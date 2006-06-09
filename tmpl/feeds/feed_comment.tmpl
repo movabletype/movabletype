@@ -1,7 +1,30 @@
-<div class="content">
-<TMPL_VAR NAME=CONTENT>
-</div>
+<entry>
+  <title type="html"><TMPL_VAR NAME=LOG.MESSAGE ESCAPE=HTML></title>
+  <published><TMPL_VAR NAME=LOG.COMMENT.CREATED_ON_ISO></published>
+  <updated><TMPL_VAR NAME=LOG.COMMENT.MODIFIED_ON_ISO></updated>
+  <id><TMPL_VAR NAME=LOG.ATOM_ID></id>
+  <TMPL_IF NAME=LOG.COMMENT.ENTRY.STATUS_IS_2><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>#c<TMPL_VAR NAME=LOG.COMMENT.ID>"/><TMPL_ELSE><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.PERMALINK>"/></TMPL_IF>
+  <author>
+  <TMPL_IF NAME=LOG.COMMENT.AUTHOR>
+    <name><TMPL_VAR NAME=LOG.COMMENT.AUTHOR></name>
+    <TMPL_IF NAME=LOG.COMMENT.URL><uri><TMPL_VAR NAME=LOG.COMMENT.URL></uri></TMPL_IF>
+    <TMPL_IF NAME=LOG.COMMENT.EMAIL><uri><TMPL_VAR NAME=LOG.COMMENT.EMAIL></uri></TMPL_IF>
+  <TMPL_ELSE>
+    <name>(system)</name>
+  </TMPL_IF>
+  </author>
+  <content type="html">
+    &lt;div class="content"&gt;
+      <TMPL_VAR NAME=LOG.COMMENT.TEXT_HTML ESCAPE=HTML>
+    &lt;/div&gt;
 
-<div class="actions">
-<a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=LOG_METADATA>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Edit"></a>
-</div>
+    <TMPL_IF NAME=LOOP_ACTIONS>
+    &lt;div class="actions"&gt;
+      &lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;
+      <TMPL_LOOP NAME=LOOP_ACTIONS>
+        &lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL ESCAPE=HTML>&lt;/a&gt;
+      </TMPL_LOOP>
+    &lt;/div&gt;
+    </TMPL_IF>
+  </content>
+</entry>

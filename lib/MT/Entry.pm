@@ -676,6 +676,26 @@ sub blog {
     return $blog;
 }
 
+sub to_hash {
+    my $entry = shift;
+    my $hash = $entry->SUPER::to_hash(@_);
+
+    $hash->{'entry.text_html'} = sub { MT->apply_text_filters($entry->text, $entry->text_filters) };
+    $hash->{'entry.text_more_html'} = sub { MT->apply_text_filters($entry->text_more, $entry->text_filters) };
+    $hash->{'entry.permalink'} = $entry->permalink;
+    $hash->{'entry.status_text'} = $entry->status_text;
+    $hash->{'entry.status_is_' . $entry->status} = 1;
+    $hash->{'entry.created_on_iso'} = sub { MT::Util::ts2iso(undef, $entry->created_on) };
+    $hash->{'entry.modified_on_iso'} = sub { MT::Util::ts2iso(undef, $entry->modified_on) };
+
+    # Populate author info
+    my $auth = $entry->author or return $hash;
+    my $auth_hash = $auth->to_hash;
+    $hash->{"entry.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+
+    $hash;
+}
+
 1;
 __END__
 

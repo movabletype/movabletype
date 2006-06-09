@@ -260,6 +260,39 @@ sub save {
     $comment->SUPER::save();
 }
 
+sub to_hash {
+    my $cmt = shift;
+    my $hash = $cmt->SUPER::to_hash();
+
+    $hash->{'comment.created_on_iso'} = sub { MT::Util::ts2iso(undef, $cmt->created_on) };
+    $hash->{'comment.modified_on_iso'} = sub { MT::Util::ts2iso(undef, $cmt->modified_on) };
+    if (my $blog = $cmt->blog) {
+        my $txt = defined $cmt->text ? $cmt->text : '';
+        require MT::Util;
+        $txt = MT::Util::munge_comment($txt, $blog);
+        my $convert_breaks = $blog->convert_paras_comments;
+        $txt = $convert_breaks ?
+            MT->apply_text_filters($txt, $blog->comment_text_filters) :
+            $txt;
+        require MT::Sanitize;
+        $txt = MT::Sanitize->sanitize($txt);
+        $hash->{comment_text_html} = $txt;
+    }
+    if (my $entry = $cmt->entry) {
+        my $entry_hash = $entry->to_hash;
+        $hash->{"comment.$_"} = $entry_hash->{$_} foreach keys %$entry_hash;
+    }
+    if ($cmt->author_id) {
+        # commenter record exists... populate it
+        if (my $auth = MT::Author->load($cmt->author_id)) {
+            my $auth_hash = $auth->to_hash;
+            $hash->{"comment.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+        }
+    }
+
+    $hash;
+}
+
 1;
 __END__
 

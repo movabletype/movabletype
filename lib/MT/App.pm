@@ -1208,6 +1208,7 @@ sub param {
 
 sub blog {
     my $app = shift;
+    $app->{_blog} = shift if @_;
     return $app->{_blog} if $app->{_blog};
     return undef unless $app->{query};
     my $blog_id = $app->param('blog_id');

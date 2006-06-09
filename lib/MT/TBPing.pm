@@ -222,6 +222,16 @@ sub all_text {
     $text;
 }
 
+sub to_hash {
+    my $ping = shift;
+    my $hash = $ping->SUPER::to_hash(@_);
+    require MT::Sanitize;
+    $hash->{tbping_excerpt} = MT::Sanitize->sanitize($ping->excerpt || '');
+    $hash->{'tbping.created_on_iso'} = sub { MT::Util::ts2iso(undef, $ping->created_on) };
+    $hash->{'tbping.modified_on_iso'} = sub { MT::Util::ts2iso(undef, $ping->modified_on) };
+    $hash;
+}
+
 1;
 __END__
 

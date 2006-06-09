@@ -1454,7 +1454,7 @@ sub launch_background_tasks {
 
 sub start_background_task {
     my ($func) = @_;
-    if (!launch_background_tasks()) { $func->() }
+    if (!launch_background_tasks()) { $func->(); }
     else {
         $| = 1;            # Flush open filehandles
         my $pid = fork();
@@ -1465,11 +1465,13 @@ sub start_background_task {
             close STDERR; open STDERR, ">/dev/null"; 
 
             MT::Object->driver->init();
-
+            MT::Object->driver->configure();
             $func->();
             CORE::exit(0) if defined($pid) && !$pid;
         } else {
             MT::Object->driver->init();
+            MT::Object->driver->configure();
+            return 1;
         }
     }
 }

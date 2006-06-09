@@ -17,7 +17,7 @@ use vars qw(@ISA %Classes);
 %Classes = (
     'system' => 'MT::Log',
     'entry' => 'MT::Log::Entry',
-    'ping' => 'MT::Log::Ping',
+    'ping' => 'MT::Log::TBPing',
     'comment' => 'MT::Log::Comment',
 );
 
@@ -62,6 +62,17 @@ sub new {
     $log;
 }
 
+sub init {
+    my $log = shift;
+    $log->SUPER::init(@_);
+    my @ts = gmtime(time);
+    my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+    $log->created_on($ts);
+    $log->modified_on($ts);
+    $log;
+}
+
 sub add_class {
     my $class = shift;
     my ($ident, $package) = @_;
@@ -91,116 +102,74 @@ sub add_class {
     }
 }
 
-sub class_description {
-    "System";
-}
-
-sub format {
+sub class_label { "System" }
+sub description {
     my $log = shift;
-    my $style = shift;
-    if (defined $style && ($style eq 'atom')) {
-        my $atom = shift;
-        my $title = $log->message || '';
-        $title = substr($title, 0, 50) if length($title) > 50;
-        $atom->title($title);
-        if ($log->metadata) {
-            $atom->content($log->metadata);
-        } else {
-            $atom->content('<pre>' . $log->message . '</pre>');
-        }
-
-        require XML::Atom::Link;
-        my $link = XML::Atom::Link->new(Version => 1.0);
-        $link->type('text/html');
-        $link->rel('alternate');
-        $link->href(MT->instance->base . MT->instance->mt_uri(mode => 'view_log', ($log->blog_id ? (args => { blog_id => $log->blog_id }) : ()) ));
-        $atom->add_link($link);
-    } else {
-        if ($log->message =~ m/\r?\n/) {
-            return '<pre>' . $log->message . '</pre>';
-        }
+    if ($log->message =~ m/\r?\n/) {
+        return '<pre>' . $log->message . '</pre>';
     }
     undef;
 }
 
-sub init {
+sub metadata_object {
     my $log = shift;
-    $log->SUPER::init(@_);
-    my @ts = gmtime(time);
-    my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
-        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
-    $log->created_on($ts);
-    $log->modified_on($ts);
-    $log;
+    my $class = $log->metadata_class;
+    return undef unless $class;
+    my $id = int($log->metadata);
+    return undef unless $id;
+    eval "require $class;" or return undef;
+    $class->load($id);
+}
+
+sub metadata_class {
+    my $log = shift;
+    my $pkg = ref $log || $log;
+    if ($pkg =~ m/::Log::/) {
+        $pkg =~ s/::Log::/::/;
+        $pkg;
+    } else {
+        undef;
+    }
+}
+
+sub to_hash {
+    my $log = shift;
+    my $hash = $log->SUPER::to_hash(@_);
+    $hash->{"log.level_" . $log->level} = 1 if $log->level;
+    $hash->{"log.class_" . $log->class} = 1 if $log->class;
+    $hash->{"log.category_" . $log->category} = 1 if $log->category;
+    if (my $obj = $log->metadata_object) {
+        my $obj_hash = $obj->to_hash;
+        $hash->{"log.$_"} = $obj_hash->{$_} foreach keys %$obj_hash;
+    }
+    if ($log->author_id) {
+        require MT::Author;
+        if (my $auth = MT::Author->load($log->author_id)) {
+            # prefix these hash keys with "log" since this
+            # log record may also refer to an entry/comment that
+            # has an associated author/commenter record and that
+            # would potentially clash with the log author record.
+            # ie, author 1 deletes entry written by author 2
+            # or author 1 deletes comment posted by commenter author 3
+            my $auth_hash = $auth->to_hash;
+            $hash->{"log.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+        }
+    }
+    return $hash;
 }
 
 package MT::Log::Entry;
 
 @MT::Log::Entry::ISA = qw(MT::Log);
 
-sub class_description {
-    "Entries";
-}
-
-sub format {
+sub class_label { "Entries" }
+sub description {
     my $log = shift;
-    my $style = shift;
-
-    my $id = int($log->metadata);
-    require MT::Entry;
-    my $entry = MT::Entry->load($id);
     my $msg;
-    if ($entry) {
-        my $blog = MT::Blog->load($entry->blog_id);
-        sub _fmt {
-            my ($entry, $blog, $text) = @_;
-            $text = '' unless defined $text;
-            my $convert_breaks = defined $entry->convert_breaks ?
-                $entry->convert_breaks :
-                $blog->convert_paras;
-            if ($convert_breaks) {
-                my $filters = $entry->text_filters;
-                push @$filters, '__default__' unless @$filters;
-                $text = MT->apply_text_filters($text, $filters);
-            }
-            $text;
-        }
-        my $txt = _fmt($entry, $blog, $entry->text) || '';
-        $txt .= _fmt($entry, $blog, $entry->text_more) || '';
-        # We may want to do some loose sanitization here to prevent
-        # any javascript from being emitted...
-        $msg = $txt;
+    if (my $entry = $log->metadata_object) {
+        $msg = $entry->to_hash->{entry_text_html};
     } else {
-        $msg = MT->translate('Entry # [_1] not found.', $id);
-    }
-
-    if (defined $style && ($style eq 'atom')) {
-        my $atom = shift;
-        if ($entry) {
-            require XML::Atom::Link;
-            my $link = XML::Atom::Link->new(Version => 1.0);
-            $link->type('text/html');
-            $link->rel('alternate');
-            $link->href($entry->permalink);
-            $atom->add_link($link);
-
-            if (my $author = $entry->author) {
-                require XML::Atom::Person;
-                my $person = XML::Atom::Person->new(Version => 1.0);
-                $person->name($author->name);
-                $person->email($author->email);
-                $person->uri($author->url);
-                $atom->author($person);
-            }
-
-            #if (my $cat = $entry->category) {
-            #    require XML::Atom::Category;
-            #    my $category = XML::Atom::Category->new(Version => 1.0);
-            #    $category->term($cat->label);
-            #    $atom->category($category);
-            #}
-        }
-        $atom->content($msg);
+        $msg = MT->translate('Entry # [_1] not found.', $log->metadata);
     }
 
     $msg;
@@ -210,113 +179,33 @@ package MT::Log::Comment;
 
 @MT::Log::Comment::ISA = qw(MT::Log);
 
-sub class_description {
-    "Comments";
-}
-
-sub format {
+sub class_label { "Comments" }
+sub description {
     my $log = shift;
-    my $style = shift;
-
-    my $id = int($log->metadata);
-    require MT::Comment;
-    require MT::Blog;
-    my $cmt = MT::Comment->load($id);
-    my $blog = MT::Blog->load($cmt->blog_id) if $cmt;
+    my $cmt = $log->metadata_object;
     my $msg;
-    if ($cmt && $blog) {
-        require MT::Util;
-        my $txt = defined $cmt->text ? $cmt->text : '';
-        $txt = MT::Util::munge_comment($txt, $blog);
-        my $convert_breaks = $blog->convert_paras_comments;
-        $txt = $convert_breaks ?
-            MT->apply_text_filters($txt, $blog->comment_text_filters) :
-            $txt;
-        require MT::Sanitize;
-        $txt = MT::Sanitize->sanitize($txt);
-        if ($cmt->is_junk) {
-            $txt .= "<p><strong>" . MT->translate("Junk Log (Score: [_1])", $cmt->junk_score) . "</strong></p>";
-            $txt .= "<pre>" . $cmt->junk_log . "</pre>";
-        }
-        $msg = $txt;
+    if ($cmt) {
+        $msg = $cmt->to_hash->{comment_text_html};
     } else {
-        $msg = MT->translate("Comment # [_1] not found.", $id);
-    }
-
-    if (defined $style && ($style eq 'atom')) {
-        my $atom = shift;
-        if ($cmt) {
-            my $e = MT::Entry->load($cmt->entry_id);
-            if ($e) {
-                require XML::Atom::Link;
-                my $link = XML::Atom::Link->new(Version => 1.0);
-                $link->type('text/html');
-                $link->rel('alternate');
-                $link->href($e->permalink . '#c' . $cmt->id);
-                $atom->add_link($link);
-            }
-            require XML::Atom::Person;
-            my $person = XML::Atom::Person->new(Version => 1.0);
-            $person->name($cmt->author) if ($cmt->author||'') ne '';
-            $person->email($cmt->email) if ($cmt->email||'') ne '';
-            $person->uri($cmt->url) if ($cmt->url||'') ne '';
-            $atom->author($person);
-        }
-        $atom->content($msg);
+        $msg = MT->translate("Comment # [_1] not found.", $log->metadata);
     }
     $msg;
 }
 
-package MT::Log::Ping;
+package MT::Log::TBPing;
 
-@MT::Log::Ping::ISA = qw(MT::Log);
+@MT::Log::TBPing::ISA = qw(MT::Log);
 
-sub class_description {
-    "TrackBacks";
-}
-
-sub format {
+sub class_label { "TrackBacks" }
+sub description {
     my $log = shift;
-    my $style = shift;
-
-    require MT::TBPing;
     my $id = int($log->metadata);
-    my $ping = MT::TBPing->load($id);
+    my $ping = $log->metadata_object;
     my $msg;
     if ($ping) {
-        require MT::Sanitize;
-        my $txt = MT::Util::html_text_transform(MT::Sanitize->sanitize($ping->excerpt || ''));
-        if ($ping->is_junk) {
-            $txt .= "<p><strong>" . MT->translate("Junk Log (Score: [_1])", $ping->junk_score ) . "</strong></p>";
-            $txt .= "<pre>" . $ping->junk_log . "</pre>";
-        }
-        $msg = $txt;
+        $msg = $ping->to_hash->{ping_excerpt_html};
     } else {
-        $msg = MT->translate("TrackBack # [_1] not found.", $id);
-    }
-    if (defined $style && ($style eq 'atom')) {
-        my $atom = shift;
-        if ($ping) {
-            require MT::Trackback;
-            my $tb = MT::Trackback->load($ping->tb_id);
-            if ($tb->entry_id) {
-                my $e = MT::Entry->load($tb->entry_id);
-                if ($e) {
-                    require XML::Atom::Link;
-                    my $link = XML::Atom::Link->new(Version => 1.0);
-                    $link->type('text/html');
-                    $link->rel('alternate');
-                    $link->href($e->permalink . '#p' . $ping->id);
-                    $atom->add_link($link);
-                }
-            }
-            require XML::Atom::Person;
-            my $person = XML::Atom::Person->new(Version => 1.0);
-            $person->name($ping->blog_name) if ($ping->blog_name||'') ne '';
-            $person->uri($ping->source_url) if ($ping->source_url||'') ne '';
-            $atom->author($person);
-        }
-        $atom->content($msg);
+        $msg = MT->translate("TrackBack # [_1] not found.", $log->metadata);
     }
     $msg;
 }

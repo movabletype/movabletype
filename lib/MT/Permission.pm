@@ -119,6 +119,17 @@ sub can_edit_entry {
         ($perms->can_post && $entry->author_id == $author->id);
 }
 
+sub to_hash {
+    my $perms = shift;
+    my $hash = {}; # $perms->SUPER::to_hash(@_);
+    my $all_perms = MT::Permission->perms();
+    foreach (@$all_perms) {
+        my $perm = $_[1];
+        $hash->{"permission.can_$perm"} = $perms->has($perm);
+    }
+    $hash;
+}
+
 1;
 __END__
 

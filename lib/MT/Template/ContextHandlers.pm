@@ -1712,11 +1712,12 @@ sub _hdlr_entry_author_link {
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
     # Open the link in a new window if requested (with new_window="1").
     my $target = $args->{new_window} ? ' target="_blank"' : '';
-    if ($show_url && $a->url) {
+    if ($show_url && $a->url && ($displayname ne '')) {
         return sprintf qq(<a href="%s"%s>%s</a>), $a->url, $target, $displayname;
-    } elsif ($show_email && $a->email) {
+    } elsif ($show_email && $a->email && ($displayname ne '')) {
         my $str = "mailto:" . $a->email;
         $str = spam_protect($str) if $args->{'spam_protect'};
+
         return sprintf qq(<a href="%s">%s</a>), $str, $displayname;
     } else {
         return $displayname;

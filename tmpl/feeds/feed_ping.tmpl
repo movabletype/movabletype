@@ -1,7 +1,29 @@
-<div class="content">
-<TMPL_VAR NAME=CONTENT>
-</div>
+<entry>
+  <title type="html"><TMPL_VAR NAME=LOG.MESSAGE></title>
+  <published><TMPL_VAR NAME=LOG.TBPING.CREATED_ON_ISO></published>
+  <updated><TMPL_VAR NAME=LOG.TBPING.MODIFIED_ON_ISO></updated>
+  <id><TMPL_VAR NAME=LOG.ATOM_ID></id>
+  <TMPL_IF NAME=LOG.TBPING.ENTRY.STATUS_IS_2><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.TBPING.ENTRY.PERMALINK>#p<TMPL_VAR NAME=LOG.TBPING.ID>"/><TMPL_ELSE><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.PERMALINK>"/></TMPL_IF>
+  <author>
+  <TMPL_IF NAME=LOG.TBPING.BLOG_NAME>
+    <name><TMPL_VAR NAME=LOG.TBPING.BLOG_NAME></name>
+    <TMPL_IF NAME=LOG.TBPING.SOURCE_URL><uri><TMPL_VAR NAME=LOG.TBPING.SOURCE_URL></uri></TMPL_IF>
+  <TMPL_ELSE>
+    <name>(system)</name>
+  </TMPL_IF>
+  </author>
+  <content type="html">
+    &lt;div class="content"&gt;
+      <TMPL_VAR NAME=LOG.TBPING.EXCERPT ESCAPE=HTML>
+    &lt;/div&gt;
 
-<div class="actions">
-<a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=ping&amp;id=<TMPL_VAR NAME=LOG_METADATA>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Edit"></a>
-</div>
+    <TMPL_IF NAME=LOOP_ACTIONS>
+    &lt;div class="actions"&gt;
+      &lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=ping&amp;id=<TMPL_VAR NAME=LOG.TBPING.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;
+      <TMPL_LOOP NAME=LOOP_ACTIONS>
+        &lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL ESCAPE=HTML>&lt;/a&gt;
+      </TMPL_LOOP>
+    &lt;/div&gt;
+    </TMPL_IF>
+  </content>
+</entry>

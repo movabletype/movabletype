@@ -330,6 +330,23 @@ sub __mangle_def {
     \%def;
 }
 
+sub to_hash {
+    my $obj = shift;
+    my $hash = {};
+    my $pfx = $obj->datasource;
+    my $values = $obj->column_values;
+    foreach (keys %$values) {
+        $hash->{"${pfx}.$_"} = $values->{$_};
+    }
+    if (my $blog_id = $obj->column('blog_id')) {
+        require MT::Blog;
+        my $blog = MT::Blog->load($blog_id);
+        my $blog_hash = $blog->to_hash;
+        $hash->{"${pfx}.$_"} = $blog_hash->{$_} foreach keys %$blog_hash;
+    }
+    $hash;
+}
+
 1;
 __END__
 

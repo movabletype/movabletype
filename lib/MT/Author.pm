@@ -306,6 +306,20 @@ sub entry_prefs {
     \%prefs;
 }
 
+sub to_hash {
+    my $author = shift;
+    my $hash = $author->SUPER::to_hash(@_);
+    my $app = MT->instance;
+    my $blog = $app->blog if $app->can('blog');
+    if ($blog) {
+        require MT::Permission;
+        if (my $perms = MT::Permission->load({ author_id => $author->id, blog_id => $blog->id })) {
+            my $perms_hash = $perms->to_hash;
+            $hash->{"author.$_"} = $perms_hash->{$_} foreach keys %$perms_hash;
+        }
+    }
+    $hash;
+}
 1;
 __END__
 

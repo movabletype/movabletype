@@ -1546,7 +1546,7 @@ sub view_log {
     foreach (keys %MT::Log::Classes) {
         push @class_loop, {
             class_name => $_,
-            class_label => $app->translate($MT::Log::Classes{$_}->class_description),
+            class_label => $app->translate($MT::Log::Classes{$_}->class_label),
         };
     }
     push @class_loop, {
@@ -1637,8 +1637,7 @@ sub build_log_table {
                 }
             }
             $row->{created_on_relative} = relative_date($ts, time);
-            my $detail = $log->format();
-            $row->{log_detail} = $detail;
+            $row->{log_detail} = $log->description;
         }
         push @log, $row;
     }
@@ -6879,8 +6878,8 @@ sub list_categories {
     require MT::TBPing;
     my %param;
     my %authors;
-    my $data = $app->_build_category_list(blog_id => $q->param ('blog_id'), 
-        counts => 1, new_cat_id => $q->param ('new_cat_id'));
+    my $data = $app->_build_category_list(blog_id => scalar $q->param('blog_id'), 
+        counts => 1, new_cat_id => scalar $q->param ('new_cat_id'));
     $param{category_loop} = $data;
     $param{saved} = $q->param('saved');
     $param{saved_deleted} = $q->param('saved_deleted');
@@ -9077,7 +9076,7 @@ sub reg_bm_js {
 sub category_add {
     my $app = shift;
     my $q = $app->param;
-    my $data = $app->_build_category_list(blog_id => $q->param('blog_id'));
+    my $data = $app->_build_category_list(blog_id => scalar $q->param('blog_id'));
     my %param;
     $param{'category_loop'} = $data;
     $app->add_breadcrumb($app->translate('Add a Category'));
