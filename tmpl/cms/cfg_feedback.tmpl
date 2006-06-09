@@ -1,0 +1,314 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="cfg-feedback">
+
+<script type="text/javascript">
+<!--
+function scoreNudge(amount) {
+    var fld = getByID('junk_score_threshold');
+    score = fld.value;
+    score.replace(/\+/, '');
+    score = parseFloat(score) + amount;
+    if (isNaN(score)) score = amount;
+    if (score > 10) score = 10;
+    if (score < -10) score = -10;
+    if (score > 0) score = '+' + score;
+    fld.value = score;
+    return false;
+}
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Feedback Settings"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="This screen allows you to control the feedback settings for this weblog, including comments and TrackBacks."></p>
+
+<div class="tabs">
+<ul>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="General"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="New Entry Defaults"></a></li>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_feedback&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Feedback"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_archives&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Publishing"></a></li>
+<TMPL_IF NAME=SHOW_IP_INFO>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list&amp;_type=banlist&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="IP Banning"></a></li>
+</TMPL_IF>
+<TMPL_IF NAME=USE_PLUGINS>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_plugins&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Plugins"></a></li>
+</TMPL_IF>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/related.gif" alt="<MT_TRANS phrase="Switch to Basic Settings">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;config_view=basic&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Switch to Basic Settings"></a>
+</li>
+</ul>
+</div>
+
+<TMPL_IF NAME=SAVED>
+<div class="message"><MT_TRANS phrase="Your feedback preferences have been saved.">
+<TMPL_IF NAME=CAN_REBUILD>
+<TMPL_IF NAME=NEED_FULL_REBUILD>
+<form class="inline" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+<MT_TRANS phrase="To see the changes reflected on your public site, you should rebuild your site now.">
+<input type="button" onclick="doRebuild('<TMPL_VAR NAME=BLOG_ID>')" name="rebuild-my-site" value="<MT_TRANS phrase="Rebuild my site">" />
+</form>
+<TMPL_ELSE>
+<TMPL_IF NAME=NEED_INDEX_REBUILD>
+<form class="inline" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+<MT_TRANS phrase="To see the changes reflected on your public site, you should rebuild your site now.">
+<input type="button" onclick="doRebuild('<TMPL_VAR NAME=BLOG_ID>', 'prompt=index')" name="rebuild-my-site" value="<MT_TRANS phrase="Rebuild indexes">" />
+</form>
+</TMPL_IF>
+</TMPL_IF>
+</TMPL_IF>
+</div>
+</TMPL_IF>
+
+<form name="cfg_form" method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="cfg_screen" value="cfg_feedback" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Comments"></h3>
+
+<div class="inner">
+
+<TMPL_UNLESS NAME=SYSTEM_ALLOW_COMMENTS>
+<div class="message"><MT_TRANS phrase="Note: Commenting is currently disabled at the system level."></div>
+</TMPL_UNLESS>
+
+<TMPL_UNLESS NAME=TK_AVAILABLE>
+<p><MT_TRANS phrase="Comment authentication is not available because one of the needed modules, MIME::Base64 or LWP::UserAgent is not installed. Talk to your host about getting this module installed."></p>
+</TMPL_UNLESS>
+
+<div class="setting">
+<div class="label"><MT_TRANS phrase="Accept comments from">:</div>
+<div class="field">
+<ul>
+<li><label><input type="radio" name="allow_comments" value="1" onclick="toggleSubPrefs(this); return true"<TMPL_IF NAME=ALLOW_UNREG_COMMENTS> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Anyone"></label></li>
+<TMPL_IF NAME=TK_AVAILABLE>
+<li><label><input type="radio" name="allow_comments" value="2" onclick="toggleSubPrefs(this); return true"<TMPL_IF NAME=ALLOW_REG_COMMENTS><TMPL_UNLESS NAME=ALLOW_UNREG_COMMENTS> checked="checked"</TMPL_UNLESS></TMPL_IF> class="rb" /> <MT_TRANS phrase="Authenticated commenters only"></label></li>
+</TMPL_IF>
+<li><label><input type="radio" name="allow_comments" value="0" onclick="toggleSubPrefs(this); return true"<TMPL_UNLESS NAME=ALLOW_REG_COMMENTS><TMPL_UNLESS NAME=ALLOW_UNREG_COMMENTS> checked="checked"</TMPL_UNLESS></TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="No one"></label></li>
+</ul>
+<p><MT_TRANS phrase="Specify from whom Movable Type shall accept comments on this weblog."> <a href="#" onclick="return openManual('blog_settings_feedback', 'accept_comments_from')" class="help">?</a></p>
+</div>
+</div>
+
+<div id="allow_comments_prefs" style="display:<TMPL_IF NAME=ALLOW_REG_COMMENTS>block<TMPL_ELSE><TMPL_IF NAME=ALLOW_UNREG_COMMENTS>block<TMPL_ELSE>none</TMPL_IF></TMPL_IF>">
+
+<div class="setting" id="setting-auth-status">
+<div class="label"><MT_TRANS phrase="Authentication Status">:</div>
+<div class="field">
+<TMPL_IF NAME=REMOTE_AUTH_TOKEN>
+<div id="token_curr_status">
+<p>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/success.gif" alt="<MT_TRANS phrase="Authentication Enabled">" width="9" height="9" />
+<span class="alert-success-inline"><MT_TRANS phrase="Authentication is enabled."></span>
+<input type="button" name="auth_setup" id="auth_setup" value="<MT_TRANS phrase="Clear Authentication Token">" onclick="getByID('remote_auth_token').value='';getByID('save_token_msg').style.display='block';getByID('token_curr_status').style.display='none';return false" />
+</p>
+<p>
+<MT_TRANS phrase="Authentication Token:">
+<input type="text" id="remote_auth_token" name="remote_auth_token" value="<TMPL_VAR NAME=REMOTE_AUTH_TOKEN ESCAPE=HTML>" />
+</p>
+</div>
+<p id="save_token_msg" style="display:none">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Authentication Token Removed">" width="9" height="9" />
+<span class="alert-warning-inline"><MT_TRANS phrase="Please click the Save Changes button below to disable authentication."></span>
+</p>
+<TMPL_ELSE>
+<TMPL_IF NAME=ALLOW_REG_COMMENTS><TMPL_UNLESS NAME=ALLOW_UNREG_COMMENTS>
+<p>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Authentication Not Enabled">" width="9" height="9" />
+<span class="alert-warning-inline"><MT_TRANS phrase="Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication."></span>
+</p>
+</TMPL_UNLESS></TMPL_IF>
+<p>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/neutral.gif" alt="<MT_TRANS phrase="Authentication Not Enabled">" width="9" height="9" />
+<span class="auth-status-neutral"><MT_TRANS phrase="Authentication is not enabled."></span>
+</p>
+<p>
+<input type="button" name="auth_setup" value="<MT_TRANS phrase="Setup Authentication">" onclick="window.open('<TMPL_VAR NAME=IDENTITY_SYSTEM>/handshake?<TMPL_IF NAME=LANG>lang=<TMPL_VAR NAME=LANG>&</TMPL_IF>url=<TMPL_VAR NAME=HANDSHAKE_RETURN ESCAPE=URL>&blog_id=<TMPL_VAR NAME=BLOG_ID>');return false"/>
+&nbsp; <MT_TRANS phrase="Or, manually enter token:">
+<input type="text" name="remote_auth_token" value="<TMPL_VAR NAME=REMOTE_AUTH_TOKEN ESCAPE=HTML>" />
+</p>
+<p id="save_token_msg" style="display:none">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Authentication Token Inserted">" width="9" height="9" />
+<span class="alert-warning-inline"><MT_TRANS phrase="Please click the Save Changes button below to enable authentication."></span>
+</p>
+</TMPL_IF>
+<p><MT_TRANS phrase="Establish a link between your weblog and an authentication service. You may use TypeKey (a free service, available by default) or another compatible service."> <a href="#" onclick="return openManual('blog_settings_feedback', 'authentication_status')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="require_email_address"><MT_TRANS phrase="Require E-mail Address">:</label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" value="1" id="require_comment_emails" name="require_comment_emails"<TMPL_IF NAME=REQUIRE_COMMENT_EMAILS> checked="checked"</TMPL_IF> class="cb" /> <span class="hint"><MT_TRANS phrase="If enabled, visitors must provide a valid e-mail address when commenting."></span>
+<a href="#" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help">?</a></li>
+</ul>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><MT_TRANS phrase="Immediately publish comments from">:</div>
+<div class="field">
+<ul>
+<li><label><input type="radio" name="moderate_comments" value="1"<TMPL_IF NAME=MODERATE_COMMENTS_1> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="No one"></label></li>
+<li><label><input type="radio" name="moderate_comments" value="2"<TMPL_IF NAME=MODERATE_COMMENTS_2> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Trusted commenters only"></label></li>
+<li><label><input type="radio" name="moderate_comments" value="3"<TMPL_IF NAME=MODERATE_COMMENTS_3> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Any authenticated commenters"></label></li>
+<li><label><input type="radio" name="moderate_comments" value="0"<TMPL_IF NAME=MODERATE_COMMENTS_0> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Anyone"></label></li>
+</ul>
+<p><MT_TRANS phrase="Specify what should happen to non-junk comments after submission."> <MT_TRANS phrase="Unpublished comments are held for moderation."> <a href="#" onclick="return openManual('blog_settings_feedback', 'immediately_publish_comments_from')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label><MT_TRANS phrase="E-mail Notification">:</label></div>
+<div class="field">
+<ul>
+<li><label><input type="radio" name="email_new_comments" value="1"<TMPL_IF NAME=EMAIL_NEW_COMMENTS_1> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="On"></label></li>
+<li><label><input type="radio" name="email_new_comments" value="2"<TMPL_IF NAME=EMAIL_NEW_COMMENTS_2> checked="checked"</TMPL_IF> class="rb"  /> <MT_TRANS phrase="Only when attention is required"></label></li>
+<li><label><input type="radio" name="email_new_comments" value="0"<TMPL_UNLESS NAME=EMAIL_NEW_COMMENTS> checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Off"></label></li>
+</ul>
+<p><MT_TRANS phrase="Specify when Movable Type should notify you of new comments if at all."> <a href="#" onclick="return openManual('blog_settings_feedback', 'email_notification')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="allow_comment_html"><MT_TRANS phrase="Allow HTML">:</label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" name="allow_comment_html" id="allow_comment_html" value="1"<TMPL_IF NAME=ALLOW_COMMENT_HTML> checked="checked"</TMPL_IF> class="cb" /> <span class="hint"><MT_TRANS phrase="If enabled, users will be able to enter a limited set of HTML in their comments. If not, all HTML will be stripped out."></span> <a href="#" onclick="return openManual('blog_settings_feedback', 'allow_html')" class="help">?</a></li>
+</ul>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="autolink_urls"><MT_TRANS phrase="Auto-Link URLs">:</label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" value="1" name="autolink_urls" id="autolink_urls"<TMPL_IF NAME=AUTOLINK_URLS> checked="checked"</TMPL_IF> class="cb" /> <span class="hint"><MT_TRANS phrase="If enabled, all non-linked URLs will be transformed into links to that URL."></span>  <a href="#" onclick="return openManual('blog_settings_feedback', 'autolink_urls')" class="help">?</a></li>
+</ul>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="convert_paras_comments"><MT_TRANS phrase="Text Formatting">:</label></div>
+<div class="field">
+<select name="convert_paras_comments" id="convert_paras_comments">
+<TMPL_LOOP NAME=TEXT_FILTERS_COMMENTS>
+<option value="<TMPL_VAR NAME=FILTER_KEY>"<TMPL_IF NAME=FILTER_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=FILTER_LABEL></option>
+</TMPL_LOOP>
+</select>
+<p><MT_TRANS phrase="Specifies the Text Formatting option to use for formatting visitor comments.">
+<a href="#" onclick="return openManual('blog_settings_feedback', 'comment_text_formatting')" class="help">?</a></p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="TrackBacks"></h3>
+
+<div class="inner">
+
+<TMPL_UNLESS NAME=SYSTEM_ALLOW_PINGS>
+<div class="message"><MT_TRANS phrase="Note: TrackBacks are currently disabled at the system level."></div>
+</TMPL_UNLESS>
+
+<div class="setting">
+<div class="label"><label for="allow_pings"><MT_TRANS phrase="Accept TrackBacks">:</label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" name="allow_pings" value="1" id="allow_pings" onclick="toggleSubPrefs(this); return true"<TMPL_IF NAME=ALLOW_PINGS> checked="checked"</TMPL_IF> class="cb" /> <span class="hint"><MT_TRANS phrase="If enabled, TrackBacks will be accepted from any source."></span>  <a href="#" onclick="return openManual('blog_settings_feedback', 'accept_trackbacks')" class="help">?</a></li>
+</ul>
+</div>
+</div>
+
+<div id="allow_pings_prefs" style="display: <TMPL_IF NAME=ALLOW_PINGS>block<TMPL_ELSE>none</TMPL_IF>">
+
+<div class="setting">
+<div class="label"><label for="moderate_pings"><MT_TRANS phrase="Moderation">:</label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" name="moderate_pings" value="1" id="moderate_pings"<TMPL_IF NAME=MODERATE_PINGS_1> checked="checked"</TMPL_IF> class="cb" /> <span class="hint"><MT_TRANS phrase="Hold all TrackBacks for approval before they're published."></span>  <a href="#" onclick="return openManual('blog_settings_feedback', 'trackback_moderation')" class="help">?</a></li>
+</ul>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="email_new_pings"><MT_TRANS phrase="E-mail Notification">:</label></div>
+<div class="field">
+<ul>
+<li><label><input type="radio" name="email_new_pings" value="1"<TMPL_IF NAME=EMAIL_NEW_PINGS_1> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="On"></label></li>
+<li><label><input type="radio" name="email_new_pings" value="2"<TMPL_IF NAME=EMAIL_NEW_PINGS_2> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Only when attention is required"></label></li>
+<li><label><input type="radio" name="email_new_pings" value="0"<TMPL_UNLESS NAME=EMAIL_NEW_PINGS> checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Off"></label></li>
+</ul>
+<p><MT_TRANS phrase="Specify when Movable Type should notify you of new TrackBacks if at all."> <a href="#" onclick="return openManual('blog_settings_feedback', 'email_notification')" class="help">?</a></p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Junk"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label">
+<label for="junk_score_threshold"><MT_TRANS phrase="Junk Score Threshold">:</label></div>
+<div class="field">
+<a href="#" id="decrease-threshold" onclick="return scoreNudge(-1)"><MT_TRANS phrase="Less Aggressive"> <img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
+<input type="text" id="junk_score_threshold" name="junk_score_threshold" value="<TMPL_VAR NAME=JUNK_SCORE_THRESHOLD>" size="3" />
+<a href="#" id="increase-threshold" onclick="return scoreNudge(1)"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /> <MT_TRANS phrase="More Aggressive"></a>
+<p><MT_TRANS phrase="Comments and TrackBacks receive a junk score between -10 (complete junk) and +10 (not junk). Feedback with a score which is lower than the threshold shown above will be marked as junk.">  <a href="#" onclick="return openManual('blog_settings_feedback', 'junk_score_threshold')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="auto_delete_junk"><MT_TRANS phrase="Auto-Delete Junk">:</label></div>
+<div class="field">
+<ul>
+<li><input id="auto_delete_junk" name="auto_delete_junk" type="checkbox" value="1"<TMPL_IF NAME="AUTO_DELETE_JUNK"> checked="checked"</TMPL_IF> onchange="toggleSubPrefs(this)" class="cb" /> <span class="hint"><MT_TRANS phrase="If enabled, junk feedback will be automatically erased after a number of days."></span>  <a href="#" onclick="return openManual('blog_settings_feedback', 'autodelete_junk')" class="help">?</a></li>
+</ul>
+</div>
+</div>
+
+<div class="setting" id="auto_delete_junk_prefs" <TMPL_UNLESS NAME=AUTO_DELETE_JUNK>style="display: none"</TMPL_UNLESS>>
+<div class="label"><label for="junk_folder_expiry"><MT_TRANS phrase="Delete Junk After">:</label></div>
+<div class="field">
+<input type="text" id="junk_folder_expiry" name="junk_folder_expiry" value="<TMPL_VAR NAME=JUNK_FOLDER_EXPIRY>" size="5" /> <MT_TRANS phrase="days">
+<p><MT_TRANS phrase="When an item has been marked as junk for this many days, it is automatically deleted."> <a href="#" onclick="return openManual('blog_settings_feedback', 'delete_junk_after')" class="help">?</a></p>
+</div>
+</div>
+
+</div>
+
+</fieldset>
+
+<div style="text-align: center;">
+<input type="submit" value="<MT_TRANS phrase="Save Changes">" title="<MT_TRANS phrase="Save changes (s)">" accesskey="s" />
+</div>
+
+</form>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

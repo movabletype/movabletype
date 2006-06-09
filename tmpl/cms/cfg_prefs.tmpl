@@ -1,0 +1,278 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="cfg-prefs">
+
+<script type="text/javascript">
+<!--
+function doRemoveLicense () {
+    document.cfg_form.cc_license.value = '';
+    var e = getByID('has-license');
+    if (e) e.style.display = 'none';
+    e = getByID('no-license');
+    if (e) e.style.display = 'block';
+}
+
+function validate (f) {
+    if (!f.name.value) {
+        alert('<MT_TRANS phrase="You must set your Weblog Name." escape="singlequotes">');
+        return false;
+    } else if (f.server_offset.value == '') {
+        alert('<MT_TRANS phrase="You did not select a timezone." escape="singlequotes">');
+        return false;
+    }
+    return true;
+}
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="General Settings"></h2>
+
+<TMPL_IF NAME=ERROR>
+<div class="error-message"><TMPL_VAR NAME=ERROR></div>
+</TMPL_IF>
+
+<p class="page-desc"><MT_TRANS phrase="This screen allows you to control general weblog settings, default weblog display settings, and third-party service settings."></p>
+
+<div class="tabs">
+<ul>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="General"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="New Entry Defaults"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_feedback&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Feedback"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_archives&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Publishing"></a></li>
+<TMPL_IF NAME=SHOW_IP_INFO>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list&amp;_type=banlist&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="IP Banning"></a></li>
+</TMPL_IF>
+<TMPL_IF NAME=USE_PLUGINS>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_plugins&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Plugins"></a></li>
+</TMPL_IF>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/related.gif" alt="<MT_TRANS phrase="Switch to Basic Settings">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;config_view=basic&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Switch to Basic Settings"></a>
+</li>
+</ul>
+</div>
+
+<TMPL_IF NAME=SAVED>
+<div class="message"><MT_TRANS phrase="Your blog preferences have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<form name="cfg_form" method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return validate(this)">
+<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="cfg_screen" value="cfg_prefs" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Weblog Settings"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label"><label for="name"><MT_TRANS phrase="Weblog Name:"></label></div>
+<div class="field">
+<input name="name" id="name" value="<TMPL_VAR NAME=NAME ESCAPE=HTML>" size="30" />
+<p><MT_TRANS phrase="Name your weblog. The weblog name can be changed at any time."> <a href="#" onclick="return openManual('blog_settings_general', 'blog_name')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="description"><MT_TRANS phrase="Description:"></label></div>
+<div class="field">
+<textarea name="description" id="description" cols="50" rows="2"><TMPL_VAR NAME=DESCRIPTION ESCAPE=HTML></textarea>
+<p><MT_TRANS phrase="Enter a description for your weblog.">
+<a href="#" onclick="return openManual('blog_settings_general', 'blog_description')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="server_offset"><MT_TRANS phrase="Timezone:"></label></div>
+<div class="field">
+<select name="server_offset" id="server_offset">
+<option value=""><MT_TRANS phrase="Time zone not selected"></option>
+<option value="13"<TMPL_IF NAME=SERVER_OFFSET_13> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+<option value="12"<TMPL_IF NAME=SERVER_OFFSET_12> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+12 (International Date Line East)"></option>
+<option value="11"<TMPL_IF NAME=SERVER_OFFSET_11> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+11"></option>
+<option value="10"<TMPL_IF NAME=SERVER_OFFSET_10> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+10 (East Australian Time)"></option>
+<option value="9.5"<TMPL_IF NAME=SERVER_OFFSET_9_5> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+9.5 (Central Australian Time)"></option>
+<option value="9"<TMPL_IF NAME=SERVER_OFFSET_9> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+9 (Japan Time)"></option>
+<option value="8"<TMPL_IF NAME=SERVER_OFFSET_8> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+8 (China Coast Time)"></option>
+<option value="7"<TMPL_IF NAME=SERVER_OFFSET_7> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+7 (West Australian Time)"></option>
+<option value="6.5"<TMPL_IF NAME=SERVER_OFFSET_6_5> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+6.5 (North Sumatra)"></option>
+<option value="6"<TMPL_IF NAME=SERVER_OFFSET_6> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+6 (Russian Federation Zone 5)"></option>
+<option value="5.5"<TMPL_IF NAME=SERVER_OFFSET_5_5> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+5.5 (Indian)"></option>
+<option value="5"<TMPL_IF NAME=SERVER_OFFSET_5> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+5 (Russian Federation Zone 4)"></option>
+<option value="4"<TMPL_IF NAME=SERVER_OFFSET_4> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+4 (Russian Federation Zone 3)"></option>
+<option value="3.5"<TMPL_IF NAME=SERVER_OFFSET_3_5> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+3.5 (Iran)"></option>
+<option value="3"<TMPL_IF NAME=SERVER_OFFSET_3> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+<option value="2"<TMPL_IF NAME=SERVER_OFFSET_2> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+2 (Eastern Europe Time)"></option>
+<option value="1"<TMPL_IF NAME=SERVER_OFFSET_1> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+1 (Central European Time)"></option>
+<option value="0"<TMPL_IF NAME=SERVER_OFFSET_0> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC+0 (Universal Time Coordinated)"></option>
+<option value="-1"<TMPL_IF NAME=SERVER_OFFSET__1> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-1 (West Africa Time)"></option>
+<option value="-2"<TMPL_IF NAME=SERVER_OFFSET__2> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-2 (Azores Time)"></option>
+<option value="-3"<TMPL_IF NAME=SERVER_OFFSET__3> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-3 (Atlantic Time)"></option>
+<option value="-3.5"<TMPL_IF NAME=SERVER_OFFSET__3_5> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-3.5 (Newfoundland)"></option>
+<option value="-4"<TMPL_IF NAME=SERVER_OFFSET__4> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-4 (Atlantic Time)"></option>
+<option value="-5"<TMPL_IF NAME=SERVER_OFFSET__5> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-5 (Eastern Time)"></option>
+<option value="-6"<TMPL_IF NAME=SERVER_OFFSET__6> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-6 (Central Time)"></option>
+<option value="-7"<TMPL_IF NAME=SERVER_OFFSET__7> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-7 (Mountain Time)"></option>
+<option value="-8"<TMPL_IF NAME=SERVER_OFFSET__8> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-8 (Pacific Time)"></option>
+<option value="-9"<TMPL_IF NAME=SERVER_OFFSET__9> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-9 (Alaskan Time)"></option>
+<option value="-10"<TMPL_IF NAME=SERVER_OFFSET__10> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+<option value="-11"<TMPL_IF NAME=SERVER_OFFSET__11> selected="selected"</TMPL_IF>><MT_TRANS phrase="UTC-11 (Nome Time)"></option>
+</select>
+<p><MT_TRANS phrase="Select your timezone from the pulldown menu.">
+<a href="#" onclick="return openManual('blog_settings_general', 'blog_timezone')" class="help">?</a></p>
+</div>
+</div>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Default Weblog Display Settings"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label"><label for="list_on_index"><MT_TRANS phrase="Entries to Display:"></label></div>
+<div class="field">
+<input name="list_on_index" id="list_on_index" size="2" value="<TMPL_VAR NAME=LIST_ON_INDEX ESCAPE=HTML>" />
+<select name="days_or_posts" id="days_or_posts">
+<option value="days"<TMPL_IF NAME=DAYS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Days"></option>
+<option value="posts"<TMPL_IF NAME=POSTS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Entries"></option>
+</select>
+<p><MT_TRANS phrase="Select the number of days' entries or the exact number of entries you would like displayed on your weblog.">
+<a href="#" onclick="return openManual('blog_settings_general', 'entries_to_display')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="sort_order_posts"><MT_TRANS phrase="Entry Order:"></label></div>
+<div class="field">
+<select name="sort_order_posts" id="sort_order_posts">
+<option value="ascend"<TMPL_IF NAME=SORT_ORDER_POSTS_ASCEND> selected="selected"</TMPL_IF>><MT_TRANS phrase="Ascending"></option>
+<option value="descend"<TMPL_IF NAME=SORT_ORDER_POSTS_DESCEND> selected="selected"</TMPL_IF>><MT_TRANS phrase="Descending"></option>
+</select>
+<p><MT_TRANS phrase="Select whether you want your posts displayed in ascending (oldest at top) or descending (newest at top) order."> <a href="#" onclick="return openManual('blog_settings_general', 'entry_order')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="sort_order_comments"><MT_TRANS phrase="Comment Order:"></label></div>
+<div class="field">
+<select name="sort_order_comments" id="sort_order_comments">
+<option value="ascend"<TMPL_IF NAME=SORT_ORDER_COMMENTS_ASCEND> selected="selected"</TMPL_IF>><MT_TRANS phrase="Ascending"></option>
+<option value="descend"<TMPL_IF NAME=SORT_ORDER_COMMENTS_DESCEND> selected="selected"</TMPL_IF>><MT_TRANS phrase="Descending"></option>
+</select>
+<p><MT_TRANS phrase="Select whether you want visitor comments displayed in ascending (oldest at top) or descending (newest at top) order."> <a href="#" onclick="return openManual('blog_settings_general', 'comment_order')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="words_in_excerpt"><MT_TRANS phrase="Excerpt Length:"></label></div>
+<div class="field">
+<input name="words_in_excerpt" id="words_in_excerpt" size="3" value="<TMPL_VAR NAME=WORDS_IN_EXCERPT ESCAPE=HTML>" />
+<p><MT_TRANS phrase="Enter the number of words that should appear in an auto-generated excerpt.">
+<a href="#" onclick="return openManual('blog_settings_general', 'excerpt_length')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="language"><MT_TRANS phrase="Date Language:"></label></div>
+<div class="field">
+<select name="language" id="language">
+<option value="cz"<TMPL_IF NAME=LANGUAGE_CZ> selected="selected"</TMPL_IF>><MT_TRANS phrase="Czech"></option>
+<option value="dk"<TMPL_IF NAME=LANGUAGE_DK> selected="selected"</TMPL_IF>><MT_TRANS phrase="Danish"></option>
+<option value="nl"<TMPL_IF NAME=LANGUAGE_NL> selected="selected"</TMPL_IF>><MT_TRANS phrase="Dutch"></option>
+<option value="en"<TMPL_IF NAME=LANGUAGE_EN> selected="selected"</TMPL_IF>><MT_TRANS phrase="English"></option>
+<option value="et"<TMPL_IF NAME=LANGUAGE_ET> selected="selected"</TMPL_IF>><MT_TRANS phrase="Estonian"></option>
+<option value="fr"<TMPL_IF NAME=LANGUAGE_FR> selected="selected"</TMPL_IF>><MT_TRANS phrase="French"></option>
+<option value="de"<TMPL_IF NAME=LANGUAGE_DE> selected="selected"</TMPL_IF>><MT_TRANS phrase="German"></option>
+<option value="is"<TMPL_IF NAME=LANGUAGE_IS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Icelandic"></option>
+<option value="it"<TMPL_IF NAME=LANGUAGE_IT> selected="selected"</TMPL_IF>><MT_TRANS phrase="Italian"></option>
+<option value="ja"<TMPL_IF NAME=LANGUAGE_JA> selected="selected"</TMPL_IF>><MT_TRANS phrase="Japanese"></option>
+<option value="no"<TMPL_IF NAME=LANGUAGE_NO> selected="selected"</TMPL_IF>><MT_TRANS phrase="Norwegian"></option>
+<option value="pl"<TMPL_IF NAME=LANGUAGE_PL> selected="selected"</TMPL_IF>><MT_TRANS phrase="Polish"></option>
+<option value="pt"<TMPL_IF NAME=LANGUAGE_PT> selected="selected"</TMPL_IF>><MT_TRANS phrase="Portuguese"></option>
+<option value="sk"<TMPL_IF NAME=LANGUAGE_SK> selected="selected"</TMPL_IF>><MT_TRANS phrase="Slovak"></option>
+<option value="si"<TMPL_IF NAME=LANGUAGE_SI> selected="selected"</TMPL_IF>><MT_TRANS phrase="Slovenian"></option>
+<option value="es"<TMPL_IF NAME=LANGUAGE_ES> selected="selected"</TMPL_IF>><MT_TRANS phrase="Spanish"></option>
+<option value="fi"<TMPL_IF NAME=LANGUAGE_FI> selected="selected"</TMPL_IF>><MT_TRANS phrase="Suomi"></option>
+<option value="se"<TMPL_IF NAME=LANGUAGE_SE> selected="selected"</TMPL_IF>><MT_TRANS phrase="Swedish"></option>
+</select>
+<p><MT_TRANS phrase="Select the language in which you would like dates on your blog displayed.">
+<a href="#" onclick="return openManual('blog_settings_general', 'date_language')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><MT_TRANS phrase="Limit HTML Tags:"></div>
+<div class="field">
+<ul>
+<li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_0" value="0"<TMPL_IF NAME=SANITIZE_SPEC_0> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Use defaults">:</label> <span class="hint"><MT_TRANS phrase="([_1])" params="<TMPL_VAR NAME=GLOBAL_SANITIZE_SPEC ESCAPE=HTML>"></span></li>
+<li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<TMPL_IF NAME=SANITIZE_SPEC_1> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Use my settings">:</label> <input name="sanitize_spec_manual" id="sanitize_spec_manual" value="<TMPL_IF NAME=SANITIZE_SPEC_1><TMPL_VAR NAME=SANITIZE_SPEC ESCAPE=HTML></TMPL_IF>" /></li>
+</ul>
+<p><MT_TRANS phrase="Specifies the list of HTML tags allowed by default when cleaning an HTML string (a comment, for example).">
+<a href="#" onclick="return openManual('blog_settings_general', 'limit_html_tags')" class="help">?</a></p>
+</div>
+</div>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Third-Party Services"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label"><label><MT_TRANS phrase="Creative Commons License:"></label></div>
+<div class="field">
+<p style="display: none;" id="has-license">
+<TMPL_IF NAME=CC_LICENSE><a href="<TMPL_VAR NAME=CC_LICENSE_URL>"><img src="<TMPL_VAR NAME=CC_LICENSE_IMAGE_URL>" /></a><br /></TMPL_IF>
+<MT_TRANS phrase="Your weblog is currently licensed under:"> <span id="cc-license-name"><TMPL_VAR NAME=CC_LICENSE_NAME></span><br />
+<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<TMPL_VAR NAME=SCRIPT_FULL_URL>?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="#"><MT_TRANS phrase="Change your license"></a> | <a onclick="doRemoveLicense(); return false" href="#"><MT_TRANS phrase="Remove this license"></a>
+</p>
+<p style="display: none;" id="no-license">
+<MT_TRANS phrase="Your weblog does not have an explicit Creative Commons license."><br />
+<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<TMPL_VAR NAME=SCRIPT_FULL_URL>?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="#"><MT_TRANS phrase="Create a license now"></a>
+</p>
+<TMPL_IF NAME=CC_LICENSE>
+<script type="text/javascript">
+	var e = getByID('has-license');
+	if (e) e.style.display = 'block';
+</script>
+<TMPL_ELSE>
+<script type="text/javascript">
+	var e = getByID('no-license');
+	if (e) e.style.display = 'block';
+</script>
+</TMPL_IF>
+<input type="hidden" name="cc_license" value="<TMPL_VAR NAME=CC_LICENSE ESCAPE=HTML>" />
+<p><MT_TRANS phrase="Select a Creative Commons license for the posts on your blog (optional).">
+<a href="#" onclick="return openManual('blog_settings_general', 'creative_commons_license')" class="help">?</a></p>
+<p><strong><MT_TRANS phrase="Be sure that you understand these licenses before applying them to your own work."></strong>
+<a href="#" onclick="return openManual('blog_settings_general', 'creative_commons_license')"><MT_TRANS phrase="Read more."></a></p>
+</div>
+</div>
+</div>
+
+</fieldset>
+
+<div style="text-align: center;">
+<input type="submit" value="<MT_TRANS phrase="Save Changes">" title="<MT_TRANS phrase="Save changes (s)">" accesskey="s" />
+</div>
+
+</form>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

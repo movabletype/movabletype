@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+   <meta name="generator" content="Movable Type <$MTVersion$>" />
+
+   <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+
+   <title><$MTBlogName encode_html="1"$><MT_TRANS phrase=": Discussion on [_1]" params="<$MTEntryTitle$>"></title>
+
+   <script type="text/javascript" src="<$MTBlogURL$>mt-site.js"></script>
+</head>
+<body class="layout-one-column trackback-listing">
+   <div id="container">
+      <div id="container-inner" class="pkg">
+
+         <div id="banner">
+            <div id="banner-inner" class="pkg">
+               <h1 id="banner-header"><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></h1>
+               <h2 id="banner-description"><$MTBlogDescription$></h2>
+            </div>
+         </div>
+
+         <div id="pagebody">
+            <div id="pagebody-inner" class="pkg">
+               <div id="alpha">
+                  <div id="alpha-inner" class="pkg">
+
+                     <h3><MT_TRANS phrase="Trackbacks: [_1]" params="<$MTEntryTitle$>"></h3>
+
+                     <MTIfPingsActive>
+                     <div class="trackbacks">
+                        <a id="trackback"></a>
+                        <h3 class="trackbacks-header"><MT_TRANS phrase="TrackBack"></h3>
+                        <div class="trackbacks-info">
+                           <MTIfPingsAccepted>
+                              <p><MT_TRANS phrase="TrackBack URL for this entry:"><br /><$MTEntryTrackbackLink$></p>
+                           </MTIfPingsAccepted>
+                           <p><MT_TRANS phrase="Listed below are links to weblogs that reference"> <a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a>:</p>
+                        </div>
+                        <div class="trackbacks-content">
+                           <MTPings>
+                              <div class="trackback">
+                                 <div class="trackback-content">
+                                    <p>
+                                       <a id="p<$MTPingID$>"></a>
+                                       &raquo; <a rel="nofollow" href="<$MTPingURL$>"><$MTPingTitle$></a> <MT_TRANS phrase="from"> <$MTPingBlogName$><br />
+                                       <$MTPingExcerpt$> <a rel="nofollow" href="<$MTPingURL$>">[<MT_TRANS phrase="Read More">]</a>
+                                    </p>
+                                 </div>
+                                 <p class="trackback-footer">
+                                    <MT_TRANS phrase="Tracked on [_1]" params="<$MTPingDate$>">
+                                 </p>
+                              </div>
+                           </MTPings>
+                        </div>
+                     </div>
+                     </MTIfPingsActive>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</body>
+</html>

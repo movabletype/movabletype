@@ -1,0 +1,23 @@
+<?php
+function smarty_function_MTLink($args, &$ctx) {
+    // status: incomplete
+    // parameters: template, entry_id
+    if ($args['template']) {
+        $name = $args['template'];
+        $tmpl = $ctx->mt->db->load_index_template($ctx, $name);
+        $blog = $ctx->stash('blog');
+        $site_url = $blog['blog_site_url'];
+        if (!preg_match('!/$!')) $site_url .= '/';
+        return $site_url . $tmpl['template_outfile'];
+    } elseif ($args['entry_id']) {
+        $args = array('entry_id' => $args['entry_id']);
+        list($entry) = $ctx->mt->db->fetch_entries($args);
+        $ctx->localize(array('entry'));
+        $ctx->stash('entry', $entry);
+        require_once('function.MTEntryPermalink.php');
+        $link = smarty_function_MTEntryPermalink($args, $ctx);
+        $ctx->restore(array('entry'));
+        return $link;
+    }
+}
+?>

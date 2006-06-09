@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+    <meta name="generator" content="Movable Type <$MTVersion$>" />
+
+    <title><$MTBlogName encode_html="1"$>: <MT_TRANS phrase="Search Results"></title>
+
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    <link type="application/atom+xml" rel="alternate" title="<$MTBlogName encode_html="1"$>: <MT_TRANS phrase="Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?search=<$MTSearchString$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+</head>
+<body class="layout-one-column">
+    <div id="container">
+        <div id="container-inner" class="pkg">
+
+            <div id="banner">
+                <div id="banner-inner" class="pkg">
+                    <h1 id="banner-header"><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></h1>
+                    <h2 id="banner-description"><$MTBlogDescription$></h2>
+                </div>
+            </div>
+
+            <div style="text-align:right">
+                <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<MT_TRANS phrase="Subscribe to a feed of these results">" width="9" height="9" />
+                <a href="<$MTCGIPath$><$MTSearchScript$>?search=<$MTSearchString$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<MT_TRANS phrase="Subscribe to a feed of these results">"><MT_TRANS phrase="Subscribe to a feed of these results"></a>
+            </div>
+
+            <div id="pagebody">
+                <div id="pagebody-inner" class="pkg">
+                    <div id="alpha">
+                        <div id="alpha-inner" class="pkg">
+
+                            <h3><MT_TRANS phrase="Search Results"></h3>
+
+                            <form method="post" action="<$MTCGIPath$><$MTSearchScript$>">
+                            <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
+
+                            <h3><MT_TRANS phrase="Search this site:"></h3>
+
+                            <p><input type="text" size="30" name="search" value="<$MTSearchString$>" /> <input type="submit" value="<MT_TRANS phrase='Search'>" /></p>
+
+                            <p><input type="checkbox" name="CaseSearch" /> <MT_TRANS phrase='Match case'> <input type="checkbox" name="RegexSearch" /> <MT_TRANS phrase='Regex search'></p>
+
+                            </form>
+
+                            <MTSearchResults>
+
+                            <MTBlogResultHeader>
+                            <h2><MT_TRANS phrase="Search Results from"> <$MTBlogName$></h2>
+                            </MTBlogResultHeader>
+
+                            <h3><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h3>
+                            <p><$MTEntryExcerpt$> <$MTEntryEditLink$></p>
+                            <p class="posted"><MT_TRANS phrase="Posted in [_1] on [_2] by [_3]" params="<$MTBlogName$>%%<$MTEntryDate$>%%<$MTEntryAuthorDisplayName$>"></p>
+
+                            </MTSearchResults>
+
+                            <MTNoSearchResults>
+                            <h2><MT_TRANS phrase="Searched for"> "<$MTSearchString$>"</h2>
+
+                            <p><MT_TRANS phrase='No pages were found containing "[_1]".' params="<$MTSearchString$>"></p>
+                            </MTNoSearchResults>
+
+                            <MTNoSearch>
+                            <h2><MT_TRANS phrase="Instructions"></h2>
+
+                            <p><MT_TRANS phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
+
+                            <blockquote><pre>"movable type"</pre></blockquote>
+
+                            <p><MT_TRANS phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
+
+                            <blockquote><pre><MT_TRANS phrase="personal OR publishing"></pre></blockquote>
+
+                            <blockquote><pre><MT_TRANS phrase="publishing NOT personal"></pre></blockquote>
+                            </MTNoSearch>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

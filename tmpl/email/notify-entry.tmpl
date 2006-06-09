@@ -1,0 +1,18 @@
+((( <MT_TRANS phrase="[_1] Update: [_2]" params="<TMPL_VAR NAME=BLOG_NAME>%%<TMPL_VAR NAME=ENTRY_TITLE>"> )))
+
+<TMPL_VAR NAME=SPACER_DATE><TMPL_VAR NAME=ENTRY_DATE>
+<TMPL_IF NAME=SEND_EXCERPT>
+------------------------------------------------------------------------
+
+<TMPL_VAR NAME=ENTRY_EXCERPT>
+</TMPL_IF>
+------------------------------------------------------------------------
+
+<TMPL_VAR NAME=ENTRY_PERMALINK>
+
+<TMPL_IF NAME=MESSAGE><TMPL_VAR NAME=MESSAGE></TMPL_IF>
+<TMPL_IF NAME=SEND_BODY>
+------------------------------------------------------------------------
+
+<TMPL_VAR NAME=ENTRY_TEXT></TMPL_IF>
+<TMPL_INCLUDE NAME="footer-email.tmpl">

@@ -1,0 +1,17 @@
+<TMPL_INCLUDE NAME=header.tmpl>
+
+<h2><MT_TRANS phrase="Backup and Refresh Templates"></h2>
+
+<TMPL_UNLESS NAME=MESSAGE_LOOP>
+<p class="message"><MT_TRANS phrase="No templates were selected to process."></p>
+<TMPL_ELSE>
+<ul>
+<TMPL_LOOP NAME=MESSAGE_LOOP>
+<li><TMPL_VAR NAME=MESSAGE></li>
+</TMPL_LOOP>
+</ul>
+</TMPL_UNLESS>
+
+<p><a href="<TMPL_VAR NAME=RETURN_URL ESCAPE=HTML>"><MT_TRANS phrase="Return"></a></p>
+
+<TMPL_INCLUDE NAME=footer.tmpl>

@@ -1,0 +1,53 @@
+<TMPL_INCLUDE NAME=header.tmpl>
+
+<style type="text/css">
+div.warning#version-warning {
+    position: absolute;
+    padding: 1em;
+    width: 700px;
+}
+div.warning#version-warning input {
+    font-size: xx-large;
+}
+</style>
+
+<script type="text/javascript">
+function dismiss(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display = 'none';
+    }
+}
+</script>
+
+<div class="upgrade">
+
+<h2><MT_TRANS phrase="Time to Upgrade!"></h2>
+
+<TMPL_IF NAME=VERSION_WARNING>
+<div class="message warning" id="version-warning">
+    <p><MT_TRANS phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<TMPL_VAR NAME=PERL_VERSION>%%<TMPL_VAR NAME=PERL_MINIMUM>"></p>
+    <p><MT_TRANS phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<TMPL_VAR NAME=PERL_MINIMUM>"></p>
+    <p><MT_TRANS phrase="Do you want to proceed with the upgrade anyway?"></p>
+    <form method="get">
+    <p align="center"><input type="button" value=" &nbsp; <MT_TRANS phrase="Yes"> &nbsp;" onclick="dismiss('version-warning')" />
+        &nbsp; &nbsp;
+    <input type="button" value=" &nbsp; <MT_TRANS phrase="No"> &nbsp; " onclick="javascript:location.href='mt-check.cgi'" />
+    </p>
+    </form>
+</div>
+</TMPL_IF>
+
+<p><MT_TRANS phrase="A new version of Movable Type has been installed.  We'll need to complete a few tasks to update your database."></p>
+
+<div class="button-bar">
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+<input type="hidden" name="__mode" value="upgrade" />
+<input type="submit" value="<MT_TRANS phrase="Begin Upgrade">" />
+</form>
+</div>
+
+</div>
+
+<TMPL_INCLUDE NAME=footer.tmpl>

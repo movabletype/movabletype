@@ -1,0 +1,681 @@
+<?php
+# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# $Id: mt.php 29263 2006-05-19 06:52:05Z fyoshimatsu $
+
+define('VERSION', '3.3a1');
+define('VERSION_ID', '3.3a1 (Tinsel)');
+
+class MT {
+    var $mime_types = array(
+        '__default__' => 'text/html',
+        'css' => 'text/css',
+        'txt' => 'text/plain',
+        'rdf' => 'text/xml',
+        'rss' => 'text/xml',
+        'xml' => 'text/xml',
+    );
+    var $blog_id;
+    var $db;
+    var $config;
+    var $debugging = false;
+    var $caching = false;
+    var $conditional = false;
+    var $log = array();
+    var $id;
+    var $request;
+    var $http_error;
+    var $cfg_file;
+
+    /***
+     * Constructor for MT class. Also declares a global variable
+     * '$mt' and assigns itself to that. There can only be one
+     * instance of this class.
+     */
+    function MT($blog_id = null, $cfg_file = null) {
+        error_reporting(E_ALL ^ E_NOTICE);
+        global $mt;
+        if (isset($mt)) {
+            die("Only one instance of the MT class can be created.");
+        }
+        $this->id = md5(uniqid('MT',true));
+        $this->init($blog_id, $cfg_file);
+    }
+
+    function init($blog_id = null, $cfg_file = null) {
+        $mtdir = dirname(dirname(__FILE__));
+        if (!isset($cfg_file)) {
+            $cfg_file = $mtdir . DIRECTORY_SEPARATOR . "mt.cfg";
+        }
+        if (!file_exists($cfg_file)) {
+            $cfg_file = $mtdir . DIRECTORY_SEPARATOR . "mt-config.cgi";
+        }
+
+        $this->configure($cfg_file);
+        if (isset($blog_id)) {
+            $this->blog_id = $blog_id;
+        }
+
+        $lang = $this->config['DefaultLanguage'];
+        if (!preg_match('/^en/i', $lang))
+            @require_once("l10n_$lang.php");
+        else
+            @require_once("l10n_en.php");
+
+        if (extension_loaded('mbstring')) {
+            mb_internal_encoding($this->config['PublishCharset']);
+            mb_http_output($this->config['PublishCharset']);
+        }
+    }
+
+    function init_plugins() {
+        $plugin_dir = $this->config['PHPDir'] . DIRECTORY_SEPARATOR . 'plugins';
+        $ctx =& $this->context();
+        // global filters have to be handled differently from
+        // tag attributes, so this causes them to be recognized
+        // as they should...
+        if (is_dir($plugin_dir)) {
+            if ($dh = opendir($plugin_dir)) {
+                 while (($file = readdir($dh)) !== false) {
+                     if (preg_match('/^modifier\.(.+?)\.php$/', $file, $matches)) {
+                         $ctx->add_global_filter($matches[1]);
+                     } elseif (preg_match('/^init\.(.+?)\.php$/', $file, $matches)) {
+                         // load 'init' plugin file
+                         require_once($file);
+                     }
+                 }
+                 closedir($dh);
+             }
+        }
+    }
+
+    /***
+     * Retreives a handle to the database and assigns it to
+     * the member variable 'db'.
+     */
+    function &db() {
+        if (isset($this->db)) return $this->db;
+
+        require_once("mtdb_".$this->config['DBDriver'].".php");
+        $mtdbclass = 'MTDatabase_'.$this->config['DBDriver'];
+        $this->db = new $mtdbclass($this->config['DBUser'],
+            $this->config['DBPassword'], $this->config['Database'],
+            $this->config['DBHost'], $this->config['DBPort']);
+        if ($this->config['DBDriver'] == 'mysql' or $this->config['DBDriver'] == 'postgres') {
+            if ($this->config['SQLSetNames']) {
+                $Charset = array( 
+                    'postgres' => array('utf-8' => 'UNICODE', 'shift_jis' => 'SJIS', 'euc-jp' => 'EUC_JP'),
+                    'mysql' => array('utf-8' => 'utf8', 'shift_jis' => 'sjis', 'euc-jp' => 'ujis'));
+                $lang = $Charset[$this->config['DBDriver']][strtolower($this->config['PublishCharset'])];
+                if ($lang) {
+                    $this->db->query("SET NAMES '$lang'");
+                }
+            }
+        }           
+        return $this->db;
+    }
+
+    /***
+     * Loads configuration data from mt.cfg and mt-db-pass.cgi files.
+     * Stores content in the 'config' member variable.
+     */
+    function configure($file = null) {
+        if (isset($this->config)) return $config;
+
+        $this->cfg_file = $file;
+
+        $cfg = array();
+        if ($fp = file($file)) {
+            foreach ($fp as $line) {
+                // search through the file
+                if (!ereg('^\s*\#',$line)) {
+                    // ignore lines starting with the hash symbol
+                    if (preg_match('/^\s*([^ ]+)[ ](.*)(\r|n)?$/', $line, $regs)) {
+                        $key = trim($regs[1]);
+                        $value = trim($regs[2]);
+                        $cfg[$key] = $value;
+                    }
+                }
+            }
+        } else {
+            die("Unable to open configuration file $file");
+        }
+
+        // setup directory locations
+        // location of mt.php
+        $cfg['PHPDir'] = realpath(dirname(__FILE__));
+        // path to MT directory
+        $cfg['MTDir'] = realpath(dirname($file));
+        // path to handlers
+        $cfg['PHPLibDir'] = $cfg['PHPDir'] . DIRECTORY_SEPARATOR . 'lib';
+
+        $cfg['DBHost'] or $cfg['DBHost'] = 'localhost'; // default to localhost
+        $driver = $cfg['ObjectDriver'];
+        $driver = preg_replace('/^DBI::/', '', $driver);
+        $driver or $driver = 'mysql';
+        $cfg['DBDriver'] = $driver;
+    
+        if ((strlen($cfg['Database'])<1 || strlen($cfg['DBUser'])<1)) {
+            if ($driver != 'sqlite') {
+                die("Unable to read database or username");
+            }
+        }
+
+        $this->config =& $cfg;
+        $this->config_defaults();
+
+        // read in the database password
+        if (!isset($cfg['DBPassword'])) {
+            $db_pass_file = $cfg['MTDir'] . DIRECTORY_SEPARATOR . 'mt-db-pass.cgi';
+            if (file_exists($db_pass_file)) {
+                $password = implode('', file($db_pass_file));
+                $password = trim($password, "\n\r\0");
+                $cfg['DBPassword'] = $password;
+            }
+        }
+
+        // set up include path
+        // add MT-PHP 'plugins' and 'lib' directories to the front
+        // of the existing PHP include path:
+        if (strtoupper(substr(PHP_OS, 0,3) == 'WIN')) {
+            $path_sep = ';';
+        } else {
+            $path_sep = ':';
+        }
+        ini_set('include_path',
+            $cfg['PHPDir'] . DIRECTORY_SEPARATOR . "plugins" . $path_sep .
+            $cfg['PHPDir'] . DIRECTORY_SEPARATOR . "lib" . $path_sep .
+            $cfg['PHPDir'] . DIRECTORY_SEPARATOR . "extlib" . $path_sep .
+            $cfg['PHPDir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "smarty" . DIRECTORY_SEPARATOR . "libs" . $path_sep .
+            ini_get('include_path')
+        );
+    
+        $mtdb =& $this->db();
+        $db_config = $mtdb->fetch_config();
+        if ($db_config) {
+            $data = $db_config['config_data'];
+            $data = preg_split('/[\r?\n]/', $data);
+            foreach ($data as $line) {
+                // search through the file
+                if (!ereg('^\s*\#',$line)) {
+                    // ignore lines starting with the hash symbol
+                    if (preg_match('/^\s*([^ ]+)[ ](.*)(\r|n)?$/', $line, $regs)) {
+                        $key = trim($regs[1]);
+                        $value = trim($regs[2]);
+                        $cfg[$key] or $cfg[$key] = $value;
+                    }
+                }
+            }
+        }
+    }
+
+    function config_defaults() {
+        $cfg =& $this->config;
+        // assign defaults:
+        if (substr($cfg['CGIPath'], strlen($cfg['CGIPath']) - 1, 1) != '/')
+            $cfg['CGIPath'] .= '/'; 
+        isset($cfg['StaticWebPath']) or
+            $cfg['StaticWebPath'] = $cfg['CGIPath'] . 'mt-static/';
+        isset($cfg['PublishCharset']) or
+            $cfg['PublishCharset'] = '__PUBLISH_CHARSET__';
+        isset($cfg['TrackbackScript']) or
+            $cfg['TrackbackScript'] = 'mt-tb.cgi';
+        isset($cfg['AdminScript']) or
+            $cfg['AdminScript'] = 'mt.cgi';
+        isset($cfg['CommentScript']) or
+            $cfg['CommentScript'] = 'mt-comments.cgi';
+        isset($cfg['AtomScript']) or
+            $cfg['AtomScript'] = 'mt-atom.cgi';
+        isset($cfg['XMLRPCScript']) or
+            $cfg['XMLRPCScript'] = 'mt-xmlrpc.cgi';
+        isset($cfg['SearchScript']) or
+            $cfg['SearchScript'] = 'mt-search.cgi';
+        isset($cfg['DefaultLanguage']) or
+            $cfg['DefaultLanguage'] = '__BUILD_LANGUAGE__';
+        isset($cfg['GlobalSanitizeSpec']) or
+            $cfg['GlobalSanitizeSpec'] = 'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre';
+        isset($cfg['SignOnURL']) or
+            $cfg['SignOnURL'] = 'https://www.typekey.com/t/typekey/login?';
+        isset($cfg['SignOffURL']) or
+            $cfg['SignOffURL'] = 'https://www.typekey.com/t/typekey/logout?';
+        isset($cfg['IdentityURL']) or
+            $cfg['IdentityURL'] = 'http://profile.typekey.com/';
+        isset($cfg['PublishCommenterIcon']) or
+            $cfg['PublishCommenterIcon'] = '1';
+        isset($cfg['AllowComments']) or
+            $cfg['AllowComments'] = '1';
+        isset($cfg['AllowPings']) or
+            $cfg['AllowPings'] = '1';
+        isset($cfg['IndexBasename']) or
+            $cfg['IndexBasename'] = 'index';
+        isset($cfg['TypeKeyVersion']) or
+            $cfg['TypeKeyVersion'] = '1.1';
+    }
+
+    function configure_paths($blog_site_path) {
+        if (preg_match('/^\./', $blog_site_path)) {
+            // relative address, so tack on the MT dir in front
+            $blog_site_path = $this->config['MTDir'] .
+                DIRECTORY_SEPARATOR . $blog_site_path;
+        }
+        $this->config['PHPTemplateDir'] or
+            $this->config['PHPTemplateDir'] = $blog_site_path .
+            DIRECTORY_SEPARATOR . 'templates';
+        $this->config['PHPCacheDir'] or
+            $this->config['PHPCacheDir'] = $blog_site_path .
+            DIRECTORY_SEPARATOR . 'cache';
+
+        $ctx =& $this->context();
+        $ctx->template_dir = $this->config['PHPTemplateDir'];
+        $ctx->compile_dir = $ctx->template_dir . '_c';
+        $ctx->cache_dir = $this->config['PHPCacheDir'];
+    }
+
+    /***
+     * Mainline handler function.
+     */
+    function view($blog_id = null) {
+        if ($this->debugging) {
+            require_once("MTUtil.php");
+        }
+        $blog_id or $blog_id = $this->blog_id;
+
+        $ctx =& $this->context();
+        $this->init_plugins();
+        $ctx->caching = $this->caching;
+
+        // Some defaults...
+        $mtdb =& $this->db();
+        $ctx->mt->db =& $mtdb;
+
+        // Set up our customer error handler
+        set_error_handler(array(&$this, 'error_handler'));
+
+        // User-specified request through request variable
+        $path = $this->request;
+
+        // Apache request
+        if (!$path && $_SERVER['REQUEST_URI'] && (preg_match('/Apache/', $_SERVER['SERVER_SOFTWARE']))) {
+            $path = $_SERVER['REQUEST_URI'];
+            // strip off any query string...
+            $path = preg_replace('/\?.*/', '', $path);
+            // strip any duplicated slashes...
+            $path = preg_replace('!/+!', '/', $path);
+        }
+
+        // IIS request by error document...
+        if (!$path && (preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE']))) {
+            // assume 404 handler
+            if (preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
+                $path = $matches[1];
+                $path = preg_replace('!^http://[^/]+!', '', $path);
+                if (preg_match('/\?(.+)?/', $path, $matches)) {
+                    $_SERVER['QUERY_STRING'] = $matches[1];
+                    $path = preg_replace('/\?.*$/', '', $path);
+                }
+            }
+        }
+
+        // now set the path so it may be queried
+        $this->request = $path;
+
+        // When we are invoked as an ErrorDocument, the parameters are
+        // in the environment variables REDIRECT_*
+        if (isset($_SERVER['REDIRECT_QUERY_STRING'])) {
+            // todo: populate $_GET and QUERY_STRING with REDIRECT_QUERY_STRING
+            $_SERVER['QUERY_STRING'] = getenv('REDIRECT_QUERY_STRING');
+        }
+
+        if (preg_match('/\.(\w+)$/', $path, $matches)) {
+            $req_ext = strtolower($matches[1]);
+        }
+
+        $this->blog_id = $blog_id;
+
+        $data =& $this->resolve_url($path);
+        if (!$data) {
+            // 404!
+            $this->http_error = 404;
+            header("HTTP/1.1 404 Not found");
+            return $ctx->error("Page not found - $path", E_USER_ERROR);
+        }
+
+        $info =& $data['fileinfo'];
+        $fi_path = $info['fileinfo_url'];
+        $fid = $info['fileinfo_id'];
+        $at = $info['fileinfo_archive_type'];
+        $ts = $info['fileinfo_startdate'];
+        $tpl_id = $info['fileinfo_template_id'];
+        $cat = $info['fileinfo_category_id'];
+        $entry_id = $info['fileinfo_entry_id'];
+        $blog_id = $info['fileinfo_blog_id'];
+        $blog =& $data['blog'];
+        if ($at == 'index') {
+            $at = null;
+        }
+        $tts = $data['template']['template_modified_on'];
+        $tts = offset_time(datetime_to_timestamp($tts), $blog);
+        $ctx->stash('template_timestamp', $tts);
+
+        $this->configure_paths($blog['blog_site_path']);
+
+        // start populating our stash
+        $ctx->stash('blog_id', $blog_id);
+        $ctx->stash('blog', $blog);
+        //$ctx->last_ts($info['template_modified_on']);
+
+        // conditional get support...
+        if ($this->caching) {
+            $this->cache_modified_check = true;
+        }
+        if ($this->conditional) {
+            $last_ts = $blog['blog_children_modified_on'];
+            $last_modified = $ctx->_hdlr_date(array('ts' => $last_ts, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en', 'utc' => 1), $ctx);
+            $this->doConditionalGet($last_modified);
+        }
+
+        $cache_id = $blog_id.';'.$fi_path;
+        if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
+            if ($cat) {
+                $archive_category = $mtdb->fetch_category($cat);
+                $ctx->stash('category', $archive_category);
+                $ctx->stash('archive_category', $archive_category);
+            }
+            if (isset($ts)) {
+                require_once("MTUtil.php");
+                if ($at == 'Yearly') {
+                    $ts = substr($ts, 0, 4);
+                } elseif ($at == 'Monthly') {
+                    $ts = substr($ts, 0, 6);
+                } elseif ($at == 'Daily') {
+                    $ts = substr($ts, 0, 8);
+                }
+                if ($at == 'Weekly') {
+                    list($ts_start, $ts_end) = start_end_week($ts);
+                } else {
+                    list($ts_start, $ts_end) = start_end_ts($ts);
+                }
+                $ctx->stash('current_timestamp', $ts_start);
+                $ctx->stash('current_timestamp_end', $ts_end);
+            }
+            if (isset($at)) {
+                $ctx->stash('current_archive_type', $at);
+                # prefetch entries for this archive_type so counts and data is available
+                $args = array();
+                $args['blog_id'] = $blog_id;
+                $args['lastn'] or $args['lastn'] = -1;
+                if ($archive_category) {
+                    $args['category'] = $archive_category['category_label'];
+                }
+                if (($ts_start && $ts_end) && !isset($args['category'])) {
+                    # only assign a date range if we have both
+                    # start and end date *and* the user has not
+                    # explicitly requested a category
+                    $args['current_timestamp'] = $ts_start;
+                    $args['current_timestamp_end'] = $ts_end;
+                }
+                $entries = $ctx->mt->db->fetch_entries($args);
+                $ctx->stash('entries', $entries); 
+            }
+    
+            if (isset($entry_id) && ($entry_id) && ($at == 'Individual')) {
+                $entry =& $mtdb->fetch_entry($entry_id);
+                $ctx->stash('entry', $entry);
+                $ctx->stash('current_timestamp', $entry['entry_created_on']);
+            }
+        }
+
+        $output = $ctx->fetch('mt:'.$tpl_id, $cache_id);
+
+        $this->http_error = 200;
+        header("HTTP/1.1 200 OK");
+        // content-type header-- need to supplement with charset
+        $content_type = $ctx->stash('content_type');
+
+        if (!isset($content_type)) {
+            $content_type = $this->mime_types['__default__'];
+            if ($req_ext && (isset($this->mime_types[$req_ext]))) {
+                $content_type = $this->mime_types[$req_ext];
+            }
+        }
+        if (isset($config['PublishCharset'])) {
+            if (!preg_match('/charset=/', $content_type))
+                $content_type .= '; charset=' . $config['PublishCharset'];
+        }
+        header("Content-Type: $content_type");
+
+        //$last_ts = $ctx->last_ts();
+
+        if ($this->debugging) {
+            $this->log("Queries: ".$mtdb->num_queries);
+            $this->log("Queries executed:");
+            $queries = $mtdb->savedqueries;
+            foreach ($queries as $q) {
+                $this->log($q);
+            }
+            $this->log_dump();
+        }
+        restore_error_handler();
+
+        // finally, issue output
+        echo $output;
+    }
+
+    function &resolve_url($path) {
+        $data =& $this->db->resolve_url($path, $this->blog_id);
+        return $data;
+    }
+
+    function doConditionalGet($last_modified) {
+        // Thanks to Simon Willison...
+        //   http://simon.incutio.com/archive/2003/04/23/conditionalGet
+        // A PHP implementation of conditional get, see 
+        //   http://fishbowl.pastiche.org/archives/001132.html
+        $etag = '"'.md5($last_modified).'"';
+        // Send the headers
+        header("Last-Modified: $last_modified");
+        header("ETag: $etag");
+        // See if the client has provided the required headers
+        $if_modified_since = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ?
+            stripslashes($_SERVER['HTTP_IF_MODIFIED_SINCE']) :
+            false;
+        $if_none_match = isset($_SERVER['HTTP_IF_NONE_MATCH']) ?
+            stripslashes($_SERVER['HTTP_IF_NONE_MATCH']) : 
+            false;
+        if (!$if_modified_since && !$if_none_match) {
+            return;
+        }
+        // At least one of the headers is there - check them
+        if ($if_none_match && $if_none_match != $etag) {
+            return; // etag is there but doesn't match
+        }
+        if ($if_modified_since && $if_modified_since != $last_modified) {
+            return; // if-modified-since is there but doesn't match
+        }
+        // Nothing has changed since their last request - serve a 304 and exit
+        header('HTTP/1.1 304 Not Modified');
+        exit;
+    }
+
+    function display($tpl, $cid = null) {
+        $ctx =& $this->context();
+        $this->init_plugins();
+        $blog =& $ctx->stash('blog');
+        if (!$blog) {
+            $db =& $this->db();
+            $ctx->mt->db =& $db;
+            $blog =& $db->fetch_blog($this->blog_id);
+            $ctx->stash('blog', $blog);
+            $ctx->stash('blog_id', $this->blog_id);
+            $this->configure_paths($blog['blog_site_path']);
+        }
+        return $ctx->display($tpl, $cid);
+    }
+
+    function fetch($tpl, $cid = null) {
+        $ctx =& $this->context();
+        $this->init_plugins();
+        $blog =& $ctx->stash('blog');
+        if (!$blog) {
+            $db =& $this->db();
+            $ctx->mt->db =& $db;
+            $blog =& $db->fetch_blog($this->blog_id);
+            $ctx->stash('blog', $blog);
+            $ctx->stash('blog_id', $this->blog_id);
+            $this->configure_paths($blog['blog_site_path']);
+        }
+        return $ctx->fetch($tpl, $cid);
+    }
+
+    function log_dump() {
+        if ($_SERVER['REMOTE_ADDR']) {
+            // web view...
+            echo "<div class=\"debug\" style=\"border:1px solid red; margin:0.5em; padding: 0 1em; text-align:left; background-color:#ddd; color:#000\"><pre>";
+            echo implode("\n", $this->log);
+            echo "</pre></div>\n\n";
+        } else {
+            // console view...
+            $stderr = fopen('php://stderr', 'w'); 
+            fwrite($stderr,implode("\n", $this->log)); 
+            echo (implode("\n", $this->log)); 
+            fclose($stderr);
+        }
+    }
+
+    function error_handler($errno, $errstr, $errfile, $errline) {
+        if ($errno & (E_ALL ^ E_NOTICE)) {
+            $mtphpdir = $this->config['PHPDir'];
+            $ctx =& $this->context();
+            $ctx->stash('blog_id', $this->blog_id);
+            $ctx->stash('blog', $this->db->fetch_blog($this->blog_id));
+            $ctx->stash('error_message', $errstr."<!-- file: $errfile; line: $errline; code: $errno -->");
+            $ctx->stash('error_code', $errno);
+            $http_error = $this->http_error;
+            if (!$http_error) {
+                $http_error = 500;
+            }
+            $ctx->stash('http_error', $http_error);
+            $ctx->stash('error_file', $errfile);
+            $ctx->stash('error_line', $errline);
+            $ctx->template_dir = $mtphpdir . DIRECTORY_SEPARATOR . 'tmpl';
+            $ctx->caching = 0;
+            $ctx->stash('StaticWebPath', $this->config['StaticWebPath']);
+            $ctx->stash('PublishCharset', $this->config['PublishCharset']);
+            $charset = $this->config['PublishCharset'];
+            $out = $ctx->tag('Include', array('type' => 'dynamic_error'));
+            if (isset($out)) {
+                header("Content-type: text/html; charset=".$charset);
+                echo $out;
+            } else {
+                header("HTTP/1.1 500 Server Error");
+                header("Content-type: text/plain");
+                echo "Error executing error template.";
+            }
+            exit;
+        }
+    }
+
+    /***
+     * Retreives a context and rendering object.
+     */
+    function &context() {
+        static $ctx;
+        if (isset($ctx)) return $ctx;
+
+        require_once('MTViewer.php');
+        $ctx = new MTViewer($this);
+        $ctx->mt =& $this;
+        $mtphpdir = $this->config['PHPDir'];
+        $mtlibdir = $this->config['PHPLibDir'];
+        $ctx->compile_check = 1;
+        $ctx->caching = false;
+        $ctx->plugins_dir[] = $mtlibdir;
+        $ctx->plugins_dir[] = $mtphpdir . DIRECTORY_SEPARATOR . "plugins";
+        if ($this->debugging) {
+            $ctx->debugging_ctrl = 'URL';
+            $ctx->debug_tpl = $mtphpdir . DIRECTORY_SEPARATOR .
+                'extlib' . DIRECTORY_SEPARATOR .
+                'smarty' . DIRECTORY_SEPARATOR . "libs" . DIRECTORY_SEPARATOR .
+                'debug.tpl';
+        }
+        if (isset($this->config['SafeMode']) && ($this->config['SafeMode'])) {
+            // disable PHP support
+            $ctx->php_handling = SMARTY_PHP_REMOVE;
+        }
+        return $ctx;
+    }
+
+    function log($msg = null) {
+        $this->log[] = $msg;
+    }
+
+    function translate($str) {
+        return $this->translate_templatized_item(array(undef, $str));
+    }
+
+    function translate_templatized_item($str) {
+        return translate_phrase($str[1]);
+    }
+
+    function translate_templatized($tmpl) {
+        $cb = array($this, 'translate_templatized_item');
+        $out = preg_replace_callback('/<MT_TRANS phrase="(.+?)".*?>/', $cb, $tmpl);
+        return $out;
+    }
+}
+
+function is_valid_email($addr) {
+    if (preg_match('/[ |\t|\r|\n]*\"?([^\"]+\"?@[^ <>\t]+\.[^ <>\t][^ <>\t]+)[ |\t|\r|\n]*/', $addr, $matches)) {
+        return $matches[1];
+    } else {
+        return 0;
+    }
+}
+
+$spam_protect_map = array(':' => '&#58;', '@' => '&#64;', '.' => '&#46;');
+function spam_protect($str) {
+    global $spam_protect_map;
+    return strtr($str, $spam_protect_map);
+}
+
+function datetime_to_timestamp($dt) {
+    $dt = preg_replace('/[^0-9]/', '', $dt);
+    $ts = mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
+    return $ts;
+}
+
+function offset_time($ts, $blog = null, $dir = null) {
+    if (isset($blog)) {
+        if (!is_array($blog)) {
+            global $mt;
+            $blog = $mt->db->fetch_blog($blog);
+        }
+        $offset = $blog['blog_server_offset'];
+    } else {
+        global $mt;
+        $offset = $mt->config['TimeOffset'];
+    }
+    intval($offset) or $offset = 0;
+    $tsa = localtime($ts);
+
+    if ($tsa[8]) {  // daylight savings offset
+        $offset++;
+    }
+    if ($dir == '-') {
+        $offset *= -1;
+    }
+    $ts += $offset * 3600;
+    return $ts;
+}
+function _strip_index($url, $blog) {
+    global $mt;
+    $index = $mt->config['IndexBasename'];
+    $ext = $blog['blog_file_extension'];
+    if ($ext != '') $ext = '.' . $ext;
+    $index = preg_quote($index . $ext);
+    $url = preg_replace("/\/$index(#.*)?$/", '/$1', $url);
+    return $url;
+}
+?>

@@ -1,0 +1,245 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="list-tags">
+
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc/client.js"></script>
+
+<script type="text/javascript">
+<!--
+var current_edit = 0;
+var old_tag_name = '';
+<TMPL_IF NAME=BLOG_ID>var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?";
+<TMPL_ELSE>var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?";
+</TMPL_IF>
+function highlight_tag(id) {
+    if (current_edit) return;
+    var tag_link = getByID('tag-link-' + id);
+    if (!tag_link) return;
+    tag_link.style.backgroundColor = '#FFC';
+    tag_link.style.borderColor = '#FFC';
+}
+
+function unhighlight_tag(id) {
+    var tag_link = getByID('tag-link-' + id);
+    if (!tag_link) return;
+    tag_link.style.backgroundColor = 'transparent';
+    tag_link.style.borderColor = '#3F658C';
+}
+
+function edit_tag(id) {
+    if (current_edit) return;
+    var tag_link = getByID('tag-link-' + id);
+    var tag_field = getByID('tag-field-' + id);
+    var tag_name = getByID('tag-name-' + id);
+    if (!tag_link || !tag_field || !tag_name) return;
+    current_edit = id;
+    old_tag_name = tag_name.value;
+    tag_link.style.display = 'none';
+    tag_field.style.display = 'inline';
+    tag_name.focus();
+    tag_name.select();
+    unhighlight_tag(id);
+    return false;
+}
+
+function cancel_edit(id) {
+    var tag_link = getByID('tag-link-' + id);
+    var tag_field = getByID('tag-field-' + id);
+    var tag_name = getByID('tag-name-' + id);
+    if (!tag_link || !tag_field || !tag_name) return;
+    tag_name.value = old_tag_name;
+    old_tag_name = '';
+    current_edit = 0;
+    tag_link.style.display = 'inline';
+    tag_field.style.display = 'none';
+}
+
+function submit_edit(id) {
+    // if old name matches new name, ignore submission (same as cancel)
+    // if new name is already in our tagList array, warn user
+    // if not in tagList and not in range of tagList tags, check with server.
+    var tag_form = getByID('tag_form');
+    var tag_name = getByID('tag-name-' + id);
+    if (!tag_form || !tag_name) return false;
+    var new_tag_name = tag_name.value;
+    if (old_tag_name == new_tag_name) {
+        cancel_edit(id);
+        return false;
+    }
+    if ((new_tag_name >= tagList[0]) &&
+        (new_tag_name <= tagList[tagList.length-1])) {
+        // in range of our view, so check for this tag
+        for (var i = 0; i < tagList.length; i++) {
+            if (tagList[i] == new_tag_name) {
+                // overwrite warning
+                if (!confirm(trans(tag_rename_warning, old_tag_name,
+                                   new_tag_name))) {
+                    cancel_edit(id);
+                    return false;
+                }
+            }
+        }
+    } else {
+        // check with server for existing tag that is out of our view
+        var server_check = false;
+        if (new_tag_name <= tagList[0]) {
+            <TMPL_IF NAME=PREV_OFFSET>server_check = true;</TMPL_IF>
+        } else if (new_tag_name >= tagList[tagList.length-1]) {
+            <TMPL_IF NAME=NEXT_OFFSET>server_check = true;</TMPL_IF>
+        }
+        if (server_check) {
+            TC.Client.call({
+                'load': function(r) { server_confirm_edit(id, r) },
+                'error': function(r) { server_confirm_edit(id, r) },
+    	        'method': 'POST',
+                'uri': '<TMPL_VAR NAME=SCRIPT_URL>',
+                'arguments': {
+                    '__mode' : 'js_tag_check',<TMPL_IF NAME=BLOG_ID>
+                    'blog_id' : <TMPL_VAR NAME=BLOG_ID>,</TMPL_IF>
+                    'tag_name' : new_tag_name
+                }
+            });
+            return false;
+        }
+    }
+    return submit_edit_form(id);
+}
+
+function server_confirm_edit(id, response) {
+    var result = '';
+    try {
+        result = response.responseText;
+    } catch ( e ) {
+    }
+    if (result == 'true' || result == 'false') {
+        if (result == 'true') {
+            var tag_name = getByID('tag-name-' + id);
+            var new_tag_name = tag_name.value;
+            if (!confirm(trans(tag_rename_warning, old_tag_name,
+                               new_tag_name))) {
+                cancel_edit(id);
+                return false;
+            } else {
+                submit_edit_form(id);
+            }
+        }
+    } else {
+        alert(trans("An error occurred while testing for the new tag name."));
+        return cancel_edit(id);
+    }
+}
+
+function submit_edit_form(id) {
+    var tag_form = getByID('tag_form');
+    var tag_name = getByID('tag-name-' + id);
+    if (!tag_form || !tag_name) return false;
+    tag_form['__mode'].value = 'rename_tag';
+    tag_form['id'][0].value = id;
+    tag_form['tag_name'].value = tag_name.value;
+    tag_form.submit();
+    return true;
+}
+
+var tagList = [];
+<TMPL_LOOP NAME=TAG_TABLE><TMPL_LOOP NAME=OBJECT_LOOP>
+tagList[tagList.length] = '<TMPL_VAR NAME=TAG_NAME>';</TMPL_LOOP></TMPL_LOOP>
+
+var tableSelect;
+function init()
+{
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+}
+
+TC.attachLoadEvent( init );
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Tags"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="_USAGE_TAGS"></p>
+
+<TMPL_IF NAME=SAVED>
+<div class="message"><MT_TRANS phrase="Your tag changes and additions have been made."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED_DELETED>
+<div class="message"><MT_TRANS phrase="You have successfully deleted the selected tags."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=TAG_TABLE>
+
+<div class="list-wrapper">
+
+<TMPL_LOOP NAME=TAG_TABLE>
+
+<form id="tag_form" method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" name="tag_form">
+
+<TMPL_IF NAME=POSITION_ACTIONS_TOP>
+<TMPL_INCLUDE NAME=tag_actions.tmpl>
+</TMPL_IF>
+
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="_type" value="tag" />
+<input type="hidden" name="id" value="" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+<input type="hidden" name="tag_name" value="" />
+
+<div class="list" id="selector">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<th id="tag-name"><MT_TRANS phrase="Tag Name"></th>
+<th id="tag-count"><MT_TRANS phrase="<TMPL_VAR NAME=TAG_OBJECT_TYPE_PLURAL>"></th>
+</tr>
+</thead>
+
+<tbody>
+<TMPL_LOOP NAME="OBJECT_LOOP">
+<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>" id="tag-<TMPL_VAR NAME=TAG_ID>">
+<td class="cb" id="delete-<TMPL_VAR NAME=TAG_ID>"><input type="checkbox" name="id" value="<TMPL_VAR NAME=TAG_ID>" class="select" /></td>
+<td class="edit-col" id="tag-cell-<TMPL_VAR NAME=TAG_ID>">
+<a href="#" title="<MT_TRANS phrase="Click to edit tag name">" class="edit-link" id="tag-link-<TMPL_VAR NAME=TAG_ID>" onmouseover="highlight_tag(<TMPL_VAR NAME=TAG_ID>)" onmouseout="unhighlight_tag(<TMPL_VAR NAME=TAG_ID>)" onclick="return edit_tag(<TMPL_VAR NAME=TAG_ID>)"><TMPL_VAR NAME=TAG_NAME ESCAPE=HTML></a>
+<span id="tag-field-<TMPL_VAR NAME=TAG_ID>" style="display: none">
+<input type="text" name="tag-name-<TMPL_VAR NAME=TAG_ID>" id="tag-name-<TMPL_VAR NAME=TAG_ID>" value="<TMPL_VAR NAME=TAG_NAME ESCAPE=HTML>" />
+<input type="submit" value="<MT_TRANS phrase="Rename">" onclick="return submit_edit(<TMPL_VAR NAME=TAG_ID>)" />
+<input type="button" value="<MT_TRANS phrase="Cancel">" onclick="cancel_edit(<TMPL_VAR NAME=TAG_ID>)" />
+</span>
+</td>
+<td><TMPL_IF NAME=TAG_COUNT><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=tag&amp;filter_val=<TMPL_VAR NAME=TAG_NAME ESCAPE=URL>" title="<MT_TRANS phrase="Show all entries with this tag">"><MT_TRANS phrase="[quant,_1,entry,entries]" params="<TMPL_VAR NAME=TAG_COUNT>"></a><TMPL_ELSE><MT_TRANS phrase="[quant,_1,entry,entries]" params="<TMPL_VAR NAME=TAG_COUNT>"></TMPL_IF></td>
+</tr>
+</TMPL_LOOP>
+</tbody>
+
+</table>
+</div>
+
+<TMPL_IF NAME=POSITION_ACTIONS_BOTTOM>
+<div class="list-actions-footer">
+<TMPL_INCLUDE NAME="tag_actions.tmpl">
+</div>
+</TMPL_IF>
+
+</form>
+
+</TMPL_LOOP>
+
+<TMPL_INCLUDE NAME=pager.tmpl>
+
+</div>
+
+<TMPL_ELSE>
+
+<div class="message"><MT_TRANS phrase="No tags could be found."></div>
+
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

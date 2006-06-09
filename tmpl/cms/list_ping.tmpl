@@ -1,0 +1,217 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="list-ping">
+
+<script type="text/javascript">
+<!--
+function enableFilterButton() {
+    getByID("filter-button").style.display = "inline";
+}
+function toggleFilter() {
+    var filterActive = getByID("filter-active");
+    if (filterActive.style.display == "none") {
+        filterActive.style.display = "block";
+        getByID("filter-select").style.display = "none";
+    } else {
+        filterActive.style.display = "none";
+        getByID("filter-select").style.display = "block";
+    }
+}
+function setFilterCol(choice) {
+    var sel = getByID('filter-select');
+    if (!sel) return;
+    sel.className = "filter-" + choice;
+    if (choice == 'none')
+        getByID('filter-mode').selectedIndex = 0;
+    else {
+        getByID('filter-mode').selectedIndex = 1;
+        var fld = getByID('filter-col');
+        if (choice == 'status')
+            fld.selectedIndex = 0;
+        col_span = getByID("filter-text-col");
+        if (fld.selectedIndex > -1 && col_span)
+            col_span.innerHTML = '<strong>' +
+                fld.options[fld.selectedIndex].text + '</strong>';
+    }
+}
+
+function doBanIP (ip) {
+  window.location = ("<TMPL_VAR NAME=SCRIPT_URL>"
+    + "?__mode=save&amp;_type=banlist"
+    + "&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" 
+    + "&amp;magic_token=<TMPL_VAR NAME=MAGIC_TOKEN>&amp;ip=" + ip);
+}
+
+var tableSelect;
+function init()
+{
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect.rowSelect = true;
+	setFilterCol(<TMPL_IF NAME=FILTER>'<TMPL_VAR NAME=FILTER>'<TMPL_ELSE>'none'</TMPL_IF>);<TMPL_IF NAME=FILTER>
+	setFilterVal('<TMPL_VAR NAME=FILTER_VAL>');
+</TMPL_IF>
+}
+TC.attachLoadEvent( init );
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="TrackBacks"></h2>
+
+<p class="page-desc"><TMPL_IF NAME=BLOG_ID><MT_TRANS phrase="_USAGE_PING_LIST_BLOG" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"><TMPL_ELSE><MT_TRANS phrase="_USAGE_PING_LIST_OVERVIEW"></TMPL_IF></p>
+
+<TMPL_IF NAME=SAVED>
+<div class="message"><MT_TRANS phrase="Your changes have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=APPROVED>
+<div class="message"><MT_TRANS phrase="The selected TrackBack(s) has been published."></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=EMPTIED>
+<div class="message"><MT_TRANS phrase="All junked TrackBacks have been removed."></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=UNAPPROVED>
+<div class="message"><MT_TRANS phrase="The selected TrackBack(s) has been unpublished."></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=JUNKED>
+<div class="message"><MT_TRANS phrase="The selected TrackBack(s) has been junked."></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=UNJUNKED>
+<div class="message"><MT_TRANS phrase="The selected TrackBack(s) has been unjunked."></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED_DELETED_PING>
+<div class="message"><MT_TRANS phrase="The selected TrackBack(s) has been deleted from the database."></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=NO_JUNK_FOUND>
+<div class="message"><MT_TRANS phrase="No TrackBacks appeared to be junk."></div>
+</TMPL_IF>
+
+<div class="tabs">
+<ul>
+<li<TMPL_IF NAME=TAB_PINGS> class="yah"</TMPL_IF>><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>"><MT_TRANS phrase="TrackBacks"></a></li>
+<li<TMPL_IF NAME=TAB_JUNK> class="yah"</TMPL_IF>><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;tab=junk<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>"><MT_TRANS phrase="Junk TrackBacks"></a></li>
+<TMPL_UNLESS NAME=TAB_JUNK>
+<li class="special">
+
+
+<TMPL_IF NAME=FEED_URL>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/feed.gif" alt="<MT_TRANS phrase="Trackback Feed">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=FEED_URL ESCAPE=HTML>" title="<TMPL_VAR NAME=FEED_NAME ESCAPE=HTML>"><MT_TRANS phrase="Trackback Feed"></a>
+<TMPL_ELSE>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/feed-disabled.gif" alt=" <MT_TRANS phrase="Trackback Feed (Disabled)">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=AUTHOR_ID>" title="<TMPL_VAR NAME=FEED_NAME ESCAPE=HTML> (<MT_TRANS phrase="Disabled">)"><MT_TRANS phrase="Set Web Services Password"></a>
+</TMPL_IF>
+
+
+</li>
+</TMPL_UNLESS>
+</ul>
+</div>
+
+<TMPL_UNLESS NAME=TAB_JUNK>
+<div class="list-filters">
+<div class="inner">
+<div id="filter-active">
+
+<div class="rightcol">
+<TMPL_UNLESS NAME=FILTER>
+<MT_TRANS phrase="Quickfilter:"> <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=status&amp;filter_val=pending"><MT_TRANS phrase="Show unpublished TrackBacks."></a>
+<TMPL_ELSE>
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF><TMPL_IF NAME=OFFSET>&amp;offset=<TMPL_VAR NAME=OFFSET></TMPL_IF>"><MT_TRANS phrase="Reset"></a>
+</TMPL_UNLESS>
+</div>
+
+<strong><MT_TRANS phrase="Filter:"></strong>
+
+<TMPL_UNLESS NAME=FILTER>
+<a href="#" onclick="toggleFilter()"><MT_TRANS phrase="None."></a> <span class="hint"><MT_TRANS phrase="(Showing all TrackBacks.)"></span>
+<TMPL_ELSE>
+<a href="#" onclick="toggleFilter()"><MT_TRANS phrase="Showing only TrackBacks where [_1] is [_2]." params='<span id="filter-text-col"></span>%%<span id="filter-text-val"></span>'></a>
+</TMPL_UNLESS>
+
+</div>
+
+<form id="filter-form" method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="list_pings" />
+<TMPL_IF NAME=BLOG_ID>
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+</TMPL_IF>
+<input id="filter" type="hidden" name="filter" value="" />
+<input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
+
+<form id="filter-select" method="get" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return execFilter(this)" style="display: none">
+
+<MT_TRANS phrase="Show">
+<select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('status') } enableFilterButton()">
+<option value="all"><MT_TRANS phrase="all"></option>
+<option value="only"><MT_TRANS phrase="only"></option>
+</select>
+<span id="filter-mode-all" style="display: none">
+<MT_TRANS phrase="TrackBacks.">
+</span>
+<span id="filter-mode-only" style="display: none">
+<MT_TRANS phrase="TrackBacks where">
+<select id="filter-col" name="filter-col" onchange="setFilterCol(this.options[this.selectedIndex].value); enableFilterButton()">
+<option value="status"><MT_TRANS phrase="status"></option>
+</select>
+<MT_TRANS phrase="is">
+<span id="filter-status" style="display: none">
+<select name="status-val" onchange="enableFilterButton()">
+<option value="approved"><MT_TRANS phrase="published"></option>
+<option value="pending"><MT_TRANS phrase="unpublished"></option>
+</select>
+</span>
+<MT_TRANS phrase=".">
+</span>
+&nbsp;
+<input type="submit" value="<MT_TRANS phrase="Filter">" id="filter-button" style="display: none" />
+<input type="button" value="<MT_TRANS phrase="Cancel">" onclick="toggleFilter()" />
+
+</form>
+</div>
+</div>
+</TMPL_UNLESS>
+
+<TMPL_IF NAME=PING_TABLE>
+
+<div class="list-wrapper" id="selector">
+
+<TMPL_INCLUDE NAME=ping_table.tmpl>
+
+<TMPL_INCLUDE NAME=pager.tmpl>
+
+</div>
+
+<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
+<div class="box" id="plugin-actions-box">
+<h4><MT_TRANS phrase="Plugin Actions"></h4>
+<div class="inner">
+<ul>
+<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
+<li><a href="<TMPL_VAR NAME=PAGE>;from=list_pings<TMPL_IF NAME=BLOG_ID>;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>"><TMPL_VAR NAME=LINK_TEXT></a></li>
+</TMPL_LOOP>
+</ul>
+</div>
+</div>
+</TMPL_IF>
+
+<TMPL_ELSE>
+
+<TMPL_UNLESS NAME=TAB_JUNK>
+<div class="message"><MT_TRANS phrase="No TrackBacks could be found."></div>
+<TMPL_ELSE>
+<div class="message"><MT_TRANS phrase="No junk TrackBacks could be found."></div>
+</TMPL_UNLESS>
+
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

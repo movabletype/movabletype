@@ -1,0 +1,109 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript">
+<!--
+function tabToggle(selectedTab) {
+	var tabs = new Array('import','export');
+	
+	for (var i = 0; i < tabs.length; i++) {
+		var tabObject = getByID(tabs[i] + '-tab');
+		var contentObject = getByID(tabs[i] + '-content');
+		
+		if (tabObject && contentObject) {
+			if (tabs[i] == selectedTab) {
+				tabObject.className = 'yah';
+				contentObject.style.display = 'block';
+			} else {
+				tabObject.className = 'default';
+				contentObject.style.display = 'none';
+			}
+		}
+	}
+}
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Import / Export"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="Transfer weblog entries into Movable Type from other blogging tools or export your entries to create a backup or copy."></p>
+
+<div class="tabs">
+<ul>
+<li class="yah" id="import-tab"><a href="#" onclick="tabToggle('import')"><MT_TRANS phrase="Import Entries"></a></li>
+<li id="export-tab"><a href="#" onclick="tabToggle('export')"><MT_TRANS phrase="Export Entries"></a></li>
+</ul>
+</div>
+
+<div id="import-content">
+
+<p><MT_TRANS phrase="_USAGE_IMPORT"></p>
+
+<form method="post" enctype="multipart/form-data" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="import" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<TMPL_IF NAME=IS_ADMINISTRATOR>
+<p><input type="checkbox" name="import_as_me" id="import_as_me" value="1" /> <label for="import_as_me"><MT_TRANS phrase="Import entries as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a></p>
+
+<p><label for="password"><MT_TRANS phrase="Password (required if creating new authors):"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help">?</a><br />
+<input type="password" name="password" id="password" /></p>
+<TMPL_ELSE>
+<input type="hidden" name="import_as_me" value="1" />
+
+<p><MT_TRANS phrase="You will be assigned the author of all imported entries.  If you wish the original authors to keep ownership, you must contact your MT system administrator to perform the import so that new authors can be created if necessary."></p>
+</TMPL_IF>
+
+<p><label for="default_cat_id"><MT_TRANS phrase="Default category for entries (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'default_category_for_entries')" class="help">?</a><br />
+<select name="default_cat_id" id="default_cat_id">
+<option value=""><MT_TRANS phrase="Select a category"></option>
+<TMPL_LOOP NAME=CATEGORY_LOOP>
+<option value="<TMPL_VAR NAME=CATEGORY_ID>"><TMPL_VAR NAME=CATEGORY_LABEL></option>
+</TMPL_LOOP>
+</select></p>
+
+<p><label for="default_status"><MT_TRANS phrase="Default post status for entries (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'default_post_status_for_entries')" class="help">?</a><br />
+<select name="default_status" id="default_status">
+<option value=""><MT_TRANS phrase="Select a post status"></option>
+<option value="1"><MT_TRANS phrase="Unpublished"></option>
+<option value="2"><MT_TRANS phrase="Published"></option>
+</select></p>
+
+<p><label for="title_start"><MT_TRANS phrase="Start title HTML (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'start_title_html')" class="help">?</a><br />
+<input name="title_start" id="title_start" /></p>
+
+<p><label for="title_end"><MT_TRANS phrase="End title HTML (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'end_title_html')" class="help">?</a><br />
+<input name="title_end" id="title_end" /></p>
+
+<p><label for="file_import"><MT_TRANS phrase="File From Your Computer (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'source_file_html')" class="help">?</a><br />
+<input name="file" id="file" type="file" /></p>
+
+<p><label for="encoding"><MT_TRANS phrase="Encoding (optional):"></label>  <a href="#" onclick="return openManual('entry_import', 'source_encoding_html')" class="help">?</a><br />
+<select name="encoding" id="encoding">
+<TMPL_LOOP NAME=ENCODING_NAMES>
+<option value="<TMPL_VAR NAME=NAME>"><MT_TRANS phrase="<TMPL_VAR NAME=DISPLAY_NAME>"></option>
+</TMPL_LOOP></select></p>
+
+<p><input type="submit" value="<MT_TRANS phrase="Import Entries">" /></p>
+</form>
+
+</div>
+<div id="export-content" style="display: none;">
+
+<p><MT_TRANS phrase="_USAGE_EXPORT_1"></p>
+
+<p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=export&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;magic_token=<TMPL_VAR NAME=MAGIC_TOKEN>"><MT_TRANS phrase="Export Entries From [_1]" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"></a></p>
+
+<TMPL_IF NAME=HAVE_TANGENT>
+<hr />
+
+<h4><MT_TRANS phrase="Export Entries to Tangent"></h4>
+
+<p><MT_TRANS phrase="_USAGE_EXPORT_3" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"></p>
+
+<p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=tangent_export&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Export Entries From [_1]" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"></a></p>
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

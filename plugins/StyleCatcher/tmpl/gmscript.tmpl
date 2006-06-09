@@ -1,0 +1,118 @@
+// ==UserScript==
+// @name          StyleCatcher Control
+// @namespace     http://www.sixapart.com/movabletype/userscripts
+// @description   Displays links for "throwing" themes discovered to your StyleCatcher installation.
+// @include       */styles*
+// ==/UserScript==
+
+(function() {
+
+var blogs = <TMPL_VAR NAME=BLOGS_JSON>;
+
+function gmsc_popurl() {
+    var url_fld = document.getElementById("gmsc_url");
+    if (mixer && mixer.name && mixer.entries) {
+        var entry = mixer.entries[mixer.name];
+        if (entry && entry.url_css)
+            url_fld.value = entry.url_css;
+        else
+            url_fld.value = window.location.href;
+    } else {
+        url_fld.value = window.location.href;
+    }
+    return true;
+}
+
+function gmsc_buttonbar(picker) {
+    var wrapper = picker.parentNode;
+    var url = window.location.href;
+
+    var div = document.createElement("div");
+    div.setAttribute("style", "text-align: right; font-size: x-small");
+    var frm = document.createElement("form");
+    frm.setAttribute("method", "get");
+    frm.setAttribute("action", "<TMPL_VAR NAME=SCRIPT_FULL_URL>");
+    frm.onsubmit = gmsc_popurl;
+    var c = '<input type="hidden" id="gmsc_url" name="url" value="' + url + '" />';
+    c += '<select name="blog_id">';
+    c += '<option value="">Select a Weblog...</option>';
+    for (var i in blogs) {
+        var blog = blogs[i];
+        c += '<option value="' + blog.id + '">' + blog.name + '</option>';
+    }
+    c += '</select> ';
+    c += '<input type="submit" value="Throw to StyleCatcher" /></form>';
+    frm.innerHTML = c;
+    div.appendChild(frm);
+    wrapper.appendChild(div);
+}
+
+function gmsc_display() {
+    /* detect whether this document contains theme links */
+    var links = document.getElementsByTagName('link');
+    var found = false;
+    for (var i = 0; i < links.length; i++) {
+        if (!links[i].rel || links[i].rel != 'theme')
+           continue;
+        if (!links[i].type || links[i].type != 'text/x-theme')
+            continue;
+        found = true;
+    }
+
+    if (!found)
+        return;
+
+    var container = document.getElementById('stylecatcher-container');
+    if (container) {
+        gmsc_buttonbar(container);
+        return;
+    }
+
+    var url = window.location.href;
+    url = escape(url).replace(/\+/g, '%2B').replace(/\"/g,'%22').replace(/\'/g, '%27');
+    var sc = document.createElement("div");
+    var sc_style = "#stylecatcher-thrower {"
+        + "z-index: 100;"
+        + "position: absolute;"
+        + "top: 3px;"
+        + "right: 3px} "
+        + "#stylecatcher-thrower img {"
+        + "border: 0} "
+        + "#stylecatcher-thrower:hover img,"
+        + "#stylecatcher-thrower ul {"
+        + "display:none} "
+        + "#stylecatcher-thrower ul {"
+        + "background-color: white;"
+        + "border: 1px solid blue;"
+        + "padding: 3px} "
+        + "#stylecatcher-thrower:hover ul {"
+        + "font-family: Verdana, Arial, sans-serif;"
+        + "font-size: 11px;"
+        + "margin: 0;"
+        + "display:block} "
+        + "#stylecatcher-thrower ul li {"
+        + "padding: 0;"
+        + "list-style: none;"
+        + "text-align: center} "
+        + "</style>";
+
+    var sc = document.createElement("div");
+    sc.id = "stylecatcher-thrower";
+
+    var sc_content = '<img src="<TMPL_VAR NAME=PLUGIN_STATIC_URI>images/top-rated.gif" height="16" width="16" alt="StyleCatcher" /><ul>';
+    sc_content += '<li><a href="<TMPL_VAR NAME=SCRIPT_FULL_URL>?url='
+        + url
+        + '">Launch StyleCatcher</a></li>';
+    for (var i in blogs) {
+        var blog = blogs[i];
+        sc_content += '<li><a href="<TMPL_VAR NAME=SCRIPT_FULL_URL>?blog_id='
+            + blog.id + '&amp;url=' + url + '">' + blog.name + '</a></li>';
+    }
+    sc_content += '</ul>';
+    sc.innerHTML = '<style type="text/css">' + sc_style + '</style>' + sc_content;
+    document.body.insertBefore(sc, document.body.firstChild);
+}
+
+gmsc_display();
+
+})();

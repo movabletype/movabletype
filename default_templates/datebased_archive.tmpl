@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+   <meta name="generator" content="Movable Type <$MTVersion$>" />
+
+   <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+   <link rel="alternate" type="application/atom+xml" title="Atom" href="<$MTBlogURL$>atom.xml" />
+   <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="<$MTBlogURL$>index.xml" />
+
+   <title><$MTBlogName encode_html="1"$>: <$MTArchiveTitle$> <MT_TRANS phrase="Archives"></title>
+
+   <link rel="start" href="<$MTBlogURL$>" title="Home" />
+   <MTArchivePrevious><link rel="prev" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchivePrevious>
+   <MTArchiveNext><link rel="next" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchiveNext>
+</head>
+<body class="layout-two-column-right date-based-archive">
+   <div id="container">
+      <div id="container-inner" class="pkg">
+
+         <div id="banner">
+            <div id="banner-inner" class="pkg">
+               <h1 id="banner-header"><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></h1>
+               <h2 id="banner-description"><$MTBlogDescription$></h2>
+            </div>
+         </div>
+
+         <div id="pagebody">
+            <div id="pagebody-inner" class="pkg">
+               <div id="alpha">
+                  <div id="alpha-inner" class="pkg">
+                     
+                     <p class="content-nav">
+                        <MTArchivePrevious><a href="<$MTArchiveLink$>">&laquo; <$MTArchiveTitle$></a> |</MTArchivePrevious>
+                        <a href="<$MTBlogURL$>"><MT_TRANS phrase="Main"></a>
+                        <MTArchiveNext>| <a href="<$MTArchiveLink$>"><$MTArchiveTitle$> &raquo;</a></MTArchiveNext>
+                     </p>
+                     <h2 id="archive-title"><$MTArchiveTitle$> <MT_TRANS phrase="Archives"></h2>
+                     
+                     <MTEntries sort_by="created_on" sort_order="ascend">
+                     <$MTEntryTrackbackData$>
+
+                     <MTDateHeader><h2 class="date-header"><$MTEntryDate format="%x"$></h2></MTDateHeader>
+                     <a id="a<$MTEntryID pad="1"$>"></a>
+                     <div class="entry" id="entry-<$MTEntryID$>">
+                        <h3 class="entry-header"><$MTEntryTitle$></h3>
+                        <div class="entry-content">
+                           <div class="entry-body">
+                              <$MTEntryBody$>
+                              <MTEntryIfExtended>
+                              <$MTEntryMore$>
+                              </MTEntryIfExtended>
+                              <MTEntryIfTagged>
+                              <div class="entry-tags">
+                                  <h4 class="entry-tags-header"><MT_TRANS phrase="Tags">:</h4> 
+                                  <ul class="entry-tags-list">
+                                      <MTEntryTags>
+                                          <li class="entry-tag"><a href="<$MTTagSearchLink$>" rel="tag"><$MTTagName></a></li>
+                                      </MTEntryTags>
+                                  </ul>
+                              </div>
+                              </MTEntryIfTagged>
+                              <p class="entry-footer">
+                                 <span class="post-footers"><MT_TRANS phrase="Posted by [_1] on [_2]" params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDateformat="%x %X"$>"></span> <span class="separator">|</span> <a class="permalink" href="<$MTEntryPermalink$>"><MT_TRANS phrase="Permalink"></a>
+                                 <MTIfCommentsActive>| <a href="<$MTEntryPermalink$>#comments"><MT_TRANS phrase="Comments"> (<$MTEntryCommentCount$>)</a></MTIfCommentsActive>
+                                 <MTIfPingsActive>| <a href="<$MTEntryPermalink$>#trackback"><MT_TRANS phrase="TrackBacks"> (<$MTEntryTrackbackCount$>)</a></MTIfPingsActive>
+                              </p>
+                           </div>
+                        </div>
+                     </div>
+                     </MTEntries>
+                  </div>
+               </div>
+               <div id="beta">
+                  <div id="beta-inner" class="pkg">
+
+                      <div class="module-search module">
+                         <h2 class="module-header"><MT_TRANS phrase="Search"></h2>
+                         <div class="module-content">
+                            <form method="get" action="<$MTCGIPath$><$MTSearchScript$>">
+                               <input type="hidden" name="IncludeBlogs" value="<$MTBlogID$>" />
+                               <label for="search" accesskey="4"><MT_TRANS phrase="Search this blog:"></label><br />
+                               <input id="search" name="search" size="20" />
+                               <input type="submit" value="Search" />
+                            </form>
+                         </div>
+                      </div>
+
+                      <div class="module-welcome module">
+                         <h2 class="module-header"><MT_TRANS phrase="About [_1]" params="<$MTArchiveDate format="%B %Y"$>"></h2>
+                         <div class="module-content">
+                             <p class="first"><MT_TRANS phrase="This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest." params="<$MTBlogName$>%%<$MTArchiveDate format="%B %Y"$>"></p>
+                                 <MTArchivePrevious>
+                                     <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+                                 </MTArchivePrevious>
+                                 <MTArchiveNext>
+                                     <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+                                 </MTArchiveNext>
+
+                             <p><MT_TRANS phrase="Many more can be found on the <a href="[_1]">main index page</a> or by looking through <a href="[_2]">the archives</a>." params="<$MTBlogURL$>%%<$MTBlogURL$>archives.html"></p>
+                             
+                         </div>
+                      </div>
+
+                      <div class="module-syndicate module">
+                         <div class="module-content">
+                            <a href="<$MTBlogURL$>atom.xml"><MT_TRANS phrase="Subscribe to this blog's feed"></a><br />
+                            [<a href="<MT_TRANS phrase="http://www.sixapart.com/about/feeds">"><MT_TRANS phrase="What is this?"></a>]
+                         </div>
+                      </div>
+
+                      <MTBlogIfCCLicense>
+                      <div class="module-creative-commons module">
+                         <div class="module-content">
+                            <a href="<$MTBlogCCLicenseURL$>"><img alt="Creative Commons License" src="<$MTBlogCCLicenseImage$>" /></a><br />
+                            <MT_TRANS phrase="This weblog is licensed under a"> <a href="<$MTBlogCCLicenseURL$>"><MT_TRANS phrase="Creative Commons License"></a>.
+                         </div>
+                      </div>
+                      </MTBlogIfCCLicense>
+
+                      <div class="module-powered module">
+                         <div class="module-content">
+                            <MT_TRANS phrase="_POWERED_BY">
+                         </div>
+                      </div>
+
+                 </div>
+              </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</body>
+</html>

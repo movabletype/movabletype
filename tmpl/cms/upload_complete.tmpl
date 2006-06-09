@@ -1,0 +1,157 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<script type="text/javascript">
+<!--
+
+function doClick (f, mode) {
+<TMPL_IF NAME=CAN_POST>
+    if (f.new_entry[0].checked)
+        doStartEntry(f, mode);
+    else
+</TMPL_IF>
+        doShowHTML(f, mode);
+}
+
+function doShowHTML (f, mode) {
+    var url = '<TMPL_VAR NAME=SCRIPT_URL>?__mode=show_upload_html&blog_id=<TMPL_VAR NAME=BLOG_ID>&url=<TMPL_VAR NAME=URL ESCAPE=URL>&site_path=<TMPL_VAR NAME=SITE_PATH>&fname=<TMPL_VAR NAME=FNAME ESCAPE=URL>&' + mode;
+<TMPL_IF NAME=DO_THUMB>
+    if (f.thumb.checked)
+        url += '&thumb=1&' + calcGeometry(f);
+</TMPL_IF>
+    window.location = url;
+}
+
+function doStartEntry (f, mode) {
+    var url = '<TMPL_VAR NAME=SCRIPT_URL>?__mode=start_upload_entry&blog_id=<TMPL_VAR NAME=BLOG_ID>&url=<TMPL_VAR NAME=URL ESCAPE=URL>&site_path=<TMPL_VAR NAME=SITE_PATH>&fname=<TMPL_VAR NAME=FNAME ESCAPE=URL>&' + mode;
+<TMPL_IF NAME=DO_THUMB>
+    if (f.thumb.checked)
+        url += '&thumb=1&' + calcGeometry(f);
+</TMPL_IF>
+    window.opener.location = url;
+    window.close();
+}
+
+<TMPL_IF NAME=DO_THUMB>
+
+function calcGeometry (f) {
+    var w = calcDim(f.thumb_width, f.thumb_width_type, f.full_width.value);
+    var h = calcDim(f.thumb_height, f.thumb_height_type, f.full_height.value);
+    return 'thumb_width=' + w + '&thumb_height=' + h;
+}
+
+function calcDim (val, type, full) {
+    if (type.options[type.selectedIndex].value == 'pixels')
+        return val.value;
+    else
+        return Math.floor(full * val.value / 100);
+}
+
+function adjustPixelsPct (f, width) {
+    if (!f.constrain.checked) return;
+    var e, s, full;
+    if (width) {
+        e = f.thumb_width;
+        s = f.thumb_width_type;
+        full = f.full_width.value;
+    } else {
+        e = f.thumb_height;
+        s = f.thumb_height_type;
+        full = f.full_height.value;
+    }
+    if (s.options[s.selectedIndex].value == 'pixels')
+        e.value = Math.floor(full * e.value / 100);
+    else
+        e.value = Math.floor(e.value / full * 100);
+    return true;
+}
+
+function adjustWidthHeight (f, width) {
+    if (!f.constrain.checked) return;
+    var w = f.thumb_width;
+    var wt = f.thumb_width_type;
+    var wf = f.full_width.value;
+    var h = f.thumb_height;
+    var ht = f.thumb_height_type;
+    var hf = f.full_height.value;
+    var pct;
+    var s = width ? wt : ht;
+    if (s.options[s.selectedIndex].value == 'pixels')
+        pct = width ? (w.value / wf) : (h.value / hf);
+    else
+        pct = width ? w.value / 100 : h.value / 100;
+    var e = width ? h : w;
+    var s = width ? ht : wt;
+    var full = width ? hf : wf;
+    if (s.options[s.selectedIndex].value == 'pixels')
+        e.value = Math.floor(pct * full);
+    else
+        e.value = Math.floor(pct * 100);
+    return true;
+}
+
+</TMPL_IF>
+
+//-->
+</script>
+
+<form action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+<TMPL_IF NAME=DO_THUMB>
+<input type="hidden" name="full_width" value="<TMPL_VAR NAME=WIDTH>" />
+<input type="hidden" name="full_height" value="<TMPL_VAR NAME=HEIGHt>" />
+</TMPL_IF>
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Upload File"></h2>
+
+<p><MT_TRANS phrase="The file named '[_1]' has been uploaded. Size: [quant,_2,byte]." params="<TMPL_VAR NAME=FNAME ESCAPE=HTML>%%<TMPL_VAR NAME=BYTES>"></p>
+
+<TMPL_IF NAME=CAN_POST>
+<p>
+<label><input type="radio" name="new_entry" value="1" checked="checked" /> <MT_TRANS phrase="Create a new entry using this uploaded file"></label> <a href="#" onclick="return openManual('file_upload', 'creating_a_new_entry')" class="help">?</a><br />
+<label><input type="radio" name="new_entry" value="0"> <MT_TRANS phrase="Show me the HTML"></label>
+</p>
+</TMPL_IF>
+
+<TMPL_IF NAME=DO_THUMB>
+<h4><MT_TRANS phrase="Image Thumbnail"></h4>
+
+<p><label><input type="checkbox" name="thumb" value="1"> <MT_TRANS phrase="Create a thumbnail for this image"></label> <a href="#" onclick="return openManual('file_upload', 'creating_thumbnails')" class="help">?</a></p>
+
+<blockquote>
+
+<p>
+<label for="thumb_width"><MT_TRANS phrase="Width:"></label>
+<input name="thumb_width" id="thumb_width" value="<TMPL_VAR NAME=WIDTH>" onchange="adjustWidthHeight(this.form, 1)" size="4" />
+<select name="thumb_width_type" onchange="adjustPixelsPct(this.form, 1)">
+<option value="pixels" selected="selected"><MT_TRANS phrase="Pixels"></option>
+<option value="percent"><MT_TRANS phrase="Percent"></option>
+</select>
+</p>
+
+<p>
+<label for="thumb_height"><MT_TRANS phrase="Height:"></label>
+<input name="thumb_height" value="<TMPL_VAR NAME=HEIGHT>" onchange="adjustWidthHeight(this.form, 0)" size="4" />
+<select name="thumb_height_type" onchange="adjustPixelsPct(this.form, 0)">
+<option value="pixels" selected="selected"><MT_TRANS phrase="Pixels"></option>
+<option value="percent"><MT_TRANS phrase="Percent"></option>
+</select>
+</p>
+
+<p><label><input type="checkbox" name="constrain" value="1" checked="checked"> <MT_TRANS phrase="Constrain proportions"></p>
+
+</blockquote>
+</TMPL_IF>
+
+<p><MT_TRANS phrase="Would you like this file to be a:"></p>
+
+<div>
+<TMPL_IF NAME=IS_IMAGE>
+<input type="button" onclick="doClick(this.form, 'popup=1&amp;width=<TMPL_VAR NAME=WIDTH>&amp;height=<TMPL_VAR NAME=HEIGHT>&amp;image_type=<TMPL_VAR NAME=IMAGE_TYPE>')" value="<MT_TRANS phrase="Popup Image">" />
+<input type="button" onclick="doClick(this.form, 'include=1&width=<TMPL_VAR NAME=WIDTH>&height=<TMPL_VAR NAME=HEIGHT>&image_type=<TMPL_VAR NAME=IMAGE_TYPE>')" value="<MT_TRANS phrase="Embedded Image">" />
+<TMPL_ELSE>
+<input type="button" onclick="doClick(this.form, 'link=1')" value="<MT_TRANS phrase="Link">" />
+</TMPL_IF>
+</div>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

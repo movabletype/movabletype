@@ -1,0 +1,241 @@
+<TMPL_IF NAME=IS_POWER_EDIT>
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="header.tmpl">
+</TMPL_IF>
+
+<div id="list-entry">
+
+<script type="text/javascript">
+<!--
+function enableFilterButton() {
+    getByID("filter-button").style.display = "inline";
+}
+function toggleFilter() {
+    var filterActive = getByID("filter-active");
+    if (filterActive.style.display == "none") {
+        filterActive.style.display = "block";
+        getByID("filter-select").style.display = "none";
+    } else {
+        filterActive.style.display = "none";
+        getByID("filter-select").style.display = "block";
+    }
+}
+
+function setFilterCol(choice) {
+    var sel = getByID('filter-select');
+    if (!sel) return;
+    sel.className = "filter-" + choice;
+    if (choice == 'none')
+        getByID('filter-mode').selectedIndex = 0;
+    else {
+        getByID('filter-mode').selectedIndex = 1;
+        var fld = getByID('filter-col');
+        if (choice == 'status')
+            fld.selectedIndex = 0;
+        else if (choice == 'author_id')
+            fld.selectedIndex = 1;
+        else if (choice == 'tag')
+            fld.selectedIndex = 2;
+        else if (choice == 'category_id')
+            fld.selectedIndex = 3;
+        col_span = getByID("filter-text-col");
+        if (fld.selectedIndex > -1 && col_span)
+            col_span.innerHTML = '<strong>' +
+                fld.options[fld.selectedIndex].text + '</strong>';
+    }
+}
+
+var tableSelect;
+function init()
+{
+<TMPL_UNLESS NAME=IS_POWER_EDIT>
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect.rowSelect = true;
+</TMPL_UNLESS>
+
+	setFilterCol(<TMPL_IF NAME=FILTER>'<TMPL_VAR NAME=FILTER>'<TMPL_ELSE>'none'</TMPL_IF>);<TMPL_IF NAME=FILTER>
+	setFilterVal('<TMPL_VAR NAME=FILTER_VAL>');
+</TMPL_IF>
+}
+
+TC.attachLoadEvent( init );
+// -->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Entries"></h2>
+
+<p class="page-desc">
+<TMPL_IF NAME=IS_POWER_EDIT>
+<MT_TRANS phrase="_USAGE_LIST_POWER" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>">
+<TMPL_ELSE>
+<TMPL_IF NAME=BLOG_ID>
+<MT_TRANS phrase="_USAGE_ENTRY_LIST_BLOG" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>">
+<TMPL_ELSE>
+<MT_TRANS phrase="_USAGE_ENTRY_LIST_OVERVIEW">
+</TMPL_IF>
+</TMPL_IF>
+</p>
+
+<TMPL_IF NAME=SAVED>
+<div class="message"><MT_TRANS phrase="Your changes have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED_DELETED>
+<div class="message"><MT_TRANS phrase="Your entry has been deleted from the database."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<TMPL_UNLESS NAME=IS_POWER_EDIT>
+<div class="tabs">
+<ul>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>"><MT_TRANS phrase="Entries"></a></li>
+<li class="special">
+
+<TMPL_IF NAME=FEED_URL>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/feed.gif" alt="<MT_TRANS phrase="Entry Feed">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=FEED_URL ESCAPE=HTML>" title="<TMPL_VAR NAME=FEED_NAME ESCAPE=HTML>"><MT_TRANS phrase="Entry Feed"></a>
+<TMPL_ELSE>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/feed-disabled.gif" alt="<MT_TRANS phrase="Entry Feed (Disabled)">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=AUTHOR_ID>" title="<TMPL_VAR NAME=FEED_NAME ESCAPE=HTML> (<MT_TRANS phrase="Disabled">)"><MT_TRANS phrase="Set Web Services Password"></a>
+</TMPL_IF>
+
+
+</li>
+<TMPL_IF NAME=BLOG_ID>
+<TMPL_IF NAME=CAN_POST>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<MT_TRANS phrase="Create New Entry">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Create New Entry"></a>
+</li>
+</TMPL_IF>
+</TMPL_IF>
+</ul>
+</div>
+</TMPL_UNLESS>
+
+<div class="list-filters">
+<div class="inner">
+
+<div id="filter-active">
+
+<div class="rightcol">
+<TMPL_UNLESS NAME=FILTER>
+<MT_TRANS phrase="Quickfilter:"> <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=status&amp;filter_val=1<TMPL_IF NAME=IS_POWER_EDIT>&amp;is_power_edit=1</TMPL_IF>"><MT_TRANS phrase="Show unpublished entries."></a>
+<TMPL_ELSE>
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF><TMPL_IF NAME=IS_POWER_EDIT>&amp;is_power_edit=1</TMPL_IF>"><MT_TRANS phrase="Reset"></a>
+</TMPL_UNLESS>
+</div>
+
+<strong><MT_TRANS phrase="Filter:"></strong>
+
+<TMPL_UNLESS NAME=FILTER>
+<a href="#" onclick="toggleFilter()"><MT_TRANS phrase="None."></a> <span class="hint"><MT_TRANS phrase="(Showing all entries.)"></span>
+<TMPL_ELSE>
+<a href="#" onclick="toggleFilter()"><MT_TRANS phrase="Showing only entries where [_1] is [_2]." params='<span id="filter-text-col"></span>%%<span id="filter-text-val"></span>'></a>
+</TMPL_UNLESS>
+
+</div>
+
+<form id="filter-form" method="get" action="<TMPL_VAR NAME=MT_URL>">
+<input type="hidden" name="__mode" value="list_entries" />
+<TMPL_IF NAME=BLOG_ID>
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+</TMPL_IF>
+<TMPL_IF NAME=IS_POWER_EDIT>
+<input type="hidden" name="is_power_edit" value="1" />
+</TMPL_IF>
+<input id="filter" type="hidden" name="filter" value="" />
+<input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
+
+<form id="filter-select" method="get" action="<TMPL_VAR NAME=MT_URL>" onsubmit="return execFilter(this)" style="display: none">
+<MT_TRANS phrase="Show">
+<select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('status') } enableFilterButton()">
+<option value="all"><MT_TRANS phrase="all"></option>
+<option value="only"><MT_TRANS phrase="only"></option>
+</select>
+<span id="filter-mode-all" style="display: none">
+<MT_TRANS phrase="entries.">
+</span>
+<span id="filter-mode-only" style="display: none">
+<MT_TRANS phrase="entries where">
+<select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
+<option value="status"><MT_TRANS phrase="status"></option>
+<option value="author_id"><MT_TRANS phrase="author"></option>
+<option value="tag"><MT_TRANS phrase="tag"></option>
+<TMPL_IF NAME=CATEGORY_LOOP>
+<option value="category_id"><MT_TRANS phrase="category"></option>
+</TMPL_IF>
+</select>
+<MT_TRANS phrase="is">
+<span id="filter-status" style="display: none">
+<select id="status-val" name="filter_val" onchange="enableFilterButton()">
+<option value="2"><MT_TRANS phrase="published"></option>
+<option value="1"><MT_TRANS phrase="unpublished"></option>
+<option value="4"><MT_TRANS phrase="scheduled"></option>
+</select>
+</span>
+<span id="filter-tag" style="display: none">
+<input type="text" id="tag-val" name="filter_val" value="<TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
+</span>
+<TMPL_IF NAME=CATEGORY_LOOP>
+<span id="filter-category_id" style="display: none">
+<select id="category_id-val" name="filter_val" onchange="enableFilterButton()">
+<TMPL_LOOP NAME=CATEGORY_LOOP>
+<option value="<TMPL_VAR NAME=CATEGORY_ID>"><TMPL_VAR NAME=CATEGORY_LABEL_SPACER><TMPL_VAR NAME=CATEGORY_LABEL></option>
+</TMPL_LOOP>
+</select>
+</span>
+</TMPL_IF>
+<span id="filter-author_id" style="display: none">
+<select id="author_id-val" name="filter_val" onchange="enableFilterButton()">
+<TMPL_LOOP NAME=ENTRY_AUTHOR_LOOP>
+<option value="<TMPL_VAR NAME=AUTHOR_ID>"><TMPL_VAR NAME=AUTHOR_NAME ESCAPE=HTML></option>
+</TMPL_LOOP>
+</select>
+</span>
+<MT_TRANS phrase=".">
+</span>
+&nbsp;
+
+<input type="submit" value="<MT_TRANS phrase="Filter">" id="filter-button" style="display: none" />
+<input type="button" value="<MT_TRANS phrase="Cancel">" onclick="toggleFilter()" />
+
+</form>
+</div>
+</div>
+
+<TMPL_IF NAME=ENTRY_TABLE>
+
+<div class="list-wrapper">
+<TMPL_INCLUDE NAME=entry_table.tmpl>
+<TMPL_INCLUDE NAME=pager.tmpl>
+</div>
+
+<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
+<div class="box" id="plugin-actions-box">
+<h4><MT_TRANS phrase="Plugin Actions"></h4>
+<div class="inner">
+<ul>
+<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
+<li><a href="<TMPL_VAR NAME=PAGE>;from=list_entries<TMPL_IF NAME=BLOG_ID>;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>"><TMPL_VAR NAME=LINK_TEXT></a></li>
+</TMPL_LOOP>
+</ul>
+</div>
+</div>
+</TMPL_IF>
+
+<TMPL_ELSE>
+
+<div class="message"><MT_TRANS phrase="No entries could be found."></div>
+
+</TMPL_IF>
+
+</div>
+
+<TMPL_IF NAME=IS_POWER_EDIT>
+<TMPL_INCLUDE NAME="footer-popup.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="footer.tmpl">
+</TMPL_IF>

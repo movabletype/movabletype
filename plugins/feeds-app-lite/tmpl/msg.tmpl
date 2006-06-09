@@ -1,0 +1,32 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<h2>Feeds.App Lite Widget Creator</h2>
+
+<TMPL_IF NAME=NOT_FOUND>
+<div class="error-message">No feeds could be discovered using <TMPL_VAR NAME=URI ESCAPE=HTML>.</div>
+</TMPL_IF>
+
+<TMPL_IF NAME=FEEDERR>
+<div class="error-message">An error occurred processing <TMPL_VAR NAME=URI ESCAPE=HTML>. Check <a href="http://www.feedvalidator.org/check.cgi?url=<TMPL_VAR NAME=URI ESCAPE=HTML>">here</a> for more detail and please try again.</div>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED>
+<p>A template module named <strong><TMPL_VAR NAME=MODULE ESCAPE=HTML></strong> has been created.</p>
+
+<MT_TRANS phrase="<p>You can customize the appearance of this feed by editing the module. </p>
+
+<p>You can reorder its position by using the Widget Manager.</p> 
+
+<p>Or you can display it by itself by include it in any template using MT Include.</p>">
+
+
+</TMPL_IF>
+
+<div align="center">
+<input type="button" onclick="window.close()" value="Close" />
+<input type="button" onclick="window.location='<TMPL_VAR NAME=WIZARD_URI ESCAPE=HTML>'" value="<TMPL_UNLESS NAME=SAVED>Go Back<TMPL_ELSE>Create Another</TMPL_UNLESS>" />
+</div>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">
+
+

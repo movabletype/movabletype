@@ -1,0 +1,11 @@
+<TMPL_INCLUDE name="header.tmpl">
+
+<h2><MT_TRANS phrase="Importing..."></h2>
+
+<div class="import-process">
+
+<div id="progress-bar"><img src="<TMPL_VAR NAME=STATIC_URI>images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+
+<pre><MT_TRANS phrase="Importing entries into blog" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>">
+<TMPL_IF NAME=IMPORT_AS_ME><MT_TRANS phrase="Importing entries as author '[_1]'" params="<TMPL_VAR NAME=AUTHOR_NAME>"><TMPL_ELSE><MT_TRANS phrase="Creating new authors for each author found in the blog"></TMPL_IF>
+

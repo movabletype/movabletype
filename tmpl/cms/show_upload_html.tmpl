@@ -1,0 +1,18 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<form action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+
+<p><label for="html"><MT_TRANS phrase="Copy and paste this HTML into your entry."></label></p>
+
+<p>
+<textarea name="html" id="html" rows="10" style="width: 100%;"><TMPL_VAR NAME=UPLOAD_HTML ESCAPE=HTML></textarea>
+</p>
+
+<p>
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Close">" />
+<input type="button" onclick="window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=start_upload&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>'" value="<MT_TRANS phrase="Upload Another">" />
+</p>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

@@ -1,0 +1,191 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript">
+<!--
+function doResetLog(f) {
+    if (confirm('<MT_TRANS phrase="Are you sure you want to reset activity log?" escape="singlequotes">')) {
+        window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=reset_log&amp;magic_token=<TMPL_VAR NAME=MAGIC_TOKEN>&amp;return_args=<TMPL_VAR NAME=RETURN_ARGS ESCAPE=URL>';
+    }
+}
+
+function enableFilterButton() {
+    getByID("filter-button").style.display = "inline";
+}
+function toggleFilter() {
+    var filterActive = getByID("filter-active");
+    if (filterActive.style.display == "none") {
+        filterActive.style.display = "block";
+        getByID("filter-select").style.display = "none";
+    } else {
+        filterActive.style.display = "none";
+        getByID("filter-select").style.display = "block";
+    }
+}
+
+function setFilterCol(choice) {
+    var sel = getByID('filter-select');
+    if (!sel) return;
+    sel.className = "filter-" + choice;
+    if (choice == 'none')
+        getByID('filter-mode').selectedIndex = 0;
+    else {
+        getByID('filter-mode').selectedIndex = 1;
+        var fld = getByID('filter-col');
+        if (choice == 'level')
+            fld.selectedIndex = 0;
+        else if (choice == 'class')
+            fld.selectedIndex = 1;
+        col_span = getByID("filter-text-col");
+        if (fld.selectedIndex > -1 && col_span)
+            col_span.innerHTML = '<strong>' +
+                fld.options[fld.selectedIndex].text + '</strong>';
+    }
+}
+
+function init() {
+	setFilterCol(<TMPL_IF NAME=FILTER>'<TMPL_VAR NAME=FILTER>'<TMPL_ELSE>'none'</TMPL_IF>);<TMPL_IF NAME=FILTER>
+	setFilterVal('<TMPL_VAR NAME=FILTER_VAL>');
+</TMPL_IF>
+}
+
+TC.attachLoadEvent( init );
+// -->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Activity Log"></h2>
+
+<p class="page-desc">
+<MT_TRANS phrase="The Movable Type activity log contains a record of notable actions in the system.">
+<TMPL_IF NAME=TIME_OFFSET>
+<MT_TRANS phrase="All times are displayed in GMT[_1]." params="<TMPL_VAR NAME=TIME_OFFSET>">
+<TMPL_ELSE>
+<MT_TRANS phrase="All times are displayed in GMT.">
+</TMPL_IF>
+</p>
+
+<TMPL_IF NAME=RESET>
+<div class="message"><MT_TRANS phrase="The activity log has been reset."></div>
+</TMPL_IF>
+
+<div class="tabs">
+<ul>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view_log<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>"><MT_TRANS phrase="Activity Log"></a></li>
+<TMPL_UNLESS NAME=FILTER>
+<li class="special">
+<TMPL_INCLUDE NAME=feed_link.tmpl>
+</li>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/download.gif" alt="<MT_TRANS phrase="Download CSV">" width="9" height="9" />
+<a href="<MT_ACTION mode="export_log" <TMPL_IF NAME=BLOG_ID>blog_id="<TMPL_VAR NAME=BLOG_ID>"</TMPL_IF> magic_token="<TMPL_VAR NAME=MAGIC_TOKEN>" return_args="<TMPL_VAR NAME=RETURN_ARGS>" filter_args="<TMPL_VAR NAME=FILTER_ARGS>">" title="<MT_TRANS phrase="Download CSV">"><MT_TRANS phrase="Download CSV"></a>
+</li>
+</TMPL_UNLESS>
+</ul>
+</div>
+
+<!-- start filter controls -->
+
+<div class="list-filters">
+<div class="inner">
+
+<div id="filter-active">
+
+<div class="rightcol">
+<TMPL_UNLESS NAME=FILTER>
+<MT_TRANS phrase="Quickfilter:"> <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view_log<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=level&amp;filter_val=4"><MT_TRANS phrase="Show only errors."></a>
+<TMPL_ELSE>
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view_log<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>"><MT_TRANS phrase="Reset"></a>
+</TMPL_UNLESS>
+</div>
+
+<strong><MT_TRANS phrase="Filter:"></strong>
+
+<TMPL_UNLESS NAME=FILTER>
+<a href="#" onclick="toggleFilter()"><MT_TRANS phrase="None."></a> <span class="hint"><MT_TRANS phrase="(Showing all log records.)"></span>
+<TMPL_ELSE>
+<a href="#" onclick="toggleFilter()"><MT_TRANS phrase="Showing only log records where"> <span id="filter-text-col"></span> <MT_TRANS phrase="is"> <span id="filter-text-val"></span>.</a>
+<a href="<MT_ACTION mode="export_log" <TMPL_IF NAME=BLOG_ID>blog_id="<TMPL_VAR NAME=BLOG_ID>"</TMPL_IF> magic_token="<TMPL_VAR NAME=MAGIC_TOKEN>" return_args="<TMPL_VAR NAME=RETURN_ARGS>" filter_args="<TMPL_VAR NAME=FILTER_ARGS>">" title="<MT_TRANS phrase="Filtered CSV">"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/download.gif" alt="<MT_TRANS phrase="Download CSV">" width="9" height="9" /></a>
+<a href="<TMPL_VAR NAME=FEED_URL ESCAPE=HTML>" title="<MT_TRANS phrase="Filtered"> <TMPL_VAR NAME=FEED_NAME ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/feed.gif" alt="<MT_TRANS phrase="Activity Feed">" width="9" height="9" /></a>
+</TMPL_UNLESS>
+
+
+</div>
+
+<form id="filter-form" method="get" action="<TMPL_VAR NAME=MT_URL>">
+<input type="hidden" name="__mode" value="view_log" />
+<TMPL_IF NAME=BLOG_ID>
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+</TMPL_IF>
+<TMPL_IF NAME=IS_POWER_EDIT>
+<input type="hidden" name="is_power_edit" value="1" />
+</TMPL_IF>
+<input id="filter" type="hidden" name="filter" value="" />
+<input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
+
+<form id="filter-select" method="get" action="<TMPL_VAR NAME=MT_URL>" onsubmit="return execFilter(this)" style="display: none">
+<MT_TRANS phrase="Show">
+<select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('level') } enableFilterButton()">
+<option value="all"><MT_TRANS phrase="all"></option>
+<option value="only"><MT_TRANS phrase="only"></option>
+</select>
+<span id="filter-mode-all" style="display: none">
+<MT_TRANS phrase="log records.">
+</span>
+<span id="filter-mode-only" style="display: none">
+<MT_TRANS phrase="log records where">
+<select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
+<option value="level"><MT_TRANS phrase="level"></option>
+<TMPL_IF NAME=CLASS_LOOP>
+<option value="class"><MT_TRANS phrase="classification"></option>
+</TMPL_IF>
+</select>
+<MT_TRANS phrase="is">
+<span id="filter-level" style="display: none">
+<select id="level-val" name="filter_val" onchange="enableFilterButton()">
+<option value="8"><MT_TRANS phrase="Security"></option>
+<option value="4"><MT_TRANS phrase="Error"></option>
+<option value="2"><MT_TRANS phrase="Warning"></option>
+<option value="1"><MT_TRANS phrase="Information"></option>
+<option value="16"><MT_TRANS phrase="Debug"></option>
+<option value="12"><MT_TRANS phrase="Security or error"></option>
+<option value="14"><MT_TRANS phrase="Security/error/warning"></option>
+<option value="15"><MT_TRANS phrase="Not debug"></option>
+<option value="20"><MT_TRANS phrase="Debug/error"></option>
+</select>
+</span>
+<TMPL_IF NAME=CLASS_LOOP>
+<span id="filter-class" style="display: none">
+<select id="class-val" name="filter_val" onchange="enableFilterButton()">
+<TMPL_LOOP NAME=CLASS_LOOP>
+<option value="<TMPL_VAR NAME=CLASS_NAME>"><TMPL_VAR NAME=CLASS_LABEL></option>
+</TMPL_LOOP>
+</select>
+</span>
+</TMPL_IF>
+.
+</span>
+&nbsp;
+
+<input type="submit" value="<MT_TRANS phrase="Filter">" id="filter-button" style="display: none" />
+<input type="button" value="<MT_TRANS phrase="Cancel">" onclick="toggleFilter()" />
+
+</form>
+</div>
+</div>
+
+<!-- end filter controls -->
+
+<TMPL_IF NAME=LOG_TABLE>
+
+<div class="list-wrapper">
+<TMPL_INCLUDE NAME=log_table.tmpl>
+<TMPL_INCLUDE NAME=pager.tmpl>
+</div>
+
+<TMPL_ELSE>
+
+<div class="message"><MT_TRANS phrase="No log records could be found."></div>
+
+</TMPL_IF>
+
+<TMPL_INCLUDE NAME=footer.tmpl>

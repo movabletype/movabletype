@@ -1,0 +1,45 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<h2>Feeds.App Lite Widget Creator</h2>
+
+<p>Multiple feeds were discovered. Select the feed you wish to use.</p>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>"/>
+<input type="hidden" name="__mode" value="config"/>
+
+<div class="list">
+<table class="compact" cellspacing="0">
+<thead>
+<tr>
+<th class="cb"></th>
+<th style="width:40%;">Title</th>
+<th style="width:55%;">URL</th>
+</tr>
+</thead>
+<tbody>
+
+<TMPL_LOOP NAME=FEEDS>
+<tr class="<TMPL_IF NAME=IS_ODD>odd<TMPL_ELSE>even</TMPL_IF>">
+<td class="cb"><input type="radio" name="uri" value="<TMPL_VAR NAME=URI ESCAPE=HTML>"/></td>
+<td><TMPL_VAR NAME=TITLE ESCAPE=HTML></td>
+<td><TMPL_VAR NAME=URI ESCAPE=HTML></td>
+</tr>
+</TMPL_LOOP>
+
+</tbody>\
+</table>
+</div>
+
+<br />
+
+<div align="center">
+<input type="submit" value="Continue" />&nbsp;
+<input onclick="window.close()" type="button" value="<MT_TRANS phrase="Cancel">" />
+</div>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">
+
+

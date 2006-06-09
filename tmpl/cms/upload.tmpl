@@ -1,0 +1,68 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<script type="text/javascript">
+<!--
+function setExtraPath(sel) {
+   var opt = sel.options[sel.selectedIndex];
+   var path = opt.getAttribute("middle_path");
+   if (!path) path = '';
+   var middle = sel.form['middle_path'];
+   if (middle) middle.value = path;
+}
+//-->
+</script>
+
+<form method="post" enctype="multipart/form-data" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="upload_file" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="middle_path" value="" />
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Upload File"></h2>
+
+<p><MT_TRANS phrase="To upload a file to your server, click on the browse button to locate the file on your hard drive."></p>
+<p><label for="file"><MT_TRANS phrase="File:"></label> <input type="file" name="file" /></p>
+
+<div id="choose-destination">
+
+<div class="spinner">
+<p>
+<a href="#" onclick="return toggleActive('choose-destination')"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="" width="7" height="7" /></a>
+<a href="#" onclick="return toggleActive('choose-destination')"><MT_TRANS phrase="Set Upload Path"></a>
+<span class="hint"><MT_TRANS phrase="(Optional)"></span>
+</p>
+</div>
+
+<div class="flyout">
+
+<p><MT_TRANS phrase="_USAGE_UPLOAD" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"></p>
+<div class="field">
+<p>
+<MT_TRANS phrase="Path:">
+<select name="site_path" onchange="setExtraPath(this)">
+<option value="1">&#60;<MT_TRANS phrase="Site Root">&#62;</option>
+<TMPL_IF NAME=ENABLE_ARCHIVE_PATHS>
+<option value="0">&#60;<MT_TRANS phrase="Archive Root">&#62;</option>
+</TMPL_IF>
+<TMPL_IF NAME=EXTRA_PATHS>
+<TMPL_LOOP NAME=EXTRA_PATHS>
+<option value="<TMPL_IF NAME=ENABLE_ARCHIVE_PATHS>0<TMPL_ELSE>1</TMPL_IF>" middle_path="<TMPL_VAR NAME=PATH ESCAPE=HTML>"><TMPL_VAR NAME=LABEL ESCAPE=HTML></option>
+</TMPL_LOOP>
+</TMPL_IF>
+</select>
+/ <input name="extra_path" id="extra_path" />
+</p>
+</div>
+
+</div>
+
+</div>
+
+<div style="text-align: right;">
+<input onclick="window.close()" type="button" value="<MT_TRANS phrase="Cancel">" />
+<input type="submit" value="<MT_TRANS phrase="Upload">" />
+</div>
+
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

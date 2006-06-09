@@ -1,0 +1,48 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<h2><MT_TRANS phrase="QuickPost"></h2>
+
+<TMPL_IF NAME=HAVE_LINK>
+<p><MT_TRANS phrase="_USAGE_BOOKMARKLET_3"></p>
+
+<p><a href="<TMPL_VAR NAME=BM_JS ESCAPE=HTML>"><MT_TRANS phrase="QuickPost"></a></p>
+
+<p><MT_TRANS phrase="_USAGE_BOOKMARKLET_4"></p>
+
+<p><MT_TRANS phrase="_USAGE_BOOKMARKLET_5"></p>
+
+<p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=reg_file&amp;bm_show=<TMPL_VAR NAME=BM_SHOW>&amp;bm_height=<TMPL_VAR NAME=BM_HEIGHT>"><MT_TRANS phrase="Add QuickPost to Windows right-click menu"></a></p>
+
+<TMPL_ELSE>
+<p class="page-desc"><MT_TRANS phrase="_USAGE_BOOKMARKLET_1"></p>
+
+<h4><MT_TRANS phrase="Configure QuickPost"></h4>
+
+<p class="page-desc"><MT_TRANS phrase="_USAGE_BOOKMARKLET_2"></p>
+
+<form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="make_bm_link" />
+
+<h4><MT_TRANS phrase="Include:"></h4>
+
+<p>
+<label><input type="checkbox" name="show" value="t" checked="checked" /> <MT_TRANS phrase="TrackBack Items"></label><br />
+<label><input type="checkbox" name="show" value="c" checked="checked" /> <MT_TRANS phrase="Category"></label><br />
+<label><input type="checkbox" name="show" value="ac" checked="checked" /> <MT_TRANS phrase="Allow Comments"></label><br />
+<label><input type="checkbox" name="show" value="ap" checked="checked" /> <MT_TRANS phrase="Allow TrackBacks"></label><br />
+<label><input type="checkbox" name="show" value="cb" checked="checked" /> <MT_TRANS phrase="Text Formatting"></label><br />
+<label><input type="checkbox" name="show" value="e" checked="checked" /> <MT_TRANS phrase="Excerpt"></label><br />
+<label><input type="checkbox" name="show" value="m" checked="checked" /> <MT_TRANS phrase="Extended Entry"></label><br />
+<label><input type="checkbox" name="show" value="k" checked="checked" /> <MT_TRANS phrase="Keywords"></label><br />
+<label><input type="checkbox" name="show" value="tg" checked="checked" /> <MT_TRANS phrase="Tags"></label><br />
+<label><input type="checkbox" name="show" value="b" checked="checked" /> <MT_TRANS phrase="Basename"></label>
+</p>
+
+<p>
+<input type="submit" value="<MT_TRANS phrase="Create">" />
+</p>
+
+</form>
+</TMPL_IF>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

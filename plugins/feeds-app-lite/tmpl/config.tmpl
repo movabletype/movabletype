@@ -1,0 +1,56 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<h2>Feeds.App Lite Widget Creator</h2>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>"/>
+<input type="hidden" name="__mode" value="save"/>
+<input type="hidden" name="uri" value="<TMPL_VAR NAME=FEED_URI ESCAPE=HTML>"/>
+<div class="field">
+<div class="label-column"><h5>Feed:</h5></div>
+<div class="field-column">
+<p>
+<strong><TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML></strong><br>
+<TMPL_VAR NAME=FEED_URI ESCAPE=HTML>
+</p>
+</div>
+</div>
+
+<hr>
+
+<div class="field">
+<div class="label-column"><h5><label for="feed_title">Title:</label></h5></div>
+<div class="field-column">
+
+<p><input name="feed_title" value="<TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML>" type="text"></p>
+<p>Enter a title to be displayed above the feed contents in your widget.</p>
+</div>
+</div>
+
+<div class="field">
+<div class="label-column"><h5><label for="lastn">Display:</label></h5></div>
+<div class="field-column">
+<p>
+<select name="lastn">
+<option value="3">3</option>
+<option value="5" selected="1">5</option>
+<option value="10">10</option>
+<option value="">All</option>
+</select>
+</p>
+<p>Select the maximum number of entries to display.</p>
+</div>
+</div>
+
+</div>
+
+<div align="center">
+<input type="submit" value="Save" />&nbsp;
+<input onclick="window.close()" type="button" value="<MT_TRANS phrase="Cancel">" />
+</div>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">
+
+

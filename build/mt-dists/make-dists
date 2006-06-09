@@ -1,0 +1,157 @@
+#!/usr/bin/perl -w
+#
+# $Id$
+#
+use strict;
+use lib 'lib';
+use ExtUtils::Manifest qw( maniread manicopy mkmanifest );
+use File::Copy;
+use File::Spec::Functions;
+use File::Basename;
+use Getopt::Long;
+
+my $saved_lang = $ENV{BUILD_LANGUAGE};
+
+my $orig = eval {
+    # Set the language default.
+    $ENV{BUILD_LANGUAGE} ||= 'en_US'; # We need "||=" instead of "=".
+    # Make sure we are clean but still have a Makefile.
+    system('make clean');
+    # Magically pre-process MT and MT::ConfigMgr.
+    system('make lib/MT.pm');
+    system('make lib/MT/ConfigMgr.pm');
+    # Make sure we have an MT package.
+    require MT;
+    'MT-' . MT->VERSION;
+} or die "Failed to get version from package `printenv`";
+
+# Collect the command-line options.
+my $distlist = '';  # XXX Unused variable.
+# The language distributions to be built.
+my $langlist = '';
+# The optional archive name override. 
+my $stamp = '';
+GetOptions(
+    'dist:s' => \$distlist,
+    'language:s' => \$langlist,
+    'stamp:s' => \$stamp,
+) or die "Couldn't grok options";
+my @distlist = split(/,/, $distlist);
+my @languages = split(/,/, $langlist);
+@languages = qw( en_US nl fr de es ja) unless @languages;    # ja !
+
+# TODO ?
+#my $extlib_base = $ARGV[0]
+#    or die "Need an extlib directory for the extra extlibs!";
+
+# XXX Unused variable.
+my $skip_base = dirname($0);
+
+# TODO Mystery code.
+#$extlib_base .= "/extlib";
+
+# Set the extra package libraries to include below.
+#my @libs = qw( html-template image-size file-spec file-temp uri
+#               libwww-perl cgi soap-lite );
+
+# Set the licenses to be used.
+my @licenses = qw( LICENSE-PERSONAL LICENSE-COMMERCIAL );
+
+# TODO This is probably important but yet commented out?
+#system("make docs-en_US");
+
+# Make a build for each language (en_GB is included with en_US).
+#for my $lang (@languages) {
+#    print join(" ", @languages), "\n";
+#    # XXX This is used only one and the initial value never changes.
+#    my $short_lang = $lang;
+#    # If there are not any _'s in the language double it: xx_XX.
+#    my $long_lang = ($lang =~ /_/ ? $lang : $lang . '_' . uc($lang));
+#    # ..unless we are Japanese.
+#    $long_lang = 'ja' if ($lang eq 'ja');
+#
+#    # Override the distribution name if we are given a stamp.
+#    my $distname = $stamp if defined $stamp && $stamp ne '';
+    my $distname = defined $stamp && $stamp ne ''
+        ? $stamp
+        : "$orig-$saved_lang";
+
+#    # Make sure the environment has the language set.
+#    $ENV{BUILD_LANGUAGE} = $short_lang;
+#    print "---------------- Building " . $ENV{BUILD_LANGUAGE} . " ----------------" . "\n";
+#    $ENV{BUILD_LANGUAGE} = $saved_lang;
+    system("make clean");  # to clean MT.pm and MT/ConfigMgr.pm
+    # PERFORM THE SACRED make CALL.
+    system("make");
+    # XXX Not the friendliest way to fail after a system call:
+    die $? if $?;
+
+    mkmanifest();
+    manicopy(maniread(), $distname, 'best');
+
+    # Mash the extlib packages into place.
+    #if ($lang eq 'ja') {
+    #    system("cp -R ${extlib_base}/* ${distname}/extlib/");
+    #} else {
+    #    for my $lib (@libs) {
+    #        my $full = catdir($extlib_base, $lib);
+    #        die "Couldn't find $lib in $extlib_base" unless -d $full;
+    #        system("cp -r $full/* $distname/extlib/");
+    #    }
+    #}
+
+    # TODO ? Ugh. Uncommented yet complex system calls. man xargs...
+    system("find $distname -name .exists | xargs rm");
+
+    # Remove non-us localizations from the US distribution.
+#    if ($lang eq 'en_US') {
+#        foreach (`ls $distname/lib/MT/L10N/`) {
+#            system("rm $distname/lib/MT/L10N/$_")
+#                # XXX The previous condition makes below redundant.
+#                unless ($_ =~ /$lang/i) || ($_ =~ /en_US/i);
+#        }
+#        # Get rid of styles_* CSS files.
+#        system("rm $distname/mt-static/styles_*.css");
+#        # Get rid of mt_* JS files.
+#        system("rm $distname/mt-static/mt_*.js");
+#    }
+    # Make the CGI scripts executable.
+    system("chmod +x $distname/*.cgi"); 
+    # Make the tools files executable.
+    system("chmod +x $distname/tools/*"); 
+
+    # Make a tar archive of the distribution.
+    system("tar cvf $distname.tar --wildcards --exclude '*.zip' $distname");
+    # Compress the tar archive.
+    system("gzip --best $distname.tar");
+    # Make a zip archive.
+    system("zip -r $distname.zip $distname -x $distname/extras/\*.gz");
+    # Remove the distribution build directory.
+    system("rm -rf $distname");
+    # Remove the MANIFEST file.
+    # XXX This is an artifact of the iterative make calls.
+    unlink("MANIFEST");
+#}
+
+# TODO This seems overly complicated and ..strange.
+# Copy the US dist to GB.
+if (grep {/en/} @languages) {
+    foreach my $us_dist (`ls *en_US*.*`) {
+        chomp $us_dist;
+        my $gb_dist;
+        ($gb_dist = $us_dist) =~ s/en_US/en_GB/;
+        shell("cp $us_dist $gb_dist");
+    }
+}
+
+# XXX SKIP is exported from SVN. This is ignored I bet.
+END {
+    move("MANIFEST.SKIP.BAK", "MANIFEST.SKIP")
+        if -e "MANIFEST.SKIP.BAK";
+}
+
+# Issue a shell command.
+sub shell {
+    print $_[0], "\n";
+    system $_[0];
+}

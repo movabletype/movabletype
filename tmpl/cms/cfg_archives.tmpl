@@ -1,0 +1,368 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="cfg-archives">
+
+<script type="text/javascript">
+<!--
+function setCreateMode () {
+    getByID('create-inline-mapping').style.display = 'block';
+	return false;
+}
+
+function cancelCreateMode () {
+    getByID('create-inline-mapping').style.display = 'none';
+    return false;
+}
+
+function archiveFileSelect(sel) {
+    var fld = sel.name;
+    fld = fld.replace(/sel/, 'tmpl');
+    var edit = getByID(fld);
+    var map = sel.options[sel.selectedIndex].value;
+    if (map == '') {
+        edit.style.display = 'block';
+        sel.style.display = 'none';
+        edit.focus();
+        //window.setTimeout('getByID("' + fld + '").focus()', 10);
+    } else {
+        edit.value = map;
+    }
+}
+
+function doAddArchive(f) {
+    f['__mode'].value = 'cfg_archives_do_add';
+    f.submit();
+}
+function doRemoveTemplateMap(id) {
+    if (confirm("<MT_TRANS phrase="Are you sure you want to delete this template map?">")) {
+        var f = getByID('cfg_form');
+        f['__mode'].value = 'delete';
+        f['_type'].value = 'templatemap';
+        f['id'].value = id;
+        f.submit();
+    }
+    return false;
+}
+function validate (f) {
+    if (!f.site_path.value) {
+        alert('<MT_TRANS phrase="You must set your Local Site Path." escape="singlequotes">');
+        return false;
+    } else if (!is_valid_url(f.site_url.value)){
+        alert('<MT_TRANS phrase="You must set your Site URL." escape="singlequotes">');
+        return false;
+    } else if (!is_valid_path(f.site_path.value)){
+        alert('<MT_TRANS phrase="You must set your Local Site Path." escape="singlequotes">');
+        return false;
+    }
+    return true;
+}
+function is_valid_url(url_){
+    return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+}
+function is_valid_path(path_){
+    for(i = 0; i < path_.length; i++){
+        var buf = escape(path_.substr(i, 1));
+        if (buf.match(/^%u.*/)){
+            return false;
+        }
+        if (buf.match(/(%.{2}){2}?/)){
+        	return false;
+        }
+    }
+    return true;
+}
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Publishing Settings"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="This screen allows you to control this weblog's publishing paths and preferences, as well as archive mapping settings."></p>
+
+<div class="tabs">
+<ul>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="General"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="New Entry Defaults"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_feedback&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Feedback"></a></li>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_archives&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Publishing"></a></li>
+<TMPL_IF NAME=SHOW_IP_INFO>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list&amp;_type=banlist&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="IP Banning"></a></li>
+</TMPL_IF>
+<TMPL_IF NAME=USE_PLUGINS>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_plugins&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Plugins"></a></li>
+</TMPL_IF>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/related.gif" alt="<MT_TRANS phrase="Switch to Basic Settings">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;config_view=basic&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Switch to Basic Settings"></a>
+</li>
+</ul>
+</div>
+
+<TMPL_IF NAME=ERROR>
+<div class="error-message"><TMPL_VAR NAME=ERROR></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=NO_WRITEDIR>
+<div class="error-message"><MT_TRANS phrase="Error: Movable Type was not able to create a directory for publishing your weblog. If you create this directory yourself, assign sufficient permissions that allow Movable Type to create files within it."></div>
+
+<TMPL_ELSE>
+
+<TMPL_IF NAME=NO_CACHEDIR>
+<div class="error-message"><MT_TRANS phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory." params="templates_c"></div>
+
+<TMPL_ELSE>
+
+<TMPL_IF NAME=NO_WRITECACHE>
+<div class="error-message"><MT_TRANS phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory." params="templates_c"></div>
+
+<TMPL_ELSE>
+
+<TMPL_IF NAME=SAVED>
+<div class="message"><MT_TRANS phrase="Your weblog's archive configuration has been saved.">
+<TMPL_IF NAME=ARCHIVES_CHANGED>
+<MT_TRANS phrase="You may need to update your templates to account for your new archive configuration.">
+</TMPL_IF>
+<br /><TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+</TMPL_IF>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED_ADDED>
+<div class="message"><MT_TRANS phrase="You have successfully added a new archive-template association.">
+<TMPL_IF NAME=ARCHIVES_CHANGED>
+<MT_TRANS phrase="You may need to update your 'Master Archive Index' template to account for your new archive configuration.">
+</TMPL_IF>
+<br /><TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED_DELETED>
+<div class="message"><MT_TRANS phrase="The selected archive-template associations have been deleted."></div>
+</TMPL_IF>
+
+</TMPL_IF>
+
+<form name="cfg_form" id="cfg_form" method="post" action="<TMPL_VAR NAME=SCRIPT_URL>"  onsubmit="return validate(this)">
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="cfg_screen" value="cfg_archives" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Publishing Paths"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label"><label for="site_url"><MT_TRANS phrase="Site URL:"></label></div>
+<div class="field">
+<input name="site_url" id="site_url" value="<TMPL_VAR NAME=SITE_URL ESCAPE=HTML>" size="50" />
+<p><MT_TRANS phrase="Enter the URL of your website. Do not include a filename (i.e. exclude index.html)."><br /><MT_TRANS phrase="Example:"> <strong>http://www.example.com/weblog/</strong>
+<a href="#" onclick="return openManual('blog_settings_publishing', 'site_url')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="site_path"><MT_TRANS phrase="Site Root:"></label></div>
+<div class="field">
+<input name="site_path" id="site_path" value="<TMPL_VAR NAME=SITE_PATH ESCAPE=HTML>" size="50" />
+<p><MT_TRANS phrase="Enter the path where your index files will be published. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory."><br /><MT_TRANS phrase="Example:"> <strong>/home/melody/public_html/weblog</strong>
+<a href="#" onclick="return openManual('blog_settings_publishing', 'site_root')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="archive_url"><MT_TRANS phrase="Advanced Archive Publishing:"></label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" onclick="toggleSubPrefs(this); return true"<TMPL_IF NAME=ENABLE_ARCHIVE_PATHS> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Publish archives to alternate root path"> <a href="#" onclick="return openManual('blog_settings_publishing', 'advanced_archive_publishing')" class="help">?</a></li>
+</ul>
+<p><MT_TRANS phrase="Select this option only if you need to publish your archives outside of your Site Root."></p>
+</div>
+</div>
+
+<div id="enable_archive_paths_prefs"<TMPL_UNLESS NAME=ENABLE_ARCHIVE_PATHS> style="display: none;"</TMPL_UNLESS>>
+
+<div class="setting">
+<div class="label"><label for="archive_url"><MT_TRANS phrase="Archive URL:"></label></div>
+<div class="field">
+<input name="archive_url" id="archive_url" value="<TMPL_VAR NAME=ARCHIVE_URL ESCAPE=HTML>" size="50" />
+<p><MT_TRANS phrase="Enter the URL of the archives section of your website."><br /><MT_TRANS phrase="Example:"> <strong>http://archives.example.com/</strong>
+<a href="#" onclick="return openManual('blog_settings_publishing', 'archive_url')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="archive_path"><MT_TRANS phrase="Archive Root:"></label></div>
+<div class="field">
+<input name="archive_path" id="archive_path" value="<TMPL_VAR NAME=ARCHIVE_PATH ESCAPE=HTML>" size="50" />
+<p><MT_TRANS phrase="Enter the path where your archive files will be published."><br /><MT_TRANS phrase="Example:"> <strong>/home/melody/public_html/archives</strong>
+<a href="#" onclick="return openManual('blog_settings_publishing', 'archive_path')" class="help">?</a></p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Publishing Preferences"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label"><label for="archive_type_preferred"><MT_TRANS phrase="Preferred Archive Type:"></label></div>
+<div class="field">
+<select name="archive_type_preferred" id="archive_type_preferred">
+<option value=""><MT_TRANS phrase="No Archives"></option>
+<TMPL_IF NAME=ARCHIVE_TYPE_INDIVIDUAL>
+<option value="Individual"<TMPL_IF NAME="ARCHIVE_TYPE_PREFERRED_INDIVIDUAL"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Individual"></option>
+</TMPL_IF>
+<TMPL_IF NAME=ARCHIVE_TYPE_DAILY>
+<option value="Daily"<TMPL_IF NAME="ARCHIVE_TYPE_PREFERRED_DAILY"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Daily"></option>
+</TMPL_IF>
+<TMPL_IF NAME=ARCHIVE_TYPE_WEEKLY>
+<option value="Weekly"<TMPL_IF NAME="ARCHIVE_TYPE_PREFERRED_WEEKLY"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Weekly"></option>
+</TMPL_IF>
+<TMPL_IF NAME=ARCHIVE_TYPE_MONTHLY>
+<option value="Monthly"<TMPL_IF NAME="ARCHIVE_TYPE_PREFERRED_MONTHLY"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Monthly"></option>
+</TMPL_IF>
+<TMPL_IF NAME=ARCHIVE_TYPE_CATEGORY>
+<option value="Category"<TMPL_IF NAME="ARCHIVE_TYPE_PREFERRED_CATEGORY"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Category"></option>
+</TMPL_IF>
+</select>
+<p><MT_TRANS phrase="When linking to an archived entry&#8212;for a permalink, for example&#8212;you must link to a particular archive type, even if you have chosen multiple archive types.">
+<a href="#" onclick="return openManual('blog_settings_publishing', 'preferred_archive_type')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="file_extension"><MT_TRANS phrase="File Extension for Archive Files:"></label></div>
+<div class="field">
+<input name="file_extension" id="file_extension" size="5" value="<TMPL_VAR NAME=FILE_EXTENSION ESCAPE=HTML>" />
+<p><MT_TRANS phrase="Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').">  <a href="#" onclick="return openManual('blog_settings_publishing', 'archive_file_extension')" class="help">?</a></p>
+</div>
+</div>
+
+<TMPL_IF NAME=SHOW_BUILD_OPTIONS>
+<div class="setting">
+<div class="label"><label for="dynamicity"><MT_TRANS phrase="Dynamic Publishing:"></label>  <a href="#" onclick="return openManual('blog_settings_publishing', 'dynamic_publishing')" class="help">?</a></div>
+<div class="field">
+<ul>
+<li><input type="radio" id="dynamic_none" name="dynamicity" value="none"<TMPL_IF NAME=DYNAMIC_NONE> checked="on"</TMPL_IF> class="rb" /> <label for="dynamic_none"><MT_TRANS phrase="Build all templates statically"></label></li>
+<li><input type="radio" id="dynamic_archives" name="dynamicity" value="archives"<TMPL_IF NAME=DYNAMIC_ARCHIVES> checked="checked"</TMPL_IF> class="rb" /> <label for="dynamic_archives"><MT_TRANS phrase="Build only Archive Templates dynamically"></label></li>
+<li><input type="radio" id="dynamic_custom" name="dynamicity" value="custom"<TMPL_IF NAME=DYNAMIC_CUSTOM> checked="checked"</TMPL_IF> class="rb" /> <label for="dynamic_custom"><MT_TRANS phrase="Set each template's Build Options separately"></label></li>
+</ul>
+</div>
+</div>
+</TMPL_IF>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Archive Mapping"></h3>
+
+<p><MT_TRANS phrase="_USAGE_ARCHIVE_MAPS"> <a href="#" onclick="return openManual('blog_settings_publishing', 'archive_mapping')" class="help">?</a></p>
+
+<div class="tabs">
+<ul>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<MT_TRANS phrase="Create New Archive Mapping">" width="9" height="9" />
+<a href="#" onclick="return setCreateMode()"><MT_TRANS phrase="Create New Archive Mapping"></a>
+</li>
+</ul>
+</div>
+
+<div class="create-inline" id="create-inline-mapping">
+<p>
+<label for="new_archive_type"><MT_TRANS phrase="Archive Type:"></label>
+<select name="new_archive_type" id="new_archive_type">
+<option value="Individual"><MT_TRANS phrase="INDIVIDUAL_ADV"></option>
+<option value="Daily"><MT_TRANS phrase="DAILY_ADV"></option>
+<option value="Weekly"><MT_TRANS phrase="WEEKLY_ADV"></option>
+<option value="Monthly"><MT_TRANS phrase="MONTHLY_ADV"></option>
+<option value="Category"><MT_TRANS phrase="CATEGORY_ADV"></option>
+</select>
+&nbsp;
+<label for="template_id"><MT_TRANS phrase="Template:"></label>
+<select name="template_id" id="template_id">
+<TMPL_LOOP NAME=TEMPLATES>
+<option value="<TMPL_VAR NAME=TEMPLATE_ID>"><TMPL_VAR NAME=TEMPLATE_NAME></option>
+</TMPL_LOOP>
+</select>
+&nbsp;
+<input type="button" name="add" value="<MT_TRANS phrase="Add">" onclick="doAddArchive(this.form)" />
+<input type="button" name="cancel" value="<MT_TRANS phrase="Cancel">" onclick="return cancelCreateMode()" />
+</p>
+</div>
+
+<div class="list" id="list-archives">
+<table cellspacing="0" <TMPL_IF NAME=HAS_MULTIPLE_ARCHIVES>class="show-multiple"</TMPL_IF>>
+
+<thead>
+<tr>
+<th id="am-type"><MT_TRANS phrase="Archive Types"></th>
+<th id="am-template"><MT_TRANS phrase="Template"> <a href="#" onclick="return openManual('blog_settings_publishing', 'archive_map_templates')" class="help">?</a></th>
+<th id="am-path"><MT_TRANS phrase="Archive File Path"> <a href="#" onclick="return openManual('blog_settings_publishing', 'archive_map_file_path')" class="help">?</a></th>
+<TMPL_IF NAME=HAS_MULTIPLE_ARCHIVES><th id="am-preferred"><MT_TRANS phrase="Preferred">&nbsp;<a href="#" onclick="return openManual('blog_settings_publishing', 'archive_map_preferred_status')" class="help">?</a></th></TMPL_IF>
+<th id="am-delete"><MT_TRANS phrase="Delete"></th>
+</tr>
+</thead>
+
+<tbody>
+<TMPL_LOOP NAME=ARCHIVE_TYPES>
+<TMPL_IF NAME=TEMPLATE_MAP>
+<tr>
+<td colspan="5" class="subhead">
+<input type="checkbox" name="archive_type" id="archive_type_<TMPL_VAR NAME=ARCHIVE_TYPE>" value="<TMPL_VAR NAME=ARCHIVE_TYPE ESCAPE=HTML>"<TMPL_IF NAME=IS_SELECTED> checked="checked"</TMPL_IF> class="cb" /> <label for="archive_type_<TMPL_VAR NAME=ARCHIVE_TYPE>"><TMPL_VAR NAME=ARCHIVE_TYPE_TRANSLATED ESCAPE=HTML></label>
+</td>
+</tr>
+</TMPL_IF>
+<TMPL_LOOP NAME=TEMPLATE_MAP>
+<tr>
+<td>&nbsp;</td>
+<td class="map-template-name"><TMPL_VAR NAME=MAP_TEMPLATE_NAME></td>
+<td class="map-archive-tmpl">
+<select id="archive_file_sel_<TMPL_VAR NAME=MAP_ID>" name="archive_file_sel_<TMPL_VAR NAME=MAP_ID>" onchange="archiveFileSelect(this)">
+<TMPL_LOOP NAME=ARCHIVE_TMPL_LOOP>
+<option value="<TMPL_VAR NAME=VALUE>"<TMPL_IF NAME=SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=NAME></option>
+</TMPL_LOOP>
+<option value=""><MT_TRANS phrase="Custom..."></option>
+</select>
+<input id="archive_file_tmpl_<TMPL_VAR NAME=MAP_ID>" name="archive_file_tmpl_<TMPL_VAR NAME=MAP_ID>" value="<TMPL_VAR NAME=MAP_FILE_TEMPLATE>" />
+</td>
+<TMPL_IF NAME=HAS_MULTIPLE_ARCHIVES>
+<td class="map-remove-tmpl"><TMPL_IF NAME=MULTIPLE_ARCHIVES><input type="radio" name="archive_tmpl_preferred_<TMPL_VAR NAME=ARCHIVE_TYPE ESCAPE=HTML>"<TMPL_IF NAME=MAP_IS_PREFERRED> checked="checked"</TMPL_IF> value="<TMPL_VAR NAME=MAP_ID>" /></TMPL_IF></td>
+</TMPL_IF>
+<td class="map-remove-tmpl"><a href="#" onclick="return doRemoveTemplateMap('<TMPL_VAR NAME=MAP_ID>')"><img src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif" width="9" height="11" alt="<MT_TRANS phrase="Delete">" /></a></td>
+</tr>
+</TMPL_LOOP>
+</TMPL_LOOP>
+
+</tbody>
+</table>
+</div>
+
+<!--
+<input onclick="doRemoveItems(this.form, '<MT_TRANS phrase="archive map">', '<MT_TRANS phrase="archive maps">', 'id', { '_type':'templatemap' })" type="button" value="<MT_TRANS phrase="Delete">" />
+-->
+
+</fieldset>
+
+<div style="text-align: center;">
+<input type="submit" value="<MT_TRANS phrase="Save Changes">" title="<MT_TRANS phrase="Save changes (s)">" accesskey="s" />
+</div>
+
+</form>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

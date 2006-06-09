@@ -1,0 +1,165 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript">
+<!--
+function toggle(field) {
+    var flds = document.getElementsByName(field);
+    if (!flds) return;
+    for (i = 0; i < flds.length; i++)
+        flds[i].checked = !flds[i].checked;
+}
+
+<TMPL_IF NAME=REDIRECT>
+function doRedirect () {
+    window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=find_junk&blog_id=<TMPL_VAR NAME=BLOG_ID>&offset=<TMPL_VAR NAME=OFFSET>';
+}
+setTimeout('doRedirect()', 200);
+</TMPL_IF>
+// -->
+</script>
+
+
+<div id="list-comment">
+
+<h2><MT_TRANS phrase="Find Junk"></h2>
+
+<TMPL_IF NAME=OBJECT_LOOP>
+
+<p><MT_TRANS phrase="The following items may be junk. Uncheck the box next to any items are NOT junk and hit JUNK to continue."></p>
+
+<p><MT_TRANS phrase="To return to the comment list without junking any items, click CANCEL."></p>
+
+<form action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+
+<div class="list">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th width="10%"><MT_TRANS phrase="Status"></th>
+<th width="18%" class="commenter"><MT_TRANS phrase="Commenter"></th>
+<TMPL_IF NAME=SHOW_IP_INFO>
+<th width="22%"><MT_TRANS phrase="Comment"></th>
+<TMPL_ELSE>
+<th width="40%"><MT_TRANS phrase="Comment"></th>
+</TMPL_IF>
+<th width="15%"><MT_TRANS phrase="Entry"></th>
+<th width="12%"><MT_TRANS phrase="Date"></th>
+<TMPL_IF NAME=SHOW_IP_INFO>
+<th width="18%"><MT_TRANS phrase="IP"></th>
+</TMPL_IF>
+<th width="5%"><MT_TRANS phrase="Junk"></th>
+</tr>
+</thead>
+
+<tbody>
+<TMPL_LOOP NAME=OBJECT_LOOP>
+<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
+
+<td class="status">
+<TMPL_IF NAME=COMMENTER_ID>
+<TMPL_IF NAME=COMMENTER_APPROVED>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/success.gif" alt="<MT_TRANS phrase="Approved">" width="9" height="9" /><br /><span class="approved"><MT_TRANS phrase="Approved"></span>
+<TMPL_ELSE>
+<TMPL_IF NAME=COMMENTER_BANNED>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/error.gif" alt="<MT_TRANS phrase="Banned">" width="9" height="9" /><br /><span class="banned"><MT_TRANS phrase="Banned"></span>
+<TMPL_ELSE>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Pending">" width="9" height="9" /><br /><span class="pending"><MT_TRANS phrase="Pending"></span>
+</TMPL_IF>
+</TMPL_IF>
+<TMPL_ELSE>
+<TMPL_IF NAME=VISIBLE>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/success.gif" alt="<MT_TRANS phrase="Approved">" width="9" height="9" /><br /><span class="approved"><MT_TRANS phrase="Approved"></span>
+<TMPL_ELSE>
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Pending">" width="9" height="9" /><br /><span class="pending"><MT_TRANS phrase="Pending"></span>
+</TMPL_IF>
+</TMPL_IF>
+</td>
+
+<td class="commenter">
+<TMPL_IF NAME=COMMENTER_ID>
+<TMPL_IF NAME=COMMENTER_APPROVED>
+<div> <TMPL_VAR NAME=AUTHOR ESCAPE=HTML> <img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/commenter-authenticated.gif" alt="<MT_TRANS phrase="Registered Commenter">" width="7" height="9" /></div>
+<TMPL_ELSE>
+<TMPL_IF NAME=COMMENTER_BANNED>
+<div> <TMPL_VAR NAME=AUTHOR ESCAPE=HTML> <img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/commenter-authenticated.gif" alt="<MT_TRANS phrase="Registered Commenter">" width="7" height="9" /></div>
+<TMPL_ELSE>
+<div> <TMPL_VAR NAME=AUTHOR ESCAPE=HTML> <img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/commenter-authenticated.gif" alt="<MT_TRANS phrase="Registered Commenter">" width="7" height="9" /></div>
+</TMPL_IF>
+</TMPL_IF>
+<TMPL_ELSE>
+<div><TMPL_IF NAME=AUTHOR> <TMPL_VAR NAME=AUTHOR_DISPLAY ESCAPE=HTML><TMPL_ELSE>[<MT_TRANS phrase="Anonymous">]</TMPL_IF></div>
+</TMPL_IF>
+</td>
+
+<td>
+<TMPL_IF NAME=HAS_EDIT_ACCESS>
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;return_args=<TMPL_VAR NAME=RETURN_ARGS ESCAPE=URL>"><TMPL_VAR NAME=COMMENT_SHORT ESCAPE=HTML></a>
+<TMPL_ELSE>
+<TMPL_VAR NAME=COMMENT_SHORT ESCAPE=HTML>
+</TMPL_IF>
+<TMPL_IF NAME=REASON>
+<br />Reason: <TMPL_VAR NAME=REASON>
+<TMPL_IF NAME=DOMAINS>
+<br />Domains: <TMPL_LOOP NAME=DOMAINS><TMPL_VAR NAME=DOMAIN> </TMPL_LOOP>
+</TMPL_IF>
+</TMPL_IF>
+</td>
+
+<td>
+<TMPL_IF NAME=ENTRY_TITLE>
+<TMPL_VAR NAME=ENTRY_TITLE ESCAPE=HTML>
+<TMPL_ELSE>
+&nbsp;
+</TMPL_IF>
+</td>
+
+<td><TMPL_VAR NAME=CREATED_ON_TIME_FORMATTED ESCAPE=HTML></td>
+
+<TMPL_IF NAME=SHOW_IP_INFO>
+<td>
+<div><TMPL_VAR NAME=IP ESCAPE=HTML></div>
+</td>
+</TMPL_IF>
+
+<td>
+<TMPL_IF NAME=HAS_EDIT_ACCESS>
+<input type="checkbox" name="id" value="<TMPL_VAR NAME=ID>" checked="checked" />
+<TMPL_ELSE>
+&nbsp;
+</TMPL_IF>
+</td>
+
+</tr>
+</TMPL_LOOP>
+
+</tbody>
+</table>
+</div>
+
+<input type="hidden" name="offset" value="<TMPL_VAR NAME=OFFSET>" />
+<input type="submit" value="Cancel" />
+<TMPL_IF NAME=MORE>
+<input type="submit" value="Junk and Continue" onclick="doItemsAreJunk(this.form, '<MT_TRANS phrase="comment">', '<MT_TRANS phrase="comments">')" />
+<input type="submit" value="Continue" />
+<TMPL_ELSE>
+<input type="submit" value="Junk" onclick="doItemsAreJunk(this.form, '<MT_TRANS phrase="comment">', '<MT_TRANS phrase="comments">')" />
+</TMPL_IF>
+
+</form>
+
+<TMPL_ELSE>
+
+<TMPL_IF NAME=REDIRECT>
+<p>No junk comments were found in the last <TMPL_VAR NAME=SCAN_COUNT> records examined.  Continuing search...<br />
+Click <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=find_junk&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;offset=<TMPL_VAR NAME=OFFSET>">here</a> if your browser does not redirect automatically...</p>
+<TMPL_ELSE>
+<p><a href="<TMPL_VAR NAME=SCRIPT_URL>"><MT_TRANS phrase="Return to comment list"></a></p>
+</TMPL_IF>
+
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">
+

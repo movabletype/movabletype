@@ -1,0 +1,18 @@
+<p>
+<MT_TRANS phrase="Incomming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.">
+</p>
+
+<div class="setting">
+<div class="label"><label for="sll_wordlist_moderate"><MT_TRANS phrase="Keywords to Moderate:"></label></div>
+<div class="field">
+<ul><li><textarea name="wordlist_moderate" id="sll_wordlist_moderate" rows="10" cols="60"><TMPL_VAR NAME=WORDLIST_MODERATE ESCAPE=HTML></textarea>
+</li></ul>
+</div>
+</div>
+
+<div class="setting last">
+<div class="label"><label for="sll_wordlist_junk"><MT_TRANS phrase="Keywords to Junk:"></label></div>
+<div class="field">
+<textarea name="wordlist_junk" id="sll_wordlist_junk" cols="60" rows="10"><TMPL_VAR NAME=WORDLIST_JUNK ESCAPE=HTML></textarea>
+</div>
+</div>

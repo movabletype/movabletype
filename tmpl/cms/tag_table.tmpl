@@ -1,0 +1,49 @@
+<TMPL_LOOP NAME=LOG_TABLE>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return this.form['__mode'] ? false : true">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+<TMPL_IF NAME=BLOG_ID>
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+</TMPL_IF>
+
+<TMPL_IF NAME=POSITION_ACTIONS_TOP>
+<TMPL_INCLUDE NAME=log_actions.tmpl>
+</TMPL_IF>
+
+<div class="list" id="list-log">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th id="lt-date"><MT_TRANS phrase="Date"></th>
+<th id="lt-ip"><MT_TRANS phrase="IP Address"></th>
+<th id="lt-message"><MT_TRANS phrase="Log Message"></th>
+</tr>
+</thead>
+<tbody>
+
+<TMPL_LOOP NAME=OBJECT_LOOP>
+<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
+<td><TMPL_IF NAME=IS_LAST><a name="last"></a></TMPL_IF><span title="<TMPL_VAR NAME=CREATED_ON_FORMATTED>"><TMPL_IF NAME=CREATED_ON_RELATIVE><TMPL_IF NAME=DATES_RELATIVE><TMPL_VAR NAME=CREATED_ON_RELATIVE><TMPL_ELSE><TMPL_VAR NAME=CREATED_ON_FORMATTED></TMPL_IF><TMPL_ELSE><TMPL_VAR NAME=CREATED_ON_FORMATTED></TMPL_IF></span></td>
+<td><TMPL_VAR NAME=LOG_IP></td>
+<td><TMPL_VAR NAME=LOG_MESSAGE ESCAPE=HTML></td>
+</tr>
+</TMPL_LOOP>
+
+</tbody>
+</table>
+</div>
+
+<TMPL_IF NAME=POSITION_ACTIONS_BOTTOM>
+<div class="list-actions-footer">
+<TMPL_INCLUDE NAME=log_actions.tmpl>
+</div>
+</TMPL_IF>
+
+</form>
+
+</TMPL_LOOP>

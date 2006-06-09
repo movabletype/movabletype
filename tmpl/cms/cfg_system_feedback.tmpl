@@ -1,0 +1,76 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<h2><span class="weblog-title-highlight"><MT_TRANS phrase="System-wide">:</span> <MT_TRANS phrase="Settings"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="This screen allows you to configure feedback and outbound TrackBack settings for the entire installation.  These settings override any similar settings for individual weblogs."></p>
+
+<TMPL_IF NAME=SAVED>
+<div class="message"><MT_TRANS phrase="Your feedback preferences have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
+</TMPL_IF>
+
+<form action="<TMPL_VAR NAME=SCRIPT_URL>" method="post">
+<input type="hidden" name="__mode" value="save_cfg_system_feedback" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Feedback Master Switch"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label"><label for="comment_disable"><MT_TRANS phrase="Disable Comments">:</label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" id="comment_disable" name="comment_disable"<TMPL_IF NAME=COMMENT_DISABLE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Stop accepting comments on all weblogs"></li>
+</ul>
+<p><MT_TRANS phrase="This will override all individual weblog comment settings."></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label"><label for="ping_disable"><MT_TRANS phrase="Disable TrackBacks">:</label></div>
+<div class="field">
+<ul>
+<li><input type="checkbox" id="ping_disable" name="ping_disable"<TMPL_IF NAME=PING_DISABLE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Stop accepting TrackBacks on all weblogs"></li>
+</ul>
+<p><MT_TRANS phrase="This will override all individual weblog TrackBack settings."></p>
+</div>
+</div>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Outbound TrackBack Control"></h3>
+
+<div class="inner">
+
+<div class="setting">
+<div class="label"><label for="trackback_send"><MT_TRANS phrase="Allow outbound TrackBacks to:"></label></div>
+<div class="field">
+<ul>
+<li><input type="radio" name="trackback_send" value="any"<TMPL_IF NAME=TRACKBACK_SEND_ANY> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Any site"></li>
+<li><input type="radio" name="trackback_send" value="off"<TMPL_IF NAME=TRACKBACK_SEND_OFF> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="No site"> <span class="hint"><MT_TRANS phrase="(Disable all outbound TrackBacks.)"></span></li>
+<li><input type="radio" name="trackback_send" value="local"<TMPL_IF NAME=TRACKBACK_SEND_LOCAL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Only the weblogs on this installation"></li>
+<li><input type="radio" name="trackback_send" value="selected"<TMPL_IF NAME=TRACKBACK_SEND_SELECTED> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Only the sites on the following domains:"><br />
+<textarea rows="5" cols="60" name="trackback_send_domains"><TMPL_VAR NAME=TRACKBACK_SEND_DOMAINS ESCAPE=HTML></textarea></li>
+</ul>
+<p><MT_TRANS phrase="This feature allows you to limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private."> </p>
+</div>
+</div>
+
+</div>
+
+</fieldset>
+
+<div style="text-align: center;">
+<input type="submit" value="<MT_TRANS phrase="Save Changes">" title="<MT_TRANS phrase="Save changes (s)">" accesskey="s" />
+</div>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

@@ -1,0 +1,75 @@
+<TMPL_LOOP NAME=TEMPLATE_TABLE>
+<form action="<TMPL_VAR NAME=SCRIPT_URL>" method="post" onsubmit="return this['__mode'] ? true : false">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="_type" value="template" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<TMPL_IF NAME=BLOG_ID>
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+</TMPL_IF>
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<TMPL_IF NAME=POSITION_ACTIONS_TOP>
+<TMPL_INCLUDE NAME=template_actions.tmpl>
+</TMPL_IF>
+
+<div id="list-template">
+<div class="list<TMPL_UNLESS NAME=BLOG_ID>show-weblog</TMPL_UNLESS>" id="index-selector">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<TMPL_IF NAME=BLOG_ID>
+<th class="tt-name"><MT_TRANS phrase="Template Name"></th>
+<th class="tt-output-file"><MT_TRANS phrase="Output File"></th>
+<th class="tt-dynamic"><MT_TRANS phrase="Dynamic"></th>
+<th class="tt-linked"><MT_TRANS phrase="Linked"></th>
+<th class="tt-rebuild"><MT_TRANS phrase="Built w/Indexes"></th>
+<th class="tt-view">&nbsp;</th>
+<TMPL_ELSE>
+<th class="tt-name"><MT_TRANS phrase="Template Name"></th>
+<th class="tt-output-file"><MT_TRANS phrase="Output File"></th>
+<th class="tt-weblog"><MT_TRANS phrase="Weblog"></th>
+<th class="tt-dynamic"><MT_TRANS phrase="Dynamic"></th>
+<th class="tt-linked"><MT_TRANS phrase="Linked"></th>
+<th class="tt-rebuild"><MT_TRANS phrase="Built w/Indexes"></th>
+<th class="tt-view">&nbsp;</th>
+</TMPL_IF>
+</tr>
+</thead>
+<tbody>
+
+<TMPL_LOOP NAME=OBJECT_LOOP>
+<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
+<td class="cb">
+<TMPL_IF NAME=CAN_DELETE>
+<input type="checkbox" name="id" class="select" value="<TMPL_VAR NAME=ID>" />
+</TMPL_IF>
+</td>
+<td><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=template&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=NAME ESCAPE=HTML></a></td>
+<td><TMPL_VAR NAME=OUTFILE ESCAPE=HTML></td>
+<TMPL_IF NAME=SYSTEM_OVERVIEW_NAV>
+<td><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML></td>
+</TMPL_IF>
+<td class="status-<TMPL_IF NAME=BUILD_DYNAMIC>dynamic<TMPL_ELSE>static</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=BUILD_DYNAMIC><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
+<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
+<td class="status-<TMPL_IF NAME=REBUILD_ME>rebuild<TMPL_ELSE>norebuild</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=REBUILD_ME><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
+<td class="status-view"><TMPL_IF NAME=PUBLISHED_URL><a href="<TMPL_VAR NAME=PUBLISHED_URL>" target="<MT_TRANS phrase="_external_link_target">" title="<MT_TRANS phrase="View Published Template">"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="View Published Template">" width="13" height="9" /></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+</tr>
+</TMPL_LOOP>
+
+</tbody>
+</table>
+</div>
+</div>
+
+<TMPL_IF NAME=POSITION_ACTIONS_BOTTOM>
+<div class="list-actions-footer">
+<TMPL_INCLUDE NAME=template_actions.tmpl>
+</div>
+</TMPL_IF>
+
+</form>
+</TMPL_LOOP>

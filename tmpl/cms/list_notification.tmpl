@@ -1,0 +1,87 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="list-notification">
+
+<script type="text/javascript">
+<!--
+function setCreateMode () {
+	getByID('email').value = '';
+	getByID('url').value = '';
+	getByID('create-inline-notification').style.display = 'block';
+	getByID('email').focus();
+}
+
+function cancelCreateMode () {
+	getByID('create-inline-notification').style.display = 'none';
+}
+
+var tableSelect;
+function init()
+{
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect.rowSelect = true;
+}
+        
+TC.attachLoadEvent( init );
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Notifications"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="Below is the list of people who wish to be notified when you post to your site. To delete an address, check the Delete box and press the Delete button."> <MT_TRANS phrase="You have [quant,_1,user,users,no users] in your notification list." params="<TMPL_VAR NAME=LIST_TOTAL>"></p>
+
+<TMPL_IF NAME=ERROR>
+<h4 class="error-message"><TMPL_VAR NAME=ERROR></h4>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED>
+<h4 class="message"><MT_TRANS phrase="You have added [_1] to your notification list." params="<TMPL_VAR NAME=SAVED ESCAPE=HTML>"></h4>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED_DELETED>
+<h4 class="message"><MT_TRANS phrase="You have successfully deleted the selected notifications from your notification list."></h4>
+</TMPL_IF>
+
+<div class="tabs">
+<ul>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<MT_TRANS phrase="Create New Notification">" width="9" height="9" />
+<a href="#" onclick="setCreateMode()"><MT_TRANS phrase="Create New Notification"></a>
+</li>
+</ul>
+</div>
+
+<div class="create-inline" id="create-inline-notification">
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="notification" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+<p>
+<MT_TRANS phrase="Email Address:"> <input name="email" id="email" value="<TMPL_VAR NAME=EMAIL>" />
+&nbsp;
+<MT_TRANS phrase="URL (Optional):"> <input name="url" id="url" value="<TMPL_VAR NAME=URL>">
+<input type="submit" name="save" value="<MT_TRANS phrase="Add Recipient">" />
+<input type="button" name="cancel" value="<MT_TRANS phrase="Cancel">" onclick="cancelCreateMode(); return false" />
+</p>
+</form>
+</div>
+
+<TMPL_IF NAME=OBJECT_LOOP>
+
+<div class="list-wrapper">
+<TMPL_INCLUDE NAME=notification_table.tmpl>
+<TMPL_INCLUDE NAME=pager.tmpl>
+</div>
+
+<TMPL_ELSE>
+
+<div class="message"><MT_TRANS phrase="No notifications could be found."></div>
+
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

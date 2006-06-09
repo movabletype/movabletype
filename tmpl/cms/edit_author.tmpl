@@ -1,0 +1,246 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript">
+<!--
+function reveal_api_password() {
+    var pw = getByID("api_password");
+    alert("<MT_TRANS phrase="Your Web services password is currently">: " + pw.value);
+    return false;
+}
+function tagDelimChoice(sel) {
+    if (sel.selectedIndex == 2) {
+        show("tag_delim_input");
+        var el = getByID("tag_delim_input");
+        if (el) el.focus();
+    } else {
+        hide("tag_delim_input");
+    }
+}
+//-->
+</script>
+
+<div id="edit-author">
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="author" />
+<TMPL_IF NAME=ID>
+<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
+</TMPL_IF>
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<TMPL_IF NAME=ID>
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Author Profile"></h2>
+<p><MT_TRANS phrase="_USAGE_PROFILE"></p>
+<TMPL_ELSE>
+<h2><MT_TRANS phrase="Create New Author"></h2>
+<p><MT_TRANS phrase="_USAGE_NEW_AUTHOR"></p>
+</TMPL_IF>
+
+<div class="tabs">
+<ul>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=ID>"><MT_TRANS phrase="Profile"></a></li>
+<TMPL_IF NAME=IS_SUPERUSER><li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=edit_admin_permissions&amp;author_id=<TMPL_VAR NAME=ID>"><MT_TRANS phrase="Permissions"></a></li></TMPL_IF>
+</ul>
+</div>
+
+<TMPL_IF NAME=SAVED>
+<h4 class="message"><MT_TRANS phrase="Your profile has been updated."></h4>
+</TMPL_IF>
+
+<TMPL_IF NAME=ERROR>
+<div class="error-message"><TMPL_VAR NAME=ERROR></div>
+</TMPL_IF>
+
+<div class="flt-wrppr">
+<TMPL_UNLESS NAME=IS_SUPERUSER>
+<div class="rightcol">
+
+<TMPL_IF NAME=BLOG_LOOP>
+<div class="box permission-box">
+<TMPL_IF NAME=ID>
+<h4><MT_TRANS phrase="Permissions"></h4>
+<TMPL_ELSE>
+<h4><MT_TRANS phrase="Weblog Associations"></h4>
+</TMPL_IF>
+<div class="inner">
+<TMPL_IF NAME=ID>
+<h5><MT_TRANS phrase="General Permissions"></h5>
+<ul>
+<li><input type="checkbox"<TMPL_IF NAME=IS_SUPERUSER> checked="checked"</TMPL_IF> disabled="disabled" /> <MT_TRANS phrase="System Administrator"></li>
+<li><input type="checkbox"<TMPL_IF NAME=CAN_CREATE_BLOG> checked="checked"</TMPL_IF> disabled="disabled" /> <MT_TRANS phrase="Create Weblogs"></li>
+<li><input type="checkbox"<TMPL_IF NAME=CAN_VIEW_LOG> checked="checked"</TMPL_IF> disabled="disabled" /> <MT_TRANS phrase="View Activity Log"></li>
+</ul>
+</TMPL_IF>
+<ul class="last">
+<TMPL_LOOP NAME=BLOG_LOOP>
+<TMPL_IF NAME=ID>
+<li><input type="checkbox" checked="checked" disabled="disabled" /> <strong><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML></strong>
+<ul<TMPL_IF NAME=__LAST__> class="last"</TMPL_IF>>
+<TMPL_LOOP NAME=PERMISSION_LOOP>
+<TMPL_IF NAME=HAVE_ACCESS>
+<li><input type="checkbox" checked="checked" disabled="disabled" /> <TMPL_VAR NAME=PROMPT></li>
+</TMPL_IF>
+</TMPL_LOOP>
+</ul></li>
+<TMPL_ELSE>
+<li><input name="add_to_blog" type="checkbox"<TMPL_IF NAME=IS_CHECKED> checked="checked"</TMPL_IF> value="<TMPL_VAR NAME=BLOG_ID>" /> <strong><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML></strong></li>
+</TMPL_IF>
+</TMPL_LOOP>
+</ul>
+</div>
+</div>
+</TMPL_IF>
+
+</div>
+</TMPL_UNLESS>
+
+<div class="leftcol">
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Profile"></h3>
+
+<div class="setting">
+    <div class="label">
+        <label for="name"><MT_TRANS phrase="Username (*):"></label>
+    </div>
+    <div class="field">
+        <input name="name" id="name" value="<TMPL_VAR NAME=NAME ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="The name used by this author to login."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="nickname"><MT_TRANS phrase="Display Name:"></label>
+    </div>
+    <div class="field">
+        <input name="nickname" id="nickname" value="<TMPL_VAR NAME=NICKNAME ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="The author's published name."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="email"><MT_TRANS phrase="Email Address (*):"></label>
+    </div>
+    <div class="field">
+        <input name="email" id="email" value="<TMPL_VAR NAME=EMAIL ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="The author's email address."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="url"><MT_TRANS phrase="Website URL:"></label>
+    </div>
+    <div class="field">
+        <input name="url" id="url" value="<TMPL_VAR NAME=URL ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="The URL of this author's website. (Optional)"></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="preferred_language"><MT_TRANS phrase="Language:"></label>
+    </div>
+    <div class="field">
+		<select name="preferred_language" id="preferred_language"><TMPL_LOOP NAME=LANGUAGES>
+			<option value="<TMPL_VAR NAME=L_TAG>"<TMPL_IF NAME=L_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=L_NAME></option></TMPL_LOOP>
+		 </select>
+        <p><MT_TRANS phrase="The author's preferred language."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="tag_delim"><MT_TRANS phrase="Tag Delimiter:"></label>
+    </div>
+    <div class="field">
+		<select name="tag_delim" id="tag_delim">
+			<option value=","<TMPL_IF NAME=AUTH_PREF_TAG_DELIM_COMMA> selected="selected"</TMPL_IF>><MT_TRANS phrase="Comma"></option>
+			<option value=" "<TMPL_IF NAME=AUTH_PREF_TAG_DELIM_SPACE> selected="selected"</TMPL_IF>><MT_TRANS phrase="Space"></option>
+<!--   onchange="tagDelimChoice(this)"
+			<option value=""<TMPL_IF NAME=AUTH_PREF_TAG_DELIM_OTHER> selected="selected"</TMPL_IF>><MT_TRANS phrase="Other..."></option>
+-->
+		 </select><!-- <span id="tag_delim_input" <TMPL_UNLESS NAME=AUTH_PREF_TAG_DELIM_OTHER>style="display:none"</TMPL_UNLESS>> <input type="text" size="1" name="tag_delim" value="<TMPL_VAR NAME=AUTH_PREF_TAG_DELIM ESCAPE=HTML>" /></span> -->
+        <p><MT_TRANS phrase="The author's preferred delimiter for entering tags."></p>
+    </div>
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Password"></h3>
+
+<TMPL_IF NAME=ID>
+<div class="setting">
+    <div class="label">
+        <label for="old_pass"><MT_TRANS phrase="Current Password:"></label>
+    </div>
+    <div class="field">
+        <input type="password" name="old_pass" id="old_pass" value="" />
+        <p><MT_TRANS phrase="Enter the existing password to change it."></p>
+    </div>
+</div>
+</TMPL_IF>
+
+<div class="setting">
+    <div class="label">
+        <label for="pass"><TMPL_IF NAME=ID><MT_TRANS phrase="New Password:"><TMPL_ELSE><MT_TRANS phrase="Initial Password (*):"></TMPL_IF></label>
+    </div>
+    <div class="field">
+        <input type="password" name="pass" id="pass" value="" />
+        <p><MT_TRANS phrase="Select a password for the author."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="pass_verify"><MT_TRANS phrase="Password Confirm:"></label><br />
+    </div>
+    <div class="field">
+        <input type="password" name="pass_verify" id="pass_verify" value="" />
+        <p><MT_TRANS phrase="Repeat the password for confirmation."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="hint"><MT_TRANS phrase="Password recovery word/phrase"> (*):</label>
+    </div>
+    <div class="field">
+        <input name="hint" id="hint" value="<TMPL_VAR NAME=HINT ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="This word or phrase will be required to recover your password if you forget it."></p>
+    </div>
+</div>
+
+<TMPL_IF NAME=ID>
+<div class="setting">
+    <div class="label">
+        <label><MT_TRANS phrase="Web Services Password:"></label>
+    </div>
+    <div class="field">
+        <input type="password" name="api_password" id="api_password" value="<TMPL_VAR NAME=API_PASSWORD ESCAPE=HTML>" /> <a href="#" onclick="return reveal_api_password()"><MT_TRANS phrase="Reveal"></a>
+        <p><MT_TRANS phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients."></p>
+    </div>
+</div>
+</TMPL_IF>
+
+</fieldset>
+
+<div style="text-align: center;">
+<input type="submit" value="<MT_TRANS phrase="Save Changes">" title="<MT_TRANS phrase="Save this author (s)">" accesskey="s" />
+</div>
+
+</div>
+</div>
+
+</form>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

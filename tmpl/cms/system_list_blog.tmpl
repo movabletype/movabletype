@@ -1,0 +1,127 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript">
+<!--
+function doRemoveBlog(id) {
+    if (confirm("<MT_TRANS phrase="Are you sure you want to delete this weblog?">")) {
+        var f = getByID('delete_blog');
+        f['id'].value = id;
+        f.submit();
+    }
+    return false;
+}
+
+var tableSelect;
+function init()
+{
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect.rowSelect = true;
+}
+
+TC.attachLoadEvent( init );
+//-->
+</script> 
+
+<h2><span class="weblog-title-highlight"><MT_TRANS phrase="System-wide">:</span> <MT_TRANS phrase="Weblogs"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="Below you find a list of all weblogs in the system with links to the main weblog page and individual settings pages for each.  You may also create or delete blogs from this screen."></p>
+
+<TMPL_IF NAME=SAVED_DELETED>
+<h4 class="message"><MT_TRANS phrase="You have successfully deleted the blogs from the Movable Type system."></h4>
+</TMPL_IF>
+
+<div class="list-wrapper" id="system-list-blog">
+
+<form method="post" name="delete_blog" id="delete_blog" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="delete" />
+<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="id" value="" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+</form>
+
+<form method="post" name="list_blog" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return this['__mode'] ? true : false;">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<div class="tabs">
+<ul>
+<li class="yah"><a href="?__mode=system_list_blogs"><MT_TRANS phrase="Weblogs"></a></li>
+<TMPL_IF NAME=CAN_CREATE_BLOG>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<MT_TRANS phrase="Create New Weblog">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=blog"><MT_TRANS phrase="Create New Weblog"></a>
+</li>
+</TMPL_IF>
+</ul>
+</div>
+
+<TMPL_IF NAME=BLOG_LOOP>
+
+<TMPL_IF NAME=POSITION_ACTIONS_TOP>
+<TMPL_INCLUDE NAME=blog_actions.tmpl>
+</TMPL_IF>
+
+<div class="list" id="selector">
+<table cellspacing="0" <TMPL_IF NAME=IS_ADMINISTRATOR>class="show-admin"</TMPL_IF>>
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<th id="bt-name"><MT_TRANS phrase="Weblog Name"></th>
+<th id="bt-entries"><MT_TRANS phrase="Entries"></th>
+<th id="bt-comments"><MT_TRANS phrase="Comments"></th>
+<th id="bt-trackbacks"><MT_TRANS phrase="TrackBacks"></th>
+<th id="bt-authors"><MT_TRANS phrase="Authors"></th>
+<th id="bt-settings"><MT_TRANS phrase="Settings"></th>
+<TMPL_UNLESS NAME=IS_ADMINISTRATOR>
+<th id="bt-delete"><MT_TRANS phrase="Delete"></th>
+</TMPL_UNLESS>
+</tr>
+</thead>
+<tbody>
+
+<TMPL_LOOP NAME=BLOG_LOOP>
+<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
+<td class="cb"><input type="checkbox" name="id" value="<TMPL_VAR NAME=ID>" class="select" />
+<td><a href="?__mode=menu&amp;blog_id=<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=NAME ESCAPE=HTML></a></td>
+<td align="right"><TMPL_IF NAME=CAN_EDIT_ENTRIES><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=NUM_ENTRIES></a><TMPL_ELSE><TMPL_VAR NAME=NUM_ENTRIES></TMPL_IF></td>
+<td align="right"><TMPL_IF NAME=CAN_EDIT_ENTRIES><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=NUM_COMMENTS></a><TMPL_ELSE><TMPL_VAR NAME=NUM_COMMENTS></TMPL_IF></td>
+<td align="right"><TMPL_IF NAME=CAN_EDIT_ENTRIES><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=NUM_PINGS></a><TMPL_ELSE><TMPL_VAR NAME=NUM_PINGS></TMPL_IF></td>
+<td align="right"><TMPL_VAR NAME=NUM_AUTHORS></td>
+<td><TMPL_IF NAME=CAN_EDIT_CONFIG><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;blog_id=<TMPL_VAR NAME=ID>"><MT_TRANS phrase="Settings"></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+<TMPL_UNLESS NAME=IS_ADMINISTRATOR><TMPL_IF NAME=CAN_ADMINISTER_BLOG>
+<td><a href="#" onclick="return doRemoveBlog('<TMPL_VAR NAME=ID>')"><img src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif" width="9" height="11" alt="<MT_TRANS phrase="Delete">" /></a></td>
+<TMPL_ELSE><td>&nbsp;</td></TMPL_IF></TMPL_UNLESS>
+</tr>
+
+</TMPL_LOOP>
+
+</tbody>
+</table>
+</div>
+
+<TMPL_IF NAME=POSITION_ACTIONS_BOTTOM>
+<div class="list-actions-footer">
+<TMPL_INCLUDE NAME=blog_actions.tmpl>
+</div>
+</TMPL_IF>
+
+</form>
+
+<TMPL_INCLUDE NAME=pager.tmpl>
+
+<TMPL_ELSE>
+
+<div class="message"><MT_TRANS phrase="No weblogs could be found."></div>
+
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

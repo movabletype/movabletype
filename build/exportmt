@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [[ ! $1 ]];
+then
+    script=`basename $0`;
+    echo "usage: $script [lang] dir [repo_path]";
+    echo " where repo_path is:  branches/branch_name";
+    echo "                 or:  tag/tag_name";
+    echo "                 or:  trunk  (this is the default)";
+    echo " where lang is one of: fr de es nl en_US";
+    exit;
+fi
+
+if [ $1 == 'en_US' ] || [ $1 == 'fr' ] || [ $1 == 'de' ] || [ $1 == 'es' ] || [ $1 == 'nl' ] ;
+then
+    lang=$1; shift
+fi
+
+echo exporting $2 to $1 in $lang
+# exit
+
+if [[ $2 ]];
+then
+    tag=https://intranet.sixapart.com/repos/eng/$2/mt;
+fi
+if [[ ! $tag ]];
+then
+    tag=https://intranet.sixapart.com/repos/eng/trunk/mt;
+fi
+
+cd ~/rel/
+#cvs export -r$tag -d $1 mt
+svn export $tag $1
+cd $1
+if [ $lang ];
+then
+    tools/mt-dists/make-dists --lang=$lang;
+else
+    tools/mt-dists/make-dists
+fi

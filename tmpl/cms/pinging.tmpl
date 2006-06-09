@@ -1,0 +1,34 @@
+<TMPL_IF NAME=IS_BM>
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="header.tmpl">
+</TMPL_IF>
+
+<script type="text/javascript">
+<!--
+function doRedirect () {
+    window.location.replace('<TMPL_VAR NAME=SCRIPT_URL>?__mode=ping&blog_id=<TMPL_VAR NAME=BLOG_ID>&entry_id=<TMPL_VAR NAME=ENTRY_ID>&is_new=<TMPL_VAR NAME=IS_NEW>&old_status=<TMPL_VAR NAME=OLD_STATUS>&magic_token=<TMPL_VAR NAME=MAGIC_TOKEN>&is_bm=<TMPL_VAR NAME=IS_BM>');
+}
+setTimeout('doRedirect()', 1000);
+// -->
+</script>
+
+<TMPL_UNLESS NAME=IS_BM>
+<div class="padded-box">
+<h4 class="message"><MT_TRANS phrase="Pinging sites..."></h4>
+<TMPL_LOOP NAME=URL_LIST>
+<p><TMPL_VAR NAME=URL ESCAPE=HTML></p>
+</TMPL_LOOP>
+</div>
+<TMPL_ELSE>
+<h4 class="message"><MT_TRANS phrase="Pinging sites..."></h4>
+<TMPL_LOOP NAME=URL_LIST>
+&nbsp;&nbsp;&nbsp;<TMPL_VAR NAME=URL><br />
+</TMPL_LOOP>
+</TMPL_UNLESS>
+
+<TMPL_IF NAME=IS_BM>
+<TMPL_INCLUDE NAME="footer-popup.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="footer.tmpl">
+</TMPL_IF>

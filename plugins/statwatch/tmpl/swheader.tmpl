@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>StatWatch<TMPL_VAR NAME=TITLE></title>
+<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css" type="text/css" />
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js"></script>
+<script type="text/javascript">
+ScriptURI = '<TMPL_VAR NAME=SCRIPT_URL>';
+ScriptBaseURI = '<TMPL_VAR NAME=SCRIPT_BASE_URL>';
+StaticURI = '<TMPL_VAR NAME=STATIC_URI>';
+</script>
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc.js"></script>
+<style type="text/css">
+
+/* modifications to mt styles */
+.body-wrap-inner {
+   margin: 20px;
+}
+
+.left-col {
+   width: 160px;
+   margin-right: 30px;
+   float: left;
+}
+
+#list-blog #leftcol-full {
+   width: 700px;
+}
+
+#list-blog .shortcuts ul {
+   width: auto;
+}
+
+.right-col {
+   width: 480px;
+   float: left;
+}
+
+/* list page */
+
+.quickstat-container {
+    float: left;
+    width: 88px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.quickstat-container h6 {
+    margin: 0 0 3px 0;
+    font-size: 11px;
+}
+
+.quickstat-container .countbox {
+    width: 60px;
+    margin: 0 auto;
+    padding: 5px 0;
+    color: #fff;
+    background-color: #8faebe;
+    font-weight: bold;
+}
+
+.quicktop-container {
+    float: right;
+    width: 220px;
+}
+
+.quicktop-container p {
+    margin: 0;
+    font-size: 10px;
+}
+
+.quicktop-container p a {
+    text-decoration: none;
+}
+
+.quicktop-container p.title {
+    font-weight: bold;
+}
+
+.quicktop-container p.url {
+    margin-left: 10px;
+}
+
+/* view page */
+
+.mini-box {
+   width: 150px;
+   margin: 0 15px 15px 0;
+   text-align: center;
+}
+
+.short-box {
+   width: 160px;
+   margin: 0 0 15px 0;
+   text-align: center;
+}
+
+.mid-box {
+   width: 320px;
+   margin: 0 30px 0 0;
+   text-align: center;
+}
+
+.long-box {
+   width: 480px;
+   margin: 0 0 15px 0;
+   text-align: center;
+}
+
+h2.title {
+   color: #fff;
+   background-color: #8faebe;
+   padding: 1px 0;
+   margin: 0;
+}
+
+h2.title a {
+   color: #c60;
+   text-decoration: none;
+}
+
+p.extra {
+   text-align: center;
+}
+
+.disabled h2.title {
+   background-color: #d8d8d8;
+}
+
+.disabled div.number {
+   color: #d8d8d8;
+}
+
+div.spacing {
+   margin-right: 30px;
+}
+
+.setup p {
+   margin: 0;
+}
+
+#breadcrumbs {
+   width: 700px;
+   margin-left: 20px;
+}
+
+h4 {
+   margin-left: 20px;
+}
+
+.number {
+   font-size: 40px;
+   font-weight: bold;
+}
+
+.hit-hour {
+   font-size: 11px;
+   line-height: 1.4em;
+}
+
+.hit-hour .hour {
+   margin-left: 4px;
+   float: left;
+}
+
+.hit-hour .hit {
+   font-weight: bold;
+   margin-right: 4px;
+   float: right;
+}
+
+.referrer, .domain, .page {
+   font-size: 11px;
+   line-height: 1.4em;
+   border-bottom: 1px solid #8faebe;
+}
+
+.right-col a {
+    color: #333;
+    text-decoration: none;
+}
+
+.right-col a:hover {
+    color: #fff;
+    background-color: #666;
+}
+
+.url {
+   margin-left: 4px;
+   float: left;
+}
+
+.count {
+   font-weight: bold;
+   margin-right: 4px;
+   float: right;
+}
+
+.mini {
+   margin-bottom: 2px;
+   vertical-align: bottom;
+}
+
+.odd {
+    background-color: #fff;
+}
+
+.even {
+    background-color: #dedede;
+}
+
+.left {
+   float: left;
+}
+
+.right {
+   float: right;
+}
+
+.none {
+   margin: 0;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+/* .pkg class wraps enclosing block element around inner floated elements */
+.pkg:after {
+    content: " ";
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0.1px;
+    font-size: 0.1em;
+    line-height: 0;
+}
+
+* html .pkg { display: inline-block; }
+/* no ie mac \*/
+* html .pkg { height: 1%; }
+.pkg { display: block; }
+/* */
+
+/* .clr class makes clearing easy */
+.clr {
+    overflow: hidden;
+    clear: both;
+    width: 1px;
+    height: 1px;
+    margin: 0 -1px -1px 0;
+    border: 0;
+    padding: 0;
+    font-size: 0;
+    line-height: 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="topnav">
+<div id="topnav-container">
+<div id="topnav-img"><h1><a href="<TMPL_VAR NAME=SCRIPT_URL>"><img alt="Movable Type" src="<TMPL_VAR NAME=STATIC_URI>images/topnav-logo.gif" width="224" height="66" border="0" /></a></h1></div>
+
+<div id="topnav-links">
+<div class="leftcol">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>">Main Menu</a>
+&nbsp;|&nbsp;
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=admin">System Overview</a>
+&nbsp;|&nbsp;
+<a href="<TMPL_VAR NAME=STATIC_URI>docs/mtmanual.html">Help</a>
+</div>
+<div class="rightcol">
+Welcome
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=AUTHOR_ID>"><TMPL_VAR NAME=AUTHOR_NAME></a>
+&nbsp;|&nbsp;
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=logout">Logout</a>
+</div>
+</div>
+
+</div>
+</div>
+
+<TMPL_IF NAME=TEST><h4><TMPL_VAR NAME=TEST></h4></TMPL_IF>
+<h2 id="breadcrumbs"><a href="<TMPL_VAR NAME=SCRIPT_URL>">Movable Type</a>&nbsp;&gt;&nbsp;<TMPL_IF NAME=BLOG_ID><a href="<TMPL_VAR NAME=STATWATCH_URL>"></TMPL_IF>StatWatch<TMPL_IF NAME=BLOG_ID></a>&nbsp;&gt;&nbsp;<TMPL_VAR NAME=BLOG_NAME> stats</TMPL_IF></h2>

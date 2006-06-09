@@ -1,0 +1,29 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Rebuild"></h2>
+
+<h4 class="message">
+<TMPL_IF NAME=ALL>
+<MT_TRANS phrase="All of your files have been rebuilt.">
+<TMPL_ELSE>
+<TMPL_IF NAME=IS_ONE_INDEX>
+<MT_TRANS phrase="Your [_1] has been rebuilt." params="<TMPL_VAR NAME=TYPE ESCAPE=HTML>">
+<TMPL_ELSE>
+<TMPL_IF NAME=IS_ENTRY>
+<MT_TRANS phrase="Your [_1] has been rebuilt." params="<TMPL_VAR NAME=TYPE ESCAPE=HTML>">
+<TMPL_ELSE>
+<MT_TRANS phrase="Your [_1] pages have been rebuilt." params="<TMPL_VAR NAME=TYPE ESCAPE=HTML>">
+</TMPL_IF>
+</TMPL_IF>
+</TMPL_IF>
+<a target="_blank" href="<TMPL_VAR NAME=BLOG_URL ESCAPE=HTML>"><MT_TRANS phrase="View your site">.</a>
+<TMPL_IF NAME=IS_ONE_INDEX><a target="_blank" href="<TMPL_VAR NAME=TMPL_URL>"><MT_TRANS phrase="View this page">.</a>
+</TMPL_IF>
+</h4>
+
+<div>
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Close">" />
+<input type="button" onclick="window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=rebuild_confirm&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>'" value="<MT_TRANS phrase="Rebuild Again">" />
+</div>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

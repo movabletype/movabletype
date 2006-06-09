@@ -1,0 +1,25 @@
+<div class="list-actions">
+<div class="button-bar">
+<TMPL_IF NAME=IS_POWER_EDIT>
+<input type="button" value="<MT_TRANS phrase="Save">" accesskey="s" title="<MT_TRANS phrase="Save these entries (s)">" onclick="submitForm(this.form, 'save_entries')" />
+<TMPL_ELSE>
+<TMPL_IF NAME=ENTRY_EDIT>
+<input accesskey="s" type="button" value="<MT_TRANS phrase="Save">" title="<MT_TRANS phrase="Save this entry (s)">" onclick="clearDirty(); submitForm(this.form, 'save_entry'); return true" />
+<input type="button" name="preview_entry" value="<MT_TRANS phrase="Preview">" accesskey="v" title="<MT_TRANS phrase="Preview this entry (v)">" onclick="clearDirty(); submitForm(this.form, 'preview_entry'); return true" />
+<TMPL_IF NAME=ID>
+<input accesskey="x" onclick="clearDirty(); doRemoveItems(this.form, '<MT_TRANS phrase="entry">', '<MT_TRANS phrase="entries">', false, { 'return_args': '__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>' }); return true" type="button" value="<MT_TRANS phrase="Delete">" title="<MT_TRANS phrase="Delete this entry (x)">" />
+</TMPL_IF>
+
+<TMPL_ELSE>
+<input type="button" onclick="doForMarkedInThisWindow(this.form, '<MT_TRANS phrase="entry">', '<MT_TRANS phrase="entries">', null, 'rebuild_new_phase', {<TMPL_IF NAME=BLOG_ID>'blog_id': '<TMPL_VAR NAME=BLOG_ID>'</TMPL_IF>}, '<MT_TRANS phrase="to rebuild">')" name="delete_entries" value="<MT_TRANS phrase="Rebuild">" accesskey="r" title="<MT_TRANS phrase="Rebuild selected entries (r)">" />
+<input type="button" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="entry">', '<MT_TRANS phrase="entries">')" name="delete_entries" value="<MT_TRANS phrase="Delete">" accesskey="x" title="<MT_TRANS phrase="Delete selected entries (x)">" />
+</TMPL_IF>
+
+</TMPL_IF>
+</div>
+<TMPL_UNLESS NAME=IS_POWER_EDIT>
+<div class="button-bar-alt">
+<TMPL_INCLUDE NAME="itemset_action_widget.tmpl">
+</div>
+</TMPL_UNLESS>
+</div>

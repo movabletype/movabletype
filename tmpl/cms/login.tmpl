@@ -1,0 +1,60 @@
+<TMPL_IF NAME=IS_BOOKMARKLET>
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="header.tmpl">
+</TMPL_IF>
+
+<script type="text/javascript">
+<!--
+function init() {
+    var u = getByID("username");
+    if (u.value != '') {
+        var p = getByID("password");
+        p.focus();
+    } else {
+        u.focus();
+    }
+}
+TC.attachLoadEvent(init);
+//-->
+</script>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<TMPL_LOOP NAME=QUERY_PARAMS>
+<input type="hidden" name="<TMPL_VAR NAME=NAME ESCAPE=HTML>" value="<TMPL_VAR NAME=VALUE ESCAPE=HTML>" />
+</TMPL_LOOP>
+<TMPL_IF NAME=IS_BOOKMARKLET>
+<input type="hidden" name="is_bm" value="1" />
+</TMPL_IF>
+
+<TMPL_IF NAME=LOGGED_OUT>
+<h4 class="message"><MT_TRANS phrase="Your Movable Type session has ended. If you wish to log in again, you can do so below."></h4>
+<TMPL_ELSE>
+<TMPL_IF NAME=LOGIN_AGAIN>
+<h4 class="message"><MT_TRANS phrase="Your Movable Type session has ended. Please login again to continue this action."></h4>
+<TMPL_ELSE>
+<TMPL_IF NAME=ERROR>
+<div class="error-message"><TMPL_VAR NAME=ERROR></div>
+</TMPL_IF>
+</TMPL_IF>
+</TMPL_IF>
+
+<p><label for="username"><MT_TRANS phrase="Username"></label><br />
+<input name="username" id="username" size="20" /></p>
+
+<p><label for="password"><MT_TRANS phrase="Password"></label><br />
+<input type="password" name="password" id="password" size="20" /></p>
+
+<p><label><MT_TRANS phrase="Remember me?"> <input type="checkbox" name="remember" value="1" /></label></p>
+
+<p><input type="submit" name="submit" value="<MT_TRANS phrase="Log In">" /></p>
+
+<p><a href="#" onclick="window.open('<TMPL_VAR NAME=MT_URL>?__mode=start_recover', 'recover', 'width=370,height=250'); return false"><MT_TRANS phrase="Forgot your password?"></a></p>
+
+</form>
+
+<TMPL_IF NAME=IS_BOOKMARKLET>
+<TMPL_INCLUDE NAME="footer-popup.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="footer.tmpl">
+</TMPL_IF>

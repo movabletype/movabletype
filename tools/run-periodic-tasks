@@ -1,0 +1,83 @@
+#!/usr/bin/perl -w
+
+# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
+# permission from www.movabletype.org.
+#
+# $Id$
+
+use strict;
+
+use lib 'lib', '../lib';
+use MT::Bootstrap;
+
+#use constant VERBOSE => 0;
+
+use MT;
+#use MT::Entry qw(:constants);
+#use MT::Util qw( offset_time_list );
+
+my $mt = MT->new()
+    or die MT->errstr;
+
+MT->run_tasks;
+
+=start
+for my $blog (MT::Blog->load) {
+    my @ts = offset_time_list(time, $blog);
+    my $now = sprintf "%04d%02d%02d%02d%02d%02d",
+                      $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+    print "Publishing entries for blog ", $blog->id, " up to ", $now, "\n"
+        if VERBOSE;
+    my $iter = MT::Entry->load_iter({blog_id => $blog->id,
+                                     status => FUTURE},
+                                    {'sort' => 'created_on',
+                                     direction => 'descend'});
+    my @queue;
+    while (my $entry = $iter->()) {
+        push @queue, $entry->id if $entry->created_on le $now;
+    }
+
+    my $changed = 0;
+    my $total_changed = 0;
+    my @results;
+    my %rebuild_queue;
+    my %ping_queue;
+    foreach my $entry_id (@queue) {
+        my $entry = MT::Entry->load($entry_id);
+        print $entry->id, "\n" if VERBOSE;
+        $entry->status(RELEASE);
+        $entry->save
+            or die $entry->errstr;
+
+        $rebuild_queue{$entry->id} = $entry;
+        $ping_queue{$entry->id} = 1;
+        my $n = $entry->next(1);
+        $rebuild_queue{$n->id} = $n if $n;
+        my $p = $entry->previous(1);
+        $rebuild_queue{$p->id} = $p if $p;
+        $changed++;
+        $total_changed++;
+    }
+    if ($changed) {
+        MT::Util::start_background_task(sub {
+            my $rebuilt;
+            foreach my $id (keys %rebuild_queue) {
+                my $entry = $rebuild_queue{$id};
+                $mt->rebuild_entry( Entry => $entry, Blog => $blog )
+                    or die $mt->errstr;
+                if ($ping_queue{$id}) {
+                    $mt->ping_and_save( Entry => $entry, Blog => $blog )
+                        or not VERBOSE or print "Ping error: ", $mt->errstr, "\n";
+                }
+                $rebuilt++;
+            }
+            print "Rebuilt $rebuilt entries\n" if VERBOSE;
+        });
+        $mt->rebuild_indexes( Blog => $blog )
+            or die $mt->errstr;
+    }
+    print "$changed updated in blog ", $blog->id, "\n" if VERBOSE;
+}
+=cut
+
+1;

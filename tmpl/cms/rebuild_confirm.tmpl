@@ -1,0 +1,37 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="start_rebuild" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="next" value="<TMPL_VAR NAME=BUILD_NEXT>" />
+<input type="hidden" name="total_entries" value="<TMPL_VAR NAME=TOTAL_ENTRIES>" />
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Rebuild"></h2>
+
+<p><MT_TRANS phrase="Select the type of rebuild you would like to perform. (Click the Cancel button if you do not want to rebuild any files.)"></p>
+
+<p>
+<select name="type">
+<option value="<TMPL_VAR NAME=BUILD_ORDER>" selected="selected"><MT_TRANS phrase="Rebuild All Files"></option>
+<TMPL_IF NAME=INDEX_TMPL_ID>
+<option value="index-<TMPL_VAR NAME=INDEX_TMPL_ID>" selected="selected"><MT_TRANS phrase="Index Template: [_1]" params="<TMPL_VAR NAME=INDEX_TMPL_NAME ESCAPE=HTML>"></option>
+</TMPL_IF>
+<option value="index"<TMPL_IF NAME=INDEX_SELECTED> selected="selected"</TMPL_IF>>
+<MT_TRANS phrase="Rebuild Indexes Only"></option>
+<TMPL_LOOP NAME=ARCHIVE_TYPE_LOOP>
+<option value="<TMPL_VAR NAME=ARCHIVE_TYPE>"><MT_TRANS phrase="Rebuild [_1] Archives Only" params="<TMPL_VAR NAME=ARCHIVE_TYPE_LABEL ESCAPE=HTML>"></option>
+</TMPL_LOOP>
+<TMPL_LOOP NAME=REBUILD_OPTION_LOOP>
+<option value="<TMPL_VAR NAME=KEY>"><TMPL_VAR NAME=NAME></option>
+</TMPL_LOOP>
+</select>
+</p>
+
+<div>
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Cancel">" />
+<input type="submit" value="<MT_TRANS phrase="Rebuild">" accesskey="r" title="<MT_TRANS phrase="Rebuild (r)">" />
+</div>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

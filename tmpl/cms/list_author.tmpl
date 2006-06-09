@@ -1,0 +1,100 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="list-author">
+
+<script type="text/javascript">
+<!--
+var tableSelect;
+function init()
+{
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect.rowSelect = true;
+}
+TC.attachLoadEvent( init );
+// -->
+</script>
+
+<h2><span class="weblog-title-highlight"><MT_TRANS phrase="System-wide">: </span> <MT_TRANS phrase="Authors"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="_USAGE_AUTHORS"></p>
+
+<TMPL_IF NAME=SAVED_DELETED>
+<h4 class="message"><MT_TRANS phrase="You have successfully deleted the authors from the Movable Type system."></h4>
+</TMPL_IF>
+
+<div class="tabs">
+<ul>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_authors"><MT_TRANS phrase="Authors"></a></li>
+<TMPL_IF NAME=CAN_CREATE_USER>
+<li class="special">
+<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<MT_TRANS phrase="Create New Author">" width="9" height="9" />
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=author"><MT_TRANS phrase="Create New Author"></a>
+</li>
+</TMPL_IF>
+</ul>
+</div>
+
+<div class="list-wrapper">
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return this['__mode'] ? true : false">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="_type" value="author" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<TMPL_IF NAME=POSITION_ACTIONS_TOP>
+<TMPL_INCLUDE NAME=author_actions.tmpl>
+</TMPL_IF>
+
+<div class="list" id="selector">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<th id="at-username"><MT_TRANS phrase="Username"></th>
+<th id="at-name"><MT_TRANS phrase="Name"></th>
+<th id="at-email"><MT_TRANS phrase="Email"></th>
+<th id="at-url"><MT_TRANS phrase="URL"></th>
+<th id="at-created"><MT_TRANS phrase="Created By"></th>
+<th id="at-entries"><MT_TRANS phrase="Entries"></th>
+<th id="at-last-entry"><MT_TRANS phrase="Last Entry"></th>
+</tr>
+</thead>
+<tbody>
+
+<TMPL_LOOP NAME=OBJECT_LOOP>
+<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
+<td class="cb"><TMPL_IF NAME=HAS_EDIT_ACCESS><input type="checkbox" name="id" value="<TMPL_VAR NAME=ID>" class="select" /><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+<td><TMPL_IF NAME=IS_ME><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=ID>"><TMPL_ELSE><TMPL_IF NAME=HAS_EDIT_ACCESS><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=edit_profile&amp;author_id=<TMPL_VAR NAME=ID>"></TMPL_IF></TMPL_IF><TMPL_VAR NAME=NAME ESCAPE=HTML><TMPL_IF NAME=IS_ME></a><TMPL_ELSE><TMPL_IF NAME=HAS_EDIT_ACCESS></a></TMPL_IF></TMPL_IF></td>
+<td><TMPL_IF NAME=NICKNAME><TMPL_VAR NAME=NICKNAME ESCAPE=HTML><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+<td class="status-email"><TMPL_IF NAME=EMAIL><a href="mailto:<TMPL_VAR NAME=EMAIL ESCAPE=HTML>" title="<TMPL_VAR NAME=EMAIL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Email">" width="16" height="9" /></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+<td class="status-link"><TMPL_IF NAME=URL><a href="<TMPL_VAR NAME=URL ESCAPE=HTML>" title="<TMPL_VAR NAME=URL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Link">" width="16" height="9" /></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+<td><TMPL_IF NAME=CREATED_BY><TMPL_VAR NAME=CREATED_BY ESCAPE=HTML><TMPL_ELSE><em><MT_TRANS phrase="System"></em></TMPL_IF></td>
+<td><TMPL_VAR NAME=ENTRY_COUNT ESCAPE=HTML></td>
+<td><span title="<TMPL_VAR NAME=LAST_ENTRY_TIME_FORMATTED>"><TMPL_IF NAME=LAST_ENTRY_RELATIVE><TMPL_IF NAME=DATES_RELATIVE><TMPL_VAR NAME=LAST_ENTRY_RELATIVE><TMPL_ELSE><TMPL_VAR NAME=LAST_ENTRY_FORMATTED></TMPL_IF><TMPL_ELSE><TMPL_VAR NAME=LAST_ENTRY_FORMATTED></TMPL_IF></span></td>
+</tr>
+</TMPL_LOOP>
+
+</tbody>
+</table>
+</div>
+
+<TMPL_IF NAME=POSITION_ACTIONS_BOTTOM>
+<div class="list-actions-footer">
+<TMPL_INCLUDE NAME=author_actions.tmpl>
+</div>
+</TMPL_IF>
+
+</form>
+
+<TMPL_INCLUDE NAME=pager.tmpl>
+
+</div>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

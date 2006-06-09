@@ -1,0 +1,9 @@
+<div class="list-actions">
+<div class="button-bar">
+<TMPL_IF NAME=IS_ADMINISTRATOR><input onclick="doRemoveItems(this.form, '<MT_TRANS phrase="weblog">', '<MT_TRANS phrase="weblogs">')" type="button" value="<MT_TRANS phrase="Delete">" accesskey="x" title="<MT_TRANS phrase="Delete selected weblogs (x)">" /></TMPL_IF>
+</div>
+
+<div class="button-bar-alt">
+<TMPL_INCLUDE NAME="itemset_action_widget.tmpl">
+</div>
+</div>

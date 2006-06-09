@@ -1,0 +1,84 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/js/app.js"></script>
+
+<h2><MT_TRANS phrase="Widget Manager">: <span class="title-highlight"><MT_TRANS phrase="Rearrange Items"></span></h2>
+
+<p><MT_TRANS phrase="To add a Widget Manager to your templates, use the following syntax:"></p>
+<p><MT_TRANS phrase="<strong><$MTWidgetManager name="Name of the Widget Manager"$></strong>"></p>
+
+<div class="tabs">
+<ul>
+  <li class="yah"><a href=""><MT_TRANS phrase="Widget Managers"></a></li>
+  <li class="special">
+
+    <img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<MT_TRANS phrase="Add Widget Manager">" width="9" height="9" />
+    <a href="?__mode=edit&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=New+WidgetManager"><MT_TRANS phrase="Create Widget Manager"></a>
+
+  </li>
+</ul>
+</div>
+
+<TMPL_IF NAME=REBUILD>
+<h4 class="message"><MT_TRANS phrase="Your changes to the Widget Manager have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></h4>
+</TMPL_IF>
+
+<TMPL_IF NAME=DELETED>
+<h4 class="message"><MT_TRANS phrase="You have successfully deleted the selected Widget Manager(s) from your weblog."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></h4>
+</TMPL_IF>
+
+<div class="list-wrapper">
+  <div class="list" id="queue">
+
+<div class="list-wrapper">
+
+    <form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
+        <input type="hidden" name="__mode" value="delete" />
+        <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+
+<div class="list" id="selector">
+<table cellspacing="0">
+  <thead>
+  <tr>
+    <th width="1%" class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+    <th><MT_TRANS phrase="WidgetManager Name"></th>
+    <th><MT_TRANS phrase="Installed Widgets"></th>
+<!--
+    <th></th>
+-->
+  </tr>
+  </thead>
+  <tbody>
+<TMPL_LOOP NAME=WIDGETMANAGERS>
+  <tr class="<TMPL_IF NAME=ENTRY_ODD>odd<TMPL_ELSE>even</TMPL_IF>">
+    <td class="cb"><input type="checkbox" name="id" value="<TMPL_VAR NAME=WIDGETMANAGER>" class="select" /></td>
+    <td class="widgetmanager-name"><a href="?__mode=edit&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=<TMPL_VAR NAME=WIDGETMANAGER>"><TMPL_VAR NAME=WIDGETMANAGER></a></td>
+    <td class="widgetmanager-widgets"><TMPL_VAR NAME=NAMES></td>
+<!--
+    <td nowrap>
+      <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=edit&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=<TMPL_VAR NAME=WIDGETMANAGER>"><MT_TRANS phrase="Edit"></a>
+    </td>
+-->
+  </tr>
+</TMPL_LOOP>
+</table>
+
+<div class="list-actions">
+<div class="button-bar">
+<input type="submit" name="delete" value="<MT_TRANS phrase="Delete Selected">" onclick="do_confirm('<MT_TRANS phrase="Are you sure you wish to delete the selected Widget Manager(s)?">','');" />
+</div>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+  </div>
+</div>
+
+</div>
+
+
+<TMPL_INCLUDE NAME="footer.tmpl">

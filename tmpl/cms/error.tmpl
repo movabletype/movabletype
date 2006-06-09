@@ -1,0 +1,12 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<p><MT_TRANS phrase="An error occurred:"></p>
+
+<div class="error-message"><TMPL_VAR NAME=ERROR></div>
+
+<div align="center">
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Close">" />
+<input type="button" onclick="<TMPL_VAR NAME=GOBACK>" value="<MT_TRANS phrase="Go Back">" />
+</div>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

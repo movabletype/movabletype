@@ -1,0 +1,26 @@
+<div class="list-actions">
+<div class="button-bar">
+<TMPL_IF NAME=CAN_EDIT_COMMENTERS>
+<TMPL_IF NAME=ID>
+<TMPL_UNLESS NAME=COMMENTER_APPROVED>
+<input type="button" value="<MT_TRANS phrase="Trust">" onclick="doForMarkedInThisWindow(this.form, '<MT_TRANS phrase="commenter">', '<MT_TRANS phrase="commenters">', 'id', 'trust_commenter', {}, '<MT_TRANS phrase="to act upon">')" accesskey="t" title="<MT_TRANS phrase="Trust commenter"> (t)" />
+<TMPL_ELSE>
+<input type="button" value="<MT_TRANS phrase="Untrust">" onclick="doForMarkedInThisWindow(this.form, '<MT_TRANS phrase="commenter">', '<MT_TRANS phrase="commenters">', 'id', 'itemset_action', {action_name:'untrust'}, '<MT_TRANS phrase="to act upon">')" accesskey="u" title="<MT_TRANS phrase="Untrust commenter"> (u)" />
+</TMPL_UNLESS>
+<TMPL_UNLESS NAME=COMMENTER_BANNED>
+<input type="button" value="<MT_TRANS phrase="Ban">" onclick="doForMarkedInThisWindow(this.form, '<MT_TRANS phrase="commenter">', '<MT_TRANS phrase="commenters">', 'id', 'ban_commenter', {}, '<MT_TRANS phrase="to act upon">')" accesskey="b" title="<MT_TRANS phrase="Ban commenter"> (b)" />
+<TMPL_ELSE>
+<input type="button" value="<MT_TRANS phrase="Unban">" onclick="doForMarkedInThisWindow(this.form, '<MT_TRANS phrase="commenter">', '<MT_TRANS phrase="commenters">', 'id', 'itemset_action', {action_name:'unban'}, '<MT_TRANS phrase="to act upon">')" accesskey="n" title="<MT_TRANS phrase="Unban commenter"> (n)" />
+</TMPL_UNLESS>
+<TMPL_ELSE>
+<input type="button" value="<MT_TRANS phrase="Trust">" onclick="doForMarkedInThisWindow(this.form, '<MT_TRANS phrase="commenter">', '<MT_TRANS phrase="commenters">', 'id', 'trust_commenter', {}, '<MT_TRANS phrase="to act upon">')" accesskey="t" title="<MT_TRANS phrase="Trust selected commenters"> (t)" />
+<input type="button" value="<MT_TRANS phrase="Ban">" onclick="doForMarkedInThisWindow(this.form, '<MT_TRANS phrase="commenter">', '<MT_TRANS phrase="commenters">', 'id', 'ban_commenter', {}, '<MT_TRANS phrase="to act upon">')" accesskey="b" title="<MT_TRANS phrase="Ban selected commenters"> (b)" />
+</TMPL_IF>
+</TMPL_IF>
+</div>
+
+<div class="button-bar-alt">
+<TMPL_INCLUDE NAME="itemset_action_widget.tmpl">
+</div>
+
+</div>

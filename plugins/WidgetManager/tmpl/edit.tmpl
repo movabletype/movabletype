@@ -1,0 +1,317 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/js/app.js"></script>
+<script type="text/javascript">
+<!--
+var colWidth = 180;
+var modWidth = 175;
+var modHeight = 30;
+var gCols;
+
+var isIE = navigator.userAgent.indexOf('MSIE') >= 0;
+var isOpera = navigator.userAgent.indexOf('Opera') >= 0;
+var isSafari = navigator.userAgent.indexOf('Safari') >= 0;
+var curMod, curCol;
+var dragStartX, dragStartY;
+var topZIndex = 10;
+
+var gDropIndex, gDrop;
+var gCanDrop = 0;
+
+function initialize () {
+	gDrop = new Object();
+	gDrop.node = document.getElementById('stage-drop');
+
+	gCols = new Array();
+
+	gCols[0] = new Column('installed-column', 0, 0);
+
+<TMPL_LOOP NAME=INSTALLED>
+	gCols[0].addModule('<TMPL_VAR NAME=ID>');
+</TMPL_LOOP>
+
+	gCols[1] = new Column('available-column', 1, 220);
+
+<TMPL_LOOP NAME=AVAILABLE>
+	gCols[1].addModule('<TMPL_VAR NAME=ID>');
+</TMPL_LOOP>
+
+	calculateHeight();
+}
+
+function Column (label, index, left) {
+	this.label = label;
+	this.node = document.getElementById(label);
+	this.node.style.height = '110px';
+	this.x = left;
+	this.y = 0;
+	this.offsetX = offsetX(this.node) - this.x;
+	this.offsetY = offsetY(this.node) - this.y;
+	this.startX = this.x + 5;
+	this.startY = this.y + 35;
+	this.index = index;
+	this.width = colWidth;
+	this.height = 100;
+	this.modules = new Array();
+	return this;
+}
+
+Column.prototype.addModule = function (key, label) {
+	var row = this.modules.length;
+	this.modules[row] = new Module(key, label, row, this.index, this);
+}
+
+Column.prototype.moveModule = function (module, index) {
+	var inCol = (curCol.index == module.col);
+	if (inCol && (module.row == index)) {
+		module.move(module.x, module.y);
+		return;
+	}
+	if (inCol && module.row < index) index--;
+	
+	// Remove the module from the old column...
+	var i;
+	var oldMods = gCols[module.col].modules;
+	for (i = module.row + 1; i < oldMods.length; i++) {
+		oldMods[i].y -= modHeight;
+		oldMods[i].row--;
+		oldMods[i].move(oldMods[i].x, oldMods[i].y);
+		oldMods[i-1] = oldMods[i];
+	}
+	oldMods.length--;
+	if (inCol && index > oldMods.length) index--;
+	
+	// ... and insert it into the new column.
+	var newMods = curCol.modules;
+	for (i = newMods.length-1; i >= index; i--) {
+		newMods[i].y += modHeight;
+		newMods[i].row++;
+		newMods[i].move(newMods[i].x, newMods[i].y);
+		newMods[i+1] = newMods[i];
+	}
+	module.colObj = curCol;
+	module.row = index;
+	module.col = curCol.index;
+	module.x = curCol.startX;
+	module.y = curCol.startY + index * modHeight;
+	module.move(module.x, module.y);
+	newMods[index] = module;
+	
+	calculateHeight();
+}
+
+function Module (key, label, row, col, colObj) {
+	this.key = key;
+	this.label = label;
+	this.row = row;
+	this.col = col;
+	this.colObj = colObj;
+	this.node = document.getElementById('module-' + key);
+	this.node.onmousedown = this.dragStart;
+	this.node.module = this;
+	this.x = colObj.startX;
+	this.y = colObj.startY + modHeight * row;
+	this.move(this.x, this.y);
+	this.node.style.width = modWidth + 'px';
+	this.node.style.display = 'block';
+	return this;
+}
+
+Module.prototype.move = function (x, y) {
+	move(this.node, x, y);
+}
+
+Module.prototype.dragStart = function (event) {
+	document.onmousemove = dragMove;
+	document.onmouseup = dragStop;
+	gCanDrop = 0;
+	var module = this.module;
+	dragStartX = cursorX(event);
+	dragStartY = cursorY(event);
+	module.node.style.zIndex = topZIndex;
+	curMod = module;
+	return false;
+}
+
+function dragMove (event) {
+	if (!curMod) return true;
+	var x = cursorX(event);
+	var y = cursorY(event);
+	curMod.move(curMod.x + x - dragStartX, curMod.y + y - dragStartY);
+	var i;
+	curCol = null;
+	for (i = 0; i< gCols.length; i++) {
+		var adjX = gCols[i].x + gCols[i].offsetX;
+		var adjY = gCols[i].y + gCols[i].offsetY;
+		if ((x > adjX) &&
+		    (x < adjX + gCols[i].width) &&
+		    (y > adjY) &&
+		    (y < adjY + gCols[i].height)) {
+			curCol = gCols[i];
+			break;
+		}
+	}
+	if (curCol == null) {
+		gDrop.node.style.display = 'none';
+		gCanDrop = 0;
+		return false;
+	}
+	gDropIndex = Math.floor((y - curCol.y - curCol.offsetY) / modHeight + 0.0);
+	if (gDropIndex < 0)
+		gDropIndex = 0;
+	if (gDropIndex > curCol.modules.length)
+		gDropIndex = curCol.modules.length;
+	if (!gCanDrop) {
+		gCanDrop = 1;
+		gDrop.node.style.display = 'block';
+	}
+	move(gDrop.node, curCol.startX, curCol.startY + gDropIndex * modHeight - 8);
+	return false;
+}
+
+function dragStop (event) {
+	if (!curMod) return true;
+	gDrop.node.style.display = 'none';
+	if (!curCol || !gCanDrop)
+		curMod.move(curMod.x, curMod.y);
+	else
+		curCol.moveModule(curMod, gDropIndex);
+	curMod = null;
+	return false;
+}
+
+function moduleListStr () {
+	var s = '';
+	var i, j;
+	for (i = 0; i < gCols.length; i++)
+		for (j = 0; j < gCols[i].modules.length; j++)
+			s += gCols[i].modules[j].key + '=' + (i+1) + '.' + (j+1) + ';';
+	return s;
+}
+
+function move (node, x, y) {
+	node.style.left = x + 'px';
+	node.style.top = y + 'px';
+}
+
+function offsetX (node) {
+	var o = node.offsetLeft;
+	while((node = node.offsetParent) != null)
+		o += node.offsetLeft;
+	return o;
+}
+
+function offsetY (node) {
+	var o = node.offsetTop;
+	while((node = node.offsetParent) != null)
+		o += node.offsetTop;
+	return o;
+}
+
+function cursorX (event) {
+	var x;
+	if (isIE || isOpera) {
+		x = window.event.clientX;
+		if (document.documentElement.scrollLeft)
+			x += document.documentElement.scrollLeft;
+		if(!isOpera) x += document.body.scrollLeft;
+	} else {
+		x = event.clientX;
+		if (!isSafari)
+			x += window.scrollX;
+	}
+	return x;
+}
+
+function cursorY (event) {
+	var y;
+	if (isIE || isOpera) {
+		y = window.event.clientY;
+		if (document.documentElement.scrollTop)
+			y += document.documentElement.scrollTop;
+		if(!isOpera) y += document.body.scrollTop;
+	} else {
+		y = event.clientY;
+		if (!isSafari)
+			y += window.scrollY;
+	}
+	return y;
+}
+
+function calculateHeight () {
+	var i, newHeight;
+	var maxMods = 0;
+	for (i = 0; i < gCols.length; i++) {
+		if (gCols[i].modules.length > maxMods) {
+			maxMods = gCols[i].modules.length;
+		}
+	}
+	if ((maxMods * modHeight) < 100) {
+		newHeight = 100;
+	} else {
+		newHeight = (maxMods + 1) * modHeight;
+	}
+	for (i = 0; i < gCols.length; i++) {
+		gCols[i].height = newHeight;
+		gCols[i].node.style.height = (newHeight + 10) + 'px';
+	}
+	document.getElementById('center-column').style.height = (newHeight + 10) + 'px';
+	document.getElementById('stage').style.height = (newHeight + 10) + 'px';
+	return true;
+}
+
+onload = initialize;
+-->
+</script>
+
+<h2><MT_TRANS phrase="Widget Manager">: <span class="title-highlight"><MT_TRANS phrase="Rearrange Items"></span></h2>
+
+<div class="tabs">
+<ul>
+  <li class="yah"><a href=""><MT_TRANS phrase="Widget Manager"></a></li>
+  <li class="special">
+  </li>
+</ul>
+</div>
+
+<TMPL_IF NAME=REBUILD>
+<h4 class="message"><MT_TRANS phrase="Your changes to the Widget Manager have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></h4>
+</TMPL_IF>
+
+<div id="edit-form">
+
+    <form onsubmit="this.modules.value = moduleListStr()" id="manager" name="manager" method="post" action="widget-manager.cgi">
+      <input type="hidden" name="__mode" value="save" />
+      <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+      <div id="widgetmanagers">
+        <p>
+          <MT_TRANS phrase="Widget Manager Name:"><br />
+          <input type="text" name="name" id="name" value="<TMPL_VAR NAME=NAME>" size="30" />
+        </p>
+      </div>
+        <h4><MT_TRANS phrase="Build WidgetManager:"></h4>
+        <div id="stage">
+            <div id="installed-column"><p><MT_TRANS phrase="Installed Widgets"></p></div>
+            <div id="center-column">&nbsp;</div>
+            <div id="available-column"><p><MT_TRANS phrase="Available Widgets"></p></div>
+        
+        <TMPL_LOOP NAME=INSTALLED>
+            <div id="module-<TMPL_VAR NAME=ID>" class="module"><a href="javascript:void(0)"><TMPL_VAR NAME=NAME></a></div>
+        </TMPL_LOOP>
+        <TMPL_LOOP NAME=AVAILABLE>
+            <div id="module-<TMPL_VAR NAME=ID>" class="module"><a href="javascript:void(0)"><TMPL_VAR NAME=NAME></a></div>
+        </TMPL_LOOP>
+        
+            <div id="stage-drop">&nbsp;</div>
+            <br class="clr" />
+        </div>
+
+        <input type="hidden" name="__mode" value="save" />
+        <input type="hidden" name="modules" value="" />
+        <div class="action-buttons">
+            <input type="submit" value="<MT_TRANS phrase="Save Changes">" />
+        </div>
+    </form>
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

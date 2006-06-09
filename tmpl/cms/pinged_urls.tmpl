@@ -1,0 +1,29 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<TMPL_IF NAME=URL_LOOP>
+<p><MT_TRANS phrase="Here is a list of the previous TrackBacks that were successfully sent:"></p>
+
+<p>
+<TMPL_LOOP NAME=URL_LOOP>
+<strong>&raquo;</strong> <TMPL_VAR NAME=URL><br />
+</TMPL_LOOP>
+</p>
+</TMPL_IF>
+
+<TMPL_IF NAME=FAILED_URL_LOOP>
+<p><MT_TRANS phrase="Here is a list of the previous TrackBacks that failed. To retry these, include them in the Outbound TrackBack URLs list for your entry.:"></p>
+
+<p>
+<TMPL_LOOP NAME=FAILED_URL_LOOP>
+<strong>&raquo;</strong> <TMPL_VAR NAME=URL><br />
+</TMPL_LOOP>
+</p>
+</TMPL_IF>
+
+<div align="center">
+<form action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Close">" />
+</form>
+</div>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

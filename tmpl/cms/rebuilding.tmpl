@@ -1,0 +1,59 @@
+<TMPL_IF NAME=IS_FULL_SCREEN>
+<TMPL_INCLUDE NAME="header.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+</TMPL_IF>
+
+<script type="text/javascript">
+<!--
+function doRedirect () {
+<TMPL_IF NAME=REDIRECT_TARGET>
+    window.location='<TMPL_VAR NAME=REDIRECT_TARGET>';
+<TMPL_ELSE>
+    window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=rebuild&blog_id=<TMPL_VAR NAME=BLOG_ID>&type=<TMPL_VAR NAME=BUILD_TYPE>&next=<TMPL_VAR NAME=BUILD_NEXT>&offset=<TMPL_VAR NAME=OFFSET>&limit=<TMPL_VAR NAME=LIMIT>&total_entries=<TMPL_VAR NAME=TOTAL_ENTRIES>&is_bm=<TMPL_VAR NAME=IS_BM>&entry_id=<TMPL_VAR NAME=ENTRY_ID>&is_new=<TMPL_VAR NAME=IS_NEW>&old_status=<TMPL_VAR NAME=OLD_STATUS>&old_previous=<TMPL_VAR NAME=OLD_PREVIOUS>&old_next=<TMPL_VAR NAME=OLD_NEXT><TMPL_IF NAME=IS_FULL_SCREEN>&fs=1</TMPL_IF>';
+</TMPL_IF>
+}
+setTimeout('doRedirect()', 200);
+// -->
+</script>
+
+<TMPL_IF NAME=IS_FULL_SCREEN>
+<div class="padded-box">
+<TMPL_ELSE>
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Rebuild"></h2>
+</TMPL_IF>
+
+<h4 class="message">
+<img valign="bottom" src="<TMPL_VAR NAME=STATIC_URI>images/ani-rebuild.gif" height="18" width="18" alt="" />&nbsp;
+<TMPL_IF NAME=IS_ONE_INDEX>
+<MT_TRANS phrase="Rebuilding [_1]" params="<TMPL_VAR NAME=BUILD_TYPE_NAME ESCAPE=HTML> ">
+<TMPL_ELSE>
+<TMPL_IF NAME=IS_INDIVIDUAL>
+<MT_TRANS phrase="Rebuilding [_1] pages [_2]" params="<TMPL_VAR NAME=BUILD_TYPE_NAME>%%<TMPL_VAR NAME=INDIV_RANGE> ">
+<TMPL_ELSE>
+<TMPL_IF NAME=IS_ENTRY>
+<TMPL_IF NAME=DYNAMIC>
+<MT_TRANS phrase="Rebuilding [_1] dynamic links" params="<TMPL_VAR NAME=BUILD_TYPE_NAME ESCAPE=HTML> ">
+<TMPL_ELSE>
+<MT_TRANS phrase="Rebuilding [_1]" params="<TMPL_VAR NAME=BUILD_TYPE_NAME ESCAPE=HTML> ">
+</TMPL_IF>
+<TMPL_ELSE>
+<TMPL_IF NAME=DYNAMIC>
+<MT_TRANS phrase="Rebuilding [_1] dynamic links" params="<TMPL_VAR NAME=BUILD_TYPE_NAME ESCAPE=HTML> ">
+<TMPL_ELSE>
+<MT_TRANS phrase="Rebuilding [_1] pages" params="<TMPL_VAR NAME=BUILD_TYPE_NAME ESCAPE=HTML> ">
+</TMPL_IF>
+</TMPL_IF>
+</TMPL_IF>
+</TMPL_IF>...
+</h4>
+
+<TMPL_IF NAME=IS_FULL_SCREEN>
+</div>
+</TMPL_IF>
+
+<TMPL_IF NAME=IS_FULL_SCREEN>
+<TMPL_INCLUDE NAME="footer.tmpl">
+<TMPL_ELSE>
+<TMPL_INCLUDE NAME="footer-popup.tmpl">
+</TMPL_IF>

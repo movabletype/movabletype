@@ -1,0 +1,163 @@
+<?php
+# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# $Id$
+
+require_once("ezsql".DIRECTORY_SEPARATOR."ezsql_mysql.php");
+require_once("mtdb_base.php");
+
+class MTDatabase_mysql extends MTDatabaseBase {
+    var $vendor = 'mysql';
+    function apply_limit_sql($sql, $limit, $offset = 0) {
+        $limit = intval($limit);
+        $offset = intval($offset);
+        $limitStr = '';
+        if ($limit == -1) $limit = 0;
+        if ($limit || $offset) {
+            if (!$limit) $limit = 2147483647;
+            $limitStr = 'limit ' . ($offset ? $offset . ',' : '')
+                . $limit;
+        }
+        $sql = preg_replace('/<LIMIT>/', $limitStr, $sql);
+        return $sql;
+    }
+    function limit_by_day_sql($column, $days) {
+        return 'date_add(' . $column .', interval ' . 
+            $days . ' day) >= now()';
+    }
+
+    function query_start($query)
+    {
+        // For reg expressions
+        $query = trim($query); 
+
+        // Query was an insert, delete, update, replace
+        if ( preg_match("/^(insert|delete|update|replace)\s+/i",$query) )
+        {
+            return false;
+        }
+
+        $this->savedqueries[] = $query;
+
+        // Flush cached values..
+        $this->flush();
+
+        // Log how the function was called
+        $this->func_call = "\$db->query_start(\"$query\")";
+
+        // Keep track of the last query for debug..
+        $this->last_query = $query;
+
+        // Perform the query via std mysql_query function..
+        $this->result = @mysql_query($query,$this->dbh);
+        $this->num_queries++;
+
+        // If there is an error then take note of it..
+        if ( mysql_error() )
+        {
+            $this->print_error();
+            return false;
+        }
+        
+        // Take note of column info 
+        $i=0;
+        while ($i < @mysql_num_fields($this->result))
+        {
+            $this->col_info[$i] = @mysql_fetch_field($this->result);
+            $i++;
+        }
+
+        $this->last_result = array();
+        $this->num_rows = 0;
+     
+        // If debug ALL queries
+        $this->trace || $this->debug_all ? $this->debug() : null ;
+
+        return true;
+    }
+
+    function query_fetch($output=OBJECT) {
+        if ( $row = @mysql_fetch_object($this->result) )
+        {
+            $this->num_rows++;
+
+            if ( $output == OBJECT )
+            {
+                return $row;
+            }
+            // If the output is an associative array then return row as such..
+            elseif ( $output == ARRAY_A )
+            {
+                return $this->convert_fieldname(get_object_vars($row));
+            }
+            // If the output is an numerical array then return row as such..
+            elseif ( $output == ARRAY_N )
+            {
+                return array_values(get_object_vars($row));
+            }
+        }
+        return null;
+    }
+
+    function query_finish() {
+        if (isset($this->result)) {
+            @mysql_free_result($this->result);
+            unset($this->result);
+        }
+    }
+
+    function &fetch_entry_tags($args) {
+        # load tags
+        if (isset($args['blog_id'])) {
+            $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
+        }
+        if (isset($args['entry_id'])) {
+            $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['entry_id']).')';
+
+        }
+        if (!isset($args['include_private'])) {
+            $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
+        }
+        if (isset($args['tags']) && ($args['tags'] != '')) {
+            $tag_list = '';
+            require_once("MTUtil.php");
+            $tag_array = tag_split($args['tags']);
+            foreach ($tag_array as $tag) {
+                if ($tag_list != '') $tag_list .= ',';
+                $tag_list .= "'" . $this->escape($tag) . "'";
+            }
+            if ($tag_list != '') {
+                $tag_filter = 'and (tag_name in binary (' . $tag_list . '))';
+                $private_filter = '';
+            }
+        }
+        $sql = "
+            select tag_id, tag_name, count(distinct entry_id) as tag_count
+              from mt_tag, mt_objecttag, mt_entry
+             where objecttag_tag_id = tag_id
+               and entry_id = objecttag_object_id and objecttag_object_datasource='entry'
+               and entry_status = 2
+                   $blog_filter
+                   $tag_filter
+                   $entry_filter
+                   $private_filter
+          group by tag_id, tag_name
+          order by tag_name";
+        $tags = $this->get_results($sql, ARRAY_A);
+        return $tags;
+    }
+
+    function &fetch_tag_by_name($tag_name) {
+        $tag_name = $this->escape($tag_name);
+        $tag = $this->get_row("
+            select *
+              from mt_tag
+             where tag_name = binary '$tag_name'
+        ", ARRAY_A);
+        $this->_tag_id_cache[$tag['tag_id']] = $tag;
+        return $tag;
+    }
+}
+?>

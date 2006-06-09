@@ -1,0 +1,225 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="list-blog">
+
+<div id="rightcol-full">
+
+<div class="box" id="news-box">
+<h4><a href="<TMPL_VAR NAME=MT_NEWS>?v=<TMPL_VAR NAME=MT_PRODUCT_CODE><TMPL_VAR NAME=MT_VERSION>"><MT_TRANS phrase="Movable Type News"></a> &#187;</h4>
+<div class="inner">
+<TMPL_VAR NAME=NEWS_HTML>
+</div>
+</div>
+
+<div class="box" id="system-box">
+<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=admin"><MT_TRANS phrase="System Shortcuts"></a></h4>
+<div class="inner">
+<ul class="nav">
+<li id="nav-weblogs">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=system_list_blogs"><MT_TRANS phrase="Weblogs"></a><br />
+<MT_TRANS phrase="Concise listing of weblogs.">
+</li>
+<TMPL_IF NAME=CAN_EDIT_AUTHORS>
+<li id="nav-authors">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_authors"><MT_TRANS phrase="Authors"></a><br />
+<MT_TRANS phrase="Create, manage, set permissions.">
+</li>
+</TMPL_IF>
+<li id="nav-plugins">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_plugins"><MT_TRANS phrase="Plugins"></a><br />
+<MT_TRANS phrase="What's installed, access to more.">
+</li>
+</ul>
+<ul class="nav">
+<li id="nav-entries">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries"><MT_TRANS phrase="Entries"></a><br />
+<MT_TRANS phrase="Multi-weblog entry listing.">
+</li>
+<TMPL_IF NAME=CAN_EDIT_TAGS>
+<li id="nav-tags">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_tags"><MT_TRANS phrase="Tags"></a><br />
+<MT_TRANS phrase="Multi-weblog tag listing.">
+</li>
+</TMPL_IF>
+<li id="nav-comments">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_comments"><MT_TRANS phrase="Comments"></a><br />
+<MT_TRANS phrase="Multi-weblog comment listing.">
+</li>
+<li id="nav-trackbacks">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings"><MT_TRANS phrase="TrackBacks"></a><br />
+<MT_TRANS phrase="Multi-weblog TrackBack listing.">
+</li>
+</ul>
+<TMPL_IF NAME=IS_ADMINISTRATOR>
+<ul class="nav">
+<li id="nav-settings">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_system"><MT_TRANS phrase="Settings"></a><br />
+<MT_TRANS phrase="System-wide configuration.">
+</li>
+</ul>
+</TMPL_IF>
+<ul class="nav last">
+<li id="nav-search">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace"><MT_TRANS phrase="Search &amp; Replace"></a><br />
+<MT_TRANS phrase="Find everything. Replace anything.">
+</li>
+<TMPL_IF NAME=CAN_VIEW_LOG>
+<li id="nav-log">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view_log"><MT_TRANS phrase="Activity Log"></a><br />
+<MT_TRANS phrase="What's been happening.">
+</li>
+</TMPL_IF>
+<!--
+<li id="nav-status">
+<a href="#"><MT_TRANS phrase="Status &amp; Info"></a><br />
+<MT_TRANS phrase="Server status and information.">
+</li>
+-->
+</ul>
+</div>
+</div>
+
+<div class="box" id="quickpost-box">
+<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=bookmarklets"><MT_TRANS phrase="QuickPost"></a></h4>
+<div class="inner">
+<ul class="nav">
+<li id="nav-quickpost">
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=bookmarklets"><MT_TRANS phrase="Set Up A QuickPost Bookmarklet"></a><br />
+<MT_TRANS phrase="Enable one-click publishing.">
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="leftcol-full">
+
+<div class="list-wrapper">
+
+<div class="box" id="weblogs-box">
+<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=system_list_blogs"><MT_TRANS phrase="My Weblogs"></a></h4>
+<div class="inner">
+
+<TMPL_LOOP NAME=BLOG_LOOP>
+
+<div class="blog-item<TMPL_IF NAME=VIEW_EXPANDED> expanded-blog-item</TMPL_IF>"<TMPL_IF __LAST__> id="last-blog-item"</TMPL_IF>>
+<div class="blog-info">
+<h5><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=menu&amp;blog_id=<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=NAME></a></h5>
+<TMPL_IF NAME=DESCRIPTION><p class="blog-desc"><TMPL_VAR NAME=DESCRIPTION></p></TMPL_IF>
+<p>
+<TMPL_IF NAME=SITE_URL>
+<MT_TRANS phrase="URL:"> <a href="<TMPL_VAR NAME=SITE_URL>"><TMPL_VAR NAME=SITE_URL></a>
+<TMPL_ELSE>
+<span class="alert-warning-inline"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Warning">" width="9" height="9" /> <MT_TRANS phrase="Important:"> <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=blog&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=ID>"><MT_TRANS phrase="Configure this weblog."></a></span>
+</TMPL_IF>
+</p>
+</div>
+<div class="shortcuts">
+<TMPL_IF NAME=CAN_POST>
+<p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=ID>"><img alt="<MT_TRANS phrase="Create New Entry">" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/new-entry.gif" width="9" height="11" /><TMPL_IF NAME=VIEW_EXPANDED><MT_TRANS phrase="Create a new entry"><TMPL_ELSE><MT_TRANS phrase="Create a new entry on this weblog"></TMPL_IF></a></p>
+</TMPL_IF>
+<ul class="shortcut-col1">
+<TMPL_IF NAME=CAN_EDIT_ENTRIES>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=ID>"><img alt="<MT_TRANS phrase="Entries">" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/entries.gif" width="9" height="11" /><MT_TRANS phrase="Entries"></a> (<TMPL_VAR NAME=NUM_ENTRIES>)</li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=ID>"><img alt="<MT_TRANS phrase="Comments">" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/comments.gif" width="9" height="11" /><MT_TRANS phrase="Comments"></a> (<TMPL_VAR NAME=NUM_COMMENTS>)</li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=ID>"><img alt="<MT_TRANS phrase="TrackBacks">" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/trackbacks.gif" width="9" height="11" /><MT_TRANS phrase="TrackBacks"></a> (<TMPL_VAR NAME=NUM_PINGS>)</li>
+</TMPL_IF>
+</ul>
+<ul class="shortcut-col2">
+<TMPL_IF NAME=CAN_EDIT_TEMPLATES>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list&amp;_type=template&amp;blog_id=<TMPL_VAR NAME=ID>"><img alt="<MT_TRANS phrase="Templates">" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/templates.gif" width="9" height="11" /><MT_TRANS phrase="Templates"></a></li>
+</TMPL_IF>
+<TMPL_IF NAME=CAN_EDIT_CONFIG>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;blog_id=<TMPL_VAR NAME=ID>"><img alt="<MT_TRANS phrase="Settings">" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/settings.gif" width="9" height="11" /><MT_TRANS phrase="Settings"></a></li>
+</TMPL_IF>
+<TMPL_IF NAME=SITE_URL>
+<li><a href="<TMPL_VAR NAME=SITE_URL>" target="<MT_TRANS phrase="_external_link_target">"><img alt="<MT_TRANS phrase="View Site">" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/view-site.gif" width="9" height="11" /><MT_TRANS phrase="View Site"></a> &#187;</li>
+</TMPL_IF>
+</ul>
+</div>
+</div>
+
+</TMPL_LOOP>
+
+</div>
+</div>
+
+<TMPL_IF NAME=BLOG_LOOP>
+
+<div class="flt-wrppr">
+<div id="display-options">
+<a href="#" onclick="return toggleDisplayOptions()"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="" width="7" height="7" id="display-options-spinner" /></a>
+<a href="#" onclick="return toggleDisplayOptions()"><MT_TRANS phrase="Show Display Options"></a>
+
+<div class="display-options-popup">
+<div class="display-options-inner">
+<form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="update_list_prefs" />
+<input type="hidden" name="_type" value="main_menu" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<h2><MT_TRANS phrase="Display Options"></h2>
+<div id="display-options-container">
+<div class="setting">
+<div class="label"><label><MT_TRANS phrase="Sort By:"></label></div>
+<div class="field">
+<p><input type="radio" name="sort" value="name" <TMPL_IF NAME=SORT_NAME>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Weblog Name"><br />
+<input type="radio" name="sort" value="created" <TMPL_IF NAME=SORT_CREATED>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Creation Order"><br />
+<input type="radio" name="sort" value="updated" <TMPL_IF NAME=SORT_UPDATED>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Last Updated"></p>
+</div>
+</div><br clear="left" />
+
+<div class="setting">
+<div class="label"><label><MT_TRANS phrase="Order:"></label></div>
+<div class="field">
+<p><input type="radio" name="order" value="ascend" <TMPL_UNLESS NAME=ORDER_DESCEND>checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Ascending"><br />
+<input type="radio" name="order" value="descend" <TMPL_IF NAME=ORDER_DESCEND>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Descending"></p>
+</div>
+</div><br clear="left" />
+
+<div class="setting">
+<div class="label"><label><MT_TRANS phrase="View:"></label></div>
+<div class="field">
+<p><input type="radio" name="verbosity" value="compact" <TMPL_UNLESS NAME=VIEW_EXPANDED>checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Compact"><br />
+<input type="radio" name="verbosity" value="expanded" <TMPL_IF NAME=VIEW_EXPANDED>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Expanded"></p>
+</div>
+</div><br clear="left" />
+
+<div class="buttons">
+<input type="submit" name="save" value="<MT_TRANS phrase="Save">" />
+<input type="button" value="<MT_TRANS phrase="Cancel">" onclick="toggleDisplayOptions()" />
+</div>
+</div>
+</form>
+</div>
+</div>
+
+</div>
+</div>
+
+<TMPL_ELSE>
+<MT_TRANS phrase="You currently have no blogs.  Please see your system administrator for access.">
+</TMPL_IF>
+
+</div>
+
+<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
+<div class="box" id="plugin-actions-box">
+<h4><MT_TRANS phrase="Plugin Actions"></h4>
+<div class="inner">
+<ul>
+<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
+<li><a href="<TMPL_VAR NAME=PAGE>;from=list_blog"><TMPL_VAR NAME=LINK_TEXT></a></li>
+</TMPL_LOOP>
+</ul>
+</div>
+</div>
+</TMPL_IF>
+
+</div>
+
+<br style="clear: both;" />
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

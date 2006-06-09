@@ -1,0 +1,214 @@
+<TMPL_INCLUDE NAME=header.tmpl>
+
+<TMPL_UNLESS NAME=UP_TO_DATE>
+    <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc/client.js"></script>
+    <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc/json.js"></script>
+
+	<script type="text/javascript">
+	<!--
+    function upgradeDone(success) {
+        var progress = getByID("progress-bar");
+        if (progress) {
+            progress.style.display = "none";
+        }
+        if (success) {
+            var complete = getByID("complete-message-div");
+            if (complete) {
+                complete.style.display = "block";
+            }
+<TMPL_IF NAME=INSTALLING>
+            current_task.innerHTML = "<MT_TRANS phrase="Installation complete.">";
+<TMPL_ELSE>
+            current_task.innerHTML = "<MT_TRANS phrase="Upgrade complete.">";
+</TMPL_IF>
+        } else {
+            var error = getByID("error-message-div");
+            if (error) {
+                error.style.display = "block";
+            }
+        }
+    }
+
+    var actionList = [];
+<TMPL_IF NAME=INITIAL_STEPS>
+    actionList = <TMPL_VAR NAME=INITIAL_STEPS>;
+</TMPL_IF>
+
+    function actionError(c, message) {
+        alert( 'Error: ' + message );
+    }
+
+    var response_pos = 0;
+    var upgrade_progress;
+    var upgrade_container;
+    var current_task;
+    function actionInteractive(c) {
+        var responseText;
+        try {
+            responseText = c.responseText;
+        } catch ( e ) {
+            return;
+        }
+        if (!responseText) return;
+        var text = responseText.substr(response_pos);
+        response_pos += text.length;
+        text = text.replace(/\s*JSON:(.|\n)*/, '');
+        // strip any partial lines. we'll grab 'em next time
+        text = text.replace(/(\r?\n)[^\r\n]*$/, '$1');
+        if (!text.length) return;
+
+        text = text.replace(/\r?\n$/, '');
+
+        var lines = text.split(/\r?\n/);
+        var last_line;
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var matches = line.match(/^#([^ ]+?) (.*)/);
+            if (matches && matches.length) {
+                var id = matches[1];
+                last_line = matches[2];
+                var li = getByID(id);
+                if (li) {
+                    li.innerHTML = matches[2];
+                } else {
+                    li = document.createElement('li');
+                    li.setAttribute('id', id);
+                    li.appendChild(document.createTextNode(''));
+                    li.innerHTML = matches[2];
+                    upgrade_progress.appendChild(li);
+                    scrollPanelDown(upgrade_container);
+                }
+            } else {
+                matches = line.match(/^([^ ]+)/);
+                if (matches && matches.length) {
+                    last_line = line;
+                    li = document.createElement('li');
+                    li.appendChild(document.createTextNode(''));
+                    li.innerHTML = line;
+                    upgrade_progress.appendChild(li);
+                    scrollPanelDown(upgrade_container);
+                }
+            }
+        }
+        if (last_line) {
+            current_task.innerHTML = last_line;
+        }
+    }
+
+    function scrollPanelDown(el) {
+        el.scrollTop = el.scrollHeight;
+    }
+
+    function setCookie (name, value, expires, path, domain, secure) {
+        var curCookie = name + "=" + escape(value) + (expires ? "; expires=" + expires : "") +
+            (path ? "; path=" + path : "") + (domain ? "; domain=" + domain : "") + (secure ? "secure" : "");
+        document.cookie = curCookie;
+    }
+
+    function actionDone(c, result) {
+        actionInteractive(c); // make sure our progress is up to date...
+        if (result) {
+            result = result.replace(/^(.|\n)*JSON:/, '');
+            var response = eval('('+result+')');
+            if (response.cookie) {
+                setCookie(response.cookie['-name'], response.cookie['-value'],
+                response.cookie['-expires'], response.cookie['-path']);
+            }
+            if (response.steps.length) {
+                if (!response.error) {
+                    actionList = response.steps;
+                    setTimeout('runActions()',10);
+                } else {
+                    var err = getByID("error-message-text");
+                    if (err) {
+                        err.innerHTML = response.error;
+                    }
+                    upgradeDone(false);  // we got an error
+                }
+            } else {
+                // we must be finished.
+                upgradeDone(true);
+            }
+        }
+    }
+
+    function runActions(steps) {
+        if (!actionList.length) return;
+        // reset response_pos so we know where to pull from
+        // for any interactive output...
+        response_pos = 0;
+        var actions = actionList.toJSON();
+        TC.Client.call({
+            'load': actionDone,
+            'interactive': actionInteractive,
+            'error': actionError,
+	        'method': 'POST',
+            'uri': '<TMPL_VAR NAME=SCRIPT_URL>',
+            'arguments': { '__mode' : 'run_actions',
+<TMPL_UNLESS NAME=INSTALLING>
+                           'magic_token' : '<TMPL_VAR NAME=MAGIC_TOKEN>',
+<TMPL_ELSE>
+                           'installing' : '1',
+</TMPL_UNLESS>
+                           'steps' : actions }
+        });
+    }
+    function init() {
+        upgrade_progress = getByID('upgrade-progress');
+        upgrade_container = getByID('upgrade-container');
+        current_task = getByID('current-task');
+        runActions();
+    }
+    TC.attachLoadEvent( init );
+	//-->
+	</script>
+</TMPL_UNLESS>
+
+<div class="upgrade">
+
+<h2><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Initializing database..."><TMPL_ELSE><MT_TRANS phrase="Upgrading database..."></TMPL_IF></h2>
+
+<TMPL_UNLESS NAME=UP_TO_DATE>
+
+<h4 id="current-task"><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Starting installation..."><TMPL_ELSE><MT_TRANS phrase="Starting upgrade..."></TMPL_IF></h4>
+
+<div id="upgrade-container" class="upgrade-process">
+<ul id="upgrade-progress">
+</ul>
+</div>
+
+<div id="progress-bar"><img src="<TMPL_VAR NAME=STATIC_URI>images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+
+<div id="error-message-div" style="display: none">
+  <p id="error-message" class="error-message"><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Error during installation:"><TMPL_ELSE><MT_TRANS phrase="Error during upgrade:"></TMPL_IF> <span id="error-message-text"></span></p>
+</div>
+
+<div id="complete-message-div" style="display: none">
+  <h3><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Installation complete!"><TMPL_ELSE><MT_TRANS phrase="Upgrade complete!"></TMPL_IF></h3>
+
+  <div class="button-bar">
+    <form method="post" action="<TMPL_VAR NAME=MT_URL>">
+      <input type="submit" value="<TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Login to Movable Type"><TMPL_ELSE><MT_TRANS phrase="Return to Movable Type"></TMPL_IF>" />
+    </form>
+  </div>
+</div>
+
+
+
+<TMPL_ELSE>
+
+
+  <h3><MT_TRANS phrase="Your database is already current."></h3>
+
+  <div class="button-bar">
+    <form method="post" action="<TMPL_VAR NAME=MT_URL>">
+      <input type="submit" value="<MT_TRANS phrase="Return to Movable Type">" />
+    </form>
+  </div>
+
+
+</TMPL_UNLESS>
+
+</div>
+
+<TMPL_INCLUDE NAME=footer.tmpl>

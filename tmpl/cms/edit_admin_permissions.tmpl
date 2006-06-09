@@ -1,0 +1,246 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript">
+<!--
+function addToWeblog() {
+    var f = document.forms['perms'];
+    var fld = f['add_role_mask'];
+    if (fld.selectedIndex == -1) return;
+
+    var id = fld.options[fld.selectedIndex].value;
+    var div = getByID("weblog-"+id);
+    if (div) {
+        div.style.display = "block";
+        fld.options[fld.selectedIndex] = null;
+        fld.selectedIndex = 0;
+        if (fld.options.length == 1) {
+            div = getByID("add-weblog");
+            if (div) div.style.display = "none";
+        }
+    }
+}
+
+function allPerms(name, check) {
+    var f = document.forms['perms'];
+    var flds = f[name];
+    for (var i = 0; i < flds.length; i++) {
+        flds[i].checked = check;
+        if (!flds[i].className.match(/administer_blog/))
+            flds[i].disabled = check;
+    }
+    return false;
+}
+
+function getParentByClass(n, c) {
+    var result = n;
+    while (!result.className.match(c)
+           && result.nodeName && (result.nodeName != 'body')) {
+       result = result.parentNode;
+    }
+    return result;
+}
+
+function rectify(blogPermContainer, forcibly) {
+    var permCheckboxes = blogPermContainer.getElementsByTagName('input');
+    for (var i=0; i < permCheckboxes.length; i++) {
+        if (permCheckboxes[i].className.match(/administer_blog/)) {
+            isAdmin = permCheckboxes[i].checked;
+        }
+    }
+    for (var i=0; i < permCheckboxes.length; i++) {
+        if (!permCheckboxes[i].className.match(/administer_blog/)) {
+            if (isAdmin) {
+                permCheckboxes[i].disabled = true;
+                permCheckboxes[i].checked = true;
+            } else {
+                if (forcibly) {
+                    permCheckboxes[i].disabled = false;
+                    permCheckboxes[i].checked = false;
+                }
+            }
+        }
+    }
+}
+
+function handleClick(e) {
+    e = e || event;
+    var targ = e.target || e.srcElement;
+    if (!targ || !targ.nodeName) {
+        return;
+    }
+    if (targ.nodeName.toLowerCase() == 'label') {
+        if (targ.getAttribute('for'))
+            targ = getByID(targ.getAttribute('for'));
+        else {
+           var inputs = targ.getElementsByTagName('input');
+           targ = inputs[0];
+        }
+    }
+    if (targ.className.match(/administer_blog/)) {
+        blogPermContainer = getParentByClass(targ, 'blogcntr');
+        rectify(blogPermContainer, 1);
+    }
+}
+
+function rectifyAll() {
+    var containers = TC.getElementsByClassName('blogcntr');
+    for (var i=0; i < containers.length; i++)
+    {
+        rectify(containers[i]);
+    }
+}
+
+
+TC.attachLoadEvent( rectifyAll );
+
+//-->
+</script>
+
+<div id="edit-permissions" onclick="handleClick(event)">
+
+<TMPL_IF NAME=SELECTED_AUTHOR_NAME>
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=SELECTED_AUTHOR_NAME ESCAPE=HTML></span>: <MT_TRANS phrase="Author Profile"></h2>
+<p><MT_TRANS phrase="_USAGE_PROFILE"></p>
+
+<div class="tabs">
+<ul>
+<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=EDIT_AUTHOR_ID>"><MT_TRANS phrase="Profile"></a></li>
+<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=edit_admin_permissions&amp;author_id=<TMPL_VAR NAME=EDIT_AUTHOR_ID>"><MT_TRANS phrase="Permissions"></a></li>
+</ul>
+</div>
+
+<TMPL_IF NAME=SAVED>
+<h4 class="message"><MT_TRANS phrase="Your changes to [_1]'s permissions have been saved." params="<TMPL_VAR NAME=SELECTED_AUTHOR_NAME ESCAPE=HTML>"></h4>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED_ADD_TO_BLOG>
+<h4 class="message"><MT_TRANS phrase="[_1] has been successfully added to [_2]." params="<TMPL_VAR NAME=SELECTED_AUTHOR_NAME ESCAPE=HTML>%%<TMPL_VAR NAME=SAVED_ADD_TO_BLOG>"></h4>
+</TMPL_IF>
+
+<TMPL_ELSE>
+<p><MT_TRANS phrase="_USAGE_PERMISSIONS_3"></p>
+</TMPL_IF>
+
+<TMPL_IF NAME=SELECTED_AUTHOR_NAME>
+<form name="perms" method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="author_id" value="<TMPL_VAR NAME=EDIT_AUTHOR_ID>" />
+<input type="hidden" name="__mode" value="save_admin_permissions" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<fieldset>
+
+<h3><MT_TRANS phrase="Permissions"></h3>
+
+<div class="inner">
+
+<TMPL_IF NAME=TOPLEVEL_EDIT_ACCESS>
+<div class="setting">
+
+<h4><MT_TRANS phrase="General Permissions"></h4>
+
+<div class="field">
+<ul>
+<li><label><input type="checkbox" name="is_superuser" value="1"<TMPL_IF NAME=PERM_SUPERUSER> checked="checked"</TMPL_IF> class="cb" disabled="disabled" /> <MT_TRANS phrase="System Administrator"></label></li>
+</ul>
+</div>
+
+<div class="field">
+<ul>
+<li><label><input type="checkbox" name="can_create_blog" value="1"<TMPL_IF NAME=PERM_CAN_CREATE_BLOG> checked="checked"</TMPL_IF> class="cb" disabled="disabled" /> <MT_TRANS phrase="User can create weblogs"></label></li>
+</ul>
+</div>
+
+<div class="field">
+<ul>
+<li><label><input type="checkbox" name="can_view_log" value="1"<TMPL_IF NAME=PERM_CAN_VIEW_LOG> checked="checked"</TMPL_IF> class="cb" disabled="disabled" /> <MT_TRANS phrase="User can view activity log"></label></li>
+</ul>
+</div>
+
+<TMPL_IF NAME=PERM_SUPERUSER><input type="hidden" name="is_superuser" value="1" /></TMPL_IF>
+<TMPL_IF NAME=PERM_CAN_CREATE_BLOG><input type="hidden" name="can_create_blog" value="1" /></TMPL_IF>
+<TMPL_IF NAME=PERM_CAN_VIEW_LOG><input type="hidden" name="can_view_log" value="1" /></TMPL_IF>
+
+</div>
+</TMPL_IF>
+
+<TMPL_LOOP NAME=BLOG_LOOP>
+<div class="setting blogcntr">
+
+<input type="hidden" name="role_mask-<TMPL_VAR NAME=BLOG_ID>" value="0" />
+
+<div class="rightcol">
+<p><a href="#" onclick="return allPerms('role_mask-<TMPL_VAR NAME=BLOG_ID>', true)"><MT_TRANS phrase="Check All"></a> |
+<a href="#" onclick="return allPerms('role_mask-<TMPL_VAR NAME=BLOG_ID>', false)"><MT_TRANS phrase="Uncheck All"></a></p>
+</div>
+
+<h4><MT_TRANS phrase="Weblog:"> <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=menu&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML></a></h4>
+
+<TMPL_LOOP NAME=PERM_LOOPS>
+<div class="field">
+<ul>
+<TMPL_LOOP NAME=PERM_LOOP>
+<li><label><input type="checkbox" class="<TMPL_VAR NAME=FLAG_NAME> cb" name="role_mask-<TMPL_VAR NAME=BLOG_ID>" value="<TMPL_VAR NAME=MASK>"<TMPL_IF NAME=HAVE_ACCESS> checked="checked"</TMPL_IF> /> <MT_TRANS phrase="<TMPL_VAR NAME=PROMPT ESCAPE=HTML>"></label></li>
+</TMPL_LOOP>
+</ul>
+</div>
+</TMPL_LOOP>
+
+</div>
+</TMPL_LOOP>
+
+<TMPL_LOOP NAME=BLOG_NO_ACCESS_LOOP>
+<div class="setting blogcntr" id="weblog-<TMPL_VAR NAME=BLOG_ID>" style="display: none">
+
+<!--input type="hidden" name="role_mask-<TMPL_VAR NAME=BLOG_ID>" value="0" /-->
+
+<div class="rightcol">
+<p>
+<a href="#" onclick="return allPerms('role_mask-<TMPL_VAR NAME=BLOG_ID>', true)"><MT_TRANS phrase="Check All"></a> |
+<a href="#" onclick="return allPerms('role_mask-<TMPL_VAR NAME=BLOG_ID>', false)"><MT_TRANS phrase="Unheck All"></a>
+</p>
+</div>
+
+<h4><MT_TRANS phrase="Weblog:"> <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=menu&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML></a></h4>
+
+<TMPL_LOOP NAME=PERM_LOOPS>
+<div class="field">
+<ul>
+<TMPL_LOOP NAME=PERM_LOOP>
+<li><label><input type="checkbox" class="<TMPL_VAR NAME=FLAG_NAME> cb" name="role_mask-<TMPL_VAR NAME=BLOG_ID>" value="<TMPL_VAR NAME=MASK>"<TMPL_IF NAME=HAVE_ACCESS> checked="checked"</TMPL_IF> /> <MT_TRANS phrase="<TMPL_VAR NAME=PROMPT ESCAPE=HTML>"></label></li>
+</TMPL_LOOP>
+</ul>
+</div>
+</TMPL_LOOP>
+
+</div>
+</TMPL_LOOP>
+
+<div class="setting" id="add-weblog"<TMPL_UNLESS NAME=BLOG_NO_ACCESS_LOOP> style="display: none"</TMPL_UNLESS>>
+<p>
+<label for="add_role_mask"><MT_TRANS phrase="Add user to an additional weblog:"></label>
+<select name="add_role_mask" id="add_role_mask">
+<option value=""><MT_TRANS phrase="Select a weblog"></option>
+<TMPL_LOOP NAME=BLOG_NO_ACCESS_LOOP>
+<option value="<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML></option>
+</TMPL_LOOP>
+</select>
+<input type="button" value="<MT_TRANS phrase="Add">" onclick="return addToWeblog()" />
+</p>
+</div>
+
+</div>
+
+</fieldset>
+
+<div style="text-align: center">
+<input type="submit" value="<MT_TRANS phrase="Save Changes">" accesskey="s" alt="<MT_TRANS phrase="Save permissions for this author (s)">" />
+</div>
+
+</form>
+
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

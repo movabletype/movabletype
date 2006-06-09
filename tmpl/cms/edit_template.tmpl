@@ -1,0 +1,230 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="edit-template">
+
+<script type="text/javascript">
+<!--
+var tag_inserts = {};
+<TMPL_IF NAME=TAG_INSERT_LOOP>
+<TMPL_LOOP NAME=TAG_INSERT_LOOP>
+tag_inserts['<TMPL_VAR NAME=ID ESCAPE=JS>'] = "<TMPL_VAR NAME=CONTENT ESCAPE=JS>";
+</TMPL_LOOP>
+</TMPL_IF>
+
+var dirty = false;
+function setDirty () { dirty = true; }
+function clearDirty () { dirty = false; }
+
+function checkDirty () {
+    if (dirty)
+        return "<MT_TRANS phrase="You have unsaved changes to your template that will be lost.">";
+}
+
+TC.attachWindowEvent('beforeunload', checkDirty);
+
+function insertSnippet(el) {
+    var o = getByID('text');
+    if (o) {
+        if (el.selectedIndex == -1) return false;
+        var opt = el.options[el.selectedIndex].value;
+        if (!opt) return false;
+        if (tag_inserts[opt]) {
+            setSelection(o, tag_inserts[opt]);
+        }
+        el.selectedIndex = 0;
+    }
+    return false;
+}
+function setRebuild(f) {
+    f['rebuild'].value = 'Y';
+}
+
+function toggleAutoRebuild (t) {
+	o = getByID('rebuild_me');
+	if (o) {
+		if (t.checked) {
+			o.disabled = true;
+		} else {
+			o.disabled = false;
+		}
+	}
+}
+
+//-->
+</script>
+
+<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Edit Template">: <span class="title-highlight"><TMPL_VAR NAME=NAME ESCAPE=HTML></span></h2>
+
+<TMPL_IF NAME=SAVED>
+<div class="message">
+<MT_TRANS phrase="Your template changes have been saved.">
+<TMPL_UNLESS NAME=BUILD_DYNAMIC>
+<TMPL_IF NAME=HAS_REBUILD><TMPL_IF NAME=CAN_REBUILD>
+<form class="inline" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+<input type="button" onclick="window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=start_rebuild&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;next=0&amp;type=index-<TMPL_VAR NAME=ID>&amp;tmpl_id=<TMPL_VAR NAME=ID>&amp;single_template=1'" value="<MT_TRANS phrase="Rebuild this template">" />
+</form>
+</TMPL_IF></TMPL_IF>
+</TMPL_UNLESS>
+</div>
+</TMPL_IF>
+<TMPL_IF NAME=ERROR>
+<div class="error-message"><TMPL_VAR NAME=ERROR></div>
+</TMPL_IF>
+<TMPL_IF NAME=MESSAGE>
+<div class="message"><TMPL_VAR NAME=MESSAGE></div>
+</TMPL_IF>
+
+<form name="entry_form" id="entry_form" method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="type" value="<TMPL_VAR NAME=TYPE>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="template" />
+<input type="hidden" name="rebuild" value="" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<TMPL_UNLESS NAME=NEW_OBJECT>
+<div class="flt-wrppr">
+<TMPL_IF NAME=PUBLISHED_URL>
+<div class="view-template">
+<a href="<TMPL_VAR NAME=PUBLISHED_URL>" target="<MT_TRANS phrase="_external_link_target">"><MT_TRANS phrase="View Published Template"></a>
+</div>
+</TMPL_IF>
+</div>
+</TMPL_UNLESS>
+
+<div>
+<div class="rightcol">
+
+<TMPL_IF NAME=HAS_BUILD_OPTIONS>
+<p class="fieldset-label"><MT_TRANS phrase="Build Options"></p>
+<div class="build-options">
+<TMPL_IF NAME=CUSTOM_DYNAMIC>
+<div class="build-item">
+<div class="build-field"><input type="checkbox" id="build_dynamic" name="build_dynamic" value="1" <TMPL_IF NAME=BUILD_DYNAMIC>checked="checked" </TMPL_IF> onchange="setDirty()" /></div>
+<p><label for="build_dynamic"><MT_TRANS phrase="Enable dynamic building for this template"></label> <a href="#" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help">?</a></p>
+</div>
+</TMPL_IF>
+<TMPL_UNLESS NAME=BUILD_DYNAMIC>
+<TMPL_IF NAME=HAS_REBUILD>
+<div class="build-item">
+<div class="build-field"><input type="checkbox" id="rebuild_me" name="rebuild_me" value="1" <TMPL_IF NAME=REBUILD_ME>checked="checked" </TMPL_IF> onchange="setDirty()" /></div>
+<p><label for="rebuild_me"><MT_TRANS phrase="Rebuild this template automatically when rebuilding index templates"></label> <a href="#" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help">?</a></p>
+</div>
+</TMPL_IF>
+</TMPL_UNLESS>
+</div>
+</TMPL_IF>
+
+</div>
+<div class="leftcol">
+
+<TMPL_IF NAME=HAS_NAME>
+<p><label for="name"><MT_TRANS phrase="Template Name"></label> <a href="#" onclick="return openManual('templates', 'template_name')" class="help">?</a><br />
+<input name="name" id="name" value="<TMPL_VAR NAME=NAME ESCAPE=HTML>" class="wide" onchange="setDirty()" /></p>
+<TMPL_ELSE>
+<p><MT_TRANS phrase="Template Name"><br /><strong>
+<TMPL_IF NAME=TYPE_COMMENTS>
+<input type="hidden" name="name" value="Comment Listing Template" />
+<MT_TRANS phrase="Comment Listing Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_COMMENT_PREVIEW>
+<input type="hidden" name="name" value="Comment Preview Template" />
+<MT_TRANS phrase="Comment Preview Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_SEARCH_TEMPLATE>
+<input type="hidden" name="name" value="Search Template" />
+<MT_TRANS phrase="Search Results Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_COMMENT_ERROR>
+<input type="hidden" name="name" value="Comment Error Template" />
+<MT_TRANS phrase="Comment Error Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_COMMENT_PENDING>
+<input type="hidden" name="name" value="Comment Pending Template" />
+<MT_TRANS phrase="Comment Pending Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_REGISTER_USER>
+<input type="hidden" name="name" value="Commenter Registration Template" />
+<MT_TRANS phrase="Commenter Registration Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_PINGS>
+<input type="hidden" name="name" value="TrackBack Listing Template" />
+<MT_TRANS phrase="TrackBack Listing Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_POPUP_IMAGE>
+<input type="hidden" name="name" value="Uploaded Image Popup Template" />
+<MT_TRANS phrase="Uploaded Image Popup Template">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_DYNAMIC_ERROR>
+<input type="hidden" name="name" value="Dynamic Pages Error Template" />
+<MT_TRANS phrase="Dynamic Pages Error Template">
+</TMPL_IF>
+</strong></p>
+</TMPL_IF>
+
+<TMPL_IF NAME=HAS_OUTFILE>
+<p><label for="outfile"><MT_TRANS phrase="Output File"></label> <a href="#" onclick="return openManual('templates', 'output_file')" class="help">?</a><br />
+<input name="outfile" id="outfile" value="<TMPL_VAR NAME=OUTFILE ESCAPE=HTML>" class="wide" onchange="setDirty()" /></p>
+</TMPL_IF>
+</div>
+
+<br style="clear: both;" />
+</div>
+
+<p><label for="linked_file"><MT_TRANS phrase="Link this template to a file"></label> <a href="#" onclick="return openManual('templates', 'linked_templates')" class="help">?</a><br />
+<input name="linked_file" id="linked_file" value="<TMPL_VAR NAME=LINKED_FILE ESCAPE=HTML>" class="wide" onchange="setDirty()" /></p>
+
+<div class="field">
+<div class="field-header">
+<label for="text"><TMPL_IF NAME=TYPE_CUSTOM><MT_TRANS phrase="Module Body"><TMPL_ELSE><MT_TRANS phrase="Template Body"></TMPL_IF></label>
+<a href="#" onclick="return openManual('templates', 'template_body')" class="help">?</a>
+</div>
+<div class="field-wrapper">
+<div class="field-buttons">
+<div class="field-buttons-formatting">
+<TMPL_IF NAME=TAG_INSERT_LOOP>
+<select id="tag-insert" name="tag-insert" onchange="insertSnippet(this)">
+    <option value=""><MT_TRANS phrase="Insert..."></option>
+<TMPL_LOOP NAME=TAG_INSERT_LOOP>
+    <option value="<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=LABEL ESCAPE=HTML></option>
+</TMPL_LOOP>
+</select>
+</TMPL_IF>
+
+
+
+</div>
+<div class="field-buttons-resizing">
+<script type="text/javascript">
+<!--
+with (document) {
+    write('<a title="<MT_TRANS phrase="Bigger">" href="javascript:void(0)" onclick="return expandEditor( \'text\', \'expand\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-bigger.gif" alt="<MT_TRANS phrase="Bigger">" width="26" height="19" /></a>');
+    write('<a title="<MT_TRANS phrase="Smaller">" href="javascript:void(0)" onclick="return expandEditor( \'text\', \'contract\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-smaller.gif" alt="<MT_TRANS phrase="Smaller">" width="26" height="19" /></a>');
+}
+// -->
+</script>
+</div>
+</div>
+<div class="textarea-wrapper">
+<textarea name="text" id="text" cols="72" rows="15" style="height: <TMPL_IF NAME=DISP_PREFS_HEIGHT_TEXT><TMPL_VAR NAME=DISP_PREFS_HEIGHT_TEXT><TMPL_ELSE>290</TMPL_IF>px" onchange="setDirty()" /><TMPL_VAR NAME=TEXT ESCAPE=HTML></textarea>
+</div>
+<input type="hidden" name="text_height" id="text_height" value="<TMPL_IF NAME=DISP_PREFS_HEIGHT_TEXT><TMPL_VAR NAME=DISP_PREFS_HEIGHT_TEXT><TMPL_ELSE>290</TMPL_IF>" />
+</div>
+</div>
+
+<input accesskey="s" type="submit" value="<MT_TRANS phrase="Save">" title="<MT_TRANS phrase="Save this template (s)">" onclick="clearDirty()" />
+<TMPL_UNLESS NAME=NEW_OBJECT>
+<TMPL_UNLESS NAME=BUILD_DYNAMIC>
+<TMPL_IF NAME=HAS_REBUILD>
+<TMPL_IF NAME=CAN_REBUILD>
+<input type="submit" value="<MT_TRANS phrase="Save and Rebuild">" accesskey="r" title="<MT_TRANS phrase="Save and rebuild this template (r)">" onclick="clearDirty();setRebuild(this.form)" /></TMPL_IF>
+</TMPL_IF>
+</TMPL_UNLESS>
+</TMPL_UNLESS>
+</form>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

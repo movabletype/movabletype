@@ -1,0 +1,17 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="submit" name="reedit" accesskey="e" value="<MT_TRANS phrase="Re-Edit this entry">" />
+<input type="submit" name="save" accesskey="s" value="<MT_TRANS phrase="Save this entry">" />
+<input type="submit" name="cancel" value="<MT_TRANS phrase="Cancel">" />
+<input type="hidden" name="__mode" value="save_entry" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+<TMPL_LOOP NAME=ENTRY_LOOP>
+<input type="hidden" name="<TMPL_VAR NAME=DATA_NAME ESCAPE=HTML>" value="<TMPL_VAR NAME=DATA_VALUE ESCAPE=HTML>" />
+</TMPL_LOOP>
+
+<TMPL_VAR NAME=PREVIEW_BODY>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

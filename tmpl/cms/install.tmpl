@@ -1,0 +1,137 @@
+<TMPL_INCLUDE NAME=header.tmpl>
+
+<style type="text/css">
+div.warning#version-warning {
+    position: absolute;
+    padding: 1em;
+    width: 700px;
+}
+div.warning#version-warning input {
+    font-size: xx-large;
+}
+</style>
+
+<script type="text/javascript">
+window.onload = init;
+
+function init() {
+    if (!getByID) {
+        // javascript files failed to load... alert user
+        return;
+    }
+    var user = getByID("admin_username");
+    if (user) {
+        user.focus();
+    }
+}
+
+function dismiss(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display = 'none';
+    }
+}
+</script>
+
+<div id="edit-author" class="upgrade">
+
+<h2><MT_TRANS phrase="Welcome to Movable Type!"></h2>
+
+<TMPL_IF NAME=VERSION_WARNING>
+<div class="warning" id="version-warning">
+    <p><MT_TRANS phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<TMPL_VAR NAME=PERL_VERSION>%%<TMPL_VAR NAME=PERL_MINIMUM>"></p>
+    <p><MT_TRANS phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<TMPL_VAR NAME=PERL_MINIMUM>"></p>
+    <p><MT_TRANS phrase="Do you want to proceed with the installation anyway?"></p>
+    <form method="get">
+    <p align="center"><input type="button" value=" &nbsp; <MT_TRANS phrase="Yes"> &nbsp;" onclick="dismiss('version-warning')" />
+        &nbsp; &nbsp;
+    <input type="button" value=" &nbsp; <MT_TRANS phrase="No"> &nbsp; " onclick="javascript:location.href='mt-check.cgi'" />
+    </p>
+    </form>
+</div>
+</TMPL_IF>
+
+<p><MT_TRANS phrase="Before you can begin blogging, we need to complete your installation by initializing your database."></p>  
+
+<TMPL_IF NAME=ERROR>
+<div class="error-message"><TMPL_VAR NAME=ERROR></div>
+</TMPL_IF>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="install">
+
+<p><MT_TRANS phrase="You will need to select a username and password for the administrator account."></p>
+
+<div class="flt-wrppr">
+
+<!--
+<div class="rightcol">
+
+<div class="box permission-box">
+<h4><MT_TRANS phrase="Title"></h4>
+
+<div class="inner">
+</div>
+</div>
+</div>
+-->
+
+<div class="leftcol">
+
+<fieldset>
+
+<div class="setting">
+    <div class="label">
+        <label for="admin_username"><MT_TRANS phrase="Username:"></label>
+    </div>
+    <div class="field">
+        <input type="text" id="admin_username" name="admin_username" value="<TMPL_VAR NAME=ADMIN_USERNAME ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="The name used by this author to login."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="admin_email"><MT_TRANS phrase="Email Address:"></label>
+    </div>
+    <div class="field">
+        <input type="text" id="admin_email" name="admin_email" value="<TMPL_VAR NAME=ADMIN_EMAIL ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="The author's email address."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="admin_password"><MT_TRANS phrase="Password:"></label><br />
+    </div>
+    <div class="field">
+        <input type="password" id="admin_password" name="admin_password" />
+        <p><MT_TRANS phrase="Select a password for your account."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="admin_password_confirm"><MT_TRANS phrase="Password Confirm:"></label><br />
+    </div>
+    <div class="field">
+        <input type="password" name="admin_password_confirm" />
+        <p><MT_TRANS phrase="Repeat the password for confirmation."></p>
+    </div>
+</div>
+
+</fieldset>
+
+</div>
+</div>
+
+<div class="button-bar">
+<input type="submit" value="<MT_TRANS phrase="Finish Install">" />
+</div>
+
+</form>
+
+</div>
+</div>
+
+<TMPL_INCLUDE NAME=footer.tmpl>

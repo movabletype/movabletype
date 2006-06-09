@@ -1,0 +1,14 @@
+<html>
+<head>
+<script type="text/javascript">
+<!--
+var o = window.opener;
+if (o && o.location) {
+    <TMPL_IF NAME=URL>o.location = '<TMPL_VAR NAME=URL>';</TMPL_IF>
+<TMPL_VAR NAME=JAVASCRIPT>
+    window.close();
+}
+// -->
+</script>
+</head>
+</html>

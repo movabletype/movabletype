@@ -1,0 +1,13 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<p><MT_TRANS phrase="Your new entry has been saved to [_1]" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"><TMPL_IF NAME=STATUS_RELEASED><MT_TRANS phrase=", and it has been posted to your site"></TMPL_IF><MT_TRANS phrase=". "><a target="_blank" href="<TMPL_VAR NAME=BLOG_URL>"><MT_TRANS phrase="View your site"></a></p>
+
+<p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=ENTRY_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" target="_blank"><MT_TRANS phrase="Edit this entry"></a></p>
+
+<div align="right">
+<form action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return false;">
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Close">" />
+</form>
+</div>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

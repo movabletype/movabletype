@@ -1,0 +1,28 @@
+<TMPL_IF NAME=HAS_ITEMSET_ACTIONS>
+<script type="text/javascript">
+<TMPL_LOOP NAME=CORE_ITEMSET_ACTION_LOOP>
+itemset_options['<TMPL_VAR NAME=KEY>'] = {type:'core'<TMPL_IF NAME=INPUT>,input:'<MT_TRANS phrase="<TMPL_VAR NAME=INPUT_LABEL ESCAPE=JS>">'</TMPL_IF><TMPL_IF NAME=CONTINUE_PROMPT>,continue_prompt:"<MT_TRANS phrase="<TMPL_VAR NAME=CONTINUE_PROMPT ESCAPE=JS>">"</TMPL_IF><TMPL_IF NAME=JS>,js:'<TMPL_VAR NAME=JS ESCAPE=JS>'</TMPL_IF>};
+</TMPL_LOOP><TMPL_LOOP NAME=PLUGIN_ITEMSET_ACTION_LOOP>
+itemset_options['<TMPL_VAR NAME=KEY>'] = {type:'plugin'<TMPL_IF NAME=INPUT>,input:'<MT_TRANS phrase="<TMPL_VAR NAME=INPUT_LABEL ESCAPE=JS>">'</TMPL_IF><TMPL_IF NAME=CONTINUE_PROMPT>,continue_prompt:"<MT_TRANS phrase="<TMPL_VAR NAME=CONTINUE_PROMPT ESCAPE=JS>">"</TMPL_IF><TMPL_IF NAME=JS>,js:'<TMPL_VAR NAME=JS ESCAPE=JS>'</TMPL_IF>};
+</TMPL_LOOP>
+</script>
+<select name="plugin_action_selector" onchange="updatePluginAction(this)">
+<option value="0"><MT_TRANS phrase="More actions..."></option>
+<TMPL_IF NAME=CORE_ITEMSET_ACTION_LOOP>
+<TMPL_LOOP NAME=CORE_ITEMSET_ACTION_LOOP>
+<option value="<TMPL_VAR NAME=KEY>"><MT_TRANS phrase="<TMPL_VAR NAME=LABEL>"></option>
+</TMPL_LOOP>
+</TMPL_IF>
+<TMPL_IF NAME=PLUGIN_ITEMSET_ACTION_LOOP>
+<optgroup label="<MT_TRANS phrase='Plugin Actions'>">
+<TMPL_LOOP NAME=PLUGIN_ITEMSET_ACTION_LOOP>
+<option value="<TMPL_VAR NAME=KEY>"><TMPL_VAR NAME=LABEL></option>
+</TMPL_LOOP>
+</optgroup>
+</TMPL_IF>
+</select>
+<input type="button" onclick="doPluginAction(this.form, '<TMPL_IF NAME="OBJECT_TYPE_PLURAL"><MT_TRANS phrase="<TMPL_VAR NAME=OBJECT_TYPE_PLURAL>"></TMPL_IF>', '<MT_TRANS phrase="to act upon">')" value="<MT_TRANS phrase="Go">" />
+<TMPL_ELSE>
+<select disabled="disabled" name="plugin_action_selector"><option value=""><MT_TRANS phrase="No actions"></option></select>
+<input disabled="disabled" type="button" value="<MT_TRANS phrase="Go">" />
+</TMPL_IF>

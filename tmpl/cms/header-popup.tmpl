@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="<TMPL_VAR NAME=LANGUAGE_TAG>">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=<TMPL_VAR NAME=LANGUAGE_ENCODING>" />
+<title><TMPL_LOOP NAME=PAGE_TITLES><TMPL_VAR NAME=BC_NAME ESCAPE=HTML> | </TMPL_LOOP><MT_TRANS phrase="Movable Type Publishing Platform"></title>
+<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css" type="text/css" />
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js"></script>
+<TMPL_IF NAME=LOCAL_LANG_ID><link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles_<TMPL_VAR NAME=LOCAL_LANG_ID>.css" />
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt_<TMPL_VAR NAME=LOCAL_LANG_ID>.js" charset="utf-8"></script></TMPL_IF>
+<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>user_styles.css" type="text/css" />
+<script type="text/javascript">
+ScriptURI = '<TMPL_VAR NAME=SCRIPT_URL>';
+ScriptBaseURI = '<TMPL_VAR NAME=SCRIPT_BASE_URL>';
+StaticURI = '<TMPL_VAR NAME=STATIC_URI>';
+HelpBaseURI = '<TMPL_VAR NAME=HELP_URL>';
+</script>
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc.js"></script>
+</head>
+
+<body id="mode_<TMPL_VAR NAME=MODE>" class="<TMPL_IF NAME=BLOG_ID>blog blog-<TMPL_VAR NAME=BLOG_ID><TMPL_ELSE>system</TMPL_IF>" onload="window.focus()">
+
+<div id="topnav-img"><h1><img alt="Movable Type" src="<TMPL_VAR NAME=STATIC_URI>images/topnav-logo-popup.gif" width="204" height="66" border="0" /></h1></div>
+
+<div class="body-pop">

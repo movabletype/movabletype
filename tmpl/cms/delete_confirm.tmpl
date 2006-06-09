@@ -1,0 +1,60 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="_type" value="<TMPL_VAR NAME=TYPE>" />
+<input type="hidden" name="parent" value="<TMPL_VAR NAME=PARENT>" />
+<input type="hidden" name="__mode" value="delete" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+<TMPL_LOOP NAME=ID_LOOP>
+<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
+</TMPL_LOOP>
+
+<p>
+<TMPL_IF NAME=TYPE_AUTHOR>
+<MT_TRANS phrase="Are you sure you want to permanently delete the [quant,_1,author] from the system?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_COMMENT>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,comment]?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_PING>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,TrackBack]?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_PING_CAT>
+Are you sure you want to delete <TMPL_VAR NAME=THISTHESE> TrackBack<TMPL_UNLESS NAME=IS_ONE>s</TMPL_UNLESS>?
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_ENTRY>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,entry,entries]?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_TEMPLATE>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,template]?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_CATEGORY>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,category,categories]? When you delete a category, all entries assigned to that category will be unassigned from that category." params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_TEMPLATEMAP>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,template] from the particular archive type(s)?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_BANLIST>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,IP address,IP addresses] from your Banned IP List?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_NOTIFICATION>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,notification address,notification addresses]?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_BLOCKLIST>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,blocked item,blocked items]?" params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+<TMPL_IF NAME=TYPE_BLOG>
+<MT_TRANS phrase="Are you sure you want to delete the [quant,_1,weblog]? When you delete a weblog, all of the entries, comments, templates, notifications, and author permissions are deleted along with the weblog itself. Make sure that this is what you want, because this action is permanent." params="<TMPL_VAR NAME=NUM>">
+</TMPL_IF>
+</p>
+
+<p align="right">
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Cancel">" />
+<input type="submit" value="<MT_TRANS phrase="Delete">" />
+</p>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

@@ -1,0 +1,31 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="recover" />
+
+<TMPL_IF NAME=RECOVERED>
+<p><MT_TRANS phrase="Your password has been changed, and the new password has been sent to your email address ([_1])." params="<TMPL_VAR NAME=EMAIL ESCAPE=HTML>"></p>
+
+<div align="right">
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Close">" />
+</div>
+<TMPL_ELSE>
+<p>
+<label for="name"><MT_TRANS phrase="Enter your Movable Type username:"></label><br />
+<input name="name" id="name" />
+</p>
+
+<p>
+<label for="hint"><MT_TRANS phrase="Enter your password hint:"></label><br /> 
+<input name="hint" id="hint" />
+</p>
+
+<div align="right">
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Cancel">" />
+<input type="submit" value="<MT_TRANS phrase="Recover">" />
+</div>
+</TMPL_IF>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

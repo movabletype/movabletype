@@ -1,0 +1,39 @@
+* {
+  _font-family: "MS PGothic", "Trebuchet MS", Trebuchet, Verdana, Arial, sans-serif ! important;
+}
+
+body {
+  font-size: x-small;
+  f\ont-size: 13px;
+  /*\*/
+  _font-size: normal;
+  /**/
+}
+
+#list-blog .blog-info {
+  width: 225px;
+}
+
+#list-blog .shortcuts {
+  width: 210px;
+}
+
+#list-blog .shortcuts ul {
+  width: 100px;
+}
+
+#list-blog .shortcuts ul.shortcut-col2 {
+   width: 90px;
+}
+
+#nav .top li {
+  line-height: 1.6;
+  padding-top: 0;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+input, select, option, textarea {
+  font-family: sans-selif;
+}
+

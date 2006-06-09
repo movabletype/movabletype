@@ -1,0 +1,102 @@
+<TMPL_INCLUDE NAME="header-popup.tmpl">
+
+<script type="text/javascript">
+<!--
+
+function move (from, to) {
+    var fbox = new Array();
+    var tbox = new Array();
+    var lookup = new Array();
+
+    // Copy data from 'to' and 'from' boxes into 'tbox' and 'fbox'
+    // arrays; if an item in 'from' is selected, it gets moved into
+    // 'tbox'.'lookup' holds the values of each option.
+    for (i=0; i<to.length; i++) {
+        if (to.options[i].value == -1) continue;
+        lookup[to.options[i].text] = to.options[i].value;
+        tbox[i] = to.options[i].text;
+    }
+    for (i=0; i<from.length; i++) {
+        if (from.options[i].value == -1) continue;
+        lookup[from.options[i].text] = from.options[i].value;
+        if (from.options[i].selected)
+            tbox[tbox.length] = from.options[i].text;
+        else
+            fbox[fbox.length] = from.options[i].text;
+    }
+
+    // Sort both of the arrays, then fill up the selection boxes with
+    // the sorted values.
+    fbox.sort();
+    tbox.sort();
+    from.length = 0;
+    to.length = 0;
+
+    // This is stupid. Mac IE has a nasty bug where, if a multiple selection
+    // box is left empty, it seems to move the other selection box all over
+    // the screen. So if the 'from' box is going to be empty, we fill it with
+    // an empty option. We then check for this dummy option up above
+    // (value == -1) to get rid of it when we don't need it.
+    if (fbox.length == 0)
+        from[0] = new Option('', -1);
+    for (i=0; i<fbox.length; i++)
+        from[i] = new Option(fbox[i], lookup[fbox[i]]);
+    for (i=0; i<tbox.length; i++)
+        to[i] = new Option(tbox[i], lookup[tbox[i]]);
+}
+
+function select_all (s) {
+    for (i=0; i<s.length; i++)
+        s.options[i].selected = 1;
+}
+
+//-->
+</script>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="select_all(this.category_id)">
+<input type="hidden" name="__mode" value="save_placements" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="entry_id" value="<TMPL_VAR NAME=ENTRY_ID>" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<p><MT_TRANS phrase="_USAGE_PLACEMENTS"></p>
+
+<TMPL_IF NAME=SAVED>
+<h4 class="message"><MT_TRANS phrase="The secondary categories for this entry have been updated. You will need to SAVE the entry for these changes to be reflected on your public site."></h4>
+</TMPL_IF>
+
+<div align="center">
+
+<table border="0" cellspacing="2" cellpadding="0">
+
+<tr>
+<th><MT_TRANS phrase="Categories in your weblog:"></th>
+<th>&nbsp;
+<th><MT_TRANS phrase="Secondary categories:"></th>
+</tr>
+
+<tr>
+<td><select multiple size="15" name="category_selector" style="width: 175px;">
+<TMPL_LOOP NAME=CATEGORY_LOOP>
+<option value="<TMPL_VAR NAME=CATEGORY_ID>"><TMPL_VAR NAME=CATEGORY_LABEL></option>
+</TMPL_LOOP>
+</select></td>
+<td align="center" valign="middle"><input onclick="move(this.form.category_selector, this.form.category_id)" type="button" value="<MT_TRANS phrase='Assign &gt;&gt;'>"><br /><br /><input onclick="move(this.form.category_id, this.form.category_selector)" type="button" value="<MT_TRANS phrase='&lt;&lt; Remove'>"></td>
+<td><select size="15" multiple name="category_id" style="width: 175px;">
+<TMPL_LOOP NAME=PLACEMENT_LOOP>
+<option value="<TMPL_VAR NAME=PLACE_CATEGORY_ID>"><TMPL_VAR NAME=PLACE_CATEGORY_LABEL></option>
+</TMPL_LOOP>
+</select></td>
+</tr>
+
+</table>
+
+<p align="center">
+<input type="button" onclick="window.close()" value="<MT_TRANS phrase="Close">" />
+<input type="submit" value="<MT_TRANS phrase="Save">" />
+</p>
+
+</form>
+
+<TMPL_INCLUDE NAME="footer-popup.tmpl">

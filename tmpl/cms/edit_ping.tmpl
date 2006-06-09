@@ -1,0 +1,184 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="edit-ping">
+
+<h2><MT_TRANS phrase="Edit TrackBack"></h2>
+
+<TMPL_IF NAME=SAVED_PING>
+<h4 class="message"><MT_TRANS phrase="Your changes have been saved."></h4>
+</TMPL_IF>
+
+<TMPL_IF NAME=APPROVED>
+<h4 class="message"><MT_TRANS phrase="The TrackBack has been approved."></h4>
+</TMPL_IF>
+
+<div class="flt-wrppr">
+<div class="object-nav">
+<TMPL_IF NAME=PREVIOUS_PING_ID>
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=ping&amp;id=<TMPL_VAR NAME=PREVIOUS_PING_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>">&laquo; <MT_TRANS phrase="Previous"></a> |
+</TMPL_IF>
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="List &amp; Edit TrackBacks"></a>
+<TMPL_IF NAME=NEXT_PING_ID>
+| <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=ping&amp;id=<TMPL_VAR NAME=NEXT_PING_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Next"> &raquo;</a>
+</TMPL_IF>
+</div>
+<div class="view-entry">
+<TMPL_IF NAME=ENTRY_PERMALINK><a href="<TMPL_VAR NAME=ENTRY_PERMALINK>" target="<MT_TRANS phrase="_external_link_target">"><MT_TRANS phrase="View Entry"></a></TMPL_IF>
+</div>
+</div>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="action_name" value="save" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="_type" value="ping" />
+<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<TMPL_IF NAME=PING_PENDING>
+<h3 class="pending"><MT_TRANS phrase="Pending Approval"></h3>
+</TMPL_IF>
+<TMPL_IF NAME=IS_JUNK>
+<h3 class="junky"><MT_TRANS phrase="Junked TrackBack"></h3>
+</TMPL_IF>
+
+<div class="flt-wrppr">
+<div class="leftcol">
+
+<textarea rows="10" cols="30" name="excerpt" id="excerpt"><TMPL_VAR NAME=EXCERPT ESCAPE=HTML></textarea>
+
+</div>
+<div class="rightcol">
+
+<div class="list">
+<table cellspacing="0">
+
+<tr class="even">
+<td class="label" id="edit-ping-label"><label for="status"><MT_TRANS phrase="Status:"></label></td>
+<td id="edit-ping-field">
+<select name="status">
+<option value="publish" <TMPL_IF NAME=PING_APPROVED>selected="selected"</TMPL_IF>><MT_TRANS phrase="Published"></option>
+<option value="moderate" <TMPL_IF NAME=PING_PENDING>selected="selected"</TMPL_IF>><MT_TRANS phrase="Unpublished"></option>
+<option value="junk" <TMPL_IF NAME=IS_JUNK>selected="selected"</TMPL_IF>><MT_TRANS phrase="Junk"></option>
+</select>
+</td>
+<td class="filter" id="edit-ping-filter"><a title="<MT_TRANS phrase="View all TrackBacks with this status">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID><TMPL_IF NAME=IS_JUNK>&amp;tab=junk<TMPL_ELSE>&amp;filter=status&amp;filter_val=<TMPL_IF NAME=PING_APPROVED>approved</TMPL_IF><TMPL_IF NAME=PING_PENDING>pending</TMPL_IF></TMPL_IF>"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+
+<tr class="odd">
+<td class="label"><label for="blog_name"><MT_TRANS phrase="Source Site:"></label></td>
+<td><input name="blog_name" id="blog_name" value="<TMPL_VAR NAME=SOURCE_BLOG_NAME ESCAPE=HTML>" /></td>
+<td class="filter"><a title="<MT_TRANS phrase="Search for other TrackBacks from this site">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;_type=ping&amp;search=<TMPL_VAR NAME=SOURCE_BLOG_NAME ESCAPE=URL>&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+
+<tr class="even">
+<td class="label"><label for="title"><MT_TRANS phrase="Source Title:"></label></td>
+<td><input name="title" id="title" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" /></td>
+<td class="filter"><a title="<MT_TRANS phrase="Search for other TrackBacks with this title">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search=<TMPL_VAR NAME=TITLE ESCAPE=URL>&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+
+<tr class="odd">
+<td class="label"><label for="source_url"><MT_TRANS phrase="URL:"></label></td>
+<td>
+<input name="source_url" id="source_url" value="<TMPL_VAR NAME=SOURCE_URL ESCAPE=HTML>" class="short" />
+<a href="<TMPL_VAR NAME=SOURCE_URL ESCAPE=HTML>" title="<TMPL_VAR NAME=SOURCE_URL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/link.gif" alt="<MT_TRANS phrase="Link">" width="16" height="9" /></a>
+</td>
+<td class="filter"><a title="<MT_TRANS phrase="Search for other TrackBacks with this status">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search=<TMPL_VAR NAME=SOURCE_URL ESCAPE=URL>&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+
+<TMPL_IF ENTRY_PING>
+<tr class="even">
+<td class="label"><MT_TRANS phrase="Target Entry:"></td>
+<td><TMPL_IF NAME=NO_ENTRY>[<MT_TRANS phrase="Entry no longer exists">]<TMPL_ELSE><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=ENTRY_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_IF NAME=ENTRY_TITLE><TMPL_VAR NAME=ENTRY_TITLE ESCAPE=HTML><TMPL_ELSE>[<MT_TRANS phrase="No title">]</TMPL_IF></a></TMPL_IF></td>
+<td class="filter"><a title="<MT_TRANS phrase="View all TrackBacks on this entry">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=ENTRY_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;tab=pings"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+</TMPL_IF>
+
+<TMPL_IF CATEGORY_PING>
+<tr class="even">
+<td class="label"><MT_TRANS phrase="Target Category:"></td>
+<td><TMPL_IF NAME=NO_CATEGORY>[<MT_TRANS phrase="Category no longer exists">]<TMPL_ELSE><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=category&amp;id=<TMPL_VAR NAME=CATEGORY_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_IF NAME=CATEGORY_LABEL><TMPL_VAR NAME=CATEGORY_LABEL ESCAPE=HTML><TMPL_ELSE>[<MT_TRANS phrase="No title">]</TMPL_IF></a></TMPL_IF></td>
+<td class="filter"><a title="<MT_TRANS phrase="View all TrackBacks on this category">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;filter=category_id&amp;filter_val=<TMPL_VAR NAME=CATEGORY_ID ESCAPE=HTML>"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+</TMPL_IF>
+
+<tr class="odd">
+<td class="label"><label for="created_on"><MT_TRANS phrase="Date:"></label></td>
+<td><TMPL_VAR NAME=CREATED_ON_TIME_FORMATTED ESCAPE=HTML></td>
+<td class="filter"><a title="<MT_TRANS phrase="View all TrackBacks posted on this day">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;from=<TMPL_VAR NAME=CREATED_ON_DAY_FORMATTED ESCAPE=HTML>&amp;to=<TMPL_VAR NAME=CREATED_ON_DAY_FORMATTED ESCAPE=HTML>&amp;show_all=1&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+
+<tr class="even">
+<td class="label"><MT_TRANS phrase="IP:"></td>
+<td><TMPL_VAR NAME=IP ESCAPE=HTML></td>
+<td class="filter"><a title="<MT_TRANS phrase="View all TrackBacks from this IP address">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=ip&amp;search=<TMPL_VAR NAME=IP ESCAPE=URL>&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
+</tr>
+
+</table>
+</div>
+
+</div>
+</div>
+
+<div class="list-actions">
+
+<div class="button-bar">
+<input name="save" type="submit" value="<MT_TRANS phrase="Save Changes">" accesskey="s" title="<MT_TRANS phrase="Save this TrackBack (s)">" />
+<input type="button" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="TrackBack">', '<MT_TRANS phrase="TrackBack">', false, { 'return_args' : '__mode=list_pings&blog_id=<TMPL_VAR NAME=BLOG_ID>'})" value="<MT_TRANS phrase="Delete">" accesskey="x" title="<MT_TRANS phrase="Delete this TrackBack (x)">" />
+<TMPL_IF NAME=IS_IP_FILTER><TMPL_IF NAME=BLOG_ID>
+<input type="button" onclick="doBanIP('<TMPL_VAR NAME=FILTER_VAL>', '<TMPL_VAR NAME=BLOG_ID>', '<TMPL_VAR NAME=MAGIC_TOKEN>')" name="banip" value="<MT_TRANS phrase="Ban This IP">" />
+</TMPL_IF></TMPL_IF>
+</div>
+
+<div class="button-bar-alt">
+<TMPL_INCLUDE NAME="itemset_action_widget.tmpl">
+</div>
+
+</div>
+
+
+<TMPL_IF NAME=JUNK_LOG_LOOP>
+
+<TMPL_IF NAME=JUNK_SCORE>
+<h3><MT_TRANS phrase="Final Feedback Rating">: <TMPL_VAR NAME=JUNK_SCORE></h3>
+</TMPL_IF>
+
+<div class="list" id="junk-log">
+<table cellspacing="0">
+<tr>
+<th id="jl-test"><MT_TRANS phrase="Test"></th>
+<th id="jl-score"><MT_TRANS phrase="Score"></th>
+<th id="jl-results"><MT_TRANS phrase="Results"></th>
+</tr>
+
+<TMPL_LOOP NAME=JUNK_LOG_LOOP>
+<tr valign="top" class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
+<td><TMPL_VAR NAME=TEST ESCAPE=HTML></td>
+<td><TMPL_VAR NAME=SCORE></td>
+<td><TMPL_VAR NAME=LOG></td>
+</tr>
+</TMPL_LOOP>
+</table>
+</div>
+</TMPL_IF>
+
+</form>
+
+<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
+<div class="box" id="plugin-actions-box">
+<h4><MT_TRANS phrase="Plugin Actions"></h4>
+<div class="inner">
+<ul>
+<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
+<li><a href="<TMPL_VAR NAME=PAGE>;from=edit_ping;id=<TMPL_VAR NAME=ID>;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=LINK_TEXT></a></li>
+</TMPL_LOOP>
+</ul>
+</div>
+</div>
+</TMPL_IF>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">

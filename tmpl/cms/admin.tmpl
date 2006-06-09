@@ -1,0 +1,75 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<div id="rightcol-notes">
+
+<div class="box" id="stats-box">
+<h4><MT_TRANS phrase="System Stats"></h4>
+<div class="list stats">
+<table cellspacing="0">
+<tr>
+<td class="name"><MT_TRANS phrase="Weblogs">:</td>
+<td class="value"><TMPL_VAR NAME=BLOG_COUNT></td>
+</tr>
+<tr>
+<td class="name"><MT_TRANS phrase="Authors">:</td>
+<td class="value"><TMPL_VAR NAME=AUTHOR_COUNT></td>
+</tr>
+<tr>
+<td class="name"><MT_TRANS phrase="Active Authors">:</td>
+<td class="value"><TMPL_VAR NAME=ACTIVE_AUTHOR_COUNT></td>
+</tr>
+<tr>
+<td class="name"><MT_TRANS phrase="Entries">:</td>
+<td class="value"><TMPL_VAR NAME=ENTRY_COUNT></td>
+</tr>
+<tr>
+<td class="name"><MT_TRANS phrase="Comments">:</td>
+<td class="value"><TMPL_VAR NAME=COMMENT_COUNT></td>
+</tr>
+<tr>
+<td class="name"><MT_TRANS phrase="TrackBacks">:</td>
+<td class="value"><TMPL_VAR NAME=TRACKBACK_COUNT></td>
+</tr>
+<tr>
+<td class="name"><MT_TRANS phrase="Version">:</td>
+<td class="value"><TMPL_VAR NAME=MT_VERSION></td>
+</tr>
+</table>
+</div>
+</div>
+
+<div class="box" id="links-box">
+<h4><MT_TRANS phrase="Essential Links"></h4>
+<div class="inner">
+<ul>
+<li><a href="<TMPL_VAR NAME=SCRIPT_PATH>mt-check.cgi"><MT_TRANS phrase="System Information"></a></li>
+<li><a href="<MT_TRANS phrase="https://secure.sixapart.com/t/account">"><MT_TRANS phrase="Your Account"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="https://secure.sixapart.com/t/help?__mode=edit">"><MT_TRANS phrase="Open a help ticket<sup><strong>&#8224;</strong></sup>"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="http://www.sixapart.com/movabletype/kb/">"><MT_TRANS phrase="Knowledge Base"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="http://www.sixapart.com/movabletype/support">"><MT_TRANS phrase="Support and Documentation"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="http://www.sixapart.com/movabletype/">"><MT_TRANS phrase="Movable Type Home"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="http://www.sixapart.com/pronet/plugins/">"><MT_TRANS phrase="Plugin Directory"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="http://www.sixapart.com/pronet/">"><MT_TRANS phrase="Professional Network"></a> &#187;</li>
+</ul>
+<p class="tip"><sup><strong>&#8224;</strong></sup> This feature is only available to paid licensees.</p>
+</div>
+</div>
+
+</div>
+
+<div id="leftcol-main">
+
+<h2><MT_TRANS phrase="System Overview"></h2>
+
+<p class="page-desc"><MT_TRANS phrase="From this screen, you can view information about and manage many aspects of your system across all weblogs."></p>
+
+<div class="box" id="expandednews-box">
+<h4><a href="<TMPL_VAR NAME=MT_NEWS>?v=<TMPL_VAR NAME=MT_PRODUCT_CODE><TMPL_VAR NAME=MT_VERSION>"><MT_TRANS phrase="Movable Type News"></a> &#187;</h4>
+<div class="inner">
+<TMPL_VAR NAME=NEWS_HTML>
+</div>
+</div>
+
+</div>
+
+<TMPL_INCLUDE NAME="footer.tmpl">
