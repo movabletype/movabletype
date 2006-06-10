@@ -63,6 +63,21 @@ function welcomeMessageToggle() {
 
 </div>
 </div>
+
+<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
+<div class="box" id="plugin-actions-box">
+<h4><MT_TRANS phrase="Plugin Actions"></h4>
+<div class="inner">
+<ul>
+<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
+<li><a href="<TMPL_VAR NAME=PAGE>;from=blog_home;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=LINK_TEXT></a></li>
+</TMPL_LOOP>
+</ul>
+</div>
+</div>
+</TMPL_IF>
+
+
 </div>
 
 <div id="leftcol-main">
@@ -142,18 +157,6 @@ function welcomeMessageToggle() {
 </TMPL_IF>
 </TMPL_IF>
 
-<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
-<div class="box" id="plugin-actions-box">
-<h4><MT_TRANS phrase="Plugin Actions"></h4>
-<div class="inner">
-<ul>
-<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
-<li><a href="<TMPL_VAR NAME=PAGE>;from=blog_home;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=LINK_TEXT></a></li>
-</TMPL_LOOP>
-</ul>
-</div>
-</div>
-</TMPL_IF>
 
 </div>
 
