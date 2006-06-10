@@ -2967,6 +2967,7 @@ sub edit_object {
             $param{category_loop} = \@c_data;
         }
         $param{show_feedback} = $param{show_allow_pings} || $param{show_allow_comments};
+        $param{refocus} = 1;
         return $app->build_page("bm_entry.tmpl", \%param);
     } elsif ($param{output}) {
         return $app->build_page($param{output}, \%param);
@@ -7500,6 +7501,7 @@ sub rebuild_confirm {
     my @options = @RebuildOptions;
     $app->run_callbacks('RebuildOptions', $app, \@options);
     $param{rebuild_option_loop} = \@options;
+    $param{refocus} = 1;
     $app->add_breadcrumb($app->translate('Rebuild Site'));
     $app->build_page('rebuild_confirm.tmpl', \%param);
 }
@@ -8210,6 +8212,7 @@ sub start_upload {
     $date_stamp =~ s!^(\d\d\d\d)(\d\d)(\d\d).*!$1/$2/$3!;
     push @extra_paths, { path => $date_stamp, label => '<' . $app->translate($label_path) . '>' . '/' . $date_stamp };
     $param{extra_paths} = \@extra_paths;
+    $param{refocus} = 1;
     $app->build_page('upload.tmpl', \%param);
 }
 

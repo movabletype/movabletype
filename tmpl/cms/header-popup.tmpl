@@ -18,7 +18,7 @@ HelpBaseURI = '<TMPL_VAR NAME=HELP_URL>';
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc.js"></script>
 </head>
 
-<body id="mode_<TMPL_VAR NAME=MODE>" class="<TMPL_IF NAME=BLOG_ID>blog blog-<TMPL_VAR NAME=BLOG_ID><TMPL_ELSE>system</TMPL_IF>" onload="window.focus()">
+<body id="mode_<TMPL_VAR NAME=MODE>" class="<TMPL_IF NAME=BLOG_ID>blog blog-<TMPL_VAR NAME=BLOG_ID><TMPL_ELSE>system</TMPL_IF>"<TMPL_IF NAME=REFOCUS> onload="window.focus()</TMPL_IF>">
 
 <div id="topnav-img"><h1><img alt="Movable Type" src="<TMPL_VAR NAME=STATIC_URI>images/topnav-logo-popup.gif" width="204" height="66" border="0" /></h1></div>
 
