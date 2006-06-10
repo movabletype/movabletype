@@ -167,7 +167,7 @@ sub description {
     my $log = shift;
     my $msg;
     if (my $entry = $log->metadata_object) {
-        $msg = $entry->to_hash->{entry_text_html};
+        $msg = $entry->to_hash->{'entry.text_html'};
     } else {
         $msg = MT->translate('Entry # [_1] not found.', $log->metadata);
     }
@@ -185,7 +185,7 @@ sub description {
     my $cmt = $log->metadata_object;
     my $msg;
     if ($cmt) {
-        $msg = $cmt->to_hash->{comment_text_html};
+        $msg = $cmt->to_hash->{'comment.text_html'};
     } else {
         $msg = MT->translate("Comment # [_1] not found.", $log->metadata);
     }
@@ -203,7 +203,7 @@ sub description {
     my $ping = $log->metadata_object;
     my $msg;
     if ($ping) {
-        $msg = $ping->to_hash->{ping_excerpt_html};
+        $msg = $ping->to_hash->{'tbping.excerpt_html'};
     } else {
         $msg = MT->translate("TrackBack # [_1] not found.", $log->metadata);
     }
