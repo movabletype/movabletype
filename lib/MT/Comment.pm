@@ -267,16 +267,19 @@ sub to_hash {
     $hash->{'comment.created_on_iso'} = sub { MT::Util::ts2iso(undef, $cmt->created_on) };
     $hash->{'comment.modified_on_iso'} = sub { MT::Util::ts2iso(undef, $cmt->modified_on) };
     if (my $blog = $cmt->blog) {
-        my $txt = defined $cmt->text ? $cmt->text : '';
-        require MT::Util;
-        $txt = MT::Util::munge_comment($txt, $blog);
-        my $convert_breaks = $blog->convert_paras_comments;
-        $txt = $convert_breaks ?
-            MT->apply_text_filters($txt, $blog->comment_text_filters) :
-            $txt;
-        require MT::Sanitize;
-        $txt = MT::Sanitize->sanitize($txt);
-        $hash->{comment_text_html} = $txt;
+        $hash->{'comment.text_html'} = sub {
+            my $txt = defined $cmt->text ? $cmt->text : '';
+            require MT::Util;
+            $txt = MT::Util::munge_comment($txt, $blog);
+            my $convert_breaks = $blog->convert_paras_comments;
+            $txt = $convert_breaks ?
+                MT->apply_text_filters($txt, $blog->comment_text_filters) :
+                $txt;
+            my $sanitize_spec = $blog->sanitize_spec ||
+                MT::ConfigMgr->instance->GlobalSanitizeSpec;
+            require MT::Sanitize;
+            MT::Sanitize->sanitize($txt, $sanitize_spec);
+        }
     }
     if (my $entry = $cmt->entry) {
         my $entry_hash = $entry->to_hash;
