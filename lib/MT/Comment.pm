@@ -282,9 +282,10 @@ sub to_hash {
         my $entry_hash = $entry->to_hash;
         $hash->{"comment.$_"} = $entry_hash->{$_} foreach keys %$entry_hash;
     }
-    if ($cmt->author_id) {
+    if ($cmt->commenter_id) {
         # commenter record exists... populate it
-        if (my $auth = MT::Author->load($cmt->author_id)) {
+        require MT::Author;
+        if (my $auth = MT::Author->load($cmt->commenter_id)) {
             my $auth_hash = $auth->to_hash;
             $hash->{"comment.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
         }
