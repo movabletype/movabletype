@@ -433,7 +433,7 @@ class MTDatabaseBase extends ezsql {
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $tag_arg);
             }
-            $tags =& $this->fetch_entry_tags(array('blog_id' => $blog_id));
+            $tags =& $this->fetch_entry_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg));
             if (!is_array($tags)) $tags = array();
             $cexpr = create_tag_expr_function($tag_arg, $tags);
 

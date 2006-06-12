@@ -274,10 +274,12 @@ http://creativecommons.org/images/public/somerights20.gif
 { "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "0,1.5,0," }, #221
 { "t" : "<MTComments lastn='3'><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted></MTIfNonEmpty></MTComments>", "e" : "John Doe: trusted" }, #222
 { "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "grandpa 6,rain 6,strolling 6,verse 1" }, #223
-{ "t" : "<MTEntries tags='grandpa' lastn='1'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day" }, #224
-{ "t" : "<MTEntries category='subfoo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 4" }, #225
-{ "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3" }, #226
-{ "t" : "<MTEntries author='Bob D' category='foo'><MTEntryTitle></MTEntries>", "e" : "Verse 3" }, #227
-{ "t" : "<MTEntries author='Chuck D' tags='strolling'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day" }, #228
-{ "t" : "<MTSetVar name='x' value='0'><MTIfNonZero tag='GetVar' name='x'><MTElse>0</MTElse></MTIfNonZero>", "e" : "0" } #229
+{ "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,6,6" }, #224
+{ "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "1" }, #225
+{ "t" : "<MTEntries tags='grandpa' lastn='1'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day" }, #226
+{ "t" : "<MTEntries category='subfoo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 4" }, #227
+{ "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3" }, #229
+{ "t" : "<MTEntries author='Bob D' category='foo'><MTEntryTitle></MTEntries>", "e" : "Verse 3" }, #229
+{ "t" : "<MTEntries author='Chuck D' tags='strolling'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day" }, #230
+{ "t" : "<MTSetVar name='x' value='0'><MTIfNonZero tag='GetVar' name='x'><MTElse>0</MTElse></MTIfNonZero>", "e" : "0" } #231
 ]
