@@ -604,7 +604,7 @@ class MTDatabaseBase extends ezsql {
             } elseif ($args['sort_by'] == 'excerpt') {
                 $sort_field = 'entry_excerpt';
             } else {
-                $sort_field = $args['sort_by'];
+                $sort_field = 'entry_' . $args['sort_by'];
             }
             if ($sort_field) {
                 if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')) {
