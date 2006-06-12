@@ -103,17 +103,6 @@ class MT {
         $this->db = new $mtdbclass($this->config['DBUser'],
             $this->config['DBPassword'], $this->config['Database'],
             $this->config['DBHost'], $this->config['DBPort']);
-        if ($this->config['DBDriver'] == 'mysql' or $this->config['DBDriver'] == 'postgres') {
-            if ($this->config['SQLSetNames']) {
-                $Charset = array( 
-                    'postgres' => array('utf-8' => 'UNICODE', 'shift_jis' => 'SJIS', 'euc-jp' => 'EUC_JP'),
-                    'mysql' => array('utf-8' => 'utf8', 'shift_jis' => 'sjis', 'euc-jp' => 'ujis'));
-                $lang = $Charset[$this->config['DBDriver']][strtolower($this->config['PublishCharset'])];
-                if ($lang) {
-                    $this->db->query("SET NAMES '$lang'");
-                }
-            }
-        }           
         return $this->db;
     }
 
@@ -208,6 +197,17 @@ class MT {
                     }
                 }
             }
+            if ($cfg['DBDriver'] == 'mysql' or $cfg['DBDriver'] == 'postgres') {
+                if ($cfg['SQLSetNames']) {
+                    $Charset = array( 
+                        'postgres' => array('utf-8' => 'UNICODE', 'shift_jis' => 'SJIS', 'euc-jp' => 'EUC_JP'),
+                        'mysql' => array('utf-8' => 'utf8', 'shift_jis' => 'sjis', 'euc-jp' => 'ujis'));
+                    $lang = $Charset[$this->config['DBDriver']][strtolower($this->config['PublishCharset'])];
+                    if ($lang) {
+                        $mtdb->query("SET NAMES '$lang'");
+                    }
+                }
+            }           
         }
     }
 
