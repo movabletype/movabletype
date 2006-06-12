@@ -86,7 +86,7 @@ function welcomeMessageToggle() {
 
 <TMPL_IF NAME=HAS_EDIT_ACCESS>
 <div class="box">
-<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" title="<MT_TRANS phrase="List Entries">"><MT_TRANS phrase="Recent Entries"></a></h4>
+<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" title="<MT_TRANS phrase="List Entries">"><MT_TRANS phrase="Recent Entries"> &raquo;</a></h4>
 <div class="list">
 <table cellspacing="0">
 <TMPL_LOOP NAME=ENTRY_LOOP>
@@ -112,7 +112,7 @@ function welcomeMessageToggle() {
 
 <TMPL_IF NAME=COMMENT_LOOP>
 <div class="box">
-<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" title="<MT_TRANS phrase="List Comments">"><MT_TRANS phrase="Recent Comments"></a></h4>
+<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" title="<MT_TRANS phrase="List Comments">"><MT_TRANS phrase="Recent Comments"> &raquo;</a></h4>
 <div class="list">
 <table cellspacing="0">
 <TMPL_LOOP NAME=COMMENT_LOOP>
@@ -135,7 +135,7 @@ function welcomeMessageToggle() {
 
 <TMPL_IF NAME=PING_LOOP>
 <div class="box">
-<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" title="<MT_TRANS phrase="List TrackBacks">"><MT_TRANS phrase="Recent TrackBacks"></a></h4>
+<h4><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>" title="<MT_TRANS phrase="List TrackBacks">"><MT_TRANS phrase="Recent TrackBacks"> &raquo;</a></h4>
 <div class="list">
 <table cellspacing="0">
 <TMPL_LOOP NAME=PING_LOOP>
