@@ -1,7 +1,7 @@
 # Copyright 2005-2006 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 package MT::Plugin::GoogleSearch;
 
 use strict;
@@ -12,7 +12,7 @@ use MT;
 my $plugin = new MT::Plugin::GoogleSearch({
     name => "Google Search",
     version => '1.0',
-    description => "<MT_TRANS phrase=\"Adds template tags to allow you to search for content from Google You will need to configure this plugin using a <a href='http://www.google.com/apis/'>license key.</a>\">",
+    description => "<MT_TRANS phrase=\"Adds template tags to allow you to search for content from Google. You will need to configure this plugin using a <a href='http://www.google.com/apis/'>license key.</a>\">",
     author_name => "Six Apart, Ltd.",
     author_link => "http://www.sixapart.com/",
     settings => new MT::PluginSettings([
