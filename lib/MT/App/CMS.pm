@@ -7691,17 +7691,15 @@ sub rebuild_pages {
         ## limit.
         my $mult = $Limit_Multipliers{$type_name} || 1;
         my $entries_per_rebuild = $app->config('EntriesPerRebuild');
-        if (defined($offset) && $offset == 0) {
-            my $static_count = $blog->count_static_templates($type_name) || 0;
-            if (!$static_count) {
-                $limit = $entries_per_rebuild * $mult * $Limit_Multipliers{'Dynamic'};
-                $dynamic = 1;
-            } else {
-                if ($mult) {
-                    $limit = int($entries_per_rebuild * $mult / $static_count);
-                }
-                $dynamic = 0;
+        my $static_count = $blog->count_static_templates($type_name) || 0;
+        if (!$static_count) {
+            $limit = $entries_per_rebuild * $mult * $Limit_Multipliers{'Dynamic'};
+            $dynamic = 1;
+        } elsif (defined($offset) && $offset == 0) {
+            if ($mult) {
+                $limit = int($entries_per_rebuild * $mult / $static_count);
             }
+            $dynamic = 0;
         }
         my %param = ( build_type => $order, build_next => $next,
                       build_type_name => $app->translate($type_name),
