@@ -3041,16 +3041,18 @@ sub load_entry_prefs {
     my $app = shift;
     my ($prefs) = @_;
     my %param;
+    my $is_from_db = 1;
     # defaults:
     if (!$prefs) {
         $prefs = $app->load_default_entry_prefs;
+        $is_from_db = 0;
     }
     ($prefs, my($pos)) = split /\|/, $prefs;
     $pos ||= 'Bottom';
     my @p = split /,/, $prefs;
     for my $p (@p) {
         if ($p =~ m/^(.+?):(\d+)$/) {
-            $param{'disp_prefs_height_' . $1} = $2;
+            $param{'disp_prefs_height_' . $1} = $2 if $is_from_db;
             $param{'disp_prefs_show_' . $1} = 1;
         } else {
             if (($p eq 'Basic') || ($p eq 'Advanced')) {
