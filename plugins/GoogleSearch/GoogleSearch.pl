@@ -1,7 +1,9 @@
-# Copyright 2005-2006 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# GoogleSearch plugin for Movable Type
+# Author: Six Apart (http://www.sixapart.com)
+# Released under the Artistic License
 #
 # $Id$
+
 package MT::Plugin::GoogleSearch;
 
 use strict;

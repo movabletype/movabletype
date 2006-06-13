@@ -1,3 +1,9 @@
+# GoogleSearch plugin for Movable Type
+# Author: Six Apart (http://www.sixapart.com)
+# Released under the Artistic License
+#
+# $Id$
+
 package GoogleSearch::L10N::en_us;
 
 use strict;
