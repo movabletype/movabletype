@@ -1,5 +1,6 @@
-    # Widget Manager Movable Type Plugin
-# Copyright (C) 2006 Six Apart, Ltd.
+# WidgetManager plugin for Movable Type
+# Author: Byrne Reese, Six Apart (http://www.sixapart.com)
+# Released under the Artistic License
 #
 # $Id$
 
