@@ -1,5 +1,8 @@
-# $Id$
+# Nofollow plugin for Movable Type
+# Author: Six Apart http://www.sixapart.com
 # Released under the Artistic License
+#
+# $Id$
 
 package MT::Plugin::Nofollow;
 
