@@ -5,8 +5,8 @@
 #
 # $Id: mt.php 29263 2006-05-19 06:52:05Z fyoshimatsu $
 
-define('VERSION', '3.3a1');
-define('VERSION_ID', '3.3a1 (Tinsel)');
+define('VERSION', '3.3');
+define('VERSION_ID', '3.3b2 (Tinsel)');
 
 class MT {
     var $mime_types = array(
