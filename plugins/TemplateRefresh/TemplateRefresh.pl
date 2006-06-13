@@ -1,3 +1,9 @@
+# TemplateRefresh plugin for Movable Type
+# Author: Nick O'Neill and Brad Choate, Six Apart (http://www.sixapart.com)
+# Released under the Artistic License
+#
+# $Id$
+
 package MT::Plugin::TemplateRefresh;
 
 use strict;
