@@ -91,7 +91,11 @@ function doRemoveItems (f, singular, plural, nameRestrict, args) {
         alert(trans('You did not select any [_1] to delete.', plural));
         return false;
     }
-    toRemove = (trans('[_1]'), singular);
+    var toRemove = "";
+    for (var i in f.childNodes) {
+        if (f.childNodes[i].name == '_type')
+            toRemove = f.childNodes[i].value;
+    }
     if(toRemove == 'author') {
         singularMessage = 'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete this author?';
         pluralMessage = 'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete the [_1] selected authors?';
