@@ -2862,14 +2862,14 @@ sub edit_object {
         } else {
             $cwd = $app->config('DefaultSiteRoot') || $ENV{DOCUMENT_ROOT} || $app->mt_dir;
         }
+        $cwd = File::Spec->canonpath($cwd);
         $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
-        $cwd =~ s!([\\/])mt[\\/]?$!$1!i; 
+        $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
         if (!$param{site_path}) {
             $param{site_path} = $cwd;
         }
         if(!$param{id}) {
-            $param{site_path} .= '/' unless $param{site_path} =~ /\/$/;
-            $param{site_path} .= 'WEBLOG-NAME';
+            $param{site_path} = File::Spec->catdir($param{site_path}, 'WEBLOG-NAME');
         }
         # If not yet defined, set the site_url to the config default, if one exists.
         $param{site_url} ||= $app->config('DefaultSiteURL');
