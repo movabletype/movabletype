@@ -3541,7 +3541,7 @@ sub CMSPreSave_category {
                                         blog_id => $obj->blog_id });
     foreach (@siblings) {
         next if $_->id == $obj->id;
-        return $app->errtrans("You can't have two categories with the same name at the same level.")
+        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
             if $_->label eq $obj->label;
     }
     1;
@@ -6915,7 +6915,7 @@ sub move_category {
     my @siblings = MT::Category->load({ parent => $cat->parent,
                                         blog_id => $cat->blog_id });
     foreach (@siblings) {
-        return $app->errtrans("You can't have two categories with the same name at the same level.")
+        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
             if $_->label eq $cat->label;
     }
     
@@ -6961,7 +6961,7 @@ sub save_category {
             my @siblings = MT::Category->load({ parent => $cat->parent,
                                                 blog_id => $cat->blog_id });
             foreach (@siblings) {
-                return $app->errtrans("You can't have two categories with the same name at the same level.")
+                return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
                     if $_->label eq $cat->label;
             }
 
@@ -9113,7 +9113,7 @@ sub category_do_add {
     my @siblings = MT::Category->load({ parent => $cat->parent,
                                         blog_id => $app->param('blog_id') });
     foreach (@siblings) {
-        return $app->errtrans("You can't have two categories with the same name at the same level.")
+        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
             if $_->label eq $cat->label;
     }
     
