@@ -176,7 +176,12 @@ sub process_log_feed {
     }
     my $chrome_tmpl = $app->load_tmpl('feed_chrome.tmpl');
     $param->{loop_entries} = \@entries;
-    $param->{feed_self} = $app->base . $app->uri . '?' . $app->return_args;
+    my $str = qq();
+    for my $key ($app->param) {
+        $str .= "&amp;$key=" . $app->param($key);
+    }
+    $str =~ s/^&amp;(.+)$/?$1/;
+    $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;
     $param->{feed_atom_id} = $app->base . $app->uri;
     $param->{feed_updated_iso} = ts2iso(undef, $last_ts);
     $param->{mt_url} = $app->base . $app->mt_uri;
