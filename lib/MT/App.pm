@@ -327,7 +327,6 @@ sub session_user {
     eval "use $user_class;";
     return $app->error($app->translate("Error loading [_1]: [_2]", $user_class, $@)) if $@;
     my $author = $user_class->load({ name => $user, type => AUTHOR });
-    my $author = $user_class->load({ name => $user, type => AUTHOR });
     if (!$author) {
         require MT::Log;
         $app->log({
