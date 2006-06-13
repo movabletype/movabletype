@@ -86,12 +86,7 @@
 <TMPL_ELSE>
 
 <input type="hidden" name="title_<TMPL_VAR NAME=ID>" value="" />
-<input name="no_title_<TMPL_VAR NAME=ID>" style="color:#999;" value="<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>" onfocus="if(this.value=='<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>'){this.value=''; this.style.color='#000';};" onblur="if((this.value=='<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>') || (this.value=='')){ this.value = '<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>'; this.style.color='#999'; }else{ title_<TMPL_VAR NAME=ID>.value=this.value; };" />
-
-<script type="text/javascript">
-no_title_<TMPL_VAR NAME=ID> = document.getElementById("no_title_<TMPL_VAR NAME=ID>").value;
-title_<TMPL_VAR NAME=ID> = document.getElementById("title_<TMPL_VAR NAME=ID>").value;
-</script>
+<input name="no_title_<TMPL_VAR NAME=ID>" style="color:#999;" value="<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>" onfocus="if(this.value=='<TMPL_VAR NAME=TITLE_SHORT ESCAPE=JS>'){this.value=''; this.style.color='#000';};" onblur="if((this.value=='<TMPL_VAR NAME=TITLE_SHORT ESCAPE=JS>') || (this.value=='')){ this.value = '<TMPL_VAR NAME=TITLE_SHORT ESCAPE=JS>'; this.style.color='#999'; }else{ title_<TMPL_VAR NAME=ID>.value=this.value; };" />
 
 </TMPL_IF>
 
