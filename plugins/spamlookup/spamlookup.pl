@@ -1,9 +1,7 @@
-# SpamLookup
+# SpamLookup plugin for Movable Type
 # Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
-#
-# Modifications and integration Copyright 2005-2006 Six Apart.
-# This code cannot be redistributed without permission from www.sixapart.com.
-# For more information, consult your Movable Type license.
+# Author: Six Apart (http://www.sixapart.com)
+# Released under the Artistic License
 #
 # $Id$
 
