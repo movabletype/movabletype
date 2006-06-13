@@ -327,12 +327,26 @@ sub session_user {
     eval "use $user_class;";
     return $app->error($app->translate("Error loading [_1]: [_2]", $user_class, $@)) if $@;
     my $author = $user_class->load({ name => $user, type => AUTHOR });
-    return undef if !$author;
+    my $author = $user_class->load({ name => $user, type => AUTHOR });
+    if (!$author) {
+        require MT::Log;
+        $app->log({
+            message => $app->translate("Invalid login attempt from user '[_1]'", $user),
+            level => MT::Log::WARNING(),
+        });
+        return undef;
+    }
+
 
     if ($pass) {
         if ($author->is_valid_password($pass, $opt{already_crypted})) {
             return $author;
         } else {
+            require MT::Log;
+            $app->log({
+                message => $app->translate("Invalid login attempt from user '[_1]' (ID: [_2])", $user, $author->id),
+                level => MT::Log::WARNING(),
+            });
             return undef;
         }
     } elsif ($session_id) {
@@ -418,12 +432,6 @@ sub login {
         ## user know.
         $app->clear_login_cookie;
         if (!defined($author)) {
-            require MT::Log;
-            # undef indicates *invalid* login as opposed to no login at all.
-            $app->log({
-                message => $app->translate("Invalid login attempt from user '[_1]'", $user),
-                level => MT::Log::WARNING(),
-            });
             return $app->error($app->translate('Invalid login.'));
         } else {
             return undef;
