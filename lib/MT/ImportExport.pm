@@ -94,7 +94,7 @@ sub do_import {
     ## Determine the author as whom we will import the entries.
     my($author, $pass, $parent_author);
     if ($author = $param{ImportAs}) {
-        $cb->("Importing entries as author '", $author->name, "'\n");
+#        $cb->("Importing entries as author '", $author->name, "'\n");
     } elsif ($parent_author = $param{ParentAuthor}) {
         $pass = $param{NewAuthorPassword}
             or return $class->error(MT->translate(
