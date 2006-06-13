@@ -53,7 +53,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
 
     '_USAGE_PROFILE' => 'Edit your author profile here. If you change your username or your password, your login credentials will be automatically updated. In other words, you will not need to re-login.',
     '_USAGE_PASSWORD_RESET' => 'Below, you can initiate password recovery on behalf of this user. If you choose to do so, a new, randomly-generated password will be created and sent directly to their email address: [_1].',
-    '_WARNING_PASSWORD_RESET_SINGLE' => 'You are about to reset the password for "[_1]". A new password will be randomly generated and sent directly to their email address ([_2]).\n\nDo you wish to continue?',
+    '_WARNING_PASSWORD_RESET_SINGLE' => 'You are about to reset the password for "[_1]". A new password will be randomly generated and sent directly to their email address ([_2]).  Do you wish to continue?',
     '_WARNING_PASSWORD_RESET_MULTI' => 'You are about to reset the password for the selected users. New passwords will be randomly generated and sent directly to their email address(es).\n\nDo you wish to continue?',
     '_USAGE_NEW_AUTHOR' => 'From this screen you can create a new author in the system and give them access to particular weblogs.',
 
