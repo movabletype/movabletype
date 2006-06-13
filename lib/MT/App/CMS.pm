@@ -1963,6 +1963,8 @@ sub edit_object {
     my $type = $q->param('_type');
     return unless $API{$type};
     my $blog_id = $q->param('blog_id');
+    return $app->error($app->translate("Invalid parameter"))
+                unless ($blog_id =~ m/\d+/);
     my $id = $q->param('id');
     my $perms = $app->{perms};
     my $author = $app->user;

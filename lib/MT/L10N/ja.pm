@@ -822,6 +822,7 @@ use vars qw( @ISA %Lexicon );
     'Invalid month format: must be YYYYMM' => '月の表記はYYYYMM (例: 200509) にする必要があります。',
     'Invalid new user name: [_1]' => 'ログイン名の設定に誤りがあります: [_1]',
     'Invalid number of columns for [_1]' => '[_1]列めの設定に誤りがあります',
+    'Invalid parameter' => 'パラメータが不正です。',
     'Invalid password hint: [_1]' => 'パスワード・ヒントの設定に誤りがあります: [_1]',
     'Invalid password recovery attempt; can\'t recover password in this configuration' => '現在の環境では、パスワードの再設定機能は利用できません。',
     'Invalid password: [_1]' => 'パスワードの設定に誤りがあります: [_1]',
