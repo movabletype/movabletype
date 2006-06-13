@@ -77,8 +77,25 @@
 </TMPL_IF>
 </td>
 
+
 <td<TMPL_IF NAME=VIEW_EXPANDED> colspan="<TMPL_IF NAME=SYSTEM_OVERVIEW_NAV>6<TMPL_ELSE>5</TMPL_IF>"</TMPL_IF>>
-<TMPL_IF NAME=VIEW_EXPANDED><strong><TMPL_VAR NAME=TITLE_LONG></strong><TMPL_IF NAME=EXCERPT> &mdash; <TMPL_VAR NAME=EXCERPT></TMPL_IF><TMPL_ELSE><TMPL_IF NAME=HAS_EDIT_ACCESS><TMPL_IF NAME=IS_POWER_EDIT><input name="title_<TMPL_VAR NAME=ID>" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" /><TMPL_ELSE><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=TITLE_SHORT></a>
+<TMPL_IF NAME=VIEW_EXPANDED><strong><TMPL_VAR NAME=TITLE_LONG></strong><TMPL_IF NAME=EXCERPT> &mdash; <TMPL_VAR NAME=EXCERPT></TMPL_IF><TMPL_ELSE><TMPL_IF NAME=HAS_EDIT_ACCESS><TMPL_IF NAME=IS_POWER_EDIT>
+
+<TMPL_IF NAME=TITLE>
+<input name="title_<TMPL_VAR NAME=ID>" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" />
+<TMPL_ELSE>
+
+<input type="hidden" name="title_<TMPL_VAR NAME=ID>" value="" />
+<input name="no_title_<TMPL_VAR NAME=ID>" style="color:#999;" value="<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>" onfocus="if(this.value=='<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>'){this.value=''; this.style.color='#000';};" onblur="if((this.value=='<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>') || (this.value=='')){ this.value = '<TMPL_VAR NAME=TITLE_SHORT ESCAPE=HTML>'; this.style.color='#999'; }else{ title_<TMPL_VAR NAME=ID>.value=this.value; };" />
+
+<script type="text/javascript">
+no_title_<TMPL_VAR NAME=ID> = document.getElementById("no_title_<TMPL_VAR NAME=ID>").value;
+title_<TMPL_VAR NAME=ID> = document.getElementById("title_<TMPL_VAR NAME=ID>").value;
+</script>
+
+</TMPL_IF>
+
+<TMPL_ELSE><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=TITLE_SHORT></a>
 </TMPL_IF><TMPL_ELSE><TMPL_VAR NAME=TITLE_SHORT></TMPL_IF></TMPL_IF></td>
 
 <TMPL_IF NAME=VIEW_EXPANDED>
