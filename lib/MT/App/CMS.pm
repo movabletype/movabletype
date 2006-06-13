@@ -3541,7 +3541,7 @@ sub CMSPreSave_category {
                                         blog_id => $obj->blog_id });
     foreach (@siblings) {
         next if $_->id == $obj->id;
-        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
+        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $_->id)
             if $_->label eq $obj->label;
     }
     1;
@@ -6911,11 +6911,10 @@ sub move_category {
     return 1 if ($new_parent == $cat->parent);
 
     $cat->parent ($new_parent);
-
     my @siblings = MT::Category->load({ parent => $cat->parent,
                                         blog_id => $cat->blog_id });
     foreach (@siblings) {
-        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
+        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $_->label)
             if $_->label eq $cat->label;
     }
     
@@ -9109,11 +9108,10 @@ sub category_do_add {
     $cat->author_id($app->user->id);
     $cat->label($name);
     $cat->parent ($parent);
-
     my @siblings = MT::Category->load({ parent => $cat->parent,
                                         blog_id => $app->param('blog_id') });
     foreach (@siblings) {
-        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
+        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $_->label)
             if $_->label eq $cat->label;
     }
     
