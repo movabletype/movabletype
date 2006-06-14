@@ -50,6 +50,8 @@ sub save {
         if (!$tag->n8d_id || ($tag->n8d_id != $n8d_tag->id)) {
             $tag->n8d_id($n8d_tag->id);
         }
+    } else {
+        $tag->n8d_id(0) if $tag->n8d_id;
     }
     # maintain the private flag...
     $tag->is_private( $name =~ m/^@/ ? 1 : 0 );
