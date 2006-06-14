@@ -17,13 +17,13 @@
       <TMPL_VAR NAME=LOG.TBPING.EXCERPT ESCAPE=HTML>
     &lt;/div&gt;
 
-    <TMPL_IF NAME=LOOP_ACTIONS>
     &lt;div class="actions"&gt;
       &lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=ping&amp;id=<TMPL_VAR NAME=LOG.TBPING.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;
+      <TMPL_IF NAME=LOOP_ACTIONS>
       <TMPL_LOOP NAME=LOOP_ACTIONS>
-        &lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL ESCAPE=HTML>&lt;/a&gt;
+      &lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL ESCAPE=HTML>&lt;/a&gt;
       </TMPL_LOOP>
+      </TMPL_IF>
     &lt;/div&gt;
-    </TMPL_IF>
   </content>
 </entry>

@@ -18,13 +18,13 @@
       <TMPL_VAR NAME=LOG.COMMENT.TEXT_HTML ESCAPE=HTML>
     &lt;/div&gt;
 
-    <TMPL_IF NAME=LOOP_ACTIONS>
     &lt;div class="actions"&gt;
       &lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;
+      <TMPL_IF NAME=LOOP_ACTIONS>
       <TMPL_LOOP NAME=LOOP_ACTIONS>
-        &lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL ESCAPE=HTML>&lt;/a&gt;
+      &lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL ESCAPE=HTML>&lt;/a&gt;
       </TMPL_LOOP>
+      </TMPL_IF>
     &lt;/div&gt;
-    </TMPL_IF>
   </content>
 </entry>
