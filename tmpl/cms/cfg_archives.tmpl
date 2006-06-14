@@ -48,10 +48,10 @@ function validate (f) {
         alert('<MT_TRANS phrase="You must set your Local Site Path." escape="singlequotes">');
         return false;
     } else if (!is_valid_url(f.site_url.value)){
-        alert('<MT_TRANS phrase="You must set your Site URL." escape="singlequotes">');
+        alert('<MT_TRANS phrase="You must set a valid Site URL." escape="singlequotes">');
         return false;
     } else if (!is_valid_path(f.site_path.value)){
-        alert('<MT_TRANS phrase="You must set your Local Site Path." escape="singlequotes">');
+        alert('<MT_TRANS phrase="You must set a valid Local Site Path." escape="singlequotes">');
         return false;
     }
     return true;
@@ -210,7 +210,7 @@ function is_valid_path(path_){
 </fieldset>
 
 <fieldset>
-
+<a name="publ_prefs"></a>
 <h3><MT_TRANS phrase="Publishing Preferences"></h3>
 
 <div class="inner">
