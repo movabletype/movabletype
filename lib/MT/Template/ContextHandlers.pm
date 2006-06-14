@@ -38,6 +38,7 @@ sub init_default_handlers {
         AtomScript => \&_hdlr_atom_script,
         Date => \&_hdlr_sys_date,
         Version => \&_hdlr_mt_version,
+        ProductName => \&_hdlr_product_name,
         PublishCharset => \&_hdlr_publish_charset,
         DefaultLanguage => \&_hdlr_default_language,
         CGIServerPath => \&_hdlr_cgi_server_path,
@@ -863,6 +864,23 @@ sub _hdlr_link {
 sub _hdlr_mt_version {
     require MT;
     MT->version_id;
+}
+
+sub _hdlr_product_name {
+    my ($ctx, $args, $cond) = @_;
+    require MT;
+    my $short_name;
+    my $code = MT->product_code;
+    if ($code eq 'MTE') {
+        $short_name = "Movable Type Enterprise";
+    } else {
+        $short_name = "Movable Type";
+    }
+    if ($args->{version}) {
+        return MT->translate("$short_name [_1]", MT->version_id);
+    } else {
+        return MT->translate($short_name);
+    }
 }
 
 sub _hdlr_publish_charset {
