@@ -102,6 +102,18 @@ function dismiss(id) {
 
 <div class="setting">
     <div class="label">
+        <label for="preferred_language"><MT_TRANS phrase="Language:"></label>
+    </div>
+    <div class="field">
+                <select name="preferred_language" id="preferred_language"><TMPL_LOOP NAME=LANGUAGES>
+                        <option value="<TMPL_VAR NAME=L_TAG>"<TMPL_IF NAME=L_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=L_NAME></option></TMPL_LOOP>
+                 </select>
+        <p><MT_TRANS phrase="The author's preferred language."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
         <label for="admin_password"><MT_TRANS phrase="Password:"></label><br />
     </div>
     <div class="field">
@@ -117,6 +129,17 @@ function dismiss(id) {
     <div class="field">
         <input type="password" name="admin_password_confirm" />
         <p><MT_TRANS phrase="Repeat the password for confirmation."></p>
+    </div>
+</div>
+
+<div class="setting">
+    <div class="label">
+        <label for="hint"><MT_TRANS phrase="Password recovery word/phrase"> (*):</label
+>
+    </div>
+    <div class="field">
+        <input name="hint" id="hint" value="<TMPL_VAR NAME=HINT ESCAPE=HTML>" />
+        <p><MT_TRANS phrase="This word or phrase will be required to recover your password if you forget it."></p>
     </div>
 </div>
 
