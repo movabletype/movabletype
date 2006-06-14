@@ -3312,7 +3312,7 @@ sub _hdlr_category_tb_link {
     my $cat = $_[0]->stash('category') || $_[0]->stash('archive_category');
     if (!$cat) {
         my $cat_name = $args->{category}
-            or return $ctx->error(MT->translate('<$MTCategoryTrackbackLink$> must be used in the context of a category, or with the \'category\' attribute to the tag.'));
+            or return $ctx->error(MT->translate("<$MTCategoryTrackbackLink$> must be used in the context of a category, or with the 'category' attribute to the tag."));
         $cat = MT::Category->load({ label => $cat_name,
                                     blog_id => $ctx->stash('blog_id') })
             or return $ctx->error("No such category '$cat_name'");
