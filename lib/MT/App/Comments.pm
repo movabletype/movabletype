@@ -207,7 +207,8 @@ sub post {
     my $app = shift;
     my $q = $app->{query};
 
-    return do_preview($app, $q, @_) if $app->request_method() ne 'POST';
+    return $app->error($app->translate("Invalid request"))
+        if $app->request_method() ne 'POST';
 
     my $entry_id = $q->param('entry_id')
         or return $app->error($app->translate("No entry_id"));
@@ -1038,6 +1039,10 @@ sub handle_error {
 
 sub do_preview {
     my($app, $q, $err) = @_;
+
+    return $app->error($app->translate("Invalid request"))
+        if $app->request_method() ne 'POST';
+
     require MT::Template;
     require MT::Template::Context;
     require MT::Entry;
