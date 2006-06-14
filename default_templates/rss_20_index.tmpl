@@ -16,7 +16,12 @@
          <description><$MTEntryBody encode_xml="1" convert_breaks="0"$></description>
          <link><$MTEntryPermalink encode_xml="1"$></link>
          <guid><$MTEntryPermalink encode_xml="1"$></guid>
-         <category><$MTEntryCategory remove_html="1" encode_xml="1"$></category>
+        <MTEntryCategories>
+          <category domain="http://sixapart.com/ns/objects/category"><$MTCategoryLabel remove_html="1" encode_xml="1"$></category>
+        </MTEntryCategories>
+        <MTEntryIfTagged><MTEntryTags>
+          <category domain="http://sixapart.com/ns/objects/tag"><$MTTagName remove_html="1" encode_xml="1"$></category>
+        </MTEntryTags></MTEntryIfTagged>
          <pubDate><$MTEntryDate format_name="rfc822"$></pubDate>
       </item>
       </MTEntries>
