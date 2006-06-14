@@ -29,7 +29,9 @@ TC.attachLoadEvent( init );
 
 <h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Notifications"></h2>
 
-<p class="page-desc"><MT_TRANS phrase="Below is the list of people who wish to be notified when you post to your site. To delete an address, check the Delete box and press the Delete button."> <MT_TRANS phrase="You have [quant,_1,user,users,no users] in your notification list." params="<TMPL_VAR NAME=LIST_TOTAL>"></p>
+<p class="page-desc"><MT_TRANS phrase="Below is the notification list for this blog. When you manually send notifications on published entries, you can select from this list."></p>
+
+<p><MT_TRANS phrase="You have [quant,_1,user,users,no users] in your notification list. To delete an address, check the Delete box and press the Delete button." params="<TMPL_VAR NAME=LIST_TOTAL>"></p>
 
 <TMPL_IF NAME=ERROR>
 <h4 class="error-message"><TMPL_VAR NAME=ERROR></h4>
