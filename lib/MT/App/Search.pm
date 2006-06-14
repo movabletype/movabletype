@@ -535,6 +535,7 @@ sub _set_form_elements {
 
 sub is_a_match { 
     my($app, $txt) = @_;
+    use utf8;
     $txt = MT::I18N::decode_utf8($txt);
     my $keyword = MT::I18N::decode_utf8($app->{search_string});
 
@@ -554,12 +555,12 @@ sub is_a_match {
         }
     }
     1;
-}
+}       
 
 sub query_parse {
     my $app = shift;
     return unless $app->{search_string};
-
+    use utf8;
     local $_ = MT::I18N::decode_utf8($app->{search_string});
 
     s/^\s//;            # Remove leading whitespace
