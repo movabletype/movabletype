@@ -148,6 +148,8 @@ elsif( $o{'append:s'} ) {
     $o{'stamp=s'} .= $o{'append:s'}
 }
 
+$ENV{BUILD_VERSION_ID} ||= $o{'stamp=s'};
+
 # Make the export directory to use with the stamp.
 $o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $o{'stamp=s'} );
 die 'No export directory given.' unless $o{'export=s'};
