@@ -377,6 +377,21 @@ sub build_page {
     my ($tmpl, $param) = @_;
     $param ||= {};
     $param->{no_breadcrumbs} = 1;
+
+    my $auth = $app->user;
+    my $langs = $app->supported_languages;
+    my @data;
+    my $preferred = $auth && $auth->preferred_language ?
+        $auth->preferred_language : $app->config('DefaultLanguage');
+    $preferred = 'en-us' if (lc($preferred) eq 'en_us');
+    for my $tag (keys %$langs) {
+        my $row = { l_tag => $tag, l_name => $app->translate($langs->{$tag}) };
+        $row->{l_selected} = 1 if $preferred eq $tag;
+        push @data, $row;
+    }
+    $param->{languages} = [ sort { $a->{l_name} cmp $b->{l_name} }
+                          @data ];
+
     $app->SUPER::build_page($tmpl, $param);
 }
 
