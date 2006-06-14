@@ -35,6 +35,12 @@ sub google_api_key {
     my %plugin_param;
 
     $plugin->load_config(\%plugin_param, 'blog:'.$blog_id);
+    my $key = $plugin_param{google_api_key};
+    unless ($key) {
+        $plugin->load_config(\%plugin_param, 'system');
+        $key = $plugin_param{google_api_key};
+    }
+    $key;
 }
 
 sub load_config {
@@ -42,6 +48,7 @@ sub load_config {
     my ($param, $scope) = @_;
 
     if ($scope && $scope eq 'system') {
+        $plugin->SUPER::load_config(@_);
         return;
     }
 
@@ -56,6 +63,7 @@ sub save_config {
     my ($param, $scope) = @_;
 
     if ($scope && $scope eq 'system') {
+        $plugin->SUPER::save_config(@_);
         return;
     }
 

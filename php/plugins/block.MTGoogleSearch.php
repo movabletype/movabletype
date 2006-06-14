@@ -37,6 +37,15 @@ function smarty_block_MTGoogleSearch($args, $content, &$ctx, &$repeat) {
 
         // Your google license key
         $key = $blog['blog_google_api_key'];
+        if (!$key) {
+            $config = $ctx->mt->db->fetch_plugin_config('Google Search');
+            if ($config) {
+                $key = $config['google_api_key'];
+            }
+            else {
+                return $ctx->error('You need a Google API key to use &lt;MTGoogleSearch>');
+            }
+        }
 
         global $mt;
         $wsdl = new SOAP_WSDL($mt->config['PHPDir'].DIRECTORY_SEPARATOR."plugins".DIRECTORY_SEPARATOR."GoogleSearch.wsdl");
