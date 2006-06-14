@@ -25,7 +25,7 @@ function tabToggle(selectedTab) {
 
 <h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Import / Export"></h2>
 
-<p class="page-desc"><MT_TRANS phrase="Transfer weblog entries into Movable Type from other blogging tools or export your entries to create a backup or copy."></p>
+<p class="page-desc"><MT_TRANS phrase="Transfer weblog entries into Movable Type from other blogging tools or export your entries to create a backup or copy. <strong>Please Note:</strong> The Movable Type import/export format does not contain all entry data. Please see the Movable Type manual for full details."></p>
 
 <div class="tabs">
 <ul>
@@ -39,43 +39,54 @@ function tabToggle(selectedTab) {
 <p><MT_TRANS phrase="_USAGE_IMPORT"></p>
 
 <form method="post" enctype="multipart/form-data" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<fieldset>
 <input type="hidden" name="__mode" value="import" />
 <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
 <input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
 
-<TMPL_IF NAME=IS_ADMINISTRATOR>
-<p><input type="checkbox" name="import_as_me" id="import_as_me" value="1" /> <label for="import_as_me"><MT_TRANS phrase="Import entries as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a></p>
+<script type="text/javascript">
+function importAsMe() {
+  var choice = document.getElementById('import_as_me');
+  var tochange = document.getElementById('setpassword');
+  if (choice.checked == true) 
+  {
+    tochange.checked = false;
+    document.getElementById('importasmediv').style.display= "";
+    document.getElementById('setpassworddiv').style.display= "none";
+  }
 
-<p><label for="password"><MT_TRANS phrase="Password (required if creating new authors):"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help">?</a><br />
+}
+
+function setPassword() {
+  var choice = document.getElementById('setpassword');
+  var tochange = document.getElementById('import_as_me');
+  if (choice.checked == true) {
+    tochange.checked = false;
+    document.getElementById('setpassworddiv').style.display= "";
+    document.getElementById('importasmediv').style.display= "none";
+  }
+}
+</script>
+
+<TMPL_IF NAME=IS_ADMINISTRATOR>
+<input type="radio" id="import_as_me" name="import_as_me" value="1" onClick="importAsMe();" checked="checked"> <label for="import_as_me"><MT_TRANS phrase="Import as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a> 
+&nbsp;&nbsp;&nbsp;
+<input type="radio" id="setpassword" name="choose" onClick="setPassword();"> <label for="setpassword"><MT_TRANS phrase="Preserve original author"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help">?</a>
+
+<div id="importasmediv" style="display:none;">
+<!--<p><input type="checkbox" name="import_as_me" id="import_as_me" value="1" /> <label for="import_as_me"><MT_TRANS phrase="Import entries as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a></p> -->
+</div>
+<div id="setpassworddiv" style="display:none;">
+<p><label for="password"><MT_TRANS phrase="Default password for new authors (required if creating new authors):"></label><br />
 <input type="password" name="password" id="password" /></p>
+</div>
 <TMPL_ELSE>
 <input type="hidden" name="import_as_me" value="1" />
 
 <p><MT_TRANS phrase="You will be assigned the author of all imported entries.  If you wish the original authors to keep ownership, you must contact your MT system administrator to perform the import so that new authors can be created if necessary."></p>
 </TMPL_IF>
 
-<p><label for="default_cat_id"><MT_TRANS phrase="Default category for entries (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'default_category_for_entries')" class="help">?</a><br />
-<select name="default_cat_id" id="default_cat_id">
-<option value=""><MT_TRANS phrase="Select a category"></option>
-<TMPL_LOOP NAME=CATEGORY_LOOP>
-<option value="<TMPL_VAR NAME=CATEGORY_ID>"><TMPL_VAR NAME=CATEGORY_LABEL></option>
-</TMPL_LOOP>
-</select></p>
-
-<p><label for="default_status"><MT_TRANS phrase="Default post status for entries (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'default_post_status_for_entries')" class="help">?</a><br />
-<select name="default_status" id="default_status">
-<option value=""><MT_TRANS phrase="Select a post status"></option>
-<option value="1"><MT_TRANS phrase="Unpublished"></option>
-<option value="2"><MT_TRANS phrase="Published"></option>
-</select></p>
-
-<p><label for="title_start"><MT_TRANS phrase="Start title HTML (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'start_title_html')" class="help">?</a><br />
-<input name="title_start" id="title_start" /></p>
-
-<p><label for="title_end"><MT_TRANS phrase="End title HTML (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'end_title_html')" class="help">?</a><br />
-<input name="title_end" id="title_end" /></p>
-
-<p><label for="file_import"><MT_TRANS phrase="File From Your Computer (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'source_file_html')" class="help">?</a><br />
+<p><label for="file_import"><MT_TRANS phrase="Upload File From... (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'source_file_html')" class="help">?</a><br />
 <input name="file" id="file" type="file" /></p>
 
 <p><label for="encoding"><MT_TRANS phrase="Encoding (optional):"></label>  <a href="#" onclick="return openManual('entry_import', 'source_encoding_html')" class="help">?</a><br />
@@ -84,7 +95,71 @@ function tabToggle(selectedTab) {
 <option value="<TMPL_VAR NAME=NAME>"><MT_TRANS phrase="<TMPL_VAR NAME=DISPLAY_NAME>"></option>
 </TMPL_LOOP></select></p>
 
+<div id="choose-destination">
+<div class="spinner">
+<p><a href="#" onclick="return toggleActive('choose-destination')"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="" width="7" height="7" /></a> <a href="#" onclick="return toggleActive('choose-destination')"><MT_TRANS phrase="Advanced Options"></a>
+</p>
+</div>
+
+<div class="flyout">
+
+
+<div class="setting">
+<div class="label">
+<label for="default_cat_id"><MT_TRANS phrase="Default category for entries (optional):"></label> 
+</div>
+<div class="field">
+<p><select name="default_cat_id" id="default_cat_id">
+<option value=""><MT_TRANS phrase="Select a category"></option>
+<TMPL_LOOP NAME=CATEGORY_LOOP>
+<option value="<TMPL_VAR NAME=CATEGORY_ID>"><TMPL_VAR NAME=CATEGORY_LABEL></option>
+</TMPL_LOOP>
+</select>
+<a href="#" onclick="return openManual('entry_import', 'default_category_for_entries')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label">
+<label for="title_start"><MT_TRANS phrase="Start title HTML (optional):"></label> 
+</div> 
+<div class="field">
+<p><input name="title_start" id="title_start" />
+<a href="#" onclick="return openManual('entry_import', 'start_title_html')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label">
+<label for="title_end"><MT_TRANS phrase="End title HTML (optional):"></label> 
+</div> 
+<div class="field">
+<p><input name="title_end" id="title_end" />
+<a href="#" onclick="return openManual('entry_import', 'end_title_html')" class="help">?</a></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label">
+<label for="default_status"><MT_TRANS phrase="Default post status for entries (optional):"></label> 
+</div> 
+<div class="field">
+<p><select name="default_status" id="default_status">
+<option value=""><MT_TRANS phrase="Select a post status"></option>
+<option value="1"><MT_TRANS phrase="Unpublished"></option>
+<option value="2"><MT_TRANS phrase="Published"></option>
+</select>
+<a href="#" onclick="return openManual('entry_import', 'default_post_status_for_entries')" class="help">?</a></p>
+</div>
+</div>
+
+
+</div>
+
+</div>
+
 <p><input type="submit" value="<MT_TRANS phrase="Import Entries">" /></p>
+</fieldset>
 </form>
 
 </div>
