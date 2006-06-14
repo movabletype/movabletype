@@ -26,6 +26,7 @@ sub first_n { _handle(first_n => @_) }
 sub first_n_text { _handle(first_n => @_) } # for backward compatibility
 sub break_up_text { _handle(break_up_text => @_) }
 sub convert_high_ascii { _handle(convert_high_ascii => @_) }
+sub decode_utf8 { _handle(decode_utf8 => @_) }
 
 sub const {
     my $label = shift;

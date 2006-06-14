@@ -83,6 +83,11 @@ sub convert_high_ascii {
     my $meth = "convert_high_ascii_" . ($PKG || $class->_load_module);
     $class->$meth(@_);
 }
+sub decode_utf8 {
+    my $class = shift;
+    my $meth = "decode_utf8_" . ($PKG || $class->_load_module);
+    $class->$meth(@_);
+}
 
 # Dumb default methods (charset ignorant)
 
@@ -327,6 +332,20 @@ sub _conv_from_utf8 {
     my ($text, $enc) = @_;
     return $text if lc($enc) eq 'utf-8';
     $class->encode_text($text, 'utf-8', $enc);
+}
+
+sub decode_utf8_encode {
+    my $class = shift;
+    my ($text, $enc) = @_;
+    $text = $class->encode_text($text, $enc, 'utf-8');
+    return Encode::decode_utf8($text);
+}
+
+sub decode_utf8_perl {
+    my $class = shift;
+    my ($text, $enc) = @_;
+    $text = $class->encode_text($text, $enc, 'utf-8');
+    return pack('U*', unpack('U0U*', $text));
 }
 
 sub _load_module {

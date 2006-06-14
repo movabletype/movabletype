@@ -238,6 +238,20 @@ sub convert_high_ascii_encode {
     $s;
 }
 
+sub decode_utf8_encode {
+    my $class = shift;
+    my ($text, $enc) = @_;
+    $text = $class->encode_text($text, $enc, 'utf-8');
+    return Encode::decode_utf8($text);
+}
+
+sub decode_utf8_jcode {
+    my $class = shift;
+    my ($text, $enc) = @_;
+    $text = $class->encode_text($text, $enc, 'utf-8');
+    return pack('U*', unpack('U0U*', $text));
+}
+
 sub _load_module {
     return $PKG if $PKG;
     my $class = shift;

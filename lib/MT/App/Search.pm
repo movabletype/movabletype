@@ -535,8 +535,15 @@ sub _set_form_elements {
 
 sub is_a_match { 
     my($app, $txt) = @_;
+    $txt = MT::I18N::decode_utf8($txt);
+    my $keyword = MT::I18N::decode_utf8($app->{search_string});
+
     if ($app->{searchparam}{RegexSearch}) {
-        return unless $txt =~ m/$app->{search_string}/;
+        if ($app->{searchparam}{CaseSearch}) {
+            return unless $txt =~ m/$keyword/;
+        } else {
+            return unless $txt =~ m/$keyword/i;
+        }
     } else {
         my $casemod = $app->{searchparam}{CaseSearch} ? '' : '(?i)';
         for (@{$app->{searchparam}{search_keys}{AND}}) {
@@ -553,7 +560,8 @@ sub query_parse {
     my $app = shift;
     return unless $app->{search_string};
 
-    local $_ = $app->{search_string};
+    local $_ = MT::I18N::decode_utf8($app->{search_string});
+
     s/^\s//;            # Remove leading whitespace
     s/\s$//;            # Remove trailing whitespace
     s/\s+AND\s+/ /g;    # Remove AND because it's implied
