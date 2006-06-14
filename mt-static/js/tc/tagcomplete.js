@@ -100,8 +100,18 @@ TC.TagComplete.prototype.keyDown = function( evt )
     }*/
     else if ( evt.keyCode == 38 )
         this.selectCompletion( -1 );
-    else if ( evt.keyCode == 40 )
-        this.selectCompletion( 1 );
+    else if ( evt.keyCode == 40 ) {
+        if (this.hasCompletions) {
+            this.selectCompletion( 1 );
+        } else {
+            var val = element.value;
+            var idx = val.lastIndexOf(this.delimiter);
+            var str = val.substring(idx+1, val.length);
+            str = str.replace(/^\s*(.+)$/g, "$1");
+            this.currentWord = str;
+            this.lookForCompletions();
+        }
+    }
     else
         this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
     return true;
@@ -253,8 +263,11 @@ TC.TagCompleteNode.prototype.getStrings = function(str1, str2, outStr)
         if ( this.nodeValue[ letter ] )
             this.nodeValue[ letter ].getStrings( rest, str2 + letter, outStr );
 
-        letter = letter.toUpperCase();
-        if ( this.nodeValue[ letter ] )
-            this.nodeValue[ letter ].getStrings( rest, str2 + letter, outStr );
+        var upperLetter = letter.toUpperCase();
+        if (letter != upperLetter) {
+            letter = upperLetter;
+            if ( this.nodeValue[ letter ] )
+                this.nodeValue[ letter ].getStrings( rest, str2 + letter, outStr );
+        }
     }
 }
