@@ -1,0 +1,156 @@
+<TMPL_INCLUDE NAME=header.tmpl>
+
+<form method="post" action="mt-wizard.cgi">
+<input type="hidden" name="__mode" value="configure" />
+<input type="hidden" name="config" value="<TMPL_VAR NAME=CONFIG ESCAPE=HTML>" />
+
+
+<script language="javascript" type="text/javascript">
+<!--
+function db_select(sel) {
+    var db = sel.options[sel.selectedIndex].value;
+    if ((db == "bdb") || (db == "sqlite") || (db == "sqlite2")) {
+        hideByID("login"); hideByID("server"); hideByID("goback"); hideByID("use_setnames");
+        showByID("path");
+        showByID("submit");
+        showByID("params");
+        document.forms[0].dbpath.focus();
+    } else if ((db == "mysql") || (db == "postgres")) {
+        showByID("login"); showByID("server"); hideByID("goback");
+        hideByID("path");
+        showByID("submit");
+        showByID("params");
+        showByID("use_setnames");
+        document.forms[0].dbname.focus();
+    } else {
+        showByID("goback");
+        hideByID("submit");
+        hideByID("params");
+    }
+    return true;
+}
+// -->
+</script>
+
+<h3><MT_TRANS phrase="Step"> 2 of 3 &mdash; <MT_TRANS phrase="Database Configuration"></h3>
+
+<p>
+<MT_TRANS phrase="Please enter the parameters necessary for connecting to your database.If your database type is not listed in the dropdown below, you may be missing the Perl module necessary to connect to your database.  If this is the case, please check your installation and click <a href="?__mode=configure">here</a> to re-test your installation.">
+</p>
+
+
+<TMPL_IF NAME=CONNECT_ERROR>
+<h4 class="error-message"><MT_TRANS phrase="An error occurred while attempting to connect to the database: "><TMPL_VAR NAME=ERROR></h4>
+<TMPL_ELSE>
+<TMPL_IF NAME=ERROR>
+<h4 class="error-message"><TMPL_VAR NAME=ERROR></h4>
+</TMPL_IF>
+</TMPL_IF>
+
+
+<p>
+<label for="dbtype"><MT_TRANS phrase="Database"></label><br />
+<select id="dbtype" name="dbtype" onchange="db_select(this)">
+<option value=""><MT_TRANS phrase="Select One..."></option>
+<TMPL_LOOP NAME=DB_LOOP>
+<option value="<TMPL_VAR NAME=ID>" <TMPL_IF NAME=SELECTED>selected="selected"</TMPL_IF>><TMPL_VAR NAME=NAME></option>
+</TMPL_LOOP>
+</select>
+</p>
+
+<div id="params" <TMPL_UNLESS NAME=DBTYPE>style="display: none"</TMPL_UNLESS>>
+
+<!-- database file path -->
+
+<div id="path"<TMPL_UNLESS NAME=PATH_REQUIRED> style="display: none"</TMPL_UNLESS>>
+<p>
+<label for="dbpath"><MT_TRANS phrase="Database Path"></label><br />
+<input type="text" id="dbpath" name="dbpath" value="<TMPL_IF NAME=DBPATH><TMPL_VAR NAME=DBPATH ESCAPE=HTML><TMPL_ELSE>./db</TMPL_IF>" /><br />
+<MT_TRANS phrase="The physical file path for your BerkeleyDB or SQLite database. "><TMPL_UNLESS NAME=DBPATH><MT_TRANS phrase="A default location of "./db" will store the database file(s) underneath your Movable Type directory."></TMPL_UNLESS>
+</p>
+</div>
+
+
+<!-- server configuration parameters -->
+
+<div id="server"<TMPL_IF NAME=PATH_REQUIRED> style="display: none"</TMPL_IF>>
+<p>
+<label for="dbname"><MT_TRANS phrase="Database Name"></label><br />
+<input type="text" id="dbname" name="dbname" value="<TMPL_VAR NAME=DBNAME ESCAPE=HTML>" /><br />
+<MT_TRANS phrase="The name of your SQL database. If it doesn't already exist, we will attempt to create it for you.">
+</p>
+
+<p>
+<label for="dbserver"><MT_TRANS phrase="Database Server"></label><br />
+<input type="text" name="dbserver" value="<TMPL_IF NAME=DBSERVER><TMPL_VAR NAME=DBSERVER ESCAPE=HTML><TMPL_ELSE>localhost</TMPL_IF>" /><TMPL_UNLESS NAME=DBSERVER><MT_TRANS phrase="This is usually 'localhost'."></TMPL_UNLESS>
+</p>
+
+<p>
+<label for="dbport"><MT_TRANS phrase="Database Port"></label><br />
+<input type="text" name="dbport" value="<TMPL_VAR NAME=DBPORT ESCAPE=HTML>" /><br />
+<MT_TRANS phrase="This can usually be left blank.">
+</p>
+
+<p>
+<label for="dbsocket"><MT_TRANS phrase="Database Socket"></label><br />
+<input type="text" name="dbsocket" value="<TMPL_VAR NAME=DBSOCKET ESCAPE=HTML>" /><br />
+<MT_TRANS phrase="This can usually be left blank.">
+</p>
+</div>
+
+
+<!-- database login parameters -->
+
+<div id="login"<TMPL_UNLESS NAME=LOGIN_REQUIRED> style="display: none"</TMPL_UNLESS>>
+<p>
+<label for="dbuser"><MT_TRANS phrase="Username"></label><br />
+<input type="text" name="dbuser" value="<TMPL_VAR NAME=DBUSER ESCAPE=HTML>" /><br />
+<MT_TRANS phrase="The username to login to your SQL database.">
+</p>
+
+<p>
+<label for="dbpass"><MT_TRANS phrase="Password"></label><br />
+<input type="text" name="dbpass" value="<TMPL_VAR NAME=DBPASS ESCAPE=HTML>" /><br />
+<MT_TRANS phrase="The password to login to your SQL database.">
+</p>
+</div>
+
+
+<!-- MySQL optional configuration parameters -->
+
+<div id="use_setnames"<TMPL_IF NAME=PATH_REQUIRED> style="display: none"</TMPL_IF>>
+<p>
+<label for="setnames"><MT_TRANS phrase="Use SQLSetNames"></label><br />
+<input type="checkbox" id="setnames" name="setnames" value="1" <TMPL_IF NAME=SETNAMES>checked</TMPL_IF>/><br />
+<MT_TRANS phrase="If you are installing a version of MySQL older than 4.1, you must check this checkbox.">
+</p>
+</div>
+
+</div>
+
+<TMPL_IF NAME=SUCCESS>
+<P>
+<MT_TRANS phrase="Your database configuration is successfully.">
+</P>
+</TMPL_IF>
+
+
+<TMPL_UNLESS NAME=SUCCESS>
+<div id="goback" <TMPL_IF NAME=DBTYPE>style="display: none"</TMPL_IF>>
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start'" />
+</div>
+<div id="submit" <TMPL_UNLESS NAME=DBTYPE>style="display: none"</TMPL_UNLESS>>
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start'" />
+<input type="submit" value="<MT_TRANS phrase="Test Connection">" />
+</TMPL_UNLESS>
+<TMPL_IF NAME=SUCCESS>
+<div id="continue">
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start'" />
+<input type="submit" value="<MT_TRANS phrase="Test Connection">" />
+<input type="submit" value="<MT_TRANS phrase="Continue">" name="continue" />
+</div>
+</TMPL_IF>
+</div>
+
+</form>
+<TMPL_INCLUDE NAME=footer.tmpl>
