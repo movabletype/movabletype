@@ -272,11 +272,7 @@ INFO
 my $TMP = "test$$.tmp";
 local *FH;
 if (open(FH, ">$TMP")) {
-    my $mode = (stat($TMP))[2] & 07777;
-    if (($mode & 07000) && !($mode & 07700)) {
-        print trans_templ("	<li><MT_TRANS phrase=\"(Probably) Running under cgiwrap or suexec\"></li>\n");
-    }
-    close(FH);
+    print trans_templ("	<li><MT_TRANS phrase=\"(Probably) Running under cgiwrap or suexec\"></li>\n");
     unlink($TMP);
 }
 
