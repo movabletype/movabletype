@@ -105,7 +105,7 @@
 <TMPL_UNLESS NAME=MODE_VIEW_ENTRY>
 <td>
 <TMPL_IF NAME=ENTRY_TITLE>
-<TMPL_IF NAME=TAB_JUNK><TMPL_VAR NAME=ENTRY_TITLE ESCAPE=HTML><TMPL_ELSE><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;id=<TMPL_VAR NAME=ENTRY_ID>&amp;tab=comments" title="<MT_TRANS phrase="Show all comments on this entry">"><TMPL_VAR NAME=ENTRY_TITLE ESCAPE=HTML></a></TMPL_IF>
+<TMPL_IF NAME=TAB_JUNK><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;id=<TMPL_VAR NAME=ENTRY_ID>" title="<MT_TRANS phrase="View this entry">"><TMPL_VAR NAME=ENTRY_TITLE ESCAPE=HTML></a><TMPL_ELSE><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;id=<TMPL_VAR NAME=ENTRY_ID>&amp;tab=comments" title="<MT_TRANS phrase="Show all comments on this entry">"><TMPL_VAR NAME=ENTRY_TITLE ESCAPE=HTML></a></TMPL_IF>
 <TMPL_ELSE>
 &nbsp;
 </TMPL_IF>
