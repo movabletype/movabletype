@@ -1,3 +1,4 @@
-PRODUCT_NAME = Movable Type Publishing Platform
+PRODUCT_NAME = Movable Type
 PRODUCT_CODE = MT
 PRODUCT_VERSION = 3.3
+SCHEMA_VERSION = 3.20021

@@ -42,16 +42,20 @@
 <h4><MT_TRANS phrase="Essential Links"></h4>
 <div class="inner">
 <ul>
-<li><a href="<TMPL_VAR NAME=SCRIPT_PATH>mt-check.cgi"><MT_TRANS phrase="System Information"></a></li>
+<li><a href="<TMPL_VAR NAME=SCRIPT_PATH>mt-check.cgi" target="<MT_TRANS phrase="_external_link_target">"><MT_TRANS phrase="System Information"></a> &#187;</li>
+<TMPL_IF NAME=LANGUAGE_JA>
+<li><a href="http://www.sixapart.jp/movabletype/" target="<MT_TRANS phrase="_external_link_target">"><MT_TRANS phrase="Movable Type Home"></a> &#187;</li>
+<li><a href="http://www.sixapart.jp/movabletype/plugins/" target="<MT_TRANS phrase="_external_link_target">"><MT_TRANS phrase="Plugin Directory"></a> &#187;</li>
+<li><a href="http://www.sixapart.jp/support/" target="<MT_TRANS phrase="_external_link_target">"><MT_TRANS phrase="Support and Documentation"></a> &#187;</li>
+<TMPL_ELSE>
 <li><a href="<MT_TRANS phrase="https://secure.sixapart.com/t/account">"><MT_TRANS phrase="Your Account"></a> &#187;</li>
-<li><a href="<MT_TRANS phrase="https://secure.sixapart.com/t/help?__mode=edit">"><MT_TRANS phrase="Open a help ticket<sup><strong>&#8224;</strong></sup>"></a> &#187;</li>
-<li><a href="<MT_TRANS phrase="http://www.sixapart.com/movabletype/kb/">"><MT_TRANS phrase="Knowledge Base"></a> &#187;</li>
-<li><a href="<MT_TRANS phrase="http://www.sixapart.com/movabletype/support">"><MT_TRANS phrase="Support and Documentation"></a> &#187;</li>
 <li><a href="<MT_TRANS phrase="http://www.sixapart.com/movabletype/">"><MT_TRANS phrase="Movable Type Home"></a> &#187;</li>
 <li><a href="<MT_TRANS phrase="http://www.sixapart.com/pronet/plugins/">"><MT_TRANS phrase="Plugin Directory"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="https://secure.sixapart.com/t/help?__mode=kb">"><MT_TRANS phrase="Knowledge Base"></a> &#187;</li>
+<li><a href="<MT_TRANS phrase="http://www.sixapart.com/movabletype/support">"><MT_TRANS phrase="Support and Documentation"></a> &#187;</li>
 <li><a href="<MT_TRANS phrase="http://www.sixapart.com/pronet/">"><MT_TRANS phrase="Professional Network"></a> &#187;</li>
+</TMPL_IF>
 </ul>
-<p class="tip"><sup><strong>&#8224;</strong></sup> This feature is only available to paid licensees.</p>
 </div>
 </div>
 

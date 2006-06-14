@@ -3,7 +3,7 @@
 <html lang="<TMPL_VAR NAME=LANGUAGE_TAG>">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<TMPL_VAR NAME=LANGUAGE_ENCODING>" />
-<title><TMPL_LOOP NAME=PAGE_TITLES><TMPL_VAR NAME=BC_NAME ESCAPE=HTML> | </TMPL_LOOP><MT_TRANS phrase="Movable Type Publishing Platform"></title>
+<title><TMPL_LOOP NAME=PAGE_TITLES><TMPL_VAR NAME=BC_NAME ESCAPE=HTML> | </TMPL_LOOP><TMPL_VAR NAME=PRODUCT_NAME></title>
 <link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css" type="text/css" />
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js"></script>
 <TMPL_IF NAME=LOCAL_LANG_ID><link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles_<TMPL_VAR NAME=LOCAL_LANG_ID>.css" />

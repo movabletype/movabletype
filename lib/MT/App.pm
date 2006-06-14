@@ -850,7 +850,11 @@ sub load_tmpl {
     $tmpl->param(script_full_url => $app->base . $app->uri);
     $tmpl->param(mt_version => MT->version_id);
     $tmpl->param(mt_product_code => MT->product_code);
-    $tmpl->param(language_tag => $app->current_language);
+    $tmpl->param(mt_product_name => $app->translate(MT->product_name));
+    my $lang = $app->current_language;
+    $tmpl->param(language_tag => $lang);
+    $lang =~ s/[-_].+//;
+    $tmpl->param("language_$lang" => 1);
     $tmpl->param(language_encoding => $app->charset);
 
     $tmpl;

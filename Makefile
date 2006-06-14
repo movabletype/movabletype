@@ -19,7 +19,7 @@ all: code
 .PHONY: code-common code code-en_US code-de code-fr code-nl \
 	code-es code-ja
 code_common = lib/MT.pm lib/MT/ConfigMgr.pm php/mt.php mt-check.cgi \
-	mt-config.cgi-original 
+	mt-config.cgi-original index.html
 
 code: check code-$(BUILD_LANGUAGE)
 code-en_US code-de code-fr code-nl code-es: check $(code_common) \
@@ -33,6 +33,8 @@ check:
 	@test $(BUILD_LANGUAGE)
 	@(test $(BUILD_PACKAGE) || echo You must define BUILD_PACKAGE)
 	@test $(BUILD_PACKAGE)
+	@(test $(BUILD_VERSION_ID) || echo You must define BUILD_VERSION_ID)
+	@test $(BUILD_VERSION_ID)
 	-@if [ "`cat build-language-stamp`" != ${BUILD_LANGUAGE} ] ;  \
 	then                                                   \
 		echo ${BUILD_LANGUAGE} > build-language-stamp; \
@@ -42,6 +44,10 @@ check:
 lib/MT.pm: %: %.pre build-language-stamp
 	sed -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
 	    -e 's!__PRODUCT_CODE__!$(PRODUCT_CODE)!g' \
+	    -e 's!__PRODUCT_NAME__!$(PRODUCT_NAME)!g' \
+	    -e 's!__PRODUCT_VERSION__!$(PRODUCT_VERSION)!g' \
+	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	    -e 's!__SCHEMA_VERSION__!$(SCHEMA_VERSION)!g' \
 	    $< > $@
 
 lib/MT/ConfigMgr.pm: %: %.pre build-language-stamp
@@ -61,7 +67,10 @@ lib/MT/ConfigMgr.pm: %: %.pre build-language-stamp
 php/mt.php: %: %.pre build-language-stamp
 	sed -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
 	    -e 's!__PUBLISH_CHARSET__!$(PUBLISH_CHARSET)!g' \
-	    $< > $@
+	    -e 's!__PRODUCT_NAME__!$(PRODUCT_NAME)!g' \
+	    -e 's!__PRODUCT_VERSION__!$(PRODUCT_VERSION)!g' \
+	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	$< > $@
 
 mt-config.cgi-original: mt-config.cgi-original.pre build-language-stamp
 	sed -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
@@ -79,22 +88,27 @@ $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm
 $(latin1_modules): %-iso-8859-1.pm: %.pm
 	iconv -f utf-8 -t iso-8859-1 $< > $@
 
-.PHONY: docs docs-en_US docs-fr docs-de docs-es docs-ja
+# Defunct
+#.PHONY: docs docs-en_US docs-fr docs-de docs-es docs-ja
+#
+#docs-en_US:
+#	$(MAKE) -C docs-en_US
+#	-rm -rf mt-static/docs
+#	cp -R docs-en_US mt-static/docs
+#
+#docs-nl: docs-en_US
+#	-rm -rf mt-static/docs
+#	cp -R docs-en_US mt-static/docs
+#
+#docs-fr docs-de docs-es docs-ja:
+#	-rm -rf mt-static/docs
+#	cp -R docs-$(BUILD_LANGUAGE) mt-static/docs
+#
+#docs: check docs-$(BUILD_LANGUAGE) build-language-stamp
 
-docs-en_US:
-	$(MAKE) -C docs-en_US
-	-rm -rf mt-static/docs
-	cp -R docs-en_US mt-static/docs
-
-docs-nl: docs-en_US
-	-rm -rf mt-static/docs
-	cp -R docs-en_US mt-static/docs
-
-docs-fr docs-de docs-es docs-ja:
-	-rm -rf mt-static/docs
-	cp -R docs-$(BUILD_LANGUAGE) mt-static/docs
-
-docs: check docs-$(BUILD_LANGUAGE) build-language-stamp
+index.html: check index.html.$(BUILD_LANGUAGE) build-language-stamp
+	cp index.html.en_US $@
+	-cp index.html.$(BUILD_LANGUAGE) $@
 
 ##### Other useful targets
 
@@ -127,10 +141,10 @@ quick-test: code
 		t/23-entry.t t/26-pings.t t/27-context.t t/28-xmlrpc.t   \
 		t/29-cleanup.t t/31-dbm.t t/32-mysql.t t/33-postgres.t   \
 		t/34-sqlite.t t/35-tags.t t/45-datetime.t t/46-i18n-en.t \
-		t/47-i18n-ja.t
+		t/47-i18n-ja.t t/48-cache.t t/49-tagsplit.t
 
-tools-dist:
-	(cd tools; perl -e 'use ExtUtils::Manifest qw(maniread manicopy); $$mani = maniread("MANIFEST"); manicopy($$mani, "mt-tools", "cp")'; tar czvf ../mt-tools.tar.gz mt-tools; zip -r ../mt-tools.zip mt-tools)
+# tools-dist:
+# 	(cd tools; perl -e 'use ExtUtils::Manifest qw(maniread manicopy); $$mani = maniread("MANIFEST"); manicopy($$mani, "mt-tools", "cp")'; tar czvf ../mt-tools.tar.gz mt-tools; zip -r ../mt-tools.zip mt-tools)
 
 clean:
 	-rm lib/MT.pm mt-config.cgi-original mt-check.cgi $(latin1_modules) $(local_js)

@@ -7,11 +7,12 @@
 package MT;
 use strict;
 
-use vars qw( $VERSION $VERSION_ID $SCHEMA_VERSION $PRODUCT_CODE );
-$VERSION = 3.3;
-$VERSION_ID = '3.3a1 (Tinsel)';  
-$SCHEMA_VERSION = '3.20021';
+use vars qw( $VERSION $VERSION_ID $SCHEMA_VERSION $PRODUCT_CODE $PRODUCT_NAME );
+$VERSION = '__PRODUCT_VERSION__';
+$VERSION_ID = '__PRODUCT_VERSION_ID__';  
+$SCHEMA_VERSION = '__SCHEMA_VERSION__';
 $PRODUCT_CODE = '__PRODUCT_CODE__';
+$PRODUCT_NAME = '__PRODUCT_NAME__';
 
 use MT::ConfigMgr;
 use MT::Object;
@@ -35,11 +36,12 @@ sub BEGIN {
 sub version_number { $VERSION }
 sub version_id { $VERSION_ID }
 sub product_code { $PRODUCT_CODE }
+sub product_name { $PRODUCT_NAME }
 sub schema_version { $SCHEMA_VERSION }
 
 sub version_slug {
     return MT->translate_templatized(<<"SLUG");
-<MT_TRANS phrase="Powered by Movable Type">
+<MT_TRANS phrase="Powered by [_1]" params="$PRODUCT_NAME">
 <MT_TRANS phrase="Version [_1]" params="$VERSION_ID">
 <MT_TRANS phrase="http://www.sixapart.com/movabletype/">
 SLUG

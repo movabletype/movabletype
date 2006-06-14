@@ -5,8 +5,12 @@
 #
 # $Id: mt.php 29263 2006-05-19 06:52:05Z fyoshimatsu $
 
-define('VERSION', '3.3');
-define('VERSION_ID', '3.3b2 (Tinsel)');
+define('VERSION', '__PRODUCT_VERSION__');
+define('VERSION_ID', '__PRODUCT_VERSION_ID__');
+define('PRODUCT_NAME', '__PRODUCT_NAME__');
+
+global $Lexicon;
+$Lexicon = array();
 
 class MT {
     var $mime_types = array(
@@ -677,5 +681,14 @@ function _strip_index($url, $blog) {
     $index = preg_quote($index . $ext);
     $url = preg_replace("/\/$index(#.*)?$/", '/$1', $url);
     return $url;
+}
+
+function translate_phrase_param($str, $params = null) {
+    if (is_array($params) && strpos($str, '[_')) {
+        for ($i = 1; $i <= count($params); $i++) {
+            $str = preg_replace("/\\[_$i\\]/", $params[$i-1], $str);
+        }
+    }
+    return $str;
 }
 ?>

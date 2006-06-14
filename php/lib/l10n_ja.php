@@ -72,10 +72,14 @@ $Lexicon_ja = array(
     'Continuing the discussion...' => 'トラックバック',
     'from' => ',',
 );
-require_once("l10n_default.php");
-function translate_phrase($str) {
+function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;
     $l10n_str = isset($Lexicon_ja[$str]) ? $Lexicon_ja[$str] : isset($Lexicon[$str]) ? $Lexicon[$str] : $str;
-    return mb_convert_encoding($l10n_str,mb_internal_encoding(),"UTF-8");
+    if (extension_loaded('mbstring')) {
+        $str = mb_convert_encoding($l10n_str,mb_internal_encoding(),"UTF-8");
+    } else {
+        $str = $l10n_str;
+    }
+    return translate_phrase_param($str, $params);
 }
 ?>
