@@ -1967,7 +1967,7 @@ sub edit_object {
     my $type = $q->param('_type');
     return unless $API{$type};
     my $blog_id = $q->param('blog_id');
-    if (defined($blog_id)) {
+    if (defined($blog_id) && $blog_id) {
         return $app->error($app->translate("Invalid parameter"))
             unless ($blog_id =~ m/\d+/);
     }
@@ -3369,14 +3369,7 @@ sub CMSPreSave_author {
     my ($delim, $delim2) = $app->param('tag_delim');
     $obj->entry_prefs('tag_delim' => $delim ? ord($delim) : ord($delim2));
 
-    ## If this is an author editing his/her profile, $id will be
-    ## some defined value; if so we should update the author's
-    ## cookie to reflect any changes made to username and password.
-    ## Otherwise, this is a new user, and we shouldn't update the
-    ## cookie.
-    if ($obj->id) {
-        $app->start_session;
-    } else {
+    unless ($obj->id) {
         $obj->created_by($app->user->id);
     }
     1;
@@ -3739,9 +3732,16 @@ sub CMSPostSave_author {
         }
     } else {
         if ($app->user->id == $obj->id) {
-            # re-save user cookie to avoid appearance of logging out
+            ## If this is an author editing his/her profile, $id will be
+            ## some defined value; if so we should update the author's
+            ## cookie to reflect any changes made to username and password.
+            ## Otherwise, this is a new user, and we shouldn't update the
+            ## cookie.
             $app->{author} = $obj;
-            $app->start_session();
+            if (($obj->name ne $original->name) ||
+                ($app->param('pass'))) {
+                $app->start_session();
+            }
         }
     }
     1;
