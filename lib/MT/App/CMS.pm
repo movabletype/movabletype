@@ -165,7 +165,10 @@ sub init_request {
             $app->mode($mode);
         } else {
             foreach my $plugin (@MT::Plugins) {
-                $app->mode('upgrade') if $plugin->needs_upgrade;
+                if ($plugin->needs_upgrade) {
+                    $mode = 'upgrade';
+                    $app->mode($mode);
+                }
             }
         }
     }
@@ -1083,6 +1086,7 @@ sub list_blogs {
 
     $param{can_create_blog} = $author->can_create_blog;
     $param{can_view_log} = $author->can_view_log;
+    $param{can_edit_tags} = $author->is_superuser;
     $param{saved_deleted} = $q->param('saved_deleted');
     if ($author->can_create_blog()) {
         $param{blog_count} = MT::Blog->count();
