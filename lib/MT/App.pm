@@ -1981,6 +1981,130 @@ The IP address of the client.
 In a L<mod_perl> context, this calls L<Apache::Connection::remote_ip>; in a
 CGI context, this uses C<$ENV{REMOTE_ADDR}>.
 
+=head1 STANDARD APPLICATION TEMPLATE PARAMETERS
+
+When loading an application template, a number of parameters are preset for
+you. The following are some parameters that are assigned by C<MT::App> itself:
+
+=over 4
+
+=item * AUTHOR_ID
+=item * AUTHOR_NAME
+
+The MT::Author ID and username of the currently logged-in user.
+
+=item * MT_VERSION
+
+The value returned by MT->version_id. Typically just the release version
+number, but for special releases such as betas, this may also include
+an identifying suffix (ie "3.2b").
+
+=item * MT_PRODUCT_CODE
+
+A product code defined by Six Apart to identify the edition of Movable Type.
+Currently, the valid values include:
+
+    MT  - Movable Type Personal or Movable Type Commercial editions
+    MTE - Movable Type Enterprise
+
+=item * MT_PRODUCT_NAME
+
+The name of the product in use.
+
+=item * LANGUAGE_TAG
+
+The active language identifier of the currently logged-in user (or default
+language for the MT installation if there is no logged in user).
+
+=item * LANGUAGE_xx
+
+A parameter dynamically named for testing for particular languages.
+
+Sample usage:
+
+    <TMPL_IF NAME=LANGUAGE_FR>Parlez-vous Francias?</TMPL_IF>
+
+Note that this is not a recommended way to localize your application. This
+is intended for including or excluding portions of a template based on the
+active language.
+
+=item * LANGUAGE_ENCODING
+
+Provides the character encoding that is configured for the application. This
+maps to the "PublishCharset" MT configuration setting.
+
+=item * STATIC_URI
+
+This provides the mt-config.cgi setting for "StaticWebPath" or "AdminCGIPath",
+depending on whether the active CGI is an admin CGI script or not (most
+likely it is, if it's meant to be used by an administrator (mt.cgi) and not
+an end user such as mt-comments.cgi).
+
+Sample usage:
+
+    <TMPL_VAR NAME=STATIC_URI>images/logo.gif
+
+With a StaticWebPath of '/mt/', this produces:
+
+    /mt/mt-static/images/logo.gif
+
+or, if StaticWebPath is 'http://example.com/mt-static/':
+
+    http://example.com/mt-static/images/logo.gif
+
+=item * SCRIPT_URL
+
+Returns the relative URL to the active CGI script.
+
+Sample usage:
+
+    <TMPL_VAR NAME=SCRIPT_URL>?__mode=blah
+
+which may output:
+
+    /mt/plugins/myplugin/myplugin.cgi?__mode=blah
+
+
+=item * MT_URI
+
+Yields the relative URL to the primary Movable Type application script
+(mt.cgi or the configured 'AdminScript').
+
+Sample usage:
+
+    <TMPL_VAR NAME=MT_URI>?__mode=view&_type=entry&id=1&blog_id=1
+
+producing:
+
+    /mt/mt.cgi?__mode=view&_type=entry&id=1&blog_id=1
+
+=item * SCRIPT_PATH
+
+The path portion of URL for script
+
+Sample usage:
+
+    <TMPL_VAR NAME=SCRIPT_PATH>mt-check.cgi
+
+producing:
+
+    /mt/mt-check.cgi
+
+=item * SCRIPT_FULL_URL
+
+The complete URL to the active script. This is useful when needing to output
+the full script URL, including the protocol and domain.
+
+Sample usage:
+
+    <TMPL_VAR NAME=SCRIPT_FULL_URL>?__mode=blah
+
+Which produces something like this:
+
+    http://example.com/mt/plugins/myplugin/myplugin.cgi
+
+=back
+
 =head1 AUTHOR & COPYRIGHTS
 
 Please see the L<MT> manpage for author, copyright, and license information.
