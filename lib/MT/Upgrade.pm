@@ -845,7 +845,7 @@ sub seed_database {
     local $MT::CallbacksEnabled = 1;
 
     require MT::L10N;
-    my $lang = MT::ConfigMgr->instance->DefaultLanguage;
+    my $lang = exists $param{user_lang} ? $param{user_lang} : MT::ConfigMgr->instance->DefaultLanguage;
     my $LH = MT::L10N->get_handle($lang);
 
     # TBD: parameter for username/password provided by user from $app
@@ -854,6 +854,7 @@ sub seed_database {
     $author->type(MT::Author::AUTHOR());
     $author->set_password(exists $param{user_password} ? $param{user_password} : 'Nelson');
     $author->email(exists $param{user_email} ? $param{user_email} : '');
+    $author->hint(exists $param{user_hint} ? $param{user_hint} : '');
     $author->is_superuser(1);
     $author->can_create_blog(1);
     $author->can_view_log(1);

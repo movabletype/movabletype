@@ -150,6 +150,8 @@ sub upgrade {
         my $initial_password = '';
         my $initial_name = $app->param('admin_name') || '';
         my $initial_email = $app->param('admin_email') || '';
+        my $initial_hint = $app->param('hint') || '';
+        my $initial_lang = $app->param('preferred_language');
 
         my $user = $app->param('admin_username');
         if (!$user) {
@@ -171,14 +173,24 @@ sub upgrade {
         } else {
             return $app->main({ error => $app->translate("You failed to supply a password.") });
         }
-        if ($initial_email eq '') {
-            return $app->main({ error => $app->translate("The e-mail address is required.") })
+        
+        if (!MT::Util::is_valid_email($initial_email)) {
+            return $app->main({ error => $app->translate("The value you entered was not a valid email address") });
         }
+
+        $initial_hint =~ s!^\s+|\s+$!!gs;
+        unless ($initial_hint) {
+            return $app->main({ error => $app->translate('Password hint is required.') });
+        }
+
+        
         $new_user = {
             user_name => $initial_user,
             user_nickname => $initial_name,
             user_password => $initial_password,
-            user_email => $initial_email
+            user_email => $initial_email,
+            user_lang => $initial_lang,
+            user_hint => $initial_hint,
         };
     }
 
