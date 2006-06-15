@@ -184,10 +184,20 @@ verbose_command( sprintf( '%s export %s%s %s',
     $o{'export=s'}
 ));
 
+# Change to the export directory.  XXX Required by the make=s command.
+chdir( $o{'export=s'} ) or die "Can't cd to $o{'export=s'}: $!"
+    unless $o{'debug'};
+
 # Read-in the configuration variables for substitution.
-my $config = read_conf( 'build/mt-dists/MT.mk' );
+my $config = read_conf( "build/mt-dists/$ENV{BUILD_PACKAGE}.mk" );
 my $version    = $config->{PRODUCT_VERSION};
-my $version_id = $config->{PRODUCT_VERSION_ID} || $ENV{BUILD_VERSION_ID};
+my $version_id = $o{'shown:s'} || $config->{PRODUCT_VERSION_ID} || $ENV{BUILD_VERSION_ID};
+
+# Update the version number.
+$version_id = update_version(
+    File::Spec->catdir( $o{'export=s'}, $o{'mt-pm=s'} ),
+    "$o{'lang=s'}-$o{'stamp=s'}"
+);
 
 # Set non-production footer.
 inject_footer() unless $o{'prod'};
@@ -201,9 +211,6 @@ my $app = $o{'name:s'}
         $o{'lang=s'},
         $o{'stamp=s'};
 
-# Change to the export directory.  XXX Required by the make=s command.
-chdir( $o{'export=s'} ) or die "Can't cd to $o{'export=s'}: $!"
-    unless $o{'debug'};
 # Build the distribution (with external make call).
 #verbose_command(
 #    sprintf( '%s %s --language=%s --stamp=%s', 
@@ -567,6 +574,56 @@ sub notify {
     $smtp->quit;
 
     verbose( "Email sent to $o{'notify:s'}" );
+}
+
+sub update_version {
+    my $file = shift;
+    die 'ERROR: No file to update given.' unless $file;
+
+    verbose( "Entered update_version with $file" );
+    return 'DEBUG' if $o{'debug'};
+
+    die "ERROR: File $file does not exist: $!" unless -e $file;
+
+    my $stamp = shift || '';
+    verbose( 'WARNING: No stamp provided for version update.' )
+        unless $stamp;
+
+    # Slurp-in the contents of the file.
+    local $/;
+    my $fh = IO::File->new( $file );
+    my $contents = <$fh>;
+    $fh->close();
+
+    # Try to replace the VERSION_ID string.
+    my $new_id = $o{'shown:s'} || "$version-$stamp";
+    $new_id .= sprintf( '-%04d%02d%02d',
+        (localtime)[5] + 1900, (localtime)[4] + 1, (localtime)[3,2,1,0] )
+        if $o{'date!'};
+    my $version_id = '';
+    if( ( $o{'date!'} || $o{'append:s'} ) ) {
+        $contents =~ s/
+            \$VERSION_ID  # We care about the VERSION_ID
+            \s* = \s*     # Assignment with whitespace
+            '?            # Version is likely quoted
+            ( \w+ )       # Capture ONLY the digit-part
+            .*?           # There may be stuff to ignore after the version_id
+            '?            # ..and is likely quoted
+            \s* ;         # Ending with a whitespace semi-colon
+        /\$VERSION_ID = '$new_id';/x;
+        $version_id = $new_id;
+    }
+    die "ERROR: Could not find a VERSION_ID in $file"
+        unless $version_id;
+    verbose( "VERSION_ID: '$version_id'" );
+
+    # Rewrite the file with the stamped version_id.
+    $fh = IO::File->new( "> $file" );
+    print $fh $contents;
+    $fh->close();
+
+    # Hand back the version_id string.
+    return $version_id;
 }
 
 sub read_conf {
