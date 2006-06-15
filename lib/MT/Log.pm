@@ -86,7 +86,7 @@ sub add_class {
         my $obj = shift;
         $obj->SUPER::set_values(@_);
         my $pkg = $obj->class;
-        $pkg = $Classes{$pkg} if $pkg && exists $Classes{$pkg};
+        $pkg = $Classes{$pkg} or return $obj;
         if ($pkg ne ref($obj)) {
             return $obj if exists $bad_classes{$pkg};
             unless (defined *{$pkg.'::'}) {
