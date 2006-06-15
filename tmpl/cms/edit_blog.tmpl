@@ -18,10 +18,10 @@ function validate (f) {
         alert('<MT_TRANS phrase="You did not select a timezone." escape="singlequotes">');
         return false;
     } else if (!is_valid_url(f.site_url.value)){
-        alert('<MT_TRANS phrase="You must set your Site URL." escape="singlequotes">');
+        alert('<MT_TRANS phrase="Your Site URL is not valid." escape="singlequotes">');
         return false;
     } else if (!is_valid_path(f.site_path.value)){
-        alert('<MT_TRANS phrase="You must set your Local Site Path." escape="singlequotes">');
+        alert('<MT_TRANS phrase="Your Local Site Path is not valid." escape="singlequotes">');
         return false;
     }
     return true;
