@@ -265,38 +265,6 @@ function initTags() {
         tagList[tagList.length] = tag;
     autoTag = new TC.TagComplete("tags", tagList);
     autoTag.delimiter = tag_delim;
-    sortTagsFreq();
-    //window.setTimeout('updateTagList()', 100);
-}
-
-function sortTagsAlpha() {
-    tagList.sort(function(a,b) { return a == b ? 0 : a < b ? -1 : 1 });
-    updateTagList();
-}
-
-function sortTagsFreq() {
-    tagList.sort(function(a,b) { return tags[b] - tags[a] });
-    updateTagList();
-}
-
-function updateTagList() {
-    if (tagPos >= tagList.length) return;
-    var html = '';
-    var div = getByID("tag-list");
-    if (tagPos == 0)
-        div.innerHTML = "";
-    var count = 0;
-    for (var i = tagPos; i < tagList.length; i++) {
-        tagPos++;
-        var tag = tagList[i];
-        html += '<a class="tag" href="javascript:void(0)" ' + (tags[tag] > 2 ? 'style="font-weight:bold" ' : '') + 'title="' + tags[tag] + '" onclick="swapTag(\'' + tag + '\')">' + tag + '</a> ';
-        if (++count > 100) break;
-    }
-    div.innerHTML += html;
-    if (tagPos < tagList.length)
-        window.setTimeout('updateTagList()', 100);
-    else
-        tagPos = 0;
 }
 
 TC.attachLoadEvent( init );
