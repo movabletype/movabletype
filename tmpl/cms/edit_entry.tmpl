@@ -258,7 +258,7 @@ function tagsLoaded(c, result) {
 
 var tagPos = 0;
 function initTags() {
-    if (!tags) return;
+    if (!tags || length(tags) == 0) return;
 
     tagList = [];
     for (var tag in tags)
