@@ -32,7 +32,7 @@ ok($tag_cache->{grandpa} == 1);
 ok($tag_cache->{verse} == 5);
 
 my $entry = MT::Entry->load(1);
-$entry->tags($entry->tag_list(), 'newtag');
+$entry->tags($entry->get_tags(), 'newtag');
 $entry->save;
 
 $tag_cache = MT::Tag->cache(blog_id => 1, datasource => 'entry');
