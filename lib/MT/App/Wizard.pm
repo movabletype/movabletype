@@ -4,8 +4,8 @@
 # $Id$
 
 package MT::App::Wizard;
-use strict;
 
+use strict;
 use MT::App;
 @MT::App::Wizard::ISA = qw( MT::App );
 
@@ -13,8 +13,10 @@ sub init {
     my $app = shift;
     my %param = @_;
     eval { $app->SUPER::init(@_); };
-    # ignore error in super init since we may not have the
-    # database set up at this point...
+    
+    use MT::ConfigMgr;
+    $app->{cfg} = MT::ConfigMgr->new unless $app->{cfg};
+
     $app->{vtbl} = { };
     $app->{requires_login} = 0;
     $app->{is_admin} = 0;
@@ -41,24 +43,11 @@ sub init {
     $app->add_methods(optional => \&optional);
     $app->add_methods(seed => \&seed);
     $app->add_methods(complete => \&complete);
+    $app->add_methods(write_config => \&write_config);
     $app->{default_mode} = 'pre_start';
     $app->{template_dir} = 'wizard';
 
-    my $path = File::Spec->catfile($app->{mt_dir}, "images", "mt-logo.gif");
-    if (!-f $path) {
-        $path = File::Spec->catfile($app->{mt_dir}, "..", "mt-static", "images", "mt-logo.gif");
-        $app->{cfg}->set('StaticWebPath', "../mt-static/") if -f $path;
-        if (!-f $path) {
-            $path = File::Spec->catfile($app->{mt_dir}, "..", "..", "mt-static", "images", "mt-logo.gif");
-            $app->{cfg}->set('StaticWebPath', "../../mt-static/") if -f $path;
-        }
-    } else {
-        $app->{cfg}->set('StaticWebPath', $app->cgipath);
-    }
-    if (!-f $path) {
-        $path = File::Spec->catfile($app->{mt_dir}, "..", "images", "mt-logo.gif");
-        $app->{cfg}->set('StaticWebPath', "../") if -f $path;
-    }
+    $app->{cfg}->set('StaticWebPath', $app->static_path);
     $app;
 }
 
@@ -66,34 +55,45 @@ sub pre_start {
     my $app = shift;
     my %param;
 
+    eval { use File::Spec; };
+    my ($cfg, $cfg_exists);
+    if (!$@) {
+        $cfg = File::Spec->catfile($app->{mt_dir}, 'mt.cfg');
+        $cfg_exists = 1 if -f $cfg;
+
+        $cfg = File::Spec->catfile($app->{mt_dir}, 'mt-config.cgi');
+        $cfg_exists |= 1 if -f $cfg;
+    }
+
+    $param{cfg_exists} = $cfg_exists;
     return$app->build_page("start.tmpl", \%param);
 }
 
 my @REQ = (
-    [ 'HTML::Template', 2, 1, MT->translate('HTML::Template is required for all Movable Type application functionality.'), 'HTML Template' ],
-    [ 'Image::Size', 0, 1, MT->translate('Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).'), 'Image Size' ],
-    [ 'File::Spec', 0.8, 1, MT->translate('File::Spec is required for path manipulation across operating systems.'), 'File Spec' ],
-    [ 'CGI::Cookie', 0, 1, MT->translate('CGI::Cookie is required for cookie authentication.'), 'CGI Cookie' ],
+    [ 'HTML::Template', 2, 1, 'HTML::Template is required for all Movable Type application functionality.', 'HTML Template' ],
+    [ 'Image::Size', 0, 1, 'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).', 'Image Size' ],
+    [ 'File::Spec', 0.8, 1, 'File::Spec is required for path manipulation across operating systems.', 'File Spec' ],
+    [ 'CGI::Cookie', 0, 1, 'CGI::Cookie is required for cookie authentication.', 'CGI Cookie' ],
 );
 
 my @DATA = (
-    [ 'DB_File', 0, 0, MT->translate('DB_File is required if you want to use the Berkeley DB/DB_File backend.'), 'BerkeleyDB Database' ],
-    [ 'DBD::mysql', 0, 0, MT->translate('DBI and DBD::mysql are required if you want to use the MySQL database backend.'), 'MySQL Database' ],
-    [ 'DBD::Pg', 1.32, 0, MT->translate('DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.'), 'PostgreSQL Database' ],
-    [ 'DBD::SQLite', 0, 0, MT->translate('DBI and DBD::SQLite are required if you want to use the SQLite database backend.'), 'SQLite Database' ],
-    [ 'DBD::SQLite2', 0, 0, MT->translate('DBI and DBD::SQLite2 are required if you want to use the SQLite2 database backend.'), 'SQLite2 Database' ],
+    [ 'DB_File', 0, 0, 'DB_File is required if you want to use the Berkeley DB/DB_File backend.', 'BerkeleyDB Database' ],
+    [ 'DBD::mysql', 0, 0, 'DBI and DBD::mysql are required if you want to use the MySQL database backend.', 'MySQL Database' ],
+    [ 'DBD::Pg', 1.32, 0, 'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.', 'PostgreSQL Database' ],
+    [ 'DBD::SQLite', 0, 0, 'DBI and DBD::SQLite are required if you want to use the SQLite database backend.', 'SQLite Database' ],
+    [ 'DBD::SQLite2', 0, 0, 'DBI and DBD::SQLite2 are required if you want to use the SQLite2 database backend.', 'SQLite2 Database' ],
 );
 
 my @OPT = (
-    [ 'HTML::Entities', 0, 0, MT->translate('HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in mt.cfg.'), 'HTML Entities' ],
-    [ 'LWP::UserAgent', 0, 0, MT->translate('LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.'), 'LWP UserAgent' ],
-    [ 'SOAP::Lite', 0.50, 0, MT->translate('SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.'), 'SOAP Lite' ],
-    [ 'File::Temp', 0, 0, MT->translate('File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.'), 'File Temp' ],
-    [ 'Image::Magick', 0, 0, MT->translate('Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.'), 'ImageMagick' ],
-    [ 'Storable', 0, 0, MT->translate('Storable is optional; it is required by certain MT plugins available from third parties.'), 'Storable'],
-    [ 'Crypt::DSA', 0, 0, MT->translate('Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.'), 'Crypt DSA'],
-    [ 'MIME::Base64', 0, 0, MT->translate('MIME::Base64 is required in order to enable comment registration.'), 'MIME Base64'],
-    [ 'XML::Atom', 0, 0, MT->translate('XML::Atom is required in order to use the Atom API.'), 'XML Atom'],
+    [ 'HTML::Entities', 0, 0, 'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in mt.cfg.', 'HTML Entities' ],
+    [ 'LWP::UserAgent', 0, 0, 'LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.', 'LWP UserAgent' ],
+    [ 'SOAP::Lite', 0.50, 0, 'SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.', 'SOAP Lite' ],
+    [ 'File::Temp', 0, 0, 'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.', 'File Temp' ],
+    [ 'Image::Magick', 0, 0, 'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.', 'ImageMagick' ],
+    [ 'Storable', 0, 0, 'Storable is optional; it is required by certain MT plugins available from third parties.', 'Storable'],
+    [ 'Crypt::DSA', 0, 0, 'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.', 'Crypt DSA'],
+    [ 'MIME::Base64', 0, 0, 'MIME::Base64 is required in order to enable comment registration.', 'MIME Base64'],
+    [ 'XML::Atom', 0, 0, 'XML::Atom is required in order to use the Atom API.', 'XML Atom'],
 );
 
 sub config_keys {
@@ -153,7 +153,6 @@ sub configure {
     foreach ($app->config_keys) {
         $param{$_} = $q->param($_) if $q->param($_);
     }
-    $param{config} = $app->serialize_config(%param);
 
     if (my $dbtype = $param{dbtype}) {
         $param{"dbtype_$dbtype"} = 1;
@@ -193,6 +192,7 @@ sub configure {
         }
     }
     $param{db_loop} = $dbmod;
+    $param{config} = $app->serialize_config(%param);
 
     my $ok = 1;
     my $err_msg;
@@ -214,7 +214,7 @@ sub configure {
             $cfg->DBPort($param{dbport}) if $param{dbport};
             $cfg->DBSocket($param{dbsocket}) if $param{dbsocket};
             $cfg->DBHost($param{dbserver}) if $param{dbserver};
-            if ($dbtype eq 'sqlite') {
+            if ($dbtype eq 'sqlite' || $dbtype eq 'sqlite2') {
                 $cfg->Database($param{dbpath});
             } else {
                 $cfg->DataSource($param{dbpath}) if $param{dbpath};
@@ -249,8 +249,7 @@ sub optional {
     my $mode = $q->param('__mode');
 
     # input data unserialize to config
-    %param = $app->unserialize_config unless %param;
-
+    %param = $app->unserialize_config;
     # get post data
     foreach ($app->config_keys) {
         $param{$_} = $q->param($_) if $q->param($_);
@@ -275,7 +274,7 @@ sub optional {
             $_->{selected} = 1;
         }
     }
-    
+
     $param{'use_'.$param{mail_transfer}} = 1;
     $param{mail_loop} = $transfer;
     $param{config} = $app->serialize_config(%param);
@@ -328,57 +327,140 @@ sub seed {
     my $q = $app->{query};
     my $mode = $q->param('__mode');
 
-    $param{static_web_path} = $app->{cfg}->get('StaticWebPath');
-    $param{cgi_path} = $app->cgipath; # no more mt-wizard.cgi
+    $param{static_web_path} = $app->static_path;
+    $param{cgi_path} = $app->cgipath;
 
-    if (my $dbtype = $q->param('dbtype')) {
+    # unserialize database configuration
+    if (my $dbtype = $param{dbtype}) {
         if ($dbtype eq 'bdb') {
             $param{use_bdb} = 1;
-            $param{database_name} = $q->param('dbpath');
+            $param{database_name} = $param{dbpath};
         } elsif ($dbtype eq 'sqlite') {
             $param{use_sqlite} = 1;
             $param{OBJECT_DRIVER} = 'DBI::sqlite';
-            $param{database_name} = $q->param('dbpath');
+            $param{database_name} = $param{dbpath};
         } elsif ($dbtype eq 'sqlite2') {
             $param{use_sqlite} = 1;
             $param{use_sqlite2} = 1;
-            $param{OBJECT_DRIVER} = 'DBI::sqlite';
-            $param{database_name} = $q->param('dbpath');
+            $param{OBJECT_DRIVER} = 'DBI::sqlite2';
+            $param{database_name} = $param{dbpath};
         } elsif ($dbtype eq 'mysql') {
             $param{use_dbms} = 1;
-            $param{object_driver} = 'dbi::mysql';
-            $param{database_name} = $q->param('dbname');
-            $param{database_username} = $q->param('dbuser');
-            $param{database_password} = $q->param('dbpass') if $q->param('dbpass');
-            $param{database_host} = $q->param('dbserver') if $q->param('dbserver');
-            $param{database_port} = $q->param('dbport') if $q->param('dbport');
-            $param{database_socket} = $q->param('dbsocket') if $q->param('dbsocket');
-            $param{use_setnames} =  $q->param('setnames') if $q->param('setnames');
+            $param{object_driver} = 'DBI::mysql';
+            $param{database_name} = $param{dbname};
+            $param{database_username} = $param{dbuser};
+            $param{database_password} = $param{dbpass} if $param{dbpass};
+            $param{database_host} = $param{dbserver} if $param{dbserver};
+            $param{database_port} = $param{dbport} if $param{dbport};
+            $param{database_socket} = $param{dbsocket} if $param{dbsocket};
+            $param{use_setnames} =  $param{setnames} if $param{setnames};
         } elsif ($dbtype eq 'postgres') {
             $param{use_dbms} = 1;
-            $param{object_driver} = 'dbi::postgres';
-            $param{database_name} = $q->param('dbname');
-            $param{database_username} = $q->param('dbuser');
-            $param{database_password} = $q->param('dbpass') if $q->param('dbpass');
-            $param{database_host} = $q->param('dbserver') if $q->param('dbserver');
-            $param{database_port} = $q->param('dbport') if $q->param('dbport');
-            $param{use_setnames} =  $q->param('setnames') if $q->param('setnames');
+            $param{object_driver} = 'DBI::postgres';
+            $param{database_name} = $param{dbname};
+            $param{database_username} = $param{dbuser};
+            $param{database_password} = $param{dbpass} if $param{dbpass};
+            $param{database_host} = $param{dbserver} if $param{dbserver};
+            $param{database_port} = $param{dbport} if $param{dbport};
+            $param{use_setnames} =  $param{setnames} if $param{setnames};
+        }
+    }
+    
+    $param{is_writable} = $app->is_writable;
+
+    return $app->build_page("complete.tmpl", \%param);
+}
+
+sub write_config {
+    my $app = shift;
+    my $q = $app->{query};
+
+    # input data unserialize to config
+    my %param = $app->unserialize_config;
+
+    $param{static_web_path} = $app->static_path;
+    $param{cgi_path} = $app->cgipath;
+
+    # unserialize database configuration
+    if (my $dbtype = $param{dbtype}) {
+        if ($dbtype eq 'bdb') {
+            $param{use_bdb} = 1;
+            $param{database_name} = $param{dbpath};
+        } elsif ($dbtype eq 'sqlite') {
+            $param{use_sqlite} = 1;
+            $param{OBJECT_DRIVER} = 'DBI::sqlite';
+            $param{database_name} = $param{dbpath};
+        } elsif ($dbtype eq 'sqlite2') {
+            $param{use_sqlite} = 1;
+            $param{use_sqlite2} = 1;
+            $param{OBJECT_DRIVER} = 'DBI::sqlite2';
+            $param{database_name} = $param{dbpath};
+        } elsif ($dbtype eq 'mysql') {
+            $param{use_dbms} = 1;
+            $param{object_driver} = 'DBI::mysql';
+            $param{database_name} = $param{dbname};
+            $param{database_username} = $param{dbuser};
+            $param{database_password} = $param{dbpass} if $param{dbpass};
+            $param{database_host} = $param{dbserver} if $param{dbserver};
+            $param{database_port} = $param{dbport} if $param{dbport};
+            $param{database_socket} = $param{dbsocket} if $param{dbsocket};
+            $param{use_setnames} =  $param{setnames} if $param{setnames};
+        } elsif ($dbtype eq 'postgres') {
+            $param{use_dbms} = 1;
+            $param{object_driver} = 'DBI::postgres';
+            $param{database_name} = $param{dbname};
+            $param{database_username} = $param{dbuser};
+            $param{database_password} = $param{dbpass} if $param{dbpass};
+            $param{database_host} = $param{dbserver} if $param{dbserver};
+            $param{database_port} = $param{dbport} if $param{dbport};
+            $param{use_setnames} =  $param{setnames} if $param{setnames};
         }
     }
 
-    if ($app->{cfg}->MailTransfer ne $q->param('mail_transfer')) {
-        $param{mail_transfer} = $q->param('mail_transfer');
-    }
-
-    if ($app->{cfg}->SMTPServer ne $q->param('smtp_server')) {
-        $param{smtp_server} = $q->param('smtp_server');
-    }
-
-    if ($app->{cfg}->SendMailPath ne $q->param('sendmail_path')) {
-        $param{sendmail_path} = $q->param('sendmail_path');
-    }
-
+    my $data = $app->build_page("mt-config.tmpl", \%param);
+    
+    # write!
+    my $cfg_file = File::Spec->catfile($app->{mt_dir}, 'mt-config.cgi');
+    open OUT, ">$cfg_file";
+    print OUT $data;
+    close OUT;
+    return $app->error("Error creating file $cfg_file") unless -f $cfg_file;
+    
+    # back to the complete screen
     return $app->build_page("complete.tmpl", \%param);
+}
+
+sub is_writable {
+    my $app = shift;
+
+    eval { use File::Spec; };
+    my $create_ok = 0;
+    if (!$@) {
+        my $test_file = File::Spec->catfile($app->{mt_dir}, '__dummy.txt');
+        open OUT, ">$test_file";
+        close OUT;
+        if (-f $test_file) {
+            # ok, we can write... can we delete?
+            unlink $test_file;
+            if (!-f $test_file) {
+                $create_ok = 1;
+            }
+        } else {
+            if (chmod 0777, $app->{mt_dir}) {
+                my $test_file = File::Spec->catfile($app->{mt_dir}, '__dummy.txt');
+                open OUT, ">$test_file";
+                close OUT;
+                if (-f $test_file) {
+                    # ok, we can write... can we delete?
+                    unlink $test_file;
+                    if (!-f $test_file) {
+                        $create_ok = 1;
+                    }
+                }
+            }
+        }
+    }
+    $create_ok;
 }
 
 sub serialize_config {
@@ -402,8 +484,6 @@ sub unserialize_config {
         require MT::Serialize;
         my $ser = MT::Serialize->new('MT');
         my $thawed = $ser->unserialize($data);
-#        use Data::Dumper;
-#        die Dumper($thawed);
         if ($thawed) {
             my $saved_cfg = $$thawed;
             if (keys %$saved_cfg) {
@@ -442,26 +522,50 @@ sub module_check {
             push @missing, { module => $mod,
                              version => $ver,
                              required => $req,
-                             description => $desc,
+                             description => $self->translate($desc),
                              name => $name };
         } else {
             push @ok, { module => $mod,
                         version => $ver,
                         required => $req,
-                        description => $desc,
+                        description => $self->translate($desc),
                         name => $name };
         }
     }
     (\@missing, \@ok);
 }
 
-1;
+sub static_path {
+    my $app = shift;
+    my $param = @_;
+    my $static_path;
+    my $path = File::Spec->catfile($app->{mt_dir}, "images", "powered.gif");
+    if (!-f $path) {
+        $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "images", "powered.gif");
+        $static_path = "../mt-static/" if -f $path;
+        if (!-f $path) {
+            $path = File::Spec->catfile($app->{mt_dir}, "..", "mt-static", "images", "powered.gif");
+            $static_path = "../../mt-static/" if -f $path;
+            if (!-f $path) {
+                $path = File::Spec->catfile($app->{mt_dir}, "..", "..", "mt-static", "images", "powered.gif");
+                $static_path = "../../../mt-static/" if -f $path;
+            }
+        }
+    } else {
+        $static_path = $app->cgipath;
+    }
+    if (!-f $path) {
+        $path = File::Spec->catfile($app->{mt_dir}, "..", "images", "poweredgif");
+        $static_path = "../" if -f $path;
+    }
 
+    $static_path;
+}
+
+
+1;
+__END__
 =pod
- * Tests Connetionから戻ったときにSQLSetNamesのチェックが外れている件
  * mt-config.cgiが書き込めるようなら書き込んでしまう
  * 全般的にキレイに
- * Invalid Mail address のチェック＆メッセージ
- * Mail TestのSuccessメッセージ
- * Mail設定のconfigへの反映
 =cut

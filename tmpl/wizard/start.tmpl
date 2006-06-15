@@ -9,6 +9,12 @@
 <p><MT_TRANS phrase="This installer requires that you enable Javascript in your browser.  Please enable it and refresh this page to proceed."></p>
 </noscript>
 
+<TMPL_IF NAME=CFG_EXISTS>
+<p>
+<MT_TRANS phrase="mt-config.cgi(or mt.cfg) is found."><br />
+</p>
+
+<TMPL_ELSE>
 <p>
 TBD:starting message here...
 </p>
@@ -16,6 +22,7 @@ TBD:starting message here...
 <script type="text/javascript" language="javascript">
    document.write("<input type=\"submit\" value=\"<MT_TRANS phrase="Begin">\" />");
 </script>
+</TMPL_IF>
 
 </form>
 <TMPL_INCLUDE NAME=footer.tmpl>
