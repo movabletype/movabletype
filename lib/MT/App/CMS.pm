@@ -290,7 +290,8 @@ sub init_core_callbacks {
         CMSPostDelete_comment CMSPostDelete_entry CMSPostDelete_ping
         CMSPostDelete_template CMSPostDelete_tag
     );
-    $MT::CallbackAlias{'AppPostEntrySave'} = 'CMSPostEntrySave';
+    $MT::CallbackAlias{'AppPostEntrySave'} = 'CMSPostSave.entry';
+    $MT::CallbackAlias{'CMSPostEntrySave'} = 'CMSPostSave.entry';
     for (@names) {
         my $x = $_; $x =~ s/_/./;
         $MT::CallbackAlias{$_} = $x;
@@ -335,7 +336,7 @@ sub init_core_callbacks {
         'CMSSavePermissionFilter.category' => \&CMSSavePermissionFilter_category,
         'CMSDeletePermissionFilter.category' => \&CMSDeletePermissionFilter_category,
         'CMSPreSave.category' => \&CMSPreSave_category,
-        #'CMSPostSave.category' => \&CMSPostSave_category,
+        'CMSPostSave.category' => \&CMSPostSave_category,
         'CMSSaveFilter.category' => \&CMSSaveFilter_category,
         'CMSPostDelete.category' => \&CMSPostDelete_category,
 
@@ -1328,9 +1329,6 @@ sub list_authors {
         $row->{entry_count} = $author_entry_count{$au->id};
         $row->{is_me} = $au->id == $this_author_id;
         $row->{has_edit_access} = $has_edit_access;
-        #    ($this_author->is_superuser
-        #        || ($row->{created_by} && $row->{created_by} == $this_author_id)
-        #        || $has_edit_access);
         if ($row->{created_by}) {
             my $parent_author = $authors{$au->created_by} ||= MT::Author->load($au->created_by) if $au->created_by;
             if ($parent_author) {
@@ -1632,7 +1630,6 @@ sub build_log_table {
             } else {
                 $row->{created_on_formatted} = format_ts("%Y.%m.%d %H:%M:%S",
                     epoch2ts(undef, offset_time(ts2epoch(undef, $ts))));
-                    #$ts);
                 if ($log->blog_id) {
                     $blog = $blogs{$log->blog_id} ||= MT::Blog->load($log->blog_id, { cache_ok => 1 });
                     $row->{weblog_name} = $blog ? $blog->name : '';
@@ -3529,19 +3526,33 @@ sub CMSPreSave_blog {
     1;
 }
 
+sub CMSPostSave_category {
+    my $eh = shift;
+    my ($app, $obj, $original) = @_;
+
+    if (!$original->id) {
+        $app->log({
+            message => $app->translate("Category '[_1]' created by '[_2]' (user #[_3])",
+                                  $obj->label, $app->user->name, $app->user->id),
+            level => MT::Log::INFO(),
+            class => 'category',
+            category => 'new',
+        });
+    }
+    1;
+}
+
 sub CMSPreSave_category {
     my $eh = shift;
     my ($app, $obj) = @_;
-    $obj->parent(0) if !defined $app->param('category_parent');
-    $obj->allow_pings(0) if !defined $app->param('allow_pings');
     if (defined(my $pass = $app->param('tb_passphrase'))) {
         $obj->{__tb_passphrase} = $pass;
     }
     my @siblings = MT::Category->load({ parent => $obj->parent,
                                         blog_id => $obj->blog_id });
     foreach (@siblings) {
-        next if $_->id == $obj->id;
-        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $_->id)
+        next if $obj->id && ($_->id == $obj->id);
+        return $eh->error($app->translate("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $_->label))
             if $_->label eq $obj->label;
     }
     1;
@@ -3722,6 +3733,14 @@ sub CMSPostSave_author {
     my ($app, $obj, $original) = @_;
 
     if (!$original->id) {
+        $app->log({
+            message => $app->translate("Author '[_1]' created by '[_2]' (user #[_3])",
+                                  $obj->name, $app->user->name, $app->user->id),
+            level => MT::Log::INFO(),
+            class => 'author',
+            category => 'new',
+        });
+
         my $author_id = $obj->id;
         for my $blog_id ($app->param('add_to_blog')) {
             # FIXME: check for existing permission just in case
@@ -3788,6 +3807,17 @@ sub CMSPostSave_trackback {
 sub CMSPostSave_template {
     my $eh = shift;
     my ($app, $obj, $original) = @_;
+
+    if (!$original->id) {
+        $app->log({
+            message => $app->translate("Template '[_1]' created by '[_2]' (user #[_3])",
+                                  $obj->name, $app->user->name, $app->user->id),
+            level => MT::Log::INFO(),
+            class => 'template',
+            category => 'new',
+        });
+    }
+
     if ($obj->build_dynamic && !$original->build_dynamic) {
         if ($obj->type eq 'index') {
             $app->rebuild_indexes(BlogID => $obj->blog_id,
@@ -6420,7 +6450,7 @@ sub save_entries {
                 or return $app->error($app->translate(
                     "Saving placement failed: [_1]", $place->errstr));
         }
-        MT->run_callbacks('CMSPostEntrySave', $app, $entry, $orig_obj);
+        MT->run_callbacks('CMSPostSave.entry', $app, $entry, $orig_obj);
     }
     $app->add_return_arg('saved' => 1, is_power_edit => 1);
     $app->call_return;
@@ -6609,7 +6639,7 @@ sub save_entry {
         $orig_obj->reset_placement_cache() if $orig_obj;
     }
 
-    MT->run_callbacks('CMSPostEntrySave', $app, $obj, $orig_obj);
+    MT->run_callbacks('CMSPostSave.entry', $app, $obj, $orig_obj);
 
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild entry archives, indexes, and send the
@@ -6955,25 +6985,22 @@ sub save_category {
             $label =~ s/(^\s+|\s+$)//g;
             next unless ($label ne '');
 
-            return $app->errtrans("The name '[_1]' is too long!", $label) 
-                if length($label) > 100;
-
             $cat = MT::Category->new;
+            my $original = $cat->clone;
             $cat->blog_id($blog_id);
             $cat->label($label);
             $cat->author_id($app->user->id);
             $cat->parent($parent);
 
-            my @siblings = MT::Category->load({ parent => $cat->parent,
-                                                blog_id => $cat->blog_id });
-            foreach (@siblings) {
-                return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $label)
-                    if $_->label eq $cat->label;
-            }
+            MT->run_callbacks('CMSPreSave.category', $app, $cat, $original)
+                || return $app->errtrans("Saving category failed: [_1]", MT->errstr);
 
             $cat->save or
                 return $app->error($app->translate(
                     "Saving category failed: [_1]", $cat->errstr));
+
+            # Now post-process it.
+            MT->run_callbacks('CMSPostSave.category', $app, $cat, $original);
         }
     }
 
@@ -9732,7 +9759,7 @@ if unavailable).
 
 =back
 
-=item CMSPostEntrySave
+=item CMSPostSave.entry
 
 Called when an entry has been saved, after all of its constituent
 parts (for example, category placements) have been saved. An 
@@ -9745,7 +9772,8 @@ CMSPostEntrySave callback would have the following signature:
 
 =back
 
-For backward compatibility, C<AppPostEntrySave> is an alias to C<CMSPostEntrySave>.
+For backward compatibility, C<CMSPostEntrySave> and C<AppPostEntrySave> are
+aliases to C<CMSPostSave.entry>.
 
 =head2 Parametric Calllbacks
 
