@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css" type="text/css" />
     <link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/styles/app.css" type="text/css" />
     <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js"></script>
+
+<TMPL_IF NAME=LOCAL_LANG_ID><link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles_<TMPL_VAR NAME=LOCAL_LANG_ID>.css?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" />
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt_<TMPL_VAR NAME=LOCAL_LANG_ID>.js?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" charset="utf-8"></script></TMPL_IF>
+
     <script type="text/javascript">
       ScriptURI = '<TMPL_VAR NAME=MTSCRIPT_URL>';
       ScriptBaseURI = '<TMPL_VAR NAME=SCRIPT_BASE_URL>';
