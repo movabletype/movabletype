@@ -275,7 +275,8 @@ sub AUTOLOAD {
     my $class = ref($obj);
     my $defs = $obj->column_defs;
     if (!exists $defs->{$col}) {
-        die "unknown column: $col for class $class";
+        require Carp;
+        Carp::confess("unknown column: $col for class $class");
     }
     no strict 'refs';
     *$AUTOLOAD = sub {
