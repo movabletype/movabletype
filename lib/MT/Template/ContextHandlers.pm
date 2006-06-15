@@ -1199,6 +1199,12 @@ sub _hdlr_entries {
     $terms{blog_id} = $blog_id;
     $terms{status} = MT::Entry::RELEASE();
 
+    if (!$entries) {
+        if (my $cat = $ctx->stash('archive_category')) {
+            $args->{category} ||= $cat->category_label_path;
+        }
+    }
+
     # kinds of <MTEntries> uses...
     #     * from an index template
     #     * from an archive context-- entries are prepopulated
@@ -2926,6 +2932,8 @@ sub _hdlr_feedback_score {
                     my $e = MT::Entry->new;
                     $e->created_on($ctx->{current_timestamp});
                     @entries = ($e);
+                } elsif ($at eq 'Category') {
+                    # nop
                 } else {
                 
                     return $ctx->error(MT->translate(
@@ -2935,7 +2943,7 @@ sub _hdlr_feedback_score {
             }
         }
         if ($ctx->{current_archive_type} eq 'Category') {
-            return '' unless @entries;
+            #return '' unless @entries;
             return $ctx->stash('archive_category')->label;
         } else {
             my $hdlrs = $ctx->type_handlers();
@@ -3144,7 +3152,7 @@ sub _hdlr_calendar {
                 }
                 $iter_drained++ unless @left;
             }
-            $ctx->{__stash}{entries} = delay(sub{\@entries});
+            $ctx->{__stash}{entries} = \@entries;
             $ctx->{current_timestamp} = $this_day . '000000';
             $ctx->{__stash}{calendar_day} = $day - $pad_start;
         }
@@ -3209,7 +3217,7 @@ sub _hdlr_categories {
               direction => 'descend', });
         if ($needs_entries) {
             my @entries = MT::Entry->load(@args);
-            $ctx->{__stash}{entries} = delay(sub{\@entries});
+            $ctx->{__stash}{entries} = \@entries;
             $ctx->{__stash}{category_count} = scalar @entries;
         } else {
             $ctx->{__stash}{category_count} = MT::Entry->count(@args);
