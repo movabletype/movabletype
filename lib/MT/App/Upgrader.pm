@@ -381,8 +381,7 @@ sub build_page {
     my $auth = $app->user;
     my $langs = $app->supported_languages;
     my @data;
-    my $preferred = $auth && $auth->preferred_language ?
-        $auth->preferred_language : $app->config('DefaultLanguage');
+    my $preferred = $app->config('DefaultLanguage');
     $preferred = 'en-us' if (lc($preferred) eq 'en_us');
     for my $tag (keys %$langs) {
         my $row = { l_tag => $tag, l_name => $app->translate($langs->{$tag}) };
