@@ -156,7 +156,7 @@ function tabToggle(selectedTab) {
 <td><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=template&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=NAME ESCAPE=HTML></a></td>
 <td><TMPL_VAR NAME=OUTFILE ESCAPE=HTML></td>
 <td class="status-<TMPL_IF NAME=BUILD_DYNAMIC>dynamic<TMPL_ELSE>static</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=BUILD_DYNAMIC><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
-<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
+<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" <TMPL_IF NAME=LINKED_FILE>title="<TMPL_VAR NAME=LINKED_FILE ESCAPE=HTML>"</TMPL_IF> /></td>
 <td class="status-<TMPL_IF NAME=REBUILD_ME>rebuild<TMPL_ELSE>norebuild</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=REBUILD_ME><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
 <td class="status-view"><TMPL_IF NAME=PUBLISHED_URL><a href="<TMPL_VAR NAME=PUBLISHED_URL>" target="<MT_TRANS phrase="_external_link_target">" title="<MT_TRANS phrase="View Published Template">"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="View Published Template">" width="13" height="9" /></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
 </tr>
@@ -211,7 +211,7 @@ function tabToggle(selectedTab) {
 <td class="cb"><input type="checkbox" name="id" class="select" value="<TMPL_VAR NAME=ID>" /></td>
 <td><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=template&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=NAME></a></td>
 <td class="status-<TMPL_IF NAME=BUILD_DYNAMIC>dynamic<TMPL_ELSE>static</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=BUILD_DYNAMIC><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
-<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
+<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" <TMPL_IF NAME=LINKED_FILE>title="<TMPL_VAR NAME=LINKED_FILE ESCAPE=HTML>"</TMPL_IF> /></td>
 </tr>
 </TMPL_LOOP>
 
@@ -262,7 +262,7 @@ function tabToggle(selectedTab) {
 <td class="cb"><input type="checkbox" name="id" class="select" value="<TMPL_VAR NAME=ID>" /></td>
 <td><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=template&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;type=<TMPL_VAR NAME=TYPE ESCAPE=URL>&amp;id=<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=NAME ESCAPE=HTML></a></td>
 <td><TMPL_VAR NAME=DESCRIPTION></td>
-<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
+<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" <TMPL_IF NAME=LINKED_FILE>title="<TMPL_VAR NAME=LINKED_FILE ESCAPE=HTML>"</TMPL_IF> /></td>
 </tr>
 </TMPL_LOOP>
 
@@ -309,7 +309,7 @@ function tabToggle(selectedTab) {
 <tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
 <td class="cb"><input type="checkbox" name="id" class="select" value="<TMPL_VAR NAME=ID>" /></td>
 <td><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=template&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=NAME></a></td>
-<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" /></td>
+<td class="status-<TMPL_IF NAME=LINKED_FILE>linked<TMPL_ELSE>unlinked</TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<TMPL_IF NAME=LINKED_FILE><MT_TRANS phrase="Yes"><TMPL_ELSE><MT_TRANS phrase="No"></TMPL_IF>" width="9" height="9" <TMPL_IF NAME=LINKED_FILE>title="<TMPL_VAR NAME=LINKED_FILE ESCAPE=HTML>"</TMPL_IF> /></td>
 </tr>
 </TMPL_LOOP>
 
