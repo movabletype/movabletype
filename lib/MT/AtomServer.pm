@@ -407,6 +407,7 @@ sub new_post {
             or return $app->error(400, "Invalid category '$label'");
     }
     my $entry = MT::Entry->new;
+    my $orig_entry = $entry->clone;
     $entry->blog_id($blog->id);
     $entry->author_id($user->id);
     $entry->status(MT::Entry::RELEASE());
@@ -421,7 +422,12 @@ sub new_post {
     }
 ## xxx mt/typepad-specific fields
     $entry->discover_tb_from_entry();
+
+    MT->run_callbacks('APIPreSave.entry', $app, $entry, $orig_entry)
+        or return $app->error(500, MT->translate("PreSave failed [_1]", MT->errstr));
+
     $entry->save or return $app->error(500, $entry->errstr);
+
     require MT::Log;
     $app->log({
         message => $app->translate("User '[_1]' (user #[_2]) added entry #[_3]", $user->name, $user->id, $entry->id),
@@ -439,6 +445,9 @@ sub new_post {
         $place->category_id($cat->id);
         $place->save or return $app->error(500, $place->errstr);
     }
+
+    MT->run_callbacks('APIPostSave.entry', $app, $entry, $orig_entry);
+
     $app->publish($entry);
     $app->response_code(201);
     $app->response_content_type('application/xml');
@@ -458,6 +467,7 @@ sub edit_post {
         or return $app->error(400, "Invalid entry_id");
     return $app->error(403, "Access denied")
         unless $app->{perms}->can_edit_entry($entry, $app->{user});
+    my $orig_entry = $entry->clone;
     $entry->title(encode_text($atom->title,'utf-8',$enc));
     $entry->text(encode_text($atom->content()->body(),'utf-8',$enc));
     $entry->excerpt(encode_text($atom->summary,'utf-8',$enc));
@@ -466,7 +476,14 @@ sub edit_post {
     }
 ## xxx mt/typepad-specific fields
     $entry->discover_tb_from_entry();
+
+    MT->run_callbacks('APIPreSave.entry', $app, $entry, $orig_entry)
+        or return $app->error(500, MT->translate("PreSave failed [_1]", MT->errstr));
+
     $entry->save or return $app->error(500, "Entry not saved");
+
+    MT->run_callbacks('APIPostSave.entry', $app, $entry, $orig_entry);
+
     $app->publish($entry) or return $app->error(500, "Entry not published");
     $app->response_code(200);
     $app->response_content_type('application/xml');
@@ -607,3 +624,35 @@ sub get_categories {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::AtomServer
+
+=head1 SYNOPSIS
+
+An Atom Publishing API interface for communicating with Movable Type.
+
+=head1 CALLBACKS
+
+=over 4
+
+=item APIPreSave.entry
+
+    callback($eh, $app, $entry, $original_entry)
+
+Called before saving a new or existing entry. If saving a new entry, the
+$original_entry will have an unassigned 'id'. This callback is executed
+as a filter, so your handler must return 1 to allow the entry to be saved.
+
+=item APIPostSave.entry
+
+    callback($eh, $app, $entry, $original_entry)
+
+Called after saving a new or existing entry. If saving a new entry, the
+$original_entry will have an unassigned 'id'.
+
+=back
+
+=cut

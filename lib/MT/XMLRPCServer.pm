@@ -164,6 +164,7 @@ sub newPost {
     die _fault(MT->translate("No posting privileges")) unless $perms && $perms->can_post;
     require MT::Entry;
     my $entry = MT::Entry->new;
+    my $orig_entry = $entry->clone;
     $entry->blog_id($blog_id);
     $entry->author_id($author->id);
 
@@ -211,7 +212,14 @@ sub newPost {
             || die MT::XMLRPCServer::_fault(MT->translate("Invalid timestamp format"));
     }
     $entry->discover_tb_from_entry();
+
+    MT->run_callbacks('APIPreSave.entry', $mt, $entry, $orig_entry)
+        || die MT::XMLRPCServer::_fault(MT->translate("PreSave failed [_1]", MT->errstr));
+
     $entry->save;
+
+    MT->run_callbacks('APIPostSave.entry', $mt, $entry, $orig_entry);
+
     require MT::Log;
     $mt->log({
         message => $mt->translate("User '[_1]' (user #[_2]) added entry #[_3]", $author->name, $author->id, $entry->id),
@@ -257,6 +265,7 @@ sub editPost {
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to edit entry"))
         unless $perms && $perms->can_edit_entry($entry, $author);
+    my $orig_entry = $entry->clone;
     $entry->status(MT::Entry::RELEASE()) if $publish;
     $entry->title($item->{title}) if $item->{title};
     $entry->basename($item->{mt_basename}) if defined $item->{mt_basename};
@@ -290,7 +299,14 @@ sub editPost {
            || die MT::XMLRPCServer::_fault(MT->translate("Invalid timestamp format"));
     }
     $entry->discover_tb_from_entry();
+
+    MT->run_callbacks('APIPreSave.entry', $mt, $entry, $orig_entry)
+        || die MT::XMLRPCServer::_fault(MT->translate("PreSave failed [_1]", MT->errstr));
+
     $entry->save;
+
+    MT->run_callbacks('APIPostSave.entry', $mt, $entry, $orig_entry);
+
     if ($publish) {
         $class->_publish($mt, $entry) or die _fault($class->errstr);
     }
@@ -756,6 +772,12 @@ sub newMediaObject {
     defined(my $bytes = $fmgr->put_data($file->{bits}, $local_file, 'upload'))
         or die _fault(MT->translate("Error writing uploaded file: [_1]", $fmgr->errstr));
     my $url = $blog->site_url . $fname;
+
+    MT->run_callbacks('APIUploadFile',
+                      File => $local_file, Url => $url,
+                      Type => 'file',
+                      Blog => $blog);
+
     { url => SOAP::Data->type(string => $url) };
 }
 
@@ -782,3 +804,65 @@ package mt;
 BEGIN { @mt::ISA = qw( MT::XMLRPCServer ); }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::XMLRPCServer
+
+=head1 SYNOPSIS
+
+An XMLRPC API interface for communicating with Movable Type.
+
+=head1 CALLBACKS
+
+=over 4
+
+=item APIPreSave.entry
+
+    callback($eh, $mt, $entry, $original_entry)
+
+Called before saving a new or existing entry. If saving a new entry, the
+$original_entry will have an unassigned 'id'. This callback is executed
+as a filter, so your handler must return 1 to allow the entry to be saved.
+
+=item APIPostSave.entry
+
+    callback($eh, $mt, $entry, $original_entry)
+
+Called after saving a new or existing entry. If saving a new entry, the
+$original_entry will have an unassigned 'id'.
+
+=item APIUploadFile
+
+    callback($eh, %params)
+
+This callback is invoked for each file the user uploads to the weblog.
+This callback is similar to the CMSUploadFile callback found in
+C<MT::App::CMS>.
+
+=head3 Parameters
+
+=over 4
+
+=item File
+
+The full physical file path of the uploaded file.
+
+=item Url
+
+The full URL to the file that has been uploaded.
+
+=item Type
+
+For this callback, this value is currently always 'file'.
+
+=item Blog
+
+The C<MT::Blog> object associated with the newly uploaded file.
+
+=back
+
+=back
+
+=cut
