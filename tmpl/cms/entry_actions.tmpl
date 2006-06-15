@@ -5,7 +5,7 @@
 <TMPL_ELSE>
 <TMPL_IF NAME=ENTRY_EDIT>
 <input accesskey="s" type="button" value="<MT_TRANS phrase="Save">" title="<MT_TRANS phrase="Save this entry (s)">" onclick="clearDirty(); submitForm(this.form, 'save_entry'); return true" />
-<input type="button" name="preview_entry" value="<MT_TRANS phrase="Preview">" accesskey="v" title="<MT_TRANS phrase="Preview this entry (v)">" onclick="clearDirty(); submitForm(this.form, 'preview_entry'); return true" />
+<input type="submit" name="preview_entry" value="<MT_TRANS phrase="Preview">" accesskey="v" title="<MT_TRANS phrase="Preview this entry (v)">" onclick="clearDirty(); submitForm(this.form, 'preview_entry'); return true" />
 <TMPL_IF NAME=ID>
 <input accesskey="x" onclick="clearDirty(); doRemoveItems(this.form, '<MT_TRANS phrase="entry">', '<MT_TRANS phrase="entries">', false, { 'return_args': '__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>' }); return true" type="button" value="<MT_TRANS phrase="Delete">" title="<MT_TRANS phrase="Delete this entry (x)">" />
 </TMPL_IF>

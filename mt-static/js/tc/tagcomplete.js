@@ -66,14 +66,14 @@ TC.TagComplete.prototype.attachElements = function()
 }
 
 TC.TagComplete.prototype.keyPress = function( evt )
-{
+{/*
     evt = evt || event;
     var element = evt.target || evt.srcElement;
     if (( evt.keyCode == 9 ) || ( evt.keyCode == 13 ))
     {
         return TC.stopEvent( evt );
     }
-}
+*/}
 
 TC.TagComplete.prototype.keyDown = function( evt )
 {
@@ -81,9 +81,10 @@ TC.TagComplete.prototype.keyDown = function( evt )
     var element = evt.target || evt.srcElement;
     if ( (evt.keyCode == 9) || (evt.keyCode == 13))
     {
-        if (this.hasCompletions)
+        if (this.hasCompletions) {
             this.handleTagComplete();
-        return TC.stopEvent( evt );
+            return TC.stopEvent( evt );
+        }
     }
     else if ( evt.keyCode == 8 )
         this.truncateWord();
