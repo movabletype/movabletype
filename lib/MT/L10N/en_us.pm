@@ -72,8 +72,8 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
 
     '_USAGE_ENTRYPREFS' => 'Select the set of fields to be displayed on the entry editor.',
 
-    '_USAGE_IMPORT' => 'You can import entries for your weblog from a file in the <code>import</code> directory where Movable Type is installed, or uploaded by following forms. Entries can be imported from other Movable Type installations or other applications. The full import format is documented in the Movable Type manual.',
-    '_USAGE_EXPORT_1' => 'Exporting your entries from Movable Type allows you to keep <b>personal backups</b> of your blog entries, for safekeeping. The format of the exported data is suitable for importing back into the system using the import mechanism (above); thus, in addition to exporting your entries for backup purposes, you could also use this to <b>move your content between blogs</b>.',
+    '_USAGE_IMPORT' => 'You can import entries for your weblog from a file in the <code>import</code> directory where Movable Type is installed, or uploaded by following forms. Entries can be imported from other Movable Type installations or other applications.',
+    '_USAGE_EXPORT_1' => 'Exporting your entries from Movable Type allows you to keep <b>personal backups</b> of your blog basic entry data, comment and TrackBack data, for safekeeping.',
     '_USAGE_EXPORT_2' => 'To export your entries, click on the link below ("Export Entries From [_1]"). To save the exported data to a file, you can hold down the <code>option</code> key on the Macintosh, or the <code>Shift</code> key on a PC, while clicking on the link. Alternatively, you can select all of the data, then copy it into another document. (<a href="#" onclick="openManual(\'importing\', \'export_ie\');return false;">Exporting from Internet Explorer?</a>)',
     '_USAGE_EXPORT_3' => 'Clicking the link below will export all of your current weblog entries to the Tangent server. This is generally a one-time push of your entries, to be done after you have installed the Tangent add-on for Movable Type, but conceivably it could be executed whenever you wish.',
 

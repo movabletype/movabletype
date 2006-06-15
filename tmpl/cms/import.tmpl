@@ -25,7 +25,7 @@ function tabToggle(selectedTab) {
 
 <h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Import / Export"></h2>
 
-<p class="page-desc"><MT_TRANS phrase="Transfer weblog entries into Movable Type from other blogging tools or export your entries to create a backup or copy. <strong>Please Note:</strong> The Movable Type import/export format does not contain all entry data. Please see the Movable Type manual for full details."></p>
+<p class="page-desc"><MT_TRANS phrase="Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy."></p>
 
 <div class="tabs">
 <ul>
@@ -36,106 +36,106 @@ function tabToggle(selectedTab) {
 
 <div id="import-content">
 
-<p><MT_TRANS phrase="_USAGE_IMPORT"></p>
 
 <form method="post" enctype="multipart/form-data" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<fieldset>
 <input type="hidden" name="__mode" value="import" />
 <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
 <input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
 
 <script type="text/javascript">
-function importAsMe() {
-  var choice = document.getElementById('import_as_me');
-  var tochange = document.getElementById('setpassword');
-  if (choice.checked == true) 
-  {
-    tochange.checked = false;
-    document.getElementById('importasmediv').style.display= "";
-    document.getElementById('setpassworddiv').style.display= "none";
-  }
-
-}
-
-function setPassword() {
-  var choice = document.getElementById('setpassword');
-  var tochange = document.getElementById('import_as_me');
-  if (choice.checked == true) {
-    tochange.checked = false;
-    document.getElementById('setpassworddiv').style.display= "";
-    document.getElementById('importasmediv').style.display= "none";
-  }
+function togglediv(divlabel,on) {
+    var div = document.getElementById(divlabel);
+    if (on) {        
+        document.getElementById('setpassworddiv').style.display= "";
+    } else {
+        document.getElementById('setpassworddiv').style.display= "none";
+    }
 }
 </script>
-
+<fieldset style="margin-top: 0px;">
 <TMPL_IF NAME=IS_ADMINISTRATOR>
-<input type="radio" id="import_as_me" name="import_as_me" value="1" onClick="importAsMe();" checked="checked"> <label for="import_as_me"><MT_TRANS phrase="Import as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a> 
-&nbsp;&nbsp;&nbsp;
-<input type="radio" id="setpassword" name="choose" onClick="setPassword();"> <label for="setpassword"><MT_TRANS phrase="Preserve original author"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help">?</a>
 
-<div id="importasmediv" style="display:none;">
-<!--<p><input type="checkbox" name="import_as_me" id="import_as_me" value="1" /> <label for="import_as_me"><MT_TRANS phrase="Import entries as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a></p> -->
-</div>
+<div class="setting">
+<div class="label"><label><MT_TRANS phrase="Authorship of imported entries:"></label></div>
+<div class="field">
+<p><input type="radio" id="import_as_me-on" name="import_as_me" value="1" onclick="togglediv('setpassworddiv',false);" checked="checked"> <label for="import_as_me"><MT_TRANS phrase="Import as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a></p>
+<p><input type="radio" id="import_as_me-off" name="import_as_me" value="0" onclick="togglediv('setpassworddiv',true);"> <label for="setpassword"><MT_TRANS phrase="Preserve original author"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help">?</a>
+</p>
+
 <div id="setpassworddiv" style="display:none;">
-<p><label for="password"><MT_TRANS phrase="Default password for new authors (required if creating new authors):"></label><br />
-<input type="password" name="password" id="password" /></p>
+<p><MT_TRANS phrase="If you choose to preserve the authorship of the imported entries and any of those authors must be created in this installation, you must define a default password for those new accounts."></p>
+<p class="field">
+<label for="password"><MT_TRANS phrase="Default password for new authors:"></label> <input type="password" name="password" id="password" />
+</p>
 </div>
-<TMPL_ELSE>
-<input type="hidden" name="import_as_me" value="1" />
+</div>
+</div>
 
-<p><MT_TRANS phrase="You will be assigned the author of all imported entries.  If you wish the original authors to keep ownership, you must contact your MT system administrator to perform the import so that new authors can be created if necessary."></p>
+
+<div class="setting">
+<div class="label"><label><MT_TRANS phrase="Upload import file: (optional)"></label></div>
+<div class="field">
+<input name="file" id="file" type="file" />
+<p><MT_TRANS phrase="If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the <code>import</code> folder of your Movable Type directory."> <a href="#" onclick="return openManual('entry_import', 'source_file_html')" class="help">?</a><br /></p>
+</div>
+</div>
+
+<TMPL_ELSE>
+
+<p class="page-desc"><input type="hidden" name="import_as_me" value="1" />
+<MT_TRANS phrase="You will be assigned the author of all imported entries.  If you wish the original authors to keep ownership, you must contact your MT system administrator to perform the import so that new authors can be created if necessary."></p>
+
 </TMPL_IF>
 
-<p><label for="file_import"><MT_TRANS phrase="Upload File From... (optional):"></label> <a href="#" onclick="return openManual('entry_import', 'source_file_html')" class="help">?</a><br />
-<input name="file" id="file" type="file" /></p>
-
-<p><label for="encoding"><MT_TRANS phrase="Encoding (optional):"></label>  <a href="#" onclick="return openManual('entry_import', 'source_encoding_html')" class="help">?</a><br />
-<select name="encoding" id="encoding">
+<div class="setting">
+<div class="label"><label for="encoding"><MT_TRANS phrase="Import File Encoding (optional):"></label></div>
+<div class="field">
+<p><select name="encoding" id="encoding">
 <TMPL_LOOP NAME=ENCODING_NAMES>
 <option value="<TMPL_VAR NAME=NAME>"><MT_TRANS phrase="<TMPL_VAR NAME=DISPLAY_NAME>"></option>
 </TMPL_LOOP></select></p>
-
-<div id="choose-destination">
-<div class="spinner">
-<p><a href="#" onclick="return toggleActive('choose-destination')"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="" width="7" height="7" /></a> <a href="#" onclick="return toggleActive('choose-destination')"><MT_TRANS phrase="Advanced Options"></a>
-</p>
+<p><MT_TRANS phrase="By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly."> <a href="#" onclick="return openManual('entry_import', 'source_encoding_html')" class="help">?</a></p>
 </div>
-
-<div class="flyout">
-
+</div>
 
 <div class="setting">
 <div class="label">
 <label for="default_cat_id"><MT_TRANS phrase="Default category for entries (optional):"></label> 
 </div>
 <div class="field">
-<p><select name="default_cat_id" id="default_cat_id">
+<select name="default_cat_id" id="default_cat_id">
 <option value=""><MT_TRANS phrase="Select a category"></option>
 <TMPL_LOOP NAME=CATEGORY_LOOP>
 <option value="<TMPL_VAR NAME=CATEGORY_ID>"><TMPL_VAR NAME=CATEGORY_LABEL></option>
 </TMPL_LOOP>
 </select>
-<a href="#" onclick="return openManual('entry_import', 'default_category_for_entries')" class="help">?</a></p>
+<p><MT_TRANS phrase="You can specify a default category for imported entries which have none assigned."> <a href="#" onclick="return openManual('entry_import', 'default_category_for_entries')" class="help">?</a></p>
 </div>
 </div>
 
-<div class="setting">
+<div id="choose-destination">
+<div class="spinner">
+<p><a href="#bottom" onclick="return toggleActive('choose-destination')"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="" width="7" height="7" /></a> <a href="#bottom" onclick="return toggleActive('choose-destination')"><MT_TRANS phrase="Importing from another system?"></a>
+</p>
+</div>
+
+<div class="flyout">
+
+
+
+<div class="setting" style="margin-top: 20px;">
 <div class="label">
 <label for="title_start"><MT_TRANS phrase="Start title HTML (optional):"></label> 
 </div> 
 <div class="field">
-<p><input name="title_start" id="title_start" />
-<a href="#" onclick="return openManual('entry_import', 'start_title_html')" class="help">?</a></p>
+<input name="title_start" id="title_start"  size="10" /></p>
 </div>
-</div>
-
-<div class="setting">
 <div class="label">
 <label for="title_end"><MT_TRANS phrase="End title HTML (optional):"></label> 
 </div> 
 <div class="field">
-<p><input name="title_end" id="title_end" />
-<a href="#" onclick="return openManual('entry_import', 'end_title_html')" class="help">?</a></p>
+<input name="title_end" id="title_end" size="10" />
+<p><MT_TRANS phrase="If the software you are importing from does not have title field, you can use this setting to identify a title inside the body of the entry."> <a href="#" onclick="return openManual('entry_import', 'start_title_html')" class="help">?</a></p>
 </div>
 </div>
 
@@ -144,12 +144,12 @@ function setPassword() {
 <label for="default_status"><MT_TRANS phrase="Default post status for entries (optional):"></label> 
 </div> 
 <div class="field">
-<p><select name="default_status" id="default_status">
+<select name="default_status" id="default_status">
 <option value=""><MT_TRANS phrase="Select a post status"></option>
 <option value="1"><MT_TRANS phrase="Unpublished"></option>
 <option value="2"><MT_TRANS phrase="Published"></option>
 </select>
-<a href="#" onclick="return openManual('entry_import', 'default_post_status_for_entries')" class="help">?</a></p>
+<p><MT_TRANS phrase="If the software you are importing from does not specify a post status in its export file, you can set this as the status to use when importing entries."> <a href="#" onclick="return openManual('entry_import', 'default_post_status_for_entries')" class="help">?</a></p>
 </div>
 </div>
 
@@ -158,16 +158,24 @@ function setPassword() {
 
 </div>
 
-<p><input type="submit" value="<MT_TRANS phrase="Import Entries">" /></p>
+<p style="text-align: center;"><input type="submit" value="<MT_TRANS phrase="Import Entries">" title="<MT_TRANS phrase="Import Entries (i)">" accesskey="i" /></p>
+
 </fieldset>
 </form>
 
 </div>
 <div id="export-content" style="display: none;">
 
-<p><MT_TRANS phrase="_USAGE_EXPORT_1"></p>
+<p class="page-desc"><MT_TRANS phrase="_USAGE_EXPORT_1"></p> 
 
-<p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=export&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;magic_token=<TMPL_VAR NAME=MAGIC_TOKEN>"><MT_TRANS phrase="Export Entries From [_1]" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"></a></p>
+<form method="post" enctype="multipart/form-data" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="export" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+
+<p style="text-align: center;"><input type="submit" value="<MT_TRANS phrase="Export Entries From [_1]" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>">" title="<MT_TRANS phrase="Export Entries (e)">" accesskey="e" /></p>
+</form>
+<p><MT_TRANS phrase="<em><strong>Please Note:</strong> The Movable Type export format is not comprehensive and is not suitable for creating full-fidelity backups. Please see the Movable Type manual for full details.</em>"></p>
 
 <TMPL_IF NAME=HAVE_TANGENT>
 <hr />
@@ -178,7 +186,7 @@ function setPassword() {
 
 <p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=tangent_export&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Export Entries From [_1]" params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>"></a></p>
 </TMPL_IF>
-
 </div>
+<div id="bottom"></div>
 
 <TMPL_INCLUDE NAME="footer.tmpl">
