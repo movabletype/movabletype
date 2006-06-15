@@ -224,7 +224,7 @@ my @OPT = (
 
     [ 'MIME::Base64', 0, 0, translate('MIME::Base64 is required in order to enable comment registration.')],
 
-    [ 'XML::Atom', 0, 0, translate('XML::Atom is required in order to use the Atom API.')],
+    [ 'XML::Atom', 0, 0, translate('XML::Atom is required in order to use Activity Feeds and the Atom API.')],
 );
 
 use Cwd;
