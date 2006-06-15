@@ -124,7 +124,7 @@ sub to_hash {
     my $hash = {}; # $perms->SUPER::to_hash(@_);
     my $all_perms = MT::Permission->perms();
     foreach (@$all_perms) {
-        my $perm = $_[1];
+        my $perm = $_->[1];
         $hash->{"permission.can_$perm"} = $perms->has($perm);
     }
     $hash;
