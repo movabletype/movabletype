@@ -54,37 +54,15 @@ HelpBaseURI = '<TMPL_VAR NAME=HELP_URL>';
 
 <div id="topnav-blogs">
 <TMPL_IF NAME=TOP_BLOG_LOOP>
-
-
 <form class="inline">
 
-<script type="text/javascript">
-<!--
-function load(formref, wref) {
- wref.location.href = formref.blog_id.options[formref.blog_id.selectedIndex].value
-}
-// -->
-</script>
-
 <MT_TRANS phrase="Go to:">
-<script type="text/javascript">
-<!-- 
-document.write('<select name="blog_id" onChange="load(this.form, window)">')
-document.write('<option value="<TMPL_VAR NAME=MT_URL>"><MT_TRANS phrase="Main Menu"></option>')
-
+<select name="blog_id" onchange="window.location.href = '<TMPL_VAR NAME=MT_URL>?__mode=menu&amp;blog_id='+this.value;">
 <TMPL_LOOP NAME=TOP_BLOG_LOOP>
-
-document.write('<option value="<TMPL_VAR NAME=MT_URL>?__mode=menu&blog_id=<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>')
-
+    <option value="<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>
 </TMPL_LOOP>
-
-document.write('</select>')
-// -->
-</script>
-
+</select>
 </form>
-
-
 <TMPL_ELSE>
 <TMPL_IF NAME=IS_ADMINISTRATOR>
 <MT_TRANS phrase="Weblogs:">
