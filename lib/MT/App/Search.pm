@@ -129,7 +129,7 @@ sub throttle_control {
     my $type = $app->param('Type') || '';
 
     # Don't throttle tag listings
-    return if $type eq 'tag';
+    return 1 if $type eq 'tag';
 
     my $ip = $app->remote_ip;
     my $whitelist = $app->config('SearchThrottleIPWhitelist');
