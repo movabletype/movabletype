@@ -212,7 +212,7 @@ TC.attachLoadEvent( init );
 <input type="button" value="<MT_TRANS phrase="Cancel">" onclick="cancel_edit(<TMPL_VAR NAME=TAG_ID>)" />
 </span>
 </td>
-<td><TMPL_IF NAME=TAG_COUNT><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=tag&amp;filter_val=<TMPL_VAR NAME=TAG_NAME ESCAPE=URL>" title="<MT_TRANS phrase="Show all entries with this tag">"><MT_TRANS phrase="[quant,_1,entry,entries]" params="<TMPL_VAR NAME=TAG_COUNT>"></a><TMPL_ELSE><MT_TRANS phrase="[quant,_1,entry,entries]" params="<TMPL_VAR NAME=TAG_COUNT>"></TMPL_IF></td>
+<td><TMPL_IF NAME=TAG_COUNT><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=exacttag&amp;filter_val=<TMPL_VAR NAME=TAG_NAME ESCAPE=URL>" title="<MT_TRANS phrase="Show all entries with this tag">"><MT_TRANS phrase="[quant,_1,entry,entries]" params="<TMPL_VAR NAME=TAG_COUNT>"></a><TMPL_ELSE><MT_TRANS phrase="[quant,_1,entry,entries]" params="<TMPL_VAR NAME=TAG_COUNT>"></TMPL_IF></td>
 </tr>
 </TMPL_LOOP>
 </tbody>

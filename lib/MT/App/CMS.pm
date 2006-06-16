@@ -6080,18 +6080,24 @@ sub list_entries {
             if ($filter_col eq 'category_id') {
                 $arg{'join'} = ['MT::Placement', 'entry_id',
                     { category_id => $filter_val }, { unique => 1 }];
-            } elsif ($filter_col eq 'tag') {
+            } elsif (($filter_col eq 'normalizedtag') || ($filter_col eq 'exacttag')) {
+                my $normalize = ($filter_col eq 'normalizedtag');
                 require MT::Tag;
                 require MT::ObjectTag;
                 my $tag_delim = chr($app->user->entry_prefs->{tag_delim});
-                my @filter_tags = MT::Tag->split($tag_delim, $filter_val);
-                my %tags = map { $_ => 1, MT::Tag->normalize($_) => 1 } @filter_tags;
-                my @tags = MT::Tag->load({ name => [ keys %tags ] }, { binary => { name => 1 }});
+                my @filter_vals = MT::Tag->split($tag_delim, $filter_val);
+                my @filter_tags = @filter_vals;
+                if ($normalize) {
+                    push @filter_tags, MT::Tag->normalize($_) foreach @filter_vals;
+                }
+                my @tags = MT::Tag->load({ name => [ @filter_tags ] }, { binary => { name => 1 }});
                 my @tag_ids;
                 foreach (@tags) {
                     push @tag_ids, $_->id;
-                    my @more = MT::Tag->load({ n8d_id => $_->n8d_id ? $_->n8d_id : $_->id });
-                    push @tag_ids, $_->id foreach @more;
+                    if ($normalize) {
+                        my @more = MT::Tag->load({ n8d_id => $_->n8d_id ? $_->n8d_id : $_->id });
+                        push @tag_ids, $_->id foreach @more;
+                    }
                 }
                 @tag_ids = ( 0 ) unless @tags;
                 $arg{'join'} = ['MT::ObjectTag', 'object_id',
@@ -6111,7 +6117,7 @@ sub list_entries {
                 return $app->errtrans("Load failed: [_1]",
                                       MT::Category->errstr) unless $cat;
                 $filter_value = $cat->label;
-            } elsif ($filter_col eq 'tag') {
+            } elsif (($filter_col eq 'normalizedtag') || ($filter_col eq 'exacttag')) {
                 $filter_name = $app->translate('Tag');
                 $filter_value = $filter_val;
             } elsif ($filter_col eq 'author_id') {

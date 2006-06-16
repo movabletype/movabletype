@@ -35,10 +35,12 @@ function setFilterCol(choice) {
             fld.selectedIndex = 0;
         else if (choice == 'author_id')
             fld.selectedIndex = 1;
-        else if (choice == 'tag')
+        else if (choice == 'exacttag')
             fld.selectedIndex = 2;
-        else if (choice == 'category_id')
+        else if (choice == 'normalizedtag')
             fld.selectedIndex = 3;
+        else if (choice == 'category_id')
+            fld.selectedIndex = 4;
         col_span = getByID("filter-text-col");
         if (fld.selectedIndex > -1 && col_span)
             col_span.innerHTML = '<strong>' +
@@ -163,7 +165,8 @@ TC.attachLoadEvent( init );
 <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
 <option value="status"><MT_TRANS phrase="status"></option>
 <option value="author_id"><MT_TRANS phrase="author"></option>
-<option value="tag"><MT_TRANS phrase="tag"></option>
+<option value="exacttag"><MT_TRANS phrase="tag (exact match)"></option>
+<option value="normalizedtag"><MT_TRANS phrase="tag (incl. normalized)"></option>
 <TMPL_IF NAME=CATEGORY_LOOP>
 <option value="category_id"><MT_TRANS phrase="category"></option>
 </TMPL_IF>
@@ -176,8 +179,11 @@ TC.attachLoadEvent( init );
 <option value="4"><MT_TRANS phrase="scheduled"></option>
 </select>
 </span>
-<span id="filter-tag" style="display: none">
-<input type="text" id="tag-val" name="filter_val" value="<TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
+<span id="filter-exacttag" style="display: none">
+<input type="text" id="exacttag-val" name="filter_val" value="<TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
+</span>
+<span id="filter-normalizedtag" style="display: none">
+<input type="text" id="normalizedtag-val" name="filter_val" value="<TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
 </span>
 <TMPL_IF NAME=CATEGORY_LOOP>
 <span id="filter-category_id" style="display: none">
