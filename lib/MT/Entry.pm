@@ -685,8 +685,8 @@ sub to_hash {
     $hash->{'entry.permalink'} = $entry->permalink;
     $hash->{'entry.status_text'} = $entry->status_text;
     $hash->{'entry.status_is_' . $entry->status} = 1;
-    $hash->{'entry.created_on_iso'} = sub { MT::Util::ts2iso(undef, $entry->created_on) };
-    $hash->{'entry.modified_on_iso'} = sub { MT::Util::ts2iso(undef, $entry->modified_on) };
+    $hash->{'entry.created_on_iso'} = sub { MT::Util::ts2iso($entry->blog_id, $entry->created_on) };
+    $hash->{'entry.modified_on_iso'} = sub { MT::Util::ts2iso($entry->blog_id, $entry->modified_on) };
 
     # Populate author info
     my $auth = $entry->author or return $hash;

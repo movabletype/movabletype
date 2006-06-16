@@ -227,8 +227,8 @@ sub to_hash {
     my $hash = $ping->SUPER::to_hash(@_);
     require MT::Sanitize;
     $hash->{'tbping.excerpt_html'} = MT::Sanitize->sanitize($ping->excerpt || '');
-    $hash->{'tbping.created_on_iso'} = sub { MT::Util::ts2iso(undef, $ping->created_on) };
-    $hash->{'tbping.modified_on_iso'} = sub { MT::Util::ts2iso(undef, $ping->modified_on) };
+    $hash->{'tbping.created_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->created_on) };
+    $hash->{'tbping.modified_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->modified_on) };
     $hash;
 }
 

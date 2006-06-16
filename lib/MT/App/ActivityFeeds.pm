@@ -143,6 +143,7 @@ sub process_log_feed {
     my $res = '';
     my @entries;
     my $last_ts;
+    my $last_ts_blog;
     my %blogs;
     my $blog;
     my $log_view_url = $app->base . $app->mt_uri( mode => 'view_log' );
@@ -156,8 +157,11 @@ sub process_log_feed {
         $app->blog($blog);
         my $item = $log->to_hash;
         my $ts = $item->{'log.created_on'};
-        $last_ts = $ts if !defined $last_ts or $ts gt $last_ts;
-        my $ts_iso = ts2iso(undef, $ts);
+        if (!defined($last_ts) or ($ts gt $last_ts)) {
+            $last_ts = $ts;
+            $last_ts_blog = $blog;
+        }
+        my $ts_iso = ts2iso($blog, $ts);
         $item->{'log.created_on_iso'} = $ts_iso;
         my $id = $item->{'log.id'};
         my $year = substr($ts, 0, 4);

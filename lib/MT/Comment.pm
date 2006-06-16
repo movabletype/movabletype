@@ -264,8 +264,8 @@ sub to_hash {
     my $cmt = shift;
     my $hash = $cmt->SUPER::to_hash();
 
-    $hash->{'comment.created_on_iso'} = sub { MT::Util::ts2iso(undef, $cmt->created_on) };
-    $hash->{'comment.modified_on_iso'} = sub { MT::Util::ts2iso(undef, $cmt->modified_on) };
+    $hash->{'comment.created_on_iso'} = sub { MT::Util::ts2iso($cmt->blog, $cmt->created_on) };
+    $hash->{'comment.modified_on_iso'} = sub { MT::Util::ts2iso($cmt->blog, $cmt->modified_on) };
     if (my $blog = $cmt->blog) {
         $hash->{'comment.text_html'} = sub {
             my $txt = defined $cmt->text ? $cmt->text : '';
