@@ -987,6 +987,12 @@ fieldset textarea {
     width: 217px;
 }
 
+#rightcol-options {
+    float: right;
+    margin-left: 20px;
+    width: 235px;
+}
+
 img.align-middle {
     vertical-align: middle;
 }
@@ -1994,8 +2000,13 @@ a.spinner,
     #edit-entry .full-width#title-field input   { width: 591px; }
     #edit-entry #title-field         { width: 320px; }
     #edit-entry #title-field input   { width: 316px; }
-    #edit-entry #status-field        { width: 258px; margin-left: 335px;}
-    #edit-entry #status-field select { width: 254px; }
+    #edit-entry #category-field        { width: 258px; margin-left: 335px;}
+    #edit-entry #category-field select { width: 254px; }
+    #edit-entry #status-area         { width: 258px; margin-left: 335px; }
+    #edit-entry #status-field        { width: 120px; float:left; }
+    #edit-entry #status-field select { width: 118px; }
+    #edit-entry #basic-publish-field       { width: 122px; float:right; }
+    #edit-entry #basic-publish-field input { width: 114px; }
 
     #edit-entry #multiple_cats,
     #quickpost .multiple_cats {
@@ -2214,6 +2225,18 @@ a.spinner,
     #edit-entry #comments-box #convert_breaks {
         width: 156px;
         font-size: x-small;
+    }
+
+    #edit-entry #basic-publish-field #created_on_manual {
+        width: 110px;
+        font-size: x-small;
+    }
+
+    #edit-entry #basic-publish-field .created_on_highlight {
+        border: 1px solid #FC3;
+        padding: 1px 0;
+        text-align: center;
+        background: #FD4;
     }
 
     #edit-entry #status-box #created_on_manual {
