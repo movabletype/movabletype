@@ -296,7 +296,7 @@ sub optional {
             my %head = (To => $param{test_mail_address},
                         From => $cfg->EmailAddressMain || $param{test_mail_address},
                         Subject => $app->translate("Test mail from Configuration Wizard") );
-            my $charset = $cfg->PublishCharset || 'iso-8859-1';
+            my $charset = $cfg->PublishCharset;
             $head{'Content-Type'} = qq(text/plain; charset="$charset");
 
             my $body = $app->translate("test test test. change me please");

@@ -789,9 +789,8 @@ sub ping {
         push @qs, 'blog_name=' . MT::Util::encode_url($blog->name);
         my $qs = join '&', @qs;
 
-        ## Character encoding--best guess. Default to iso-8859-1, just as we
-        ## do in MT::Template::Context::_hdlr_publish_charset.
-        my $enc = $mt->{cfg}->PublishCharset || 'iso-8859-1';
+        ## Character encoding--best guess.
+        my $enc = $mt->{cfg}->PublishCharset;
 
         for my $url (@$pings) {
             $url =~ s/^\s*//;

@@ -545,7 +545,7 @@ sub reset_password {
     my %head = ( To => $author->email,
                  From => $app->config('EmailAddressMain') || $author->email,
                  Subject => $app->translate("Password Recovery") );
-    my $charset = $app->config('PublishCharset') || 'iso-8859-1';
+    my $charset = $app->config('PublishCharset');
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
 
     my $body = $app->build_email('recover-password.tmpl', {user_password => $pass});
@@ -8186,7 +8186,7 @@ sub send_notify {
                  Subject => $subj,
                  'Content-Transfer-Encoding' => '8bit' );
     my $charset = $app->config('MailEncoding') ||
-                  $app->config('PublishCharset') || 'iso-8859-1';
+                  $app->config('PublishCharset');
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
     my $i = 1;
     require MT::Mail;
