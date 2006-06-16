@@ -33,6 +33,9 @@ sub add_task {
 
 sub run_tasks {
     my $mgr = shift;
+    if (!ref($mgr)) {
+        $mgr = $mgr->instance;
+    }
 
     if ($mgr->{running}) {
         warn "Attempt to recursively invoke TaskMgr.";
@@ -42,7 +45,16 @@ sub run_tasks {
     local $mgr->{running} = 1;
 
     # Secure lock before running tasks
-    my $unlock = $mgr->_lock() or return;
+    my $unlock;
+    unless ($unlock = $mgr->_lock()) {
+        MT->log({
+            class => 'system',
+            category => 'tasks',
+            level => MT::Log::ERROR(),
+            message => MT->translate("Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.", MT::ConfigMgr->instance->TempDir)
+        });
+        return;
+    }
 
     eval {
         my $app = MT->instance;
@@ -172,9 +184,9 @@ MT::TaskMgr - MT class for controlling the execution of system tasks.
 
 =head1 SYNOPSIS
 
-    MT::TaskMgr->instance->add_task($task);
+    MT::TaskMgr->add_task($task);
 
-    MT::TaskMgr->instance->run_tasks;
+    MT::TaskMgr->run_tasks;
 
 =head1 DESCRIPTION
 
