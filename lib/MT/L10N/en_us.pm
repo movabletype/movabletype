@@ -166,6 +166,10 @@ the address you provided is correct and belongs to you.',
     'Unban Commenter(s)' => 'Unban Commenter(s)',
     'Untrust Commenter(s)' => 'Untrust Commenter(s)',
     'Unban Commenter(s)' => 'Unban Commenter(s)',
+    'Add Tags...' => 'Add Tags...',
+    'Remove Tags...' => 'Remove Tags...',
+    'Tags to add to selected entries' => 'Tags to add to selected entries',
+    'Tags to remove from selected entries' => 'Tags to remove from selected entries',
 );
 
 1;
