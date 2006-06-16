@@ -40,13 +40,16 @@
                      <div class="entry" id="entry-<$MTEntryID$>">
                         <h3 class="entry-header"><$MTEntryTitle$></h3>
                         <div class="entry-content">
-                           <div class="entry-body">
-                              <$MTEntryBody$>
-                              <MTEntryIfExtended>
+                              <MTIfNonEmpty tag="EntryBody">
+                              <div class="entry-body">
+                                 <$MTEntryBody$>
+                              </div>
+                              </MTIfNonEmpty>
+                              <MTIfNonEmpty tag="EntryMore">
                               <p class="entry-more-link">
                                  <a href="<$MTEntryPermalink$>#more"><MT_TRANS phrase="Continue reading"> "<$MTEntryTitle$>" &raquo;</a>
                               </p>
-                              </MTEntryIfExtended>
+                              </MTIfNonEmpty>
                               <p class="entry-footer">
                                  <span class="post-footers">
                                      <MTIfNonEmpty tag="EntryAuthorDisplayName">
@@ -61,7 +64,6 @@
                                  <MTIfCommentsActive>| <a href="<$MTEntryPermalink$>#comments"><MT_TRANS phrase="Comments"> (<$MTEntryCommentCount$>)</a></MTIfCommentsActive>
                                  <MTIfPingsActive>| <a href="<$MTEntryPermalink$>#trackback"><MT_TRANS phrase="TrackBacks"> (<$MTEntryTrackbackCount$>)</a></MTIfPingsActive>
                               </p>
-                           </div>
                         </div>
                      </div>
                      </MTEntries>
