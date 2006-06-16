@@ -48,12 +48,16 @@
                      <h2 id="archive-title"><$MTEntryTitle$></h2>
                      <div class="entry" id="entry-<$MTEntryID$>">
                         <div class="entry-content">
+                           <MTIfNonEmpty tag="EntryBody">
                            <div class="entry-body">
                               <$MTEntryBody$>
                            </div>
+                           </MTIfNonEmpty>
+                           <MTIfNonEmpty tag="EntryMore">
                            <div id="more" class="entry-more">
                               <$MTEntryMore$>
                            </div>
+                           </MTIfNonEmpty>             
                            <MTEntryIfTagged>
                            <div class="entry-tags">
                                <h4 class="entry-tags-header"><MT_TRANS phrase="Tags">:</h4> 
