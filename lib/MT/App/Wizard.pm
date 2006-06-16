@@ -105,7 +105,7 @@ sub pre_start {
 }
 
 sub config_keys {
-    return qw(dbname dbpath dbport dbserver dbsocket dbtype dbuser setnames mail_transfer sendmail_path smtp_server test_mail_address);
+    return qw(dbname dbpath dbport dbserver dbsocket dbtype dbuser dbpass setnames mail_transfer sendmail_path smtp_server test_mail_address);
 }
 
 sub start {
