@@ -884,11 +884,11 @@ sub _hdlr_product_name {
 }
 
 sub _hdlr_publish_charset {
-    MT::ConfigMgr->instance->PublishCharset || 'iso-8859-1';
+    MT::ConfigMgr->instance->PublishCharset;
 }
 
 sub _hdlr_default_language {
-    MT::ConfigMgr->instance->DefaultLanguage || 'en';
+    MT::ConfigMgr->instance->DefaultLanguage;
 }
 
 sub _hdlr_signon_url {
