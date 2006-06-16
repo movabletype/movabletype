@@ -2050,6 +2050,7 @@ use vars qw( @ISA %Lexicon );
     '_INDEX_INTRO' => '<p>Movable Typeのインストール時には、<a href="http://www.sixapart.jp/movabletype/docs/mtinstall.html">インストール手順</a>に目を通し、<a rel="nofollow" href="mt-check.cgi">Movable Typeシステム・チェック</a>を参照して、お使いのシステムに必要なものが揃っていることをご確認ください。</p>',
     '_NOTIFY_REQUIRE_CONFIRMATION' => '確認のメールを[_1]あてに送りました。登録するためには、メールに書かれているURLにアクセスしてください。このメールアドレスがあなたのものかを確認します。',
     '_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.jp/movabletype/">Movable Type</a>',
+    '_SEARCH_SIDEBAR' => '検索・置換',
     '_SYSTEM_TEMPLATE_COMMENTS' => 'コメントの投稿で、ポップアップ・ウィンドウを使うように設定したときの表示レイアウトです。',
     '_SYSTEM_TEMPLATE_COMMENT_ERROR' => 'コメントの投稿で、エラーが発生したときに表示します。',
     '_SYSTEM_TEMPLATE_COMMENT_PENDING' => '投稿したコメントが、保留されたり、迷惑コメントと判断されたときに表示します。',

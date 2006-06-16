@@ -17,6 +17,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '_external_link_target' => '_top',
     '_BLOG_CONFIG_MODE_BASIC' => 'Basic Mode',
     '_BLOG_CONFIG_MODE_DETAIL' => 'Detailed Mode',
+    '_SEARCH_SIDEBAR' => 'Search',
     '_SYSTEM_TEMPLATE_COMMENT_PREVIEW' => 'Shown when a commenter previews their comment.',
     '_SYSTEM_TEMPLATE_COMMENT_PENDING' => 'Shown when a comment is moderated or junked.',
     '_SYSTEM_TEMPLATE_COMMENT_ERROR' => 'Shown when a comment submission cannot be validated.',

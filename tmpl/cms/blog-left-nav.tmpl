@@ -28,7 +28,7 @@
 </TMPL_IF>
 <li><MT_TRANS phrase="Utilities">
 <ul class="sub">
-<TMPL_IF NAME=CAN_EDIT_ENTRIES><li><a<TMPL_IF NAME=NAV_SEARCH> class="here"</TMPL_IF> id="nav-search" title="<MT_TRANS phrase="Search &amp; Replace">" href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Search"></a></li></TMPL_IF>
+<TMPL_IF NAME=CAN_EDIT_ENTRIES><li><a<TMPL_IF NAME=NAV_SEARCH> class="here"</TMPL_IF> id="nav-search" title="<MT_TRANS phrase="Search &amp; Replace">" href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="_SEARCH_SIDEBAR"></a></li></TMPL_IF>
 <TMPL_IF NAME=CAN_VIEW_LOG><li><a<TMPL_IF NAME=NAV_LOG> class="here"</TMPL_IF> id="nav-log" title="<MT_TRANS phrase="View Activity Log">" href="<TMPL_VAR NAME=MT_URL>?__mode=view_log&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Activity Log"></a></li></TMPL_IF>
 <TMPL_IF NAME=CAN_EDIT_CONFIG><li><a<TMPL_IF NAME=NAV_IMPORT> class="here"</TMPL_IF> id="nav-import" title="<MT_TRANS phrase="Import &amp; Export Entries">" href="<TMPL_VAR NAME=MT_URL>?__mode=start_import&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Import / Export"></a></li></TMPL_IF>
 <TMPL_IF NAME=CAN_REBUILD><li><a id="nav-rebuild" title="<MT_TRANS phrase="Rebuild Site">" href="#" onclick="window.open('<TMPL_VAR NAME=MT_URL>?__mode=rebuild_confirm&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>', 'rebuild', 'width=400,height=300,resizable=yes')"><MT_TRANS phrase="Rebuild Site"></a></li></TMPL_IF>
