@@ -1200,7 +1200,11 @@ sub _hdlr_entries {
     $terms{status} = MT::Entry::RELEASE();
 
     if (!$entries) {
-        if (my $cat = $ctx->stash('archive_category')) {
+        if ($ctx->{inside_mt_categories}) {
+            if (my $cat = $ctx->stash('category')) {
+                $args->{category} ||= [ 'OR', [ $cat ] ];
+            }
+        } elsif (my $cat = $ctx->stash('archive_category')) {
             $args->{category} ||= [ 'OR', [ $cat ] ];
         }
     }
@@ -3215,7 +3219,6 @@ sub _hdlr_categories {
     my $res = '';
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
-    my $needs_entries = ($ctx->stash('uncompiled') =~ /<\$?MTEntries/) ? 1 : 0;
     my $glue = exists $args->{glue} ? $args->{glue} : '';
     ## In order for this handler to double as the handler for
     ## <MTArchiveList archive_type="Category">, it needs to support
@@ -3232,13 +3235,7 @@ sub _hdlr_categories {
                           { category_id => $cat->id } ],
               'sort' => 'created_on',
               direction => 'descend', });
-        if ($needs_entries) {
-            my @entries = MT::Entry->load(@args);
-            $ctx->{__stash}{entries} = \@entries;
-            $ctx->{__stash}{category_count} = scalar @entries;
-        } else {
-            $ctx->{__stash}{category_count} = MT::Entry->count(@args);
-        }
+        $ctx->{__stash}{category_count} = MT::Entry->count(@args);
         next unless $ctx->{__stash}{category_count} || $args->{show_empty};
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
