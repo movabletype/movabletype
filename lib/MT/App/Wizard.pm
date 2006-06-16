@@ -539,25 +539,32 @@ sub static_path {
     my $app = shift;
     my $param = @_;
     my $static_path;
-    my $path = File::Spec->catfile($app->{mt_dir}, "images", "powered.gif");
-    if (!-f $path) {
-        $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "images", "powered.gif");
-        $static_path = "../mt-static/" if -f $path;
+
+    my $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "images", "powered.gif");
+    if (-f $path){
+        $static_path = "mt-static/";
+    }else{
+        $path = File::Spec->catfile($app->{mt_dir}, "images", "mt-logo.gif");
+        my $path = File::Spec->catfile($app->{mt_dir}, "images", "powered.gif");
         if (!-f $path) {
-            $path = File::Spec->catfile($app->{mt_dir}, "..", "mt-static", "images", "powered.gif");
-            $static_path = "../../mt-static/" if -f $path;
+            $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "images", "powered.gif");
+            $static_path = "../mt-static/" if -f $path;
             if (!-f $path) {
-                $path = File::Spec->catfile($app->{mt_dir}, "..", "..", "mt-static", "images", "powered.gif");
-                $static_path = "../../../mt-static/" if -f $path;
+                $path = File::Spec->catfile($app->{mt_dir}, "..", "mt-static", "images", "powered.gif");
+                $static_path = "../../mt-static/" if -f $path;
+                if (!-f $path) {
+                    $path = File::Spec->catfile($app->{mt_dir}, "..", "..", "mt-static", "images", "powered.gif");
+                    $static_path = "../../../mt-static/" if -f $path;
+                }
             }
+        } else {
+            $static_path = $app->cgipath;
         }
-    } else {
-        $static_path = $app->cgipath;
-    }
-    if (!-f $path) {
-        $path = File::Spec->catfile($app->{mt_dir}, "..", "images", "poweredgif");
-        $static_path = "../" if -f $path;
-    }
+        if (!-f $path) {
+            $path = File::Spec->catfile($app->{mt_dir}, "..", "images", "poweredgif");
+            $static_path = "../" if -f $path;
+        }
+    
 
     $static_path;
 }
@@ -565,7 +572,3 @@ sub static_path {
 
 1;
 __END__
-=pod
- * mt-config.cgiが書き込めるようなら書き込んでしまう
- * 全般的にキレイに
-=cut
