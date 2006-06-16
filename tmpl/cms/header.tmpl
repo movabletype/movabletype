@@ -102,27 +102,27 @@ function action_menu_change(menu) {
             <input type="hidden" name="_type" value="" />
             <input type="hidden" name="type" value="" />
             <select name="__mode" onchange="action_menu_change(this);">
-                <option value="menu" selected="selected"><MT_TRANS phrase="Menu"></option>
-                <option value="view"><MT_TRANS phrase="New Entry"></option>
-                <option value="list_entries"><MT_TRANS phrase="Entries"></option>
-                <option value="list_comments"><MT_TRANS phrase="Comments"></option>
-                <option value="list_commenters"><MT_TRANS phrase="Commenters"></option>
-                <option value="list_pings"><MT_TRANS phrase="TrackBacks"></option>
-                <option value="list"><MT_TRANS phrase="Notifications"></option>
-                <option value="list"><MT_TRANS phrase="Templates"></option>
-                <option value="view"><MT_TRANS phrase="New Index Template"></option>
-                <option value="view"><MT_TRANS phrase="New Archive Template"></option>
-                <option value="view"><MT_TRANS phrase="New Template Module"></option>
-                <option value="list_cat"><MT_TRANS phrase="Categories"></option>
-                <option value="list_tags"><MT_TRANS phrase="Tags"></option>
-                <option value="cfg_prefs"><MT_TRANS phrase="Settings: General"></option>
-                <option value="cfg_entries"><MT_TRANS phrase="Settings: Defaults"></option>
-                <option value="cfg_feedback"><MT_TRANS phrase="Settings: Feedback"></option>
-                <option value="cfg_archives"><MT_TRANS phrase="Settings: Publishing"></option>
-                <option value="cfg_plugins"><MT_TRANS phrase="Settings: Plugins"></option>
-                <option value="search_replace"><MT_TRANS phrase="Search &amp; Replace"></option>
-                <option value="view_log"><MT_TRANS phrase="Activity Log"></option>
-                <option value="start_import"><MT_TRANS phrase="Import/Export"></option>
+                <option value="menu"<TMPL_IF NAME=MODE_MENU> selected="selected"</TMPL_IF>><MT_TRANS phrase="Menu"></option>
+                <option value="view"<TMPL_IF NAME=MODE_VIEW> selected="selected"</TMPL_IF>><MT_TRANS phrase="New Entry"></option>
+                <option value="list_entries"<TMPL_IF NAME=MODE_LIST_ENTRIES> selected="selected"</TMPL_IF>><MT_TRANS phrase="Entries"></option>
+                <option value="list_comments"<TMPL_IF NAME=MODE_LIST_COMMENTS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Comments"></option>
+                <option value="list_commenters"<TMPL_IF NAME=MODE_LIST_COMMENTERS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Commenters"></option>
+                <option value="list_pings"<TMPL_IF NAME=MODE_LIST_PINGS> selected="selected"</TMPL_IF>><MT_TRANS phrase="TrackBacks"></option>
+                <option value="list"<TMPL_IF NAME=MODE_LIST> selected="selected"</TMPL_IF>><MT_TRANS phrase="Notifications"></option>
+                <option value="list"<TMPL_IF NAME=MODE_LIST> selected="selected"</TMPL_IF>><MT_TRANS phrase="Templates"></option>
+                <option value="view"<TMPL_IF NAME=MODE_VIEW> selected="selected"</TMPL_IF>><MT_TRANS phrase="New Index Template"></option>
+                <option value="view"<TMPL_IF NAME=MODE_VIEW> selected="selected"</TMPL_IF>><MT_TRANS phrase="New Archive Template"></option>
+                <option value="view"<TMPL_IF NAME=MODE_VIEW> selected="selected"</TMPL_IF>><MT_TRANS phrase="New Template Module"></option>
+                <option value="list_cat"<TMPL_IF NAME=MODE_LIST_CAT> selected="selected"</TMPL_IF>><MT_TRANS phrase="Categories"></option>
+                <option value="list_tags"<TMPL_IF NAME=MODE_LIST_TAGS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Tags"></option>
+                <option value="cfg_prefs"<TMPL_IF NAME=MODE_CFG_PREFS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Settings: General"></option>
+                <option value="cfg_entries"<TMPL_IF NAME=MODE_CFG_ENTRIES> selected="selected"</TMPL_IF>><MT_TRANS phrase="Settings: Defaults"></option>
+                <option value="cfg_feedback"<TMPL_IF NAME=MODE_CFG_FEEDBACK> selected="selected"</TMPL_IF>><MT_TRANS phrase="Settings: Feedback"></option>
+                <option value="cfg_archives"<TMPL_IF NAME=MODE_CFG_ARCHIVES> selected="selected"</TMPL_IF>><MT_TRANS phrase="Settings: Publishing"></option>
+                <option value="cfg_plugins"<TMPL_IF NAME=MODE_CFG_PLUGINS> selected="selected"</TMPL_IF>><MT_TRANS phrase="Settings: Plugins"></option>
+                <option value="search_replace"<TMPL_IF NAME=MODE_SEARCH_REPLACE> selected="selected"</TMPL_IF>><MT_TRANS phrase="Search &amp; Replace"></option>
+                <option value="view_log"<TMPL_IF NAME=MODE_VIEW_LOG> selected="selected"</TMPL_IF>><MT_TRANS phrase="Activity Log"></option>
+                <option value="start_import"<TMPL_IF NAME=MODE_START_IMPORT> selected="selected"</TMPL_IF>><MT_TRANS phrase="Import/Export"></option>
             </select>
             <input type="submit" value="<MT_TRANS phrase="Go">" />
         </form>
