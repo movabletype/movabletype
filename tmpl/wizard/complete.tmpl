@@ -5,7 +5,7 @@
 <input type="hidden" name="config" value="<TMPL_VAR NAME=CONFIG ESCAPE=HTML>" />
 
 
-<h3><MT_TRANS phrase="Congratulations! You've successfully configured [_1] [_2]." params="<TMPL_VAR NAME=PRODUCT_NAME>%%<TMPL_VAR NAME=MT_VERSION>"></h3>
+<h3><MT_TRANS phrase="Congratulations! You've successfully configured [_1] [_2]." params="<TMPL_VAR NAME=MT_PRODUCT_NAME>%%<TMPL_VAR NAME=MT_VERSION>"></h3>
 
 <p>
 <MT_TRANS phrase="This is a copy of your configuration settings.">
@@ -24,7 +24,7 @@
 </p>
 
 <p>
-<input type="submit" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=optional&config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'; return false" />
+<input type="submit" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=optional&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'; return false" />
 <TMPL_UNLESS NAME=CONFIG_CREATED>
 <input name="retry" type="submit" value="<MT_TRANS phrase="Retry">" />
 <TMPL_ELSE>
