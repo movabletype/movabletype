@@ -30,6 +30,7 @@ __PACKAGE__->install_properties({
     },
     defaults => {
         parent => 0,
+        allow_pings => 0,
     },
     child_of => 'MT::Blog',
     child_classes => ['MT::Placement', 'MT::Trackback', 'MT::FileInfo'],
