@@ -105,10 +105,16 @@ sub add_class {
 sub class_label { "System" }
 sub description {
     my $log = shift;
-    if ($log->message =~ m/\r?\n/) {
-        return '<pre>' . $log->message . '</pre>';
+    my $msg = '';
+    if ($log->message =~ m/\n/) {
+        $msg = $log->message;
     }
-    undef;
+    if (defined $log->metadata && ($log->metadata ne '')) {
+        $msg .= "\n\n" if $msg ne '';
+        $msg .= $log->metadata;
+    }
+    $msg = '<pre>' . $msg . '</pre>' if $msg =~ m/\n/;
+    $msg;
 }
 
 sub metadata_object {
