@@ -61,6 +61,10 @@ TC.attachLoadEvent( init );
 
 <p class="page-desc"><MT_TRANS phrase="Use this page to edit the attributes of the category [_1]. You can set a description for your category to be used in your public pages, as well as configuring the TrackBack options for this category." params="<TMPL_VAR NAME=LABEL ESCAPE=HTML>"></p>
 
+<TMPL_IF NAME=ERROR>
+<p class="error-message"><TMPL_VAR NAME=ERROR></p>
+</TMPL_IF>
+
 <TMPL_IF NAME=SAVED>
 <div class="message"><MT_TRANS phrase="Your category changes have been made."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
 </TMPL_IF>
