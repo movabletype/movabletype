@@ -1201,7 +1201,7 @@ sub _hdlr_entries {
 
     if (!$entries) {
         if (my $cat = $ctx->stash('archive_category')) {
-            $args->{category} ||= $cat->category_label_path;
+            $args->{category} ||= [ 'OR', [ $cat ] ];
         }
     }
 
@@ -1530,12 +1530,29 @@ sub _compile_category_filter {
         $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
         return undef if $test_expr;
     } else {
+        my %cats_used;
         $cat_expr = '';
-        foreach (@$cats) {
-            my $id = $_->id;
+        foreach my $cat (@$cats) {
+            my $id = $cat->id;
             $cat_expr .= ($is_and ? '&&' : '||') if $cat_expr ne '';
-            $cat_expr .= "#$id";
+            if ($children) {
+                my @kids = ($cat);
+                my @cats;
+                while (my $c = shift @kids) {
+                    push @cats, $c;
+                    push @kids, ($c->children_categories);
+                }
+                my $repl = '';
+                $repl .= '||' . '#'.$_->id for @cats;
+                $cats_used{$_->id} = $_ for @cats;
+                $repl = '(' . substr($repl, 2) . ')';
+                $cat_expr .= $repl;
+            } else {
+                $cats_used{$cat->id} = $cat;
+                $cat_expr .= "#$id";
+            }
         }
+        @$cats = values %cats_used;
     }
 
     $cat_expr =~ s/#(\d+)/(exists \$p->{\$e}{$1})/g;
