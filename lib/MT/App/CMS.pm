@@ -197,6 +197,7 @@ sub init_core_itemset_actions {
                               code => \&add_tags_to_entries,
                               input => 1,
                               input_label => 'Tags to add to selected entries',
+                              condition => sub { $app->user->is_superuser() || ($app->param('blog_id') && $app->{perms}->can_edit_all_posts) },
                           }, 1);
     $app->add_itemset_action({type => 'entry',
                               key => "remove_tags",
@@ -204,6 +205,7 @@ sub init_core_itemset_actions {
                               code => \&remove_tags_from_entries,
                               input => 1,
                               input_label => 'Tags to remove from selected entries',
+                              condition => sub { $app->user->is_superuser() || ($app->param('blog_id') && $app->{perms}->can_edit_all_posts) },
                           }, 1);
     $app->add_itemset_action({type => 'ping',
                               key => "unapprove_ping",
