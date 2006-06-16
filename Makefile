@@ -152,6 +152,6 @@ clean:
 	-rm php/mt.php
 	-rm -rf `ls tmpl/cms/*.tmpl.pre | sed s/\.pre//`
 	-rm -rf tmpl/cms/admin_essential_links_$(BUILD_LANGUAGE).tmpl
-	-rm -rf index.html
+	-rm -rf index.html*
 	-rm MANIFEST
 
