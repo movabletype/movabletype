@@ -258,7 +258,7 @@ function tagsLoaded(c, result) {
 
 var tagPos = 0;
 function initTags() {
-    if (!tags || length(tags) == 0) return;
+    if (!tags || tags.length == 0) return;
 
     tagList = [];
     for (var tag in tags)
@@ -306,7 +306,7 @@ function doValidateNotifyRecips(f) {
 </TMPL_IF>
 
 <TMPL_IF NAME=SAVED_ADDED>
-<div class="message"><MT_TRANS phrase="Your entry has been saved. You can now make any changes to the entry itself, edit the authored-on date, edit comments, or send a notification."></div>
+<div class="message"><MT_TRANS phrase="Your entry has been saved. You can now make any changes to the entry itself, edit the authored-on date, or edit comments."></div>
 </TMPL_IF>
 
 <TMPL_IF NAME=SAVED_CHANGES>
@@ -596,6 +596,8 @@ with (document) {
 </div>
 </TMPL_IF>
 
+
+
 <TMPL_IF NAME=DISP_PREFS_SHOW_TAGS>
 <div class="field" id="tag-field">
 <div class="field-header">
@@ -606,6 +608,7 @@ with (document) {
 <input name="tags" id="tags" tabindex="7" value="<TMPL_VAR NAME=TAGS ESCAPE=HTML>" onchange="setDirty()" />
 </div>
 <div id="tags_completion" class="full-width"></div>
+
 </div>
 </TMPL_IF>
 
