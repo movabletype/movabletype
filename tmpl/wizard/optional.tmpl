@@ -72,7 +72,7 @@ function mail_select(sel) {
 <!-- SMTPServer -->
 <div id="smtp_server" <TMPL_UNLESS NAME=USE_SMTP>style="display: none"</TMPL_UNLESS>>
 <p>
-<label for="smtp_server"><MT_TRANS phrase="SMTPServer"></label><br />
+<label for="smtp_server"><MT_TRANS phrase="SMTP Server"></label><br />
 <input type="text" id="smtp_server" name="smtp_server" value="<TMPL_IF NAME=SMTP_SERVER><TMPL_VAR NAME=SMTP_SERVER ESCAPE=HTML></TMPL_IF>" /><br />
 <MT_TRANS phrase="Address of your SMTP Server">
 </p>

@@ -3,15 +3,15 @@
 <form method="post" action="mt-wizard.cgi">
 <input type="hidden" name="__mode" value="start" />
 
-<h3><MT_TRANS phrase="Movable Type Configuration Wizard"></h3>
+<h3><MT_TRANS phrase="Welcome to the Movable Type Configuration Wizard"></h3>
 
 <noscript>
-<p><MT_TRANS phrase="This installer requires that you enable Javascript in your browser.  Please enable it and refresh this page to proceed."></p>
+<p><MT_TRANS phrase="Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed."></p>
 </noscript>
 
 <TMPL_IF NAME=CFG_EXISTS>
 <p>
-<MT_TRANS phrase="mt-config.cgi(or mt.cfg) is found."><br />
+<MT_TRANS phrase="Your Movable Type configuration file already exists. The Wizard cannot continue with this file present."><br />
 </p>
 
 <TMPL_ELSE>
@@ -19,7 +19,7 @@
 TBD:starting message here...
 </p>
 
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
    document.write("<input type=\"submit\" value=\"<MT_TRANS phrase="Begin">\" />");
 </script>
 </TMPL_IF>

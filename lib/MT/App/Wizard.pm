@@ -110,7 +110,7 @@ sub config_keys {
 
 sub start {
     my $app = shift;
-    my $q = $app->{query};
+    my $q = $app->param;
 
     # test for required packages...
     my ($needed) = $app->module_check(\@REQ);
@@ -123,6 +123,7 @@ sub start {
     my ($db_missing) = $app->module_check(\@DATA);
     if ((scalar @$db_missing) == (scalar @DATA)) {
         my %param = ( 'package_loop' => $db_missing );
+        $param{missing_db_or_optional} = 1;
         $param{missing_db} = 1;
         return $app->build_page("packages.tmpl", \%param);
     }
@@ -131,6 +132,7 @@ sub start {
     push @$opt_missing, @$db_missing;
     if (@$opt_missing) {
         my %param = ( 'package_loop' => $opt_missing );
+        $param{missing_db_or_optional} = 1;
         $param{optional} = 1;
         return $app->build_page("packages.tmpl", \%param);
     }
@@ -143,7 +145,7 @@ sub configure {
     my $app = shift;
     my %param = @_;
 
-    my $q = $app->{query};
+    my $q = $app->param;
     my $mode = $q->param('__mode');
 
     # input data unserialize to config
@@ -171,6 +173,7 @@ sub configure {
 
     my ($missing, $dbmod) = $app->module_check(\@DATA);
     if (scalar(@$dbmod) == 0) {
+        $param{missing_db_or_optional} = 1;
         $param{missing_db} = 1;
         $param{package_loop} = $missing;
         return $app->build_page("packages.tmpl", \%param);
@@ -245,7 +248,7 @@ sub optional {
     my $app = shift;
     my %param = @_;
 
-    my $q = $app->{query};
+    my $q = $app->param;
     my $mode = $q->param('__mode');
 
     # input data unserialize to config
@@ -266,8 +269,8 @@ sub optional {
     $param{sendmail_path} = $sm_loc || '';
 
     my $transfer;
-    push @$transfer, {id => 'smtp', name => 'smtp'};
-    push @$transfer, {id => 'sendmail', name => 'sendmail'};
+    push @$transfer, {id => 'smtp', name => $app->translate('SMTP Server')};
+    push @$transfer, {id => 'sendmail', name => $app->translate('Sendmail')};
 
     foreach(@$transfer){
         if ($_->{id} eq $param{mail_transfer}) {
@@ -324,60 +327,10 @@ sub seed {
     my $app = shift;
     my %param = @_;
 
-    my $q = $app->{query};
-    my $mode = $q->param('__mode');
-
-    $param{static_web_path} = $app->static_path;
-    $param{cgi_path} = $app->cgipath;
-
-    # unserialize database configuration
-    if (my $dbtype = $param{dbtype}) {
-        if ($dbtype eq 'bdb') {
-            $param{use_bdb} = 1;
-            $param{database_name} = $param{dbpath};
-        } elsif ($dbtype eq 'sqlite') {
-            $param{use_sqlite} = 1;
-            $param{OBJECT_DRIVER} = 'DBI::sqlite';
-            $param{database_name} = $param{dbpath};
-        } elsif ($dbtype eq 'sqlite2') {
-            $param{use_sqlite} = 1;
-            $param{use_sqlite2} = 1;
-            $param{OBJECT_DRIVER} = 'DBI::sqlite2';
-            $param{database_name} = $param{dbpath};
-        } elsif ($dbtype eq 'mysql') {
-            $param{use_dbms} = 1;
-            $param{object_driver} = 'DBI::mysql';
-            $param{database_name} = $param{dbname};
-            $param{database_username} = $param{dbuser};
-            $param{database_password} = $param{dbpass} if $param{dbpass};
-            $param{database_host} = $param{dbserver} if $param{dbserver};
-            $param{database_port} = $param{dbport} if $param{dbport};
-            $param{database_socket} = $param{dbsocket} if $param{dbsocket};
-            $param{use_setnames} =  $param{setnames} if $param{setnames};
-        } elsif ($dbtype eq 'postgres') {
-            $param{use_dbms} = 1;
-            $param{object_driver} = 'DBI::postgres';
-            $param{database_name} = $param{dbname};
-            $param{database_username} = $param{dbuser};
-            $param{database_password} = $param{dbpass} if $param{dbpass};
-            $param{database_host} = $param{dbserver} if $param{dbserver};
-            $param{database_port} = $param{dbport} if $param{dbport};
-            $param{use_setnames} =  $param{setnames} if $param{setnames};
-        }
-    }
-    
-    $param{is_writable} = $app->is_writable;
-
-    return $app->build_page("complete.tmpl", \%param);
-}
-
-sub write_config {
-    my $app = shift;
-    my $q = $app->{query};
-
     # input data unserialize to config
     my %param = $app->unserialize_config;
 
+    $param{config} = $app->param('config');
     $param{static_web_path} = $app->static_path;
     $param{cgi_path} = $app->cgipath;
 
@@ -388,12 +341,12 @@ sub write_config {
             $param{database_name} = $param{dbpath};
         } elsif ($dbtype eq 'sqlite') {
             $param{use_sqlite} = 1;
-            $param{OBJECT_DRIVER} = 'DBI::sqlite';
+            $param{object_driver} = 'DBI::sqlite';
             $param{database_name} = $param{dbpath};
         } elsif ($dbtype eq 'sqlite2') {
             $param{use_sqlite} = 1;
             $param{use_sqlite2} = 1;
-            $param{OBJECT_DRIVER} = 'DBI::sqlite2';
+            $param{object_driver} = 'DBI::sqlite2';
             $param{database_name} = $param{dbpath};
         } elsif ($dbtype eq 'mysql') {
             $param{use_dbms} = 1;
@@ -418,49 +371,20 @@ sub write_config {
     }
 
     my $data = $app->build_page("mt-config.tmpl", \%param);
-    
-    # write!
+
     my $cfg_file = File::Spec->catfile($app->{mt_dir}, 'mt-config.cgi');
-    open OUT, ">$cfg_file";
-    print OUT $data;
-    close OUT;
-    return $app->error("Error creating file $cfg_file") unless -f $cfg_file;
-    
+    if (!-f $cfg_file) {
+        # write!
+        if (open OUT, ">$cfg_file") {
+            print OUT $data;
+            close OUT;
+        }
+        $param{config_created} = 1 if -f $cfg_file;
+        $param{config_file} = $cfg_file;
+    }
+
     # back to the complete screen
     return $app->build_page("complete.tmpl", \%param);
-}
-
-sub is_writable {
-    my $app = shift;
-
-    eval { use File::Spec; };
-    my $create_ok = 0;
-    if (!$@) {
-        my $test_file = File::Spec->catfile($app->{mt_dir}, '__dummy.txt');
-        open OUT, ">$test_file";
-        close OUT;
-        if (-f $test_file) {
-            # ok, we can write... can we delete?
-            unlink $test_file;
-            if (!-f $test_file) {
-                $create_ok = 1;
-            }
-        } else {
-            if (chmod 0777, $app->{mt_dir}) {
-                my $test_file = File::Spec->catfile($app->{mt_dir}, '__dummy.txt');
-                open OUT, ">$test_file";
-                close OUT;
-                if (-f $test_file) {
-                    # ok, we can write... can we delete?
-                    unlink $test_file;
-                    if (!-f $test_file) {
-                        $create_ok = 1;
-                    }
-                }
-            }
-        }
-    }
-    $create_ok;
 }
 
 sub serialize_config {
@@ -477,7 +401,7 @@ sub serialize_config {
 
 sub unserialize_config {
     my $app = shift;
-    my $data = $app->{query}->param('config');
+    my $data = $app->param('config');
     my %config = { };
     if ($data) {
         $data = pack 'H*', $data;

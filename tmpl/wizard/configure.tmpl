@@ -110,19 +110,8 @@ function db_select(sel) {
 
 <p>
 <label for="dbpass"><MT_TRANS phrase="Password"></label><br />
-<input type="text" name="dbpass" value="<TMPL_VAR NAME=DBPASS ESCAPE=HTML>" /><br />
+<input type="password" name="dbpass" value="<TMPL_VAR NAME=DBPASS ESCAPE=HTML>" /><br />
 <MT_TRANS phrase="The password to login to your SQL database.">
-</p>
-</div>
-
-
-<!-- MySQL optional configuration parameters -->
-
-<div id="use_setnames"<TMPL_IF NAME=PATH_REQUIRED> style="display: none"</TMPL_IF>>
-<p>
-<label for="setnames"><MT_TRANS phrase="Use SQLSetNames"></label><br />
-<input type="checkbox" id="setnames" name="setnames" value="1" <TMPL_IF NAME=SETNAMES>checked</TMPL_IF>/><br />
-<MT_TRANS phrase="If you are installing a version of MySQL older than 4.1, you must check this checkbox.">
 </p>
 </div>
 

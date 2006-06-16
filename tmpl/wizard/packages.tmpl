@@ -43,6 +43,7 @@
 </p>
 </TMPL_IF>
 <input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=pre_start'" />
+<TMPL_IF NAME=MISSING_DB_OR_OPTIONAL>
 <TMPL_IF NAME=MISSING_DB>
    <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start'" />
 <TMPL_ELSE>
@@ -52,6 +53,7 @@
    <TMPL_ELSE>
       <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start'" />
    </TMPL_IF>
+</TMPL_IF>
 </TMPL_IF>
 <TMPL_IF NAME=SUCCESS>
    <input type="button" value="<MT_TRANS phrase="Continue">" onclick="document.location.href='?__mode=configure'" />
