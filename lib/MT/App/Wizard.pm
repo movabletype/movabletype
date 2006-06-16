@@ -9,6 +9,41 @@ use strict;
 use MT::App;
 @MT::App::Wizard::ISA = qw( MT::App );
 
+my @REQ = (
+    [ 'HTML::Template', 2, 1, 'HTML::Template is required for all Movable Type application functionality.', 'HTML Template' ],
+    [ 'Image::Size', 0, 1, 'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).', 'Image Size' ],
+    [ 'File::Spec', 0.8, 1, 'File::Spec is required for path manipulation across operating systems.', 'File Spec' ],
+    [ 'CGI::Cookie', 0, 1, 'CGI::Cookie is required for cookie authentication.', 'CGI Cookie' ],
+);
+
+my @DATA = (
+    [ 'DB_File', 0, 0, 'DB_File is required if you want to use the Berkeley DB/DB_File backend.', 'BerkeleyDB Database' ],
+    [ 'DBD::mysql', 0, 0, 'DBI and DBD::mysql are required if you want to use the MySQL database backend.', 'MySQL Database' ],
+    [ 'DBD::Pg', 1.32, 0, 'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.', 'PostgreSQL Database' ],
+    [ 'DBD::SQLite', 0, 0, 'DBI and DBD::SQLite are required if you want to use the SQLite database backend.', 'SQLite Database' ],
+    [ 'DBD::SQLite2', 0, 0, 'DBI and DBD::SQLite2 are required if you want to use the SQLite2 database backend.', 'SQLite2 Database' ],
+);
+
+my @OPT = (
+    [ 'HTML::Entities', 0, 0, 'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in mt.cfg.', 'HTML Entities' ],
+    [ 'LWP::UserAgent', 0, 0, 'LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.', 'LWP UserAgent' ],
+    [ 'SOAP::Lite', 0.50, 0, 'SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.', 'SOAP Lite' ],
+    [ 'File::Temp', 0, 0, 'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.', 'File Temp' ],
+    [ 'Image::Magick', 0, 0, 'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.', 'ImageMagick' ],
+    [ 'Storable', 0, 0, 'Storable is optional; it is required by certain MT plugins available from third parties.', 'Storable'],
+    [ 'Crypt::DSA', 0, 0, 'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.', 'Crypt DSA'],
+    [ 'MIME::Base64', 0, 0, 'MIME::Base64 is required in order to enable comment registration.', 'MIME Base64'],
+    [ 'XML::Atom', 0, 0, 'XML::Atom is required in order to use the Atom API.', 'XML Atom'],
+);
+
+my %drivers = (
+    'mysql' => 'DBI::mysql',
+    'bdb' => 'DBM',
+    'postgres' => 'DBI::postgres',
+    'sqlite' => 'DBI::sqlite',
+    'sqlite2' => 'DBI::sqlite'
+);
+
 sub init {
     my $app = shift;
     my %param = @_;
@@ -69,33 +104,6 @@ sub pre_start {
     return$app->build_page("start.tmpl", \%param);
 }
 
-my @REQ = (
-    [ 'HTML::Template', 2, 1, 'HTML::Template is required for all Movable Type application functionality.', 'HTML Template' ],
-    [ 'Image::Size', 0, 1, 'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).', 'Image Size' ],
-    [ 'File::Spec', 0.8, 1, 'File::Spec is required for path manipulation across operating systems.', 'File Spec' ],
-    [ 'CGI::Cookie', 0, 1, 'CGI::Cookie is required for cookie authentication.', 'CGI Cookie' ],
-);
-
-my @DATA = (
-    [ 'DB_File', 0, 0, 'DB_File is required if you want to use the Berkeley DB/DB_File backend.', 'BerkeleyDB Database' ],
-    [ 'DBD::mysql', 0, 0, 'DBI and DBD::mysql are required if you want to use the MySQL database backend.', 'MySQL Database' ],
-    [ 'DBD::Pg', 1.32, 0, 'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.', 'PostgreSQL Database' ],
-    [ 'DBD::SQLite', 0, 0, 'DBI and DBD::SQLite are required if you want to use the SQLite database backend.', 'SQLite Database' ],
-    [ 'DBD::SQLite2', 0, 0, 'DBI and DBD::SQLite2 are required if you want to use the SQLite2 database backend.', 'SQLite2 Database' ],
-);
-
-my @OPT = (
-    [ 'HTML::Entities', 0, 0, 'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in mt.cfg.', 'HTML Entities' ],
-    [ 'LWP::UserAgent', 0, 0, 'LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.', 'LWP UserAgent' ],
-    [ 'SOAP::Lite', 0.50, 0, 'SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.', 'SOAP Lite' ],
-    [ 'File::Temp', 0, 0, 'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.', 'File Temp' ],
-    [ 'Image::Magick', 0, 0, 'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.', 'ImageMagick' ],
-    [ 'Storable', 0, 0, 'Storable is optional; it is required by certain MT plugins available from third parties.', 'Storable'],
-    [ 'Crypt::DSA', 0, 0, 'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.', 'Crypt DSA'],
-    [ 'MIME::Base64', 0, 0, 'MIME::Base64 is required in order to enable comment registration.', 'MIME Base64'],
-    [ 'XML::Atom', 0, 0, 'XML::Atom is required in order to use the Atom API.', 'XML Atom'],
-);
-
 sub config_keys {
     return qw(dbname dbpath dbport dbserver dbsocket dbtype dbuser setnames mail_transfer sendmail_path smtp_server test_mail_address);
 }
@@ -130,14 +138,6 @@ sub start {
     my %param = ( 'success' => 1 );
     return $app->build_page("packages.tmpl", \%param);
 }
-
-my %drivers = (
-    'mysql' => 'DBI::mysql',
-    'bdb' => 'DBM',
-    'postgres' => 'DBI::postgres',
-    'sqlite' => 'DBI::sqlite',
-    'sqlite2' => 'DBI::sqlite'
-);
 
 sub configure {
     my $app = shift;
@@ -511,6 +511,7 @@ sub cgipath {
 
     $cgipath;
 }
+
 sub module_check {
     my $self = shift;
     my $modules = shift;
