@@ -2095,7 +2095,7 @@ sub edit_object {
             #my $core_actions = $app->core_itemset_actions($type);
             #$param{core_itemset_action_loop} = $core_actions
             #    if $core_actions;
-            $param{has_itemset_actions} = $plugin_actions ? 1 : 0;
+            $param{has_itemset_actions} = scalar(@$plugin_actions) > 0 ? 1 : 0;
         } elsif ($type eq 'category') {
             $param{nav_categories} = 1;
             $param{"tab_" . ($app->param('tab') || 'details')} = 1;
