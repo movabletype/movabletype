@@ -15,8 +15,21 @@ function setDirty () { dirty = true; }
 function clearDirty () { dirty = false; }
 
 function checkDirty () {
-    if (dirty)
-        return "<MT_TRANS phrase="You have unsaved changes to your entry that will be lost.">";
+    var text = document.getElementById('text').value;
+    var orig_text = document.getElementById('orig_text').value;
+    var text_more = document.getElementById('text_more').value;
+    var orig_text_more = document.getElementById('orig_text_more').value;
+    var excerpt = document.getElementById('excerpt').value;
+    var orig_excerpt = document.getElementById('orig_excerpt').value;
+    var keywords = document.getElementById('keywords').value;
+    var orig_keywords = document.getElementById('orig_keywords').value;
+    var tags = document.getElementById('tags').value;
+    var orig_tags = document.getElementById('orig_tags').value;
+    if (dirty) {
+        if ((text != orig_text) || (text_more != orig_text_more) || (excerpt != orig_excerpt) || (keywords != orig_keywords) | (tags != orig_tags)) { 
+            return "<MT_TRANS phrase="You have unsaved changes to your entry that will be lost.">"; 
+        }
+    }
 }
 
 TC.attachWindowEvent('beforeunload', checkDirty);
@@ -394,6 +407,12 @@ function doValidateNotifyRecips(f) {
 <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
 <input type="hidden" name="basename" value="<TMPL_VAR NAME=BASENAME ESCAPE=HTML>" />
 </TMPL_UNLESS>
+
+<input type="hidden" id="orig_text" name="orig_text" value="<TMPL_VAR NAME=TEXT ESCAPE=HTML>" />
+<input type="hidden" id="orig_text_more" name="orig_text_more" value="<TMPL_VAR NAME=TEXT_MORE ESCAPE=HTML>" />
+<input type="hidden" id="orig_excerpt" name="orig_excerpt" value="<TMPL_VAR NAME=EXCERPT ESCAPE=HTML>" />
+<input type="hidden" id="orig_keywords" name="orig_keywords" value="<TMPL_VAR NAME=KEYWORDS ESCAPE=HTML>" />
+<input type="hidden" id="orig_tags" name="orig_tags" value="<TMPL_VAR NAME=TAGS ESCAPE=HTML>" />
 
 <TMPL_IF NAME=POSITION_BUTTONS_TOP>
 <TMPL_INCLUDE NAME=entry_actions.tmpl>
