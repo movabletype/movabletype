@@ -92,8 +92,8 @@ __PACKAGE__->install_properties({
 sub set_defaults {
     my $blog = shift;
 
-    $blog->days_on_index(7);
-    $blog->entries_on_index(0);
+    $blog->days_on_index(0);
+    $blog->entries_on_index(10);
     $blog->words_in_excerpt(40);
     $blog->sort_order_posts('descend');
     $blog->language(MT->config('DefaultLanguage'));
