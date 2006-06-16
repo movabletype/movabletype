@@ -435,8 +435,6 @@ sub find_config {
 sub read_config {
     my $mt = shift;
     my ($param) = @_;
-    return 1 if $mt->{cfg};
-    return $mt->{cfg} = $MT::ConfigMgr::cfg if $MT::ConfigMgr::cfg;
 
     my $cfg_file = $mt->find_config($param);
     return $mt->trans_error("Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?") unless $cfg_file;

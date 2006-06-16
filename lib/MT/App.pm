@@ -133,7 +133,6 @@ sub print {
 
 my $TransparentProxyIPs = 0;
 
-
 sub handler ($$) {
     my $class = shift;
     my($r) = @_;
@@ -149,8 +148,7 @@ sub handler ($$) {
         or die $class->errstr;
 
     MT->set_instance($app);
-    $app->init_request(%params)
-        unless $app->{init_request}; # same params as call to "new"
+    $app->init_request(%params);
 
     my $cfg = $app->config;
     if (my @extra = $r->dir_config('MTSetVar')) {
@@ -162,6 +160,13 @@ sub handler ($$) {
 
     $app->run;
     return Apache::Constants::OK();
+}
+
+sub new {
+    my $pkg = shift;
+    my $app = $pkg->SUPER::new(@_);
+    $app->{init_request} = 0;
+    $app;
 }
 
 sub init {
@@ -190,9 +195,9 @@ sub init_request {
     my $app = shift;
     my %param = @_;
 
-    if (!$app->{cfg}) {
-        $app->read_config(\%param) or return;
-    }
+    return if $app->{init_request};
+
+    $app->read_config(\%param) or return;
 
     # @req_vars: members of the app object which are request-specific
     # and are cleared at the beginning of each request.
@@ -734,14 +739,9 @@ sub takedown {
     my $driver = $MT::Object::DRIVER;
     $driver->clear_cache if $driver;
 
-    if (my $r = $app->request) {
-        $r->finish;
-    }
-    delete $app->{cfg};
-    undef $MT::ConfigMgr::cfg;
+    $app->request->finish;
     delete $app->{request};
     delete $app->{cookies};
-    delete $app->{init_request};
 }
 
 sub l10n_filter { $_[0]->translate_templatized($_[1]) }
