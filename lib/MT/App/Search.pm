@@ -49,13 +49,9 @@ sub init_request{
         $app->param('IncludeBlogs', $blog_id) if $blog_id;
     }
 
-    my $type = $q->param('Type') || '';
-
-    if ($type ne 'tag') {
-        ## Check whether IP address has searched in the last
-        ## minute which is still progressing. If so, block it.
-        return unless $app->throttle_control();
-    }
+    ## Check whether IP address has searched in the last
+    ## minute which is still progressing. If so, block it.
+    return unless $app->throttle_control();
 
     my %no_override = map { $_ => 1 } split /\s*,\s*/, $cfg->NoOverride;
 
@@ -127,6 +123,11 @@ sub init_request{
 
 sub throttle_control {
     my $app = shift;
+
+    my $type = $app->param('Type') || '';
+
+    # Don't throttle tag listings
+    return if $type eq 'tag';
 
     my $ip = $app->remote_ip;
     my $whitelist = $app->config('SearchThrottleIPWhitelist');
@@ -248,11 +249,11 @@ sub execute {
 
     if (!$include || ($include && !%$include)) {
         $include = { $blog->id => 1 };
-    }else{
+    } else {
         my $self_blog_id = $app->param('blog_id');
         if ($self_blog_id) {
             $include = { $blog->id => $self_blog_id };
-        }else{
+        } else {
             $include = { $blog->id => 1 };
         }
     }
