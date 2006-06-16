@@ -1,3 +1,4 @@
+index\.html\..*
 ^MT.*\.zip
 ^MT.*\.gz
 \bCVS\b
