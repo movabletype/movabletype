@@ -3300,7 +3300,8 @@ sub CMSSaveFilter_blog {
             && $app->param('site_url') !~ m.^https?://.);
     return $eh->error(MT->translate("Archive URL must be an absolute URL."))
         if ($app->param('cfg_screen') eq 'cfg_archives'
-            && $app->param('archive_url') !~ m.^https?://.);
+            && $app->param('archive_url') !~ m.^https?://.
+            && $app->param('enable_archive_paths'));
     require MT::Blog;
     return 1;
 }
