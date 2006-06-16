@@ -51,7 +51,9 @@ sub init_request{
 
     ## Check whether IP address has searched in the last
     ## minute which is still progressing. If so, block it.
-    return unless $app->throttle_control();
+    return $app->error($app->translate(
+        "You are currently performing a search. Please wait " .
+        "until your search is completed.")) unless $app->throttle_control();
 
     my %no_override = map { $_ => 1 } split /\s*,\s*/, $cfg->NoOverride;
 
@@ -148,9 +150,7 @@ sub throttle_control {
         if ($DB) {
             if (my $time = $db{$ip}) {
                 if ($time > time - $app->config('ThrottleSeconds')) {
-                    return $app->error($app->translate(
-                        "You are currently performing a search. Please wait " .
-                        "until your search is completed."));
+                    return 0;
                 }
             }
             $db{$ip} = time;
@@ -169,7 +169,8 @@ sub takedown {
         my $file = File::Spec->catfile($app->config('TempDir'),
                                        'mt-throttle.db');
         if (tie my %db, 'DB_File', $file) {
-            delete $db{$app->remote_ip};
+            my $time = $db{$app->remote_ip};
+            delete $db{$app->remote_ip} if ($time && $time < (time - $app->config('ThrottleSeconds')));
             untie %db;
         }
     }
@@ -178,6 +179,8 @@ sub takedown {
 
 sub execute {
     my $app = shift;
+    return $app->error($app->errstr) if $app->errstr;
+
     my @results;
     if ($app->{searchparam}{RegexSearch}) {
         eval { m/$app->{search_string}/ };
