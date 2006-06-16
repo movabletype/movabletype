@@ -28,7 +28,7 @@ sub send {
     my $mgr = MT::ConfigMgr->instance;
     my $xfer = $mgr->MailTransfer;
 
-    my $enc = $mgr->PublishCharset || 'iso-8859-1';
+    my $enc = $mgr->PublishCharset;
     my $mail_enc = uc ($mgr->MailEncoding || $enc);
 
 
