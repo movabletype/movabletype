@@ -16,7 +16,10 @@ use Locale::Maketext;
 sub language_name {
     my $tag = $_[0]->language_tag;
     require I18N::LangTags::List;
-    I18N::LangTags::List::name($tag);
+    my $name = I18N::LangTags::List::name($tag);
+    # Just call any en_XX "English" instead of "Xxx English"
+    $name =~ s/\w+\s+English/English/;
+    return $name;
 }
 
 sub encoding { 'iso-8859-1' }   ## Latin-1
