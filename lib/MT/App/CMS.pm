@@ -8621,8 +8621,10 @@ sub search_replace {
     }
     if ($is_limited) {
         @cols = $q->param('search_cols');
+        my %search_api_cols = map {$_=>1} @{$search_api->{$type}{search_cols}};
         if (@cols && ($cols[0] =~ /,/)) {
             @cols = split /,/, $cols[0];
+            @cols = grep { $search_api_cols{$_} } @cols;
         }
     } else {
         @cols = @{$search_api->{$type}->{search_cols}};
