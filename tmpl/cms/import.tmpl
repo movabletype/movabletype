@@ -1,40 +1,17 @@
 <TMPL_INCLUDE NAME="header.tmpl">
 
-<script type="text/javascript">
-<!--
-function tabToggle(selectedTab) {
-	var tabs = new Array('import','export');
-	
-	for (var i = 0; i < tabs.length; i++) {
-		var tabObject = getByID(tabs[i] + '-tab');
-		var contentObject = getByID(tabs[i] + '-content');
-		
-		if (tabObject && contentObject) {
-			if (tabs[i] == selectedTab) {
-				tabObject.className = 'yah';
-				contentObject.style.display = 'block';
-			} else {
-				tabObject.className = 'default';
-				contentObject.style.display = 'none';
-			}
-		}
-	}
-}
-//-->
-</script>
-
 <h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Import / Export"></h2>
 
 <p class="page-desc"><MT_TRANS phrase="Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy."></p>
 
 <div class="tabs">
 <ul>
-<li class="yah" id="import-tab"><a href="#" onclick="tabToggle('import')"><MT_TRANS phrase="Import Entries"></a></li>
-<li id="export-tab"><a href="#" onclick="tabToggle('export')"><MT_TRANS phrase="Export Entries"></a></li>
+<li class="yah" id="import-tab"><a href="#" onclick="tabToggle('import',Array('import','export'))"><MT_TRANS phrase="Import Entries"></a></li>
+<li id="export-tab"><a href="#" onclick="tabToggle('export',Array('import','export'))"><MT_TRANS phrase="Export Entries"></a></li>
 </ul>
 </div>
 
-<div id="import-content">
+<div id="import-panel">
 
 
 <form method="post" enctype="multipart/form-data" action="<TMPL_VAR NAME=SCRIPT_URL>">
@@ -42,24 +19,14 @@ function tabToggle(selectedTab) {
 <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
 <input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
 
-<script type="text/javascript">
-function togglediv(divlabel,on) {
-    var div = document.getElementById(divlabel);
-    if (on) {        
-        document.getElementById('setpassworddiv').style.display= "";
-    } else {
-        document.getElementById('setpassworddiv').style.display= "none";
-    }
-}
-</script>
 <fieldset style="margin-top: 0px;">
 <TMPL_IF NAME=IS_ADMINISTRATOR>
 
 <div class="setting">
 <div class="label"><label><MT_TRANS phrase="Authorship of imported entries:"></label></div>
 <div class="field">
-<p><input type="radio" id="import_as_me-on" name="import_as_me" value="1" onclick="togglediv('setpassworddiv',false);" checked="checked"> <label for="import_as_me"><MT_TRANS phrase="Import as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a></p>
-<p><input type="radio" id="import_as_me-off" name="import_as_me" value="0" onclick="togglediv('setpassworddiv',true);"> <label for="setpassword"><MT_TRANS phrase="Preserve original author"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help">?</a>
+<p><input type="radio" id="import_as_me-on" name="import_as_me" value="1" onclick="hide('setpassworddiv');" checked="checked"> <label for="import_as_me"><MT_TRANS phrase="Import as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help">?</a></p>
+<p><input type="radio" id="import_as_me-off" name="import_as_me" value="0" onclick="show('setpassworddiv');"> <label for="setpassword"><MT_TRANS phrase="Preserve original author"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help">?</a>
 </p>
 
 <div id="setpassworddiv" style="display:none;">
@@ -164,7 +131,7 @@ function togglediv(divlabel,on) {
 </form>
 
 </div>
-<div id="export-content" style="display: none;">
+<div id="export-panel" style="display: none;">
 
 <p class="page-desc"><MT_TRANS phrase="_USAGE_EXPORT_1"></p> 
 
