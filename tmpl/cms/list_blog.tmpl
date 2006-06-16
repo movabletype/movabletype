@@ -198,7 +198,12 @@
 </div>
 
 <TMPL_ELSE>
-<MT_TRANS phrase="You currently have no blogs.  Please see your system administrator for access.">
+<div class="message">
+<MT_TRANS phrase="You currently have no blogs.">
+<TMPL_UNLESS NAME=IS_ADMINISTRATOR>
+<MT_TRANS phrase="Please see your system administrator for access.">
+</TMPL_UNLESS>
+</div>
 </TMPL_IF>
 
 </div>
