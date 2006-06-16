@@ -270,12 +270,15 @@ function initTags() {
 TC.attachLoadEvent( init );
 
 function highlightSwitch(selection) {
+    var descriptionObject = getByID('publish-status');
     var highlightObject = getByID('created-on-manual-wrapper');
     if (highlightObject) {
         if (selection.value == 4) {
             highlightObject.className = 'created_on_highlight';
+            descriptionObject.innerHTML = '<MT_TRANS phrase="Publish On">';
         } else {
             highlightObject.className = 'default';
+            descriptionObject.innerHTML = '<MT_TRANS phrase="Entry Date">';
         }
     }
     return false;
@@ -408,24 +411,50 @@ function doValidateNotifyRecips(f) {
 <div><input name="title" id="title" tabindex="1" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" maxlength="255" <TMPL_IF NAME=DISP_PREFS_SHOW_BASENAME>onchange="rebasename(this)"</TMPL_IF> /></div>
 </div>
 
-<div id="status-field">
 <TMPL_IF NAME=DISP_PREFS_BASIC>
+<div id="status-area">
+
+<div id="status-field">
 <div class="field-header">
 <label for="status"><MT_TRANS phrase="Status"></label>
 <a href="#" onclick="return openManual('entries', 'status');return false;" class="help">?</a>
 </div>
 <div>
-<select name="status" id="status" tabindex="2">
+<select name="status" id="status" tabindex="3" onchange="highlightSwitch(this)">
 <option value="1"<TMPL_IF NAME="STATUS_DRAFT"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Unpublished"></option>
 <option value="2"<TMPL_IF NAME="STATUS_PUBLISH"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Published"></option>
+<TMPL_IF NAME="NEW_OBJECT">
 <option value="4"<TMPL_IF NAME="STATUS_FUTURE"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Scheduled"></option>
-</select>
-<TMPL_UNLESS NAME=NEW_OBJECT>
-<span class="tip"><TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML></span>
+<TMPL_ELSE>
+<TMPL_UNLESS NAME="STATUS_PUBLISH">
+<option value="4"<TMPL_IF NAME="STATUS_FUTURE"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Scheduled"></option>
 </TMPL_UNLESS>
+</TMPL_IF>
+</select>
 </div>
+</div>
+
+<div id="basic-publish-field">
+<div class="field-header">
+<TMPL_IF NAME="STATUS_FUTURE">
+<label id="publish-status"><MT_TRANS phrase="Publish On"></label>
+<TMPL_ELSE>
+<label id="publish-status"><MT_TRANS phrase="Entry Date"></label>
+</TMPL_IF>
+<a href="#" onclick="return openManual('entries', 'date')" class="help">?</a>
+</div>
+<div<TMPL_IF NAME="STATUS_FUTURE"> class="created_on_highlight"</TMPL_IF> id="created-on-manual-wrapper">
+<input name="created_on_manual" id="created_on_manual" tabindex="4" value="<TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML>" />
+</div>
+
+</div>
+
+</div>
+<div style="clear:both;"></div>
+
 <TMPL_ELSE>
 <TMPL_IF NAME=DISP_PREFS_SHOW_CATEGORY>
+<div id="category-field">
 <div class="field-header">
 <label for="category_id"><MT_TRANS phrase="Category"></label>
 <a href="#" onclick="return openManual('entries', 'entry_categories')" class="help">?</a>
@@ -455,14 +484,14 @@ function doValidateNotifyRecips(f) {
 </TMPL_IF></TMPL_LOOP>
 </li>
 </ul>
+</div>
+</div>
 </TMPL_IF>
 
 </div>
-</div>
 </TMPL_IF>
 </TMPL_IF>
 
-</div>
 </div>
 
 <div id="body-box">
@@ -498,7 +527,7 @@ with (document) {
 </div>
 </div>
 <div class="textarea-wrapper">
-<textarea onkeypress="mtShortCuts(event)" name="text" id="text" tabindex="3" cols="72" rows="<TMPL_IF NAME=DISP_PREFS_HEIGHT_BODY>15<TMPL_ELSE><TMPL_IF NAME=DISP_PREFS_SHOW_EXTENDED>10<TMPL_ELSE>20</TMPL_IF></TMPL_IF>" style="height: <TMPL_IF NAME=DISP_PREFS_HEIGHT_BODY><TMPL_VAR NAME=DISP_PREFS_HEIGHT_BODY><TMPL_ELSE><TMPL_IF NAME=DISP_PREFS_SHOW_EXTENDED>130<TMPL_ELSE>194</TMPL_IF></TMPL_IF>px" onchange="setDirty()"><TMPL_VAR NAME=TEXT ESCAPE=HTML></textarea>
+<textarea onkeypress="mtShortCuts(event)" name="text" id="text" tabindex="<TMPL_IF NAME=DISP_PREFS_BASIC>2<TMPL_ELSE>3</TMPL_IF>" cols="72" rows="<TMPL_IF NAME=DISP_PREFS_HEIGHT_BODY>15<TMPL_ELSE><TMPL_IF NAME=DISP_PREFS_SHOW_EXTENDED>10<TMPL_ELSE>20</TMPL_IF></TMPL_IF>" style="height: <TMPL_IF NAME=DISP_PREFS_HEIGHT_BODY><TMPL_VAR NAME=DISP_PREFS_HEIGHT_BODY><TMPL_ELSE><TMPL_IF NAME=DISP_PREFS_SHOW_EXTENDED>130<TMPL_ELSE>194</TMPL_IF></TMPL_IF>px" onchange="setDirty()"><TMPL_VAR NAME=TEXT ESCAPE=HTML></textarea>
 </div>
 <input type="hidden" name="text_height" id="text_height" value="<TMPL_IF NAME=DISP_PREFS_HEIGHT_BODY><TMPL_VAR NAME=DISP_PREFS_HEIGHT_BODY><TMPL_ELSE><TMPL_IF NAME=DISP_PREFS_SHOW_EXTENDED>130<TMPL_ELSE>194</TMPL_IF></TMPL_IF>" />
 </div>
@@ -599,7 +628,13 @@ with (document) {
 <select name="status" id="status" tabindex="8" onchange="highlightSwitch(this)">
 <option value="1"<TMPL_IF NAME="STATUS_DRAFT"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Unpublished"></option>
 <option value="2"<TMPL_IF NAME="STATUS_PUBLISH"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Published"></option>
+<TMPL_IF NAME="NEW_OBJECT">
 <option value="4"<TMPL_IF NAME="STATUS_FUTURE"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Scheduled"></option>
+<TMPL_ELSE>
+<TMPL_UNLESS NAME="STATUS_PUBLISH">
+<option value="4"<TMPL_IF NAME="STATUS_FUTURE"> selected="selected"</TMPL_IF>><MT_TRANS phrase="Scheduled"></option>
+</TMPL_UNLESS>
+</TMPL_IF>
 </select>
 </div>
 
