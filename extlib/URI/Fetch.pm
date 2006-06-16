@@ -1,4 +1,4 @@
-# $Id: Fetch.pm 1864 2005-08-05 06:09:48Z btrott $
+# $Id: Fetch.pm 1918 2006-02-24 21:18:37Z btrott $
 
 package URI::Fetch;
 use strict;
@@ -9,7 +9,7 @@ use Carp qw( croak );
 use URI;
 use URI::Fetch::Response;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 our $HAS_ZLIB;
 BEGIN {
@@ -35,6 +35,7 @@ sub fetch {
     my $p_cache_grep = delete $param{CacheEntryGrep};
     my $freeze       = delete $param{Freeze};
     my $thaw         = delete $param{Thaw};
+    my $force        = delete $param{ForceResponse};
     croak("Unknown parameters: " . join(", ", keys %param))
         if %param;
 
@@ -98,7 +99,8 @@ sub fetch {
         $fetch->last_modified($ref->{LastModified});
         return $fetch;
     } elsif (!$res->is_success) {
-        return $class->error($res->message);
+        return $force ? $fetch : $class->error($res->message);
+        
     } else {
         $fetch->status(URI_OK);
     }
@@ -193,19 +195,30 @@ I<URI::Fetch> can only do so much for you in this regard, but it gives
 you the tools to be a well-written client.
 
 The response from I<fetch> gives you the raw HTTP response code, along with
-special handling of 2 codes:
+special handling of 4 codes:
 
 =over 4
 
-=item * 304 (Moved Permanently)
+=item * 200 (OK)
 
-Signals that a page/feed has moved permanently, and that your database
-of feeds should be updated to reflect the new URI.
+Signals that the content of a page/feed was retrieved
+successfully.
+
+=item * 301 (Moved Permanently)
+
+Signals that a page/feed has moved permanently, and that
+your database of feeds should be updated to reflect the new
+URI.
+
+=item * 304 (Not Modified)
+
+Signals that a page/feed has not changed since it was last
+fetched.
 
 =item * 410 (Gone)
 
-Signals that a page is gone and will never be coming back, so you should
-stop trying to fetch it.
+Signals that a page/feed is gone and will never be coming back,
+so you should stop trying to fetch it.
 
 =back
 
@@ -318,6 +331,15 @@ deserialize the scalar into a data structure.
 
 By default, I<Storable> will be used for freezing and thawing the cached
 data structure.
+
+=item * ForceResponse
+
+Optional. A boolean that indicates a I<URI::Fetch::Response>
+should be returned regardless of the HTTP status. By
+default C<undef> is returned when a response is not a
+"success" (200 codes) or one of the recognized HTTP status
+codes listed above. The HTTP status message can then be retreived 
+using the C<errstr> method on the class.
 
 =back
 
