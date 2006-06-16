@@ -150,10 +150,8 @@ clean:
 	-rm lib/MT.pm mt-config.cgi-original mt-check.cgi $(latin1_modules) $(local_js)
 	-rm lib/MT/ConfigMgr.pm
 	-rm php/mt.php
-	-rm -rf mt-static/docs
 	-rm -rf `ls tmpl/cms/*.tmpl.pre | sed s/\.pre//`
 	-rm -rf tmpl/cms/admin_essential_links_$(BUILD_LANGUAGE).tmpl
 	-rm -rf index.html
 	-rm MANIFEST
-	$(MAKE) clean -C docs-en_US
 
