@@ -565,11 +565,9 @@ sub static_path {
             $path = File::Spec->catfile($app->{mt_dir}, "..", "images", "poweredgif");
             $static_path = "../" if -f $path;
         }
-    
+    }
 
     $static_path;
 }
 
-
 1;
-__END__
