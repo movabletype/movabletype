@@ -52,26 +52,87 @@ HelpBaseURI = '<TMPL_VAR NAME=HELP_URL>';
 </div>
 </div>
 
+<script type="text/javascript">
+function action_menu_change(menu) {
+	if (menu.options[menu.selectedIndex].value == 'list') {
+		if (menu.selectedIndex == 6) {
+			menu.form._type.value = 'notification';
+		} else {
+			menu.form._type.value = 'template';
+		}
+	} else if (menu.options[menu.selectedIndex].value == 'view') {
+		if ((menu.selectedIndex >= 8) && (menu.selectedIndex <= 10)) {
+			menu.form._type.value = 'template';
+			if (menu.selectedIndex == 8) {
+				menu.form.type.value = 'index';
+			} else if (menu.selectedIndex == 9) {
+				menu.form.type.value = 'archive';
+			} else {
+				menu.form.type.value = 'module';
+			}
+		} else {
+			menu.form._type.value = 'entry';
+		}
+	} else {
+		menu.form._type.value = '';
+		menu.form.type.value = '';
+	}
+}
+</script>    
 <div id="topnav-blogs">
-<TMPL_IF NAME=TOP_BLOG_LOOP>
-<form class="inline">
-
-<MT_TRANS phrase="Go to:">
-<select name="blog_id" onchange="if(this.value!='')window.location.href=this.value;">
-<TMPL_UNLESS NAME=BLOG_ID>
-<option value=""><MT_TRANS phrase="Select a Weblog..."></option>
-</TMPL_UNLESS>
-<TMPL_LOOP NAME=TOP_BLOG_LOOP>
-    <option value="<TMPL_VAR NAME=MT_URL>?__mode=menu&amp;blog_id=<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>
-</TMPL_LOOP>
-</select>
-</form>
-<TMPL_ELSE>
-<TMPL_IF NAME=IS_ADMINISTRATOR>
-<MT_TRANS phrase="Weblogs:">
-<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=system_list_blogs"><MT_TRANS phrase="System-wide listing"></a>
-</TMPL_IF>
-</TMPL_IF>
+    <TMPL_IF NAME=TOP_BLOG_LOOP>
+        <TMPL_UNLESS NAME=IS_ADMINISTRATOR>
+            <form method="get" class="inline">
+                <MT_TRANS phrase="Go to:">
+                <select name="blog_id" onchange="if(this.value!='')window.location.href=this.value;">
+                    <TMPL_UNLESS NAME=BLOG_ID><option value="" selected="selected"><MT_TRANS phrase="Select a blog"></option></TMPL_UNLESS>
+                    <TMPL_LOOP NAME=TOP_BLOG_LOOP>
+                        <option value="<TMPL_VAR NAME=MT_URL>?__mode=menu&amp;blog_id=<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>
+                    </TMPL_LOOP>
+                </select>
+            </form>
+            <TMPL_ELSE>
+        <form method="get" action="<TMPL_VAR NAME=MT_URL>" class="inline">
+            <MT_TRANS phrase="Go to:">
+            <select name="blog_id">
+                <TMPL_LOOP NAME=TOP_BLOG_LOOP>
+                    <option value="<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>
+                </TMPL_LOOP>
+            </select>
+            <input type="hidden" name="_type" value="" />
+            <input type="hidden" name="type" value="" />
+            <select name="__mode" onchange="action_menu_change(this);">
+                <option value="menu" selected="selected"><MT_TRANS phrase="Menu"></option>
+                <option value="view"><MT_TRANS phrase="New Entry"></option>
+                <option value="list_entries"><MT_TRANS phrase="Entries"></option>
+                <option value="list_comments"><MT_TRANS phrase="Comments"></option>
+                <option value="list_commenters"><MT_TRANS phrase="Commenters"></option>
+                <option value="list_pings"><MT_TRANS phrase="TrackBacks"></option>
+                <option value="list"><MT_TRANS phrase="Notifications"></option>
+                <option value="list"><MT_TRANS phrase="Templates"></option>
+                <option value="view"><MT_TRANS phrase="New Index Template"></option>
+                <option value="view"><MT_TRANS phrase="New Archive Template"></option>
+                <option value="view"><MT_TRANS phrase="New Template Module"></option>
+                <option value="list_cat"><MT_TRANS phrase="Categories"></option>
+                <option value="list_tags"><MT_TRANS phrase="Tags"></option>
+                <option value="cfg_prefs"><MT_TRANS phrase="Settings: General"></option>
+                <option value="cfg_entries"><MT_TRANS phrase="Settings: Defaults"></option>
+                <option value="cfg_feedback"><MT_TRANS phrase="Settings: Feedback"></option>
+                <option value="cfg_archives"><MT_TRANS phrase="Settings: Publishing"></option>
+                <option value="cfg_plugins"><MT_TRANS phrase="Settings: Plugins"></option>
+                <option value="search_replace"><MT_TRANS phrase="Search &amp; Replace"></option>
+                <option value="view_log"><MT_TRANS phrase="Activity Log"></option>
+                <option value="start_import"><MT_TRANS phrase="Import/Export"></option>
+            </select>
+            <input type="submit" value="<MT_TRANS phrase="Go">" />
+        </form>
+    </TMPL_UNLESS>
+    <TMPL_ELSE>
+        <TMPL_IF NAME=IS_ADMINISTRATOR>
+            <MT_TRANS phrase="Go to:">
+            <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=system_list_blogs"><MT_TRANS phrase="System-wide listing"></a>
+        </TMPL_IF>
+    </TMPL_IF>
 </div>
 
 </TMPL_IF>
