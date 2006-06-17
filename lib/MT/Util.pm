@@ -528,7 +528,7 @@ sub remove_html {
 sub iso_dirify {
     my $s = $_[0];
     my $sep;
-    if ($_[1] && ($_[1] ne '1')) {
+    if ((defined $_[1]) && ($_[1] ne '1')) {
         $sep = $_[1];
     } else {
         $sep = '_';
@@ -545,7 +545,7 @@ sub iso_dirify {
 sub utf8_dirify {
     my $s = $_[0];
     my $sep;
-    if ($_[1] && ($_[1] ne '1')) {
+    if ((defined $_[1]) && ($_[1] ne '1')) {
         $sep = $_[1];
     } else {
         $sep = '_';

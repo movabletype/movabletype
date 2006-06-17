@@ -349,6 +349,7 @@ sub _fltr_remove_html {
 }
 sub _fltr_dirify {
     my ($str, $val, $ctx) = @_;
+    return $str if (defined $val) && ($val eq '0');
     MT::Util::dirify($str, $val);
 }
 sub _fltr_sanitize {
