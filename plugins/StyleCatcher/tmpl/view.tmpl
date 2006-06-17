@@ -395,13 +395,13 @@
 
 <TMPL_IF NAME=BLOG_LOOP>
 
-         <p><MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href='http://www.sixapart.com/movabletype/styles'>Movable Type styles</a> page.">
+         <p><MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the "><a href='http://www.sixapart.com/movabletype/styles'><MT_TRANS phrase="Movable Type styles"></a><MT_TRANS phrase=" page.">
          <TMPL_IF NAME=CONFIG_LINK><MT_TRANS phrase=" To change the location of your local theme repository, "><a href="<TMPL_VAR NAME=CONFIG_LINK>"><MT_TRANS phrase="click here."></a></TMPL_IF></p>
 
            <script type="text/javascript">
            if(navigator.userAgent.indexOf("Firefox")!=-1){
            var versionindex=navigator.userAgent.indexOf("Firefox")+8
-              document.writeln("<p><MT_TRANS phrase="Install <a href='http://greasemonkey.mozdev.org/'>GreaseMonkey</a> "> <a href='<TMPL_VAR NAME=SCRIPT_URL>?__mode=gm<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>;file=stylecatcher.user.js'><MT_TRANS phrase="StyleCatcher user script."></a></p>");
+              document.writeln("<p><MT_TRANS phrase="Install"> <a href='http://greasemonkey.mozdev.org/'><MT_TRANS phrase="GreaseMonkey"></a> <a href='<TMPL_VAR NAME=SCRIPT_URL>?__mode=gm<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>;file=stylecatcher.user.js'><MT_TRANS phrase="StyleCatcher user script."></a></p>");
            }
            </script>
 
@@ -410,7 +410,7 @@
               <input class="repo-url" style="width:350px;" name="url" id="repo-url" value="<TMPL_VAR NAME=LAST_THEME_URL>" />
               <input type="button" id="find-button" value="<MT_TRANS phrase="Find Styles">" onclick="getStyles()" />
            </form>
-            <p><MT_TRANS phrase="<strong>NOTE:</strong> It will take a moment for themes to populate once you click 'Find Style'."></p> 
+            <p><strong><MT_TRANS phrase="NOTE:"></strong> <MT_TRANS phrase="It will take a moment for themes to populate once you click 'Find Style'."></p> 
             <p id="status-message" class="message" style="display: none"></p>
             
             <div id="template-picker">
