@@ -222,6 +222,9 @@ sub configure {
             } else {
                 $cfg->DataSource($param{dbpath}) if $param{dbpath};
             }
+            if ($dbtype eq 'sqlite2') {
+                $cfg->UseSQLite2(1);
+            }
             # test loading of object driver with these parameters...
             require MT::ObjectDriver;
             my $od = MT::ObjectDriver->new($driver);
@@ -346,7 +349,7 @@ sub seed {
         } elsif ($dbtype eq 'sqlite2') {
             $param{use_sqlite} = 1;
             $param{use_sqlite2} = 1;
-            $param{object_driver} = 'DBI::sqlite2';
+            $param{object_driver} = 'DBI::sqlite';
             $param{database_name} = $param{dbpath};
         } elsif ($dbtype eq 'mysql') {
             $param{use_dbms} = 1;
@@ -424,7 +427,7 @@ sub cgipath {
     # these work for Apache... need to test for IIS...
     my $host = $ENV{HTTP_HOST};
     my $port = $ENV{SERVER_PORT};
-    my $uri = $ENV{REQUEST_URI};
+    my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
     $uri =~ s/mt-wizard(\.cgi)?.*$//;
 
     my $cgipath = '';
