@@ -29,6 +29,14 @@ function smarty_block_MTGoogleSearch($args, $content, &$ctx, &$repeat) {
         } else {
             $query = $args['query'];
         }
+
+        global $mt;
+        $lang = $mt->config['DefaultLanguage'];
+        if ($lang == 'ja') {
+            $charset = $mt->config['PublishCharset'];
+            $query = mb_convert_encoding($query, 'utf-8', $charset);
+        }
+
         $max = $args['results'] ? $args['results'] : 10;
         $lang = $args['lang'];
         if (!isset($lang)){
@@ -47,7 +55,6 @@ function smarty_block_MTGoogleSearch($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        global $mt;
         $wsdl = new SOAP_WSDL($mt->config['PHPDir'].DIRECTORY_SEPARATOR."plugins".DIRECTORY_SEPARATOR."GoogleSearch.wsdl");
         $proxy = $wsdl->getProxy();
         $result = $proxy->doGoogleSearch(

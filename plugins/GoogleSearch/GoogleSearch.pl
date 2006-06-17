@@ -96,6 +96,10 @@ sub _hdlr_google_search {
             'You used [_1] without a query.', '<MTGoogleSearch>' ));
     }
 
+    my $enc = MT->instance->config('PublishCharset') || undef;
+    $query = MT::I18N::encode_text($query, $enc, 'utf-8');
+    require Encode;
+    Encode::_utf8_on($query);
     my $key = $plugin->google_api_key
         or return $ctx->error($plugin->translate(
             'You need a Google API key to use [_1]', '<MTGoogleSearch>' ));
@@ -115,6 +119,7 @@ sub _hdlr_google_search {
         *SOAP::XMLSchema1999::Deserializer::as_boolean =
         *SOAP::XMLSchemaSOAP1_1::Deserializer::as_boolean =
         \&SOAP::XMLSchema2001::Deserializer::as_boolean;
+
     }
     my $result;
     eval {
@@ -128,7 +133,6 @@ sub _hdlr_google_search {
     my $tokens = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $res = '';
-
     for my $rec (@{ $result->{resultElements} }) {
         $ctx->stash('google_result', $rec);
         my $out = $builder->build($ctx, $tokens, $cond);
@@ -146,9 +150,10 @@ sub _hdlr_google_search_result {
            '<$MTGoogleSearchResult$>' ));
     my $prop = $args->{property} || 'title';
     my $enc = MT->instance->config('PublishCharset') || undef;
+
     exists $res->{$prop}
         or return $ctx->error($plugin->translate(
             'You used a non-existent property from the result structure.' ));
-    MT::I18N::encode_text($res->{$prop}, 'UTF-8', $enc) || '';
+    MT::I18N::encode_text(MT::I18N::encode_text($res->{$prop}, $enc, 'utf-8'), 'utf-8', $enc) || '';
 }
 
