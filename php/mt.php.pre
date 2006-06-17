@@ -301,7 +301,7 @@ class MT {
         $path = $this->request;
 
         // Apache request
-        if (!$path && $_SERVER['REQUEST_URI'] && (preg_match('/Apache/', $_SERVER['SERVER_SOFTWARE']))) {
+        if (!$path && $_SERVER['REQUEST_URI']) {
             $path = $_SERVER['REQUEST_URI'];
             // strip off any query string...
             $path = preg_replace('/\?.*/', '', $path);
@@ -310,7 +310,7 @@ class MT {
         }
 
         // IIS request by error document...
-        if (!$path && (preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE']))) {
+        if (preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE'])) {
             // assume 404 handler
             if (preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
                 $path = $matches[1];
