@@ -99,7 +99,9 @@ sub init_tmpl {
     $tmpl->param(mmscript_url      => $app->{mmscript_url});
     $tmpl->param(script_url        => File::Spec->catdir($apppath,'widget-manager.cgi'));
     $tmpl->param(blog_url          => $app->blog->site_url);
-
+    if (my $lang_id = $app->current_language) {
+        $tmpl->param(local_lang_id => lc $lang_id) if $lang_id !~ m/^en/i;
+    }
     $tmpl->param(page_titles       => [ reverse @{ $app->{breadcrumbs} } ]);
     $tmpl->param(nav_widgetmanager => 1);
 
