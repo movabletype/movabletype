@@ -7,7 +7,7 @@
 
 <TMPL_IF NAME=MISSING_DB>
 <h4 class="error-message">
-<MT_TRANS phrase="One of the following Perl packages are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the "Retry" button.">
+<MT_TRANS phrase="One of the following Perl packages are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
 </h4>
 
 <h4><MT_TRANS phrase="Missing Database Packages"></h4>
@@ -15,7 +15,7 @@
 </TMPL_IF>
 <TMPL_IF NAME=OPTIONAL>
 <h4 class="message">
-<MT_TRANS phrase="The following Perl packages are missing from your installation. These packages are not required to install Movable Type.  They will enhance the features available to Movable Type.  If you want to continue without installing these packages, click the "Continue" button to configure your database.  Otherwise, click the "Retry" button to re-test for these packages.">
+<MT_TRANS phrase="The following Perl packages are missing from your installation. These packages are not required to install Movable Type.  They will enhance the features available to Movable Type.  If you want to continue without installing these packages, click the 'Continue' button to configure your database.  Otherwise, click the 'Retry' button to re-test for these packages.">
 </h4>
 
 <h4><MT_TRANS phrase="Missing Optional Packages"></h4>
@@ -23,7 +23,7 @@
 </TMPL_IF>
 <TMPL_IF NAME=REQUIRED>
 <h4 class="error-message">
-<MT_TRANS phrase="The following Perl packages are required for Movable Type to run properly. Once you have met these requirements, click the "Retry" button to re-test for these packages.">
+<MT_TRANS phrase="The following Perl packages are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages.">
 </h4>
 
 <h4><MT_TRANS phrase="Missing Required Packages"></h4>
@@ -33,16 +33,18 @@
 <ul>
 <TMPL_LOOP NAME=PACKAGE_LOOP>
 <li><TMPL_VAR NAME=DESCRIPTION><br />
-<TMPL_IF NAME=VERSION><strong><MT_TRANS phrase="Minimal version requirement": <TMPL_VAR NAME=VERSION>.</strong></TMPL_IF> <a href="http://movabletype.org/docs/install/<TMPL_VAR NAME=NAME ESCAPE=URL>.html"><MT_TRANS phrase="Installation instructions."></a></li>
+<TMPL_IF NAME=VERSION>
+<strong><MT_TRANS phrase="Minimal version requirement:"><TMPL_VAR NAME=VERSION></strong><br />
+</TMPL_IF> 
+<a href="http://movabletype.org/docs/install/<TMPL_VAR NAME=NAME ESCAPE=URL>.html"><MT_TRANS phrase="Installation instructions."></a></li>
 </TMPL_LOOP>
 </ul>
 
-<TMPL_IF NAME=SUCCESS>
 <p>
+<TMPL_IF NAME=SUCCESS>
 <MT_TRANS phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations.">
-</p>
 </TMPL_IF>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=pre_start'" />
+<p><input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=pre_start'" />
 <TMPL_IF NAME=MISSING_DB_OR_OPTIONAL>
 <TMPL_IF NAME=MISSING_DB>
    <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start'" />
@@ -58,6 +60,7 @@
 <TMPL_IF NAME=SUCCESS>
    <input type="button" value="<MT_TRANS phrase="Continue">" onclick="document.location.href='?__mode=configure'" />
 </TMPL_IF>
+</p>
 
 </form>
 <TMPL_INCLUDE NAME=footer.tmpl>

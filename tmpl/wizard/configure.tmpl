@@ -34,9 +34,15 @@ function db_select(sel) {
 
 <h3><MT_TRANS phrase="Step"> 2 of 3 &mdash; <MT_TRANS phrase="Database Configuration"></h3>
 
+<TMPL_IF NAME=SUCCESS>
+<P>
+<MT_TRANS phrase="Your database configuration is complete. Click 'Continue' below to configure your mail settings.">
+</P>
+<TMPL_ELSE>
 <p>
 <MT_TRANS phrase="Please enter the parameters necessary for connecting to your database.If your database type is not listed in the dropdown below, you may be missing the Perl module necessary to connect to your database.  If this is the case, please check your installation and click <a href="?__mode=configure">here</a> to re-test your installation.">
 </p>
+</TMPL_IF>
 
 
 <TMPL_IF NAME=CONNECT_ERROR>
@@ -48,80 +54,116 @@ function db_select(sel) {
 </TMPL_IF>
 
 
-<p>
+<fieldset>
+
+<div class="setting">
+<div class="label">
 <label for="dbtype"><MT_TRANS phrase="Database"></label><br />
+</div>
+<div class="field">
 <select id="dbtype" name="dbtype" onchange="db_select(this)">
 <option value=""><MT_TRANS phrase="Select One..."></option>
 <TMPL_LOOP NAME=DB_LOOP>
 <option value="<TMPL_VAR NAME=ID>" <TMPL_IF NAME=SELECTED>selected="selected"</TMPL_IF>><TMPL_VAR NAME=NAME></option>
 </TMPL_LOOP>
 </select>
-</p>
+</div>
+</div>
 
 <div id="params" <TMPL_UNLESS NAME=DBTYPE>style="display: none"</TMPL_UNLESS>>
 
 <!-- database file path -->
 
 <div id="path"<TMPL_UNLESS NAME=PATH_REQUIRED> style="display: none"</TMPL_UNLESS>>
-<p>
+
+<div class="setting">
+<div class="label">
 <label for="dbpath"><MT_TRANS phrase="Database Path"></label><br />
+</div>
+<div class="field">
 <input type="text" id="dbpath" name="dbpath" value="<TMPL_IF NAME=DBPATH><TMPL_VAR NAME=DBPATH ESCAPE=HTML><TMPL_ELSE>./db</TMPL_IF>" /><br />
-<MT_TRANS phrase="The physical file path for your BerkeleyDB or SQLite database. "><TMPL_UNLESS NAME=DBPATH><MT_TRANS phrase="A default location of "./db" will store the database file(s) underneath your Movable Type directory."></TMPL_UNLESS>
-</p>
+<p><MT_TRANS phrase="The physical file path for your BerkeleyDB or SQLite database. "><TMPL_UNLESS NAME=DBPATH><MT_TRANS phrase="A default location of './db' will store the database file(s) underneath your Movable Type directory."></p></TMPL_UNLESS>
+</div>
+</div>
+
 </div>
 
 
 <!-- server configuration parameters -->
 
 <div id="server"<TMPL_IF NAME=PATH_REQUIRED> style="display: none"</TMPL_IF>>
-<p>
+
+<div class="setting">
+<div class="label">
 <label for="dbname"><MT_TRANS phrase="Database Name"></label><br />
-<input type="text" id="dbname" name="dbname" value="<TMPL_VAR NAME=DBNAME ESCAPE=HTML>" /><br />
-<MT_TRANS phrase="The name of your SQL database. If it doesn't already exist, we will attempt to create it for you.">
-</p>
-
-<p>
-<label for="dbserver"><MT_TRANS phrase="Database Server"></label><br />
-<input type="text" name="dbserver" value="<TMPL_IF NAME=DBSERVER><TMPL_VAR NAME=DBSERVER ESCAPE=HTML><TMPL_ELSE>localhost</TMPL_IF>" /><TMPL_UNLESS NAME=DBSERVER><MT_TRANS phrase="This is usually 'localhost'."></TMPL_UNLESS>
-</p>
-
-<p>
-<label for="dbport"><MT_TRANS phrase="Database Port"></label><br />
-<input type="text" name="dbport" value="<TMPL_VAR NAME=DBPORT ESCAPE=HTML>" /><br />
-<MT_TRANS phrase="This can usually be left blank.">
-</p>
-
-<p>
-<label for="dbsocket"><MT_TRANS phrase="Database Socket"></label><br />
-<input type="text" name="dbsocket" value="<TMPL_VAR NAME=DBSOCKET ESCAPE=HTML>" /><br />
-<MT_TRANS phrase="This can usually be left blank.">
-</p>
 </div>
-
+<div class="field">
+<input type="text" id="dbname" name="dbname" value="<TMPL_VAR NAME=DBNAME ESCAPE=HTML>" /><br />
+<p><MT_TRANS phrase="The name of your SQL database (this database must already exist)."></p>
+</div>
+</div>
 
 <!-- database login parameters -->
 
 <div id="login"<TMPL_UNLESS NAME=LOGIN_REQUIRED> style="display: none"</TMPL_UNLESS>>
-<p>
+
+
+<div class="setting">
+<div class="label">
 <label for="dbuser"><MT_TRANS phrase="Username"></label><br />
+</div>
+<div class="field">
 <input type="text" name="dbuser" value="<TMPL_VAR NAME=DBUSER ESCAPE=HTML>" /><br />
-<MT_TRANS phrase="The username to login to your SQL database.">
-</p>
+<p><MT_TRANS phrase="The username to login to your SQL database."></p>
+</div>
+</div>
 
-<p>
+<div class="setting">
+<div class="label">
 <label for="dbpass"><MT_TRANS phrase="Password"></label><br />
+</div>
+<div class="field">
 <input type="password" name="dbpass" value="<TMPL_VAR NAME=DBPASS ESCAPE=HTML>" /><br />
-<MT_TRANS phrase="The password to login to your SQL database.">
-</p>
+<p><MT_TRANS phrase="The password to login to your SQL database."></p>
+</div>
 </div>
 
 </div>
 
-<TMPL_IF NAME=SUCCESS>
-<P>
-<MT_TRANS phrase="Your database configuration is successfully.">
-</P>
-</TMPL_IF>
+
+<div class="setting">
+<div class="label">
+<label for="dbserver"><MT_TRANS phrase="Database Server"></label><br />
+</div>
+<div class="field">
+<input type="text" name="dbserver" value="<TMPL_IF NAME=DBSERVER><TMPL_VAR NAME=DBSERVER ESCAPE=HTML><TMPL_ELSE>localhost</TMPL_IF>" /><TMPL_UNLESS NAME=DBSERVER>
+<p><MT_TRANS phrase="This is usually 'localhost'."></p></TMPL_UNLESS>
+</div>
+</div>
+
+<div class="setting">
+<div class="label">
+<label for="dbport"><MT_TRANS phrase="Database Port"></label><br />
+</div>
+<div class="field">
+<input type="text" name="dbport" value="<TMPL_VAR NAME=DBPORT ESCAPE=HTML>" /><br />
+<p><MT_TRANS phrase="This can usually be left blank."></p>
+</div>
+</div>
+
+<div class="setting">
+<div class="label">
+<label for="dbsocket"><MT_TRANS phrase="Database Socket"></label><br />
+</div>
+<div class="field">
+<input type="text" name="dbsocket" value="<TMPL_VAR NAME=DBSOCKET ESCAPE=HTML>" /><br />
+<p><MT_TRANS phrase="This can usually be left blank."></p>
+</div>
+</div>
+
+</div>
+
+</div>
 
 
 <TMPL_UNLESS NAME=SUCCESS>
@@ -141,5 +183,6 @@ function db_select(sel) {
 </TMPL_IF>
 </div>
 
+</fieldset>
 </form>
 <TMPL_INCLUDE NAME=footer.tmpl>

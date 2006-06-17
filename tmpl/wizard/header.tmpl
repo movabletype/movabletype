@@ -5,8 +5,10 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Movable Type</title>
-<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css" />
-<script language="javascript" type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js"></script>
+
+<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" type="text/css" />
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>"></script>
+
 <script language="javascript" type="text/javascript">
 <!--
 function showByID(id) {

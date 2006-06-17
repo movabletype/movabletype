@@ -35,7 +35,7 @@ function mail_select(sel) {
 <h3><MT_TRANS phrase="Step"> 3 of 3 &mdash; <MT_TRANS phrase="Mail Configuration"></h3>
 
 <p>
-<MT_TRANS phrase="Please enter the parameters if you change default values">
+<MT_TRANS phrase="You can configure you mail settings from here, or you can complete the configuration wizard by clicking 'Continue'.">
 </p>
 
 
@@ -47,42 +47,64 @@ function mail_select(sel) {
 </TMPL_IF>
 </TMPL_IF>
 
+<fieldset>
 
 <!-- MailTransfer -->
-<p>
+<div class="setting">
+<div class="label">
 <label for="mail_transfer"><MT_TRANS phrase="MailTransfer"></label><br />
+</div>
+<div class="field">
 <select id="mail_transfer" name="mail_transfer" onchange="mail_select(this)">
 <option value=""><MT_TRANS phrase="Select One..."></option>
 <TMPL_LOOP NAME=MAIL_LOOP>
 <option value="<TMPL_VAR NAME=ID>" <TMPL_IF NAME=SELECTED>selected="selected"</TMPL_IF>><TMPL_VAR NAME=NAME></option>
 </TMPL_LOOP>
 </select>
-</p>
+</div>
+</div>
 
 <div id="params" <TMPL_UNLESS NAME=MAIL_TRANSFER>style="display: none"</TMPL_UNLESS>>
 <!-- SendMailPath -->
 <div id="sendmail_path" <TMPL_UNLESS NAME=USE_SENDMAIL>style="display: none"</TMPL_UNLESS>>
-<p>
+
+<div class="setting">
+<div class="label">
 <label for="sendmail_path"><MT_TRANS phrase="SendMailPath"></label><br />
+</div>
+<div class="field">
 <input type="text" id="sendmail_path" name="sendmail_path" value="<TMPL_IF NAME=SENDMAIL_PATH><TMPL_VAR NAME=SENDMAIL_PATH ESCAPE=HTML></TMPL_IF>" /><br />
-<MT_TRANS phrase="The physical file path for your sendmail.">
-</p>
+<p><MT_TRANS phrase="The physical file path for your sendmail."></p>
+</div>
+</div>
+
 </div>
 
 <!-- SMTPServer -->
 <div id="smtp_server" <TMPL_UNLESS NAME=USE_SMTP>style="display: none"</TMPL_UNLESS>>
-<p>
+
+<div class="setting">
+<div class="label">
 <label for="smtp_server"><MT_TRANS phrase="SMTP Server"></label><br />
+</div>
+<div class="field">
 <input type="text" id="smtp_server" name="smtp_server" value="<TMPL_IF NAME=SMTP_SERVER><TMPL_VAR NAME=SMTP_SERVER ESCAPE=HTML></TMPL_IF>" /><br />
-<MT_TRANS phrase="Address of your SMTP Server">
-</p>
+<p><MT_TRANS phrase="Address of your SMTP Server"></p>
+</div>
+</div>
+
 </div>
 
 <!-- Test Address -->
-<p>
+
+<div class="setting">
+<div class="label">
 <label for="test_mail_address"><MT_TRANS phrase="Mail address for test sending"></label><br />
+</div>
+<div class="field">
 <input type="text" id="test_mail_address" name="test_mail_address" value="<TMPL_IF NAME=TEST_MAIL_ADDRESS><TMPL_VAR NAME=TEST_MAIL_ADDRESS ESCAPE=HTML></TMPL_IF>" /><br />
-</p>
+</div>
+</div>
 
 </div>
 
@@ -92,23 +114,20 @@ function mail_select(sel) {
 </P>
 </TMPL_IF>
 
-
-<TMPL_UNLESS NAME=SUCCESS>
 <div id="goback" <TMPL_IF NAME=mail_transfer>style="display: none"</TMPL_IF>>
 <input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'" />
-</div>
-<div id="submit" <TMPL_UNLESS NAME=mail_transfer>style="display: none"</TMPL_UNLESS>>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'" />
-<input type="submit" value="<MT_TRANS phrase="Test Sending">" />
-</TMPL_UNLESS>
-<TMPL_IF NAME=SUCCESS>
-<div id="continue">
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'" />
-<input type="submit" value="<MT_TRANS phrase="Test Sending">" />
 <input type="submit" value="<MT_TRANS phrase="Continue">" name="continue" />
 </div>
-</TMPL_IF>
+
+<div id="submit" <TMPL_UNLESS NAME=mail_transfer>style="display: none"</TMPL_UNLESS>>
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'" />
+<input type="submit" value="<MT_TRANS phrase="Send Test Email">" />
+<input type="submit" value="<MT_TRANS phrase="Continue">" name="continue" />
 </div>
 
+
+
+
+</fieldset>
 </form>
 <TMPL_INCLUDE NAME=footer.tmpl>
