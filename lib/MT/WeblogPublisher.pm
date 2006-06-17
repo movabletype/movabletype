@@ -152,6 +152,7 @@ sub make_commenter_icon {
 sub rebuild_entry {
     my $mt = shift;
     my %param = @_;
+    MT->log("rebuild_entry called; args are " . join("; ", keys %param));
     my $entry = $param{Entry} or
         return $mt->error(MT->translate("Parameter '[_1]' is required",
             'Entry'));
@@ -201,7 +202,7 @@ sub rebuild_entry {
 
     if ($param{BuildDependencies}) {
         ## Rebuild previous and next entry archive pages.
-        if (my $prev = $entry->{__prev}) {
+        if (my $prev = $entry->{__previous}) {
             $mt->rebuild_entry( Entry => $prev ) or return;
 
             ## Rebuild the old previous and next entries, if we have some.
