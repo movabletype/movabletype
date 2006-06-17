@@ -8,7 +8,7 @@ package MT::Template::Context;
 use strict;
 
 use MT::Util qw( start_end_day start_end_week 
-                 start_end_month week2ymd munge_comment archive_file_for
+                 start_end_month week2ymd archive_file_for
                  format_ts offset_time_list first_n_words dirify get_entry
                  encode_html encode_js remove_html wday_from_ts days_in
                  spam_protect encode_php encode_url decode_html encode_xml
@@ -2522,15 +2522,21 @@ sub _hdlr_comment_body {
         or return $ctx->_no_comment_error('MT' . $tag);
     my $blog = $ctx->stash('blog');
     my $t = defined $c->text ? $c->text : '';
-    $t = munge_comment($t, $blog)
-        unless exists $arg->{autolink} && !$arg->{autolink};
+    unless ($blog->allow_comment_html) {
+        $t = remove_html($t);
+    }
     $t = _fltr_sanitize($t, '1', $ctx);
     my $convert_breaks = exists $arg->{convert_breaks} ?
         $arg->{convert_breaks} :
         $blog->convert_paras_comments;
-    return $convert_breaks ?
+    $t = $convert_breaks ?
         MT->apply_text_filters($t, $blog->comment_text_filters, $ctx) :
         $t;
+    if (!(exists $arg->{autolink} && !$arg->{autolink}) &&
+        $blog->autolink_urls) {
+        $t =~ s!(^|\s)(https?://\S+)!$1<a href="$2">$2</a>!gs;
+    }
+    $t;
 }
 sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
 sub _hdlr_comment_prev_state { $_[0]->stash('comment_state') }
