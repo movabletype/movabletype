@@ -3,7 +3,7 @@
 # permission from www.sixapart.com.  For more information, consult your
 # Movable Type license.
 #
-# $Id: mt.php 29263 2006-05-19 06:52:05Z fyoshimatsu $
+# $Id$
 
 define('VERSION', '__PRODUCT_VERSION__');
 define('VERSION_ID', '__PRODUCT_VERSION_ID__');

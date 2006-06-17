@@ -114,7 +114,7 @@ class MTDatabase_mysql extends MTDatabaseBase {
             $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
         }
         if (isset($args['entry_id'])) {
-            $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['entry_id']).')';
+            $entry_filter = 'and entry_id = '.intval($args['entry_id']);
 
         }
         if (!isset($args['include_private'])) {
@@ -135,9 +135,9 @@ class MTDatabase_mysql extends MTDatabaseBase {
         }
         $sql = "
             select tag_id, tag_name, count(distinct entry_id) as tag_count
-              from mt_tag, mt_objecttag, mt_entry
-             where objecttag_tag_id = tag_id
-               and entry_id = objecttag_object_id and objecttag_object_datasource='entry'
+              from mt_tag join mt_objecttag on objecttag_tag_id = tag_id
+                          join mt_entry on entry_id = objecttag_object_id
+             where objecttag_object_datasource='entry'
                and entry_status = 2
                    $blog_filter
                    $tag_filter
