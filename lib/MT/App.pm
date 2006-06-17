@@ -1125,6 +1125,10 @@ sub static_path {
     } else {
         $spath .= '/' unless $spath =~ m!/$!;
     }
+    my $script_name = $app->config('AdminScript');
+    my $mt_url_sans_script = $app->mt_uri;
+    $mt_url_sans_script =~ s!(^/.+)${script_name}$!$1!ig;
+    $spath =  $mt_url_sans_script . $spath unless ($spath =~ m!^/!) || ($spath =~ m!^http!);
     $spath;
 }
 
