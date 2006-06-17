@@ -12,15 +12,42 @@ tag_inserts['<TMPL_VAR NAME=ID ESCAPE=JS>'] = "<TMPL_VAR NAME=CONTENT ESCAPE=JS>
 </TMPL_IF>
 
 var dirty = false;
+var fieldsToWatch = ['name', 'outfile', 'text', 'linked_file', 'build_dynamic', 'rebuild_me'];
+var fieldStorage = {};
+var dirty = false;
 function setDirty () { dirty = true; }
 function clearDirty () { dirty = false; }
-
-function checkDirty () {
-    if (dirty)
-        return "<MT_TRANS phrase="You have unsaved changes to your template that will be lost.">";
+function initDirty() {
+    for (var i = 0; i < fieldsToWatch.length; i++) {
+        var fld = fieldsToWatch[i];
+        var e = getByID(fld);
+        if (!e) continue;
+        if (e.type == "checkbox")
+            fieldStorage[fld] = e.checked;
+        else
+            fieldStorage[fld] = e.value;
+    }
+}
+function checkDirty() {
+    if (dirty) {
+        var really_dirty = false;
+        for (var i = 0; i < fieldsToWatch.length; i++) {
+            var fld = fieldsToWatch[i];
+            var e = getByID(fld);
+            if (!e) continue;
+            if (e.type == "checkbox")
+                really_dirty = e.checked != fieldStorage[fld];
+            else
+                really_dirty = e.value != fieldStorage[fld];
+            if (really_dirty) break;
+        }
+        if (really_dirty)
+            return '<MT_TRANS phrase="You have unsaved changes to your template that will be lost." escape="singlequotes">';
+    }
 }
 
 TC.attachWindowEvent('beforeunload', checkDirty);
+TC.attachLoadEvent( init );
 
 function insertSnippet(el) {
     var o = getByID('text');
@@ -50,6 +77,10 @@ function toggleAutoRebuild (t) {
 	}
 }
 
+function init()
+{
+    initDirty();
+}
 //-->
 </script>
 
