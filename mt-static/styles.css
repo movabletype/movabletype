@@ -2008,6 +2008,21 @@ a.spinner,
     #edit-entry #basic-publish-field       { width: 122px; float:right; }
     #edit-entry #basic-publish-field input { width: 114px; }
 
+    #basic-publish-field input#created_on_manual {
+        display: none;
+    }
+    #basic-publish-field span {
+        font-size: 12px;
+        font-weight: normal;
+        display: inline;
+    }
+    #basic-publish-field .created_on_highlight input#created_on_manual {
+        display: inline;
+    }
+    #basic-publish-field .created_on_highlight span {
+        display: none;
+    }
+
     #edit-entry #multiple_cats,
     #quickpost .multiple_cats {
         display: none;
