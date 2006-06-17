@@ -10,25 +10,34 @@
 <script type="text/javascript">
 <!--
 var tag_delim = '<TMPL_VAR NAME=AUTH_PREF_TAG_DELIM>';
+var fieldsToWatch = ['title', 'text', 'text_more', 'excerpt', 'keywords', 'tags'];
+var fieldStorage = {};
 var dirty = false;
 function setDirty () { dirty = true; }
 function clearDirty () { dirty = false; }
-
-function checkDirty () {
-    var text = document.getElementById('text').value;
-    var orig_text = document.getElementById('orig_text').value;
-    var text_more = document.getElementById('text_more').value;
-    var orig_text_more = document.getElementById('orig_text_more').value;
-    var excerpt = document.getElementById('excerpt').value;
-    var orig_excerpt = document.getElementById('orig_excerpt').value;
-    var keywords = document.getElementById('keywords').value;
-    var orig_keywords = document.getElementById('orig_keywords').value;
-    var tags = document.getElementById('tags').value;
-    var orig_tags = document.getElementById('orig_tags').value;
+function initDirty() {
+    for (var i = 0; i < fieldsToWatch.length; i++) {
+        var fld = fieldsToWatch[i];
+        var e = getByID(fld);
+        if (!e) continue;
+        fieldStorage[fld] = e.value;
+    }
+}
+function checkDirty() {
     if (dirty) {
-        if ((text != orig_text) || (text_more != orig_text_more) || (excerpt != orig_excerpt) || (keywords != orig_keywords) | (tags != orig_tags)) { 
-            return "<MT_TRANS phrase="You have unsaved changes to your entry that will be lost.">"; 
+        var really_dirty = false;
+        for (var i = 0; i < fieldsToWatch.length; i++) {
+            var fld = fieldsToWatch[i];
+            var e = getByID(fld);
+            if (!e) continue;
+            var orig_value = fieldStorage[fld];
+            if (e.value != orig_value) {
+                really_dirty = true;
+                break;
+            }
         }
+        if (really_dirty)
+            return '<MT_TRANS phrase="You have unsaved changes to your entry that will be lost." escape="singlequotes">'; 
     }
 }
 
@@ -240,6 +249,7 @@ function init()
         }
 </TMPL_IF>
     }
+    initDirty();
     entryFocus = new TC.Focus("edit-entry");
     <TMPL_IF NAME=DEFER_TAG_LOAD>deferredTagLoad();</TMPL_IF>
     <TMPL_IF NAME=TAGS_JS>initTags();</TMPL_IF>
@@ -408,12 +418,6 @@ function doValidateNotifyRecips(f) {
 <input type="hidden" name="basename" value="<TMPL_VAR NAME=BASENAME ESCAPE=HTML>" />
 </TMPL_UNLESS>
 
-<input type="hidden" id="orig_text" name="orig_text" value="<TMPL_VAR NAME=TEXT ESCAPE=HTML>" />
-<input type="hidden" id="orig_text_more" name="orig_text_more" value="<TMPL_VAR NAME=TEXT_MORE ESCAPE=HTML>" />
-<input type="hidden" id="orig_excerpt" name="orig_excerpt" value="<TMPL_VAR NAME=EXCERPT ESCAPE=HTML>" />
-<input type="hidden" id="orig_keywords" name="orig_keywords" value="<TMPL_VAR NAME=KEYWORDS ESCAPE=HTML>" />
-<input type="hidden" id="orig_tags" name="orig_tags" value="<TMPL_VAR NAME=TAGS ESCAPE=HTML>" />
-
 <TMPL_IF NAME=POSITION_BUTTONS_TOP>
 <TMPL_INCLUDE NAME=entry_actions.tmpl>
 </TMPL_IF>
@@ -427,7 +431,7 @@ function doValidateNotifyRecips(f) {
 <label for="title"><MT_TRANS phrase="Title"></label>
 <a href="#" onclick="return openManual('entries', 'entry_title')" class="help">?</a>
 </div>
-<div><input name="title" id="title" tabindex="1" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" maxlength="255" <TMPL_IF NAME=DISP_PREFS_SHOW_BASENAME>onchange="rebasename(this)"</TMPL_IF> /></div>
+<div><input name="title" id="title" tabindex="1" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" maxlength="255" onchange="setDirty()<TMPL_IF NAME=DISP_PREFS_SHOW_BASENAME>;rebasename(this)</TMPL_IF>" /></div>
 </div>
 
 <TMPL_IF NAME=DISP_PREFS_BASIC>
@@ -463,6 +467,7 @@ function doValidateNotifyRecips(f) {
 <a href="#" onclick="return openManual('entries', 'date')" class="help">?</a>
 </div>
 <div<TMPL_IF NAME="STATUS_FUTURE"> class="created_on_highlight"</TMPL_IF> id="created-on-manual-wrapper">
+<span><TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML></span>
 <input name="created_on_manual" id="created_on_manual" tabindex="4" value="<TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML>" />
 </div>
 
