@@ -615,8 +615,8 @@ class MT {
         $this->log[] = $msg;
     }
 
-    function translate($str) {
-        return $this->translate_templatized_item(array(undef, $str));
+    function translate($str, $params = null) {
+        return translate_phrase($str, $params);
     }
 
     function translate_templatized_item($str) {
