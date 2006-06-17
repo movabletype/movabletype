@@ -97,7 +97,7 @@
 <h2>はじめてお使いになる方へ</h2>
 <p>Movable Typeをご利用いただくためには、セットアップを完了しておく必要があります。Movable Typeのセットアップを、以下の手順でおこなってください。</p>
 <ol>
-<li><a href="http://www.sixapart.jp/movabletype/docs/3.2/01_installation_and_upgrade/">インストールマニュアル</a>を読み、Movable Typeの稼働に必要な環境を整備します。</li>
+<li><a href="__HELP_URL____PRODUCT_VERSION__/01_installation_and_upgrade/">インストールマニュアル</a>を読み、Movable Typeの稼働に必要な環境を整備します。</li>
 <li>環境設定ファイル (mt-config.cgi) を作成します。環境設定ファイルは、mt-config.cgi-originalファイルをコピーするか、リネームして作成してください。</li>
 <li>作成したファイルを、環境設定ファイルの&quot;CGIPath&quot;のパスにおきます。</li>
 <li><a rel=:nofollow" href="mt-check.cgi">Movable Type システム・チェック (mt-check.cgi)</a> を実行して、稼働に必要な環境が整っていることを確認します。</li>

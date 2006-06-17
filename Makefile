@@ -106,10 +106,13 @@ $(latin1_modules): %-iso-8859-1.pm: %.pm
 #
 #docs: check docs-$(BUILD_LANGUAGE) build-language-stamp
 
-index.html: check index.html.$(BUILD_LANGUAGE) build-language-stamp
-	sed -e 's!__HELP_URL__!$(HELP_URL)!g' $< > $@
-	cp index.html.en_US $@
-	-cp index.html.$(BUILD_LANGUAGE) $@
+index.html: check build-language-stamp
+	cp index.html.en_US $@.pre
+	-cp index.html.$(BUILD_LANGUAGE) $@.pre
+	sed -e 's!__HELP_URL__!$(HELP_URL)!g' \
+	    -e 's!__PRODUCT_VERSION__!$(PRODUCT_VERSION)!g' \
+	index.html.pre > index.html
+	rm $@.pre
 
 ##### Other useful targets
 
