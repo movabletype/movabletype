@@ -12,7 +12,7 @@ MT::Module::Build - Movable Type build functionality via Module::Build
   $build->preprocess();
   $build->create_build_script();
 
-  # tools/mt-build.PL
+  # build/mt-build.PL
   use MT::Module::Build;
   my $build = MT::Module::Build->current;
   for my $file ( @ARGV ) {
@@ -64,9 +64,9 @@ sub preprocess {
 
     # Read-in the configuration variables for substitution.
     my $config = read_conf(
-        'tools/mt-dists/default.mk',
-        "tools/mt-dists/$language.mk",
-        "tools/mt-dists/$package.mk",
+        'build/mt-dists/default.mk',
+        "build/mt-dists/$language.mk",
+        "build/mt-dists/$package.mk",
     );
     # Add the build arguments to the config.
     $config->{BUILD_LANGUAGE} = $language;
@@ -82,9 +82,9 @@ sub preprocess {
     for my $lang ( $self->languages() ) {
         # Add language specific files but skip the default: English.
         if( $lang !~ /^en_?/ ) {
-            push @{ $files->{'tools/mt-build.PL'} }, "lib/MT/L10N/$lang-iso-8859-1.pm"
+            push @{ $files->{'build/mt-build.PL'} }, "lib/MT/L10N/$lang-iso-8859-1.pm"
                 unless $lang eq 'ja';
-            push @{ $files->{'tools/mt-build.PL'} }, "mt-static/mt_$lang.js";
+            push @{ $files->{'build/mt-build.PL'} }, "mt-static/mt_$lang.js";
         }
     }
     $self->PL_files( $files );
