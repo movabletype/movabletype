@@ -10,6 +10,12 @@ require_once("mtdb_base.php");
 
 class MTDatabase_postgres extends MTDatabaseBase {
     var $vendor = 'postgres';
+
+    function unserialize($data) {
+        $data = preg_replace('/\\\\([0-9]{3})/e', 'chr(\1)', $data);
+        return parent::unserialize($data);
+    }
+
     function apply_limit_sql($sql, $limit, $offset = 0) {
         $limit = intval($limit);
         $offset = intval($offset);
