@@ -152,7 +152,6 @@ sub make_commenter_icon {
 sub rebuild_entry {
     my $mt = shift;
     my %param = @_;
-    MT->log("rebuild_entry called; args are " . join("; ", keys %param));
     my $entry = $param{Entry} or
         return $mt->error(MT->translate("Parameter '[_1]' is required",
             'Entry'));
