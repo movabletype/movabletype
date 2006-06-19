@@ -1,4 +1,4 @@
-# WidgetManager plugin for Movable Type
+# Widget Manager plugin for Movable Type
 # Author: Byrne Reese, Six Apart (http://www.sixapart.com)
 # Released under the Artistic License
 #
@@ -6,17 +6,12 @@
 
 package WidgetManager::App;
 
-use vars qw( $DEBUG );
 use strict;
-@WidgetManager::App::ISA = qw( MT::App );
-
 use Data::Dumper;
-
+use vars qw( $DEBUG );
 use MT::App;
-
+@WidgetManager::App::ISA = qw( MT::App );
 use WidgetManager::Util;
-
-# TODO Only install widgets ONCE - check for existence before creation.
 
 sub init {
     my $app = shift;
@@ -228,15 +223,15 @@ sub edit {
       }
       }
 
-      # Find non-conflicting name for new WidgetManager
-      if ($widgetmanager eq 'New WidgetManager') { 
-          $widgetmanager = $app->plugin->translate('WidgetManager');
+      # Find non-conflicting name for new Widget Manager
+      if ($widgetmanager eq 'New Widget Manager') { 
+          $widgetmanager = $app->plugin->translate('Widget Manager');
           if (grep(/^\Q$widgetmanager\E$/, @names)) {
               my $i = 1;
-              while (grep(/^\Q$widgetmanager-$i\E$/, @names)) {
+              while (grep(/^\Q$widgetmanager $i\E$/, @names)) {
                   $i++;
               }
-              $widgetmanager = "$widgetmanager-$i";
+              $widgetmanager = "$widgetmanager $i";
           }
       }
 
