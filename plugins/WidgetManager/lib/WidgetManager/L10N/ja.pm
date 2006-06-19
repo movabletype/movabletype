@@ -11,6 +11,7 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+"Maintain your weblog's widget content using a handy drag and drop interface." => 'ブログに表示されるWidgetをドラッグアンドドロップで簡単に管理できるようにします。',
 'Widget Manager' => 'Widget Manager',
 'Rearrange Items' => 'アイテムの再設定',
 'To add a Widget Manager to your templates, use the following syntax:' => 'WidgetManagerをテンプレートに追加するときは次の構文で指定します。',
