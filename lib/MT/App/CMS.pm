@@ -2903,7 +2903,8 @@ sub edit_object {
             $obj->preferred_language : $app->config('DefaultLanguage');
         $preferred = 'en-us' if (lc($preferred) eq 'en_us');
         for my $tag (keys %$langs) {
-            my $row = { l_tag => $tag, l_name => $app->translate($langs->{$tag}) };
+            (my $name = $langs->{$tag}) =~ s/\w+ English/English/;
+            my $row = { l_tag => $tag, l_name => $app->translate($name) };
             $row->{l_selected} = 1 if $preferred eq $tag;
             push @data, $row;
         }
@@ -8062,7 +8063,8 @@ sub edit_profile {
             $this_author->preferred_language : $app->config('DefaultLanguage');
         $preferred = 'en-us' if (lc($preferred) eq 'en_us');
         for my $tag (keys %$langs) {
-            my $row = { l_tag => $tag, l_name => $app->translate($langs->{$tag}) };
+            (my $name = $langs->{$tag}) =~ s/\w+ English/English/;
+            my $row = { l_tag => $tag, l_name => $app->translate($name) };
             $row->{l_selected} = 1 if $preferred eq $tag;
             push @data, $row;
         }
