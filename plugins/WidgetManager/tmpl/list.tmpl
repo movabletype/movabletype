@@ -1,6 +1,24 @@
 <TMPL_INCLUDE NAME="header.tmpl">
 
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/js/app.js"></script>
+<script type="text/javascript">
+<!--
+var tableSelect;
+function init()
+{
+<TMPL_UNLESS NAME=IS_POWER_EDIT>
+    // setup
+    tableSelect = new TC.TableSelect( "selector" );
+    tableSelect.rowSelect = true;
+</TMPL_UNLESS>
+
+    setFilterCol(<TMPL_IF NAME=FILTER>'<TMPL_VAR NAME=FILTER>'<TMPL_ELSE>'none'</TMPL_IF>);<TMPL_IF NAME=FILTER>
+    setFilterVal('<TMPL_VAR NAME=FILTER_VAL>');
+</TMPL_IF>
+}
+TC.attachLoadEvent( init );
+// -->
+</script>
 
 <h2><MT_TRANS phrase="Widget Manager">: <span class="title-highlight"><MT_TRANS phrase="Rearrange Items"></span></h2>
 
