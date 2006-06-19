@@ -16,8 +16,17 @@
 
 <TMPL_ELSE>
 <p>
-TBD:starting message here...
+<MT_TRANS phrase="The Movable Type Configuration Wizard will help you set up your Perl installation, your database connection, and your mail settings. Click on 'Begin' below to get started.">
 </p>
+
+<div id="static_webpath_config">
+<MT_TRANS phrase="It appears that you need to set your static webpath. This is where static files such as stylesheets and images will reside. Please enter where your static webpath is below.">
+
+<p><MT_TRANS phrase="Where is your static webpath?">
+<input type="text" name="set_static_uri_to" value="<TMPL_VAR STATIC_URI>">
+<input type="hidden" name="__mode" value="set_webpath"></p>
+</div>
+
 
 <script type="text/javascript">
    document.write("<input type=\"submit\" value=\"<MT_TRANS phrase="Begin">\" />");
