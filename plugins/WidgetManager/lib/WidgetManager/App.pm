@@ -290,6 +290,10 @@ sub list {
 
       my @widgetmanagers;
       my @keys = sort keys %$modulesets;
+
+      my $offset = $app->param('offset') || 0;
+      $tmpl->param( list_end => $offset + scalar @keys );
+
       foreach my $key (@keys) {
           my $names = join(', ',map { $avail{$_} } split(',',$modulesets->{$key}));
           push @widgetmanagers,{
