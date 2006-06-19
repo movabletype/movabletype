@@ -62,7 +62,7 @@ function cancelCreateMode (id) {
 }
 
 function setMoveMode (id) {
-    getByID('category-' + id).style.backgroundColor = '#FFE5BF'; // set background color of selected row to orange
+    getByID('category-' + id).style.backgroundColor = '#FFB13E'; // set background color of selected row to orange
 	getByID('move-radio-' + id).style.display = 'none'; // hide radio button of selected row
 	if (document.all) {
 		getByID('move-col-head').style.display = 'block'; // show header of radio button column
@@ -181,7 +181,7 @@ TC.attachLoadEvent( init );
 
 <td><TMPL_IF NAME=CATEGORY_ENTRYCOUNT><TMPL_IF NAME=CAN_EDIT_ENTRIES><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;filter=category_id&amp;filter_val=<TMPL_VAR NAME=CATEGORY_ID>"></TMPL_IF></TMPL_IF><MT_TRANS phrase="[quant,_1,entry,entries]" params="<TMPL_VAR NAME=CATEGORY_ENTRYCOUNT>"><TMPL_IF NAME=CATEGORY_ENTRYCOUNT><TMPL_IF NAME=CAN_EDIT_ENTRIES></a></TMPL_IF></TMPL_IF></td>
 
-<td class="status-disabled"><TMPL_IF NAME=HAS_TB><TMPL_IF NAME=CATEGORY_TBCOUNT><TMPL_IF NAME=CAN_EDIT_ENTRIES><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;filter=category_id&amp;filter_val=<TMPL_VAR NAME=CATEGORY_ID>"></TMPL_IF></TMPL_IF><MT_TRANS phrase="[quant,_1,TrackBack]" params="<TMPL_VAR NAME=CATEGORY_TBCOUNT>"><TMPL_IF NAME=CATEGORY_TBCOUNT><TMPL_IF NAME=CAN_EDIT_ENTRIES></a></TMPL_IF></TMPL_IF><TMPL_ELSE><img alt="<MT_TRANS phrase="Create Subcategory">" src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" width="9" height="9" /></TMPL_IF></td>
+<td class="status-disabled"><TMPL_IF NAME=HAS_TB><TMPL_IF NAME=CATEGORY_TBCOUNT><TMPL_IF NAME=CAN_EDIT_ENTRIES><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;filter=category_id&amp;filter_val=<TMPL_VAR NAME=CATEGORY_ID>"></TMPL_IF></TMPL_IF><MT_TRANS phrase="[quant,_1,TrackBack]" params="<TMPL_VAR NAME=CATEGORY_TBCOUNT>"><TMPL_IF NAME=CATEGORY_TBCOUNT><TMPL_IF NAME=CAN_EDIT_ENTRIES></a></TMPL_IF></TMPL_IF><TMPL_ELSE></TMPL_IF></td>
 
 </tr>
 
