@@ -134,8 +134,8 @@ class MTDatabase_mysql extends MTDatabaseBase {
         }
         $sql = "
             select tag_id, tag_name, count(distinct entry_id) as tag_count
-              from mt_tag join mt_objecttag on objecttag_tag_id = tag_id
-                          join mt_entry on entry_id = objecttag_object_id
+              from mt_tag left join mt_objecttag on objecttag_tag_id = tag_id
+                          left join mt_entry on entry_id = objecttag_object_id
              where objecttag_object_datasource='entry'
                and entry_status = 2
                    $blog_filter
