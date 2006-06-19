@@ -285,7 +285,7 @@
                 if (data.themes)
                     loadThemes(data.themes, cat);
 
-                btn.value = "Find Style";
+                btn.value = "<MT_TRANS phrase="Find Style">";
                 btn.disabled = false;
             }
 
@@ -395,13 +395,13 @@
 
 <TMPL_IF NAME=BLOG_LOOP>
 
-         <p><MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the "><a href='http://www.sixapart.com/movabletype/styles'><MT_TRANS phrase="Movable Type styles"></a><MT_TRANS phrase=" page.">
-         <TMPL_IF NAME=CONFIG_LINK><MT_TRANS phrase=" To change the location of your local theme repository, "><a href="<TMPL_VAR NAME=CONFIG_LINK>"><MT_TRANS phrase="click here."></a></TMPL_IF></p>
+         <p><MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href='http://www.sixapart.com/movabletype/styles'>Movable Type styles</a> page.">
+         <TMPL_IF NAME=CONFIG_LINK><MT_TRANS phrase=" To change the location of your local theme repository, <a href='<TMPL_VAR NAME=CONFIG_LINK>'> click here."></a></TMPL_IF></p>
 
            <script type="text/javascript">
            if(navigator.userAgent.indexOf("Firefox")!=-1){
            var versionindex=navigator.userAgent.indexOf("Firefox")+8
-              document.writeln("<p><MT_TRANS phrase="Install"> <a href='http://greasemonkey.mozdev.org/'><MT_TRANS phrase="GreaseMonkey"></a> <a href='<TMPL_VAR NAME=SCRIPT_URL>?__mode=gm<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>;file=stylecatcher.user.js'><MT_TRANS phrase="StyleCatcher user script."></a></p>");
+              document.writeln("<p><MT_TRANS phrase="Install <a href='http://greasemonkey.mozdev.org/'>GreaseMonkey</a>"> <a href='<TMPL_VAR NAME=SCRIPT_URL>?__mode=gm<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>;file=stylecatcher.user.js'><MT_TRANS phrase="StyleCatcher user script."></a></p>");
            }
            </script>
 
