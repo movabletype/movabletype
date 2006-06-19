@@ -3,46 +3,6 @@
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/js/app.js"></script>
 <script type="text/javascript">
 <!--
-function enableFilterButton() {
-    getByID("filter-button").style.display = "inline";
-}
-function toggleFilter() {
-    var filterActive = getByID("filter-active");
-    if (filterActive.style.display == "none") {
-        filterActive.style.display = "block";
-        getByID("filter-select").style.display = "none";
-    } else {
-        filterActive.style.display = "none";
-        getByID("filter-select").style.display = "block";
-    }
-}
-
-function setFilterCol(choice) {
-    var sel = getByID('filter-select');
-    if (!sel) return;
-    sel.className = "filter-" + choice;
-    if (choice == 'none')
-        getByID('filter-mode').selectedIndex = 0;
-    else {
-        getByID('filter-mode').selectedIndex = 1;
-        var fld = getByID('filter-col');
-        if (choice == 'status')
-            fld.selectedIndex = 0;
-        else if (choice == 'author_id')
-            fld.selectedIndex = 1;
-        else if (choice == 'exacttag')
-            fld.selectedIndex = 2;
-        else if (choice == 'normalizedtag')
-            fld.selectedIndex = 3;
-        else if (choice == 'category_id')
-            fld.selectedIndex = 4;
-        col_span = getByID("filter-text-col");
-        if (fld.selectedIndex > -1 && col_span)
-            col_span.innerHTML = '<strong>' +
-                fld.options[fld.selectedIndex].text + '</strong>';
-    }
-}
-
 var tableSelect;
 function init()
 {
