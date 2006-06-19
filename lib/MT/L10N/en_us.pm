@@ -170,6 +170,8 @@ the address you provided is correct and belongs to you.',
     'Remove Tags...' => 'Remove Tags...',
     'Tags to add to selected entries' => 'Tags to add to selected entries',
     'Tags to remove from selected entries' => 'Tags to remove from selected entries',
+    'Manage my Widgets' => 'Manage my Widgets',
+    'Select a Design using StyleCatcher' => 'Select a Design using StyleCatcher',
 );
 
 1;
