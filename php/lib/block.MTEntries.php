@@ -3,7 +3,17 @@ function smarty_block_MTEntries($args, $content, &$ctx, &$repeat) {
     $localvars = array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue');
     if (!isset($content)) {
         $ctx->localize($localvars);
-        if (count($args) && ($ctx->stash('entries')))
+        // If we have a set of entries that were set based on context,
+        // but the user has specified attributes that effectively
+        // break that context, clear the stashed entries so fetch_entries
+        // can reselect.
+        if ($ctx->stash('entries') &&
+            (isset($args['category']) || isset($args['categories']) ||
+             isset($args['tag']) || isset($args['tags']) ||
+             isset($args['author']) ||
+             isset($args['recently_commented_on']) ||
+             isset($args['include_subcategories']) ||
+             isset($args['days']) ))
             $ctx->__stash['entries'] = null;
         $counter = 0;
         $lastn = $args['lastn'];
@@ -37,8 +47,8 @@ function smarty_block_MTEntries($args, $content, &$ctx, &$repeat) {
         }
         $entries = $ctx->mt->db->fetch_entries($args);
         $ctx->stash('entries', $entries);
-        $ctx->stash('_entries_glue', $args['glue']);
     }
+    $ctx->stash('_entries_glue', $args['glue']);
     if (($lastn > count($entries)) || ($lastn == -1)) {
         $lastn = count($entries);
         $ctx->stash('_entries_lastn', $lastn);
