@@ -17,7 +17,7 @@
 
 <p>
 <TMPL_UNLESS NAME=CONFIG_CREATED>
-<MT_TRANS phrase="We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the 'Retry' button.'>
+<MT_TRANS phrase="We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the 'Retry' button.">
 <TMPL_ELSE>
 <MT_TRANS phrase="The above settings have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the 'Back' button below to reconfigure them." params="<TMPL_VAR NAME=CONFIG_FILE>">
 </TMPL_UNLESS>
