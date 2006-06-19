@@ -207,8 +207,10 @@ sub build_sql {
         foreach my $col (keys %{$args->{binary}}) {
             next unless $args->{binary}{$col};
             foreach my $wterm (@$w_terms) {
-                if ($wterm =~ m/$tbl\_$col/) {
-                    $wterm =~ s/\?/binary ?/g;
+                if ($wterm =~ m/^(\()?($tbl\_$col )/) {
+                    my $paren = $1 || '';
+                    my $column = $2;
+                    $wterm =~ s/^(\()?($tbl\_$col )/${paren}binary $column/;
                 }
             }
         }
