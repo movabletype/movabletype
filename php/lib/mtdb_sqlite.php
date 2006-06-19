@@ -14,6 +14,11 @@ class MTDatabase_sqlite extends MTDatabaseBase {
         parent::MTDatabaseBase($dbname);
     }
 
+    function unserialize($data) {
+        $data = stripslashes($data);  #SQLite uses addslashes for binary data
+        return parent::unserialize($data);
+    }
+
     function &convert_fieldname($array) {
         $converted = array();
         foreach ($array as $key => $value) {
