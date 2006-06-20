@@ -139,7 +139,7 @@ sub no_utf8 {
 
 sub _thaw_mt {
     my ($frozen) = @_;
-    return \{} unless substr($frozen, 0, 4) eq 'SERG';
+    return \{} unless $frozen && substr($frozen, 0, 4) eq 'SERG';
     my $n = unpack 'N', substr($frozen, 4, 4);
     if ($n == 0) {
         my $v = unpack 'N', substr($frozen, 8, 4);
