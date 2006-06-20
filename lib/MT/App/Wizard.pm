@@ -237,7 +237,12 @@ sub configure {
             $cfg->DBSocket($param{dbsocket}) if $param{dbsocket};
             $cfg->DBHost($param{dbserver}) if $param{dbserver};
             if ($dbtype eq 'sqlite' || $dbtype eq 'sqlite2') {
-                $cfg->Database($param{dbpath});
+                require File::Spec;
+                my $db_file = $param{dbpath};
+                if (!File::Spec->file_name_is_absolute($db_file)) {
+                    $db_file = File::Spec->catfile($app->{mt_dir}, $db_file);
+                }
+                $cfg->Database($db_file) if  $db_file;
             } else {
                 $cfg->DataSource($param{dbpath}) if $param{dbpath};
             }
