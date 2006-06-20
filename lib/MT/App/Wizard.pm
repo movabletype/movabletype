@@ -101,16 +101,33 @@ sub pre_start {
     }
 
     $param{cfg_exists} = $cfg_exists;
-    return$app->build_page("start.tmpl", \%param);
+    $param{valid_static_path} = 1 if $app->is_valid_static_path($app->static_path);
+    
+    return $app->build_page("start.tmpl", \%param);
 }
 
 sub config_keys {
-    return qw(dbname dbpath dbport dbserver dbsocket dbtype dbuser dbpass setnames mail_transfer sendmail_path smtp_server test_mail_address);
+    return qw(dbname dbpath dbport dbserver dbsocket dbtype dbuser dbpass setnames mail_transfer sendmail_path smtp_server test_mail_address set_static_uri_to);
 }
 
 sub start {
     my $app = shift;
     my $q = $app->param;
+
+    # test for static_path
+    my $static_path = $q->param('set_static_uri_to');
+    unless ($q->param('set_static_uri_to')) {
+        my %param = ('uri_invalid' => 1 );
+        return $app->build_page("start.tmpl", \%param);
+    }
+
+    $static_path = $app->cgipath.$static_path unless (($static_path =~ m/^\//) || ($static_path =~ m/^http/));
+    unless ($app->is_valid_static_path($static_path)) {
+        my %param = ('uri_invalid' => 1 );
+        return $app->build_page("start.tmpl", \%param);
+    }
+
+    $app->{cfg}->set('StaticWebPath', $static_path);
 
     # test for required packages...
     my ($needed) = $app->module_check(\@REQ);
@@ -156,6 +173,8 @@ sub configure {
         $param{$_} = $q->param($_) if $q->param($_);
     }
 
+    # set static web path
+    $app->{cfg}->set('StaticWebPath', $param{set_static_uri_to});
     if (my $dbtype = $param{dbtype}) {
         $param{"dbtype_$dbtype"} = 1;
         if ($dbtype eq 'bdb') {
@@ -260,6 +279,9 @@ sub optional {
     foreach ($app->config_keys) {
         $param{$_} = $q->param($_) if $q->param($_);
     }
+
+    # set static web path
+    $app->{cfg}->set('StaticWebPath', $param{set_static_uri_to});
 
     # discover sendmail
     use MT::ConfigMgr;
@@ -465,36 +487,42 @@ sub module_check {
 
 sub static_path {
     my $app = shift;
-    my $param = @_;
-    my $static_path;
+    my $static_path = '';
 
-    my $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "images", "powered.gif");
+    if ($app->{cfg}->StaticWebPath ne ''){
+        return $app->{cfg}->StaticWebPath;
+    }
+
+    my $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "styles.css");
     if (-f $path){
-        $static_path = "mt-static/";
-    }else{
-        $path = File::Spec->catfile($app->{mt_dir}, "images", "mt-logo.gif");
-        my $path = File::Spec->catfile($app->{mt_dir}, "images", "powered.gif");
-        if (!-f $path) {
-            $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "images", "powered.gif");
-            $static_path = "../mt-static/" if -f $path;
-            if (!-f $path) {
-                $path = File::Spec->catfile($app->{mt_dir}, "..", "mt-static", "images", "powered.gif");
-                $static_path = "../../mt-static/" if -f $path;
-                if (!-f $path) {
-                    $path = File::Spec->catfile($app->{mt_dir}, "..", "..", "mt-static", "images", "powered.gif");
-                    $static_path = "../../../mt-static/" if -f $path;
-                }
-            }
-        } else {
-            $static_path = $app->cgipath;
-        }
-        if (!-f $path) {
-            $path = File::Spec->catfile($app->{mt_dir}, "..", "images", "poweredgif");
-            $static_path = "../" if -f $path;
-        }
+        $static_path = $app->cgipath."mt-static/";
     }
 
     $static_path;
 }
 
+sub is_valid_static_path {
+    my $app = shift;
+    my ($static_uri) = @_;
+
+    my $path;
+    if ($static_uri =~ m/^http/i){
+        $path = $static_uri.'styles.css';
+    }elsif($static_uri =~ m/^\//){
+        my $host = $ENV{HTTP_HOST};
+        my $port = $ENV{SERVER_PORT};
+        $path = $port == 443 ? 'https' : 'http';
+        $path .= '://' . $host;
+        $path .= ($port == 443 || $port == 80) ? '' : ':' . $port;
+        $path .= $static_uri.'styles.css';
+    }else{
+        $path = $app->cgipath.$static_uri.'styles.css';
+    }
+
+    require LWP::UserAgent;
+    my $ua = LWP::UserAgent->new;
+    my $request = HTTP::Request->new(HEAD => $path);
+    my $response = $ua->request($request);
+    $response->is_success;
+}
 1;

@@ -1,4 +1,17 @@
 <TMPL_INCLUDE NAME=header.tmpl>
+<style>
+   .error-message {
+       font-family: Verdana, Arial, sans-serif;
+       font-size: x-small;
+       color: #666;
+       line-height: 13px;
+       font-weight: bold;
+       margin: 0 0 10px 0;
+       border: 1px #D44 solid;
+       background: #FEE;
+       padding: 10px;
+   }
+</style>
 
 <form method="post" action="mt-wizard.cgi">
 <input type="hidden" name="__mode" value="start" />
@@ -19,14 +32,22 @@
 <MT_TRANS phrase="The Movable Type Configuration Wizard will help you set up your Perl installation, your database connection, and your mail settings. Click on 'Begin' below to get started.">
 </p>
 
+<TMPL_IF NAME=URI_INVALID>
+<p>
+<h4 class="error-message"><MT_TRANS phrase="You will need to create this directory and copy the static files over to it"></h4>
+</p>
+</TMPL_IF>
+
+<TMPL_IF NAME=VALID_STATIC_PATH>
+<input type="hidden" name="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>" size=50>
+<TMPL_ELSE>
 <div id="static_webpath_config">
 <MT_TRANS phrase="It appears that you need to set your static webpath. This is where static files such as stylesheets and images will reside. Please enter where your static webpath is below.">
 
 <p><MT_TRANS phrase="Where is your static webpath?">
-<input type="text" name="set_static_uri_to" value="<TMPL_VAR STATIC_URI>">
-<input type="hidden" name="__mode" value="set_webpath"></p>
+<input type="text" name="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>" size=50>
 </div>
-
+</TMPL_IF>
 
 <script type="text/javascript">
    document.write("<input type=\"submit\" value=\"<MT_TRANS phrase="Begin">\" />");
