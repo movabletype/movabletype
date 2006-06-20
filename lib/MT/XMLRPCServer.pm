@@ -16,7 +16,9 @@ sub mt_new {
         $MT::XMLRPCServer::MT_DIR . '/mt.cfg';
     my $mt = MT->new( Config => $cfg )
         or die MT::XMLRPCServer::_fault(MT->errstr);
-    $main::server->serializer->encoding($mt->config('PublishCharset'));
+    #$main::server->serializer->encoding($mt->config('PublishCharset'));
+    # we need to be UTF-8 here no matter which PublishCharset
+    $main::server->serializer->encoding('UTF-8');
     $mt;
 }
 
@@ -74,7 +76,11 @@ BEGIN {
 }
 
 sub _fault {
-    SOAP::Fault->faultcode(1)->faultstring([SOAP::Data->type(string => $_[0])]);
+    my $mt = MT::XMLRPCServer::Util::mt_new();
+    my $enc = $mt->config('PublishCharset');
+    SOAP::Fault->faultcode(1)->faultstring(
+        [SOAP::Data->type(
+            string => encode_text($_[0], $enc, 'utf-8'))]);
 }
 
 ## This is sort of a hack. XML::Parser automatically makes everything
