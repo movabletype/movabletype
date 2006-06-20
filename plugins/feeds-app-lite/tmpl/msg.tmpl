@@ -1,24 +1,21 @@
 <TMPL_INCLUDE NAME="header-popup.tmpl">
 
-<h2>Feeds.App Lite Widget Creator</h2>
+<h2><MT_TRANS phrase="Feeds.App Lite Widget Creator"></h2>
 
 <TMPL_IF NAME=NOT_FOUND>
-<div class="error-message">No feeds could be discovered using <TMPL_VAR NAME=URI ESCAPE=HTML>.</div>
+<div class="error-message"><MT_TRANS phrase="No feeds could be discovered using [_1]." params="<TMPL_VAR NAME=URI ESCAPE=HTML>"></div>
 </TMPL_IF>
 
 <TMPL_IF NAME=FEEDERR>
-<div class="error-message">An error occurred processing <TMPL_VAR NAME=URI ESCAPE=HTML>. Check <a href="http://www.feedvalidator.org/check.cgi?url=<TMPL_VAR NAME=URI ESCAPE=HTML>">here</a> for more detail and please try again.</div>
+<div class="error-message"><MT_TRANS phrase="An error occurred processing [_1]. Check <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">here</a> for more detail and please try again." params="<TMPL_VAR NAME=URI ESCAPE=HTML>%%<TMPL_VAR NAME=URI ESCAPE=HTML>"></div>
 </TMPL_IF>
 
 <TMPL_IF NAME=SAVED>
-<p>A template module named <strong><TMPL_VAR NAME=MODULE ESCAPE=HTML></strong> has been created.</p>
+<p><MT_TRANS phrase="A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]" target="_blank">edit</a> to customize its display." params="<TMPL_VAR NAME=MODULE ESCAPE=HTML>%%URL_to_template_module_editing_page"></p>
 
-<MT_TRANS phrase="<p>You can customize the appearance of this feed by editing the module. </p>
+<p><MT_TRANS phrase="It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or the MTInclude tag" params="URL_to_widget_manager_main_page_if_active">. <strong>(NOTE TO DAVID: That link needs to be conditionalized on WidgetManager's existence!!)</strong></p>
 
-<p>You can reorder its position by using the Widget Manager.</p> 
-
-<p>Or you can display it by itself by include it in any template using MT Include.</p>">
-
+<blockquote><p><strong>&lt;$MTInclude name="<TMPL_VAR NAME=MODULE ESCAPE=HTML>"&gt;</strong></p></blockquote>
 
 </TMPL_IF>
 
