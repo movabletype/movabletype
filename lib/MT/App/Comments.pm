@@ -575,7 +575,9 @@ sub _send_comment_notification {
     if (!$from_addr || !is_valid_email($from_addr)) {
         $from_addr = $app->{cfg}->EmailAddressMain || $author->email;
     } 
-    if ($author && $author->email) {
+    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
+    $reply_to = undef if $reply_to && !is_valid_email($reply_to);
+    if ($author && $author->email && is_valid_email($author->email)) {
         my %head = ( To => $author->email,
                      $from_addr ? (From => $from_addr) : (),
                      $reply_to ? ('Reply-To' => $reply_to) : (),
