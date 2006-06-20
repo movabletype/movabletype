@@ -22,6 +22,14 @@ TC.attachLoadEvent( init );
 
 <h2><MT_TRANS phrase="Widget Manager">: <span class="title-highlight"><MT_TRANS phrase="Rearrange Items"></span></h2>
 
+<TMPL_IF NAME=REBUILD>
+<h4 class="message"><MT_TRANS phrase="Your changes to the Widget Manager have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></h4>
+</TMPL_IF>
+
+<TMPL_IF NAME=DELETED>
+<h4 class="message"><MT_TRANS phrase="You have successfully deleted the selected Widget Manager(s) from your weblog."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></h4>
+</TMPL_IF>
+
 <p><MT_TRANS phrase="To add a Widget Manager to your templates, use the following syntax:"></p>
 <p><MT_TRANS phrase="<strong><$MTWidgetManager name="Name of the Widget Manager"$></strong>"></p>
 
@@ -37,18 +45,9 @@ TC.attachLoadEvent( init );
 </ul>
 </div>
 
-<TMPL_IF NAME=REBUILD>
-<h4 class="message"><MT_TRANS phrase="Your changes to the Widget Manager have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></h4>
-</TMPL_IF>
-
-<TMPL_IF NAME=DELETED>
-<h4 class="message"><MT_TRANS phrase="You have successfully deleted the selected Widget Manager(s) from your weblog."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></h4>
-</TMPL_IF>
-
 <div class="list-wrapper">
-  <div class="list" id="queue">
+ <div class="list" id="queue">
 
-<div class="list-wrapper">
 
     <form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
         <input type="hidden" name="__mode" value="delete" />
@@ -91,13 +90,9 @@ TC.attachLoadEvent( init );
 
 </div>
 
-</div>
-
-  </div>
-</div>
-
 <TMPL_INCLUDE NAME=pager.tmpl>
-
 </div>
+</div>
+
 
 <TMPL_INCLUDE NAME="footer.tmpl">
