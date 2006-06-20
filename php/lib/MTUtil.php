@@ -176,6 +176,7 @@ function format_ts($format, $ts, $blog, $lang = null) {
     if ($lang == 'jp') {
         $lang = 'ja';
     }
+    $lang = strtolower(substr($lang, 0, 2));
     if (!isset($format) || empty($format)) {
         if (count($Languages[$lang]) >= 4)
             $format = $Languages[$lang][3];
@@ -554,20 +555,6 @@ function convert_high_ascii($s) {
 global $Languages;
 $Languages = array(
     'en' => array(
-            array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'),
-            array('January','February','March','April','May','June',
-                  'July','August','September','October','November','December'),
-            array('AM','PM'),
-          ),
-
-    'en-us' => array(
-            array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'),
-            array('January','February','March','April','May','June',
-                  'July','August','September','October','November','December'),
-            array('AM','PM'),
-          ),
-
-    'en_us' => array(
             array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'),
             array('January','February','March','April','May','June',
                   'July','August','September','October','November','December'),
