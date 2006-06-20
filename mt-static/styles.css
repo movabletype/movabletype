@@ -403,7 +403,7 @@ p.page-desc {
     height: 15px;
     font-size: 10px;
     font-weight: bold;
-    line-height: 1;
+    line-height: 1.0;
     color: #FFF;
 }
 
@@ -430,7 +430,7 @@ p.page-desc {
     width: 520px;
     height: 20px;
     font-size: 10px;
-    line-height: 1;
+    line-height: 1.0;
 }
 
 #topnav-blogs a {
@@ -932,7 +932,7 @@ fieldset .field li {
     margin: 3px 0;
     padding: 0;
     font-size: 11px;
-    line-height: 1;
+    line-height: 1.0;
 }
 
 fieldset .field li input.cb,
@@ -1331,7 +1331,7 @@ li {
     border-color: #E3EBEF #CEDCE3 #CEDCE3 #E3EBEF;
     padding: 3px 0 3px 4px;
     font-size: 10px;
-    line-height: 1;
+    line-height: 1.0;
     background-color: #F0F5F6;
     background-image: url(images/mininav-create-bg.gif);
     background-repeat: repeat-x;
@@ -1356,7 +1356,7 @@ li {
     padding: 4px 0 0 0;
     color: #666;
     font-size: 10px;
-    line-height: 1;
+    line-height: 1.0;
 }
 * html body #list-blog .shortcuts li,
 * html body #list-plugins .shortcuts li { padding: 0; } /* ie win fix */
@@ -2105,7 +2105,7 @@ a.spinner,
     #edit-template .field-buttons-formatting,
     #edit-template .field-buttons-resizing {
         font-size: 0;
-        line-height: 0;
+        line-height: 0px;
     }
 
     #edit-entry .field-buttons,
@@ -2201,18 +2201,6 @@ a.spinner,
         border: 1px solid gray;
         background-color: #eaf2ff;
         z-index: 20;
-    }
-
-    iframe {
-	display:none;/*sorry for IE5*/
-	display/**/:block;/*sorry for IE5*/
-	position:absolute;/*must have*/
-	top:0;/*must have*/
-	left:0;/*must have*/
-	z-index:-1;/*must have*/
-	filter:mask();/*must have*/
-	width:3000px;/*must have for any big value*/
-	height:3000px/*must have for any big value*/;
     }
 
     #edit-entry #tags_completion .complete-highlight {
@@ -2336,7 +2324,7 @@ a.spinner,
     }
 
     #quickpost .title-box .field-header {
-        line-height: 1;
+        line-height: 1.0;
     }
 
     #quickpost #title-field {
@@ -2357,7 +2345,7 @@ a.spinner,
     position: relative;
     margin-bottom: 2px;
     font-size: 0;
-    line-height: 1;
+    line-height: 1.0;
 }
 
     #quickpost .field-label {
@@ -2624,7 +2612,7 @@ a.spinner,
     margin: 3px 0;
     padding: 0;
     font-size: 11px;
-    line-height: 1;
+    line-height: 1.0;
 }
 
 #entry-prefs li .cb,
@@ -2897,7 +2885,7 @@ form.filter-commenter #filter-commenter {
         padding: 3px;
         color: #fff;
         font-size: 11px;
-        line-height: 1;
+        line-height: 1.0;
         text-align: center;
         text-transform: uppercase;
         background-color: #999;
