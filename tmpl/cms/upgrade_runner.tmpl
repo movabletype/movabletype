@@ -51,10 +51,10 @@
         }
         if (!responseText) return;
         var text = responseText.substr(response_pos);
-        response_pos += text.length;
         text = text.replace(/\s*JSON:(.|\n)*/, '');
         // strip any partial lines. we'll grab 'em next time
         text = text.replace(/(\r?\n)[^\r\n]*$/, '$1');
+        response_pos += text.length;
         if (!text.length) return;
 
         text = text.replace(/\r?\n$/, '');
