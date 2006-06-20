@@ -2212,6 +2212,28 @@ a.spinner,
         z-index: 20;
     }
 
+    #iehack { position:relative; }
+
+    *html #edit-entry #tags_completion {
+        display: none;
+        position: absolute;
+        top:-21px;
+        left:592px;
+        width: 200px;
+        border: 1px solid gray;
+        background-color: #eaf2ff;
+        z-index: 20;
+    }
+
+    *html #edit-entry #tags_completion .complete-highlight {
+        color: #fff;
+        overflow:hidden;
+        width: 200px;
+        font-weight: bold;
+        background-color: #8faebe;
+        z-index: 20;
+    }
+
 #edit-entry #settings-box {
     width: 100%;
     overflow: hidden;
