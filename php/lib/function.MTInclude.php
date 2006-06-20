@@ -37,14 +37,11 @@ function smarty_function_MTInclude($args, &$ctx) {
                     return $ctx->error("Could not open file '$file'");
                 }
             }
-            # Until MT/Perl processes MT tags of included files, we
-            # shouldn't do it on the PHP side either
-            return $tmpl;
-            #if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-            #    $_include_cache['file:'.$file] = $_var_compiled;
-            #} else {
-            #    return $ctx->error("Error compiling template file '$file'");
-            #}
+            if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
+                $_include_cache['file:'.$file] = $_var_compiled;
+            } else {
+                return $ctx->error("Error compiling template file '$file'");
+            }
         }
     } elseif (isset($args['type']) && ($args['type'])) {
         $type = $args['type'];
