@@ -631,8 +631,9 @@ with (document) {
 <div class="textarea-wrapper">
 <input name="tags" id="tags" tabindex="7" value="<TMPL_VAR NAME=TAGS ESCAPE=HTML>" onchange="setDirty()" />
 </div>
+<!--[if lte IE 6.5]><div id="iehack"><![endif]-->
 <div id="tags_completion" class="full-width"></div>
-
+<!--[if lte IE 6.5]></div><![endif]-->
 </div>
 </TMPL_IF>
 
