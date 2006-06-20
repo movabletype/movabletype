@@ -90,8 +90,10 @@ sub init_tmpl {
     $tmpl->param(plugin_name       => 'Widget Manager');
     $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
     $tmpl->param(plugin_author     => 'Six Apart');
+    $tmpl->param(mt_url            => $app->{mtscript_url});
     $tmpl->param(mtscript_url      => $app->{mtscript_url});
     $tmpl->param(mmscript_url      => $app->{mmscript_url});
+    $tmpl->param(static_uri        => $spath);
     $tmpl->param(script_url        => File::Spec->catdir($apppath,'widget-manager.cgi'));
     $tmpl->param(blog_url          => $app->blog->site_url);
     if (my $lang_id = $app->current_language) {
