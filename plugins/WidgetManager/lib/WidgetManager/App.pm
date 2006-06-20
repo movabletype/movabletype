@@ -140,7 +140,7 @@ sub save {
     # XXX Widget Manager records should be keyed by ID rather than name.
     # delete old set
     delete $modulesets->{$q->param('widgetmanager')};
-    # Handle renaming: Delete the old name of an entry that has changed names.
+    # Handle renaming: Delete the entry that has changed names.
     delete $modulesets->{$q->param('old_name')}
         unless $q->param('old_name') eq $q->param('name');
     # add it back with a potential new name
@@ -227,6 +227,18 @@ sub edit {
               splice(@avail_modules,$i,1);
           }
       }
+      }
+
+      # Find non-conflicting name for new Widget Manager
+      if ($widgetmanager eq 'New Widget Manager') { 
+          $widgetmanager = $app->plugin->translate('Widget Manager');
+          if (grep(/^\Q$widgetmanager\E$/, @names)) {
+              my $i = 1;
+              while (grep(/^\Q$widgetmanager $i\E$/, @names)) {
+                  $i++;
+              }
+              $widgetmanager = "$widgetmanager $i";
+          }
       }
 
       $tmpl->param(available => \@avail_modules);
