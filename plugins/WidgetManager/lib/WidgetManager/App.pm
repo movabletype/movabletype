@@ -282,10 +282,14 @@ sub list {
       $tmpl->param( list_end => $offset + scalar @keys );
 
       foreach my $key (@keys) {
-          my $names = join(', ',map { $avail{$_} } split(',',$modulesets->{$key}));
+          # Collect the available widgets for this key.
+          my @w = ();
+          for my $w ( split /\s*,\s*/o, $modulesets->{$key} ) {
+              push @w, $avail{$w} if $avail{$w};
+          }
           push @widgetmanagers,{
             widgetmanager => $key,
-            names   => $names,
+            names   => join(', ', @w),
             widgets => $modulesets->{$key}
           };
       }
