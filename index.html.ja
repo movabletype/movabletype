@@ -83,28 +83,22 @@
 				text-align: center;
 				background-color: #E5E5E5;
 			}
-		
+			
 		//-->
 	</style>
 </head>
 
 <body>
-
+<div class="section">
 <h1>Movable Type</h1>
 <p class="info">あなたのサイトをよりアクティブに、よりクリエイティブに。次世代ウェブツール &quot;Movable Type&quot; へようこそ</p>
 <p class="login"><a rel="nofollow" href="mt.cgi">ログイン</a></p>
 
+<div class="section">
 <h2>はじめてお使いになる方へ</h2>
-<p>Movable Typeをご利用いただくためには、セットアップを完了しておく必要があります。Movable Typeのセットアップを、以下の手順でおこなってください。</p>
-<ol>
-<li><a href="__HELP_URL____PRODUCT_VERSION__/">オンラインマニュアル</a>を読み、Movable Typeの稼働に必要な環境を整備します。</li>
-<li>環境設定ファイル (mt-config.cgi) を作成します。環境設定ファイルは、mt-config.cgi-originalファイルをコピーするか、リネームして作成してください。</li>
-<li>作成したファイルを、環境設定ファイルの&quot;CGIPath&quot;のパスにおきます。</li>
-<li><a rel=:nofollow" href="mt-check.cgi">Movable Type システム・チェック (mt-check.cgi)</a> を実行して、稼働に必要な環境が整っていることを確認します。</li>
-サーバの状態を確認してください。</p>
-<li>必要な環境が整っていることを確認した後に、上の「ログイン」をクリックしてください。</li>
-</ol>
-
+<p>Movable Typeをご利用いただくためには、セットアップを完了しておく必要があります。<a href="__HELP_URL____PRODUCT_VERSION__/">オンライン・マニュアル</a>のインストール・セットアップの章を読み、稼働に必要な環境を準備してください。また、<a rel=:nofollow" href="mt-check.cgi">Movable Type システム・チェック (mt-check.cgi)</a> を実行し、環境が整ったことを確認してください。</p>
+<p>必要な環境が整っていることを確認した後に、上の「ログイン」をクリックしてください。</p>
+</div>
+</div>
 </body>
-
 </html>
