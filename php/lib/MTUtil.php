@@ -979,7 +979,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
             $child_cats = array();
             while ($c = array_shift($kids)) {
                 $child_cats[$c['category_id']] = $c;
-                $children = $mt->db->fetch_categories(array('category_id' => $c['category_id'], 'children' => 1));
+                $children = $mt->db->fetch_categories(array('category_id' => $c['category_id'], 'children' => 1, 'show_empty' => 1));
                 if ($children)
                     $kids = array_merge($kids, $children);
             }
@@ -1043,7 +1043,7 @@ function cat_path_to_category($path, $blog_id = 0) {
         }
         $last_cat_id = 0;
         foreach ($cat_path as $label) {
-            $cats = $mtdb->fetch_categories(array('label' => $label, 'parent' => $last_cat_id, 'blog_id' => $blog_id));
+            $cats = $mtdb->fetch_categories(array('label' => $label, 'parent' => $last_cat_id, 'blog_id' => $blog_id, 'show_empty' => 1));
             if (!$cats || (count($cats) != 1))
                 break;
             $cat = $cats[0];
@@ -1051,7 +1051,7 @@ function cat_path_to_category($path, $blog_id = 0) {
         }
     }
     if (!$cat && $path) {
-        $cats = $mtdb->fetch_categories(array('label' => $path, 'blog_id' => $blog_id));
+        $cats = $mtdb->fetch_categories(array('label' => $path, 'blog_id' => $blog_id, 'show_empty' => 1));
         if ($cats && (count($cats) == 1))
             return $cats[0];
     }
