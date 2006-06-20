@@ -190,7 +190,7 @@ class MTDatabaseBase extends ezsql {
         return $url;
     }
 
-    function entry_link($eid, $at, $args) {
+    function entry_link($eid, $at = "Individual", $args = null) {
         if (isset($this->_entry_link_cache[$eid.';'.$at])) {
             $url = $this->_entry_link_cache[$eid.';'.$at];
         } else {
@@ -246,7 +246,7 @@ class MTDatabaseBase extends ezsql {
             $this->_entry_link_cache[$eid.';'.$at] = $url;
         }
         if ($at != 'Individual') {
-            if (!isset($args['no_anchor'])) {
+            if ($args && !isset($args['no_anchor'])) {
                 $url .= '#' . (isset($args['valid_html']) ? 'a' : '') .
                         sprintf("%06d", $eid);
             }
