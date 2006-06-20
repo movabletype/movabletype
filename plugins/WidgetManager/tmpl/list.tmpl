@@ -33,6 +33,8 @@ TC.attachLoadEvent( init );
 <p><MT_TRANS phrase="To add a Widget Manager to your templates, use the following syntax:"></p>
 <p><MT_TRANS phrase="<strong><$MTWidgetManager name="Name of the Widget Manager"$></strong>"></p>
 
+<div class="list-wrapper">
+
 <div class="tabs">
 <ul>
   <li class="yah"><a href=""><MT_TRANS phrase="Widget Managers"></a></li>
@@ -45,13 +47,9 @@ TC.attachLoadEvent( init );
 </ul>
 </div>
 
-<div class="list-wrapper">
- <div class="list" id="queue">
-
-
-    <form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
-        <input type="hidden" name="__mode" value="delete" />
-        <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<input type="hidden" name="__mode" value="delete" />
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
 
 <div class="list-actions">
 <div class="button-bar">
@@ -66,9 +64,6 @@ TC.attachLoadEvent( init );
     <th width="1%" class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
     <th><MT_TRANS phrase="WidgetManager Name"></th>
     <th><MT_TRANS phrase="Installed Widgets"></th>
-<!--
-    <th></th>
--->
   </tr>
   </thead>
   <tbody>
@@ -77,21 +72,13 @@ TC.attachLoadEvent( init );
     <td class="cb"><input type="checkbox" name="id" value="<TMPL_VAR NAME=WIDGETMANAGER>" class="select" /></td>
     <td class="widgetmanager-name"><a href="?__mode=edit&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=<TMPL_VAR NAME=WIDGETMANAGER>"><TMPL_VAR NAME=WIDGETMANAGER></a></td>
     <td class="widgetmanager-widgets"><TMPL_VAR NAME=NAMES></td>
-<!--
-    <td nowrap>
-      <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=edit&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=<TMPL_VAR NAME=WIDGETMANAGER>"><MT_TRANS phrase="Edit"></a>
-    </td>
--->
   </tr>
 </TMPL_LOOP>
-</table>
-
 </form>
-
+</table>
 </div>
 
 <TMPL_INCLUDE NAME=pager.tmpl>
-</div>
 </div>
 
 
