@@ -422,17 +422,32 @@ sub _hdlr_entry_if_tagged {
     }
 }
 
+sub _tags_for_blog {
+    my ($blog_id, $type) = @_;
+    my $r = MT::Request->instance;
+    my $tag_cache = $r->stash('blog_tag_cache:' . $type) || {};
+    if (!$tag_cache->{$blog_id}) {
+        my $terms = { is_private => 0, blog_id => $blog_id };
+        require MT::Tag;
+        require MT::Entry;
+        my @tags = MT::Tag->load_by_datasource($type, $terms);
+        $tag_cache->{$blog_id} = \@tags;
+        $r->stash('blog_tag_cache:' . $type, $tag_cache);
+    }
+    $tag_cache->{$blog_id};
+}
+
 sub _hdlr_tags {
     my ($ctx, $args, $cond) = @_;
 
     require MT::Tag;
     require MT::ObjectTag;
     require MT::Entry;
+    my $type = $args->{type} || MT::Entry->datasource;
+
     my $blog_id = $ctx->stash('blog_id');
-    my $type = MT::Entry->datasource;
     my @tag_filter;
-    my $terms = { is_private => 0, blog_id => $blog_id };
-    my @tags = MT::Tag->load_by_datasource($type, $terms);
+    my $tags = _tags_for_blog($blog_id, $type);
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
     my $needs_entries = ($ctx->stash('uncompiled') =~ /<\$?MTEntries/) ? 1 : 0;
@@ -442,7 +457,7 @@ sub _hdlr_tags {
     local $ctx->{inside_mt_tags} = 1;
 
     my $min = 0; my $max = 0;
-    foreach my $tag (@tags) {
+    foreach my $tag (@$tags) {
         if ($needs_entries) {
             my @args = (
                 { blog_id => $blog_id,
@@ -467,11 +482,11 @@ sub _hdlr_tags {
         $min = $count if ($count && ($count < $min)) || $min == 0;
         $max = $count if $count && ($count > $max);
     }
-    @tags = grep { $_->{__entry_count} } @tags;
+    @$tags = grep { $_->{__entry_count} } @$tags;
 
     local $ctx->{__stash}{tag_max_count} = $max;
     local $ctx->{__stash}{tag_min_count} = $min;
-    foreach my $tag (@tags) {
+    foreach my $tag (@$tags) {
         local $ctx->{__stash}{Tag} = $tag;
         local $ctx->{__stash}{entries} = $tag->{__entries};
         local $ctx->{__stash}{tag_entry_count} = $tag->{__entry_count};
@@ -542,31 +557,18 @@ sub _hdlr_tag_rank {
 sub _hdlr_entry_tags {
     my ($ctx, $args, $cond) = @_;
     
-    require MT::Tag;
     require MT::ObjectTag;
+    require MT::Entry;
+    my $type = MT::Entry->datasource;
     my $entry = $ctx->stash('entry');
     return '' unless $entry;
     my $glue = $args->{glue} || '';
 
     my $blog_id = $ctx->stash('blog_id');
-    my $type = MT::Entry->datasource;
-    my $terms = { is_private => 0, blog_id => $blog_id };
-    my @tags = MT::Tag->load_by_datasource($type, $terms);
-    my $needs_entries = ($ctx->stash('uncompiled') =~ /<\$?MTEntries/) ? 1 : 0;
+    my $tags = _tags_for_blog($blog_id, $type);
     my $min = 0;
     my $max = 0;
-    foreach my $tag (@tags) {
-        if ($needs_entries) {
-            my @args = (
-                { blog_id => $blog_id,
-                  status => MT::Entry::RELEASE() },
-                { 'join' => [ 'MT::ObjectTag', 'object_id',
-                              { tag_id => $tag->id, blog_id => $blog_id,
-                                object_datasource => $type }, { unique => 1 } ],
-                  'sort' => 'created_on',
-                  direction => 'descend' });
-            $tag->{__entries} = delay(sub { my @e = MT::Entry->load(@args); \@e });
-        }
+    foreach my $tag (@$tags) {
         my $count = MT::Entry->count({
             status => MT::Entry::RELEASE()
         }, { join => [ 'MT::ObjectTag', 'object_id', {
@@ -580,7 +582,7 @@ sub _hdlr_entry_tags {
         $min = $count if ($count && ($count < $min)) || $min == 0;
         $max = $count if $count && ($count > $max);
     }
-    @tags = grep { $_->{__entry_count} } @tags;
+    @$tags = grep { $_->{__entry_count} } @$tags;
 
     local $ctx->{__stash}{tag_max_count} = $max;
     local $ctx->{__stash}{tag_min_count} = $min;
