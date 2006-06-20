@@ -22,14 +22,30 @@ function validate (f) {
     } else if (!is_valid_url(f.site_url.value)){
         alert('<MT_TRANS phrase="You must set your Site URL." escape="singlequotes">');
         return false;
+    } else if (checkUrlSpaces(f.site_url.value)){
+        alert('<MT_TRANS phrase="You can not have spaces in your Site URL." escape="singlequotes">');
+        return false;
+    } else if (checkPathSpaces(f.site_path.value)){
+        alert('<MT_TRANS phrase="You can not have spaces in your Local Site Path." escape="singlequotes">');
+        return false;
     } else if (!is_valid_path(f.site_path.value)){
         alert('<MT_TRANS phrase="You must set your Local Site Path." escape="singlequotes">');
         return false;
     }
     return true;
 }
+function checkUrlSpaces(url_){
+    if (url_.match(/\s+/)){
+        return true;
+    }
+}
 function is_valid_url(url_){
-    return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+}
+function checkPathSpaces(path_){
+    if (path_.match(/\s+/)){
+        return true;
+    }
 }
 function is_valid_path(path_){
     for(i = 0; i < path_.length; i++){
