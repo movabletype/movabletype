@@ -288,7 +288,7 @@ sub BEGIN {
                 class => 'MT::Entry',
                 condition => sub { !$_[0]->basename },
                 code => sub { my $entry = shift; my %args = @_;
-                    $args{from} < 3.3
+                    $args{from} < 3.20021
                         ? $entry->basename(mt32_dirify($entry->title))
                         : 1;
                 },
@@ -357,7 +357,7 @@ sub BEGIN {
             }
         },
         'core_set_tag_permissions' => {
-            version_limit => 3.3,
+            version_limit => 3.20021,
             code => \&core_update_records,
             priority => 9.3,
             updater => {
@@ -368,7 +368,7 @@ sub BEGIN {
             }
         },
         'core_init_blog_entry_display_defaults' => {
-            version_limit => 3.3,
+            version_limit => 3.20021,
             code => sub {
                 require MT::Permission;
                 &core_update_records
@@ -389,7 +389,7 @@ sub BEGIN {
             }
         },
         'core_upgrade_tag_categories' => {
-            version_limit => 3.3,
+            version_limit => 3.20021,
             code => \&core_update_records,
             priority => 9.3,
             updater => {
@@ -523,20 +523,11 @@ sub BEGIN {
                 class => 'MT::Category',
                 condition => sub { !defined $_[0]->basename },
                 code => sub { my $cat = shift; my %args = @_;
-                    $args{from} < 3.3
+                    $args{from} < 3.20021
                         ? $cat->basename(mt32_dirify($cat->label))
                         : 1;
                 },
                 message => 'Assigning basename for categories...',
-            }
-        },
-        'core_flush_newsbox' => {
-            code => \&core_update_records,
-            priority => 9.1,
-            updater => {
-                class => 'MT::Session',
-                condition => sub { $_[0]->id eq 'NW' },
-                code => sub { $_[0]->start(0) }
             }
         }
     );
@@ -695,7 +686,6 @@ sub upgrade_database {
     $self->add_step("core_upgrade_begin", from => $schema_ver);
     $self->check_schema;
     $self->add_step('core_upgrade_templates');
-    $self->add_step('core_flush_newsbox');
     $self->add_step('core_upgrade_end', from => $schema_ver);
     $self->add_step('core_finish');
     1;
@@ -1218,7 +1208,8 @@ sub core_upgrade_begin {
     my (%param) = @_;
     my $from_schema = $param{from};
     if ($from_schema) {
-        $self->progress($self->translate("Upgrading database from version [_1].", $from_schema));
+        my $cur_schema = MT->schema_version;
+        $self->progress($self->translate("Upgrading database from version [_1].", $from_schema)) if $from_schema < $cur_schema;
         $self->pre_schema_upgrade($from_schema);
     }
 }
@@ -1238,13 +1229,20 @@ sub core_finish {
     my $self = shift;
     my $cfg = MT::ConfigMgr->instance;
     my $cur_schema = MT->instance->schema_version;
-    $self->progress($self->translate("Database has been upgraded to version [_1].", $cur_schema));
+    my $old_schema = $cfg->SchemaVersion || 0;
+    $self->progress($self->translate("Database has been upgraded to version [_1].", $cur_schema)) if $cur_schema > $old_schema;
     $cfg->SchemaVersion( $cur_schema, 1 );
 
     my $plugin_schema = $cfg->PluginSchemaVersion || {};
     foreach my $plugin (@MT::Plugins) {
         my $ver = $plugin->schema_version;
         next unless $ver;
+        my $old_plugin_schema = $plugin_schema->{$plugin->{plugin_sig}} || 0;
+        if ($old_plugin_schema && ($ver > $old_plugin_schema)) {
+            $self->progress($self->translate("Plugin '[_1]' upgraded successfully.", $plugin->name));
+        } elsif ($ver && !$old_plugin_schema) {
+            $self->progress($self->translate("Plugin '[_1]' installed successfully.", $plugin->name));
+        }
         $plugin_schema->{$plugin->{plugin_sig}} = $ver;
     }
     if (keys %$plugin_schema) {

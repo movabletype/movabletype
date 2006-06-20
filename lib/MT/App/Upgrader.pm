@@ -381,6 +381,22 @@ sub main {
         }
     }
 
+    my $cur_schema = MT->schema_version;
+    if ($cur_schema > $schema) {
+        # yes, MT itself is needing an upgrade...
+        $param->{mt_upgrade} = 1;
+    }
+
+    my @plugins;
+    my $plugin_ver = $app->{cfg}->PluginSchemaVersion;
+    foreach my $plugin (@MT::Plugins) {
+        if ($plugin->needs_upgrade) {
+            push @plugins, { name => $plugin->name,
+                version => $plugin->version };
+        }
+    }
+    $param->{plugin_upgrades} = \@plugins if @plugins;
+
     $app->build_page('upgrade.tmpl', $param);
 }
 

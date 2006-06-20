@@ -38,7 +38,23 @@ function dismiss(id) {
 </div>
 </TMPL_IF>
 
+<TMPL_IF NAME=MT_UPGRADE>
 <p><MT_TRANS phrase="A new version of Movable Type has been installed.  We'll need to complete a few tasks to update your database."></p>
+</TMPL_IF>
+
+<TMPL_IF NAME=PLUGIN_UPGRADES>
+<TMPL_IF NAME=MT_UPGRADE>
+<p><MT_TRANS phrase="In addition, the following Movable Type plugins require upgrading or installation:"></p>
+<TMPL_ELSE>
+<p><MT_TRANS phrase="The following Movable Type plugins require upgrading or installation:"></p>
+</TMPL_IF>
+
+<ul>
+<TMPL_LOOP NAME=PLUGIN_UPGRADES>
+<li><p><TMPL_VAR NAME=NAME><TMPL_IF NAME=VERSION> <MT_TRANS phrase="Version [_1]" params="<TMPL_VAR NAME=VERSION>"></TMPL_IF></p></li>
+</TMPL_LOOP>
+</ul>
+</TMPL_IF>
 
 <div class="button-bar">
 <form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
