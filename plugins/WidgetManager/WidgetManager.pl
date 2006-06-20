@@ -35,7 +35,6 @@ unless ($plugin) {
         \&verify_permission);
     MT->add_callback('MT::App::CMS::AppTemplateParam.list_template', 9, $plugin,
         \&verify_permission);
-
     require MT::Template::Context;
     MT::Template::Context->add_tag(WidgetManager => sub { $plugin->runner('_hdlr_widget_manager', @_) });
 }                                                                                                        
@@ -57,17 +56,12 @@ sub load_selected_modules {
 
 sub verify_permission {
     my ($eh, $app, $param, $tmpl) = @_;
-    unless ($app->user->is_superuser ||
-            $param->{'can_edit_templates'}) {
-        @{$param->{plugin_action_loop}} = grep { $_->{'orig_link_text'} ne 'Manage my Widgets' } @{$param->{plugin_action_loop}};
+    unless ($app->user->is_superuser || $param->{'can_edit_templates'}) {
+        @{$param->{plugin_action_loop}} = grep { $_->{'orig_link_text'} ne 'Manage my Widgets' }
+            @{$param->{plugin_action_loop}};
     }
     1;
 }
 
-
-
-
 1;
-
 __END__
-
