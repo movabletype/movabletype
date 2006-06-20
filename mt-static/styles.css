@@ -2217,7 +2217,6 @@ a.spinner,
 
     #edit-entry #tags_completion .complete-highlight {
         color: #fff;
-        position: absolute;
         overflow:hidden;
         width: 591px;
         font-weight: bold;
