@@ -5635,11 +5635,13 @@ sub build_plugin_table {
     foreach my $key (@keys) {
         my $fld = substr($key, 1, 100);
         $fld =~ s/\s+$//;
-        next unless $fld;
-        if ($folder_counts{$fld} == 1) {
+        if (!$fld || ($folder_counts{$fld} == 1)) {
             my $sig = $list{$key};
             delete $list{$key};
-            $list{'0'.(' 'x100) . substr($key, 102)} = $sig;
+            my $plugin = $MT::Plugins{$sig};
+            my $name = $plugin && $plugin->{object}
+                ? $plugin->{object}->name : $sig;
+            $list{'0'.(' 'x100) . sprintf("%-102s", $name)} = $sig;
         }
     }
 
