@@ -283,6 +283,7 @@ onload = initialize;
     <form onsubmit="this.modules.value = moduleListStr()" id="manager" name="manager" method="post" action="widget-manager.cgi">
       <input type="hidden" name="__mode" value="save" />
       <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+      <input type="hidden" name="old_name" value="<TMPL_VAR NAME=NAME>" />
       <div id="widgetmanagers">
         <p>
           <MT_TRANS phrase="Widget Manager Name:"><br />
