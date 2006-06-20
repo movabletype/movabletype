@@ -55,16 +55,6 @@ sub load_selected_modules {
     WidgetManager::Plugin::load_selected_modules(@_); 
 }
 
-<<<<<<< .mine
-sub verify_permission {
-    my ($eh, $app, $param, $tmpl) = @_;
-    unless ($app->user->is_superuser ||
-            $param->{'can_edit_templates'}) {
-        @{$param->{plugin_action_loop}} = grep { $_->{'orig_link_text'} ne 'Manage my Widgets' } @{$param->{plugin_action_loop}};
-    }
-    1;
-}
-=======
 sub verify_permission {
     my ($eh, $app, $param, $tmpl) = @_;
     unless ($app->user->is_superuser || $param->{'can_edit_templates'}) {
@@ -73,7 +63,6 @@ sub verify_permission {
     }
     1;
 }
->>>>>>> .r31772
 
 
 1;
