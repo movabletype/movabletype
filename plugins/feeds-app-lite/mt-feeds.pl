@@ -9,7 +9,7 @@ MT->add_plugin($plugin);
 
 use MT::Template::Context;
 
-MT::Template::Context->add_container_tag(Feeds => \&feeds);
+MT::Template::Context->add_container_tag(Feed => \&feed);
 MT::Template::Context->add_tag(FeedTitle => \&feed_title);
 MT::Template::Context->add_tag(FeedLink  => \&feed_link);
 MT::Template::Context->add_container_tag(FeedEntries => \&entries);
@@ -20,7 +20,7 @@ MT::Template::Context->add_tag(FeedInclude    => \&include);
 use constant LITE  => 'MT::Plugin::FeedsLite';
 use constant ENTRY => 'MT::Plugin::FeedsLite::entry';
 
-sub feeds {
+sub feed {
     my ($ctx, $args, $cond) = @_;
     my $uri = $args->{uri}
       or return
