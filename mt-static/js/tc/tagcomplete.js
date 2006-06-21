@@ -30,6 +30,7 @@ TC.TagComplete = function( id, words )
         this.tagCompleteNode.add( words[i] );
     this.delimiter = ' ';
     this.currentWord = '';
+    this.insert_pos = -1;
     this.symbols = /[!#$%"'()=\-~^|\\`@\[{}\]\+\*;:<>,\./?_\\]/;
     TC.TagComplete.instances[ this.id ] = this;
     this.clearCompletions();
@@ -194,7 +195,19 @@ TC.TagComplete.prototype.handleTagComplete = function( word )
         word = '"' + word + '"';
     var lastDelim = inputValue.lastIndexOf( this.delimiter );
     var sep = this.delimiter + (this.delimiter == ' ' ? '' : ' ' );
-    this.input_box.value = inputValue.substring( 0, lastDelim ) + (lastDelim != -1 ? sep : '') + word + sep;
+    if (this.insert_pos != -1) {
+        var rest = this.input_box.value.substring(this.insert_pos+1);
+        if (rest.indexOf(this.delimiter) != -1) {
+            rest = rest.substring(rest.indexOf(this.delimiter) + 1);
+        }
+        var completion = word + sep;
+        this.input_box.value = inputValue.substring( 0, this.insert_pos ) + completion + rest;
+        var newPos = (this.insert_pos - 1) + completion.length + 1;
+        this.input_box.selectionStart = newPos;
+        this.input_box.selectionEnd = newPos;
+    } else {
+        this.input_box.value = inputValue.substring( 0, lastDelim ) + (lastDelim != -1 ? sep : '') + word + sep;
+    }
     this.currentWord = '';
     this.clearCompletions();
 }
@@ -206,9 +219,11 @@ TC.TagComplete.prototype.lookForCompletions = function()
     this.suggestedCompletions = new Array();
     this.tagCompleteNode.getStrings(this.currentWord, '', this.suggestedCompletions);
     this.hasCompletions = this.suggestedCompletions.length ? 1 : 0;
-    if (this.hasCompletions)
+    if (this.hasCompletions) {
+        this.insert_pos = (this.input_box.selectionStart != 'undefined' ?
+            this.input_box.selectionStart : -1);
         this.constructCompletionBox();
-    else
+    } else
         this.clearCompletions();
 }
 
@@ -250,6 +265,7 @@ TC.TagComplete.prototype.constructCompletionBox = function()
 TC.TagComplete.prototype.clearCompletions = function()
 {
     this.hasCompletions = 0;
+    this.insert_pos = -1;
     this.suggestedCompletions = new Array();
     this.selectedCompletion = 0;
     if (this.completion_box)
