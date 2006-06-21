@@ -293,7 +293,8 @@ sub list {
       my @keys = sort keys %$modulesets;
 
       my $offset = $app->param('offset') || 0;
-      $tmpl->param( list_end => $offset + scalar @keys );
+      $tmpl->param( list_start => $offset + 1 );
+      $tmpl->param( list_end   => $offset + scalar @keys );
 
       foreach my $key (@keys) {
           # Collect the available widgets for this key.
