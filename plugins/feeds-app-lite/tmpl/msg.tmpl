@@ -13,7 +13,7 @@
 <TMPL_IF NAME=SAVED>
 <p><MT_TRANS phrase="A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]" target="_blank">edit</a> to customize its display." params="<TMPL_VAR NAME=MODULE ESCAPE=HTML>%%URL_to_template_module_editing_page"></p>
 
-<p><MT_TRANS phrase="It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or the MTInclude tag" params="URL_to_widget_manager_main_page_if_active">. <strong>(NOTE TO DAVID: That link needs to be conditionalized on WidgetManager's existence!!)</strong></p>
+<p><MT_TRANS phrase="It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or the MTInclude tag" params="URL_to_widget_manager_main_page_if_active">.</p>
 
 <blockquote><p><strong>&lt;$MTInclude name="<TMPL_VAR NAME=MODULE ESCAPE=HTML>"&gt;</strong></p></blockquote>
 
