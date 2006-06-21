@@ -11,12 +11,68 @@
        background: #FEE;
        padding: 10px;
    }
+   fieldset {
+       margin: 30px 0;
+       border-width: 0;
+       padding: 0;
+   }
+
+   fieldset h3 {
+       margin-bottom: 10px;
+       border-bottom: 1px solid #93B06B;
+       font-size: 14px;
+       color: #93B06B;
+   }
+
+   fieldset .setting {
+       overflow: hidden;
+       width: 100%;
+       margin-bottom: 10px;
+       border-bottom: 1px solid #E4EBDA;
+       padding-bottom: 10px;
+   }
+
+   fieldset .label {
+       float: left;
+       width: 125px;
+       margin: 4px 5px 0 5px;
+       color: #333;
+       font-size: 11px;
+       font-weight: bold;
+       text-align: right;
+   }
+
+   fieldset .field {
+       float: left;
+       width: 445px;
+       margin: 0;
+   }
+
+   fieldset .field p {
+       margin: 3px 0;
+       padding: 1px 0 0 0;
+       font-size: 11px;
+       line-height: 1.1;
+       color: #666;
+   }
+
+   fieldset input {
+       font-size: 11px;
+   }
+   .field {
+       margin-bottom: 10px;
+   }
+   .field p {
+       margin: 3px 0;
+       font-size: 11px;
+       line-height: 1.1;
+   }
+
+
 </style>
 
 <form method="post" action="mt-wizard.cgi">
 <input type="hidden" name="__mode" value="start" />
-
-<h3><MT_TRANS phrase="Welcome to the Movable Type Configuration Wizard"></h3>
 
 <noscript>
 <p><MT_TRANS phrase="Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed."></p>
@@ -29,12 +85,12 @@
 
 <TMPL_ELSE>
 <p>
-<MT_TRANS phrase="The Movable Type Configuration Wizard will help you set up your Perl installation, your database connection, and your mail settings. Click on 'Begin' below to get started.">
+<MT_TRANS phrase="This wizard will help you configure the basic settings needed to run Movable Type.">
 </p>
 
 <TMPL_IF NAME=URI_INVALID>
 <p>
-<h4 class="error-message"><MT_TRANS phrase="You will need to create this directory and copy the static files over to it"></h4>
+<h4 class="error-message"><MT_TRANS phrase="Error: '<TMPL_VAR NAME=SET_STATIC_URI_TO>' could not be found.  Please move your static files to the directory first or correct the setting if it is incorrect."></h4>
 </p>
 </TMPL_IF>
 
@@ -42,11 +98,28 @@
 <input type="hidden" name="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>" size="50">
 <TMPL_ELSE>
 <div id="static_webpath_config">
-<MT_TRANS phrase="It appears that you need to set your static webpath. This is where static files such as stylesheets and images will reside. Please enter where your static webpath is below.">
 
-<p><MT_TRANS phrase="Where is your static webpath?">
-<input type="text" name="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>" size="50">
+<fieldset>
+<h3><MT_TRANS phrase="Static Web Path"></h3>
+<p><MT_TRANS phrase="Movable Type ships with directory named <strong>mt-static</strong> which contains a number of important files such as images, javascript files and stylesheets.">
+
+<TMPL_IF NAME=MT_STATIC_EXISTS>
+<MT_TRANS phrase="Due to your server's configuration it is not accessible in its current location and must be moved to a web-accessible location (e.g. into your web document root directory).">
+<TMPL_ELSE>
+<MT_TRANS phrase="This directory has either been renamed or moved to a location outside of the Movable Type directory.">
+</TMPL_IF>
+</p>
+
+<p><MT_TRANS phrase="Please specify the web-accessible URL to this directory below."></p>
+
+<div class="setting">
+<div class="label"><label for"set_static_uri_to"><MT_TRANS phrase="Static web path URL"></label></div>
+<div class="field">
+<input type="text" name="set_static_uri_to" id="set_static_uri_to" value="<TMPL_VAR NAME=SET_STATIC_URI_TO>" size="50">
+<p><MT_TRANS phrase="This can be in the form of http://example.com/mt-static/ or simply /mt-static"></p>
 </div>
+</div>
+</fieldset>
 </TMPL_IF>
 
 <script type="text/javascript">

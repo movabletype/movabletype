@@ -102,7 +102,8 @@ sub pre_start {
 
     $param{cfg_exists} = $cfg_exists;
     $param{valid_static_path} = 1 if $app->is_valid_static_path($app->static_path);
-    
+    $param{mt_static_exists} = $app->mt_static_exists; 
+
     return $app->build_page("start.tmpl", \%param);
 }
 
@@ -121,9 +122,12 @@ sub start {
         return $app->build_page("start.tmpl", \%param);
     }
 
-    $static_path = $app->cgipath.$static_path unless (($static_path =~ m/^\//) || ($static_path =~ m/^http/));
+    $static_path = $app->cgipath.$static_path unless $static_path =~ m#^(https?:/)?/#;
+    $static_path =~ s#(^\s+|\s+$)##;
+    $static_path .= '/' unless $static_path =~ m!/$!;
+
     unless ($app->is_valid_static_path($static_path)) {
-        my %param = ('uri_invalid' => 1 );
+        my %param = ('uri_invalid' => 1, set_static_uri_to => $q->param('set_static_uri_to') );
         return $app->build_page("start.tmpl", \%param);
     }
 
@@ -494,16 +498,15 @@ sub static_path {
     my $app = shift;
     my $static_path = '';
 
-    if ($app->{cfg}->StaticWebPath ne ''){
+    if ($app->{cfg}->StaticWebPath ne '') {
         return $app->{cfg}->StaticWebPath;
     }
+    return $app->mt_static_exists ? $app->cgipath."mt-static/" : ''
+}
 
-    my $path = File::Spec->catfile($app->{mt_dir}, "mt-static", "styles.css");
-    if (-f $path){
-        $static_path = $app->cgipath."mt-static/";
-    }
-
-    $static_path;
+sub mt_static_exists {
+    my $app = shift;
+    return (-f File::Spec->catfile($app->{mt_dir}, "mt-static", "styles.css")) ? 1 : 0;
 }
 
 sub is_valid_static_path {
@@ -511,9 +514,9 @@ sub is_valid_static_path {
     my ($static_uri) = @_;
 
     my $path;
-    if ($static_uri =~ m/^http/i){
+    if ($static_uri =~ m/^http/i) {
         $path = $static_uri.'styles.css';
-    }elsif($static_uri =~ m/^\//){
+    } elsif($static_uri =~ m#^/#) {
         my $host = $ENV{HTTP_HOST};
         my $port = $ENV{SERVER_PORT};
         $path = $port == 443 ? 'https' : 'http';
