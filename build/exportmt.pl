@@ -152,6 +152,7 @@ $ENV{BUILD_VERSION_ID} ||= $o{'stamp=s'};
 # Make the export directory to use with the stamp.
 $o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $o{'stamp=s'} );
 die 'No export directory given.' unless $o{'export=s'};
+$o{'export=s'} =~ s/~/$ENV{HOME}/;
 
 # Construct the "make-dists" tool path.
 $o{'make=s'} = File::Spec->catdir( $o{'mt-dir=s'}, $o{'make=s'} );
