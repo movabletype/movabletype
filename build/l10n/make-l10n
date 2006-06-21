@@ -7,7 +7,7 @@
 
 
 TEMP_DIR=/tmp
-SCRIPT_DIR=tools/l10n
+SCRIPT_DIR=build/l10n
 
 if [ -n $1 ]; then
     TARGET=$1

@@ -18,8 +18,10 @@ foreach my $lang (qw(ja de nl fr es)) {
         or die "failed to find package MT::L10N::$lang";
 
     my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }';
+    $js =~ s/\\'/\t\t/g;
     while ($js =~ m/trans\('([^']+?)'/g) {
         my $str = $1;
+        $str =~ s/\t\t/'/g;
         my $local = $lex->{$str} || $str;
         $str = encode_js($str);
         $local = encode_js($local);
