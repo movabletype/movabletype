@@ -5583,12 +5583,6 @@ sub list_plugins {
     my %param;
     my $cfg = $app->config;
 
-    # also handles view switch
-    if ($app->blog) {
-        my $blog_prefs = $app->user_blog_prefs;
-        my $view = $blog_prefs->{config_view};
-        $param{"settings_mode_$view"} = 1;
-    }
     $param{can_config} = $app->user->is_superuser();
     $param{use_plugins} = $cfg->UsePlugins;
     $app->build_plugin_table(param => \%param, scope => 'system');
@@ -7086,10 +7080,21 @@ sub cfg_entries {
 }
 
 sub cfg_plugins {
-    my $q = $_[0]->{query};
+    my $app = shift;
+    my $q = $app->param;
     $q->param('_type', 'blog');
     $q->param('id', scalar $q->param('blog_id'));
-    $_[0]->edit_object({ output => 'list_plugin.tmpl' });
+
+    my %param;
+    # also handles view switch
+    if ($app->blog) {
+        my $blog_prefs = $app->user_blog_prefs;
+        my $view = $blog_prefs->{config_view};
+        $param{"settings_mode_$view"} = 1;
+    }
+    $param{output} = 'list_plugin.tmpl';
+
+    $app->edit_object(\%param);
 }
 
 sub cfg_feedback {
