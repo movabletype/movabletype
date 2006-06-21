@@ -30,7 +30,7 @@ TC.TagComplete = function( id, words )
         this.tagCompleteNode.add( words[i] );
     this.delimiter = ' ';
     this.currentWord = '';
-    this.symbols = /[!#$%"'()=\-~^|\\`@\[{}\]\+\*;:<>,\./?_\\]/.compile(/[!#$%"'()=\-~^|\\`@\[{}\]\+\*;:<>,\./?_\\]/);
+    this.symbols = /[!#$%"'()=\-~^|\\`@\[{}\]\+\*;:<>,\./?_\\]/;
     TC.TagComplete.instances[ this.id ] = this;
     this.clearCompletions();
     this.attachElements();
@@ -52,8 +52,10 @@ TC.TagComplete.prototype.attachElements = function()
             var self = this;
             var keyDown = function( event ) { return self.keyDown( event ); }
             var keyUp = function( event ) { return self.keyUp( event ); }
+            var keyPress = function( event ) { return self.keyPress( event ); }
             TC.attachEvent( this.input_box, "keydown", keyDown );
             TC.attachEvent( this.input_box, "keyup", keyUp );
+            TC.attachEvent( this.input_box, "keypress", keyPress );
             this.input_box.setAttribute("autocomplete", "off");
         }
     }
@@ -66,25 +68,47 @@ TC.TagComplete.prototype.attachElements = function()
         window.setTimeout( "TC.TagComplete.instances[ '" + this.id + "' ].attachElements();", 1000 );
 }
 
+TC.TagComplete.prototype.keyPress = function( evt )
+{
+    evt = evt || event;
+    var element = evt.target || evt.srcElement;
+    if ( this.stopped == evt.keyCode )
+    {
+        this.stopped = 0;
+        if ( (evt.keyCode == 9) || (evt.keyCode == 13) || (evt.keyCode == 38 ) || (evt.keyCode == 40) )
+        {
+            return TC.stopEvent( evt );
+        }
+    }
+    return true;
+}
+
 TC.TagComplete.prototype.keyDown = function( evt )
 {
     evt = evt || event;
     var element = evt.target || evt.srcElement;
-    if ( evt.keyCode == 8 ) {
+    if ( evt.keyCode == 8 ) {   // backspace
         this.truncateWord();
     }
-    else if ( (evt.keyCode == 9) || (evt.keyCode == 13)) {
+    else if ( (evt.keyCode == 9) || (evt.keyCode == 13)) { // tab or enter
         if (this.hasCompletions) {
             this.handleTagComplete();
+            this.stopped = evt.keyCode;
             return TC.stopEvent( evt );
         }
     }
-    else if ( evt.keyCode == 38 ) {
-        this.selectCompletion( -1 );
+    else if ( evt.keyCode == 38 ) {  // up arrow key
+        if (this.hasCompletions) {
+            this.selectCompletion( -1 );
+            this.stopped = evt.keyCode;
+            return TC.stopEvent( evt );
+        }
     }
-    else if ( evt.keyCode == 40 ) {
+    else if ( evt.keyCode == 40 ) {  // down arrow key
         if (this.hasCompletions) {
             this.selectCompletion( 1 );
+            this.stopped = evt.keyCode;
+            return TC.stopEvent( evt );
         } else {
             var val = element.value;
             var idx = val.lastIndexOf(this.delimiter);
@@ -95,15 +119,10 @@ TC.TagComplete.prototype.keyDown = function( evt )
         }
     }
     else if ( String.fromCharCode(evt.keyCode) == this.delimiter ) {
-        if (this.hasCompletions) {
-            this.handleTagComplete();
-            return TC.stopEvent( evt );
-        } else {
-            this.currentWord = '';
-            this.clearCompletions();
-        }
+        this.currentWord = '';
+        this.clearCompletions();
     }
-    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) {
+    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) { // uppercase A-Z
         this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
     }
     else {
@@ -123,22 +142,16 @@ TC.TagComplete.prototype.keyUp = function( evt )
     }
     this.processed = 0;
     var element = evt.target || evt.srcElement;
-    var char = element.value.charAt(element.value.length - 1);
-    if ( char == this.delimiter ) {
-        if (this.hasCompletions) {
-            element.value = element.value.substring(0, element.value.length- 1);
-            this.handleTagComplete();
-            return TC.stopEvent( evt );
-        } else {
-            this.currentWord = '';
-            this.clearCompletions();
-        }
+    var ch = element.value.charAt(element.value.length - 1);
+    if ( ch == this.delimiter ) {
+        this.currentWord = '';
+        this.clearCompletions();
     }
     else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) {
         return false;
     }
-    else if (this.symbols.test(char)) {
-        this.updateWord( char.toLowerCase() );
+    else if (this.symbols.test(ch)) {
+        this.updateWord( ch.toLowerCase() );
         return true;
     }
     
