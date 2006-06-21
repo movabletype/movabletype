@@ -3060,3 +3060,13 @@ html>body .import-process { width: 603px; height: 258px; }
 }
 
 #static_webpath_config { display:none; }
+
+body#mt-wizard #topnav-img h1 {
+    display:none;
+}
+body#mt-wizard #topnav-img {
+    background-image: url(images/topnav-logo.gif);
+    width: 224px;
+    height: 66px;
+    color: transparent;
+}

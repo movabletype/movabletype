@@ -500,7 +500,7 @@ sub static_path {
     if ($app->{cfg}->StaticWebPath ne '') {
         return $app->{cfg}->StaticWebPath;
     }
-    return $app->mt_static_exists ? $app->cgipath."mt-static/" : ''
+    return $app->mt_static_exists ? $app->cgipath.'mt-static/' : '';
 }
 
 sub mt_static_exists {

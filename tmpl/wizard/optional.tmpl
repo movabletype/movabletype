@@ -115,12 +115,12 @@ function mail_select(sel) {
 </TMPL_IF>
 
 <div id="goback" <TMPL_IF NAME=mail_transfer>style="display: none"</TMPL_IF>>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'" />
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 <input type="submit" value="<MT_TRANS phrase="Continue">" name="continue" />
 </div>
 
 <div id="submit" <TMPL_UNLESS NAME=mail_transfer>style="display: none"</TMPL_UNLESS>>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'" />
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 <input type="submit" value="<MT_TRANS phrase="Send Test Email">" />
 <input type="submit" value="<MT_TRANS phrase="Continue">" name="continue" />
 </div>

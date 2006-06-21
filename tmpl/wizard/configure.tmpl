@@ -168,15 +168,15 @@ function db_select(sel) {
 
 <TMPL_UNLESS NAME=SUCCESS>
 <div id="goback" <TMPL_IF NAME=DBTYPE>style="display: none"</TMPL_IF>>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start'" />
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 </div>
 <div id="submit" <TMPL_UNLESS NAME=DBTYPE>style="display: none"</TMPL_UNLESS>>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start'" />
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 <input type="submit" value="<MT_TRANS phrase="Test Connection">" />
 </TMPL_UNLESS>
 <TMPL_IF NAME=SUCCESS>
 <div id="continue">
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start'" />
+<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 <input type="submit" value="<MT_TRANS phrase="Test Connection">" />
 <input type="submit" value="<MT_TRANS phrase="Continue">" name="continue" />
 </div>

@@ -8,7 +8,7 @@
 
 <TMPL_IF NAME=MISSING_DB>
 <h4 class="error-message">
-<MT_TRANS phrase="One of the following Perl packages are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
+<MT_TRANS phrase="One of the following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
 </h4>
 
 <h4><MT_TRANS phrase="Missing Database Packages"></h4>
@@ -16,7 +16,7 @@
 </TMPL_IF>
 <TMPL_IF NAME=OPTIONAL>
 <h4 class="message">
-<MT_TRANS phrase="The following Perl packages are missing from your installation. These packages are not required to install Movable Type.  They will enhance the features available to Movable Type.  If you want to continue without installing these packages, click the 'Continue' button to configure your database.  Otherwise, click the 'Retry' button to re-test for these packages.">
+<MT_TRANS phrase="The following optional, feature-enhancing Perl modules could not be found. You may install them now and click 'Retry' or simply continue without them.  They can be installed at any time if needed.">
 </h4>
 
 <h4><MT_TRANS phrase="Missing Optional Packages"></h4>
@@ -24,7 +24,7 @@
 </TMPL_IF>
 <TMPL_IF NAME=REQUIRED>
 <h4 class="error-message">
-<MT_TRANS phrase="The following Perl packages are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages.">
+<MT_TRANS phrase="The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages.">
 </h4>
 
 <h4><MT_TRANS phrase="Missing Required Packages"></h4>
@@ -45,7 +45,7 @@
 <TMPL_IF NAME=SUCCESS>
 <MT_TRANS phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations.">
 </TMPL_IF>
-<p><input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=pre_start'" />
+<p><input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=pre_start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 <TMPL_IF NAME=MISSING_DB_OR_OPTIONAL>
 <TMPL_IF NAME=MISSING_DB>
    <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
