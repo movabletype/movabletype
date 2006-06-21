@@ -144,10 +144,11 @@ sub doc_link    { '' }
 
 sub description {
     return <<DESC;
+<p class="plugin-desc"><MT_TRANS phrase="Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?"> <a href="http://code.appnel.com/feeds-app" target="_blank"><MT_TRANS phrase="Upgrade to Feeds.App"></a>.</p>
 DESC
 }
 
-sub init { $_[0]->{blog_config_template}   = 'weblog_config.tmpl' }
+sub init { }
 
 sub load_config {
     my $plugin = shift;
