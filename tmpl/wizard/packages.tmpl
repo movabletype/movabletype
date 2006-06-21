@@ -2,9 +2,9 @@
 
 <form method="post" action="#">
 <input type="hidden" name="config" value="<TMPL_VAR NAME=CONFIG ESCAPE=HTML>" />
-<input type="hidden" name="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>" size=50>
+<input type="hidden" name="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>" size="50">
 
-<h3><MT_TRANS phrase="Step"> 1 of 3 &mdash; <MT_TRANS phrase="Requirements Check"></h3>
+<h3><MT_TRANS phrase="Step 1 of 3"> &mdash; <MT_TRANS phrase="Requirements Check"></h3>
 
 <TMPL_IF NAME=MISSING_DB>
 <h4 class="error-message">
@@ -48,18 +48,18 @@
 <p><input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=pre_start'" />
 <TMPL_IF NAME=MISSING_DB_OR_OPTIONAL>
 <TMPL_IF NAME=MISSING_DB>
-   <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
+   <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 <TMPL_ELSE>
    <TMPL_IF NAME=OPTIONAL>
-      <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
-      <input type="button" value="<MT_TRANS phrase="Continue">" onclick="document.location.href='?__mode=configure&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
+      <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
+      <input type="button" value="<MT_TRANS phrase="Continue">" onclick="document.location.href='?__mode=configure&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
    <TMPL_ELSE>
-      <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
+      <input type="button" value="<MT_TRANS phrase="Retry">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
    </TMPL_IF>
 </TMPL_IF>
 </TMPL_IF>
 <TMPL_IF NAME=SUCCESS>
-   <input type="button" value="<MT_TRANS phrase="Continue">" onclick="document.location.href='?__mode=configure&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
+   <input type="button" value="<MT_TRANS phrase="Continue">" onclick="document.location.href='?__mode=configure&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
 </TMPL_IF>
 </p>
 
