@@ -497,7 +497,9 @@ class MTDatabaseBase extends ezsql {
             if ((!isset($args['current_timestamp']) &&
                 !isset($args['current_timestamp_end'])) &&
                 ($limit <= 0) &&
-                (!isset($args['category']) || !isset($args['categories'])) &&
+                (!isset($args['category'])) &&
+                (!isset($args['categories'])) &&
+                (!isset($args['category_id'])) &&
                 (isset($blog))) {
                 if ($days = $blog['blog_days_on_index']) {
                     $day_filter = 'and ' . $this->limit_by_day_sql('entry_created_on', $days);
