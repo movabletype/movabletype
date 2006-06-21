@@ -12,6 +12,7 @@ use vars qw( $DEBUG );
 use MT::App;
 @WidgetManager::App::ISA = qw( MT::App );
 use WidgetManager::Util;
+use MT::Template;
 
 sub init {
     my $app = shift;
@@ -181,6 +182,7 @@ sub edit {
     return $app->error($app->plugin->translate('Permission denied.'))
         unless $app->_permission_check;
 
+      $app->install_default_widgets(1);
 
       my $q = $app->{query};
       my $blog_id = $q->param('blog_id');
@@ -354,9 +356,17 @@ sub install_module {
 
 sub install_default_widgets {
     my $app = shift;
+    my $reinstall = shift;
     my $blog_id = $app->blog->id;
     my @preinstalled;
     my ($tmpl,$default_widget_templates);
+
+    # Gather the existing modules.
+    my $modules = {};
+    for( MT::Template->load({ blog_id => $blog_id, type => 'custom' }) ) {
+        ( my $name = $_->name() ) =~ s/^(?:Widget|Sidebar):\s+(.*?)$/$1/;
+        $modules->{$name} = $_->linked_file();  # XXX The linked_file is undef for this plugin modules for some reason.
+    }
 
     use File::Spec;
     my $widgets_dir = File::Spec->catfile($app->app_dir, 'default_widgets');
@@ -372,6 +382,7 @@ sub install_default_widgets {
     close FH;
 
     foreach (@$default_widget_templates) {
+        next if exists $modules->{$_->{name}};
         open(TMPL, File::Spec->catfile($widgets_dir, $_->{template})) or die "Error: $!\n";
         while (my $line = <TMPL>) {
             $_->{text} .= $line;
@@ -381,16 +392,18 @@ sub install_default_widgets {
         push @preinstalled, $tmpl->id;
     }
 
-    # Set the 'installed' bit in the config
-    $app->installed(1);
+    unless( $reinstall ) {
+        # Set the 'installed' bit in the config
+        $app->installed(1);
 
-    # Now that the plugin is installed for this blog, create a first widgetmanager
-    # with all modules pre-installed.
-    
-    my $modulesets = {};
-    $modulesets->{$app->plugin->translate('First Widget Manager')} = join (',', @preinstalled);
+        # Now that the plugin is installed for this blog, create a first widgetmanager
+        # with all modules pre-installed.
+        
+        my $modulesets = {};
+        $modulesets->{$app->plugin->translate('First Widget Manager')} = join (',', @preinstalled);
 
-    $app->plugin->set_config_value('modulesets',$modulesets,"blog:$blog_id");
+        $app->plugin->set_config_value('modulesets',$modulesets,"blog:$blog_id");
+    }
 }
 
 sub installed {
