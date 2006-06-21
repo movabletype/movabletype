@@ -19,8 +19,7 @@
 
 </TMPL_IF>
 
-<div align="center">
-<input type="button" onclick="window.close()" value="Close" />
+<div>
 <input type="button" onclick="window.location='<TMPL_VAR NAME=WIZARD_URI ESCAPE=HTML>'" value="<TMPL_UNLESS NAME=SAVED>Go Back<TMPL_ELSE>Create Another</TMPL_UNLESS>" />
 </div>
 
