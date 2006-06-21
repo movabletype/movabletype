@@ -498,6 +498,8 @@ sub static_path {
     my $static_path = '';
 
     if ($app->{cfg}->StaticWebPath ne '') {
+        $static_path = $app->{cfg}->StaticWebPath;
+        $static_path .= '/' unless $static_path =~ m!/$!;
         return $app->{cfg}->StaticWebPath;
     }
     return $app->mt_static_exists ? $app->cgipath.'mt-static/' : '';
