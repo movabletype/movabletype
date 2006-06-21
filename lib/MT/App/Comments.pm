@@ -611,6 +611,7 @@ sub _send_comment_notification {
                      unapproved => !$comment->visible(),
                     );
         my $body = MT->build_email('new-comment.tmpl', \%param);
+        $body = wrap_text($body, 72);
         MT::Mail->send(\%head, $body)
             or return $app->handle_error(MT::Mail->errstr());
     }
