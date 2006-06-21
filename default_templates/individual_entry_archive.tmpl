@@ -214,12 +214,12 @@
                       <div class="module-welcome module">
                          <h2 class="module-header"><MT_TRANS phrase="About"></h2>
                          <div class="module-content">
-                             <p class="first"><MT_TRANS phrase="This page contains a single entry from the blog posted on "><strong><$MTEntryDate format="%x %X"$></strong><MT_TRANS phrase="."></p>
-                             <MTEntryPrevious><p><MT_TRANS phrase="The previous post in this blog was "><a href="<$MTEntryPermalink$>"><$MTEntryTitle remove_html="1"$></a><MT_TRANS phrase="."></p></MTEntryPrevious>
+                             <p class="first"><MT_TRANS phrase="This page contains a single entry from the blog posted on <strong>[_1]</strong>." params="<$MTEntryDate format="%x %X"$>"></p>
+                             <MTEntryPrevious><p><MT_TRANS phrase="The previous post in this blog was <a href="[_1]">[_2]</a>." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p></MTEntryPrevious>
 
-                             <MTEntryNext><p><MT_TRANS phrase="The next post in this blog is "><a href="<$MTEntryPermalink$>"><$MTEntryTitle remove_html="1"$></a><MT_TRANS phrase="."></p></MTEntryNext>
+                             <MTEntryNext><p><MT_TRANS phrase="The next post in this blog is <a href="[_1]">[_2]</a>." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p></MTEntryNext>
 
-                             <p><MT_TRANS phrase="Many more can be found on the "><a href="<$MTBlogURL$>"><MT_TRANS phrase="main index page"></a><MT_TRANS phrase=" or by looking through "><a href="<$MTBlogURL$>archives.html"><MT_TRANS phrase="the archives"></a><MT_TRANS phrase="."></p>
+                             <p><MT_TRANS phrase="Many more can be found on the <a href="[_1]">main index page</a> or by looking through <a href="[_2]">the archives</a>." params="<$MTBlogURL$>%%<$MTBlogURL$>archives.html"></p>
                              
                          </div>
                       </div>
