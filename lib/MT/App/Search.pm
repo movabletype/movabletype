@@ -108,6 +108,7 @@ sub init_request{
             $app->{templates}{$nickname} = $file;
         }
     }
+
     $app->{templates}{default} = $cfg->DefaultTemplate;
     $app->{searchparam}{SearchTemplatePath} = $cfg->SearchTemplatePath;
 
@@ -275,7 +276,7 @@ sub execute {
     $ctx->stash('template_id', $app->{searchparam}{Template});
 
     my $str;
-    if ($include && keys(%$include) == 1) {
+    if ($include_blog && keys(%$include_blog) == 1) {
         if ($app->{searchparam}{Template} eq 'default') {
             # look for a 'search_template'
             my ($blog_id) = keys %$include;
