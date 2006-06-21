@@ -171,6 +171,7 @@ sub process_log_feed {
         my $class = $log->class || 'system';
         $templates{$class} ||= $app->load_tmpl("feed_$class.tmpl") ||
             $app->load_tmpl("feed_system.tmpl");
+        $templates{$class}->clear_params();
         my $out = $app->build_page($templates{$class}, $item)
             or die $app->errstr;
         push @entries, { entry => $out };
