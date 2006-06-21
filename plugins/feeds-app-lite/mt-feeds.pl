@@ -7,6 +7,10 @@ $VERSION = '0.85';
 my $plugin = MT::Plugin::FeedsLite->new;
 MT->add_plugin($plugin);
 
+# added by DJ XXX
+MT->add_plugin_action('blog','index.cgi?', "Create a feed module/widget");
+MT->add_plugin_action('list_template','index.cgi?', "Create a feed module/widget");
+
 use MT::Template::Context;
 
 MT::Template::Context->add_container_tag(Feed => \&feed);

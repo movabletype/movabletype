@@ -46,7 +46,8 @@ sub select {
     unless (@feeds) {
         $p->{not_found}  = 1;
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
-        $p->{uri}        = $uri;
+        $p->{uri}        = $uri;	
+	$p->{wm_url}	 = $app->app_path . '/plugins/WidgetManager/widget-manager.cgi?blog_id='. $blog_id;
         return $app->build_page("msg.tmpl", $p);
     } elsif (@feeds == 1) {    # skip to the next step if only one choice
         my $redirect = $app->app_uri;
@@ -75,6 +76,7 @@ sub configuration {
         $p->{feederr}    = 1;
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
         $p->{uri}        = $uri;
+	$p->{wm_url}	 = $app->app_path . '/plugins/WidgetManager/widget-manager.cgi?blog_id='. $blog_id;
         return $app->build_page("msg.tmpl", $p);
     }
     $p->{feed_title} = $feed->find_title($feed->feed) || $uri;
@@ -126,6 +128,7 @@ TEXT
     $p->{saved}      = 1;
     $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
     $p->{uri}        = $uri;
+    $p->{wm_url}     = $app->app_path . '/plugins/WidgetManager/widget-manager.cgi?blog_id='. $blog_id;
     $app->build_page("msg.tmpl", $p);
 }
 
