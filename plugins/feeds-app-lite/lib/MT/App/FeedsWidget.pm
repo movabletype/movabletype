@@ -47,7 +47,7 @@ sub select {
         $p->{not_found}  = 1;
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
         $p->{uri}        = $uri;	
-	$p->{wm_url}	 = $app->app_path . '/plugins/WidgetManager/widget-manager.cgi?blog_id='. $blog_id;
+        $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
         return $app->build_page("msg.tmpl", $p);
     } elsif (@feeds == 1) {    # skip to the next step if only one choice
         my $redirect = $app->app_uri;
@@ -76,7 +76,7 @@ sub configuration {
         $p->{feederr}    = 1;
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
         $p->{uri}        = $uri;
-	$p->{wm_url}	 = $app->app_path . '/plugins/WidgetManager/widget-manager.cgi?blog_id='. $blog_id;
+        $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
         return $app->build_page("msg.tmpl", $p);
     }
     $p->{feed_title} = $feed->find_title($feed->feed) || $uri;
@@ -128,8 +128,20 @@ TEXT
     $p->{saved}      = 1;
     $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
     $p->{uri}        = $uri;
-    $p->{wm_url}     = $app->app_path . '/plugins/WidgetManager/widget-manager.cgi?blog_id='. $blog_id;
+    $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
     $app->build_page("msg.tmpl", $p);
+}
+
+sub wm_url {
+    my $app = shift;
+    eval {
+        require WidgetManager::App;
+    };
+
+    unless ($@) {
+        my $wm = WidgetManager::App->new( Directory => $app->config_dir );
+        return $wm->{script_url};
+    }
 }
 
 1;

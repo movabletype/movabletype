@@ -30,9 +30,9 @@ sub init {
     $app->{user_class}     = 'MT::Author';
     $app->{requires_login} = 1;
 
-    $app->{mtscript_url}   = ($app->{cfg}->AdminCGIPath ? $app->{cfg}->AdminCGIPath : $app->{cfg}->CGIPath) . 
-    $app->{cfg}->AdminScript;
+    $app->{mtscript_url}   = ($app->{cfg}->AdminCGIPath ? $app->{cfg}->AdminCGIPath : $app->{cfg}->CGIPath) . $app->{cfg}->AdminScript;
     $app->{mmscript_url}   = $app->path . $app->{cfg}->AdminScript;
+    $app->{script_url} = $app->{cfg}->CGIPath . 'plugins/WidgetManager/widget-manager.cgi';
 
     WidgetManager::Util::debug('Finished initializing Widget Manager.');
     return $app;
