@@ -199,6 +199,8 @@ TC.TagComplete.prototype.handleTagComplete = function( word )
         var rest = this.input_box.value.substring(this.insert_pos+1);
         if (rest.indexOf(this.delimiter) != -1) {
             rest = rest.substring(rest.indexOf(this.delimiter) + 1);
+        } else {
+            rest = ''
         }
         var completion = word + sep;
         this.input_box.value = inputValue.substring( 0, this.insert_pos ) + completion + rest;
@@ -220,8 +222,9 @@ TC.TagComplete.prototype.lookForCompletions = function()
     this.tagCompleteNode.getStrings(this.currentWord, '', this.suggestedCompletions);
     this.hasCompletions = this.suggestedCompletions.length ? 1 : 0;
     if (this.hasCompletions) {
-        this.insert_pos = (this.input_box.selectionStart != 'undefined' ?
-            this.input_box.selectionStart : -1);
+        if (this.insert_pos == -1)
+            this.insert_pos = (this.input_box.selectionStart != 'undefined' ?
+                this.input_box.selectionStart : -1);
         this.constructCompletionBox();
     } else
         this.clearCompletions();
