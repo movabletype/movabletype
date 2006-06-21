@@ -359,7 +359,6 @@ sub optional {
 
 sub seed {
     my $app = shift;
-    my %param = @_;
 
     # input data unserialize to config
     my %param = $app->unserialize_config;
