@@ -972,7 +972,8 @@ function create_cat_expr_function($expr, &$cats, $param) {
         $catl = $cat['category_label'];
         $catid = $cat['category_id'];
         $oldexpr = $expr;
-        if (!preg_match("/(?:\Q[$catl]\E|\Q$catl\E|#$catid)/", $expr))
+        $catre = preg_quote($catl, "/");
+        if (!preg_match("/(?:\[$catre\]|$catre|#$catid)/", $expr))
             continue;
         if ($include_children) {
             $kids = array($cat);
@@ -993,7 +994,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
         } else {
             $repl = "(#$catid)";
         }
-	    $expr = preg_replace("/(?:\Q[$catl]\E|\Q$catl\E|#$catid)/", $repl,
+	    $expr = preg_replace("/(?:\[$catre\]|$catre|#$catid)/", $repl,
             $expr);
         if ($oldexpr != $expr) {
             if ($include_children) {

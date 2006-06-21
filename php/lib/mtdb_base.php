@@ -1255,7 +1255,7 @@ class MTDatabaseBase extends ezsql {
         if (isset($this->_cat_id_cache['c'.$cat_id])) {
             return $this->_cat_id_cache['c'.$cat_id];
         }
-        $cats =& $this->fetch_categories(array('category_id' => $cat_id));
+        $cats =& $this->fetch_categories(array('category_id' => $cat_id, 'show_empty' => 1));
         if ($cats && (count($cats) > 0)) {
             $this->_cat_id_cache['c'.$cat_id] = $cats[0];
             return $cats[0];

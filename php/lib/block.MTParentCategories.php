@@ -19,7 +19,7 @@ function smarty_block_MTParentCategories($args, $content, &$ctx, &$repeat) {
         $parents = array();
         get_parent_categories($cat, $ctx, $parents);
         if (!isset($args['exclude_current'])) {
-            array_push($parents, 0); $parents[count($parents)-1] =& $cat;
+            $parents[] = $cat;
         }
         if (isset($args['glue'])) {
             $glue = $args['glue'];
