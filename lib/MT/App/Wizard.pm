@@ -332,11 +332,11 @@ sub optional {
             $cfg->SendMailPath($param{sendmail_path}) if $param{sendmail_path};
             my %head = (To => $param{test_mail_address},
                         From => $cfg->EmailAddressMain || $param{test_mail_address},
-                        Subject => $app->translate("Test mail from Configuration Wizard") );
+                        Subject => $app->translate("Test email from Movable Type Configuration Wizard") );
             my $charset = $cfg->PublishCharset;
             $head{'Content-Type'} = qq(text/plain; charset="$charset");
 
-            my $body = $app->translate("test test test. change me please");
+            my $body = $app->translate("This is the test email sent by your new installation of Movable Type.");
 
             require MT::Mail;
             $ok = MT::Mail->send(\%head, $body);
