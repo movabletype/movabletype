@@ -219,6 +219,10 @@ TC.TagComplete.prototype.handleTagComplete = function( word )
             rest = ''
         }
         var completion = word + sep;
+        if (this.delimiter != ' ') {
+            if (this.insert_pos > 0)
+                completion = ' ' + completion;
+        }
         this.input_box.value = inputValue.substring( 0, this.insert_pos ) + completion + rest;
         var newPos = (this.insert_pos - 1) + completion.length + 1;
         TC.setCaretPosition( this.input_box, newPos );
