@@ -153,6 +153,9 @@ class MTDatabase_mysql extends MTDatabaseBase {
         if (isset($args['entry_id'])) {
             $entry_filter = 'and B.objecttag_object_id = '.intval($args['entry_id']);
         }
+        if (isset($args['blog_id'])) {
+            $blog_filter = 'and A.objecttag_blog_id = '.intval($args['blog_id']);
+        }
 
         if (!isset($args['include_private'])) {
             $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
@@ -181,7 +184,7 @@ class MTDatabase_mysql extends MTDatabaseBase {
                 , A.objecttag_blog_id
             from
                 mt_objecttag A
-                left join mt_objecttag B on A.objecttag_tag_id = B.objecttag_tag_id $entry_filter
+                left join mt_objecttag B on A.objecttag_tag_id = B.objecttag_tag_id $entry_filter $blog_filter
                 left join mt_entry D on B.objecttag_object_id = D.entry_id
                 ,mt_tag C
             where

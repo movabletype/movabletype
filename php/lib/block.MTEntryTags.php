@@ -21,7 +21,7 @@ function smarty_block_MTEntryTags($args, $content, &$ctx, &$repeat) {
         $ctx->stash('all_tag_count', $all_count);
 
         $entry = $ctx->stash('entry');
-        $tags = $ctx->mt->db->fetch_entry_tags(array('entry_id' => $entry['entry_id']));
+        $tags = $ctx->mt->db->fetch_entry_tags(array('entry_id' => $entry['entry_id'], 'blog_id' => $blog_id));
         $ctx->stash('_tags', $tags);
         
         $counter = 0;
