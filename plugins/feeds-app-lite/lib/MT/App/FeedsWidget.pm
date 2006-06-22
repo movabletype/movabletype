@@ -55,7 +55,10 @@ sub select {
         $p->{not_found}  = 1;
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
         $p->{uri}        = $uri;	
-        $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
+        if ($app->wm_url) {
+	    $p->{wm_url} = $app->wm_url . '?blog_id=' . $blog_id;
+	    $p->{wm_is} = 1;
+        }
         $app->add_breadcrumb("Main Menu", $app->mt_uri);
         $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
         $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
@@ -92,11 +95,14 @@ sub configuration {
         $p->{feederr}    = 1;
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
         $p->{uri}        = $uri;
-        $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
         $app->add_breadcrumb("Main Menu", $app->mt_uri);
         $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
         $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
         $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
+        if ($app->wm_url) {
+	    $p->{wm_url} = $app->wm_url . '?blog_id=' . $blog_id;
+	    $p->{wm_is} = 1;
+        }
         return $app->build_page("msg.tmpl", $p);
     }
     $p->{feed_title} = $feed->find_title($feed->feed) || $uri;
@@ -152,11 +158,14 @@ TEXT
     $p->{saved}      = 1;
     $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
     $p->{uri}        = $uri;
-    $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
     $app->add_breadcrumb("Main Menu", $app->mt_uri);
     $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
     $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
     $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
+    if ($app->wm_url) {
+        $p->{wm_url} = $app->wm_url . '?blog_id=' . $blog_id;
+        $p->{wm_is} = 1;
+    }
     $app->build_page("msg.tmpl", $p);
 }
 
@@ -169,6 +178,7 @@ sub wm_url {
         my $wm = WidgetManager::App->new( Directory => $app->config_dir );
         return $wm->{script_url};
     }
+    return 0;
 }
 
 1;

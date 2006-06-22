@@ -13,7 +13,11 @@
 <TMPL_IF NAME=SAVED>
 <p><MT_TRANS phrase="Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]" target="_blank">edit</a> to customize its display." params="<TMPL_VAR NAME=MODULE ESCAPE=HTML>%%<TMPL_VAR NAME=MT_URL>?__mode=list&_type=template&blog_id=<TMPL_VAR NAME=BLOG_ID>"></p>
 
+<TMPL_IF NAME=WM_IS>
 <p><MT_TRANS phrase="It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or this MTInclude tag" params="<TMPL_VAR NAME=WM_URL ESCAPE=HTML>">.</p>
+<TMPL_ELSE>
+<p><MT_TRANS phrase="It can be included onto your published blog using this MTInclude tag" params="<TMPL_VAR NAME=WM_URL ESCAPE=HTML>">.</p>
+</TMPL_IF>
 
 <blockquote><p><strong>&lt;$MTInclude name="<TMPL_VAR NAME=MODULE ESCAPE=HTML>"&gt;</strong></p></blockquote>
 
