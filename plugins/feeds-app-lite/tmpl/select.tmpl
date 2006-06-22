@@ -13,7 +13,7 @@
 <thead>
 <tr>
 <th style="width:10%;" class="cb"></th>
-<th style="width:50%;"><MT_TRANS phrase="Title"></th>
+<th style="width:50%;"><MT_TRANS phrase="Type"></th>
 <th style="width:40%;"><MT_TRANS phrase="URI"></th>
 </tr>
 </thead>
@@ -21,7 +21,7 @@
 
 <TMPL_LOOP NAME=FEEDS>
 <tr class="<TMPL_IF NAME=IS_ODD>odd<TMPL_ELSE>even</TMPL_IF>">
-<td class="cb"><input type="radio" name="uri" value="<TMPL_VAR NAME=URI ESCAPE=HTML>"/></td>
+<td class="cb"><input type="radio" name="uri" value="<TMPL_VAR NAME=URI ESCAPE=HTML>" /></td>
 <td><TMPL_VAR NAME=TITLE ESCAPE=HTML></td>
 <td><TMPL_VAR NAME=URI ESCAPE=HTML></td>
 </tr>
@@ -34,11 +34,11 @@
 <br />
 
 <div>
-<input type="submit" value="Continue" />&nbsp;
+<input type="submit" value="<MT_TRANS phrase="Continue">" />&nbsp;
 </div>
 
 </form>
 
-<TMPL_INCLUDE NAME="footer-popup.tmpl">
+<TMPL_INCLUDE NAME="footer.tmpl">
 
 

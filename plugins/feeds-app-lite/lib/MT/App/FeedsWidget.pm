@@ -155,6 +155,7 @@ TEXT
     $tmpl->text($txt);
     $tmpl->save or return $app->error($tmpl->errstr);
     $p->{module}     = $name;
+    $p->{module_id}  = $tmpl->id;
     $p->{saved}      = 1;
     $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
     $p->{uri}        = $uri;

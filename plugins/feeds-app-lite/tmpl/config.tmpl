@@ -2,20 +2,29 @@
 
 <h2><MT_TRANS phrase="Feeds.App Lite Widget Creator"></h2>
 
-<h3><TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML></h3>
-
-<p><strong><MT_TRANS phrase="Feed URL">:</strong> <TMPL_VAR NAME=FEED_URI ESCAPE=HTML></p>
-
 <form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>"/>
-<input type="hidden" name="__mode" value="save"/>
-<input type="hidden" name="uri" value="<TMPL_VAR NAME=FEED_URI ESCAPE=HTML>"/>
 
-<fieldset>
+    <fieldset>
+        <h3><MT_TRANS phrase="Feed Configuration">: <TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML></h3>
+
+    <div class="inner">
+
+
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="uri" value="<TMPL_VAR NAME=FEED_URI ESCAPE=HTML>" />
+
+<div class="setting">
+<div class="label" style="width: 70px;"><label><MT_TRANS phrase="Feed URL">:</label></div>
+<div class="field" style="width: 250px;">
+<p><TMPL_VAR NAME=FEED_URI ESCAPE=HTML></p>
+</div>
+</div>
+
 <div class="setting">
 <div class="label" style="width: 50px;"><label for="feed_title"><MT_TRANS phrase="Title">:</label></div>
 <div class="field" style="width: 270px;">
-<input name="feed_title" value="<TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML>" type="text">
+<input name="feed_title" id="feed_title" value="<TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML>" type="text" />
 <p><MT_TRANS phrase="Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog."></p>
 </div>
 </div>
@@ -24,9 +33,9 @@
 <div class="setting">
 <div class="label" style="width: 50px;"><label for="lastn"><MT_TRANS phrase="Display">:</label></div>
 <div class="field" style="width: 270px;">
-<select name="lastn">
+<select name="lastn" id="lastn">
 <option value="3"><MT_TRANS phrase="3"></option>
-<option value="5" selected="1"><MT_TRANS phrase="5"></option>
+<option value="5" selected="selected"><MT_TRANS phrase="5"></option>
 <option value="10"><MT_TRANS phrase="10"></option>
 <option value=""><MT_TRANS phrase="All"></option>
 </select>
@@ -34,15 +43,11 @@
 </div>
 </div>
 
+
+<div style="margin-left:70px;">
+<input type="submit" value="<MT_TRANS phrase="Save">" />&nbsp;
+</div>
+</div>
 </fieldset>
-
-<div>
-<input type="submit" value="Save" />&nbsp;
-</div>
-
 </form>
-<TMPL_INCLUDE NAME="footer-popup.tmpl">
-</div>
-
-
-
+<TMPL_INCLUDE NAME="footer.tmpl">

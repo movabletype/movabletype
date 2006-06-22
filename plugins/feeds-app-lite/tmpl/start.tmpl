@@ -3,8 +3,8 @@
 <h2><MT_TRANS phrase="Feeds.App Lite Widget Creator"></h2>
 
 <form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>"/>
-<input type="hidden" name="__mode" value="select"/>
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="__mode" value="select" />
 
 <div class="field">
 
@@ -13,13 +13,12 @@
 <TMPL_IF NAME=NEED_URI><h5 class="error-message"><MT_TRANS phrase="You must enter an address to proceed"></h5></TMPL_IF>
 <div class="label-column"><h5><label for="uri"><MT_TRANS phrase="Enter the URL of a feed, or the URL of a site that has a feed."></label></h5></div>
 <div class="field-column">
-<input style="width:300px;" type="text" name="uri" id="uri"/></p>
+<input style="width:300px;" type="text" name="uri" id="uri" />
 </div>
 </div>
 
-<div><input type="submit" value="<MT_TRANS phrase="Continue">" />&nbsp;
-</div>
+<div><input type="submit" value="<MT_TRANS phrase="Continue">" /></div>
 
 </form>
 
-<TMPL_INCLUDE NAME="footer-popup.tmpl">
+<TMPL_INCLUDE NAME="footer.tmpl">
