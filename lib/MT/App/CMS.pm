@@ -2129,6 +2129,7 @@ sub edit_object {
             }
         } elsif ($type eq 'template') {
             $param{nav_templates} = 1;
+            $param{name} = $app->translate($param{name});
             my $tab;
             if ($obj->type eq 'index') {
                 $tab = 'index';
