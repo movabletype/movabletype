@@ -136,7 +136,8 @@ TC.TagComplete.prototype.keyDown = function( evt )
         this.stopped = evt.keyCode;
         return TC.stopEvent( evt );
     }
-    else if ( String.fromCharCode(evt.keyCode) == this.delimiter ) {
+    else if ( ( String.fromCharCode(evt.keyCode) == this.delimiter ) ||
+              ( ( evt.keyCode == 188 ) && ( this.delimiter == ',' ) ) ) {
         this.currentWord = '';
         this.clearCompletions();
     }
