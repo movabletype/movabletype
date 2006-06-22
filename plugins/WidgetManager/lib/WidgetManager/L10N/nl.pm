@@ -19,6 +19,8 @@ use vars qw( %Lexicon );
     'Recent posts' => 'Recente berichten',
     'Search form' => 'Zoekformulier',
     'Subscribe to feed' => 'Inschrijven op feed',
+    'Recent comments' => 'Laatste reacties',
+    'Tag cloud (sidebar)' => 'Tagcloud (zijkolom)',
 );
 1;
 

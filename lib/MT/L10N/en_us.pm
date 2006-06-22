@@ -180,6 +180,7 @@ the address you provided is correct and belongs to you.',
 yles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for st
 yles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.',
      'Install <a href=\'http://greasemonkey.mozdev.org/\'>GreaseMonkey</a>' => 'Install <a href=\'http://greasemonkey.mozdev.org/\'>GreaseMonkey</a>',
+     'Create a feed widget' => 'Create a feed widget',
 );
 
 1;

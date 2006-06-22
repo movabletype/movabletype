@@ -340,7 +340,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'StyleCatcher user script.' => 'StyleCatcher gebruikers script.',
     'Theme or Repository URL:' => 'URL van thema of bibliotheek:',
     'Find Styles' => 'Stijlen zoeken',
-    'NOTE:' => 'NOTE:', # Translate - New (1)
+    'NOTE:' => 'OPMERKING:', 
     'It will take a moment for themes to populate once you click \'Find Style\'.' => 'Het kan even duren voor de lijst met thema\'s is ingeladen nadat u op \'Stijlen zoeken\' heeft geklikt.',
     'Current theme for your weblog' => 'Huidig thema van uw weblog',
     'Current Theme' => 'Huidig thema',
@@ -699,8 +699,8 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Compact' => 'Compact', # Translate - Previous (1)
     'Expanded' => 'Uitgebreid',
     'Save' => 'Opslaan',
-    'You currently have no blogs.' => 'You currently have no blogs.', # Translate - New (5)
-    'Please see your system administrator for access.' => 'Please see your system administrator for access.', # Translate - New (7)
+    'You currently have no blogs.' => 'U heeft momenteel geen blogs.', # Translate - New (5)
+    'Please see your system administrator for access.' => 'Gelieve uw systeembeheerder te contacteren voor toegang.', # Translate - New (7)
 
     ## ./tmpl/cms/import.tmpl
     'Import / Export' => 'Import/export',
@@ -1487,7 +1487,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
 
     ## ./tmpl/cms/header.tmpl
     'Go to:' => 'Ga naar:',
-    'Select a blog' => 'Select a blog', # Translate - New (3)
+    'Select a blog' => 'Selecteer een blog', # Translate - New (3)
     'System-wide listing' => 'Overzicht op systeemniveau',
     'Search (q)' => 'Zoeken (q)',
 
@@ -1869,7 +1869,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     ## ./tmpl/wizard/optional.tmpl
     'Step' => 'Stap',
     'Mail Configuration' => 'E-mail instellingen',
-    'You can configure you mail settings from here, or you can complete the configuration wizard by clicking \'Continue\'.' => 'You can configure you mail settings from here, or you can complete the configuration wizard by clicking \'Continue\'.', # Translate - New (18)
+    'You can configure you mail settings from here, or you can complete the configuration wizard by clicking \'Continue\'.' => 'U kunt uw e-mail instellingen van hieruit configureren, of u kunt de configuratiewizard verder zetten door op \'Doorgaan\' te klikken.', # Translate - New (18)
     'An error occurred while attempting to send mail: ' => 'Er deed zich een fout voor toen er werd geprobeerd e-mail te verzenden: ',
     'MailTransfer' => 'MailTransfer', # Translate - Previous (1)
     'Select One...' => 'Selecteer er één...',
@@ -1880,12 +1880,12 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Mail address for test sending' => 'E-mail adres om een testmail te sturen',
     'Your mail configuration is successfully.' => 'U e-mail instellingen zijn met succes geconfigureerd.',
     'Back' => 'Terug',
-    'Send Test Email' => 'Send Test Email', # Translate - New (3)
+    'Send Test Email' => 'Verstuur testbericht', # Translate - New (3)
 
     ## ./tmpl/wizard/complete.tmpl
     'Congratulations! You\'ve successfully configured [_1] [_2].' => 'Gefeliciteerd!  U heeft met succes [_1] [_2] geconfigureerd.',
     'This is a copy of your configuration settings.' => 'Dit is een kopie van uw configuratie-instellingen.',
-    'We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the \'Retry\' button.', # Translate - New (23)
+    'We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'Het aanmaken van uw configuratiebestand is mislukt.  Als u de permissies van uw map wenst na te kijken om daarna opnieuw te proberen, klik op de \'Opnieuw\' knop.', # Translate - New (23)
     'Retry' => 'Opnieuw proberen',
     'Install' => 'Installeren',
 
@@ -1896,36 +1896,38 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Welcome to the Movable Type Configuration Wizard' => 'Welkom in de  Movable Type configuratiewizard',
     'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type vereist dat JavaScript ingeschakeld is in uw browser.  Gelieve het in te schakelen en herlaad deze pagina om opnieuw te proberen.',
     'Your Movable Type configuration file already exists. The Wizard cannot continue with this file present.' => 'Uw Movable Type configuratiebestand bestaat al.  De wizzard kan niet verder gaan als dit bestand al aanwezig is.',
-    'The Movable Type Configuration Wizard will help you set up your Perl installation, your database connection, and your mail settings. Click on \'Begin\' below to get started.' => 'The Movable Type Configuration Wizard will help you set up your Perl installation, your database connection, and your mail settings. Click on \'Begin\' below to get started.', # Translate - New (27)
-    'It appears that you need to set your static webpath. This is where static files such as stylesheets and images will reside. Please enter where your static webpath is below.' => 'It appears that you need to set your static webpath. This is where static files such as stylesheets and images will reside. Please enter where your static webpath is below.', # Translate - New (30)
-    'Where is your static webpath?' => 'Where is your static webpath?', # Translate - New (5)
+    'The Movable Type Configuration Wizard will help you set up your Perl installation, your database connection, and your mail settings. Click on \'Begin\' below to get started.' => '
+    De Movable Type configuratiewizard zal u helpen met het opzetten van uw Perl installatie, databaseverbinding en e-mail instellingen.  Klik hieronder op \'Begin\' om van start te gaan.', # Translate - New (27)
+    'It appears that you need to set your static webpath. This is where static files such as stylesheets and images will reside. Please enter where your static webpath is below.' => 'Het lijkt er op dat u een statisch webpad moet instellen.  Dit is de plaats waar statische bestanden zoals stylesheets en afbeeldingen zullen staan.  Gelieve hieronder uw statisch webpad in te vullen..', # Translate - New (30)
+    'Where is your static webpath?' => 'Waar is uw statisch webpad?', # Translate - New (5)
     'Begin' => 'Begin', # Translate - Previous (1)
 
     ## ./tmpl/wizard/footer.tmpl
 
     ## ./tmpl/wizard/packages.tmpl
+    'Step 1 of 3' => 'Stap 1 van 3',
     'Requirements Check' => 'Controle systeemvereisten',
-    'One of the following Perl packages are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'One of the following Perl packages are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.', # Translate - New (47)
+    'One of the following Perl packages are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'Eén van de onderstaande Perl modules is vereist om een databaseverbinding te kunnen maken.  Movable Type heeft een database nodig om de gegevens van uw weblog op te slaan.  Gelieve één van de modules hieronder te installeren om verder te kunnen gaan. Wanneer u klaar bent, klik dan op de \'Opnieuw\' knop.', # Translate - New (47)
     'Missing Database Packages' => 'Ontbrekende database modules',
-    'The following Perl packages are missing from your installation. These packages are not required to install Movable Type.  They will enhance the features available to Movable Type.  If you want to continue without installing these packages, click the \'Continue\' button to configure your database.  Otherwise, click the \'Retry\' button to re-test for these packages.' => 'The following Perl packages are missing from your installation. These packages are not required to install Movable Type.  They will enhance the features available to Movable Type.  If you want to continue without installing these packages, click the \'Continue\' button to configure your database.  Otherwise, click the \'Retry\' button to re-test for these packages.', # Translate - New (54)
+    'The following Perl packages are missing from your installation. These packages are not required to install Movable Type.  They will enhance the features available to Movable Type.  If you want to continue without installing these packages, click the \'Continue\' button to configure your database.  Otherwise, click the \'Retry\' button to re-test for these packages.' => 'Volgende Perl modules ontbreken in uw installatie.  Deze modules zijn niet vereist om Movable Type te kunnen installeren.  Ze vergroten wel de mogelijkheden beschikbaar in Movable Type.  Als u wenst verder te gaan zonder deze modules te installeren, klik dan op de knop \'Doorgaan\' om uw database-instellingen te configureren.  Klik anders op de \'Opnieuw\' knop om nogmaals te testen of deze modules beschikbaar zijn.', # Translate - New (54)
     'Missing Optional Packages' => 'Ontbrekende optionele modules',
-    'The following Perl packages are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'The following Perl packages are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.', # Translate - New (27)
+    'The following Perl packages are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'Volgende Perl modules zijn vereist voor de werking van Movable Type.  Klik op te \'Opnieuw\' knop zodra uw systeem aan deze vereisten voldoet om opnieuw te testen of deze modules aanwezig zijn.', # Translate - New (27)
     'Missing Required Packages' => 'Ontbrekende vereiste modules.',
-    'Minimal version requirement:' => 'Minimal version requirement:', # Translate - New (3)
+    'Minimal version requirement:' => 'Minimale versie vereist:', # Translate - New (3)
     'Installation instructions.' => 'Installatie-instructies.',
     'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'Op uw server zijn alle vereiste modules geïnstalleerd; u hoeft geen bijkomende modules te installeren.',
 
     ## ./tmpl/wizard/configure.tmpl
     'Database Configuration' => 'Database configuratie',
-    'Your database configuration is complete. Click \'Continue\' below to configure your mail settings.' => 'Your database configuration is complete. Click \'Continue\' below to configure your mail settings.', # Translate - New (13)
+    'Your database configuration is complete. Click \'Continue\' below to configure your mail settings.' => 'Uw databaseconfiguratie is voltooid.  Klik op \'Doorgaan\' hieronder om uw e-mail instellingen te configureren.', # Translate - New (13)
     'Please enter the parameters necessary for connecting to your database.If your database type is not listed in the dropdown below, you may be missing the Perl module necessary to connect to your database.  If this is the case, please check your installation and click <a href=' => 'Gelieve hieronder de parameters in te vullen die nodig zijn om verbinding te maken met uw database.  Als uw databasetype niet in het onderstaande lijstje voorkomt, kan het zijn dat er een Perl module ontbreekt op uw systeem om verbinding te kunnen maken met uw database.  Als dit het geval is, controleer uw installatie en klik <a href=',
     'An error occurred while attempting to connect to the database: ' => 'Er deed zich een fout bij tijdens het verbinden met de database: ',
     'Database' => 'Database', # Translate - Previous (1)
     'Database Path' => 'Databasepad',
     'The physical file path for your BerkeleyDB or SQLite database. ' => 'Het pad naar het fysieke bestand voor uw BerkeleyDB of SQLite database. ',
-    'A default location of \'./db\' will store the database file(s) underneath your Movable Type directory.' => 'A default location of \'./db\' will store the database file(s) underneath your Movable Type directory.', # Translate - New (16)
+    'A default location of \'./db\' will store the database file(s) underneath your Movable Type directory.' => 'De standaardlocatie \'./db\' zal de databasebestand(en) opslaan onder uw Movable Type map.', # Translate - New (16)
     'Database Name' => 'Databasenaam',
-    'The name of your SQL database (this database must already exist).' => 'The name of your SQL database (this database must already exist).', # Translate - New (11)
+    'The name of your SQL database (this database must already exist).' => 'De naam van uw SQL database (deze database moet al bestaan).', # Translate - New (11)
     'The username to login to your SQL database.' => 'De gebruikersnaam om in te loggen op uw SQL database.',
     'The password to login to your SQL database.' => 'Het wachtwoord om in te loggen op uw SQL database.',
     'Database Server' => 'Databaseserver',
@@ -2562,18 +2564,18 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
     ## ./extlib/Math/BigInt/Calc.pm
 
     ## ./lib/MT.pm
-    'Message: [_1]' => 'Message: [_1]', # Translate - New (2)
-    'Unnamed plugin' => 'Unnamed plugin', # Translate - New (2)
-    '[_1] died with: [_2]' => '[_1] died with: [_2]', # Translate - New (5)
-    'Plugin error: [_1] [_2]' => 'Plugin error: [_1] [_2]', # Translate - New (4)
+    'Message: [_1]' => 'Boodschap: [_1]', # Translate - New (2)
+    'Unnamed plugin' => 'Plugin zonder naam', # Translate - New (2)
+    '[_1] died with: [_2]' => '[_1] mislukte met: [_2]', # Translate - New (5)
+    'Plugin error: [_1] [_2]' => 'Plugin fout: [_1] [_2]', # Translate - New (4)
 
     ## ./lib/MT/BasicAuthor.pm
 
     ## ./lib/MT/TaskMgr.pm
-    'Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.', # Translate - New (16)
+    'Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'Aanmaken van een lockfile mislukt om systeemtaken uit te kunnen voeren. Kijk naof uw TempDir locatie ([_1]) beschrijfbaar is.', # Translate - New (16)
     'Error during task \'[_1]\': [_2]' => 'Fout tijdens taak \'[_1]\': [_2]',
     'Task Update' => 'Taak-update',
-    'The following tasks were run:' => 'The following tasks were run:', # Translate - New (5)
+    'The following tasks were run:' => 'Volgende taken moesten uitgevoerd worden:', # Translate - New (5)
 
     ## ./lib/MT/Placement.pm
 
@@ -2823,8 +2825,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
     ## ./lib/MT/ConfigMgr.pm
     'Error opening file \'[_1]\': [_2]' => 'Fout bij openen bestand \'[_1]\': [_2]',
-    'Config directive [_1] without value at [_2] line [_3]' => 'Config directive [_1] without value at [_2] line [_3]', # Translate - New (9)
-    'No such config variable \'[_1]\'' => 'No such config variable \'[_1]\'', # Translate - New (5)
+    'Config directive [_1] without value at [_2] line [_3]' => 'Configuratiedirectief [_1] zonder waarde bij [_2] lijn [_3]', # Translate - New (9)
+    'No such config variable \'[_1]\'' => 'Onbekende configuratievariabele \'[_1]\'', # Translate - New (5)
 
     ## ./lib/MT/I18N/default.pm
 
