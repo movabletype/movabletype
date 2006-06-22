@@ -266,6 +266,8 @@ sub db2type {
         return 'smallint';
     } elsif ($type eq 'mediumint') {
         return 'integer';
+    } elsif ($type eq 'bigint') {
+        return 'integer';
     } elsif ($type eq 'varchar') {
         return 'string';
     } elsif ($type eq 'char') {
