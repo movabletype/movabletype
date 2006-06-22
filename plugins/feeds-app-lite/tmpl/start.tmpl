@@ -10,6 +10,7 @@
 
 <p><MT_TRANS phrase="Feeds.App Lite creates modules that include feed data. Once you've used it to create those modules, you can then use them in your blog templates."></p>
 
+<TMPL_IF NAME=NEED_URI><h4 class="error-message"><MT_TRANS phrase="You must enter an address to proceed"></h4></TMPL_IF>
 <div class="label-column"><h5><label for="uri"><MT_TRANS phrase="Enter the URL of a feed, or the URL of a site that has a feed."></label></h5></div>
 <div class="field-column">
 <input style="width:300px;" type="text" name="uri" id="uri"/></p>
