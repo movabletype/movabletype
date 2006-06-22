@@ -41,7 +41,7 @@ my %o = get_options(
   'date!'           => 1,  # Date-stamp the build by default.
   'debug'           => 0,  # Turn on/off the actual system calls.
   'deploy:s'        => '', #($ENV{USER}||$ENV{USERNAME}) .'@rongo:/usr/local/cifs/intranet/mt-interest/',
-  'deploy-uri=s'    => 'https://intranet.sixapart.com/mt-interest/%s',
+  'deploy-uri=s'    => 'https://intranet.sixapart.com/mt-interest',
   'email-bcc:s'     => undef,
   'email-body=s'    => '',  # Constructed at run-time.
   'email-cc:s'      => undef,
@@ -52,8 +52,8 @@ my %o = get_options(
   'footer=s'        => "<br><b>SOFTWARE IS PROVIDED FOR TESTING ONLY - NOT FOR PRODUCTION USE.</b>\n",
   'footer-tmpl=s'   => 'tmpl/cms/footer.tmpl',
   'help|h'          => 0,  # Show the program usage.
-  'http-user=s'       => undef,
-  'http-pass=s'       => undef,
+  'http-user=s'     => undef,
+  'http-pass=s'     => undef,
   'ldap'            => 0,  # Use LDAP (and don't initialize the database).
   'lang=s'          => $ENV{BUILD_LANGUAGE} || 'en_US',  # en_GB is generated automatically (de,es,fr,ja,nl)
   'local'           => 0,  # Command-line --option alias
@@ -65,11 +65,11 @@ my %o = get_options(
   'prod'            => 0,  # Command-line --option alias
   'qa'              => 0,  # Command-line --option alias
   'repo=s'          => 'trunk',  # Reset at runtime depending on branch,tag.
-  'repo-uri=s'      => 'https://intranet.sixapart.com/repos/eng/%s/mt',
+  'repo-uri=s'      => 'https://intranet.sixapart.com/repos/eng',
   'shown:s'         => undef,  # String to replace the VERSION_ID.
   'stage'           => 0,  # Command-line --option alias
   'stage-dir=s'     => '/var/www/html/mt-stage',
-  'stage-uri=s'     => 'http://mt.sixapart.com/%s',
+  'stage-uri=s'     => 'http://mt.sixapart.com',
   'stamp=s'         => '%04d%02d%02d',  # YYYY=%04d, MM=%02d, etc.
   'symlink!'        => 1,  # Make build symlinks when staging.
   'tag=s'           => '',  # mt3.2, mt3.2-intl, etc.
@@ -84,11 +84,11 @@ usage() if $o{'help|h'};
 $ENV{BUILD_LANGUAGE} ||= $o{'lang=s'};
 $ENV{BUILD_PACKAGE} ||= $o{'app=s'};
 
-# Figure out the the repository and URL to use.
+# Figure out the the repository and reset the URL.
 $o{'repo=s'} = $o{'branch=s'} ? "branches/$o{'branch=s'}"
              : $o{'tag=s'}    ? "tags/$o{'tag=s'}"
              : $o{'repo=s'};
-$o{'repo-uri=s'} = sprintf $o{'repo-uri=s'}, $o{'repo=s'};
+$o{'repo-uri=s'} = sprintf '%s/%s/mt', $o{'repo-uri=s'}, $o{'repo=s'};
 
 # Make sure that the repository actually exists.
 my $ua = LWP::UserAgent->new;
@@ -258,8 +258,8 @@ for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
         # Create lists of things to notify about.
         push @{ $distros->{path} }, $stamped;
         push @{ $distros->{url} },
-              $o{'stage'}           ? sprintf "$o{'stage-uri=s'}/mt.cgi", $app
-            : $o{'deploy:s'} =~ /:/ ? sprintf $o{'deploy-uri=s'}, $filename
+              $o{'stage'}           ? sprintf "%s/%s/mt.cgi", $o{'stage-uri=s'}, $app
+            : $o{'deploy:s'} =~ /:/ ? sprintf '%s/%s', $o{'deploy-uri=s'}, $filename
             : ();
     }
 }
@@ -330,7 +330,7 @@ if( $o{'deploy:s'} ) {
                 $db = 'stage_' . $db;
 
                 # Set the staging URL to a real location now.
-                my $url = sprintf $o{'stage-uri=s'}, "$o{'append:s'}/";
+                my $url = sprintf '%s/%s/', $o{'stage-uri=s'}, $o{'append:s'};
 
                 # Give unto us a shiny, new config file.
                 my $config = 'mt-config.cgi';
@@ -421,13 +421,13 @@ CONFIG
 
                 if( !$o{'debug'} || !$o{'symlink!'} ) {
                     # Make sure we can get to our symlink.
-                    $url = sprintf "$o{'stage-uri=s'}/mt.cgi",
-                        $o{'append:s'};
+                    $url = sprintf "%s/%s/mt.cgi",
+                        $o{'stage-uri=s'}, $o{'append:s'};
                     die "ERROR: Staging $url can't be resolved."
                         unless $ua->head( $url );
                     # Make sure we can get to our archive file symlink.
-                    $url = sprintf $o{'stage-uri=s'},
-                        "$o{'append:s'}$o{'arch=s'}";
+                    $url = sprintf '%s/%s%s',
+                        $o{'stage-uri=s'}, $o{'append:s'}, $o{'arch=s'};
                     die "ERROR: Staging $url can't be resolved."
                         unless $ua->head( $url );
                 }
@@ -448,8 +448,9 @@ CONFIG
                         if( /id="($o{'append:s'}(?:$o{'arch=s'}))"/ ) {
                             my $id = $1;
                             verbose( "Matched id=$id" );
-                            $line = sprintf qq/<a id="%s" href="$o{'stage-uri=s'}%s">%s%s<\/a>\n/,
+                            $line = sprintf qq/<a id="%s" href="%s/%s%s">%s%s<\/a>\n/,
                                 $id,
+                                $o{'stage-uri=s'},
                                 $stage_dir, $o{'arch=s'},
                                 $stage_dir, $o{'arch=s'};
                         }
