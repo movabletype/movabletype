@@ -73,7 +73,7 @@ sub view {
     my $webthemeroot = $config->{webthemeroot};
 
     unless ($themeroot && $webthemeroot) {
-        my $errmsg = $app->plugin->translate('Before using StyleCatcher, you must specify the Theme Root URL and Path for the installation in the system-level plugin settings for StyleCatcher.');
+        my $errmsg = $app->plugin->translate('StyleCatcher must first be configured system-wide before it can be used.');
 
         if ($app->user->is_superuser()) {
             $errmsg .= '  <a href="'.$app->mt_uri(mode => 'list_plugins').'">'. $app->plugin->translate('Configure plugin').'</a>';

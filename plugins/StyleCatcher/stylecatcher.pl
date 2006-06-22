@@ -46,8 +46,14 @@ sub configuration_template {
         }
         $param->{themeroot} ||= File::Spec->catdir(MT->instance->mt_dir, 'mt-static', 'themes');
         $param->{stylelibrary} ||= $StyleCatcher::DEFAULT_STYLE_LIBRARY;
-        $intro = q{<MT_TRANS phrase="You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it's own theme paths, it will use these settings. If a blog has it's own theme paths, then the theme will be copied to that location when applied to that weblog.">};
+        $intro = q{<MT_TRANS phrase="<p>You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it's own theme paths, it will use these settings directly. If a blog has it's own theme paths, then the theme will be copied to that location when applied to that weblog. The paths defined here must physically exist and be writable by the webserver.</p>">};
     } else {
+
+        my $system_plugin_config = $plugin->get_config_hash();
+        unless ($system_plugin_config && $system_plugin_config->{webthemeroot} && $system_plugin_config->{themeroot}) {
+            return q{<MT_TRANS phrase="<p style="color: #f00;"><strong>NOTE:</strong> StyleCatcher must first be configured from the system-level plugins listing before it can be used on any blog.</p>">};    
+          }
+            
         if (my $blog = MT->instance->blog) {
             if (!$param->{webthemeroot}) {
                 my $url = $blog->site_url;
@@ -61,14 +67,12 @@ sub configuration_template {
                 $param->{themeroot} = $path;
             }
         }
-        $intro = q{<MT_TRANS phrase="Your theme URL and path can be customized for this weblog.">};
+        $intro = q{<MT_TRANS phrase="<p>If you wish to store your themes locally for this blog, you can configure your theme URL and path below.  Although downloaded themes will still be stored in the system-level directory, they will be copied to this directory when they are applied. The paths defined here must physically exist and be writable by the webserver.</p>">};
+
     }
 
     return qq{
-<p>
 $intro
-<MT_TRANS phrase="The paths defined here must physically exist and be writable by the webserver.">
-</p>
 
 <div class="setting">
 <div class="label"><label for="stycat_webthemeroot"><MT_TRANS phrase="Theme Root URL:"></label></div>
