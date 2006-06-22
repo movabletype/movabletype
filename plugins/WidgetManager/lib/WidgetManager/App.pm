@@ -223,7 +223,7 @@ sub edit {
       foreach my $mid (@selected) {
       for (my $i = 0; $i <= $#avail_modules; $i++) {
           if ($avail_modules[$i]->{id} == $mid) {
-              WidgetManager::Util::debug($app->plugin->translate("Moving $mid to list of installed modules"));
+              WidgetManager::Util::debug($app->plugin->translate("Moving [_1] to list of installed modules", $mid));
               push @inst_modules,$avail_modules[$i];
               splice(@avail_modules,$i,1);
           }

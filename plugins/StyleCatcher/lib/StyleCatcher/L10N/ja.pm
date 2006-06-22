@@ -39,6 +39,7 @@ use vars qw( %Lexicon );
     'Show Details' => '詳細表示',
     'Single themes from the web' => 'その他のテーマ',
     "StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href='http://www.sixapart.com/movabletype/styles'>Movable Type styles</a> page." => "StyleCatcherを使うと、ほんの数回クリックするだけでスタイルを探してブログに適用することができます。Movable Typeのスタイルについての詳細やスタイルの配布元については、<a href='http://www.sixapart.com/movabletype/styles'>Movable Type styles</a>のページ（英語）へアクセスしてください。",
+    'StyleCatcher must first be configured system-wide before it can be used.' => 'StyleCatcherを利用するには、まずシステムレベルで設定を行う必要があります。',
     'Style Library URL:' => 'Style LibraryへのURL:',
     'Successfully applied new theme selection.' => '新しいテーマを適用しました。',
     'Theme or Repository URL:' => 'テーマ/リポジトリへのURL:',

@@ -880,7 +880,7 @@ sub _hdlr_product_name {
         $short_name = "Movable Type";
     }
     if ($args->{version}) {
-        return MT->translate("$short_name [_1]", MT->version_id);
+        return MT->translate("[_1] [_2]", $short_name, MT->version_id);
     } else {
         return MT->translate($short_name);
     }

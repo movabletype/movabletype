@@ -13,6 +13,7 @@ use vars qw( @ISA %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+    '[_1] [_2]' => '[_1] [_2]',
     "Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.\n" => "既存のタイムスタンプが「[_1]」のエントリーが見つかりません。コメントをスキップし、次のエントリーへ移動します。\n",
     "failed\n" => "失敗しました。\n",
     "Importing into existing entry [_1] ('[_2]')\n" => "エントリー「[_2] (ID: [_1])」にコメントを追加します。\n",
