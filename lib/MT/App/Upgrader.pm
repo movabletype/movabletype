@@ -180,7 +180,7 @@ sub upgrade {
 
         $initial_hint =~ s!^\s+|\s+$!!gs;
         unless ($initial_hint) {
-            return $app->main({ error => $app->translate('Password hint is required.') });
+            return $app->main({ error => $app->translate('Password recovery word/phrase is required.') });
         }
 
         

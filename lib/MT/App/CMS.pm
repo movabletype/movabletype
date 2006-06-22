@@ -3241,7 +3241,7 @@ sub CMSSaveFilter_author {
     if (!$app->param('id')) {  # it's a new object
         return $eh->error($app->translate("Author requires password"))
             if (!$app->param('pass'));
-        return $eh->error($app->translate("Author requires password hint"))
+        return $eh->error($app->translate("Author requires password recovery word/phrase"))
             if (!$app->param('hint'));
     }
     return $eh->error(MT->translate("Email Address is required for password recovery"))
@@ -4160,7 +4160,7 @@ sub save_object {
         my $hint = $q->param('hint') || '';
         $hint =~ s!^\s+|\s+$!!gs;
         unless ($hint) {
-            $param{error} = $app->translate('Password hint is required.');
+            $param{error} = $app->translate('Password recovery word/phrase is required.');
         }
         if ($param{error}) {
             $param{return_args} = $app->param('return_args');
