@@ -27,6 +27,7 @@ sub start {
     my $blog = MT::Blog->load($blog_id)
       or return $app->error(MT::Blog->errstr);
     my $p = {blog_id => $blog_id, site_url => $blog->site_url};
+    $p->{need_uri} = $app->param('need_uri');
     $app->build_page("start.tmpl", $p);
 }
 
@@ -37,7 +38,7 @@ sub select {
     my $blog = MT::Blog->load($blog_id)
       or return $app->error(MT::Blog->errstr);
     my $uri = $app->param('uri')
-      or return $app->redirect($app->app_uri . "?blog_id=$blog_id");
+      or return $app->redirect($app->app_uri . "?blog_id=$blog_id&need_uri=1");
     $uri = 'http://' . $uri unless $uri =~ m{^https?://};
     require MT::Util;
     my $p = {blog_id => $blog_id, site_url => $blog->site_url};
@@ -134,9 +135,8 @@ TEXT
 
 sub wm_url {
     my $app = shift;
-    eval {
-        require WidgetManager::App;
-    };
+    eval { require WidgetManager::App; };
+    # if { MT::Plugin::WidgetManager::VERSION } is better
 
     unless ($@) {
         my $wm = WidgetManager::App->new( Directory => $app->config_dir );
