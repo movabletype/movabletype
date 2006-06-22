@@ -28,6 +28,13 @@ sub start {
       or return $app->error(MT::Blog->errstr);
     my $p = {blog_id => $blog_id, site_url => $blog->site_url};
     $p->{need_uri} = $app->param('need_uri');
+    $app->add_breadcrumb("Main Menu", $app->mt_uri);
+    $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
+    $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
+    $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
+
+    $app->{breadcrumbs}[-1]{is_last} = 1;
+    $p->{breadcrumbs} = $app->{breadcrumbs};
     $app->build_page("start.tmpl", $p);
 }
 
@@ -49,6 +56,10 @@ sub select {
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
         $p->{uri}        = $uri;	
         $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
+        $app->add_breadcrumb("Main Menu", $app->mt_uri);
+        $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
+        $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
+        $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
         return $app->build_page("msg.tmpl", $p);
     } elsif (@feeds == 1) {    # skip to the next step if only one choice
         my $redirect = $app->app_uri;
@@ -58,6 +69,10 @@ sub select {
     }
     MT::Util::mark_odd_rows(\@feeds);
     $p->{feeds} = \@feeds;
+    $app->add_breadcrumb("Main Menu", $app->mt_uri);
+    $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
+    $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
+    $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
     $app->build_page("select.tmpl", $p);
 }
 
@@ -78,10 +93,18 @@ sub configuration {
         $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
         $p->{uri}        = $uri;
         $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
+        $app->add_breadcrumb("Main Menu", $app->mt_uri);
+        $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
+        $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
+        $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
         return $app->build_page("msg.tmpl", $p);
     }
     $p->{feed_title} = $feed->find_title($feed->feed) || $uri;
     $p->{feed_uri} = $uri;
+    $app->add_breadcrumb("Main Menu", $app->mt_uri);
+    $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
+    $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
+    $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
     $app->build_page("config.tmpl", $p);
 }
 
@@ -130,6 +153,10 @@ TEXT
     $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
     $p->{uri}        = $uri;
     $p->{wm_url}     = $app->wm_url . '?blog_id=' . $blog_id;
+    $app->add_breadcrumb("Main Menu", $app->mt_uri);
+    $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
+    $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
+    $app->add_breadcrumb('Feeds.App Lite', 'index.cgi');
     $app->build_page("msg.tmpl", $p);
 }
 
