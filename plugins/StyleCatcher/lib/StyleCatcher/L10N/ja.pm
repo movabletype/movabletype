@@ -52,6 +52,11 @@ use vars qw( %Lexicon );
     q{You don't appear to have any weblogs with a "styles-site.css" template that you have rights to edit. Please check your weblog(s) for this template.'} => 'styles-site.cssテンプレートを利用しているブログがありません。このテンプレートをブログで確認してください。',
     q{You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it's own theme paths, it will use these settings. If a blog has it's own theme paths, then the theme will be copied to that location when applied to that weblog.} => 'テーマを保存するためのグローバルテーマディレクトリを指定してください。ブログごとの設定で上書きしない限り、ここでの設定が利用されます。ブログの設定で上書きした場合、テーマはブログに適用されたときにその場所へコピーされます。',
     q{Your theme URL and path can be customized for this weblog.} => 'このブログ用にテーマのURLとパスをカスタマイズできます。', 
+    "<p>You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it's own theme paths, it will use these settings directly. If a blog has it's own theme paths, then the theme will be copied to that location when applied to that weblog. The paths defined here must physically exist and be writable by the webserver.</p>" => '<p>テーマを保存するためのグローバルテーマディレクトリを指定してください。ブログごとの設定で上書きしない限り、ここでの設定が利用されます。ブログの設定で上書きした場合、テーマはブログに適用されたときにその場所へコピーされます。このパスは物理的に存在しかつWebサーバーから書き込み可能でなければなりません。</p>',
+    '<p style="color: #f00;"><strong>NOTE:</strong> StyleCatcher must first be configured from the system-level plugins listing before it can be used on any blog.</p>' => '<p style="color: #f00;"><strong>注意：</strong>StyleCatcherを利用するには、まずシステムレベルで設定を行う必要があります。',
+    "<p>If you wish to store your themes locally for this blog, you can configure your theme URL and path below.  Although downloaded themes will still be stored in the system-level directory, they will be copied to this directory when they are applied. The paths defined here must physically exist and be writable by the webserver.</p>" => '<p>テーマのファイルをブログごとに保存したい場合は、テーマのURLとパスを以下に設定してください。ダウンロードされたテーマはシステムレベルで設定したディレクリに保存されますが、ブログに適用すればここで指定したディレクトリにもコピーされます。このパスは物理的に存在しかつWebサーバーから書き込み可能でなければなりません。</p>',
+
+
 );
 
 1;
