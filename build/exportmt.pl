@@ -132,25 +132,23 @@ if( $o{'ldap'} ) {
 ######################################################################
 
 # Create the build-stamp to use.
-$o{'stamp=s'} = $o{'date!'}
+my $stamp = $o{'date!'}
     ? sprintf $o{'stamp=s'},
         (localtime)[5] + 1900, (localtime)[4] + 1, (localtime)[3,2,1,0]
     : '';
 # Override the stamp if a --name is given.
 if( $o{'name:s'} ) {
-    $o{'stamp=s'} = "-$o{'stamp=s'}" if $o{'date!'};
-    $o{'stamp=s'} = $o{'name:s'} . $o{'stamp=s'};
+    $stamp = $stamp ? "$o{'name:s'}-$stamp" : $o{'name:s'};
 }
 # Override the stamp if a --name is not given but --append is.
 elsif( $o{'append:s'} ) {
-    $o{'stamp=s'} .= '-' if $o{'date!'};
-    $o{'stamp=s'} .= $o{'append:s'}
+    $stamp = $stamp ? "$o{'append:s'}-$stamp" : $o{'append:s'};
 }
 
-$ENV{BUILD_VERSION_ID} ||= $o{'stamp=s'};
+$ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || $stamp;
 
 # Make the export directory to use with the stamp.
-$o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $o{'stamp=s'} );
+$o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $stamp );
 die 'No export directory given.' unless $o{'export=s'};
 $o{'export=s'} =~ s/~/$ENV{HOME}/;
 
@@ -192,35 +190,20 @@ chdir( $o{'export=s'} ) or die "Can't cd to $o{'export=s'}: $!"
 # Read-in the configuration variables for substitution.
 my $config = read_conf( "build/mt-dists/$ENV{BUILD_PACKAGE}.mk" );
 my $version    = $config->{PRODUCT_VERSION};
-my $version_id = $o{'shown:s'} || $config->{PRODUCT_VERSION_ID} || $ENV{BUILD_VERSION_ID};
-
-# Update the version number.
-$version_id = update_version(
-    File::Spec->catdir( $o{'export=s'}, $o{'mt-pm=s'} ),
-    "$o{'lang=s'}-$o{'stamp=s'}"
-);
+my $version_id = $o{'shown:s'} || $config->{PRODUCT_VERSION_ID};
 
 # Set non-production footer.
 inject_footer() unless $o{'prod'};
 
 my $app = $o{'name:s'}
-    ? $o{'stamp=s'}
+    ? $stamp
     : sprintf '%s-%s%s-%s-%s',
         $o{'app=s'},
         $version,
         ($o{'alpha=i'} ? "a$o{'alpha=i'}" : ($o{'beta=i'} ? "b$o{'beta=i'}" : '')),
         $o{'lang=s'},
-        $o{'stamp=s'};
+        $stamp;
 
-# Build the distribution (with external make call).
-#verbose_command(
-#    sprintf( '%s %s --language=%s --stamp=%s', 
-#        $^X,
-#        $o{'make=s'},
-#        ($o{'lang=s'} eq 'en_GB' ? 'en_US' : $o{'lang=s'}),
-#        $app,
-#    )
-#);
 verbose_command(
     sprintf( '%s %s --stamp=%s', $^X, $o{'make=s'}, $app )
 );
@@ -229,15 +212,6 @@ verbose_command(
 my $distros = { path => [], url => [] };
 for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
     for my $arch ( split( /\s*,\s*/, $o{'arch=s'} ) ) {
-        # Set the new distribution name.
-        my $app = $o{'name:s'}
-            ? $o{'stamp=s'}
-            : sprintf '%s-%s%s-%s-%s',
-                $o{'app=s'},
-                $version,
-                ($o{'alpha=i'} ? "a$o{'alpha=i'}" : ($o{'beta=i'} ? "b$o{'beta=i'}" : '')),
-                $o{'lang=s'},
-                $o{'stamp=s'};
         # The filename is the distribution name plus the archive extension.
         my $filename = $app . $arch;
         # The distribution is the full export path and filename.
@@ -483,7 +457,7 @@ if( !$o{'debug'} && $o{'cleanup!'} ) {
 # Send email notification.
 if( $o{'notify:s'} ) {
     $o{'email-subject=s'} = sprintf '%s build: %s',
-        $o{'app=s'}, $o{'stamp=s'};
+        $o{'app=s'}, $stamp;
     $o{'email-subject=s'} .=
         $o{'alpha=i'} ? ' - Alpha ' . $o{'alpha=i'} :
         $o{'beta=i'}  ? ' - Beta '  . $o{'beta=i'}  :
@@ -576,56 +550,6 @@ sub notify {
     $smtp->quit;
 
     verbose( "Email sent to $o{'notify:s'}" );
-}
-
-sub update_version {
-    my $file = shift;
-    die 'ERROR: No file to update given.' unless $file;
-
-    verbose( "Entered update_version with $file" );
-    return 'DEBUG' if $o{'debug'};
-
-    die "ERROR: File $file does not exist: $!" unless -e $file;
-
-    my $stamp = shift || '';
-    verbose( 'WARNING: No stamp provided for version update.' )
-        unless $stamp;
-
-    # Slurp-in the contents of the file.
-    local $/;
-    my $fh = IO::File->new( $file );
-    my $contents = <$fh>;
-    $fh->close();
-
-    # Try to replace the VERSION_ID string.
-    my $new_id = $o{'shown:s'} || "$version-$stamp";
-    $new_id .= sprintf( '-%04d%02d%02d',
-        (localtime)[5] + 1900, (localtime)[4] + 1, (localtime)[3,2,1,0] )
-        if $o{'date!'};
-    my $version_id = '';
-    if( ( $o{'date!'} || $o{'append:s'} ) ) {
-        $contents =~ s/
-            \$VERSION_ID  # We care about the VERSION_ID
-            \s* = \s*     # Assignment with whitespace
-            '?            # Version is likely quoted
-            ( \w+ )       # Capture ONLY the digit-part
-            .*?           # There may be stuff to ignore after the version_id
-            '?            # ..and is likely quoted
-            \s* ;         # Ending with a whitespace semi-colon
-        /\$VERSION_ID = '$new_id';/x;
-        $version_id = $new_id;
-    }
-    die "ERROR: Could not find a VERSION_ID in $file"
-        unless $version_id;
-    verbose( "VERSION_ID: '$version_id'" );
-
-    # Rewrite the file with the stamped version_id.
-    $fh = IO::File->new( "> $file" );
-    print $fh $contents;
-    $fh->close();
-
-    # Hand back the version_id string.
-    return $version_id;
 }
 
 sub read_conf {
