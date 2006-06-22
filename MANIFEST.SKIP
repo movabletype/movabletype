@@ -87,7 +87,8 @@ plugins/statwatch
 #plugins/StyleCatcher
 #plugins/WidgetManager
 plugins/feeds-app-lite
-^_build/
+^_build
+^build
 ^Build.*$
 ^tools/mt-build.PL
 ^lib/MT/Module/
