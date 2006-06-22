@@ -12,7 +12,6 @@ use vars qw( $DEBUG );
 use MT::App;
 @WidgetManager::App::ISA = qw( MT::App );
 use WidgetManager::Util;
-use MT::Template;
 
 sub init {
     my $app = shift;
@@ -363,6 +362,7 @@ sub install_default_widgets {
 
     # Gather the existing modules.
     my $modules = {};
+    require MT::Template;
     for( MT::Template->load({ blog_id => $blog_id, type => 'custom' }) ) {
         ( my $name = $_->name() ) =~ s/^(?:Widget|Sidebar):\s+(.*?)$/$1/;
         $modules->{$name} = $_->linked_file();  # XXX The linked_file is undef for this plugin modules for some reason.
