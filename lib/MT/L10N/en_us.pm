@@ -172,6 +172,14 @@ the address you provided is correct and belongs to you.',
     'Tags to remove from selected entries' => 'Tags to remove from selected entries',
     'Manage my Widgets' => 'Manage my Widgets',
     'Select a Design using StyleCatcher' => 'Select a Design using StyleCatcher',
+    'This page contains a single entry from the blog posted on <strong>[_1]</strong>.' => 'This page contains a single entry from the blog posted on <strong>[_1]</strong>.',
+    'The previous post in this blog was <a href="[_1]">[_2]</a>.' => 'The previous post in this blog was <a href="[_1]">[_2]</a>.',
+    'The next post in this blog is <a href="[_1]">[_2]</a>.' => 'The next post in this blog is <a href="[_1]">[_2]</a>.',
+    'Many more can be found on the <a href="[_1]">main index page</a> or by looking through <a href="[_2]">the archives</a>.' => 'Many more can be found on the <a href="[_1]">main index page</a> or by looking through <a href="[_2]">the archives</a>.',
+     'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for st
+yles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for st
+yles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.',
+     'Install <a href=\'http://greasemonkey.mozdev.org/\'>GreaseMonkey</a>' => 'Install <a href=\'http://greasemonkey.mozdev.org/\'>GreaseMonkey</a>',
 );
 
 1;
