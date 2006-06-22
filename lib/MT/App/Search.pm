@@ -138,7 +138,7 @@ sub throttle_control {
         # check for $ip in $whitelist
         my @list = split /(\s*[,;]\s*|\s+)/, $whitelist;
         foreach (@list) {
-            next unless $_ =~ m/^\d{1,3}(\.\d{1,3}){0,3}$/;
+            next unless $_ =~ m/^\d{1,3}(\.\d{0,3}){0,3}$/;
             if (($ip eq $_) || ($ip =~ m/^\Q$_\E/)) {
                 return 1;
             }
