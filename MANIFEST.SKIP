@@ -86,7 +86,7 @@ lang-it
 plugins/statwatch
 #plugins/StyleCatcher
 #plugins/WidgetManager
-plugins/feeds-app-lite
+#plugins/feeds-app-lite
 ^_build
 ^build
 ^Build.*$
