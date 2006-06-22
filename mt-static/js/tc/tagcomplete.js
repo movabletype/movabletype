@@ -160,8 +160,8 @@ TC.TagComplete.prototype.keyUp = function( evt )
     }
     this.processed = 0;
     var element = evt.target || evt.srcElement;
-    var caret_pos = TC.getCaretPositioon(element);
-    if (caret_pos == nul) caret_pos = element.value.length - 1;
+    var caret_pos = TC.getCaretPosition(element);
+    if (caret_pos == null) caret_pos = element.value.length - 1;
     var ch = element.value.charAt(caret_pos);
     if ( ch == this.delimiter ) {
         this.currentWord = '';
