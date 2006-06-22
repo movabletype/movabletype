@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Lite.pm 22194 2006-01-25 22:20:57Z bchoate $
+# $Id: Lite.pm,v 1.6 2004/11/14 19:30:50 byrnereese Exp $
 #
 # ======================================================================
 
@@ -13,9 +13,42 @@ package UDDI::Lite;
 use 5.004;
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name:  $ =~ /-(\d+)_([\d_]+)/);
+$VERSION = $SOAP::Lite::VERSION;
 
 use SOAP::Lite;
+
+# ======================================================================
+
+package UDDI::Constants;
+
+BEGIN {
+  use vars qw(%UDDI_VERSIONS $ELEMENTS $ATTRIBUTES $WITHNAMES $NAMESPACE $GENERIC);
+
+  %UDDI_VERSIONS = (
+    1 => {
+      ELEMENTS => {address=>{addressLine=>1},authToken=>{authInfo=>1},bindingDetail=>{bindingTemplate=>1},bindingTemplate=>{accessPoint=>1,description=>1,hostingRedirector=>1,tModelInstanceDetails=>1},bindingTemplates=>{bindingTemplate=>1},businessDetail=>{businessEntity=>1},businessDetailExt=>{businessEntityExt=>1},businessEntity=>{businessServices=>1,categoryBag=>1,contacts=>1,description=>1,discoveryURLs=>1,identifierBag=>1,name=>1},businessEntityExt=>{businessEntity=>1},businessInfo=>{description=>1,name=>1,serviceInfos=>1},businessInfos=>{businessInfo=>1},businessList=>{businessInfos=>1},businessService=>{bindingTemplates=>1,categoryBag=>1,description=>1,name=>1},businessServices=>{businessService=>1},categoryBag=>{keyedReference=>1},contact=>{address=>1,description=>1,email=>1,personName=>1,phone=>1},contacts=>{contact=>1},delete_binding=>{authInfo=>1,bindingKey=>1},delete_business=>{authInfo=>1,businessKey=>1},delete_service=>{authInfo=>1,serviceKey=>1},delete_tModel=>{authInfo=>1,tModelKey=>1},discard_authToken=>{authInfo=>1},discoveryURLs=>{discoveryUrl=>1},dispositionReport=>{result=>1},findQualifiers=>{findQualifier=>1},find_binding=>{findQualifiers=>1,tModelBag=>1},find_business=>{categoryBag=>1,discoveryURLs=>1,findQualifiers=>1,identifierBag=>1,name=>1,tModelBag=>1},find_service=>{categoryBag=>1,findQualifiers=>1,name=>1,tModelBag=>1},find_tModel=>{categoryBag=>1,findQualifiers=>1,identifierBag=>1,name=>1},get_bindingDetail=>{bindingKey=>1},get_businessDetail=>{businessKey=>1},get_businessDetailExt=>{businessKey=>1},get_registeredInfo=>{authInfo=>1},get_serviceDetail=>{serviceKey=>1},get_tModelDetail=>{tModelKey=>1},identifierBag=>{keyedReference=>1},instanceDetails=>{description=>1,instanceParms=>1,overviewDoc=>1},overviewDoc=>{description=>1,overviewURL=>1},registeredInfo=>{businessInfos=>1,tModelInfos=>1},result=>{errInfo=>1},save_binding=>{authInfo=>1,bindingTemplate=>1},save_business=>{authInfo=>1,businessEntity=>1,uploadRegister=>1},save_service=>{authInfo=>1,businessService=>1},save_tModel=>{authInfo=>1,tModel=>1,uploadRegister=>1},serviceDetail=>{businessService=>1},serviceInfo=>{name=>1},serviceInfos=>{serviceInfo=>1},serviceList=>{serviceInfos=>1},tModel=>{categoryBag=>1,description=>1,identifierBag=>1,name=>1,overviewDoc=>1},tModelBag=>{tModelKey=>1},tModelDetail=>{tModel=>1},tModelInfo=>{name=>1},tModelInfos=>{tModelInfo=>1},tModelInstanceDetails=>{tModelInstanceInfo=>1},tModelInstanceInfo=>{description=>1,instanceDetails=>1},tModelList=>{tModelInfos=>1},validate_categorization=>{businessEntity=>1,businessService=>1,keyValue=>1,tModel=>1,tModelKey=>1}},
+      ATTRIBUTES => {accessPoint=>{URLType=>2},address=>{sortCode=>2,useType=>2},authToken=>{generic=>2,operator=>2},bindingDetail=>{generic=>2,operator=>2,truncated=>2},bindingTemplate=>{bindingKey=>2,serviceKey=>2},businessDetail=>{generic=>2,operator=>2,truncated=>2},businessDetailExt=>{generic=>2,operator=>2,truncated=>2},businessEntity=>{authorizedName=>2,businessKey=>2,operator=>2},businessInfo=>{businessKey=>2},businessList=>{generic=>2,operator=>2,truncated=>2},businessService=>{businessKey=>2,serviceKey=>2},contact=>{useType=>2},delete_binding=>{generic=>2},delete_business=>{generic=>2},delete_service=>{generic=>2},delete_tModel=>{generic=>2},description=>{lang=>2},discard_authToken=>{generic=>2},discoveryUrl=>{useType=>2},dispositionReport=>{generic=>2,operator=>2,truncated=>2},email=>{useType=>2},errInfo=>{errCode=>2},find_binding=>{generic=>2,maxRows=>2,serviceKey=>2},find_business=>{generic=>2,maxRows=>2},find_service=>{businessKey=>2,generic=>2,maxRows=>2},find_tModel=>{generic=>2,maxRows=>2},get_authToken=>{cred=>2,generic=>2,userID=>2},get_bindingDetail=>{generic=>2},get_businessDetail=>{generic=>2},get_businessDetailExt=>{generic=>2},get_registeredInfo=>{generic=>2},get_serviceDetail=>{generic=>2},get_tModelDetail=>{generic=>2},hostingRedirector=>{bindingKey=>2},keyedReference=>{keyName=>2,keyValue=>2,tModelKey=>2},phone=>{useType=>2},registeredInfo=>{generic=>2,operator=>2,truncated=>2},result=>{errno=>2,keyType=>2},save_binding=>{generic=>2},save_business=>{generic=>2},save_service=>{generic=>2},save_tModel=>{generic=>2},serviceDetail=>{generic=>2,operator=>2,truncated=>2},serviceInfo=>{businessKey=>2,serviceKey=>2},serviceList=>{generic=>2,operator=>2,truncated=>2},tModel=>{authorizedName=>2,operator=>2,tModelKey=>2},tModelDetail=>{generic=>2,operator=>2,truncated=>2},tModelInfo=>{tModelKey=>2},tModelInstanceInfo=>{tModelKey=>2},tModelList=>{generic=>2,operator=>2,truncated=>2},validate_categorization=>{generic=>2}},
+      WITHNAMES => [qw/accessPoint address addressLine authInfo authToken bindingDetail bindingKey bindingTemplate bindingTemplates businessDetail businessDetailExt businessEntity businessEntityExt businessInfo businessInfos businessKey businessList businessService businessServices categoryBag contact contacts description discoveryURLs discoveryUrl dispositionReport email errInfo findQualifier findQualifiers hostingRedirector identifierBag instanceDetails instanceParms keyValue keyedReference name overviewDoc overviewURL personName phone registeredInfo result serviceDetail serviceInfo serviceInfos serviceKey serviceList tModel tModelBag tModelDetail tModelInfo tModelInfos tModelInstanceDetails tModelInstanceInfo tModelKey tModelList uploadRegister/],
+      NAMESPACE => 'urn:uddi-org:api',
+      GENERIC => '1.0', # string, not number; '.0' matters
+    },
+    2 => {
+      ELEMENTS => {add_publisherAssertions=>{authInfo=>1,publisherAssertion=>1},address=>{addressLine=>1},assertionStatusItem=>{fromKey=>1,keyedReference=>1,keysOwned=>1,toKey=>1},assertionStatusReport=>{assertionStatusItem=>1},authToken=>{authInfo=>1},bindingDetail=>{bindingTemplate=>1},bindingTemplate=>{accessPoint=>1,description=>1,hostingRedirector=>1,tModelInstanceDetails=>1},bindingTemplates=>{bindingTemplate=>1},businessDetail=>{businessEntity=>1},businessDetailExt=>{businessEntityExt=>1},businessEntity=>{businessServices=>1,categoryBag=>1,contacts=>1,description=>1,discoveryURLs=>1,identifierBag=>1,name=>1},businessEntityExt=>{businessEntity=>1},businessInfo=>{description=>1,name=>1,serviceInfos=>1},businessInfos=>{businessInfo=>1},businessList=>{businessInfos=>1},businessService=>{bindingTemplates=>1,categoryBag=>1,description=>1,name=>1},businessServices=>{businessService=>1},categoryBag=>{keyedReference=>1},contact=>{address=>1,description=>1,email=>1,personName=>1,phone=>1},contacts=>{contact=>1},delete_binding=>{authInfo=>1,bindingKey=>1},delete_business=>{authInfo=>1,businessKey=>1},delete_publisherAssertions=>{authInfo=>1,publisherAssertion=>1},delete_service=>{authInfo=>1,serviceKey=>1},delete_tModel=>{authInfo=>1,tModelKey=>1},discard_authToken=>{authInfo=>1},discoveryURLs=>{discoveryURL=>1},dispositionReport=>{result=>1},findQualifiers=>{findQualifier=>1},find_binding=>{findQualifiers=>1,tModelBag=>1},find_business=>{categoryBag=>1,discoveryURLs=>1,findQualifiers=>1,identifierBag=>1,name=>1,tModelBag=>1},find_relatedBusinesses=>{businessKey=>1,findQualifiers=>1,keyedReference=>1},find_service=>{categoryBag=>1,findQualifiers=>1,name=>1,tModelBag=>1},find_tModel=>{categoryBag=>1,findQualifiers=>1,identifierBag=>1,name=>1},get_assertionStatusReport=>{authInfo=>1,completionStatus=>1},get_bindingDetail=>{bindingKey=>1},get_businessDetail=>{businessKey=>1},get_businessDetailExt=>{businessKey=>1},get_publisherAssertions=>{authInfo=>1},get_registeredInfo=>{authInfo=>1},get_serviceDetail=>{serviceKey=>1},get_tModelDetail=>{tModelKey=>1},identifierBag=>{keyedReference=>1},instanceDetails=>{description=>1,instanceParms=>1,overviewDoc=>1},keysOwned=>{fromKey=>1,toKey=>1},overviewDoc=>{description=>1,overviewURL=>1},publisherAssertion=>{fromKey=>1,keyedReference=>1,toKey=>1},publisherAssertions=>{publisherAssertion=>1},registeredInfo=>{businessInfos=>1,tModelInfos=>1},relatedBusinessInfo=>{businessKey=>1,description=>1,name=>1,sharedRelationships=>1},relatedBusinessInfos=>{relatedBusinessInfo=>1},relatedBusinessesList=>{businessKey=>1,relatedBusinessInfos=>1},result=>{errInfo=>1},save_binding=>{authInfo=>1,bindingTemplate=>1},save_business=>{authInfo=>1,businessEntity=>1,uploadRegister=>1},save_service=>{authInfo=>1,businessService=>1},save_tModel=>{authInfo=>1,tModel=>1,uploadRegister=>1},serviceDetail=>{businessService=>1},serviceInfo=>{name=>1},serviceInfos=>{serviceInfo=>1},serviceList=>{serviceInfos=>1},set_publisherAssertions=>{authInfo=>1,publisherAssertion=>1},sharedRelationships=>{keyedReference=>1},tModel=>{categoryBag=>1,description=>1,identifierBag=>1,name=>1,overviewDoc=>1},tModelBag=>{tModelKey=>1},tModelDetail=>{tModel=>1},tModelInfo=>{name=>1},tModelInfos=>{tModelInfo=>1},tModelInstanceDetails=>{tModelInstanceInfo=>1},tModelInstanceInfo=>{description=>1,instanceDetails=>1},tModelList=>{tModelInfos=>1},validate_values=>{businessEntity=>1,businessService=>1,tModel=>1}},
+      ATTRIBUTES => {accessPoint=>{URLType=>2},add_publisherAssertions=>{generic=>2},address=>{sortCode=>2,tModelKey=>2,useType=>2},addressLine=>{keyName=>2,keyValue=>2},assertionStatusItem=>{completionStatus=>2},assertionStatusReport=>{generic=>2,operator=>2},authToken=>{generic=>2,operator=>2},bindingDetail=>{generic=>2,operator=>2,truncated=>2},bindingTemplate=>{bindingKey=>2,serviceKey=>2},businessDetail=>{generic=>2,operator=>2,truncated=>2},businessDetailExt=>{generic=>2,operator=>2,truncated=>2},businessEntity=>{authorizedName=>2,businessKey=>2,operator=>2},businessInfo=>{businessKey=>2},businessList=>{generic=>2,operator=>2,truncated=>2},businessService=>{businessKey=>2,serviceKey=>2},contact=>{useType=>2},delete_binding=>{generic=>2},delete_business=>{generic=>2},delete_publisherAssertions=>{generic=>2},delete_service=>{generic=>2},delete_tModel=>{generic=>2},description=>{lang=>2},discard_authToken=>{generic=>2},discoveryURL=>{useType=>2},dispositionReport=>{generic=>2,operator=>2,truncated=>2},email=>{useType=>2},errInfo=>{errCode=>2},find_binding=>{generic=>2,maxRows=>2,serviceKey=>2},find_business=>{generic=>2,maxRows=>2},find_relatedBusinesses=>{generic=>2,maxRows=>2},find_service=>{businessKey=>2,generic=>2,maxRows=>2},find_tModel=>{generic=>2,maxRows=>2},get_assertionStatusReport=>{generic=>2},get_authToken=>{cred=>2,generic=>2,userID=>2},get_bindingDetail=>{generic=>2},get_businessDetail=>{generic=>2},get_businessDetailExt=>{generic=>2},get_publisherAssertions=>{generic=>2},get_registeredInfo=>{generic=>2},get_serviceDetail=>{generic=>2},get_tModelDetail=>{generic=>2},hostingRedirector=>{bindingKey=>2},keyedReference=>{keyName=>2,keyValue=>2,tModelKey=>2},name=>{lang=>2},phone=>{useType=>2},publisherAssertions=>{authorizedName=>2,generic=>2,operator=>2},registeredInfo=>{generic=>2,operator=>2,truncated=>2},relatedBusinessesList=>{generic=>2,operator=>2,truncated=>2},result=>{errno=>2,keyType=>2},save_binding=>{generic=>2},save_business=>{generic=>2},save_service=>{generic=>2},save_tModel=>{generic=>2},serviceDetail=>{generic=>2,operator=>2,truncated=>2},serviceInfo=>{businessKey=>2,serviceKey=>2},serviceList=>{generic=>2,operator=>2,truncated=>2},set_publisherAssertions=>{generic=>2},sharedRelationships=>{direction=>2},tModel=>{authorizedName=>2,operator=>2,tModelKey=>2},tModelDetail=>{generic=>2,operator=>2,truncated=>2},tModelInfo=>{tModelKey=>2},tModelInstanceInfo=>{tModelKey=>2},tModelList=>{generic=>2,operator=>2,truncated=>2},validate_values=>{generic=>2}},
+      WITHNAMES => [qw/accessPoint address addressLine assertionStatusItem assertionStatusReport authInfo authToken bindingDetail bindingKey bindingTemplate bindingTemplates businessDetail businessDetailExt businessEntity businessEntityExt businessInfo businessInfos businessKey businessList businessService businessServices categoryBag completionStatus contact contacts description discoveryURL discoveryURLs dispositionReport email errInfo findQualifier findQualifiers fromKey hostingRedirector identifierBag instanceDetails instanceParms keyedReference keysOwned name overviewDoc overviewURL personName phone publisherAssertion publisherAssertions registeredInfo relatedBusinessInfo relatedBusinessInfos relatedBusinessesList result serviceDetail serviceInfo serviceInfos serviceKey serviceList sharedRelationships tModel tModelBag tModelDetail tModelInfo tModelInfos tModelInstanceDetails tModelInstanceInfo tModelKey tModelList toKey uploadRegister/],
+      NAMESPACE => 'urn:uddi-org:api_v2',
+      GENERIC => '2.0',
+    },
+    3 => {
+      ELEMENTS => {add_publisherAssertions=>{authInfo=>1,publisherAssertion=>1},address=>{addressLine=>1},assertionStatusItem=>{fromKey=>1,keyedReference=>1,keysOwned=>1,toKey=>1},assertionStatusReport=>{assertionStatusItem=>1},authToken=>{authInfo=>1},bindingDetail=>{bindingTemplate=>1,listDescription=>1},bindingTemplate=>{accessPoint=>1,categoryBag=>1,description=>1,Signature=>1,hostingRedirector=>1,tModelInstanceDetails=>1},bindingTemplates=>{bindingTemplate=>1},businessDetail=>{businessEntity=>1},businessEntity=>{businessServices=>1,categoryBag=>1,contacts=>1,description=>1,discoveryURLs=>1,Signature=>1,identifierBag=>1,name=>1},businessInfo=>{description=>1,name=>1,serviceInfos=>1},businessInfos=>{businessInfo=>1},businessList=>{businessInfos=>1,listDescription=>1},businessService=>{bindingTemplates=>1,categoryBag=>1,description=>1,Signature=>1,name=>1},businessServices=>{businessService=>1},categoryBag=>{keyedReference=>1,keyedReferenceGroup=>1,keyedReferenceGroup=>1},contact=>{address=>1,description=>1,email=>1,personName=>1,phone=>1},contacts=>{contact=>1},delete_binding=>{authInfo=>1,bindingKey=>1},delete_business=>{authInfo=>1,businessKey=>1},delete_publisherAssertions=>{authInfo=>1,publisherAssertion=>1},delete_service=>{authInfo=>1,serviceKey=>1},delete_tModel=>{authInfo=>1,tModelKey=>1},discard_authToken=>{authInfo=>1},discoveryURLs=>{discoveryURL=>1},dispositionReport=>{result=>1},findQualifiers=>{findQualifier=>1},find_binding=>{authInfo=>1,categoryBag=>1,findQualifiers=>1,find_tModel=>1,tModelBag=>1},find_business=>{authInfo=>1,categoryBag=>1,discoveryURLs=>1,findQualifiers=>1,find_relatedBusinesses=>1,find_tModel=>1,identifierBag=>1,name=>1,tModelBag=>1},find_relatedBusinesses=>{authInfo=>1,businessKey=>1,findQualifiers=>1,fromKey=>1,keyedReference=>1,toKey=>1},find_service=>{authInfo=>1,categoryBag=>1,findQualifiers=>1,find_tModel=>1,name=>1,tModelBag=>1},find_tModel=>{authInfo=>1,categoryBag=>1,findQualifiers=>1,identifierBag=>1,name=>1},get_assertionStatusReport=>{authInfo=>1,completionStatus=>1},get_bindingDetail=>{authInfo=>1,bindingKey=>1},get_businessDetail=>{authInfo=>1,businessKey=>1},get_operationalInfo=>{authInfo=>1,entityKey=>1},get_publisherAssertions=>{authInfo=>1},get_registeredInfo=>{authInfo=>1},get_serviceDetail=>{authInfo=>1,serviceKey=>1},get_tModelDetail=>{authInfo=>1,tModelKey=>1},identifierBag=>{keyedReference=>1},instanceDetails=>{description=>1,instanceParms=>1,instanceParms=>1,overviewDoc=>1},keyedReferenceGroup=>{keyedReference=>1},keysOwned=>{fromKey=>1,toKey=>1,toKey=>1},listDescription=>{actualCount=>1,includeCount=>1,listHead=>1},operationalInfo=>{authorizedName=>1,created=>1,modified=>1,modifiedIncludingChildren=>1,nodeID=>1},operationalInfos=>{operationalInfo=>1},overviewDoc=>{description=>1,overviewURL=>1,overviewURL=>1},publisherAssertion=>{Signature=>1,fromKey=>1,keyedReference=>1,toKey=>1},publisherAssertions=>{publisherAssertion=>1},registeredInfo=>{businessInfos=>1,tModelInfos=>1},relatedBusinessInfo=>{businessKey=>1,description=>1,name=>1,sharedRelationships=>1},relatedBusinessInfos=>{relatedBusinessInfo=>1},relatedBusinessesList=>{businessKey=>1,listDescription=>1,relatedBusinessInfos=>1},result=>{errInfo=>1},save_binding=>{authInfo=>1,bindingTemplate=>1},save_business=>{authInfo=>1,businessEntity=>1},save_service=>{authInfo=>1,businessService=>1},save_tModel=>{authInfo=>1,tModel=>1},serviceDetail=>{businessService=>1},serviceInfo=>{name=>1},serviceInfos=>{serviceInfo=>1},serviceList=>{listDescription=>1,serviceInfos=>1},set_publisherAssertions=>{authInfo=>1,publisherAssertion=>1},sharedRelationships=>{keyedReference=>1,publisherAssertion=>1},tModel=>{categoryBag=>1,description=>1,Signature=>1,identifierBag=>1,name=>1,overviewDoc=>1},tModelBag=>{tModelKey=>1},tModelDetail=>{tModel=>1},tModelInfo=>{description=>1,name=>1},tModelInfos=>{tModelInfo=>1},tModelInstanceDetails=>{tModelInstanceInfo=>1},tModelInstanceInfo=>{description=>1,instanceDetails=>1},tModelList=>{listDescription=>1,tModelInfos=>1}},
+      ATTRIBUTES => {accessPoint=>{useType=>2},address=>{sortCode=>2,tModelKey=>2,useType=>2,lang=>2},addressLine=>{keyName=>2,keyValue=>2},assertionStatusItem=>{completionStatus=>2},bindingDetail=>{truncated=>2},bindingTemplate=>{bindingKey=>2,serviceKey=>2},businessDetail=>{truncated=>2},businessEntity=>{businessKey=>2},businessInfo=>{businessKey=>2},businessList=>{truncated=>2},businessService=>{businessKey=>2,serviceKey=>2},contact=>{useType=>2},description=>{lang=>2},discoveryURL=>{useType=>2},dispositionReport=>{truncated=>2},email=>{useType=>2},errInfo=>{errCode=>2},find_binding=>{listHead=>2,maxRows=>2,serviceKey=>2},find_business=>{listHead=>2,maxRows=>2},find_relatedBusinesses=>{listHead=>2,maxRows=>2},find_service=>{businessKey=>2,listHead=>2,maxRows=>2},find_tModel=>{listHead=>2,maxRows=>2},get_authToken=>{cred=>2,userID=>2},get_registeredInfo=>{infoSelection=>2},hostingRedirector=>{bindingKey=>2},keyedReference=>{keyName=>2,keyValue=>2,tModelKey=>2},keyedReferenceGroup=>{tModelKey=>2},name=>{lang=>2},operationalInfo=>{entityKey=>2},operationalInfos=>{truncated=>2},overviewURL=>{useType=>2},personName=>{lang=>2},phone=>{useType=>2},registeredInfo=>{truncated=>2},relatedBusinessesList=>{truncated=>2},result=>{errno=>2,keyType=>2},serviceDetail=>{truncated=>2},serviceInfo=>{businessKey=>2,serviceKey=>2},serviceList=>{truncated=>2},sharedRelationships=>{direction=>2},tModel=>{deleted=>2,tModelKey=>2},tModelDetail=>{truncated=>2},tModelInfo=>{tModelKey=>2},tModelInstanceInfo=>{tModelKey=>2},tModelList=>{truncated=>2}},
+      WITHNAMES => [qw/accessPoint actualCount address addressLine assertionStatusItem assertionStatusReport authToken authorizedName bindingDetail bindingKey bindingTemplate bindingTemplates businessDetail businessEntity businessInfo businessInfos businessKey businessList businessService businessServices categoryBag completionStatus contact contacts created description discoveryURL discoveryURLs dispositionReport email entityKey errInfo findQualifier findQualifiers fromKey hostingRedirector identifierBag includeCount infoSelection instanceDetails instanceParms keyedReference keyedReferenceGroup keysOwned listDescription listHead modified modifiedIncludingChildren name nodeID operationalInfo operationalInfos overviewDoc overviewURL personName phone publisherAssertion publisherAssertions registeredInfo relatedBusinessInfo relatedBusinessInfos relatedBusinessesList result serviceDetail serviceInfo serviceInfos serviceKey serviceList sharedRelationships tModel tModelBag tModelDetail tModelInfo tModelInfos tModelInstanceDetails tModelInstanceInfo tModelKey tModelList toKey/],
+      NAMESPACE => 'urn:uddi-org:api_v3',
+      GENERIC => undef,
+    },
+  );
+}
 
 # ======================================================================
 
@@ -37,18 +70,20 @@ package UDDI::Data;
 
 use Carp ();
 
-use vars qw(@ISA $AUTOLOAD @EXPORT_OK %EXPORT_TAGS);
+use vars qw(@ISA $AUTOLOAD);
 @ISA = qw(SOAP::Data);
-
-my @elements = (with => qw/accessPoint address addressLine authInfo authToken bindingDetail bindingKey bindingTemplate bindingTemplates businessDetail businessDetailExt businessEntity businessEntityExt businessInfo businessInfos businessKey businessList businessService businessServices categoryBag contact contacts description discoveryURL discoveryURLs dispositionReport email errInfo findQualifier findQualifiers hostingRedirector identifierBag instanceDetails instanceParms keyValue keyedReference name overviewDoc overviewURL personName phone registeredInfo result serviceDetail serviceInfo serviceInfos serviceKey serviceList tModel tModelBag tModelDetail tModelInfo tModelInfos tModelInstanceDetails tModelInstanceInfo tModelKey tModelList uploadRegister/);
-@EXPORT_OK = (@elements);
-%EXPORT_TAGS = ('all' => [@EXPORT_OK]);
 
 use overload fallback => 1, '""' => sub { shift->SUPER::value };
 
-use vars qw(%elements %attributes);
-%elements = (get_serviceDetail=>{serviceKey=>1},find_tModel=>{categoryBag=>1,name=>1,identifierBag=>1,findQualifiers=>1},tModelInstanceInfo=>{instanceDetails=>1,description=>1},address=>{addressLine=>1},categoryBag=>{keyedReference=>1},save_binding=>{authInfo=>1,bindingTemplate=>1},businessEntity=>{categoryBag=>1,businessServices=>1,name=>1,description=>1,identifierBag=>1,discoveryURLs=>1,contacts=>1},businessInfos=>{businessInfo=>1},find_business=>{categoryBag=>1,name=>1,identifierBag=>1,discoveryURLs=>1,findQualifiers=>1,tModelBag=>1},get_bindingDetail=>{bindingKey=>1},identifierBag=>{keyedReference=>1},get_businessDetailExt=>{businessKey=>1},businessServices=>{businessService=>1},tModelInfo=>{name=>1},find_service=>{categoryBag=>1,name=>1,findQualifiers=>1,tModelBag=>1},dispositionReport=>{result=>1},authToken=>{authInfo=>1},get_tModelDetail=>{tModelKey=>1},delete_tModel=>{tModelKey=>1,authInfo=>1},bindingTemplate=>{tModelInstanceDetails=>1,accessPoint=>1,description=>1,hostingRedirector=>1},tModelDetail=>{tModel=>1},businessInfo=>{serviceInfos=>1,name=>1,description=>1},get_registeredInfo=>{authInfo=>1},businessEntityExt=>{businessEntity=>1},registeredInfo=>{businessInfos=>1,tModelInfos=>1},find_binding=>{findQualifiers=>1,tModelBag=>1},serviceInfo=>{name=>1},get_businessDetail=>{businessKey=>1},delete_business=>{businessKey=>1,authInfo=>1},discoveryURLs=>{discoveryURL=>1},businessDetail=>{businessEntity=>1},contacts=>{contact=>1},tModelInstanceDetails=>{tModelInstanceInfo=>1},tModelList=>{tModelInfos=>1},delete_service=>{serviceKey=>1,authInfo=>1},tModelInfos=>{tModelInfo=>1},serviceDetail=>{businessService=>1},tModel=>{categoryBag=>1,name=>1,description=>1,identifierBag=>1,overviewDoc=>1},businessList=>{businessInfos=>1},bindingTemplates=>{bindingTemplate=>1},validate_categorization=>{businessEntity=>1,tModel=>1,businessService=>1,keyValue=>1,tModelKey=>1},contact=>{email=>1,personName=>1,phone=>1,description=>1,address=>1},discard_authToken=>{authInfo=>1},overviewDoc=>{overviewURL=>1,description=>1},delete_binding=>{bindingKey=>1,authInfo=>1},serviceList=>{serviceInfos=>1},bindingDetail=>{bindingTemplate=>1},tModelBag=>{tModelKey=>1},businessDetailExt=>{businessEntityExt=>1},serviceInfos=>{serviceInfo=>1},save_tModel=>{uploadRegister=>1,tModel=>1,authInfo=>1},findQualifiers=>{findQualifier=>1},save_business=>{businessEntity=>1,uploadRegister=>1,authInfo=>1},instanceDetails=>{instanceParms=>1,description=>1,overviewDoc=>1},businessService=>{categoryBag=>1,name=>1,bindingTemplates=>1,description=>1},save_service=>{businessService=>1,authInfo=>1},result=>{errInfo=>1});
-%attributes = (get_serviceDetail=>{generic=>2},find_tModel=>{maxRows=>2,generic=>2},tModelInstanceInfo=>{tModelKey=>2},address=>{sortCode=>2,useType=>2},email=>{useType=>2},save_binding=>{generic=>2},businessEntity=>{authorizedName=>2,operator=>2,businessKey=>2},discoveryURL=>{useType=>2},find_business=>{maxRows=>2,generic=>2},get_bindingDetail=>{generic=>2},get_businessDetailExt=>{generic=>2},tModelInfo=>{tModelKey=>2},find_service=>{maxRows=>2,businessKey=>2,generic=>2},dispositionReport=>{truncated=>2,operator=>2,generic=>2},authToken=>{operator=>2,generic=>2},get_tModelDetail=>{generic=>2},bindingTemplate=>{serviceKey=>2,bindingKey=>2},delete_tModel=>{generic=>2},tModelDetail=>{truncated=>2,operator=>2,generic=>2},businessInfo=>{businessKey=>2},get_registeredInfo=>{generic=>2},registeredInfo=>{truncated=>2,operator=>2,generic=>2},phone=>{useType=>2},find_binding=>{maxRows=>2,serviceKey=>2,generic=>2},serviceInfo=>{serviceKey=>2,businessKey=>2},get_businessDetail=>{generic=>2},delete_business=>{generic=>2},businessDetail=>{truncated=>2,operator=>2,generic=>2},keyedReference=>{keyName=>2,keyValue=>2,tModelKey=>2},tModelList=>{truncated=>2,operator=>2,generic=>2},delete_service=>{generic=>2},serviceDetail=>{truncated=>2,operator=>2,generic=>2},tModel=>{authorizedName=>2,operator=>2,tModelKey=>2},businessList=>{truncated=>2,operator=>2,generic=>2},validate_categorization=>{generic=>2},contact=>{useType=>2},discard_authToken=>{generic=>2},delete_binding=>{generic=>2},serviceList=>{truncated=>2,operator=>2,generic=>2},bindingDetail=>{truncated=>2,operator=>2,generic=>2},hostingRedirector=>{bindingKey=>2},businessDetailExt=>{truncated=>2,operator=>2,generic=>2},get_authToken=>{userID=>2,generic=>2,cred=>2},save_tModel=>{generic=>2},errInfo=>{errCode=>2},save_business=>{generic=>2},accessPoint=>{URLType=>2},businessService=>{serviceKey=>2,businessKey=>2},save_service=>{generic=>2},result=>{keyType=>2,errno=>2});
+sub _init {
+  use vars qw(@EXPORT_OK %EXPORT_TAGS);
+  @EXPORT_OK = (with => @$UDDI::Constants::WITHNAMES);
+  %EXPORT_TAGS = (all => [@EXPORT_OK]);
+
+  use vars qw($elements $attributes);
+  $elements = $UDDI::Constants::ELEMENTS;
+  $attributes = $UDDI::Constants::ATTRIBUTES;
+}
 
 sub new {
   my $self = shift;
@@ -69,12 +104,14 @@ sub with {
   my @values;
   while (@_) {
     my $data = shift;
-    my($method, @value) = UNIVERSAL::isa($data => __PACKAGE__)
-      ? ($data->SUPER::name, $data->value)
-      : ($data, shift);
-    exists $attributes{$name}{$method}
+    my($method, $attr, @value) = UNIVERSAL::isa($data => __PACKAGE__)
+      ? ($data->SUPER::name, $data->SUPER::attr, $data->SUPER::value)
+      : ($data, {}, shift);
+    exists $attributes->{$name}{$method}
+      # attribute
       ? $self->$method(@value)
-      : push(@values, ($self->can($method) || Carp::croak "Don't know what to do with '$method'")->(@value));
+      # sub element
+      : push(@values, ($self->can($method) || Carp::croak "Don't know what to do with '$method'")->(@value)->attr($attr));
   }
   $self->set_value([@values]);
 }
@@ -86,35 +123,45 @@ sub _compileit {
 
     # GENERATE element if no parameters: businessInfo()
     return __PACKAGE__->SUPER::name($method) 
-      if !@_ && exists $elements{$method};
+      if !@_ && exists $elements->{$method};
 
     die "Expected element (UDDI::Data) as parameter for $method()\n"
-      if !ref $_[0] && exists $elements{$method};
+      if !ref $_[0] && exists $elements->{$method};
 
-    my $uddi = UNIVERSAL::isa($_[0] => __PACKAGE__);
-
-    # MAKE ELEMENT: name('old')
-    return __PACKAGE__->SUPER::name($method => @_) 
-      if !$uddi;
+    # MAKE ELEMENT: name( [{attr => value},] 'old')
+    if (!UNIVERSAL::isa($_[0] => __PACKAGE__)) {
+      # get optional list of attributes as a first parameter
+      my $attr = ref $_[0] eq 'HASH' ? shift @_ : {};
+      return __PACKAGE__->SUPER::name($method => @_)->attr($attr);
+    }
 
     my $name = $_[0]->SUPER::name;
 
-    # GET/SET ATTRIBUTE: businessInfo->businessKey
-    return @_ > 1 
-        ? scalar($_[0]->attr->{$method} = $_[1], $_[0])               # SET
-        : __PACKAGE__->SUPER::name($method => $_[0]->attr->{$method}) # GET
-      if exists $attributes{$name} && exists $attributes{$name}{$method};
+    if (defined $name) {
+      # GET/SET ATTRIBUTE: businessInfo->businessKey
+      return @_ > 1 
+          ? scalar($_[0]->attr->{$method} = $_[1], $_[0])               # SET
+          : __PACKAGE__->SUPER::name($method => $_[0]->attr->{$method}) # GET
+        if exists $attributes->{$name} && exists $attributes->{$name}{$method};
 
-    # GET ELEMENT: businessInfos->businessInfo
-    my @elems = grep {
-      ref $_ && UNIVERSAL::isa($_ => __PACKAGE__) && $_->SUPER::name eq $method
-    } map {ref $_ eq 'ARRAY' ? @$_ : $_} $_[0]->value;
-    return wantarray? @elems : $elems[0]
-      if exists $elements{$name} && exists $elements{$name}{$method};
+      # GET ELEMENT: businessInfos->businessInfo
+      my @elems = grep {
+        ref $_ && UNIVERSAL::isa($_ => __PACKAGE__) && $_->SUPER::name eq $method
+      } map {ref $_ eq 'ARRAY' ? @$_ : $_} $_[0]->value;
+      return wantarray? @elems : $elems[0]
+        if exists $elements->{$name} && exists $elements->{$name}{$method};
 
-    # MAKE ELEMENT: businessInfos(businessInfo('something'))
-    return __PACKAGE__->SUPER::name($method => @_) 
-      if exists $elements{$method} && exists $elements{$method}{$name};
+      # MAKE ELEMENT: businessInfos(businessInfo('something'))
+      return __PACKAGE__->SUPER::name($method => @_) 
+        if exists $elements->{$method} && exists $elements->{$method}{$name};
+    }
+
+    # handle UDDI::Data->method() calls for those SOAP::Data methods 
+    #  that conflict with UDDI methods, like name()
+    if (UNIVERSAL::can($ISA[0] => $method)) {
+      my $pkg = shift @_;
+      return eval "\$pkg->SUPER::$method(\@_)";
+    }
 
     Carp::croak "Don't know what to do with '$method' and '$name' elements";
   }
@@ -210,18 +257,50 @@ use Carp ();
 
 BEGIN { # handle exports
   %EXPORT_TAGS = (
-    'delete'   => [qw/delete_binding delete_business delete_service delete_tModel/],
+    'delete'   => [qw/delete_binding delete_business delete_service 
+                      delete_tModel delete_publisherAssertions/], 
+                                  # ^-------------------- v2/3
     'auth'     => [qw/get_authToken discard_authToken get_registeredInfo/],
-    'save'     => [qw/save_binding save_business save_service save_tModel/],
-    'validate' => [qw/validate_categorization/],
-    'find'     => [qw/find_binding find_business find_service find_tModel/],
-    'get'      => [qw/get_bindingDetail get_businessDetail get_businessDetailExt get_serviceDetail get_tModelDetail/],
+    'save'     => [qw/save_binding save_business save_service save_tModel
+                      add_publisherAssertions set_publisherAssertions/], 
+                    # ^----------------- v2/3 ^----------------- v2/3
+    'validate' => [qw/validate_categorization validate_values/],
+                    # ^------------------- v1 ^------------v2
+    'find'     => [qw/find_binding find_business find_service find_tModel 
+                      find_relatedBusinesses/],
+                    # ^---------------- v2/3
+    'get'      => [qw/get_bindingDetail get_businessDetail get_businessDetailExt 
+                      get_serviceDetail get_tModelDetail
+                      get_assertionStatusReport get_publisherAssertions/],
+                    # ^------------------- v2/3 ^----------------- v2/3
   );
   $EXPORT_TAGS{inquiry} = [map {@{$EXPORT_TAGS{$_}}} qw/find get/];
   $EXPORT_TAGS{publish} = [map {@{$EXPORT_TAGS{$_}}} qw/delete auth save validate/];
   $EXPORT_TAGS{all} =     [map {@{$EXPORT_TAGS{$_}}} qw/inquiry publish/];
   Exporter::export_ok_tags('all');
 }
+
+my $uddiversion;
+
+sub uddiversion {
+  my $self = shift;
+  my $version = shift or return $uddiversion;
+
+  die qq!Wrong UDDI version. Supported versions: @{[
+        join ", ", keys %UDDI::Constants::UDDI_VERSIONS]}\n!
+    unless defined $UDDI::Constants::UDDI_VERSIONS{$version};
+
+  foreach (keys %{$UDDI::Constants::UDDI_VERSIONS{$version}}) {
+    eval "\$UDDI::Constants::$_ = \$UDDI::Constants::UDDI_VERSIONS{$version}->{$_}" or die;
+  }
+
+  UDDI::Data->_init;
+
+  $uddiversion = $version;
+  $self;
+}
+
+BEGIN { UDDI::Lite->uddiversion(1) }
 
 sub new { 
   my $self = shift;
@@ -262,7 +341,9 @@ sub call { SOAP::Trace::trace('()');
   }
   my $message = SOAP::Data
     -> name($method => \SOAP::Data->value(@parameters))
-    -> attr({xmlns=>'urn:uddi-org:api', generic => '1.0', %$attr});
+    -> attr({xmlns => $UDDI::Constants::NAMESPACE, 
+             (defined $UDDI::Constants::GENERIC ? (generic => $UDDI::Constants::GENERIC) : ()), 
+             %$attr});
 
   my $serializer = $self->serializer;
   $serializer->on_nonserialized($self->on_nonserialized);
@@ -451,6 +532,10 @@ nothing. Use +trace/+debug option for UDDI::Lite instead.
 
 =back
 
+To change to UDDI Version 2, use the following pragma:
+
+  use UDDI::Lite uddiversion => 2;
+
 =head2 UDDI::Data
 
 You can use this class if you want to specify value and name for UDDI 
@@ -628,7 +713,7 @@ L<UDDI> ( http://search.cpan.org/search?dist=UDDI )
 
 =head1 COPYRIGHT
 
-Copyright (C) 2000-2001 Paul Kulchenko. All rights reserved.
+Copyright (C) 2000-2004 Paul Kulchenko. All rights reserved.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
