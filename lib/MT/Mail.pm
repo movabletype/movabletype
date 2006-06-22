@@ -47,7 +47,7 @@ sub send {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                                 $_ = MIME::Words::encode_mimeword($1, 'b', $mail_enc) . ' ' . $2;
                             }
-                        } else {
+                        } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
                             $_ = MIME::Words::encode_mimeword($_, 'b', $mail_enc);
                         }
                     }
@@ -58,8 +58,8 @@ sub send {
                         if ($val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                             $hdrs->{$header} = MIME::Words::encode_mimeword($1, 'b', $mail_enc) . ' ' . $2;
                         }
-                    } else {
-                        $hdrs->{$header} = MIME::Words::encode_mimeword($val, 'b', $mail_enc);
+                    } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
+                       $hdrs->{$header} = MIME::Words::encode_mimeword($val, 'b', $mail_enc);
                     }
                 }
             }
