@@ -92,13 +92,13 @@
 
 <h1>Movable Type</h1>
 
-<p class="info">Welcome to Movable Type, the premier weblog publishing platform for businesses, organizations, developers, and web designers!</p>
+<p class="info">Bienvenue sur Movable Type, la premi�re plateforme de blogging pour les entreprises,les organisations, les developpeurs et les webdesigners!</p>
 
-<p class="login"><a rel="nofollow" href="mt.cgi">Log in to Movable Type</a></p>
+<p class="login"><a rel="nofollow" href="mt.cgi">S'enregistrer dans Movable Type</a></p>
 
-<h2>Installing?</h2>
+<h2>Installation?</h2>
 
-<p>If you are just starting with Movable Type __PRODUCT_VERSION__, you may want to review the installation/upgrade section of the <a href="__HELP_URL____PRODUCT_VERSION__/">Movable Type documentqtion</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>
+<p>Si vous découvrez Movable Type __PRODUCT_VERSION__, vous apprécierez certainement de trouver des conseils utiles dans le chapitre "Instllation" dans notre <a href="__HELP_URL____PRODUCT_VERSION__/">documentation Movable Type</a>. Vous pouvez aussi visiter la Page <a rel="nofollow" href="mt-check.cgi">"Vérification Système"</a> pour vérifier que votre système comporte tous les éléments nécessaires à l'installation de Movable Type.</p>
 
 </body>
 
