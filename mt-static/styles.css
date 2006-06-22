@@ -2588,6 +2588,10 @@ a.spinner,
     font-size: 12px;
 }
 
+#edit-category .field #trackback_url {
+    width: 90%;
+}
+
 /* tmpl/cms/menu.tmpl */
 
 #menu #welcome-message {
