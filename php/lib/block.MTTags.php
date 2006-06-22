@@ -7,11 +7,13 @@ function smarty_block_MTTags($args, $content, &$ctx, &$repeat) {
         $tags = $ctx->mt->db->fetch_entry_tags(array(blog_id => $blog_id));
         $min = 0; $max = 0;
         $all_count = 0;
-        foreach ($tags as $tag) {
-            $count = $tag['tag_count'];
-            if ($count > $max) $max = $count;
-            if ($count < $min or $min == 0) $min = $count;
-            $all_count += $count;
+        if ($tags) {
+            foreach ($tags as $tag) {
+                $count = $tag['tag_count'];
+                if ($count > $max) $max = $count;
+                if ($count < $min or $min == 0) $min = $count;
+                $all_count += $count;
+            }
         }
         $ctx->stash('tag_min_count', $min);
         $ctx->stash('tag_max_count', $max);
