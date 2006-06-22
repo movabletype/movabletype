@@ -110,11 +110,11 @@ class MTDatabase_mysql extends MTDatabaseBase {
 
     function &fetch_entry_tags($args) {
         # load tags
+        if (isset($args['entry_id'])) {
+            return $this->fetch_tags_by_entry($args);
+        }
         if (isset($args['blog_id'])) {
             $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
-        }
-        if (isset($args['entry_id'])) {
-            return $this->fetch_tag_by_entry($args);
         }
         if (!isset($args['include_private'])) {
             $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
@@ -148,17 +148,10 @@ class MTDatabase_mysql extends MTDatabaseBase {
         return $tags;
     }
 
-    function &fetch_tag_by_entry($args) {
+    function &fetch_tags_by_entry($args) {
         # load tags by entry_id
         if (isset($args['entry_id'])) {
-            $entry_filter = 'B.objecttag_object_id = '.intval($args['entry_id']);
-        }
-
-        if (isset($args['blog_id'])) {
-            $blog_filter = 'A.objecttag_blog_id = '.intval($args['blog_id']);
-            if ($entry_filter != '') {
-                $blog_filter = ' and '.$blog_filter;
-            }
+            $entry_filter = 'and B.objecttag_object_id = '.intval($args['entry_id']);
         }
 
         if (!isset($args['include_private'])) {
@@ -181,14 +174,14 @@ class MTDatabase_mysql extends MTDatabaseBase {
 
         $sql = "
             select
-                A.objecttag_tag_id
+                A.objecttag_tag_id tag_id
                 , C.tag_name
                 , count(A.objecttag_tag_id) as tag_count
                 , B.objecttag_object_id
                 , A.objecttag_blog_id
             from
                 mt_objecttag A
-                left join mt_objecttag B on A.objecttag_tag_id = B.objecttag_tag_id
+                left join mt_objecttag B on A.objecttag_tag_id = B.objecttag_tag_id $entry_filter
                 left join mt_entry D on B.objecttag_object_id = D.entry_id
                 ,mt_tag C
             where
@@ -200,9 +193,6 @@ class MTDatabase_mysql extends MTDatabaseBase {
                 A.objecttag_blog_id
                 , A.objecttag_tag_id
                 , B.objecttag_object_id
-            having
-                $entry_filter
-                $blog_filter
           order by
                 C.tag_name";
         $tags = $this->get_results($sql, ARRAY_A);
