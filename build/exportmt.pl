@@ -36,7 +36,7 @@ my %o = get_options(
   'arch=s'          => '.tar.gz',  # CSV: .tar.gz,.zip
   'beta=i'          => 0,  # Integer
   'branch=s'        => '',  # TINSEL, TRIBBLE, etc.
-  'build=s'         => '/tmp/MT-Dist',  # Export directory base.
+  'build=s'         => '/tmp',  # Export directory base.
   'cleanup!'        => 1,  # Remove the exported directory after deployment.
   'date!'           => 1,  # Date-stamp the build by default.
   'debug'           => 0,  # Turn on/off the actual system calls.
@@ -448,7 +448,7 @@ CONFIG
                         if( /id="($o{'append:s'}(?:$o{'arch=s'}))"/ ) {
                             my $id = $1;
                             verbose( "Matched id=$id" );
-                            $line = sprintf qq/<a id="%s" href="%s/%s%s">%s%s<\/a>\n/,
+                            $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
                                 $id,
                                 $o{'stage-uri=s'},
                                 $stage_dir, $o{'arch=s'},
@@ -487,13 +487,13 @@ if( $o{'notify:s'} ) {
     $o{'email-subject=s'} .=
         $o{'alpha=i'} ? ' - Alpha ' . $o{'alpha=i'} :
         $o{'beta=i'}  ? ' - Beta '  . $o{'beta=i'}  :
-        $o{'prod'}  ? ' - Production'               :
-        $o{'stage'} ? ' - Staging'                  :
-        $o{'qa'}    ? ' - QA'                       : '';
+        $o{'prod'}    ? ' - Production'             :
+        $o{'stage'}   ? ' - Staging'                :
+        $o{'qa'}      ? ' - QA'                     : '';
 
     # If an email-cc exists, add a comma in front of the QA address.
-    $o{'email-cc:s'} .= ($o{'email-cc:s'} ? ',' : '') .
-        'sixapart@qasource.com';
+    $o{'email-cc:s'} .= ($o{'email-cc:s'} ? ',' : '') . 'sixapart@qasource.com'
+        if $o{'qa'};
 
     # Show the deployed URL's.
     $o{'email-body=s'} = sprintf "File URL(s):\n%s\n\n",
