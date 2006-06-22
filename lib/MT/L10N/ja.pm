@@ -105,6 +105,7 @@ use vars qw( @ISA %Lexicon );
     'Step 3 of 3' => 'ステップ 3/3',
     'tag (exact match)' => 'タグ（完全一致）',
     'tag (incl. normalized)' => 'タグ（正規化）',
+    'Tag cloud (sidebar)' => 'タグクラウド (サイドバー)',
     "Template '[_1]' created by '[_2]' (user #[_3])" => '[_2]（ID:[_3]）がテンプレート「[_1]」を作成しました。',
     'Test Connection' => '接続のテスト',
     'Test mail from Configuration Wizard' => '構成ウィザードからのテストメール',
