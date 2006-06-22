@@ -78,7 +78,8 @@ sub view {
         if ($app->user->is_superuser()) {
             $errmsg .= '  <a href="'.$app->mt_uri(mode => 'list_plugins').'">'. $app->plugin->translate('Configure plugin').'</a>';
         } 
-        return $app->build_page('error.tmpl', {error => $errmsg});
+
+        return $app->build_page('error.tmpl', {error => $errmsg, GOBACK => $app->{goback} || 'history.back()'});
     }
         
     my $stylelibrary = $blog_config ? $blog_config->{stylelibrary} || $DEFAULT_STYLE_LIBRARY : $DEFAULT_STYLE_LIBRARY;
