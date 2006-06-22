@@ -1829,7 +1829,7 @@ sub _hdlr_entry_tb_data {
     dc:identifier="$url"
     dc:subject="@{[ encode_xml($e->category ? $e->category->label : '', 1) ]}"
     dc:description="@{[ encode_xml($strip_hyphen->(_hdlr_entry_excerpt(@_)), 1) ]}"
-    dc:creator="@{[ encode_xml(_hdlr_entry_author(@_), 1) ]}"
+    dc:creator="@{[ encode_xml(_hdlr_entry_author_display_name(@_), 1) ]}"
     dc:date="@{[ _hdlr_date($_[0], { 'format' => "%Y-%m-%dT%H:%M:%S" }) .
                  _hdlr_blog_timezone($_[0]) ]}" />
 </rdf:RDF>

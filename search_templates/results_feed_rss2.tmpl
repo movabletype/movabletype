@@ -3,8 +3,8 @@
 <title><$MTBlogName remove_html="1" encode_xml="1"$> results for <$MTSearchString$></title>
 <link><$MTBlogURL remove_html="1" encode_xml="1"$></link>
 <description><$MTBlogDescription remove_html="1" encode_xml="1"$></description>
-<managingEditor><MTEntries lastn="1"><$MTEntryAuthor$></MTEntries></managingEditor>
-<webMaster><MTEntries lastn="1"><$MTEntryAuthor$></MTEntries></webMaster>
+<managingEditor><MTEntries lastn="1"><$MTEntryAuthorDisplayName encode_xml="1"$></MTEntries></managingEditor>
+<webMaster><MTEntries lastn="1"><$MTEntryAuthorDisplayName encode_xml="1"$></MTEntries></webMaster>
 <language>en-us</language>
 <pubDate><$MTDate format="%a, %d %b %Y %H:%M:%S "$><$MTBlogTimezone no_colon="1"$></pubDate>
 <docs>http://blogs.law.harvard.edu/tech/rss</docs>
@@ -19,7 +19,7 @@
 <description><$MTEntryExcerpt encode_xml="1"$></description>
 <pubDate><$MTEntryDate format="%a, %d %b %Y %H:%M:%S "$><$MTBlogTimezone no_colon="1"$></pubDate>
 <guid isPermaLink="true"><$MTEntryLink encode_xml="1"$></guid>
-<author><$MTEntryAuthor$></author>
+<author><$MTEntryAuthorDisplayName encode_xml="1"$></author>
 <MTEntryIfAllowComments><comments><$MTCGIPath$><$MTCommentScript$>?entry_id=<$MTEntryID$></comments></MTEntryIfAllowComments>
 <MTIfNonEmpty tag="MTEntryCategory"><category domain="<$MTBlogArchiveURL$>"><MTParentCategories glue="/"><MTCategoryLabel dirify="1" encode_xml="1"></MTParentCategories></category></MTIfNonEmpty>
 </item>

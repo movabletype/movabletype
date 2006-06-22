@@ -30,7 +30,7 @@ function smarty_function_MTEntryTrackbackData($args, &$ctx) {
     $title = encode_xml(strip_hyphen($e['entry_title']), 1);
     $subject = encode_xml(strip_hyphen($ctx->tag('EntryCategory')), 1);
     $excerpt = encode_xml(strip_hyphen($ctx->tag('EntryExcerpt')), 1);
-    $creator = encode_xml(strip_hyphen($ctx->tag('EntryAuthor')), 1);
+    $creator = encode_xml(strip_hyphen($ctx->tag('EntryAuthorDisplayName')), 1);
     $date = $ctx->_hdlr_date(array('format' => '%Y-%m-%dT%H:%M:%S'), $ctx) .
             $ctx->tag('BlogTimezone');
     $rdf .= <<<RDF
