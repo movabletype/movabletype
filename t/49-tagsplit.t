@@ -13,7 +13,7 @@ test(q{textile}, ',');
 
 sub test {
     my ($str, $delim) = @_;
-    my @tags = MT::Tag->split($str, $delim);
+    my @tags = MT::Tag->split($delim, $str);
     print $str . ' [' . $delim . ']' . "\n" . Dumper(\@tags);
 }
 
