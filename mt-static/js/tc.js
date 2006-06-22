@@ -267,6 +267,38 @@ TC.getSelection = function( element )
 	return null;
 }
 
+TC.getCaretPosition = function( element )
+{
+	var doc = TC.getOwnerDocument( element );
+    if (doc.selection) {
+        var range = doc.selection.createRange();
+    	var isCollapsed = range.compareEndPoints("StartToEnd", range) == 0;
+    	if (!isCollapsed)
+    		range.collapse(true);
+    	var b = range.getBookmark();
+    	return b.charCodeAt(2) - 2;
+    } else if (element.selectionStart != 'undefined') {
+        return element.selectionStart;
+    }
+
+    return null;
+}
+
+TC.setCaretPosition = function( element, pos )
+{
+    if (element.createTextRange) {
+		var range = element.createTextRange();
+		range.collapse(true);
+		range.moveStart("character", pos);
+		range.select();
+        return true;
+    } else {
+        element.selectionStart = pos;
+        element.selectionEnd = pos;
+        return true;
+    }
+    return false;
+}
 
 TC.createRange = function( selection, element )
 {

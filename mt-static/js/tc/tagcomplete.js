@@ -105,6 +105,14 @@ TC.TagComplete.prototype.keyDown = function( evt )
             return TC.stopEvent( evt );
         }
     }
+    else if ( evt.keyCode == 37 ) {  // left arrow key
+        this.currentWord = '';
+        this.clearCompletions();
+    }
+    else if ( evt.keyCode == 37 ) {  // right arrow key
+        this.currentWord = '';
+        this.clearCompletions();
+    }
     else if ( evt.keyCode == 40 ) {  // down arrow key
         if (this.hasCompletions) {
             this.selectCompletion( 1 );
@@ -112,8 +120,17 @@ TC.TagComplete.prototype.keyDown = function( evt )
             return TC.stopEvent( evt );
         } else {
             var val = element.value;
-            var idx = val.lastIndexOf(this.delimiter);
-            var str = val.substring(idx+1, val.length);
+            var idx = TC.getCaretPosition(this.input_box);
+            if (idx == null) {
+                idx = val.lastIndexOf(this.delimiter) + 1;
+            } else {
+                idx = val.substring(0, idx).lastIndexOf(this.delimiter) + 1;
+                this.insert_pos = idx;
+            }
+            var str = val.substring(idx, val.length);
+            var del_pos = str.indexOf(this.delimiter);
+            if (del_pos != -1)
+                str = str.substring(0, del_pos);
             str = str.replace(/^\s*(.+)$/g, "$1");
             this.currentWord = str;
             this.lookForCompletions();
@@ -143,7 +160,9 @@ TC.TagComplete.prototype.keyUp = function( evt )
     }
     this.processed = 0;
     var element = evt.target || evt.srcElement;
-    var ch = element.value.charAt(element.value.length - 1);
+    var caret_pos = TC.getCaretPositioon(element);
+    if (caret_pos == nul) caret_pos = element.value.length - 1;
+    var ch = element.value.charAt(caret_pos);
     if ( ch == this.delimiter ) {
         this.currentWord = '';
         this.clearCompletions();
@@ -205,8 +224,7 @@ TC.TagComplete.prototype.handleTagComplete = function( word )
         var completion = word + sep;
         this.input_box.value = inputValue.substring( 0, this.insert_pos ) + completion + rest;
         var newPos = (this.insert_pos - 1) + completion.length + 1;
-        this.input_box.selectionStart = newPos;
-        this.input_box.selectionEnd = newPos;
+        TC.setCaretPosition( this.input_box, newPos );
     } else {
         this.input_box.value = inputValue.substring( 0, lastDelim ) + (lastDelim != -1 ? sep : '') + word + sep;
     }
@@ -222,9 +240,10 @@ TC.TagComplete.prototype.lookForCompletions = function()
     this.tagCompleteNode.getStrings(this.currentWord, '', this.suggestedCompletions);
     this.hasCompletions = this.suggestedCompletions.length ? 1 : 0;
     if (this.hasCompletions) {
-        if (this.insert_pos == -1)
-            this.insert_pos = (this.input_box.selectionStart != 'undefined' ?
-                this.input_box.selectionStart : -1);
+        if (this.insert_pos == -1) {
+            var pos = TC.getCaretPosition(this.input_box);
+            if (pos != null) this.insert_pos = pos;
+        }
         this.constructCompletionBox();
     } else
         this.clearCompletions();
