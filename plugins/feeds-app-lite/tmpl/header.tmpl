@@ -1,37 +1,34 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=<TMPL_VAR NAME=LANGUAGE_ENCODING>" />
-    <title><TMPL_LOOP NAME=PAGE_TITLES><TMPL_VAR NAME=BC_NAME ESCAPE=HTML> | </TMPL_LOOP><MT_TRANS phrase="Movable Type Publishing Platform"></title>
-    <link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css" type="text/css" />
-    <link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/styles/app.css" type="text/css" />
-    <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js"></script>
 
+<html lang="<TMPL_VAR NAME=LANGUAGE_TAG>">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=<TMPL_VAR NAME=LANGUAGE_ENCODING>" />
+<title><TMPL_LOOP NAME=PAGE_TITLES><TMPL_VAR NAME=BC_NAME ESCAPE=HTML> | </TMPL_LOOP><TMPL_VAR NAME=MT_PRODUCT_NAME></title>
+<TMPL_IF NAME=FEED_URL>
+<link type="application/atom+xml" rel="alternate" <TMPL_IF NAME=FEED_NAME>title="<TMPL_VAR NAME=FEED_NAME>" </TMPL_IF>href="<TMPL_VAR NAME=FEED_URL ESCAPE=HTML>" />
+</TMPL_IF>
+<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" type="text/css" />
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>"></script>
 <TMPL_IF NAME=LOCAL_LANG_ID><link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles_<TMPL_VAR NAME=LOCAL_LANG_ID>.css?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" />
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt_<TMPL_VAR NAME=LOCAL_LANG_ID>.js?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" charset="utf-8"></script></TMPL_IF>
+<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>user_styles.css" type="text/css" />
+<style type="text/css">
+<MT_HEAD:STYLE>
+</MT_HEAD:STYLE>
+</style>
+<script type="text/javascript">
+<MT_HEAD:SCRIPT>
+ScriptURI = '<TMPL_VAR NAME=SCRIPT_URL>';
+ScriptBaseURI = '<TMPL_VAR NAME=SCRIPT_BASE_URL>';
+StaticURI = '<TMPL_VAR NAME=STATIC_URI>';
+HelpBaseURI = '<TMPL_VAR NAME=HELP_URL>';
+</MT_HEAD:SCRIPT>
+</script>
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc.js?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>"></script>
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc/tableselect.js?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>"></script>
+</head>
 
-    <script type="text/javascript">
-      ScriptURI = '<TMPL_VAR NAME=MTSCRIPT_URL>';
-      ScriptBaseURI = '<TMPL_VAR NAME=SCRIPT_BASE_URL>';
-      StaticURI = '<TMPL_VAR NAME=STATIC_URI>';
-    </script>
-    <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc.js"></script>
-    <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc/tableselect.js"></script>
-    <script type="text/javascript"><!--
-      var ss;
-      function init_ss() {
-        ss = new Slideshow( "slideshow" );
-	ss.init();
-        var i = <TMPL_VAR NAME=LAYOUT> - 1;
-        if (i < 0) { i = 0; }
-	ss.slides[ i ].style.visibility = "visible";
-	ss.currentSlide = i;
-      }
-    --></script>
-
-  </head>
-
-<body id="mode_<TMPL_VAR NAME=MODE>">
+<body id="mode_<TMPL_VAR NAME=MODE>" class="<TMPL_IF NAME=BLOG_ID>blog blog-<TMPL_VAR NAME=BLOG_ID><TMPL_ELSE>system</TMPL_IF>">
 
 <div id="topnav">
 <div id="topnav-container">
@@ -45,7 +42,7 @@
 &nbsp;|&nbsp;
 <a href="<TMPL_VAR NAME=MT_URL>?__mode=admin"><MT_TRANS phrase="System Overview"></a>
 &nbsp;|&nbsp;
-<a href="<TMPL_VAR NAME=STATIC_URI>docs/mtmanual.html"><MT_TRANS phrase="Help"></a>
+<a href="<TMPL_VAR NAME=HELP_URL>"><MT_TRANS phrase="Help"></a>
 </div>
 <div class="rightcol">
 <MT_TRANS phrase="Welcome">
@@ -55,23 +52,6 @@
 </div>
 </div>
 
-<div id="topnav-blogs">
-<TMPL_IF NAME=TOP_BLOG_LOOP>
-<form method="get" action="<TMPL_VAR NAME=MT_URL>" class="inline">
-<input type="hidden" name="__mode" value="menu" />
-<MT_TRANS phrase="Weblogs:">
-<select name="blog_id">
-<TMPL_LOOP NAME=TOP_BLOG_LOOP>
-<option value="<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>
-</TMPL_LOOP>
-</select>
-<input type="submit" value="<MT_TRANS phrase="Go">" />
-<TMPL_IF NAME=BLOG_NAME>
-&nbsp;<a href="<TMPL_VAR NAME=BLOG_URL>"><MT_TRANS phrase="View Site"></a> &#187;
-</TMPL_IF>
-</form>
-</TMPL_IF>
-</div>
 </TMPL_IF>
 
 </div>
@@ -80,7 +60,6 @@
 <div class="body-wrap">
 
 <TMPL_IF NAME=BLOG_ID>
-<TMPL_INCLUDE NAME=blog-left-nav.tmpl>
 
 <div class="body-nav">
 <TMPL_ELSE>
@@ -93,19 +72,22 @@
 </TMPL_IF>
 
 <TMPL_UNLESS NAME=NO_BREADCRUMBS>
-<h2 id="breadcrumbs"><TMPL_LOOP NAME=BREADCRUMBS><TMPL_UNLESS NAME=IS_LAST><a href="<TMPL_VAR NAME=BC_URI ESCAPE=HTML>"><TMPL_VAR NAME=BC_NAME ESCAPE=HTML></a>&nbsp;&gt;&nbsp;<TMPL_ELSE><TMPL_VAR NAME=BC_NAME ESCAPE=HTML></TMPL_UNLESS></TMPL_LOOP></h2>
+<h2 id="breadcrumbs">
+<TMPL_LOOP NAME=BREADCRUMBS><TMPL_UNLESS NAME=IS_LAST><a href="<TMPL_VAR NAME=BC_URI ESCAPE=HTML>"><TMPL_VAR NAME=BC_NAME ESCAPE=HTML></a>&nbsp;&gt;&nbsp;<TMPL_ELSE><TMPL_VAR NAME=BC_NAME ESCAPE=HTML></TMPL_UNLESS></TMPL_LOOP>
+</h2>
 </TMPL_UNLESS>
 
 <TMPL_IF NAME=QUICK_SEARCH>
 <div id="topnav-search">
-<form method="get" action="<TMPL_VAR NAME=MT_URL>" class="inline">
+<form name="quicksearch" method="get" action="<TMPL_VAR NAME=MT_URL>" class="inline">
 <input type="hidden" name="__mode" value="search_replace" />
 <input type="hidden" name="_type" value="<TMPL_IF NAME=SEARCH_TYPE><TMPL_VAR NAME=OBJECT_TYPE><TMPL_ELSE>entry</TMPL_IF>" />
 <TMPL_IF NAME=BLOG_ID>
 <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
 </TMPL_IF>
+<input type="hidden" name="do_search" value="1" />
 <input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-<input accesskey="f" type="text" name="search" value="<MT_TRANS phrase="Search"><TMPL_IF NAME=SEARCH_TYPE> <TMPL_VAR NAME=SEARCH_TYPE><TMPL_ELSE> <MT_TRANS phrase="Entries"></TMPL_IF>" title="Search (f)" size="15" onfocus="this.value = ''; this.style.color = '#000';" />
+<input accesskey="q" type="text" name="search" value="<MT_TRANS phrase="Search"><TMPL_IF NAME=SEARCH_TYPE> <TMPL_VAR NAME=SEARCH_TYPE><TMPL_ELSE> <MT_TRANS phrase="Entries"></TMPL_IF>" title="<MT_TRANS phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" /><a href="#" onclick="document.quicksearch.submit()"><img src="<TMPL_VAR NAME=STATIC_URI>images/search-button.gif" alt="" width="14" height="14" /></a>
 </form>
 </div>
 </TMPL_IF>
