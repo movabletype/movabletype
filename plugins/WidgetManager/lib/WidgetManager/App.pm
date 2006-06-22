@@ -382,7 +382,7 @@ sub install_default_widgets {
     close FH;
 
     foreach (@$default_widget_templates) {
-        next if exists $modules->{$_->{name}};
+        next if exists $modules->{$app->plugin->translate($_->{name})};
         open(TMPL, File::Spec->catfile($widgets_dir, $_->{template})) or die "Error: $!\n";
         while (my $line = <TMPL>) {
             $_->{text} .= $line;
