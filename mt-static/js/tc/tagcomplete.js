@@ -109,15 +109,13 @@ TC.TagComplete.prototype.keyDown = function( evt )
         this.currentWord = '';
         this.clearCompletions();
     }
-    else if ( evt.keyCode == 37 ) {  // right arrow key
+    else if ( evt.keyCode == 39 ) {  // right arrow key
         this.currentWord = '';
         this.clearCompletions();
     }
     else if ( evt.keyCode == 40 ) {  // down arrow key
         if (this.hasCompletions) {
             this.selectCompletion( 1 );
-            this.stopped = evt.keyCode;
-            return TC.stopEvent( evt );
         } else {
             var val = element.value;
             var idx = TC.getCaretPosition(this.input_box);
@@ -131,10 +129,12 @@ TC.TagComplete.prototype.keyDown = function( evt )
             var del_pos = str.indexOf(this.delimiter);
             if (del_pos != -1)
                 str = str.substring(0, del_pos);
-            str = str.replace(/^\s*(.+)$/g, "$1");
+            str = str.replace(/^\s*(.+)\s*$/g, "$1");
             this.currentWord = str;
             this.lookForCompletions();
         }
+        this.stopped = evt.keyCode;
+        return TC.stopEvent( evt );
     }
     else if ( String.fromCharCode(evt.keyCode) == this.delimiter ) {
         this.currentWord = '';
@@ -154,7 +154,7 @@ TC.TagComplete.prototype.keyDown = function( evt )
 TC.TagComplete.prototype.keyUp = function( evt )
 {
     evt = evt || event;
-    if (evt.keyCode == this.processed) {
+    if ((evt.keyCode == this.processed) || (evt.keyCode == this.stopped)) {
         this.processed = 0;
         return false;
     }
@@ -163,11 +163,7 @@ TC.TagComplete.prototype.keyUp = function( evt )
     var caret_pos = TC.getCaretPosition(element);
     if (caret_pos == null) caret_pos = element.value.length - 1;
     var ch = element.value.charAt(caret_pos);
-    if ( ch == this.delimiter ) {
-        this.currentWord = '';
-        this.clearCompletions();
-    }
-    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) {
+    if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) {
         return false;
     }
     else if (this.symbols.test(ch)) {
@@ -199,9 +195,9 @@ TC.TagComplete.prototype.updateWord = function( c )
 TC.TagComplete.prototype.truncateWord = function()
 {
     this.currentWord = this.currentWord.substring( 0, this.currentWord.length - 1 );
-    if (!this.currentWord.length)
+    if (!this.currentWord.length) {
         this.clearCompletions();
-    else
+    } else
         this.lookForCompletions();
 }
 
@@ -242,11 +238,16 @@ TC.TagComplete.prototype.lookForCompletions = function()
     if (this.hasCompletions) {
         if (this.insert_pos == -1) {
             var pos = TC.getCaretPosition(this.input_box);
-            if (pos != null) this.insert_pos = pos;
+            if (pos != null) {
+                var val = this.input_box.value;
+                pos = val.substring(0, pos).lastIndexOf(this.delimiter) + 1;
+                this.insert_pos = pos;
+            }
         }
         this.constructCompletionBox();
-    } else
+    } else {
         this.clearCompletions();
+    }
 }
 
 TC.TagComplete.prototype.onDivMouseDown = function()
