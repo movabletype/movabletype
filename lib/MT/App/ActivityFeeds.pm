@@ -172,6 +172,7 @@ sub process_log_feed {
         $templates{$class} ||= $app->load_tmpl("feed_$class.tmpl") ||
             $app->load_tmpl("feed_system.tmpl");
         $templates{$class}->clear_params();
+        $item->{static_uri} = $app->static_path;
         my $out = $app->build_page($templates{$class}, $item)
             or die $app->errstr;
         push @entries, { entry => $out };
@@ -190,6 +191,8 @@ sub process_log_feed {
     $param->{feed_atom_id} = $app->base . $app->uri;
     $param->{feed_updated_iso} = ts2iso(undef, $last_ts);
     $param->{mt_url} = $app->base . $app->mt_uri;
+    $param->{static_uri} = $app->static_path;
+
     if (!defined $last_ts) {
         # set to current timestamp?
     }

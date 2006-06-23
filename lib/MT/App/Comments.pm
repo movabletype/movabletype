@@ -320,7 +320,7 @@ sub post {
     });
     if ($comment->id && !$comment->is_junk) {
         $app->log({
-            message => $app->translate("New comment for entry #[_1] '[_2]'.", $entry->id, $entry->title),
+            message => $app->translate("Comment on \"[_1]\" by [_2].", encode_html($entry->title), encode_html($comment->author)),
             class => 'comment',
             category => 'new',
             blog_id => $blog->id,
