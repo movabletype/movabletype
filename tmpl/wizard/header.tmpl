@@ -7,7 +7,7 @@
 <title><MT_TRANS phrase="Movable Type"></title>
 
 <link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" type="text/css" />
-<TMPL_IF NAME=LOCAL_LANG_ID><link rel="stylesheet" type="text/css" href="<TMPL_VAR NAME=STATIC_URI>styles_<TMPL_VAR NAME=LOCAL_LANG_ID>.css" /></TMPL_IF>
+<TMPL_IF NAME=LOCAL_LANG_ID><link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles_<TMPL_VAR NAME=LOCAL_LANG_ID>.css?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>" type="text/css" /></TMPL_IF>
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js?v=<TMPL_VAR NAME=MT_VERSION ESCAPE=URL>"></script>
 
 <script language="javascript" type="text/javascript">
