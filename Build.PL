@@ -5,13 +5,13 @@
 #
 use strict;
 use warnings;
-use lib 'lib';
-use MT::Module::Build;
+use lib qw( lib build );
+use Build;
 
 $|++;
 
 # Give unto us a blessed build object.
-my $build = MT::Module::Build->new(
+my $build = Build->new(
     module_name => 'MT',
     dist_version  => '3.3',
     dist_abstract => 'Movable Type Web Publishing Platform and Content Management System',

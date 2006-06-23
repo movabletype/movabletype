@@ -2,31 +2,33 @@
 
 =head1 NAME
 
-MT::Module::Build - Movable Type build functionality via Module::Build
+Build - Movable Type build functionality via Module::Build
 
 =head1 SYNOPSIS
 
   # Build.PL
-  use MT::Module::Build;
-  my $build = MT::Module::Build->new( %args );
+  use lib 'build';
+  use Build;
+  my $build = Build->new( %args );
   $build->preprocess();
   $build->create_build_script();
 
   # build/mt-build.PL
-  use MT::Module::Build;
-  my $build = MT::Module::Build->current;
+  use lib 'build';
+  use Build;
+  my $build = Build->current;
   for my $file ( @ARGV ) {
     # Process the PL_files given as arguments.
   }
 
 =head1 DESCRIPTION
 
-A C<MT::Module::Build> object contains all the internal routines
-needed to build Movable Type distributions.
+A C<Build> object contains all the internal routines needed to build
+Movable Type distributions.
 
 =cut
 
-package MT::Module::Build;
+package Build;
 our $VERSION = '0.04';
 use base qw( Module::Build );
 use strict;

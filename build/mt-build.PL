@@ -5,9 +5,9 @@
 #
 use strict;
 use warnings;
-use lib 'lib';
-use MT::Module::Build;
-my $build = MT::Module::Build->current;
+use lib qw( lib build );
+use Build;
+my $build = Build->current;
 for my $file ( @ARGV ) {
     if( $file =~ /mt_(\w+)\.js$/ ) {
         $build->make_js( $1, $file );
