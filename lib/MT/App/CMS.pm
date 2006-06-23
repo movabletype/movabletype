@@ -4218,6 +4218,8 @@ sub save_object {
         if (!$obj->id) {
             init_blog($obj, $app->user->preferred_language);
         }
+        
+        $values{file_extension} =~ s/^\.*// if $q->param('file_extension') ne '';
     }
         
     $obj->set_values(\%values);
