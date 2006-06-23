@@ -1,0 +1,22 @@
+<MTIfArchiveTypeEnabled archive_type="Monthly">
+<div class="module-archives module" id="monthly-archives">
+   <h2 class="module-header"><a href="<$MTBlogURL$>weblog/"><MT_TRANS phrase="Archives"></a></h2>
+   <div class="module-content">
+      <select onchange="nav(this)">
+         <option><MT_TRANS phrase="Select a Month..."></option>
+         <MTArchiveList archive_type="Monthly">
+         <option value="<$MTArchiveLink$>"><$MTArchiveTitle$></option>
+         </MTArchiveList>
+      </select>
+   </div>
+</div>
+</MTIfArchiveTypeEnabled>
+
+<script type="text/javascript" charset="utf-8">
+function nav(sel) {
+   if (sel.selectedIndex == -1) return;
+   var opt = sel.options[sel.selectedIndex];
+   if (opt && opt.value)
+      location.href = opt.value;
+}    
+</script>
