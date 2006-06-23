@@ -17,20 +17,24 @@ sub install_properties {
     my $class = shift;
     no strict 'refs';
     my $props = shift;
+    my @cols;
     if (exists $props->{column_defs}) {
         $props->{columns} = [ keys %{ $props->{column_defs} } ];
-        if ($props->{audit}) {
-            $props->{column_defs}{created_on} = 'datetime';
-            $props->{column_defs}{created_by} = 'integer';
-            $props->{column_defs}{modified_on} = 'timestamp not null';
-            $props->{defaults}{modified_on} = '20000101000000';
-            $props->{column_defs}{modified_by} = 'integer';
+        @cols = @{ $props->{columns} };
+    } else {
+        @cols = @{ $props->{columns} };
+        foreach ( @cols ) {
+            $props->{column_defs}{$_} = ();
         }
     }
+    if ($props->{audit}) {
+        $props->{column_defs}{created_on} = 'datetime';
+        $props->{column_defs}{created_by} = 'integer';
+        $props->{column_defs}{modified_on} = 'timestamp not null';
+        $props->{defaults}{modified_on} ||= '20000101000000';
+        $props->{column_defs}{modified_by} = 'integer';
+    }
 
-    my @cols = @{ $props->{columns} };
-    @cols = grep { defined $props->{column_defs}{$_} } @cols
-        if exists $props->{column_defs};
     my $pk = $props->{primary_key} || '';
     @cols = sort { $a eq $pk ? -1 : $b eq $pk ? 1 : $a cmp $b } @cols;
     push @cols, qw( created_on created_by modified_on modified_by )
