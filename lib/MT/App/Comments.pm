@@ -190,7 +190,7 @@ sub _builtin_throttle {
                          Subject =>
                              '[' . $blog->name . '] ' .
                          $app->translate("IP Banned Due to Excessive Comments"));
-            my $charset = $app->{cfg}->PublishCharset;
+            my $charset = $app->{cfg}->MailEncoding || $app->{cfg}->PublishCharset;
             $head{'Content-Type'} = qq(text/plain; charset="$charset");
             my $body = $app->translate('_THROTTLED_COMMENT_EMAIL',
                                        $blog->name, 10 * $throttle_period,
@@ -586,7 +586,7 @@ sub _send_comment_notification {
                      $app->translate("New Comment Posted to '[_1]'",
                                      $entry->title)
                    );
-        my $charset = $app->{cfg}->PublishCharset;
+        my $charset = $app->{cfg}->MailEncoding || $app->{cfg}->PublishCharset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
         my $base;
         { local $app->{is_admin} = 1;

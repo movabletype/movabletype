@@ -548,7 +548,8 @@ sub reset_password {
                  From => $app->config('EmailAddressMain') || $author->email,
                  Subject => $app->translate("Password Recovery") );
     my $charset = $app->config('PublishCharset');
-    $head{'Content-Type'} = qq(text/plain; charset="$charset");
+    my $mail_enc = uc ($app->config('MailEncoding') || $charset);
+    $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 
     my $body = $app->build_email('recover-password.tmpl', {user_password => $pass});
     $body = wrap_text($body, 72);

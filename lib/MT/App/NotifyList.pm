@@ -60,7 +60,7 @@ sub subscribe {
     my %head = ( From => $admin_email_addr,
                  To => $subscr_addr,
                  Subject => $app->translate("Please verify your email to subscribe"));
-    my $charset = $app->config('PublishCharset');
+    my $charset = $app->config('MailEncoding') || $app->config('PublishCharset');
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
 
     my @pool = ('A'..'Z','a'..'z','0'..'9');

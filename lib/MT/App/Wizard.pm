@@ -333,7 +333,7 @@ sub optional {
             my %head = (To => $param{test_mail_address},
                         From => $cfg->EmailAddressMain || $param{test_mail_address},
                         Subject => $app->translate("Test email from Movable Type Configuration Wizard") );
-            my $charset = $cfg->PublishCharset;
+            my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
             $head{'Content-Type'} = qq(text/plain; charset="$charset");
 
             my $body = $app->translate("This is the test email sent by your new installation of Movable Type.");
