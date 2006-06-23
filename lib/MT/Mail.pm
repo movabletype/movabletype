@@ -66,9 +66,9 @@ sub send {
         }
     }
 
-    $hdrs->{'Content-Type'} ||= qq(text/plain; charset=") . lc $mail_enc . q(");
-    $hdrs->{'Content-Transfer-Encoding'} ||= ((lc $mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
-    $hdrs->{'MIME-Version'} ||= "1.0";
+    $hdrs->{'Content-Type'} = qq(text/plain; charset=") . lc $mail_enc . q(");
+    $hdrs->{'Content-Transfer-Encoding'} = ((lc $mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
+    $hdrs->{'MIME-Version'} = "1.0";
 
     if ($xfer eq 'sendmail') {
         return $class->_send_mt_sendmail($hdrs, $body, $mgr);
