@@ -47,6 +47,7 @@ sub run_tasks {
     # Secure lock before running tasks
     my $unlock;
     unless ($unlock = $mgr->_lock()) {
+        require MT::ConfigMgr;
         MT->log({
             class => 'system',
             category => 'tasks',
@@ -117,6 +118,7 @@ sub run_tasks {
 sub _lock {
     my $mgr = shift;
 
+    require MT::ConfigMgr;
     my $cfg = MT::ConfigMgr->instance;
 
     # It's unwise to ignore locking for task manager; NoLocking should be
