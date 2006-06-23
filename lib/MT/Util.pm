@@ -1073,7 +1073,7 @@ sub is_valid_url {
     $url =~ s,http;//,http://,;
     $url =~ s,http//,http://,;
 
-    $url = "http://$url" unless ($url =~ m,http://,);
+    $url = "http://$url" unless ($url =~ m,https?://,);
 
     my ($scheme, $host, $path, $query, $fragment) =
         $url =~ m,(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?,;
