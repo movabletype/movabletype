@@ -145,12 +145,12 @@ sub save {
     $lastn = " lastn=\"$lastn\"" if $lastn;
     $title = MT::Util::encode_html($title);
     my $txt = <<TEXT;
-<MTFeeds uri="$uri">
+<MTFeed uri="$uri">
 <h2>$title</h2>
 <ul><MTFeedEntries$lastn>
 <li><a href="<MTFeedEntryLink>"><MTFeedEntryTitle encode_html="1"></a></li>
 </MTFeedEntries></ul>
-</MTFeeds>
+</MTFeed>
 TEXT
     $tmpl->text($txt);
     $tmpl->save or return $app->error($tmpl->errstr);

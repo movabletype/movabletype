@@ -129,8 +129,8 @@ BODY
 #--- utility
 
 sub _error {
-    $_[0]->error('MT[_1] was not used in the proper context.',
-                 $_[0]->stash('tag'));
+    $_[0]->error(MT->translate('MT[_1] was not used in the proper context.',
+                 $_[0]->stash('tag')));
 }
 
 package MT::Plugin::FeedsLite;
