@@ -252,6 +252,19 @@ sub decode_utf8_jcode {
     return pack('U*', unpack('U0U*', $text));
 }
 
+sub utf8_off_encode {
+    my $class = shift;
+    my ($text) = @_;
+    Encode::_utf8_off($text);
+    $text;
+}
+
+sub utf8_off_jcode {
+    my $class = shift;
+    my ($text) = @_;
+    return pack('C*', unpack('C*', $text));
+}
+
 sub _load_module {
     return $PKG if $PKG;
     my $class = shift;

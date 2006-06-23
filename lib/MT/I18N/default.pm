@@ -89,6 +89,12 @@ sub decode_utf8 {
     $class->$meth(@_);
 }
 
+sub utf8_off {
+    my $class = shift;
+    my $meth = "utf8_off_" . ($PKG || $class->_load_module);
+    $class->$meth(@_);
+}
+
 # Dumb default methods (charset ignorant)
 
 sub encode_text_perl {
@@ -346,6 +352,19 @@ sub decode_utf8_perl {
     my ($text, $enc) = @_;
     $text = $class->encode_text($text, $enc, 'utf-8');
     return pack('U*', unpack('U0U*', $text));
+}
+
+sub utf8_off_encode {
+    my $class = shift;
+    my ($text) = @_;
+    Encode::_utf8_off($text);
+    $text;
+}
+
+sub utf8_off_perl {
+    my $class = shift;
+    my ($text) = @_;
+    return pack('C*', unpack('C*', $text));
 }
 
 sub _load_module {

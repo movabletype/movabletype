@@ -97,9 +97,8 @@ sub _hdlr_google_search {
     }
 
     my $enc = MT->instance->config('PublishCharset') || undef;
-    $query = MT::I18N::encode_text($query, $enc, 'utf-8');
-    require Encode;
-    Encode::_utf8_on($query);
+    use utf8;
+    $query = MT::I18N::decode_utf8($query, $enc);
     my $key = $plugin->google_api_key
         or return $ctx->error($plugin->translate(
             'You need a Google API key to use [_1]', '<MTGoogleSearch>' ));
@@ -128,7 +127,6 @@ sub _hdlr_google_search {
                                                 "false", "", "false",
                                                 $lang, "UTF-8", "UTF-8");
     };
-
     warn $@, return '' if $@;
     my $tokens = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
@@ -154,6 +152,6 @@ sub _hdlr_google_search_result {
     exists $res->{$prop}
         or return $ctx->error($plugin->translate(
             'You used a non-existent property from the result structure.' ));
-    MT::I18N::encode_text(MT::I18N::encode_text($res->{$prop}, $enc, 'utf-8'), 'utf-8', $enc) || '';
+    MT::I18N::encode_text(MT::I18N::utf8_off($res->{$prop}), 'utf-8', $enc) || '';
 }
 
