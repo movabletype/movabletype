@@ -2519,7 +2519,7 @@ sub _hdlr_comment_url {
 }
 sub _hdlr_comment_body {
     my($ctx, $arg) = @_;
-    sanitize_off($arg);
+    sanitize_on($arg);
     my $tag = $ctx->stash('tag');
     my $c = $ctx->stash($tag =~ /Preview/ ? 'comment_preview' : 'comment')
         or return $ctx->_no_comment_error('MT' . $tag);
@@ -2528,7 +2528,7 @@ sub _hdlr_comment_body {
     unless ($blog->allow_comment_html) {
         $t = remove_html($t);
     }
-    $t = _fltr_sanitize($t, '1', $ctx);
+    $t = _fltr_sanitize($t, $arg->{sanitize}, $ctx);
     my $convert_breaks = exists $arg->{convert_breaks} ?
         $arg->{convert_breaks} :
         $blog->convert_paras_comments;
@@ -2539,6 +2539,7 @@ sub _hdlr_comment_body {
         $blog->autolink_urls) {
         $t =~ s!(^|\s)(https?://\S+)!$1<a href="$2">$2</a>!gs;
     }
+    $arg->{sanitize} = 0;
     $t;
 }
 sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
