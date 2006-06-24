@@ -714,10 +714,6 @@ sub sanitize_on {
     $_[0]->{'sanitize'} = 1 unless exists $_[0]->{'sanitize'};
 }
 
-sub sanitize_off {
-    $_[0]->{'sanitize'} = 0 unless exists $_[0]->{'sanitize'};
-}
-
 sub _hdlr_include {
     my($ctx, $arg, $cond) = @_;
     my $req = MT::Request->instance;
@@ -2528,7 +2524,6 @@ sub _hdlr_comment_body {
     unless ($blog->allow_comment_html) {
         $t = remove_html($t);
     }
-    $t = _fltr_sanitize($t, $arg->{sanitize}, $ctx);
     my $convert_breaks = exists $arg->{convert_breaks} ?
         $arg->{convert_breaks} :
         $blog->convert_paras_comments;
@@ -2539,7 +2534,6 @@ sub _hdlr_comment_body {
         $blog->autolink_urls) {
         $t =~ s!(^|\s)(https?://\S+)!$1<a href="$2">$2</a>!gs;
     }
-    $arg->{sanitize} = 0;
     $t;
 }
 sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
