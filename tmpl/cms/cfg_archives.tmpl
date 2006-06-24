@@ -165,7 +165,7 @@ function is_valid_path(path_){
 </div>
 
 <div class="setting">
-<div class="label"><label for="site_path"><MT_TRANS phrase="Site Root:"></label></div>
+<div class="label"><label for="site_path"><MT_TRANS phrase="Site Root">:</label></div>
 <div class="field">
 <input name="site_path" id="site_path" value="<TMPL_VAR NAME=SITE_PATH ESCAPE=HTML>" size="50" />
 <p><MT_TRANS phrase="Enter the path where your index files will be published. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory."><br /><MT_TRANS phrase="Example:"> <strong>/home/melody/public_html/weblog</strong>
@@ -292,7 +292,7 @@ function is_valid_path(path_){
 <option value="Category"><MT_TRANS phrase="CATEGORY_ADV"></option>
 </select>
 &nbsp;
-<label for="template_id"><MT_TRANS phrase="Template:"></label>
+<label for="template_id"><MT_TRANS phrase="Template">:</label>
 <select name="template_id" id="template_id">
 <TMPL_LOOP NAME=TEMPLATES>
 <option value="<TMPL_VAR NAME=TEMPLATE_ID>"><TMPL_VAR NAME=TEMPLATE_NAME></option>

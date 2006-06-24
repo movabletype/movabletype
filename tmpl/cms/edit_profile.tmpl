@@ -148,14 +148,14 @@ TC.attachLoadEvent( rectifyAll );
 
 <TMPL_IF NAME=TOPLEVEL_EDIT_ACCESS>
 	<div class="setting">
-		<div class="label"><label for="name"><MT_TRANS phrase="Username:"></label></div>
+		<div class="label"><label for="name"><MT_TRANS phrase="Username">:</label></div>
 		<div class="field">
 			<input name="name" id="name" value="<TMPL_VAR NAME=NAME ESCAPE=HTML>" />
 			<p><MT_TRANS phrase="The name used by this author to login."></p>
 		</div>
     </div>
 	<div class="setting">
-		<div class="label"><label for="nickname"><MT_TRANS phrase="Display Name:"></label></div>
+		<div class="label"><label for="nickname"><MT_TRANS phrase="Display Name">:</label></div>
 		<div class="field">
 			<input name="nickname" id="nickname" value="<TMPL_VAR NAME=NICKNAME ESCAPE=HTML>" />
 			<p><MT_TRANS phrase="The author's published name."></p>
@@ -163,7 +163,7 @@ TC.attachLoadEvent( rectifyAll );
     </div>
 </TMPL_IF>
 <div class="setting">
-	<div class="label"><label for="email"><MT_TRANS phrase="Email Address:"></label></div>
+	<div class="label"><label for="email"><MT_TRANS phrase="Email Address">:</label></div>
 	<div class="field">
 		<input type="text" name="email" id="email" value="<TMPL_VAR NAME=EMAIL ESCAPE=HTML>" />
 		<p><MT_TRANS phrase="The author's email address."></p>

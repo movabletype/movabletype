@@ -251,7 +251,7 @@ EOT
 my $server = $ENV{SERVER_SOFTWARE};
 my $inc_path = join "<br />\n", @INC;
 print trans_templ(<<INFO);
-<h2><MT_TRANS phrase="System Information:"></h2>
+<h2><MT_TRANS phrase="System Information">:</h2>
 $perl_ver_check
 <ul>
 	<li><strong><MT_TRANS phrase="Current working directory:"></strong> <code>$cwd</code></li>

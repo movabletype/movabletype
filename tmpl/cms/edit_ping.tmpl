@@ -80,7 +80,7 @@
 </tr>
 
 <tr class="odd">
-<td class="label"><label for="source_url"><MT_TRANS phrase="URL:"></label></td>
+<td class="label"><label for="source_url"><MT_TRANS phrase="URL">:</label></td>
 <td>
 <input name="source_url" id="source_url" value="<TMPL_VAR NAME=SOURCE_URL ESCAPE=HTML>" class="short" />
 <a href="<TMPL_VAR NAME=SOURCE_URL ESCAPE=HTML>" title="<TMPL_VAR NAME=SOURCE_URL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/link.gif" alt="<MT_TRANS phrase="Link">" width="16" height="9" /></a>
@@ -105,13 +105,13 @@
 </TMPL_IF>
 
 <tr class="odd">
-<td class="label"><label for="created_on"><MT_TRANS phrase="Date:"></label></td>
+<td class="label"><label for="created_on"><MT_TRANS phrase="Date">:</label></td>
 <td><TMPL_VAR NAME=CREATED_ON_TIME_FORMATTED ESCAPE=HTML></td>
 <td class="filter"><a title="<MT_TRANS phrase="View all TrackBacks posted on this day">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;from=<TMPL_VAR NAME=CREATED_ON_DAY_FORMATTED ESCAPE=HTML>&amp;to=<TMPL_VAR NAME=CREATED_ON_DAY_FORMATTED ESCAPE=HTML>&amp;show_all=1&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
 </tr>
 
 <tr class="even">
-<td class="label"><MT_TRANS phrase="IP:"></td>
+<td class="label"><MT_TRANS phrase="IP">:</td>
 <td><TMPL_VAR NAME=IP ESCAPE=HTML></td>
 <td class="filter"><a title="<MT_TRANS phrase="View all TrackBacks from this IP address">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=ip&amp;search=<TMPL_VAR NAME=IP ESCAPE=URL>&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
 </tr>

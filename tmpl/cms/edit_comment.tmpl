@@ -56,7 +56,7 @@
 <table cellspacing="0">
 
 <tr class="even">
-<td class="label" id="edit-comment-label"><label for="status"><MT_TRANS phrase="Status:"></label></td>
+<td class="label" id="edit-comment-label"><label for="status"><MT_TRANS phrase="Status">:</label></td>
 <td class="status" id="edit-comment-field">
 <select name="status">
 <option value="publish" <TMPL_IF NAME=COMMENT_APPROVED>selected="selected"</TMPL_IF>><MT_TRANS phrase="Published"></option>
@@ -68,7 +68,7 @@
 </tr>
 
 <tr class="odd">
-<td class="label"><label<TMPL_UNLESS NAME=COMMENTER_ID> for="author"</TMPL_UNLESS>><MT_TRANS phrase="Commenter:"></label></td>
+<td class="label"><label<TMPL_UNLESS NAME=COMMENTER_ID> for="author"</TMPL_UNLESS>><MT_TRANS phrase="Commenter">:</label></td>
 <td>
 <TMPL_IF NAME=COMMENTER_ID>
 <TMPL_IF NAME=COMMENTER_APPROVED>
@@ -117,7 +117,7 @@
 </tr>
 
 <tr class="even">
-<td class="label"><label for="email"><MT_TRANS phrase="Email:"></label></td>
+<td class="label"><label for="email"><MT_TRANS phrase="Email">:</label></td>
 <td>
 <TMPL_IF NAME=COMMENTER_ID>
 <TMPL_IF NAME=EMAIL_WITHHELD>
@@ -141,7 +141,7 @@
 </tr>
 
 <tr class="odd">
-<td class="label"><label<TMPL_UNLESS NAME=COMMENTER_ID> for="url"</TMPL_UNLESS>><MT_TRANS phrase="URL:"></label></td>
+<td class="label"><label<TMPL_UNLESS NAME=COMMENTER_ID> for="url"</TMPL_UNLESS>><MT_TRANS phrase="URL">:</label></td>
 <td>
 <input name="url" id="url" value="<TMPL_VAR NAME=URL ESCAPE=HTML>"<TMPL_IF NAME=URL> class="short"</TMPL_IF> />
 <TMPL_IF NAME=URL>
@@ -152,19 +152,19 @@
 </tr>
 
 <tr class="even">
-<td class="label"><MT_TRANS phrase="Entry:"></td>
+<td class="label"><MT_TRANS phrase="Entry">:</td>
 <td><TMPL_IF NAME=NO_ENTRY>[<MT_TRANS phrase="Entry no longer exists">]<TMPL_ELSE><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=ENTRY_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_IF NAME=ENTRY_TITLE><TMPL_VAR NAME=ENTRY_TITLE ESCAPE=HTML><TMPL_ELSE>[<MT_TRANS phrase="No title">]</TMPL_IF></a></TMPL_IF></td>
 <td class="filter"><a title="<MT_TRANS phrase="View all comments on this entry">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;id=<TMPL_VAR NAME=ENTRY_ID ESCAPE=HTML>&amp;tab=comments"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
 </tr>
 
 <tr class="odd">
-<td class="label"><label for="created_on"><MT_TRANS phrase="Date:"></label></td>
+<td class="label"><label for="created_on"><MT_TRANS phrase="Date">:</label></td>
 <td><TMPL_VAR NAME=CREATED_ON_TIME_FORMATTED ESCAPE=HTML></td>
 <td class="filter"><a title="<MT_TRANS phrase="View all comments posted on this day">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;from=<TMPL_VAR NAME=CREATED_ON_DAY_FORMATTED ESCAPE=URL>&amp;to=<TMPL_VAR NAME=CREATED_ON_DAY_FORMATTED ESCAPE=URL>&amp;show_all=1&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
 </tr>
 
 <tr class="even">
-<td class="label"><MT_TRANS phrase="IP:"></td>
+<td class="label"><MT_TRANS phrase="IP">:</td>
 <td><TMPL_VAR NAME=IP ESCAPE=HTML></td>
 <td class="filter"><a title="<MT_TRANS phrase="View all comments from this IP address">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;is_limited=1&amp;search_cols=ip&amp;search=<TMPL_VAR NAME=IP ESCAPE=HTML>&amp;do_search=1"><img alt="" src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" width="8" height="8" border="0" /></a></td>
 </tr>

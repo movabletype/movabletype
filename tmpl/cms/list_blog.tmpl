@@ -109,7 +109,7 @@
 <TMPL_IF NAME=DESCRIPTION><p class="blog-desc"><TMPL_VAR NAME=DESCRIPTION></p></TMPL_IF>
 <p>
 <TMPL_IF NAME=SITE_URL>
-<MT_TRANS phrase="URL:"> <a href="<TMPL_VAR NAME=SITE_URL>"><TMPL_VAR NAME=SITE_URL></a>
+<MT_TRANS phrase="URL">: <a href="<TMPL_VAR NAME=SITE_URL>"><TMPL_VAR NAME=SITE_URL></a>
 <TMPL_ELSE>
 <span class="alert-warning-inline"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Warning">" width="9" height="9" /> <MT_TRANS phrase="Important:"> <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=blog&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=ID>"><MT_TRANS phrase="Configure this weblog."></a></span>
 </TMPL_IF>

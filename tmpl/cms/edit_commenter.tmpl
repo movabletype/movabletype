@@ -55,7 +55,7 @@ TC.attachLoadEvent(init);
 <table cellspacing="0">
 
 <tr class="even">
-<td class="label" id="edit-commenter-label"><MT_TRANS phrase="Name:"></td>
+<td class="label" id="edit-commenter-label"><MT_TRANS phrase="Name">:</td>
 <td id="edit-commenter-field"><TMPL_VAR NAME=NICKNAME ESCAPE=HTML></td>
 <td id="edit-commenter-filter">
 <a title="<MT_TRANS phrase="View all comments with this name">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=name&amp;search=<TMPL_VAR NAME=NICKNAME ESCAPE=URL>&amp;do_search=1"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a>
@@ -63,13 +63,13 @@ TC.attachLoadEvent(init);
 </tr>
 
 <tr class="odd">
-<td class="label"><MT_TRANS phrase="Identity:"></td>
+<td class="label"><MT_TRANS phrase="Identity">:</td>
 <td><a href="<TMPL_VAR NAME=PROFILE_PAGE>"><TMPL_VAR NAME=NAME ESCAPE=HTML> &raquo;</a></td>
 <td class="filter">&nbsp;</td>
 </tr>
 
 <tr class="even">
-<td class="label"><TMPL_UNLESS IS_EMAIL_HIDDEN><a href="mailto:<TMPL_VAR NAME=EMAIL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/email.gif" height="9" width="16" alt="Email" /></a> </TMPL_UNLESS><MT_TRANS phrase="Email:"></td>
+<td class="label"><TMPL_UNLESS IS_EMAIL_HIDDEN><a href="mailto:<TMPL_VAR NAME=EMAIL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/email.gif" height="9" width="16" alt="Email" /></a> </TMPL_UNLESS><MT_TRANS phrase="Email">:</td>
 <td><TMPL_IF NAME=IS_EMAIL_HIDDEN><MT_TRANS phrase="Withheld"><TMPL_ELSE><TMPL_VAR NAME=EMAIL ESCAPE=HTML></TMPL_IF></td>
 <td class="filter"><TMPL_IF NAME=IS_EMAIL_HIDDEN>&nbsp;<TMPL_ELSE>
 <a title="<MT_TRANS phrase="View all comments with this email address">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=email&amp;search=<TMPL_VAR NAME=EMAIL ESCAPE=URL>&amp;do_search=1"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a></TMPL_IF>
@@ -77,7 +77,7 @@ TC.attachLoadEvent(init);
 </tr>
 
 <tr class="odd">
-<td class="label"><MT_TRANS phrase="URL:"></td>
+<td class="label"><MT_TRANS phrase="URL">:</td>
 <td><TMPL_IF NAME=URL><a href="<TMPL_VAR NAME=URL ESCAPE=HTML>"><TMPL_VAR NAME=URL ESCAPE=HTML> &raquo;</a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
 <td class="filter"><TMPL_IF NAME=URL>
 <a title="<MT_TRANS phrase="View all comments with this URL address">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=url&amp;search=<TMPL_VAR NAME=URL ESCAPE=URL>&amp;do_search=1"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a>
@@ -85,7 +85,7 @@ TC.attachLoadEvent(init);
 </tr>
 
 <tr class="even">
-<td class="label"><MT_TRANS phrase="Status:"></td>
+<td class="label"><MT_TRANS phrase="Status">:</td>
 <td class="<TMPL_IF NAME=COMMENTER_APPROVED>status-trusted<TMPL_ELSE><TMPL_IF NAME=COMMENTER_BANNED>status-banned<TMPL_ELSE>status-authenticated</TMPL_IF></TMPL_IF>">
 <TMPL_IF NAME=COMMENTER_APPROVED>
 <img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Trusted">" width="13" height="9" /> <MT_TRANS phrase="Trusted">
