@@ -282,7 +282,7 @@ sub ping {
     if ($ping->id && !$ping->is_junk) {
         my $msg = 'New TrackBack received.';
         if ($entry) {
-            $msg = $app->translate("TrackBack on \"[_1]\" from '[_2]'.", encode_html($entry->title), encode_html($ping->blog_name));
+            $msg = $app->translate('TrackBack on "[_1]" from "[_2]".', encode_html($entry->title), encode_html($ping->blog_name));
         } elsif ($cat) {
             $msg = $app->translate("TrackBack for category #[_1] '[_2]'.", $cat->id, $cat->label);
         }

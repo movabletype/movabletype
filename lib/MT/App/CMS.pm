@@ -6588,7 +6588,7 @@ sub save_entry {
             "Saving entry failed: [_1]", $obj->errstr));
     require MT::Log;
     $app->log({
-        message => $app->translate("Entry \"[_1]\" added by user '[_2]'", encode_html($obj->title), $author->name),
+        message => $app->translate('Entry "[_1]" added by user "[_2]"', encode_html($obj->title), $author->name),
         level => MT::Log::INFO(),
         class => 'entry',
         category => 'new',

@@ -19,8 +19,8 @@ use vars qw( %Lexicon );
     'Recent posts' => 'Notes r�centes',
     'Search form' => 'Formulaire de recherche',
     'Subscribe to feed' => 'S\'abonner au flux',
-    'Recent comments' => '',
-    'Tag cloud (sidebar)' => '',
+    'Recent comments' => 'Recent comments',
+    'Tag cloud (sidebar)' => 'Tag cloud (sidebar)',
 );
 1;
 
