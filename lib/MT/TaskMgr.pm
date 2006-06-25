@@ -105,7 +105,7 @@ sub run_tasks {
                 class => 'system',
                 category => 'tasks',
                 level => MT::Log::INFO(),
-                message => $app->translate("Task Update"),
+                message => $app->translate("Scheduled Tasks Update"),
                 metadata => $app->translate("The following tasks were run:") . ' ' .
                     join ", ", @completed
             });
