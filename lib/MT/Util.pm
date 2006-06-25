@@ -13,7 +13,7 @@ use Time::Local qw( timegm );
 use Exporter;
 @MT::Util::ISA = qw( Exporter );
 use vars qw( @EXPORT_OK );
-@EXPORT_OK = qw( start_end_day start_end_week start_end_month init_sax
+@EXPORT_OK = qw( start_end_day start_end_week start_end_month
                  start_end_period week2ymd munge_comment
                  html_text_transform encode_html decode_html
                  iso2ts ts2iso offset_time offset_time_list first_n_words
@@ -25,7 +25,8 @@ use vars qw( @EXPORT_OK );
                  perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8 
                  start_background_task launch_background_tasks substr_wref
                  extract_urls extract_domain extract_domains is_valid_date
-                 epoch2ts ts2epoch escape_unicode unescape_unicode);
+                 epoch2ts ts2epoch escape_unicode unescape_unicode
+                 sax_parser);
 
 
 sub leap_day {
@@ -1752,15 +1753,26 @@ sub unescape_unicode {
     $text = MT::I18N::encode_text($text, 'ucs2', undef);
 }
 
-sub init_sax {
-    require XML::SAX;
-    if (@{XML::SAX->parsers} == 1) {
-        map { eval { XML::SAX->add_parser($_) } }
-            qw( XML::SAX::Expat XML::LibXML::SAX::Parser
-                XML::LibXML::SAX
-                XML::SAX::ExpatXS );
+{
+    my $initialized_sax;
+
+    sub init_sax {
+        require XML::SAX;
+        if (@{XML::SAX->parsers} == 1) {
+            map { eval { XML::SAX->add_parser($_) } }
+                qw( XML::SAX::Expat XML::LibXML::SAX::Parser
+                    XML::LibXML::SAX
+                    XML::SAX::ExpatXS );
+        }
+        $initialized_sax = 1;
     }
-    1;
+
+    sub sax_parser {
+        init_sax() unless $initialized_sax;
+        require XML::SAX::ParserFactory;
+        my $f = XML::SAX::ParserFactory->new;
+        $f->parser();
+    }
 }
 
 1;
