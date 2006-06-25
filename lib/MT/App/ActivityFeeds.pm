@@ -174,6 +174,7 @@ sub process_log_feed {
             $app->load_tmpl("feed_system.tmpl");
         $templates{$class}->clear_params();
         $item->{static_uri} = $app->static_path;
+        $item->{mt_url} = $app->base . $app->mt_uri;
         $item->{feed_token} = $token;
         my $out = $app->build_page($templates{$class}, $item)
             or die $app->errstr;
