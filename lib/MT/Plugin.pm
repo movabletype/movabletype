@@ -37,7 +37,7 @@ sub new {
 
 sub init {
     my $plugin = shift;
-    if (my $cb = $plugin->{callbacks}) {
+    if (my $cb = $plugin->callbacks) {
         if (ref $cb eq 'ARRAY') {
             foreach (@$cb) {
                 MT->add_callback($_->{name}, $_->{priority} || 5, $plugin, $_->{code});
@@ -52,7 +52,7 @@ sub init {
             }
         }
     }
-    if (my $jf = $plugin->{junk_filters}) {
+    if (my $jf = $plugin->junk_filters) {
         if (ref $jf eq 'ARRAY') {
             $_->{plugin} = $plugin for @$jf;
             MT->register_junk_filter($jf);
@@ -66,25 +66,25 @@ sub init {
             }
         }
     }
-    if (my $filters = $plugin->{text_filters}) {
+    if (my $filters = $plugin->text_filters) {
         MT->add_text_filter($_, $filters->{$_}) for keys %$filters;
     }
-    if (my $classes = $plugin->{log_classes}) {
+    if (my $classes = $plugin->log_classes) {
         MT->add_log_class($_, $classes->{$_}) for keys %$classes;
     }
-    if (my $tags = $plugin->{template_tags}) {
+    if (my $tags = $plugin->template_tags) {
         require MT::Template::Context;
         MT::Template::Context->add_tag($_, $tags->{$_}) for keys %$tags;
     }
-    if (my $tags = $plugin->{conditional_tags}) {
+    if (my $tags = $plugin->conditional_tags) {
         require MT::Template::Context;
         MT::Template::Context->add_conditional_tag($_, $tags->{$_}) for keys %$tags;
     }
-    if (my $tags = $plugin->{container_tags}) {
+    if (my $tags = $plugin->container_tags) {
         require MT::Template::Context;
         MT::Template::Context->add_container_tag($_, $tags->{$_}) for keys %$tags;
     }
-    if (my $f = $plugin->{global_filters}) {
+    if (my $f = $plugin->global_filters) {
         require MT::Template::Context;
         MT::Template::Context->add_global_filter($_, $f->{$_}) for keys %$f;
     }
@@ -103,14 +103,14 @@ sub init_app {
             $init->($plugin, @_);
         }
     }
-    if (my $methods = $plugin->{app_methods}) {
-        if (my $app_methods = $plugin->{app_methods}{$app_pkg}) {
+    if (my $methods = $plugin->app_methods) {
+        if (my $app_methods = $methods->{$app_pkg}) {
             foreach my $meth (keys %$app_methods) {
                 $MT::App::Global_actions{$app_pkg}{$meth} = $app_methods->{$meth};
             }
         }
     }
-    if (my $actions = $plugin->{app_action_links}) {
+    if (my $actions = $plugin->app_action_links) {
         if (my $app_actions = $actions->{$app_pkg}) {
             if (ref $app_actions eq 'ARRAY') {
                 foreach (@$app_actions) {
@@ -122,7 +122,7 @@ sub init_app {
             }
         }
     }
-    if (my $actions = $plugin->{app_itemset_actions}) {
+    if (my $actions = $plugin->app_itemset_actions) {
         if (my $app_actions = $actions->{$app_pkg}) {
             if (ref $app_actions eq 'ARRAY') {
                 $app->add_itemset_action($_) for @$app_actions;
@@ -152,7 +152,7 @@ sub init_request {
 
 sub init_tasks {
     my $plugin = shift;
-    if (my $tasks = $plugin->{tasks}) {
+    if (my $tasks = $plugin->tasks) {
         if (ref $tasks eq 'ARRAY') {  # an array of MT::Task objects
             MT->add_task($_) for @$tasks;
         } elsif (ref $tasks eq 'HASH') {  # an array of task metadata
@@ -172,14 +172,14 @@ sub init_tasks {
 }
 
 sub _getset {
-    $_ = (caller(1))[3]; s/.*:://;
-    @_ > 1 ? $_[0]->{$_} = $_[1] : $_[0]->{$_}
+    my $p = (caller(1))[3]; $p =~ s/.*:://;
+    @_ > 1 ? $_[0]->{$p} = $_[1] : $_[0]->{$p};
 }
 
 sub _getset_translate {
-    $_ = (caller(1))[3]; s/.*:://;
-    $_[0]->{$_} = $_[1] if @_ > 1;
-    $_[0]->l10n_filter($_[0]->{$_} || '');
+    my $p = (caller(1))[3]; $p =~ s/.*:://;
+    $_[0]->{$p} = $_[1] if @_ > 1;
+    $_[0]->l10n_filter($_[0]->{$p} || '');
 }
 
 sub key { &_getset }
@@ -195,13 +195,28 @@ sub description { &_getset_translate }
 sub envelope { &_getset }
 sub settings { &_getset }
 sub icon { &_getset }
+sub callbacks { &_getset }
+sub upgrade_functions { &_getset }
+sub object_classes { &_getset }
+sub junk_filters { &_getset }
+sub text_filters { &_getset }
+sub template_tags { &_getset }
+sub conditional_tags { &_getset }
+sub log_classes { &_getset }
+sub container_tags { &_getset }
+sub global_filters { &_getset }
+sub app_methods { &_getset }
+sub app_action_links { &_getset }
+sub app_itemset_actions { &_getset }
+sub tasks { &_getset }
 
 sub needs_upgrade {
     my $plugin = shift;
-    return 0 unless exists $plugin->{schema_version};
+    my $sv = $plugin->schema_version;
+    return 0 unless defined $sv;
     my $ver = MT->config('PluginSchemaVersion');
     my $cfg_ver = $ver->{$plugin->{plugin_sig}} if $ver;
-    if ((!defined $cfg_ver) || ($cfg_ver < $plugin->{schema_version})) {
+    if ((!defined $cfg_ver) || ($cfg_ver < $sv)) {
         return 1;
     }
     0;
@@ -267,8 +282,8 @@ sub config_vars {
     my ($scope) = @_;
     $scope ||= 'system';
     my @settings;
-    if ($plugin->{settings}) {
-        foreach my $setting (@{$plugin->{settings}}) {
+    if (my $s = $plugin->settings) {
+        foreach my $setting (@$s) {
             my ($name, $param) = @$setting;
             next if $scope && $param->{Scope} && $param->{Scope} ne $scope;
             push @settings, $name;
@@ -334,7 +349,8 @@ sub apply_default_settings {
         $scope_id = 'system';
     }
     my $defaults;
-    if ($plugin->{settings} && ($defaults = $plugin->{settings}->defaults($scope))) {
+    my $s = $plugin->settings;
+    if ($s && ($defaults = $s->defaults($scope))) {
         foreach (keys %$defaults) {
             $data->{$_} = $defaults->{$_} if !exists $data->{$_};
         }
