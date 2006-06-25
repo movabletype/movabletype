@@ -9175,10 +9175,7 @@ sub category_add {
 sub category_do_add {
     my $app = shift;
     my $q = $app->param;
-    my $perms = $app->{perms}
-        or return $app->error($app->translate("No permissions"));
-    return $app->error($app->translate("Permission denied."))
-        unless $perms->can_edit_categories;
+    my $author = $app->user;
     $app->validate_magic() or return;
     require MT::Category;
     my $name = $q->param('label') or return $app->error($app->translate("No label"));
@@ -9187,18 +9184,32 @@ sub category_do_add {
         if $name eq '';
     my $parent = $q->param ('parent') || '0';
     my $cat = MT::Category->new;
+    my $original = $cat->clone;
     $cat->blog_id(scalar $q->param('blog_id'));
     $cat->author_id($app->user->id);
     $cat->label($name);
-    $cat->parent ($parent);
-    my @siblings = MT::Category->load({ parent => $cat->parent,
-                                        blog_id => $app->param('blog_id') });
-    foreach (@siblings) {
-        return $app->errtrans("The category label '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.", $_->label)
-            if $_->label eq $cat->label;
+    $cat->parent($parent);
+
+    if (!$author->is_superuser) {
+        MT->run_callbacks('CMSSavePermissionFilter.category', $app, undef)
+            || return $app->error($app->translate("Permission denied.")
+                                  . MT->errstr());
     }
+
+    my $filter_result = MT->run_callbacks('CMSSaveFilter.category', $app);
+    if (!$filter_result) {
+        return $app->error(MT->errstr);
+    }
+
+    MT->run_callbacks('CMSPreSave.category', $app, $cat, $original)
+        || return $app->error(MT->errstr);
     
     $cat->save or return $app->error($cat->errstr);
+
+    # Now post-process it.
+    MT->run_callbacks('CMSPostSave.category', $app, $cat, $original)
+        or return $app->error(MT->errstr());
+
     my $id = $cat->id;
     $name = encode_js($name);
     my %param = (javascript => <<SCRIPT);
