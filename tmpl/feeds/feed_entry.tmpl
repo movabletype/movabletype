@@ -47,9 +47,9 @@
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>"&gt;<MT_TRANS phrase="Edit">&lt;/a&gt;&lt;/li&gt;
 
             <TMPL_IF NAME=LOG.ENTRY.STATUS_IS_2>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=set_draft&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;return_args=tab%3Dentry%26__mode%3Dlist_entries%26blog_id%3D<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=set_draft&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;return_args=__mode%3Dview%26_type%3Dentry%26id%3D<TMPL_VAR NAME=LOG.ENTRY.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
             <TMPL_ELSE>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=set_published&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;return_args=tab%3Dentry%26__mode%3Dlist_entries%26blog_id%3D<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=set_published&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;return_args=__mode%3Dview%26_type%3Dentry%26id%3D<TMPL_VAR NAME=LOG.ENTRY.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             </TMPL_IF>
 
           <TMPL_IF NAME=LOOP_ACTIONS>
