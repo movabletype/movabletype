@@ -13,7 +13,7 @@ use Time::Local qw( timegm );
 use Exporter;
 @MT::Util::ISA = qw( Exporter );
 use vars qw( @EXPORT_OK );
-@EXPORT_OK = qw( start_end_day start_end_week start_end_month
+@EXPORT_OK = qw( start_end_day start_end_week start_end_month init_sax
                  start_end_period week2ymd munge_comment
                  html_text_transform encode_html decode_html
                  iso2ts ts2iso offset_time offset_time_list first_n_words
@@ -1750,6 +1750,17 @@ sub unescape_unicode {
     my $text = shift;
     $text =~ s/\&\#(\d+);/pack("H*", sprintf("%X",$1))/egx;
     $text = MT::I18N::encode_text($text, 'ucs2', undef);
+}
+
+sub init_sax {
+    require XML::SAX;
+    if (@{XML::SAX->parsers} == 1) {
+        map { eval { XML::SAX->add_parser($_) } }
+            qw( XML::SAX::Expat XML::LibXML::SAX::Parser
+                XML::LibXML::SAX
+                XML::SAX::ExpatXS );
+    }
+    1;
 }
 
 1;
