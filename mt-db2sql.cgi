@@ -30,7 +30,7 @@ my @CLASSES = qw( MT::Author MT::Blog MT::Trackback MT::Category MT::Comment MT:
                   MT::IPBanList MT::Log MT::Notification MT::Permission
                   MT::Placement MT::Template MT::TemplateMap
                   MT::TBPing MT::PluginData MT::Config MT::Session
-                  MT::FileInfo );
+                  MT::FileInfo MT::Tag MT::ObjectTag );
 
 use File::Spec;
 
