@@ -10,7 +10,8 @@ use strict;
 use File::Spec;
 use MT::TBPing;
 use MT::Trackback;
-use MT::Util qw( first_n_words encode_xml is_valid_url start_background_task );
+use MT::Util qw( first_n_words encode_xml is_valid_url
+    start_background_task encode_html );
 use MT::JunkFilter qw(:constants);
 use MT::App;
 use MT::I18N qw( encode_text guess_encoding const length_text wrap_text substr_text first_n_text );
