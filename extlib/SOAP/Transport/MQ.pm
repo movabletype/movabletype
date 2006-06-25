@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: MQ.pm,v 1.3 2004/11/14 19:30:50 byrnereese Exp $
+# $Id: MQ.pm,v 1.3 2001/08/11 19:09:57 paulk Exp $
 #
 # ======================================================================
 
@@ -12,8 +12,7 @@ package SOAP::Transport::MQ;
 
 use strict;
 use vars qw($VERSION);
-#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name:  $ =~ /-(\d+)_([\d_]+)/);
-$VERSION = $SOAP::Lite::VERSION;
+$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
 
 use MQClient::MQSeries; 
 use MQSeries::QueueManager;
@@ -236,3 +235,52 @@ sub handle {
 1;
 
 __END__
+
+=head1 NAME
+
+SOAP::Transport::MQ - Server/Client side MQ support for SOAP::Lite
+
+=head1 SYNOPSIS
+
+=over 4
+
+=item Client
+
+  use SOAP::Lite 
+    uri => 'http://my.own.site.com/My/Examples',
+    proxy => 'mq://server:port?Channel=CHAN1;QueueManager=QM_SOAP;RequestQueue=SOAPREQ1;ReplyQueue=SOAPRESP1',
+  ;
+
+  print getStateName(1);
+
+=item Server
+
+  use SOAP::Transport::MQ;
+
+  my $server = SOAP::Transport::MQ::Server
+    ->new('mq://server:port?Channel=CHAN1;QueueManager=QM_SOAP;RequestQueue=SOAPREQ1;ReplyQueue=SOAPRESP1')
+    # specify list of objects-by-reference here 
+    -> objects_by_reference(qw(My::PersistentIterator My::SessionIterator My::Chat))
+    # specify path to My/Examples.pm here
+    -> dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method')
+  ;
+
+  print "Contact to SOAP server\n";
+  do { $server->handle } while sleep 1;
+
+=back
+
+=head1 DESCRIPTION
+
+=head1 COPYRIGHT
+
+Copyright (C) 2000-2001 Paul Kulchenko. All rights reserved.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+Paul Kulchenko (paulclinger@yahoo.com)
+
+=cut

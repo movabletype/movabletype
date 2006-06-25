@@ -47,8 +47,7 @@ sub add {
   my $self = shift;
   my ($handle,$writeonly) = @_;
   warn "Adding a new session for $handle.\n" if $DEBUG;
-  return $self->{sessions}{$handle} = 
-      $self->SessionDataClass->new($self,$handle,$writeonly);
+  return $self->{sessions}{$handle} = $self->SessionDataClass->new($self,$handle,$writeonly);
 }
 
 # Object method: delete()
@@ -109,26 +108,23 @@ sub activate {
 }
 
 # Object method: wait()
-# Wait for I/O.  Handles writes automatically.  Returns a list of 
-# IO::SessionData objects ready for reading.  
-# If there is a listen socket, then will automatically do an accept()
-# and return a new IO::SessionData object for that.
-use Data::Dumper;
+# Wait for I/O.  Handles writes automatically.  Returns a list of IO::SessionData
+# objects ready for reading.  
+# If there is a listen socket, then will automatically do an accept() and return
+# a new IO::SessionData object for that.
 sub wait {
   my $self = shift;
   my $timeout = shift;
 
-  # Call select() to get the list of sessions that are ready for 
-  # reading/writing.
-  warn "IO::Select->select() returned error: $!"
+  # Call select() to get the list of sessions that are ready for reading/writing.
+  croak "IO::Select->select() returned error: $!"
     unless my ($read,$write) = 
       IO::Select->select($self->{readers},$self->{writers},undef,$timeout);
 
   # handle queued writes automatically
   foreach (@$write) {
     my $session = $self->to_session($_);
-    warn "Writing pending data (",$session->pending+0," bytes) for $_.\n" 
-	if $DEBUG;
+    warn "Writing pending data (",$session->pending+0," bytes) for $_.\n" if $DEBUG;
     my $rc = $session->write;
   }
 
