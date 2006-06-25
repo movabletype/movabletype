@@ -563,15 +563,15 @@ sub register_upgrade_function {
 sub init {
     my $pkg = shift;
     foreach my $plugin (@MT::Plugins) {
-        if ($plugin->{object_classes}) {
-            $pkg->register_class($plugin->{object_classes});
+        if (my $classes = $plugin->object_classes) {
+            $pkg->register_class($classes);
         }
-        if ($plugin->{upgrade_functions}) {
-            foreach (keys %{$plugin->{upgrade_functions}}) {
+        if (my $functions = $plugin->upgrade_functions) {
+            foreach (keys %$functions) {
                 # associate plugin with upgrade function
                 $_->{plugin} = $plugin->{plugin_sig};
             }
-            $pkg->register_upgrade_function($plugin->{upgrade_functions});
+            $pkg->register_upgrade_function($functions);
         }
     }
 }
