@@ -106,7 +106,7 @@ sub run_tasks {
                 category => 'tasks',
                 level => MT::Log::INFO(),
                 message => $app->translate("Task Update"),
-                metadata => $app->translate("The following tasks were run:") .
+                metadata => $app->translate("The following tasks were run:") . ' ' .
                     join ", ", @completed
             });
         }
