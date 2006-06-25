@@ -123,6 +123,10 @@ sub process_log_feed {
     my %templates;
     my $max_items = $app->config('ActivityFeedItemLimit');
 
+    my $static_path = $app->static_path;
+    if ($static_path =~ m!^/!) {
+        $static_path = $app->base . $static_path;
+    }
     my $last_mod = $app->get_header('If-Modified-Since');
     if ($last_mod) {
         $last_mod = iso2ts(undef, $last_mod);
@@ -179,6 +183,7 @@ sub process_log_feed {
         }
         # make sure this is an absolute url
         $item->{mt_url} = $app->base . $app->mt_uri;
+        $item->{static_uri} = $static_path;
         $item->{feed_token} = $token;
         my $out = $app->build_page($templates{$class}, $item)
             or die $app->errstr;
@@ -198,7 +203,7 @@ sub process_log_feed {
     $param->{feed_atom_id} = $app->base . $app->uri;
     $param->{feed_updated_iso} = ts2iso(undef, $last_ts);
     $param->{mt_url} = $app->base . $app->mt_uri;
-    $param->{static_uri} = $app->static_path;
+    $param->{static_uri} = $static_path;
     $param->{feed_token} = $token;
 
     if (!defined $last_ts) {
