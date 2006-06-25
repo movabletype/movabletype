@@ -136,7 +136,7 @@ sub log {
     }
     my $log = new MT::Log();
     if (ref $msg eq 'HASH') {
-        $log->column($_, $msg->{$_}) foreach keys %$msg;
+        $log->set_values($msg);
         $msg = $msg->{'message'};
     } else {
         $log->message($msg);
