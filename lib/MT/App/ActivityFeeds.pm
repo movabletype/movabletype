@@ -131,6 +131,7 @@ sub process_log_feed {
     my $host = $app->base;
     $host =~ s!^https?://!!;
     my $path = $app->mt_uri;
+    my $token = $app->param('token');
 
     require MT::Log;
     my $cfg = $app->config;
@@ -173,6 +174,7 @@ sub process_log_feed {
             $app->load_tmpl("feed_system.tmpl");
         $templates{$class}->clear_params();
         $item->{static_uri} = $app->static_path;
+        $item->{feed_token} = $token;
         my $out = $app->build_page($templates{$class}, $item)
             or die $app->errstr;
         push @entries, { entry => $out };
@@ -192,6 +194,7 @@ sub process_log_feed {
     $param->{feed_updated_iso} = ts2iso(undef, $last_ts);
     $param->{mt_url} = $app->base . $app->mt_uri;
     $param->{static_uri} = $app->static_path;
+    $param->{feed_token} = $token;
 
     if (!defined $last_ts) {
         # set to current timestamp?

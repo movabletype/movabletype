@@ -44,13 +44,11 @@
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=ping&amp;id=<TMPL_VAR NAME=LOG.TBPING.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;&lt;/li&gt;
 
             <TMPL_IF NAME=LOG.TBPING.VISIBLE>
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=unapprove_item&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.TBPING.ID>&amp;return_args=__mode%3Dlist_pings%26blog_id%3D<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
             <TMPL_ELSE>
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=approve_item&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.TBPING.ID>&amp;return_args=__mode%3Dlist_pings%26blog_id%3D<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             </TMPL_IF>
-
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Delete">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=handle_junk&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.TBPING.ID>&amp;return_args=__mode%3Dlist_pings%26tab%3Djunk%26blog_id%3D<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
 
       <TMPL_IF NAME=LOOP_ACTIONS>
       <TMPL_LOOP NAME=LOOP_ACTIONS>

@@ -47,12 +47,10 @@
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>"&gt;<MT_TRANS phrase="Edit">&lt;/a&gt;&lt;/li&gt;
 
             <TMPL_IF NAME=LOG.ENTRY.STATUS_IS_2>
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=set_draft&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;return_args=tab%3Dentry%26__mode%3Dlist_entries%26blog_id%3D<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
             <TMPL_ELSE>
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=set_published&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.ENTRY.ID>&amp;return_args=tab%3Dentry%26__mode%3Dlist_entries%26blog_id%3D<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             </TMPL_IF>
-
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Delete">&lt;/a&gt;&lt;/li&gt;
 
           <TMPL_IF NAME=LOOP_ACTIONS>
           <TMPL_LOOP NAME=LOOP_ACTIONS>
@@ -68,7 +66,7 @@
         &lt;strong&gt;<MT_TRANS phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>"&gt;<MT_TRANS phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;filter=author_id&amp;filter_val=<TMPL_VAR NAME=LOG.ENTRY.AUTHOR.ID>"&gt;<MT_TRANS phrase="From this author">&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=entry&amp;from=<TMPL_VAR NAME=LOG.ENTRY.CREATED_ON>&amp;to=<TMPL_VAR NAME=LOG.ENTRY.CREATED_ON>&amp;show_all=1&amp;blog_id=<TMPL_VAR NAME=LOG.ENTRY.BLOG_ID>&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
     &lt;/div&gt;
     &lt;br style="clear: both;" /&gt;

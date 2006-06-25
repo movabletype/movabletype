@@ -61,6 +61,7 @@ sub init {
         'trust_commenter' => \&trust_commenter,
         'ban_commenter' => \&ban_commenter,
         'approve_item' => \&approve_item,
+        'unapprove_item' => \&unapprove_item,
         'save_entries' => \&save_entries,
         'save_entry' => \&save_entry,
         'preview_entry' => \&preview_entry,
@@ -391,6 +392,20 @@ sub user_can_admin_commenters {
     my $app = shift;
     $app->{author}->is_superuser() ||
         ($app->{perms} && ($app->{perms}->can_administer_blog || $app->{perms}->can_edit_config));
+}
+
+sub validate_magic {
+    my $app = shift;
+    if (my $feed_token = $app->param('feed_token')) {
+        return unless $app->user;
+        my $pw = $app->user->api_password;
+        return undef if ($pw || '') eq '';
+        require MT::Util;
+        my $auth_token = MT::Util::perl_sha1_digest_hex('feed:' . $pw);
+        return $feed_token eq $auth_token;
+    } else {
+        return $app->SUPER::validate_magic(@_);
+    }
 }
 
 sub update_welcome_message {
@@ -8667,13 +8682,13 @@ sub search_replace {
     } elsif ($from && $to) {
         $is_dateranged = 1;
         s!\D!!g foreach ($from, $to);
-        $datefrom = $from; $dateto = $to;
+        $datefrom = substr($from, 0, 8); $dateto = substr($to, 0, 8);
     }
     my $tab = $q->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
     ## on it if it's there.
-    if ($search) {
+    if (defined $search) {
         $search = quotemeta($search) unless $is_regex;
         $search = '(?i)' . $search unless $case;
     }
@@ -8681,7 +8696,7 @@ sub search_replace {
     my %param = %$list_pref;
     my $limit = $q->param('limit') || 125;     # FIXME: mt.cfg setting?
     my $matches;
-    if (($do_search && $search) || $show_all || $do_replace) {
+    if (($do_search && defined $search) || $show_all || $do_replace) {
         my $api = $search_api->{$type};
         my $class = $app->_load_driver_for($type);
         my %terms;
@@ -8736,7 +8751,6 @@ sub search_replace {
                                                        %terms },
                                                        \%args) } } @perms;
             } elsif ($author->is_superuser) {
-                #my @blogs = MT::Blog->load();
                 @streams = ({iter =>
                                    $class->load_iter(\%terms, \%args) });
             }
@@ -8785,7 +8799,7 @@ sub search_replace {
             %replace_cols = map { $_ => 1 } @{$api->{replace_cols}};
         }
 
-        my $re = eval { qr/$search/ };
+        my $re = eval { qr/$search/ } if defined $search;
         if (my $err = $@) {
             return $app->error($app->translate("Error in search expression: [_1]",  $@));
         }
@@ -8803,7 +8817,7 @@ sub search_replace {
                             $obj->$col($text);
                         }
                     } else {
-                        $match = $text =~ m!$re!;
+                        $match = defined $search ? $text =~ m!$re! : 1;
                         last if $match;
                     }
                 }

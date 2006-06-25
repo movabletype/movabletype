@@ -46,13 +46,11 @@
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;&lt;/li&gt;
 
             <TMPL_IF NAME=LOG.COMMENT.VISIBLE>
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=unapprove_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dlist_comments%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
             <TMPL_ELSE>
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=approve_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dlist_comments%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             </TMPL_IF>
-
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="Delete">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=itemset_action&amp;action_name=handle_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dlist_pings%26tab%3Djunk%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
 
           <TMPL_IF NAME=LOOP_ACTIONS>
           <TMPL_LOOP NAME=LOOP_ACTIONS>
@@ -71,17 +69,23 @@
 
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ENTRY.ID>&amp;tab=comments"&gt;<MT_TRANS phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
 
-        <TMPL_IF NAME=LOG.COMMENT.AUTHOR.AUTHENTICATED> <!-- BRAD FIXME -->
-        &lt;li&gt;&lt;a href="INSERT_ACTION"&gt;<MT_TRANS phrase="By commenter identity">&lt;/a&gt;&lt;/li&gt;
+        <TMPL_IF NAME=LOG.COMMENT.AUTHOR.AUTHENTICATED>
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=commenter&amp;id=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;tab=comments"&gt;<MT_TRANS phrase="By commenter identity">&lt;/a&gt;&lt;/li&gt;
         </TMPL_IF>
 
+        <TMPL_IF NAME=LOG.COMMENT.AUTHOR>
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR ESCAPE=HTML>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="By commenter name">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>
 
+        <TMPL_IF NAME=LOG.COMMENT.EMAIL>
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.COMMENT.EMAIL ESCAPE=HTML>&amp;is_limited=1&amp;search_cols=email&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter email">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>
 
+        <TMPL_IF NAME=LOG.COMMENT.URL>
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;_type=comment&amp;search=<TMPL_VAR NAME=LOG.COMMENT.URL ESCAPE=HTML>&amp;is_limited=1&amp;search_cols=url&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter URL">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;from=<TMPL_VAR NAME=LOG.COMMENT.DATE>&amp;to=<TMPL_VAR NAME=LOG.COMMENT.DATE>&amp;show_all=1&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;from=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;to=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;show_all=1&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
       
     &lt;/div&gt;
