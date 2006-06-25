@@ -170,10 +170,14 @@ sub process_log_feed {
         $item->{'log.atom_id'} = qq{tag:$host,$year:$path/$id};
         $item->{'log.message'} = entity_translate(encode_html($item->{'log.message'}, 1));
         my $class = $log->class || 'system';
-        $templates{$class} ||= $app->load_tmpl("feed_$class.tmpl") ||
-            $app->load_tmpl("feed_system.tmpl");
-        $templates{$class}->clear_params();
-        $item->{static_uri} = $app->static_path;
+        if (!$templates{$class}) {
+            $templates{$class} = $app->load_tmpl("feed_$class.tmpl") ||
+                $app->load_tmpl("feed_system.tmpl");
+        } else {
+            $templates{$class}->clear_params();
+            $app->set_default_tmpl_params($templates{$class});
+        }
+        # make sure this is an absolute url
         $item->{mt_url} = $app->base . $app->mt_uri;
         $item->{feed_token} = $token;
         my $out = $app->build_page($templates{$class}, $item)

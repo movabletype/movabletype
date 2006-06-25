@@ -837,8 +837,14 @@ sub load_tmpl {
     return $app->error(
         $app->translate("Loading template '[_1]' failed: [_2]", $file, $err))
         if $err;
+    $app->set_default_tmpl_params($tmpl);
+    $tmpl;
+}
 
-    if (my $author = $app->{author}) {
+sub set_default_tmpl_params {
+    my $app = shift;
+    my ($tmpl) = @_;
+    if (my $author = $app->user) {
         $tmpl->param(author_id => $author->id);
         $tmpl->param(author_name => $author->name);
     }
@@ -857,8 +863,6 @@ sub load_tmpl {
     $lang =~ s/[-_].+//;
     $tmpl->param("language_$lang" => 1);
     $tmpl->param(language_encoding => $app->charset);
-
-    $tmpl;
 }
 
 sub process_mt_template {
