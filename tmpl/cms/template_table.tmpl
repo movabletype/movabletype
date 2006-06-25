@@ -44,9 +44,7 @@
 <TMPL_LOOP NAME=OBJECT_LOOP>
 <tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
 <td class="cb">
-<TMPL_IF NAME=CAN_DELETE>
 <input type="checkbox" name="id" class="select" value="<TMPL_VAR NAME=ID>" />
-</TMPL_IF>
 </td>
 <td><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=template&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=NAME ESCAPE=HTML></a></td>
 <td><TMPL_VAR NAME=OUTFILE ESCAPE=HTML></td>

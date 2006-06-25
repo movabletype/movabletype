@@ -444,6 +444,10 @@ function blurDateFields(s) {
 
 </TMPL_IF>
 
+<TMPL_IF NAME=ERROR>
+<div class="error-message"><MT_TRANS phrase="<TMPL_VAR NAME=ERROR>"></div>
+</TMPL_IF>
+
 </div>
 
 <TMPL_INCLUDE NAME="footer.tmpl">

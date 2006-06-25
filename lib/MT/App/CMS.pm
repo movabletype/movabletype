@@ -4538,6 +4538,7 @@ sub delete {
     my($entry_id, $cat_id, $author_id) = ("", "", "");
     my %rebuild_entries;
     my @rebuild_cats;
+    my $required_items = 0;
     for my $id ($q->param('id')) {
         next unless $id; # avoid 'empty' ids
 
@@ -4599,9 +4600,13 @@ sub delete {
             }
         }
 
-        $obj->remove;
-
-        MT->run_callbacks('CMSPostDelete.' . $type, $app, $obj);
+        if ($type eq 'template' && $obj->type !~ /(custom|index|archive|individual|category)/o) {
+            $required_items++;
+        }
+        else {
+            $obj->remove;
+            MT->run_callbacks('CMSPostDelete.' . $type, $app, $obj);
+        }
     }
     require MT::Entry;
     for my $entry_id (keys %rebuild_entries) {
@@ -4617,6 +4622,9 @@ sub delete {
                          : (saved_deleted => 1));
     if ($q->param('is_power_edit')) {
         $app->add_return_arg(is_power_edit => 1);
+    }
+    if ($required_items) {
+        $app->add_return_arg(error => $app->translate("System templates can not be deleted."));
     }
     $app->call_return;
 }
@@ -8858,6 +8866,7 @@ sub search_replace {
             = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
     }
     my %res = (
+        error => $q->param('error') || '',
         limit => $limit,
         limit_all => $limit eq 'all',
         count_matches => $matches, 
