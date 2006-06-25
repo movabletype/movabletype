@@ -22,7 +22,7 @@
         </TMPL_IF>
 
         &lt;p&gt;
-        &lt;b&gt;<MT_TRANS phrase="Blog">:&lt;/b&gt; &lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<TMPL_VAR NAME=LOG.COMMENT.BLOG.NAME ESCAPE=HTML>&lt;/a&gt;&lt;br /&gt;
+        &lt;b&gt;<MT_TRANS phrase="Blog">:&lt;/b&gt; &lt;a href="<TMPL_VAR NAME=LOG.COMMENT.BLOG.SITE_URL>"&gt;<TMPL_VAR NAME=LOG.COMMENT.BLOG.NAME ESCAPE=HTML>&lt;/a&gt;&lt;br /&gt;
         <TMPL_IF NAME=LOG.COMMENT.ENTRY.STATUS_IS_2>
         &lt;b&gt;<MT_TRANS phrase="Entry">:&lt;/b&gt; &lt;a href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>"&gt;<TMPL_IF NAME=LOG.COMMENT.ENTRY.TITLE><TMPL_VAR NAME=LOG.COMMENT.ENTRY.TITLE ESCAPE=HTML><TMPL_ELSE>(<MT_TRANS phrase="Untitled">)</TMPL_IF>&lt;/a&gt;&lt;br /&gt;
         <TMPL_ELSE>
