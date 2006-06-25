@@ -69,7 +69,7 @@ TC.attachLoadEvent( init );
 <input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
 <input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
 <p>
-<label for="ip"><MT_TRANS phrase="IP Address">:</label> <input name="ip" id="ip" value="<TMPL_VAR NAME=IP>" />
+<label for="ip"><MT_TRANS phrase="IP Address">:</label> <input name="ip" id="ip" value="<TMPL_VAR NAME=IP>" maxlength="15" />
 &nbsp;
 <input type="submit" name="save" value="<MT_TRANS phrase="Ban IP Address">" />
 <input type="button" name="cancel" value="<MT_TRANS phrase="Cancel">" onclick="cancelCreateMode(); return false" />
