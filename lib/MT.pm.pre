@@ -137,7 +137,8 @@ sub log {
     my $log = new MT::Log();
     if (ref $msg eq 'HASH') {
         $log->set_values($msg);
-        $msg = $msg->{'message'};
+    } elsif ((ref $msg) && (UNIVERSAL::isa($msg, 'MT::Log'))) {
+        $log = $msg;
     } else {
         $log->message($msg);
     }
@@ -146,7 +147,7 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save();
-    print STDERR MT->translate("Message: [_1]", $msg) . "\n"
+    print STDERR MT->translate("Message: [_1]", $log->message) . "\n"
         if $MT::DebugMode;
 }
 my $plugin_full_path;

@@ -1244,6 +1244,8 @@ sub log {
     if (ref $msg eq 'HASH') {
         $log->set_values($msg);
         $msg = $msg->{'message'} || '';
+    } elsif ((ref $msg) && (UNIVERSAL::isa($msg, 'MT::Log'))) {
+        $log = $msg;
     } else {
         $log->message($msg);
     }
