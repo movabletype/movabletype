@@ -1582,7 +1582,7 @@ sub view_log {
     if ($blog) {
         $so = $blog->server_offset;
     } else {
-        $so = $app->{cfg}->timeoffset;
+        $so = $app->{cfg}->TimeOffset;
     }
     if ($so) {
         my $partial_hour_offset = 60 * abs($so - int($so));
