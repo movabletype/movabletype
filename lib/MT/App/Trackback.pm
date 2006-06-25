@@ -11,7 +11,7 @@ use File::Spec;
 use MT::TBPing;
 use MT::Trackback;
 use MT::Util qw( first_n_words encode_xml is_valid_url
-    start_background_task encode_html );
+    start_background_task );
 use MT::JunkFilter qw(:constants);
 use MT::App;
 use MT::I18N qw( encode_text guess_encoding const length_text wrap_text substr_text first_n_text );
@@ -283,7 +283,7 @@ sub ping {
     if ($ping->id && !$ping->is_junk) {
         my $msg = 'New TrackBack received.';
         if ($entry) {
-            $msg = $app->translate('TrackBack on "[_1]" from "[_2]".', encode_html($entry->title), encode_html($ping->blog_name));
+            $msg = $app->translate('TrackBack on "[_1]" from "[_2]".', $entry->title, $ping->blog_name);
         } elsif ($cat) {
             $msg = $app->translate("TrackBack for category #[_1] '[_2]'.", $cat->id, $cat->label);
         }
