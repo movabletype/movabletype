@@ -2035,9 +2035,11 @@ sub edit_object {
             ## Don't pass in author_id, because it will clash with the
             ## author_id parameter of the author currently logged in.
             delete $param{'author_id'};
-            delete $param{'category_id'};
-            if (my $cat = $obj->category) {
-                $param{category_id} = $cat->id;
+            unless (defined $q->param('category_id')) {
+                delete $param{'category_id'};
+                if (my $cat = $obj->category) {
+                    $param{category_id} = $cat->id;
+                }
             }
             $blog_id = $obj->blog_id;
             my $status = $q->param('status') || $obj->status;
