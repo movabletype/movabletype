@@ -46,11 +46,11 @@
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;&lt;/li&gt;
 
             <TMPL_IF NAME=LOG.COMMENT.VISIBLE>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=unapprove_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.TBPING.ID>blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=unapprove_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TCOMMENT.ID>blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
             <TMPL_ELSE>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=approve_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.TBPING.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=approve_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             </TMPL_IF>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=handle_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.TBPING.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=handle_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
 
           <TMPL_IF NAME=LOOP_ACTIONS>
           <TMPL_LOOP NAME=LOOP_ACTIONS>
