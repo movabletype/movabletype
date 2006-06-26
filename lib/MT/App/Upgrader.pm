@@ -230,7 +230,7 @@ sub finish {
         my $cookie_obj = $app->start_session($author);
         my $response = $app->response;
         $response->{cookie} = { map { $_ => $cookie_obj->{$_} } (keys %$cookie_obj) };
-        $app->log($app->translate("User [_1] upgraded database to version [_2]", $author->name, MT->schema_version));
+        $app->log($app->translate("User '[_1]' upgraded database to version [_2]", $author->name, MT->schema_version));
     }    
 }
 

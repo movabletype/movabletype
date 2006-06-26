@@ -285,7 +285,7 @@ sub ping {
         if ($entry) {
             $msg = $app->translate('TrackBack on "[_1]" from "[_2]".', $entry->title, $ping->blog_name);
         } elsif ($cat) {
-            $msg = $app->translate("TrackBack for category #[_1] '[_2]'.", $cat->id, $cat->label);
+            $msg = $app->translate("TrackBack on category '[_1]' (ID:[_2]).", $cat->label, $cat->id);
         }
         require MT::Log;
         $app->log({
