@@ -147,12 +147,16 @@ sub save {
     $lastn = " lastn=\"$lastn\"" if $lastn;
     $title = MT::Util::encode_html($title);
     my $txt = <<TEXT;
+<div class="module-feed module">
+<div class="module-content">
 <MTFeed uri="$uri">
-<h2>$title</h2>
+<h2 class="module-header">$title</h2>
 <ul><MTFeedEntries$lastn>
 <li><a href="<MTFeedEntryLink>"><MTFeedEntryTitle encode_html="1"></a></li>
 </MTFeedEntries></ul>
 </MTFeed>
+</div>
+</div>
 TEXT
     $tmpl->text($txt);
     $tmpl->save or return $app->error($tmpl->errstr);
