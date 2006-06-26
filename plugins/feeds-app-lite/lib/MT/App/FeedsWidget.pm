@@ -125,6 +125,8 @@ sub save {
       return $app->redirect($app->app_uri . "?__mode=config&blog_id=$blog_id");
     my $lastn = $app->param('lastn');
     my $title = $app->param('feed_title');
+    # XXX Hack-truncate feed widget title to the magic literal of 42 characters.
+    $title = substr $title, 0, 42;
     my $p     = {blog_id => $blog_id, site_url => $blog->site_url};
     my $name  = "Widget: $title";
     require MT::Template;
