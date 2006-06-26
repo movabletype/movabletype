@@ -550,7 +550,7 @@ sub reset_password {
     for (1..8) { $pass .= $pool[ rand @pool ] }
     $author->set_password($pass);
     $author->save;
-    my $message = $app->translate("Password was reset for author '[_1]' (user #[_2]). Password was sent to the following address: [_3]", $author->name, $author->id, $author->email);
+    my $message = $app->translate("Password was reset for user '[_1]' (ID:[_2]) and sent to address: [_3]", $author->name, $author->id, $author->email);
     $app->log({
         message => $message,
         level => MT::Log::SECURITY(),
@@ -4021,7 +4021,7 @@ sub CMSPostDelete_blog {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Weblog '[_1]' deleted by '[_2]' (user #[_3])", $obj->name, $app->user->name, $app->user->id),
+        message => $app->translate("Weblog '[_1]' (ID:[_2]) deleted by '[_3]'", $obj->name, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'blog',
         category => 'delete'
@@ -4032,7 +4032,7 @@ sub CMSPostDelete_notification {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Notification '[_1]' (#[_2]) deleted by '[_3]' (user #[_4])", $obj->email, $obj->id, $app->user->name, $app->user->id),
+        message => $app->translate("Subscriber '[_1]' (ID:[_2]) deleted from notification list by '[_3]'", $obj->email, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4043,7 +4043,7 @@ sub CMSPostDelete_author {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Author '[_1]' (#[_2]) deleted by '[_3]' (user #[_4])", $obj->name, $obj->id, $app->user->name, $app->user->id),
+        message => $app->translate("User '[_1]' (ID:[_2]) deleted by '[_3]'", $obj->name, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4054,7 +4054,7 @@ sub CMSPostDelete_category {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Category '[_1]' (category #[_2]) deleted by '[_3]' (user #[_4])", $obj->label, $obj->id, $app->user->name, $app->user->id),
+        message => $app->translate("Category '[_1]' (ID:[_2]) deleted by '[_3]'", $obj->label, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4071,7 +4071,7 @@ sub CMSPostDelete_comment {
     }
 
     $app->log({
-        message => $app->translate("Comment '[_1]' (#[_2]) deleted by '[_3]' (user #[_4]) from entry '[_5]' (entry #[_6])", $obj->text, $obj->id, $app->user->name, $app->user->id, $title, $obj->entry_id),
+        message => $app->translate("Comment (ID:[_1]) by '[_2]' deleted by '[_3]' from entry '[_4]'", $obj->id, $obj->author, $app->user->name, $title),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4082,7 +4082,7 @@ sub CMSPostDelete_entry {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Entry '[_1]' (entry #[_2]) deleted by '[_3]' (user #[_4])", $obj->title, $obj->id, $app->user->name, $app->user->id),
+        message => $app->translate("Entry '[_1]' (ID:[_2]) deleted by '[_3]'", $obj->title, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4092,8 +4092,18 @@ sub CMSPostDelete_entry {
 sub CMSPostDelete_ping {
     my ($eh, $app, $obj) = @_;
 
+    my ($message,$title);
+    my $obj_parent = $obj->parent();
+    if ($obj_parent->isa('MT::Category')) {
+        $title = $obj_parent->label || $app->translate('(Unlabeled category)');
+        $message = $app->translate("Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from category '[_4]'", $obj->id, $obj->blog_name, $app->user->name, $title);
+    } else {
+        $title = $obj_parent->title || $app->translate('(Untitled entry)');
+        $message = $app->translate("Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from entry '[_4]'", $obj->id, $obj->blog_name, $app->user->name, $title);
+    }
+        
     $app->log({
-        message => $app->translate("Ping '[_1]' (ping #[_2]) deleted by '[_3]' (user #[_4])", $obj->excerpt, $obj->id, $app->user->name, $app->user->id),
+        message => $message,
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4104,7 +4114,7 @@ sub CMSPostDelete_template {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Template '[_1]' (#[_2]) deleted by '[_3]' (user #[_4])", $obj->name, $obj->id, $app->user->name, $app->user->id),
+        message => $app->translate("Template '[_1]' (#[_2]) deleted by '[_3]'", $obj->name, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4115,7 +4125,7 @@ sub CMSPostDelete_tag {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Tags '[_1]' (tags #[_2]) deleted by '[_3]' (user #[_4])", $obj->name, $obj->id, $app->user->name, $app->user->id),
+        message => $app->translate("Tag '[_1]' (ID:[_2]) deleted by '[_3]'", $obj->name, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
@@ -4815,23 +4825,23 @@ sub save_commenter_perm {
         
         if ($action eq 'trust' && $cmntr->status($blog_id) != APPROVED) {
             $cmntr->approve($blog_id) or return $app->error($cmntr->errstr);
-            $app->log($app->translate("User '[_1]' (#[_2]) trusted commenter '[_3]' (#[_4]).",
-                    $author->name, $author->id, $cmntr->name, $cmntr->id));
+            $app->log($app->translate("User '[_1]' trusted commenter '[_2]'.",
+                    $author->name, $cmntr->name));
             $acted_on++;
         } elsif ($action eq 'ban' && $cmntr->status($blog_id) != BANNED) {
             $cmntr->ban($blog_id) or return $app->error($cmntr->errstr);
-            $app->log($app->translate("User '[_1]' (#[_2]) banned commenter '[_3]' (#[_4]).",
-                    $author->name, $author->id, $cmntr->name, $cmntr->id));
+            $app->log($app->translate("User '[_1]' banned commenter '[_2]'.",
+                    $author->name, $cmntr->name));
             $acted_on++;
         } elsif ($action eq 'unban' && $cmntr->status($blog_id) == BANNED) {
             $cmntr->pending($blog_id) or return $app->error($cmntr->errstr);
-            $app->log($app->translate("User '[_1]' (#[_2]) unbanned commenter '[_3]' (#[_4]).",
-                    $author->name, $author->id, $cmntr->name, $cmntr->id));
+            $app->log($app->translate("User '[_1]' unbanned commenter '[_2]'.",
+                    $author->name, $cmntr->name));
             $acted_on++;
         } elsif ($action eq 'untrust' && $cmntr->status($blog_id) == APPROVED) {
             $cmntr->pending($blog_id) or return $app->error($cmntr->errstr);
-            $app->log($app->translate("User '[_1]' (#[_2]) untrusted commenter '[_3]' (#[_4]).",
-                    $author->name, $author->id, $cmntr->name, $cmntr->id));
+            $app->log($app->translate("User '[_1]' untrusted commenter '[_2]'.",
+                    $author->name, $cmntr->name));
             $acted_on++;
         }
         
@@ -6612,7 +6622,7 @@ sub save_entry {
             "Saving entry failed: [_1]", $obj->errstr));
     require MT::Log;
     $app->log({
-        message => $app->translate('Entry "[_1]" added by user "[_2]"', encode_html($obj->title), $author->name),
+        message => $app->translate("Entry '[_1]' (ID:[_2]) added by user '[_3]'", $obj->title, $obj->id, $author->name),
         level => MT::Log::INFO(),
         class => 'entry',
         category => 'new',
