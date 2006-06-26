@@ -669,16 +669,19 @@ with (document) {
 <div class="field">
 <TMPL_IF NAME=DISP_PREFS_SHOW_AUTHORED_ON>
 <div class="field-header">
-<label><MT_TRANS phrase="Authored On"></label>
+<label id="publish-status"><MT_TRANS phrase="Entry Date"></label>
 <a href="#" onclick="return openManual('entries', 'date')" class="help">?</a>
 </div>
 <input type="hidden" name="created_on_old" id="created_on_old" value="<TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML>" />
 <div<TMPL_IF NAME="STATUS_FUTURE"> class="created_on_highlight"</TMPL_IF> id="created-on-manual-wrapper">
-<input name="created_on_manual" id="created_on_manual" tabindex="9" value="<TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML>" />
+<input name="created_on_manual" id="created_on_manual" style="display: inline" tabindex="9" value="<TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML>" />
 </div>
 <TMPL_ELSE>
-<label><MT_TRANS phrase="Authored On"></label><br />
-<TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML>
+<label id="publish-status"><MT_TRANS phrase="Entry Date"></label>
+<div<TMPL_IF NAME="STATUS_FUTURE"> class="created_on_highlight"</TMPL_IF> id="created-on-manual-wrapper">
+<span><TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML></span>
+<input name="created_on_manual" id="created_on_manual" tabindex="9" value="<TMPL_VAR NAME=CREATED_ON_FORMATTED ESCAPE=HTML>" />
+</div>
 </TMPL_IF>
 </div>
 </div>
