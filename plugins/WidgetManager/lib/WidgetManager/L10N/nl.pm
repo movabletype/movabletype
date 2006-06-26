@@ -20,7 +20,8 @@ use vars qw( %Lexicon );
     'Search form' => 'Zoekformulier',
     'Subscribe to feed' => 'Inschrijven op feed',
     'Recent comments' => 'Laatste reacties',
-    'Tag cloud (sidebar)' => 'Tagcloud (zijkolom)',
+    'Tag cloud (sidebar)' => 'Tag-wolk (zijkolom)',
+    'Monthly archive dropdown' => 'Uitklapmenu maandelijkse archieven',
 );
 1;
 

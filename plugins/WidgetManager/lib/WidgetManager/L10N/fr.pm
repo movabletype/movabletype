@@ -13,14 +13,15 @@ use vars qw( %Lexicon );
 %Lexicon = (
     'Technorati Search' => 'Recherche Technorati',
     'Calendar' => 'Calendrier',
-    'Category list (nested)' => 'Liste de Cat�gories',
+    'Category list (nested)' => 'Liste de Catégories',
     'Creative Commons' => 'Creative Commons',
     'Monthly archive list' => 'Liste des archives mensuelles',
-    'Recent posts' => 'Notes r�centes',
+    'Recent posts' => 'Notes récentes',
     'Search form' => 'Formulaire de recherche',
     'Subscribe to feed' => 'S\'abonner au flux',
-    'Recent comments' => 'Recent comments',
-    'Tag cloud (sidebar)' => 'Tag cloud (sidebar)',
+    'Recent comments' => 'Commentaires récents',
+    'Tag cloud (sidebar)' => 'Nuage de Tags (colonne latérale)',
+    'Monthly archive dropdown' => 'Menu déroulant des archives mensuelles',
 );
 1;
 
