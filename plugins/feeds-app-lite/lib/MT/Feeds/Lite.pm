@@ -6,8 +6,6 @@ use base qw( MT::ErrorHandler );
 use URI;
 use URI::Fetch;
 use MT::Feeds::Lite::CacheMgr;
-use XML::Elemental;
-use XML::Elemental::Util qw( process_name );
 use MT::Util qw( encode_xml );
 
 use vars qw( $VERSION );
@@ -84,14 +82,18 @@ sub fetch {
 sub new {
     my ($class, $xml) = @_;
     my $self = bless {}, $class;
+    MT::Util::init_sax(); # Make sure XML::SAX knows about available parsers
+    require XML::Elemental;
+    require XML::Elemental::Util;
     my $p = XML::Elemental->parser;
+warn "x:e:p => " . ref($p);
     my $tree;
     eval { $tree = $p->parse_string($xml) };
     return $class->error($@) if $@;
     my ($root) =
       grep { ref $_ eq 'XML::Elemental::Element' } @{$tree->contents};
     $self->{root} = $root;
-    my ($name, $ns) = process_name($root->name);
+    my ($name, $ns) = XML::Elemental::Util::process_name($root->name);
     $ns = 'http://purl.org/rss/1.0/'
       if $ns eq 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';    # rss 1.0
     $self->{type} = $Types{$ns} || 'rss';
@@ -223,12 +225,12 @@ sub as_xhtml {
           if (ref($node) eq 'XML::Elemental::Characters');
 
         # it must be an element then.
-        my ($name, $ns) = process_name($node->name);
+        my ($name, $ns) = XML::Elemental::Util::process_name($node->name);
         my $xml      = "<$name";
         my $a        = $node->attributes;
         my $children = $node->contents;
         foreach (keys %$a) {
-            my ($aname, $ans) = process_name($_);
+            my ($aname, $ans) = XML::Elemental::Util::process_name($_);
             $xml .= " $aname=\"" . encode_xml($a->{$_}, 1) . "\"";
         }
         if ($children) {
