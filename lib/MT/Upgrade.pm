@@ -839,12 +839,13 @@ sub seed_database {
     my $LH = MT::L10N->get_handle($lang);
 
     # TBD: parameter for username/password provided by user from $app
+    use URI::Escape;
     my $author = MT::Author->new;
-    $author->name(exists $param{user_name} ? $param{user_name} : 'Melody');
+    $author->name(exists $param{user_name} ? uri_unescape($param{user_name}) : 'Melody');
     $author->type(MT::Author::AUTHOR());
     $author->set_password(exists $param{user_password} ? $param{user_password} : 'Nelson');
     $author->email(exists $param{user_email} ? $param{user_email} : '');
-    $author->hint(exists $param{user_hint} ? $param{user_hint} : '');
+    $author->hint(exists $param{user_hint} ? uri_unescape($param{user_hint}) : '');
     $author->is_superuser(1);
     $author->can_create_blog(1);
     $author->can_view_log(1);

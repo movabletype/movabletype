@@ -183,14 +183,14 @@ sub upgrade {
             return $app->main({ error => $app->translate('Password recovery word/phrase is required.') });
         }
 
-        
+        use URI::Escape;
         $new_user = {
-            user_name => $initial_user,
-            user_nickname => $initial_name,
+            user_name => uri_escape($initial_user),
+            user_nickname => uri_escape($initial_name),
             user_password => $initial_password,
             user_email => $initial_email,
             user_lang => $initial_lang,
-            user_hint => $initial_hint,
+            user_hint => uri_escape($initial_hint),
         };
     }
 
