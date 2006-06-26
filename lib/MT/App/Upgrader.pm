@@ -268,6 +268,8 @@ sub run_actions {
     eval {
         local $app->{upgrading} = 1;
         require MT::Upgrade;
+        MT::Upgrade->init;
+
         local $MT::Upgrade::App = $app;
         local $MT::Upgrade::Installing = $install_mode;
         local $MT::Upgrade::MAX_TIME = $MAX_TIME;

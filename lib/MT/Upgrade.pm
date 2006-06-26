@@ -567,9 +567,9 @@ sub init {
             $pkg->register_class($classes);
         }
         if (my $functions = $plugin->upgrade_functions) {
-            foreach (keys %$functions) {
+            foreach my $fn (keys %$functions) {
                 # associate plugin with upgrade function
-                $_->{plugin} = $plugin->{plugin_sig};
+                $functions->{$fn}{plugin_sig} = $plugin->{plugin_sig};
             }
             $pkg->register_upgrade_function($functions);
         }
@@ -974,15 +974,15 @@ sub post_schema_upgrade {
 
     # run any functions that define a version_limit and where the schema we're
     # upgrading from is below that limit.
-    foreach (keys %functions) {
+    foreach my $fn (keys %functions) {
         my $save_from = $from;
         {
-            my $func = $functions{$_};
+            my $func = $functions{$fn};
             if ($func->{plugin_sig} && $plugin_ver) {
                 $from = $plugin_ver->{$func->{plugin_sig}};
             }
             if ($func->{version_limit} && ($from < $func->{version_limit})) {
-                $self->add_step($_, from => $from);
+                $self->add_step($fn, from => $from);
             }
         }
         $from = $save_from;
