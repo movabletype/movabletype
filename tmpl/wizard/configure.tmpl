@@ -2,11 +2,16 @@
 
 <form method="post" action="mt-wizard.cgi">
 <input type="hidden" name="__mode" value="configure" />
+<input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>">
 <input type="hidden" name="config" value="<TMPL_VAR NAME=CONFIG ESCAPE=HTML>" />
 
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <!--
+function go(mode) {
+    var f = document.forms[0];
+    f['__mode'].value = mode;
+}
 function db_select(sel) {
     var db = sel.options[sel.selectedIndex].value;
     if ((db == "bdb") || (db == "sqlite") || (db == "sqlite2")) {
@@ -168,17 +173,17 @@ function db_select(sel) {
 
 <TMPL_UNLESS NAME=SUCCESS>
 <div id="goback" <TMPL_IF NAME=DBTYPE>style="display: none"</TMPL_IF>>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
+<input name="back" type="submit" value="<MT_TRANS phrase="Back">" onclick="this.form.reset(); go('start');" />
 </div>
 <div id="submit" <TMPL_UNLESS NAME=DBTYPE>style="display: none"</TMPL_UNLESS>>
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
-<input type="submit" value="<MT_TRANS phrase="Test Connection">" />
+<input name="back" type="submit" value="<MT_TRANS phrase="Back">" onclick="this.form.reset(); go('start');" />
+<input name="test" type="submit" value="<MT_TRANS phrase="Test Connection">" />
 </TMPL_UNLESS>
 <TMPL_IF NAME=SUCCESS>
 <div id="continue">
-<input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=start&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
-<input type="submit" value="<MT_TRANS phrase="Test Connection">" />
-<input type="submit" value="<MT_TRANS phrase="Continue">" name="continue" />
+<input name="back" type="submit" value="<MT_TRANS phrase="Back">" onclick="this.form.reset(); go('start');" />
+<input name="test" type="submit" value="<MT_TRANS phrase="Test Connection">" onclick="go('test')" />
+<input name="continue" type="submit" value="<MT_TRANS phrase="Continue">" name="continue" onclick="go('configure_save')" />
 </div>
 </TMPL_IF>
 </div>

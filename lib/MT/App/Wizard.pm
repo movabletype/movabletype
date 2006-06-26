@@ -47,6 +47,7 @@ my %drivers = (
 sub init {
     my $app = shift;
     my %param = @_;
+    $app->{mt_dir} = $param{Directory} if $param{Directory};
     eval { $app->SUPER::init(@_); };
     
     use MT::ConfigMgr;
@@ -54,8 +55,7 @@ sub init {
 
     $app->{vtbl} = { };
     $app->{requires_login} = 0;
-    $app->{is_admin} = 0;
-    $app->{template_dir} = '';
+    $app->{is_admin} = 1;
     $app->{cgi_headers} = { };
     if ($ENV{MOD_PERL}) {
         require Apache::Request;
@@ -75,7 +75,9 @@ sub init {
     $app->add_methods(pre_start => \&pre_start);
     $app->add_methods(start => \&start);
     $app->add_methods(configure => \&configure);
+    $app->add_methods(configure_save => \&configure);
     $app->add_methods(optional => \&optional);
+    $app->add_methods(optional_save => \&optional);
     $app->add_methods(seed => \&seed);
     $app->add_methods(complete => \&complete);
     $app->add_methods(write_config => \&write_config);
@@ -108,7 +110,15 @@ sub pre_start {
 }
 
 sub config_keys {
-    return qw(dbname dbpath dbport dbserver dbsocket dbtype dbuser dbpass setnames mail_transfer sendmail_path smtp_server test_mail_address set_static_uri_to);
+    return {
+        configure => [
+            'dbname', 'dbpath', 'dbport', 'dbserver', 'dbsocket',
+            'dbtype', 'dbuser', 'dbpass' ],
+        optional => [
+            'mail_transfer', 'sendmail_path', 'smtp_server',
+            'test_mail_address' ],
+        start => [ 'set_static_uri_to' ]
+    };
 }
 
 sub start {
@@ -173,8 +183,13 @@ sub configure {
     %param = $app->unserialize_config;
 
     # get post data
-    foreach ($app->config_keys) {
-        $param{$_} = $q->param($_) if $q->param($_);
+    my $keys = $app->config_keys;
+    my $cfg_mode = $mode;
+    $cfg_mode =~ s/_save//;
+    if (!$q->param('back')) {
+        foreach (@{ $keys->{$cfg_mode} }) {
+            $param{$_} = $q->param($_);
+        }
     }
 
     # set static web path
@@ -222,24 +237,22 @@ sub configure {
 
     my $ok = 1;
     my $err_msg;
-    if ($app->request_method() eq 'POST' && $mode eq 'configure') {
+    if ($q->param('test')) {
         # if check successfully and push continue then goto next step
-        if ($q->param('continue')){
-            return $app->optional(\%param);
-        }
-
         $ok = 0;
         my $dbtype = $param{dbtype};
         my $driver = $drivers{$dbtype} if exists $drivers{$dbtype};
         if ($driver) {
             my $cfg = $app->{cfg};
             $cfg->ObjectDriver($driver);
-            $cfg->Database($param{dbname}) if $param{dbname};
-            $cfg->DBUser($param{dbuser}) if $param{dbuser};
-            $cfg->DBPassword($param{dbpass}) if $param{dbpass};
-            $cfg->DBPort($param{dbport}) if $param{dbport};
-            $cfg->DBSocket($param{dbsocket}) if $param{dbsocket};
-            $cfg->DBHost($param{dbserver}) if $param{dbserver};
+            if ($driver ne 'DBM') {
+                $cfg->Database($param{dbname}) if $param{dbname};
+                $cfg->DBUser($param{dbuser}) if $param{dbuser};
+                $cfg->DBPassword($param{dbpass}) if $param{dbpass};
+                $cfg->DBPort($param{dbport}) if $param{dbport};
+                $cfg->DBSocket($param{dbsocket}) if $param{dbsocket};
+                $cfg->DBHost($param{dbserver}) if $param{dbserver};
+            }
             if ($dbtype eq 'sqlite' || $dbtype eq 'sqlite2') {
                 require File::Spec;
                 my $db_file = $param{dbpath};
@@ -268,6 +281,8 @@ sub configure {
         }
         $param{connect_error} = 1;
         $param{error} = $err_msg;
+    } elsif ($mode eq 'configure_save') {
+        return $app->optional(%param);
     }
 
     $app->build_page("configure.tmpl", \%param);
@@ -285,8 +300,13 @@ sub optional {
     # input data unserialize to config
     %param = $app->unserialize_config;
     # get post data
-    foreach ($app->config_keys) {
-        $param{$_} = $q->param($_) if $q->param($_);
+    my $opt_mode = $mode;
+    $opt_mode =~ s/_save//;
+    my $keys = $app->config_keys;
+    if (!$q->param('back')) {
+        foreach (@{ $keys->{$opt_mode} }) {
+            $param{$_} = $q->param($_);
+        }
     }
 
     # set static web path
@@ -318,12 +338,7 @@ sub optional {
 
     my $ok = 1;
     my $err_msg;
-    if ($app->request_method() eq 'POST' && $mode eq 'optional') {
-        # if check successfully and push continue then goto next step
-        if ($q->param('continue')){
-            return $app->seed(%param);
-        }
-
+    if ($q->param('test')) {
         $ok = 0;
         if ($param{test_mail_address}){
             my $cfg = $app->{cfg};
@@ -349,9 +364,12 @@ sub optional {
             }
         }
         
-
         $param{send_error} = 1;
         $param{error} = $err_msg;
+    }
+    # if check successfully and push continue then goto next step
+    if ($mode eq 'optional_save') {
+        return $app->seed(%param);
     }
 
     $app->build_page("optional.tmpl", \%param);
@@ -359,9 +377,7 @@ sub optional {
 
 sub seed {
     my $app = shift;
-
-    # input data unserialize to config
-    my %param = $app->unserialize_config;
+    my %param = @_;
 
     $param{config} = $app->param('config');
     $param{static_web_path} = $app->static_path;
@@ -426,8 +442,13 @@ sub serialize_config {
  
     require MT::Serialize;
     my $ser = MT::Serialize->new('MT');
-    my @keys = $app->config_keys();
-    my %set = map { $_ => $param{$_} } @keys;
+    my $keys = $app->config_keys();
+    my %set;
+    foreach my $key (keys %$keys) {
+        foreach my $p (@{$keys->{$key}}) {
+            $set{$p} = $param{$p};
+        }
+    }
     my $set = \%set;
     unpack 'H*', $ser->serialize(\$set);
 }
@@ -435,7 +456,7 @@ sub serialize_config {
 sub unserialize_config {
     my $app = shift;
     my $data = $app->param('config');
-    my %config = { };
+    my %config;
     if ($data) {
         $data = pack 'H*', $data;
         require MT::Serialize;
@@ -444,7 +465,9 @@ sub unserialize_config {
         if ($thawed) {
             my $saved_cfg = $$thawed;
             if (keys %$saved_cfg) {
-                $config{$_} =  $saved_cfg->{$_} foreach keys %$saved_cfg;
+                foreach my $p (keys %$saved_cfg) {
+                    $config{$p} = $saved_cfg->{$p};
+                }
             }
         }
     }
