@@ -137,12 +137,15 @@ sub save {
     # my $modulesets = WidgetManager::Plugin::load_selected_modules($blog_id);
     $modulesets = {} unless $modulesets;
 
-    # XXX Widget Manager records should be keyed by ID rather than name.
     # delete old set
     delete $modulesets->{$q->param('widgetmanager')};
     # Handle renaming: Delete the entry that has changed names.
-    delete $modulesets->{$q->param('old_name')}
-        unless $q->param('old_name') eq $q->param('name');
+    delete $modulesets->{$q->param('old_name')} unless $q->param('old_name') eq $q->param('name');
+    if(exists $modulesets->{$q->param('name')}) {
+        return $app->error($app->plugin->translate(
+            "Can't duplicate the existing '[_1]' Widget Manager. Please go back and enter a unique name.",
+            $q->param('name')))
+    }
     # add it back with a potential new name
     $modulesets->{$q->param('name')} = $str;
 
@@ -242,6 +245,7 @@ sub edit {
           }
       }
 
+      $tmpl->param(widgetmanagers => [keys %$modulesets]);
       $tmpl->param(available => \@avail_modules);
       $tmpl->param(installed => \@inst_modules);
       $tmpl->param(name      => $widgetmanager);
