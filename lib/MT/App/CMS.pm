@@ -473,16 +473,11 @@ sub recover_password {
     my @author = $class->load({ name => $name });
     my $author;
     foreach (@author) {
-        next unless ($_->email && $_->password) && ($_->password ne '(none)');
+        next unless $_->password && ($_->password ne '(none)');
         $author = $_;
     }
 
-    my ($rc, $res);
-    if ($q->param('hint')) {
-        ($rc, $res) = $app->reset_password($author, $q->param('hint'), $name);
-    } else {
-        ($rc, $res) = (0, $app->translate("No birthplace, cannot recover password"))
-    }
+    my ($rc, $res) = $app->reset_password($author, $q->param('hint'), $name);
 
     if ($rc){
         $app->add_breadcrumb($app->translate('Password Recovery'));
@@ -524,27 +519,31 @@ sub reset_password {
     my $name = $_[2];
     
     require MT::Log;
+    my ($errstr, $log_msg);
+    if (! $author) {
+        $log_msg = $app->translate("Invalid username '[_1]' in password recovery attempt", $name);
+        $errstr = $app->translate("Username or password recovery phrase is incorrect.");
+    } elsif ($hint && !$author->hint) {
+        $log_msg = $app->translate("Password recovery for user '[_1]' failed due to lack of recovery phrase specified in profile.", $name);
+        $errstr = $app->translate(
+            "No password recovery phrase set in user profile. Please see your system administrator for password recovery.");        
+    } elsif ($hint ne $author->hint) {
+        $log_msg = $app->translate("Invalid attempt to recover password (used recovery phrase '[_1]')", $hint);
+        $errstr = $app->translate("Username or password recovery phrase is incorrect.");
+    } elsif (!$author->email) {
+        $log_msg = $app->translate("Password recovery for user '[_1]' failed due to lack of email specified in profile.", $author->name);
+        $errstr = $app->translate("No email specified in user profile.  Please see your system administrator for password recovery.");
+    }
 
-    $app->log({
-        message => $app->translate("Invalid author name '[_1]' in password recovery attempt", $name),
-        level => MT::Log::SECURITY(),
-        class => 'system',
-        category => 'recover_password',
-    }), return (0, $app->translate("Author name or birthplace is incorrect.")) unless $author;
-    return (0, $app->translate(
-        "Author has not set birthplace; cannot recover password"))
-        if ($hint && !$author->hint);
-
-    $app->log({
-        message => $app->translate("Invalid attempt to recover password (used birthplace '[_1]')", $hint),
-        level => MT::Log::SECURITY(),
-        class => 'system',
-        category => 'recover_password'
-    }), return (0, $app->translate("Author name or birthplace is incorrect."))
-        unless $author->hint eq $hint;
-
-    return (0, $app->translate("Author does not have email address"))
-        unless $author->email;
+    if ($errstr) {    
+        $app->log({
+            message => $log_msg,
+            level => MT::Log::SECURITY(),
+            class => 'system',
+            category => 'recover_password'
+        });
+        return (0, $errstr);
+    }
 
     my @pool = ('a'..'z', 0..9);
     my $pass = '';
