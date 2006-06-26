@@ -9,7 +9,7 @@ function smarty_function_MTEntriesCount($args, &$ctx) {
         if (!is_array($entries)){
             $blog = $ctx->stash('blog');
             $args['blog_id'] = $blog['blog_id'];
-            $entries = $ctx->mt->db->fetch_entries($args);
+            $entries =& $ctx->mt->db->fetch_entries($args);
         }
     
         $lastn = $ctx->stash('_entries_lastn');

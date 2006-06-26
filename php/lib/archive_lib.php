@@ -20,12 +20,7 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
         }
         $at = $args['archive_type'];
         $at or $at = $ctx->stash('current_archive_type');
-        #$ctx->stash('current_archive_type', $at);
         global $_archive_helpers;
-        /*if (!isset($_archive_helpers[$at])) {
-            return $ctx->error(
-                "<MT$tag> can be used only with Daily, Weekly, or Monthly archives.");
-        }*/
         $order = $is_prev ? 'previous' : 'next';
         $helper = $_archive_helpers[$at];
         if ($entry = get_entry($ts, $ctx->stash('blog_id'), $at, $order)) {

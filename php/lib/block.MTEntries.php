@@ -45,7 +45,7 @@ function smarty_block_MTEntries($args, $content, &$ctx, &$repeat) {
         if ($tag = $ctx->stash('Tag')) {
             $args['tag'] or $args['tags'] or $args['tags'] = is_array($tag) ? $tag['tag_name'] : $tag;
         }
-        $entries = $ctx->mt->db->fetch_entries($args);
+        $entries =& $ctx->mt->db->fetch_entries($args);
         $ctx->stash('entries', $entries);
     }
     $ctx->stash('_entries_glue', $args['glue']);

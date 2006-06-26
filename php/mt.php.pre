@@ -368,7 +368,6 @@ class MT {
         // start populating our stash
         $ctx->stash('blog_id', $blog_id);
         $ctx->stash('blog', $blog);
-        //$ctx->last_ts($info['template_modified_on']);
 
         // conditional get support...
         if ($this->caching) {
@@ -406,22 +405,6 @@ class MT {
             }
             if (isset($at)) {
                 $ctx->stash('current_archive_type', $at);
-                # prefetch entries for this archive_type so counts and data is available
-                $args = array();
-                $args['blog_id'] = $blog_id;
-                $args['lastn'] or $args['lastn'] = -1;
-                if ($archive_category) {
-                    $args['category'] = $archive_category['category_label'];
-                }
-                if (($ts_start && $ts_end) && !isset($args['category'])) {
-                    # only assign a date range if we have both
-                    # start and end date *and* the user has not
-                    # explicitly requested a category
-                    $args['current_timestamp'] = $ts_start;
-                    $args['current_timestamp_end'] = $ts_end;
-                }
-                $entries = $ctx->mt->db->fetch_entries($args);
-                $ctx->stash('entries', $entries); 
             }
     
             if (isset($entry_id) && ($entry_id) && ($at == 'Individual')) {
@@ -450,7 +433,8 @@ class MT {
         }
         header("Content-Type: $content_type");
 
-        //$last_ts = $ctx->last_ts();
+        // finally, issue output
+        echo $output;
 
         if ($this->debugging) {
             $this->log("Queries: ".$mtdb->num_queries);
@@ -462,9 +446,6 @@ class MT {
             $this->log_dump();
         }
         restore_error_handler();
-
-        // finally, issue output
-        echo $output;
     }
 
     function &resolve_url($path) {

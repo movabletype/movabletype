@@ -343,7 +343,7 @@ class MTDatabaseBase extends ezsql {
         return $tmpl;
     }
 
-    function fetch_entries($args) {
+    function &fetch_entries($args) {
 
     	if (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
@@ -561,7 +561,8 @@ class MTDatabaseBase extends ezsql {
              order by $sort_field $order
         ";
 
-        if (isset($rco)) {
+        if (isset($args['recently_commented_on'])) {
+            $rco = $args['recently_commented_on'];
             $sql = $this->entries_recently_commented_on_sql($sql);
             $sql = $this->apply_limit_sql($sql, count($filters) ? null : $rco);
             $args['sort_by'] or $args['sort_by'] = 'comment_created_on';
@@ -607,6 +608,8 @@ class MTDatabaseBase extends ezsql {
                 $sort_field = 'entry_author_id';
             } elseif ($args['sort_by'] == 'excerpt') {
                 $sort_field = 'entry_excerpt';
+            } elseif ($args['sort_by'] == 'comment_created_on') {
+                $sort_field = $args['sorty_by'];
             } else {
                 $sort_field = 'entry_' . $args['sort_by'];
             }
@@ -671,7 +674,6 @@ class MTDatabaseBase extends ezsql {
                 if (isset($this->_entry_tag_cache[$args['entry_id']]))
                     return $this->_entry_tag_cache[$args['entry_id']];
             }
-            
             $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['entry_id']).')';
         }
         if (!isset($args['include_private'])) {

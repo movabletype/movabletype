@@ -43,7 +43,7 @@ function smarty_block_MTCalendar($args, $content, &$ctx, &$repeat) {
         $pad_end = 6 - wday_from_ts($y, $m, $days_in_month);
         $this_day = $prefix . sprintf("%02d", $day - $pad_start);
         $args = array('current_timestamp' => $start, 'current_timestamp_end' => $end, 'blog_id' => $blog_id, 'lastn' => -1, 'sort_order' => 'ascend');
-        $iter = $ctx->mt->db->fetch_entries($args);
+        $iter =& $ctx->mt->db->fetch_entries($args);
         $ctx->stash('cal_entries', $iter);
         $ctx->stash('cal_pad_start', $pad_start);
         $ctx->stash('cal_pad_end', $pad_end);
