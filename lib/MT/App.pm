@@ -336,7 +336,7 @@ sub session_user {
     if (!$author) {
         require MT::Log;
         $app->log({
-            message => $app->translate("Invalid login attempt from user '[_1]'", $user),
+            message => $app->translate("Failed login attempt by unknown user '[_1]'", $user),
             level => MT::Log::WARNING(),
         });
         return undef;
@@ -349,7 +349,7 @@ sub session_user {
         } else {
             require MT::Log;
             $app->log({
-                message => $app->translate("Invalid login attempt from user '[_1]' (ID: [_2])", $user, $author->id),
+                message => $app->translate("Failed login attempt with incorrect password by user '[_1]' (ID: [_2])", $user, $author->id),
                 level => MT::Log::WARNING(),
             });
             return undef;
@@ -429,7 +429,7 @@ sub login {
             # do session/cookie management.
             $app->start_session($author, $remember);
             $app->request('fresh_login', 1);
-            $app->log($app->translate("User '[_1]' (user #[_2]) logged in successfully", $author->name, $author->id));
+            $app->log($app->translate("User '[_1]' (ID:[_2]) logged in successfully", $author->name, $author->id));
         }
         return ($author, defined($pass));
     } else {
@@ -447,7 +447,7 @@ sub login {
 sub logout {
     my $app = shift;
     if (my $user = $app->user) {
-        $app->log($app->translate("User '[_1]' (user #[_2]) logged out",
+        $app->log($app->translate("User '[_1]' (ID:[_2]) logged out",
                                   $user->name, $user->id));
         $user->remove_sessions;
         delete $app->{author};
