@@ -11,6 +11,7 @@ use Data::Dumper;
 use vars qw( $DEBUG );
 use MT::App;
 @WidgetManager::App::ISA = qw( MT::App );
+use lib 'plugins/WidgetManager/lib';
 use WidgetManager::Util;
 
 sub init {
@@ -245,7 +246,9 @@ sub edit {
           }
       }
 
-      $tmpl->param(widgetmanagers => [keys %$modulesets]);
+      my @widgetmanagers = map { { widgetmanager => $_ } } keys %$modulesets;
+      $tmpl->param(widgetmanagers => \@widgetmanagers);
+
       $tmpl->param(available => \@avail_modules);
       $tmpl->param(installed => \@inst_modules);
       $tmpl->param(name      => $widgetmanager);
