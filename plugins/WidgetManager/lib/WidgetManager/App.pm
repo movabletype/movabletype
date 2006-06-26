@@ -420,7 +420,6 @@ sub installed {
     
     my $plugin = $app->plugin;
     if (@_) {
-        print STDERR "Setting Blog ID $blog_id to INSTALLED\n";
         # Set the installed bit, save and return
         return $plugin->set_config_value('installed',1,"blog:$blog_id");
     } else {
