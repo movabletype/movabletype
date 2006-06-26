@@ -2532,7 +2532,7 @@ sub _hdlr_comment_body {
         $t;
     if (!(exists $arg->{autolink} && !$arg->{autolink}) &&
         $blog->autolink_urls) {
-        $t =~ s!(^|\s)(https?://\S+)!$1<a href="$2">$2</a>!gs;
+        $t =~ s!(^|\s)(https?://[^\s<]+)!$1<a href="$2">$2</a>!gs;
     }
     $t;
 }

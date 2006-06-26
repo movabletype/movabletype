@@ -889,7 +889,7 @@ function munge_comment($text, $blog) {
         $text = strip_tags($text);
     }
     if ($blog['blog_autolink_urls']) {
-        $text = preg_replace('!(^|\s)(https?://\S+)!s', '$1<a href="$2">$2</a>', $text);
+        $text = preg_replace('!(^|\s)(https?://[^\s<]+)!s', '$1<a href="$2">$2</a>', $text);
     }
     return $text;
 }
