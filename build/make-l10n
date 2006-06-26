@@ -101,10 +101,11 @@ sub wanted_app {
     local $_ = do { local $/; <$fh> };
     close $fh;
     if ($file =~ m/\.js/) {
-        while (/\btrans\('([^']+?)'/gs) {
+        while (/trans\('(.+?[^\\])'/gs) { # Anything between trans(' and '), including escaped quotes
             my($phrase) = $1;
             next if $SeenPhrase{$phrase}++;
             next if $phrase =~ /^_[A-Z]/;
+	    $phrase =~ s/\\\'/\'/sg; # Turn escaped quotes back into regular quotes, because the encode_phrase will re-encode them if needed
             print encode_phrase($phrase,eval('$MT::L10N::'.$languagename.'::Lexicon{$phrase}'));
         }
     } else {
