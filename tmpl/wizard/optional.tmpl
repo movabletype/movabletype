@@ -34,6 +34,12 @@ function mail_select(sel) {
 
 <h3><MT_TRANS phrase="Step 3 of 3"> &mdash; <MT_TRANS phrase="Mail Configuration"></h3>
 
+<TMPL_IF NAME=SUCCESS>
+<P>
+<MT_TRANS phrase="Your mail configuration is complete. To finish with the configuration wizard, press 'Continue' below.">
+</P>
+</TMPL_IF>
+
 <p>
 <MT_TRANS phrase="You can configure you mail settings from here, or you can complete the configuration wizard by clicking 'Continue'.">
 </p>
@@ -107,12 +113,6 @@ function mail_select(sel) {
 </div>
 
 </div>
-
-<TMPL_IF NAME=SUCCESS>
-<P>
-<MT_TRANS phrase="Your mail configuration is successfully.">
-</P>
-</TMPL_IF>
 
 <div id="goback" <TMPL_IF NAME=mail_transfer>style="display: none"</TMPL_IF>>
 <input type="button" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=configure&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI ESCAPE=HTML>'" />
