@@ -1,5 +1,4 @@
 <TMPL_INCLUDE NAME="header.tmpl">
-
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/js/app.js"></script>
 <script type="text/javascript">
 <!--
@@ -14,6 +13,23 @@ var isSafari = navigator.userAgent.indexOf('Safari') >= 0;
 var curMod, curCol;
 var dragStartX, dragStartY;
 var topZIndex = 10;
+
+function checkName() {
+        widgetname = document.getElementById('name').value;
+
+        var1 = "<TMPL_LOOP NAME=WIDGETMANAGERS><TMPL_VAR NAME=widgetmanager>,</TMPL_LOOP>"
+        var2 = var1.split(",")
+
+        for (var i=0; i < var2.length; i++) {
+
+            if (var2[i] == widgetname) {
+                alert('You already have a widget manager named ' + widgetname + '. Please use a unique name for this widget manager.');
+                return false;
+            } 
+        }
+
+}
+
 
 var gDropIndex, gDrop;
 var gCanDrop = 0;
@@ -280,7 +296,7 @@ onload = initialize;
 
 <div id="edit-form">
 
-    <form onsubmit="this.modules.value = moduleListStr()" id="manager" name="manager" method="post" action="widget-manager.cgi">
+    <form onsubmit="return checkName(); this.modules.value = moduleListStr();" id="manager" name="manager" method="post" action="widget-manager.cgi">
       <input type="hidden" name="__mode" value="save" />
       <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
       <input type="hidden" name="old_name" value="<TMPL_VAR NAME=NAME>" />
