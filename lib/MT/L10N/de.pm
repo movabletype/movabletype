@@ -19,7 +19,7 @@ sub encoding { 'utf-8' }
     ## ./mt-check.cgi.pre
     'Movable Type System Check' => 'Movable Type Systemüberprüfung',
     'This page provides you with information on your system\'s configuration and determines whether you have all of the components you need to run Movable Type.' => 'Auf dieser Seite finden Sie Informationen zu Ihrer Systemkonfiguration, damit festgestellt werden kann, ob Ihr Webserver über alle notwendigen Komponenten zur Ausführung von Movable Type verfügt.',
-    'System Information:' => 'Systeminformationen:',
+    'System Information' => 'Systeminformation',
     'Current working directory:' => 'Aktuelles Arbeitsverzeichnis:',
     'MT home directory:' => 'MT Home-Verzeichnis:',
     'Operating system:' => 'Betriebssystem:',
@@ -27,17 +27,17 @@ sub encoding { 'utf-8' }
     'Perl include path:' => 'Perl-Include-Pfad:',
     'Web server:' => 'Webserver:',
     '(Probably) Running under cgiwrap or suexec' => '(Wahrscheinlich) ausgeführt unter cgiwrap oder suexec',
-    'Checking for [_1] Modules:' => 'Überprüfung der [_1] Module:',
+    'Checking for [_1] Modules:' => 'Überprüfung der [_1]Pakete:',
     'Some of the following modules are required by the various data storage options in Movable Type. In order run the system, your server needs to have either DB_File, or else DBI and at least one of the other modules installed.' => 'Zum Ausführen von Movable Type benötigt Ihr Server bestimmte Datenbankmodule. Abhängig von der gewünschten Datenbankkonfiguration sind DB_File oder DBI gemeinsam mit mindestens einem weiteren spezifischen Modul erforderlich.',
-    'Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed.' => 'Entweder ist [_1] nicht auf Ihrem Webserver installiert, ist die installierte Version zu alt oder [_1] benötigt ein weiteres Modul, welches nicht installiert ist.',
-    'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'Entweder ist [_1] nicht auf Ihrem Webserver installiert oder [_1] benötigt ein weiteres Modul, das nicht installiert ist.',
-    'Please consult the installation instructions for help in installing [_1].' => 'Bitte beachten Sie die Installationsanleitung, um [_1] zu installieren.',
+    'Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed.' => '[_1] ist Ihrem Webserver nicht installiert oder die installierte Version ist zu alt oder [_1] benötigt ein weiteres Modul, das nicht installiert ist.',
+    'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => '[_1] ist entweder nicht auf Ihrem Webserver installiert oder [_1] benötigt ein weiteres Modul, das nicht installiert ist.',
+    'Please consult the installation instructions for help in installing [_1].' => 'Hinweise zur Installation von [_1] finden Sie in der Dokumentation.',
     'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN.' => 'Ihre DBD::mysql Version ist mit Movable Type nicht kompatibel. Bitte installieren Sie die aktuelle Version aus CPAN.',
     'The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements.' => '$mod ist korrekt installiert, erfordert aber ein aktuelleres DBI-Modul. Bitte beachten Sie oben stehende Versionshinweise.',
-    'Your server has [_1] installed (version [_2]).' => 'Auf Ihrem Server ist [_1] installiert (Version [_2]).',
+    'Your server has [_1] installed (version [_2]).' => '[_1] ist auf Ihrem Server installiert (Version [_2]).',
     'Movable Type System Check Successful' => 'Movable Type Systemüberprüfung erfolgreich',
     'You\'re ready to go!' => 'Ihr System ist jetzt bereit.',
-    'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'Alle erforderlichen Module sind auf Ihrem Server installiert. Sie brauchen keine weiteren Module zu installieren. Fahren Sie mit den weiteren Installationsanweisungen fort.',
+    'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'Alle erforderlichen Pakete sind auf Ihrem Server installiert. Sie brauchen keine weiteren Module zu installieren und können mit der Installation fortfahren.',
 
     ## ./extras/examples/plugins/mirror/mirror.pl
 
@@ -63,27 +63,26 @@ sub encoding { 'utf-8' }
     'Read More' => 'Weiter lesen',
     'Tracked on' => 'Verlinkt am',
     'Comments' => 'Kommentare',
-    'Posted by:' => 'Verfasst von:',
+    'Posted by' => 'Posted by', # Translate - New (2)
     'Anonymous' => 'Anonym',
     'Posted on' => 'Geschrieben am',
     'Permalink to this comment' => 'Permalink dieses Kommentars',
     'Post a comment' => 'Kommentar schreiben',
     '(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(Wenn Sie auf dieser Site bisher noch nicht kommentiert haben, wird Ihr Kommentar eventuell erst zeitverzögert freigeschaltet werden. Vielen Dank für Ihre Geduld.)',
-    'Name:' => 'Name:', # Translate - Previous (1)
-    'Email Address:' => 'Email-Adresse:',
-    'URL:' => 'URL:', # Translate - Previous (1)
+    'Name' => 'Name', # Translate - Previous (1)
+    'Email Address' => 'E-Mail-Adresse',
+    'URL' => 'URL', # Translate - Previous (1)
     'Remember personal info?' => 'Persönliche Angaben speichern?',
-    'Comments:' => 'Kommentar:',
     '(you may use HTML tags for style)' => '(HTML erlaubt)',
     'Preview' => 'Vorschau',
     'Post' => 'Absenden',
     'Search' => 'Suchen',
     'Search this blog:' => 'Dieses Weblog durchsuchen:',
     'About' => 'Über',
-    'The previous post in this blog was <a href=' => 'The previous post in this blog was <a href=', # Translate - New (9)
-    'The next post in this blog is <a href=' => 'The next post in this blog is <a href=', # Translate - New (9)
+    'The previous post in this blog was <a href=' => 'Zuvor erschien in diesem Blog <a href=',
+    'The next post in this blog is <a href=' => 'Danach erschien <a href=',
     'Many more can be found on the <a href=' => 'Viel mehr in <a href=',
-    'Subscribe to this blog\'s feed' => 'Feed zu diesem Weblog abonnieren',
+    'Subscribe to this blog\'s feed' => 'Feed dieses Weblogs abonnieren',
     'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.com/about/feeds', # Translate - Previous (6)
     'What is this?' => 'Was ist das?',
     'This weblog is licensed under a' => 'Dieser Weblog steht unter einer',
@@ -210,8 +209,8 @@ sub encoding { 'utf-8' }
     ## ./search_templates/results_feed_rss2.tmpl
 
     ## ./search_templates/default.tmpl
-    'Blog Search Results' => 'Blog Search Results', # Translate - New (3)
-    'Blog search' => 'Blog search', # Translate - New (2)
+    'Blog Search Results' => 'Blogsuche - Ergebnisse',
+    'Blog search' => 'Blogsuche',
 
     ## ./plugins/nofollow/nofollow.pl
     'Adds a \'nofollow\' relationship to comment and TrackBack hyperlinks to reduce spam.' => 'Fügt Hyperlinks in TrackBacks und Kommentaren das \'nofollow\'-Attribut hinzu und hilft so, Spam zu reduzieren',
@@ -227,27 +226,27 @@ sub encoding { 'utf-8' }
     'Return' => 'Zurück',
 
     ## ./plugins/feeds-app-lite/mt-feeds.pl
-    'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?' => 'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?', # Translate - New (19)
-    'Upgrade to Feeds.App' => 'Upgrade to Feeds.App', # Translate - New (4)
+    'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?' => 'Mit Feeds.App Lite können Sie Feeds in Ihre Blogs integrieren. Noch mehr Möglichkeiten erhalten Sie durch ein',
+    'Upgrade to Feeds.App' => 'Upgrade auf Feeds.App',
 
     ## ./plugins/feeds-app-lite/tmpl/select.tmpl
-    'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widget Creator', # Translate - New (5)
-    'Multiple feeds were discovered. Select the feed you wish to use. Feeds.App lite supports text-only RSS 1.0, 2.0 and Atom feeds.' => 'Multiple feeds were discovered. Select the feed you wish to use. Feeds.App lite supports text-only RSS 1.0, 2.0 and Atom feeds.', # Translate - New (22)
-    'Type' => 'Type', # Translate - New (1)
-    'URI' => 'URI', # Translate - New (1)
+    'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widget Creator', # Translate - Previous (5)
+    'Multiple feeds were discovered. Select the feed you wish to use. Feeds.App lite supports text-only RSS 1.0, 2.0 and Atom feeds.' => 'Es wurden mehrere Feeds gefunden. Wählen Sie den Feed aus, den Sie verwenden wollen. Feeds.App Lite unterstützt Textfeeds in den Formaten RSS 1.0, RSS 2.0 und ATOM.',
+    'Type' => 'Typ',
+    'URI' => 'URI', # Translate - Previous (1)
     'Continue' => 'Weiter',
 
     ## ./plugins/feeds-app-lite/tmpl/msg.tmpl
-    'No feeds could be discovered using [_1].' => 'No feeds could be discovered using [_1].', # Translate - New (7)
-    'An error occurred processing [_1]. Check <a href=' => 'An error occurred processing [_1]. Check <a href=', # Translate - New (8)
-    'It can be included onto your published blog using <a href=' => 'It can be included onto your published blog using <a href=', # Translate - New (11)
-    'It can be included onto your published blog using this MTInclude tag' => 'It can be included onto your published blog using this MTInclude tag', # Translate - New (12)
+    'No feeds could be discovered using [_1].' => 'Keine Feeds mit [_1] gefunden.',
+    'An error occurred processing [_1]. Check <a href=' => 'Beim Einlesen von [_1] trat ein Fehler auf. Beachten Sie <a href=',
+    'It can be included onto your published blog using <a href=' => 'Sie können es in Ihr Blog integrieren mit <a href=',
+    'It can be included onto your published blog using this MTInclude tag' => 'Sie können es mit diesem MTInclude-Tag in Ihr Blog integrieren',
     'Go Back' => 'Zurück',
-    'Create Another' => 'Create Another', # Translate - New (2)
+    'Create Another' => 'Weiteres Widget anlegen',
 
     ## ./plugins/feeds-app-lite/tmpl/header.tmpl
     'Main Menu' => 'Hauptmenü',
-    'System Overview' => 'Systemübersicht',
+    'System Overview' => 'Systemeinstellungen',
     'Help' => 'Hilfe',
     'Welcome' => 'Willkommen',
     'Logout' => 'Abmelden',
@@ -256,23 +255,23 @@ sub encoding { 'utf-8' }
 
     ## ./plugins/feeds-app-lite/tmpl/start.tmpl
     'Feeds.App Lite creates modules that include feed data. Once you\'ve used it to create those modules, you can then use them in your blog templates.' => 'Feeds.App Lite erzeugt Template-Module, die externe Feed-Daten in Ihren Blogs anzeigen. Legen Sie zuerst die Module an und binden Sie sie dann in Ihre Blog-Templates ein.',
-    'You must enter an address to proceed' => 'You must enter an address to proceed', # Translate - New (7)
-    'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Enter the URL of a feed, or the URL of a site that has a feed.', # Translate - New (16)
+    'You must enter an address to proceed' => 'Geben Sie eine Adresse (URL) ein',
+    'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Geben Sie die URL eines Feeds oder einer Website, die Feeds anbietet, ein.',
 
     ## ./plugins/feeds-app-lite/tmpl/footer.tmpl
-    'Or return to the <a href=' => 'Or return to the <a href=', # Translate - New (6)
+    'Or return to the <a href=' => 'Oder zurück zu <a href=',
 
     ## ./plugins/feeds-app-lite/tmpl/config.tmpl
-    'Feed Configuration' => 'Feed Configuration', # Translate - New (2)
-    'Feed URL' => 'Feed URL', # Translate - New (2)
-    'Title' => 'Überschrift',
-    'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.', # Translate - New (23)
-    'Display' => 'Display', # Translate - New (1)
-    '3' => '3', # Translate - New (1)
-    '5' => '5', # Translate - New (1)
-    '10' => '10', # Translate - New (1)
+    'Feed Configuration' => 'Feed-Konfiguration',
+    'Feed URL' => 'Feed-URL',
+    'Title' => 'Titel',
+    'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Vergeben Sie einen Namen für das Widget. Dieser Name wird auch als Name des Feeds in Ihrem Blog angezeigt werden.',
+    'Display' => 'Zeige',
+    '3' => '3', # Translate - Previous (1)
+    '5' => '5', # Translate - Previous (1)
+    '10' => '10', # Translate - Previous (1)
     'All' => 'Alle',
-    'Select the maximum number of entries to display.' => 'Select the maximum number of entries to display.', # Translate - New (8)
+    'Select the maximum number of entries to display.' => 'Anzahl der Einträge, die höchstens angezeigt werden sollen.',
     'Save' => 'Speichern',
 
     ## ./plugins/spamlookup/spamlookup_words.pl
@@ -314,12 +313,12 @@ sub encoding { 'utf-8' }
     'More' => 'Stärker',
     'block' => 'sperren',
     'none' => 'keine',
-    'IP Blacklist Services:' => 'IP-Schwarzlistendienste:',
+    'IP Blacklist Services:' => 'IP-Schwarz- listendienste:',
     'Domain Name Lookups:' => 'Kontrolle der Domainnamen:',
     'Moderate feedback containing blacklisted domains' => 'Feedback von gesperrten Domains moderieren',
     'Junk feedback containing blacklisted domains' => 'Feedback von gesperrten Domains als Junk einstufen',
-    'Domain Blacklist Services:' => 'Domain-Schwarzlistendienste:',
-    'Advanced TrackBack Lookups:' => 'Zusätzliche TrackBack-Kontrollen:',
+    'Domain Blacklist Services:' => 'Domain-Schwarz- listendienste:',
+    'Advanced TrackBack Lookups:' => 'Zusätzliche TrackBack- Kontrollen:',
     'Moderate TrackBacks from suspicious sources' => 'TrackBacks aus verdächtigen Quellen moderieren',
     'Junk TrackBacks from suspicious sources' => 'TrackBacks aus verdächtigen Quellen als Junk einstufen',
     'To prevent lookups for some IP addresses or domains, list them below. Place each entry on a line by itself.' => 'Domains und IP-Adressen, die nicht nachgeschlagen werden sollen, können hier aufgeführt werden. Verwenden Sie für jeden Eintag eine neue Zeile.',
@@ -337,7 +336,7 @@ sub encoding { 'utf-8' }
     'If you wish to use any of the Google API functionality, you will need a Google API key. Paste it in here.' => 'Um eine der API-Funktionen von Google nutzen zu können, benötigen Sie einen API-Schlüssel von Google. Fügen Sie diesen hier ein.',
 
     ## ./plugins/StyleCatcher/stylecatcher.pl
-    '<p style=' => '<p style=', # Translate - New (3)
+    '<p style=' => '<p style=', # Translate - Previous (3)
     'Theme Root URL:' => 'Wurzeladresse für Themes:',
     'Theme Root Path:' => 'Wurzelverzeichnis für Themes:',
     'Style Library URL:' => 'Adresse der Style Library:',
@@ -354,8 +353,8 @@ sub encoding { 'utf-8' }
     'Choose this Design' => 'Dieses Design wählen',
     'Find Style' => 'Style finden',
     'Loading...' => 'Lade...',
-    'StyleCatcher user script.' => 'StyleCatcher-User Script.',
-    'Theme or Repository URL:' => 'Theme oder Speicher-Adresse:',
+    'StyleCatcher user script.' => 'StyleCatcher-User Script installieren',
+    'Theme or Repository URL:' => 'Theme- oder Repository-Adresse:',
     'Find Styles' => 'Styles finden',
     'NOTE:' => 'HINWEIS:',
     'It will take a moment for themes to populate once you click \'Find Style\'.' => 'Es kann einige Momente dauern, bis nach Klick auf \'Style finden\' Suchergebnisse erscheinen.',
@@ -364,7 +363,7 @@ sub encoding { 'utf-8' }
     'Current themes for your weblogs' => 'Aktuelle Themes Ihrer Weblogs',
     'Current Themes' => 'Aktuelle Themes',
     'Locally saved themes' => 'Lokal gespeicherte Themes',
-    'Saved Themes' => 'Gespeicherte Themes',
+    'Saved Themes' => 'Vorhandene Themes',
     'Single themes from the web' => 'Einzelne Themes aus dem Web',
     'More Themes' => 'Weitere Themes',
     'Templates' => 'Templates', # Translate - Previous (1)
@@ -373,7 +372,7 @@ sub encoding { 'utf-8' }
     'Hide Details' => 'Details ausblenden',
     'Select a Weblog...' => 'Weblog wählen...',
     'Apply Selected Design' => 'Gewähltes Design anwenden',
-    'You don\'t appear to have any weblogs with a ' => 'Sie haben kein Weblog mit',
+    'You don\'t appear to have any weblogs with a \'styles-site.css\' template that you have rights to edit. Please check your weblog(s) for this template.' => 'You don\'t appear to have any weblogs with a \'styles-site.css\' template that you have rights to edit. Please check your weblog(s) for this template.', # Translate - New (27)
 
     ## ./plugins/StyleCatcher/tmpl/footer.tmpl
 
@@ -384,25 +383,25 @@ sub encoding { 'utf-8' }
     'Widget Manager' => 'Widget Manager', # Translate - Previous (2)
     'Rearrange Items' => 'Elemente anordnen',
     'Your changes to the Widget Manager have been saved.' => 'Änderungen übernommen',
-    'You have successfully deleted the selected Widget Manager(s) from your weblog.' => 'Widget Manager erfolgreich gelöscht.',
-    'To add a Widget Manager to your templates, use the following syntax:' => 'Um einen Widget Manager in ein Template einzufügen, verwenden Sie folgende Syntax:',
-    'Widget Managers' => 'Widget Manager',
-    'Add Widget Manager' => 'Widget Manager hinzufügen',
-    'Create Widget Manager' => 'Widget Manager anlegen',
+    'You have successfully deleted the selected Widget Manager(s) from your weblog.' => 'Widgetgruppe erfolgreich gelöscht.',
+    'To add a Widget Manager to your templates, use the following syntax:' => 'Um eine Widgetgruppe in ein Template einzufügen, verwenden Sie folgende Syntax:',
+    'Widget Managers' => 'Widgetgruppen',
+    'Add Widget Manager' => 'Widgetgruppe hinzufügen',
+    'Create Widget Manager' => 'Widgetgruppe anlegen',
     'Delete Selected' => 'Ausgewählte Elemente löschen',
-    'Are you sure you wish to delete the selected Widget Manager(s)?' => 'Diese Widget Manager wirklich löschen?',
-    'WidgetManager Name' => 'Name des Widget Managers',
+    'Are you sure you wish to delete the selected Widget Manager(s)?' => 'Diese Widgetgruppe(n) wirklich löschen?',
+    'WidgetManager Name' => 'Name der Widgetgruppe',
     'Installed Widgets' => 'Installierte Widgets',
 
     ## ./plugins/WidgetManager/tmpl/header.tmpl
     'Movable Type Publishing Platform' => 'Movable Type Publishing Platform', # Translate - Previous (4)
-    'Weblogs:' => 'Weblogs:', # Translate - Previous (1)
+    'Weblogs' => 'Weblogs', # Translate - Previous (1)
     'Go' => 'Ausführen',
 
     ## ./plugins/WidgetManager/tmpl/edit.tmpl
-    'Widget Manager Name:' => 'Name des Widget Managers:',
-    'Build WidgetManager:' => 'Widget Manager anlegen:',
-    'Available Widgets' => 'Erhältliche Widgets',
+    'Widget Manager Name:' => 'Name der Widgetgruppe:',
+    'Build WidgetManager:' => 'Widgetgruppe anlegen:',
+    'Available Widgets' => 'Verfügbare Widgets',
     'Save Changes' => 'Änderungen speichern',
     'Save changes (s)' => 'Änderungen speichern',
 
@@ -428,7 +427,7 @@ sub encoding { 'utf-8' }
     ## ./plugins/WidgetManager/default_widgets/subscribe_to_feed.tmpl
 
     ## ./plugins/WidgetManager/default_widgets/monthly_archive_dropdown.tmpl
-    'Select a Month...' => 'Select a Month...', # Translate - New (3)
+    'Select a Month...' => 'Monat auswählen...',
 
     ## ./plugins/WidgetManager/default_widgets/monthly_archive_list.tmpl
 
@@ -452,7 +451,7 @@ sub encoding { 'utf-8' }
     'Sat' => 'Sa',
 
     ## ./plugins/WidgetManager/default_widgets/tag_cloud_module.tmpl
-    'Tag cloud' => 'Tag cloud', # Translate - New (2)
+    'Tag cloud' => 'Tag Cloud',
 
     ## ./lib/MT/default-templates.pl
 
@@ -516,7 +515,6 @@ sub encoding { 'utf-8' }
     '(comma-delimited list)' => '(Liste mit Kommatrennung)',
     '(space-delimited list)' => '(Liste mit Leerzeichentrennung)',
     '(delimited by \'[_1]\')' => '(Trennung durch \'[_1]\')',
-    'Authored On' => 'Erstellt am',
     'Text Formatting' => 'Textformatierung',
     'Basename' => 'Basename', # Translate - Previous (1)
     'Unlock this entry\'s output filename for editing' => 'Dateiname zur Bearbeitung entsperren',
@@ -593,7 +591,7 @@ sub encoding { 'utf-8' }
     'The selected commenter(s) have been blocked from commenting.' => 'Die ausgewählten Kommentatoren wurden für Kommentare gesperrt.',
     'The selected commenter(s) have been unbanned.' => 'Die Kommentarsperre wurde für die ausgewählten Kommentatoren aufgehoben.',
     'Reset' => 'Zurücksetzen',
-    'Filter:' => 'Filter:', # Translate - Previous (1)
+    'Filter' => 'Filter', # Translate - Previous (1)
     'None.' => 'Keine',
     '(Showing all commenters.)' => '(Zeige alle Kommentatoren)',
     'Showing only commenters whose [_1] is [_2].' => 'Zeige nur Kommentatoren bei denen [_1] [_2] ist',
@@ -615,7 +613,6 @@ sub encoding { 'utf-8' }
     'unauthenticated' => 'nicht authentifiziert',
     'authenticated' => 'authentifiziert',
     '.' => '.', # Translate - Previous (0)
-    'Filter' => 'Filter', # Translate - Previous (1)
     'No commenters could be found.' => 'Keine Kommentatoren gefunden.',
 
     ## ./tmpl/cms/list_comment.tmpl
@@ -687,7 +684,7 @@ sub encoding { 'utf-8' }
     'Show Resources' => 'Funktionen anzeigen',
     'Run' => 'Ausführen',
     'Run [_1]' => '[_1] ausführen',
-    'Show Settings' => 'Einstellungen zeigen',
+    'Show Settings' => 'Einstellungen anzeigen',
     'Settings for [_1]' => 'Einstellungen von [_1]',
     'Version' => 'Version', # Translate - Previous (1)
     'Resources Provided by [_1]' => 'Resourcen von [_1]',
@@ -714,7 +711,7 @@ sub encoding { 'utf-8' }
     'Import File Encoding (optional):' => 'Encoding der Importdatei (optional):',
     'By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.' => 'Movable Type versucht automatisch das korrekte Encoding auszuwählen. Sollte das fehlschlagen, können Sie es auch explizit angeben.',
     'Default category for entries (optional):' => 'Standardkategorie (optional):',
-    'Select a category' => 'Kategorie auswählen',
+    'Select a category' => 'Kategorie auswählen...',
     'You can specify a default category for imported entries which have none assigned.' => 'Standardkdategorie für importierte Einträge ohne Kategorie',
     'Importing from another system?' => 'Import aus einem anderen System als Movable Type',
     'Start title HTML (optional):' => 'Anfang Überschrift (optional):',
@@ -731,7 +728,7 @@ sub encoding { 'utf-8' }
     ## ./tmpl/cms/commenter_actions.tmpl
     'Trust' => 'Vertrauen',
     'commenters' => 'Kommentatoren',
-    'to act upon' => 'bearbeiten',
+    'to act upon' => 'Bearbeiten',
     'Trust commenter' => 'Kommentator vertrauen',
     'Untrust' => 'Nicht vertrauen',
     'Untrust commenter' => 'Kommentator nicht vertrauen',
@@ -749,10 +746,10 @@ sub encoding { 'utf-8' }
     'This screen allows you to control general weblog settings, default weblog display settings, and third-party service settings.' => 'Hier können Sie allgemeine Weblog-Einstellungen vornehmen, Anzeigeoptionen bearbeiten und Dienste von Drittanbietern konfigurieren.',
     'Your blog preferences have been saved.' => 'Ihre Blog-Einstellungen wurden gespeichert.',
     'Weblog Settings' => 'Weblog-Grundeinstellungen',
-    'Weblog Name:' => 'Weblog:',
-    'Name your weblog. The weblog name can be changed at any time.' => 'Name Ihres Weblog. Der Weblog-Name kann jederzeit geändert werden.',
-    'Description:' => 'Beschreibung:',
-    'Enter a description for your weblog.' => 'Geben Sie eine Beschreibung Ihres Weblog ein.',
+    'Weblog Name' => 'Weblog-Name',
+    'Name your weblog. The weblog name can be changed at any time.' => 'Name des Weblog (kann jederzeit geändert werden)',
+    'Description' => 'Beschreibung',
+    'Enter a description for your weblog.' => 'Beschreibung des Weblogs',
     'Timezone:' => 'Zeitzone:',
     'Time zone not selected' => 'Es wurde keine Zeitzone ausgewählt',
     'UTC+13 (New Zealand Daylight Savings Time)' => 'UTC+13 (Neuseeland Sommerzeit)',
@@ -785,7 +782,7 @@ sub encoding { 'utf-8' }
     'UTC-9 (Alaskan Time)' => 'UTC-9 (Alaska-Zeit)',
     'UTC-10 (Aleutians-Hawaii Time)' => 'UTC-10 (Aleuten-Hawaii-Zeit)',
     'UTC-11 (Nome Time)' => 'UTC-11 (Alaska, Nome-Zeit)',
-    'Select your timezone from the pulldown menu.' => 'Wählen Sie Ihre Zeitzone aus dem Pulldown-Menü.',
+    'Select your timezone from the pulldown menu.' => 'Zeitzone des Blogs',
     'Default Weblog Display Settings' => 'Weblog-Standardeinstellungen',
     'Entries to Display:' => 'Anzeige der Einträge:',
     'Days' => 'Tage',
@@ -817,22 +814,21 @@ sub encoding { 'utf-8' }
     'Spanish' => 'Spanisch',
     'Suomi' => 'Finnisch',
     'Swedish' => 'Schwedisch',
-    'Select the language in which you would like dates on your blog displayed.' => 'Wählen Sie die Sprache für Datumsanzeigen.',
+    'Select the language in which you would like dates on your blog displayed.' => 'Sprache für Datumsanzeigen',
     'Limit HTML Tags:' => 'HTML-Tags limitieren:',
     'Use defaults' => 'Standardwerte verwenden',
     '([_1])' => '([_1])', # Translate - Previous (2)
     'Use my settings' => 'Eigene Einstellungen',
     'Specifies the list of HTML tags allowed by default when cleaning an HTML string (a comment, for example).' => 'Liste der HTML-Tags, die aus HTML-Kommentaren nicht ausgefiltert werden sollen.',
-    'Third-Party Services' => 'Dienste von Drittanbietern',
-    'Creative Commons License:' => 'Creative Commons Lizenz:',
+    'License' => 'Lizenz',
     'Your weblog is currently licensed under:' => 'Ihr Weblog ist derzeit lizenziert unter:',
     'Change your license' => 'Lizenz ändern',
     'Remove this license' => 'Lizenz entfernen',
-    'Your weblog does not have an explicit Creative Commons license.' => 'Ihr Weblog hat keine explizite Creative Commons-Lizenz.',
+    'Your weblog does not have an explicit Creative Commons license.' => 'Keine Creative Commons-Lizenz gewählt',
     'Create a license now' => 'Jetzt eine Lizenz erstellen',
-    'Select a Creative Commons license for the posts on your blog (optional).' => 'Wählen einer Creative Commons Lizenz für Ihre Inhalte (optional).',
+    'Select a Creative Commons license for the posts on your blog (optional).' => 'Optional kann eine Creative Commons-Lizenz gewählt werden',
     'Be sure that you understand these licenses before applying them to your own work.' => 'Sie sollten die Lizenzen verstehen, bevor Sie sie auf Ihre Arbeit anwenden.',
-    'Read more.' => 'Weitere Informationen.',
+    'Read more.' => 'Weitere Informationen',
 
     ## ./tmpl/cms/tag_table.tmpl
     'Date' => 'Datum',
@@ -886,31 +882,30 @@ sub encoding { 'utf-8' }
     'Feedback Master Switch' => 'Feedback-Hauptschalter',
     'Disable Comments' => 'Kommentare ausschalten',
     'Stop accepting comments on all weblogs' => 'Bei allen Weblogs Kommentare ausschalten',
-    'This will override all individual weblog comment settings.' => 'Diese Einstellung setzt die entsprechenden Einstellungen der Einzelweblogs außer Kraft.',
+    'This will override all individual weblog comment settings.' => 'Diese Einstellung setzt die entsprechenden Einstellungen der Einzelweblogs außer Kraft',
     'Disable TrackBacks' => 'TrackBacks ausschalten',
     'Stop accepting TrackBacks on all weblogs' => 'Bei allen Weblogs TrackBack ausschalten',
-    'This will override all individual weblog TrackBack settings.' => 'Diese Einstellung setzt die entsprechenden Einstellungen der Einzelweblogs außer Kraft.',
-    'Outbound TrackBack Control' => 'TrackBack-Kontrolle (outbound)',
-    'Allow outbound TrackBacks to:' => 'TrackBacks (outbound) zulassen:',
+    'This will override all individual weblog TrackBack settings.' => 'Diese Einstellung setzt die entsprechenden Einstellungen der Einzelweblogs außer Kraft',
+    'Outbound TrackBack Control' => 'TrackBack-Kontrolle (für ausgehende Pings)',
+    'Allow outbound TrackBacks to:' => 'Ausgehende TrackBacks zulassen:',
     'Any site' => 'zu beliebigen Sites',
     'No site' => 'zu keinen Sites',
-    '(Disable all outbound TrackBacks.)' => '(Alle TrackBacks (outbound) ausschalten.)',
+    '(Disable all outbound TrackBacks.)' => '(Alle ausgehenden TrackBacks ausschalten)',
     'Only the weblogs on this installation' => 'nur zu Sites in dieser Installation',
     'Only the sites on the following domains:' => 'nur zu Sites mit den folgenden Domains:',
-    'This feature allows you to limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.' => 'Um Ihre Installation nichtöffentlich zu machen, können Sie hier begrenzen, auf welche Sites TrackBacks (outbound) zugelassen sind.',
+    'This feature allows you to limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.' => 'Um Ihre Installation nichtöffentlich zu machen, können Sie hier begrenzen, zu welchen Sites TrackBacks verschickt werden dürfen.',
 
     ## ./tmpl/cms/cfg_entries.tmpl
     'New Entry Default Settings' => 'Standardeinstellung für neue Einträge',
     'This screen allows you to control default settings for new entries as well as your publicity and remote interface settings.' => 'Hier legen Sie fest, welche Einstellungen für neue Einträge standardmässig übernommen werden. Zudem konfigurieren Sie die Öffentlichkeits- und Remote Interface-Funktionen.',
     'Default Settings for New Entries' => 'Standardeinstellung für neue Einträge',
     'Post Status' => 'Eintragsstatus',
-    'Specifies the default Post Status when creating a new entry.' => 'Gibt an, welcher Standard-Eintragsstatus beim Erstellen eines neuen Eintrags verwendet werden soll.',
-    'Specifies the default Text Formatting option when creating a new entry.' => 'Gibt an, welche Textformatierungsoption standardmäßig beim Erstellen eines neuen Eintrags verwendet werden soll.',
-    'Specifies the default Accept Comments setting when creating a new entry.' => 'Legt fest, ob bei neuen Einträgen Kommentare standardmässig aktiv sind.',
+    'Specifies the default Post Status when creating a new entry.' => 'Gibt an, welcher Standard-Eintragsstatus beim Erstellen eines neuen Eintrags verwendet werden soll',
+    'Specifies the default Text Formatting option when creating a new entry.' => 'Gibt an, welche Textformatierungsoption standardmäßig beim Erstellen eines neuen Eintrags verwendet werden soll',
+    'Specifies the default Accept Comments setting when creating a new entry.' => 'Legt fest, ob bei neuen Einträgen Kommentare standardmässig aktiv sind',
     'Setting Ignored' => 'Einstellung ignoriert',
     'Note: This option is currently ignored since comments are disabled either weblog or system-wide.' => 'Hinweis: Diese Einstellung wird derzeit ignoriert, da Kommentare für das Weblog bzw. global deaktiviert wurden.',
-    'Accept TrackBacks:' => 'TrackBacks zulassen',
-    'Specifies the default Accept TrackBacks setting when creating a new entry.' => 'Legt fest, ob bei neuen Einträgen TrackBack standardmässig aktiv ist.',
+    'Specifies the default Accept TrackBacks setting when creating a new entry.' => 'Legt fest, ob bei neuen Einträgen TrackBack standardmässig aktiv ist',
     'Note: This option is currently ignored since TrackBacks are disabled either weblog or system-wide.' => 'Hinweis: Diese Einstellung wird derzeit ignoriert, da TrackBacks für das Weblog bzw. global deaktiviert wurden.',
     'Basename Length:' => 'Basename-Länge:',
     'Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.' => 'Setzt den Wert für den automatisch generierten Basename des Eintrags. Mögliche Länge: 15 bis 250.',
@@ -936,9 +931,9 @@ sub encoding { 'utf-8' }
 
     ## ./tmpl/cms/recover.tmpl
     'Your password has been changed, and the new password has been sent to your email address ([_1]).' => 'Ihr Passwort wurde geändert, und das neue Passwort wurde an Ihre E-Mail-Adresse gesendet ([_1]).',
-    'Enter your Movable Type username:' => 'Geben Sie Ihren Benutzernamen für Movable Type ein:',
-    'Enter your password recovery word/phrase:' => 'Enter your password recovery word/phrase:', # Translate - New (6)
-    'Recover' => 'Wiederherstellen',
+    'Enter your Movable Type username:' => 'Geben Sie Ihren Benutzernamen ein:',
+    'Enter your password recovery word/phrase:' => 'Geben Sie Ihren Erinnerungssatz ein:',
+    'Recover' => 'Passwort anfordern',
 
     ## ./tmpl/cms/list_entry.tmpl
     'Your entry has been deleted from the database.' => 'Ihr Eintrag wurde aus der Datenbank gelöscht.',
@@ -950,15 +945,15 @@ sub encoding { 'utf-8' }
     'entries.' => 'Einträge',
     'entries where' => 'Einträge bei denen',
     'author' => 'Autor',
-    'tag (exact match)' => 'Tag (genaue Schreibweise)',
-    'tag (fuzzy match)' => 'tag (fuzzy match)', # Translate - New (3)
+    'tag (exact match)' => 'Tag (exakt)',
+    'tag (fuzzy match)' => 'tag (fuzzy)',
     'category' => 'Kategorie',
-    'scheduled' => 'geplant',
-    'No entries could be found.' => 'Keine Einträge gefunden.',
+    'scheduled' => 'zeitgeplant',
+    'No entries could be found.' => 'Keine Einträge gefunden',
 
     ## ./tmpl/cms/list_template.tmpl
     'Index Templates' => 'Index-Templates',
-    'Index templates produce single pages and can be used to publish Movable Type data or plain files with any type of content. These templates are typically rebuilt automatically upon saving entries, comments and TrackBacks.' => 'Index-Templates erzeugen Einzelseiten, die Movable Type-Inhalte anzeigen können. Normalerweise werden Index-Templates beim Veröffentlichen von Einträgen, Kommentaren und TrackBacks aktualisiert.',
+    'Index templates produce single pages and can be used to publish Movable Type data or plain files with any type of content. These templates are typically rebuilt automatically upon saving entries, comments and TrackBacks.' => 'Index-Templates erzeugen Einzelseiten, die Movable Type-Inhalte anzeigen können. Normalerweise werden Index-Templates beim Veröffentlichen von Einträgen, Kommentaren und TrackBacks automatisch aktualisiert.',
     'Archive Templates' => 'Archiv-Templates',
     'Archive templates are used for producing multiple pages of the same archive type.  You can create new ones and map them to archive types on the publishing settings screen for this weblog.' => 'Archiv-Templates erzeugen Archivdateien vom jeweiligen Archivtypen. In den Einstellungen können Sie weitere Archivtemplates anlegen und mit den verschiedenen Archivarten verknüpfen.',
     'System Templates' => 'System-Templates',
@@ -987,7 +982,6 @@ sub encoding { 'utf-8' }
     'View Published Template' => 'Veröffentlichtes Template ansehen',
     'No index templates could be found.' => 'Keine Index-Templates gefunden.',
     'No archive templates could be found.' => 'Keine Archiv-Templates geunden.',
-    'Description' => 'Beschreibung',
     'No template modules could be found.' => 'Keine Template-Module gefunden.',
 
     ## ./tmpl/cms/list_tags.tmpl
@@ -1015,16 +1009,15 @@ sub encoding { 'utf-8' }
     'System Administrator' => 'Systemadministrator',
     'Create Weblogs' => 'Weblogs einrichten',
     'View Activity Log' => 'Aktivitätsprotokoll anzeigen',
-    'Username (*):' => 'Benutzername:',
-    'The name used by this author to login.' => 'Der Name, um sich am System anzumelden',
-    'Display Name:' => 'Angezeigter Name:',
+    'Username' => 'Benutzername',
+    'The name used by this author to login.' => 'Anmeldename dieses Benutzerkontos',
+    'Display Name' => 'Anzeigename',
     'The author\'s published name.' => 'Der Name, der bei Einträgen angezeigt wird',
-    'Email Address (*):' => 'Email-Adresse:',
-    'The author\'s email address.' => 'Die Email-Adresse des Autors',
+    'The author\'s email address.' => 'Email-Adresse des Benutzers',
     'Website URL:' => 'Website-URL:',
     'The URL of this author\'s website. (Optional)' => 'Die URL des Autors (optional)',
     'Language:' => 'Sprache:',
-    'The author\'s preferred language.' => 'Die bevorzugte Sprache des Autors',
+    'The author\'s preferred language.' => 'Gewünschte Spracheinstellung',
     'Tag Delimiter:' => 'Tags-Trennzeichen:',
     'Comma' => 'Komma',
     'Space' => 'Leerzeichen',
@@ -1034,8 +1027,8 @@ sub encoding { 'utf-8' }
     'Current Password:' => 'Aktuelles Passwort:',
     'Enter the existing password to change it.' => 'Geben Sie das aktuelle Passwort ein, um es zu ändern.',
     'New Password:' => 'Neues Passwort:',
-    'Initial Password (*):' => 'Passwort:',
-    'Select a password for the author.' => 'Geben Sie ein Passwort für den Autoren an',
+    'Initial Password' => 'Initial Password', # Translate - New (2)
+    'Select a password for the author.' => 'Passwort für dieses Benutzerkonto',
     'Password Confirm:' => 'Passwort wiederholen:',
     'Repeat the password for confirmation.' => 'Passwort zur Bestätigung wiederholen',
     'Password recovery word/phrase' => 'Erinnerungssatz',
@@ -1046,13 +1039,10 @@ sub encoding { 'utf-8' }
     'Save this author (s)' => 'Autor speichern',
 
     ## ./tmpl/cms/notification_table.tmpl
-    'Email Address' => 'E-Mail-Adresse',
-    'URL' => 'URL', # Translate - Previous (1)
     'Date Added' => 'Hinzugefügt am',
 
     ## ./tmpl/cms/overview-left-nav.tmpl
     'List Weblogs' => 'Weblogs anzeigen',
-    'Weblogs' => 'Weblogs', # Translate - Previous (1)
     'List Authors' => 'Autoren anzeigen',
     'Authors' => 'Autoren',
     'List Plugins' => 'Plugins anzeigen',
@@ -1094,7 +1084,7 @@ sub encoding { 'utf-8' }
     'No log records could be found.' => 'Keine Log-Einträge gefunden.',
 
     ## ./tmpl/cms/tag_actions.tmpl
-    'tag' => 'tag', # Translate - New (1)
+    'tag' => 'Tag',
     'tags' => 'Tags',
     'Delete selected tags (x)' => 'Markierte Tags löschen (x)',
 
@@ -1134,18 +1124,17 @@ sub encoding { 'utf-8' }
     'System Stats' => 'Systemstatistik',
     'Active Authors' => 'Aktive Autoren',
     'Essential Links' => 'Wichtige Weblinks',
-    'System Information' => 'Systeminformation',
     'Movable Type Home' => 'Movable Type-Website',
     'Plugin Directory' => 'Plugin-Verzeichnis',
     'Support and Documentation' => 'Support und Dokumentation',
-    'https://secure.sixapart.com/t/account' => 'https://secure.sixapart.com/t/account', # Translate - Previous (6)
+    'https://secure.sixapart.com/t/account' => 'https://secure.sixapart.com/t/account?portal=de', # Translate - Previous (6)
     'Your Account' => 'Ihr Movable Type-Account',
-    'https://secure.sixapart.com/t/help?__mode=edit' => 'https://secure.sixapart.com/t/help?__mode=edit', # Translate - Previous (8)
+    'https://secure.sixapart.com/t/help?__mode=edit' => 'https://secure.sixapart.com/t/help?__mode=edit&portal=de', # Translate - Previous (8)
     'Open a Help Ticket' => 'Hilfe-Ticket öffnen',
     'Paid License Required' => 'Bezahlte MT-Version erforderlich',
-    'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/', # Translate - Previous (5)
+    'http://www.sixapart.com/movabletype/' => 'http://www.movabletype.org/sitede', # Translate - Previous (5)
     'http://www.sixapart.com/pronet/plugins/' => 'http://www.sixapart.com/pronet/plugins/', # Translate - Previous (6)
-    'https://secure.sixapart.com/t/help?__mode=kb' => 'https://secure.sixapart.com/t/help?__mode=kb', # Translate - Previous (8)
+    'https://secure.sixapart.com/t/help?__mode=kb' => 'https://secure.sixapart.com/t/help?__mode=kb&portal=de', # Translate - Previous (8)
     'Knowledge Base' => 'Wissensdatenbank',
     'http://www.sixapart.com/pronet/' => 'http://www.sixapart.com/pronet/', # Translate - Previous (5)
     'Professional Network' => 'Professional Network', # Translate - Previous (2)
@@ -1156,7 +1145,7 @@ sub encoding { 'utf-8' }
     'Weblog' => 'Weblog', # Translate - Previous (1)
     'Only show unpublished entries' => 'Nur unveröffentlichte Einträge anzeigen',
     'Only show published entries' => 'Nur veröffentlichte Einträge anzeigen',
-    'Only show scheduled entries' => 'Nur terminierte Einträge anzeigen',
+    'Only show scheduled entries' => 'Nur zeitgeplante Einträge anzeigen',
     'None' => 'Kein(e)',
 
     ## ./tmpl/cms/pinged_urls.tmpl
@@ -1170,10 +1159,9 @@ sub encoding { 'utf-8' }
     'User can view activity log' => 'Protokoll einsehen',
     'Check All' => 'Alle markieren',
     'Uncheck All' => 'Alle deaktivieren',
-    'Weblog:' => 'Weblog:', # Translate - Previous (1)
     'Unheck All' => 'Markierungen aufheben',
     'Add user to an additional weblog:' => 'Benutzer zu einem weiteren Weblog hinzufügen:',
-    'Select a weblog' => 'Weblog auswählen',
+    'Select a weblog' => 'Weblog auswählen...',
     'Add' => 'Hinzufügen',
     'Save permissions for this author (s)' => 'Änderungen speichern',
 
@@ -1181,7 +1169,7 @@ sub encoding { 'utf-8' }
     'Reset Activity Log' => 'Aktivitätsprotokoll zurücksetzen',
 
     ## ./tmpl/cms/rebuild_confirm.tmpl
-    'Select the type of rebuild you would like to perform. (Click the Cancel button if you do not want to rebuild any files.)' => 'Wählen Sie die Art der erneuten Veröffentlichung aus.',
+    'Select the type of rebuild you would like to perform. (Click the Cancel button if you do not want to rebuild any files.)' => 'Wählen Sie aus, welche Dateien neu veröffentlicht werden sollen.',
     'Rebuild All Files' => 'Alle Dateien neu veröffentlichen',
     'Index Template: [_1]' => 'Index-Template: [_1]',
     'Rebuild Indexes Only' => 'Nur Index-Dateien neu veröffentlichen',
@@ -1193,8 +1181,8 @@ sub encoding { 'utf-8' }
     'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]).' => 'Die vorhandene Perl-Version ([_1]) ist nicht aktuell genug ([_2] oder höher erforderlich).',
     'Do you want to proceed with the upgrade anyway?' => 'Upgrade dennoch fortsetzen?',
     'A new version of Movable Type has been installed.  We\'ll need to complete a few tasks to update your database.' => 'Es wurde eine neue Version von Movable Type installiert. Ihre Datenbank wird nun auf den aktuellen Stand gebracht.',
-    'In addition, the following Movable Type plugins require upgrading or installation:' => 'In addition, the following Movable Type plugins require upgrading or installation:', # Translate - New (11)
-    'The following Movable Type plugins require upgrading or installation:' => 'The following Movable Type plugins require upgrading or installation:', # Translate - New (9)
+    'In addition, the following Movable Type plugins require upgrading or installation:' => 'Zusätzlich müssen folgende Movable Type-Plugins installiert oder aktualisiert werden:',
+    'The following Movable Type plugins require upgrading or installation:' => 'Folgende Movable Type-Plugins müssen installiert oder aktualisiert werden:',
     'Version [_1]' => 'Version [_1]', # Translate - Previous (2)
     'Begin Upgrade' => 'Upgrade durchführen',
 
@@ -1210,7 +1198,6 @@ sub encoding { 'utf-8' }
     ## ./tmpl/cms/login.tmpl
     'Your Movable Type session has ended. If you wish to log in again, you can do so below.' => 'Ihre Movable Type-Sitzung ist abgelaufen. Sie können sich nachfolgend erneut anmelden.',
     'Your Movable Type session has ended. Please login again to continue this action.' => 'Ihre Movable Type-Session ist abgelaufen. Bitte melden Sie sich erneut an.',
-    'Username' => 'Benutzername',
     'Remember me?' => 'Benutzername speichern?',
     'Log In' => 'Anmelden',
     'Forgot your password?' => 'Passwort vergessen?',
@@ -1271,7 +1258,6 @@ sub encoding { 'utf-8' }
     ## ./tmpl/cms/edit_profile.tmpl
     'Author Permissions' => 'Benutzerrechte',
     'A new password has been generated and sent to the email address [_1].' => 'Ein neues Passwort wurde erzeugt und an die Adresse  [_1] verschickt.',
-    'Username:' => 'Beutzername:',
     'Password Recovery' => 'Passwort wird wiederhergestellt',
 
     ## ./tmpl/cms/edit_commenter.tmpl
@@ -1279,12 +1265,11 @@ sub encoding { 'utf-8' }
     'The commenter has been trusted.' => 'Sie vertrauen diesem Kommentator.',
     'The commenter has been banned.' => 'Dieser Kommentator wurde gesperrt.',
     'View all comments with this name' => 'Alle Kommentare mit diesem Namen anzeigen',
-    'Identity:' => 'Identität:',
-    'Email:' => 'Email:', # Translate - Previous (1)
+    'Identity' => 'ID',
+    'Email' => 'Email', # Translate - Previous (1)
     'Withheld' => 'Underdrückt',
     'View all comments with this email address' => 'Alle Kommentare von dieser Email-Adresse anzeigen',
     'View all comments with this URL address' => 'Alle Kommentare mit dieser URL anzeigen',
-    'Status:' => 'Status:', # Translate - Previous (1)
     'Trusted' => 'vertraut',
     'Blocked' => 'Gesperrt',
     'Authenticated' => 'Authentifiziert',
@@ -1299,12 +1284,11 @@ sub encoding { 'utf-8' }
     ## ./tmpl/cms/install.tmpl
     'Welcome to Movable Type!' => 'Willkommen bei Movable Type!',
     'Do you want to proceed with the installation anyway?' => 'Möchten Sie die Installation dennoch fortsetzen?',
-    'Before you can begin blogging, we need to complete your installation by initializing your database.' => 'Als Abschluss des Installationsvorgangs muss nun die Datenbank initialisiert werden. Dann können Sie mit dem Bloggen beginnen.',
-    'You will need to select a username and password for the administrator account.' => 'Wählen Sie einen Benutzernamen und ein Passwort für den Administrator-Account aus.',
-    'Password:' => 'Passwort:',
-    'Select a password for your account.' => 'Wählen Sie ein Passwort für Ihren Account aus.',
-    'Password recovery word/phrase:' => 'Password recovery word/phrase:', # Translate - New (4)
-    'Finish Install' => 'Installation beenden',
+    'Before you can begin blogging, we need to complete your installation by initializing your database.' => 'Abschließend wird nun die Datenbank eingerichtet werden. Dann können Sie mit dem Bloggen beginnen.',
+    'You will need to select a username and password for the administrator account.' => 'Legen Sie den Benutzernamen und das Passwort des Administrator-Accounts fest:',
+    'Select a password for your account.' => 'Passwort dieses Benutzerkontos',
+    'Password recovery word/phrase:' => 'Erinnerungssatz:',
+    'Finish Install' => 'Installation abschließen',
 
     ## ./tmpl/cms/comment_table.tmpl
     'Only show published comments' => 'Nur veröffentlichte Kommentare anzeigen',
@@ -1323,7 +1307,6 @@ sub encoding { 'utf-8' }
     'You have added [_1] to your list of banned IP addresses.' => 'Sie haben [_1] zur Liste mit gesperrten IP-Adressen hinzugefgt.',
     'You have successfully deleted the selected IP addresses from the list.' => 'Sie haben die ausgewählten IP-Adressen erfolgreich aus der Liste entfernt.',
     'Ban New IP Address' => 'Neue IP-Adresse sperren',
-    'IP Address:' => 'IP-Adresse:',
     'Ban IP Address' => 'IP-Adresse sperren',
     'Date Banned' => 'gesperrt am',
     'IP address' => 'IP-Adresse',
@@ -1372,17 +1355,17 @@ sub encoding { 'utf-8' }
     'You must set your Local Site Path.' => 'Sie müssen den Pfad Ihres lokalen Verzeichnis festlegen.',
     'You must set your Site URL.' => 'Sie müssen Ihre Webadresse (URL) festlegen.',
     'Your Site URL is not valid.' => 'Die gewählte Webadresse (URL) ist ungültig.',
-    'You can not have spaces in your Site URL.' => 'You can not have spaces in your Site URL.', # Translate - New (9)
-    'You can not have spaces in your Local Site Path.' => 'You can not have spaces in your Local Site Path.', # Translate - New (10)
+    'You can not have spaces in your Site URL.' => 'Die Adresse (URL) darf keine Leerzeichen enthalten.',
+    'You can not have spaces in your Local Site Path.' => 'Der lokale Pfad darf keine Leerzeichen enthalten.',
     'Your Local Site Path is not valid.' => 'Das gewählte lokale Verzeichnis ist ungültig.',
     'New Weblog Settings' => 'Einstellungen für neue Weblogs',
     'From this screen you can specify the basic information needed to create a weblog.  Once you click the save button, your weblog will be created and you can continue to customize its settings and templates, or just simply start posting.' => 'In diesem Menü legen Sie die Grundkonfiguration für ein neues Weblog fest. Sobald Sie die Einstellungen speichern, wird das Weblog angelegt. Sie können dann weitere Einstellungen vornehmen oder aber direkt einen Eintrag schreiben und veröffentlichen.',
     'Your weblog configuration has been saved.' => 'Ihre Weblog-Konfiguration wurde gespeichert.',
     'Site URL:' => 'Adresse (URL):',
-    'Enter the URL of your public website. Do not include a filename (i.e. exclude index.html).' => 'Geben Sie die Adresse (URL) Ihres neuen Blogs ein. Sie sollte keinen Dateinamen enthalten (z. B. "index.html").',
+    'Enter the URL of your public website. Do not include a filename (i.e. exclude index.html).' => 'Adresse (URL) des Blogs (Ohne Dateinamen wie z.B. "index.html").',
     'Example:' => 'Beispiel:',
-    'Site root:' => 'Wurzelverzeichnis:',
-    'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory.' => 'Geben Sie das Wurzelverzeichnis Ihres neuen Blogs ein (Pfad zur Startseite). Verwenden Sie möglichst einen absoluten Pfad (der mit \'/\' beginnt). Sie können aber auch einen Pfad relativ zum Movable Type-Verzeichnis benennen.',
+    'Site Root' => 'Site-Root',
+    'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory.' => 'Wurzelverzeichnis des Blogs (Verwenden Sie möglichst einen mit \'/\' beginnenden absoluten Pfad. Sie können aber auch einen Pfad relativ zum Movable Type-Verzeichnis angeben.)',
 
     ## ./tmpl/cms/blog-left-nav.tmpl
     'Posting' => 'Einträge',
@@ -1448,15 +1431,15 @@ sub encoding { 'utf-8' }
     ## ./tmpl/cms/pager.tmpl
     'Show Display Options' => 'Anzeigeoptionen',
     'Display Options' => 'Anzeigeoptionen',
-    'Show:' => 'Anzahl der Zeilen:',
+    'Show:' => 'Zeige:',
     '[quant,_1,row]' => '[quant,_1,Zeile,Zeilen]',
     'all rows' => 'Alle Zeilen',
     'Another amount...' => 'Andere Anzahl...',
     'View:' => 'Ansicht:',
     'Compact' => 'Kompakt',
     'Expanded' => 'Erweitert',
-    'Actions:' => 'Position der Funktionsleiste:',
-    'Date Display:' => 'Datumanzeige:',
+    'Actions' => 'Aktionen',
+    'Date Display:' => 'Datumsanzeige:',
     'Relative' => 'Relativ (z.B. "Vor 20 Minuten")',
     'Full' => 'Voll',
     'Open Batch Editor' => 'Batch-Editor öffnen',
@@ -1494,9 +1477,9 @@ sub encoding { 'utf-8' }
     'Please click the Save Changes button below to disable authentication.' => 'Bitte speichern Sie die Änderungen, um die Authentifizierung abzuschalten.',
     'Authentication Not Enabled' => 'Authentifizierung nicht aktiviert',
     'Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication.' => 'Hinweis: Sie möchten Kommentare nur von authentifizierten Kommentatoren zulassen. Allerdings haben Sie die Authentifizierung nicht aktiviert.',
-    'Authentication is not enabled.' => 'Authentifizierung nicht aktiviert.',
+    'Authentication is not enabled.' => 'Authentifizierung nicht aktiviert',
     'Setup Authentication' => 'Authentifizierungs-Setup',
-    'Or, manually enter token:' => 'Oder: Token manuell eintragen:',
+    'Or, manually enter token:' => 'Oder Token manuell eintragen:',
     'Authentication Token Inserted' => 'Authentifizierungs-Token eingefügt',
     'Please click the Save Changes button below to enable authentication.' => 'Bitte speichern Sie die Einstellungen, um die Authentifizierung zu aktivieren.',
     'Establish a link between your weblog and an authentication service. You may use TypeKey (a free service, available by default) or another compatible service.' => 'Einen Link zwischen Ihrem Weblog und einem Authentifizierungs-Dienst einrichten. Sie können TypeKey verwenden (Standard-Dienst von Six Apart, kostenlos) oder einen anderen Dienst.',
@@ -1517,10 +1500,10 @@ sub encoding { 'utf-8' }
     'If enabled, all non-linked URLs will be transformed into links to that URL.' => 'Wenn die Option aktiv ist, werden alle URLs automatisch in HTML-Links umgewandelt.',
     'Specifies the Text Formatting option to use for formatting visitor comments.' => 'Legt fest, welche Textformatierungsoption standardmäßig für Kommentare verwendet werden soll.',
     'Note: TrackBacks are currently disabled at the system level.' => 'Hinweis: TrackBacks sind derzeit im Gesamtsystem deaktiviert.',
-    'If enabled, TrackBacks will be accepted from any source.' => 'Legt fest, ob TrackBacks von allen Quellen zugelassen sind.',
+    'If enabled, TrackBacks will be accepted from any source.' => 'Legt fest, ob TrackBacks von allen Quellen zugelassen sind',
     'Moderation' => 'Moderation', # Translate - Previous (1)
-    'Hold all TrackBacks for approval before they\'re published.' => 'Alle TrackBacks moderieren.',
-    'Specify when Movable Type should notify you of new TrackBacks if at all.' => 'Legt fest, ob und wann Sie bei neuen TrackBacks benachrichtigt werden.',
+    'Hold all TrackBacks for approval before they\'re published.' => 'Alle TrackBacks moderieren',
+    'Specify when Movable Type should notify you of new TrackBacks if at all.' => 'Legt fest, ob und wann Sie bei neuen TrackBacks benachrichtigt werden',
     'Junk Score Threshold' => 'Junk-Score Grenzwert',
     'Less Aggressive' => 'konservativ',
     'More Aggressive' => 'aggressiv',
@@ -1540,12 +1523,10 @@ sub encoding { 'utf-8' }
     'Deletes all junk comments' => 'Alle Junk-Kommentare löschen',
 
     ## ./tmpl/cms/author_table.tmpl
-    'Name' => 'Name', # Translate - Previous (1)
-    'Email' => 'Email', # Translate - Previous (1)
 
     ## ./tmpl/cms/header.tmpl
     'Go to:' => 'Gehe zu:',
-    'Select a blog' => 'Blog auswählen',
+    'Select a blog' => 'Blog auswählen...',
     'System-wide listing' => 'Systemweite Auflistung',
 
     ## ./tmpl/cms/edit_comment.tmpl
@@ -1554,7 +1535,6 @@ sub encoding { 'utf-8' }
     'Pending Approval' => 'Freischaltung offen',
     'Junked Comment' => 'Junk-Kommentar',
     'View all comments with this status' => 'Alle Kommentare mit diesem Status ansehen',
-    'Commenter:' => 'Kommentator:',
     '(Trusted)' => '(vertraut)',
     'Ban&nbsp;Commenter' => 'Kommentator&nbsp;sperren',
     'Untrust&nbsp;Commenter' => 'Kommentator&nbsp;nicht&nbsp;vertrauen',
@@ -1564,13 +1544,10 @@ sub encoding { 'utf-8' }
     'View all comments by this commenter' => 'Alle Kommentare von diesem Kommentator anzeigen',
     'None given' => 'leer',
     'View all comments with this URL' => 'Alle Kommentare mit dieser URL anzeigen',
-    'Entry:' => 'Eintrag:',
     'Entry no longer exists' => 'Eintrag nicht mehr vorhanden',
     'No title' => 'Keine Überschrift',
     'View all comments on this entry' => 'Alle Kommentare zu diesem Eintrag anzeigen',
-    'Date:' => 'Datum:',
     'View all comments posted on this day' => 'Alle Kommentare von diesem Tag anzeigen',
-    'IP:' => 'IP:', # Translate - Previous (1)
     'View all comments from this IP address' => 'Alle Kommentare von dieser IP-Adresse anzeigen',
     'Save this comment (s)' => 'Kommentar(e) speichern',
     'Delete this comment (x)' => 'Diesen Kommentar löschen (x)',
@@ -1592,6 +1569,7 @@ sub encoding { 'utf-8' }
     'The TrackBack has been approved.' => 'TrackBack wurde freigeschaltet.',
     'List &amp; Edit TrackBacks' => 'TrackBacks anzeigen &amp; bearbeiten',
     'Junked TrackBack' => 'Junk-TrackBacks',
+    'Status:' => 'Status:', # Translate - Previous (1)
     'View all TrackBacks with this status' => 'Alle TrackBacks mit diesem Status ansehen',
     'Source Site:' => 'Quelle:',
     'Search for other TrackBacks from this site' => 'Weitere TrackBacks von dieser Site suchen',
@@ -1629,21 +1607,19 @@ sub encoding { 'utf-8' }
     ## ./tmpl/cms/cfg_simple.tmpl
     'This screen allows you to control all settings specific to this weblog.' => 'Hier können alle Weblog-spezifischen Einstellungen vorgenommen werden.',
     'Publishing Paths' => 'System-Pfade',
-    'Enter the URL of your website. Do not include a filename (i.e. exclude index.html).' => 'Die URL dieses Weblogs. Geben Sie die Adresse ohne Dateinamen an (ohne z.B. index.html).',
-    'Site Root:' => 'Wurzelverzeichnis:',
-    'Enter the path where your index files will be published. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory.' => 'Das Wurzelverzeichnis dieses Blogs (Pfad zur Startseite). Verwenden Sie möglichst einen absoluten Pfad (der mit \'/\' beginnt). Sie können aber auch einen Pfad relativ zum Movable Type-Verzeichnis benennen.',
-    'You can configure the publishing model for this blog (static vs dynamic) on the ' => 'You can configure the publishing model for this blog (static vs dynamic) on the ', # Translate - New (14)
-    'Detailed Settings' => 'Detailed Settings', # Translate - New (2)
-    ' page.' => ' page.', # Translate - New (2)
-    'Choose to display a number of recent entries or entries from a recent number of days.' => 'Wählen Sie die Anzahl der Einträge oder die Anzahl der Tage, aus denen Einträge auf der Startseite angezeigt werden sollen.',
+    'Enter the URL of your website. Do not include a filename (i.e. exclude index.html).' => 'URL dieses Weblogs (ohne Dateinamen wie z.B. index.html)',
+    'Enter the path where your index files will be published. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory.' => 'Wurzelverzeichnis dieses Blogs (Verwenden Sie möglichst einen mit \'/\' beginnenden absoluten Pfad. Sie können aber auch einen Pfad relativ zum Movable Type-Verzeichnis angeben.)',
+    'You can configure the publishing model for this blog (static vs dynamic) on the ' => 'Ob dieses Blog dynamisch oder statisch publiziert werden soll, legen Sie in den ',
+    'Detailed Settings' => 'erweiterten Einstellungen',
+    ' page.' => ' fest.',
+    'Choose to display a number of recent entries or entries from a recent number of days.' => 'Anzahl der Einträge oder Anzahl der Tage, aus denen Einträge auf der Startseite angezeigt werden sollen',
     'Specify which types of commenters will be allowed to leave comments on this weblog.' => 'Legen Sie fest, wer Kommentare schreiben darf',
     'If you want to require visitors to sign in before leaving a comment, set up authentication with the free TypeKey service.' => 'Wenn Sie möchen, daß sich Kommentatoren registrieren müssen, verwenden sie den kostenlosen TypeKey-Service.',
     'Specify what should happen to comments after submission. Unpublished comments are held for moderation and junk comments do not appear.' => 'Bestimmen Sie, was mit neuen Kommentaren geschehen sollen. Noch nicht veröffentlichte Kommentare werden zur Moderation zurückgehalten. Junk-Kommentare werden ausgefiltert.',
-    'Accept TrackBacks from people who link to your weblog.' => 'TrackBacks von Autoren akzeptieren, die Ihr Weblog verlinkt haben.',
-    'License' => 'Lizens',
+    'Accept TrackBacks from people who link to your weblog.' => 'TrackBacks von Autoren akzeptieren, die Ihr Weblog verlinkt haben',
 
     ## ./tmpl/cms/list_blog.tmpl
-    'System Shortcuts' => 'System-Shortcuts',
+    'System Shortcuts' => 'Schnellzugriff',
     'Concise listing of weblogs.' => 'Übersicht über alle Weblogs',
     'Create, manage, set permissions.' => 'Berechtigungen verwalten',
     'What\'s installed, access to more.' => 'Plugins verwalten',
@@ -1653,26 +1629,24 @@ sub encoding { 'utf-8' }
     'Multi-weblog TrackBack listing.' => 'TrackBacks aller Weblogs',
     'System-wide configuration.' => 'Globale Systemkonfiguration',
     'Find everything. Replace anything.' => 'Über alle Weblogs',
-    'What\'s been happening.' => 'Was ist wann passiert?',
+    'What\'s been happening.' => 'Was wann passiert ist',
     'Status &amp; Info' => 'Status &amp; Info', # Translate - Previous (3)
     'Server status and information.' => 'Serverstatus und Information.',
     'Set Up A QuickPost Bookmarklet' => 'QuickPost-Bookmarklet einrichten',
     'Enable one-click publishing.' => 'One-Click-Publishing einrichten',
     'My Weblogs' => 'Meine Weblogs',
     'Important:' => 'Wichtig:',
-    'Configure this weblog.' => 'Dieses Weblog konfigurieren.',
+    'Configure this weblog.' => 'Dieses Weblog konfigurieren',
     'Create a new entry' => 'Eintrag schreiben',
     'Create a new entry on this weblog' => 'Einen Eintrag schreiben',
     'Sort By:' => 'Sortieren nach:',
-    'Weblog Name' => 'Weblog-Name',
     'Creation Order' => 'Anlagedatum',
     'Last Updated' => 'Zuletzt aktualisiert',
-    'Order:' => 'Reihenfolge:',
+    'Order:' => 'Reihen- folge:',
     'You currently have no blogs.' => 'Keine Blogs vorhanden',
     'Please see your system administrator for access.' => 'Bitte wenden Sie sich an Ihren Administrator.',
 
     ## ./tmpl/cms/commenter_table.tmpl
-    'Identity' => 'ID',
     'Most Recent Comment' => 'Neuester Kommentar',
     'Only show trusted commenters' => 'Nur vertrauenswürdige Kommentatoren anzeigen',
     'Only show banned commenters' => 'Nur gesperrte Kommentatoren anzeigen',
@@ -1714,8 +1688,6 @@ sub encoding { 'utf-8' }
     'Text' => 'Text', # Translate - Previous (1)
     'Output Filename' => 'Ausgabe-Dateiname',
     'Linked Filename' => 'Verlinkter Dateiname',
-    'Display Name' => 'Anzeigename',
-    'Date Range:' => 'Zeitspanne:',
     'From:' => 'Von:',
     'To:' => 'Bis:',
     'Replaced [_1] records successfully.' => '[_1] Wörter ersetzt.',
@@ -1746,7 +1718,7 @@ sub encoding { 'utf-8' }
     'Delete selected entries (x)' => 'Markierte Einträge löschen (x)',
 
     ## ./tmpl/cms/bm_entry.tmpl
-    'Select' => 'Auswählen',
+    'Select' => 'Auswählen...',
     'You must choose a weblog in which to post the new entry.' => 'Sie müssen einen Weblog auswählen, in dem der neue Eintrag veröffentlicht werden soll.',
     'Select a weblog for this post:' => 'Wählen Sie einen Weblog für diesen Eintrag:',
     'Send an outbound TrackBack:' => 'TrackBack (outbound) senden:',
@@ -1771,7 +1743,7 @@ sub encoding { 'utf-8' }
     'Select this option only if you need to publish your archives outside of your Site Root.' => 'Wählen Sie diese Option nur, wenn Sie Ihre Archive außerhalb des Site-Root-Verzeichnisses veröffentlichen müssen.',
     'Archive URL:' => 'Archiv-URL:',
     'Enter the URL of the archives section of your website.' => 'Geben Sie die URL der Archive Ihres Weblogs an.',
-    'Archive Root:' => 'Archiv-Root:',
+    'Archive Root' => 'Archiv-Root',
     'Enter the path where your archive files will be published.' => 'Geben Sie den Pfad zu Ihren Archivdateien an.',
     'Publishing Preferences' => 'Weitere Einstellungen',
     'Preferred Archive Type:' => 'Bevorzugter Archivierungstyp:',
@@ -1795,9 +1767,8 @@ sub encoding { 'utf-8' }
     'WEEKLY_ADV' => 'Wöchentlich',
     'MONTHLY_ADV' => 'Monatlich',
     'CATEGORY_ADV' => 'Kategorie',
-    'Template:' => 'Template:', # Translate - Previous (1)
-    'Archive Types' => 'Archivierungstypen',
     'Template' => 'Templates',
+    'Archive Types' => 'Archivierungstypen',
     'Archive File Path' => 'Archivdatei-Pfad',
     'Preferred' => 'Bevorzugt',
     'Custom...' => 'Angepasst...',
@@ -1810,8 +1781,6 @@ sub encoding { 'utf-8' }
     'Set Upload Path' => 'Ziel wählen',
     '(Optional)' => '(optional)',
     'Path:' => 'Ordner:',
-    'Site Root' => 'Site-Root',
-    'Archive Root' => 'Archiv-Root',
     'Upload' => 'Hochladen',
 
     ## ./tmpl/cms/footer.tmpl
@@ -1820,7 +1789,6 @@ sub encoding { 'utf-8' }
     'Your category changes and additions have been made.' => 'Kategorien geändert bzw. hinzugefügt.',
     'You have successfully deleted the selected categories.' => 'Ausgewählten Kategorien erfolgreich gelöscht.',
     'Create new top level category' => 'Neue Kategorie der obersten Ebene erstellen',
-    'Actions' => 'Aktionen',
     'Create Category' => 'Kategorie erstellen',
     'Collapse' => 'Reduzieren',
     'Expand' => 'Erweitern',
@@ -1843,13 +1811,13 @@ sub encoding { 'utf-8' }
     ## ./tmpl/wizard/mt-config.tmpl
 
     ## ./tmpl/wizard/packages.tmpl
-    'Step 1 of 3' => 'Step 1 of 3', # Translate - New (4)
+    'Step 1 of 3' => 'Schritt 1 von 3',
     'Requirements Check' => 'Überprüfung der Systemvoraussetzungen',
-    'One of the following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'One of the following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.', # Translate - New (47)
+    'One of the following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your weblog data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'Damit Movable Type eine Verbindung zur benötigten Datenbank aufbauen kann, ist eines der folgenden Perl-Pakete erforderlich. Bitte installieren Sie das für Ihre Datenbank benötigte Paket und klicken Sie dann auf \'Erneut versuchen\'.',
     'Missing Database Packages' => 'Nicht vorhandene Datenbank-Pakete',
-    'The following optional, feature-enhancing Perl modules could not be found. You may install them now and click \'Retry\' or simply continue without them.  They can be installed at any time if needed.' => 'The following optional, feature-enhancing Perl modules could not be found. You may install them now and click \'Retry\' or simply continue without them.  They can be installed at any time if needed.', # Translate - New (32)
+    'The following optional, feature-enhancing Perl modules could not be found. You may install them now and click \'Retry\' or simply continue without them.  They can be installed at any time if needed.' => 'Die folgenden  optionalen Pakete sind nicht installiert, ermöglichen aber die Nutzung zusätzlicher Funktionen. Wenn Sie möchten, installieren Sie die Pakete jetzt und klicken danach auf \'Erneut versuchen\', oder setzen Sie die Installation einfach fort. Sie können die Pakete auch zu jedem beliebigen Zeitpunkt nachinstallieren.',
     'Missing Optional Packages' => 'Nicht vorhandene optionale Pakete',
-    'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.', # Translate - New (27)
+    'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'Die folgenden Pakete sind nicht vorhanden, zur Ausführung von Movable Type aber zwingend erforderlich. Bitte installieren Sie sie und klicken dann auf \'Erneut versuchen\'.',
     'Missing Required Packages' => 'Nicht vorhandene erforderliche Pakete',
     'Minimal version requirement:' => 'Mindestens erforderliche Version:',
     'Installation instructions.' => 'Installationsanweisungen.',
@@ -1858,12 +1826,12 @@ sub encoding { 'utf-8' }
     'Retry' => 'Erneut versuchen',
 
     ## ./tmpl/wizard/optional.tmpl
-    'Step 3 of 3' => 'Step 3 of 3', # Translate - New (4)
+    'Step 3 of 3' => 'Schritt 3 von 3',
     'Mail Configuration' => 'Mailkonfiguration',
-    'You can configure you mail settings from here, or you can complete the configuration wizard by clicking \'Continue\'.' => 'Sie können hier Ihre Maileinstellungen vornehmen oder durch Klick auf \'Weiter\' den Konfigurationshelfer beenden.',
+    'You can configure you mail settings from here, or you can complete the configuration wizard by clicking \'Continue\'.' => 'Hier können Sie Ihre Einstellungen zum Versand von Email vornehmen und testen. \'Weiter\' schließt den Konfigurationshelfer ab.',
     'An error occurred while attempting to send mail: ' => 'Mailversand fehlgeschlagen: ',
     'MailTransfer' => 'MailTransfer', # Translate - Previous (1)
-    'Select One...' => 'Auswählen',
+    'Select One...' => 'Auswählen...',
     'SendMailPath' => 'SendMailPath', # Translate - Previous (1)
     'The physical file path for your sendmail.' => 'Pfad zu sendmail',
     'SMTP Server' => 'SMTP-Server',
@@ -1873,29 +1841,29 @@ sub encoding { 'utf-8' }
     'Send Test Email' => 'Test-Email verschicken',
 
     ## ./tmpl/wizard/complete.tmpl
-    'Congratulations! You\'ve successfully configured [_1] [_2].' => 'Herzlichen Glückwunsch! [_1] [_2]-Konfiguration erfolgreich.',
-    'This is a copy of your configuration settings.' => 'Dies ist eine Sicherung Ihrer Einstellungen.',
-    'We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'Konfigurationsdatei konnte nicht angelegt werden. Bitte prüfen Sie ob Schreibrechte für das Verzeichnis vorhanden sind und versuchen es erneut.',
-    'Install' => 'Installieren',
+    'Congratulations! You\'ve successfully configured [_1] [_2].' => 'Herzlichen Glückwunsch! Sie haben die Konfiguration der [_1] [_2] erfolgreich abgeschlossen',
+    'This is a copy of your configuration settings.' => 'Ihre Konfigurationsdatei enthält folgende Einträge:',
+    'We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'Die Konfigurationsdatei konnte nicht angelegt werden. Bitte überprüfen Sie, ob Schreibrechte für das Verzeichnis vorhanden sind und versuchen es erneut.',
+    'Install' => 'Movable Type Installieren',
 
     ## ./tmpl/wizard/header.tmpl
-    'Movable Type' => 'Movable Type', # Translate - New (2)
+    'Movable Type' => 'Movable Type', # Translate - Previous (2)
     'Movable Type Configuration Wizard' => 'Movable Type-Konfigurationshelfer',
 
     ## ./tmpl/wizard/start.tmpl
     'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type erfordert JavaScript. Bitte aktivieren Sie es in Ihren Browsereinstellungen und laden diese Seite dann neu.',
-    'Your Movable Type configuration file already exists. The Wizard cannot continue with this file present.' => 'Es ist bereits eine Movable Type-Konfigurationsdatei vorhanden. Entfernen Sie diese Datei um den Konfigurationshelfer ausführen zu können.',
-    'This wizard will help you configure the basic settings needed to run Movable Type.' => 'This wizard will help you configure the basic settings needed to run Movable Type.', # Translate - New (14)
-    'Static Web Path' => 'Static Web Path', # Translate - New (3)
-    'Due to your server\'s configuration it is not accessible in its current location and must be moved to a web-accessible location (e.g. into your web document root directory).' => 'Due to your server\'s configuration it is not accessible in its current location and must be moved to a web-accessible location (e.g. into your web document root directory).', # Translate - New (29)
-    'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'This directory has either been renamed or moved to a location outside of the Movable Type directory.', # Translate - New (17)
-    'Please specify the web-accessible URL to this directory below.' => 'Please specify the web-accessible URL to this directory below.', # Translate - New (9)
-    'Static web path URL' => 'Static web path URL', # Translate - New (4)
-    'This can be in the form of http://example.com/mt-static/ or simply /mt-static' => 'This can be in the form of http://example.com/mt-static/ or simply /mt-static', # Translate - New (14)
+    'Your Movable Type configuration file already exists. The Wizard cannot continue with this file present.' => 'Es ist bereits eine Konfigurationsdatei vorhanden. Wenn Sie den Konfigurationshelfer erneut ausführen möchten, entfernen Sie die Datei zuerst aus Ihrem Movable Type-Verzeichnis.',
+    'This wizard will help you configure the basic settings needed to run Movable Type.' => 'Der Movable Type-Konfigurationshelfer hilft Ihnen, die zur Installation von Movable Type erforderlichen Einstellungen vorzunehmen.',
+    'Static Web Path' => 'Statischer Pfad',
+    'Due to your server\'s configuration it is not accessible in its current location and must be moved to a web-accessible location (e.g. into your web document root directory).' => 'Bitte wählen Sie einen vom Internet aus erreichenbaren Ort wie z.B. das Web-Rootverzeichnis Ihres Servers.',
+    'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'Das Verzeichnis wurde entweder umbenannt oder an einen Ort außerhalb des Movable Type-Verzeichnisses verschoben.',
+    'Please specify the web-accessible URL to this directory below.' => 'Bitte geben Sie die Webadresse (URL) des Verzeichnisses an.',
+    'Static web path URL' => 'Statische Webadresse (URL)',
+    'This can be in the form of http://example.com/mt-static/ or simply /mt-static' => 'Das kann in absoluter (http://beispiel.de/mt-static/) oder relativer (/mt-static) Form geschehen.',
     'Begin' => 'Anfangen',
 
     ## ./tmpl/wizard/configure.tmpl
-    'Step 2 of 3' => 'Step 2 of 3', # Translate - New (4)
+    'Step 2 of 3' => 'Schritt 2 von 3',
     'Database Configuration' => 'Datenbankkonfiguration',
     'Your database configuration is complete. Click \'Continue\' below to configure your mail settings.' => 'Datenbankkonfiguration abgeschlossen. "Weiter" führt zur Mailkonfiguration.',
     'Please enter the parameters necessary for connecting to your database.If your database type is not listed in the dropdown below, you may be missing the Perl module necessary to connect to your database.  If this is the case, please check your installation and click <a href=' => 'Bitte geben Sie die Verbindungsdaten Ihrer Datenbank ein. Wenn Ihre Datenbank nicht im Dropdown-Menü erscheint, ist möglicherweise das zur Verwendung der Datenbank erforderliche Perl-Modul nicht installiert. In diesem Fall überprüfen Sie bitte Ihre Installation und klicken dann auf <a href=',
@@ -1905,11 +1873,11 @@ sub encoding { 'utf-8' }
     'The physical file path for your BerkeleyDB or SQLite database. ' => 'Pfad zu Ihrer BerkeleyDB- oder SQLite-Datenbank ',
     'A default location of \'./db\' will store the database file(s) underneath your Movable Type directory.' => 'Die Standardangabe \'./db\' legt Ihre Datenbank in einem Unterverzeichnis des Movable Type-Ordners an.',
     'Database Name' => 'Datenbankname',
-    'The name of your SQL database (this database must already exist).' => 'Name Ihrer SQL-Datenbank (die Datenbank muss bereits bestehen)',
-    'The username to login to your SQL database.' => 'Benutzername der SQL-Datenbank',
+    'The name of your SQL database (this database must already exist).' => 'Name Ihrer SQL-Datenbank (die Datenbank muss bereits existieren)',
+    'The username to login to your SQL database.' => 'Benutzername Ihrer SQL-Datenbank',
     'The password to login to your SQL database.' => 'Passwort Ihrer SQL-Datenbank',
     'Database Server' => 'Serveradresse',
-    'This is usually \'localhost\'.' => 'Meistens \'localhost\'.',
+    'This is usually \'localhost\'.' => 'Meistens \'localhost\'',
     'Database Port' => 'Port',
     'This can usually be left blank.' => 'Braucht normalerweise nicht angegeben zu werden',
     'Database Socket' => 'Socket',
@@ -1920,35 +1888,35 @@ sub encoding { 'utf-8' }
     ## ./tmpl/feeds/feed_chrome.tmpl
 
     ## ./tmpl/feeds/feed_comment.tmpl
-    'system' => 'system', # Translate - New (1)
-    'Blog' => 'Blog', # Translate - New (1)
-    'Untitled' => 'Untitled', # Translate - New (1)
+    'system' => 'System',
+    'Blog' => 'Blog', # Translate - Previous (1)
+    'Untitled' => 'Ohne Name',
     'Edit' => 'Bearbeiten',
-    'Unpublish' => 'Unpublish', # Translate - New (1)
-    'More like this' => 'More like this', # Translate - New (3)
-    'From this blog' => 'From this blog', # Translate - New (3)
-    'On this entry' => 'On this entry', # Translate - New (3)
-    'By commenter identity' => 'By commenter identity', # Translate - New (3)
-    'By commenter name' => 'By commenter name', # Translate - New (3)
-    'By commenter email' => 'By commenter email', # Translate - New (3)
-    'By commenter URL' => 'By commenter URL', # Translate - New (3)
-    'On this day' => 'On this day', # Translate - New (3)
+    'Unpublish' => 'Nicht mehr veröffentlichen',
+    'More like this' => 'Ähnliche Einträge',
+    'From this blog' => 'Aus diesem Blog',
+    'On this entry' => 'Zu diesem Eintrag',
+    'By commenter identity' => 'Nach Kommentatoren-Identität',
+    'By commenter name' => 'Nach Kommentatoren-Name',
+    'By commenter email' => 'Nach Kommentatoren-Email',
+    'By commenter URL' => 'Nach Kommentatoren-URL',
+    'On this day' => 'An diesem Tag',
 
     ## ./tmpl/feeds/error.tmpl
     'Movable Type Activity Log' => 'Movable Type Aktivitätsprotokoll',
     'Movable Type System Activity' => 'Movable Type Systemaktivität',
 
     ## ./tmpl/feeds/feed_entry.tmpl
-    'From this author' => 'From this author', # Translate - New (3)
+    'From this author' => 'Von diesem Autoren',
 
     ## ./tmpl/feeds/login.tmpl
     'This link is invalid. Please resubscribe to your activity feed.' => 'Dieser Link ist ungültig. Bitte abonnieren Sie Ihren Aktivitäts-Feed erneut.',
 
     ## ./tmpl/feeds/feed_ping.tmpl
-    'Source blog' => 'Source blog', # Translate - New (2)
-    'By source blog' => 'By source blog', # Translate - New (3)
-    'By source title' => 'By source title', # Translate - New (3)
-    'By source URL' => 'By source URL', # Translate - New (3)
+    'Source blog' => 'Quelle',
+    'By source blog' => 'Nach Quelle',
+    'By source title' => 'Nach Name der Quelle',
+    'By source URL' => 'By URL der Quelle',
 
     ## ./tmpl/feeds/feed_system.tmpl
 
@@ -1959,7 +1927,7 @@ sub encoding { 'utf-8' }
     'Approve this comment:' => 'Kommentar freischalten:',
     'A new comment has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'Auf Ihrem Blog [_1] wurde zu Eintag #[_2] ("[_3]") ein neuer Kommentar veröffentlicht.',
     'View this comment:' => 'Kommentar anzeigen:',
-    'Edit this comment:' => 'Kommentar bearbeiten:',
+    'Comments:' => 'Kommentar:',
 
     ## ./tmpl/email/notify-entry.tmpl
     '[_1] Update: [_2]' => '[_1] Update: [_2]', # Translate - Previous (4)
@@ -1975,9 +1943,6 @@ sub encoding { 'utf-8' }
     'A new TrackBack has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'Ein neues TrackBack wurde bei Ihrem Weblog [_1] registriert, zu Eintrag #[_2] ([_3]).',
     'A new TrackBack has been posted on your blog [_1], on category #[_2] ([_3]).' => 'Ein neues TrackBack wurde bei Ihrem Weblog [_1] registriert, zu Kategorie #[_2] ([_3]).',
     'View this TrackBack:' => 'TrackBack ansehen:',
-    'Edit this TrackBack:' => 'TrackBack bearbeiten:',
-    'Title:' => 'Überschrift:',
-    'Excerpt:' => 'Auszug:',
 
     ## ./tmpl/email/footer-email.tmpl
     'Powered by Movable Type' => 'Powered by Movable Type', # Translate - Previous (4)
@@ -1994,7 +1959,7 @@ sub encoding { 'utf-8' }
 
     ## Other phrases, with English translations.
     '_BLOG_CONFIG_MODE_DETAIL' => 'Detailmodus',
-    'The previous post in this blog was <a href="[_1]">[_2]</a>.' => 'The previous post in this blog was <a href="[_1]">[_2]</a>.', # Translate - New (12)
+    'The previous post in this blog was <a href="[_1]">[_2]</a>.' => 'Zuvor erschien in diesem Blog <a href="[_1]">[_2]</a>.',
     'RSS 1.0 Index' => 'RSS 1.0 Index', # Translate - Previous (3)
     '_USAGE_BOOKMARKLET_4' => 'Nachdem Sie das QuickPost-Lesezeichen installiert haben, können Sie jederzeit einen Eintrag veröffentlichen. Klicken Sie auf den QuickPost-Link und verwenden Sie das Popup-Fenster, um einen Eintrag zu schreiben und zu veröffentlichen.',
     'Remove Tags...' => 'Tags entfernen...',
@@ -2010,13 +1975,13 @@ sub encoding { 'utf-8' }
     '_USAGE_COMMENT' => 'Bearbeiten Sie den Kommentar. Speichern Sie die Änderungen, wenn Sie fertig sind. Um die Änderungen zu sehen, müssen Sie den Eintrag neu veröffentlichen.',
     '_SEARCH_SIDEBAR' => 'Suchen',
     '_SYSTEM_TEMPLATE_DYNAMIC_ERROR' => 'Wird verwendet, wenn es beim dynamischen Aufbau einer Seite zu einem Fehler kommt.',
-    'An error occurred processing [_1]. Check <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">here</a> for more detail and please try again.' => 'An error occurred processing [_1]. Check <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">here</a> for more detail and please try again.', # Translate - New (25)
+    'An error occurred processing [_1]. Check <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">here</a> for more detail and please try again.' => 'Fehler beim Einlesen von [_1]. Beachten Sie die <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">Hinweise des Feed Validators</a> und versuchen Sie es ggf. erneut.',
     'Date-Based Archive' => 'Datumsbasiertes Archiv',
     'Unban Commenter(s)' => 'Kommentatorsperre aufheben',
     'Individual Entry Archive' => 'Einzelarchive',
     'Daily' => 'Täglich',
     'Unpublish Entries' => 'Einträge nicht mehr veröffentlichen',
-    'Create a feed widget' => 'Create a feed widget', # Translate - New (4)
+    'Create a feed widget' => 'Feed Widget anlegen',
     '_USAGE_UPLOAD' => 'Laden Sie diese Datei in Ihren lokalen Site-Pfad <a href="javascript:alert(\'[_1]\')">(?)</a>. Optional können Sie die Datei in ein beliebiges Unterverzeichnis laden. Tragen Sie dazu den Pfad in das Formularfeld ein. Besteht das Verzeichnis noch nicht, wird es automatisch angelegt.',
     '_USAGE_REBUILD' => '<a href="#" onclick="doRebuild()">NEU VERÖFFENTLICHEN</a>, damit die Änderungen sichtbar werden.',
     'Blog Administrator' => 'Blog-Administrator',
@@ -2030,24 +1995,25 @@ sub encoding { 'utf-8' }
     'Entry Creation' => 'Neuer Eintrag',
     'Atom Index' => 'ATOM Index',
     '_USAGE_PLACEMENTS' => 'Verwenden Sie die untenstehenden Optionen, um die sekundären Kategorien zu bearbeiten, denen dieser Eintrag zugeordnet ist. Die linke Liste zeigt alle Kategorien an, denen der Eintrag noch nicht zugeordnet ist. Die rechte Liste zeigt die Kategorien an, denen der Eintrag bereits zugordnet ist.',
-    'Adds template tags to allow you to search for content from Google. You will need to configure this plugin using a <a href=\'http://www.google.com/apis/\'>license key.</a>' => 'Adds template tags to allow you to search for content from Google. You will need to configure this plugin using a <a href=\'http://www.google.com/apis/\'>license key.</a>', # Translate - New (31)
+    'Adds template tags to allow you to search for content from Google. You will need to configure this plugin using a <a href=\'http://www.google.com/apis/\'>license key.</a>' => 'Stellt für Google-basierte Blogsuchen erforderliche Tags zur Verfügung. Kostenloser <a href=\'http://www.google.com/apis/\'>API-Schlüssel</a> erforderlich.',
     'Add Tags...' => 'Tags hinzufügen...',
-    'This page contains a single entry from the blog posted on <strong>[_1]</strong>.' => 'This page contains a single entry from the blog posted on <strong>[_1]</strong>.', # Translate - New (14)
+    'This page contains a single entry from the blog posted on <strong>[_1]</strong>.' => 'Diese Seite enthält einen einzelnen am <strong>[_1]</strong> erschienenen Blogeintrag.',
     '_THROTTLED_COMMENT_EMAIL' => 'Ein Kommentator Ihres Weblogs [_1] wurde automatisch gesperrt. Der Kommentator hat mehr als die erlaubte Anzahl an Kommentaren in den letzten [_2] Sekunden veröffentlicht. Diese Sperre schützt Sie vor Spam-Skripts. Die gesperrte IP-Adresse ist [_3]. Wenn diese Sperrung ein Fehler war, können Sie die IP-Adresse wieder entsperren. Wählen Sie die IP-Adresse [_4] aus der IP-Sperrliste und löschen Sie die Adresse aus der Liste.',
     'MONTHLY_ADV' => 'Monatlich',
-    'It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or this MTInclude tag' => 'It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or this MTInclude tag', # Translate - New (18)
+    'It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or this MTInclude tag' => 'Um das Widget in Ihren Blog einzufügen benutzen Sie bitte den <a href="[_1]">Widget Manager</a> oder diesen MTInclude-Tag:',
     'Manage Tags' => 'Tags verwalten',
     '_SYSTEM_TEMPLATE_COMMENT_PREVIEW' => 'Wird verwendet, wenn einem Kommentator eine Kommentarvorschau anzeigt wird.',
     '_USAGE_BOOKMARKLET_3' => 'Um das QuickPost-Lesezeichen zu installieren, ziehen Sie den folgenden Link in die Lesezeichenleiste oder in das Lesezeichenmenü Ihres Browsers:',
     '_USAGE_PASSWORD_RESET' => 'Unten können Sie das Passwort dieses Benutzers zurücksetzen. Dazu wird ein zufällig erzeugtes neues Passwort an seine Adresse verschickt werden: [_1].',
     '_USAGE_LIST_POWER' => 'Eine Liste der Einträge in [_1] im Stapelverarbeitungsmodus. Im nachfolgenden Formular können Sie alle Werte für jeden angezeigten Eintrag ändern. Klicken Sie auf die Schaltfläche SPEICHERN, nachdem Sie die gewünschten Änderungen vorgenommen haben. Die standardmäßigen Steuerelemente für "Einträge auflisten &amp; bearbeiten" (Filter, Paging) arbeiten im Stapelverarbeitungsmodus, wie Sie es gewöhnt sind.',
-    'Or return to the <a href="[_1]">Main Menu</a> or <a href="[_2]">System Overview</a>.' => 'Or return to the <a href="[_1]">Main Menu</a> or <a href="[_2]">System Overview</a>.', # Translate - New (17)
+    'Or return to the <a href="[_1]">Main Menu</a> or <a href="[_2]">System Overview</a>.' => 'Oder zurück zur <a href="[_1]">Hauptseite</a> oder zu den <a href="[_2]">Systemeinstellungen</a>',
     '_ERROR_CONFIG_FILE' => 'Ihre Movable Type Konfigurationsdatei fehlt oder kann nicht gelesen werden. Bitte lesen Sie die Movable Type-Dokumention: <a href="#">Installation and Configuration</a>.',
     '_WARNING_PASSWORD_RESET_SINGLE' => 'Sie sind dabei, das Passwort von [_1] zurückzusetzen. Ein zufällig erzeugtes neues Passwort wird an seine Adresse [_2] verschickt werden.\n\nForsetzen?',
     '_USAGE_PING_LIST_BLOG' => 'Eine Liste aller TrackBack-Pings in [_1], die Sie filtern, verwalten und bearbeiten können.',
-    'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.', # Translate - New (48)
+    'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'Mit StyleCatchter können Sie spielend leicht neue Designvorlagen für Ihre Blogs finden und mit wenigen Klicks direkt aus dem Internet installieren. Mehr dazu auf der <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type Styles</a>-Seite.',
     'Monthly' => 'Monatliche',
-    'Tags to add to selected entries' => 'Tags to add to selected entries', # Translate - Previous (6)
+    'If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the <code>import</code> folder of your Movable Type directory.' => 'If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the <code>import</code> folder of your Movable Type directory.', # Translate - New (31)
+    'Tags to add to selected entries' => 'Zu gewählten Einträgen hinzuzufügende Tags',
     'Ban Commenter(s)' => 'Kommentatoren sperren',
     '_USAGE_VIEW_LOG' => 'Überprüfen Sie das <a href="[_1]">Aktivitätsprotokoll</a>, um den Fehler zu finden.',
     '_USAGE_BOOKMARKLET_1' => 'Wenn Sie QuickPost einrichten, können Sie einfach neue Einträge veröffentlichen, ohne direkt in Movable Type zu arbeiten.',
@@ -2055,23 +2021,27 @@ sub encoding { 'utf-8' }
     '_SYSTEM_TEMPLATE_SEARCH_TEMPLATE' => 'Wird bei der Suche im Blog angezeigt. # Translate - Testing (1) #k',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
     'INDIVIDUAL_ADV' => 'Einzeln',
+    'The above settings have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.' => 'The above settings have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.', # Translate - New (29)
     '_ERROR_CGI_PATH' => 'Ihre CGIPath-Konfiguration fehlt oder ist fehlerhaft. Bitte lesen Sie die Movable Type-Dokumention: <a href="#">Installation and Configuration</a>.',
     '_SYSTEM_TEMPLATE_COMMENTS' => 'Wird verwendet, wenn Kommentar-Popups eingesetzt werden (auslaufend).',
     '_USAGE_CATEGORIES' => 'Verwenden Sie Kategorien, um Einträge bestimmten Themen zuzuordnen oder Ihr Weblog zu ordnen. Sie können einen Eintrag einer Kategorie gleich beim Schreiben oder auch später zuordnen. Unterkategorien stehen zur Verfügung.',
     'Master Archive Index' => 'Master Archiv Index',
     'Weekly' => 'Wöchentlich',
     'Unpublish TrackBack(s)' => 'TrackBacks nicht mehr veröffentlichen',
-    'Many more can be found on the <a href="[_1]">main index page</a> or by looking through <a href="[_2]">the archives</a>.' => 'Many more can be found on the <a href="[_1]">main index page</a> or by looking through <a href="[_2]">the archives</a>.', # Translate - New (24)
+    'Many more can be found on the <a href="[_1]">main index page</a> or by looking through <a href="[_2]">the archives</a>.' => 'Viele weitere Einträge finden Sie auf der <a href="[_1]">Hauptseite</a> und im <a href="[_2]">Archiv</a>.',
     '_USAGE_PREFS' => 'Hier können Sie eine Anzahl von optionalen Einstellungen für Ihr Weblog, Ihre Archive und Kommentare, Ihre Feeds und für Benachrichtigungen vornehmen. Wenn Sie ein neues Weblog anlegen, werden diese Werte auf gängige Standardwerte gesetzt.',
     'WEEKLY_ADV' => 'Wöchentlich',
     '_SYSTEM_TEMPLATE_COMMENT_PENDING' => 'Wird verwendet, wenn ein Kommentar nicht sofort veröffentlicht wird.',
     'Unpublish Comment(s)' => 'Kommentare nicht mehr veröffentlichen',
-    'The next post in this blog is <a href="[_1]">[_2]</a>.' => 'The next post in this blog is <a href="[_1]">[_2]</a>.', # Translate - New (12)
+    'The next post in this blog is <a href="[_1]">[_2]</a>.' => 'Danach erschien <a href="[_1]">[_2]</a>.',
     '_USAGE_ENTRY_LIST_OVERVIEW' => 'Eine Liste aller Einträge in allen Weblogs, die Sie filtern, verwalten und bearbeiten können.',
+    'Please enter the parameters necessary for connecting to your database.If your database type is not listed in the dropdown below, you may be missing the Perl module necessary to connect to your database.  If this is the case, please check your installation and click <a href="?__mode=configure">here</a> to re-test your installation.' => 'Please enter the parameters necessary for connecting to your database.If your database type is not listed in the dropdown below, you may be missing the Perl module necessary to connect to your database.  If this is the case, please check your installation and click <a href="?__mode=configure">here</a> to re-test your installation.', # Translate - New (55)
+    'Drag and drop the widgets you want into the <strong>Installed</strong> column.' => 'Drag and drop the widgets you want into the <strong>Installed</strong> column.', # Translate - New (13)
     'Manage Categories' => 'Kategorien verwalten',
     '_USAGE_ARCHIVING_2' => 'Sie können jedes Archivtemplate in Ihren Template-Einstellungen konfigurieren.',
     'UTC+11' => 'UTC+11 (East Australian Daylight Savings Time)',
     'View Activity Log For This Weblog' => 'Protokoll ansehen',
+    'Refresh Template(s)' => 'Refresh Template(s)', # Translate - New (3)
     '_USAGE_NOTIFICATIONS' => 'Eine Liste der Personen, die benachrichtigt werden, wenn Sie einen neuen Eintrag veröffentlichen. Um eine neue Person hinzuzufügen, geben Sie einfach die Email-Adresse ein. Das URL-Feld ist optional.',
     '_USAGE_COMMENTERS_LIST' => 'Eine Liste der authentifizierten Kommentatoren bei [_1]. Die Kommentatoren können Sie unten bearbeiten.',
     '_ERROR_DATABASE_CONNECTION' => 'Ihre Datenbankkonfiguration ist fehlerhaft. Bitte lesen Sie die Movable Type-Dokumention: <a href="#">Installation and Configuration</a>.',
@@ -2083,6 +2053,7 @@ sub encoding { 'utf-8' }
     'Configure Weblog' => 'Weblog einrichten',
     'Select a Design using StyleCatcher' => 'Design per StyleCatcher aussuchen',
     '_USAGE_NEW_AUTHOR' => 'Hier können Sie einen neuen Autoren anlegen und einem oder mehreren Weblogs zuordnen.',
+    'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides.' => 'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides.', # Translate - New (31)
     '_USAGE_FORGOT_PASSWORD_1' => 'Sie haben ein neues Movable Type-Passwort angefordert. Es wurde automatisch ein neues Passwort erzeugt. Es lautet:',
     '_USAGE_COMMENTS_LIST_OVERVIEW' => 'Eine Liste aller Kommentare in allen Weblogs, die Sie filtern, verwalten und bearbeiten können.',
     '_SYSTEM_TEMPLATE_POPUP_IMAGE' => 'Wird verwendet, wenn auf ein Popup-Bild geklickt wird.',
@@ -2092,15 +2063,16 @@ sub encoding { 'utf-8' }
     'Publish Entries' => 'Einträge veröffentlichen',
     '_USAGE_PING_LIST_OVERVIEW' => 'Eine Liste aller TrackBack-Pings in allen Weblogs, die Sie filtern, verwalten und bearbeiten können.',
     'AUTO DETECT' => 'Auto-detect',
+    '<em><strong>Please Note:</strong> The Movable Type export format is not comprehensive and is not suitable for creating full-fidelity backups. Please see the Movable Type manual for full details.</em>' => '<em><strong>Please Note:</strong> The Movable Type export format is not comprehensive and is not suitable for creating full-fidelity backups. Please see the Movable Type manual for full details.</em>', # Translate - New (32)
     'Install <a href=\'http://greasemonkey.mozdev.org/\'>GreaseMonkey</a>' => 'Install <a href=\'http://greasemonkey.mozdev.org/\'>GreaseMonkey</a>', # Translate - New (9)
     '_USAGE_PLUGINS' => 'Eine Liste aller Plugins, die derzeit im System registriert sind.',
     '_USAGE_PERMISSIONS_2' => 'Um einen anderen Autoren zu bearbeiten, wählen Sie den entsprechenden Autoren aus dem Menü aus.',
     'Untrust Commenter(s)' => 'Kommentatoren nicht mehr vertrauen',
     '_USAGE_PROFILE' => 'Hier bearbeiten Sie Ihr Autorenprofil. Wenn Sie Ihren Benutzernamen und Ihr Passwort ändern, werden die Login-Informationen sofort aktualisiert und Sie müssen sich nicht erneut anmelden.',
-    'Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]">edit</a> to customize its display.' => 'Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]">edit</a> to customize its display.', # Translate - New (25)
+    'Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]">edit</a> to customize its display.' => 'Herzlichen Glückwunsch! Das Widget <strong>[_1]</strong> wurde erfolgreich angelegt. Sie können seine Anzeigeoptionen weiter <a href="[_2]">anpassen</a>.',
     'Category' => 'Kategorie',
     '_USAGE_ENTRYPREFS' => 'Die Feldkonfiguration legt fest, welche Felder in Ihrer Eingabemaske für neue Einträge erscheinen. Sie könnnen die vordefinierten Einstellungen verwenden (einfach oder erweitert) oder die Felder frei auswählen.',
-    'To download more plugins, check out the <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.' => 'To download more plugins, check out the <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.', # Translate - New (20)
+    'To download more plugins, check out the <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.' => 'Weitere Plugins finden Sie im <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.',
     'Stylesheet' => 'Stylesheet', # Translate - Previous (1)
     'RSD' => 'RSD', # Translate - Previous (1)
     '_USAGE_ARCHIVE_MAPS' => 'Diese Funktion erlaubt es Ihnen, Archiv-Templates mit den verschiedene Archivtypen zu verknüpfen. So können Sie z.B. zwei unterschiedliche Ansichten Ihrer monatlichen Archive erzeugen, einen Listen- und eine Kalenderansicht.',
@@ -2113,6 +2085,7 @@ sub encoding { 'utf-8' }
     '_external_link_target' => '_top',
     '_AUTO' => '1',
     'Add/Manage Categories' => 'Kategorien hinzufügen/verwalten',
+    'Recover Password(s)' => 'Recover Password(s)', # Translate - New (3)
     '_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/sitede/">Movable Type <$MTVersion$></a>',
     '_USAGE_ARCHIVING_1' => 'Wählen Sie die Archivtypen aus, die Sie für Ihr Weblog verwenden möchten. Sie können für jeden Archivtypen optional mehrere Archivtemplates verwenden.',
     '_USAGE_PERMISSIONS_4' => 'Jedes Weblog kann mehrere Autoren haben. So können jedem Weblog Autoren hinzufügen. Legen Sie einen neuen Autoren an und vergeben Sie dann die benötigten Rechte.',
@@ -2121,6 +2094,7 @@ sub encoding { 'utf-8' }
     '_USAGE_IMPORT' => 'Mit dem Mechanismus zum Importieren von Einträgen können Sie Einträge aus einem anderen Weblog-System importieren. Das Handbuch enthält ausführliche Anweisungen zum Importieren.',
     'Main Index' => 'Hauptindex',
     '_USAGE_ENTRY_LIST_BLOG' => 'Eine Liste aller Einträge in [_1], die Sie filtern, verwalten und bearbeiten können.',
+    '<p>You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it\'s own theme paths, it will use these settings directly. If a blog has it\'s own theme paths, then the theme will be copied to that location when applied to that weblog. The paths defined here must physically exist and be writable by the webserver.</p>' => '<p>You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it\'s own theme paths, it will use these settings directly. If a blog has it\'s own theme paths, then the theme will be copied to that location when applied to that weblog. The paths defined here must physically exist and be writable by the webserver.</p>', # Translate - New (72)
     '_USAGE_EXPORT_3' => 'Durch Klicken auf den nachfolgenden Link werden alle aktuellen Weblog-Einträge exportiert. In der Regel ist das Übertragen der Einträge ein einmaliger Vorgang. Sie können den Vorgang aber jederzeit wiederholen.',
     'Send Notifications' => 'Benachrichtigungen versenden',
     '_SYSTEM_TEMPLATE_COMMENT_ERROR' => 'Wird bei der Kommentarvalidierung verwendet.',
@@ -2140,7 +2114,7 @@ sub encoding { 'utf-8' }
     'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI und DBD::mysql sind erforderlich, wenn Sie eine MySQL-Datenbank einsetzen möchten.',
     'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI und DBD::Pg sind erforderlich, wenn Sie das PostgreSQL-Datenbank-Backend einsetzen möchten.',
     'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'DBI und DBD::SQLite sind erforderlich, wenn Sie eine SQLite-Datenbank einsetzen möchten.',
-    'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'DBI and DBD::SQLite2 sind erforderlich, wenn Sie eine SQLite 2.x-Datenbank einsetzen möchten.',
+    'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'DBI und DBD::SQLite2 sind erforderlich, wenn Sie eine SQLite 2.x-Datenbank einsetzen möchten.',
     'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in mt.cfg.' => 'HTML::Entities ist zur Codierung einiger Sonderzeichen erforderlich. Diese Funktion kann jedoch mit der Option NoHTMLEntities in mt.cfg deaktiviert werden.',
     'LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'LWP::UserAgent ist optional und nur erforderlich, wenn Sie das TrackBack-System, den weblogs.com-Ping oder den "Kürzlich aktualisiert"-Ping von MT einsetzen möchten.',
     'SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.' => 'SOAP::Lite ist optional und nur erforderlich, wenn Sie die XML-RPC Server-Implementierung von MT einsetzen möchten',
@@ -2150,9 +2124,9 @@ sub encoding { 'utf-8' }
     'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSA ist optional. Durch die Installation wird der Anmeldevorgang für die Kommentarregistrierung beschleunigt.',
     'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64 ist für die Aktivierung der Kommentarregistrierung erforderlich.',
     'XML::Atom is required in order to use the Atom API.' => 'XML::Atom ist für den Einsatz der Atom-API erforderlich.',
-    'Data Storage' => 'Datenbank',
-    'Required' => 'erforderlichen',
-    'Optional' => 'optionalen',
+    'Data Storage' => 'Datenbank-',
+    'Required' => 'erforderlichen ',
+    'Optional' => 'optionalen ',
 
     ## ./extras/examples/plugins/mirror/lib/Mirror.pm
 
@@ -2198,7 +2172,7 @@ sub encoding { 'utf-8' }
     ## ./plugins/GoogleSearch/lib/GoogleSearch/L10N/en_us.pm
 
     ## ./plugins/StyleCatcher/lib/StyleCatcher.pm
-    'StyleCatcher must first be configured system-wide before it can be used.' => 'StyleCatcher must first be configured system-wide before it can be used.', # Translate - New (11)
+    'StyleCatcher must first be configured system-wide before it can be used.' => 'StyleCatcher muss erst global konfiguriert werden, bevor es benutzt werden kann:',
     'Configure plugin' => 'Plugin konfigurieren',
     'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Konnte den Ordner [_1] nicht anlegen. Stellen Sie sicher, daß der Webserver Schreibrechte auf dem \'themes\'-Ordner hat.',
     'Successfully applied new theme selection.' => 'Neue Themenauswahl erfolgreich angewendet.',
@@ -2219,9 +2193,9 @@ sub encoding { 'utf-8' }
     ## ./plugins/WidgetManager/lib/WidgetManager/App.pm
     'Loading template \'[_1]\' failed: [_2]' => 'Laden des Templates \'[_1]\' fehlgeschlagen: [_2]',
     'Permission denied.' => 'Keine Berechtigung.',
-    'Moving [_1] to list of installed modules' => 'Moving [_1] to list of installed modules', # Translate - New (7)
+    'Moving [_1] to list of installed modules' => '[_1] auf die Liste der installierten Module verschoben',
     'Error opening file \'[_1]\': [_2]' => 'Fehler beim Öffnen der Datei \'[_1]\': [_2]',
-    'First Widget Manager' => 'Erster Widget Manager',
+    'First Widget Manager' => 'Erste Widgetgruppe',
 
     ## ./plugins/WidgetManager/lib/WidgetManager/L10N/es.pm
 
@@ -2229,17 +2203,19 @@ sub encoding { 'utf-8' }
 
     ## ./plugins/WidgetManager/lib/WidgetManager/L10N/ja.pm
 
+    ## ./plugins/WidgetManager/lib/WidgetManager/L10N/de.pm
+
     ## ./plugins/WidgetManager/lib/WidgetManager/L10N/en_us.pm
 
     ## ./plugins/WidgetManager/lib/WidgetManager/L10N/fr.pm
 
     ## ./mt-static/mt.js
     'You did not select any [_1] to delete.' => 'Sie haben keine(n) [_1] zum Löschen gewählt.',
-    'Are you sure you want to delete this [_1]?' => 'Are you sure you want to delete this [_1]?', # Translate - New (9)
-    'Are you sure you want to delete the [_1] selected [_2]?' => 'Are you sure you want to delete the [_1] selected [_2]?', # Translate - New (11)
-    'to delete' => 'zum Löschen',
-    'You did not select any [_1] [_2].' => 'Sie haben keine [_1] [_2] gewählt.',
-    'You must select an action.' => 'Sie müssen eine Aktion wählen.',
+    'Are you sure you want to delete this [_1]?' => 'Diese [_1] wirklich löschen?',
+    'Are you sure you want to delete the [_1] selected [_2]?' => 'Die [_1] ausgewählten [_2] wirklich löschen?',
+    'to delete' => 'zu Löschen',
+    'You did not select any [_1] [_2].' => 'Sie haben keine [_1] zu [_2] gewählt',
+    'You must select an action.' => 'Sie müssen eine Aktion wählen',
     'to mark as junk' => 'zum Junk markieren',
     'to remove "junk" status' => 'zum "Junk"-Status zurücksetzen',
     'Enter email address:' => 'Email-Adresse eingeben:',
@@ -2280,7 +2256,7 @@ sub encoding { 'utf-8' }
     'Building date-based archive \'[_1]\' failed: [_2]' => 'Datumsbasiertes Archiv \'[_1]\' erzeugen fehlgeschlagen: [_2]',
     'You did not set your Local Site Path' => 'Kein Local Site Path angegeben',
     'Template \'[_1]\' does not have an Output File.' => 'Template \'[_1]\' hat keine Output-Datei.',
-    'An error occurred while rebuilding to publish scheduled posts: [_1]' => 'Bei der Veröffentlichung terminierter Einträge ist ein Fehler aufgetreten: [_1]',
+    'An error occurred while rebuilding to publish scheduled posts: [_1]' => 'Bei der Veröffentlichung zeitgeplanter Einträge ist ein Fehler aufgetreten: [_1]',
 
     ## ./lib/MT/Session.pm
 
@@ -2289,7 +2265,7 @@ sub encoding { 'utf-8' }
     ## ./lib/MT/TaskMgr.pm
     'Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'Konnte Lock für Systemtask nicht setzen. Stellen Sie sicher, daß Schreibrechte für das TempDir ([_1]) vorhanden sind.',
     'Error during task \'[_1]\': [_2]' => 'Fehler während Task \'[_1]\': [_2]',
-    'Task Update' => 'Task-Update',
+    'Scheduled Tasks Update' => 'Scheduled Tasks Update', # Translate - New (3)
     'The following tasks were run:' => 'Folgende Tasks wurden ausgeführt:',
 
     ## ./lib/MT/IPBanList.pm
@@ -2314,18 +2290,18 @@ sub encoding { 'utf-8' }
     'Error saving record: [_1].' => 'Fehler beim Speichern eines Datensatzes: [_1].',
     'First Weblog' => 'Erstes Weblog',
     'Can\'t find default template list; where is \'default-templates.pl\'? Error: [_1]' => 'Kann Liste der Standardvorlagen nicht finden - wo befindet sich \'default-templates.pl\'? Fehler: [_1]',
-    'Creating new template: \'[_1]\'.' => 'Lege neues Template an: \'[_1]\'.',
-    'Mapping templates to blog archive types...' => 'Verknüpfung von Template mit Weblog-Archivierungstypen...',
+    'Creating new template: \'[_1]\'.' => 'Lege neues Template an: \'[_1]\'',
+    'Mapping templates to blog archive types...' => 'Verknüpfe Templates mit Archiven...',
     'Upgrading table for [_1]' => 'Upgrade Tabelle [_1]',
-    'Upgrading database from version [_1].' => 'Upgrade der Datenbank auf Version [_1].',
-    'Database has been upgraded to version [_1].' => 'Datenbank ist nun Version [_1].',
-    'Plugin \'[_1]\' upgraded successfully.' => 'Plugin \'[_1]\' upgraded successfully.', # Translate - New (4)
-    'Plugin \'[_1]\' installed successfully.' => 'Plugin \'[_1]\' installed successfully.', # Translate - New (4)
-    'Setting your permissions to administrator.' => 'Rechte auf Administrator gesetzt.',
-    'Creating configuration record.' => 'Lege Configuration-Eintrag an.',
-    'Creating template maps...' => 'Lege Template-Verknüpfung an...',
-    'Mapping template ID [_1] to [_2] ([_3]).' => 'Verknüpfe Template-ID [_1] mit [_2] ([_3]).',
-    'Mapping template ID [_1] to [_2].' => 'Verknüpfe Template-ID [_1] mit [_2].',
+    'Upgrading database from version [_1].' => 'Upgrade der Datenbank auf Version [_1]',
+    'Database has been upgraded to version [_1].' => 'Datenbank auf Movable Type-Version [_1] aktualisiert',
+    'Plugin \'[_1]\' upgraded successfully.' => 'Plugin \'[_1]\' erfolgreich aktualisiert.',
+    'Plugin \'[_1]\' installed successfully.' => 'Plugin \'[_1]\' erfolgreich installiert.',
+    'Setting your permissions to administrator.' => 'Setze Benutzerrechte auf \'Administrator\'...',
+    'Creating configuration record.' => 'Lege Konfiguration ab...',
+    'Creating template maps...' => 'Verknüpfe Templates...',
+    'Mapping template ID [_1] to [_2] ([_3]).' => 'Verknüpfe Template-ID [_1] mit [_2] ([_3])',
+    'Mapping template ID [_1] to [_2].' => 'Verknüpfe Template-ID [_1] mit [_2]',
 
     ## ./lib/MT/PluginData.pm
 
@@ -2502,11 +2478,11 @@ sub encoding { 'utf-8' }
 
     ## ./lib/MT/App.pm
     'Error loading [_1]: [_2]' => 'Fehler beim Laden von [_1]: [_2]',
-    'Invalid login attempt from user \'[_1]\'' => 'Ungültiger Login-Versuch von Benutzer \'[_1]\'',
-    'Invalid login attempt from user \'[_1]\' (ID: [_2])' => 'Ungültiger Login-Versuch von Benutzer  \'[_1]\' (ID: [_2])',
-    'User \'[_1]\' (user #[_2]) logged in successfully' => 'Benutzer \'[_1]\' (ID: #[_2]) angemeldet',
+    'Failed login attempt by unknown user \'[_1]\'' => 'Failed login attempt by unknown user \'[_1]\'', # Translate - New (7)
+    'Failed login attempt with incorrect password by user \'[_1]\' (ID: [_2])' => 'Failed login attempt with incorrect password by user \'[_1]\' (ID: [_2])', # Translate - New (11)
+    'User \'[_1]\' (ID:[_2]) logged in successfully' => 'User \'[_1]\' (ID:[_2]) logged in successfully', # Translate - New (7)
     'Invalid login.' => 'Login ungültig.',
-    'User \'[_1]\' (user #[_2]) logged out' => 'Benutzer \'[_1]\' (ID: #[_2]) abgemeldet',
+    'User \'[_1]\' (ID:[_2]) logged out' => 'User \'[_1]\' (ID:[_2]) logged out', # Translate - New (6)
     'The file you uploaded is too large.' => 'Die hochgeladene Datei ist zu gross.',
     'Unknown action [_1]' => 'Unbekannte Aktion [_1]',
 
@@ -2531,8 +2507,8 @@ sub encoding { 'utf-8' }
     ## ./lib/MT/L10N/fr.pm
 
     ## ./lib/MT/ObjectDriver/DBM.pm
-    'Your DataSource directory (\'[_1]\') does not exist.' => 'Das DataSource-Verzeichnis (\'[_1]\') existiert nicht.',
-    'Your DataSource directory (\'[_1]\') is not writable.' => 'Das DataSource-Verzeichnis (\'[_1]\') ist nicht beschreibbar.',
+    'Your DataSource directory (\'[_1]\') does not exist.' => 'Das Datenbankverzeichnis (\'[_1]\') existiert nicht.',
+    'Your DataSource directory (\'[_1]\') is not writable.' => 'Das Datenbankverzeichnis (\'[_1]\') ist nicht beschreibbar.',
     'Tie \'[_1]\' failed: [_2]' => 'Verknüpfung \'[_1]\' failed: [_2]',
     'Failed to generate unique ID: [_1]' => 'Anlegen der individuellen Kennung fehlgeschlagen: [_1]',
     'Unlink of \'[_1]\' failed: [_2]' => 'Aufheben der Verknüpfung von \'[_1]\' fehlgeschlagen: [_2]',
@@ -2566,7 +2542,7 @@ sub encoding { 'utf-8' }
     'Error in file template: [_1]' => 'Fehler in Datei-Template: [_1]',
     'Can\'t find template \'[_1]\'' => 'Kann Vorlage \'[_1]\' nicht finden',
     'Can\'t find entry \'[_1]\'' => 'Kann Eintrag \'[_1]\' nicht finden',
-    '[_1] [_2]' => '[_1] [_2]', # Translate - New (3)
+    '[_1] [_2]' => '[_1] [_2]', # Translate - Previous (3)
     'You used a [_1] tag without any arguments.' => 'Sie haben einen [_1]-Tag ohne Argument verwendet.',
     'You have an error in your \'category\' attribute: [_1]' => 'Fehler im \'category\'-Attribut: [_1]',
     'You have an error in your \'tag\' attribute: [_1]' => 'Fehler im \'tag\'-Attribut: [_1]',
@@ -2643,13 +2619,13 @@ sub encoding { 'utf-8' }
     'Search: new comment search' => 'Suche nach neuen Kommentaren',
 
     ## ./lib/MT/App/Upgrader.pm
-    'The initial account name is required.' => 'Ursprünglicher Benutzername ist erforderlich.',
-    'You failed to validate your password.' => 'Passwort konnte nicht verifiziert werden.',
-    'You failed to supply a password.' => 'Kein Passwort angegeben.',
-    'The value you entered was not a valid email address' => 'Die Eingabe ist keine gültige Email-Adresse',
-    'Password recovery word/phrase is required.' => 'Password recovery word/phrase is required.', # Translate - New (6)
-    'User [_1] upgraded database to version [_2]' => 'Benutzer [_1] hat Upgrade der Datenbank auf Version [_2] durchgeführt',
-    'Invalid session.' => 'Ungültige Session.',
+    'The initial account name is required.' => 'Benutzername erforderlich',
+    'You failed to validate your password.' => 'Passwort und Wiederholung des Passworts stimmen nicht überein',
+    'You failed to supply a password.' => 'Passwort erforderlich',
+    'The value you entered was not a valid email address' => 'Email-Adresse ungültig',
+    'Password recovery word/phrase is required.' => 'Passwort-Erinnerungsfrage erforderlich',
+    'User \'[_1]\' upgraded database to version [_2]' => 'User \'[_1]\' upgraded database to version [_2]', # Translate - New (7)
+    'Invalid session.' => 'Ungültige Session',
     'No permissions. Please contact your administrator for upgrading Movable Type.' => 'Bitte kontaktieren Sie Ihren Administrator, um das Upgrade von Movable Type durchzuführen. Sie haben nicht die erforderlichen Rechte.',
 
     ## ./lib/MT/App/Trackback.pm
@@ -2663,8 +2639,8 @@ sub encoding { 'utf-8' }
     'Invalid URL \'[_1]\'' => 'Ungültige URL \'[_1]\'',
     'This TrackBack item is disabled.' => 'TrackBack hier nicht aktiv.',
     'This TrackBack item is protected by a passphrase.' => 'Dieser TrackBack-Eintrag ist passwortgeschützt.',
-    'TrackBack on "[_1]" from "[_2]".' => 'TrackBack on "[_1]" from "[_2]".', # Translate - New (5)
-    'TrackBack for category #[_1] \'[_2]\'.' => 'TrackBack for category #[_1] \'[_2]\'.', # Translate - New (5)
+    'TrackBack on "[_1]" from "[_2]".' => 'TrackBack zu "[_1]" von "[_2]".',
+    'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack on category \'[_1]\' (ID:[_2]).', # Translate - New (6)
     'Rebuild failed: [_1]' => 'Neuaufbau fehlgeschlagen: [_1]',
     'Can\'t create RSS feed \'[_1]\': ' => 'RSS-Feed kann nicht angelegt werden \'[_1]\': ',
     'New TrackBack Ping to Entry [_1] ([_2])' => 'Neuer TrackBack-Ping bei Eintrag [_1] ([_2])',
@@ -2684,7 +2660,7 @@ sub encoding { 'utf-8' }
     'Name and email address are required.' => 'Name und Email sind Pflichtfelder.',
     'Invalid email address \'[_1]\'' => 'Ungültige Email-Adresse \'[_1]\'',
     'Comment save failed with [_1]' => 'Speichern des Kommentars fehlgeschlagen: [_1]',
-    'Comment on \"[_1]\" by [_2].' => 'Comment on \"[_1]\" by [_2].', # Translate - New (5)
+    'Comment on "[_1]" by [_2].' => 'Comment on "[_1]" by [_2].', # Translate - New (5)
     'Commenter save failed with [_1]' => 'Speichern des Kommentators fehlgeschlagen: [_1]',
     'New Comment Posted to \'[_1]\'' => 'Neuer Kommentar bei \'[_1]\'',
     'The login could not be confirmed because of a database error ([_1])' => 'Anmeldung konnte aufgrund eines Datenbankfehlers nicht durchgeführt werden ([_1])',
@@ -2710,8 +2686,8 @@ sub encoding { 'utf-8' }
 
     ## ./lib/MT/App/Wizard.pm
     'Sendmail' => 'Sendmail', # Translate - Previous (1)
-    'Test email from Movable Type Configuration Wizard' => 'Test email from Movable Type Configuration Wizard', # Translate - New (7)
-    'This is the test email sent by your new installation of Movable Type.' => 'This is the test email sent by your new installation of Movable Type.', # Translate - New (13)
+    'Test email from Movable Type Configuration Wizard' => 'Testmail vom Movable Type-Konfigurationshelfer',
+    'This is the test email sent by your new installation of Movable Type.' => 'Diese Testmail wurde von Ihrer neuer Movable Type-Installation verschickt.',
 
     ## ./lib/MT/App/ActivityFeeds.pm
     'An error occurred while generating the activity feed: [_1].' => 'Fehler beim Erzeugen des Aktivitäts-Feeds aufgetreten: [_1].',
@@ -2730,14 +2706,15 @@ sub encoding { 'utf-8' }
     'No permissions' => 'Keine Berechtigung',
     'Invalid blog' => 'Ungültiges Blog',
     'Convert Line Breaks' => 'Zeilenumbrüche konvertieren',
-    'No birthplace, cannot recover password' => 'Geburtsort nicht genannt; Passwort kann nicht versendet werden',
     'Invalid author_id' => 'Ungültige Autoren-ID',
-    'Invalid author name \'[_1]\' in password recovery attempt' => 'Benutzername \'[_1]\' ungültig',
-    'Author name or birthplace is incorrect.' => 'Der Benutzername oder der Geburtsort ist nicht korrekt.',
-    'Author has not set birthplace; cannot recover password' => 'Geburtsort nicht angegeben; Passwort kann nicht versendet werden',
-    'Invalid attempt to recover password (used birthplace \'[_1]\')' => 'Ungültiger Versuch, das Passwort anzufordern (Geburtsort \'[_1]\')',
-    'Author does not have email address' => 'Autor hat keine Email-Adressse',
-    'Password was reset for author \'[_1]\' (user #[_2]). Password was sent to the following address: [_3]' => 'Passwort des Benutzers \'[_1]\' (Benutzer #[_2]) wurde zurückgesetzt und an folgende Adresse verschickt: [_3]',
+    'Invalid username \'[_1]\' in password recovery attempt' => 'Invalid username \'[_1]\' in password recovery attempt', # Translate - New (7)
+    'Username or password recovery phrase is incorrect.' => 'Username or password recovery phrase is incorrect.', # Translate - New (7)
+    'Password recovery for user \'[_1]\' failed due to lack of recovery phrase specified in profile.' => 'Password recovery for user \'[_1]\' failed due to lack of recovery phrase specified in profile.', # Translate - New (15)
+    'No password recovery phrase set in user profile. Please see your system administrator for password recovery.' => 'No password recovery phrase set in user profile. Please see your system administrator for password recovery.', # Translate - New (16)
+    'Invalid attempt to recover password (used recovery phrase \'[_1]\')' => 'Invalid attempt to recover password (used recovery phrase \'[_1]\')', # Translate - New (9)
+    'Password recovery for user \'[_1]\' failed due to lack of email specified in profile.' => 'Password recovery for user \'[_1]\' failed due to lack of email specified in profile.', # Translate - New (14)
+    'No email specified in user profile.  Please see your system administrator for password recovery.' => 'No email specified in user profile.  Please see your system administrator for password recovery.', # Translate - New (14)
+    'Password was reset for user \'[_1]\' (ID:[_2]) and sent to address: [_3]' => 'Password was reset for user \'[_1]\' (ID:[_2]) and sent to address: [_3]', # Translate - New (13)
     'Error sending mail ([_1]); please fix the problem, then ' => 'Mailversand fehlgeschlagen([_1]); bitte beheben Sie das Problem, dann',
     'Invalid type' => 'Ungültiger Typ',
     'No such tag' => 'Kein solcher Tag',
@@ -2748,8 +2725,8 @@ sub encoding { 'utf-8' }
     'All Feedback' => 'Jedes Feedback',
     'log records' => 'Log-Einträge',
     'System Activity Feed' => 'System-Aktivitätsfeed',
-    'Application log for blog \'[_1]\' reset by \'[_2]\' (user #[_3])' => 'Protokoll von Weblog \'[_1]\' zurückgesetzt von \'[_2]\' (Benutzer #[_3])',
-    'Application log reset by \'[_1]\' (user #[_2])' => 'Protokoll zurückgesetzt von \'[_1]\' (Benutzer #[_2])',
+    'Activity log for blog \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Activity log for blog \'[_1]\' (ID:[_2]) reset by \'[_3]\'', # Translate - New (10)
+    'Activity log reset by \'[_1]\'' => 'Activity log reset by \'[_1]\'', # Translate - New (5)
     'Import/Export' => 'Import/Export', # Translate - Previous (2)
     'Invalid blog id [_1].' => 'Ungültige Blog-ID [_1].',
     'Invalid parameter' => 'Ungültiges Parameter',
@@ -2761,7 +2738,7 @@ sub encoding { 'utf-8' }
     'New Weblog' => 'Neues Weblog',
     'Author requires username' => 'Autor erfordert Benutzername',
     'Author requires password' => 'Autor erfodert Benutzername',
-    'Author requires password recovery word/phrase' => 'Author requires password recovery word/phrase', # Translate - New (6)
+    'Author requires password recovery word/phrase' => 'Author erfordert Passwort-Erinnerungssatz',
     'Email Address is required for password recovery' => 'Email-Adresse bei Passwort-Anfrage erforderlich',
     'The e-mail address you entered is already on the Notification List for this weblog.' => 'Diese Email-Adresse ist bereits in der Benachrichtigungsliste für dieses Weblog.',
     'You did not enter an IP address to ban.' => 'Keine IP-Adresse angegeben.',
@@ -2770,26 +2747,29 @@ sub encoding { 'utf-8' }
     'Site URL must be an absolute URL.' => 'Site-URL muß absolute URL sein.',
     'Archive URL must be an absolute URL.' => 'Archiv-URLs müssen absolut sein.',
     'The name \'[_1]\' is too long!' => 'Der Name \'[_1]\' ist zu lang!',
-    'Category \'[_1]\' created by \'[_2]\' (user #[_3])' => 'Kategorie \'[_1]\' angelegt von \'[_2]\' (Benutzer #[_3])',
+    'Category \'[_1]\' created by \'[_2]\'' => 'Category \'[_1]\' created by \'[_2]\'', # Translate - New (5)
     'The category label \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Konflikt um Kategoriename \'[_1]\': Kategorien und Unterkategorien mit der gleichen Wurzel müssen unterschiedliche Namen haben.',
     'Saving permissions failed: [_1]' => 'Speichern von Rechten fehlgeschlagen: [_1]',
     'Can\'t find default template list; where is ' => 'Kann Standardtemplates nicht finden, wo ist',
     'Populating blog with default templates failed: [_1]' => 'Standard-Templates konnten nicht geladen werden: [_1]',
     'Setting up mappings failed: [_1]' => 'Anlegen der Verknüpfung fehlgeschlagen: [_1]',
-    'Weblog \'[_1]\' created by \'[_2]\' (user #[_3])' => 'Weblog \'[_1]\' angelegt von \'[_2]\' (Benutzer #[_3])',
-    'Author \'[_1]\' created by \'[_2]\' (user #[_3])' => 'Benutzer \'[_1]\' angelegt von \'[_2]\' (Benutzer #[_3])',
-    'Template \'[_1]\' created by \'[_2]\' (user #[_3])' => 'Template \'[_1]\' angelegt von \'[_2]\' (Benutzer #[_3])',
+    'Weblog \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Weblog \'[_1]\' (ID:[_2]) created by \'[_3]\'', # Translate - New (7)
+    'User \'[_1]\' (ID:[_2]) created by \'[_2]\'' => 'User \'[_1]\' (ID:[_2]) created by \'[_2]\'', # Translate - New (7)
+    'Template \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Template \'[_1]\' (ID:[_2]) created by \'[_3]\'', # Translate - New (7)
     'You cannot delete your own author record.' => 'Sie können nicht Ihr eigenes Benutzerkonto löschen.',
     'You have no permission to delete the author [_1].' => 'Keine Rechte zum Löschen von Autor [_1].',
-    'Weblog \'[_1]\' deleted by \'[_2]\' (user #[_3])' => 'Weblog \'[_1]\' gelöscht von \'[_2]\' (Benutzer #[_3])',
-    'Notification \'[_1]\' (#[_2]) deleted by \'[_3]\' (user #[_4])' => 'Benachrichtigung \'[_1]\' (#[_2]) von \'[_3]\' (Benutzer #[_4]) gelöscht',
-    'Author \'[_1]\' (#[_2]) deleted by \'[_3]\' (user #[_4])' => 'Benutzer \'[_1]\' (#[_2]) von \'[_3]\' (Benutzer #[_4]) gelöscht',
-    'Category \'[_1]\' (category #[_2]) deleted by \'[_3]\' (user #[_4])' => 'Kategorie \'[_1]\' (Kategorie #[_2]) von \'[_3]\' (Benutzer #[_4]) gelöscht',
-    'Comment \'[_1]\' (#[_2]) deleted by \'[_3]\' (user #[_4]) from entry \'[_5]\' (entry #[_6])' => 'Kommentar \'[_1]\' (#[_2]) von \'[_3]\' (Benutzer #[_4]) aus Eintrag \'[_5]\' (Eintrag #[_6]) gelöscht',
-    'Entry \'[_1]\' (entry #[_2]) deleted by \'[_3]\' (user #[_4])' => 'Eintrag \'[_1]\' (Eintrag #[_2]) von\'[_3]\' (Benutzer #[_4]) gelöscht',
-    'Ping \'[_1]\' (ping #[_2]) deleted by \'[_3]\' (user #[_4])' => 'Ping \'[_1]\' (Ping #[_2]) von \'[_3]\' (Benutzer #[_4]) gelöscht',
-    'Template \'[_1]\' (#[_2]) deleted by \'[_3]\' (user #[_4])' => 'Template \'[_1]\' (#[_2]) von \'[_3]\' (Benutzer #[_4]) gelöscht',
-    'Tags \'[_1]\' (tags #[_2]) deleted by \'[_3]\' (user #[_4])' => 'Tags \'[_1]\' (Tags #[_2]) von \'[_3]\' (Benutzer #[_4]) gelöscht',
+    'Weblog \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Weblog \'[_1]\' (ID:[_2]) deleted by \'[_3]\'', # Translate - New (7)
+    'Subscriber \'[_1]\' (ID:[_2]) deleted from notification list by \'[_3]\'' => 'Subscriber \'[_1]\' (ID:[_2]) deleted from notification list by \'[_3]\'', # Translate - New (10)
+    'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'', # Translate - New (7)
+    'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'', # Translate - New (7)
+    'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'', # Translate - New (11)
+    'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'', # Translate - New (7)
+    '(Unlabeled category)' => '(Unlabeled category)', # Translate - New (3)
+    'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => 'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'', # Translate - New (11)
+    '(Untitled entry)' => '(Untitled entry)', # Translate - New (3)
+    'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'', # Translate - New (11)
+    'Template \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Template \'[_1]\' (ID:[_2]) deleted by \'[_3]\'', # Translate - New (7)
+    'Tag \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Tag \'[_1]\' (ID:[_2]) deleted by \'[_3]\'', # Translate - New (7)
     'Passwords do not match.' => 'Passwörter stimmen nicht überein.',
     'Failed to verify current password.' => 'Kann Passwort nicht überprüfen.',
     'An author by that name already exists.' => 'Ein Autor mit diesem Benutzernamen besteht bereits.',
@@ -2801,6 +2781,7 @@ sub encoding { 'utf-8' }
     'Can\'t delete that way' => 'Kann so nicht gelöscht werden',
     'Your login session has expired.' => 'Ihre Login-Session ist abgelaufen.',
     'You can\'t delete that category because it has sub-categories. Move or delete the sub-categories first if you want to delete this one.' => 'Solange die Kategorie Unterkategorien hat, können Sie die Kategorie nicht löschen.',
+    'System templates can not be deleted.' => 'System templates can not be deleted.', # Translate - New (6)
     'Unknown object type [_1]' => 'Unbekannter Objekttyp [_1]',
     'Loading object driver [_1] failed: [_2]' => 'Laden des Objekttreibers [_1] fehlgeschlagen: [_2]',
     'Reading \'[_1]\' failed: [_2]' => 'Einlesen von \'[_1]\' fehlgeschlagen: [_2]',
@@ -2808,10 +2789,10 @@ sub encoding { 'utf-8' }
     'Error writing to \'[_1]\': [_2]' => 'Fehler beim Schreiben auf \'[_1]\': [_2]',
     'Invalid basename \'[_1]\'' => 'Ungültiger Basename \'[_1]\'',
     'No such commenter [_1].' => 'Kein Kommentator [_1].',
-    'User \'[_1]\' (#[_2]) trusted commenter \'[_3]\' (#[_4]).' => 'Benutzer \'[_1]\' (#[_2]) hat Kommentator \'[_3]\' (#[_4]) das Vertrauen ausgesprochen.',
-    'User \'[_1]\' (#[_2]) banned commenter \'[_3]\' (#[_4]).' => 'Benutzer \'[_1]\' (#[_2]) hat Kommentator \'[_3]\' (#[_4]) gesperrt.',
-    'User \'[_1]\' (#[_2]) unbanned commenter \'[_3]\' (#[_4]).' => 'Benutzer \'[_1]\' (#[_2]) hat Kommentator \'[_3]\' (#[_4]) entsperrt.',
-    'User \'[_1]\' (#[_2]) untrusted commenter \'[_3]\' (#[_4]).' => 'Benutzer \'[_1]\' (#[_2]) hat Kommentator \'[_3]\' (#[_4]) das Vertrauen entzogen.',
+    'User \'[_1]\' trusted commenter \'[_2]\'.' => 'User \'[_1]\' trusted commenter \'[_2]\'.', # Translate - New (5)
+    'User \'[_1]\' banned commenter \'[_2]\'.' => 'User \'[_1]\' banned commenter \'[_2]\'.', # Translate - New (5)
+    'User \'[_1]\' unbanned commenter \'[_2]\'.' => 'User \'[_1]\' unbanned commenter \'[_2]\'.', # Translate - New (5)
+    'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'User \'[_1]\' untrusted commenter \'[_2]\'.', # Translate - New (5)
     'Need a status to update entries' => 'Statusangabe erforderlich',
     'Need entries to update status' => 'Einträge erforderlich',
     'One of the entries ([_1]) did not actually exist' => 'Einer der Einträge ([_1]) ist nicht vorhanden',
@@ -2834,28 +2815,28 @@ sub encoding { 'utf-8' }
     'Removing placement failed: [_1]' => 'Entfernen der Platzierung fehlgeschlagen: [_1]',
     'No such entry.' => 'Kein Eintrag.',
     'Your weblog has not been configured with a site path and URL. You cannot publish entries until these are defined.' => 'Sie haben noch keinen Site-Path und Site-URL konfiguriert. Sie können Einträge erst veröffentlichen, wenn Sie diese Einstellungen vorgenommen haben.',
-    'Entry "[_1]" added by user "[_2]"' => 'Entry "[_1]" added by user "[_2]"', # Translate - New (6)
+    'Entry \'[_1]\' (ID:[_2]) added by user \'[_3]\'' => 'Entry \'[_1]\' (ID:[_2]) added by user \'[_3]\'', # Translate - New (8)
     'The category must be given a name!' => 'Die Kategorie muss einen Namen haben!',
     'yyyy/mm/entry_basename' => 'jjjj/mm/eintrag_basename',
-    'yyyy/mm/entry-basename' => 'yyyy/mm/eintrag_basename',
+    'yyyy/mm/entry-basename' => 'yyyy/mm/eintrag-basename',
     'yyyy/mm/entry_basename/' => 'jjjj/mm/eintrag_basename/',
-    'yyyy/mm/entry-basename/' => 'yyyy/mm/eintrag_basename/',
+    'yyyy/mm/entry-basename/' => 'yyyy/mm/eintrag-basename/',
     'yyyy/mm/dd/entry_basename' => 'jjjj/mm/tt/eintrag_basename',
-    'yyyy/mm/dd/entry-basename' => 'yyyy/mm/dd/eintrag_basename',
+    'yyyy/mm/dd/entry-basename' => 'yyyy/mm/dd/eintrag-basename',
     'yyyy/mm/dd/entry_basename/' => 'jjjj/mm/tt/eintrag_basename/',
-    'yyyy/mm/dd/entry-basename/' => 'yyyy/mm/dd/eintrag_basename/',
+    'yyyy/mm/dd/entry-basename/' => 'yyyy/mm/dd/eintrag-basename/',
     'category/sub_category/entry_basename' => 'kategorie/unterkategorie/eintrag_basename',
     'category/sub_category/entry_basename/' => 'kategorie/unterkategorie/eintrag_basename/',
     'category/sub-category/entry_basename' => 'kategorie/unterkategorie/eintrag_basename',
-    'category/sub-category/entry-basename' => 'category/sub-category/eintrag_basename',
+    'category/sub-category/entry-basename' => 'kategorie/unterkategorie/eintrag-basename',
     'category/sub-category/entry_basename/' => 'kategorie/unterkategorie/eintrag_basename/',
-    'category/sub-category/entry-basename/' => 'category/sub-category/eintrag_basename/',
+    'category/sub-category/entry-basename/' => 'kategorie/unterkategorie/eintrag-basename/',
     'primary_category/entry_basename' => 'hauptkategorie/eintrag_basename',
     'primary_category/entry_basename/' => 'hauptkategorie/eintrag_basename/',
     'primary-category/entry_basename' => 'hauptkategorie/eintrag_basename',
-    'primary-category/entry-basename' => 'primary-category/eintrag_basename',
+    'primary-category/entry-basename' => 'hauptkategorie/eintrag-basename',
     'primary-category/entry_basename/' => 'hauptkategorie/eintrag_basename/',
-    'primary-category/entry-basename/' => 'primary-category/eintrag_basename/',
+    'primary-category/entry-basename/' => 'hauptkategorie/eintrag-basename/',
     'yyyy/mm/' => 'jjjj/mm/',
     'yyyy_mm' => 'jjjj_mm',
     'yyyy/mm/dd/' => 'jjjj/mm/tt/',
@@ -3368,35 +3349,7 @@ sub encoding { 'utf-8' }
 
     ## ./extlib/SOAP/Lite.pm
 
-    ## ./extlib/SOAP/Utils.pm
-
     ## ./extlib/SOAP/Test.pm
-
-    ## ./extlib/SOAP/Client.pm
-
-    ## ./extlib/SOAP/Packager.pm
-
-    ## ./extlib/SOAP/Deserializer.pm
-
-    ## ./extlib/SOAP/Header.pm
-
-    ## ./extlib/SOAP/Serializer.pm
-
-    ## ./extlib/SOAP/SOM.pm
-
-    ## ./extlib/SOAP/Data.pm
-
-    ## ./extlib/SOAP/Server.pm
-
-    ## ./extlib/SOAP/Constants.pm
-
-    ## ./extlib/SOAP/Transport.pm
-
-    ## ./extlib/SOAP/Fault.pm
-
-    ## ./extlib/SOAP/Schema.pm
-
-    ## ./extlib/SOAP/Trace.pm
 
     ## ./extlib/SOAP/Transport/IO.pm
 
@@ -3453,9 +3406,25 @@ sub encoding { 'utf-8' }
     ## ./t/lib/Text/WikiFormat.pm
 
     ## ./t/lib/LWP/UserAgent/Local.pm
+
+    'Your mail configuration is complete. To finish with the configuration wizard, press \'Continue\' below.' => 'Your mail configuration is complete. To finish with the configuration wizard, press \'Continue\' below.', # Translate - New (14)
+    'User \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'User \'[_1]\' (ID:[_2]) created by \'[_3]\'', # Translate - New (7)
+    'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.' => 'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.', # Translate - New (24)
+    '<a href="[_1]">[_2]</a> is the next archive.' => '<a href="[_1]">[_2]</a> is the next archive.', # Translate - New (10)
+    'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.' => 'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.', # Translate - New (20)
+    '<a href="[_1]">[_2]</a> is the previous category.' => '<a href="[_1]">[_2]</a> is the previous category.', # Translate - New (10)
+    'Refreshing template \'[_1]\'.' => 'Refreshing template \'[_1]\'.', # Translate - New (3)
+    'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Skipping template \'[_1]\' since it appears to be a custom template.', # Translate - New (11)
+    '<a href="[_1]">[_2]</a> is the previous archive.' => '<a href="[_1]">[_2]</a> is the previous archive.', # Translate - New (10)
+    'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => 'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.', # Translate - New (19)
+    '<a href="[_1]">[_2]</a> is the next category.' => '<a href="[_1]">[_2]</a> is the next category.', # Translate - New (10)
+    'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete this author?' => 'Flabba an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete this author?', # Translate - New (49)
+    'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete the [_1] selected authors?' => 'Flubba an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete the [_1] selected authors?', # Translate - New (51)
+    'Can\'t duplicate the existing \'[_1]\' Widget Manager. Please go back and enter a unique name.' => 'Can\'t duplicate the existing \'[_1]\' Widget Manager. Please go back and enter a unique name.', # Translate - New (16)
+
 );
 
 
 1;
 
-## New words: 875
+## New words: 622
