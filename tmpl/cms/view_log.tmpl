@@ -4,7 +4,7 @@
 <!--
 function doResetLog(f) {
     if (confirm('<MT_TRANS phrase="Are you sure you want to reset activity log?" escape="singlequotes">')) {
-        window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=reset_log&amp;magic_token=<TMPL_VAR NAME=MAGIC_TOKEN>&amp;return_args=<TMPL_VAR NAME=RETURN_ARGS ESCAPE=URL>';
+        window.location='<TMPL_VAR NAME=SCRIPT_URL>?__mode=reset_log&amp;<TMPL_IF NAME=BLOG_ID>blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;</TMPL_IF>magic_token=<TMPL_VAR NAME=MAGIC_TOKEN>&amp;return_args=<TMPL_VAR NAME=RETURN_ARGS ESCAPE=URL>';
     }
 }
 
