@@ -19,8 +19,8 @@ foreach my $lang (qw(ja de nl fr es)) {
 
     my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }';
     $js =~ s/\\'/\t\t/g;
-    while ($js =~ m/trans\('([^']+?)'/g) {
-        my $str = $1;
+    while ($js =~ m/trans\('([^'|\\\']+?)'/g) {
+	my $str = $1;
         $str =~ s/\t\t/'/g;
         my $local = $lex->{$str} || $str;
         $str = encode_js($str);
