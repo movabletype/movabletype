@@ -3756,7 +3756,7 @@ sub CMSPostSave_author {
 
     if (!$original->id) {
         $app->log({
-            message => $app->translate("User '[_1]' (ID:[_2]) created by '[_2]'",
+            message => $app->translate("User '[_1]' (ID:[_2]) created by '[_3]'",
                                   $obj->name, $obj->id, $app->user->name),
             level => MT::Log::INFO(),
             class => 'author',
