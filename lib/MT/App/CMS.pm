@@ -1672,11 +1672,12 @@ sub reset_log {
     $app->validate_magic() or return;
     require MT::Log;
     if (my $blog_id = $app->param('blog_id')) {
+        my $blog = MT::Blog->load($blog_id, { cache_ok => 1 });
         my @obj = MT::Log->load({ blog_id => $blog_id });
         if (@obj) {
             $_->remove foreach @obj;
             $app->log({
-                message => $app->translate("Application log for blog '[_1]' reset by '[_2]' (user #[_3])", $blog_id, $author->name, $author->id),
+                message => $app->translate("Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'", $blog->name, $blog_id, $author->name),
                 level => MT::Log::INFO(),
                 class => 'system',
                 category => 'reset_log'
@@ -1685,7 +1686,7 @@ sub reset_log {
     } else {
         MT::Log->remove_all;
         $app->log({
-            message => $app->translate("Application log reset by '[_1]' (user #[_2])", $author->name, $author->id),
+            message => $app->translate("Activity log reset by '[_1]'", $author->name),
             level => MT::Log::INFO(),
             class => 'system',
             category => 'reset_log'
@@ -3554,8 +3555,7 @@ sub CMSPostSave_category {
 
     if (!$original->id) {
         $app->log({
-            message => $app->translate("Category '[_1]' created by '[_2]' (user #[_3])",
-                                  $obj->label, $app->user->name, $app->user->id),
+            message => $app->translate("Category '[_1]' created by '[_2]'", $obj->label, $app->user->name),
             level => MT::Log::INFO(),
             class => 'category',
             category => 'new',
@@ -3713,8 +3713,8 @@ sub CMSPostSave_blog {
         }
         require MT::Log;
         $app->log({
-            message => $app->translate("Weblog '[_1]' created by '[_2]' (user #[_3])",
-                                  $obj->name, $app->user->name, $app->user->id),
+            message => $app->translate("Weblog '[_1]' (ID:[_2]) created by '[_3]'",
+                                  $obj->name, $obj->id, $app->user->name),
             level => MT::Log::INFO(),
             class => 'blog',
             category => 'new',
@@ -3756,8 +3756,8 @@ sub CMSPostSave_author {
 
     if (!$original->id) {
         $app->log({
-            message => $app->translate("Author '[_1]' created by '[_2]' (user #[_3])",
-                                  $obj->name, $app->user->name, $app->user->id),
+            message => $app->translate("User '[_1]' (ID:[_2]) created by '[_2]'",
+                                  $obj->name, $obj->id, $app->user->name),
             level => MT::Log::INFO(),
             class => 'author',
             category => 'new',
@@ -3832,8 +3832,8 @@ sub CMSPostSave_template {
 
     if (!$original->id) {
         $app->log({
-            message => $app->translate("Template '[_1]' created by '[_2]' (user #[_3])",
-                                  $obj->name, $app->user->name, $app->user->id),
+            message => $app->translate("Template '[_1]' (ID:[_2]) created by '[_3]'",
+                                  $obj->name, $obj->id, $app->user->name),
             level => MT::Log::INFO(),
             class => 'template',
             category => 'new',
@@ -4114,7 +4114,7 @@ sub CMSPostDelete_template {
     my ($eh, $app, $obj) = @_;
 
     $app->log({
-        message => $app->translate("Template '[_1]' (#[_2]) deleted by '[_3]'", $obj->name, $obj->id, $app->user->name),
+        message => $app->translate("Template '[_1]' (ID:[_2]) deleted by '[_3]'", $obj->name, $obj->id, $app->user->name),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete'
