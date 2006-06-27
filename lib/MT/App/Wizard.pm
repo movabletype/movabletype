@@ -260,6 +260,7 @@ sub configure {
                     $db_file = File::Spec->catfile($app->{mt_dir}, $db_file);
                 }
                 $cfg->Database($db_file) if  $db_file;
+                $param{dbpath} = $db_file if  $db_file;
             } else {
                 $cfg->DataSource($param{dbpath}) if $param{dbpath};
             }
