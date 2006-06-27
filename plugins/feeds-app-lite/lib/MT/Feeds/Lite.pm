@@ -86,7 +86,6 @@ sub new {
     require XML::Elemental;
     require XML::Elemental::Util;
     my $p = XML::Elemental->parser;
-warn "x:e:p => " . ref($p);
     my $tree;
     eval { $tree = $p->parse_string($xml) };
     return $class->error($@) if $@;
