@@ -29,7 +29,7 @@ __PACKAGE__->install_properties({
         'id' => 'integer not null auto_increment',
         'message' => 'string(255)',
         'ip' => 'string(16)',
-        'blog_id' => 'integer not null',
+        'blog_id' => 'integer',
         'author_id' => 'integer',
         'level' => 'integer',
         'class' => 'string(255)',
@@ -44,6 +44,9 @@ __PACKAGE__->install_properties({
     },
     defaults => {
         blog_id => 0,
+        author_id => 0,
+        level => 1,
+        class => 'system',
     },
     child_of => 'MT::Blog',
     datasource => 'log',
@@ -232,6 +235,22 @@ MT::Log - Movable Type activity log record
     $log->save
         or die $log->errstr;
 
+Extended log example:
+
+    use MT::Log;
+    my $log = MT::Log->new;
+    $log->message("This is a debug message");
+    $log->level(MT::Log::DEBUG);
+    $log->save or die $log->errstr;
+
+You can also log directly with the MT package:
+
+    MT->log({
+        message => "A new entry has been posted.",
+        metadata => $entry->id,
+        class => 'MT::Log::Entry'
+    });
+
 =head1 DESCRIPTION
 
 An I<MT::Log> object represents a record in the Movable Type activity log.
@@ -242,6 +261,72 @@ As a subclass of I<MT::Object>, I<MT::Log> inherits all of the
 data-management and -storage methods from that class; thus you should look
 at the I<MT::Object> documentation for details about creating a new object,
 loading an existing object, saving an object, etc.
+
+=head1 SUBCLASSING
+
+I<MT::Log> may be subclassed for different types of log records. The MT
+Activity Feeds make use of this feature.
+
+    # MyCustomLog.pm
+
+    package MyCustomLog;
+
+    use base 'MT::Log';
+
+    sub description {
+        # returns html presentation of log message; used in activity
+        # log view and activity feeds...
+    }
+
+    1;
+
+If you do define your own subclass, you will want to register it when
+your plugin loads. The key/value pairs assigned to the plugin's "log_classes"
+element should be unique enough to not conflict with other plugins.
+
+    # Plugin file
+
+    MT->add_plugin({
+        name => "My custom plugin",
+        log_classes => { customlog => "MyCustomLog" }
+    });
+
+    1;
+
+=head1 METHODS
+
+=over 4
+
+=item * class_label
+
+Returns a string identifying the kind of log record the class is for.
+
+=item * description
+
+Provides an extended view of the log data; this may contain HTML.
+
+=item * metadata_object
+
+The base C<MT::Log> metadata_object method will return a MT data object that
+is related to this log object in the event that:
+
+=over 4
+
+=item 1. The metadata column is populated with a number.
+
+=item 2. The class column has an identifier that maps to a registered
+C<MT::Log> subclass.
+
+=item 3. The class identified for the log record has a name that follows this
+pattern: C<BASE::Log::OBJECTCLASS>.
+
+=back
+
+If these conditions are met, this method will attempt to load a record using
+the package name C<BASE::OBJECTCLASS> with the id given in the metadata
+column.
+
+=back
 
 =head1 DATA ACCESS METHODS
 
@@ -259,6 +344,54 @@ The numeric ID of the log record.
 
 The log entry.
 
+=item * blog_id
+
+For log messages that occurred within the context of a blog, the
+blog's id is stored in this column.
+
+=item * author_id
+
+For log messages that were created from the action of a user, their
+author id is recorded in this column.
+
+=item * class
+
+Optional. An identifier that relates to a Perl package name that is a
+valid I<MT::Log> descendant class (or relates to I<MT::Log> itself).
+
+=item * category
+
+Optional. A field to further categorize the message being logged. Being
+an indexed column, it is possible to filter on this column when selecting
+log records.
+
+=item * level
+
+Optional. A number that defines the level or priority of the log message. This
+column may be one of the following values (shown below are the package
+constants for each level followed by their numeric equivalent).
+
+=over 4
+
+=item * INFO / 1
+
+=item * WARNING / 2
+
+=item * ERROR / 4
+
+=item * SECURITY / 8
+
+=item * DEBUG / 16
+
+=back
+
+The default value for level is 1 (INFO).
+
+=item * metadata
+
+A storage field for additional information about this particular log
+message. Different log classes utilize this field in different ways.
+
 =item * ip
 
 The IP address related with the message; this is useful, for example, when
@@ -268,8 +401,7 @@ user who attempted to log in.
 =item * created_on
 
 The timestamp denoting when the log record was created, in the format
-C<YYYYMMDDHHMMSS>. Note that the timestamp has already been adjusted for the
-selected timezone.
+C<YYYYMMDDHHMMSS>. This timestamp is always in GMT.
 
 =item * modified_on
 
@@ -288,6 +420,12 @@ I<MT::Object> for more information.
 =over 4
 
 =item * created_on
+
+=item * blog_id
+
+=item * level
+
+=item * class
 
 =back
 
