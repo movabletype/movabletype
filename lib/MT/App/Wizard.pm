@@ -49,9 +49,6 @@ sub init {
     my %param = @_;
     $app->{mt_dir} = $param{Directory} if $param{Directory};
     eval { $app->SUPER::init(@_); };
-    # Call without a language parameter; this is a special syntax
-    # to let the app select the language based on HTTP_ACCEPT_LANGUAGE
-    my $lh = $app->set_language();
 
     use MT::ConfigMgr;
     $app->{cfg} = MT::ConfigMgr->new unless $app->{cfg};
