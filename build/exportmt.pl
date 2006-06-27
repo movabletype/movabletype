@@ -136,6 +136,7 @@ my $stamp = $o{'date!'}
     ? sprintf $o{'stamp=s'},
         (localtime)[5] + 1900, (localtime)[4] + 1, (localtime)[3,2,1,0]
     : '';
+$stamp .= '-ldap' if $o{'ldap'};
 # Override the stamp if a --name is given.
 if( $o{'name:s'} ) {
     $stamp = $stamp ? "$o{'name:s'}-$stamp" : $o{'name:s'};
@@ -144,6 +145,7 @@ if( $o{'name:s'} ) {
 elsif( $o{'append:s'} ) {
     $stamp = $stamp ? "$o{'append:s'}-$stamp" : $o{'append:s'};
 }
+#die "A: $o{'append:s'}, N: $o{'name:s'}, S: $stamp\n";
 
 $ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || $stamp;
 
@@ -353,9 +355,9 @@ CONFIG
                 # Now we re-link the stamped directory to the append string.
                 if( $o{'symlink!'} && ( !$current || $current ne $stage_dir ) ) {
                     # Drop current symlink.
-                    if( !$o{'debug'} && $o{'symlink!'} && -e $o{'append:s'} ) {
+                    if( !$o{'debug'} && $o{'symlink!'} ) {
                         unlink( $o{'append:s'} ) or
-                            die "Can't unlink $o{'append:s'}: $!"
+                            warn "Can't unlink $o{'append:s'}: $!"
                     }
                     # Drop previous directory.
                     if( !$o{'debug'} && $current && -d $current ) {
@@ -364,7 +366,7 @@ CONFIG
                     }
                     # Relink the staged directory.
                     symlink( "$stage_dir/", $o{'append:s'} ) or
-                        die "Can't symlink $stage_dir/ to $o{'append:s'}: $!"
+                        warn "Can't symlink $stage_dir/ to $o{'append:s'}: $!"
                         unless $o{'debug'};
                     verbose( "Symlink'd $stage_dir/ to $o{'append:s'}" );
                 }
@@ -374,7 +376,7 @@ CONFIG
                 $current = '';
                 $current = readlink( $build ) if -e $build;
 
-                if( $o{'symlink!'} && ( !$current || $current ne "$stage_dir$o{'arch=s'}" ) ) {
+                if( !$o{'ldap'} && $o{'symlink!'} && ( !$current || $current ne "$stage_dir$o{'arch=s'}" ) ) {
                     # Drop current symlink.
                     if( !$o{'debug'} && $build && -e $build ) {
                         unlink( $build ) or die "Can't remove $build: $!"
