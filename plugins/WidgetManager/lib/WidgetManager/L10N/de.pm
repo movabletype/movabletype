@@ -21,7 +21,7 @@ use vars qw( %Lexicon );
     'Subscribe to feed' => 'Feed abonnieren',
     'Recent comments' => 'Aktuelle Kommentare',
     'Tag cloud (sidebar)' => 'Tag Cloud (Seitenleiste)',
-    'Monthly archive dropdown' => 'Dropdown Monatsarchive',
+    'Monthly archive dropdown' => 'Monatsarchive (Dropdown)',
 );
 1;
 
