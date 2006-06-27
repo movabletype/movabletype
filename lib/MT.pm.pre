@@ -903,8 +903,9 @@ sub update_ping_list {
 {
     my $LH;
     sub set_language {
+        my $pkg = shift;
         require MT::L10N;
-        $LH = MT::L10N->get_handle($_[1]);
+        $LH = MT::L10N->get_handle(@_);
     }
 
     require MT::I18N;
