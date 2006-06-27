@@ -7,7 +7,6 @@
 package MT::ConfigMgr;
 use strict;
 
-use MT;
 use MT::ErrorHandler;
 @MT::ConfigMgr::ISA = qw( MT::ErrorHandler );
 
