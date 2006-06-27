@@ -11,7 +11,6 @@ use Data::Dumper;
 use vars qw( $DEBUG );
 use MT::App;
 @WidgetManager::App::ISA = qw( MT::App );
-use lib 'plugins/WidgetManager/lib';
 use WidgetManager::Util;
 
 sub init {
