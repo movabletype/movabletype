@@ -62,6 +62,8 @@ use vars qw( %Lexicon );
     'Search form' => '検索フォーム', 
     '<strong><$MTWidgetManager name="Name of the Widget Manager"$></strong>' => '<strong><$MTWidgetManager name="Widget Managerの名前"$></strong>',
     'Select a Month...' => '月を選択',
+    "Can't duplicate the existing '[_1]' Widget Manager. Please go back and enter a unique name." => 'Widget Manager [_1] が重複しています。戻って別の名前を付けてください。',
+    'You already have a widget manager named [_1]. Please use a unique name for this widget manager.' => '[_1] という名前のWidget Managerがすでに存在します。別の名前を付けてください。',
 );
 
 1;
