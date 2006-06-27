@@ -104,7 +104,7 @@ if (!$response->is_success) {
 # Append the repository unless an append string is already defined.
 $o{'append:s'} = lc( fileparse $o{'repo=s'} )
     unless defined $o{'append:s'};
-$o{'append:s'} .= '-ja' if $o{'lang=s'} eq 'ja';
+$o{'append:s'} .= "-$o{'lang=s'}" unless $o{'lang=s'} =~ /^en_/;
 
 ######################################################################
 ## COMMAND ALIAS OVERRIDE LOGIC:
@@ -145,7 +145,6 @@ if( $o{'name:s'} ) {
 elsif( $o{'append:s'} ) {
     $stamp = $stamp ? "$o{'append:s'}-$stamp" : $o{'append:s'};
 }
-#die "A: $o{'append:s'}, N: $o{'name:s'}, S: $stamp\n";
 
 $ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || $stamp;
 
