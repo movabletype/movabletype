@@ -140,7 +140,7 @@ sub save {
     # delete old set
     delete $modulesets->{$q->param('widgetmanager')};
     # Handle renaming: Delete the entry that has changed names.
-    delete $modulesets->{$q->param('old_name')} unless $q->param('old_name') eq $q->param('name');
+    delete $modulesets->{$q->param('old_name')}; # unless $q->param('old_name') eq $q->param('name');
     if(exists $modulesets->{$q->param('name')}) {
         return $app->error($app->plugin->translate(
             "Can't duplicate the existing '[_1]' Widget Manager. Please go back and enter a unique name.",

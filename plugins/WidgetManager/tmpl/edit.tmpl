@@ -16,13 +16,14 @@ var topZIndex = 10;
 
 function checkName() {
         widgetname = document.getElementById('name').value;
+        oldname = document.getElementById('old_name').value;
 
         var1 = "<TMPL_LOOP NAME=WIDGETMANAGERS><TMPL_VAR NAME=widgetmanager>,</TMPL_LOOP>"
         var2 = var1.split(",")
 
         for (var i=0; i < var2.length; i++) {
 
-            if (var2[i] == widgetname) {
+            if (var2[i] == widgetname && widgetname != oldname) {
                 alert('<MT_TRANS phrase="You already have a widget manager named [_1]. Please use a unique name for this widget manager." params="$name">'.replace(/\$name/, widgetname));
                 return false;
             } 
@@ -296,10 +297,10 @@ onload = initialize;
 
 <div id="edit-form">
 
-    <form onsubmit="return checkName(); this.modules.value = moduleListStr();" id="manager" name="manager" method="post" action="widget-manager.cgi">
+    <form onsubmit="this.modules.value = moduleListStr(); return checkName();" id="manager" name="manager" method="post" action="widget-manager.cgi">
       <input type="hidden" name="__mode" value="save" />
       <input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-      <input type="hidden" name="old_name" value="<TMPL_VAR NAME=NAME>" />
+      <input type="hidden" name="old_name" id="old_name" value="<TMPL_VAR NAME=NAME>" />
       <div id="widgetmanagers">
         <p>
           <MT_TRANS phrase="Widget Manager Name:"><br />
