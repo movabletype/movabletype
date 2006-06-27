@@ -74,15 +74,15 @@
         </TMPL_IF>
 
         <TMPL_IF NAME=LOG.COMMENT.AUTHOR>
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR ESCAPE=HTML>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="By commenter name">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR ESCAPE=URL>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="By commenter name">&lt;/a&gt;&lt;/li&gt;
         </TMPL_IF>
 
         <TMPL_IF NAME=LOG.COMMENT.EMAIL>
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.COMMENT.EMAIL ESCAPE=HTML>&amp;is_limited=1&amp;search_cols=email&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter email">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.COMMENT.EMAIL ESCAPE=URL>&amp;is_limited=1&amp;search_cols=email&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter email">&lt;/a&gt;&lt;/li&gt;
         </TMPL_IF>
 
         <TMPL_IF NAME=LOG.COMMENT.URL>
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;_type=comment&amp;search=<TMPL_VAR NAME=LOG.COMMENT.URL ESCAPE=HTML>&amp;is_limited=1&amp;search_cols=url&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter URL">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;_type=comment&amp;search=<TMPL_VAR NAME=LOG.COMMENT.URL ESCAPE=URL>&amp;is_limited=1&amp;search_cols=url&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter URL">&lt;/a&gt;&lt;/li&gt;
         </TMPL_IF>
 
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;from=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;to=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;show_all=1&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;

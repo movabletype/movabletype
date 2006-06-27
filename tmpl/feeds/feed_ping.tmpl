@@ -62,18 +62,17 @@
 
         &lt;ul&gt;
         &lt;strong&gt;<MT_TRANS phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
-
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>"&gt;<MT_TRANS phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.TBPING.ENTRY.ID>&amp;tab=pings"&gt;<MT_TRANS phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
+        <TMPL_IF NAME=LOG.TBPING.ENTRY.ID>&lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.TBPING.ENTRY.ID>&amp;tab=pings"&gt;<MT_TRANS phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;_type=ping&amp;search=<TMPL_VAR NAME=LOG.TBPING.BLOG_NAME ESCAPE=HTML>&amp;do_search=1"&gt;<MT_TRANS phrase="By source blog">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>&lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;_type=ping&amp;search=<TMPL_VAR NAME=LOG.TBPING.BLOG_NAME ESCAPE=URL>&amp;do_search=1"&gt;<MT_TRANS phrase="By source blog">&lt;/a&gt;&lt;/li&gt;
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.TBPING.TITLE ESCAPE=HTML>&amp;do_search=1"&gt;<MT_TRANS phrase="By source title">&lt;/a&gt;&lt;/li&gt;        
-        
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.TBPING.SOURCE_URL ESCAPE=HTML>&amp;do_search=1"&gt;<MT_TRANS phrase="By source URL">&lt;/a&gt;&lt;/li&gt;
-        
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;from=<TMPL_VAR NAME=LOG.TBPING.DATE>&amp;to=<TMPL_VAR NAME=LOG.TBPING.DATE>&amp;show_all=1&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.TBPING.TITLE ESCAPE=URL>&amp;do_search=1"&gt;<MT_TRANS phrase="By source title">&lt;/a&gt;&lt;/li&gt;
+
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.TBPING.SOURCE_URL ESCAPE=URL>&amp;do_search=1"&gt;<MT_TRANS phrase="By source URL">&lt;/a&gt;&lt;/li&gt;
+
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=ping&amp;blog_id=<TMPL_VAR NAME=LOG.TBPING.BLOG_ID>&amp;from=<TMPL_VAR NAME=LOG.TBPING.CREATED_ON>&amp;to=<TMPL_VAR NAME=LOG.TBPING.CREATED_ON>&amp;show_all=1&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
       
     &lt;/div&gt;

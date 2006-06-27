@@ -229,6 +229,12 @@ sub to_hash {
     $hash->{'tbping.excerpt_html'} = MT::Sanitize->sanitize($ping->excerpt || '');
     $hash->{'tbping.created_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->created_on) };
     $hash->{'tbping.modified_on_iso'} = sub { MT::Util::ts2iso($ping->blog_id, $ping->modified_on) };
+
+    if (my $parent = $ping->parent) {
+        my $parent_hash = $parent->to_hash;
+        $hash->{"tbping.$_"} = $parent_hash->{$_} foreach keys %$parent_hash;
+    }
+
     $hash;
 }
 
