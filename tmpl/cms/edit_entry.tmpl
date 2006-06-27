@@ -531,12 +531,12 @@ function doValidateNotifyRecips(f) {
 <script type="text/javascript">
 if (canFormat) {
     with (document) {
-        write('<a title="<MT_TRANS phrase="Bold">" href="#" onclick="return formatStr(document.entry_form.text, \'strong\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/bold.gif" alt="<MT_TRANS phrase="Bold">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Italic">" href="#" onclick="return formatStr(document.entry_form.text, \'em\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/italic.gif" alt="<MT_TRANS phrase="Italic">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Underline">" href="#" onclick="return formatStr(document.entry_form.text, \'u\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/underline.gif" alt="<MT_TRANS phrase="Underline">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Insert Link">" href="#" onclick="return insertLink(document.entry_form.text)"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/link.gif" alt="<MT_TRANS phrase="Insert Link">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Insert Email Link">" href="#" onclick="return insertLink(document.entry_form.text, 1)"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/email.gif" alt="<MT_TRANS phrase="Insert Email Link">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Quote">" href="#" onclick="return formatStr(document.entry_form.text, \'blockquote\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/quote.gif" alt="<MT_TRANS phrase="Quote">" width="26" height="19" /></a>');
+        write('<img title="<MT_TRANS phrase="Bold">" onclick="return formatStr(document.entry_form.text, \'strong\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/bold.gif" alt="<MT_TRANS phrase="Bold">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Italic">" onclick="return formatStr(document.entry_form.text, \'em\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/italic.gif" alt="<MT_TRANS phrase="Italic">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Underline">" onclick="return formatStr(document.entry_form.text, \'u\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/underline.gif" alt="<MT_TRANS phrase="Underline">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Insert Link">" onclick="return insertLink(document.entry_form.text)" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/link.gif" alt="<MT_TRANS phrase="Insert Link">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Insert Email Link">" onclick="return insertLink(document.entry_form.text, 1)" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/email.gif" alt="<MT_TRANS phrase="Insert Email Link">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Quote">" onclick="return formatStr(document.entry_form.text, \'blockquote\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/quote.gif" alt="<MT_TRANS phrase="Quote">" width="26" height="19" />');
     }
 }
 </script>
@@ -544,8 +544,8 @@ if (canFormat) {
 <div class="field-buttons-resizing">
 <script type="text/javascript">
 with (document) {
-    write('<a title="<MT_TRANS phrase="Bigger">" href="javascript:void(0)" onclick="return expandEditor( \'text\', \'expand\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-bigger.gif" alt="<MT_TRANS phrase="Bigger">" width="26" height="19" /></a>');
-    write('<a title="<MT_TRANS phrase="Smaller">" href="javascript:void(0)" onclick="return expandEditor( \'text\', \'contract\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-smaller.gif" alt="<MT_TRANS phrase="Smaller">" width="26" height="19" /></a>');
+    write('<img title="<MT_TRANS phrase="Bigger">" onclick="return expandEditor( \'text\', \'expand\' );" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-bigger.gif" alt="<MT_TRANS phrase="Bigger">" width="26" height="19" /></a>');
+    write('<img title="<MT_TRANS phrase="Smaller">" onclick="return expandEditor( \'text\', \'contract\' );" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-smaller.gif" alt="<MT_TRANS phrase="Smaller">" width="26" height="19" /></a>');
 }
 </script>
 </div>
@@ -569,12 +569,12 @@ with (document) {
 <script type="text/javascript">
 if (canFormat) {
     with (document) {
-        write('<a title="<MT_TRANS phrase="Bold">" href="#" onclick="return formatStr(document.entry_form.text_more, \'strong\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/bold.gif" alt="<MT_TRANS phrase="Bold">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Italic">" href="#" onclick="return formatStr(document.entry_form.text_more, \'em\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/italic.gif" alt="<MT_TRANS phrase="Italic">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Underline">" href="#" onclick="return formatStr(document.entry_form.text_more, \'u\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/underline.gif" alt="<MT_TRANS phrase="Underline">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Insert Link">" href="#" onclick="return insertLink(document.entry_form.text_more)"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/link.gif" alt="<MT_TRANS phrase="Insert Link">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Insert Email Link">" href="#" onclick="return insertLink(document.entry_form.text_more, 1)"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/email.gif" alt="<MT_TRANS phrase="Insert Email Link">" width="26" height="19" /></a>');
-        write('<a title="<MT_TRANS phrase="Quote">" href="#" onclick="return formatStr(document.entry_form.text_more, \'blockquote\')"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/quote.gif" alt="<MT_TRANS phrase="Quote">" width="26" height="19" /></a>');
+        write('<img title="<MT_TRANS phrase="Bold">" onclick="return formatStr(document.entry_form.text_more, \'strong\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/bold.gif" alt="<MT_TRANS phrase="Bold">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Italic">" onclick="return formatStr(document.entry_form.text_more, \'em\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/italic.gif" alt="<MT_TRANS phrase="Italic">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Underline">" onclick="return formatStr(document.entry_form.text_more, \'u\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/underline.gif" alt="<MT_TRANS phrase="Underline">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Insert Link">" onclick="return insertLink(document.entry_form.text_more)" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/link.gif" alt="<MT_TRANS phrase="Insert Link">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Insert Email Link">" onclick="return insertLink(document.entry_form.text_more, 1)" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/email.gif" alt="<MT_TRANS phrase="Insert Email Link">" width="26" height="19" />');
+        write('<img title="<MT_TRANS phrase="Quote">" onclick="return formatStr(document.entry_form.text_more, \'blockquote\')" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/quote.gif" alt="<MT_TRANS phrase="Quote">" width="26" height="19" />');
     }
 }
 </script>
@@ -582,8 +582,8 @@ if (canFormat) {
 <div class="field-buttons-resizing">
 <script type="text/javascript">
 with (document) {
-    write('<a title="<MT_TRANS phrase="Bigger">" href="javascript:void(0)" onclick="return expandEditor( \'text_more\', \'expand\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-bigger.gif" alt="<MT_TRANS phrase="Bigger">" width="26" height="19" /></a>');
-    write('<a title="<MT_TRANS phrase="Smaller">" href="javascript:void(0)" onclick="return expandEditor( \'text_more\', \'contract\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-smaller.gif" alt="<MT_TRANS phrase="Smaller">" width="26" height="19" /></a>');
+    write('<img title="<MT_TRANS phrase="Bigger">" onclick="return expandEditor( \'text_more\', \'expand\' );" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-bigger.gif" alt="<MT_TRANS phrase="Bigger">" width="26" height="19" /></a>');
+    write('<img title="<MT_TRANS phrase="Smaller">" onclick="return expandEditor( \'text_more\', \'contract\' );" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-smaller.gif" alt="<MT_TRANS phrase="Smaller">" width="26" height="19" /></a>');
 }
 </script>
 </div>
