@@ -22,11 +22,11 @@ local $| = 1;
 
 eval {
     require  MT::App::Wizard;
-    my $app = MT::App::Wizard->new
+    my $app = MT::App::Wizard->new(Directory => $MT_DIR)
         or die MT->errstr;
     $app->{warning_trace} = 0;
     local $SIG{__WARN__} = sub { $app->trace($_[0]) };
-    $app->{mt_dir} = $MT_DIR;
+print STDERR "$app->{mt_dir}\n";
     $app->run;
 };
 
