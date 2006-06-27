@@ -201,6 +201,14 @@ sub ping {
     my($title, $excerpt, $url, $blog_name, $enc) = map scalar $q->param($_),
                                              qw( title excerpt url blog_name charset);
 
+    unless ($enc) {
+        my $content_type = $q->content_type();
+        if ($content_type =~ m/;[ ]+charset=(.+)/i) {
+            $enc = lc $1;
+            $enc =~ s/^\s+|\s+$//gs;
+        }
+    }
+
     no_utf8($tb_id, $title, $excerpt, $url, $blog_name);
     # guess encoding as possible
     $enc = MT::I18N::guess_encoding($excerpt.$title.$blog_name) unless $enc;
