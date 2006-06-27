@@ -231,8 +231,8 @@ function init()
 <script type="text/javascript">
 <!--
 with (document) {
-    write('<a title="<MT_TRANS phrase="Bigger">" href="javascript:void(0)" onclick="return expandEditor( \'text\', \'expand\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-bigger.gif" alt="<MT_TRANS phrase="Bigger">" width="26" height="19" /></a>');
-    write('<a title="<MT_TRANS phrase="Smaller">" href="javascript:void(0)" onclick="return expandEditor( \'text\', \'contract\' );"><img src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-smaller.gif" alt="<MT_TRANS phrase="Smaller">" width="26" height="19" /></a>');
+    write('<img title="<MT_TRANS phrase="Bigger">" onclick="return expandEditor( \'text\', \'expand\' );" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-bigger.gif" alt="<MT_TRANS phrase="Bigger">" width="26" height="19" />');
+    write('<img title="<MT_TRANS phrase="Smaller">" onclick="return expandEditor( \'text\', \'contract\' );" src="<TMPL_VAR NAME=STATIC_URI>images/formatting-icons/field-smaller.gif" alt="<MT_TRANS phrase="Smaller">" width="26" height="19" />');
 }
 // -->
 </script>
