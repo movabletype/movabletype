@@ -1732,6 +1732,7 @@ sub export_log {
 
     my $file = '';
     $file = dirify($blog->name) . '-' if $blog;
+    $file = "Blog-" . $blog->id . '-' if $file eq '-';
     my @ts = gmtime(time);
     my $ts = sprintf "%04d-%02d-%02d-%02d-%02d-%02d",
         $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
