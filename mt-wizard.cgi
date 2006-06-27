@@ -26,7 +26,6 @@ eval {
         or die MT->errstr;
     $app->{warning_trace} = 0;
     local $SIG{__WARN__} = sub { $app->trace($_[0]) };
-print STDERR "$app->{mt_dir}\n";
     $app->run;
 };
 
