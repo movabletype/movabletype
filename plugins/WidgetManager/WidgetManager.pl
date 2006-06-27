@@ -13,7 +13,7 @@ use MT;
 use constant DEBUG => 0;
 
 use vars qw( $VERSION $plugin );
-$VERSION = '1.0 Beta 4';
+$VERSION = '1.0';
 
 unless ($plugin) {
     eval {
