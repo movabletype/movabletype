@@ -379,7 +379,16 @@ sub seed {
     my $app = shift;
     my %param = @_;
 
-    $param{config} = $app->param('config');
+    # input data unserialize to config
+    unless (keys(%param)) {
+        %param = $app->unserialize_config;
+        $param{config} = $app->param('config');
+    }else{
+        $param{config} = $app->serialize_config(%param);
+    }
+
+
+#    $param{config} = $app->param('config');
     $param{static_web_path} = $app->static_path;
     $param{cgi_path} = $app->cgipath;
 
