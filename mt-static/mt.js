@@ -41,7 +41,7 @@ function doRebuild (blogID, otherParams) {
 }
 
 function openManual (section, page) {
-    window.open(HelpBaseURI + 'g_contextsensitive_help/' + section + '/' + page + '.html' , '_blank', 
+    window.open(HelpBaseURI + 'help/' + section + '/' + page + '.html' , '_blank', 
 'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,toolbar=yes,location=yes,menubar=yes');
     return false;
 }
