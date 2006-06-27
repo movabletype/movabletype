@@ -23,7 +23,7 @@ function checkName() {
         for (var i=0; i < var2.length; i++) {
 
             if (var2[i] == widgetname) {
-                alert('<MT_TRANS phrase="You already have a widget manager named"> ' + widgetname + '. <MT_TRANS phrase="Please use a unique name for this widget manager.">');
+                alert('<MT_TRANS phrase="You already have a widget manager named [_1]. Please use a unique name for this widget manager." params="$name">'.replace(/\$name/, widgetname));
                 return false;
             } 
         }
