@@ -111,12 +111,12 @@ sub include {
       );
     my $lastn = $args->{lastn} ? ' lastn="' . $args->{lastn} . '"' : '';
     my $body  = <<BODY;
-<MTFeeds uri="$uri">
+<MTFeed uri="$uri">
 <h2><MTFeedTitle encode_html="1"></h2>
 <ul><MTFeedEntries$lastn>
 <li><a href="<MTFeedEntryLink>"><MTFeedEntryTitle encode_html="1"></a></li>
 </MTFeedEntries></ul>
-</MTFeeds>
+</MTFeed>
 BODY
     require MT::Template;
     my $t = MT::Template->new;
