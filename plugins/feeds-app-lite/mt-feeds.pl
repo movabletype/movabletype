@@ -2,7 +2,7 @@ package MT::FeedsLite;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '0.85';
+$VERSION = '1.0';
 
 my $plugin = MT::Plugin::FeedsLite->new;
 MT->add_plugin($plugin);

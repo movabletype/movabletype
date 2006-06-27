@@ -9,7 +9,7 @@ use MT::Feeds::Lite::CacheMgr;
 use MT::Util qw( encode_xml );
 
 use vars qw( $VERSION );
-$VERSION = '0.86';
+$VERSION = '1.0';
 
 my %Types = (
              'http://purl.org/rss/1.0/'               => 'rss',

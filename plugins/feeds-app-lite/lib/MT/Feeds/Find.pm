@@ -10,7 +10,7 @@ eval { require HTML::Parser };
 our $html_parser = !$@;
 
 use vars qw( $VERSION );
-$VERSION = '0.01';
+$VERSION = '1.0';
 
 use constant FEED_MIME_TYPES => [
                                  'application/x.atom+xml',

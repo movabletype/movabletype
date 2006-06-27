@@ -70,7 +70,9 @@ lang-it
 plugins/statwatch
 #plugins/StyleCatcher
 #plugins/WidgetManager
-#plugins/feeds-app-lite
+plugins/feeds-app-lite
+plugins/feeds-app-lite/tools
+plugins/feeds-app-lite/t
 ^_build
 ^build
 ^Build.*$
