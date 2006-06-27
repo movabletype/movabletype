@@ -399,6 +399,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Go' => 'Ga',
 
     ## ./plugins/WidgetManager/tmpl/edit.tmpl
+    'You already have a widget manager named [_1]. Please use a unique name for this widget manager.' => 'U heeft al een widget manager met de naam [_1]. Gelieve een unieke naam te gebruiken voor deze widget manager.',
     'Rearrange Items' => 'Items herschikken',
     'Widget Manager Name:' => 'Widget Manager naam:',
     'Build WidgetManager:' => 'Bouw WidgetManager:',
@@ -455,6 +456,8 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Tag cloud' => 'Tagcloud',
 
     ## ./lib/MT/default-templates.pl
+
+    ## ./lib/MT/L10N/nl_done.pl
 
     ## ./build/exportmt.pl
 
@@ -903,12 +906,12 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'This screen allows you to control default settings for new entries as well as your publicity and remote interface settings.' => 'Met dit scherm kunt u de standaardinstellingen voor nieuwe berichten bepalen, net als de instellingen voor publiciteit en de interface voor beheer op afstand.',
     'Default Settings for New Entries' => 'Standaard instellingen voor nieuwe berichten',
     'Post Status' => 'Publicatiestatus',
-    'Specifies the default Post Status when creating a new entry.' => 'Geeft de standaard publicatiestatus aan van een nieuw bericht.',
-    'Specifies the default Text Formatting option when creating a new entry.' => 'Geeft de standaard tekstopmaak aan voor het aanmaken van een nieuw bericht.',
+    'Specifies the default Post Status when creating a new entry.' => 'Bepaalt de standaard publicatiestatus van een nieuw bericht.',
+    'Specifies the default Text Formatting option when creating a new entry.' => 'Bepaalt de standaard tekstopmaak voor het aanmaken van een nieuw bericht.',
     'Specifies the default Accept Comments setting when creating a new entry.' => 'Bepaalt de standaardinstelling voor het aanvaarden van nieuwe reacties bij nieuwe berichten.',
     'Setting Ignored' => 'Instelling genegeerd',
     'Note: This option is currently ignored since comments are disabled either weblog or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat reacties over heel het systeem of weblog-specifiek zijn uitgeschakeld.',
-    'Specifies the default Accept TrackBacks setting when creating a new entry.' => 'Geeft de standaard instelling aan voor het aanvaarden van nieuwe trackbacks bij een nieuw bericht.',
+    'Specifies the default Accept TrackBacks setting when creating a new entry.' => 'Bepaalt de standaardinstelling voor het aanvaarden van nieuwe TrackBacks bij nieuwe berichten.',
     'Note: This option is currently ignored since TrackBacks are disabled either weblog or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat TrackBacks over heel het systeem of weblog-specifiek zijn uitgeschakeld.',
     'Basename Length:' => 'Lengte basisnaam:',
     'Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.' => 'Bepaalt de standaardlengte van automatisch gegenereerde basisnamen.  Het bereik van deze instelling is tussen 15 en 250.',
@@ -926,7 +929,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Enable External TrackBack Auto-Discovery' => 'Externe automatische TrackBack-ontdekking inschakelen',
     'Note: The above option is currently ignored since outbound pings are disabled system-wide.' => 'Opmerking: bovenstaande optie wordt momenteel genegeerd omdat uitgaande pings op systeemniveau uitgeschakeld zijn.',
     'Enable Internal TrackBack Auto-Discovery' => 'Interne automatische TrackBack-ontdekking inschakelen',
-    'If you turn on auto-discovery, when you write a new post, any external links will be extracted and the appropriate sites automatically sent TrackBacks.' => 'Als u automatisch ontdekken inschakelt, dan zullen telkens u een nieuw bericht schrijft alle externe links er worden uitgehaald om de passende sites TrackBacks te sturen.',
+    'If you turn on auto-discovery, when you write a new post, any external links will be extracted and the appropriate sites automatically sent TrackBacks.' => 'Als u automatisch ontdekken inschakelt dan zullen alle externe links in nieuwe berichten worden verwerkt om de sites die het ondersteunen automatisch een TrackBack te sturen.',
 
     ## ./tmpl/cms/template_actions.tmpl
     'template' => 'sjabloon',
@@ -1032,7 +1035,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'New Password:' => 'Nieuw wachtwoord:',
     'Initial Password' => 'Initiëel wachtwoord',
     'Select a password for the author.' => 'Kies een wachtwoord voor de auteur.',
-    'Password Confirm:' => 'Wachtwoordbevestiging:',
+    'Password Confirm:' => 'Bevestig wachtwoord:',
     'Repeat the password for confirmation.' => 'Herhaal het wachtwoord ter bevestiging.',
     'Password recovery word/phrase' => 'Woord/uitdrukking om wachtwoord terug te vinden',
     'This word or phrase will be required to recover your password if you forget it.' => 'Dit woord of deze uitdrukking zal gevraagd worden om uw wachtwoord terug te vinden als u het mocht vergeten.',
@@ -1516,7 +1519,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'If enabled, junk feedback will be automatically erased after a number of days.' => 'Indien ingeschakeld zal verworpen feedback automatisch worden verwijderd na een aantal dagen.',
     'Delete Junk After' => 'Verworpen items verwijderen na',
     'days' => 'dagen',
-    'When an item has been marked as junk for this many days, it is automatically deleted.' => 'Indien een item dit aantal dagen als verworpen gemarkeerd is gebleven wordt het automatisch verwijderd.',
+    'When an item has been marked as junk for this many days, it is automatically deleted.' => 'Indien een item langer dan dit aantal dagen als verworpen gemarkeerd is gebleven wordt het automatisch verwijderd.',
 
     ## ./tmpl/cms/comment_actions.tmpl
     'Publish selected comments (p)' => 'Geselecteerde reacties publiceren (p)',
@@ -1824,7 +1827,6 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'De onderstaande Perl modules zijn nodig voor de werking van Movable Type.  Eens uw systeem aan deze voorwaarden voldoet, klik op de \'Opnieuw\' knop om opnieuw te testen of deze modules geïnstalleerd zijn.',
     'Missing Required Packages' => 'Ontbrekende vereiste modules.',
     'Minimal version requirement:' => 'Minimale versie vereist:',
-    'Installation instructions.' => 'Installatie-instructies.',
     'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'Op uw server zijn alle vereiste modules geïnstalleerd; u hoeft geen bijkomende modules te installeren.',
     'Back' => 'Terug',
     'Retry' => 'Opnieuw',
@@ -1867,6 +1869,10 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Begin' => 'Start!',
 
     ## ./tmpl/wizard/configure.tmpl
+    'You must set your Database Path.' => 'U moet uw databasepad instellen.',
+    'You must set your Database Name.' => 'U moet de naam van uw database instellen.',
+    'You must set your Username.' => 'U moet uw gebruikersnaam instellen.',
+    'You must set your Database Server.' => 'U moet uw databaseserver instellen.',
     'Step 2 of 3' => 'Stap 2 van 3',
     'Database Configuration' => 'Database configuratie',
     'Your database configuration is complete. Click \'Continue\' below to configure your mail settings.' => 'Uw databaseconfiguratie is voltooid.  Klik op \'Doorgaan\' hieronder om uw e-mail instellingen te configureren.',
@@ -1975,7 +1981,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     gelieve de link te volgen die in die e-mail staat.  Dit om te bevestigen dat
     het opgegeven e-mail adres correct is en aan u toebehoort.',
     'Manage Notification List' => 'Notificatielijst beheren',
-    'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.' => 'Deze pagina bevat een archief van alle berichten geplaatst op [_1] in de categorie <strong>[_2]</strong>.  Ze zijn gerangschikt van oud naar nieuw.', # Translate - New (24)
+    'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.' => 'Deze pagina bevat een archief van alle berichten geplaatst op [_1] in de categorie <strong>[_2]</strong>.  Ze zijn gerangschikt van oud naar nieuw.',
     'Individual' => 'individuele',
     '_USAGE_COMMENTS_LIST_ALL_WEBLOGS' => 'Hier is de lijst met reacties op alle weblogs. U kunt alle willekeurige reacties bewerken door te klikken op de tekst van de reactie. Klik om de berichten te filteren op een van de waarden die in de lijst worden weergegeven.',
     '_USAGE_FORGOT_PASSWORD_2' => 'Met dit nieuwe wachtwoord moet u zich op Movable Type kunnen aanmelden. Zodra u zich hebt aangemeld, kunt u uw wachtwoord veranderen in iets dat u goed kunt onthouden.',
@@ -2002,7 +2008,7 @@ Opzoekingen houden IP adressen van oorsprong en hyperlinks in de gaten van alle 
     'Category Archive' => 'Archief per categorie',
     '_USAGE_EXPORT_1' => 'Het exporteren van uw berichten vanuit Movable Type maakt het mogelijk om <b>persoonlijke back-ups</b> van uw blogberichten te bewaren. Het formaat van de geëxporteerde gegevens is geschikt om weer in het systeem geïmporteerd te worden m.b.v. de importfunctie (hierboven); dus kunt u, behalve het exporteren van uw berichten voor backup-doeleinden, deze functie ook gebruiken om <b>de inhoud te verplaatsen naar verschillende blogs</b>.',
     '_SYSTEM_TEMPLATE_PINGS' => 'Getoond wanneer TrackBack popups (afgeraden) zijn ingeschakeld.',
-    '<a href="[_1]">[_2]</a> is the previous category.' => '<a href="[_1]">[_2]</a> is de vorige categorie.', # Translate - New (10)
+    '<a href="[_1]">[_2]</a> is the previous category.' => '<a href="[_1]">[_2]</a> is de vorige categorie.',
     'Entry Creation' => 'Berichten aanmaken',
     'Atom Index' => 'Atom index',
     '_USAGE_PLACEMENTS' => 'Gebruik de velden hieronder om de secundaire categorieën te beheren waaraan dit bericht is toegewezen. De lijst aan de linkerkant bevat de categorieën waaraan dit bericht nog niet is toegewezen als primaire of secundaire categorie; de lijst aan de rechterkant bestaat uit de secundaire categorieën waaraan dit bericht is toegewezen.',
@@ -2020,7 +2026,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
     '_SYSTEM_TEMPLATE_COMMENT_PREVIEW' => 'Getoond wanneer een reageerder een voorbeeld van zijn reactie bekijkt',
     '_USAGE_BOOKMARKLET_3' => 'Als u het Movable Type QuickPost-bookmark wilt installeren, sleept u de volgende link naar de werkbalk Favorieten in het menu van uw browser.',
     '_USAGE_PASSWORD_RESET' => 'Hieronder kunt u een nieuw wachtwoord laten instellen voor deze gebruiker.  Als u ervoor kiest om dit te doen, zal een willekeurig gegenereerd wachtwoord worden aangemaakt en rechtstreeks naar volgend e-mail adres worden verstuurd: [_1].',
-    'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete this author?' => 'Een auteur verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de auteur in \'wezen\' verandert.  Als u een auteur wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen om al zijn permissies te verwijderen als alternatief.  Bent u zeker dat u deze auteur wenst te verwijderen?', # Translate - New (49)
     '_USAGE_LIST_POWER' => 'Hier is de lijst met berichten op [_1] in batchbewerkingsmodus. In het onderstaande formulier kunt u de waarden voor alle weergegeven berichten wijzigen; druk na het maken van de gewenste aanpassingen, op de knop \'Opslaan\'. De standaard besturingelementen voor Berichten weergeven en bewerken (filters, pagineren) werken in batchmodus op de manier die u gewend bent.',
     'Or return to the <a href="[_1]">Main Menu</a> or <a href="[_2]">System Overview</a>.' => 'Of keer terug naar het <a href="[_1]">Hoofdmenu</a> of het <a href="[_2]">Systeemoverzicht</a>.',
     '_ERROR_CONFIG_FILE' => 'Uw Movable Type configuratiebestand ontbreekt of kan niet gelezen worden. Gelieve het deel <a href="#">Installation and Configuration</a> van de handleiding van Movable Type te raadplegen voor meer informatie.',
@@ -2062,7 +2067,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
     'Refresh Template(s)' => 'Sjablo(o)n(en) verversen',
     '_USAGE_NOTIFICATIONS' => 'Hieronder staat een lijst met personen die op de hoogte willen worden wanneer u iets publiceert op uw site. Als u een nieuwe gebruiker wilt toevoegen, voer dan het e-mailadres in het formulier hieronder in. Het URL-veld is optioneel. Als u een gebruiker wilt verwijderen, kruis dan het vak \'Verwijderen\' aan in de tabel hieronder en druk vervolgens op de knop \'Verwijderen\'.',
     '_USAGE_COMMENTERS_LIST' => 'Hier is de lijst met bezoekers die reacties achterlieten op [_1].',
-    'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete the [_1] selected authors?' => 'Een auteur verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de auteur in \'wezen\' verandert.  Als u een auteur wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen om al zijn permissies te verwijderen als alternatief.  Bent u zeker dat u de [_1] geselecteerde auteurs wenst te verwijderen?',
     '_ERROR_DATABASE_CONNECTION' => 'Uw database instellingen zijn ofwel ongeldig ofwel niet aanwezig in uw Movable Type configuratiebestand. Bekijk het deel <a href="#">Installation and Configuration</a> van de Movable Type handleiding voor meer informatie.',
     '_USAGE_BANLIST' => 'Hieronder is de lijst met IP-adressen die u hebt uitgesloten van de publicatie van reacties op uw site of het versturen van TrackBack-pings naar uw site. Als u een nieuw IP-adres wilt toevoegen, voer dan het adres in het formulier hieronder in. Als u een uitgesloten IP-adres wilt verwijderen, kruis dan het vak \'Verwijderen\' aan in de tabel hieronder en druk vervolgens op de knop \'Verwijderen\'.',
     'RSS 2.0 Index' => 'RSS 2.0 index',
@@ -2092,7 +2096,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
     'Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]">edit</a> to customize its display.' => '
     Gefeliciteerd! Er is een sjabloonmodule van het type Widget aangemaakt met de naam <strong>[_1]</strong> die u verder kunt <a href="[_2]">bewerken</a> om te veranderen hoe het er komt uit te zien.',
     'Category' => 'Categorie',
-    '_USAGE_ENTRYPREFS' => 'De veldconfiguratie bepaalt welke velden verschijnen op de schermen voor nieuwe en bewerkte berichten. U kunt een bestaande configuratie selecteren (Eenvoudig of Geavanceerd) of uw schermen aanpassen door op Aanpassen te klikken en vervolgens de velden te selecteren die u wilt weergeven.',
+    '_USAGE_ENTRYPREFS' => 'Deze instellingen bepalen welke opties verschijnen op de schermen waar men nieuwe en bestaande berichten kan bewerken. U kunt een voorgedefiniëerde configuratie selecteren (Eenvoudig of Alle) of uw persoonlijke voorkeuren instellen door op Aangepast te klikken en vervolgens de opties te selecteren die u wenst weer te geven.',
     'To download more plugins, check out the <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.' => 'Om meer plugins te downloaden, moet u een kijkje nemen in de <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.',
     'Stylesheet' => 'Stylesheet', # Translate - Previous (1)
     'RSD' => 'RSD', # Translate - Previous (1)
@@ -2216,6 +2220,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
     ## ./plugins/WidgetManager/lib/WidgetManager/App.pm
     'Loading template \'[_1]\' failed: [_2]' => 'Sjabloon \'[_1]\' laden mislukt: [_2]',
     'Permission denied.' => 'Toestemming geweigerd.',
+    'Can\'t duplicate the existing \'[_1]\' Widget Manager. Please go back and enter a unique name.' => 'Kan de bestaande \'[_1]\' WidgetManager niet dupliceren. Gelieve terug te gaan en een unieke naam in te geven.',
     'Moving [_1] to list of installed modules' => '[_1] wordt verplaatst naar de lijst van geïnstalleerde modules',
     'Error opening file \'[_1]\': [_2]' => 'Fout bij openen bestand \'[_1]\': [_2]',
     'First Widget Manager' => 'Eerste Widget Manager',
@@ -2234,6 +2239,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
     ## ./mt-static/mt.js
     'You did not select any [_1] to delete.' => 'U selecteerde geen [_1] om te verwijderen',
+    'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete this author?' => 'Een auteur verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de auteur in \'wezen\' verandert.  Als u een auteur wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen om al zijn permissies te verwijderen als alternatief.  Bent u zeker dat u deze auteur wenst te verwijderen?',
+    'Deleting an author is an irrevocable action which creates orphans of the author\'s entries.  If you wish to retire an author or remove their access to the system, removing all of their permissions is the recommended course of action.  Are you sure you want to delete the [_1] selected authors?' => 'Een auteur verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de auteur in \'wezen\' verandert.  Als u een auteur wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen om al zijn permissies te verwijderen als alternatief.  Bent u zeker dat u de [_1] geselecteerde auteurs wenst te verwijderen?',
     'Are you sure you want to delete this [_1]?' => 'Bevestiging: [_1] verwijderen?',
     'Are you sure you want to delete the [_1] selected [_2]?' => 'Bevestiging: [_1] geselecteerde [_2] verwijderen?',
     'to delete' => 'om te verwijderen',
@@ -3429,12 +3436,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
     ## ./t/lib/Text/WikiFormat.pm
 
     ## ./t/lib/LWP/UserAgent/Local.pm
-    
-    'Can\'t duplicate the existing \'[_1]\' Widget Manager. Please go back and enter a unique name.' => 'Kan de bestaande \'[_1]\' WidgetManager niet dupliceren. Gelieve terug te gaan en een unieke naam in te geven.', # Translate - New (16)
-
 );
 
 
 1;
 
-## New words: 96
+## New words: 0
