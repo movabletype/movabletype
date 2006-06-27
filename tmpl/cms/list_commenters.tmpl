@@ -103,8 +103,6 @@ TC.attachLoadEvent( init );
 <img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/feed.gif" alt="<MT_TRANS phrase="Commenter Feed">" width="9" height="9" />
 <a href="<TMPL_VAR NAME=FEED_URL ESCAPE=HTML>" title="<TMPL_VAR NAME=FEED_NAME ESCAPE=HTML>"><MT_TRANS phrase="Commenter Feed"></a>
 <TMPL_ELSE>
-<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/feed-disabled.gif" alt="<MT_TRANS phrase="Commenter Feed (Disabled)">" width="9" height="9" />
-<a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=AUTHOR_ID>" title="<TMPL_VAR NAME=FEED_NAME ESCAPE=HTML> (<MT_TRANS phrase="Disabled">)"><MT_TRANS phrase="Set Web Services Password"></a>
 </TMPL_IF>
 
 </TMPL_UNLESS>
