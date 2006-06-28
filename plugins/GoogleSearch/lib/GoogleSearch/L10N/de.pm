@@ -15,11 +15,10 @@ use vars qw( %Lexicon );
 %Lexicon = (
     'Google API Key:' => 'Google API-Key:',
     'If you wish to use any of the Google API functionality, you will need a Google API key. Paste it in here.' => 'Um eine der API-Funktionen von Google nutzen zu können, benötigen Sie einen API-Schlüssel von Google. Fügen Sie diesen hier ein.',
-    'Adds template tags to allow you to search for content from Google. You will need to configure this plugin using a <a href=\'http://www.google.com/apis/\'>license key.</a>' => 'Stellt für Google-basierte Blogsuchen erforderliche Tags zur Verfügung. Kostenloser <a href=\'http://www.google.com/apis/\'>API-Schlüssel</a> erforderlich.',
-    'You used [_1] without a query.' => '',
-    'You need a Google API key to use [_1]' => '',
-    'You used a non-existent property from the result structure.' => '',
-    
+    'Adds template tags to allow you to search for content from Google. You will need to configure this plugin using a <a href=\'http://www.google.com/apis/\'>license key.</a>' => 'Stellt für Google-basierte Blogsuchen erforderliche Tags zur Verfügung. Kostenloser <a href=\'http://www.google.com/apis/\'>API-Schlüssel</a> erforderlich.',      
+    'You used [_1] without a query.' => '[_1] ohne Suchbegriff verwendet.',
+    'You need a Google API key to use [_1]' => 'Google API-Schlüssel für [_1] erforderlich.',
+    'You used a non-existent property from the result structure.' => 'Nicht vorhandene Eigenschaft der Ergebnisstruktur verwendet.',  
 );
 
 1;
