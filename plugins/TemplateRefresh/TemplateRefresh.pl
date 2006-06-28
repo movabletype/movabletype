@@ -14,7 +14,7 @@ sub BEGIN {
     MT->add_plugin(new MT::Plugin::TemplateRefresh({
         name => "Template Backup and Refresh",
         description => "<MT_TRANS phrase=\"Backup and refresh existing templates to Movable Type's default templates.\">",
-        version => 1.0,
+        version => 1.1,
     }));
 }
 

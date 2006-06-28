@@ -8,7 +8,7 @@ package MT::Plugin::StyleCatcher;
 use strict;
 use base 'MT::Plugin';
 use vars qw($VERSION);
-$VERSION = '1.01';
+$VERSION = '1.1';
 
 my $plugin;
 $plugin = MT::Plugin::StyleCatcher->new({
