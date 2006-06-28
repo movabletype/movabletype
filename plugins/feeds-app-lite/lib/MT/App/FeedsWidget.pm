@@ -17,6 +17,8 @@ sub init {
     $app->{plugins_dir}    = 'feeds-app-lite';
     $app->{requires_login} = 1;
     $app->{user_class}     = 'MT::Author';
+    $app->{help_url} = File::Spec->catdir($app->static_path, 'plugins', 
+                        'feeds-app-lite', 'docs', 'index.html');
     $app;
 }
 
@@ -28,6 +30,7 @@ sub start {
       or return $app->error(MT::Blog->errstr);
     my $p = {blog_id => $blog_id, site_url => $blog->site_url};
     $p->{need_uri} = $app->param('need_uri');
+    $p->{help_url} = $app->{help_url};
     $app->add_breadcrumb("Main Menu", $app->mt_uri);
     $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
     $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
@@ -72,6 +75,7 @@ sub select {
     }
     MT::Util::mark_odd_rows(\@feeds);
     $p->{feeds} = \@feeds;
+    $p->{help_url} = $app->{help_url};
     $app->add_breadcrumb("Main Menu", $app->mt_uri);
     $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
     $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
@@ -107,6 +111,7 @@ sub configuration {
     }
     $p->{feed_title} = $feed->find_title($feed->feed) || $uri;
     $p->{feed_uri} = $uri;
+    $p->{help_url} = $app->{help_url};    
     $app->add_breadcrumb("Main Menu", $app->mt_uri);
     $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
     $app->add_breadcrumb('Templates', $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
@@ -173,6 +178,7 @@ TEXT
         $p->{wm_url} = $app->wm_url . '?blog_id=' . $blog_id;
         $p->{wm_is} = 1;
     }
+    $p->{help_url} = $app->{help_url};
     $app->build_page("msg.tmpl", $p);
 }
 
