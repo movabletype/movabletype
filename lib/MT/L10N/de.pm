@@ -2025,7 +2025,7 @@ sub encoding { 'utf-8' }
     '_USAGE_VIEW_LOG' => 'Überprüfen Sie das <a href="[_1]">Aktivitätsprotokoll</a>, um den Fehler zu finden.',
     '_USAGE_BOOKMARKLET_1' => 'Wenn Sie QuickPost einrichten, können Sie einfach neue Einträge veröffentlichen, ohne direkt in Movable Type zu arbeiten.',
     '_USAGE_ARCHIVING_3' => 'Wählen Sie den Archivtypen und ordnen Sie dann ein Archivtemplate zu.',
-    '_SYSTEM_TEMPLATE_SEARCH_TEMPLATE' => 'Wird bei der Suche im Blog angezeigt. # Translate - Testing (1) #k',
+    '_SYSTEM_TEMPLATE_SEARCH_TEMPLATE' => 'Wird bei der Suche im Blog angezeigt.',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
     'INDIVIDUAL_ADV' => 'Einzeln',
     'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Überspringe Template \'[_1]\', da es ein Custom Template zu sein scheint.',
