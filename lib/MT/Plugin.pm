@@ -702,15 +702,32 @@ Used to register plugin action links that are displayed on various pages
 within the MT::App::CMS application. The format for this key is:
 
     app_action_links => {
-        'type' => {
-            link => 'myplugin.cgi',
-            link_text => 'Configure MyPlugin'
+        'MT::App::CMS' => {   # application the action applies to
+            'type' => {
+                link => 'myplugin.cgi',
+                link_text => 'Configure MyPlugin'
+            }
         }
     }
 
 This is an alternative to using C<MT-E<gt>add_plugin_action>.
 
 =item * app_itemset_actions
+
+Used to register plugin itemset action links that are displayed on various
+listings within the MT::App::CMS application. The format for this key is:
+
+    app_action_links => {
+        'MT::App::CMS' => {   # application the action applies to
+            'type' => {
+                key => 'unique_action_name',
+                label => 'Uppercase text',
+                code => \&itemset_handler
+            }
+        }
+    }
+
+This is an alternative to using C<MT::App::CMS-E<gt>add_itemset_action>.
 
 =item * callbacks
 
