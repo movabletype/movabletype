@@ -86,6 +86,7 @@ sub init_tmpl {
     $spath =~ s/\/*$/\//g;
 
     my $enc = $app->{cfg}->PublishCharset || $app->language_handle->encoding;
+    my $helpurl = $app->{cfg}->HelpURL;
 
     $tmpl->param(plugin_name       => 'Widget Manager');
     $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
@@ -95,13 +96,13 @@ sub init_tmpl {
     $tmpl->param(mmscript_url      => $app->{mmscript_url});
     $tmpl->param(static_uri        => $spath);
     $tmpl->param(script_url        => File::Spec->catdir($apppath,'widget-manager.cgi'));
-    $tmpl->param(help_url          => $app->{cfg}->HelpURL;
     $tmpl->param(blog_url          => $app->blog->site_url);
     if (my $lang_id = $app->current_language) {
         $tmpl->param(local_lang_id => lc $lang_id) if $lang_id !~ m/^en/i;
     }
     $tmpl->param(page_titles       => [ reverse @{ $app->{breadcrumbs} } ]);
     $tmpl->param(nav_widgetmanager => 1);
+    $tmpl->param(help_url => $helpurl);
 
     WidgetManager::Util::debug('MT Script URL: '.$tmpl->param('mtscript_url'),'    >');
 
