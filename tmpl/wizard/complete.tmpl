@@ -3,6 +3,7 @@
 <form method="post" action="mt-wizard.cgi">
 <input type="hidden" name="__mode" value="seed" />
 <input type="hidden" name="config" value="<TMPL_VAR NAME=CONFIG ESCAPE=HTML>" />
+<input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>">
 
 
 <h3><MT_TRANS phrase="Congratulations! You've successfully configured [_1] [_2]." params="<TMPL_VAR NAME=MT_PRODUCT_NAME>%%<TMPL_VAR NAME=MT_VERSION>"></h3>
@@ -24,7 +25,7 @@
 </p>
 
 <p>
-<input type="submit" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=optional&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>'; return false" />
+<input type="submit" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=optional&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI>'; return false" />
 <TMPL_UNLESS NAME=CONFIG_CREATED>
 <input name="retry" type="submit" value="<MT_TRANS phrase="Retry">" />
 <TMPL_ELSE>

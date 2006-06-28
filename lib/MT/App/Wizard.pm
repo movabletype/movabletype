@@ -191,7 +191,8 @@ sub configure {
             $param{$_} = $q->param($_);
         }
     }
-
+    
+    $param{set_static_uri_to} = $q->param('set_static_uri_to');
     # set static web path
     $app->{cfg}->set('StaticWebPath', $param{set_static_uri_to});
     if (my $dbtype = $param{dbtype}) {
@@ -309,6 +310,7 @@ sub optional {
             $param{$_} = $q->param($_);
         }
     }
+    $param{set_static_uri_to} = $q->param('set_static_uri_to');
 
     # set static web path
     $app->{cfg}->set('StaticWebPath', $param{set_static_uri_to});
@@ -388,9 +390,8 @@ sub seed {
         $param{config} = $app->serialize_config(%param);
     }
 
-
-#    $param{config} = $app->param('config');
-    $param{static_web_path} = $app->static_path;
+    $param{static_web_path} = $app->param->param('set_static_uri_to');
+    $param{static_uri} = $app->param->param('set_static_uri_to');
     $param{cgi_path} = $app->cgipath;
 
     # unserialize database configuration
