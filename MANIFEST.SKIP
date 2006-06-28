@@ -75,3 +75,9 @@ plugins/feeds-app-lite/t
 ^_build
 ^build
 ^Build.*$
+extras/feeds-app-lite-0.85.tar.gz
+extras/feeds-app-lite-0.85.zip
+extras/statwatch-1.2.tar.gz
+extras/statwatch-1.2.zip
+
+
