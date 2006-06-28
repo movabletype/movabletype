@@ -10,7 +10,7 @@
 <li id="export-tab"><a href="#" onclick="tabToggle('export',Array('import','export'))"><MT_TRANS phrase="Export Entries"></a></li>
 </ul>
 </div>
-
+                                                                                         
 <div id="import-panel">
 
 
@@ -43,7 +43,7 @@
 <div class="label"><label><MT_TRANS phrase="Upload import file: (optional)"></label></div>
 <div class="field">
 <input name="file" id="file" type="file" />
-<p><MT_TRANS phrase="If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the <code>import</code> folder of your Movable Type directory."> <a href="#" onclick="return openManual('entry_import', 'source_file_html')" class="help">?</a><br /></p>
+<p><MT_TRANS phrase="If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the <code>import</code> folder of your Movable Type directory."> <a href="#" onclick="return openManual('entry_import', 'source_file')" class="help">?</a><br /></p>
 </div>
 </div>
 
@@ -61,7 +61,7 @@
 <TMPL_LOOP NAME=ENCODING_NAMES>
 <option value="<TMPL_VAR NAME=NAME>"><MT_TRANS phrase="<TMPL_VAR NAME=DISPLAY_NAME>"></option>
 </TMPL_LOOP></select></p>
-<p><MT_TRANS phrase="By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly."> <a href="#" onclick="return openManual('entry_import', 'source_encoding_html')" class="help">?</a></p>
+<p><MT_TRANS phrase="By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly."> <a href="#" onclick="return openManual('entry_import', 'source_file_encoding')" class="help">?</a></p>
 </div>
 </div>
 
