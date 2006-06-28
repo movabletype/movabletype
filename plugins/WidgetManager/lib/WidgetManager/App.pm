@@ -95,7 +95,7 @@ sub init_tmpl {
     $tmpl->param(mmscript_url      => $app->{mmscript_url});
     $tmpl->param(static_uri        => $spath);
     $tmpl->param(script_url        => File::Spec->catdir($apppath,'widget-manager.cgi'));
-    $tmpl->param{help_url}         => $app->{cfg}->HelpURL;
+    $tmpl->param(help_url          => $app->{cfg}->HelpURL;
     $tmpl->param(blog_url          => $app->blog->site_url);
     if (my $lang_id = $app->current_language) {
         $tmpl->param(local_lang_id => lc $lang_id) if $lang_id !~ m/^en/i;
