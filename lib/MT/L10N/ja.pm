@@ -1537,10 +1537,11 @@ use vars qw( @ISA %Lexicon );
     'This wizard will help you configure the basic settings needed to run Movable Type.' => 'このウィザードはMovable Typeの基本的な構成作業を支援します。',
     'Static Web Path' => 'Static Web Path',
     "Due to your server's configuration it is not accessible in its current location and must be moved to a web-accessible location (e.g. into your web document root directory)." => 'サーバーの構成上、現在の場所にはWebブラウザからアクセスできません。Webサイトのルートディレクトリの下など、アクセス可能な場所に移動してください。',
-    'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'このディレクトリはMovable Typeのインストールディレクトリの外部に移動されたかまたは名前が変更されました。',
+    'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'mt-static ディレクトリはMovable Typeのインストールディレクトリの外部に移動されたかまたは名前が変更されました。',
     'Please specify the web-accessible URL to this directory below.' => 'このディレクトリにWebブラウザからアクセスするURLを指定してください。',
     'Static web path URL' => 'スタティックファイルへのURL',
     'This can be in the form of http://example.com/mt-static/ or simply /mt-static' => 'http://example.com/mt-static/のような絶対URLまたは/mt-staticのようにも指定できます。',
+    'Movable Type ships with directory named <strong>mt-static</strong> which contains a number of important files such as images, javascript files and stylesheets.' => 'Movable Type には <strong>mt-static</strong> ディレクトリが標準で含まれています。この中には画像ファイルやJavaScript、スタイルシートのファイルが含まれています。',
     'Begin' => '開始',
     ## tmpl/wizard/configure.tmpl
     'Step 2 of 3' => 'ステップ 2/3',
