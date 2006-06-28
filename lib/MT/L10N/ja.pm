@@ -101,7 +101,7 @@ use vars qw( @ISA %Lexicon );
     'Main' => 'メイン',
     'TrackBack' => 'トラックバック',
     'TrackBack URL for this entry:' => 'このエントリーのトラックバックURL: ',
-    'Listed below are links to weblogs that reference' => 'この一覧は、次のエントリーを参照しています: ',
+    'Listed below are links to weblogs that reference' => 'この一覧は、次のエントリーを参照しています ',
     'from' => '送信元',
     'Read More' => '詳しくはこちら',
     'Tracked on' => 'トラックバック時刻: ',
