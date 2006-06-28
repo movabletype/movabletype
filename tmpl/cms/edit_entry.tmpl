@@ -145,6 +145,7 @@ function editPlacements () {
     } else {
         window.open('<TMPL_VAR NAME=SCRIPT_URL>?__mode=edit_placements&entry_id=<TMPL_VAR NAME=ID>&blog_id=<TMPL_VAR NAME=BLOG_ID>', 'placements', 'width=550,height=520,resizable=yes');
     }
+    return false;
 }
 
 function doRebuildThis () {
@@ -496,7 +497,7 @@ function doValidateNotifyRecips(f) {
 </select>
 </div>
 <div id="assign_multiple_div">
-<a id="assign-multiple" href="javascript:editPlacements()"><MT_TRANS phrase="Assign Multiple Categories"></a>
+<a id="assign-multiple" href="#" onclick="return editPlacements();"><MT_TRANS phrase="Assign Multiple Categories"></a>
 <div id="multiple_cats">
 
 <TMPL_IF NAME=ADD_CATEGORY_LOOP>
