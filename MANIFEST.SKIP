@@ -69,9 +69,9 @@ lang-it
 \.(en_us|fr|de|gb|ja|en|no|it)$
 #plugins/StyleCatcher
 #plugins/WidgetManager
-plugins/feeds-app-lite
-#plugins/feeds-app-lite/tools
-#plugins/feeds-app-lite/t
+#plugins/feeds-app-lite
+plugins/feeds-app-lite/tools
+plugins/feeds-app-lite/t
 ^_build
 ^build
 ^Build.*$
