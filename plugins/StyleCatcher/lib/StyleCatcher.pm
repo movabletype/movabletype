@@ -122,6 +122,8 @@ sub view {
         auto_fetch => $url ? 1 : 0,
         last_theme_url => $url || $stylelibrary
     );
+    
+    $param{help_url} = $app->{cfg}->HelpURL;
 
     if ($blog_id && @$styled_blogs) {
         my $blog = $styled_blogs->[0];
