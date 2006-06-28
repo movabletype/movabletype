@@ -29,7 +29,7 @@ sub feed {
       or return
       $ctx->error(
          MT->translate(
-                       "'[_1]' is a required argument of [_2]", 'uri', 'MTFeeds'
+                       "'[_1]' is a required argument of [_2]", 'uri', 'MTFeed'
          )
       );
     require MT::Feeds::Lite;
@@ -143,7 +143,7 @@ sub author_name { 'Appnel Solutions' }
 sub author_link { 'http://www.appnel.com/' }
 sub plugin_link { '' }
 sub version     { $MT::FeedsLite::VERSION }
-sub doc_link    { '' }
+sub doc_link    { 'docs/index.html' }
 
 sub description {
     return <<DESC;
