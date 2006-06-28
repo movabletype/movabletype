@@ -111,10 +111,11 @@ function onClickHandler(evt) {
     // try to find our "window" element in dom hierarchy
     evt = evt || event;
     var element = evt.target || evt.srcElement;
-    el = document.getElementById('multiple_cats');
+    el_link = getByID('assign-multiple');
+    el = getByID('multiple_cats');
     if (!el) return true;
     while( element ) {
-        if( element == el )
+        if( (element == el) || (element == el_link) )
             return true;
         element = element.parentNode;
     }
@@ -138,7 +139,7 @@ function listPreviousPings () {
 }
 
 function editPlacements () {
-    el = document.getElementById('multiple_cats');
+    el = getByID('multiple_cats');
     if (el) {
         el.style.display = 'block';
         el.style.visibility = 'visible';
