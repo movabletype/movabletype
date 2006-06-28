@@ -10,7 +10,7 @@ use base 'MT::App';
 use vars qw($VERSION);
 use File::Basename qw(basename);
 
-$VERSION = '1.01';
+$VERSION = '1.1';
 use vars qw($DEFAULT_STYLE_LIBRARY);
 
 sub init {
