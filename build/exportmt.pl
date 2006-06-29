@@ -108,9 +108,10 @@ $o{'append:s'} .= "-$o{'lang=s'}" unless $o{'lang=s'} =~ /^en_/;
 
 ######################################################################
 ## COMMAND ALIAS OVERRIDE LOGIC:
-# Production builds are not dated or stamped.
+# Production builds are not dated or stamped (or symlinked if staged).
 if( $o{'prod'} ) {
     $o{'date!'} = 0;
+    $o{'symlink!'} = 0;
     $o{'append:s'} = '';
 }
 # Local builds don't deploy or cleanup after themselves.
@@ -411,11 +412,11 @@ CONFIG
             # Update the staging html.
             if( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} ) {
                 my $stage_dir = fileparse( $dest, split /\s*,\s*/, $o{'arch=s'} );
-                my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'index.html' );
+                my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
                 unless( $o{'debug'} ) {
                     warn "ERROR: $old_html does not exist" unless -e $old_html;
                     warn "Updating $old_html...\n";
-                    my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'index.html.new' );
+                    my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html.new' );
                     my $old_fh = IO::File->new( '< ' . $old_html );
                     my $new_fh = IO::File->new( '> ' . $new_html );
                     while( <$old_fh> ) {
