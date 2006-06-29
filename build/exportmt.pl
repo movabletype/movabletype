@@ -5,7 +5,6 @@
 # $Id$
 #
 # XXX WARNING: Overly rambling, deeply nested logic ahead.
-# XXX Modularization is next.
 #
 use strict;
 use warnings;
@@ -126,10 +125,6 @@ if( $o{'stage'} ) {
 if( $o{'alpha=i'} || $o{'beta=i'} ) {
     $o{'append:s'} = '';
 }
-# LDAP-ness
-if( $o{'ldap'} ) {
-    $o{'append:s'} .= '-ldap';
-}
 ######################################################################
 
 # Create the build-stamp to use.
@@ -137,6 +132,7 @@ my $stamp = $o{'date!'}
     ? sprintf $o{'stamp=s'},
         (localtime)[5] + 1900, (localtime)[4] + 1, (localtime)[3,2,1,0]
     : '';
+# LDAP-ness
 $stamp .= '-ldap' if $o{'ldap'};
 # Override the stamp if a --name is given.
 if( $o{'name:s'} ) {
@@ -177,6 +173,7 @@ if( -d $o{'export=s'} ) {
         unless $o{'debug'};
 }
 
+my $revision = export_revision();
 # Export the build (SVN auto-creates the directory).
 verbose_command( sprintf( '%s export %s%s %s',
     'svn',
@@ -525,6 +522,22 @@ sub verbose_command {
     }
 
     return $command;
+}
+
+sub export_revision {
+    # Export the build (SVN auto-creates the directory).
+    my $revision = qx{
+        sprintf( '%s export %s%s %s',
+            'svn',
+            ($o{'verbose!'} ? '' : '--quiet '),
+            $o{'repo-uri=s'},
+            $o{'export=s'}
+        )
+    };
+
+        $revision =~ s//$1/;
+
+    return $revision;
 }
 
 sub notify {
