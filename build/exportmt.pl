@@ -303,7 +303,7 @@ if( $o{'deploy:s'} ) {
                 $db = 'stage_' . $db;
 
                 # Set the staging URL to a real location now.
-                my $url = sprintf '%s/%s/', $o{'stage-uri=s'}, $o{'append:s'};
+                my $url = sprintf '%s/%s/', $o{'stage-uri=s'}, ($o{'append:s'} || $stage_dir);
 
                 # Give unto us a shiny, new config file.
                 my $config = 'mt-config.cgi';
