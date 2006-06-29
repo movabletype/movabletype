@@ -79,8 +79,8 @@ lang-it
 #plugins/StyleCatcher
 #plugins/WidgetManager
 #plugins/feeds-app-lite
-plugins/feeds-app-lite/tools
-plugins/feeds-app-lite/t
+plugins/feeds-app-lite/tools/
+plugins/feeds-app-lite/t/
 
 # Build process and distribution files
 \.pre$
