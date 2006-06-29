@@ -21,7 +21,6 @@
 ~$
 ^\.#
 \.bak$
-\.exists$
 \.old$
 \.swp$
 \.tmp$
