@@ -33,7 +33,7 @@ my %o = get_options(
   'alpha=i'         => 0,  # Integer
   'append:s'        => undef,  # String to append to the build.
   'app=s'           => 'MT',  # String to append to the build.
-  'arch=s'          => '.tar.gz',  # CSV: .tar.gz,.zip
+  'arch=s'          => '',  # .tar.gz or .zip
   'beta=i'          => 0,  # Integer
   'branch=s'        => '',  # TINSEL, TRIBBLE, etc.
   'build=s'         => '/tmp',  # Export directory base.
@@ -82,7 +82,9 @@ usage() if $o{'help|h'};
 # Set the BUILD_LANGUAGE and BUILD_PACKAGE environment variables
 # unless they are not already defined.
 $ENV{BUILD_LANGUAGE} ||= $o{'lang=s'};
+$o{'lang=s'} = $ENV{BUILD_LANGUAGE};
 $ENV{BUILD_PACKAGE} ||= $o{'app=s'};
+$o{'app=s'} = $ENV{BUILD_PACKAGE};
 
 # Grab our repository revision from the environment.
 my $revision = qx{ /usr/bin/svn info | grep 'Changed Rev' };
@@ -146,7 +148,14 @@ if( $o{'stage'} ) {
 if( $o{'alpha=i'} || $o{'beta=i'} ) {
     $o{'append:s'} = '';
 }
+# QA seems to prefer zip file archives.
+if( $o{'qa'} ) {
+    $o{'arch=s'} ||= '.zip';
+}
 ######################################################################
+
+# Make sure we have an archive type.
+$o{'arch=s'} ||= '.tar.gz';
 
 # Create the build-stamp to use.
 my $stamp = $o{'date!'}
