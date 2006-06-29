@@ -65,7 +65,7 @@ my %o = get_options(
   'prod'            => 0,  # Command-line --option alias
   'qa'              => 0,  # Command-line --option alias
   'repo=s'          => 'trunk',  # Reset at runtime depending on branch,tag.
-  'repo-uri=s'      => 'https://intranet.sixapart.com/repos/eng',
+  'repo-uri=s'      => '',  #'https://intranet.sixapart.com/repos/eng',
   'shown:s'         => undef,  # String to replace the VERSION_ID.
   'stage'           => 0,  # Command-line --option alias
   'stage-dir=s'     => '/var/www/html/mt-stage',
@@ -84,11 +84,31 @@ usage() if $o{'help|h'};
 $ENV{BUILD_LANGUAGE} ||= $o{'lang=s'};
 $ENV{BUILD_PACKAGE} ||= $o{'app=s'};
 
-# Figure out the the repository and reset the URL.
-$o{'repo=s'} = $o{'branch=s'} ? "branches/$o{'branch=s'}"
-             : $o{'tag=s'}    ? "tags/$o{'tag=s'}"
-             : $o{'repo=s'};
-$o{'repo-uri=s'} = sprintf '%s/%s/mt', $o{'repo-uri=s'}, $o{'repo=s'};
+# Grab our repository revision from the environment.
+my $revision = qx{ /usr/bin/svn info | grep 'Changed Rev' };
+chomp $revision;
+$revision =~ s/^Last Changed Rev: (\d+)$/r$1/o;
+die $revision if $revision =~ /is not a working copy/;
+
+# Figure out what repository we are using.
+if( $o{'repo-uri=s'} and $o{'repo=s'} ) {
+    $o{'repo=s'} = $o{'branch=s'} ? "branches/$o{'branch=s'}"
+                 : $o{'tag=s'}    ? "tags/$o{'tag=s'}"
+                 : $o{'repo=s'};
+    $o{'repo-uri=s'} = sprintf '%s/%s/mt', $o{'repo-uri=s'}, $o{'repo=s'};
+}
+else {
+    # Grab our repository from the environment.
+    $o{'repo-uri=s'} = qx{ /usr/bin/svn info | grep URL };
+    chomp $o{'repo-uri=s'};
+    $o{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
+    if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/(\w+)\/mt/ ) {
+        # The repo is embedded in the repo uri.
+        $o{'repo=s'} = join '/', $1, $2;
+        # Set branch or tag, otherwise trunk is used.
+        $o{ $1.'=s' } = $2 if $2;
+    }
+}
 
 # Make sure that the repository actually exists.
 my $ua = LWP::UserAgent->new;
@@ -102,7 +122,7 @@ if (!$response->is_success) {
 }
 
 # Append the repository unless an append string is already defined.
-$o{'append:s'} = lc( fileparse $o{'repo=s'} )
+$o{'append:s'} = lc( fileparse $o{'repo=s'} ) . "-$revision"
     unless defined $o{'append:s'};
 $o{'append:s'} .= "-$o{'lang=s'}" unless $o{'lang=s'} =~ /^en_/;
 
@@ -164,7 +184,9 @@ verbose( sprintf 'Debugging is %s and system calls %s be made.',
     $o{'debug'} ? 'ON' : 'OFF', $o{'debug'} ? "WON'T" : 'WILL',
 );
 verbose( sprintf( 'Running with options: %s', Dumper \%o ),
-    "Svn uri: $o{'repo-uri=s'}", "Make dir: $o{'make=s'}",
+    "Svn uri: $o{'repo-uri=s'}",
+    "Make dir: $o{'make=s'}",
+    "Svn revision: $revision",
 ) if $o{'debug'};
 
 # Get any existing distro, with the same path name, out of the way.
@@ -176,7 +198,7 @@ if( -d $o{'export=s'} ) {
 
 # Export the build (SVN auto-creates the directory).
 verbose_command( sprintf( '%s export %s%s %s',
-    'svn',
+    '/usr/bin/svn',
     ($o{'verbose!'} ? '' : '--quiet '),
     $o{'repo-uri=s'},
     $o{'export=s'}
@@ -286,10 +308,11 @@ if( $o{'deploy:s'} ) {
                 # Database named the same as the distribution (but with _'s).
                 (my $current_db = $current) =~ s/[.-]/_/g;
 
-                # Change to the distribution directory.
+                # Grab the literal build directory name.
                 my $stage_dir = fileparse(
                     $dest, split /\s*,\s*/, $o{'arch=s'}
                 );
+                # Change to the distribution directory.
                 chdir( $stage_dir ) or die "Can't chdir $stage_dir: $!"
                     unless $o{'debug'};
                 verbose( "Changed to $stage_dir" );
@@ -303,7 +326,8 @@ if( $o{'deploy:s'} ) {
                 $db = 'stage_' . $db;
 
                 # Set the staging URL to a real location now.
-                my $url = sprintf '%s/%s/', $o{'stage-uri=s'}, ($o{'append:s'} || $stage_dir);
+                my $url = sprintf '%s/%s/',
+                    $o{'stage-uri=s'}, ($o{'append:s'} || $stage_dir);
 
                 # Give unto us a shiny, new config file.
                 my $config = 'mt-config.cgi';
