@@ -309,6 +309,7 @@ if( $o{'deploy:s'} ) {
                 # Do we have a current symlink?
                 my $link = $o{'branch=s'} || $o{'tag=s'};
                 $link .= "-$short_lang" if $short_lang ne 'en';
+                $link .= '-ldap' if $o{'ldap'};
                 my $current = '';
                 $current = readlink( $link ) if -e $link;
                 $current =~ s/\/$//;
