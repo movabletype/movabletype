@@ -128,7 +128,6 @@ if (!$response->is_success) {
 # Append the repository unless an append string is already defined.
 $o{'append:s'} = lc( fileparse $o{'repo=s'} ) . "-$revision"
     unless defined $o{'append:s'};
-$o{'append:s'} .= "-$o{'lang=s'}" unless $o{'lang=s'} =~ /^en_/;
 
 ######################################################################
 ## COMMAND ALIAS OVERRIDE LOGIC:
@@ -175,10 +174,10 @@ elsif( $o{'append:s'} ) {
     $stamp = $stamp ? "$o{'append:s'}-$stamp" : $o{'append:s'};
 }
 
-$ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || $stamp;
+$ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || "$o{'app=s'}-$o{'lang=s'}-$stamp";
 
 # Make the export directory to use with the stamp.
-$o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $stamp );
+$o{'export=s'} = File::Spec->catdir( $o{'build=s'}, "$o{'app=s'}-$o{'lang=s'}-$stamp" );
 die 'No export directory given.' unless $o{'export=s'};
 $o{'export=s'} =~ s/~/$ENV{HOME}/;
 
