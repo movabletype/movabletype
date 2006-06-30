@@ -87,7 +87,7 @@ $ENV{BUILD_PACKAGE} ||= $o{'app=s'};
 $o{'app=s'} = $ENV{BUILD_PACKAGE};
 
 # Make en_XX just en.
-(my $short_lang = $o{'lang=s'}) =~ s/([a-z]+)_[A-Z]+$/$1/;
+(my $short_lang = $o{'lang=s'}) =~ s/en_[A-Z]+$/en/o;
 
 # Grab our repository revision from the environment.
 my $revision = qx{ /usr/bin/svn info | grep 'Revision' };
@@ -308,6 +308,7 @@ if( $o{'deploy:s'} ) {
 
                 # Do we have a current symlink?
                 my $link = $o{'branch=s'} || $o{'tag=s'};
+                $link .= "-$short_lang" if $short_lang ne 'en';
                 my $current = '';
                 $current = readlink( $link ) if -e $link;
                 $current =~ s/\/$//;
