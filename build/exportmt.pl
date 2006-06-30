@@ -93,7 +93,6 @@ $o{'app=s'} = $ENV{BUILD_PACKAGE};
 my $revision = qx{ /usr/bin/svn info | grep 'Revision' };
 chomp $revision;
 $revision =~ s/^Revision: (\d+)$/r$1/o;
-die "R: $revision\n";
 die $revision if $revision =~ /is not a working copy/;
 
 # Figure out what repository we are using.
