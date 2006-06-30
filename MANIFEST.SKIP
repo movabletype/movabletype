@@ -14,7 +14,7 @@
 # Revision files.
 \bCVS\b
 \bRCS\b
-\b\.svn\b
+\.svn\b
 ,v$
 
 # Hidden, temp and backup files.
