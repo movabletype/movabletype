@@ -86,6 +86,9 @@ $o{'lang=s'} = $ENV{BUILD_LANGUAGE};
 $ENV{BUILD_PACKAGE} ||= $o{'app=s'};
 $o{'app=s'} = $ENV{BUILD_PACKAGE};
 
+# Make en_XX just en.
+(my $short_lang = $o{'lang=s'}) =~ s/([a-z]+)_[A-Z]+$/$1/;
+
 # Grab our repository revision from the environment.
 my $revision = qx{ /usr/bin/svn info | grep 'Changed Rev' };
 chomp $revision;
@@ -146,7 +149,7 @@ if( $o{'stage'} ) {
     $o{'deploy:s'} = $o{'stage-dir=s'};
 }
 # Alpha/Beta releases are not repo-tagged.
-if( $o{'alpha=i'} || $o{'beta=i'} ) {
+if( $o{'alpha=i'} or $o{'beta=i'} ) {
     $o{'append:s'} = '';
 }
 # QA seems to prefer zip file archives.
@@ -174,10 +177,10 @@ elsif( $o{'append:s'} ) {
     $stamp = $stamp ? "$o{'append:s'}-$stamp" : $o{'append:s'};
 }
 
-$ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || "$o{'app=s'}-$o{'lang=s'}-$stamp";
+$ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || join( '-', $o{'app=s'}, $short_lang, $stamp );
 
 # Make the export directory to use with the stamp.
-$o{'export=s'} = File::Spec->catdir( $o{'build=s'}, "$o{'app=s'}-$o{'lang=s'}-$stamp" );
+$o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $ENV{BUILD_VERSION_ID} );
 die 'No export directory given.' unless $o{'export=s'};
 $o{'export=s'} =~ s/~/$ENV{HOME}/;
 
@@ -234,7 +237,7 @@ my $app = $o{'name:s'}
         $o{'app=s'},
         $version,
         ($o{'alpha=i'} ? "a$o{'alpha=i'}" : ($o{'beta=i'} ? "b$o{'beta=i'}" : '')),
-        $o{'lang=s'},
+        $short_lang,
         $stamp;
 
 verbose_command(
@@ -305,15 +308,17 @@ if( $o{'deploy:s'} ) {
 
                 # Do we have a current symlink?
                 my $link = $o{'branch=s'} || $o{'tag=s'};
-                $link .= "-$o{'lang=s'}" unless $o{'lang=s'} =~ /^en/o;
                 my $current = '';
                 $current = readlink( $link ) if -e $link;
                 $current =~ s/\/$//;
                 # Database named the same as the distribution (but with _'s).
                 (my $current_db = $current) =~ s/[.-]/_/g;
 
-                # Drop previous directory.
-                rmtree( $current ) || warn( "Can't rmtree '$current': $!" );
+                # Drop previous.
+                rmtree( $current ) or warn( "Can't rmtree '$current': $!" );
+                unlink( $current . $o{'arch=s'} ) or
+                    warn( "Can't unlink $current$o{'arch=s'}: $!" )
+                    unless $current eq $dest;
 
                 my $tar;
                 unless( $o{'debug'} ) {
@@ -392,10 +397,10 @@ CONFIG
                 if( $o{'symlink!'} ) {
                     unless( $o{'debug'} ) {
                         # Drop current symlink.
-                        unlink( $link ) || warn( "Can't unlink '$link': $!" );
+                        unlink( $link ) or warn( "Can't unlink '$link': $!" );
                         warn "Unlinked $link\n";
                         # Relink the staged directory.
-                        symlink( "$stage_dir/", $link ) ||
+                        symlink( "$stage_dir/", $link ) or
                             warn( "Can't symlink $stage_dir/ to $link: $!" );
                     }
                     verbose( "Symlink'd $stage_dir/ to $link" );
@@ -440,7 +445,7 @@ CONFIG
                     }
                     $old_fh->close;
                     $new_fh->close;
-                    move( $new_html, $old_html ) ||
+                    move( $new_html, $old_html ) or
                         die "ERROR: Can't move $new_html, $old_html: $!";
                     verbose( "Moved $new_html to $old_html" );
                 }
@@ -484,7 +489,7 @@ if( $o{'notify:s'} ) {
 
     $o{'email-body=s'} .= sprintf "Build file(s) located on %s\n%s",
         hostname(), join( "\n", @{ $distros->{path} } )
-        if $o{'qa'} || !$o{'cleanup!'};
+        if $o{'qa'} or !$o{'cleanup!'};
 
     notify();
 }
