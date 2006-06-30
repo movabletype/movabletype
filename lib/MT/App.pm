@@ -275,7 +275,7 @@ sub touch_blogs {
 sub add_breadcrumb {
     my $app = shift;
     push @{ $app->{breadcrumbs} }, {
-        bc_name => $app->translate($_[0]),
+        bc_name => $_[0],
         bc_uri => $_[1],
     }
 }

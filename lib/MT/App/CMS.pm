@@ -2148,7 +2148,6 @@ sub edit_object {
             }
         } elsif ($type eq 'template') {
             $param{nav_templates} = 1;
-            $param{name} = $app->translate($param{name});
             my $tab;
             if ($obj->type eq 'index') {
                 $tab = 'index';
@@ -2164,13 +2163,17 @@ sub edit_object {
                             '_type' => 'template',
                             'blog_id' => $obj->blog_id,
                             'tab' => $tab }));
-            $app->add_breadcrumb($obj->name);
             $blog_id = $obj->blog_id;
             $param{has_name} = $obj->type eq 'index' ||
                                $obj->type eq 'custom' ||
                                $obj->type eq 'archive' ||
                                $obj->type eq 'category' ||
                                $obj->type eq 'individual';
+            if ($param{has_name}) {
+                $app->add_breadcrumb($obj->name);
+            } else {
+                $app->add_breadcrumb($app->translate($obj->name));
+            }
             $param{has_outfile} = $obj->type eq 'index';
             $param{has_rebuild} = $obj->type eq 'index';
             $param{custom_dynamic} = ($blog->custom_dynamic_templates||"") 
@@ -2352,7 +2355,7 @@ sub edit_object {
             $param{nav_trackbacks} = 1;
             $app->add_breadcrumb($app->translate('TrackBacks'),
                 $app->uri('mode' => 'list_pings', args => { blog_id => $blog_id }));
-            $app->add_breadcrumb('Edit TrackBack');
+            $app->add_breadcrumb($app->translate('Edit TrackBack'));
             $param{approved} = $app->param('approved');
             $param{unapproved} = $app->param('unapproved');
             require MT::Trackback;
@@ -8290,7 +8293,7 @@ sub start_upload {
     my $blog_id = $app->param('blog_id');
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id, {cached_ok=>1});
-    $app->add_breadcrumb('Upload File');
+    $app->add_breadcrumb($app->translate('Upload File'));
     my %param;
     my $label_path;
     if ($param{enable_archive_paths}) {
