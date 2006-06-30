@@ -36,11 +36,11 @@ my @distlist = split(/,/, $distlist);
 my @languages = split(/,/, $langlist);
 @languages = qw( en_US nl fr de es ja) unless @languages;
 
-my $extlib_base = undef;
-if (grep { /^ja$/o } @languages) {
-    $extlib_base = $ARGV[0] or die "Need an extlib directory for the extra extlibs!";
-    $extlib_base .= "/extlib";
-}
+#my $extlib_base = undef;
+#if (grep { /^ja$/o } @languages) {
+#    $extlib_base = $ARGV[0] or die "Need an extlib directory for the extra extlibs!";
+#    $extlib_base .= "/extlib";
+#}
 
 my @libs = qw( html-template image-size file-spec file-temp uri libwww-perl cgi soap-lite );
 
@@ -75,9 +75,9 @@ for my $lang (@languages) {
     mkmanifest();
     manicopy(maniread(), $distname, 'best');
 
-    if ($lang eq 'ja') {
-        system("cp -R ${extlib_base}/* ${distname}/extlib/");
-    }
+#    if ($lang eq 'ja') {
+#        system("cp -R ${extlib_base}/* ${distname}/extlib/");
+#    }
 
     system("find $distname -name .exists | xargs rm");
 
