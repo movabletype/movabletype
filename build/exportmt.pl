@@ -105,10 +105,12 @@ else {
     chomp $o{'repo-uri=s'};
     $o{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
     if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/(\w+)\/mt/ ) {
+        my( $key, $val ) = ( $1, $2 );
         # The repo is embedded in the repo uri.
-        $o{'repo=s'} = join '/', $1, $2;
+        $o{'repo=s'} = join '/', $key, $val;
         # Set branch or tag, otherwise trunk is used.
-        $o{ $1.'=s' } = $2 if $2;
+        $key =~ s/e?s$//;
+        $o{ lc($key) . '=s' } = lc($val) if $val;
     }
 }
 
@@ -197,6 +199,8 @@ verbose( sprintf( 'Running with options: %s', Dumper \%o ),
     "Make dir: $o{'make=s'}",
     "Svn revision: $revision",
 ) if $o{'debug'};
+#
+######################################################################
 
 # Get any existing distro, with the same path name, out of the way.
 if( -d $o{'export=s'} ) {
@@ -287,7 +291,6 @@ if( $o{'deploy:s'} ) {
                 unless $o{'debug'};
             verbose( "Copied $dist to $dest" );
 
-# XXX We assume there is only one archive file.
             # Install if we are locally staging.
             if( $o{'stage'} ) {
                 chdir $o{'stage-dir=s'} or
@@ -301,6 +304,18 @@ if( $o{'deploy:s'} ) {
                     verbose( "Removed: $dest" );
                 }
 
+                # Do we have a current symlink?
+                my $link = $o{'branch=s'} || $o{'tag=s'};
+                $link .= "-$o{'lang=s'}" unless $o{'lang=s'} =~ /^en/o;
+                my $current = '';
+                $current = readlink( $link ) if -e $link;
+                $current =~ s/\/$//;
+                # Database named the same as the distribution (but with _'s).
+                (my $current_db = $current) =~ s/[.-]/_/g;
+
+                # Drop previous directory.
+                rmtree( $current ) || warn( "Can't rmtree '$current': $!" );
+
                 my $tar;
                 unless( $o{'debug'} ) {
                     verbose( "Extracting $dest..." );
@@ -308,14 +323,6 @@ if( $o{'deploy:s'} ) {
                     $tar->extract();
                 }
                 verbose( "Extracted $dest" );
-
-                # Do we have a current symlink?
-                my $current = '';
-                $current = readlink( $o{'append:s'} )
-                    if -e $o{'append:s'};
-                $current =~ s/\/$//;
-                # Database named the same as the distribution (but with _'s).
-                (my $current_db = $current) =~ s/[.-]/_/g;
 
                 # Grab the literal build directory name.
                 my $stage_dir = fileparse(
@@ -336,7 +343,7 @@ if( $o{'deploy:s'} ) {
 
                 # Set the staging URL to a real location now.
                 my $url = sprintf '%s/%s/',
-                    $o{'stage-uri=s'}, ($o{'append:s'} || $stage_dir);
+                    $o{'stage-uri=s'}, $stage_dir;
 
                 # Give unto us a shiny, new config file.
                 my $config = 'mt-config.cgi';
@@ -383,57 +390,27 @@ CONFIG
                 verbose( 'Changed back to staging root' );
 
                 # Now we re-link the stamped directory to the append string.
-                if( $o{'symlink!'} && ( !$current || $current ne $stage_dir ) ) {
-                    # Drop current symlink.
-                    if( !$o{'debug'} && $o{'symlink!'} ) {
-                        unlink( $o{'append:s'} ) or
-                            warn "Can't unlink $o{'append:s'}: $!"
+                if( $o{'symlink!'} ) {
+                    unless( $o{'debug'} ) {
+                        # Drop current symlink.
+                        unlink( $link ) || warn( "Can't unlink '$link': $!" );
+                        warn "Unlinked $link\n";
+                        # Relink the staged directory.
+                        symlink( "$stage_dir/", $link ) ||
+                            warn( "Can't symlink $stage_dir/ to $link: $!" );
                     }
-                    # Drop previous directory.
-                    if( !$o{'debug'} && $current && -d $current ) {
-                        rmtree( $current ) or
-                            die "Can't rmtree $current: $!"
-                    }
-                    # Relink the staged directory.
-                    symlink( "$stage_dir/", $o{'append:s'} ) or
-                        warn "Can't symlink $stage_dir/ to $o{'append:s'}: $!"
-                        unless $o{'debug'};
-                    verbose( "Symlink'd $stage_dir/ to $o{'append:s'}" );
+                    verbose( "Symlink'd $stage_dir/ to $link" );
                 }
 
-                # Do we have a current archive file symlink?
-                my $build = $o{'append:s'} . $o{'arch=s'};
-                $current = '';
-                $current = readlink( $build ) if -e $build;
-
-                if( !$o{'ldap'} && $o{'symlink!'} && ( !$current || $current ne "$stage_dir$o{'arch=s'}" ) ) {
-                    # Drop current symlink.
-                    if( !$o{'debug'} && $build && -e $build ) {
-                        unlink( $build ) or die "Can't remove $build: $!"
-                    }
-                    # Drop previous build file.
-                    if( !$o{'debug'} && $current && -e $current ) {
-                        unlink( $current ) or
-                            die "Can't unlink $current $!"
-                    }
-                    # Relink the staged build file.
-                    symlink( "$stage_dir$o{'arch=s'}", $build ) or
-                        die "Can't symlink $stage_dir$o{'arch=s'} to $build $!"
-                        unless $o{'debug'};
-                    verbose(
-                        "Symlink'd $stage_dir$o{'arch=s'} to $o{'append:s'}$o{'arch=s'}"
-                    );
-                }
-
-                if( !$o{'debug'} || !$o{'symlink!'} ) {
+                unless( $o{'debug'} and $o{'symlink!'} ) {
                     # Make sure we can get to our symlink.
                     $url = sprintf "%s/%s/mt.cgi",
-                        $o{'stage-uri=s'}, $o{'append:s'};
+                        $o{'stage-uri=s'}, $link;
                     die "ERROR: Staging $url can't be resolved."
                         unless $ua->head( $url );
                     # Make sure we can get to our archive file symlink.
                     $url = sprintf '%s/%s%s',
-                        $o{'stage-uri=s'}, $o{'append:s'}, $o{'arch=s'};
+                        $o{'stage-uri=s'}, $stage_dir, $o{'arch=s'};
                     die "ERROR: Staging $url can't be resolved."
                         unless $ua->head( $url );
                 }
@@ -451,7 +428,7 @@ CONFIG
                     my $new_fh = IO::File->new( '> ' . $new_html );
                     while( <$old_fh> ) {
                         my $line = $_;
-                        if( /id="($o{'append:s'}(?:$o{'arch=s'}))"/ ) {
+                        if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
                             my $id = $1;
                             verbose( "Matched id=$id" );
                             $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
