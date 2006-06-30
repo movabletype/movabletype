@@ -90,9 +90,10 @@ $o{'app=s'} = $ENV{BUILD_PACKAGE};
 (my $short_lang = $o{'lang=s'}) =~ s/([a-z]+)_[A-Z]+$/$1/;
 
 # Grab our repository revision from the environment.
-my $revision = qx{ /usr/bin/svn info | grep 'Changed Rev' };
+my $revision = qx{ /usr/bin/svn info | grep 'Revision' };
 chomp $revision;
-$revision =~ s/^Last Changed Rev: (\d+)$/r$1/o;
+$revision =~ s/^Revision: (\d+)$/r$1/o;
+die "R: $revision\n";
 die $revision if $revision =~ /is not a working copy/;
 
 # Figure out what repository we are using.
