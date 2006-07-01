@@ -75,8 +75,8 @@ lang-it
 ^tools/write-default-templates
 
 # Plugins
-plugins/StyleCatcher
-plugins/WidgetManager
+#plugins/StyleCatcher
+#plugins/WidgetManager
 plugins/feeds-app-lite
 
 # Build process and distribution files
