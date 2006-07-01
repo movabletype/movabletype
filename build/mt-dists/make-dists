@@ -14,6 +14,8 @@ my $distlist = '';
 my $langlist = $ENV{BUILD_LANGUAGE};
 my $stamp = '';
 my $package = 'MT';
+my $skip = 'MANIFEST.SKIP';
+my $skip_bak = "$skip.BAK";
 
 GetOptions(
     'dist:s' => \$distlist,
@@ -34,17 +36,8 @@ my $orig = eval {
 
 my @distlist = split(/,/, $distlist);
 my @languages = split(/,/, $langlist);
-@languages = qw( en_US nl fr de es ja) unless @languages;
-
-#my $extlib_base = undef;
-#if (grep { /^ja$/o } @languages) {
-#    $extlib_base = $ARGV[0] or die "Need an extlib directory for the extra extlibs!";
-#    $extlib_base .= "/extlib";
-#}
-
+@languages = qw( en_US nl fr de es ja ) unless @languages;
 my @libs = qw( html-template image-size file-spec file-temp uri libwww-perl cgi soap-lite );
-
-# ?
 my @licenses = qw( LICENSE-PERSONAL LICENSE-COMMERCIAL );
 
 for my $lang (@languages) {
@@ -67,17 +60,14 @@ for my $lang (@languages) {
     system("make");
     die $? if $?; # XXX Not the friendliest way to fail after a system call:
 
-    if ($lang eq 'ja') {
-        move("MANIFEST.SKIP", "MANIFEST.SKIP.BAK");
-        move("MANIFEST.SKIP.JA", "MANIFEST.SKIP");
+    my $lang_skip = $skip .'.'. uc($lang);
+    if (-e $skip) {
+        move($skip, "$skip.BAK");
+        move($lang_skip, $skip);
     }           
 
     mkmanifest();
     manicopy(maniread(), $distname, 'best');
-
-#    if ($lang eq 'ja') {
-#        system("cp -R ${extlib_base}/* ${distname}/extlib/");
-#    }
 
     system("find $distname -name .exists | xargs rm");
 
@@ -92,8 +82,7 @@ for my $lang (@languages) {
 }
 
 END {
-    move("MANIFEST.SKIP.BAK", "MANIFEST.SKIP")
-        if -e "MANIFEST.SKIP.BAK";
+    move($skip_bak, $skip) if -e $skip_bak;
 }
 
 sub shell {
