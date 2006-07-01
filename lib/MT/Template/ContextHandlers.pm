@@ -1348,19 +1348,34 @@ sub _hdlr_entries {
             $no_resort = 1;
         }
     } else {
-        my $offset;
-        if ($offset = $args->{offset}) {
-            if ($offset < scalar @$entries) {
-                @entries = @{$entries}[$offset,];
-            } else {
-                @entries = ();
+        if (@filters) {
+            my $i = 0; my $j = 0;
+            my $off = $args->{offset} || 0;
+            my $n = $args->{lastn};
+            ENTRY2: foreach my $e (@$entries) {
+                for (@filters) {
+                    next ENTRY2 unless $_->($e);
+                }
+                next if $off && $j++ < $off;
+                push @entries, $e;
+                $i++;
+                last if $n && $i >= $n;
             }
         } else {
-            @entries = @$entries;
-        }
-        if (my $last = $args->{lastn}) {
-            if (scalar @entries > $last) {
-                @entries = @entries[0..$last-1];
+            my $offset;
+            if ($offset = $args->{offset}) {
+                if ($offset < scalar @$entries) {
+                    @entries = @{$entries}[$offset,];
+                } else {
+                    @entries = ();
+                }
+            } else {
+                @entries = @$entries;
+            }
+            if (my $last = $args->{lastn}) {
+                if (scalar @entries > $last) {
+                    @entries = @entries[0..$last-1];
+                }
             }
         }
     }

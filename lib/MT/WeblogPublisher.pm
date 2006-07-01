@@ -333,7 +333,7 @@ sub _rebuild_entry_archive_type {
                                     { range_incl => { created_on => 1 } });
             \@e;
         };
-        $ctx->stash('archive_entries', delay($entries));
+        $ctx->stash('entries', delay($entries));
     } elsif ($at eq 'Weekly') {
         my($start, $end) = start_end_week($entry->created_on, $blog);
         $ctx->{current_timestamp} = $start;
@@ -345,7 +345,7 @@ sub _rebuild_entry_archive_type {
                                     { range_incl => { created_on => 1 } });
             \@e;
         };
-        $ctx->stash('archive_entries', delay($entries));
+        $ctx->stash('entries', delay($entries));
     } elsif ($at eq 'Monthly') {
         my($start, $end) = start_end_month($entry->created_on, $blog);
         $ctx->{current_timestamp} = $start;
@@ -357,7 +357,7 @@ sub _rebuild_entry_archive_type {
                                     { range_incl => { created_on => 1 } });
             \@e;
         };
-        $ctx->stash('archive_entries', delay($entries));
+        $ctx->stash('entries', delay($entries));
     } elsif ($at eq 'Category') {
         my $cat;
         unless ($cat = $param{Category}) {
@@ -373,7 +373,7 @@ sub _rebuild_entry_archive_type {
                                       { category_id => $cat->id } ] });
             \@e;
         };
-        $ctx->stash('archive_entries', delay($entries));
+        $ctx->stash('entries', delay($entries));
     }
     
     my $fmgr = $blog->file_mgr;
