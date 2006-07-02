@@ -2169,11 +2169,10 @@ sub edit_object {
                                $obj->type eq 'archive' ||
                                $obj->type eq 'category' ||
                                $obj->type eq 'individual';
-            if ($param{has_name}) {
-                $app->add_breadcrumb($obj->name);
-            } else {
-                $app->add_breadcrumb($app->translate($obj->name));
+            if (!$param{has_name}) {
+                $param{name} = $app->translate($obj->name);
             }
+            $app->add_breadcrumb($param{name});
             $param{has_outfile} = $obj->type eq 'index';
             $param{has_rebuild} = $obj->type eq 'index';
             $param{custom_dynamic} = ($blog->custom_dynamic_templates||"") 
