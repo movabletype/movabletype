@@ -434,7 +434,7 @@ CONFIG
                     my $new_fh = IO::File->new( '> ' . $new_html );
                     while( <$old_fh> ) {
                         my $line = $_;
-                        if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
+                        if( !$o{'ldap'} && /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
                             my $id = $1;
                             verbose( "Matched id=$id" );
                             $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
