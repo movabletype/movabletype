@@ -15,7 +15,7 @@ my $langlist = $ENV{BUILD_LANGUAGE};
 my $stamp = '';
 my $package = 'MT';
 my $skip = 'MANIFEST.SKIP';
-my $skip_bak = "$skip.BAK";
+my $skip_bak = "$skip.bak";
 
 GetOptions(
     'dist:s' => \$distlist,
@@ -58,11 +58,11 @@ for my $lang (@languages) {
     print "---------------- Building " . $ENV{BUILD_LANGUAGE} . " ----------------" . "\n";
     system("make clean");  # to clean MT.pm and MT/ConfigMgr.pm
     system("make");
-    die $? if $?; # XXX Not the friendliest way to fail after a system call:
+    die $? if $?; # XXX This is not the friendliest way to fail after a system call.
 
-    my $lang_skip = $skip .'.'. uc($lang);
+    my $lang_skip = "$skip.$lang";
     if (-e $skip) {
-        move($skip, "$skip.BAK");
+        move($skip, $skip_bak);
         move($lang_skip, $skip);
     }           
 
@@ -83,9 +83,4 @@ for my $lang (@languages) {
 
 END {
     move($skip_bak, $skip) if -e $skip_bak;
-}
-
-sub shell {
-    print $_[0], "\n";
-    system $_[0];
 }
