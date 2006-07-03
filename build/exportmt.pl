@@ -423,7 +423,7 @@ CONFIG
             }
 
             # Update the staging html.
-            if( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} ) {
+            if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
                 my $stage_dir = fileparse( $dest, split /\s*,\s*/, $o{'arch=s'} );
                 my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
                 unless( $o{'debug'} ) {
@@ -434,7 +434,7 @@ CONFIG
                     my $new_fh = IO::File->new( '> ' . $new_html );
                     while( <$old_fh> ) {
                         my $line = $_;
-                        if( !$o{'ldap'} && /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
+                        if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
                             my $id = $1;
                             verbose( "Matched id=$id" );
                             $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
