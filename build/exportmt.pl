@@ -349,7 +349,7 @@ if( $o{'deploy:s'} ) {
 
                 # Set the staging URL to a real location now.
                 my $url = sprintf '%s/%s/',
-                    $o{'stage-uri=s'}, $stage_dir;
+                    $o{'stage-uri=s'}, ($link || $stage_dir);
 
                 # Give unto us a shiny, new config file.
                 my $config = 'mt-config.cgi';
