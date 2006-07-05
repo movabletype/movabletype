@@ -75,7 +75,7 @@ function dec_ts($ts) {
                 if ($d == 0) {
                     $mo--;
                     if ($mo == 0) {
-                        $mo = 1; $y--;
+                        $mo = 12; $y--;
                     }
                     $d = days_in($mo, $y);
                 }
