@@ -10,7 +10,7 @@
  ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
 </MTIgnore>
 <MTNoSearch><MTElse>
-   <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+   <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
 </MTElse></MTNoSearch>      
    <title><MT_TRANS phrase="Search Results"></title>
 </head>
@@ -36,7 +36,7 @@
                       <h2 class="search-results-header"><MT_TRANS phrase="Search this site"></h2>
                       <form method="post" action="<$MTCGIPath$><$MTSearchScript$>" id="search-form">
                          <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
-                         <p><input type="text" size="30" name="search" id="search" value="<$MTSearchString$>" /> <input type="submit" value="<MT_TRANS phrase="Search">" /></p>
+                         <p><input type="text" size="30" name="search" id="search" value="<$MTSearchString encode_html="1"$>" /> <input type="submit" value="<MT_TRANS phrase="Search">" /></p>
                          <p id="search-options"><input type="checkbox" name="CaseSearch" /> <MT_TRANS phrase="Match case"> <input type="checkbox" name="RegexSearch" /> <MT_TRANS phrase="Regex search"></p>
                       </form>
                       </MTIfStraightSearch>
@@ -139,7 +139,7 @@
                                  <h2 class="module-header"><MT_TRANS phrase="Feed Subscription"></h2>
                                  <p><$MTGetVar name="search_feed_description">  [<a href="<MT_TRANS phrase="http://www.sixapart.com/about/feeds">"><MT_TRANS phrase="What is this?"></a>]</p>
                                  <p>
-                                     <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<$MTGetVar name="search_feed_text"$>" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<MT_TRANS phrase="Subscribe to feed">"><MT_TRANS phrase="Subscribe to feed"></a>
+                                     <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<$MTGetVar name="search_feed_text"$>" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<MT_TRANS phrase="Subscribe to feed">"><MT_TRANS phrase="Subscribe to feed"></a>
                                  </p>
                              </div>
                           </div>
