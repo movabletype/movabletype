@@ -1348,6 +1348,14 @@ sub _hdlr_entries {
             $no_resort = 1;
         }
     } else {
+        my $so = $args->{sort_order} || $ctx->stash('blog')->sort_order_posts || '';
+        my $col = $args->{sort_by} || 'created_on';
+        # TBD: check column being sorted; if it is numeric, use numeric sort
+        @$entries = $so eq 'ascend' ?
+            sort { $a->$col() cmp $b->$col() } @$entries :
+            sort { $b->$col() cmp $a->$col() } @$entries;
+        $no_resort = 1;
+
         if (@filters) {
             my $i = 0; my $j = 0;
             my $off = $args->{offset} || 0;
@@ -1365,7 +1373,7 @@ sub _hdlr_entries {
             my $offset;
             if ($offset = $args->{offset}) {
                 if ($offset < scalar @$entries) {
-                    @entries = @{$entries}[$offset,];
+                    @entries = @$entries[$offset..$#$entries];
                 } else {
                     @entries = ();
                 }
