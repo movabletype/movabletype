@@ -662,19 +662,19 @@ class MTDatabaseBase extends ezsql {
 
     function &fetch_entry_tags($args) {
         # load tags
-        if (isset($args['blog_id'])) {
-            if (!isset($args['tag'])) {
-                if (isset($this->_blog_tag_cache[$args['blog_id']]))
-                    return $this->_blog_tag_cache[$args['blog_id']];
-            }
-            $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
-        }
         if (isset($args['entry_id'])) {
-            if (!isset($args['tag'])) {
+            if (!isset($args['tags'])) {
                 if (isset($this->_entry_tag_cache[$args['entry_id']]))
                     return $this->_entry_tag_cache[$args['entry_id']];
             }
             $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['entry_id']).')';
+        }
+        if (isset($args['blog_id'])) {
+            if (!isset($args['tags'])) {
+                if (isset($this->_blog_tag_cache[$args['blog_id']]))
+                    return $this->_blog_tag_cache[$args['blog_id']];
+            }
+            $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
         }
         if (!isset($args['include_private'])) {
             $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
