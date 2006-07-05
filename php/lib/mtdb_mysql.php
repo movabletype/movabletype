@@ -111,9 +111,20 @@ class MTDatabase_mysql extends MTDatabaseBase {
     function &fetch_entry_tags($args) {
         # load tags
         if (isset($args['entry_id'])) {
-            return $this->fetch_tags_by_entry($args);
+            if (!isset($args['tags'])) {
+                if (isset($this->_entry_tag_cache[$args['entry_id']]))
+                    return $this->_entry_tag_cache[$args['entry_id']];
+            }
+            $tags =& $this->fetch_tags_by_entry($args);
+            if (!isset($args['tags']))
+                $this->_entry_tag_cache[$args['entry_id']] = $tags;
+            return $tags;
         }
         if (isset($args['blog_id'])) {
+            if (!isset($args['tags'])) {
+                if (isset($this->_blog_tag_cache[$args['blog_id']]))
+                    return $this->_blog_tag_cache[$args['blog_id']];
+            }
             $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
         }
         if (!isset($args['include_private'])) {
