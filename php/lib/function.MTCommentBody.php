@@ -4,8 +4,9 @@ function smarty_function_MTCommentBody($args, &$ctx) {
     $text = $comment['comment_text'];
 
     $blog = $ctx->stash('blog');
-    require_once("MTUtil.php");
-    $text = munge_comment($text, $blog);
+    if (!$blog['blog_allow_comment_html']) {
+        $text = strip_tags($text);
+    }
     $cb = $blog['blog_convert_paras_comments'];
     if ($cb == '1' || $cb == '__default__') {
         $cb = 'convert_breaks';
@@ -16,7 +17,9 @@ function smarty_function_MTCommentBody($args, &$ctx) {
             $text = $mod($text);
         }
     }
-
+    if ($blog['blog_autolink_urls']) {
+        $text = preg_replace('!(^|\s|>)(https?://[^\s<]+)!s', '$1<a href="$2">$2</a>', $text);
+    }
     return $text;
 }
 ?>
