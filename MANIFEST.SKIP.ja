@@ -1,0 +1,95 @@
+^schemas
+\bknown-issues
+^t/
+^db
+^ToDo$
+^README
+
+# License files.
+^LICENSE$
+^LICENSE-PERSONAL$
+^LICENSE-BETA$
+^LICENSE-COMMERCIAL$
+
+# Revision files.
+\bCVS\b
+\bRCS\b
+\.svn\b
+,v$
+
+# Hidden, temp and backup files.
+~$
+^\.#
+\.bak$
+\.old$
+\.swp$
+\.tmp$
+^\.DS_Store$
+
+# Doc files.
+^mt-static/docs
+^mt-static/docs/.*\.txt
+^mt-static/docs/.*\.pod
+^mt-static/docs/mtweblogs.*
+^mt-static/docs/mtapi
+^mt-static/docs/mttrackback
+^mt-static/docs/mtmanual-full.html$
+^docs-.*/
+
+# Packages
+^lib/MT/FileMgr/SFTP.pm$
+^lib/MT/FileMgr/FTP.pm$
+^lib/MT/FileMgr/DAV.pm$
+^extlib/share
+^extlib/pkg
+^extlib/perllocal.po
+Tangent\.pm$
+/no\.pm$
+#/ja\.pm$
+/it\.pm$
+
+# Language
+lang-es
+lang-no
+lang-ja
+lang-it
+\.(en_us|fr|de|gb|ja|en|no|it)$
+
+# Tools
+^mt-inbox.pl$
+^mt-thread.cgi$
+^mt-set-reg.cgi$
+^mt-load.cgi
+#^tools/find-junk
+#^tools/list-index
+#^tools/list-objects
+^tools/mt-tools
+^tools/mt-tools.tar.gz
+^tools/mt-tools.zip
+#^tools/rebuild-indexes
+#^tools/rebuild-pages
+#^tools/remove-object
+#^tools/run-periodic-tasks
+#^tools/sig-validate
+#^tools/upgrade
+^tools/write-default-templates
+
+# Plugins
+#plugins/StyleCatcher
+#plugins/WidgetManager
+plugins/feeds-app-lite
+
+# Build process and distribution files
+\.pre$
+^MANIFEST
+Makefile
+^_build
+^build
+^Build.*$
+^blib/
+^pm_to_blib$
+^MT-
+^MT.*\.zip
+^MT.*\.gz
+index\.html\..*
+build-language-stamp
