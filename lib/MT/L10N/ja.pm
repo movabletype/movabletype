@@ -2300,7 +2300,7 @@ use vars qw( @ISA %Lexicon );
     'UTC+13 (New Zealand Daylight Savings Time)' => 'UTC+13 (トンガ)',
     'UTC+12 (International Date Line East)' => 'UTC+12 (ニュージーランド標準時)',
     'UTC+11' => 'UTC+11 (ニューカレドニア)',
-    '    UTC+10 (East Australian Time)' => 'UTC+10 (オーストラリア東部標準時)',
+    'UTC+10 (East Australian Time)' => 'UTC+10 (オーストラリア東部標準時)',
     'UTC+9.5 (Central Australian Time)' => 'UTC+9.5 (中央オーストラリア標準時)',
     'UTC+9 (Japan Time)' => 'UTC+9 (日本標準時)',
     'UTC+8 (China Coast Time)' => 'UTC+8 (中国標準時)',
