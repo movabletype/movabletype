@@ -108,38 +108,40 @@ sub handler_for      {
 }
 
 {
-    my @order = qw(filters trim_to trim ltrim rtrim decode_html
-                   decode_xml remove_html dirify sanitize
-                   encode_html encode_xml encode_js encode_php
-                   encode_url upper_case lower_case strip_linefeeds
-                   space_pad zero_pad sprintf);
-    my %order;
-    {
+    my (@order, %order);
+    BEGIN {
+        @order = qw(filters trim_to trim ltrim rtrim decode_html
+                    decode_xml remove_html dirify sanitize
+                    encode_html encode_xml encode_js encode_php
+                    encode_url upper_case lower_case strip_linefeeds
+                    space_pad zero_pad sprintf);
         my $el = 0; %order = map { $_ => ++$el } @order;
     }
-    sub post_process_handler {
-        sub {
-            my($ctx, $args, $str, $arglist) = @_;
-            # in the event that we don't have arglist,
-            # we'll build it using the hashref we do have
-            # we might as well preserve the original ordering
-            # of processing as well, since it's better than
-            # the pseudo random order we get from retrieving the
-            # keys from the hash.
-            unless ($arglist) {
-                $arglist = [];
-                push @$arglist, [ $_, $args->{$_} ] foreach
-                    sort { $order{$a} <=> $order{$b} } keys %$args;
-            }
-            for my $arg (@$arglist) {
-                my ($name, $val) = @$arg;
-                next unless exists $args->{$name};
-                if (my $code = $Global_filters{$name} || $Filters{$name}) {
-                    $str = $code->($str, $val, $ctx);
-                }
-            }
-            $str;
+    sub stock_post_process_handler {
+        my($ctx, $args, $str, $arglist) = @_;
+        # in the event that we don't have arglist,
+        # we'll build it using the hashref we do have
+        # we might as well preserve the original ordering
+        # of processing as well, since it's better than
+        # the pseudo random order we get from retrieving the
+        # keys from the hash.
+        unless ($arglist) {
+            $arglist = [];
+            push @$arglist, [ $_, $args->{$_} ] foreach
+                sort { $order{$a} <=> $order{$b} }
+                grep { exists $Filters{$_} } keys %$args;
         }
+        for my $arg (@$arglist) {
+            my ($name, $val) = @$arg;
+            next unless exists $args->{$name};
+            if (my $code = $Global_filters{$name} || $Filters{$name}) {
+                $str = $code->($str, $val, $ctx);
+            }
+        }
+        $str;
+    }
+    sub post_process_handler {
+        \&stock_post_process_handler;
     }
 }
 
