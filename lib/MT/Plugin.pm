@@ -110,6 +110,10 @@ sub init_app {
             }
         }
     }
+    # Localize these settings which are used by add_plugin_action to
+    # construct the hyperlinks to the plugin CGI.
+    local $MT::plugin_sig = $plugin->{plugin_sig};
+    local $MT::plugin_envelope = $plugin->envelope;
     if (my $actions = $plugin->app_action_links) {
         if (my $app_actions = $actions->{$app_pkg}) {
             if (ref $app_actions eq 'ARRAY') {
