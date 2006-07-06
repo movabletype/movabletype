@@ -43,7 +43,7 @@ sub add_plugin_action {
     }
     $action_link .= '?' unless $action_link =~ m.\?.;
     push @{$MT::Plugins{$plugin_sig}{actions}}, "$object_type Action" if $plugin_sig;
-    my $page = $app->config('CGIPath');
+    my $page = $app->config('AdminCGIPath') || $app->config('CGIPath');
     $page .= '/' unless $page =~ m!/$!;
     $page .= $plugin_envelope . '/' if $plugin_envelope;
     $page .= $action_link;
