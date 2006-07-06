@@ -204,11 +204,12 @@ sub register_junk_filter {
 
 sub add_plugin_action {
     my $class = shift;
-    if (!ref $class) {
-        my $app = MT->instance;
-        return unless $app->can('add_plugin_action');
-        return $app->add_plugin_action(@_);
-    }
+    return MT->instance->add_plugin_action(@_) unless ref $class;
+}
+
+sub add_itemset_action {
+    my $class = shift;
+    return MT->instance->add_itemset_action(@_) unless ref $class;
 }
 
 sub add_log_class {
