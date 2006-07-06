@@ -180,10 +180,10 @@ TC.attachLoadEvent( init );
 </select>
 </span>
 <span id="filter-exacttag" style="display: none">
-<input type="text" id="exacttag-val" name="filter_val" value="<TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
+<input type="text" id="exacttag-val" name="filter_val" value="<TMPL_IF NAME=FILTER_COL_EXACTTAG><TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML></TMPL_IF><TMPL_IF NAME=FILTER_COL_NORMALIZEDTAG><TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML></TMPL_IF>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
 </span>
 <span id="filter-normalizedtag" style="display: none">
-<input type="text" id="normalizedtag-val" name="filter_val" value="<TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
+<input type="text" id="normalizedtag-val" name="filter_val" value="<TMPL_IF NAME=FILTER_COL_EXACTTAG><TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML></TMPL_IF><TMPL_IF NAME=FILTER_COL_NORMALIZEDTAG><TMPL_VAR NAME=FILTER_VAL ESCAPE=HTML></TMPL_IF>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
 </span>
 <TMPL_IF NAME=CATEGORY_LOOP>
 <span id="filter-category_id" style="display: none">
