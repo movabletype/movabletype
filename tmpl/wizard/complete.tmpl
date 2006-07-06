@@ -6,7 +6,13 @@
 <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>">
 
 
+<TMPL_UNLESS NAME=CONFIG_CREATED>
+<h3><MT_TRANS phrase="We were unable to create your configuration file."></h3>
+<MT_TRANS phrase="If you would like to check the directory permissions and retry, click the 'Retry' button.">
+<TMPL_ELSE>
 <h3><MT_TRANS phrase="Congratulations! You've successfully configured [_1] [_2]." params="<TMPL_VAR NAME=MT_PRODUCT_NAME>%%<TMPL_VAR NAME=MT_VERSION>"></h3>
+<MT_TRANS phrase="The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the 'Back' button below to reconfigure them." params="<TMPL_VAR NAME=CONFIG_FILE>">
+</TMPL_UNLESS>
 
 <p>
 <MT_TRANS phrase="This is a copy of your configuration settings.">
@@ -15,14 +21,6 @@
 <textarea style="width: 100%; height: 300px; font-family: monospace">
 <TMPL_INCLUDE NAME=mt-config.tmpl>
 </textarea>
-
-<p>
-<TMPL_UNLESS NAME=CONFIG_CREATED>
-<MT_TRANS phrase="We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the 'Retry' button.">
-<TMPL_ELSE>
-<MT_TRANS phrase="The above settings have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the 'Back' button below to reconfigure them." params="<TMPL_VAR NAME=CONFIG_FILE>">
-</TMPL_UNLESS>
-</p>
 
 <p>
 <input type="submit" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=optional&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI>'; return false" />
