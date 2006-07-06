@@ -1534,6 +1534,7 @@ use vars qw( @ISA %Lexicon );
     'Retry' => '再試行',
     'Install' => 'インストール',
     "The above settings have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the 'Back' button below to reconfigure them." => '上記の設定で構成ファイル<tt>[_1]</tt>が作成されました。構成が誤っている場合は、戻るボタンで戻って設定をやり直すことができます。',
+    "The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the 'Back' button below to reconfigure them." => '下記の設定でファイル<tt>[_1]</tt>が作成されました。構成が誤っている場合は、戻るボタンで戻って設定をやり直すことができます。',
     ## tmpl/wizard/start.tmpl
     'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'ブラウザでJavaScriptを有効にしないとMovable Typeは動作しません。有効化して表示を更新してください。',
     'Your Movable Type configuration file already exists. The Wizard cannot continue with this file present.' => 'Movable Typeの構成ファイルがすでに存在します。ウィザードは実行できません。',
