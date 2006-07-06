@@ -1526,8 +1526,10 @@ use vars qw( @ISA %Lexicon );
     'Continue' => '次へ',
     'Send Test Email' => 'テストメールを送信',
     ## tmpl/wizard/complete.tmpl
+    'We were unable to create your configuration file.' => '構成ファイルを作成できませんでした',
+    "If you would like to check the directory permissions and retry, click the 'Retry' button." => 'ディレクトリの権限設定を確認してください。再試行ボタンをクリックすると、ウィザードが構成ファイルの作成をもう一度試みます。',
     'Congratulations! You\'ve successfully configured [_1] [_2].' => '[_1] [_2]の構成が終了しました。',
-    'This is a copy of your configuration settings.' => '以下は構成ファイルのコピーです。',
+    'This is a copy of your configuration settings.' => '構成ファイルに記述する内容は以下のとおりです。',
     "We were unable to create your configuration file. If you would like to check the directory permissions and retry, click the 'Retry' button." => '構成ファイルを作成できませんでした。ディレクトリに対して書き込み権限がある場合は、再試行ボタンをクリックすればもう一度処理を行うことができます。',
     'Retry' => '再試行',
     'Install' => 'インストール',
