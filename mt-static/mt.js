@@ -92,7 +92,7 @@ function doRemoveItems (f, singular, plural, nameRestrict, args) {
         return false;
     }
     var toRemove = "";
-    for (var i in f.childNodes) {
+    for (var i = 0; i < f.childNodes.length; i++) {
         if (f.childNodes[i].name == '_type') {
             toRemove = f.childNodes[i].value;
             break;
