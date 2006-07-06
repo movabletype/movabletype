@@ -9,7 +9,9 @@ package MT::App::ActivityFeeds;
 use strict;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
-use MT::Util qw(perl_sha1_digest_hex ts2iso iso2ts encode_html);
+use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts ts2iso iso2ts
+                encode_html);
+use HTTP::Date qw(time2isoz str2time time2str);
 
 sub init {
     my $app = shift;
@@ -103,9 +105,21 @@ sub mode_default {
         my $feed = undef;
         MT->run_callbacks("ActivityFeed.$view", $app, $view, \$feed);
         if (defined $feed) {
-            $app->send_http_header("application/atom+xml");
+            my $last_update;
+            if ($feed =~ m!<updated>(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)</updated>!) {
+                $last_update = time2str(str2time($1));
+            }
+            my $mod_since = $app->get_header('If-Modified-Since');
             $app->{no_print_body} = 1;
-            $app->print($feed);
+            if ($last_update && $mod_since && (str2time($last_update) <= str2time($mod_since))) { 
+                $app->response_code(304);
+                $app->response_message('Not Modified');
+                $app->send_http_header("application/atom+xml");
+            } else {
+                $app->set_header('Last-Modified', $last_update) if $last_update;
+                $app->send_http_header("application/atom+xml");
+                $app->print($feed);
+            }
         } else {
             die MT->errstr;
         }
@@ -129,7 +143,7 @@ sub process_log_feed {
     }
     my $last_mod = $app->get_header('If-Modified-Since');
     if ($last_mod) {
-        $last_mod = iso2ts(undef, $last_mod);
+        $last_mod = epoch2ts(undef, str2time($last_mod));
     }
 
     my $host = $app->base;
@@ -162,11 +176,14 @@ sub process_log_feed {
         $app->blog($blog);
         my $item = $log->to_hash;
         my $ts = $item->{'log.created_on'};
+        last if $last_mod && ($ts < $last_mod);
+
         if (!defined($last_ts) or ($ts gt $last_ts)) {
             $last_ts = $ts;
             $last_ts_blog = $blog;
         }
-        my $ts_iso = ts2iso($blog, $ts);
+        my $ts_iso = time2isoz(ts2epoch(undef, $ts));
+        $ts_iso =~ s/ /T/;
         $item->{'log.created_on_iso'} = $ts_iso;
         my $id = $item->{'log.id'};
         my $year = substr($ts, 0, 4);
@@ -201,7 +218,8 @@ sub process_log_feed {
     $str =~ s/^&amp;(.+)$/?$1/;
     $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;
     $param->{feed_atom_id} = $app->base . $app->uri;
-    $param->{feed_updated_iso} = ts2iso(undef, $last_ts);
+    $param->{feed_updated_iso} = time2isoz(ts2epoch(undef, $last_ts));
+    $param->{feed_updated_iso} =~ s/ /T/;
     $param->{mt_url} = $app->base . $app->mt_uri;
     $param->{static_uri} = $static_path;
     $param->{feed_token} = $token;
