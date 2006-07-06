@@ -871,14 +871,14 @@ sub _hdlr_product_name {
     my $short_name;
     my $code = MT->product_code;
     if ($code eq 'MTE') {
-        $short_name = "Movable Type Enterprise";
+        $short_name = MT->translate("Movable Type Enterprise");
     } else {
-        $short_name = "Movable Type";
+        $short_name = MT->translate("Movable Type");
     }
     if ($args->{version}) {
         return MT->translate("[_1] [_2]", $short_name, MT->version_id);
     } else {
-        return MT->translate($short_name);
+        return $short_name;
     }
 }
 
@@ -903,6 +903,9 @@ sub _hdlr_if_nonempty {
         if (defined($handler)) {
             local $ctx->{__stash}{tag} = $args->{tag};
             $value = $handler->($ctx, { %$args });
+            if (my $ph = $ctx->post_process_handler) {
+                $value = $ph->($ctx, $args, $value);
+            }
         }
     } elsif (exists $args->{var}) {
         $value = $ctx->{__stash}{vars}{$args->{var}};
@@ -923,6 +926,9 @@ sub _hdlr_if_nonzero {
         if (defined($handler)) {
             local $ctx->{__stash}{tag} = $args->{tag};
             $value = $handler->($ctx, { %$args });
+            if (my $ph = $ctx->post_process_handler) {
+                $value = $ph->($ctx, $args, $value);
+            }
         }
     } elsif (exists $args->{var}) {
         $value = $ctx->{__stash}{vars}{$args->{var}};
