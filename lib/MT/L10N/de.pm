@@ -3503,6 +3503,11 @@ sub encoding { 'utf-8' }
     ## ./t/lib/Text/WikiFormat.pm
 
     ## ./t/lib/LWP/UserAgent/Local.pm
+    
+    'You are currently performing a search. Please wait until your search is completed.' => '',
+    'We were unable to create your configuration file.' => 'Die Konfigurationsdatei konnte nicht angelegt werden.',
+    'If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'Bitte überprüfen Sie, ob Schreibrechte für das Verzeichnis vorhanden sind und versuchen es erneut.',
+    'The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.' => 'Die Einstellungen wurden in der Datei <tt>[_1]</tt> gespeichert. Möchten Sie Änderungen vornehmen, klicken Sie auf \'Zurück\' um zur entsprechenden Seite zu gelangen.', 
 );
 
 

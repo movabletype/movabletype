@@ -3507,6 +3507,11 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
     ## ./t/lib/Text/WikiFormat.pm
 
     ## ./t/lib/LWP/UserAgent/Local.pm
+    
+    'You are currently performing a search. Please wait until your search is completed.' => 'Vous êtes en train d\'effectuer une recherche. Merci d\'attendre que la recherche soit finie.',
+    'We were unable to create your configuration file.' => 'Vous n\'avez pas pu créer votre fichier de configuration.',
+    'If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'Si vous souhaitez vérifier les droits du répertoire et essayer à nouveau, cliquez sur le bouton \'Réessayer\'',
+    'The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.' => 'Les réglages ci-dessous ont été écrits dans le fichier <tt>[_1]</tt>. Si certaines valeurs sont incorrectes, vous pouvez cliquer sur le bouton \'retour\' ci-dessous pour les modifier.', 
 );
 
 

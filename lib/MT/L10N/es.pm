@@ -3509,6 +3509,13 @@ Si esta operación no es correcta, puede desbloquear la dirección IP y permitir
     ## ./t/lib/Text/WikiFormat.pm
 
     ## ./t/lib/LWP/UserAgent/Local.pm
+    
+    'You are currently performing a search. Please wait until your search is completed.' => '',
+    'We were unable to create your configuration file.' => 'No se pudo crear el fichero de configuración.',
+    'If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'Si desea comprobar los permisos del directorio y reintentarlo, haga clic en el botón \'Reintentar\'.',
+    'The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.' => 'La configuración de abajo se ha guardado en el fichero <tt>[_1]</tt>. Si cualquiera de estas opciones es incorrecta, puede hacer clic en el botón \'Regresar\' para reconfigurarla.', 
+
+    
 );
 
 
