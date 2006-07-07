@@ -2,8 +2,7 @@
 #
 # $Id$
 #
-# XXX WARNING: Overly rambling, deeply nested logic ahead.
-# XXX Modularization is next.
+# XXX WARNING: Overly rambling, deeply nested logic ahead.  Modularization is underway...
 #
 use strict;
 use warnings;
@@ -290,7 +289,7 @@ if( $o{'deploy:s'} ) {
             verbose( "Copied $dist to $dest" );
 
             # Handle deployent to staging.
-            if( $o{'deploy:s'} eq $o{'stage-uri=s'} ) {
+            if( $o{'deploy:s'} eq $o{'stage-dir=s'} ) {
                 # Do we have a current symlink?
                 my $link = $o{'branch=s'} || $o{'tag=s'};
                 $link .= "-$short_lang" if $short_lang ne 'en';
@@ -637,14 +636,21 @@ sub usage {
 
  Examples:
 
- cd \$MT_DIR; svn up;
+ cd \$MT_DIR
+ svn up
  export BUILD_PACKAGE=MT
  export BUILD_LANGAGE=ja
  export BUILD_VERSION_ID=3.3-ja
  perl $0 --help
  perl $0 --debug
- perl $0 --build=. --local
- perl $0 --notify=mt-dev\@sixapart.com --qa
+ perl $0 --local
+ perl $0 --qa
+ perl $0 --alpha=1
+ perl $0 --beta=41
+ perl $0 --prod
+
+Please see the full documentation with defaults and command overrides at:
+https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
 
 USAGE
     exit;
