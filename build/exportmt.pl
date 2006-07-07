@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 #
-# Export/build/deployment/notification automation.
-#
 # $Id$
 #
 # XXX WARNING: Overly rambling, deeply nested logic ahead.
@@ -79,8 +77,7 @@ my %o = get_options(
 # Show the usage if requested.
 usage() if $o{'help|h'};
 
-# Set the BUILD_LANGUAGE and BUILD_PACKAGE environment variables
-# unless they are not already defined.
+# Set the BUILD_LANGUAGE and BUILD_PACKAGE environment variables unless they are not already defined.
 $ENV{BUILD_LANGUAGE} ||= $o{'lang=s'};
 $o{'lang=s'} = $ENV{BUILD_LANGUAGE};
 $ENV{BUILD_PACKAGE} ||= $o{'app=s'};
@@ -111,7 +108,7 @@ else {
         my( $key, $val ) = ( $1, $2 );
         # The repo is embedded in the repo uri.
         $o{'repo=s'} = join '/', $key, $val;
-        # Set branch or tag, otherwise trunk is used.
+        # Decide if we are using a branch or a tag (otherwise trunk is used).
         $key =~ s/e?s$//;
         $o{ lc($key) . '=s' } = lc($val) if $val;
     }
@@ -274,8 +271,7 @@ for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
     }
 }
 
-# XXX Below is some frightening #$@&ing logic. See the TO DO section.
-# Deploy the distro.
+# XXX Below is some frightening #$@&ing logic. See the TO DO section.  Deploy the distro.
 if( $o{'deploy:s'} ) {
     # If a colon : is in the deployment string, use scp.
     if( $o{'deploy:s'} =~ /:/ ) {
@@ -292,6 +288,20 @@ if( $o{'deploy:s'} ) {
             copy( $dist, $dest ) or die "Can't copy $dist to $dest: $!"
                 unless $o{'debug'};
             verbose( "Copied $dist to $dest" );
+
+            # Handle deployent to staging.
+            if( $o{'deploy:s'} eq $o{'stage-uri=s'} ) {
+                # Do we have a current symlink?
+                my $link = $o{'branch=s'} || $o{'tag=s'};
+                $link .= "-$short_lang" if $short_lang ne 'en';
+                $link .= '-ldap' if $o{'ldap'};
+                $link .= $o{'arch=s'};
+                my $current = '';
+                $current = readlink( $link ) if -e $link;
+                unlink( $current ) or
+                    warn( "Can't unlink $current: $!" )
+                    unless $current eq $dest;
+            }
 
             # Install if we are locally staging.
             if( $o{'stage'} ) {
@@ -312,9 +322,11 @@ if( $o{'deploy:s'} ) {
                 $link .= '-ldap' if $o{'ldap'};
                 my $current = '';
                 $current = readlink( $link ) if -e $link;
+                # Remove any trailing slash.
                 $current =~ s/\/$//;
                 # Database named the same as the distribution (but with _'s).
                 (my $current_db = $current) =~ s/[.-]/_/g;
+                $current_db .= 'stage_' . $current_db;
 
                 # Drop previous.
                 rmtree( $current ) or warn( "Can't rmtree '$current': $!" );
@@ -339,8 +351,7 @@ if( $o{'deploy:s'} ) {
                     unless $o{'debug'};
                 verbose( "Changed to $stage_dir" );
 
-                # Our database is named the same as the distribution
-                # (but with _'s) except for LDAP.
+                # Our database is named the same as the distribution (but with _'s) except for LDAP.
                 (my $db = $stage_dir) =~ s/[.-]/_/g;
                 # Reset the db to have the same name, if we are LDAP.
                 $db = 'ldap' if $o{'ldap'};
@@ -381,11 +392,11 @@ CONFIG
                     verbose( 'Initializing database.' );
                     # XXX Use DBI ASAP.
                     # Drop the previous database.
-                    verbose_command( "mysqladmin drop $current_db -u root -f" )
+                    verbose_command( "mysqladmin -u root -f drop $current_db" )
                         if $db eq $current_db;
                     # Drop a database of same name.
-                    verbose_command( "mysqladmin drop $db -u root -f" );
-                    verbose_command( "mysqladmin create $db -u root" );
+                    verbose_command( "mysqladmin -u root -f drop $db" );
+                    verbose_command( "mysqladmin -u root create $db" );
                     # Run the upgrade tool.
                     verbose_command( "$^X ./tools/upgrade --name Melody" );
                 }
@@ -511,8 +522,7 @@ sub get_options {
     # Get the command-line options.
     GetOptions( %o );
 
-    # "Un-map" the scalar references so we don't have to say,
-    # ${$o{'foo'}}.
+    # "Un-map" the scalar references so we don't have to say, ${$o{'foo'}}.
     while( my( $key, $val ) = each %o ) {
         $o{$key} = $$val if ref $val eq 'SCALAR';
     }
@@ -620,39 +630,23 @@ sub verbose {
 }
 
 sub usage {
+    # Emit the helpful usage message and then bail out.
     print <<USAGE;
 
- perldoc $0    # Detailed documentation with option defaults
+ MT export build deployment notification automation.
 
+ Examples:
+
+ cd \$MT_DIR; svn up;
+ export BUILD_PACKAGE=MT
+ export BUILD_LANGAGE=ja
+ export BUILD_VERSION_ID=3.3-ja
  perl $0 --help
-
- Simple examples:
-
- cd \$MT_DIR
- perl $0 --tag=FOO --build=mt/builds --local
- perl $0 --branch=BAR --notify=mt-dev\@sixapart.com --qa
- perl $0 --beta=1
-
- Supressing and overriding:
-
-  --append=    # Supress automatic repository stamping.
-  --alpha=42   # Stamps archive with an 'a42' instead of the repo export.
-  --beta=42    # Same as --alpha.
-  --build=/build/under/path  # Export and build under this path.
-  --deploy=    # Supress automatic deployment.
-  --local      # Does not cleanup or deploy anywhere.
-  --mt-dir=~/svn/tinsel  # Used to locate the depency script, make-dists.
-  --name=Foo   # Override the archive name with a string.
-  --nocleanup  # Leaves the build files in the export directory.
-  --nodate     # Supress automatic archive date stamping.
-  --notify=mt-dev\@sixapart.com  # Notify mt-dev.
-  --noverbose  # Supress run-time verbosity.
-  --prod       # Does no archive stamping and notifies mt-dev.
-  --qa         # Reposoitory and date stamps. Cc:'s QA.
-  --stage      # Stamp the archive and deploy to staging.
+ perl $0 --debug
+ perl $0 --build=. --local
+ perl $0 --notify=mt-dev\@sixapart.com --qa
 
 USAGE
-    # And then bail out.
     exit;
 }
 
@@ -664,8 +658,12 @@ MovableType Export/Make/Deploy/Notify Automation
 
 =head1 DESCRIPTION
 
-Please see:
+Please see
 https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
 for full documentation.
+
+=head1 REQUIRES
+
+Currently, this is the 6A internal subversion repository.
 
 =cut
