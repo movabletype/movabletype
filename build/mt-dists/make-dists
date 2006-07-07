@@ -61,7 +61,7 @@ for my $lang (@languages) {
     die $? if $?; # XXX This is not the friendliest way to fail after a system call.
 
     my $lang_skip = "$skip.$lang";
-    if (-e $skip) {
+    if (-e $lang_skip) {
         move($skip, $skip_bak);
         move($lang_skip, $skip);
     }           
