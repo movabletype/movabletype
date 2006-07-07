@@ -2685,7 +2685,7 @@ use vars qw( @ISA %Lexicon );
     'Reset to Defaults' => '初期化',
     'Plugin error:' => 'プラグイン・エラー: ',
     'No plugins with weblog-level configuration settings are installed.' => 'ブログ別に設定するプラグインは見つかりません。',
-    'To download more plugins, check out the <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.' => '<a href="http://www.sixapart.com/pronet/plugins/">プラグイン・ディレクトリ(英語)</a>で、多くのプラグインを紹介しています。',
+    'To download more plugins, check out the <a href="http://www.sixapart.com/pronet/plugins/">Six Apart Plugin Directory</a>.' => '<a href="http://www.sixapart.jp/movabletype/plugins/">プラグイン・ディレクトリ</a>で、多くのプラグインを紹介しています。',
     ## tmpl/cms/feed_link.tmpl
     'Activity Feed (Disabled)' => 'ログ・フィード(利用不可)',
     ## tmpl/cms/category_add.tmpl
