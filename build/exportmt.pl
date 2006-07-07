@@ -238,13 +238,13 @@ sub deploy_distro {
                 verbose( "Copied $dist to $dest" );
 
                 # Handle file deployent to staging.
-                deploy_to_staging();
+                deploy_to_staging( $dest, $short_lang );
 
                 # Install the distro if we are (locally) staging.
                 stage_distro( $dest ) if $o{'stage'};
 
                 # Update the staging html.
-                update_html();
+                update_html( $dest );
 
             }
         }
