@@ -85,44 +85,11 @@ $o{'app=s'} = $ENV{BUILD_PACKAGE};
 # Make en_XX just en.
 (my $short_lang = $o{'lang=s'}) =~ s/en_[A-Z]+$/en/o;
 
-# Grab our repository revision from the environment.
-my $revision = qx{ /usr/bin/svn info | grep 'Revision' };
-chomp $revision;
-$revision =~ s/^Revision: (\d+)$/r$1/o;
-die $revision if $revision =~ /is not a working copy/;
+# Grab our repository revision.
+my $revision = repo_rev();
 
-# Figure out what repository we are using.
-if( $o{'repo-uri=s'} and $o{'repo=s'} ) {
-    $o{'repo=s'} = $o{'branch=s'} ? "branches/$o{'branch=s'}"
-                 : $o{'tag=s'}    ? "tags/$o{'tag=s'}"
-                 : $o{'repo=s'};
-    $o{'repo-uri=s'} = sprintf '%s/%s/mt', $o{'repo-uri=s'}, $o{'repo=s'};
-}
-else {
-    # Grab our repository from the environment.
-    $o{'repo-uri=s'} = qx{ /usr/bin/svn info | grep URL };
-    chomp $o{'repo-uri=s'};
-    $o{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
-    if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/(\w+)\/mt/ ) {
-        my( $key, $val ) = ( $1, $2 );
-        # The repo is embedded in the repo uri.
-        $o{'repo=s'} = join '/', $key, $val;
-        # Decide if we are using a branch or a tag (otherwise trunk is used).
-        $key =~ s/e?s$//;
-        $o{ lc($key) . '=s' } = lc($val) if $val;
-    }
-}
-
-# Make sure that the repository actually exists.
-my $ua = LWP::UserAgent->new;
-my $request = HTTP::Request->new(HEAD => $o{'repo-uri=s'});
-if ($o{'http-user=s'} && $o{'http-pass=s'}) {
-    $request->authorization_basic($o{'http-user=s'}, $o{'http-pass=s'});
-}
-my HTTP::Response $response = $ua->request($request);
-if (!$response->is_success) {
-    die "ERROR: The repoository '$o{'repo-uri=s'}' can't be resolved.";
-}
+# Figure out what repository we are using and make sure we can see it.
+my $ua = set_repo();
 
 # Append the repository unless an append string is already defined.
 $o{'append:s'} = lc( fileparse $o{'repo=s'} ) . "-$revision"
@@ -201,171 +168,198 @@ verbose( sprintf( 'Running with options: %s', Dumper \%o ),
 ######################################################################
 
 # Get any existing distro, with the same path name, out of the way.
-if( -d $o{'export=s'} ) {
-    verbose( "Remove: $o{'export=s'}" );
-    rmtree( $o{'export=s'} ) or die "Can't rmtree $o{'export=s'}: $!"
-        unless $o{'debug'};
-}
+remove_copy();
 
-# Export the build (SVN auto-creates the directory).
-verbose_command( sprintf( '%s export %s%s %s',
-    '/usr/bin/svn',
-    ($o{'verbose!'} ? '' : '--quiet '),
-    $o{'repo-uri=s'},
-    $o{'export=s'}
-));
-
-# Change to the export directory.  XXX Required by the make=s command.
-chdir( $o{'export=s'} ) or die "Can't cd to $o{'export=s'}: $!"
-    unless $o{'debug'};
+# Export the latest files.
+export_em();
 
 # Read-in the configuration variables for substitution.
 my $config = read_conf( "build/mt-dists/$ENV{BUILD_PACKAGE}.mk" );
-my $version    = $config->{PRODUCT_VERSION};
-my $version_id = $o{'shown:s'} || $config->{PRODUCT_VERSION_ID};
+my $version = $config->{PRODUCT_VERSION};
+my $version_id = $ENV{BUILD_VERSION_ID};
 
 # Set non-production footer.
 inject_footer() unless $o{'prod'};
 
+# Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
+# XXX This might be either in conflict with or simplified with BUILD_VERSION_ID.
 my $app = $o{'name:s'}
     ? $stamp
-    : sprintf '%s-%s%s-%s-%s',
-        $o{'app=s'},
-        $version,
+    : sprintf( '%s-%s%s-%s-%s',
+        $o{'app=s'}, $version,
         ($o{'alpha=i'} ? "a$o{'alpha=i'}" : ($o{'beta=i'} ? "b$o{'beta=i'}" : '')),
-        $short_lang,
-        $stamp;
+        $short_lang, $stamp );
 
 verbose_command(
     sprintf( '%s %s --stamp=%s', $^X, $o{'make=s'}, $app )
 );
 
 # Create lists of the actual files that are part of the distribution.
-my $distros = { path => [], url => [] };
-for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
-    for my $arch ( split( /\s*,\s*/, $o{'arch=s'} ) ) {
-        # The filename is the distribution name plus the archive extension.
-        my $filename = $app . $arch;
-        # The distribution is the full export path and filename.
-        my $dist = File::Spec->catdir( $o{'export=s'}, $filename );
-        # The stamp starts life as the distribution name.
-        my $stamped = $dist;
+my $distros = create_distro_list( $app );
 
-        # Move the build file to the drop-zone.
-        if( $o{qa} ) {
-            my $drop = File::Spec->catdir( $o{'build=s'}, $filename );
-            verbose( "Moving $stamped to $drop" );
-            move( $stamped, $drop ) or
-                die "Can't move $stamped to $drop: $!"
-                unless $o{'debug'};
-            $stamped = $drop;
-        }
+# Deploy the distro.
+deploy_distro();
 
-        # Create lists of things to notify about.
-        push @{ $distros->{path} }, $stamped;
-        push @{ $distros->{url} },
-              $o{'stage'}           ? sprintf "%s/%s/mt.cgi", $o{'stage-uri=s'}, $app
-            : $o{'deploy:s'} =~ /:/ ? sprintf '%s/%s', $o{'deploy-uri=s'}, $filename
-            : ();
+# Cleanup the exported files.
+cleanup();
+
+# Send email notification.
+notify() if $o{'notify:s'};
+
+# ------------------------------------------------------------------ #
+# Whew! We made it.
+exit;
+# ------------------------------------------------------------------ #
+
+sub cleanup {
+    if( !$o{'debug'} && $o{'cleanup!'} ) {
+        rmtree( $o{'export=s'} ) or die "Can't rmtree $o{'export=s'}: $!";
+        verbose( "Cleanup: Removed $o{'export=s'}" );
     }
 }
 
-# XXX Below is some frightening #$@&ing logic. See the TO DO section.  Deploy the distro.
-if( $o{'deploy:s'} ) {
-    # If a colon : is in the deployment string, use scp.
-    if( $o{'deploy:s'} =~ /:/ ) {
-        verbose_command( sprintf( '%s %s %s',
-            'scp', join( ' ', @{ $distros->{path} } ), $o{'deploy:s'}
-        ));
-    }
-    else {
-        # Copy the distribution file(s) to the destination.
-        for my $dist ( @{ $distros->{path} } ) {
-            my $dest = File::Spec->catdir(
-                $o{'deploy:s'}, scalar fileparse( $dist )
-            );
-            copy( $dist, $dest ) or die "Can't copy $dist to $dest: $!"
-                unless $o{'debug'};
-            verbose( "Copied $dist to $dest" );
+sub deploy_distro {
+    # XXX Below is some frightening #$@&ing logic. See the TO DO section.
+    if( $o{'deploy:s'} ) {
+        # If a colon : is in the deployment string, use scp.
+        if( $o{'deploy:s'} =~ /:/ ) {
+            verbose_command( sprintf( '%s %s %s',
+                'scp', join( ' ', @{ $distros->{path} } ), $o{'deploy:s'}
+            ));
+        }
+        else {
+            # Copy the distribution file(s) to the destination.
+            for my $dist ( @{ $distros->{path} } ) {
+                my $dest = File::Spec->catdir(
+                    $o{'deploy:s'}, scalar fileparse( $dist )
+                );
+                copy( $dist, $dest ) or die "Can't copy $dist to $dest: $!"
+                    unless $o{'debug'};
+                verbose( "Copied $dist to $dest" );
 
-            # Handle deployent to staging.
-            if( $o{'deploy:s'} eq $o{'stage-dir=s'} ) {
-                # Do we have a current symlink?
-                my $link = $o{'branch=s'} || $o{'tag=s'};
-                $link .= "-$short_lang" if $short_lang ne 'en';
-                $link .= '-ldap' if $o{'ldap'};
-                $link .= $o{'arch=s'};
-                my $current = '';
-                $current = readlink( $link ) if -e $link;
-                unlink( $current ) or
-                    warn( "Can't unlink $current: $!" )
-                    unless $current eq $dest;
+                # Handle file deployent to staging.
+                deploy_to_staging();
+
+                # Install the distro if we are (locally) staging.
+                stage_distro( $dest ) if $o{'stage'};
+
+                # Update the staging html.
+                update_html();
+
+            }
+        }
+
+        # Make sure the deployed distros actually made it.
+        unless( $o{'debug'} ) {
+            for( @{ $distros->{url} } ) {
+                die "ERROR: $_ can't be resolved." unless $ua->head( $_ );
+            }
+        }
+    }
+}
+
+sub update_html {
+    my $dest = shift;
+
+    if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
+        my $stage_dir = fileparse( $dest, split /\s*,\s*/, $o{'arch=s'} );
+        my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
+
+        unless( $o{'debug'} ) {
+            warn "ERROR: $old_html does not exist" unless -e $old_html;
+            warn "Updating $old_html...\n";
+            my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html.new' );
+            my $old_fh = IO::File->new( '< ' . $old_html );
+            my $new_fh = IO::File->new( '> ' . $new_html );
+
+            while( <$old_fh> ) {
+                my $line = $_;
+                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
+                    my $id = $1;
+                    verbose( "Matched id=$id" );
+                    $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
+                        $id,
+                        $o{'stage-uri=s'},
+                        $stage_dir, $o{'arch=s'},
+                        $stage_dir, $o{'arch=s'};
+                }
+                print $new_fh $line;
             }
 
-            # Install if we are locally staging.
-            if( $o{'stage'} ) {
-                chdir $o{'stage-dir=s'} or
-                    die "Can't chdir to $o{'stage-dir=s'}: $!";
-                verbose( "Changed to staging root $o{'stage-dir=s'}" );
+            $old_fh->close;
+            $new_fh->close;
+            move( $new_html, $old_html ) or
+                die "ERROR: Can't move $new_html, $old_html: $!";
+            verbose( "Moved $new_html to $old_html" );
+        }
+    }
+}
 
-                # Remove any existing distro, with the same path name.
-                if( -d $dest ) {
-                    rmtree( $dest ) or die "Can't rmtree $dest: $!"
-                        unless $o{'debug'};
-                    verbose( "Removed: $dest" );
-                }
+sub stage_distro {
+    my $dest = shift;
 
-                # Do we have a current symlink?
-                my $link = $o{'branch=s'} || $o{'tag=s'};
-                $link .= "-$short_lang" if $short_lang ne 'en';
-                $link .= '-ldap' if $o{'ldap'};
-                my $current = '';
-                $current = readlink( $link ) if -e $link;
-                # Remove any trailing slash.
-                $current =~ s/\/$//;
-                # Database named the same as the distribution (but with _'s).
-                (my $current_db = $current) =~ s/[.-]/_/g;
-                $current_db .= 'stage_' . $current_db;
+    chdir $o{'stage-dir=s'} or
+        die "Can't chdir to $o{'stage-dir=s'}: $!";
+    verbose( "Changed to staging root $o{'stage-dir=s'}" );
 
-                # Drop previous.
-                rmtree( $current ) or warn( "Can't rmtree '$current': $!" );
-                unlink( $current . $o{'arch=s'} ) or
-                    warn( "Can't unlink $current$o{'arch=s'}: $!" )
-                    unless $current eq $dest;
+    # Remove any existing distro, with the same path name.
+    if( -d $dest ) {
+        rmtree( $dest ) or die "Can't rmtree $dest: $!"
+            unless $o{'debug'};
+        verbose( "Removed: $dest" );
+    }
 
-                my $tar;
-                unless( $o{'debug'} ) {
-                    verbose( "Extracting $dest..." );
-                    $tar = Archive::Tar->new( $dest );
-                    $tar->extract();
-                }
-                verbose( "Extracted $dest" );
+    # Do we have a current symlink?
+    my $link = $o{'branch=s'} || $o{'tag=s'};
+    $link .= "-$short_lang" if $short_lang ne 'en';
+    $link .= '-ldap' if $o{'ldap'};
+    my $current = '';
+    $current = readlink( $link ) if -e $link;
+    # Remove any trailing slash.
+    $current =~ s/\/$//;
+    # Database named the same as the distribution (but with _'s).
+    (my $current_db = $current) =~ s/[.-]/_/g;
+    $current_db .= 'stage_' . $current_db;
 
-                # Grab the literal build directory name.
-                my $stage_dir = fileparse(
-                    $dest, split /\s*,\s*/, $o{'arch=s'}
-                );
-                # Change to the distribution directory.
-                chdir( $stage_dir ) or die "Can't chdir $stage_dir: $!"
-                    unless $o{'debug'};
-                verbose( "Changed to $stage_dir" );
+    # Drop previous.
+    rmtree( $current ) or warn( "Can't rmtree '$current': $!" );
+    unlink( $current . $o{'arch=s'} ) or
+        warn( "Can't unlink $current$o{'arch=s'}: $!" )
+        unless $current eq $dest;
 
-                # Our database is named the same as the distribution (but with _'s) except for LDAP.
-                (my $db = $stage_dir) =~ s/[.-]/_/g;
-                # Reset the db to have the same name, if we are LDAP.
-                $db = 'ldap' if $o{'ldap'};
-                # Append the handy staging build flag.
-                $db = 'stage_' . $db;
+    my $tar;
+    unless( $o{'debug'} ) {
+        verbose( "Extracting $dest..." );
+        $tar = Archive::Tar->new( $dest );
+        $tar->extract();
+    }
+    verbose( "Extracted $dest" );
 
-                # Set the staging URL to a real location now.
-                my $url = sprintf '%s/%s/',
-                    $o{'stage-uri=s'}, ($o{'symlink!'} ? $link : $stage_dir);
+    # Grab the literal build directory name.
+    my $stage_dir = fileparse(
+        $dest, split /\s*,\s*/, $o{'arch=s'}
+    );
+    # Change to the distribution directory.
+    chdir( $stage_dir ) or die "Can't chdir $stage_dir: $!"
+        unless $o{'debug'};
+    verbose( "Changed to $stage_dir" );
 
-                # Give unto us a shiny, new config file.
-                my $config = 'mt-config.cgi';
-                unless( $o{'debug'} ) {
-                    my $fh = IO::File->new( ">$config" );
-                    print $fh <<CONFIG;
+    # Our database is named the same as the distribution (but with _'s) except for LDAP.
+    (my $db = $stage_dir) =~ s/[.-]/_/g;
+    # Reset the db to have the same name, if we are LDAP.
+    $db = 'ldap' if $o{'ldap'};
+    # Append the handy staging build flag.
+    $db = 'stage_' . $db;
+
+    # Set the staging URL to a real location now.
+    my $url = sprintf '%s/%s/',
+        $o{'stage-uri=s'}, ($o{'symlink!'} ? $link : $stage_dir);
+
+    # Give unto us a shiny, new config file.
+    my $config = 'mt-config.cgi';
+    unless( $o{'debug'} ) {
+        my $fh = IO::File->new( ">$config" );
+        print $fh <<CONFIG;
 CGIPath $url
 DefaultSiteURL http://mt.sixapart.com/blogs/
 DefaultSiteRoot /var/www/html/mt-stage/blogs/
@@ -374,142 +368,179 @@ ObjectDriver DBI::mysql
 DBUser root
 DebugMode 1
 CONFIG
-                    if( $o{'ldap'} ) {
-                        print $fh <<CONFIG;
+        if( $o{'ldap'} ) {
+            print $fh <<CONFIG;
 AuthenticationModule LDAP
 AuthLDAPURL ldap://ldap.sixapart.com/dc=sixapart,dc=com
 CONFIG
-                    }
+        }
 
-                    $fh->close();
-                }
-                verbose( "Wrote configuration to $config" );
+        $fh->close();
+    }
+    verbose( "Wrote configuration to $config" );
 
-                # Create and initialize a new database.
-                unless( $o{'ldap'} ) {
-                    # Set up the database for this distribution.
-                    verbose( 'Initializing database.' );
-                    # XXX Use DBI ASAP.
-                    # Drop the previous database.
-                    verbose_command( "mysqladmin -u root -f drop $current_db" )
-                        if $db eq $current_db;
-                    # Drop a database of same name.
-                    verbose_command( "mysqladmin -u root -f drop $db" );
-                    verbose_command( "mysqladmin -u root create $db" );
-                    # Run the upgrade tool.
-                    verbose_command( "$^X ./tools/upgrade --name Melody" );
-                }
+    # Create and initialize a new database.
+    unless( $o{'ldap'} ) {
+        # Set up the database for this distribution.
+        verbose( 'Initializing database.' );
+        # XXX Use DBI ASAP.
+        # Drop the previous database.
+        verbose_command( "mysqladmin -u root -f drop $current_db" )
+            if $db eq $current_db;
+        # Drop a database of same name.
+        verbose_command( "mysqladmin -u root -f drop $db" );
+        verbose_command( "mysqladmin -u root create $db" );
+        # Run the upgrade tool.
+        verbose_command( "$^X ./tools/upgrade --name Melody" );
+    }
 
-                # Change to the parent of the new stage directory.
-                chdir( '..' ) or die "Can't chdir to .."
+    # Change to the parent of the new stage directory.
+    chdir( '..' ) or die "Can't chdir to .."
+        unless $o{'debug'};
+    verbose( 'Changed back to staging root' );
+
+    # Now we re-link the stamped directory to the append string.
+    if( $o{'symlink!'} ) {
+        unless( $o{'debug'} ) {
+            # Drop current symlink.
+            unlink( $link ) or warn( "Can't unlink '$link': $!" );
+            warn "Unlinked $link\n";
+            # Relink the staged directory.
+            symlink( "$stage_dir/", $link ) or
+                warn( "Can't symlink $stage_dir/ to $link: $!" );
+        }
+        verbose( "Symlink'd $stage_dir/ to $link" );
+    }
+
+    unless( $o{'debug'} and $o{'symlink!'} ) {
+        # Make sure we can get to our symlink.
+        $url = sprintf "%s/%s/mt.cgi",
+            $o{'stage-uri=s'}, $link;
+        die "ERROR: Staging $url can't be resolved."
+            unless $ua->head( $url );
+        # Make sure we can get to our archive file symlink.
+        $url = sprintf '%s/%s%s',
+            $o{'stage-uri=s'}, $stage_dir, $o{'arch=s'};
+        die "ERROR: Staging $url can't be resolved."
+            unless $ua->head( $url );
+    } 
+}
+
+sub deploy_to_staging {
+    my( $dest, $short_lang ) = @_;
+
+    if( $o{'deploy:s'} eq $o{'stage-dir=s'} ) {
+        # Do we have a current symlink?
+        my $link = $o{'branch=s'} || $o{'tag=s'};
+        $link .= "-$short_lang" if $short_lang ne 'en';
+        $link .= '-ldap' if $o{'ldap'};
+        $link .= $o{'arch=s'};
+
+        my $current = '';
+        $current = readlink( $link ) if -e $link;
+        unlink( $current ) or
+            warn( "Can't unlink $current: $!" )
+            unless $current eq $dest;
+    }
+}
+
+sub create_distro_list {
+my $app = shift;
+    my $distros = { path => [], url => [] };
+    for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
+        for my $arch ( split( /\s*,\s*/, $o{'arch=s'} ) ) {
+            # The filename is the distribution name plus the archive extension.
+            my $filename = $app . $arch;
+            # The distribution is the full export path and filename.
+            my $dist = File::Spec->catdir( $o{'export=s'}, $filename );
+            # The stamp starts life as the distribution name.
+            my $stamped = $dist;
+
+            # Move the build file to the drop-zone.
+            if( $o{qa} ) {
+                my $drop = File::Spec->catdir( $o{'build=s'}, $filename );
+                verbose( "Moving $stamped to $drop" );
+                move( $stamped, $drop ) or
+                    die "Can't move $stamped to $drop: $!"
                     unless $o{'debug'};
-                verbose( 'Changed back to staging root' );
-
-                # Now we re-link the stamped directory to the append string.
-                if( $o{'symlink!'} ) {
-                    unless( $o{'debug'} ) {
-                        # Drop current symlink.
-                        unlink( $link ) or warn( "Can't unlink '$link': $!" );
-                        warn "Unlinked $link\n";
-                        # Relink the staged directory.
-                        symlink( "$stage_dir/", $link ) or
-                            warn( "Can't symlink $stage_dir/ to $link: $!" );
-                    }
-                    verbose( "Symlink'd $stage_dir/ to $link" );
-                }
-
-                unless( $o{'debug'} and $o{'symlink!'} ) {
-                    # Make sure we can get to our symlink.
-                    $url = sprintf "%s/%s/mt.cgi",
-                        $o{'stage-uri=s'}, $link;
-                    die "ERROR: Staging $url can't be resolved."
-                        unless $ua->head( $url );
-                    # Make sure we can get to our archive file symlink.
-                    $url = sprintf '%s/%s%s',
-                        $o{'stage-uri=s'}, $stage_dir, $o{'arch=s'};
-                    die "ERROR: Staging $url can't be resolved."
-                        unless $ua->head( $url );
-                }
+                $stamped = $drop;
             }
 
-            # Update the staging html.
-            if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
-                my $stage_dir = fileparse( $dest, split /\s*,\s*/, $o{'arch=s'} );
-                my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
-                unless( $o{'debug'} ) {
-                    warn "ERROR: $old_html does not exist" unless -e $old_html;
-                    warn "Updating $old_html...\n";
-                    my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html.new' );
-                    my $old_fh = IO::File->new( '< ' . $old_html );
-                    my $new_fh = IO::File->new( '> ' . $new_html );
-                    while( <$old_fh> ) {
-                        my $line = $_;
-                        if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
-                            my $id = $1;
-                            verbose( "Matched id=$id" );
-                            $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
-                                $id,
-                                $o{'stage-uri=s'},
-                                $stage_dir, $o{'arch=s'},
-                                $stage_dir, $o{'arch=s'};
-                        }
-                        print $new_fh $line;
-                    }
-                    $old_fh->close;
-                    $new_fh->close;
-                    move( $new_html, $old_html ) or
-                        die "ERROR: Can't move $new_html, $old_html: $!";
-                    verbose( "Moved $new_html to $old_html" );
-                }
-            }
+            # Create lists of things to notify about.
+            push @{ $distros->{path} }, $stamped;
+            push @{ $distros->{url} },
+                  $o{'stage'}           ? sprintf "%s/%s/mt.cgi", $o{'stage-uri=s'}, $app
+                : $o{'deploy:s'} =~ /:/ ? sprintf '%s/%s', $o{'deploy-uri=s'}, $filename
+                : ();
         }
     }
 
-    # Make sure the deployed distros actually made it.
-    unless( $o{'debug'} ) {
-        for( @{ $distros->{url} } ) {
-            die "ERROR: $_ can't be resolved." unless $ua->head( $_ );
-        }
+    return $distros;
+}
+
+sub export_em {
+    # Export the build (SVN auto-creates the directory).
+    verbose_command( sprintf( '%s export %s%s %s',
+        '/usr/bin/svn',
+        ($o{'verbose!'} ? '' : '--quiet '),
+        $o{'repo-uri=s'},
+        $o{'export=s'}
+    ));
+    # Change to the export directory.  XXX Required by the make=s command.
+    chdir( $o{'export=s'} ) or die "Can't cd to $o{'export=s'}: $!"
+        unless $o{'debug'};
+}
+
+sub remove_copy {
+    if( -d $o{'export=s'} ) {
+        verbose( "Remove: $o{'export=s'}" );
+        rmtree( $o{'export=s'} ) or die "Can't rmtree $o{'export=s'}: $!"
+            unless $o{'debug'};
     }
 }
 
-# Cleanup the exported files.
-if( !$o{'debug'} && $o{'cleanup!'} ) {
-    rmtree( $o{'export=s'} ) or die "Can't rmtree $o{'export=s'}: $!";
-    verbose( "Cleanup: Removed $o{'export=s'}" );
+sub repo_rev {
+    my $revision = qx{ /usr/bin/svn info | grep 'Revision' };
+    chomp $revision;
+    $revision =~ s/^Revision: (\d+)$/r$1/o;
+    die $revision if $revision =~ /is not a working copy/;
+    return $revision;
 }
 
-# Send email notification.
-if( $o{'notify:s'} ) {
-    $o{'email-subject=s'} = sprintf '%s build: %s',
-        $o{'app=s'}, $stamp;
-    $o{'email-subject=s'} .=
-        $o{'alpha=i'} ? ' - Alpha ' . $o{'alpha=i'} :
-        $o{'beta=i'}  ? ' - Beta '  . $o{'beta=i'}  :
-        $o{'prod'}    ? ' - Production'             :
-        $o{'stage'}   ? ' - Staging'                :
-        $o{'qa'}      ? ' - QA'                     : '';
+sub set_repo {
+    # Set the branch or tag if given with a repository URI to use (unlikely).
+    if( $o{'repo-uri=s'} and $o{'repo=s'} ) {
+        $o{'repo=s'} = $o{'branch=s'} ? "branches/$o{'branch=s'}"
+                     : $o{'tag=s'}    ? "tags/$o{'tag=s'}"
+                     : $o{'repo=s'};
+        $o{'repo-uri=s'} = sprintf '%s/%s/mt', $o{'repo-uri=s'}, $o{'repo=s'};
+    }
+    # Grab our repository from the environment.
+    else {
+        $o{'repo-uri=s'} = qx{ /usr/bin/svn info | grep URL };
+        chomp $o{'repo-uri=s'};
+        $o{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
+        if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/(\w+)\/mt/ ) {
+            my( $key, $val ) = ( $1, $2 );
+            # The repo is embedded in the repo uri.
+            $o{'repo=s'} = join '/', $key, $val;
+            # Decide if we are using a branch or a tag (otherwise trunk is used).
+            $key =~ s/e?s$//;
+            $o{ lc($key) . '=s' } = lc($val) if $val;
+        }
+    }
 
-    # If an email-cc exists, add a comma in front of the QA address.
-    $o{'email-cc:s'} .= ($o{'email-cc:s'} ? ',' : '') . 'sixapart@qasource.com'
-        if $o{'qa'};
+    # Make sure that the repository actually exists.
+    my $ua = LWP::UserAgent->new;
+    my $request = HTTP::Request->new( HEAD => $o{'repo-uri=s'} );
+    $request->authorization_basic( $o{'http-user=s'}, $o{'http-pass=s'} )
+        if $o{'http-user=s'} && $o{'http-pass=s'};
+    my HTTP::Response $response = $ua->request( $request );
+    die "ERROR: The repoository '$o{'repo-uri=s'}' can't be resolved."
+        unless $response->is_success;
 
-    # Show the deployed URL's.
-    $o{'email-body=s'} = sprintf "File URL(s):\n%s\n\n",
-        join( "\n", @{ $distros->{url} } )
-        if $o{'deploy:s'};
-
-    $o{'email-body=s'} .= sprintf "Build file(s) located on %s\n%s",
-        hostname(), join( "\n", @{ $distros->{path} } )
-        if $o{'qa'} or !$o{'cleanup!'};
-
-    notify();
+    return $ua;
 }
-
-# ------------------------------------------------------------------ #
-# Whew! We made it.
-exit;
-# ------------------------------------------------------------------ #
 
 sub get_options {
     my %o = @_;
@@ -552,6 +583,25 @@ sub verbose_command {
 sub notify {
     verbose( 'Entered notify()' );
     return if $o{'debug'};
+
+    $o{'email-subject=s'} = sprintf '%s build: %s',
+        $o{'app=s'}, $stamp;
+    $o{'email-subject=s'} .=
+        $o{'alpha=i'} ? ' - Alpha ' . $o{'alpha=i'} :
+        $o{'beta=i'}  ? ' - Beta '  . $o{'beta=i'}  :
+        $o{'prod'}    ? ' - Production'             :
+        $o{'stage'}   ? ' - Staging'                :
+        $o{'qa'}      ? ' - QA'                     : '';
+    # If an email-cc exists, add a comma in front of the QA address.
+    $o{'email-cc:s'} .= ($o{'email-cc:s'} ? ',' : '') . 'sixapart@qasource.com'
+        if $o{'qa'};
+    # Show the deployed URL's.
+    $o{'email-body=s'} = sprintf "File URL(s):\n%s\n\n",
+        join( "\n", @{ $distros->{url} } )
+        if $o{'deploy:s'};
+    $o{'email-body=s'} .= sprintf "Build file(s) located on %s\n%s",
+        hostname(), join( "\n", @{ $distros->{path} } )
+        if $o{'qa'} or !$o{'cleanup!'};
 
     my $smtp = Net::SMTP->new(
         $o{'email-host=s'},
