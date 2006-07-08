@@ -255,7 +255,7 @@ TC.attachLoadEvent( init );
 <div class="field" id="title-field">
 <div class="field-header"><label for="title"><MT_TRANS phrase="Title"></label></div>
 <div class="textarea-wrapper">
-<input name="title" id="title" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" maxlength="255" onkeypress="rebasename(this)" onchange="rebasename(this)" />
+<input name="title" id="title" value="<TMPL_VAR NAME=TITLE ESCAPE=HTML>" maxlength="255"<TMPL_IF NAME=SHOW_BASENAME> onkeypress="rebasename(this)" onchange="rebasename(this)"</TMPL_IF> />
 </div>
 </div>
 
