@@ -448,6 +448,9 @@ if (canFormat) {
 </TMPL_IF>
 </div>
 </div>
+<TMPL_ELSE>
+<input type="hidden" name="allow_comments" value="0" />
+<input type="hidden" name="allow_pings" value="0" />
 </TMPL_IF>
 
 <TMPL_IF NAME=SHOW_BASENAME>
