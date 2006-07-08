@@ -255,16 +255,18 @@ sub category {
         require MT::Category;
         unless (MT::ConfigMgr->instance->NoPlacementCache) {
             my $cache = _placement_cache($entry->blog_id);
-            my $p = $cache->{primary}{$entry->id} or return;
-            $entry->{__category} = MT::Category->load($p, {cached_ok=>1});
-        } else {
-            require MT::Placement;
-            $entry->{__category} = MT::Category->load(undef,
-                { 'join' => [ 'MT::Placement', 'category_id',
-                            { entry_id => $entry->id,
-                              is_primary => 1 } ] },
-            );
+            if (exists $cache->{primary}{$entry->id}) {
+                my $p = $cache->{primary}{$entry->id} or return;
+                return $entry->{__category} = MT::Category->load($p,
+                    {cached_ok=>1});
+            }
         }
+        require MT::Placement;
+        $entry->{__category} = MT::Category->load(undef,
+            { 'join' => [ 'MT::Placement', 'category_id',
+                        { entry_id => $entry->id,
+                          is_primary => 1 } ] },
+        );
     }
     $entry->{__category};
 }
@@ -275,18 +277,22 @@ sub categories {
         require MT::Category;
         unless (MT::ConfigMgr->instance->NoPlacementCache) {
             my $cache = _placement_cache($entry->blog_id);
-            my $p = $cache->{all}{$entry->id} or return;
-            for my $place (@$p) {
-                push @{ $entry->{__categories} },
-                    MT::Category->load($place, {cached_ok=>1});
+            if (exists $cache->{all}{$entry->id}) {
+                my $p = $cache->{all}{$entry->id} or return;
+                for my $place (@$p) {
+                    push @{ $entry->{__categories} },
+                        MT::Category->load($place, {cached_ok=>1});
+                }
+                $entry->{__categories} = [ sort { $a->label cmp $b->label }
+                                           @{ $entry->{__categories} } ];
+                return $entry->{__categories};
             }
-        } else {
-            require MT::Placement;
-            $entry->{__categories} = [ MT::Category->load(undef,
-                { 'join' => [ 'MT::Placement', 'category_id',
-                            { entry_id => $entry->id } ] },
-            ) ];
         }
+        require MT::Placement;
+        $entry->{__categories} = [ MT::Category->load(undef,
+            { 'join' => [ 'MT::Placement', 'category_id',
+                        { entry_id => $entry->id } ] },
+        ) ];
         $entry->{__categories} = [ sort { $a->label cmp $b->label }
                                    @{ $entry->{__categories} } ];
     }
