@@ -63,7 +63,6 @@ my %o = get_options(
   'qa'              => 0,  # Command-line --option alias
   'repo=s'          => 'trunk',  # Reset at runtime depending on branch,tag.
   'repo-uri=s'      => '',  #'https://intranet.sixapart.com/repos/eng',
-  'shown:s'         => undef,  # String to replace the VERSION_ID.
   'stage'           => 0,  # Command-line --option alias
   'stage-dir=s'     => '/var/www/html/mt-stage',
   'stage-uri=s'     => 'http://mt.sixapart.com',
@@ -140,7 +139,7 @@ elsif( $o{'append:s'} ) {
     $stamp = $stamp ? "$o{'append:s'}-$stamp" : $o{'append:s'};
 }
 
-$ENV{BUILD_VERSION_ID} ||= $o{'shown:s'} || join( '-', $o{'app=s'}, $short_lang, $stamp );
+$ENV{BUILD_VERSION_ID} ||= join( '-', $short_lang, $stamp );
 
 # Make the export directory to use with the stamp.
 $o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $ENV{BUILD_VERSION_ID} );
