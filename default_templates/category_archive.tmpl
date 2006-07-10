@@ -50,21 +50,21 @@
                                  <a href="<$MTEntryPermalink$>#more"><MT_TRANS phrase="Continue reading"> "<$MTEntryTitle$>" &raquo;</a>
                               </p>
                               </MTIfNonEmpty>
-                              <p class="entry-footer">
-                                 <span class="post-footers">
-                                     <MTIfNonEmpty tag="EntryAuthorDisplayName">
-                                         <MT_TRANS phrase="Posted by [_1] on [_2]" 
-                                             params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>">
-                                     <MTElse>
-                                         <MT_TRANS phrase="Posted on [_1]" params="<$MTEntryDate format="%x %X"$>">
-                                     </MTElse>
-                                     </MTIfNonEmpty>
-                                 </span> 
-                                         <span class="separator">|</span> <a class="permalink" href="<$MTEntryPermalink$>"><MT_TRANS phrase="Permalink"></a>
-                                 <MTIfCommentsActive>| <a href="<$MTEntryPermalink$>#comments"><MT_TRANS phrase="Comments"> (<$MTEntryCommentCount$>)</a></MTIfCommentsActive>
-                                 <MTIfPingsActive>| <a href="<$MTEntryPermalink$>#trackback"><MT_TRANS phrase="TrackBacks"> (<$MTEntryTrackbackCount$>)</a></MTIfPingsActive>
-                              </p>
                         </div>
+                        <p class="entry-footer">
+                           <span class="post-footers">
+                               <MTIfNonEmpty tag="EntryAuthorDisplayName">
+                                   <MT_TRANS phrase="Posted by [_1] on [_2]" 
+                                       params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>">
+                               <MTElse>
+                                   <MT_TRANS phrase="Posted on [_1]" params="<$MTEntryDate format="%x %X"$>">
+                               </MTElse>
+                               </MTIfNonEmpty>
+                           </span> 
+                           <span class="separator">|</span> <a class="permalink" href="<$MTEntryPermalink$>"><MT_TRANS phrase="Permalink"></a>
+                           <MTIfCommentsActive>| <a href="<$MTEntryPermalink$>#comments"><MT_TRANS phrase="Comments"> (<$MTEntryCommentCount$>)</a></MTIfCommentsActive>
+                           <MTIfPingsActive>| <a href="<$MTEntryPermalink$>#trackback"><MT_TRANS phrase="TrackBacks"> (<$MTEntryTrackbackCount$>)</a></MTIfPingsActive>
+                        </p>
                      </div>
                      </MTEntries>
                   </div>
