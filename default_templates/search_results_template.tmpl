@@ -136,8 +136,8 @@
                               ##########  <MT_TRANS phrase="SEARCH/TAG FEED SUBSCRIPTION INFORMATION">
                           </MTIgnore>
                           <div class="module-search-feed module">
+                             <h2 class="module-header"><MT_TRANS phrase="Feed Subscription"></h2>
                              <div class="module-content">
-                                 <h2 class="module-header"><MT_TRANS phrase="Feed Subscription"></h2>
                                  <p><$MTGetVar name="search_feed_description">  [<a href="<MT_TRANS phrase="http://www.sixapart.com/about/feeds">"><MT_TRANS phrase="What is this?"></a>]</p>
                                  <p>
                                      <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<$MTGetVar name="search_feed_text"$>" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<MT_TRANS phrase="Subscribe to feed">"><MT_TRANS phrase="Subscribe to feed"></a>
@@ -150,8 +150,8 @@
                           </MTIgnore>
                           <MTIfTagSearch>
                           <div class="module-tags module">
+                             <h2 class="module-header"><MT_TRANS phrase="Other Tags"></h2>
                              <div class="module-content">
-                                 <h2 class="module-header"><MT_TRANS phrase="Other Tags"></h2>
                                  <p><MT_TRANS phrase="Other tags used on this blog">:</p>
                                  <ul>
                                  <MTTags>
