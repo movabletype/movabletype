@@ -303,9 +303,9 @@ sub run_callback {
         if ($cb->{internal}) {
             $name = "Internal callback";
         } elsif (UNIVERSAL::isa($plugin, 'MT::Plugin')) {
-            $name = $plugin->name() || MT->translate("Unnamed plugin");
+            $name = $plugin->name() || $plugin->{plugin_sig} || $plugin->{full_path} || MT->translate("Unnamed plugin");
         } else {
-            $name = MT->translate("Unnamed plugin");
+            $name = MT->translate("Unnamed object");
         }
         MT->log({
             message => MT->translate("[_1] died with: [_2]", $name, $err),
