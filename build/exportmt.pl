@@ -112,7 +112,6 @@ unless( $o{'stamp=s'} ) {
         unless $o{'stamp=s'};
     # Set the BUILD_VERSION_ID, which has not been defined until now.
     $ENV{BUILD_VERSION_ID} = $o{'stamp=s'};
-use Data::Dumper;die Dumper(\@stamp);
 }
 
 # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
