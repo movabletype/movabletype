@@ -2,11 +2,10 @@
 #
 # $Id$
 #
-# XXX WARNING: Overly rambling, deeply nested logic ahead.  Modularization is underway...
-#
 use strict;
 use warnings;
 use Archive::Tar;
+use Cwd;
 use Getopt::Long;
 use File::Basename;
 use File::Copy;
@@ -27,38 +26,30 @@ usage() unless @ARGV;
 
 # Set-up the command-line options with their default values.
 my %o = get_options(
-  'alpha=i'         => 0,  # Integer
-  'append:s'        => undef,  # String to append to the build.
-  'app=s'           => 'MT',  # String to append to the build.
-  'arch=s'          => '',  # .tar.gz or .zip
-  'beta=i'          => 0,  # Integer
-  'branch=s'        => '',  # TINSEL, TRIBBLE, etc.
-  'build=s'         => '/tmp',  # Export directory base.
+  'agent=s'         => '',  # Constructed at run-time.
+  'arch=s'          => '.tar.gz,.zip',
   'cleanup!'        => 1,  # Remove the exported directory after deployment.
-  'date!'           => 1,  # Date-stamp the build by default.
   'debug'           => 0,  # Turn on/off the actual system calls.
-  'deploy:s'        => '', #($ENV{USER}||$ENV{USERNAME}) .'@rongo:/usr/local/cifs/intranet/mt-interest/',
+  'deploy:s'        => '', #($ENV{USER}||$ENV{USERNAME}).'@rongo:/usr/local/cifs/intranet/mt-interest/',
   'deploy-uri=s'    => 'https://intranet.sixapart.com/mt-interest',
   'email-bcc:s'     => undef,
   'email-body=s'    => '',  # Constructed at run-time.
   'email-cc:s'      => undef,
-  'email-from=s'    => ($ENV{USER}||$ENV{USERNAME}) .'@sixapart.com',
+  'email-from=s'    => ( $ENV{USER} || $ENV{USERNAME} ) .'@sixapart.com',
   'email-host=s'    => 'mail.sixapart.com',
   'email-subject=s' => '',  # Constructed at run-time.
-  'export=s'        => '',  # Export directory base - Constructed at run-time.
-  'footer=s'        => "<br><b>SOFTWARE IS PROVIDED FOR TESTING ONLY - NOT FOR PRODUCTION USE.</b>\n",
+  'export!'         => 1,  # To export or not to export. That is the question.
+  'export-dir=s'    => '',  # Constructed at run-time.
+  'footer=s'        => "<br/><b>SOFTWARE IS PROVIDED FOR TESTING ONLY - NOT FOR PRODUCTION USE.</b>\n",
   'footer-tmpl=s'   => 'tmpl/cms/footer.tmpl',
   'help|h'          => 0,  # Show the program usage.
   'http-user=s'     => undef,
   'http-pass=s'     => undef,
   'ldap'            => 0,  # Use LDAP (and don't initialize the database).
-  'lang=s'          => $ENV{BUILD_LANGUAGE} || 'en_US',  # en_GB is generated automatically (de,es,fr,ja,nl)
+  'lang=s'          => $ENV{BUILD_LANGUAGE} || 'en_US',  # de,es,en_US,fr,ja,nl
   'local'           => 0,  # Command-line --option alias
-  'make=s'          => 'build/mt-dists/make-dists',  # Constructed at run-time.
-  'mt-dir=s'        => ($ENV{MT_DIR}||'.'),  # Location defaults to the user env or the cwd.
-  'mt-pm=s'         => 'lib/MT.pm.pre', # Where the version strings are located.
-  'name:s'          => undef,  # Override string to name the archive.
   'notify:s'        => undef,  # Send email notification on completion.
+  'pack=s'          => $ENV{BUILD_PACKAGE} || 'MT',  # Default package to build.
   'prod'            => 0,  # Command-line --option alias
   'qa'              => 0,  # Command-line --option alias
   'repo=s'          => 'trunk',  # Reset at runtime depending on branch,tag.
@@ -66,41 +57,29 @@ my %o = get_options(
   'stage'           => 0,  # Command-line --option alias
   'stage-dir=s'     => '/var/www/html/mt-stage',
   'stage-uri=s'     => 'http://mt.sixapart.com',
-  'stamp=s'         => '%04d%02d%02d',  # YYYY=%04d, MM=%02d, etc.
+  'short-lang=s'    => '',  # Constructed at run-time.
+  'stamp!'          => 1,  # Stamp the build? Default = Yes
+  'stamp=s'         => $ENV{BUILD_VERSION_ID},
   'symlink!'        => 1,  # Make build symlinks when staging.
-  'tag=s'           => '',  # mt3.2, mt3.2-intl, etc.
   'verbose!'        => 1,  # Express (the default) or suppress run output.
 );
 
 # Show the usage if requested.
 usage() if $o{'help|h'};
 
-# Set the BUILD_LANGUAGE and BUILD_PACKAGE environment variables unless they are not already defined.
+# Set the BUILD_PACKAGE and BUILD_LANGUAGE variables.
+$ENV{BUILD_PACKAGE}  ||= $o{'pack=s'};
 $ENV{BUILD_LANGUAGE} ||= $o{'lang=s'};
-$o{'lang=s'} = $ENV{BUILD_LANGUAGE};
-$ENV{BUILD_PACKAGE} ||= $o{'app=s'};
-$o{'app=s'} = $ENV{BUILD_PACKAGE};
-
-# Make en_XX just en.
-(my $short_lang = $o{'lang=s'}) =~ s/en_[A-Z]+$/en/o;
 
 # Grab our repository revision.
 my $revision = repo_rev();
+# Figure out what repository to use and make sure we can connect.
+set_repo();
 
-# Figure out what repository we are using and make sure we can see it.
-my $ua = set_repo();
-
-# Append the repository unless an append string is already defined.
-$o{'append:s'} = lc( fileparse $o{'repo=s'} ) . "-$revision"
-    unless defined $o{'append:s'};
-
-######################################################################
-## COMMAND ALIAS OVERRIDE LOGIC:
 # Production builds are not dated or stamped (or symlinked if staged).
 if( $o{'prod'} ) {
-    $o{'date!'} = 0;
+    $o{'stamp!'} = 0;
     $o{'symlink!'} = 0;
-    $o{'append:s'} = '';
 }
 # Local builds don't deploy or cleanup after themselves.
 if( $o{'local'} ) {
@@ -110,49 +89,33 @@ if( $o{'local'} ) {
 if( $o{'stage'} ) {
     $o{'deploy:s'} = $o{'stage-dir=s'};
 }
-# Alpha/Beta releases are not repo-tagged.
-if( $o{'alpha=i'} or $o{'beta=i'} ) {
-    $o{'append:s'} = '';
-}
-# QA seems to prefer zip file archives.
-if( $o{'qa'} ) {
-    $o{'arch=s'} ||= '.zip';
-}
-######################################################################
 
-# Make sure we have an archive type.
-$o{'arch=s'} ||= '.tar.gz';
+# Just make en_XX, en.
+($o{'short-lang=s'} = $o{'lang=s'}) =~ s/en_[A-Z]+$/en/o;
 
-# Create the build-stamp to use.
-my $stamp = $o{'date!'}
-    ? sprintf $o{'stamp=s'},
-        (localtime)[5] + 1900, (localtime)[4] + 1, (localtime)[3,2,1,0]
-    : '';
-# LDAP-ness
-$stamp .= '-ldap' if $o{'ldap'};
-# Override the stamp if a --name is given.
-if( $o{'name:s'} ) {
-    $stamp = $stamp ? "$o{'name:s'}-$stamp" : $o{'name:s'};
-}
-# Override the stamp if a --name is not given but --append is.
-elsif( $o{'append:s'} ) {
-    $stamp = $stamp ? "$o{'append:s'}-$stamp" : $o{'append:s'};
+# Create the build-stamp if not already defined.
+unless( $o{'stamp=s'} ) {
+    # Read-in the configuration variables for substitution.
+    my $config = read_conf( "build/mt-dists/$o{'pack=s'}.mk" );
+    my @stamp = ();
+    push @stamp, $config->{PRODUCT_VERSION};
+    push @stamp, $o{'short_lang=s'} unless $o{'short-lang=s'} eq 'en';
+    # Add repo, date and ldap if a stamp is requested.
+    if( $o{'stamp!'} ) {
+        push @stamp, lc( fileparse $o{'repo=s'} );
+        push @stamp, $revision;
+        push @stamp, sprintf( '%04d%02d%02d', (localtime)[5]+1900, (localtime)[4]+1, (localtime)[3]);
+        push @stamp, 'ldap' if $o{'ldap'};
+    }
+    $o{'stamp=s'} = join '-', @stamp;
+    die( "ERROR: No stamp created. Cannot proceed.\n" )
+        unless $o{'stamp=s'};
+    # Set the BUILD_VERSION_ID, which has not been defined until now.
+    $ENV{BUILD_VERSION_ID} = $o{'stamp=s'};
 }
 
-$ENV{BUILD_VERSION_ID} ||= join( '-', $short_lang, $stamp );
-
-# Make the export directory to use with the stamp.
-$o{'export=s'} = File::Spec->catdir( $o{'build=s'}, $ENV{BUILD_VERSION_ID} );
-die 'No export directory given.' unless $o{'export=s'};
-$o{'export=s'} =~ s/~/$ENV{HOME}/;
-
-# Construct the "make-dists" tool path.
-$o{'make=s'} = File::Spec->catdir( $o{'mt-dir=s'}, $o{'make=s'} );
-# Once stringified by GO::L, the tilde no longer means $HOME.
-$o{'make=s'} =~ s/~/$ENV{HOME}/;
-
-# Make sure the make script exists.
-die "ERROR: Can't locate $o{'make=s'}: $!" unless -e $o{'make=s'};
+# Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
+$o{'export-dir=s'} = "$o{'pack=s'}-$o{'stamp=s'}";
 
 # Summarize what we are about to do.
 verbose( sprintf 'Debugging is %s and system calls %s be made.',
@@ -160,136 +123,118 @@ verbose( sprintf 'Debugging is %s and system calls %s be made.',
 );
 verbose( sprintf( 'Running with options: %s', Dumper \%o ),
     "Svn uri: $o{'repo-uri=s'}",
-    "Make dir: $o{'make=s'}",
     "Svn revision: $revision",
 ) if $o{'debug'};
-#
-######################################################################
 
-# Get any existing distro, with the same path name, out of the way.
-remove_copy();
-
+# Get any existing distro. with the same path name, out of the way.
+remove_copy() if -d $o{'export-dir=s'};
 # Export the latest files.
-export_em();
-
-# Read-in the configuration variables for substitution.
-my $config = read_conf( "build/mt-dists/$ENV{BUILD_PACKAGE}.mk" );
-my $version = $config->{PRODUCT_VERSION};
-my $version_id = $ENV{BUILD_VERSION_ID};
-
-# Set non-production footer.
+export() if $o{'export!'};
+# Add the non-production footer.
 inject_footer() unless $o{'prod'};
-
-# Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
-# XXX This might be either in conflict with or simplified with BUILD_VERSION_ID.
-my $app = $o{'name:s'}
-    ? $stamp
-    : sprintf( '%s-%s%s-%s-%s',
-        $o{'app=s'}, $version,
-        ($o{'alpha=i'} ? "a$o{'alpha=i'}" : ($o{'beta=i'} ? "b$o{'beta=i'}" : '')),
-        $short_lang, $stamp );
-
-verbose_command(
-    sprintf( '%s %s --stamp=%s', $^X, $o{'make=s'}, $app )
-);
-
-# Create lists of the actual files that are part of the distribution.
-my $distros = create_distro_list( $app );
-
-# Deploy the distro.
-deploy_distro();
-
+# Call the legacy make commands from the export directory.
+make();
+# Create lists of the distributions.
+my $distros = create_distro_list();
+# Deploy the distributions.
+deploy_distros( $distros ) if $o{'deploy:s'};
 # Cleanup the exported files.
-cleanup();
-
+cleanup() if $o{'cleanup!'};
 # Send email notification.
-notify() if $o{'notify:s'};
+notify( $distros ) if $o{'notify:s'};
 
-# ------------------------------------------------------------------ #
-# Whew! We made it.
 exit;
-# ------------------------------------------------------------------ #
+
+sub make {
+    if( !$o{'debug'} && $o{'export!'} ) {
+        chdir( $o{'export-dir=s'} ) or
+            die( "ERROR: Can't cd to $o{'export-dir=s'}: $!" );
+        verbose( "Changed to the $o{'export-dir=s'} directory" );
+    }
+    verbose_command( sprintf(
+        '%s build/mt-dists/make-dists --stamp=%s', $^X, $o{'export-dir=s'}
+    ));
+    if( !$o{'debug'} && $o{'export!'} ) {
+        chdir( '..' ) or die( "ERROR: Can't cd ..: $!" );
+        verbose( 'Changed back to the parent directory' );
+    }
+}
 
 sub cleanup {
-    if( !$o{'debug'} && $o{'cleanup!'} ) {
-        rmtree( $o{'export=s'} ) or die "Can't rmtree $o{'export=s'}: $!";
-        verbose( "Cleanup: Removed $o{'export=s'}" );
+    my $build = $o{'export-dir=s'};  # Less ugly.
+    # Move the build archives up one level.
+    unless( $o{'debug'} ) {
+        for my $arch ( split /\s*,\s*/o, $o{'arch=s'} ) {
+            move( "$build/$build$arch", "$build$arch" )
+                or die( "ERROR: Can't move $build$arch: $!" );
+        }
     }
+    verbose( "Moved: $build $o{'arch=s'} archive builds." );
+    unless( $o{'debug'} ) {
+        rmtree( $build ) or die( "ERROR: Can't rmtree $build: $!" );
+    }
+    verbose( "Cleanup: Removed $build" );
 }
 
-sub deploy_distro {
-    # XXX Below is some frightening #$@&ing logic. See the TO DO section.
-    if( $o{'deploy:s'} ) {
-        # If a colon : is in the deployment string, use scp.
-        if( $o{'deploy:s'} =~ /:/ ) {
-            verbose_command( sprintf( '%s %s %s',
-                'scp', join( ' ', @{ $distros->{path} } ), $o{'deploy:s'}
-            ));
-        }
-        else {
-            # Copy the distribution file(s) to the destination.
-            for my $dist ( @{ $distros->{path} } ) {
-                my $dest = File::Spec->catdir(
-                    $o{'deploy:s'}, scalar fileparse( $dist )
-                );
-                copy( $dist, $dest ) or die "Can't copy $dist to $dest: $!"
-                    unless $o{'debug'};
-                verbose( "Copied $dist to $dest" );
-
-                # Handle file deployent to staging.
-                deploy_to_staging( $dest, $short_lang );
-
-                # Install the distro if we are (locally) staging.
-                stage_distro( $dest ) if $o{'stage'};
-
-                # Update the staging html.
-                update_html( $dest );
-
+sub create_distro_list {
+    my $distros = { path => [], url => [] };
+    my %seen = ();
+    for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
+        for my $arch ( split( /\s*,\s*/, $o{'arch=s'} ) ) {
+            # The filename is the distribution name plus the archive extension.
+            my $filename = $o{'export-dir=s'} . $arch;
+            # The distribution is the full export path and filename.
+            my $dist = File::Spec->catdir( $o{'export-dir=s'}, $filename );
+            # Create lists of the distribution paths.
+            push @{ $distros->{path} }, $dist;
+            # Add to the URL list depending on where we are deploying.
+            if( $o{'stage'} ) {
+                my $loc = sprintf "%s/%s/mt.cgi", $o{'stage-uri=s'}, $o{'export-dir=s'};
+                push @{ $distros->{url} }, $loc unless $seen{$loc}++;
             }
-        }
-
-        # Make sure the deployed distros actually made it.
-        unless( $o{'debug'} ) {
-            for( @{ $distros->{url} } ) {
-                die "ERROR: $_ can't be resolved." unless $ua->head( $_ );
+            elsif( $o{'deploy:s'} =~ /:/ ) {
+                my $loc = sprintf '%s/%s', $o{'deploy-uri=s'}, $filename;
+                push @{ $distros->{url} }, $loc unless $seen{$loc}++;
             }
         }
     }
+
+    return $distros;
 }
 
-sub update_html {
-    my $dest = shift;
+sub deploy_distros {
+    my $distros = shift;
 
-    if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
-        my $stage_dir = fileparse( $dest, split /\s*,\s*/, $o{'arch=s'} );
-        my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
+    # If a colon is in the deployment string, use scp.
+    if( $o{'deploy:s'} =~ /:/ ) {
+        verbose_command( sprintf( '%s %s %s',
+            '/usr/bin/scp', join(' ', @{ $distros->{path} }), $o{'deploy:s'}
+        ) );
+    }
+    # Otherwise, copy the distribution file(s) to the destination.
+    else {
+        for my $dist ( @{ $distros->{path} } ) {
+            my $dest = File::Spec->catdir(
+                $o{'deploy:s'}, scalar fileparse( $dist )
+            );
+            copy( $dist, $dest ) or die( "ERROR: Can't copy $dist to $dest: $!" )
+                unless $o{'debug'};
+            verbose( "Copied: $dist to $dest" );
 
-        unless( $o{'debug'} ) {
-            warn "ERROR: $old_html does not exist" unless -e $old_html;
-            warn "Updating $old_html...\n";
-            my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html.new' );
-            my $old_fh = IO::File->new( '< ' . $old_html );
-            my $new_fh = IO::File->new( '> ' . $new_html );
+            # Install if we are staging.
+            stage_distro( $dest, $o{'short-lang=s'} ) if $o{'stage'};
 
-            while( <$old_fh> ) {
-                my $line = $_;
-                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
-                    my $id = $1;
-                    verbose( "Matched id=$id" );
-                    $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
-                        $id,
-                        $o{'stage-uri=s'},
-                        $stage_dir, $o{'arch=s'},
-                        $stage_dir, $o{'arch=s'};
-                }
-                print $new_fh $line;
-            }
+            # Update the staging html.
+            update_html( $dest );
 
-            $old_fh->close;
-            $new_fh->close;
-            move( $new_html, $old_html ) or
-                die "ERROR: Can't move $new_html, $old_html: $!";
-            verbose( "Moved $new_html to $old_html" );
+        }
+    }
+
+    # Make sure the deployed distros actually made it.
+    unless( $o{'debug'} ) {
+        for( @{ $distros->{url} } ) {
+            die( "ERROR: $_ can't be resolved." )
+                unless $o{'agent=s'}->head( $_ );
         }
     }
 }
@@ -297,20 +242,28 @@ sub update_html {
 sub stage_distro {
     my $dest = shift;
 
+    # We only stage tar.gz's.
+    return if $dest !~ /\.gz$/o;
+
+    die( "ERROR: Cannot stage '$dest': No such file or directory" )
+        unless $dest && -e $dest;
+
+    my $cwd = cwd();
+
     chdir $o{'stage-dir=s'} or
-        die "Can't chdir to $o{'stage-dir=s'}: $!";
+        die( "ERROR: Can't chdir to $o{'stage-dir=s'}: $!" );
     verbose( "Changed to staging root $o{'stage-dir=s'}" );
 
     # Remove any existing distro, with the same path name.
     if( -d $dest ) {
-        rmtree( $dest ) or die "Can't rmtree $dest: $!"
+        rmtree( $dest ) or die( "ERROR: Can't rmtree $dest: $!" )
             unless $o{'debug'};
         verbose( "Removed: $dest" );
     }
 
     # Do we have a current symlink?
-    my $link = $o{'branch=s'} || $o{'tag=s'};
-    $link .= "-$short_lang" if $short_lang ne 'en';
+    (my $link = lc( fileparse $o{'repo=s'} )) =~ s/e?s$//;
+    $link .= "-$o{'short-lang=s'}" if $o{'short-lang=s'} ne 'en';
     $link .= '-ldap' if $o{'ldap'};
     my $current = '';
     $current = readlink( $link ) if -e $link;
@@ -321,25 +274,26 @@ sub stage_distro {
     $current_db .= 'stage_' . $current_db;
 
     # Drop previous.
-    rmtree( $current ) or warn( "Can't rmtree '$current': $!" );
+    rmtree( $current ) or warn( "Can't rmtree '$current': $!" )
+        if $current;
     unlink( $current . $o{'arch=s'} ) or
-        warn( "Can't unlink $current$o{'arch=s'}: $!" )
+        warn( "Can't unlink the '$current$o{'arch=s'}' symlink: $!\n" )
         unless $current eq $dest;
 
     my $tar;
     unless( $o{'debug'} ) {
-        verbose( "Extracting $dest..." );
+        verbose( "Extracting: $dest..." );
         $tar = Archive::Tar->new( $dest );
         $tar->extract();
     }
-    verbose( "Extracted $dest" );
+    verbose( "Extracted: $dest" );
 
     # Grab the literal build directory name.
     my $stage_dir = fileparse(
         $dest, split /\s*,\s*/, $o{'arch=s'}
     );
     # Change to the distribution directory.
-    chdir( $stage_dir ) or die "Can't chdir $stage_dir: $!"
+    chdir( $stage_dir ) or die( "ERROR: Can't chdir $stage_dir: $!" )
         unless $o{'debug'};
     verbose( "Changed to $stage_dir" );
 
@@ -394,11 +348,11 @@ CONFIG
     }
 
     # Change to the parent of the new stage directory.
-    chdir( '..' ) or die "Can't chdir to .."
+    chdir( '..' ) or die( "ERROR: Can't chdir to .." )
         unless $o{'debug'};
     verbose( 'Changed back to staging root' );
 
-    # Now we re-link the stamped directory to the append string.
+    # Now we re-link the stamped directory.
     if( $o{'symlink!'} ) {
         unless( $o{'debug'} ) {
             # Drop current symlink.
@@ -408,137 +362,116 @@ CONFIG
             symlink( "$stage_dir/", $link ) or
                 warn( "Can't symlink $stage_dir/ to $link: $!" );
         }
-        verbose( "Symlink'd $stage_dir/ to $link" );
+        verbose( "Symlink'd: $stage_dir/ to $link" );
     }
 
     unless( $o{'debug'} and $o{'symlink!'} ) {
         # Make sure we can get to our symlink.
         $url = sprintf "%s/%s/mt.cgi",
             $o{'stage-uri=s'}, $link;
-        die "ERROR: Staging $url can't be resolved."
-            unless $ua->head( $url );
+        die( "ERROR: Staging $url can't be resolved." )
+            unless $o{'agent=s'}->head( $url );
         # Make sure we can get to our archive file symlink.
         $url = sprintf '%s/%s%s',
             $o{'stage-uri=s'}, $stage_dir, $o{'arch=s'};
-        die "ERROR: Staging $url can't be resolved."
-            unless $ua->head( $url );
+        die( "ERROR: Staging $url can't be resolved." )
+            unless $o{'agent=s'}->head( $url );
     } 
+
+    chdir( $cwd ) or die( "ERROR: Can't chdir back to $cwd: $!" );
 }
 
-sub deploy_to_staging {
-    my( $dest, $short_lang ) = @_;
+sub update_html {
+    my $dest = shift;
 
-    if( $o{'deploy:s'} eq $o{'stage-dir=s'} ) {
-        # Do we have a current symlink?
-        my $link = $o{'branch=s'} || $o{'tag=s'};
-        $link .= "-$short_lang" if $short_lang ne 'en';
-        $link .= '-ldap' if $o{'ldap'};
-        $link .= $o{'arch=s'};
+    if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
+        my $stage_dir = fileparse( $dest, split /\s*,\s*/o, $o{'arch=s'} );
+        my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
 
-        my $current = '';
-        $current = readlink( $link ) if -e $link;
-        unlink( $current ) or
-            warn( "Can't unlink $current: $!" )
-            unless $current eq $dest;
-    }
-}
+        unless( -e $old_html ) {
+            warn "ERROR: Staging HTML file, $old_html, does not exist.\n";
+            return;
+        }
+        unless( -e $stage_dir ) {
+            warn "ERROR: Staging distribution file, $stage_dir, does not exist.\n";
+            return;
+        }
+        verbose( "Updating: $old_html for staging $dest" );
 
-sub create_distro_list {
-my $app = shift;
-    my $distros = { path => [], url => [] };
-    for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
-        for my $arch ( split( /\s*,\s*/, $o{'arch=s'} ) ) {
-            # The filename is the distribution name plus the archive extension.
-            my $filename = $app . $arch;
-            # The distribution is the full export path and filename.
-            my $dist = File::Spec->catdir( $o{'export=s'}, $filename );
-            # The stamp starts life as the distribution name.
-            my $stamped = $dist;
+        unless( $o{'debug'} ) {
+            warn "ERROR: $old_html does not exist" unless -e $old_html;
+            warn "Updating $old_html...\n";
+            my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html.new' );
+            my $old_fh = IO::File->new( '< ' . $old_html );
+            my $new_fh = IO::File->new( '> ' . $new_html );
 
-            # Move the build file to the drop-zone.
-            if( $o{qa} ) {
-                my $drop = File::Spec->catdir( $o{'build=s'}, $filename );
-                verbose( "Moving $stamped to $drop" );
-                move( $stamped, $drop ) or
-                    die "Can't move $stamped to $drop: $!"
-                    unless $o{'debug'};
-                $stamped = $drop;
+            while( <$old_fh> ) {
+                my $line = $_;
+                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
+                    my $id = $1;
+                    verbose( "Matched: id=$id" );
+                    $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
+                        $id,
+                        $o{'stage-uri=s'},
+                        $stage_dir, $o{'arch=s'},
+                        $stage_dir, $o{'arch=s'};
+                }
+                print $new_fh $line;
             }
 
-            # Create lists of things to notify about.
-            push @{ $distros->{path} }, $stamped;
-            push @{ $distros->{url} },
-                  $o{'stage'}           ? sprintf "%s/%s/mt.cgi", $o{'stage-uri=s'}, $app
-                : $o{'deploy:s'} =~ /:/ ? sprintf '%s/%s', $o{'deploy-uri=s'}, $filename
-                : ();
+            $old_fh->close;
+            $new_fh->close;
+            move( $new_html, $old_html ) or
+                die( "ERROR: Can't move $new_html, $old_html: $!" );
+            verbose( "Moved: $new_html to $old_html" );
         }
     }
-
-    return $distros;
-}
-
-sub export_em {
-    # Export the build (SVN auto-creates the directory).
-    verbose_command( sprintf( '%s export %s%s %s',
-        '/usr/bin/svn',
-        ($o{'verbose!'} ? '' : '--quiet '),
-        $o{'repo-uri=s'},
-        $o{'export=s'}
-    ));
-    # Change to the export directory.  XXX Required by the make=s command.
-    chdir( $o{'export=s'} ) or die "Can't cd to $o{'export=s'}: $!"
-        unless $o{'debug'};
 }
 
 sub remove_copy {
-    if( -d $o{'export=s'} ) {
-        verbose( "Remove: $o{'export=s'}" );
-        rmtree( $o{'export=s'} ) or die "Can't rmtree $o{'export=s'}: $!"
-            unless $o{'debug'};
-    }
+    verbose( "Remove: $o{'export-dir=s'}" );
+    rmtree( $o{'export-dir=s'} ) or
+        die( "ERROR: Can't rmtree $o{'export-dir=s'}: $!" )
+        unless $o{'debug'};
 }
 
 sub repo_rev {
     my $revision = qx{ /usr/bin/svn info | grep 'Revision' };
     chomp $revision;
     $revision =~ s/^Revision: (\d+)$/r$1/o;
-    die $revision if $revision =~ /is not a working copy/;
+    die( "ERROR: $revision" ) if $revision =~ /is not a working copy/;
     return $revision;
 }
 
 sub set_repo {
-    # Set the branch or tag if given with a repository URI to use (unlikely).
-    if( $o{'repo-uri=s'} and $o{'repo=s'} ) {
-        $o{'repo=s'} = $o{'branch=s'} ? "branches/$o{'branch=s'}"
-                     : $o{'tag=s'}    ? "tags/$o{'tag=s'}"
-                     : $o{'repo=s'};
-        $o{'repo-uri=s'} = sprintf '%s/%s/mt', $o{'repo-uri=s'}, $o{'repo=s'};
-    }
     # Grab our repository from the environment.
-    else {
-        $o{'repo-uri=s'} = qx{ /usr/bin/svn info | grep URL };
-        chomp $o{'repo-uri=s'};
-        $o{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
-        if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/(\w+)\/mt/ ) {
-            my( $key, $val ) = ( $1, $2 );
-            # The repo is embedded in the repo uri.
-            $o{'repo=s'} = join '/', $key, $val;
-            # Decide if we are using a branch or a tag (otherwise trunk is used).
-            $key =~ s/e?s$//;
-            $o{ lc($key) . '=s' } = lc($val) if $val;
-        }
+    $o{'repo-uri=s'} = qx{ /usr/bin/svn info | grep URL };
+    chomp $o{'repo-uri=s'};
+    $o{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
+    if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/(\w+)\/mt/ ) {
+        # The repo is embedded in the repo uri.
+        my( $key, $val ) = ( $1, $2 );
+        $o{'repo=s'} = join '/', $key, $val;
     }
 
     # Make sure that the repository actually exists.
-    my $ua = LWP::UserAgent->new;
+    $o{'agent=s'} = LWP::UserAgent->new;
     my $request = HTTP::Request->new( HEAD => $o{'repo-uri=s'} );
     $request->authorization_basic( $o{'http-user=s'}, $o{'http-pass=s'} )
         if $o{'http-user=s'} && $o{'http-pass=s'};
-    my HTTP::Response $response = $ua->request( $request );
-    die "ERROR: The repoository '$o{'repo-uri=s'}' can't be resolved."
+    my $response = $o{'agent=s'}->request( $request );
+    die( "ERROR: The repoository '$o{'repo-uri=s'}' can't be resolved." )
         unless $response->is_success;
+}
 
-    return $ua;
+sub export {
+    # Export the build (SVN auto-creates the directory).
+    verbose_command( sprintf( '%s export %s%s %s',
+        '/usr/bin/svn',
+        ($o{'verbose!'} ? '' : '--quiet '),
+        $o{'repo-uri=s'},
+        $o{'export-dir=s'}
+    ));
 }
 
 sub get_options {
@@ -565,10 +498,10 @@ sub verbose_command {
     system $command unless $o{'debug'};
 
     if( $? == -1 ) {
-        die "Failed to execute: $!";
+        die( "ERROR: Failed to execute: $!" );
     }
     elsif( $? & 127 ) {
-        die sprintf( "Child died with signal %d, with%s coredump\n",
+        die sprintf( "ERROR: Child died with signal %d, with%s coredump\n",
             ( $? & 127 ), ( $? & 128 ? '' : 'out' )
         );
     }
@@ -580,11 +513,13 @@ sub verbose_command {
 }
 
 sub notify {
-    verbose( 'Entered notify()' );
+    my $distros = shift;
+
+    verbose( 'Entered: notify()' );
     return if $o{'debug'};
 
     $o{'email-subject=s'} = sprintf '%s build: %s',
-        $o{'app=s'}, $stamp;
+        $o{'pack=s'}, $o{'stamp=s'};
     $o{'email-subject=s'} .=
         $o{'alpha=i'} ? ' - Alpha ' . $o{'alpha=i'} :
         $o{'beta=i'}  ? ' - Beta '  . $o{'beta=i'}  :
@@ -653,10 +588,10 @@ sub read_conf {
 }
 
 sub inject_footer {
-    my $file = File::Spec->catdir( $o{'export=s'},  $o{'footer-tmpl=s'} );
-    verbose( "Entered inject_footer with $file" );
+    my $file = File::Spec->catdir( $o{'export-dir=s'},  $o{'footer-tmpl=s'} );
+    verbose( "Entered: inject_footer with $file" );
     return 'DEBUG' if $o{'debug'};
-    die "ERROR: File $file does not exist: $!" unless -e $file;
+    die( "ERROR: File $file does not exist: $!" ) unless -e $file;
 
     # Slurp-in the contents of the file.
     local $/;
