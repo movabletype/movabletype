@@ -93,13 +93,13 @@ if( $o{'stage'} ) {
 # Just make en_XX, en.
 ($o{'short-lang=s'} = $o{'lang=s'}) =~ s/en_[A-Z]+$/en/o;
 
-# Create the build-stamp if not already defined.
+# Create the build-stamp if one is not already defined.
 unless( $o{'stamp=s'} ) {
     # Read-in the configuration variables for substitution.
     my $config = read_conf( "build/mt-dists/$o{'pack=s'}.mk" );
     my @stamp = ();
     push @stamp, $config->{PRODUCT_VERSION};
-    push @stamp, $o{'short_lang=s'} unless $o{'short-lang=s'} eq 'en';
+    push @stamp, $o{'short-lang=s'} unless $o{'short-lang=s'} eq 'en';
     # Add repo, date and ldap if a stamp is requested.
     if( $o{'stamp!'} ) {
         push @stamp, lc( fileparse $o{'repo=s'} );
@@ -112,6 +112,7 @@ unless( $o{'stamp=s'} ) {
         unless $o{'stamp=s'};
     # Set the BUILD_VERSION_ID, which has not been defined until now.
     $ENV{BUILD_VERSION_ID} = $o{'stamp=s'};
+use Data::Dumper;die Dumper(\@stamp);
 }
 
 # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
@@ -246,7 +247,7 @@ sub stage_distro {
     return if $dest !~ /\.gz$/o;
 
     die( "ERROR: Cannot stage '$dest': No such file or directory" )
-        unless $dest && -e $dest;
+        unless $o{'debug'} || ( $dest && -e $dest );
 
     my $cwd = cwd();
 
@@ -393,7 +394,7 @@ sub update_html {
             return;
         }
         unless( -e $stage_dir ) {
-            warn "ERROR: Staging distribution file, $stage_dir, does not exist.\n";
+            warn "ERROR: Staged distribution file, $dest, does not exist.\n";
             return;
         }
         verbose( "Updating: $old_html for staging $dest" );
