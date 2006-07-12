@@ -98,7 +98,7 @@
 
 <h2>Installatie?</h2>
 
-<p>Als u Movable Type aan het installeren bent, is het nuttig om de <a href="http://www.sixapart.com/movabletype/docs/3.3/01_installation_and_upgrade/">installatie-instructies</a> te bekijken en om de <a rel="nofollow" href="mt-check.cgi">Movable Type systeemcontrole</a> uit te voeren om zeker te zijn dat u systeem alles heeft wat nodig is.</p>
+<p>Als u Movable Type aan het installeren bent, is het nuttig om de <a href="__HELP_URL____PRODUCT_VERSION__/">installatie-instructies</a> te bekijken en om de <a rel="nofollow" href="mt-check.cgi">Movable Type systeemcontrole</a> uit te voeren om zeker te zijn dat u systeem alles heeft wat nodig is.</p>
 
 </body>
 
