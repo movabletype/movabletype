@@ -96,7 +96,7 @@
 
 <div class="section">
 <h2>はじめてお使いになる方へ</h2>
-<p>Movable Typeをご利用いただくためには、セットアップを完了しておく必要があります。<a href="__HELP_URL____PRODUCT_VERSION__/">オンライン・マニュアル</a>のインストール・セットアップの章を読み、稼働に必要な環境を準備してください。また、<a rel=:nofollow" href="mt-check.cgi">Movable Type システム・チェック (mt-check.cgi)</a> を実行し、環境が整ったことを確認してください。</p>
+<p>Movable Typeをご利用いただくためには、セットアップを完了しておく必要があります。<a href="__HELP_URL____PRODUCT_VERSION__/">オンライン・マニュアル</a>のインストール・セットアップの章を読み、稼働に必要な環境を準備してください。また、<a rel="nofollow" href="mt-check.cgi">Movable Type システム・チェック (mt-check.cgi)</a> を実行し、環境が整ったことを確認してください。</p>
 <p>必要な環境が整っていることを確認した後に、上の「ログイン」をクリックしてください。</p>
 </div>
 </div>
