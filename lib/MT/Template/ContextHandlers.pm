@@ -2359,50 +2359,45 @@ sub _hdlr_comments {
     ## If there is a "lastn" arg, then we need to check if there is an entry
     ## in context. If so, grab the N most recent comments for that entry;
     ## otherwise, grab the N most recent comments for the entire blog.
-    if (my $n = $args->{lastn}) {
-        if (my $e = $ctx->stash('entry')) {
-            ## Sort in descending order, then grab the first $n ($n most
-            ## recent) comments.
-            my $comments = $e->comments;
-            @comments = $so eq 'ascend' ?
-                sort { $a->created_on <=> $b->created_on } @$comments :
-                sort { $b->created_on <=> $a->created_on } @$comments;
-            # filter out comments from unapproved commenters
-            @comments = grep { $_->visible() } @comments;
-            
-            my $max = $n - 1 > $#comments ? $#comments : $n - 1;
-            @comments = $so eq 'ascend' ?
-                @comments[$#comments-$max..$#comments] :
-                @comments[0..$max];
-        } else {
-            require MT::Comment;
-            my $iter = MT::Comment->load_iter({ blog_id => $blog_id,
-                                            visible => 1 },
-                { 'sort' => 'created_on',
-                  direction => 'descend' });
-            my %entries;
-            while (my $c = $iter->()) {
-                my $e = $entries{$c->entry_id} ||= $c->entry;
-                next unless $e;
-                next if $e->status != MT::Entry::RELEASE();
-                push @comments, $c;
-                if (scalar @comments == $n) {
-                    $iter->('finish');
-                    last;
-                }
-            }
-            @comments = $so eq 'ascend' ?
-                sort { $a->created_on <=> $b->created_on } @comments :
-                sort { $b->created_on <=> $a->created_on } @comments;
-        }
-    } else {
-        my $e = $ctx->stash('entry')
-            or return $_[0]->_no_entry_error('MTComments');
+    my $n = $args->{lastn};
+    if (my $e = $ctx->stash('entry')) {
+        ## Sort in descending order, then grab the first $n ($n most
+        ## recent) comments.
         my $comments = $e->comments;
         @comments = $so eq 'ascend' ?
             sort { $a->created_on <=> $b->created_on } @$comments :
             sort { $b->created_on <=> $a->created_on } @$comments;
+        # filter out comments from unapproved commenters
+        @comments = grep { $_->visible() } @comments;
+        
+        if ($n) {
+            my $max = $n - 1 > $#comments ? $#comments : $n - 1;
+            @comments = $so eq 'ascend' ?
+                @comments[$#comments-$max..$#comments] :
+                @comments[0..$max];
+        }
+    } else {
+        require MT::Comment;
+        my $iter = MT::Comment->load_iter({ blog_id => $blog_id,
+                                        visible => 1 },
+            { 'sort' => 'created_on',
+              direction => 'descend' });
+        my %entries;
+        while (my $c = $iter->()) {
+            my $e = $entries{$c->entry_id} ||= $c->entry;
+            next unless $e;
+            next if $e->status != MT::Entry::RELEASE();
+            push @comments, $c;
+            if ($n && (scalar @comments == $n)) {
+                $iter->('finish');
+                last;
+            }
+        }
+        @comments = $so eq 'ascend' ?
+            sort { $a->created_on <=> $b->created_on } @comments :
+            sort { $b->created_on <=> $a->created_on } @comments;
     }
+
     my $html = '';
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
