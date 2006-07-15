@@ -607,11 +607,10 @@ sub _send_comment_notification {
                      (is_valid_email($comment->email)?
                       (comment_email => $comment->email):()),
                      comment_url => $comment->url,
-                     comment_text => $comment->text,
+                     comment_text => wrap_text($comment->text, 72),
                      unapproved => !$comment->visible(),
                     );
         my $body = MT->build_email('new-comment.tmpl', \%param);
-        $body = wrap_text($body, 72);
         MT::Mail->send(\%head, $body)
             or return $app->handle_error(MT::Mail->errstr());
     }
