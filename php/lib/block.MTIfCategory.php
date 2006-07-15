@@ -17,6 +17,7 @@ function smarty_block_MTIfCategory($args, $content, &$ctx, &$repeat) {
             }
         }
         $primary = $args['type'] == 'primary';
+        $secondary = $args['type'] == 'secondary';
         $name = $args['name'];
         $name or $name = $args['label'];
         if (!isset($name) || !isset($cat))
@@ -25,8 +26,19 @@ function smarty_block_MTIfCategory($args, $content, &$ctx, &$repeat) {
             $cats = array();
             if ($primary || !$e) {
                 $cats[] = $cat;
-            } else {
+            } elseif ($e) {
                 $cats = $ctx->mt->db->fetch_categories(array('entry_id' => $e['entry_id']));
+                if (!is_array($cats))
+                    $cats = array();
+            }
+            if ($secondary && $cat) {
+                $sec_cats = array();
+                $primary_cat = $cat;
+                foreach ($cats as $cat) {
+                    if ($cat['category_id'] != $primary_cat['category_id'])
+                        $sec_cats[] = $cat;
+                }
+                $cats = $sec_cats;
             }
             $ok = 0;
             if (isset($name)) {

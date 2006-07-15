@@ -3470,16 +3470,20 @@ sub _hdlr_if_category {
         return $ctx->error(MT->translate("You failed to specify the label attribute for the [_1] tag.", $tag));
     }
     my $primary = $args->{type} && ($args->{type} eq 'primary');
+    my $secondary = $args->{type} && ($args->{type} eq 'secondary');
     my $cat = $entry_context ? $e->category : ($ctx->stash('category') || $ctx->stash('archive_category'));
     if (!$cat && $e && !$entry_context) {
         $cat = $e->category;
     }
-    return 0 if !defined $cat;
     my $cats;
-    if ($primary || !$e) {
-        push @$cats, $cat;
-    } else { 
+    if ($cat && ($primary || !$e)) {
+        $cats = [ $cat ];
+    } elsif ($e) { 
         $cats = $e->categories;
+    }
+    if ($secondary && $cat) {
+        my @cats = grep { $_->id != $cat->id } @$cats;
+        $cats = \@cats;
     }
     foreach my $cat (@$cats) {
         return 1 if $cat->label eq $name;
