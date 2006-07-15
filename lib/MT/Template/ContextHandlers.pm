@@ -423,18 +423,36 @@ sub _hdlr_entry_if_tagged {
 }
 
 sub _tags_for_blog {
-    my ($blog_id, $type) = @_;
+    my ($ctx, $blog_id, $type) = @_;
     my $r = MT::Request->instance;
     my $tag_cache = $r->stash('blog_tag_cache:' . $type) || {};
+    my $min = 0;
+    my $max = 0;
     if (!$tag_cache->{$blog_id}) {
         my $terms = { is_private => 0, blog_id => $blog_id };
         require MT::Tag;
         require MT::Entry;
         my @tags = MT::Tag->load_by_datasource($type, $terms);
+
+        my $needs_rank = $ctx->stash('uncompiled') =~ m/<\$?MTTagRank/;
+        if ($needs_rank && (MT::Object->driver->can('count_group_by'))) {
+            my $min = 0;
+            my $max = 0;
+            my %tags = map { $_->id => $_ } @tags;
+            my $count_iter = MT::Entry->count_group_by({
+               status => MT::Entry::RELEASE(),
+               blog_id => $blog_id,
+            }, { group => ['objecttag_tag_id'], join => ['MT::ObjectTag', 'object_id', { blog_id => $blog_id, object_datasource => $type }] });
+            while (my ($count, $tag_id) = $count_iter->()) {
+                $tags{$tag_id}->{__entry_count} = $count;
+                $min = $count if ($count && ($count < $min)) || $min == 0;
+                $max = $count if $count && ($count > $max);
+            }
+        }
         $tag_cache->{$blog_id} = \@tags;
         $r->stash('blog_tag_cache:' . $type, $tag_cache);
     }
-    $tag_cache->{$blog_id};
+    ($tag_cache->{$blog_id}, $min, $max);
 }
 
 sub _hdlr_tags {
@@ -447,7 +465,7 @@ sub _hdlr_tags {
 
     my $blog_id = $ctx->stash('blog_id');
     my @tag_filter;
-    my $tags = _tags_for_blog($blog_id, $type);
+    my ($tags) = _tags_for_blog($ctx, $blog_id, $type);
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
     my $needs_entries = ($ctx->stash('uncompiled') =~ /<\$?MTEntries/) ? 1 : 0;
@@ -565,25 +583,9 @@ sub _hdlr_entry_tags {
     my $glue = $args->{glue} || '';
 
     my $blog_id = $ctx->stash('blog_id');
-    my $tags = _tags_for_blog($blog_id, $type);
-    my $min = 0;
-    my $max = 0;
-    foreach my $tag (@$tags) {
-        my $count = MT::Entry->count({
-            status => MT::Entry::RELEASE()
-        }, { join => [ 'MT::ObjectTag', 'object_id', {
-                       tag_id => $tag->id,
-                       blog_id => $blog_id,
-                       object_datasource => $type
-                     } ],
-             unique => 1
-        });
-        $tag->{__entry_count} = $count;
-        $min = $count if ($count && ($count < $min)) || $min == 0;
-        $max = $count if $count && ($count > $max);
-    }
-    @$tags = grep { $_->{__entry_count} } @$tags;
 
+    my ($tags, $min, $max);
+    ($tags, $min, $max) = _tags_for_blog($ctx, $blog_id, $type);
     local $ctx->{__stash}{tag_max_count} = $max;
     local $ctx->{__stash}{tag_min_count} = $min;
     
@@ -4258,7 +4260,9 @@ sub _sort_cats {
 
         # Sort the categories based on sort_method
         eval ("\@\$cats = sort $sort_method \@\$cats");
-        return $ctx->error(MT->translate("Error sorting categories: [_1]", $@)) if ($@);
+        if (my $err = $@) {
+            return $ctx->error(MT->translate("Error sorting categories: [_1]", $err));
+        }
     } else {
         if ($sort_order eq 'descend') {
             @$cats = sort { $b->label cmp $a->label } @$cats;
