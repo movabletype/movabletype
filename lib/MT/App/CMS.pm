@@ -1571,6 +1571,9 @@ sub view_log {
     push @class_loop, {
         class_name => 'comment,ping',
         class_label => $app->translate("All Feedback"),
+    }, {
+        class_name => 'search',
+        class_label => $app->translate("Search"),
     };
     @class_loop = sort { $a->{class_label} cmp $b->{class_label} } @class_loop;
     $param{class_loop} = \@class_loop;
