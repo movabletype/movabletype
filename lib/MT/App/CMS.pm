@@ -6651,7 +6651,7 @@ sub save_entry {
         $place->category_id($cat_id);
         $place->save;
     } else {
-        if ($place) {
+        if ((defined $cat_id) && ($place)) {
             $place->remove;
         }
     }
@@ -7540,8 +7540,9 @@ HTML
         push @data, { data_name => $qparam,
             data_value => 1 };
     }
-    push @data, { data_name => 'tags',
-        data_value => $q->param('tags') };
+    my $tags = $q->param('tags');
+    $tags = '' unless defined $tags;
+    push @data, { data_name => 'tags', data_value => $tags };
     $param{entry_loop} = \@data;
     if ($id) {
         $app->add_breadcrumb($app->translate('Entries'),
