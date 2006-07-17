@@ -5,7 +5,11 @@ function smarty_block_MTEntryIfTagged($args, $content, &$ctx, &$repeat) {
         if ($entry) {
             $entry_id = $entry['entry_id'];
             $tag = $args['tag'];
-            $tags = $ctx->mt->db->fetch_entry_tags(array('entry_id' => $entry_id, 'include_private' => $tag && (substr($tag,0,1) == '@')));
+            $targs = array('entry_id' => $entry_id);
+            if ($tag && (substr($tag,0,1) == '@')) {
+                $targs['include_private'] = 1;
+            }
+            $tags = $ctx->mt->db->fetch_entry_tags($targs);
             if ($tag && $tags) {
                 $has_tag = 0;
                 foreach ($tags as $row) {
