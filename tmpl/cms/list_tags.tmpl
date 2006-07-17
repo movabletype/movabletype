@@ -142,7 +142,7 @@ function submit_edit_form(id) {
 
 var tagList = [];
 <TMPL_LOOP NAME=TAG_TABLE><TMPL_LOOP NAME=OBJECT_LOOP>
-tagList[tagList.length] = '<TMPL_VAR NAME=TAG_NAME>';</TMPL_LOOP></TMPL_LOOP>
+tagList[tagList.length] = '<TMPL_VAR NAME=TAG_NAME ESCAPE=JS>';</TMPL_LOOP></TMPL_LOOP>
 
 var tableSelect;
 function init()
