@@ -6367,10 +6367,10 @@ sub build_entry_table {
             my $title = remove_html($obj->text);
             $row->{title_short} = substr_text(defined($title) ? $title : "", 0, $title_max_len) . '...';
         } else {
+            $row->{title_short} = remove_html($row->{title_short});
             $row->{title_short} = substr_text($row->{title_short}, 0, $title_max_len + 3) . '...'
                 if length_text($row->{title_short}) > $title_max_len;
         }
-        $row->{title_short} = remove_html($row->{title_short});
         if ($row->{excerpt}) {
             $row->{excerpt} = remove_html($row->{excerpt});
         }
