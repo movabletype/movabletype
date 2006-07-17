@@ -146,8 +146,17 @@ sub init {
     $app->{plugin_template_path} = '';
     $app->{is_admin} = 1;
     $app->init_core_itemset_actions();
-    $app->init_core_callbacks();
     $app;
+}
+
+sub init_plugins {
+    my $app = shift;
+    # This has to be done prior to plugin initialization since we
+    # may have plugins that register themselves using some of the
+    # older callback names. The callback aliases are declared
+    # in init_core_callbacks.
+    $app->init_core_callbacks();
+    $app->SUPER::init_plugins(@_);
 }
 
 sub init_request {
