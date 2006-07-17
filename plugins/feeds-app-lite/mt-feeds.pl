@@ -1,3 +1,5 @@
+# Copyright 2002-2006 Appnel Internet Solutions, LLC
+# This code is distributed with permission by Six Apart
 package MT::FeedsLite;
 use strict;
 
@@ -7,8 +9,8 @@ $VERSION = '1.0';
 my $plugin = MT::Plugin::FeedsLite->new;
 MT->add_plugin($plugin);
 
-MT->add_plugin_action('blog','index.cgi?', "Create a feed widget");
-MT->add_plugin_action('list_template','index.cgi?', "Create a feed widget");
+MT->add_plugin_action('blog',          'index.cgi?', "Create a feed widget");
+MT->add_plugin_action('list_template', 'index.cgi?', "Create a feed widget");
 
 use MT::Template::Context;
 
@@ -26,11 +28,8 @@ use constant ENTRY => 'MT::Plugin::FeedsLite::entry';
 sub feed {
     my ($ctx, $args, $cond) = @_;
     my $uri = $args->{uri}
-      or return
-      $ctx->error(
-         MT->translate(
-                       "'[_1]' is a required argument of [_2]", 'uri', 'MTFeed'
-         )
+      or return $ctx->error(
+         MT->translate("'[_1]' is a required argument of [_2]", 'uri', 'MTFeed')
       );
     require MT::Feeds::Lite;
     my $lite = MT::Feeds::Lite->fetch($uri)
@@ -129,8 +128,12 @@ BODY
 #--- utility
 
 sub _error {
-    $_[0]->error(MT->translate('MT[_1] was not used in the proper context.',
-                 $_[0]->stash('tag')));
+    $_[0]->error(
+                 MT->translate(
+                               'MT[_1] was not used in the proper context.',
+                               $_[0]->stash('tag')
+                 )
+    );
 }
 
 package MT::Plugin::FeedsLite;
@@ -159,7 +162,7 @@ sub load_config {
     $plugin->SUPER::load_config(@_);
     my $blog_id = $scope;
     $blog_id =~ s{\D}{}g;
-    $param->{blog_id} = $blog_id;
+    $param->{blog_id}    = $blog_id;
     $param->{wizard_uri} = $plugin->envelope . '/index.cgi';
 }
 

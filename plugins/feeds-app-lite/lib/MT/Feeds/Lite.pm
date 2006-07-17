@@ -1,3 +1,5 @@
+# Copyright 2002-2006 Appnel Internet Solutions, LLC
+# This code is distributed with permission by Six Apart
 package MT::Feeds::Lite;
 use strict;
 
@@ -82,7 +84,7 @@ sub fetch {
 sub new {
     my ($class, $xml) = @_;
     my $self = bless {}, $class;
-    MT::Util::init_sax(); # Make sure XML::SAX knows about available parsers
+    MT::Util::init_sax();    # Make sure XML::SAX knows about available parsers
     require XML::Elemental;
     require XML::Elemental::Util;
     my $p = XML::Elemental->parser;

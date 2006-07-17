@@ -1,5 +1,6 @@
-# Large parts sampled from Feed::Find.
-package MT::Feeds::Find;
+# Copyright 2002-2006 Appnel Internet Solutions, LLC
+# This code is distributed with permission by Six Apart
+package MT::Feeds::Find; # Large parts sampled from Feed::Find.
 use strict;
 
 use base qw( MT::ErrorHandler );
