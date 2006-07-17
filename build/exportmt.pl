@@ -400,14 +400,13 @@ sub update_html {
 
         unless( $o{'debug'} ) {
             warn "ERROR: $old_html does not exist" unless -e $old_html;
-            warn "Updating $old_html...\n";
             my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html.new' );
             my $old_fh = IO::File->new( '< ' . $old_html );
             my $new_fh = IO::File->new( '> ' . $new_html );
 
             while( <$old_fh> ) {
                 my $line = $_;
-                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$o{'arch=s'}))"/ ) {
+                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:\.tar\.gz|\.zip))"/ ) {
                     my $id = $1;
                     verbose( "Matched: id=$id" );
                     $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
@@ -654,6 +653,7 @@ for full documentation.
 
 =head1 REQUIRES
 
-Currently, this is the 6A internal subversion repository.
+Currently, using this program requires 6A check-in rights to the
+public subversion repository.
 
 =cut
