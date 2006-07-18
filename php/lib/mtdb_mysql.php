@@ -223,5 +223,17 @@ class MTDatabase_mysql extends MTDatabaseBase {
         $this->_tag_id_cache[$tag['tag_id']] = $tag;
         return $tag;
     }
+
+    function entries_recently_commented_on_sql($subsql) {
+      $sql = $subsql;
+        $sql = preg_replace("/from mt_entry\s+left/i",
+                    "from mt_entry\ninner join mt_comment on comment_entry_id = entry_id and comment_visible = 1\nleft",
+                    $sql);
+        $sql = preg_replace("/order by(.+)/i",
+                    "order by comment_created_on desc, \$1",
+                   $sql);
+      return $sql;
+    }
+
 }
 ?>
