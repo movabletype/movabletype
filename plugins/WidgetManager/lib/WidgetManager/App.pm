@@ -194,6 +194,10 @@ sub edit {
       my $tmpl = $app->init_tmpl('edit.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
       $app->add_breadcrumb($app->plugin->translate('Main Menu'),$app->{mtscript_url});
+      require MT::Blog;
+      my $blog = MT::Blog->load ($blog_id);
+      $app->add_breadcrumb($blog->name,$app->{mtscript_url}."?__mode=menu&blog_id=$blog_id");
+
       $app->add_breadcrumb($app->plugin->translate('Widget Manager'),'?__mode=list&blog_id='.$blog_id);
       $app->add_breadcrumb($q->param('widgetmanager'));
 
@@ -274,6 +278,10 @@ sub list {
       my $tmpl = $app->init_tmpl('list.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
       $app->add_breadcrumb($app->plugin->translate("Main Menu"),$app->{mtscript_url});
+      require MT::Blog;
+      my $blog = MT::Blog->load ($blog_id);
+      $app->add_breadcrumb($blog->name,$app->{mtscript_url}."?__mode=menu&blog_id=$blog_id");
+
       $app->add_breadcrumb($app->plugin->translate("Widget Manager"));
 
       $app->install_default_widgets() unless $app->installed;
