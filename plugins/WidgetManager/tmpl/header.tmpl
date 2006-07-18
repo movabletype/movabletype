@@ -56,22 +56,27 @@
 </div>
 
 <div id="topnav-blogs">
+<MT_TOPNAV:BLOGMENU>
 <TMPL_IF NAME=TOP_BLOG_LOOP>
-<form method="get" action="<TMPL_VAR NAME=MT_URL>" class="inline">
-<input type="hidden" name="__mode" value="menu" />
-<MT_TRANS phrase="Weblogs">:
-<select name="blog_id">
+<form class="inline">
+
+<MT_TRANS phrase="Go to:">
+<select name="blog_id" onchange="if(this.value!='')window.location.href=this.value;">
+<TMPL_UNLESS NAME=BLOG_ID><option value="" selected="selected"><MT_TRANS phrase="Select a blog"></option></TMPL_UNLESS>
 <TMPL_LOOP NAME=TOP_BLOG_LOOP>
-<option value="<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>
+    <option value="<TMPL_VAR NAME=MT_URL>?__mode=menu&amp;blog_id=<TMPL_VAR NAME=TOP_BLOG_ID>"<TMPL_IF NAME=TOP_BLOG_SELECTED> selected="selected"</TMPL_IF>><TMPL_VAR NAME=TOP_BLOG_NAME ESCAPE=HTML></option>
 </TMPL_LOOP>
 </select>
-<input type="submit" value="<MT_TRANS phrase="Go">" />
-<TMPL_IF NAME=BLOG_NAME>
-&nbsp;<a href="<TMPL_VAR NAME=BLOG_URL>"><MT_TRANS phrase="View Site"></a> &#187;
-</TMPL_IF>
 </form>
+<TMPL_ELSE>
+<TMPL_IF NAME=IS_ADMINISTRATOR>
+<MT_TRANS phrase="Weblogs">:
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=system_list_blogs"><MT_TRANS phrase="System-wide listing"></a>
 </TMPL_IF>
+</TMPL_IF>
+</MT_TOPNAV:BLOGMENU>
 </div>
+
 </TMPL_IF>
 
 </div>
