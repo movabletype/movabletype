@@ -448,7 +448,8 @@ sub set_repo {
     $o{'repo-uri=s'} = qx{ /usr/bin/svn info | grep URL };
     chomp $o{'repo-uri=s'};
     $o{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
-    if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/(\w+)\/mt/ ) {
+
+    if( $o{'repo-uri=s'} =~ /http.+?(branches|tags)\/([0-9A-Za-z_.-]+)/ ) {
         # The repo is embedded in the repo uri.
         my( $key, $val ) = ( $1, $2 );
         $o{'repo=s'} = join '/', $key, $val;
