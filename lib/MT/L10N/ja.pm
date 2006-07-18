@@ -93,7 +93,7 @@ use vars qw( @ISA %Lexicon );
     'Archives' => 'アーカイブ',
     'Creative Commons License' => 'クリエイティブ・コモンズ・ライセンス',
     'This weblog is licensed under a' => 'このブログは、次のライセンスで保護されています。',
-    '_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.jp/movabletype/">Movable Type</a>',
+    '_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.jp/movabletype/"><$MTProductName version="1"$></a>',
     ## default_templates/master_archive_index.tmpl
     ': Archives' => ': アーカイブ',
     ## default_templates/atom_index.tmpl

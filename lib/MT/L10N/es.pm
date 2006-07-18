@@ -2163,7 +2163,7 @@ Si esta operación no es correcta, puede desbloquear la dirección IP y permitir
     'Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]' => 'Publicado <MTIfNonEmpty tag="EntryAuthorDisplayName">por [_1] </MTIfNonEmpty>en [_2]', # Translate - New (9)
     'Updating entry week numbers...' => 'Actualizando números de semana de entradas...', # Translate - New (4)
     'Recover Password(s)' => 'Recuperar contraseña/s',
-    '_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/sitees/">Movable Type <$MTVersion$></a>',
+    '_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/sitees/"><$MTProductName version="1"$></a>',
     'Assigning comment/moderation settings...' => 'Asignando opciones de comentarios/moderación...', # Translate - New (4)
     'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => 'Esta página contiene todas las entradas publicadas en [_1] en <strong>[_2]</strong>. Están listadas de más antiguas a más recientes.',
     '_USAGE_ARCHIVING_1' => 'Seleccione la periodicidad y los tipos de archivado que desee realizar en su sitio. Por cada tipo de archivado que elija, tendrá la opción de asignar múltiples plantillas de archivado, que se aplicarán a ese tipo en particular. Por ejemplo, puede crear dos vistas diferentes de sus archivos mensuales: una consistente en una página que contenga cada una de las entradas de un determinado mes y la otra consistente en una vista de calendario de ese mes.',

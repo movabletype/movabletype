@@ -2168,7 +2168,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
     'Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]' => 'Gepubliceerd <MTIfNonEmpty tag="EntryAuthorDisplayName">door [_1] </MTIfNonEmpty>op [_2]', # Translate - New (9)
     'Updating entry week numbers...' => 'Weeknummers van berichten worden bijgewerkt...', # Translate - New (4)
     'Recover Password(s)' => 'Wachtwoord(en) terugvinden',
-    '_POWERED_BY' => 'Aangedreven door<br /><a href="http://www.movabletype.org/sitenl/">Movable Type <$MTVersion$></a>',
+    '_POWERED_BY' => 'Aangedreven door<br /><a href="http://www.movabletype.org/sitenl/"><$MTProductName version="1"$></a>',
     'Assigning comment/moderation settings...' => 'Instellingen voor reacties/moderatie worden toegewezen...', # Translate - New (4)
     'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => 'Deze pagina bevat alle berichten gepubliceerd op [_1] in <strong>[_2]</strong>. Ze zijn gerangschikt van oud naar nieuw.',
     '_USAGE_ARCHIVING_1' => 'Selecteer aantal/soorten archivering die u op uw site wenst te hebben. Voor elk archiveringstype dat u kiest, kunt u meerdere archiefsjablonen toewijzen die u op dat bepaalde type wilt toepassen Stel dat u  twee verschillende weergaven wilt aanmaken van uw maandelijkse archieven: een pagina met alle berichten voor een bepaalde maand en de andere met een kalenderoverzicht voor die maand.',

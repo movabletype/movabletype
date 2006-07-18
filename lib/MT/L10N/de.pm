@@ -2157,7 +2157,7 @@ sub encoding { 'utf-8' }
     'Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]' => 'Geschrieben <MTIfNonEmpty tag="EntryAuthorDisplayName">von [_1] </MTIfNonEmpty>am [_2]', # Translate - New (9) OK
     'Updating entry week numbers...' => 'Aktualisiere Wochendaten...', # Translate - New (4) OK
     'Recover Password(s)' => 'Passwort anfordern',
-    '_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/sitede/">Movable Type <$MTVersion$></a>',
+    '_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/sitede/"><$MTProductName version="1"$></a>',
     'Assigning comment/moderation settings...' => 'Weise Kommentierungseinstellungen zu...', # Translate - New (4) OK
     'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => 'Diese Seite enthält alle "[_1]"-Einträge in <strong>[_2]</strong>. Sie sind in chronologischer Reihenfolge angeordnet.',
     '_USAGE_ARCHIVING_1' => 'Wählen Sie die Archivtypen aus, die Sie für Ihr Weblog verwenden möchten. Sie können für jeden Archivtypen optional mehrere Archivtemplates verwenden.',
