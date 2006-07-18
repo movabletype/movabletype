@@ -385,7 +385,8 @@ sub update_html {
     my $dest = shift;
 
     if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
-        my $stage_dir = fileparse( $dest, split /\s*,\s*/o, $o{'arch=s'} );
+         my( $stage_dir, $suffix );
+        ($stage_dir, undef, $suffix) = fileparse( $dest, split /\s*,\s*/o, $o{'arch=s'} );
         my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
 
         unless( -e $old_html ) {
@@ -406,14 +407,14 @@ sub update_html {
 
             while( <$old_fh> ) {
                 my $line = $_;
-                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:\.tar\.gz|\.zip))"/ ) {
+                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$suffix))"/ ) {
                     my $id = $1;
                     verbose( "Matched: id=$id" );
                     $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
                         $id,
                         $o{'stage-uri=s'},
-                        $stage_dir, $o{'arch=s'},
-                        $stage_dir, $o{'arch=s'};
+                        $stage_dir, $suffix,
+                        $stage_dir, $suffix;
                 }
                 print $new_fh $line;
             }
