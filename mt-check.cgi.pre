@@ -26,11 +26,9 @@ local $| = 1;
 
 my $mt;
 my $lang = '__BUILD_LANGUAGE__';
-my $version;
 eval {
     require MT;
     $mt = MT->new();
-    $version = MT->VERSION;
     my $cfg = $mt->config;
     $cfg->PublishCharset('utf-8');
     $cfg->DefaultLanguage($lang);
@@ -165,17 +163,6 @@ print trans_templ(<<HTML);
 				padding-top : 0px;
 				margin-top : 0px;
 			}
-
-            #copyright {
-                background: #FFF;
-                font-family: Verdana, Arial, sans-serif;
-                font-size: xx-small;
-                color: #666;
-                border-top: 1px dotted #CCC;
-                border-bottom: 1px dotted #CCC;
-                margin: 50px 0 0 0;
-                padding-left: 30px;
-            }
 		
 		//-->
 	</style>
@@ -372,10 +359,4 @@ if ($is_good) {
 HTML
 }
 
-print <<HTML;
-<div id="copyright">
-<p><b>Version $version</b> Copyright &copy; 2001-2006 Six Apart. All Rights Reserved.</p>
-</div>
-</body>
-</html>
-HTML
+print "</body>\n\n</html>\n";
