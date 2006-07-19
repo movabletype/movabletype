@@ -66,6 +66,7 @@ use vars qw( %Lexicon );
     'You already have a widget manager named [_1]. Please use a unique name for this widget manager.' => '[_1] という名前のWidget Managerがすでに存在します。別の名前を付けてください。',
     'Tag cloud (sidebar)' => 'タグ クラウド (サイドバー)',
     'Tag cloud' => 'タグ クラウド',
+    'Powered by' => 'Powered by',
 );
 
 1;
