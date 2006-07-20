@@ -7741,7 +7741,7 @@ sub rebuild_pages {
         $app->rebuild_indexes( BlogID => $blog_id, Template => $tmpl_saved,
                                Force => 1 )
             or return;
-        $order = $app->translate("index template '[_1]'", $tmpl_saved->name);
+        $order = "index template $tmpl_saved->name";
     } elsif ($type =~ /^entry-(\d+)$/) {
         my $entry_id = $1;
         require MT::Entry;
