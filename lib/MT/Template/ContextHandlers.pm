@@ -632,7 +632,8 @@ sub _hdlr_tag_count {
     my $blog_id = $ctx->stash('blog_id');
     return 0 unless $tag;
     unless (defined $count) {
-        $count = MT::Entry->tagged_count($tag->id, { blog_id => $blog_id });
+        $count = MT::Entry->tagged_count($tag->id, { status => MT::Entry::RELEASE(),
+                                                     blog_id => $blog_id });
     }
     $count || 0;
 }
