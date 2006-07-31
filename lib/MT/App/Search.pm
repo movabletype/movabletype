@@ -42,8 +42,6 @@ sub init_request{
     $app->param('search', $tag) if $tag;
     my $blog_id = $q->param('blog_id') || '';
     my $include_blog_id = $q->param('IncludeBlogs') || '';
-    $app->param('blog_id', $blog_id) if $blog_id;
-    $app->param('IncludeBlogs', $include_blog_id) if $include_blog_id;
 
     unless ($include_blog_id){
         $app->param('IncludeBlogs', $blog_id) if $blog_id;
