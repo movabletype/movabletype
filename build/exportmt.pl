@@ -27,7 +27,7 @@ usage() unless @ARGV;
 # Set-up the command-line options with their default values.
 my %o = get_options(
   'agent=s'         => '',  # Constructed at run-time.
-  'arch=s'          => '.tar.gz,.zip',
+  'arch=s'          => [qw( .tar.gz .zip )],
   'cleanup!'        => 1,  # Remove the exported directory after deployment.
   'debug'           => 0,  # Turn on/off the actual system calls.
   'deploy:s'        => '', #($ENV{USER}||$ENV{USERNAME}).'@rongo:/usr/local/cifs/intranet/mt-interest/',
@@ -99,7 +99,7 @@ unless( $o{'stamp=s'} ) {
     my $config = read_conf( "build/mt-dists/$o{'pack=s'}.mk" );
     my @stamp = ();
     push @stamp, $config->{PRODUCT_VERSION};
-    push @stamp, $o{'short-lang=s'} unless $o{'short-lang=s'} eq 'en';
+    push @stamp, $o{'short-lang=s'};
     # Add repo, date and ldap if a stamp is requested.
     if( $o{'stamp!'} ) {
         push @stamp, lc( fileparse $o{'repo=s'} );
@@ -164,14 +164,13 @@ sub cleanup {
     my $build = $o{'export-dir=s'};  # Less ugly.
     # Move the build archives up one level.
     unless( $o{'debug'} ) {
-        for my $arch ( split /\s*,\s*/o, $o{'arch=s'} ) {
+        for my $arch ( @{ $o{'arch=s'} } ) {
             move( "$build/$build$arch", "$build$arch" )
                 or die( "ERROR: Can't move $build$arch: $!" );
         }
     }
-    verbose( "Moved: $build $o{'arch=s'} archive builds." );
     unless( $o{'debug'} ) {
-        rmtree( $build ) or die( "ERROR: Can't rmtree $build: $!" );
+        rmtree( $build ) or die( "ERROR: Can't rmtree clean-up $build: $!" );
     }
     verbose( "Cleanup: Removed $build" );
 }
@@ -180,7 +179,7 @@ sub create_distro_list {
     my $distros = { path => [], url => [] };
     my %seen = ();
     for my $lang ( split( /\s*,\s*/, $o{'lang=s'} ) ) {
-        for my $arch ( split( /\s*,\s*/, $o{'arch=s'} ) ) {
+        for my $arch ( @{ $o{'arch=s'} } ) {
             # The filename is the distribution name plus the archive extension.
             my $filename = $o{'export-dir=s'} . $arch;
             # The distribution is the full export path and filename.
@@ -222,7 +221,7 @@ sub deploy_distros {
             verbose( "Copied: $dist to $dest" );
 
             # Install if we are staging.
-            stage_distro( $dest, $o{'short-lang=s'} ) if $o{'stage'};
+            stage_distro( $dest ) if $o{'stage'};
 
             # Update the staging html.
             update_html( $dest );
@@ -246,7 +245,7 @@ sub stage_distro {
     return if $dest !~ /\.gz$/o;
 
     die( "ERROR: Cannot stage '$dest': No such file or directory" )
-        unless $o{'debug'} || ( $dest && -e $dest );
+        unless $o{'debug'} || -e $dest;
 
     my $cwd = cwd();
 
@@ -254,16 +253,9 @@ sub stage_distro {
         die( "ERROR: Can't chdir to $o{'stage-dir=s'}: $!" );
     verbose( "Changed to staging root $o{'stage-dir=s'}" );
 
-    # Remove any existing distro, with the same path name.
-    if( -d $dest ) {
-        rmtree( $dest ) or die( "ERROR: Can't rmtree $dest: $!" )
-            unless $o{'debug'};
-        verbose( "Removed: $dest" );
-    }
-
     # Do we have a current symlink?
-    (my $link = lc( fileparse $o{'repo=s'} )) =~ s/e?s$//;
-    $link .= "-$o{'short-lang=s'}" if $o{'short-lang=s'} ne 'en';
+    my $link = lc $o{'pack=s'};
+    $link .= "-$o{'short-lang=s'}";
     $link .= '-ldap' if $o{'ldap'};
     my $current = '';
     $current = readlink( $link ) if -e $link;
@@ -273,12 +265,27 @@ sub stage_distro {
     (my $current_db = $current) =~ s/[.-]/_/g;
     $current_db .= 'stage_' . $current_db;
 
+    # Grab the literal build directory name.
+    my $stage_dir = fileparse( $dest, @{ $o{'arch=s'} } );
+
+    # Remove any existing distro, with the same path name.
+    if( -d $stage_dir ) {
+        rmtree( $stage_dir ) or
+            die( "ERROR: Can't rmtree the old $stage_dir $!" )
+            unless $o{'debug'};
+        verbose( "Removed: $stage_dir" );
+    }
+
     # Drop previous.
-    rmtree( $current ) or warn( "Can't rmtree '$current': $!" )
-        if $current;
-    unlink( $current . $o{'arch=s'} ) or
-        warn( "Can't unlink the '$current$o{'arch=s'}' symlink: $!\n" )
-        unless $current eq $dest;
+    if( -d $current ) {
+        rmtree( $current ) or
+            warn( "WARNING: Can't rmtree previous '$current': $!" );
+        for my $arch ( @{ $o{'arch=s'} } ) {
+            unlink( "$current$arch" ) or
+                warn( "WARNING: Can't unlink '$current$arch': $!\n" )
+                unless "$current$arch" eq $dest;
+        }
+    }
 
     my $tar;
     unless( $o{'debug'} ) {
@@ -288,10 +295,6 @@ sub stage_distro {
     }
     verbose( "Extracted: $dest" );
 
-    # Grab the literal build directory name.
-    my $stage_dir = fileparse(
-        $dest, split /\s*,\s*/, $o{'arch=s'}
-    );
     # Change to the distribution directory.
     chdir( $stage_dir ) or die( "ERROR: Can't chdir $stage_dir: $!" )
         unless $o{'debug'};
@@ -338,10 +341,9 @@ CONFIG
         verbose( 'Initializing database.' );
         # XXX Use DBI ASAP.
         # Drop the previous database.
-        verbose_command( "mysqladmin -u root -f drop $current_db" )
-            if $db eq $current_db;
+        verbose_command( "mysqladmin -f -u root drop $current_db" );
         # Drop a database of same name.
-        verbose_command( "mysqladmin -u root -f drop $db" );
+        verbose_command( "mysqladmin -f -u root drop $db" );
         verbose_command( "mysqladmin -u root create $db" );
         # Run the upgrade tool.
         verbose_command( "$^X ./tools/upgrade --name Melody" );
@@ -355,12 +357,12 @@ CONFIG
     # Now we re-link the stamped directory.
     if( $o{'symlink!'} ) {
         unless( $o{'debug'} ) {
+            warn "Unlinking $link\n";
             # Drop current symlink.
-            unlink( $link ) or warn( "Can't unlink '$link': $!" );
-            warn "Unlinked $link\n";
+            unlink( $link ) or warn( "WARNING: Can't unlink '$link': $!" );
             # Relink the staged directory.
             symlink( "$stage_dir/", $link ) or
-                warn( "Can't symlink $stage_dir/ to $link: $!" );
+                warn( "WARNING: Can't symlink $stage_dir/ to $link: $!" );
         }
         verbose( "Symlink'd: $stage_dir/ to $link" );
     }
@@ -371,11 +373,13 @@ CONFIG
             $o{'stage-uri=s'}, $link;
         die( "ERROR: Staging $url can't be resolved." )
             unless $o{'agent=s'}->head( $url );
-        # Make sure we can get to our archive file symlink.
-        $url = sprintf '%s/%s%s',
-            $o{'stage-uri=s'}, $stage_dir, $o{'arch=s'};
-        die( "ERROR: Staging $url can't be resolved." )
-            unless $o{'agent=s'}->head( $url );
+        # Make sure we can get to our archive file symlinks.
+        for my $arch ( @{ $o{'arch=s'} } ) {
+            $url = sprintf '%s/%s%s',
+                $o{'stage-uri=s'}, $stage_dir, $arch;
+            die( "ERROR: Staging $url can't be resolved." )
+                unless $o{'agent=s'}->head( $url );
+        }
     } 
 
     chdir( $cwd ) or die( "ERROR: Can't chdir back to $cwd: $!" );
@@ -386,28 +390,28 @@ sub update_html {
 
     if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
          my( $stage_dir, $suffix );
-        ($stage_dir, undef, $suffix) = fileparse( $dest, split /\s*,\s*/o, $o{'arch=s'} );
+        ($stage_dir, undef, $suffix) = fileparse( $dest, @{ $o{'arch=s'} } );
         my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
 
         unless( -e $old_html ) {
-            warn "ERROR: Staging HTML file, $old_html, does not exist.\n";
+            warn "WARNING: Staging HTML file, $old_html, does not exist.\n";
             return;
         }
         unless( -e $stage_dir ) {
-            warn "ERROR: Staged distribution file, $dest, does not exist.\n";
+            warn "WARNING: Distribution file, $dest, does not exist.\n";
             return;
         }
         verbose( "Updating: $old_html for staging $dest" );
 
         unless( $o{'debug'} ) {
-            warn "ERROR: $old_html does not exist" unless -e $old_html;
-            my $new_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html.new' );
+            warn "WARNING: $old_html does not exist" unless -e $old_html;
+            my $new_html = "$old_html.new";
             my $old_fh = IO::File->new( '< ' . $old_html );
             my $new_fh = IO::File->new( '> ' . $new_html );
 
             while( <$old_fh> ) {
                 my $line = $_;
-                if( /id="($o{'repo=s'}-$o{'lang=s'}(?:$suffix))"/ ) {
+                if( /id="($o{'pack=s'}-$o{'short-lang=s'}$suffix)"/ ) {
                     my $id = $1;
                     verbose( "Matched: id=$id" );
                     $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
@@ -429,10 +433,12 @@ sub update_html {
 }
 
 sub remove_copy {
-    verbose( "Remove: $o{'export-dir=s'}" );
-    rmtree( $o{'export-dir=s'} ) or
-        die( "ERROR: Can't rmtree $o{'export-dir=s'}: $!" )
-        unless $o{'debug'};
+    if( -d $o{'export-dir=s'} ) {
+        verbose( "Remove existing export: $o{'export-dir=s'}" );
+        rmtree( $o{'export-dir=s'} ) or
+            die( "ERROR: Can't rmtree existing export $o{'export-dir=s'}: $!" )
+            unless $o{'debug'};
+    }
 }
 
 sub repo_rev {
@@ -467,11 +473,8 @@ sub set_repo {
 
 sub export {
     # Export the build (SVN auto-creates the directory).
-    verbose_command( sprintf( '%s export %s%s %s',
-        '/usr/bin/svn',
-        ($o{'verbose!'} ? '' : '--quiet '),
-        $o{'repo-uri=s'},
-        $o{'export-dir=s'}
+    verbose_command( sprintf( '%s export --quiet %s %s',
+        '/usr/bin/svn', $o{'repo-uri=s'}, $o{'export-dir=s'}
     ));
 }
 
@@ -565,7 +568,6 @@ sub read_conf {
     my @files = @_;
     my $config = {};
 
-#    warn "Files: @files\n";
     for my $file ( @files ) {
         next unless -e $file;
         warn "Parsing config $file file...\n";
