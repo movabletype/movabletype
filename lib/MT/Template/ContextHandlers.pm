@@ -2290,7 +2290,7 @@ sub _hdlr_sys_date {
     my $args = $_[1];
     my $t = time;
     my @ts;
-    local $args->{utc};
+    local $args->{utc} = $args->{utc};
     if ($args->{utc}) {
         @ts = gmtime $t;
         delete $args->{utc}; # prevents it happening again in _hdlr_date
@@ -4255,7 +4255,9 @@ sub _sort_cats {
 
             # Make sure it's loaded
             eval (qq(use $package;));
-            return $ctx->error(MT->translate("Cannot find package [_1]: [_2]", $package, $@)) if $@;
+            if (my $err = $@) {
+                return $ctx->error(MT->translate("Cannot find package [_1]: [_2]", $package, $err));
+            }
         }
 
         # Sort the categories based on sort_method
