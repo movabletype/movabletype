@@ -328,7 +328,6 @@ sub read_config_file {
         return $class->error(MT->translate(
             "Error opening file '[_1]': [_2]", $cfg_file, "$!" ));
     my $line;
-print STDERR "$$ - reading configuration file...\n";
     while (<FH>) {
         chomp; $line++;
         next if !/\S/ || /^#/;
