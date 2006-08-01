@@ -320,6 +320,7 @@ sub read_config_file {
     my $class = shift;
     my($cfg_file) = @_;
     my $mgr = $class->instance;
+    $mgr->{__var} = {};
     local(*FH, $_, $/);
     $/ = "\n";
     die "Can't read config without config file name" if !$cfg_file;
@@ -327,6 +328,7 @@ sub read_config_file {
         return $class->error(MT->translate(
             "Error opening file '[_1]': [_2]", $cfg_file, "$!" ));
     my $line;
+print STDERR "$$ - reading configuration file...\n";
     while (<FH>) {
         chomp; $line++;
         next if !/\S/ || /^#/;
