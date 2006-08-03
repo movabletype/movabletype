@@ -745,24 +745,28 @@ sub _validate_signature {
     my $key_location = $app->{cfg}->RegKeyURL;
     if (!$dsa_key && $key_location) {
         my $ua = $app->new_ua;
-        $app->log({
-            message => $app->translate("Couldn't get public key from url provided"),
-            level => MT::Log::ERROR(),
-            class => 'system',
-            category => 'commenter_authentication',
-        });
-        return $app->error($app->translate("Couldn't get public key from url provided"))
-            unless $ua;
+        unless ($ua) {
+            my $err = $app->translate("Couldn't get public key from url provided");
+            $app->log({
+                message => $err,
+                level => MT::Log::ERROR(),
+                class => 'system',
+                category => 'commenter_authentication',
+            });
+            return $app->error($err);
+        }
         my $req = new HTTP::Request(GET => $key_location);
         my $resp = $ua->request($req);
-        $app->log({
-            message => $app->translate("Couldn't get public key from url provided"),
-            level => MT::Log::ERROR(),
-            class => 'system',
-            category => 'commenter_authentication',
-        });
-        return $app->error($app->translate("Couldn't get public key from url provided"))
-            unless $resp->is_success();
+        unless ($resp->is_success()) {
+            my $err = $app->translate("Couldn't get public key from url provided");
+            $app->log({
+                message => $err,
+                level => MT::Log::ERROR(),
+                class => 'system',
+                category => 'commenter_authentication',
+            });
+            return $app->error($err);
+        }
         # TBD: Check the content-type
         $dsa_key = $resp->content();
 
