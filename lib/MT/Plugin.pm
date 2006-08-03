@@ -721,7 +721,7 @@ This is an alternative to using C<MT-E<gt>add_plugin_action>.
 Used to register plugin itemset action links that are displayed on various
 listings within the MT::App::CMS application. The format for this key is:
 
-    app_action_links => {
+    app_itemset_actions => {
         'MT::App::CMS' => {   # application the action applies to
             'type' => {
                 key => 'unique_action_name',
@@ -729,6 +729,24 @@ listings within the MT::App::CMS application. The format for this key is:
                 code => \&itemset_handler
             }
         }
+    }
+
+In the event that you need to register multiple actions for a single type,
+you can use the alternate format:
+
+    app_itemset_actions => {
+        'MT::App::CMS' => [   # application the action applies to
+            {   type => 'type',
+                key => 'unique_action_name',
+                label => 'Uppercase text',
+                code => \&itemset_handler_upper
+            },
+            {   type => 'type',
+                key => 'unique_action_name2',
+                label => 'Lowercase text',
+                code => \&itemset_handler_lower
+            }
+        ]
     }
 
 This is an alternative to using C<MT::App::CMS-E<gt>add_itemset_action>.
