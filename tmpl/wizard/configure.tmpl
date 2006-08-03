@@ -64,9 +64,9 @@ function db_select(sel) {
 <h3><MT_TRANS phrase="Step 2 of 3"> &mdash; <MT_TRANS phrase="Database Configuration"></h3>
 
 <TMPL_IF NAME=SUCCESS>
-<P>
+<div class="message">
 <MT_TRANS phrase="Your database configuration is complete. Click 'Continue' below to configure your mail settings.">
-</P>
+</div>
 <TMPL_ELSE>
 <p>
 <MT_TRANS phrase="Please enter the parameters necessary for connecting to your database.If your database type is not listed in the dropdown below, you may be missing the Perl module necessary to connect to your database.  If this is the case, please check your installation and click <a href="?__mode=configure">here</a> to re-test your installation.">

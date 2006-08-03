@@ -7,10 +7,10 @@
 
 
 <TMPL_UNLESS NAME=CONFIG_CREATED>
-<h3><MT_TRANS phrase="We were unable to create your configuration file."></h3>
+<div class="error-message"><MT_TRANS phrase="We were unable to create your configuration file."></div>
 <MT_TRANS phrase="If you would like to check the directory permissions and retry, click the 'Retry' button.">
 <TMPL_ELSE>
-<h3><MT_TRANS phrase="Congratulations! You've successfully configured [_1] [_2]." params="<TMPL_VAR NAME=MT_PRODUCT_NAME>%%<TMPL_VAR NAME=MT_VERSION>"></h3>
+<div class="message"><MT_TRANS phrase="Congratulations! You've successfully configured [_1] [_2]." params="<TMPL_VAR NAME=MT_PRODUCT_NAME>%%<TMPL_VAR NAME=MT_VERSION>"></div>
 <MT_TRANS phrase="The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the 'Back' button below to reconfigure them." params="<TMPL_VAR NAME=CONFIG_FILE>">
 </TMPL_UNLESS>
 
