@@ -1,10 +1,7 @@
 <$MTHTTPContentType type="application/rss+xml"$><?xml version="1.0" encoding="<$MTPublishCharset$>"?><rss version="2.0" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/">
-<channel><MTSearchResults><MTBlogResultHeader>
-<title><$MTBlogName remove_html="1" encode_xml="1"$> results for <$MTSearchString$></title>
-<link><$MTBlogURL remove_html="1" encode_xml="1"$></link>
-<description><$MTBlogDescription remove_html="1" encode_xml="1"$></description>
-<managingEditor><MTEntries lastn="1"><$MTEntryAuthorDisplayName encode_xml="1"$></MTEntries></managingEditor>
-<webMaster><MTEntries lastn="1"><$MTEntryAuthorDisplayName encode_xml="1"$></MTEntries></webMaster>
+<channel>
+<title><MT_TRANS phrase="Search Results for [_1]" params="<$MTSearchString remove_html="1" encode_xml="1"$>"></title>
+<link><$MTCGIPath$><$MTSearchScript$>?search=<$MTSearchString$>&amp;Template=<$MTSearchTemplateID$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$></link>
 <language>en-us</language>
 <pubDate><$MTDate format="%a, %d %b %Y %H:%M:%S "$><$MTBlogTimezone no_colon="1"$></pubDate>
 <docs>http://blogs.law.harvard.edu/tech/rss</docs>
@@ -12,7 +9,8 @@
 <ttl>1440</ttl>
 <openSearch:totalResults><$MTSearchResultCount$></openSearch:totalResults>
 <openSearch:startIndex>1</openSearch:startIndex>
-<openSearch:itemsPerPage><$MTSearchResultCount$></openSearch:itemsPerPage></MTBlogResultHeader>
+<openSearch:itemsPerPage><$MTSearchResultCount$></openSearch:itemsPerPage>
+<MTSearchResults>
 <item>
 <title><$MTEntryTitle remove_html="1" encode_xml="1"$></title>
 <link><$MTEntryLink encode_xml="1"$></link>
