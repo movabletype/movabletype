@@ -319,7 +319,7 @@ sub week2ymd {
     require MT::DateTime;
     my $jan_one_dow_m1 = (MT::DateTime->ymd2rd($y, 1, 1) + 6) % 7;
     $week-- if $jan_one_dow_m1 < 4;
-    my $day_of_year = $week * 7 - $jan_one_dow_m1 + 1;
+    my $day_of_year = $week * 7 - $jan_one_dow_m1;
     my $leap_year = is_leap_year($y);
     if ($day_of_year < 1) {
         $y--;
