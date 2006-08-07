@@ -137,13 +137,13 @@ use vars qw( @ISA %Lexicon );
     '<a href="[_1]">[_2]</a> is the next category.' => '次のカテゴリは<a href="[_1]">[_2]</a>です。',
     '<a href="[_1]">[_2]</a> is the previous category.' => '前のカテゴリは<a href="[_1]">[_2]</a>です。',
     'Posted on [_1]' => '日時: [_1]',
-    'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.' => 'ブログ「[_1]」のカテゴリ「[_2]」に投稿されたすべてのエントリーのアーカイブのページです。新しい順番に並んでいます。',
+    'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.' => 'ブログ「[_1]」のカテゴリ「[_2]」に投稿されたすべてのエントリーのアーカイブのページです。過去のものから新しいものへ順番に並んでいます。',
     ## default_templates/rss_20_index.tmpl
     ## default_templates/datebased_archive.tmpl
     '<a href="[_1]">[_2]</a> is the next archive.' => '次のアーカイブは<a href="[_1]">[_2]</a>です。',
     '<a href="[_1]">[_2]</a> is the previous archive.' => '前のアーカイブは<a href="[_1]">[_2]</a>です。',
     'About [_1]' => 'About [_1]',
-    'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => '[_2]にブログ「[_1]」に投稿されたすべてのエントリーです。新しい順に並んでいます。',
+    'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => '[_2]にブログ「[_1]」に投稿されたすべてのエントリーです。過去のものから新しいものへ順番に並んでいます。',
     ## default_templates/comment_error_template.tmpl
     'Comment Submission Error' => 'コメントの登録エラー',
     'Your comment submission failed for the following reasons:' => '次のエラーでコメントを投稿できませんでした: ',
