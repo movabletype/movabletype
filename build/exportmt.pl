@@ -118,10 +118,10 @@ unless( $o{'stamp=s'} ) {
 $o{'export-dir=s'} = "$o{'pack=s'}-$o{'stamp=s'}";
 
 # Summarize what we are about to do.
-verbose( sprintf 'Debugging is %s and system calls %s be made.',
+verbose( sprintf 'Debug is %s and system calls %s be made.',
     $o{'debug'} ? 'ON' : 'OFF', $o{'debug'} ? "WON'T" : 'WILL',
 );
-verbose( sprintf( 'Running with options: %s', Dumper \%o ),
+verbose( sprintf( 'Run options: %s', Dumper \%o ),
     "Svn uri: $o{'repo-uri=s'}",
     "Svn revision: $revision",
 ) if $o{'debug'};
@@ -149,14 +149,14 @@ sub make {
     if( !$o{'debug'} && $o{'export!'} ) {
         chdir( $o{'export-dir=s'} ) or
             die( "ERROR: Can't cd to $o{'export-dir=s'}: $!" );
-        verbose( "Changed to the $o{'export-dir=s'} directory" );
+        verbose( "Change to the $o{'export-dir=s'} directory" );
     }
     verbose_command( sprintf(
         '%s build/mt-dists/make-dists --stamp=%s', $^X, $o{'export-dir=s'}
     ));
     if( !$o{'debug'} && $o{'export!'} ) {
         chdir( '..' ) or die( "ERROR: Can't cd ..: $!" );
-        verbose( 'Changed back to the parent directory' );
+        verbose( 'Change back to the parent directory' );
     }
 }
 
@@ -218,7 +218,7 @@ sub deploy_distros {
             );
             copy( $dist, $dest ) or die( "ERROR: Can't copy $dist to $dest: $!" )
                 unless $o{'debug'};
-            verbose( "Copied: $dist to $dest" );
+            verbose( "Copy $dist to $dest" );
 
             # Install if we are staging.
             stage_distro( $dest ) if $o{'stage'};
@@ -251,14 +251,14 @@ sub stage_distro {
 
     chdir $o{'stage-dir=s'} or
         die( "ERROR: Can't chdir to $o{'stage-dir=s'}: $!" );
-    verbose( "Changed to staging root $o{'stage-dir=s'}" );
+    verbose( "Change to staging root $o{'stage-dir=s'}" );
 
     # Do we have a current symlink?
     my $link = lc $o{'pack=s'};
     $link .= "-$o{'short-lang=s'}";
     $link .= '-ldap' if $o{'ldap'};
     my $current = '';
-    $current = readlink( $link ) if -e $link;
+    $current = readlink( $link ) if $o{'symlink!'} and -e $link;
     # Remove any trailing slash.
     $current =~ s/\/$//;
     # Database named the same as the distribution (but with _'s).
@@ -290,16 +290,16 @@ sub stage_distro {
 
     my $tar;
     unless( $o{'debug'} ) {
-        verbose( "Extracting: $dest..." );
+        verbose( "Extract: $dest..." );
         $tar = Archive::Tar->new( $dest );
         $tar->extract();
     }
-    verbose( "Extracted: $dest" );
+    verbose( "Extract: $dest" );
 
     # Change to the distribution directory.
     chdir( $stage_dir ) or die( "ERROR: Can't chdir $stage_dir: $!" )
         unless $o{'debug'};
-    verbose( "Changed to $stage_dir" );
+    verbose( "Change to $stage_dir" );
 
     # Our database is named the same as the distribution (but with _'s) except for LDAP.
     (my $db = $stage_dir) =~ s/[.-]/_/g;
@@ -334,38 +334,44 @@ CONFIG
 
         $fh->close();
     }
-    verbose( "Wrote configuration to $config" );
+    verbose( "Write configuration to $config" );
 
     # Create and initialize a new database.
     unless( $o{'ldap'} ) {
         # Set up the database for this distribution.
-        verbose( 'Initializing database.' );
+        verbose( 'Initialize database.' );
         # XXX Use DBI ASAP.
         # Drop the previous database.
-        verbose_command( "mysqladmin -f -u root drop $current_db" );
+        verbose_command( "mysqladmin -f -u root drop $current_db" )
+            if $current;
         # Drop a database of same name.
-        verbose_command( "mysqladmin -f -u root drop $db" );
-        verbose_command( "mysqladmin -u root create $db" );
-        # Run the upgrade tool.
-        verbose_command( "$^X ./tools/upgrade --name Melody" );
+        if( $db ) {
+            verbose_command( "mysqladmin -f -u root drop $db" );
+            verbose_command( "mysqladmin -u root create $db" );
+            # Run the upgrade tool.
+            verbose_command( "$^X ./tools/upgrade --name Melody" );
+        }
+        else {
+            die "ERROR: No database to stage - very odd.";
+        }
     }
 
     # Change to the parent of the new stage directory.
     chdir( '..' ) or die( "ERROR: Can't chdir to .." )
         unless $o{'debug'};
-    verbose( 'Changed back to staging root' );
+    verbose( 'Change back to staging root' );
 
     # Now we re-link the stamped directory.
     if( $o{'symlink!'} ) {
         unless( $o{'debug'} ) {
-            warn "Unlinking $link\n";
+            warn "Unlink $link\n";
             # Drop current symlink.
             unlink( $link ) or warn( "WARNING: Can't unlink '$link': $!" );
             # Relink the staged directory.
             symlink( "$stage_dir/", $link ) or
                 warn( "WARNING: Can't symlink $stage_dir/ to $link: $!" );
         }
-        verbose( "Symlink'd: $stage_dir/ to $link" );
+        verbose( "Symlink: $stage_dir/ to $link" );
     }
 
     unless( $o{'debug'} and $o{'symlink!'} ) {
@@ -402,7 +408,7 @@ sub update_html {
             warn "WARNING: Distribution file, $dest, does not exist.\n";
             return;
         }
-        verbose( "Updating: $old_html for staging $dest" );
+        verbose( "Update: $old_html for staging $dest" );
 
         unless( $o{'debug'} ) {
             warn "WARNING: $old_html does not exist" unless -e $old_html;
@@ -571,7 +577,7 @@ sub read_conf {
 
     for my $file ( @files ) {
         next unless -e $file;
-        warn "Parsing config $file file...\n";
+        warn "Parse: config $file file...\n";
         my $fh = IO::File->new( '< ' . $file );
 
         while( <$fh> ) {
