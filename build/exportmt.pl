@@ -395,7 +395,7 @@ CONFIG
 sub update_html {
     my $dest = shift;
 
-    if( !$o{'ldap'} && ( $o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'} )) {
+    if( !$o{'prod'} && !$o{'ldap'} && ($o{'stage'} || $o{'deploy:s'} eq $o{'stage-dir=s'}) ) {
          my( $stage_dir, $suffix );
         ($stage_dir, undef, $suffix) = fileparse( $dest, @{ $o{'arch=s'} } );
         my $old_html = File::Spec->catdir( $o{'stage-dir=s'}, 'build.html' );
