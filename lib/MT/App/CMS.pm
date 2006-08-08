@@ -768,26 +768,22 @@ sub rename_tag {
     my $tag2 = MT::Tag->load({name => $name}, { binary => { name => 1 }});
     if ($tag2) {
         return $app->call_return if $tag->id == $tag2->id;
-        # merge!
-        my $terms = { tag_id => $tag->id, object_datasource => MT::Entry->datasource };
-        $terms->{blog_id} = $blog_id if $blog_id;
-        my @etags = MT::ObjectTag->load($terms);
-        foreach (@etags) {
-            # check for an existing one!
-            my $etag = MT::ObjectTag->load({ tag_id => $tag2->id, object_id => $_->object_id, object_datasource => $_->datasource });
-            if ($etag) {
-                # an objecttag relation already exists, so
-                # simply remove the old reference.
-                $_->remove;
-                next;
-            }
-            $_->tag_id($tag2->id);
-            $_->save;
-        }
+    }
+
+    my $terms = { tag_id => $tag->id };
+    $terms->{blog_id} = $blog_id if $blog_id;
+    my $iter = MT::Entry->load_iter(undef, { join => ['MT::ObjectTag', 'object_id', $terms ] });
+    my @entries;
+    while (my $entry = $iter->()) {
+        $entry->remove_tags($tag->name);
+        $entry->add_tags($name);
+        push @entries, $entry;
+    }
+    $_->save foreach @entries;
+
+    if ($tag2) {
         $app->add_return_arg(merged => 1);
     } else {
-        $tag->name($name);
-        $tag->save or return $app->error($tag->errstr);
         $app->add_return_arg(renamed => 1);
     }
     $app->call_return;
