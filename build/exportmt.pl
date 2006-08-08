@@ -263,7 +263,7 @@ sub stage_distro {
     $current =~ s/\/$//;
     # Database named the same as the distribution (but with _'s).
     (my $current_db = $current) =~ s/[.-]/_/g;
-    $current_db .= 'stage_' . $current_db;
+    $current_db = 'stage_' . $current_db;
 
     # Grab the literal build directory name.
     my $stage_dir = fileparse( $dest, @{ $o{'arch=s'} } );
@@ -279,11 +279,12 @@ sub stage_distro {
     # Drop previous.
     if( -d $current ) {
         rmtree( $current ) or
-            warn( "WARNING: Can't rmtree previous '$current': $!" );
+            warn( "WARNING: Can't rmtree previous '$current': $!" )
+            unless $o{'debug'};
         for my $arch ( @{ $o{'arch=s'} } ) {
             unlink( "$current$arch" ) or
                 warn( "WARNING: Can't unlink '$current$arch': $!\n" )
-                unless "$current$arch" eq $dest;
+                unless $o{'debug'} or ("$current$arch" eq $dest);
         }
     }
 
