@@ -58,7 +58,6 @@ my %o = get_options(
   'stage-dir=s'     => '/var/www/html/mt-stage',
   'stage-uri=s'     => 'http://mt.sixapart.com',
   'short-lang=s'    => '',  # Constructed at run-time.
-  'stamp!'          => 1,  # Stamp the build? Default = Yes
   'stamp=s'         => $ENV{BUILD_VERSION_ID},
   'symlink!'        => 1,  # Make build symlinks when staging.
   'verbose!'        => 1,  # Express (the default) or suppress run output.
@@ -78,7 +77,7 @@ set_repo();
 
 # Production builds are not dated or stamped (or symlinked if staged).
 if( $o{'prod'} ) {
-    $o{'stamp!'} = 0;
+    $o{'stamp=s'} ||= '';
     $o{'symlink!'} = 0;
 }
 # Local builds don't deploy or cleanup after themselves.
@@ -110,9 +109,10 @@ unless( $o{'stamp=s'} ) {
     $o{'stamp=s'} = join '-', @stamp;
     die( "ERROR: No stamp created. Cannot proceed.\n" )
         unless $o{'stamp=s'};
-    # Set the BUILD_VERSION_ID, which has not been defined until now.
-    $ENV{BUILD_VERSION_ID} = $o{'stamp=s'};
 }
+
+# Set the BUILD_VERSION_ID, which has not been defined until now.
+$ENV{BUILD_VERSION_ID} = $o{'stamp=s'};
 
 # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
 $o{'export-dir=s'} = "$o{'pack=s'}-$o{'stamp=s'}";
@@ -172,7 +172,7 @@ sub cleanup {
     unless( $o{'debug'} ) {
         rmtree( $build ) or die( "ERROR: Can't rmtree clean-up $build: $!" );
     }
-    verbose( "Cleanup: Removed $build" );
+    verbose( "Cleanup: Remove $build" );
 }
 
 sub create_distro_list {
@@ -273,7 +273,7 @@ sub stage_distro {
         rmtree( $stage_dir ) or
             die( "ERROR: Can't rmtree the old $stage_dir $!" )
             unless $o{'debug'};
-        verbose( "Removed: $stage_dir" );
+        verbose( "Remove: $stage_dir" );
     }
 
     # Drop previous.
@@ -434,7 +434,7 @@ sub update_html {
             $new_fh->close;
             move( $new_html, $old_html ) or
                 die( "ERROR: Can't move $new_html, $old_html: $!" );
-            verbose( "Moved: $new_html to $old_html" );
+            verbose( "Move: $new_html to $old_html" );
         }
     }
 }
