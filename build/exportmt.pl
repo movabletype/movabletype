@@ -27,8 +27,11 @@ usage() unless @ARGV;
 # Set-up the command-line options with their default values.
 my %o = get_options(
   'agent=s'         => '',  # Constructed at run-time.
+  'alpha=s'         => 0,  # Alpha build number.
   'arch=s'          => [qw( .tar.gz .zip )],
+  'beta=s'          => 0,  # Beta build number.
   'cleanup!'        => 1,  # Remove the exported directory after deployment.
+  'date!'           => 1,  # Toggle date stamping.
   'debug'           => 0,  # Turn on/off the actual system calls.
   'deploy:s'        => '', #($ENV{USER}||$ENV{USERNAME}).'@rongo:/usr/local/cifs/intranet/mt-interest/',
   'deploy-uri=s'    => 'https://intranet.sixapart.com/mt-interest',
@@ -54,6 +57,7 @@ my %o = get_options(
   'qa'              => 0,  # Command-line --option alias
   'repo=s'          => 'trunk',  # Reset at runtime depending on branch,tag.
   'repo-uri=s'      => '',  #'https://intranet.sixapart.com/repos/eng',
+  'rev!'            => 1,  # Toggle revision stamping.
   'stage'           => 0,  # Command-line --option alias
   'stage-dir=s'     => '/var/www/html/mt-stage',
   'stage-uri=s'     => 'http://mt.sixapart.com',
@@ -75,15 +79,13 @@ my $revision = repo_rev();
 # Figure out what repository to use and make sure we can connect.
 set_repo();
 
-# Production builds are not dated or stamped (or symlinked if staged).
-if( $o{'prod'} ) {
+# Handle option aliases.
+if( $o{'prod'} or $o{'alpha=s'} or $o{'beta=s'} ) {
     $o{'symlink!'} = 0;
 }
-# Local builds don't deploy or cleanup after themselves.
 if( $o{'local'} ) {
     $o{'cleanup!'} = 0;
 }
-# Staging deploys into the stage-dir.
 if( $o{'stage'} ) {
     $o{'deploy:s'} = $o{'stage-dir=s'};
 }
@@ -96,13 +98,20 @@ unless( $o{'stamp=s'} ) {
     # Read-in the configuration variables for substitution.
     my $config = read_conf( "build/mt-dists/$o{'pack=s'}.mk" );
     my @stamp = ();
-    push @stamp, $config->{PRODUCT_VERSION};
+    push @stamp, $config->{PRODUCT_VERSION} . (
+        $o{'alpha=s'} ? "a$o{'alpha=s'}"
+      : $o{'beta=s'} ? "b$o{'beta=s'}"
+      : '' );
     push @stamp, $o{'short-lang=s'};
     # Add repo, date and ldap to the stamp if we are not production.
     unless( $o{'prod'} ) {
-        push @stamp, lc( fileparse $o{'repo=s'} );
-        push @stamp, $revision;
-        push @stamp, sprintf( '%04d%02d%02d', (localtime)[5]+1900, (localtime)[4]+1, (localtime)[3]);
+        if( $o{'rev!'} ) {
+            push @stamp, lc( fileparse $o{'repo=s'} );
+            push @stamp, $revision;
+        }
+        push @stamp, sprintf(
+            '%04d%02d%02d', (localtime)[5]+1900, (localtime)[4]+1, (localtime)[3]
+        ) if $o{'date!'};
         push @stamp, 'ldap' if $o{'ldap'};
     }
     $o{'stamp=s'} = join '-', @stamp;
@@ -631,6 +640,8 @@ sub usage {
 
  cd \$MT_DIR
  svn up
+ perl $0 --alpha=1
+ perl $0 --beta=42
  perl $0 --debug
  perl $0 --help
  perl $0 --local
