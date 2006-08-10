@@ -77,7 +77,6 @@ set_repo();
 
 # Production builds are not dated or stamped (or symlinked if staged).
 if( $o{'prod'} ) {
-    $o{'stamp=s'} ||= '';
     $o{'symlink!'} = 0;
 }
 # Local builds don't deploy or cleanup after themselves.
@@ -99,8 +98,8 @@ unless( $o{'stamp=s'} ) {
     my @stamp = ();
     push @stamp, $config->{PRODUCT_VERSION};
     push @stamp, $o{'short-lang=s'};
-    # Add repo, date and ldap if a stamp is requested.
-    if( $o{'stamp!'} ) {
+    # Add repo, date and ldap to the stamp if we are not production.
+    unless( $o{'prod'} ) {
         push @stamp, lc( fileparse $o{'repo=s'} );
         push @stamp, $revision;
         push @stamp, sprintf( '%04d%02d%02d', (localtime)[5]+1900, (localtime)[4]+1, (localtime)[3]);
@@ -632,16 +631,12 @@ sub usage {
 
  cd \$MT_DIR
  svn up
- export BUILD_PACKAGE=MT
- export BUILD_LANGAGE=ja
- export BUILD_VERSION_ID=3.3-ja
- perl $0 --help
  perl $0 --debug
+ perl $0 --help
  perl $0 --local
- perl $0 --qa
- perl $0 --alpha=1
- perl $0 --beta=41
  perl $0 --prod
+ perl $0 --qa
+ perl $0 --stage
 
 Please see the full documentation with defaults and command overrides at:
 https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
