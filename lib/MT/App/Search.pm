@@ -49,9 +49,7 @@ sub init_request{
 
     ## Check whether IP address has searched in the last
     ## minute which is still progressing. If so, block it.
-    return $app->error($app->translate(
-        "You are currently performing a search. Please wait " .
-        "until your search is completed.")) unless $app->throttle_control();
+    return $app->throttle_response() unless $app->throttle_control();
 
     my %no_override = map { $_ => 1 } split /\s*,\s*/, $cfg->NoOverride;
 
@@ -120,6 +118,21 @@ sub init_request{
     ## Get login information if user is logged in (via cookie).
     ## If no login cookie, this fails silently, and that's fine.
     ($app->{user}) = $app->login;
+}
+
+sub throttle_response {
+    my $app = shift;
+    my $tmpl = $app->param('Template') || '';
+    my $msg = $app->translate(
+        "You are currently performing a search. Please wait " .
+        "until your search is completed.");
+    if ($tmpl eq 'feed') {
+        $app->response_code(503);
+        $app->set_header('Retry-After' => $app->config('ThrottleSeconds'));
+        $app->send_http_header("text/plain");
+        $app->{no_print_body} = 1;
+    }
+    return $app->error($msg);
 }
 
 sub throttle_control {
