@@ -725,7 +725,8 @@ sub mode {
     if (@_) {
         $app->{mode} = shift;
     } else {
-        $app->{mode} ||= $app->param('__mode');
+        require MT::Sanitize;
+        $app->{mode} ||= MT::Sanitize->sanitize($app->param('__mode'));
     }
     $app->{mode} || $app->{default_mode} || 'default';
 }
