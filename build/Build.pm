@@ -1,250 +1,711 @@
 # $Id$
 
+package Build;
+our $VERSION = '0.07';
+
 =head1 NAME
 
-Build - Movable Type build functionality via Module::Build
+Build - Movable Type build functionality
 
 =head1 SYNOPSIS
 
-  # Build.PL
-  use lib 'build';
-  use Build;
-  my $build = Build->new( %args );
-  $build->preprocess();
-  $build->create_build_script();
-
-  # build/mt-build.PL
-  use lib 'build';
-  use Build;
-  my $build = Build->current;
-  for my $file ( @ARGV ) {
-    # Process the PL_files given as arguments.
-  }
+ cd $MT_DIR
+ svn up
+ perl $0 --alpha=1
+ perl $0 --beta=42
+ perl $0 --debug
+ perl $0 --help
+ perl $0 --local
+ perl $0 --plugin=Foo
+ perl $0 --prod
+ perl $0 --qa
+ perl $0 --stage
 
 =head1 DESCRIPTION
 
 A C<Build> object contains all the internal routines needed to build
 Movable Type distributions.
 
+Please see the full documentation at:
+https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
+
 =cut
 
-package Build;
-our $VERSION = '0.04';
-use base qw( Module::Build );
 use strict;
 use warnings;
 use Archive::Tar;
-use Archive::Zip;
-use Carp;
-use IO::File;
+use Cwd;
+use ExtUtils::Install 1.37_02;
 use File::Basename;
-use File::Copy 'copy';
+use File::Copy;
 use File::Path;
-use File::Slurp;
-use Text::Iconv;
+use File::Spec;
+use Getopt::Long;
+use IO::File;
+use LWP::UserAgent;
+use Net::SMTP;
+use Sys::Hostname;
 
 =head2 METHODS
 
 =cut
 
-sub languages { return qw( de es fr ja nl en_US ) }
+sub new {
+    my $class = shift;
+    my $self = {};
+    bless $self, $class;
+    return $self;
+}
 
-=head2 languages()
-
-  my @languages = $build->languages();
-
-Accessor routine to get the list of supported languages.
-
-=cut
-
-sub preprocess {
+sub get_options {
     my $self = shift;
-
-    # Retrieve the build arguments or set to defaults.
-    my $language = $self->args( 'language' ) || 'en_US';
-    my $package  = $self->args( 'package' )  || 'MT';
-
-    # Read-in the configuration variables for substitution.
-    my $config = read_conf(
-        'build/mt-dists/default.mk',
-        "build/mt-dists/$language.mk",
-        "build/mt-dists/$package.mk",
+    my %o = (
+      'agent=s'         => '',  # Constructed at run-time.
+      'alpha=s'         => 0,  # Alpha build number.
+      'arch=s@'         => undef,  # Constructed below.
+      'beta=s'          => 0,  # Beta build number.
+      'cleanup!'        => 1,  # Remove the exported directory after deployment.
+      'date!'           => 1,  # Toggle date stamping.
+      'debug'           => 0,  # Turn on/off the actual system calls.
+      'deploy:s'        => '', #($ENV{USER}||$ENV{USERNAME}).'@rongo:/usr/local/cifs/intranet/mt-interest/',
+      'deploy-uri=s'    => 'https://intranet.sixapart.com/mt-interest',
+      'email-bcc:s'     => undef,
+      'email-body=s'    => '',  # Constructed at run-time.
+      'email-cc:s'      => undef,
+      'email-from=s'    => ( $ENV{USER} || $ENV{USERNAME} ) .'@sixapart.com',
+      'email-host=s'    => 'mail.sixapart.com',
+      'email-subject=s' => '',  # Constructed at run-time.
+      'export!'         => 1,  # To export or not to export. That is the question.
+      'export-dir=s'    => '',  # Constructed at run-time.
+      'footer=s'        => "<br/><b>SOFTWARE IS PROVIDED FOR TESTING ONLY - NOT FOR PRODUCTION USE.</b>\n",
+      'footer-tmpl=s'   => 'tmpl/cms/footer.tmpl',
+      'help|h'          => 0,  # Show the program usage.
+      'http-user=s'     => undef,
+      'http-pass=s'     => undef,
+      'ldap'            => 0,  # Use LDAP (and don't initialize the database).
+      'lang=s'          => $ENV{BUILD_LANGUAGE} || 'en_US',  # de,es,en_US,fr,ja,nl
+      'local'           => 0,  # Command-line --option alias
+      'notify:s'        => undef,  # Send email notification on completion.
+      'pack=s'          => undef,  # Constructed at run-time.
+      'plugin=s@'       => undef,  # Plugin list
+      'plugin-uri=s'    => 'http://code.sixapart.com/svn/mtplugins/trunk',
+      'prod'            => 0,  # Command-line --option alias
+      'qa'              => 0,  # Command-line --option alias
+      'repo=s'          => 'trunk',  # Reset at runtime depending on branch,tag.
+      'repo-uri=s'      => '',  #'https://intranet.sixapart.com/repos/eng',
+      'rev!'            => 1,  # Toggle revision stamping.
+      'revision=s'      => undef,  # Constructed at run-time.
+      'stage'           => 0,  # Command-line --option alias
+      'stage-dir=s'     => '/var/www/html/mt-stage',
+      'stage-uri=s'     => 'http://mt.sixapart.com',
+      'short-lang=s'    => '',  # Constructed at run-time.
+      'stamp=s'         => $ENV{BUILD_VERSION_ID},
+      'symlink!'        => 1,  # Make build symlinks when staging.
+      'verbose!'        => 1,  # Express (the default) or suppress run output.
+      @_,
     );
-    # Add the build arguments to the config.
-    $config->{BUILD_LANGUAGE} = $language;
-    $config->{BUILD_PACKAGE}  = $package;
 
-    # Add the configuration items to the build notes.
-    $self->notes( config   => $config );
-    $self->notes( language => $language );
-    $self->notes( package  => $package );
+    # Map all literal string values to a scalar reference because
+    # Getopt::Long wants it that way. 
+    while( my( $key, $val ) = each %o ) {
+       $o{$key} = \$val unless ref $val;
+    }
 
-    # Add the locale files to the list of files to generate.
-    my $files = $self->PL_files();
-    for my $lang ( $self->languages() ) {
-        # Add language specific files but skip the default: English.
-        if( $lang !~ /^en_?/ ) {
-            push @{ $files->{'build/mt-build.PL'} }, "lib/MT/L10N/$lang-iso-8859-1.pm"
-                unless $lang eq 'ja';
-            push @{ $files->{'build/mt-build.PL'} }, "mt-static/mt_$lang.js";
+    GetOptions( %o );  # Get the command-line options.
+
+    # "Un-map" the references so we don't have to say, ${$self->{'foo'}}.
+    while( my( $key, $val ) = each %o ) {
+        $self->{$key} = $$val
+            if ref($val) eq 'SCALAR' || ref($val) eq 'REF';
+    }
+
+    # XXX Can't figure out how to pre-define arrays yet.
+    # Make sure we have an archive file type list.
+    $self->{'arch=s@'} ||= [qw( .tar.gz .zip )];
+    # Make the plugins an empty list unless defined.
+    $self->{'plugin=s@'} ||= [];
+}
+
+sub setup {
+    my $self = shift;
+
+    $self->{'pack=s'} ||= -e 'build/mt-dists/MTE.mk' ? 'MTE' : 'MT';
+    $ENV{BUILD_PACKAGE}  = $self->{'pack=s'};
+    $ENV{BUILD_LANGUAGE} = $self->{'lang=s'};
+
+    # Handle option aliases.
+    if( $self->{'prod'} or $self->{'alpha=s'} or $self->{'beta=s'} ) {
+        $self->{'symlink!'} = 0;
+    }
+    if( $self->{'local'} ) {
+        $self->{'export!'} = 0;
+    }
+    if( $self->{'stage'} ) {
+        $self->{'deploy:s'} = $self->{'stage-dir=s'};
+    }
+
+    # Grab our repository revision.
+    $self->{'revision=s'} = repo_rev();
+    # Figure out what repository to use and make sure we can connect.
+    $self->set_repo();
+
+    # Make ab_CD into just ab.
+    ($self->{'short-lang=s'} = $self->{'lang=s'}) =~ s/([a-z]{2})_[A-Z]{2}$/$1/o;
+
+    # Create the build-stamp if one is not already defined.
+    unless( $self->{'stamp=s'} ) {
+        # Read-in the configuration variables for substitution.
+        my $config = $self->read_conf( "build/mt-dists/$self->{'pack=s'}.mk" );
+        my @stamp = ();
+        push @stamp, $config->{PRODUCT_VERSION} . (
+            $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
+          : $self->{'beta=s'}  ? "b$self->{'beta=s'}"
+          : '' );
+        push @stamp, $self->{'short-lang=s'};
+        # Add repo, date and ldap to the stamp if we are not production.
+        unless( $self->{'prod'} ) {
+            if( $self->{'rev!'} ) {
+                push @stamp, lc( fileparse $self->{'repo=s'} );
+                push @stamp, $self->{'revision=s'};
+            }
+            push @stamp, sprintf(
+                '%04d%02d%02d', (localtime)[5]+1900, (localtime)[4]+1, (localtime)[3]
+            ) if $self->{'date!'};
+            push @stamp, 'ldap' if $self->{'ldap'};
+        }
+        $self->{'stamp=s'} = join '-', @stamp;
+        die( "ERROR: No stamp created. Cannot proceed.\n" )
+            unless $self->{'stamp=s'};
+    }
+
+    # Set the BUILD_VERSION_ID, which has not been defined until now.
+    $ENV{BUILD_VERSION_ID} = $self->{'stamp=s'};
+
+    # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
+    $self->{'export-dir=s'} = "$self->{'pack=s'}-$self->{'stamp=s'}";
+}
+
+sub make {
+    my $self = shift;
+    $self->verbose( 'Entered make()' );
+    return if $self->{'debug'};
+
+    if( !$self->{'debug'} && $self->{'export!'} ) {
+        chdir( $self->{'export-dir=s'} ) or
+            die( "ERROR: Can't cd to $self->{'export-dir=s'}: $!" );
+        $self->verbose( "Change to the $self->{'export-dir=s'} directory" );
+    }
+
+    $self->verbose_command( sprintf(
+        '%s build/mt-dists/make-dists --package=%s --language=%s --stamp=%s %s',
+        $^X,
+        $self->{'pack=s'},
+        $self->{'lang=s'},
+        $self->{'export-dir=s'},
+        ($self->{'verbose!'} ? '' : '--silent')
+    ));
+
+    if( !$self->{'debug'} && $self->{'export!'} ) {
+        chdir( '..' ) or die( "ERROR: Can't cd ..: $!" );
+        $self->verbose( 'Change back to the parent directory' );
+    }
+}
+
+sub cleanup {
+    my $self = shift;
+    $self->verbose( 'Entered cleanup()' );
+    return unless $self->{'cleanup!'};
+
+    my $build = $self->{'export-dir=s'};  # Less ugly.
+    if( !$self->{'debug'} && $self->{'export!'} ) {
+        # Move the build archives out of the soon-to-be-removed build directory.
+        for my $arch ( @{ $self->{'arch=s@'} } ) {
+            move( "$build/$build$arch", "$build$arch" )
+                or die( "ERROR: Can't move $build/$build$arch: $!" );
+        }
+
+        rmtree( $build ) or die( "ERROR: Can't rmtree clean-up $build: $!" );
+    }
+    $self->verbose( "Cleanup: Remove $build" );
+}
+
+sub create_distro_list {
+    my $self = shift;
+
+    my $distros = { path => [], url => [] };
+
+    my %seen = ();
+
+    for my $lang ( split( /\s*,\s*/, $self->{'lang=s'} ) ) {
+        for my $arch ( @{ $self->{'arch=s@'} } ) {
+            # The filename is the distribution name plus the archive extension.
+            my $filename = $self->{'export-dir=s'} . $arch;
+
+            # The distribution is the full export path and filename.
+            my $dist = File::Spec->catdir( $self->{'export-dir=s'}, $filename );
+
+            # Create lists of the distribution paths.
+            push @{ $distros->{path} }, $dist;
+
+            # Add to the URL list depending on where we are deploying.
+            if( $self->{'stage'} ) {
+                my $loc = sprintf "%s/%s/mt.cgi", $self->{'stage-uri=s'}, $self->{'export-dir=s'};
+                push @{ $distros->{url} }, $loc unless $seen{$loc}++;
+            }
+            elsif( $self->{'deploy:s'} =~ /:/ ) {
+                my $loc = sprintf '%s/%s', $self->{'deploy-uri=s'}, $filename;
+                push @{ $distros->{url} }, $loc unless $seen{$loc}++;
+            }
         }
     }
-    $self->PL_files( $files );
+
+    return $distros;
 }
 
-=head2 preprocess()
-
-  $build->preprocess();
-
-This routine is called by the C<Build.PL> script and collects the
-substitution configuration variables and adds the locale files to the
-build object's C<PL_files> list.
-
-=cut
-
-sub substitute {
+sub deploy_distros {
     my $self = shift;
-    my $config = shift || croak 'No configuration given to substitute';
-    my $file = shift || croak 'No file given to substitute()';
-    warn "Substituting in $file...\n";
+    my $distros = shift;
 
-    # Copy the pre-file and then substitute the config variables.
-    my $source = $file . '.pre';
-    copy( $source, $file ) ||
-        croak "Can't copy $source to $file: $!";
+    return unless $self->{'deploy:s'};
 
-    my $text = read_file( $file );  # File::Slurp
+    # If a colon is in the deployment string, use scp.
+    if( $self->{'deploy:s'} =~ /:/ ) {
+        $self->verbose_command( sprintf( '%s %s %s',
+            'scp', join(' ', @{ $distros->{path} }), $self->{'deploy:s'}
+        ) );
+    }
+    # Otherwise, copy the distribution file(s) to the destination.
+    else {
+        for my $dist ( @{ $distros->{path} } ) {
+            my $dest = File::Spec->catdir(
+                $self->{'deploy:s'}, scalar fileparse( $dist )
+            );
+            copy( $dist, $dest ) or die( "ERROR: Can't copy $dist to $dest: $!" )
+                unless $self->{'debug'};
+            $self->verbose( "Copy $dist to $dest" );
 
-    my $success = 0;
-    while( my( $key, $val ) = each %$config ) {
-        if( $text =~ /__$key\__/s ) {
-            $success++;
-            warn "Found $key. Replacing with $val\n";
-            $text =~ s/__$key\__/$val/gs;
+            # Install if we are staging.
+            $self->stage_distro( $dest ) if $self->{'stage'};
+
+            # Update the staging html.
+            $self->update_html( $dest );
+
         }
     }
 
-    write_file( $file, $text ) if $success;  # File::Slurp
-
-    return $success;
+    # Make sure the deployed distros actually made it.
+    unless( $self->{'debug'} ) {
+        for( @{ $distros->{url} } ) {
+            die( "ERROR: $_ can't be resolved." )
+                unless $self->{'agent=s'}->head( $_ );
+        }
+    }
 }
 
-=head2 substitute()
-
-  my $n = $build->substitute( \%config, $file )
-
-Replace the strings (given by the hash reference keys) in the given
-file with the corresponding values of the hash-ref and return the
-number of successful matches.
-
-=cut
-
-sub make_js {
+sub stage_distro {
     my $self = shift;
-    my $lang = shift || croak 'No locale language given for make_js()';
-    my $file = shift || croak 'No locale file given for make_js()';
+    my $dest = shift;
 
-    my $class = 'MT::Util';
-    eval "require $class" or croak "ERROR: Can't require $class: $!";
+    # We only stage tar.gz's.
+    return if $dest !~ /\.gz$/o;
 
-    # Import the language L10N lexicon.
-    eval 'require MT::L10N::'. $lang or
-        croak "ERROR: Can't require MT::L10N::$lang";
-    my $lex = eval '\%{ %MT::L10N::'. $lang .'::Lexicon }';
-    warn "Imported %MT::L10N::$lang\::Lexicon\n";
+    die( "ERROR: Cannot stage '$dest': No such file or directory" )
+        unless $self->{'debug'} || -e $dest;
 
-    # Read-in the MT javascript.
-    my $source = 'mt-static/mt.js';
-    my $js = read_file( $source );  # File::Slurp
-    warn "Read-in $source contents.\n";
+    my $cwd = cwd();
 
-    # Open the given locale js file.
-    my $fh = IO::File->new( '> '. $file );
+    chdir $self->{'stage-dir=s'} or
+        die( "ERROR: Can't chdir to $self->{'stage-dir=s'}: $!" );
+    $self->verbose( "Change to staging root $self->{'stage-dir=s'}" );
 
-    print $fh "/* Movable Type language lexicon for $lang localization. */\n\n";
+    # Do we have a current symlink?
+    my $link = lc( fileparse $self->{'repo=s'} );
+    $link .= "-$self->{'short-lang=s'}";
+    $link .= '-ldap' if $self->{'ldap'};
+    my $current = '';
+    $current = readlink( $link ) if $self->{'symlink!'} and -e $link;
+    # Remove any trailing slash.
+    $current =~ s/\/$//;
+    # Database named the same as the distribution (but with _'s).
+    (my $current_db = $current) =~ s/[.-]/_/g;
+    $current_db = 'stage_' . $current_db;
 
-    # Encode any matching lines.
-    while( $js =~ m/trans\('([^']+?)'/g ) {
-        my $str = $1;
-        my $local = $lex->{$str} || $str;
-        $str = MT::Util::encode_js( $str );
-        $local = MT::Util::encode_js( $local );
-        next if $str eq $local;
-        print $fh "Lexicon['$str'] = '$local';\n";
+    # Grab the literal build directory name.
+    my $stage_dir = fileparse( $dest, @{ $self->{'arch=s@'} } );
+
+    # Remove any existing distro, with the same path name.
+    if( -d $stage_dir ) {
+        rmtree( $stage_dir ) or
+            die( "ERROR: Can't rmtree the old $stage_dir $!" )
+            unless $self->{'debug'};
+        $self->verbose( "Remove: $stage_dir" );
     }
 
-    # Bail out!
-    $fh->close;
-    warn "make_js: $file updated.\n";
+    # Drop previous.
+    if( -d $current ) {
+        rmtree( $current ) or
+            warn( "WARNING: Can't rmtree previous '$current': $!" )
+            unless $self->{'debug'};
+        for my $arch ( @{ $self->{'arch=s@'} } ) {
+            unlink( "$current$arch" ) or
+                warn( "WARNING: Can't unlink '$current$arch': $!\n" )
+                unless $self->{'debug'} or ("$current$arch" eq $dest);
+        }
+    }
+
+    # Tar-up the distribution.
+    my $tar;
+    unless( $self->{'debug'} ) {
+        $self->verbose( "Extract: $dest..." );
+        $tar = Archive::Tar->new( $dest );
+        $tar->extract();
+    }
+    $self->verbose( "Extract: $dest" );
+
+    # Change to the distribution directory.
+    chdir( $stage_dir ) or die( "ERROR: Can't chdir $stage_dir: $!" )
+        unless $self->{'debug'};
+    $self->verbose( "Change to $stage_dir" );
+
+    # Our database is named the same as the distribution (but with _'s) except for LDAP.
+    (my $db = $stage_dir) =~ s/[.-]/_/g;
+    # Reset the db to have the same name, if we are LDAP.
+    $db = 'ldap' if $self->{'ldap'};
+    # Append the handy staging build flag.
+    $db = 'stage_' . $db;
+
+    # Set the staging URL to a real location now.
+    my $url = sprintf '%s/%s/',
+        $self->{'stage-uri=s'}, ($self->{'symlink!'} ? $link : $stage_dir);
+
+    # Give unto us a shiny, new config file.
+    my $config = 'mt-config.cgi';
+    unless( $self->{'debug'} ) {
+        my $fh = IO::File->new( ">$config" );
+        print $fh <<CONFIG;
+CGIPath $url
+DefaultSiteURL http://mt.sixapart.com/blogs/
+DefaultSiteRoot /var/www/html/mt-stage/blogs/
+Database $db
+ObjectDriver DBI::mysql
+DBUser root
+DebugMode 1
+CONFIG
+        if( $self->{'ldap'} ) {
+            print $fh <<CONFIG;
+AuthenticationModule LDAP
+AuthLDAPURL ldap://ldap.sixapart.com/dc=sixapart,dc=com
+CONFIG
+        }
+
+        $fh->close();
+    }
+    $self->verbose( "Write configuration to $config" );
+
+    # Create and initialize a new database.
+    unless( $self->{'ldap'} ) {
+        # Set up the database for this distribution.
+        $self->verbose( 'Initialize database.' );
+        # XXX Use DBI ASAP.
+        # Drop the previous database.
+        $self->verbose_command( "mysqladmin -f -u root drop $current_db" )
+            if $current;
+        # Drop a database of same name.
+        if( $db ) {
+            $self->verbose_command( "mysqladmin -f -u root drop $db" );
+            $self->verbose_command( "mysqladmin -u root create $db" );
+            # Run the upgrade tool.
+            $self->verbose_command( "$^X ./tools/upgrade --name Melody" );
+        }
+        else {
+            die "ERROR: No database to stage - very odd.";
+        }
+    }
+
+    # Change to the parent of the new stage directory.
+    chdir( '..' ) or die( "ERROR: Can't chdir to .." )
+        unless $self->{'debug'};
+    $self->verbose( 'Change back to staging root' );
+
+    # Now we re-link the stamped directory.
+    if( $self->{'symlink!'} ) {
+        unless( $self->{'debug'} ) {
+            print "Unlink $link\n";
+            # Drop current symlink.
+            unlink( $link ) or warn( "WARNING: Can't unlink '$link': $!" );
+            # Relink the staged directory.
+            symlink( "$stage_dir/", $link ) or
+                warn( "WARNING: Can't symlink $stage_dir/ to $link: $!" );
+        }
+        $self->verbose( "Symlink: $stage_dir/ to $link" );
+    }
+
+    unless( $self->{'debug'} or $self->{'symlink!'} ) {
+        # Make sure we can get to our symlink.
+        $url = sprintf "%s/%s/mt.cgi",
+            $self->{'stage-uri=s'}, $link;
+        die( "ERROR: Staging $url can't be resolved." )
+            unless $self->{'agent=s'}->head( $url );
+        # Make sure we can get to our archive file symlinks.
+        for my $arch ( @{ $self->{'arch=s@'} } ) {
+            $url = sprintf '%s/%s%s',
+                $self->{'stage-uri=s'}, $stage_dir, $arch;
+            die( "ERROR: Staging $url can't be resolved." )
+                unless $self->{'agent=s'}->head( $url );
+        }
+    } 
+
+    chdir( $cwd ) or die( "ERROR: Can't chdir back to $cwd: $!" );
 }
 
-=head2 make_js()
-
-  $build->make_js( $language, $file );
-
-Create a JavaScript file for the given lnaguage.
-
-=cut
-
-sub make_latin1 {
+sub update_html {
     my $self = shift;
-    my $lang = shift ||
-        croak "No locale language given for make_latin1()";
-    my $file = shift ||
-        croak "No file to convert given for make_latin1()";
+    $self->verbose( 'Entered update_html()' );
+    my $dest = shift;
 
-    # XXX en_us is used all over the code, instead of en_US.
-    $lang = lc $lang;
+    if( $self->{'symlink!'} &&
+        !$self->{'prod'} &&
+        !$self->{'ldap'} &&
+        ($self->{'stage'} || $self->{'deploy:s'} eq $self->{'stage-dir=s'})
+    ) {
+        my( $stage_dir, $suffix );
+        ($stage_dir, undef, $suffix) = fileparse( $dest, @{ $self->{'arch=s@'} } );
+        my $old_html = File::Spec->catdir( $self->{'stage-dir=s'}, 'build.html' );
 
-    my $source = "lib/MT/L10N/$lang.pm";
+        unless( -e $old_html ) {
+            warn "WARNING: Staging HTML file, $old_html, does not exist.\n";
+            return;
+        }
+        unless( -e $stage_dir ) {
+            warn "WARNING: Distribution file, $dest, does not exist.\n";
+            return;
+        }
 
-    # Read-in the file.
-    my $text = read_file( $source );  # File::Slurp
-    warn "Read $source contents.\n";
+        my $id = lc( fileparse $self->{'repo=s'} ) . "-$self->{'short-lang=s'}$suffix";
+        $self->verbose( "Update: $old_html with $id for $dest" );
 
-    # Convert the file text.
-    my $conv = Text::Iconv->new( 'utf-8', 'iso-8859-1' );
-    $text = $conv->convert( $text );
-    warn "Converted $source contents.\n";
+        unless( $self->{'debug'} ) {
+            warn "WARNING: $old_html does not exist" unless -e $old_html;
+            my $new_html = "$old_html.new";
+            my $old_fh = IO::File->new( '< ' . $old_html );
+            my $new_fh = IO::File->new( '> ' . $new_html );
 
-    # Write out the converted file.
-    write_file( $file, $text );  # File::Slurp
-    warn "Wrote the converted contents to $file.\n";
+            while( my $line = <$old_fh> ) {
+                if( $line =~ /id="($id)"/ ) {
+                    $self->verbose( "Matched: id=$id" );
+                    $line = sprintf qq|<a id="%s" href="%s/%s%s">%s%s<\/a>\n|,
+                        $id,
+                        $self->{'stage-uri=s'},
+                        $stage_dir, $suffix,
+                        $stage_dir, $suffix;
+                }
+                print $new_fh $line;
+            }
+
+            $old_fh->close;
+            $new_fh->close;
+            move( $new_html, $old_html ) or
+                die( "ERROR: Can't move $new_html, $old_html: $!" );
+            $self->verbose( "Move: $new_html to $old_html" );
+        }
+    }
 }
 
-=head2 make_latin1()
+sub remove_copy {
+    my $self = shift;
+    if( -d $self->{'export-dir=s'} ) {
+        $self->verbose( "Remove existing export: $self->{'export-dir=s'}" );
+        rmtree( $self->{'export-dir=s'} ) or
+            die( "ERROR: Can't rmtree existing export $self->{'export-dir=s'}: $!" )
+            unless $self->{'debug'};
+    }
+}
 
-  $build->make_latin1( $language, $file );
+sub repo_rev {
+    my $revision = qx{ svn info | grep 'Revision' };
+    chomp $revision;
+    $revision =~ s/^Revision: (\d+)$/r$1/o;
+    die( "ERROR: $revision" ) if $revision =~ /is not a working copy/;
+    return $revision;
+}
 
-Convert file contents from utf-8 to iso-8859-1 and rename according to
-the given language.
+sub set_repo {
+    my $self = shift;
 
-=cut
+    # Grab our repository from the environment.
+    $self->{'repo-uri=s'} = qx{ svn info | grep URL };
+    chomp $self->{'repo-uri=s'};
+    $self->{'repo-uri=s'} =~ s/^URL: (.+)$/$1/o;
 
-sub make_tarball {
-     my $self = shift;
-    $self->SUPER::make_tarball( @_ );
-    my $dist_dir = $self->dist_dir();
-    my $tar = Archive::Tar->new( "$dist_dir.tar.gz" ) or
-        croak "Can't read $dist_dir: $!";
-    $tar->extract() or
-        croak "Can't extract $dist_dir: $!";
-    my $zip = Archive::Zip->new();
-    $zip->addDirectory( $dist_dir ) or
-        croak "Can't read $dist_dir: $!";
-    $zip->writeToFileNamed( "$dist_dir.zip" ) or
-        croak "Can't create $dist_dir.zip: $!";
-    $self->delete_filetree( $dist_dir );
+    if( $self->{'repo-uri=s'} =~ /http.+?(branches|tags)\/([0-9A-Za-z_.-]+)/ ) {
+        # The repo is embedded in the repo uri.
+        my( $key, $val ) = ( $1, $2 );
+        $self->{'repo=s'} = join '/', $key, $val;
+    }
+
+    # Make sure that the repository actually exists.
+    if( !$self->{'debug'} && $self->{'export!'} ) {
+        $self->{'agent=s'} = LWP::UserAgent->new;
+        my $request = HTTP::Request->new( HEAD => $self->{'repo-uri=s'} );
+        $request->authorization_basic( $self->{'http-user=s'}, $self->{'http-pass=s'} )
+            if $self->{'http-user=s'} && $self->{'http-pass=s'};
+        my $response = $self->{'agent=s'}->request( $request );
+        die( "ERROR: The repoository '$self->{'repo-uri=s'}' can't be resolved." )
+            unless $response->is_success;
+    }
+}
+
+sub export {
+    my $self = shift;
+    return unless $self->{'export!'};
+    # NOTE Subversion auto-creates the export directory.
+    $self->verbose_command( sprintf( '%s export --quiet %s %s',
+        'svn', $self->{'repo-uri=s'}, $self->{'export-dir=s'}
+    ));
+}
+
+sub plugin_export {
+    my $self = shift;
+
+    # Change to the export directory, if we are exporting.
+    chdir( $self->{'export-dir=s'} ) or
+        die( "ERROR: Can't cd to $self->{'export-dir=s'}: $!" )
+        if !$self->{debug} && $self->{'export!'};
+
+    # Export the plugins.
+    for my $plugin ( @{ $self->{'plugin=s@'} } ) {
+        my $uri = "$self->{'plugin-uri=s'}/$plugin";
+        my $path = "plugins/$plugin";
+        $self->verbose_command(
+            sprintf( '%s export %s %s', 'svn', $uri, $path )
+        );
+        die "ERROR: Plugin not exported: $uri"
+            unless $self->{debug} || -d $path;
+
+        # Handle the plugin subdirectory.
+        my $subdir = "$path/plugins/$plugin";
+        if( -d $subdir && !$self->{debug} ) {
+            $self->dirmove( $subdir, $path ) or
+                die( "Can't move $subdir up to $path: $!" );
+            $self->verbose( "Moved $subdir up to $path" );
+            $subdir = "$path/plugins";
+            rmtree( $subdir ) or
+                die( "Can't rmtree() the $subdir $!" );
+            $self->verbose( "Removed $subdir" );
+        }
+
+        # Handle the mt-static subdirectory.
+        my $static = "mt-static/plugins/$plugin";
+        $subdir = "$path/$static";
+        if( -d $subdir && !$self->{debug} ) {
+            unless( -d $static ) {
+                mkdir( $static ) or die( "Can't mkdir $static: $!" );
+                $self->verbose( "Created $static" );
+            }
+            $self->dirmove( $subdir, $static ) or
+                die( "Can't move directory $subdir to $static: $!" );
+            $self->verbose( "Moved $subdir to $static" );
+            $subdir = "$path/mt-static";
+            rmtree( $subdir ) or
+                die( "Can't rmtree() the $subdir: $!" );
+            $self->verbose( "Removed $subdir" );
+        }
+    }
+
+    chdir( '..' ) or die( "ERROR: Can't cd ..: $!" )
+        if !$self->{debug} && $self->{'export!'};
+}
+
+sub dirmove {
+    my $self = shift;
+    my @paths = @_;
+    my $dest = pop @paths;
+    for my $path ( @paths ) {
+#        $self->verbose( "Moving $path to $dest..." );
+        eval{ install({ $path => $dest }) };
+    }
+    return 1;
+}
+
+sub verbose_command {
+    my $self = shift;
+    my $command = shift;
+    $self->verbose( "Execute: $command" );
+    system $command unless $self->{'debug'};
+
+    if( $? == -1 ) {
+        die( "ERROR: Failed to execute: $!" );
+    }
+    elsif( $? & 127 ) {
+        die sprintf( "ERROR: Child died with signal %d, with%s coredump\n",
+            ( $? & 127 ), ( $? & 128 ? '' : 'out' )
+        );
+    }
+    else {
+#        printf "Child exited with value %d\n", $? >> 8 if $self->{'verbose!'};
+    }
+
+    return $command;
+}
+
+sub notify {
+    my $self = shift;
+    my $distros = shift;
+
+    return unless $self->{'notify:s'};
+    $self->verbose( 'Entered notify()' );
+    return if $self->{'debug'};
+
+    $self->{'email-subject=s'} = sprintf '%s build: %s',
+        $self->{'pack=s'}, $self->{'stamp=s'};
+    $self->{'email-subject=s'} .=
+        $self->{'alpha=i'} ? ' - Alpha ' . $self->{'alpha=i'} :
+        $self->{'beta=i'}  ? ' - Beta '  . $self->{'beta=i'}  :
+        $self->{'prod'}    ? ' - Production'             :
+        $self->{'stage'}   ? ' - Staging'                :
+        $self->{'qa'}      ? ' - QA'                     : '';
+    # If an email-cc exists, add a comma in front of the QA address.
+    $self->{'email-cc:s'} .= ($self->{'email-cc:s'} ? ',' : '') . 'sixapart@qasource.com'
+        if $self->{'qa'};
+    # Show the deployed URL's.
+    $self->{'email-body=s'} = sprintf "File URL(s):\n%s\n\n",
+        join( "\n", @{ $distros->{url} } )
+        if $self->{'deploy:s'};
+    $self->{'email-body=s'} .= sprintf "Build file(s) located on %s\n%s",
+        hostname(), join( "\n", @{ $distros->{path} } )
+        if $self->{'qa'} or !$self->{'cleanup!'};
+
+    my $smtp = Net::SMTP->new(
+        $self->{'email-host=s'},
+        Debug => $self->{'debug'},
+    );
+
+    $smtp->mail( $self->{'email-from=s'} );
+    $smtp->to( $self->{'notify:s'} );
+    $smtp->cc( $self->{'email-cc:s'} ) if $self->{'email-cc:s'};
+    $smtp->bcc( $self->{'email-bcc:s'} ) if $self->{'email-bcc:s'};
+
+    $smtp->data();
+    $smtp->datasend( "To: $self->{'notify:s'}\n" );
+    $smtp->datasend( "Cc: $self->{'email-cc:s'}\n" ) if $self->{'email-cc:s'};
+    $smtp->datasend( "Subject: $self->{'email-subject=s'}\n" );
+    $smtp->datasend( "\n" );
+    $smtp->datasend( "$self->{'email-body=s'}\n" );
+    $smtp->dataend();
+
+    $smtp->quit;
+
+    $self->verbose( "Email sent to $self->{'notify:s'}" );
 }
 
 sub read_conf {
+    my $self = shift;
     my @files = @_;
     my $config = {};
 
-#    warn "Files: @files\n";
     for my $file ( @files ) {
         next unless -e $file;
-        warn "Parsing config $file file...\n";
+        print "Parse: config $file file...\n";
         my $fh = IO::File->new( '< ' . $file );
 
         while( <$fh> ) {
@@ -264,13 +725,61 @@ sub read_conf {
     return $config;
 }
 
-=head2 read_conf()
+sub inject_footer {
+    my $self = shift;
+    $self->verbose( 'Entered inject_footer()' );
+    return if $self->{'prod'} || $self->{'debug'};
 
-  $config = $build->read_config( @files );
+    my $file = $self->{'export!'}
+        ? File::Spec->catdir( $self->{'export-dir=s'}, $self->{'footer-tmpl=s'} )
+        : $self->{'footer-tmpl=s'};
+    die( "ERROR: File $file does not exist: $!" ) unless -e $file;
 
-Read-in the given configuration files with B<key = value> pairs per
-line and return a single hash reference of B<key => "value"> pairs.
+    # Slurp-in the contents of the file.
+    local $/;
+    my $fh = IO::File->new( $file );
+    my $contents = <$fh>;
+    $fh->close();
 
-=cut
+    $contents =~ s/Reserved.\n/Reserved.\n$self->{'footer=s'}/;
+
+    # Rewrite the file with the injected footer.
+    $fh = IO::File->new( "> $file" );
+    print $fh $contents;
+    $fh->close();
+}
+
+sub verbose {
+    my $self = shift;
+    return unless $self->{'verbose!'};
+    print join( "\n", @_ ), "\n\n";
+}
+
+sub usage {
+    my $self = shift;
+    print <<USAGE;
+
+ MT export build deployment notification automation.
+
+ Examples:
+
+ cd \$MT_DIR
+ svn up
+ perl $0 --alpha=1
+ perl $0 --beta=42
+ perl $0 --debug
+ perl $0 --help
+ perl $0 --local
+ perl $0 --prod
+ perl $0 --qa
+ perl $0 --stage
+
+ Please see the full documentation at:
+ https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
+
+USAGE
+    exit;
+}
 
 1;
+__END__

@@ -10,36 +10,35 @@ use File::Spec::Functions;
 use File::Basename;
 use Getopt::Long;
 
-my $distlist = '';
-my $langlist = $ENV{BUILD_LANGUAGE};
+my $langlist = '';
 my $stamp = '';
-my $package = 'MT';
+my $package = '';
+my $silent = 0;
+
+GetOptions(
+    'language:s' => \$langlist,
+    'package:s' => \$package,
+    'silent' => \$silent,
+    'stamp:s' => \$stamp,
+) or die "ERROR: Couldn't get the command-line options";
+
+my $make = 'make';
+$make .= ' -s' if $silent;
+$ExtUtils::Manifest::Quiet = $silent; # XXX This appears to be broken.
+
 my $skip = 'MANIFEST.SKIP';
 my $skip_bak = "$skip.bak";
 
-GetOptions(
-    'dist:s' => \$distlist,
-    'language:s' => \$langlist,
-    'package:s' => \$package,
-    'stamp:s' => \$stamp,
-) or die "Couldn't grok options";
-
 my $orig = eval {
-    $ENV{BUILD_LANGUAGE} ||= 'en_US';
-    $ENV{BUILD_PACKAGE}  ||= $package;
-    system('make clean');
-    system('make lib/MT.pm');
-    system('make lib/MT/ConfigMgr.pm');
+    verbose_command("$make clean");
+    verbose_command("$make lib/MT.pm");
+    verbose_command("$make lib/MT/ConfigMgr.pm");
     require MT;
     $package . '-' . MT->VERSION;
-} or die "Failed to get version from package `printenv`";
+} or die "ERROR: Failed to get version from package $package";
 
-my @distlist = split(/,/, $distlist);
 my @languages = split(/,/, $langlist);
 @languages = qw( en_US nl fr de es ja ) unless @languages;
-my @libs = qw( html-template image-size file-spec file-temp uri libwww-perl cgi soap-lite );
-my @licenses = qw( LICENSE-PERSONAL LICENSE-COMMERCIAL );
-
 for my $lang (@languages) {
     print join(" ", @languages), "\n";
     my $short_lang = $lang;
@@ -53,12 +52,9 @@ for my $lang (@languages) {
         ? $stamp
         : $orig . '-' . $long_lang;
 
-#    # Make sure the environment has the language set.
-    $ENV{BUILD_LANGUAGE} = $short_lang;
-    print "---------------- Building " . $ENV{BUILD_LANGUAGE} . " ----------------" . "\n";
-    system("make clean");  # to clean MT.pm and MT/ConfigMgr.pm
-    system("make");
-    die $? if $?; # XXX This is not the friendliest way to fail after a system call.
+    print "---------------- Building $lang ----------------\n";
+    verbose_command("$make clean");  # to clean MT.pm and MT/ConfigMgr.pm
+    verbose_command($make);
 
     my $lang_skip = "$skip.$lang";
     if (-e $lang_skip) {
@@ -69,18 +65,38 @@ for my $lang (@languages) {
     mkmanifest();
     manicopy(maniread(), $distname, 'best');
 
-    system("find $distname -name .exists | xargs rm");
+    verbose_command("find $distname -name .exists | xargs rm");
+    verbose_command("chmod +x $distname/*.cgi"); 
+    verbose_command("chmod +x $distname/tools/*"); 
 
-    system("chmod +x $distname/*.cgi"); 
-    system("chmod +x $distname/tools/*"); 
+    my $options = $silent ? 'cf' : 'cvf';
+    verbose_command("tar $options $distname.tar --wildcards --exclude '*.zip' $distname");
+    $options = $silent ? '-q' : '';
+    verbose_command("gzip $options --best $distname.tar");
+    verbose_command("zip -r $distname.zip $distname -x $distname/extras/\*.gz");
 
-    system("tar cvf $distname.tar --wildcards --exclude '*.zip' $distname");
-    system("gzip --best $distname.tar");
-    system("zip -r $distname.zip $distname -x $distname/extras/\*.gz");
-    system("rm -rf $distname");
+    verbose_command("rm -rf $distname");
     unlink("MANIFEST");
 }
 
 END {
     move($skip_bak, $skip) if -e $skip_bak;
+}
+
+sub verbose_command {
+    my $command = shift;
+    print 'Execute:', "  $command" unless $silent;
+    system $command;
+    if( $? == -1 ) {
+        die "ERROR: Failed to execute: $!";
+    }
+    elsif( $? & 127 ) {
+        die sprintf( "ERROR: Child died with signal %d, with%s coredump\n",
+            ( $? & 127 ), ( $? & 128 ? '' : 'out' )
+        );
+    }
+    else {
+#        printf "Child exited with value %d\n", $? >> 8;
+    }
+    return $command;
 }
