@@ -10,7 +10,7 @@ use strict;
 use MT;
 
 use vars qw( $VERSION );
-$VERSION = '2.0';
+$VERSION = '2.01';
 
 my $plugin;
 eval {
@@ -34,7 +34,9 @@ use MT::Template::Context;
 
 my $tags_to_filter = {
     CommentBody       => [0, \&MT::Template::Context::_hdlr_comment_body],
+    CommentPreviewBody       => [0, \&MT::Template::Context::_hdlr_comment_body],
     CommentAuthorLink => [0, \&MT::Template::Context::_hdlr_comment_author_link],
+    CommentPreviewAuthorLink => [0, \&MT::Template::Context::_hdlr_comment_author_link],
     Pings             => [1, \&MT::Template::Context::_hdlr_pings]
 };
 
@@ -79,7 +81,7 @@ sub nofollowfy_hdlr {
     my $config = config('blog:'.$blog->id);
 
     my $tag = $ctx->stash('tag');
-    if ($tag eq 'CommentAuthorLink') {
+    if ($tag =~ m/Comment(Preview)?AuthorLink/) {
         $args->{no_redirect} = 1 unless exists $args->{no_redirect};
     }
     my $fn = $tags_to_filter->{$tag}->[1];

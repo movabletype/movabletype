@@ -65,8 +65,13 @@ sub init_request{
         for my $blog_id ($q->param($type)) {
             if ($blog_id =~ m/,/) {
                 my @ids = split /,/, $blog_id;
-                $app->{searchparam}{$type}{$_} = 1 for @ids;
+                s/\D+//g for @ids; # only numeric values.
+                foreach my $id (@ids) {
+                    next unless $id;
+                    $app->{searchparam}{$type}{$id} = 1;
+                }
             } else {
+                $blog_id =~ s/\D+//g; # only numeric values.
                 $app->{searchparam}{$type}{$blog_id} = 1;
             }
         }
@@ -355,7 +360,6 @@ sub _tag_search {
     #    level => MT::Log::INFO(),
     #    class => 'search',
     #    category => 'tag_search',
-    #    metadata => $app->{search_string}
     #});
 
     my %terms = (status => MT::Entry::RELEASE());
@@ -451,7 +455,6 @@ sub _straight_search {
         level => MT::Log::INFO(),
         class => 'search',
         category => 'straight_search',
-        metadata => $app->{search_string},
         $blog_id ? (blog_id => $blog_id) : ()
     });
 
