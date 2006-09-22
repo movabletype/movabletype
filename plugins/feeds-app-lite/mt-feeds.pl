@@ -25,6 +25,26 @@ MT::Template::Context->add_tag(FeedInclude    => \&include);
 use constant LITE  => 'MT::Plugin::FeedsLite';
 use constant ENTRY => 'MT::Plugin::FeedsLite::entry';
 
+# Returns link if okay, "#" if not.
+sub sanitize_link {
+    my $link = shift;
+    $link = '' unless defined $link;
+    $link =~ s/^\s+//;
+    # check for malicious protocols
+    require MT::Util;
+    my $dec_val = MT::Util::decode_html($link);
+    $dec_val =~ s/&#0*58(?:=;|[^0-9])/:/;
+    $dec_val =~ s/&#x0*3[Aa](?:=;|[^a-fA-F0-9])/:/;
+    if ((my $prot) = $dec_val =~ m/^(.+?):/) {
+        return "#" if $prot =~ m/[\r\n\t]/;
+        $prot =~ s/\s+//gs;
+        return "#" if $prot =~ m/[^a-zA-Z0-9\+]/;
+        return "#" if $prot =~ m/script$/i;
+    }
+    return "#" unless $link =~ m/^https?:/i;
+    $link;
+}
+
 sub feed {
     my ($ctx, $args, $cond) = @_;
     my $uri = $args->{uri}
@@ -56,7 +76,8 @@ sub feed_link {
     my $ctx  = shift;
     my $lite = $ctx->stash(LITE)
       or return _error($ctx);
-    $lite->find_link($lite->feed);
+    my $link = $lite->find_link($lite->feed);
+    sanitize_link($link);
 }
 
 sub entries {
@@ -95,7 +116,8 @@ sub entry_link {
       or return _error($ctx);
     my $entry = $ctx->stash(ENTRY)
       or return _error($ctx);
-    $lite->find_link($entry);
+    my $link = $lite->find_link($entry);
+    sanitize_link($link);
 }
 
 sub include {
@@ -113,7 +135,7 @@ sub include {
 <MTFeed uri="$uri">
 <h2><MTFeedTitle encode_html="1"></h2>
 <ul><MTFeedEntries$lastn>
-<li><a href="<MTFeedEntryLink>"><MTFeedEntryTitle encode_html="1"></a></li>
+<li><a href="<$MTFeedEntryLink encode_url="1"$>"><$MTFeedEntryTitle encode_html="1"$></a></li>
 </MTFeedEntries></ul>
 </MTFeed>
 BODY
