@@ -997,6 +997,10 @@ sub get_newsbox_content {
         return unless $resp->is_success();
         my $result = $resp->content();
         if ($result) {
+            require MT::Sanitize;
+            # allowed html
+            my $spec = 'a href,* style class id,ul,li,div,span,br';
+            $result = MT::Sanitize->sanitize($result, $spec);
             $news_object = MT::Session->new();
             $news_object->set_values({id => 'NW',
                                       kind => 'NW',
