@@ -116,7 +116,11 @@ sub description {
         $msg .= "\n\n" if $msg ne '';
         $msg .= $log->metadata;
     }
-    $msg = '<pre>' . $msg . '</pre>' if $msg =~ m/\n/;
+    if ($msg ne '') {
+        require MT::Util;
+        $msg = '<pre>' . MT::Util::encode_html($msg) . '</pre>';
+    }
+
     $msg;
 }
 
