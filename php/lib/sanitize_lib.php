@@ -53,7 +53,7 @@ function sanitize($s, $arg) {
                             $safe = 1;
                             if (preg_match('/^(src|href|dynsrc)$/', $attr)) {
                                 $dec_val = preg_replace('/&#0*58(?:=;|[^0-9])/', ':', $dec_val);
-                                $dec_val = preg_replace('/&#x3[Aa](?:=;|[^a-fA-F0-9])/', ':', $dec_val);
+                                $dec_val = preg_replace('/&#x0*3[Aa](?:=;|[^a-fA-F0-9])/', ':', $dec_val);
                                 if (preg_match('/^(.+?):/', $dec_val, $proto_match)) {
                                     $proto = $proto_match[1];
                                     if (preg_match('/[\r\n\t]/', $proto)) {
