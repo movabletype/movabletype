@@ -107,13 +107,14 @@ sub sanitize {
                             my $dec_val = decode_html($val);
                             if ($attr =~ m/^(src|href|dynsrc)$/) {
                                 $dec_val =~ s/&#0*58(?:=;|[^0-9])/:/;
-                                $dec_val =~ s/&#x3[Aa](?:=;|[^a-fA-F0-9])/:/;
+                                $dec_val =~ s/&#x0*3[Aa](?:=;|[^a-fA-F0-9])/:/;
 
                                 if ((my $prot) = $dec_val =~ m/^(.+?):/) {
                                     next if $prot =~ m/[\r\n\t]/;
                                     $prot =~ s/\s+//gs;
                                     next if $prot =~ m/[^a-zA-Z0-9\+]/;
                                     next if $prot =~ m/script$/i;
+                                    next if $prot =~ m/&#/;
                                 }
                             }
                             push @attrs, qq{$attr=$q$val$q};
