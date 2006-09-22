@@ -135,7 +135,7 @@ sub include {
 <MTFeed uri="$uri">
 <h2><MTFeedTitle encode_html="1"></h2>
 <ul><MTFeedEntries$lastn>
-<li><a href="<$MTFeedEntryLink encode_url="1"$>"><$MTFeedEntryTitle encode_html="1"$></a></li>
+<li><a href="<\$MTFeedEntryLink encode_url="1"\$>"><\$MTFeedEntryTitle encode_html="1"\$></a></li>
 </MTFeedEntries></ul>
 </MTFeed>
 BODY
