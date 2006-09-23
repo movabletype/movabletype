@@ -4,7 +4,7 @@ package MT::FeedsLite;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '1.0';
+$VERSION = '1.01';
 
 my $plugin = MT::Plugin::FeedsLite->new;
 MT->add_plugin($plugin);
@@ -48,8 +48,11 @@ sub sanitize_link {
 sub feed {
     my ($ctx, $args, $cond) = @_;
     my $uri = $args->{uri}
-      or return $ctx->error(
-         MT->translate("'[_1]' is a required argument of [_2]", 'uri', 'MTFeed')
+      or return
+      $ctx->error(
+         $plugin->translate(
+                       "'[_1]' is a required argument of [_2]", 'uri', 'MTFeeds'
+         )
       );
     require MT::Feeds::Lite;
     my $lite = MT::Feeds::Lite->fetch($uri)
@@ -66,10 +69,19 @@ sub feed {
 }
 
 sub feed_title {
-    my $ctx  = shift;
+    my ($ctx, $args) = @_;
     my $lite = $ctx->stash(LITE)
       or return _error($ctx);
-    $lite->find_title($lite->feed);
+    require MT::Util;
+    my $title = $lite->find_title($lite->feed);
+    $title = '' unless defined $title;
+    $title = MT::Util::remove_html($title)
+        unless (exists $args->{remove_html}) && !$args->{remove_html};
+    $title = MT::Util::encode_html($title)
+        unless (exists $args->{encode_html}) && !$args->{encode_html};
+    delete $args->{encode_html} if exists $args->{encode_html};
+    delete $args->{remove_html} if exists $args->{remove_html};
+    $title;
 }
 
 sub feed_link {
@@ -102,12 +114,20 @@ sub entries {
 }
 
 sub entry_title {
-    my $ctx  = shift;
+    my ($ctx, $args, $cond) = @_;
     my $lite = $ctx->stash(LITE)
       or return _error($ctx);
     my $entry = $ctx->stash(ENTRY)
       or return _error($ctx);
-    $lite->find_title($entry);
+    my $title = $lite->find_title($entry);
+    $title = '' unless defined $title;
+    $title = MT::Util::remove_html($title)
+        unless (exists $args->{remove_html}) && !$args->{remove_html};
+    $title = MT::Util::encode_html($title)
+        unless (exists $args->{encode_html}) && !$args->{encode_html};
+    delete $args->{encode_html} if exists $args->{encode_html};
+    delete $args->{remove_html} if exists $args->{remove_html};
+    $title;
 }
 
 sub entry_link {
@@ -125,7 +145,7 @@ sub include {
     my $uri = $args->{uri}
       or return
       $ctx->error(
-                  MT->translate(
+                  $plugin->translate(
                                 "'[_1]' is a required argument of [_2]", 'uri',
                                 'MTFeedInclude'
                   )
@@ -133,9 +153,9 @@ sub include {
     my $lastn = $args->{lastn} ? ' lastn="' . $args->{lastn} . '"' : '';
     my $body  = <<BODY;
 <MTFeed uri="$uri">
-<h2><MTFeedTitle encode_html="1"></h2>
+<h2><\$MTFeedTitle\$></h2>
 <ul><MTFeedEntries$lastn>
-<li><a href="<\$MTFeedEntryLink encode_html="1"\$>"><\$MTFeedEntryTitle encode_html="1"\$></a></li>
+<li><a href="<\$MTFeedEntryLink encode_html="1"\$>"><\$MTFeedEntryTitle\$></a></li>
 </MTFeedEntries></ul>
 </MTFeed>
 BODY
@@ -150,12 +170,8 @@ BODY
 #--- utility
 
 sub _error {
-    $_[0]->error(
-                 MT->translate(
-                               'MT[_1] was not used in the proper context.',
-                               $_[0]->stash('tag')
-                 )
-    );
+    $_[0]->error($plugin->translate('MT[_1] was not used in the proper context.',
+                 $_[0]->stash('tag')));
 }
 
 package MT::Plugin::FeedsLite;
