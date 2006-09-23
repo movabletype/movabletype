@@ -166,7 +166,10 @@ sub configuration {
         }
         return $app->build_page("msg.tmpl", $p);
     }
-    $p->{feed_title} = $feed->find_title($feed->feed) || $uri;
+    my $title = $feed->find_title($feed->feed);
+    require MT::Util;
+    $title = MT::Util::remove_html($title);
+    $p->{feed_title} = $title || $uri;
     $p->{feed_uri}   = $uri;
     $p->{help_url}   = $app->{help_url};
     $app->add_breadcrumb($app->translate("Main Menu"), $app->mt_uri);
