@@ -123,7 +123,11 @@ sub join {
     foreach (@tags) {
         $tags .= $delim . ($delim eq ' ' ? '' : ' ') if $tags ne '';
         if (m/\Q$delim\E/) {
-            $tags .= '"' . $_ . '"';
+            if (m/"/) {
+                $tags .= "'" . $_ . "'";
+            } else {
+                $tags .= '"' . $_ . '"';
+            }
         } else {
             $tags .= $_;
         }

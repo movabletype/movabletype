@@ -897,7 +897,8 @@ use strict; # and no funny business, either.
 
 use Carp; # generate better errors with more context
 use File::Spec; # generate paths that work on all platforms
-use Digest::MD5 qw(md5_hex); # generate cache keys
+## Removing 'use' to allow module to work with basic 5.6.x install
+## use Digest::MD5 qw(md5_hex); # generate cache keys
 
 # define accessor constants used to improve readability of array
 # accesses into "objects".  I used to use 'use constant' but that
@@ -1319,7 +1320,8 @@ sub _cache_key {
     push(@key, $options->{global_vars} || 0);
 
     # compute the md5 and return it
-    return md5_hex(@key);
+    require Digest::MD5;
+    return Digest::MD5::md5_hex(@key);
 }
 
 # generates MD5 from filepath to determine filename for cache file

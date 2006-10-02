@@ -2161,7 +2161,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
     'Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]' => 'Posté <MTIfNonEmpty tag="EntryAuthorDisplayName">par [_1] </MTIfNonEmpty>le [_2]', # Translate - New (9)
     'Updating entry week numbers...' => 'Mise à jour des numéros des semaines de la note...', # Translate - New (4)
     'Recover Password(s)' => 'Récupérer le(s) mot(s) de passe',
-    '_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/sitefr/">Movable Type <$MTVersion$></a>',
+    '_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/sitefr/"><$MTProductName version="1"$></a>',
     'Assigning comment/moderation settings...' => 'Mise en place des réglages commentaire/modération ...', # Translate - New (4)
     'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => 'Cette page contient les notes postées en [_1] dans <strong>[_2]</strong>. Elles sont classées de la plus ancienne à la plus récente.',
     '_USAGE_ARCHIVING_1' => 'Sélectionnez les fréquences/types de mise en archives du contenu de votre site. Vous pouvez, pour chaque type de mise en archives que vous choisissez, affecter plusieurs modèles devant être appliqués. Par exemple, vous pouvez créer deux affichages différents de vos archives mensuelles: un contenant les notes d\'un mois particulier et l\'autre présentant les notes dans un calendrier.',

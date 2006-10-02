@@ -93,7 +93,7 @@ use vars qw( @ISA %Lexicon );
     'Archives' => 'アーカイブ',
     'Creative Commons License' => 'クリエイティブ・コモンズ・ライセンス',
     'This weblog is licensed under a' => 'このブログは、次のライセンスで保護されています。',
-    '_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.jp/movabletype/">Movable Type</a>',
+    '_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.jp/movabletype/"><$MTProductName version="1"$></a>',
     ## default_templates/master_archive_index.tmpl
     ': Archives' => ': アーカイブ',
     ## default_templates/atom_index.tmpl
@@ -137,13 +137,13 @@ use vars qw( @ISA %Lexicon );
     '<a href="[_1]">[_2]</a> is the next category.' => '次のカテゴリは<a href="[_1]">[_2]</a>です。',
     '<a href="[_1]">[_2]</a> is the previous category.' => '前のカテゴリは<a href="[_1]">[_2]</a>です。',
     'Posted on [_1]' => '日時: [_1]',
-    'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.' => 'ブログ「[_1]」のカテゴリ「[_2]」に投稿されたすべてのエントリーのアーカイブのページです。新しい順番に並んでいます。',
+    'This page contains an archive of all entries posted to [_1] in the <strong>[_2]</strong> category.  They are listed from oldest to newest.' => 'ブログ「[_1]」のカテゴリ「[_2]」に投稿されたすべてのエントリーのアーカイブのページです。過去のものから新しいものへ順番に並んでいます。',
     ## default_templates/rss_20_index.tmpl
     ## default_templates/datebased_archive.tmpl
     '<a href="[_1]">[_2]</a> is the next archive.' => '次のアーカイブは<a href="[_1]">[_2]</a>です。',
     '<a href="[_1]">[_2]</a> is the previous archive.' => '前のアーカイブは<a href="[_1]">[_2]</a>です。',
     'About [_1]' => 'About [_1]',
-    'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => '[_2]にブログ「[_1]」に投稿されたすべてのエントリーです。新しい順に並んでいます。',
+    'This page contains all entries posted to [_1] in <strong>[_2]</strong>. They are listed from oldest to newest.' => '[_2]にブログ「[_1]」に投稿されたすべてのエントリーです。過去のものから新しいものへ順番に並んでいます。',
     ## default_templates/comment_error_template.tmpl
     'Comment Submission Error' => 'コメントの登録エラー',
     'Your comment submission failed for the following reasons:' => '次のエラーでコメントを投稿できませんでした: ',
@@ -820,7 +820,7 @@ use vars qw( @ISA %Lexicon );
     'You do not have export permissions' => '書き出しに関する権限がありません。',
     'You do not have import permissions' => '読み込みに関する権限がありません。',
     'You do not have permission to create authors' => '投稿者を作成する権限がありません。',
-    "You need to provide a password if you are going to\ncreate new authors for each author listed in your blog.\n" => 'ブログに各投稿者を追加するためには、パスワードを指定する必要があります。\n',
+    "You need to provide a password if you are going to\ncreate new authors for each author listed in your blog.\n" => "ブログに各投稿者を追加するためには、パスワードを指定する必要があります。\n",
     'Preferences' => '設定',
     'Add a Category' => 'カテゴリーを追加する',
     'No label' => 'カテゴリーが見つかりません。',
@@ -2770,7 +2770,7 @@ use vars qw( @ISA %Lexicon );
     'https://secure.sixapart.com/t/help?__mode=edit' => 'https://secure.sixapart.com/t/help?__mode=edit',
     'Open a Help Ticket' => 'Open a Help Ticket',
     'Paid License Required' => 'Paid License Required',
-    'http://www.sixapart.com/pronet/plugins/' => 'http://www.sixapart.com/pronet/plugins/',
+    'http://www.sixapart.com/pronet/plugins/' => 'http://www.sixapart.jp/movabletype/plugins/',
     'https://secure.sixapart.com/t/help?__mode=kb' => 'http://www.sixapart.jp/support/faq_mt_technical.html',
     'Knowledge Base' => '技術的なよくある質問 (FAQ)',
     'http://www.sixapart.com/pronet/' => 'http://www.sixapart.com/pronet/',

@@ -146,8 +146,17 @@ sub init {
     $app->{plugin_template_path} = '';
     $app->{is_admin} = 1;
     $app->init_core_itemset_actions();
-    $app->init_core_callbacks();
     $app;
+}
+
+sub init_plugins {
+    my $app = shift;
+    # This has to be done prior to plugin initialization since we
+    # may have plugins that register themselves using some of the
+    # older callback names. The callback aliases are declared
+    # in init_core_callbacks.
+    $app->init_core_callbacks();
+    $app->SUPER::init_plugins(@_);
 }
 
 sub init_request {
@@ -759,26 +768,22 @@ sub rename_tag {
     my $tag2 = MT::Tag->load({name => $name}, { binary => { name => 1 }});
     if ($tag2) {
         return $app->call_return if $tag->id == $tag2->id;
-        # merge!
-        my $terms = { tag_id => $tag->id, object_datasource => MT::Entry->datasource };
-        $terms->{blog_id} = $blog_id if $blog_id;
-        my @etags = MT::ObjectTag->load($terms);
-        foreach (@etags) {
-            # check for an existing one!
-            my $etag = MT::ObjectTag->load({ tag_id => $tag2->id, object_id => $_->object_id, object_datasource => $_->datasource });
-            if ($etag) {
-                # an objecttag relation already exists, so
-                # simply remove the old reference.
-                $_->remove;
-                next;
-            }
-            $_->tag_id($tag2->id);
-            $_->save;
-        }
+    }
+
+    my $terms = { tag_id => $tag->id };
+    $terms->{blog_id} = $blog_id if $blog_id;
+    my $iter = MT::Entry->load_iter(undef, { join => ['MT::ObjectTag', 'object_id', $terms ] });
+    my @entries;
+    while (my $entry = $iter->()) {
+        $entry->remove_tags($tag->name);
+        $entry->add_tags($name);
+        push @entries, $entry;
+    }
+    $_->save foreach @entries;
+
+    if ($tag2) {
         $app->add_return_arg(merged => 1);
     } else {
-        $tag->name($name);
-        $tag->save or return $app->error($tag->errstr);
         $app->add_return_arg(renamed => 1);
     }
     $app->call_return;
@@ -992,6 +997,10 @@ sub get_newsbox_content {
         return unless $resp->is_success();
         my $result = $resp->content();
         if ($result) {
+            require MT::Sanitize;
+            # allowed html
+            my $spec = 'a href,* style class id,ul,li,div,span,br';
+            $result = MT::Sanitize->sanitize($result, $spec);
             $news_object = MT::Session->new();
             $news_object->set_values({id => 'NW',
                                       kind => 'NW',
@@ -1571,6 +1580,9 @@ sub view_log {
     push @class_loop, {
         class_name => 'comment,ping',
         class_label => $app->translate("All Feedback"),
+    }, {
+        class_name => 'search',
+        class_label => $app->translate("Search"),
     };
     @class_loop = sort { $a->{class_label} cmp $b->{class_label} } @class_loop;
     $param{class_loop} = \@class_loop;
@@ -6355,10 +6367,10 @@ sub build_entry_table {
             my $title = remove_html($obj->text);
             $row->{title_short} = substr_text(defined($title) ? $title : "", 0, $title_max_len) . '...';
         } else {
+            $row->{title_short} = remove_html($row->{title_short});
             $row->{title_short} = substr_text($row->{title_short}, 0, $title_max_len + 3) . '...'
                 if length_text($row->{title_short}) > $title_max_len;
         }
-        $row->{title_short} = remove_html($row->{title_short});
         if ($row->{excerpt}) {
             $row->{excerpt} = remove_html($row->{excerpt});
         }
@@ -6648,7 +6660,7 @@ sub save_entry {
         $place->category_id($cat_id);
         $place->save;
     } else {
-        if ($place) {
+        if ((defined $cat_id) && ($place)) {
             $place->remove;
         }
     }
@@ -7537,8 +7549,9 @@ HTML
         push @data, { data_name => $qparam,
             data_value => 1 };
     }
-    push @data, { data_name => 'tags',
-        data_value => $q->param('tags') };
+    my $tags = $q->param('tags');
+    $tags = '' unless defined $tags;
+    push @data, { data_name => 'tags', data_value => $tags };
     $param{entry_loop} = \@data;
     if ($id) {
         $app->add_breadcrumb($app->translate('Entries'),
@@ -7728,7 +7741,7 @@ sub rebuild_pages {
         $app->rebuild_indexes( BlogID => $blog_id, Template => $tmpl_saved,
                                Force => 1 )
             or return;
-        $order = $app->translate("index template '[_1]'", $tmpl_saved->name);
+        $order = "index template $tmpl_saved->name";
     } elsif ($type =~ /^entry-(\d+)$/) {
         my $entry_id = $1;
         require MT::Entry;

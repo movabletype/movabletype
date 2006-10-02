@@ -155,6 +155,11 @@ sub build {
             }
             my($h) = $ctx->handler_for($t->[0]);
             if ($h) {
+                my $start;
+                if ($MT::DebugMode & 8) {
+                    require Time::HiRes;
+                    $start = [ Time::HiRes::gettimeofday() ];
+                }
                 local($ctx->{__stash}->{tag}) = $t->[0];
                 local($ctx->{__stash}->{tokens}) = $tokens;
                 local($ctx->{__stash}->{tokens_else}) = $tokens_else;
@@ -170,6 +175,10 @@ sub build {
                     $out = $ph->($ctx, \%args, $out, \@args);
                 }
                 $res .= $out;
+                if ($MT::DebugMode & 8) {
+                    my $elapsed = Time::HiRes::tv_interval($start);
+                    print STDERR "Builder: Tag [" . $t->[0] . "] - $elapsed seconds\n" if $elapsed > 0.25;
+                }
             } else {
                 # FIXME: should we make this louder?
                 warn "No handler exists for tag $t->[0]";

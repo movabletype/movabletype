@@ -489,7 +489,8 @@ sub cgipath {
     my $app = shift;
 
     # these work for Apache... need to test for IIS...
-    my $host = $ENV{HTTP_HOST};
+    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
+    $host =~ s/:\d+//; # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
     my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
     $uri =~ s/mt-wizard(\.cgi)?.*$//;

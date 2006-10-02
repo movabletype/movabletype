@@ -593,7 +593,7 @@ sub fetch_theme {
         # TBD: strip any "risky" content; we don't want any
         # XSS in this content.
         s/^\s+|\s+$//g;
-        my ($key, $value) = split(/:/, $_) or next;
+        my ($key, $value) = split(/:/, $_, 2) or next;
         next unless defined $value;
         $value =~ s/^\s+//;
         $metadata{lc $key} = $value;

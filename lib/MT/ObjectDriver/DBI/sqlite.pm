@@ -83,7 +83,7 @@ sub _prepare_from_where {
         my $j_tbl = $j_class->datasource;
         my $j_tbl_name = 'mt_' . $j_tbl;
 
-        $sql = "from $tbl_name, $j_tbl_name\n";
+        $sql = "from $j_tbl_name NATURAL LEFT OUTER JOIN $tbl_name\n";
         ($w_sql, $w_terms, $w_bind) =
             $driver->build_sql($j_class, $j_terms, $j_args, $j_tbl);
         push @$w_terms, "${tbl}_id = ${j_tbl}_$j_col";

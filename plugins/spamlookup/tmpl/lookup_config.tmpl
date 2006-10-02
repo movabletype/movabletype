@@ -72,7 +72,7 @@
 <div class="field">
 <ul>
 <li><input type="radio" name="tborigin_mode" value="0" <TMPL_UNLESS NAME=TBORIGIN_MODE>checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Off"></li>
-<li><input type="radio" name="tborigin_mode" value="1" <TMPL_IF NAME=TBORIGIN_MODE_2>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Moderate TrackBacks from suspicious sources"></li>
+<li><input type="radio" name="tborigin_mode" value="2" <TMPL_IF NAME=TBORIGIN_MODE_2>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Moderate TrackBacks from suspicious sources"></li>
 <li><input type="radio" id="tborigin_mode_junk" name="tborigin_mode" value="1" <TMPL_IF NAME=TBORIGIN_MODE_1>checked="checked"</TMPL_IF> class="rb" onclick="toggleAdvancedPrefs(event,this)" /> <MT_TRANS phrase="Junk TrackBacks from suspicious sources"> (<a href="#" onclick="return toggleAdvancedPrefs(event,'tborigin_mode_junk')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="tborigin_mode_junk-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
 
 <a href="#" class="spinner" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight')"><!-- <MT_TRANS phrase="Less"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>

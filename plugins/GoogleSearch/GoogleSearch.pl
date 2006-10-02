@@ -99,7 +99,7 @@ sub _hdlr_google_search {
     my $enc = MT->instance->config('PublishCharset') || undef;
     use utf8;
     $query = MT::I18N::decode_utf8($query, $enc);
-    my $key = $plugin->google_api_key
+    my $key = $plugin->google_api_key($blog->id)
         or return $ctx->error($plugin->translate(
             'You need a Google API key to use [_1]', '<MTGoogleSearch>' ));
 

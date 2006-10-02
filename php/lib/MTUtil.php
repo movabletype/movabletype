@@ -80,7 +80,7 @@ function week2ymd($y, $week) {
     $jan_one_dow_m1 = (ymd2rd($y, 1, 1) + 6) % 7;
 
     if ($jan_one_dow_m1 < 4) $week--;
-    $day_of_year = $week * 7 - $jan_one_dow_m1 + 1;
+    $day_of_year = $week * 7 - $jan_one_dow_m1;
     $leap_year = is_leap_year($y);
     if ($day_of_year < 1) {
         $y--;

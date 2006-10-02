@@ -53,7 +53,7 @@ TC.attachLoadEvent( init );
 
 <div class="list-actions">
 <div class="button-bar">
-<input type="submit" name="delete" value="<MT_TRANS phrase="Delete Selected">" onclick="do_confirm('<MT_TRANS phrase="Are you sure you wish to delete the selected Widget Manager(s)?">','');" />
+<input type="button" name="delete" value="<MT_TRANS phrase="Delete">" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="Widget Manager">', '<MT_TRANS phrase="Widget Managers">')" accesskey="x" title="<MT_TRANS phrase="Delete selected Widget Managers (x)">" />
 </div>
 </div>
 

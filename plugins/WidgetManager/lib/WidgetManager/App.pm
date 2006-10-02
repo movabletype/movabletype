@@ -78,6 +78,29 @@ sub init_tmpl {
             $perms->can_post  || $perms->can_edit_config ||
             $perms->can_edit_notifications || $perms->can_edit_all_posts);
         $tmpl->param(can_view_log => $perms->can_view_blog_log);
+
+        require MT::Permission;
+        my @perms = MT::Permission->load({ author_id => $perms->author_id });
+        my @blogs = MT::Blog->load( undef,
+            { join => [ 'MT::Permission',
+                        'blog_id',
+                        { author_id => $perms->author_id },
+                        undef ]
+            }
+        );
+        my %blogs = map { $_->id => $_ } @blogs;
+        my @data;
+        for my $perms (@perms) {
+            next unless $perms->role_mask;
+            my $blog = $blogs{$perms->blog_id};
+            next unless $blog;
+            push @data, { top_blog_id => $blog->id,
+                          top_blog_name => $blog->name };
+            $data[-1]{top_blog_selected} = 1
+                if $app->blog->id && ($blog->id == $app->blog->id);
+        }
+        @data = sort { $a->{top_blog_name} cmp $b->{top_blog_name} } @data;
+        $tmpl->param(top_blog_loop => \@data);
     }
 
     my $apppath = $app->{__path} || '';
@@ -194,6 +217,10 @@ sub edit {
       my $tmpl = $app->init_tmpl('edit.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
       $app->add_breadcrumb($app->plugin->translate('Main Menu'),$app->{mtscript_url});
+      require MT::Blog;
+      my $blog = MT::Blog->load ($blog_id);
+      $app->add_breadcrumb($blog->name,$app->{mtscript_url}."?__mode=menu&blog_id=$blog_id");
+
       $app->add_breadcrumb($app->plugin->translate('Widget Manager'),'?__mode=list&blog_id='.$blog_id);
       $app->add_breadcrumb($q->param('widgetmanager'));
 
@@ -274,6 +301,10 @@ sub list {
       my $tmpl = $app->init_tmpl('list.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
       $app->add_breadcrumb($app->plugin->translate("Main Menu"),$app->{mtscript_url});
+      require MT::Blog;
+      my $blog = MT::Blog->load ($blog_id);
+      $app->add_breadcrumb($blog->name,$app->{mtscript_url}."?__mode=menu&blog_id=$blog_id");
+
       $app->add_breadcrumb($app->plugin->translate("Widget Manager"));
 
       $app->install_default_widgets() unless $app->installed;

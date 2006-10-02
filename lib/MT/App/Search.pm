@@ -42,8 +42,6 @@ sub init_request{
     $app->param('search', $tag) if $tag;
     my $blog_id = $q->param('blog_id') || '';
     my $include_blog_id = $q->param('IncludeBlogs') || '';
-    $app->param('blog_id', $blog_id) if $blog_id;
-    $app->param('IncludeBlogs', $include_blog_id) if $include_blog_id;
 
     unless ($include_blog_id){
         $app->param('IncludeBlogs', $blog_id) if $blog_id;
@@ -51,9 +49,7 @@ sub init_request{
 
     ## Check whether IP address has searched in the last
     ## minute which is still progressing. If so, block it.
-    return $app->error($app->translate(
-        "You are currently performing a search. Please wait " .
-        "until your search is completed.")) unless $app->throttle_control();
+    return $app->throttle_response() unless $app->throttle_control();
 
     my %no_override = map { $_ => 1 } split /\s*,\s*/, $cfg->NoOverride;
 
@@ -69,8 +65,13 @@ sub init_request{
         for my $blog_id ($q->param($type)) {
             if ($blog_id =~ m/,/) {
                 my @ids = split /,/, $blog_id;
-                $app->{searchparam}{$type}{$_} = 1 for @ids;
+                s/\D+//g for @ids; # only numeric values.
+                foreach my $id (@ids) {
+                    next unless $id;
+                    $app->{searchparam}{$type}{$id} = 1;
+                }
             } else {
+                $blog_id =~ s/\D+//g; # only numeric values.
                 $app->{searchparam}{$type}{$blog_id} = 1;
             }
         }
@@ -122,6 +123,21 @@ sub init_request{
     ## Get login information if user is logged in (via cookie).
     ## If no login cookie, this fails silently, and that's fine.
     ($app->{user}) = $app->login;
+}
+
+sub throttle_response {
+    my $app = shift;
+    my $tmpl = $app->param('Template') || '';
+    my $msg = $app->translate(
+        "You are currently performing a search. Please wait " .
+        "until your search is completed.");
+    if ($tmpl eq 'feed') {
+        $app->response_code(503);
+        $app->set_header('Retry-After' => $app->config('ThrottleSeconds'));
+        $app->send_http_header("text/plain");
+        $app->{no_print_body} = 1;
+    }
+    return $app->error($msg);
 }
 
 sub throttle_control {
@@ -344,7 +360,6 @@ sub _tag_search {
     #    level => MT::Log::INFO(),
     #    class => 'search',
     #    category => 'tag_search',
-    #    metadata => $app->{search_string}
     #});
 
     my %terms = (status => MT::Entry::RELEASE());
@@ -440,7 +455,6 @@ sub _straight_search {
         level => MT::Log::INFO(),
         class => 'search',
         category => 'straight_search',
-        metadata => $app->{search_string},
         $blog_id ? (blog_id => $blog_id) : ()
     });
 

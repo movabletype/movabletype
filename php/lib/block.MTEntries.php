@@ -29,12 +29,10 @@ function smarty_block_MTEntries($args, $content, &$ctx, &$repeat) {
             $args['lastn'] or $args['lastn'] = -1;
             $ts = $ctx->stash('current_timestamp');
             $tse = $ctx->stash('current_timestamp_end');
-            if (($ts && $tse) && !isset($args['category_id']) &&
-                !isset($args['category']) && !isset($args['categories']) &&
-                !isset($args['tag']) && !isset($args['tags'])) {
-                # only assign a date range if we have both
-                # start and end date *and* the user has not
-                # explicitly requested a category/tag
+            global $_archive_helpers;
+            if (($ts && $tse) && isset($_archive_helpers[$at])) {
+                # assign date range if we have both
+                # start and end date
                 $args['current_timestamp'] = $ts;
                 $args['current_timestamp_end'] = $tse;
             }

@@ -39,11 +39,9 @@ sub on_load_complete {
 
 sub _set_names {
     my $driver = shift;
-    return 1 if exists $driver->{set_names};
 
     my $cfg = MT::ConfigMgr->instance;
     my $set_names = $cfg->SQLSetNames;
-    $driver->{set_names} = 1;
     return 1 if (defined $set_names) && !$set_names;
 
     eval {
@@ -83,8 +81,7 @@ sub _set_names {
 
 sub configure {
     my $driver = shift;
-    $driver->SUPER::init(@_);
-    my $sql_set_names = $driver->_set_names;
+    $driver->_set_names;
     $driver;
 }
 

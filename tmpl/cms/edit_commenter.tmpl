@@ -57,7 +57,7 @@ TC.attachLoadEvent(init);
 <tr class="even">
 <td class="label" id="edit-commenter-label"><MT_TRANS phrase="Name">:</td>
 <td id="edit-commenter-field"><TMPL_VAR NAME=NICKNAME ESCAPE=HTML></td>
-<td id="edit-commenter-filter">
+<td class="filter">
 <a title="<MT_TRANS phrase="View all comments with this name">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=name&amp;search=<TMPL_VAR NAME=NICKNAME ESCAPE=URL>&amp;do_search=1"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a>
 </td>
 </tr>

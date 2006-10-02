@@ -52,6 +52,16 @@ class MTDatabase_sqlite extends MTDatabaseBase {
                        strftime('%m', entry_created_on) $order,
                        strftime('%d', entry_created_on) $order
                  $limitStr";
+        } elseif ($at == 'Weekly') {
+            $sql = "
+                select count(*),
+                       entry_week_number
+                  from mt_entry
+                 where entry_blog_id = $blog_id
+                   and entry_status = 2
+                 group by entry_week_number
+                 order by entry_week_number $order
+                 $limitStr";
         } elseif ($at == 'Monthly') {
             $sql = "
                 select count(*),

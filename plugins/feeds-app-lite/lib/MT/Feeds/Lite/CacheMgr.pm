@@ -1,3 +1,5 @@
+# Copyright 2002-2006 Appnel Internet Solutions, LLC
+# This code is distributed with permission by Six Apart
 package MT::Feeds::Lite::CacheMgr;
 use strict;
 

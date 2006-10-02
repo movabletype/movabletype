@@ -143,7 +143,7 @@ the address you provided is correct and belongs to you.',
     'UTC+11' => 'UTC+11 (East Australian Daylight Savings Time)',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
 
-    '_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.com/movabletype/">Movable Type <$MTVersion$></a>',
+    '_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.com/movabletype/"><$MTProductName version="1"$></a>',
     'Blog Administrator' => 'Blog Administrator',
     'Entry Creation' => 'Entry Creation',
     'Edit All Entries' => 'Edit All Entries',

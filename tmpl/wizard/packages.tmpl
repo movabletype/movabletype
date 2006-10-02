@@ -52,7 +52,9 @@ function go(mode) {
 
 <p>
 <TMPL_IF NAME=SUCCESS>
+<div class="message">
 <MT_TRANS phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations.">
+</div>
 </TMPL_IF>
 <p><input name="back" type="submit" value="<MT_TRANS phrase="Back">" onclick="this.form.reset(); go('pre_start');" />
 <TMPL_IF NAME=MISSING_DB_OR_OPTIONAL>

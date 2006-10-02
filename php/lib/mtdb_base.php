@@ -534,15 +534,6 @@ class MTDatabaseBase extends ezsql {
             $limit = 0; $offset = 0;
         }
 
-        if ($args['sort_order']) {
-            if ($args['sort_order'] == 'ascend') {
-                $order = 'asc';
-            } elseif ($args['sort_order'] == 'descend') {
-                $order = 'desc';
-            }
-        }
-
-        $sort_field or $sort_field = 'entry_created_on';
         $sql = "
             select mt_entry.*, mt_placement.*, mt_author.*,
                    mt_trackback.*
@@ -558,7 +549,7 @@ class MTDatabaseBase extends ezsql {
                    $author_filter
                    $date_filter
                    $day_filter
-             order by $sort_field $order
+             order by entry_created_on $order
         ";
 
         if (isset($args['recently_commented_on'])) {
@@ -568,6 +559,7 @@ class MTDatabaseBase extends ezsql {
             $args['sort_by'] or $args['sort_by'] = 'comment_created_on';
             $args['sort_order'] or $args['sort_order'] = 'descend';
             $post_select_limit = $rco;
+            $no_resort = 1;
         } else {
             $sql = $this->apply_limit_sql($sql . " <LIMIT>", $limit, $offset);
         }
@@ -595,23 +587,27 @@ class MTDatabaseBase extends ezsql {
             if (($limit > 0) && (count($entries) >= $limit)) break;
         }
 
-        if (isset($args['sort_by'])) {
-            if ($args['sort_by'] == 'title') {
-                $sort_field = 'entry_title';
-            } elseif ($args['sort_by'] == 'id') {
-                $sort_field = 'entry_id';
-            } elseif ($args['sort_by'] == 'status') {
-                $sort_field = 'entry_status';
-            } elseif ($args['sort_by'] == 'modified_on') {
-                $sort_field = 'entry_modified_on';
-            } elseif ($args['sort_by'] == 'author_id') {
-                $sort_field = 'entry_author_id';
-            } elseif ($args['sort_by'] == 'excerpt') {
-                $sort_field = 'entry_excerpt';
-            } elseif ($args['sort_by'] == 'comment_created_on') {
-                $sort_field = $args['sorty_by'];
+        if (!$no_resort) {
+            if (isset($args['sort_by'])) {
+                if ($args['sort_by'] == 'title') {
+                    $sort_field = 'entry_title';
+                } elseif ($args['sort_by'] == 'id') {
+                    $sort_field = 'entry_id';
+                } elseif ($args['sort_by'] == 'status') {
+                    $sort_field = 'entry_status';
+                } elseif ($args['sort_by'] == 'modified_on') {
+                    $sort_field = 'entry_modified_on';
+                } elseif ($args['sort_by'] == 'author_id') {
+                    $sort_field = 'entry_author_id';
+                } elseif ($args['sort_by'] == 'excerpt') {
+                    $sort_field = 'entry_excerpt';
+                } elseif ($args['sort_by'] == 'comment_created_on') {
+                    $sort_field = $args['sort_by'];
+                } else {
+                    $sort_field = 'entry_' . $args['sort_by'];
+                }
             } else {
-                $sort_field = 'entry_' . $args['sort_by'];
+                $sort_field = 'entry_created_on';
             }
             if ($sort_field) {
                 if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')) {

@@ -400,7 +400,7 @@ sub _send_ping_notification {
                   ban_url => $base . $app->uri_params('mode' => 'save', args => {'_type' => 'banlist', blog_id => $blog->id, ip => $ping->ip}),
                   ping_ip => $ping->ip,
                   ping_url => $ping->source_url,
-                  ping_excerpt => $ping->excerpt,
+                  ping_excerpt => wrap_text($ping->excerpt, 72),
                   ping_blog_name => $ping->blog_name,
                   ping_title => $ping->title,
                   unapproved => !$ping->visible(),
@@ -417,7 +417,6 @@ sub _send_ping_notification {
         my $charset = $app->config('MailEncoding') || $app->charset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
         my $body = MT->build_email('new-ping.tmpl', \%param);
-        $body = wrap_text($body, 72);
         MT::Mail->send(\%head, $body);
     }
 }

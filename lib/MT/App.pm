@@ -197,7 +197,10 @@ sub init_request {
 
     return if $app->{init_request};
 
-    $app->read_config(\%param) or return;
+    if ($app->{request_read_config}) {
+        $app->read_config(\%param) or return;
+        $app->{request_read_config} = 0;
+    }
 
     # @req_vars: members of the app object which are request-specific
     # and are cleared at the beginning of each request.
@@ -722,7 +725,10 @@ sub mode {
     if (@_) {
         $app->{mode} = shift;
     } else {
-        $app->{mode} ||= $app->param('__mode');
+        if (my $mode = $app->param('__mode')) {
+            $mode =~ s/[<>"']//g;
+            $app->{mode} ||= $mode;
+        }
     }
     $app->{mode} || $app->{default_mode} || 'default';
 }
@@ -743,6 +749,7 @@ sub takedown {
     $app->request->finish;
     delete $app->{request};
     delete $app->{cookies};
+    $app->{request_read_config} = 1;
 }
 
 sub l10n_filter { $_[0]->translate_templatized($_[1]) }

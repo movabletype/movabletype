@@ -85,7 +85,7 @@
 
                               <p id="comments-open-text">
                                  <label for="comment-text"><MT_TRANS phrase="Comments">: <MTIfAllowCommentHTML><MT_TRANS phrase="(you may use HTML tags for style)"></MTIfAllowCommentHTML></label>
-                                 <textarea id="comment-text" name="text" rows="10" cols="50"><$MTCommentPreviewBody autolink="0" sanitize="0" convert_breaks="0"$></textarea>
+                                 <textarea id="comment-text" name="text" rows="10" cols="50"><$MTCommentPreviewBody autolink="0" sanitize="0" convert_breaks="0" encode_html="1"$></textarea>
                               </p>
                               <div id="comments-open-footer" class="comments-open-footer">
                                  <input type="submit" name="preview" id="comment-preview" accesskey="v" value="<MT_TRANS phrase="Preview">" />

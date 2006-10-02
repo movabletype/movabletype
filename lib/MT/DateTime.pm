@@ -53,7 +53,7 @@ sub week {
             ( ( $self->ymd2rd( $self->year, 1, 1 ) + 6 ) % 7 );
 
         $self->{local_c}{week_number} =
-            int( ( ( $self->day_of_year - 1 ) + $jan_one_dow_m1 ) / 7 );
+            int( ( ( $self->day_of_year) + $jan_one_dow_m1 ) / 7 );
         $self->{local_c}{week_number}++ if $jan_one_dow_m1 < 4;
 
         if ( $self->{local_c}{week_number} == 0 ) {
