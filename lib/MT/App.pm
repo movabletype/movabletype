@@ -1211,6 +1211,7 @@ sub is_secure {
 sub redirect {
     my $app = shift;
     my($url, %options) = @_;
+    $url =~ s/[\r\n].*$//s;
     $app->{redirect_use_meta} = $options{UseMeta};
     unless ($url =~ m!^https?://!i) {
         $url = $app->base . $url;
