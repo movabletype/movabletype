@@ -5,7 +5,7 @@ function sanitize($s, $arg) {
         $arg = sanitize_parse_spec($arg);
     $ok_tags = $arg['ok'];
     $tag_attr = $arg['tag_attr'];
-
+    $s = preg_replace('/\x00/', '', $s);
     $closings = array('<'.'?' => '?'.'>', '<!--' => '-->', '<%' => '%>');
     $tokens = preg_split('/(<(?:!--|%|\?)|<\/\w*|<\w*|(?:-->|%>|\?'.'>|>))/', $s, -1, PREG_SPLIT_DELIM_CAPTURE);
     $open_tag_a = array();

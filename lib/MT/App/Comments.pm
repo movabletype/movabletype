@@ -169,7 +169,6 @@ sub _builtin_throttle {
         $ipban->blog_id($entry->blog_id);
         $ipban->ip($user_ip);
         $ipban->save();
-        $ipban->commit();
         $app->log({
             message => $app->translate("IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.", $user_ip, 10 * $throttle_period ),
             class => 'comment',
@@ -527,6 +526,16 @@ sub _make_comment {
     $comment->text($text);
     #$comment->visible(0); # leave as undefined
     $comment->is_junk(0);
+
+    # strip of any null characters (done after junk checks so they can
+    # monitor for that kind of activity)
+    for my $field (qw(author email url text)) {
+        my $val = $comment->column($field);
+        if ($val =~ m/\x00/) {
+            $val =~ tr/\x00//d;
+            $comment->column($field, $val);
+        }
+    }
     
     return ($comment, $commenter);
 }
@@ -1135,6 +1144,70 @@ MT::App::Comments
 The application-level callbacks of the C<MT::App::Comments> application
 are documented here.
 
+=head1 METHODS
+
+=head2 $app->init
+
+Initializes the application and defines the serviceable modes.
+
+=head2 $app->init_request
+
+Initializes the application to service the request.
+
+=head2 $app->do_preview($cgi[, $err])
+
+Handles the comment preview request and displays the preview using
+the Comment Preview blog template. If C<$err> is specified, the
+error message is relayed to the user using the Comment Error blog
+template.
+
+=head2 $app->blog
+
+Returns the L<MT::Blog> object related to the entry being commented on.
+
+=head2 $app->eval_comment
+
+Evaluates the comment being posted in a variety of ways and an L<MT::Comment>
+object is returned. If the comment request is rejected due to throttling,
+no object is returned and the Comment Pending blog template is displayed.
+
+=head2 $app->handle_error
+
+Returns an error message to the user using the Comment Error blog template.
+
+=head1 APPLICATION MODES
+
+=head2 $app->commenter_name_js
+
+Returns some JavaScript code that sets the 'commenter_name' variable
+based on the 'tk_commenter' cookie that is accessible to the comments
+CGI script.
+
+=head2 $app->do_red
+
+Handles a commenter URL redirect, where the comment_id points to a
+L<MT::Comment> object with a URL. The response redirects the user to
+that URL. The comment must be approved and published.
+
+Note: This behavior has been deprecated in favor of using the 'nofollow'
+plugin.
+
+=head2 $app->handle_sign_in
+
+Handles the sign-in process for a TypeKey-compatible sign-in request.
+
+=head2 $app->post
+
+Mode that handles posting of a new comment.
+
+=head2 $app->preview
+
+Mode for previewing a comment before posting.
+
+=head2 $app->view
+
+Mode for displaying a dynamic view of comments for a particular entry.
+
 =head1 CALLBACKS
 
 =over 4
@@ -1147,7 +1220,7 @@ comment data will be discarded and the app will output an error page
 about throttling. A CommentThrottleFilter callback has the following
 signature:
 
-    sub comment_throttle_filter($eh, $app, $entry)
+    sub comment_throttle_filter($cb, $app, $entry)
     {
         ...
     }
@@ -1169,9 +1242,19 @@ Called once the comment object has been constructed, but before saving
 it. If any CommentFilter callback returns false, the comment will not
 be saved. The callback has the following signature:
 
-    sub comment_filter($eh, $app, $comment)
+    sub comment_filter($cb, $app, $comment)
     {
         ...
     }
+
+=head1 SPAM PROTECTION
+
+Spam filtering (or "Junk" filtering in MT terminology) is handled using
+the L<MT::JunkFilter> package and plugins that implement them. Please
+refer to that module for further documentation.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
 
 =back
