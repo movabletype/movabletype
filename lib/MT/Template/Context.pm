@@ -119,17 +119,34 @@ sub handler_for      {
     }
     sub stock_post_process_handler {
         my($ctx, $args, $str, $arglist) = @_;
-        # in the event that we don't have arglist,
-        # we'll build it using the hashref we do have
-        # we might as well preserve the original ordering
-        # of processing as well, since it's better than
-        # the pseudo random order we get from retrieving the
-        # keys from the hash.
-        unless ($arglist) {
-            $arglist = [];
+        $arglist ||= [];
+        if (@$arglist) {
+            # In the event that $args was manipulated by handlers,
+            # locate any new arguments and add them to $arglist for
+            # processing
+            my %arglist_keys = map { @$_ } @$arglist;
+            if (scalar keys %arglist_keys != scalar keys %$args) {
+                my %more_args = %$args;
+                for (keys %arglist_keys) {
+                    delete $more_args{$_} if exists $more_args{$_};
+                }
+                if (%more_args) {
+                    push @$arglist, [ $_ => $more_args{$_} ] foreach
+                        grep { exists $Global_filters{$_} || exists $Filters{$_} }
+                        keys %more_args;
+                }
+            }
+        } elsif (keys %$args && !@$arglist) {
+            # in the event that we don't have arglist,
+            # we'll build it using the hashref we do have
+            # we might as well preserve the original ordering
+            # of processing as well, since it's better than
+            # the pseudo random order we get from retrieving the
+            # keys from the hash.
             push @$arglist, [ $_, $args->{$_} ] foreach
-                sort { $order{$a} <=> $order{$b} }
-                grep { exists $Filters{$_} } keys %$args;
+                sort { exists $order{$a} && exists $order{$b} ? $order{$a} <=> $order{$b} : 0 }
+                grep { exists $Global_filters{$_} || exists $Filters{$_} }
+                keys %$args;
         }
         for my $arg (@$arglist) {
             my ($name, $val) = @$arg;
