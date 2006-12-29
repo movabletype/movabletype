@@ -1,15 +1,11 @@
 #!/usr/bin/perl
-#
 # $Id$
-#
 use strict;
 use warnings;
-
-use Data::Dumper;
-$Data::Dumper::Indent = $Data::Dumper::Terse = $Data::Dumper::Sortkeys = 1;
-
 use lib 'build';
 use Build;
+use Data::Dumper;
+$Data::Dumper::Indent = $Data::Dumper::Terse = $Data::Dumper::Sortkeys = 1;
 
 my $build = Build->new();
 
@@ -19,39 +15,54 @@ $build->usage() unless @ARGV;
 $build->get_options();
 
 # Show the usage if requested.
-$build->usage() if $build->{'help|h'};
+$build->usage() if $build->help();
 
-# Perform some preliminary contextual set-up.
-$build->setup();
+for( $build->languages() ) {
+    $build->setup( language => $_ );
 
-# Summarize what we are about to do.
-$build->verbose( sprintf '* Debug mode is %s and system calls %s be made.',
-    $build->{'debug'} ? 'ON' : 'OFF', $build->{'debug'} ? "WON'T" : 'WILL',
-);
-$build->verbose( sprintf('Run options: %s', Dumper $build) ) if $build->{'debug'};
+    # Summarize what we are about to do.
+    $build->verbose( sprintf '* Debug mode is %s and system calls %s be made.',
+        $build->debug() ? 'ON' : 'OFF', $build->debug() ? "WON'T" : 'WILL' );
+    $build->verbose( sprintf 'Run options: %s', Dumper $build ) if $build->debug();
 
-# Get any existing distro with the same path name, out of the way.
-$build->remove_copy();
+    # Get any existing distro with the same path name, out of the way.
+    $build->remove_copy();
 
-# Export the latest files.
-$build->export();
+    # Export the latest files.
+    $build->export();
 
-# Add the non-production footer.
-$build->inject_footer();
+    # Export any plugins that are requested.
+    $build->plugin_export();
 
-# Make the all-important make calls.
-$build->make();
+    # Add a non-production footer.
+    $build->inject_footer();
 
-# Create lists of the distributions.
-my $distros = $build->create_distro_list();
+    # Actually build the distribution files.
+    $build->make();
 
-# Deploy the distributions.
-$build->deploy_distros( $distros );
+    # Create lists of the distribution paths and uris.
+    my $distros = $build->create_distro_list();
 
-# Cleanup the exported files.
-$build->cleanup();
+    # Deploy the distributions.
+    $build->deploy_distros( $distros );
 
-# Send email notification.
-$build->notify( $distros );
+    # Cleanup the exported files.
+    $build->cleanup();
 
-exit;
+    # TODO Factor out the (rarely used) email notification.
+    $build->notify( $distros );
+}
+
+__END__
+
+=head1 NAME
+
+exportmt - Movable Type Export Build Deployment and Notification
+
+=head1 SEE ALSO
+
+https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
+
+The L<Build> (F<build/Build.pm>) module.
+
+=cut
