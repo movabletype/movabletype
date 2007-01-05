@@ -22,7 +22,7 @@
 <option value="<TMPL_VAR NAME=ARCHIVE_TYPE>"><MT_TRANS phrase="Rebuild [_1] Archives Only" params="<TMPL_VAR NAME=ARCHIVE_TYPE_LABEL ESCAPE=HTML>"></option>
 </TMPL_LOOP>
 <TMPL_LOOP NAME=REBUILD_OPTION_LOOP>
-<option value="<TMPL_VAR NAME=KEY>"><TMPL_VAR NAME=NAME></option>
+<option value="<TMPL_VAR NAME=KEY>"><TMPL_VAR NAME=LABEL ESCAPE=HTML></option>
 </TMPL_LOOP>
 </select>
 </p>
