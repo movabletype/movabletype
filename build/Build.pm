@@ -797,8 +797,13 @@ sub read_conf {
 
 sub inject_footer {
     my $self = shift;
+
+    # Do not inject the non-production footer if we are running in
+    # debug mode, doing a (local) make or are building an alpha/beta
+    # version.
+    return if $self->{'debug'} || $self->{'make'} ||
+        ($self->{'prod'} && !($self->{'beta=s'} || $self->{'alpha=s'}));
     $self->verbose( 'Entered inject_footer()' );
-    return if $self->{'prod'} || $self->{'debug'} || $self->{'make'};
 
     my $file = $self->{'export!'}
         ? File::Spec->catdir( $self->{'export-dir=s'}, $self->{'footer-tmpl=s'} )
