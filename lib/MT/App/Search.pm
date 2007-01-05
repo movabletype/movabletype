@@ -1,5 +1,5 @@
 # Original Copyright 2001-2002 Jay Allen.
-# Modifications and integration Copyright 2001-2006 Six Apart.
+# Modifications and integration Copyright 2001-2007 Six Apart.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
