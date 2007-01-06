@@ -396,8 +396,7 @@ sub _send_ping_notification {
                                     $cat->id, $cat->label);
         }
         my %head = ( To => $author->email,
-                     From => $app->config('EmailAddressMain') || $author->emai
-l,
+                     From => $app->config('EmailAddressMain') || $author->email,
                      Subject => '[' . $blog->name . '] ' . $subj );
         my $base;
         { local $app->{is_admin} = 1;
