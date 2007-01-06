@@ -1,4 +1,4 @@
-# Copyright 2005-2006 Six Apart. This code cannot be redistributed without
+# Copyright 2005-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
 # $Id$
@@ -24,3 +24,4 @@ MT->add_plugin($plugin);
 MT->add_plugin_action('blog', 'l10nsample.cgi', 'This is localizable');
 
 sub instance { $plugin }
+

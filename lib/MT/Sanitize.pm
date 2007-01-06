@@ -5,7 +5,7 @@
 #
 # Original Copyright (c) 2002 Brad Choate
 # ---------------------------------------------------------------------------
-# Modifications and integration Copyright 2002-2006 Six Apart.
+# Modifications and integration Copyright 2002-2007 Six Apart.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #

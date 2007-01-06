@@ -1,5 +1,6 @@
 # SpamLookup plugin for Movable Type
 # Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
+# Copyright (c) 2004-2007, Six Apart, Ltd.
 # Author: Six Apart (http://www.sixapart.com)
 # Released under the Artistic License
 #
