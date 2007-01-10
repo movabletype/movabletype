@@ -100,25 +100,8 @@ sub import {
                     print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err";
                 }
             } else {
-
-                if ($err =~ m/Missing configuration file/) {
-                    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
-                    $host =~ s/:\d+//;
-                    my $port = $ENV{SERVER_PORT};
-                    my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
-                    $uri =~ s/mt(\.cgi)?.*$//;
-                    my $cgipath = '';
-                    $cgipath = $port == 443 ? 'https' : 'http';
-                    $cgipath .= '://' . $host;
-                    $cgipath .= ($port == 443 || $port == 80) ? '' : ':' . $port;
-                    $cgipath .= $uri;
-
-                    print "Status: 302 Moved\n";
-                    print "Location: ".$cgipath."mt-wizard.cgi\n\n";
-               } else {
-                    print "Content-Type: text/plain; charset=$charset\n\n";
-                    print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
-                }
+                print "Content-Type: text/plain; charset=$charset\n\n";
+                print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
             }
         }
     }
