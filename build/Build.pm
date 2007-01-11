@@ -458,7 +458,7 @@ DefaultSiteRoot /var/www/html/mt-stage/blogs/
 Database $db
 ObjectDriver DBI::mysql
 DBUser root
-DebugMode 1
+DebugMode 2
 CONFIG
         if( $self->{'ldap'} ) {
             print $fh <<CONFIG;
