@@ -156,7 +156,7 @@ sub init {
         ['ShowIPInformation', { Default => 0 }],
         ['AllowComments', {Default => 1}],
         ['AllowPings', {Default => 1}],
-        ['HelpURL', {Default => '__HELP_URL__' . MT->version_number . '/'}],
+        ['HelpURL', {Default => '__HELP_URL__'}],
         ['UsePlugins', {Default => 1}],
         ['PluginSwitch', {Type => 'HASH'}],
         ['PluginSchemaVersion', {Type => 'HASH'}],
