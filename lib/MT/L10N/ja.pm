@@ -1368,7 +1368,7 @@ use vars qw( @ISA %Lexicon );
     ## plugins/nofollow/nofollow.pl
     'Adds a \'nofollow\' relationship to comment and TrackBack hyperlinks to reduce spam.' => '迷惑コメント/スパム対策の1つとして、コメントやトラックバックのハイパーリンク (アンカータグ) に、rel=&quot;nofollow&quot;を追加します。',
     'Restrict:' => '追加の制限: ',
-    'Don\'t add nofollow to links in comments by authenticated commenters' => '認証済みコメント投稿者からのコメントには追加しない',
+    'Don\'t add nofollow to links in comments by trusted commenters' => '認証済みコメント投稿者からのコメントには追加しない',
     ## plugins/spamlookup/spamlookup.pl
     'SpamLookup module for using blacklist lookup services to filter feedback.' => 'ブラックリストにより、迷惑コメント/トラックバックをチェックします。',
     ## plugins/spamlookup/lib/spamlookup.pm
@@ -1678,6 +1678,9 @@ use vars qw( @ISA %Lexicon );
     '[quant,_1,entry,entries]' => '[quant,_1,件,件]',
     'No tags could be found.' => 'タグは見つかりません。',
     'An error occurred while testing for the new tag name.' => '新しいタグを検査しているときにエラーが発生しました。',
+    'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?' => '「[_2]」というタグはすでに存在します。「[_1]」を「[_2]」にマージしてもよろしいですか?',
+    'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?' => '「[_2]」というタグはすでに存在します。すべてのブログをまたがって、「[_1]」を「[_2]」にマージしてもよろしいですか?',
+        
     ## tmpl/cms/header-popup.tmpl
     ## tmpl/cms/edit_comment.tmpl
     'Your changes have been saved.' => '変更を保存しました。',

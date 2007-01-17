@@ -760,3 +760,6 @@ function dirify (s) {
 function setElementValue(domID, newVal) {
     getByID(domID).value = newVal;
 }
+//These two lines are to translate phrases in list_tags.tmpl
+//trans('The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?');
+//trans('The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?');
