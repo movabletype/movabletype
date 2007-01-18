@@ -3514,7 +3514,12 @@ Si esta operación no es correcta, puede desbloquear la dirección IP y permitir
     'We were unable to create your configuration file.' => 'No pudimos crear el fichero de configuración.',
     'If you would like to check the directory permissions and retry, click the \'Retry\' button.' => 'Si desea comprobar los permisos del directorio y reintentarlo, haga clic en el botón \'Reintentar\'',
     'The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.' => 'La configuración se ha escrito en el fichero <tt>[_1]</tt>. Si algunas de las opciones es incorrecta, puede hacer clic en el botón \'Regresar\' debajo para reconfigurarla.',
-    
+    'Don\'t add nofollow to links in comments by trusted commenters' => 'No añadir nofollow a los enlaces en los comentarios realizados por comentaristas en los que se confía.', # Translate - New (11)
+    'Multiple feeds were discovered. Select the feed you wish to use. Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.' => 'Se descubrieron múltiples fuentes de sindicación. Seleccione la que desea usar. Feeds.App Lite soporta fuentes RSS 1.0, 2.0 y Atom (solo texto).', # Translate - New (22)
+    'Delete selected Widget Managers (x)' => 'Borrar Administradores de Widgets seleccionados (x)', # Translate - New (5)
+    'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?' => 'La etiqueta \'[_2]\' ya existe. ¿Está seguro de que desea integrar \'[_1]\' y \'[_2]\'?', # Translate - New (15)
+    'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?' => 'La etiqueta \'[_2]\' ya existe. ¿Está seguro de que desea integrar \'[_1]\' y \'[_2]\' en todos los weblogs?', # Translate - New (18)
+    'Movable Type Enterprise' => 'Movable Type Enterprise', # Translate - New (3) 
 );
 
 
