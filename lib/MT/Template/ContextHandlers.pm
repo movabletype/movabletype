@@ -1,4 +1,4 @@
-# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
+# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.  For more information, consult your
 # Movable Type license.
 #
@@ -2569,7 +2569,7 @@ sub _hdlr_comment_body {
 sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
 sub _hdlr_comment_prev_state { $_[0]->stash('comment_state') }
 sub _hdlr_comment_prev_static {
-    my $s = $_[0]->stash('comment_is_static');
+    my $s = encode_html($_[0]->stash('comment_is_static')) || '';
     defined $s ? $s : ''
 }
 sub _hdlr_comment_entry {

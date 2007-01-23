@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright 2005-2006 Six Apart. This code cannot be redistributed without
+# Copyright 2005-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
 # $Id$

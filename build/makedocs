@@ -30,7 +30,7 @@ my $do_send = 0;
 
 my $COPY = <<HTML;
 <hr size="1" color="#CCCCCC">
-<span class="copyright">Copyright &copy; 2001-2006 Six Apart. All Rights Reserved.</span>
+<span class="copyright">Copyright &copy; 2001-2007 Six Apart. All Rights Reserved.</span>
 HTML
 
 my %MANUAL_FILE_NAMES = (

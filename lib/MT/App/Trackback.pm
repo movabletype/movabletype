@@ -1,4 +1,4 @@
-# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
+# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.  For more information, consult your
 # Movable Type license.
 #
@@ -275,6 +275,17 @@ sub ping {
     }
     $ping->title(defined $title && $title ne '' ? $title : $url);
     $ping->blog_name($blog_name);
+
+    # strip of any null characters (done after junk checks so they can
+    # monitor for that kind of activity)
+    for my $field (qw(title excerpt url blog_name)) {
+        my $val = $ping->column($field);
+        if ($val =~ m/\x00/) {
+            $val =~ tr/\x00//d;
+            $ping->column($field, $val);
+        }
+    }
+
     if (!MT->run_callbacks('TBPingFilter', $app, $ping)) {
         return $app->_response(Error => "", Code => 403);
     }
@@ -475,3 +486,37 @@ sub blog {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::App::Trackback
+
+=head1 METHODS
+
+=head2 init
+
+Call L<MT::App/init>, register the C<ping>, C<view> and C<rss>
+callbacks and set the application default_mode to C<ping>.
+
+=head2 view
+
+Build the trackback page for viewing.
+
+=head2 rss
+
+Generate and return RSS text for the trackback.
+
+=head2 blog
+
+Return the blog of the trackback.
+
+=head2 no_utf8
+
+This function removes UTF-8 from scalars.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

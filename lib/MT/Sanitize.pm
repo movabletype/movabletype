@@ -5,7 +5,7 @@
 #
 # Original Copyright (c) 2002 Brad Choate
 # ---------------------------------------------------------------------------
-# Modifications and integration Copyright 2002-2006 Six Apart.
+# Modifications and integration Copyright 2002-2007 Six Apart.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -46,6 +46,8 @@ my $Strip_RE = join '|', map quotemeta($_), keys %Strip;
 sub sanitize {
     my $class = shift;
     my($s, $arg) = @_;
+    $s = '' unless defined $s;
+    $s =~ tr/\x00//d;
     $arg = '1' unless defined $arg;
     return $s if $arg eq '0';
     unless (!$arg || ref($arg)) {
@@ -100,7 +102,7 @@ sub sanitize {
                 (exists $tag_attr->{$name} && $tag_attr->{$name} eq '/')) {
                 if ($inside) {
                     my @attrs;
-                    while ($inside =~ m/([:\w]+)\s*=\s*(['"])(.*?)\2/gs) {  #"'
+                    while ($inside =~ m/([:\w]+)\s*=\s*(['"])(.*?)\2/gs) {
                         my ($attr, $q, $val) = (lc($1), $2, $3);
                         if ($ok_tags->{'*'}{$attr} ||
                            (ref $ok_tags->{$name} && $ok_tags->{$name}{$attr})) {
@@ -154,10 +156,12 @@ sub sanitize {
         }
     }
     if (defined $last_pos && ($last_pos < length($s))) {
-        $out .= substr($s, $last_pos);
+        if (substr($s, $last_pos) !~ m/</) {
+            $out .= substr($s, $last_pos);
+        }
     }
-    for my $tag (@open_tags) {
-        $out .= '</' . $tag . '>';
+    if (@open_tags) {
+        $out .= _expel_up_to(\@open_tags, \%open_tags, '');
     }
     $out;
 }
@@ -192,5 +196,22 @@ MT::Sanitize - Sanitize HTML for Safety
     HTML
     my $str = MT::Sanitize->sanitize($html, 'a href');
     ## $str is now <a href="foo.html">foolink</a>
+
+=head1 METHODS
+
+=head2 parse_spec($tags)
+
+Return a hash reference of allowed tags and their attributes.
+
+=head2 sanitize($text, [0|1|\%args])
+
+"Sanitize" the I<text> with the rules defined in I<args> (or by the
+C<parse_spec> method if rules are not provided).
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut
 
 =cut

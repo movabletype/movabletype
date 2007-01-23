@@ -4,7 +4,7 @@ BEGIN {
     my $LANG = $ARGV[0];
     shift @ARGV unless (-e $LANG);
     print <<EOF;
-# # Copyright 2003-2006 Six Apart. This code cannot be redistributed without
+# # Copyright 2003-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
 # \$Id:\$

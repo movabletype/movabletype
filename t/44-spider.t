@@ -61,7 +61,7 @@ my %modes_seen;
 my $skip_pattern = qr{logout|export|magic_token};
 my $must_match = qr{(/cgi-bin/|^\?).*mt\.cgi};
 my $warning_pattern = qr{Uninitialized};
-my $good_pattern = qr{Copyright .* 2001-2006 Six Apart\. All Rights Reserved\.};
+my $good_pattern = qr{Copyright .* 2001-2007 Six Apart\. All Rights Reserved\.};
 my $bad_pattern = qr{<input\s+type="submit"\s+value="Log In" />|time\s+to\s+upgrade!}i;
 
 my $verbose = 0;

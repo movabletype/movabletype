@@ -1,7 +1,12 @@
+# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# $Id$
+
 package MT::Bootstrap;
 
 use strict;
-use MT;
 
 sub BEGIN {
     my ($dir, $orig_dir);
@@ -36,15 +41,35 @@ sub import {
     my $class = $param{App} || $ENV{MT_APP};
 
     if ($class) {
+        # When running under FastCGI, the initial invocation of the
+        # script has a bare environment. We can use this to test
+        # for FastCGI.
+        my $not_fast_cgi = 0;
+        $not_fast_cgi ||= exists $ENV{$_}
+            for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
+        my $fast_cgi = (!$not_fast_cgi) || $param{FastCGI};
+        require CGI::Fast if $fast_cgi;
+
         # ready to run now... run inside an eval block so we can gracefully
         # die if something bad happens
         my $app;
         eval {
+            require MT;
             eval "require $class; 1;" or die $@;
-            $app = $class->new( %param ) or die $class->errstr;
-            local $SIG{__WARN__} = sub { $app->trace($_[0]) };
-            MT->set_instance($app);
-            $app->run;
+            if ($fast_cgi) {
+                while (my $cgi = new CGI::Fast) {
+                    $app = $class->new( %param, CGIObject => $cgi )
+                        or die $class->errstr;
+                    local $SIG{__WARN__} = sub { $app->trace($_[0]) };
+                    MT->set_instance($app);
+                    $app->init_request(CGIObject => $cgi);
+                    $app->run;
+                }
+            } else {
+                $app = $class->new( %param ) or die $class->errstr;
+                local $SIG{__WARN__} = sub { $app->trace($_[0]) };
+                $app->run;
+            }
         };
         if (my $err = $@) {
             my $charset = 'utf-8';

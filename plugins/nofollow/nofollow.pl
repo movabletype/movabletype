@@ -54,7 +54,7 @@ sub template {
     </div>
     <div class="field">
     <p><input value="1" type="checkbox" name="follow_auth_links" id="follow_auth_links" <TMPL_IF NAME=FOLLOW_AUTH_LINKS>checked="checked"</TMPL_IF> />
-    <MT_TRANS phrase="Don't add nofollow to links in comments by authenticated commenters"></p>
+    <MT_TRANS phrase="Don't add nofollow to links in comments by trusted commenters"></p>
     </div> 
     </div>
 EOT
