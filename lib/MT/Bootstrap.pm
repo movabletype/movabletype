@@ -1,4 +1,4 @@
-# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
+# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.  For more information, consult your
 # Movable Type license.
 #
@@ -102,7 +102,7 @@ sub import {
                     my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
                     $host =~ s/:\d+//;
                     my $port = $ENV{SERVER_PORT};
-                    my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
+                    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
                     if ($uri =~ m/(\/mt\.(f?cgi|f?pl)(\?.*)?)$/) {
                         my $script = $1;
                         my $ext = $2;

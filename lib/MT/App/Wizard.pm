@@ -492,8 +492,9 @@ sub cgipath {
     my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
     $host =~ s/:\d+//; # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
-    my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
-    $uri =~ s/mt-wizard(\.cgi)?.*$//;
+    # REQUEST_URI for CGI-compliant servers; SCRIPT_NAME for IIS.
+    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+    $uri =~ s!/mt-wizard(\.f?cgi|\.f?pl)(\?.*)?$!/!;
 
     my $cgipath = '';
     $cgipath = $port == 443 ? 'https' : 'http';
