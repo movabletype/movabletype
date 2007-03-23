@@ -98,7 +98,7 @@
 
 <h2>¿Instalando?</h2>
 
-<p>Si acaba de empezar con Movable Type __PRODUCT_VERSION__, quizás desee consultar la sección de instalación/actualización de la <a href="__HELP_URL____PRODUCT_VERSION__/">documentación de Movable Type</a> y ver la <a rel="nofollow" href="mt-check.cgi">comprobación del sistema de Movable Type</a> para segurarse de que su sistema tiene todo lo necesario.</p>
+<p>Si acaba de empezar con Movable Type __PRODUCT_VERSION__, quizás desee consultar la sección de instalación/actualización de la <a href="__HELP_URL__/">documentación de Movable Type</a> y ver la <a rel="nofollow" href="mt-check.cgi">comprobación del sistema de Movable Type</a> para segurarse de que su sistema tiene todo lo necesario.</p>
 
 </body>
 
