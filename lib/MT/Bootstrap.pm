@@ -120,7 +120,7 @@ sub import {
                     }
                 }
                 print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
+                print $app ? $app->translate("Got an error: [_1]", $app->translate($err)) : "Got an error: $err\n";
             }
         }
     }

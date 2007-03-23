@@ -439,7 +439,7 @@ sub read_config {
     my ($param) = @_;
 
     my $cfg_file = $mt->find_config($param);
-    return $mt->trans_error("Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?") unless $cfg_file;
+    return $mt->error("Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?") unless $cfg_file;
     if ($] >= 5.006) {
         $cfg_file = File::Spec->rel2abs($cfg_file);
     }
