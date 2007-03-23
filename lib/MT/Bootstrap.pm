@@ -1,4 +1,4 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
+# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.  For more information, consult your
 # Movable Type license.
 #
@@ -94,12 +94,31 @@ sub import {
                         or die $app->errstr;
                     print "Content-Type: text/html; charset=$charset\n\n";
                     print $page;
+                    exit;
                 };
-                if (my $err = $@) {
-                    print "Content-Type: text/plain; charset=$charset\n\n";
-                    print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err";
-                }
+                $err = $@;
             } else {
+                if ($err =~ m/Missing configuration file/) {
+                    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
+                    $host =~ s/:\d+//;
+                    my $port = $ENV{SERVER_PORT};
+                    my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
+                    if ($uri =~ m/(\/mt\.(f?cgi|f?pl)(\?.*)?)$/) {
+                        my $script = $1;
+                        my $ext = $2;
+                        $uri =~ s/\Q$script\E//;
+                        $uri .= '/mt-wizard.' . $ext;
+
+                        my $cgipath = '';
+                        $cgipath = $port == 443 ? 'https' : 'http';
+                        $cgipath .= '://' . $host;
+                        $cgipath .= ($port == 443 || $port == 80) ? '' : ':' . $port;
+                        $cgipath .= $uri;
+                        print "Status: 302 Moved\n";
+                        print "Location: " . $cgipath . "\n\n";
+                        exit;
+                    }
+                }
                 print "Content-Type: text/plain; charset=$charset\n\n";
                 print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
             }
