@@ -107,7 +107,7 @@ sub import {
                         my $script = $1;
                         my $ext = $2;
 
-                        if (-f File::Spec->catfile($ENV{MT_DIR}, "mt-wizard.$ext")) {
+                        if (-f File::Spec->catfile($ENV{MT_HOME}, "mt-wizard.$ext")) {
                             $uri =~ s/\Q$script\E//;
                             $uri .= '/mt-wizard.' . $ext;
 
@@ -122,9 +122,9 @@ sub import {
                         }
                     }
                 }
+                print "Content-Type: text/plain; charset=$charset\n\n";
+                print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
             }
-            print "Content-Type: text/plain; charset=$charset\n\n";
-            print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
         }
     }
 }
