@@ -51,7 +51,7 @@ sub init {
     eval { $app->SUPER::init(@_); };
 
     use MT::ConfigMgr;
-    $app->{cfg} = MT::ConfigMgr->new unless $app->{cfg};
+    $app->{cfg} = MT::ConfigMgr->instance unless $app->{cfg};
 
     $app->{vtbl} = { };
     $app->{requires_login} = 0;
