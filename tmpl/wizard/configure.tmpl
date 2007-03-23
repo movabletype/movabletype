@@ -56,7 +56,7 @@ function db_select(sel) {
 // -->
 </script>
 
-<form method="post" action="mt-wizard.cgi" onsubmit="return validate(this)">
+<form method="post" onsubmit="return validate(this)">
 <input type="hidden" name="__mode" value="configure" />
 <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<TMPL_VAR NAME=STATIC_URI>">
 <input type="hidden" name="config" value="<TMPL_VAR NAME=CONFIG ESCAPE=HTML>" />

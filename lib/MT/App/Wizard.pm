@@ -7,6 +7,7 @@ package MT::App::Wizard;
 
 use strict;
 use MT::App;
+use MT::ConfigMgr;
 @MT::App::Wizard::ISA = qw( MT::App );
 
 my @REQ = (
@@ -47,45 +48,44 @@ my %drivers = (
 sub init {
     my $app = shift;
     my %param = @_;
-    $app->{mt_dir} = $param{Directory} if $param{Directory};
-    eval { $app->SUPER::init(@_); };
-
-    use MT::ConfigMgr;
-    $app->{cfg} = MT::ConfigMgr->instance unless $app->{cfg};
-
-    $app->{vtbl} = { };
-    $app->{requires_login} = 0;
+    $app->SUPER::init(@_);
+    $app->{mt_dir} ||= $ENV{MT_HOME} || $param{Directory};
     $app->{is_admin} = 1;
-    $app->{cgi_headers} = { };
-    if ($ENV{MOD_PERL}) {
-        require Apache::Request;
-        $app->{apache} = $param{ApacheObject} || Apache->request;
-        $app->{query} = Apache::Request->instance($app->{apache},
-            POST_MAX => $app->{cfg}->CGIMaxUpload);
-    } else {
-        require CGI;
-        $CGI::POST_MAX = $app->{cfg}->CGIMaxUpload;
-        $app->{query} = CGI->new( $app->{no_read_body} ? {} : () );
-    }
-    $app->{cookies} = $app->cookies;
-    ## Initialize the MT::Request singleton for this particular request.
-    my $mt_req = MT::Request->instance;
-    $mt_req->stash('App-Class', ref $app);
-
-    $app->add_methods(pre_start => \&pre_start);
-    $app->add_methods(start => \&start);
-    $app->add_methods(configure => \&configure);
-    $app->add_methods(configure_save => \&configure);
-    $app->add_methods(optional => \&optional);
-    $app->add_methods(optional_save => \&optional);
-    $app->add_methods(seed => \&seed);
-    $app->add_methods(complete => \&complete);
-    $app->add_methods(write_config => \&write_config);
-    $app->{default_mode} = 'pre_start';
+    $app->add_methods(
+        pre_start => \&pre_start,
+        start => \&start,
+        configure => \&configure,
+        configure_save => \&configure,
+        optional => \&optional,
+        optional_save => \&optional,
+        seed => \&seed,
+        complete => \&complete,
+        write_config => \&write_config,
+    );
     $app->{template_dir} = 'wizard';
-
     $app->{cfg}->set('StaticWebPath', $app->static_path);
     $app;
+}
+
+sub read_config {
+    my $app = shift;
+    $app->{cfg} = MT::ConfigMgr->instance unless $app->{cfg};
+    return 1;
+}
+
+# Plugins are effectively disabled during the Wizard since
+# they may attempt to access the ObjectDriver, which isn't
+# ready yet.
+sub init_plugins {
+    return 1;
+}
+
+sub init_request {
+    my $app = shift;
+    $app->{default_mode} = 'pre_start';
+    # prevents init_request from trying to process the configuration file.
+    $app->SUPER::init_request(@_);
+    $app->{requires_login} = 0;
 }
 
 sub pre_start {

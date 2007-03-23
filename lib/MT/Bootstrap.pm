@@ -106,22 +106,25 @@ sub import {
                     if ($uri =~ m/(\/mt\.(f?cgi|f?pl)(\?.*)?)$/) {
                         my $script = $1;
                         my $ext = $2;
-                        $uri =~ s/\Q$script\E//;
-                        $uri .= '/mt-wizard.' . $ext;
 
-                        my $cgipath = '';
-                        $cgipath = $port == 443 ? 'https' : 'http';
-                        $cgipath .= '://' . $host;
-                        $cgipath .= ($port == 443 || $port == 80) ? '' : ':' . $port;
-                        $cgipath .= $uri;
-                        print "Status: 302 Moved\n";
-                        print "Location: " . $cgipath . "\n\n";
-                        exit;
+                        if (-f File::Spec->catfile($ENV{MT_DIR}, "mt-wizard.$ext")) {
+                            $uri =~ s/\Q$script\E//;
+                            $uri .= '/mt-wizard.' . $ext;
+
+                            my $prot = $port == 443 ? 'https' : 'http';
+                            my $cgipath = "$prot://$host";
+                            $cgipath .= ":$port"
+                                unless $port == 443 or $port == 80;
+                            $cgipath .= $uri;
+                            print "Status: 302 Moved\n";
+                            print "Location: " . $cgipath . "\n\n";
+                            exit;
+                        }
                     }
                 }
-                print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app ? $app->translate("Got an error: [_1]", $app->translate($err)) : "Got an error: $err\n";
             }
+            print "Content-Type: text/plain; charset=$charset\n\n";
+            print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
         }
     }
 }
