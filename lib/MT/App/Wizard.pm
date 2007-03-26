@@ -249,7 +249,7 @@ sub configure {
             if ($driver ne 'DBM') {
                 $cfg->Database($param{dbname}) if $param{dbname};
                 $cfg->DBUser($param{dbuser}) if $param{dbuser};
-                $cfg->DBPassword($param{dbpass}) if $param{dbpass};
+                $cfg->DBPassword(defined $param{dbpass} ? $param{dbpass} : '');
                 $cfg->DBPort($param{dbport}) if $param{dbport};
                 $cfg->DBSocket($param{dbsocket}) if $param{dbsocket};
                 $cfg->DBHost($param{dbserver}) if $param{dbserver};
@@ -393,6 +393,34 @@ sub seed {
     $param{static_web_path} = $app->param->param('set_static_uri_to');
     $param{static_uri} = $app->param->param('set_static_uri_to');
     $param{cgi_path} = $app->cgipath;
+
+    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+    if ($ENV{MOD_PERL} || (($uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/) && ($1 ne 'cgi'))) {
+        my $new = '';
+        if ($ENV{MOD_PERL}) {
+            $param{mod_perl} = 1;
+        } else {
+            $new = '.' . $1;
+        }
+        my @scripts;
+        my $cfg = $app->config;
+        my @cfg_keys = grep { /Script$/ } keys %{ $cfg->{__settings} };
+        $param{mt_script} = $app->config->AdminScript;
+        foreach my $key (@cfg_keys) {
+            my $path = $cfg->get($key);
+            $path =~ s/\.cgi$/$new/;
+            if (-e File::Spec->catfile($app->{mt_dir}, $path)) {
+                $param{mt_script} = $path if $key eq 'AdminScript';
+                push @scripts, { name => $key, path => $path };
+            }
+        }
+        if (@scripts) {
+            $param{script_loop} = \@scripts if @scripts;
+            $param{non_cgi_suffix} = 1;
+        }
+    } else {
+        $param{mt_script} = $app->config->AdminScript;
+    }
 
     # unserialize database configuration
     if (my $dbtype = $param{dbtype}) {

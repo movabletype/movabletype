@@ -23,11 +23,11 @@
 </textarea>
 
 <p>
-<input type="submit" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=optional&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>&amp;set_static_uri_to=<TMPL_VAR NAME=STATIC_URI>'; return false" />
+<input type="submit" value="<MT_TRANS phrase="Back">" onclick="document.location.href='?__mode=optional&amp;config=<TMPL_VAR NAME=CONFIG ESCAPE=HTML>&set_static_uri_to=<TMPL_VAR NAME=STATIC_URI>'; return false" />
 <TMPL_UNLESS NAME=CONFIG_CREATED>
 <input name="retry" type="submit" value="<MT_TRANS phrase="Retry">" />
 <TMPL_ELSE>
-<input name="continue" type="submit" value="<MT_TRANS phrase="Install">" onclick="document.location.href='mt.cgi'; return false" />
+<input name="continue" type="submit" value="<MT_TRANS phrase="Install">" onclick="document.location.href='<TMPL_VAR NAME=MT_SCRIPT>'; return false" />
 </TMPL_UNLESS>
 </p>
 

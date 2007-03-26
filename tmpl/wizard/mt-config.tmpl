@@ -4,7 +4,13 @@
 ##################### REQUIRED SETTINGS ########################
 
 CGIPath        <TMPL_VAR NAME=CGI_PATH>
-StaticWebPath  <TMPL_VAR NAME=STATIC_WEB_PATH>
+StaticWebPath  <TMPL_VAR NAME=STATIC_WEB_PATH><TMPL_IF NAME=NON_CGI_SUFFIX>
+
+#================ SCRIPT NAMES =======================<TMPL_IF NAME=MOD_PERL>
+# Since you're using mod_perl, these names must map to your mod_perl
+# handlers. Adjust as necessary.
+</TMPL_IF><TMPL_LOOP NAME=SCRIPT_LOOP>
+<TMPL_VAR NAME=NAME> <TMPL_VAR NAME=PATH></TMPL_LOOP></TMPL_IF>
 
 #================ DATABASE SETTINGS ==================<TMPL_IF NAME=USE_DBMS>
 ### MySQL or PostgreSQL ###
