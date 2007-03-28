@@ -29,7 +29,7 @@ __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
         'blog_id' => 'integer not null',
-        'name' => 'string(50) not null',
+        'name' => 'string(255) not null',
         'type' => 'string(25) not null',
         'outfile' => 'string(255)',
         'text' => 'text',
