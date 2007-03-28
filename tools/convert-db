@@ -49,6 +49,7 @@ eval {
     require MT::Object;
     MT::Object->set_driver($cfg->ObjectDriver)
         or die MT::ObjectDriver->errstr;
+    MT::Object->driver->configure;
 
     use MT::Upgrade;
     my @stmts;
@@ -67,6 +68,7 @@ eval {
         print $class, "\n";
         $cfg->read_config($cfg_file_orig);
         MT::Object->set_driver($cfg->ObjectDriver);
+        MT::Object->driver->configure;
         eval "use $class";
         my $iter = $class->load_iter;
 
@@ -75,6 +77,7 @@ eval {
 
         $cfg->read_config($cfg_file_new);
         MT::Object->set_driver($cfg->ObjectDriver);
+        MT::Object->driver->configure;
         while (my $obj = $iter->()) {
             print "    ", $obj->id, "\n";
             $obj = clean_object($obj);
