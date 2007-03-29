@@ -231,6 +231,10 @@ class MTViewer extends Smarty {
             preg_match('/(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/', $ts, $matches);
             list($all, $y, $mo, $d, $h, $m, $s) = $matches;
             $so = $blog['blog_server_offset'];
+            $timelocal = mktime($h, $m, $s, $mo, $d, $y);
+            $localtime = localtime($timelocal);
+            if ($localtime[8])
+                $so += 1;
             $partial_hour_offset = 60 * abs($so - intval($so));
             $four_digit_offset = sprintf('%s%02d%02d', $so < 0 ? '-' : '+',
                                          abs($so), $partial_hour_offset);
@@ -239,14 +243,17 @@ class MTViewer extends Smarty {
         if (isset($args['format_name'])) {
             $format = $args['format_name'];
             if ($format == 'rfc822') {
-                $blog = $ctx->stash('blog');
-                if (!is_array($blog)) {
-                    $blog = $ctx->mt->db->fetch_blog($blog);
+                $tz = 'Z';
+                if (!$args['utc']) {
+                    $blog = $ctx->stash('blog');
+                    if (!is_array($blog)) {
+                        $blog = $ctx->mt->db->fetch_blog($blog);
+                    }
+                    $so = $blog['blog_server_offset'];
+                    $partial_hour_offset = 60 * abs($so - intval($so));
+                    $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
+                                  abs($so), $partial_hour_offset);
                 }
-                $so = $blog['blog_server_offset'];
-                $partial_hour_offset = 60 * abs($so - intval($so));
-                $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
-                              abs($so), $partial_hour_offset);
                 $args['format'] = '%a, %d %b %Y %H:%M:%S ' . $tz;
                 $args['language'] = 'en';
             }

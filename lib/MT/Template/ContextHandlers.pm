@@ -15,7 +15,7 @@ use MT::Util qw( start_end_day start_end_week
                  decode_xml );
 use MT::ConfigMgr;
 use MT::Request;
-use Time::Local qw( timegm );
+use Time::Local qw( timegm timelocal );
 use MT::ErrorHandler;
 use MT::Promise qw(lazy delay force);
 use MT::Category;
@@ -2292,14 +2292,7 @@ sub _hdlr_pass_tokens_else {
 sub _hdlr_sys_date {
     my $args = $_[1];
     my $t = time;
-    my @ts;
-    local $args->{utc} = $args->{utc};
-    if ($args->{utc}) {
-        @ts = gmtime $t;
-        delete $args->{utc}; # prevents it happening again in _hdlr_date
-    } else {
-        @ts = offset_time_list($t, $_[0]->stash('blog_id'));
-    }
+    my @ts = offset_time_list($t, $_[0]->stash('blog_id'));
     $args->{ts} = sprintf "%04d%02d%02d%02d%02d%02d",
         $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
     _hdlr_date($_[0], $args);
@@ -2316,9 +2309,13 @@ sub _hdlr_date {
         my $blog = $_[0]->stash('blog');
         $blog = ref $blog ? $blog : MT::Blog->load($blog, {cached_ok=>1});
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
-        my $four_digit_offset = sprintf('%.02d%.02d', int($blog->server_offset),
-                                        60 * abs($blog->server_offset
-                                                 - int($blog->server_offset)));
+        my $server_offset = $blog->server_offset;
+        if ((localtime (timelocal ($s, $m, $h, $d, $mo, $y - 1900)))[8]) {
+            $server_offset += 1;
+        }
+        my $four_digit_offset = sprintf('%.02d%.02d', int($server_offset),
+                                        60 * abs($server_offset
+                                                 - int($server_offset)));
         require MT::DateTime;
         my $tz_secs = MT::DateTime->tz_offset_as_seconds($four_digit_offset);
         my $ts_utc;
@@ -2335,12 +2332,15 @@ sub _hdlr_date {
     }
     if (my $format = $args->{format_name}) {
         if ($format eq 'rfc822') {
-            my $blog = $_[0]->stash('blog');
-            $blog = ref $blog ? $blog : MT::Blog->load($blog, {cached_ok=>1});
-            my $so = $blog->server_offset;
-            my $partial_hour_offset = 60 * abs($so - int($so));
-            my $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
-                abs($so), $partial_hour_offset);
+            my $tz = 'Z';
+            unless ($args->{utc}) {
+                my $blog = $_[0]->stash('blog');
+                $blog = ref $blog ? $blog : MT::Blog->load($blog, {cached_ok=>1});
+                my $so = $blog->server_offset;
+                my $partial_hour_offset = 60 * abs($so - int($so));
+                $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
+                    abs($so), $partial_hour_offset);
+            }
             ## RFC-822 dates must be in English.
             $args->{'format'} = '%a, %d %b %Y %H:%M:%S ' . $tz;
             $args->{language} = 'en';
