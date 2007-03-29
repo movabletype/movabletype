@@ -3495,8 +3495,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
     ## ./t/lib/Text/WikiFormat.pm
 
     ## ./t/lib/LWP/UserAgent/Local.pm
+    'The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.' => 'Les paramètres ci-dessous ont été écrits dans le fichier <tt>[_1]</tt>. Si certains de ces paramètres sont incorrects, vous pouvez cliquer sur le bouton \'Retour\' ci-dessous pour les reconfigurer.', # Translate - New (29)
 );
-
 
 1;
 
