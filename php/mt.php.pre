@@ -62,11 +62,13 @@ class MT {
             $this->blog_id = $blog_id;
         }
 
-        $lang = $this->config['DefaultLanguage'];
-        if (!preg_match('/^en/i', $lang))
-            @require_once("l10n_$lang.php");
-        else
+        $lang = substr(strtolower($this->config['DefaultLanguage']), 0, 2);
+        if (!preg_match('/^en/', $lang)) {
+            if (!@require_once("l10n_$lang.php"))
+                @require_once("l10n_en.php");
+        } else {
             @require_once("l10n_en.php");
+        }
 
         if (extension_loaded('mbstring')) {
             mb_internal_encoding($this->config['PublishCharset']);
