@@ -2309,6 +2309,7 @@ sub _hdlr_date {
         my $blog = $_[0]->stash('blog');
         $blog = ref $blog ? $blog : MT::Blog->load($blog, {cached_ok=>1});
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
+        $mo--;
         my $server_offset = $blog->server_offset;
         if ((localtime (timelocal ($s, $m, $h, $d, $mo, $y - 1900)))[8]) {
             $server_offset += 1;
@@ -2319,7 +2320,6 @@ sub _hdlr_date {
         require MT::DateTime;
         my $tz_secs = MT::DateTime->tz_offset_as_seconds($four_digit_offset);
         my $ts_utc;
-        $mo--;
         if ($] >= 5.006) { # _nocheck is only available with 5.6 and up
             $ts_utc = Time::Local::timegm_nocheck($s, $m, $h, $d, $mo, $y);
         } else {
