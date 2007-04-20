@@ -7,6 +7,7 @@ package MT::App::Wizard;
 
 use strict;
 use MT::App;
+use MT::ConfigMgr;
 @MT::App::Wizard::ISA = qw( MT::App );
 
 my @REQ = (
@@ -47,45 +48,44 @@ my %drivers = (
 sub init {
     my $app = shift;
     my %param = @_;
-    $app->{mt_dir} = $param{Directory} if $param{Directory};
-    eval { $app->SUPER::init(@_); };
-
-    use MT::ConfigMgr;
-    $app->{cfg} = MT::ConfigMgr->new unless $app->{cfg};
-
-    $app->{vtbl} = { };
-    $app->{requires_login} = 0;
+    $app->SUPER::init(@_);
+    $app->{mt_dir} ||= $ENV{MT_HOME} || $param{Directory};
     $app->{is_admin} = 1;
-    $app->{cgi_headers} = { };
-    if ($ENV{MOD_PERL}) {
-        require Apache::Request;
-        $app->{apache} = $param{ApacheObject} || Apache->request;
-        $app->{query} = Apache::Request->instance($app->{apache},
-            POST_MAX => $app->{cfg}->CGIMaxUpload);
-    } else {
-        require CGI;
-        $CGI::POST_MAX = $app->{cfg}->CGIMaxUpload;
-        $app->{query} = CGI->new( $app->{no_read_body} ? {} : () );
-    }
-    $app->{cookies} = $app->cookies;
-    ## Initialize the MT::Request singleton for this particular request.
-    my $mt_req = MT::Request->instance;
-    $mt_req->stash('App-Class', ref $app);
-
-    $app->add_methods(pre_start => \&pre_start);
-    $app->add_methods(start => \&start);
-    $app->add_methods(configure => \&configure);
-    $app->add_methods(configure_save => \&configure);
-    $app->add_methods(optional => \&optional);
-    $app->add_methods(optional_save => \&optional);
-    $app->add_methods(seed => \&seed);
-    $app->add_methods(complete => \&complete);
-    $app->add_methods(write_config => \&write_config);
-    $app->{default_mode} = 'pre_start';
+    $app->add_methods(
+        pre_start => \&pre_start,
+        start => \&start,
+        configure => \&configure,
+        configure_save => \&configure,
+        optional => \&optional,
+        optional_save => \&optional,
+        seed => \&seed,
+        complete => \&complete,
+        write_config => \&write_config,
+    );
     $app->{template_dir} = 'wizard';
-
     $app->{cfg}->set('StaticWebPath', $app->static_path);
     $app;
+}
+
+sub read_config {
+    my $app = shift;
+    $app->{cfg} = MT::ConfigMgr->instance unless $app->{cfg};
+    return 1;
+}
+
+# Plugins are effectively disabled during the Wizard since
+# they may attempt to access the ObjectDriver, which isn't
+# ready yet.
+sub init_plugins {
+    return 1;
+}
+
+sub init_request {
+    my $app = shift;
+    $app->{default_mode} = 'pre_start';
+    # prevents init_request from trying to process the configuration file.
+    $app->SUPER::init_request(@_);
+    $app->{requires_login} = 0;
 }
 
 sub pre_start {
@@ -249,7 +249,7 @@ sub configure {
             if ($driver ne 'DBM') {
                 $cfg->Database($param{dbname}) if $param{dbname};
                 $cfg->DBUser($param{dbuser}) if $param{dbuser};
-                $cfg->DBPassword($param{dbpass}) if $param{dbpass};
+                $cfg->DBPassword(defined $param{dbpass} ? $param{dbpass} : '');
                 $cfg->DBPort($param{dbport}) if $param{dbport};
                 $cfg->DBSocket($param{dbsocket}) if $param{dbsocket};
                 $cfg->DBHost($param{dbserver}) if $param{dbserver};
@@ -394,6 +394,34 @@ sub seed {
     $param{static_uri} = $app->param->param('set_static_uri_to');
     $param{cgi_path} = $app->cgipath;
 
+    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+    if ($ENV{MOD_PERL} || (($uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/) && ($1 ne 'cgi'))) {
+        my $new = '';
+        if ($ENV{MOD_PERL}) {
+            $param{mod_perl} = 1;
+        } else {
+            $new = '.' . $1;
+        }
+        my @scripts;
+        my $cfg = $app->config;
+        my @cfg_keys = grep { /Script$/ } keys %{ $cfg->{__settings} };
+        $param{mt_script} = $app->config->AdminScript;
+        foreach my $key (@cfg_keys) {
+            my $path = $cfg->get($key);
+            $path =~ s/\.cgi$/$new/;
+            if (-e File::Spec->catfile($app->{mt_dir}, $path)) {
+                $param{mt_script} = $path if $key eq 'AdminScript';
+                push @scripts, { name => $key, path => $path };
+            }
+        }
+        if (@scripts) {
+            $param{script_loop} = \@scripts if @scripts;
+            $param{non_cgi_suffix} = 1;
+        }
+    } else {
+        $param{mt_script} = $app->config->AdminScript;
+    }
+
     # unserialize database configuration
     if (my $dbtype = $param{dbtype}) {
         if ($dbtype eq 'bdb') {
@@ -492,8 +520,9 @@ sub cgipath {
     my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
     $host =~ s/:\d+//; # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
-    my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
-    $uri =~ s/mt-wizard(\.cgi)?.*$//;
+    # REQUEST_URI for CGI-compliant servers; SCRIPT_NAME for IIS.
+    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+    $uri =~ s!/mt-wizard(\.f?cgi|\.f?pl)(\?.*)?$!/!;
 
     my $cgipath = '';
     $cgipath = $port == 443 ? 'https' : 'http';

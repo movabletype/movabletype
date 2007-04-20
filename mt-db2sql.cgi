@@ -45,6 +45,7 @@ eval {
     my($type) = $cfg->ObjectDriver =~ /^DBI::(.*)$/;
     MT::Object->set_driver('DBI::' . $type)
         or die MT::ObjectDriver->errstr;
+    MT::Object->driver->configure;
     my $dbh = MT::Object->driver->{dbh};
 
     my @stmts;
@@ -81,6 +82,7 @@ eval {
         my %cat_parent;
 
         MT::Object->set_driver('DBI::' . $type);
+        MT::Object->driver->configure;
         while (my $obj = $iter->()) {
             print "    ", $obj->id, "\n";
             # Update IDs only auto_increment.

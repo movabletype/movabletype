@@ -94,12 +94,34 @@ sub import {
                         or die $app->errstr;
                     print "Content-Type: text/html; charset=$charset\n\n";
                     print $page;
+                    exit;
                 };
-                if (my $err = $@) {
-                    print "Content-Type: text/plain; charset=$charset\n\n";
-                    print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err";
-                }
+                $err = $@;
             } else {
+                if ($err =~ m/Missing configuration file/) {
+                    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
+                    $host =~ s/:\d+//;
+                    my $port = $ENV{SERVER_PORT};
+                    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+                    if ($uri =~ m/(\/mt\.(f?cgi|f?pl)(\?.*)?)$/) {
+                        my $script = $1;
+                        my $ext = $2;
+
+                        if (-f File::Spec->catfile($ENV{MT_HOME}, "mt-wizard.$ext")) {
+                            $uri =~ s/\Q$script\E//;
+                            $uri .= '/mt-wizard.' . $ext;
+
+                            my $prot = $port == 443 ? 'https' : 'http';
+                            my $cgipath = "$prot://$host";
+                            $cgipath .= ":$port"
+                                unless $port == 443 or $port == 80;
+                            $cgipath .= $uri;
+                            print "Status: 302 Moved\n";
+                            print "Location: " . $cgipath . "\n\n";
+                            exit;
+                        }
+                    }
+                }
                 print "Content-Type: text/plain; charset=$charset\n\n";
                 print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
             }

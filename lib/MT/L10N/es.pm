@@ -3497,6 +3497,7 @@ Si esta operación no es correcta, puede desbloquear la dirección IP y permitir
     ## ./t/lib/Text/WikiFormat.pm
 
     ## ./t/lib/LWP/UserAgent/Local.pm
+    'The settings below have been written to the file <tt>[_1]</tt>. If any of these settings are incorrect, you may click the \'Back\' button below to reconfigure them.' => 'Estas opciones de abajo se escribieron en el fichero <tt>[_1]</tt>. Si cualquiera fuera incorrecta, puede hacer clic en el botón \'Regresar\' para reconfigurarlas.',
 );
 
 

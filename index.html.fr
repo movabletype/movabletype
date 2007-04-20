@@ -98,7 +98,7 @@
 
 <h2>Installation?</h2>
 
-<p>Si vous découvrez Movable Type __PRODUCT_VERSION__, vous apprécierez certainement de trouver des conseils utiles dans le chapitre "Instllation" dans notre <a href="__HELP_URL____PRODUCT_VERSION__/">documentation Movable Type</a>. Vous pouvez aussi visiter la Page <a rel="nofollow" href="mt-check.cgi">"Vérification Système"</a> pour vérifier que votre système comporte tous les éléments nécessaires à l'installation de Movable Type.</p>
+<p>Si vous découvrez Movable Type __PRODUCT_VERSION__, vous apprécierez certainement de trouver des conseils utiles dans le chapitre "Instllation" dans notre <a href="__HELP_URL__/">documentation Movable Type</a>. Vous pouvez aussi visiter la Page <a rel="nofollow" href="mt-check.cgi">"Vérification Système"</a> pour vérifier que votre système comporte tous les éléments nécessaires à l'installation de Movable Type.</p>
 
 </body>
 
