@@ -589,6 +589,15 @@ sub core_upgrade_functions {
             priority => 3.1,
             code => \&update_widget_templates,
         },
+        'core_merge_comment_response_templates' => {
+            version_limit => 4.0023,
+            priority => 3.1,
+            updater => {
+                type => 'blog',
+                label => "Merging comment system templates...",
+                code => \&_merge_comment_response_templates_updater,
+            },
+        },
         'core_populate_default_file_template' => {
             version_limit => 4.0023,
             priority => 3.1,
@@ -607,6 +616,11 @@ sub core_upgrade_functions {
                         if !defined $_[0]->file_template && exists($default_template{$_[0]->archive_type});
                 },
             },
+        },
+        'core_remove_unused_templatemap' => {
+            version_limit => 4.0023,
+            priority => 3.0,
+            code => \&remove_unused_templatemap,
         },
     }
 }
@@ -1404,12 +1418,17 @@ sub rename_php_plugin_filenames {
     $server_path =~ s/\/*$//;
     my $plugin_path = File::Spec->canonpath("$server_path/php/plugins");
 
-    $self->progress($self->translate_escape('Renaming php plugin file names...'));
+    # If PHP plugins directory doesn't exist, return without failing
+    return 0 if !-d $plugin_path;
+
     opendir(DIR, $plugin_path)
-        or return $self->error($self->translate_escape("Error opening directory: [_1].", $plugin_path));
+        or return 0;
     my @files = grep { /^(?:function|block)\.(.*)\.php$/ } readdir(DIR);
     closedir(DIR);
 
+    return 0 unless @files;
+
+    $self->progress($self->translate_escape('Renaming PHP plugin file names...'));
     my @error_files = ();
     for my $file (@files) {
         my $newfile = lc $file;
@@ -1419,7 +1438,7 @@ sub rename_php_plugin_filenames {
         }
     }
     if ($#error_files >= 0) {
-        $self->progress($self->translate_escape('Error rename php files. Please check the Activity Log'));
+        $self->progress($self->translate_escape('Error renaming PHP files. Please check the Activity Log.'));
         MT->log(
             {
                 message => $self->translate_escape("Cannot rename in [_1]: [_2].", $plugin_path, join(', ', @error_files)),
@@ -1451,6 +1470,23 @@ sub update_widget_templates {
         }
     }
     1;
+}
+
+sub remove_unused_templatemap {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Removing unused template maps...'));
+
+    require MT::Blog;
+    require MT::TemplateMap;
+    my $iter = MT::Blog->load_iter();
+    while (my $blog = $iter->()) {
+        my @blog_at = map { "'$_'" } split ',', $blog->archive_type;
+        MT::TemplateMap->remove(
+            { blog_id => $blog->id, archive_type => \@blog_at },
+            { not => { archive_type => 1 } }
+        );
+    }
 }
 
 ###  Upgrade triggers
@@ -1846,6 +1882,109 @@ sub core_remove_unique_constraints {
         ]);
     }
     1;
+}
+
+sub _merge_comment_response_templates_updater {
+    my ($blog) = @_;
+    require MT::Template;
+    my $tmpl = MT::Template->load({ blog_id => $blog->id, type => 'comment_response' });
+    return if $tmpl;
+
+    my $pending_tmpl = MT::Template->load({ blog_id => $blog->id, type => 'comment_pending' });
+    my $error_tmpl = MT::Template->load({ blog_id => $blog->id, type => 'comment_error' });
+    my $confirm_template = <<'EOT';
+<MTSetVarBlock name="page_title"><__trans phrase="Comment Posted"></MTSetVarBlock>
+
+<MTSetVar name="heading" value="<__trans phrase="Confirmation...">">
+
+<MTSetVarBlock name="message">
+<p><__trans phrase="Your comment has been posted!"></p>
+</MTSetVarBlock>
+
+<$MTInclude module="<__trans phrase="Header">"$>
+
+<h1><$MTGetVar name="heading"$></h1>
+
+<$MTGetVar name="message"$>
+
+<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
+
+<$MTInclude module="<__trans phrase="Footer">"$>
+EOT
+    my ($pending_template, $error_template);
+    if ($pending_tmpl) {
+        $pending_template = $pending_tmpl->text;
+    } else {
+        $pending_template = <<'EOT';
+<MTSetVarBlock name="page_title"><__trans phrase="Comment Pending"></MTSetVarBlock>
+
+<MTSetVar name="heading" value="<__trans phrase="Thank you for commenting.">">
+
+<MTSetVarBlock name="message">
+<h1><__trans phrase="Thank you for commenting."></h1>
+<p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>
+</MTSetVarBlock>
+
+<$MTInclude module="<__trans phrase="Header">"$>
+
+<h1><$MTGetVar name="heading"$></h1>
+
+<$MTGetVar name="message"$>
+
+<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
+
+<$MTInclude module="<__trans phrase="Footer">"$>
+EOT
+    }
+    if ($error_tmpl) {
+        $error_template = $error_tmpl->text;
+    } else {
+        $error_template = <<'EOT';
+<MTSetVarBlock name="page_title"><__trans phrase="Comment Submission Error"></MTSetVarBlock>
+
+<MTSetVar name="heading" value="$page_title">
+
+<MTSetVarBlock name="message">
+<p><__trans phrase="Your comment submission failed for the following reasons:"></p>
+<blockquote>
+    <$MTErrorMessage$>
+</blockquote>
+</MTSetVarBlock>
+
+<$MTInclude module="<__trans phrase="Header">"$>
+
+<h1><$MTGetVar name="heading"$></h1>
+
+<$MTGetVar name="message"$>
+
+<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
+
+<$MTInclude module="<__trans phrase="Footer">"$>
+EOT
+    }
+
+    $tmpl = new MT::Template;
+    $tmpl->blog_id($blog->id);
+    $tmpl->type('comment_response');
+    $tmpl->name(MT->translate("Comment Response"));
+    $tmpl->text(<<"EOT");
+<MTSetVar name="page_layout" value="layout-one-column">
+<MTSetVar name="system_template" value="1">
+<MTSetVar name="feedback_template" value="1">
+
+<MTIf name="body_class" eq="mt-comment-pending">
+$pending_template
+</MTIf>
+
+<MTIf name="body_class" eq="mt-comment-error">
+$error_template
+</MTIf>
+
+<MTIf name="body_class" eq="mt-comment-confirmation">
+$confirm_template
+</MTIf>
+EOT
+    $tmpl->save;
 }
 
 sub core_create_config_table {

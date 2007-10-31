@@ -600,7 +600,15 @@ RSS
             limit     => $lastn
         );
     }
-    my $iter = MT::TBPing->load_iter( { tb_id => $tb->id }, \%arg );
+    $arg{not} = { junk_status => 1 };
+    my $iter = MT::TBPing->load_iter(
+      {
+        tb_id       => $tb->id,
+        junk_status => -1,
+        visible     => 1
+      },
+      \%arg
+    );
     while ( my $ping = $iter->() ) {
         $rss .= sprintf qq(<item>\n<title>%s</title>\n<link>%s</link>\n),
           encode_xml( $ping->title ), encode_xml( $ping->source_url );

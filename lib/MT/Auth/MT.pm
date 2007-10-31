@@ -20,7 +20,7 @@ sub sanity_check {
         return $app->translate('Passwords do not match.');
     } else {
         if ($q->param('pass') && $id) {
-            my $author = MT::Author->load($id, {cached_ok=>1});
+            my $author = MT::Author->load($id);
             if (!$auth->is_valid_password($author, $q->param('old_pass'))) {
                 return $app->translate('Failed to verify current password.');
             }

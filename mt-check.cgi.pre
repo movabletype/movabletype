@@ -354,6 +354,7 @@ my @OPT = (
     [ 'XML::SAX', 0, 0, translate('XML::SAX and/or its dependencies is required in order to restore.')],
 
     [ 'Digest::SHA1', 0, 0, translate('Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.')],
+    [ 'Mail::Sendmail', 0, 0, translate('Mail::Sendmail is required for sending mail via SMTP Server.')],
 );
 
 use Cwd;
@@ -417,8 +418,8 @@ INFO
 my $TMP = "test$$.tmp";
 local *FH;
 if (open(FH, ">$TMP")) {
-    print trans_templ("    <li><MT_TRANS phrase=\"(Probably) Running under cgiwrap or suexec\"></li>\n");
     unlink($TMP);
+    print trans_templ("    <li><MT_TRANS phrase=\"(Probably) Running under cgiwrap or suexec\"></li>\n");
 }
 
 print "\n\n</ul>\n";

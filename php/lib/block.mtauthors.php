@@ -15,6 +15,7 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
         } else {
             $args['sort_by'] = 'author_created_on';
         }
+        $args['need_entry'] = 1;
         $authors = $ctx->mt->db->fetch_authors($args);
         $ctx->stash('authors', $authors);
         $counter = 0;

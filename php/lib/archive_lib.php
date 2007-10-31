@@ -41,6 +41,7 @@ class BaseArchiver {
     function archive_prev_next($args, $content, &$ctx, &$repeat, $tag) { }
     function prepare_list(&$ctx, &$row) { }
     function setup_args($ctx, &$args) { }
+    function template_params(&$ctx) { }
 }
 
 class IndividualArchiver extends BaseArchiver {
@@ -85,6 +86,15 @@ class IndividualArchiver extends BaseArchiver {
         $entry = $ctx->mt->db->fetch_entry($entry_id);
         $ctx->stash('entry', $entry);
         $ctx->stash('entries', array());
+    }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['main_template'] = 1;
+        $vars['archive_template'] = 1;
+        $vars['entry_template'] = 1;
+        $vars['feedback_template'] = 1;
+        $vars['archive_class'] = 'entry-archive';
     }
 }
 
@@ -250,6 +260,15 @@ class YearlyArchiver extends DateBasedArchiver {
     function get_archive_link_sql($ctx, $ts, $at, $args) {
         return '';
     }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_yearly_archive'] = 1;
+        $vars['archive_class'] = 'datebased-yearly-archive';
+    }
 }
 
 class MonthlyArchiver extends DateBasedArchiver {
@@ -288,6 +307,15 @@ class MonthlyArchiver extends DateBasedArchiver {
     function get_archive_link_sql($ctx, $ts, $at, $args) {
         return '';
     }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_monthly_archive'] = 1;
+        $vars['archive_class'] = 'datebased-monthly-archive';
+    }
 }
 
 class DailyArchiver extends DateBasedArchiver {
@@ -325,6 +353,15 @@ class DailyArchiver extends DateBasedArchiver {
     
     function get_archive_link_sql($ctx, $ts, $at, $args) {
         return '';
+    }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_daily_archive'] = 1;
+        $vars['archive_class'] = 'datebased-daily-archive';
     }
 }
 
@@ -368,6 +405,15 @@ class WeeklyArchiver extends DateBasedArchiver {
     
     function get_archive_link_sql($ctx, $ts, $at, $args) {
         return '';
+    }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_weekly_archive'] = 1;
+        $vars['archive_class'] = 'datebased-weekly-archive';
     }
 }
 ?>

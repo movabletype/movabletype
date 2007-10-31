@@ -31,6 +31,7 @@ sub _populate_obj_to_backup {
         next if $key =~ /\w+\.\w+/; # skip subclasses
         my $class = MT->model($key);
         next unless $class;
+        next if $class eq $key; # FIXME: to remove plugin object_classes
         next if exists $skip->{$class};
         next if exists $later->{$class};
         next if exists $populated{$class};
@@ -118,6 +119,10 @@ sub backup {
         {
             MT->model('config') => 1, 
             MT->model('session') => 1,
+            MT->model('schwartz_job') => 1,
+            MT->model('schwartz_error') => 1,
+            MT->model('schwartz_exitstatus') => 1,
+            MT->model('schwartz_funcmap') => 1,
         },
         {
             MT->model('placement') => 1, 
@@ -138,7 +143,7 @@ sub backup {
     _loop_through_objects(
         $printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files);
 
-    my $else_xml = MT->run_callbacks('Backup', $blog_ids);
+    my $else_xml = MT->run_callbacks('Backup', $blog_ids, $progress);
     $printer->($else_xml) if $else_xml ne '1';
 
     $printer->('</movabletype>');
@@ -159,7 +164,7 @@ sub _loop_through_objects {
             eval "require $child_class;";
         }
         if (my $err = $@) {
-            $printer->("$err\n");
+            $progress->("$err\n", 'Error');
             next;
         }
         my $records = 0;
@@ -171,7 +176,13 @@ sub _loop_through_objects {
         while (1) {
             $args->{offset} = $offset;
             $args->{limit} = 50;
-            my @objects = $class->load($terms, $args);
+            my @objects;
+            eval {
+                @objects = $class->load($terms, $args);
+            };
+            if (my $err = $@) {
+                $progress->("$class:$err\n", 'Error');
+            }
             last unless @objects;
             $offset += scalar @objects;
             for my $object (@objects) {
@@ -896,6 +907,13 @@ sub parents {
 
 package MT::ObjectScore;
 
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    return { terms => undef, args => undef };
+}
+
 sub parents {
     my $obj = shift;
     {
@@ -964,17 +982,19 @@ Callbacks called by the package are as follows:
     
 Calling convention is:
 
-    callback($cb, $blog_ids)
+    callback($cb, $blog_ids, $progress)
 
 The callback is used for MT::Object-derived types used by plugins
 to be backup.  The callback must return the object's XML representation
 in a string, or 1 for nothing.  $blog_ids has an ARRAY reference to
 blog_ids which indicates what weblog a user chose to backup.  It may
-be an empty array if a user chose Everything.
+be an empty array if a user chose Everything.  $progress is a CODEREF
+used to report progress to the user.
 
 If a plugin has an MT::Object derived type, the plugin will register 
 a callback to Backup callback, and Backup process will call the callbacks
 to give plugins a chance to add their own data to the backup file.
+Otherwise, plugin's object classes is likely be ignored in backup operation.
 
 =item Restore
 

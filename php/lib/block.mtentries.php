@@ -39,7 +39,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
             $args['entry_id'] = $args['id'];
         }
         if (isset($archiver)) {
-            $args['lastn'] or $args['lastn'] = -1;
+            ($args['limit'] || $args['lastn']) or $args['lastn'] = -1;
             $ts = $ctx->stash('current_timestamp');
             $tse = $ctx->stash('current_timestamp_end');
             if ($ts && $tse) {

@@ -18,7 +18,7 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
 <mt:unless name="template_type" eq="system">
-    <input class="deleteButton" type="button" name="delete" value="<MT_TRANS phrase="Delete">" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="template">', '<__trans phrase="templates">')" />
+    <input class="deleteButton" type="button" name="delete" value="<MT_TRANS phrase="Delete">" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="template">', '<__trans phrase="templates">')" accesskey="x" title="<__trans phrase="Delete selected templates (x)">" />
 </mt:unless>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">

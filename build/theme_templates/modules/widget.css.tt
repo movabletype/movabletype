@@ -1,0 +1,50 @@
+[% IF theme.widget.template %]
+    [% templatename = "widget/" _ theme.widget.template _ ".css.tt" %]
+[%+ INCLUDE $templatename %]
+[% ELSE %]
+[%+ INCLUDE widget/basic.css.tt %]
+[% END %]
+
+.widget-header,
+.widget-content {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.widget-header {
+    font-size: 14px;
+}
+
+.widget-header a {
+    text-decoration: none;
+}
+
+.widget-header a:hover {
+    text-decoration: underline;
+}
+
+.widget-content {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 11px;
+}
+
+
+/* "Powered By" Module */
+
+.widget-powered .widget-content {
+    padding: 10px;
+    text-align: center;
+}
+
+.widget-powered .widget-content,
+.widget-powered .widget-content a {
+    color: [% theme.default.color || "#333" %];
+}
+
+
+/* Calendar Module */
+
+.widget-calendar .widget-content table {
+    font-size: 10px;
+}

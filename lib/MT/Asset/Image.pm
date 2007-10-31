@@ -253,7 +253,7 @@ sub insert_options {
         for qw(percent pixels);
     $param->{thumb_width} = $blog->image_default_width || $asset->image_width || 0;
 
-    return $app->build_page('dialog/asset_image_options.tmpl', $param);
+    return $app->build_page('dialog/asset_options_image.tmpl', $param);
 }
 
 sub on_upload {

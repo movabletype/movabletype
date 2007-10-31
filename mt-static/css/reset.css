@@ -42,6 +42,7 @@ q:before,q:after {
 }
 a {
     text-decoration: underline;
+    outline: none;
 }
 hr {
     border: 0;

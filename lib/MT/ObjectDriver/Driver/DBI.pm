@@ -11,7 +11,9 @@ use base qw( Data::ObjectDriver::Driver::DBI );
 
 sub init {
     my $driver = shift;
-    $driver->SUPER::init(@_);
+    my (%param) = @_;
+    $param{prefix} ||= 'mt_';
+    $driver->SUPER::init(%param);
     my $opts = $driver->connect_options || {};
     $opts->{RaiseError} = 0;
     $driver->connect_options($opts);
@@ -27,10 +29,6 @@ sub table_exists {
     my $driver = shift;
     my ($class) = @_;
     return $driver->dbd->ddl_class->table_exists($class);
-}
-
-sub prefix {
-    return "mt_";
 }
 
 # Be mindful of SQLite when you modify the method.

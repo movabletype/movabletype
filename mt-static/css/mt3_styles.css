@@ -3677,12 +3677,12 @@ body#mt-wizard #topnav-img {
 }
 */
 
-.upload_restore_files {
+/*.upload_restore_files {
     font-size: 11px;
     color: #BDA239;
     font-weight: bold;
 }
-
+*/
 /*.dialog .panel-commands {
     text-align: right;
     margin: 10px 0px 0px 0px;
@@ -3840,19 +3840,19 @@ body#mt-wizard #topnav-img {
     z-index: 20;
 }
 */
-.pager {
+/*.pager {
     margin-top: 10px;
     font-size: 11px;
     color: #999;
     font-weight: bold;
     text-align: right;
 }
-
-.pager .current-page {
+*/
+/*.pager .current-page {
     color: #333;
 }
-
-table td .link { float: right; vertical-align: text-top; margin-right:12px; } /* list_assets.tmpl & listing_panel.tmpl */
+*/
+table td .link { float: right; vertical-align: text-top; margin-right:12px; } /* asset_list.tmpl & listing_panel.tmpl */
 table td .link img { background-image: url(../images/status_icons/view.gif); }
 table tr.selected .link img { background-image: url(../images/status_icons/invert-view.gif); }
 table td .float_desc { float: left; }

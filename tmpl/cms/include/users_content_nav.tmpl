@@ -61,14 +61,16 @@
     <li>&laquo;<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_roles"><__trans phrase="List Roles"></a></li>
 </mt:if>
 
-<mt:if name="group_support">
 <mt:if name="USERGROUP_VIEW">
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><__trans phrase="Users"></a></li>
+<mt:if name="group_support">
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Groups"></a></li>
+</mt:if>
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><__trans phrase="Roles"></a></li>
     <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Permissions"></a></li>
 </mt:if>
 
+<mt:if name="group_support">
 <mt:if name="list_group">
     <mt:if name="EDIT_AUTHOR_ID">
         <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="Profile"></a></li>

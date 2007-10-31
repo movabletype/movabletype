@@ -1,7 +1,7 @@
 # Copyright 2005-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id: BackupRestoreSample.pl 951 2006-12-19 11:42:50Z fumiakiy $
+# $Id$
 
 package MT::Plugin::BackupRestoreSample;
 
@@ -31,7 +31,7 @@ MT->add_callback('Backup', 9, $plugin, \&backup);
 MT->add_callback("Restore.backup_restore_sample_object:$ns", 9, $plugin, \&restore);
 
 sub backup {
-    my ($cb, $blog_ids) = @_;
+    my ($cb, $blog_ids, $progress) = @_;
     my $xml;
     my $terms = {};
     $terms->{blog_id} = $blog_ids if defined($blog_ids) && (0 < scalar(@$blog_ids));
@@ -39,16 +39,21 @@ sub backup {
     for my $object (@objects) {
         $xml .= $object->to_xml($ns);
     }
+    $progress->('BackupRestoreSampleObject is backed up.', 'BackupRestoreSample::Object');
     return $xml;
 }
 
 sub restore {
-    my ($cb, $data, $objects, $deferred, $printer) = @_;
+    my ($cb, $data, $objects, $deferred, $progress) = @_;
     return 0 if $ns ne $data->{NamespaceURI};
     
     my $attrs = $data->{Attributes};
-    my %column_data = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} } keys(%$attrs);
+    my %column_data = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
+        grep { $attrs->{$_}->{Value} ne $ns } keys(%$attrs);
     my $obj = BackupRestoreSample::Object->new;
     $obj->set_values(\%column_data); 
+    $progress->('BackupRestoreSampleObject is restored.', 'BackupRestoreSample::Object');
     return $obj;
 }
+
+1;

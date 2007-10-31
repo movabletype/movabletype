@@ -1,0 +1,323 @@
+/* Vox Theme for Movable Type ============================================= */
+
+/* Default ---------------------------------------------------------------- */
+
+/* Global */
+
+body {
+    font: normal 13px arial, helvetica, hirakakupro-w3, osaka, "ms pgothic", sans-serif;
+}
+
+
+/* Header */
+
+#header {
+    border-top-width: 10px;
+    border-top-style: solid;
+}
+
+#header-name {
+    margin: 0 0 5px;
+    line-height: 1;
+}
+
+#header-description {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.125;
+}
+
+#header a {
+    text-decoration: none;
+}
+
+#header a:hover {
+    text-decoration: underline;
+}
+
+
+/* Content */
+
+.asset-name {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.asset-name a {
+    text-decoration: none;
+}
+
+.asset-name a:hover {
+    text-decoration: underline;
+}
+
+.asset-content {
+    margin: 5px 0;
+}
+
+.asset-more-link {
+    font-weight: bold;
+}
+
+.asset-footer {
+    margin-top: 10px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    padding-top: 5px;
+    font-weight: normal;
+}
+
+.asset-footer a,
+.comment-footer a {
+    font-weight: normal;
+}
+
+.content-nav {
+    margin: 5px 0 10px;
+}
+
+.archive-title {
+    margin: 5px 0 30px;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.trackbacks-info,
+.trackback-content,
+.comment-content,
+.comments-open-content,
+.comments-closed {
+    margin: 5px 0;
+}
+
+.module-header,
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    margin: 0;
+    padding: 5px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+/* Utility */
+
+.module-header,
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    /* ie win (5, 5.5, 6) bugfix */
+    p\osition: relative;
+    width: 100%;
+    w\idth: auto;
+}
+
+.asset-more-link,
+.asset-footer,
+.comment-footer,
+.trackback-footer,
+.typelist-thumbnailed {
+    font-size: 11px;
+}
+
+
+/* Global ----------------------------------------------------------------- */
+
+body {
+    color: #333;  
+    font-family: trebuchet ms;   
+    background-color: #fff; 
+}
+
+a {
+    color: #8252a4; 
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+
+/* Layout ----------------------------------------------------------------- */
+
+#container-inner,
+#content {
+    background-color: #fff;
+}
+
+#content { 
+    margin-top: 20px;  
+    margin-bottom: 30px;  
+}
+
+#container {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.layout-wtt #container,
+.layout-twt #container,
+.layout-wt #container,
+.layout-tw #container {
+    width: 100%;
+}
+
+#header-inner,
+#content-inner,
+#footer-inner {
+    position: relative;
+    width: 940px;
+    margin: 0 auto;
+}
+
+
+/* Header ----------------------------------------------------------------- */
+
+#header { 
+    border-color: #975fbe;  
+    background: #dbacfa url(header.png) repeat-x bottom right; 
+    padding: 30px 0 40px 20px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#header a {
+    color: #fff;
+    font-weight: bold;
+}
+
+#header-name {
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #fff; 
+    font-size: 34px;
+    font-weight: bold;
+}
+
+#header-description {
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #fff; 
+}
+
+
+/* Content ---------------------------------------------------------------- */
+
+.asset-name,
+.asset-name a,
+.archive-title {
+    color: #8654a9;
+}
+
+.asset-footer,
+.asset-footer a,
+.comment-footer,
+.comment-footer a,
+.trackback-footer {
+    color: #999;
+}
+
+.asset-footer {
+    border-top-color: #f2e0ff;
+}
+
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    color: #a480bd;
+}
+
+ .asset-name a {
+    display: block;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #e5d8ee;
+    padding-bottom: .3em;
+    text-decoration: none;
+}
+
+.asset-name a:hover {
+    text-decoration: underline;
+}
+
+.archive-list-item {
+    margin-bottom: 5px;
+}
+
+
+/* Widget ----------------------------------------------------------------- */
+
+.widget-header { 
+    border-width: 0 0 1px;
+    border-style: solid;
+    border-color: #e5d8ee; 
+    padding: 0;
+    font-size: 14px; 
+    font-family: trebuchet ms; 
+    margin-bottom: 8px;
+    padding-bottom: .3em; 
+}
+
+.widget-header,
+.widget-header a {
+    color: #a480bd;
+    font-weight: normal;
+}
+
+.widget-content a {
+    color: #999;
+}
+
+.widget-powered .widget-content {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #f2e0ff;
+    background-color: #faf2ff;
+} 
+
+.widget-header,
+.widget-content {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.widget-header {
+    font-size: 14px;
+}
+
+.widget-header a {
+    text-decoration: none;
+}
+
+.widget-header a:hover {
+    text-decoration: underline;
+}
+
+.widget-content {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 11px;
+}
+
+
+/* "Powered By" Module */
+
+.widget-powered .widget-content {
+    padding: 10px;
+    text-align: center;
+}
+
+.widget-powered .widget-content,
+.widget-powered .widget-content a {
+    color: #333;
+}
+
+
+/* Calendar Module */
+
+.widget-calendar .widget-content table {
+    font-size: 10px;
+}

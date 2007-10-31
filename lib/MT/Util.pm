@@ -217,7 +217,7 @@ sub relative_date {
             return $result;
         }
     }
-    return $fmt ? format_ts($fmt, $ts) : "";
+    return $fmt ? format_ts($fmt, $ts, $blog) : "";
 }
 
 use vars qw( %Languages );
@@ -284,6 +284,8 @@ sub format_ts {
     ## I'll just hardcode this, for Japanese dates.
     if ($lang eq 'ja') {
         $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
+        $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
+        $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
     }
     $format =~ s!%(\w)!$f{$1}!g if defined $format;
     $format;
@@ -1317,10 +1319,11 @@ sub mark_odd_rows {
               '&#22303;&#26332;&#26085;'],
             [ qw( 1 2 3 4 5 6 7 8 9 10 11 12 ) ],
             [ qw( AM PM ) ],
-            "%Y&#24180;%m&#26376;%d&#26085; %H:%M",
-            "%Y&#24180;%m&#26376;%d&#26085;",
+            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
+            "%Y&#24180;%b&#26376;%e&#26085;",
             "%H:%M",
-            "%Y&#24180;%m&#26376;",
+            "%Y&#24180;%b&#26376;",
+            "%b&#26376;%e&#26085;",
           ],
 
     'et' => [

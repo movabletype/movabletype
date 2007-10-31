@@ -24,9 +24,6 @@
     </mt:if>
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
-    <mt:if name="comment_approved">
-    <input name="reply" type="button" value="<__trans phrase="Reply">" accesskey="r" title="<__trans phrase="Reply to this comment (s)">" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">')" />
-    </mt:if>
     <input name="save" type="submit" value="<__trans phrase="Save Changes">" accesskey="s" title="<__trans phrase="Save this comment (s)">" />
     <input accesskey="x" type="button" onclick="doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list_comments&amp;blog_id=<mt:var name="blog_id">'})" value="<__trans phrase="Delete">" title="<__trans phrase="Delete this comment (x)">" />
     <mt:if name="is_ip_filter">
@@ -40,14 +37,17 @@
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul>
-            <mt:if name="previous_comment_id">
-                <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="previous_comment_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Previous Comment"></a></li>
-            </mt:if>
-                <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Edit Comments"></a></li>
-            <mt:if name="next_comment_id">
-                <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Next Comment"></a></li>
-            </mt:if>
-                <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View the entry this comment was left on"></a></mt:if></li>            
+        <mt:if name="previous_comment_id">
+            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="previous_comment_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Previous Comment"></a></li>
+        </mt:if>
+        <mt:if name="next_comment_id">
+            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Next Comment"></a></li>
+        </mt:if>
+            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Manage Comments"></a></li>
+            <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View entry comment was left on"></a></mt:if></li>            
+        <mt:if name="comment_approved">
+            <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Reply to this comment"></a></li>
+        </mt:if>
         </ul>
     </mtapp:widget>
     <$mtapp:PageActions$>

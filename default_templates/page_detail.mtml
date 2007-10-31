@@ -1,13 +1,15 @@
-<div class="entry" id="entry-<$MTPageID$>">
-    <h3 class="entry-header"><$MTPageTitle$></h3>
-    <div class="entry-content">
+<div id="page-<$MTPageID$>" class="page-asset asset">
+    <div class="asset-header">
+        <h1 class="asset-name"><$MTPageTitle$></h1>
+    </div>
+    <div class="asset-content">
 <MTIfNonEmpty tag="PageBody">
-        <div class="entry-body">
+        <div class="asset-body">
             <$MTPageBody$>
         </div>
 </MTIfNonEmpty>
-<MTIfNonEmpty tag="EntryMore" convert_breaks="0">
-        <div id="more" class="entry-more">
+<MTIfNonEmpty tag="PageMore" convert_breaks="0">
+        <div id="more" class="asset-more">
             <$MTPageMore$>
         </div>
 </MTIfNonEmpty>

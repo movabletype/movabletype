@@ -1,13 +1,13 @@
-<MTSetVar name="page_id" value="archive-index">
+<MTSetVar name="body_class" value="mt-archive-index">
 <MTSetVar name="main_template" value="1">
 <MTSetVar name="archive_index" value="1">
 <MTSetVar name="sidebar" value="1">
 <MTSetVar name="module_about_context" value="1">
-<MTSetVarBlock name="page_title"><MT_TRANS phrase="Archives"></MTSetVarBlock>
+<MTSetVarBlock name="page_title"><__trans phrase="Archives"></MTSetVarBlock>
 
-<$MTInclude module="<MT_TRANS phrase="Header">"$>
+<$MTInclude module="<__trans phrase="Header">"$>
 
-<h2 id="archive-title"><$MTGetVar name="page_title"$></h2>
+<h1 class="archive-title"><$MTGetVar name="page_title"$></h1>
 
 <MTIfArchiveTypeEnabled archive_type="Individual">
 <div class="archive-individual archive-date-based archive">
@@ -29,7 +29,7 @@
 <div class="archive-monthly archive-date-based archive">
     <MTArchiveList archive_type="Monthly">
         <MTArchiveListHeader>
-    <h2 class="archive-header"><MT_TRANS phrase="Monthly Archives"></h2>
+    <h2 class="archive-header"><__trans phrase="Monthly Archives"></h2>
     <div class="archive-content">
         <ul class="archive-list">
         </MTArchiveListHeader>
@@ -44,7 +44,7 @@
 
 <MTIfArchiveTypeEnabled archive_type="Category">
 <div class="archive-category archive">
-    <h2 class="archive-header"><MT_TRANS phrase="Categories"></h2>
+    <h2 class="archive-header"><__trans phrase="Categories"></h2>
     <div class="archive-content">
     <MTTopLevelCategories>
         <MTSubCatIsFirst>
@@ -69,7 +69,7 @@
 <div class="archive-author archive">
     <MTArchiveList archive_type="Author">
         <MTArchiveListHeader>
-    <h2 class="archive-header"><MT_TRANS phrase="Author Archives"></h2>
+    <h2 class="archive-header"><__trans phrase="Author Archives"></h2>
     <div class="archive-content">
         <ul class="archive-list">
         </MTArchiveListHeader>
@@ -86,7 +86,7 @@
 <div class="archive-category-monthly archive">
     <MTArchiveList archive_type="Category-Monthly">
         <MTArchiveListHeader>
-    <h2 class="archive-header"><!-- [<$MTArchiveType$>] [<$MTArchiveTitle$>] --> <MT_TRANS phrase="Category Monthly Archives"></h2> <!-- Todo: Archive title not printing. bugzid:48098 --> <!-- Todo: <$MTArchiveType$> should print "$Category Monthly" -->
+    <h2 class="archive-header"><__trans phrase="Category Monthly Archives"></h2>
     <div class="archive-content">
         <ul class="archive-list">
         </MTArchiveListHeader>
@@ -101,9 +101,9 @@
 
 <MTIfArchiveTypeEnabled archive_type="Author-Monthly">
 <div class="archive-author-monthly archive">
-    <MTArchiveList archive_type="Author-Monthly"> <!-- Todo: prints all rather than single author. bugzid:48202 -->
+    <MTArchiveList archive_type="Author-Monthly">
         <MTArchiveListHeader>
-    <h2 class="archive-header"><!-- [<$MTArchiveType$>]  [<$MTArchiveTitle$>] --> <MT_TRANS phrase="Author Monthly Archives"></h2> <!-- Todo: <$MTArchiveType$> should print "$Author Monthly" -->
+    <h2 class="archive-header"><__trans phrase="Author Monthly Archives"></h2>
     <div class="archive-content">
         <ul class="archive-list">
         </MTArchiveListHeader>
@@ -116,4 +116,4 @@
 </div>
 </MTIfArchiveTypeEnabled>
 
-<$MTInclude module="<MT_TRANS phrase="Footer">"$>
+<$MTInclude module="<__trans phrase="Footer">"$>

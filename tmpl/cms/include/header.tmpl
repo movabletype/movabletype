@@ -12,6 +12,9 @@
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
     <![endif]-->
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+    <![endif]-->
 <mt:if name="local_lang_id">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version" escape="url">" />
 </mt:if>
@@ -105,27 +108,27 @@
                             <li id="all-blogs"><a href="<$mt:var name="mt_url">?blog_id=&amp;<$mt:var name="return_args" escape="html"$>"><em><__trans phrase="System Overview"></em></a></li>
                             </mt:if>
                             <mt:unless name="selector_hide_chooser">
-                            <li id="select-blog"><a class="command-open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
+                            <li id="select-blog"><a mt:command="open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
                             </mt:unless>
                         </mt:unless>
                         <mt:if name="can_create_blog">
-                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog"><__trans phrase="Create a new blog"></a></li>
+                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
                         </mt:if>
                     </mt:if>
                 </mt:loop>
                 </mt:setvarblock>
                 <mt:if name="blog_selector_dropdown" like="\S">
                     <li id="blog-selector-control" class="nav-menu has-sub-nav">
-                        <a href="javascript:void(0);" id="current-blog-title"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if><span>&nbsp;</span></a>
+                        <a href="javascript:void(0);" id="current-blog-title" mt:command="open-menu"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if><span>&nbsp;</span></a>
                         <ul><mt:var name="blog_selector_dropdown"></ul>
                     </li>
                 <mt:else>
                     <li id="blog-selector-control" class="nav-menu">
-                        <a href="javascript:void(0);" id="current-blog-title"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if></a></li>
+                        <a href="javascript:void(0);" id="current-blog-title" mt:command="open-menu"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if></a></li>
                 </mt:if>
             <mt:else>
                     <li id="blog-selector-control" class="nav-menu<mt:unless name="no_submenu"> has-sub-nav</mt:unless>">
-                        <a href="javascript:void(0);" class="blog-name" id="current-blog-title"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if></a>
+                        <a href="javascript:void(0);" class="blog-name" id="current-blog-title" mt:command="open-menu"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if></a>
                 <mt:unless name="no_submenu">
                         <ul>
                 <mt:unless name="single_blog_mode">
@@ -135,7 +138,7 @@
                             <li id="select-blog"><a class="command-open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
                 </mt:unless>
                         <mt:if name="can_create_blog">
-                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog"><__trans phrase="Create a new blog"></a></li>
+                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
                         </mt:if>
                         </ul>
                 </mt:unless>

@@ -11,23 +11,9 @@ use base qw( MT::Object );
 
 use constant NODE => 'MT::Template::Node';
 
-our %TYPES = (
-    'index' => 'Index',
-    archive => 'Archive',
-    category => 'Category Archive',
-    individual => 'Individual',
-    page => 'Page',
-    comments => 'Comment Listing',
-    pings => 'Ping Listing',
-    comment_preview => 'Comment Preview',
-    comment_error => 'Comment Error',
-    comment_pending => 'Comment Pending',
-    dynamic_error => 'Dynamic Error',
-    popup_image => 'Uploaded Image',
-    search_results => 'Search Results',
-    custom => 'Module',
-    widget => 'Widget',
-);
+use constant NODE_TEXT => 1;
+use constant NODE_BLOCK => 2;
+use constant NODE_FUNCTION => 3;
 
 my $resync_to_db;
 
@@ -131,9 +117,10 @@ sub load_file {
             $file = $test_file, last if -f $test_file;
         }
     }
-    return $tmpl->trans_error("File not found: [_1]", $file) unless -e $file;
+    return $tmpl->trans_error(Carp::longmess("File not found: [_1]"), $file) unless -e $file;
     local *FH;
-    open FH, $file or return;
+    open FH, $file
+        or return $tmpl->trans_error("Error reading file '[_1]': [_2]", $file, $!);
     my $c;
     do { local $/; $c = <FH> };
     close FH;
@@ -142,9 +129,9 @@ sub load_file {
 
 sub context {
     my $tmpl = shift;
+    return $tmpl->{context} = shift if @_;
     require MT::Template::Context;
     my $ctx = $tmpl->{context} ||= MT::Template::Context->new;
-    # FIXME: Circular reference... problem?
     $ctx->stash('template', $tmpl);
     return $ctx;
 }
@@ -171,21 +158,53 @@ sub clear_params {
     %{$ctx->{__stash}{vars}} = ();
 }
 
+sub reflow {
+    my $tmpl = shift;
+    my ($tokens) = @_;
+    $tokens ||= $tmpl->tokens;
+
+    # reconstitute text of template based on tokens
+    my $str = '';
+    foreach my $token (@$tokens) {
+        if ($token->[0] eq 'TEXT') {
+            $str .= $token->[1];
+        } else {
+            my $tag = $token->[0];
+            $str .= '<mt' . $tag;
+            if (my $attrs = $token->[4]) {
+                my $attrh = $token->[1];
+                foreach my $a (@$attrs) {
+                    delete $attrh->{$a->[0]};
+                    my $v = $a->[1];
+                    $v = $v =~ m/"/ ? qq{'$v'} : qq{"$v"};
+                    $str .= ' ' . $a->[0] . '=' . $v;
+                }
+                foreach my $a (keys %$attrh) {
+                    my $v = $attrh->{$a};
+                    $v = $v =~ m/"/ ? qq{'$v'} : qq{"$v"};
+                    $str .= ' ' . $a . '=' . $v;
+                }
+            }
+            $str .= '>';
+            if ($token->[2]) {
+                # container tag
+                $str .= $tmpl->reflow( $token->[2] );
+                $str .= '</mt' . $tag . '>';
+            }
+        }
+    }
+    return $str;
+}
+
 sub build {
     my $tmpl = shift;
     my($ctx, $cond) = @_;
     $ctx ||= $tmpl->context;
 
     local $ctx->{__stash}{template} = $tmpl;
-    my $tokens;
+    my $tokens = $tmpl->tokens
+        or return;
     my $build = MT::Builder->new;
-    unless ($tokens = $tmpl->{__tokens}) {
-        my $text = $tmpl->text;
-        $tokens = $tmpl->{__tokens} = $build->compile($ctx, $text, { uncompiled => 0 }) or
-            return $tmpl->error(MT->translate(
-                "Parse error in template '[_1]': [_2]",
-                $tmpl->name, $build->errstr));
-    }
     if (my $blog_id = $tmpl->blog_id) {
         $ctx->stash('blog_id', $blog_id);
         my $blog = $ctx->stash('blog');
@@ -275,7 +294,13 @@ sub set_values_internal {
 
 sub text {
     my $tmpl = shift;
-    my $text = $tmpl->SUPER::text(@_);
+    my $text;
+    if ($tmpl->{reflow_flag}) {
+        $text = $tmpl->reflow();
+        $tmpl->{reflow_flag} = 0;
+    }
+    $text = $tmpl->SUPER::text(@_);
+
     $tmpl->{needs_db_sync} = 0;
     unless (@_) {
         if ($tmpl->linked_file) {
@@ -377,6 +402,32 @@ sub _sync_to_disk {
     1;
 }
 
+sub rescan {
+    my $tmpl = shift;
+    my ($tokens) = @_;
+    unless ($tokens) {
+        # top of tree; reset
+        $tmpl->{__ids} = {};
+        $tmpl->{__classes} = {};
+        # Use tokens if we already have them, otherwise compile
+        $tokens = $tmpl->{__tokens} || $tmpl->compile;
+    }
+    return unless $tokens;
+    foreach my $t (@$tokens) {
+        if ($t->[0] ne 'TEXT') {
+            if ($t->[1]->{id}) {
+                my $ids = $tmpl->{__ids} ||= {};
+                $ids->{lc $t->[1]->{id}} = $t;
+            }
+            elsif ($t->[1]->{class}) {
+                my $classes = $tmpl->{__classes} ||= {};
+                push @{ $classes->{lc $t->[1]->{class}} ||= [] }, $t;
+            }
+            $tmpl->rescan($t->[2]) if $t->[2];
+        }
+    }
+}
+
 sub compile {
     my $tmpl = shift;
     require MT::Builder;
@@ -385,9 +436,32 @@ sub compile {
     return $tmpl->{__tokens};
 }
 
+sub errors {
+    my $tmpl = shift;
+    $tmpl->{errors} = shift if @_;
+    $tmpl->{errors};
+}
+
 sub reset_tokens {
     my $tmpl = shift;
     $tmpl->{__tokens} = undef;
+    $tmpl->{__classes} = undef;
+    $tmpl->{__ids} = undef;
+}
+
+sub reset_ids {
+    my $tmpl = shift;
+    $tmpl->{__ids} = undef;
+}
+
+sub reset_classes {
+    my $tmpl = shift;
+    $tmpl->{__classes} = undef;
+}
+
+sub reset_markers {
+    my $tmpl = shift;
+    $tmpl->{__classes} = undef;
     $tmpl->{__ids} = undef;
 }
 
@@ -395,21 +469,28 @@ sub token_ids {
     my $tmpl = shift;
     if (@_) {
         return $tmpl->{__ids} = shift;
-    } else {
-        $tmpl->compile unless $tmpl->{__ids};
-        return $tmpl->{__ids};
     }
+    $tmpl->rescan unless $tmpl->{__ids};
+    return $tmpl->{__ids};
+}
+
+sub token_classes {
+    my $tmpl = shift;
+    if (@_) {
+        return $tmpl->{__classes} = shift;
+    }
+    $tmpl->rescan unless $tmpl->{__classes};
+    return $tmpl->{__classes};
 }
 
 sub tokens {
     my $tmpl = shift;
     if (@_) {
-        return bless( $tmpl->{__tokens} = shift ), 'MT::Template::Tokens';
-    } else {
-        my $t = $tmpl->{tokens} || $tmpl->compile;
-        return bless $t, 'MT::Template::Tokens' if $t;
-        return undef;
+        return bless $tmpl->{__tokens} = shift, 'MT::Template::Tokens';
     }
+    my $t = $tmpl->{__tokens} || $tmpl->compile;
+    return bless $t, 'MT::Template::Tokens' if $t;
+    return undef;
 }
 
 sub published_url {
@@ -453,6 +534,18 @@ sub getElementsByTagName {
     return MT::Template::Tokens::getElementsByTagName($tmpl->tokens, @_);
 }
 
+sub getElementsByClassName {
+    my $tmpl = shift;
+    my ($name) = @_;
+    my $classes = $tmpl->token_classes;
+    my $tokens = $classes->{lc $name};
+    if ($tokens && @$tokens) {
+        #@$tokens = map { bless $_, NODE } @$tokens;
+        return @$tokens;
+    }
+    return ();
+}
+
 sub getElementsByName {
     my $tmpl = shift;
     return MT::Template::Tokens::getElementsByName($tmpl->tokens, @_);
@@ -470,18 +563,34 @@ sub getElementById {
 sub createElement {
     my $tmpl = shift;
     my ($tag, $attr) = @_;
-    return bless [ $tag, $attr, undef, undef, undef ], NODE;
+    return bless [ $tag, $attr, undef, undef, undef, undef, $tmpl ], NODE;
+}
+
+sub createTextNode {
+    my $tmpl = shift;
+    my ($text) = @_;
+    return bless [ 'TEXT', $text, undef, undef, undef, undef, $tmpl ], NODE;
 }
 
 sub insertAfter {
     my $tmpl = shift;
     my ($node1, $node2) = @_;
-    my $parent_array = $node1->[5];
-    for (my $i = 0; $i < scalar @$parent_array; $i++) {
-        if ($parent_array->[$i] == $node1) {
-            splice(@$parent_array, $i + 1, 0, $node2);
-            return 1;
+    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_array = $parent_node->childNodes;
+    if ( $node2 ) {
+        for (my $i = 0; $i < scalar @$parent_array; $i++) {
+            if ($parent_array->[$i] == $node2) {
+                $node1->parentNode($parent_node);
+                splice(@$parent_array, $i + 1, 0, $node1);
+                return 1;
+            }
         }
+        return 0;
+    }
+    else {
+        $node1->parentNode($parent_node);
+        push @$parent_array, $node1;
+        return 1;
     }
     return 0;
 }
@@ -489,14 +598,43 @@ sub insertAfter {
 sub insertBefore {
     my $tmpl = shift;
     my ($node1, $node2) = @_;
-    my $parent_array = $node1->[5];
-    for (my $i = 0; $i < scalar @$parent_array; $i++) {
-        if ($parent_array->[$i] == $node1) {
-            splice(@$parent_array, $i, 0, $node2);
-            return 1;
+    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_array = $parent_node->childNodes;
+    if ( $node2 ) {
+        for (my $i = 0; $i < scalar @$parent_array; $i++) {
+            if ($parent_array->[$i] == $node2) {
+                $node1->parentNode($parent_node);
+                splice(@$parent_array, $i, 0, $node1);
+                return 1;
+            }
         }
+        return 0;
+    }
+    else {
+        $node1->parentNode($parent_node);
+        unshift @$parent_array, $node1;
+        return 1;
     }
     return 0;
+}
+
+sub childNodes {
+    my $tmpl = shift;
+    return $tmpl->tokens;
+}
+
+sub hasChildNodes {
+    my $tmpl = shift;
+    my $nodes = $tmpl->childNodes;
+    return $nodes && (@$nodes) ? 1 : 0;
+}
+
+sub appendChild {
+    my $tmpl = shift;
+    my ($new_node) = @_;
+    my $nodes = $tmpl->childNodes;
+    push @$nodes, $new_node;
+    $tmpl->{reflow_flag} = 1;
 }
 
 # Alias to perl_function_names for those that may prefer that.
@@ -510,6 +648,9 @@ sub insertBefore {
 package MT::Template::Tokens;
 
 use strict;
+use constant NODE_TEXT => 1;
+use constant NODE_BLOCK => 2;
+use constant NODE_FUNCTION => 3;
 
 sub getElementsByTagName {
     my ($tokens, $name) = @_;
@@ -547,6 +688,147 @@ package MT::Template::Node;
 
 use strict;
 
+sub setAttribute {
+    my $node = shift;
+    my ($attr, $val) = @_;
+    if ($attr eq 'id') {
+        # assign into ids
+        my $tmpl = $node->template;
+        my $ids = $tmpl->token_ids;
+        my $old_id = $node->getAttribute("id");
+        if ($old_id && $ids) {
+            delete $ids->{$old_id};
+        }
+    }
+    elsif ($attr eq 'class') {
+        # assign into classes
+        my $tmpl = $node->template;
+        my $classes = $tmpl->token_classes;
+        my $old_class = $node->getAttribute("class");
+        if ($old_class && $classes->{$old_class}) {
+            @{$classes->{$old_class}} = grep { $_ != $node }
+                @{$classes->{$old_class}};
+        }
+        push @{$classes->{$val} ||= []}, $node;
+    }
+    ($node->[1] ||= {})->{$attr} = $val;
+}
+
+sub template {
+    my $node = shift;
+    return $node->[6];
+}
+
+sub getAttribute {
+    my $node = shift;
+    my ($attr) = @_;
+    ($node->[1] || {})->{$attr};
+}
+
+# sub attributes {
+#     my $node = shift;
+#     return $node->[1] ||= {};
+# }
+
+sub nextSibling {
+    my $node = shift;
+    my $parent = $node->parentNode->childNodes;
+    my $max = (scalar @$parent) - 1;
+    return undef unless $max;
+    my $last = $parent->[0];
+    foreach my $n ($parent->[1..$max]) {
+        return $n if $node == $last;
+        $last = $n;
+    }
+    return $parent->[$max] if $node == $last;
+    return undef;
+}
+
+sub lastChild {
+    my $node = shift;
+    my $children = $node->childNodes or return undef;
+    @$children ? $children->[scalar @$children - 1] : undef;
+}
+
+sub firstChild {
+    my $node = shift;
+    my $children = $node->[2] or return undef;
+    @$children ? $children->[0] : undef;
+}
+
+sub previousSibling {
+    my $node = shift;
+    my $parent = $node->parentNode->childNodes;
+    my $last;
+    foreach my $n (@$parent) {
+        return $last if $node == $n;
+        $last = $n;
+    }
+    return undef;
+}
+
+sub parentNode {
+    my $node = shift;
+    $node->[5] = shift if @_;
+    $node->[5];
+}
+
+sub childNodes {
+    my $node = shift;
+    $node->[2] = shift if @_;
+    $node->[2];
+}
+
+sub ownerDocument { #template
+    my $node = shift;
+    return $node->template;
+}
+
+sub hasChildNodes {
+    my $node = shift;
+    $node->[2] && (@{$node->[2]}) ? 1 : 0;
+}
+
+sub nodeType {
+    my $node = shift;
+    if ($node->[0] eq 'TEXT') {
+        return NODE_TEXT();
+    } elsif (defined $node->[2]) {
+        return NODE_BLOCK();
+    } else {
+        return NODE_FUNCTION();
+    }
+}
+
+sub nodeName {
+    my $node = shift;
+    if ($node->[0] eq 'TEXT') {
+        return undef;
+    }
+    # normalize:
+    #    MTEntry => mt:entry
+    #    MTAPP:WIDGET => mtapp:widget
+    my $tag = lc $node->[0];
+    if (($tag !~ m/:/) && ($tag =~ m/^mt/)) {
+        $tag =~ s/^mt/mt:/;
+    }
+    return $tag;
+}
+
+# Returns text of a text node; inner text for a block tag, or undef
+# for a function tag.
+sub nodeValue {
+    my $node = shift;
+    if ($node->[0] eq 'TEXT') {
+        return $node->[1];
+    } else {
+        if (defined $node->[3]) {
+            return $node->[3];
+        }
+    }
+    return undef;
+}
+
 sub innerHTML {
     my $node = shift;
     if (@_) {
@@ -555,6 +837,11 @@ sub innerHTML {
         my $builder = new MT::Builder;
         my $ctx = MT::Template::Context->new;
         $node->[2] = $builder->compile($ctx, $text);
+        my $tmpl = $node->ownerDocument;
+        if ($tmpl) {
+            $tmpl->reset_markers;
+            $tmpl->{reflow_flag} = 1;
+        }
     }
     return $node->[3];
 }
@@ -563,37 +850,12 @@ sub innerHTML {
 sub appendChild {
     my $node = shift;
     my ($new_node) = @_;
-    my $nodes = $node->[2] ||= [];
-    my $str = $node->[3];
+    my $nodes = $node->childNodes;
     push @$nodes, $new_node;
-    $node->[3] = '' unless defined $node->[3];
-    $node->[3] .= $new_node->[3];
-}
-
-sub insertAfter {
-    my $node1 = shift;
-    my ($node2) = @_;
-    my $parent_array = $node1->[5];
-    for (my $i = 0; $i < scalar @$parent_array; $i++) {
-        if ($parent_array->[$i] == $node1) {
-            splice(@$parent_array, $i + 1, 0, $node2);
-            return 1;
-        }
+    my $tmpl = $node->ownerDocument;
+    if ($tmpl) {
+        $tmpl->{reflow_flag} = 1;
     }
-    return 0;
-}
-
-sub insertBefore {
-    my $node1 = shift;
-    my ($node2) = @_;
-    my $parent_array = $node1->[5];
-    for (my $i = 0; $i < scalar @$parent_array; $i++) {
-        if ($parent_array->[$i] == $node1) {
-            splice(@$parent_array, $i, 0, $node2);
-            return 1;
-        }
-    }
-    return 0;
 }
 
 sub removeChild {

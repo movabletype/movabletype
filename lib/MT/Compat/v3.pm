@@ -8,6 +8,11 @@ package MT::Compat;
 
 use strict;
 
+# These were loaded by default under MT 3.x in the main MT module.
+use MT::Entry;
+use MT::Comment;
+use MT::Blog;
+
 our %app_ids;
 our %api_map;
 BEGIN {
@@ -288,6 +293,12 @@ package MT::TaskMgr;
 package MT::App;
 
 use strict;
+
+# Short-lived templating API that is unsupported in MT 4
+sub tmpl_prepend {}
+sub tmpl_replace {}
+sub tmpl_append {}
+sub tmpl_select {}
 
 *plugin_actions = \&page_actions;
 

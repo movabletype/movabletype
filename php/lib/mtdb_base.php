@@ -1175,9 +1175,13 @@ class MTDatabaseBase extends ezsql {
         # make filters
         $filters = array();
 
-        $entend_column = '';
+        $extend_column = '';
         # Adds blog filter
-        if (isset($args['blog_id'])) {
+
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'join mt_permission on permission_author_id = author_id and permission_blog_id ' . $sql;
+            $extend_column = ', mt_permission.*';
+        } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = "join mt_permission on permission_author_id = author_id and permission_blog_id = $blog_id";
             $extend_column = ', mt_permission.*';
@@ -1197,7 +1201,11 @@ class MTDatabaseBase extends ezsql {
             $entry_filter = 'join mt_entry on author_id = entry_author_id';
             $unique_filter = 'distinct';
             array_push($filters, "entry_status = 2");
-            array_push($filters, "entry_blog_id = ".$args['blog_id']);
+            if ($blog_filter) {
+                array_push($filters, "entry_blog_id = permission_blog_id");
+            } else {
+                array_push($filters, "entry_blog_id = ".$args['blog_id']);
+            }
         }
 
         # sort

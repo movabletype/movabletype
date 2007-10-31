@@ -47,6 +47,12 @@ sub init_registry {
             dynamic_support => 1,
             date_based => 1,
             category_based => 1,
+            template_params => {
+                archive_class => "category-yearly-archive",
+                category_yearly_archive => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         ),
         'Category-Monthly' =>
         ArchiveType(
@@ -68,6 +74,14 @@ sub init_registry {
             dynamic_support => 1,
             date_based => 1,
             category_based => 1,
+            template_params => {
+                archive_class => "category-monthly-archive",
+                category_monthly_archive => 1,
+                'module_category-monthly_archives' => 1,
+                module_category_archives => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         ),
         'Category-Daily' =>
         ArchiveType(
@@ -89,6 +103,12 @@ sub init_registry {
             dynamic_support => 1,
             date_based => 1,
             category_based => 1,
+            template_params => {
+                archive_class => "category-daily-archive",
+                category_daily_archive => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         ),
         'Category-Weekly' =>
         ArchiveType(
@@ -110,6 +130,12 @@ sub init_registry {
             dynamic_support => 1,
             date_based => 1,
             category_based => 1,
+            template_params => {
+                archive_class => "category-weekly-archive",
+                category_weekly_archive => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         )
     }});
 }

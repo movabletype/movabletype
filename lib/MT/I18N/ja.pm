@@ -35,6 +35,7 @@ use constant ENCODING_NAMES => [
     { 'name' => 'euc', 'display_name' => 'EUC-JP' },
     { 'name' => 'utf8', 'display_name' => 'UTF-8' },
     { 'name' => 'ascii', 'display_name' => 'ISO-8859-1' },
+    { 'name' => 'WinLatin1', 'display_name' => 'Windows Latin1' },
 ];
 
 my $ENCODINGS_LABEL = {

@@ -84,13 +84,9 @@ BEGIN {
             },
         },
         'system' => {
-            'comment_error' => {
-                label => 'Comment Error',
-                description_label => 'Shown when a comment submission cannot be validated.',
-            },
-            'comment_pending' => {
-                label => 'Comment Pending',
-                description_label => 'Shown when a comment is moderated or reported as spam.',
+            'comment_response' => {
+                label => 'Comment Response',
+                description_label => 'Shown for a comment error, pending or confirmation message.',
             },
             'comment_preview' => {
                 label => 'Comment Preview',
@@ -140,8 +136,11 @@ BEGIN {
             'header' => {
                 label => 'Header',
             },
-            'sidebar' => {
-                label => 'Sidebar',
+            'sidebar_2col' => {
+                label => 'Sidebar - 2 Column Layout',
+            },
+            'sidebar_3col' => {
+                label => 'Sidebar - 3 Column Layout',
             },
             'trackbacks' => {
                 label => 'TrackBacks',
@@ -155,6 +154,18 @@ BEGIN {
 
 sub core_default_templates {
     return $templates;
+}
+
+sub load {
+    my $class = shift;
+    my ($terms) = @_;
+    my $tmpls = $class->templates || [];
+    if ($terms) {
+        foreach my $key (keys %$terms) {
+            @$tmpls = grep { $_->{$key} eq $terms->{$key} } @$tmpls;
+        }
+    }
+    return $tmpls;
 }
 
 sub templates {

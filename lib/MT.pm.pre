@@ -41,12 +41,6 @@ BEGIN {
     *{mt::} = *{MT::};
 }
 
-# We always load the compat module from the previous version.
-# This is our official 'deprecation' layer, and any plugin that
-# is using elements from v3 is bound to break in release 5 (or should
-# add an explicit "use MT 3.0" in their plugin code).
-use MT::Compat::v3;
-
 # On-demand loading of compatibility module, if a plugin asks for it, using
 #     use MT 3;
 # or even specific to minor version (but this just loads MT::Compat::v3)
@@ -905,6 +899,10 @@ sub on_init_tasks {
 sub init_plugins {
     my $mt = shift;
 
+    # Load compatibility module for prior version
+    # This should always be MT::Compat::v(MAJOR_RELEASE_VERSION - 1).
+    require MT::Compat::v3;
+
     require MT::Plugin;
     my $use_plugins = $mt->{cfg}->UsePlugins;
     my @PluginPaths = $mt->{cfg}->PluginPath;
@@ -949,6 +947,12 @@ sub init_plugins {
                     } else {
                         if (my $obj = $Plugins{$plugin_sig}{object}) {
                             $obj->init_callbacks();
+                        } else {
+                            # A plugin did not register itself, so
+                            # create a dummy plugin object which will
+                            # cause it to show up in the plugin listing
+                            # by it's filename.
+                            MT->add_plugin({});
                         }
                     }
                     $Plugins{$plugin_sig}{enabled} = 1;
@@ -1484,7 +1488,12 @@ sub build_email {
     for my $key (keys %$param) {
         $tmpl->param($key, $param->{$key});
     }
-    $class->translate_templatized($tmpl->output);
+    my $app = MT->instance;
+    my $old_tmpl_dir = $app->{template_dir};
+    MT->instance->{template_dir} = 'email';
+    my $body = $tmpl->output;
+    $app->{template_dir} = $old_tmpl_dir;
+    $class->translate_templatized($body);
 }
 
 sub get_next_sched_post_for_user {
@@ -1589,6 +1598,7 @@ sub core_commenter_authenticators {
 OpenID
             login_form_params => \&_commenter_auth_params,
             condition => \&_openid_commenter_condition,
+            logo => 'images/comment/signin_openid.png',
         },
         'LiveJournal' => {
             class => 'MT::Auth::LiveJournal',
@@ -1616,6 +1626,7 @@ OpenID
 LiveJournal
             login_form_params => \&_commenter_auth_params,
             condition => \&_openid_commenter_condition,
+            logo => 'images/comment/signin_livejournal.png',
         },
         'Vox' => {
             class => 'MT::Auth::Vox',
@@ -1644,6 +1655,7 @@ http://<input name="openid_userid" style="background: #fff url('<mt:var name="st
 Vox
             login_form_params => \&_commenter_auth_params,
             condition => \&_openid_commenter_condition,
+            logo => 'images/comment/signin_vox.png',
         },
         'TypeKey' => {
             class => 'MT::Auth::TypeKey',
@@ -1667,6 +1679,7 @@ TypeKey
                 $params->{tk_signin_url} = MT::Template::Context::_hdlr_remote_sign_in_link($ctx, { static => $static });
                 return $params;
             },
+            logo => 'images/comment/signin_typekey.png',
         },
     };
 }

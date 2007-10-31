@@ -439,6 +439,17 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
         arguments.callee.applySuper( this, arguments );
         this.isWebKit = navigator.userAgent.toLowerCase().match(/webkit/);
     },
+    
+    
+    eventFocusIn: function( event ) {
+       this.eventFocus( event );
+    },
+
+
+    eventFocus: function( event ) {
+        if ( this.editor.mode == "textarea" )
+            this.editor.focus();
+    },
 
 
     eventClick: function( event ) {
@@ -726,6 +737,11 @@ MT.App.CategorySelector = new Class( Transient, {
         };
         var catlist = MT.App.categoryList;
         parent = parseInt( parent );
+
+        /* single selection, and we're about to select the new folder */
+        if ( this.type == 'folder' )
+            this.list.resetSelection();
+
         if ( parent != 0 ) {
             var idx;
             for ( var i = 0; i < catlist.length; i++ )
@@ -743,8 +759,8 @@ MT.App.CategorySelector = new Class( Transient, {
             catlist.splice( idx, 0, cat );
             /* update the cache */
             app.catCache.setItem( "cat:" + cat.id, cat );
-            /* add puts the item at the bottom */
-            this.list.addItem( cat, false, "list-item hidden" );
+            /* add puts the item at the bottom, so we hide it and move it */
+            this.list.addItem( cat, true, "list-item hidden" );
             var div = this.list.getItem( cat.id );
             div.parentNode.removeChild( div );
             var parentItem = this.list.getItem( parent.id );
@@ -754,10 +770,11 @@ MT.App.CategorySelector = new Class( Transient, {
         } else {
             catlist.push( cat );
             /* update the cache */
-            app.catCache.setItem( "cat:"+cat.id, cat );
+            app.catCache.setItem( "cat:" + cat.id, cat );
             this.list.addItem( cat, true );
-            this.listItemsSelected( this.list );
         }
+        /* recheck selection */
+        this.listItemsSelected( this.list );
     },
 
 

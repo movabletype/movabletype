@@ -1,24 +1,20 @@
 <MTIfCommentsActive>
 <div id="comments" class="comments">
-
     <MTIf name="comment_preview_template">
-    <$MTInclude module="<MT_TRANS phrase="Comment Form">"$>
+    <$MTInclude module="<__trans phrase="Comment Form">"$>
     </MTIf>
-
     <MTComments>
         <MTCommentsHeader>
+    <h2 class="comments-header"><__trans phrase="[_1] Comments" params="<$MTEntryCommentCount$>"></h2>
     <div class="comments-content">
-        <h3 class="comments-header"><MT_TRANS phrase="[_1] Comments" params="<$MTEntryCommentCount$>"></h3>
         </MTCommentsHeader>
-        <$MTInclude module="<MT_TRANS phrase="Comment Detail">"$>
+        <$MTInclude module="<__trans phrase="Comment Detail">"$>
         <MTCommentsFooter>
     </div>
         </MTCommentsFooter>
     </MTComments>
-
     <MTUnless name="comment_preview_template">
-    <$MTInclude module="<MT_TRANS phrase="Comment Form">"$>
+    <$MTInclude module="<__trans phrase="Comment Form">"$>
     </MTUnless>
-
 </div>
 </MTIfCommentsActive>

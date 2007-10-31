@@ -1276,68 +1276,59 @@ Pager = new Class(Object, {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.first(e) };
-                link.innerHTML = '&lt;&lt;';
-                var nbsp = doc.createElement('span');
-                nbsp.innerHTML = '&nbsp;';
+                link.className = 'start';
+                link.innerHTML = '<em>&lt;&lt;</em>&nbsp;';
                 this.element.appendChild(link);
-                this.element.appendChild(nbsp)
             } else {
                 var txt = doc.createElement('span');
-                txt.innerHTML = '&lt;&lt;&nbsp;';
+                txt.className = 'start-disabled';
+                txt.innerHTML = '<em>&lt;&lt;</em>&nbsp;';
                 this.element.appendChild(txt);
             }
             if (this.previousOffset() != null) {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.previous(e) };
-                link.innerHTML = '&lt;&nbsp;';
+                link.className = 'to-start';
+                link.innerHTML = '<em>&lt;</em>&nbsp;';
                 this.element.appendChild(link);
             } else {
                 var txt = doc.createElement('span');
-                txt.innerHTML = '&lt;&nbsp;';
+                txt.className = 'to-start-disabled';
+                txt.innerHTML = '<em>&lt;</em>&nbsp;';
                 this.element.appendChild(txt);
             }
-            var txt = doc.createElement('span');
-            txt.innerHTML = '&nbsp;';
-            this.element.appendChild(txt);
-            var span = doc.createElement('span');
-            span.className = 'current-page';
             var showing = doc.createElement('span');
+            showing.className = 'current-rows';
             if (this.state.listTotal)
-                showing.innerHTML = trans('Showing: [_1] &ndash; [_2] of [_3]', listStart, listEnd, this.state.listTotal);
+                showing.innerHTML = trans('[_1] &ndash; [_2] of [_3]', listStart, listEnd, this.state.listTotal);
             else
-                showing.innerHTML = trans('Showing: [_1] &ndash; [_2]', listStart, listEnd);
-            span.appendChild(showing);
-            this.element.appendChild(span);
-            var nbsp = doc.createElement('span');
-            nbsp.innerHTML = '&nbsp;';
-            this.element.appendChild(nbsp);
+                showing.innerHTML = trans('[_1] &ndash; [_2]', listStart, listEnd);
+            this.element.appendChild(showing);
             if (this.nextOffset() != null) {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.next(e) };
-                link.innerHTML = '&gt;';
-                var nbsp = doc.createElement('span');
-                nbsp.innerHTML = '&nbsp;';
-                this.element.appendChild(nbsp);
+                link.className = 'to-end';
+                link.innerHTML = '&nbsp;<em>&gt;</em>';
                 this.element.appendChild(link);
             } else {
                 var txt = doc.createElement('span');
-                txt.innerHTML = '&nbsp;&gt;';
+                txt.className = 'to-end-disabled';
+                txt.innerHTML = '&nbsp;<em>&gt;</em>';
                 this.element.appendChild(txt);
             }
             if (this.lastOffset() != null) {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.last(e) };
-                link.innerHTML = '&gt;&gt;';
-                var nbsp = doc.createElement('span');
-                nbsp.innerHTML = '&nbsp;';
-                this.element.appendChild(nbsp);
+                link.className = 'end';
+                link.innerHTML = '&nbsp;<em>&gt;&gt;</em>';
                 this.element.appendChild(link);
             } else {
                 var txt = doc.createElement('span');
-                txt.innerHTML = '&nbsp;&gt;&gt;';
+                txt.className = 'end-disabled';
+                txt.innerHTML = '&nbsp;<em>&gt;&gt;</em>';
                 this.element.appendChild(txt);
             }
         } else {
@@ -2101,7 +2092,7 @@ MT.App.NavMenu = new Class( Object, {
         if ( this.outTimer )
             this.outTimer.stop();
 
-        if ( this.opened )
+        if ( this.al.getAttribute( "mt:is-opened" ) == "1" )
             return this.openMenu();
        
         var delay = event.attributeElement.getAttribute( "mt:nav-delayed-open" ); // ms
@@ -2172,7 +2163,7 @@ MT.App.NavMenu = new Class( Object, {
 
         DOM.addClassName( this.el, "show-nav" );
 
-        this.opened = true;
+        DOM.setElementAttribute( this.al, "mt:is-opened", "1" );
 
         /* actually hides select boxes, not the dropdown */
         hideDropDown();
@@ -2191,7 +2182,7 @@ MT.App.NavMenu = new Class( Object, {
         if ( this.inTimer )
             this.inTimer.stop();
 
-        this.opened = false;
+        DOM.setElementAttribute( this.al, "mt:is-opened", "0" );
 
         /* actually shows select boxes, not the dropdown */
         showDropDown();
@@ -2246,6 +2237,9 @@ MT.App.CodePress = new Class( Object, {
         this.iframe.style.visibility = 'visible';
         this.iframe.style.display = 'inline';
         this.editor.onModified = app.getIndirectMethod( "setDirty" );
+        /* match the textarea's tab index */
+        if ( this.textarea[ "tabIndex" ] )
+            this.iframe.setAttribute( "tabIndex", this.textarea[ "tabIndex" ] );
         DOM.addClassName( document.body, "codepress-editor-enabled" );
     },
 

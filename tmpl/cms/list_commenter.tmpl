@@ -34,9 +34,6 @@
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="action_buttons">
-    <input type="button" name="delete" value="<__trans phrase="Delete">" onclick="doRemoveItems(this.form, '<__trans phrase="notification address">', '<__trans phrase="notification addresses">')" accesskey="x" title="<__trans phrase="Delete selected notification addresses (x)">" />
-</mt:setvarblock>
 <mt:setvarblock name="related_content">
     <$mt:include name="include/display_options.tmpl"$>
     <$MTApp:PageActions from="list_commenter"$>

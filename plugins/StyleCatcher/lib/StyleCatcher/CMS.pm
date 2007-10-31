@@ -199,7 +199,11 @@ sub apply {
     }
 
     $url = "$webthemeroot/$basename/$basename.css";
-    my $url2 = "$webthemeroot/base-weblog.css";
+
+    my $base_theme = $app->model('template')->load(
+        { identifier => 'base_theme', blog_id => $blog_id }
+    );
+    my $url2 = $base_theme ? $base_theme->outfile : 'base_theme.css';
 
     # Replacing the theme import or adding a new one at the beginning
     my $template_text = $tmpl->text();

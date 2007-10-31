@@ -227,6 +227,14 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         $category = $ctx->mt->db->fetch_category($category_id);
         $ctx->stash('category', $category);
     }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['category_yearly_archive'] = 1;
+        $vars['archive_class'] = 'category-yearly-archive';
+    }
 }
 
 class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
@@ -313,6 +321,14 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         $category_id = $row[3];
         $category = $ctx->mt->db->fetch_category($category_id);
         $ctx->stash('category', $category);
+    }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['category_monthly_archive'] = 1;
+        $vars['archive_class'] = 'category-monthlyl-archive';
     }
 }
 
@@ -404,6 +420,14 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
         $category_id = $row[4];
         $category = $ctx->mt->db->fetch_category($category_id);
         $ctx->stash('category', $category);
+    }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['category_daily_archive'] = 1;
+        $vars['archive_class'] = 'category-daily-archive';
     }
 }
 
@@ -498,6 +522,14 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         $category_id = $row[2];
         $category = $ctx->mt->db->fetch_category($category_id);
         $ctx->stash('category', $category);
+    }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['archive_template'] = 1;
+        $vars['main_template'] = 1;
+        $vars['category_weekly_archive'] = 1;
+        $vars['archive_class'] = 'category-weekly-archive';
     }
 }
 

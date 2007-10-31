@@ -27,6 +27,14 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate('Contact');
+}
+
+sub class_label_plural {
+    MT->translate('Contacts');
+}
+
 1;
 __END__
 

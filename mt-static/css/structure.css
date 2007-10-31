@@ -234,7 +234,7 @@ iframe {
 }
 
 #system-menu a.nav-menu-link {
-    border: 1px solid #fff;
+    border: 1px solid #474747;
     border-width: 0 1px 0 0;
     padding-right: 17px;
     background: url('../images/system-nav-down.gif') no-repeat right center;
@@ -654,6 +654,7 @@ li#config-menu {
 .main-screen #content {
     background: url('../images/content-bg.jpg') repeat-x;
     padding: 18px 0;
+    min-height: 400px;
 }
 .system #content {
     background-image: url('../images/content-bg-system.jpg');
@@ -762,7 +763,7 @@ li#config-menu {
 }
 
 #content-nav ul li.active {
-    background: #e2e9f0;
+    background: #e0eaef;
 }
 .system #content-nav ul li.active {
     background: #e6e9d3;
@@ -818,7 +819,7 @@ li#config-menu {
 
 .widget-header {
     background: #fff url(../images/widget/related-content-header-bg.gif) repeat-x left bottom;
-    border: 1px solid #edf3f6;
+    border: 1px solid #e7eff3;
     border-width: 1px 0;
 }
 .widget:first-child .widget-header {
@@ -1226,36 +1227,6 @@ li#config-menu {
         margin-bottom: .75em;
     }
 
-/* Search & Replace ---------------------------------------------------------------------------------- */
-
-.search-replace .tabs {
-    height: 22px;
-    margin: 10px 0;
-    border-bottom: 1px solid #CEDCF0;
-    width: 100%;
-}
-
-.search-replace .tabs li {
-    margin-right: 1px;
-    background: #EAF2FF url(../images/tab-bg.gif) repeat-x;
-}
-
-.search-replace .tabs a {
-    font-size: 11px;
-}
-
-.search-replace .tabs a:hover {
-    color: #000;
-}
-
-.search-replace .tabs .yah {
-    background: #CEDCF0 url(../images/tab-bg-yah.gif) repeat-x;
-}
-
-.search-replace .tabs .yah a {
-    color: #000;
-}
-
 /* Dashboard ---------------------------------------------------------------------------------- */
 
 #dashboard #content-inner {
@@ -1291,8 +1262,17 @@ li#config-menu {
     height: 3.6em;
 }
 
-textarea.short {
+textarea.short,
+textarea.lines-3 {
     height: 3.6em;
+}
+
+textarea.lines-4 {
+    height: 4.8em;
+}
+
+textarea.lines-5 {
+    height: 6em;
 }
 
 textarea.medium {
@@ -1309,7 +1289,7 @@ fieldset h3 {
 
 .field {
     margin-bottom: .75em;
-    border-bottom: 1px solid #d7e3f5;
+    border-bottom: 1px solid #c5d3e0;
     padding-bottom: .75em;
 }
 
@@ -1510,13 +1490,35 @@ input#title {
 .actions-bar-bottom { 
     display: none; 
 } 
-#container.show-actions-bar-top .actions-bar-top { 
+.show-actions-bar-top .actions-bar-top { 
     display: block; 
 } 
-#container.show-actions-bar-bottom .actions-bar-bottom { 
+.show-actions-bar-bottom .actions-bar-bottom { 
     display: block; 
 }
- 
+.search-replace .actions-bar-top, 
+.search-replace .actions-bar-bottom { 
+    display: none; 
+}
+
+.actions-bar-left-label .actions-bar-inner {
+    margin-left: 110px;
+}
+
+.main-screen .actions-bar {
+    background: #f3f6f9;
+}
+
+.system .actions-bar {
+    background: none;
+}
+
+.main-screen .actions-bar-inner {
+    padding: 6px;
+}
+
+
+
 /* Listing ---------------------------------------------------------------------------------- */
 
 .listing {
@@ -1525,7 +1527,6 @@ input#title {
 .dialog .listing {
     border: none;
 }
-
 
 .listing table {
     width: 100%;
@@ -1536,11 +1537,14 @@ input#title {
     border-width: 1px 0;
 }
 .dialog .listing table {
-    border: none;
+    border-width: 1px;
 }
 .dialog .listing table.list-heading {
-    border: 1px solid #c5d3e0;
     border-width: 1px 1px 0;
+}
+.dialog .listing table.scrollable,
+.search-replace .listing table {
+    border-width: 0;
 }
 
 .hide_actions table {
@@ -1582,7 +1586,7 @@ input#title {
     background-color: #f3f6f9;
 }
 .listing tr.even td {
-    border-bottom-color: #f3f6fc;
+    border-bottom-color: #f3f6f9;
 }
 
 .listing tbody tr.selected {
@@ -1788,20 +1792,53 @@ input#title {
 
 /* actions bar */
 
-.main-screen .actions-bar {
-    background: #f3f6fc;
-}
-
-.main-screen .actions-bar-inner {
-    padding: 6px;
-}
-
-.selector-form .actions-bar .pagination {
+.listing-form .actions-bar .pagination,
+.dialog .pagination {
     display: inline;
     float: right;
     white-space: nowrap;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: bold;
 }
 
+.pagination a em,
+.pagination span em {
+    display: none;
+}
+
+.pagination a,
+.pagination a:hover,
+.pagination span {
+    float: left;
+    display: block;
+    width: 12px;
+    text-decoration: none;
+    background: url('../images/pagination.gif') no-repeat left center;
+}
+.system .pagination a,
+.system .pagination a:hover,
+.system .pagination span {
+    background-image: url('../images/pagination-system.gif');
+}
+.pagination span.current-rows {
+    width: auto;
+    margin: 0 5px;
+    background: none;
+}
+
+.pagination .start              { background-position:    0px center; }
+.pagination .start-disabled     { background-position:  -40px center; }
+.pagination a.start:hover       { background-position:  -80px center; }
+.pagination .to-start           { background-position:  -20px center; }
+.pagination .to-start-disabled  { background-position:  -60px center; }
+.pagination a.to-start:hover    { background-position: -100px center; }
+.pagination .to-end             { background-position: -120px center; }
+.pagination .to-end-disabled    { background-position: -160px center; }
+.pagination a.to-end:hover      { background-position: -200px center; }
+.pagination .end                { background-position: -140px center; }
+.pagination .end-disabled       { background-position: -180px center; }
+.pagination a.end:hover         { background-position: -220px center; }
 
 /* asset details */
 
@@ -1963,8 +2000,13 @@ input#title {
 }
 
 .edit-entry fieldset {
-    border-top: 2px solid #d7e3f5;
+    border-top: 2px solid #c5d3e0;
     padding: 0 10px;
+}
+
+.edit-entry .field {
+    border: none;
+    margin-bottom: 1em;
 }
 
 .edit-entry fieldset h3 {
@@ -2082,7 +2124,7 @@ input#title {
 
 .edit-entry .actions-bar {
     clear: both;
-    border-top: 1px solid #d7e3f5;
+    border-top: 1px solid #c5d3e0;
     padding-top: 10px;
 }
 
@@ -2222,6 +2264,36 @@ body.preview-screen {
     display: none;
 }
 
+/* Search & Replace ---------------------------------------------------------------------------------- */
+
+.search-replace .tabs {
+    height: 22px;
+    margin: 10px 0;
+    border-bottom: 1px solid #CEDCF0;
+    width: 100%;
+}
+
+.search-replace .tabs li {
+    margin-right: 1px;
+    background: #EAF2FF url(../images/tab-bg.gif) repeat-x;
+}
+
+.search-replace .tabs a {
+    font-size: 11px;
+}
+
+.search-replace .tabs a:hover {
+    color: #000;
+}
+
+.search-replace .tabs .yah {
+    background: #CEDCF0 url(../images/tab-bg-yah.gif) repeat-x;
+}
+
+.search-replace .tabs .yah a {
+    color: #000;
+}
+
 /* Flyout ---------------------------------------------------------------------------------- */
 
 .flyout {
@@ -2230,19 +2302,18 @@ body.preview-screen {
     top: 2em;
     left: 0;
     width: 300px;
-    border: 1px solid #8faebe;
-    background-color: #fff;
+    border: 1px solid #c6d4e0;
+    background-color: #f3f6f9;
     z-index: 6;
 }
 
 .flyout .inner {
     position: relative;
-    margin: 2px 5px 5px;
+    margin: 5px;
 }
 
 .flyout h3 {
-    margin: 0 0 2px;
-    color: #61889b;
+    margin: 0 0 5px;
     border: none;
 }
 
@@ -2266,7 +2337,8 @@ body.preview-screen {
 }
 
 .category-selector-list {
-    border: 1px solid #8faebe;
+    border: 1px solid #c6d4e0;
+    background: #fff;
     height: 200px;
     overflow: scroll;
     overflow-x: hidden;
@@ -2288,7 +2360,7 @@ body.preview-screen {
 }
 
 .list-item-hover {
-    background: #d7e3f5;
+    background: #e7eff3;
 }
 
 .add-category-new-link span,
@@ -2317,7 +2389,7 @@ body.preview-screen {
 
 .add-category-new-parent-link {
     position: absolute;
-    top: 0;
+    top: 3px;
     right: 0;
     padding-left: 11px;
     background: url('../images/status_icons/create.gif') no-repeat left center;
@@ -2329,8 +2401,7 @@ body.preview-screen {
 
 .add-category-input {
     width: 85%;
-    margin: 1px 0 1px 2px;
-    border: 1px solid #8faebe;
+    margin: 3px 0 5px;
     padding: 1px 0 1px 2px;
 }
 .add-category-checkbox {
@@ -2505,7 +2576,7 @@ body.preview-screen {
 
 #dialog-container {
     display: none;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -2588,62 +2659,59 @@ body.preview-screen {
 
 body.dialog {
     margin: 20px 25px 25px;
+    background: url('../images/content-bg.jpg') repeat-x;
 }
 
-.dialog-4 #container {
+.dialog #container {
     height: 450px;
     width: 610px;
+    background-color: transparent;
     padding: 0;
     overflow: hidden;
     position: relative;
-/*    background: red;*/
 }
 
-.dialog-4 #content-header {
+.dialog #content-header {
     overflow: visible;
     height: 35px;
-/*    background: tan;*/
 }
-.dialog-4 #content-header h1 {
+.dialog #content-header h1 {
     margin: 0;
     font-size: 24px;
     line-height: 1;
     font-weight: normal;
 }
 
-.dialog-4 #content {
+.dialog #content {
     height: 375px;
     overflow: hidden;
     margin: 0;
     padding: 0;
-/*    background: orange;*/
 }
 .insert-asset-dialog #content {
     height: 415px;
-/*    background: tan;*/
 }
 
-.dialog-4 .actions-bar {
+.dialog .actions-bar {
     position: absolute;
     bottom: 0;
     width: 610px;
     height: 26px; /* may change if button size is taller */
     text-align: right;
-/*    background: #ccc;*/
 }
 
-.dialog-4 .actions-bar input {
+.dialog .actions-bar input {
     font-size: 10px;
 }
 
-.dialog-4 .progress {
+.dialog .progress {
     position: absolute;
     top: 1em;
     right: 0;
     line-height: 1;
 }
 
-.dialog-4 .panel-header h2 {
+.dialog .panel-header h2 {
     height: 23px;
     overflow: hidden;
     white-space: nowrap;
@@ -2665,8 +2733,8 @@ body.dialog {
 }
 
 #new_entry_prefs {
-    border: 1px solid #d1dbe6;
-    background-color: #f4f7fa;
+    border: 1px solid #c5d3e0;
+    background-color: #f3f6f9;
     padding: 10px;
     position: relative;
 }
@@ -2717,6 +2785,7 @@ body.dialog {
     bottom: 0;
     font-style: italic;
 }
+
 
 /* Dialog List ---------------------------------------------------------------------------------- */
 
@@ -2790,7 +2859,7 @@ body.dialog {
     overflow: auto;
     overflow-x: hidden;
     overflow-y: auto;
-    border: 1px solid #D7E3F5;
+    border: 1px solid #c5d3e0;
     border-width: 0 1px 1px;
     font-size: 11px;
 }
@@ -2808,7 +2877,7 @@ body.dialog {
     overflow: auto;
     overflow-x: hidden;
     overflow-y: auto;
-    border: 1px solid #D7E3F5;
+    border: 1px solid #c5d3e0;
     border-width: 0 1px 1px;
 }
 
@@ -2828,98 +2897,73 @@ body.dialog {
 .metadata_dialog dd { margin-left: 0px; }
 
 
-
 /* Dialog form ---------------------------------------------------------------------------------- */
 
 .cb input {
     padding: 0;
 }
 
-/* Reply to comment */
+/* Comment Reply */
 
-.dialog-4 #form-content {
-    position: relative;
-}
-
-.dialog-4 #comments-form #comment {
-    float: left;
-    height: 328px;
-    width: 290px;
-    margin-right: 20px;
-}
-
-.dialog-4 #comments-form #comment-body {
-    border: 1px solid #ccc;
-    height: 237px;
-    width: 272px;
-    padding: 8px;
-    overflow: hidden;
-    overflow-y: scroll;
-}
-
-.dialog-4 #comments-form #reply {
-    position: absolute;
-    right: 0;
-    height: 328px;
-    width: 290px;
-}
-
-.dialog-4 #comments-form #reply-text {
-    border: 1px solid #ccc;
-    height: 248px;
-    width: 288px;
-    overflow: scroll;
-    overflow-x: hidden;
-}
-
-.dialog-4 .intro {
-    white-space: nowrap;
-    overflow: hidden;
-    margin: 0 0 5px;
-}
-
-.dialog-4 #comments-form .comment-meta,
-.dialog-4 #comments-form .hint {
-    height: 36px;
-    border: 1px solid #ccc;
-    border-width: 0 1px 1px;
-    padding: 8px;
-}
-
-
-
-/* Debug Panel ---------------------------------------------------------------------------------- */
-
-.debug-panel {
-    width: 100%;
-    border-top: 1px dotted #f55;
-    margin-top: 5px;
-    background-color: #daa;
-}
-.debug-panel h3 {
-    padding: 5px;
-    font-size: 12px;
-    margin: 0;
-    background-color: #f55;
-    color: #fff;
-}
-
-.debug-panel-inner li {
-    white-space: pre;
-}
-
-.debug-panel-inner li:hover {
-    background-color: #eaa;
-}
-
-.debug-panel-inner {
-    padding: 5px;
-    font-family: 'Andale Mono', monospace;
-    font-size: 10px;
-    max-height: 200px;
+.dialog #comments-form #comment {
+    height: 120px;
     overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    background: #fff;
+    padding: 8px;
 }
 
+.dialog #comments-form #comment .comment-meta {
+    color: #666;
+    margin-bottom: .5em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: .1em;
+}
+
+.dialog #comments-form #comment .commenter-name,
+.dialog #comments-form #comment .entry-title {
+    font-weight: bold;
+}
+
+.dialog #comments-form #comment-reply #reply-body {
+    width: 600px;
+/*    width: 610px;*/ /* safari needs this... but how to pass to safari? */
+    height: 198px;
+    border: 1px solid #ccc;
+    padding: 0 0 0 8px;
+}
+.dialog #comments-form.preview #comment-reply {
+    display: none;
+}
+
+.dialog #comments-form #comment-preview {
+    display: none;
+}
+.dialog #comments-form.preview #comment-preview {
+    display: block;
+}
+.dialog #comments-form #comment-preview #reply-body {
+    height: 178px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.dialog #comments-form.preview #preview-comment-action {
+    display: none;
+}
+
+.dialog #comments-form #re-edit-comment-action {
+    display: none;
+}
+.dialog #comments-form.preview #re-edit-comment-action {
+    display: inline;
+}
 
 /* Edit Comment ---------------------------------------------------------------------------------- */
 

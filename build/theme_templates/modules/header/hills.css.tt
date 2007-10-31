@@ -1,0 +1,13 @@
+[% INCLUDE header/basic.css.tt %]
+
+#header {
+    margin-bottom: 10px;
+}
+
+#header-name {
+    padding: 10px 70px 0;
+}
+
+#header-description {
+    padding: 0 70px 4px;
+}

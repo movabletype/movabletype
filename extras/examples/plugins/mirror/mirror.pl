@@ -39,7 +39,7 @@ my $plugin = new MT::Plugin(name => $PLUGIN_NAME,
 			    description => "Replicates each post you make to another weblog using Atom.",
 			    config_link => "mt-mirror.cgi");
 
-MT::Entry->add_callback("pre_save", 9, $plugin, \&replicate);
+MT->model('entry')->add_callback("pre_save", 9, $plugin, \&replicate);
 
 MT->add_plugin($plugin);
 

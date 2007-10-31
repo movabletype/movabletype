@@ -94,7 +94,6 @@ sub import {
                     } elsif ($err =~ m/Missing configuration file/) {
                         $param{error_config_file} = 1;
                     }
-                    local $app->{defer_build_page} = 0;
                     my $page = $app->build_page('error.tmpl', \%param)
                         or die $app->errstr;
                     print "Content-Type: text/html; charset=$charset\n\n";

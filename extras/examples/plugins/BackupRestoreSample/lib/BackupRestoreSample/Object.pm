@@ -2,13 +2,13 @@
 # permission from www.sixapart.com.  For more information, consult your
 # Movable Type license.
 #
-# $Id: Object.pm 822 2006-12-04 09:21:08Z fumiakiy $
+# $Id$
 
 package BackupRestoreSample::Object;
 use strict;
 
-use MT::Object;
-@BackupRestoreSample::Object::ISA = qw( MT::Object );
+use MT::Blog;
+use base qw( MT::Object );
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -25,13 +25,12 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
-sub parent_names {
+sub parents {
     my $obj = shift;
-    my $parents = {
-        blog => 'MT::Blog',
-        role => 'MT::Role',
+    {
+        blog_id => MT->model('blog'),
+        role_id => MT->model('role'),
     };
-    $parents;
 }
 
 1;

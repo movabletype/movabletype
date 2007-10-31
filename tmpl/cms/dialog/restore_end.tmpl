@@ -12,18 +12,30 @@ if (progress) {
 
 <mt:if name="restore_end">
 <mt:if name="error">
-<p><strong><__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">"></strong></p>
-<div class="panel-commands">
-    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-        <input type="button" value="<__trans phrase="View Activity Log">" onclick="return closeDialog('<mt:var name="error_url">')" />
-    </form>
+    <mtapp:statusmsg
+        id="restore-error"
+        class="error">
+        <__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">">
+    </mtapp:statusmsg>
+<div class="actions-bar">
+    <div class="actions-bar-inner">
+        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+            <input type="button" value="<__trans phrase="View Activity Log">" onclick="return closeDialog('<mt:var name="error_url">')" />
+        </form>
+    </div>
 </div>
 <mt:else>
-<p><strong><__trans phrase="All of the data have been restored successfully!"></strong></p>
-<div class="panel-commands">
-    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-        <input type="button" value="<__trans phrase="OK">" onclick="return closeDialog('<mt:var name="ok_url">')" />
-    </form>
+    <mtapp:statusmsg
+        id="restore-success"
+        class="success">
+        <__trans phrase="All of the data have been restored successfully!">
+    </mtapp:statusmsg>
+<div class="actions-bar">
+    <div class="actions-bar-inner">
+        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+            <input type="button" value="<__trans phrase="OK">" onclick="return closeDialog('<mt:var name="ok_url">')" />
+        </form>
+    </div>
 </div>
 </mt:if>
 
@@ -45,9 +57,11 @@ if (progress) {
 <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
 
 </form>
-<div class="panel-commands">
-    <form id="command_form" action="" method="get" onsubmit="return false" onclick="window.focus();">
-    </form>
+<div class="actions-bar">
+    <div class="actions-bar-inner">
+        <form id="command_form" action="" method="get" onsubmit="return false" onclick="window.focus();">
+        </form>
+    </div>
 </div>
 <script type="text/javascript">
 function submit_form() {
@@ -71,6 +85,6 @@ function stopTimer() {
     getByID('command_form').appendChild(button);
 }
 </script>
-<p id="message"><__trans phrase="The page will redirect to a new page in 3 seconds.  Click <a href='javascript:void(0)' onclick='return stopTimer()'>here</a> to stop the timer."></p>
+<p id="message"><__trans phrase="The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]" params="<a href='javascript:void(0)' onclick='return stopTimer()'>%%</a>"></p>
 </mt:if>
 <mt:include name="dialog/footer.tmpl">

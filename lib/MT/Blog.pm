@@ -108,6 +108,7 @@ __PACKAGE__->install_meta({
         'follow_auth_links',
         'update_pings',
         'captcha_provider',
+        'publish_queue',
     ],
 });
 
@@ -708,6 +709,8 @@ sub clone_with_children {
     );
     $new_blog;
 }
+
+#trans('blogs')
 
 1;
 __END__

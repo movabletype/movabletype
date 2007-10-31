@@ -55,7 +55,7 @@ parameters:
 </mt:unless>
 <mt:if name="object_loop">
                 <div class="listing list-data-layout">
-                    <table cellspacing="0">
+                    <table cellspacing="0" class="scrollable">
                         <tbody>
     <mt:loop name="object_loop">
                             <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
@@ -89,7 +89,7 @@ parameters:
             </div>
         </form>
     </div>
-    <div class="pager"></div>
+    <div class="pagination"></div>
     <div class="actions-bar">
         <div class="actions-bar-inner pkg">
             <form action="" method="get" onsubmit="return false" onclick="window.focus();">

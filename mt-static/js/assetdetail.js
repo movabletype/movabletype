@@ -65,8 +65,8 @@ function toggleAssetDetails(id) {
     }
     
 
-    if (dlg) {
-        var panel = dlg.panel;
+    if (window.dlg) {
+        var panel = window.dlg.panel;
         var button = panel.closeButton;
         button.disabled = button_val;
     }

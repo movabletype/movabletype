@@ -12,7 +12,7 @@ sub preprocess_native_tags {
     my $plugin = shift;
     my $orig_handler = shift;
     my ( $ctx, $args, $cond ) = @_;
-    my $tag = $ctx->stash('tag');
+    my $tag = lc $ctx->stash('tag');
 
     # If we're running under MT-Search, set the context based on the search
     # parameters available.
@@ -38,9 +38,11 @@ sub preprocess_native_tags {
     }
     # Explicity set blog_id for MTInclude if not specified
     # so that it never gets a multiblog context from MTMultiBlog
-    elsif ($tag eq 'Include' and ! exists $args->{blog_id}) {
-    
-        $args->{blog_id} = $ctx->stash('local_blog_id');
+    elsif ($tag eq 'include' and ! exists $args->{blog_id}) {
+        my $local_blog_id = $ctx->stash('local_blog_id');
+        if (defined $local_blog_id) {
+            $args->{blog_id} = $ctx->stash('local_blog_id');
+        }
     }
     # If no include_blogs/exclude_blogs specified look for a 
     # previously set MTMultiBlog context
@@ -54,7 +56,7 @@ sub preprocess_native_tags {
         unless $ctx->stash('multiblog_context');
     # Remove local blog ID from MTTags since it is cross-blog
     # and hence MTMultiBlogIfLocalBlog doesn't make sense there.    
-    local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'Tags';
+    local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'tags';
 
     # Call original tag handler with new args
     return $orig_handler->( $ctx, $args, $cond ) 
@@ -196,7 +198,7 @@ sub filter_blogs {
     $is_include = $is_include eq 'include_blogs' ? 1 : 0;
 
     # Set local blog
-    my $this_blog = $ctx->stash('blog_id');
+    my $this_blog = $ctx->stash('blog_id') or return;
 
     # Get the MultiBlog system config for default access and overrides
     my $default_access_allowed = 

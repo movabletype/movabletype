@@ -32,14 +32,26 @@ sub init {
     $ctx;
 }
 
+sub replace_handler {
+    my $ctx = shift;
+    my ($tag, $h) = @_;
+    $tag = lc $tag;
+    my $old_hdlr = $ctx->{__handlers}{$tag};
+    if (ref($old_hdlr) eq 'ARRAY') {
+        $old_hdlr = $old_hdlr->[0];
+        $ctx->{__handlers}{$tag}[0] = $h;
+    } else {
+        $ctx->{__handlers}{$tag} = $h;
+    }
+    return $old_hdlr;
+}
+
 sub init_handlers {
     my $ctx = shift;
     my $mt = MT->instance;
     if (!$mt->{__tag_handlers}) {
         my $h = $mt->{__tag_handlers} = {};
         my $f = $mt->{__tag_filters} = {};
-        $ctx->{__handlers} = $h;
-        $ctx->{__filters} = $f;
         my $all_tags = MT::Component->registry('tags');
         if ($mt->isa('MT::App')) {
             my $app_tags = MT->registry("applications", $mt->id, "tags");
@@ -72,10 +84,9 @@ sub init_handlers {
                 }
             }
         }
-    } else {
-        $ctx->{__handlers} = $mt->{__tag_handlers};
-        $ctx->{__filters} = $mt->{__tag_filters};
     }
+    $ctx->{__handlers} = $mt->{__tag_handlers};
+    $ctx->{__filters} = $mt->{__tag_filters};
 }
 
 sub stash {
@@ -186,6 +197,12 @@ sub post_process_handler {
 sub slurp {
     my ($ctx, $args, $cond) = @_;
     $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
+}
+
+sub else {
+    my ($ctx, $args, $cond) = @_;
+    my $else = $ctx->stash('tokens_else');
+    $else ? $ctx->stash('builder')->build($ctx, $else, $cond) : '';
 }
 
 sub build {

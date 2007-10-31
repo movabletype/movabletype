@@ -81,6 +81,12 @@ BEGIN {
             'objecttag'       => 'MT::ObjectTag',
             'objectscore'     => 'MT::ObjectScore',
             'objectasset'     => 'MT::ObjectAsset',
+
+            # TheSchwartz tables
+            'schwartz_job'    => 'MT::TheSchwartz::Job',
+            'schwartz_error'  => 'MT::TheSchwartz::Error',
+            'schwartz_exitstatus' => 'MT::TheSchwartz::ExitStatus',
+            'schwartz_funcmap' => 'MT::TheSchwartz::FuncMap',
         },
         permissions => {
             'system.administer' => {
@@ -524,6 +530,16 @@ BEGIN {
         tasks                    => \&load_core_tasks,
         default_templates        => \&load_default_templates,
         junk_filters             => \&load_junk_filters,
+        task_workers             => {
+            'mt_rebuild' => {
+                label => "Publishes content.",
+                class => 'MT::Worker::Publish',
+            },
+            'mt_sync' => {
+                label => "Synchronizes content to other server(s).",
+                class => 'MT::Worker::Sync',
+            },
+        },
         template_snippets        => {
             'insert_entries' => {
                 trigger => 'entries',

@@ -87,8 +87,9 @@ function delayShowCaptcha() {
 var commenter_name;
 var commenter_blog_ids;
 var is_preview;
-// TODO - determine if the following variables should be explicitly stated
-// var mtcmtemail, mtcmtauth, mtcmthome;
+var mtcmtmail;
+var mtcmtauth;
+var mtcmthome;
 
 function individualArchivesOnLoad(commenter_name) {
 <MTIfCommentsAccepted>
@@ -102,7 +103,7 @@ function individualArchivesOnLoad(commenter_name) {
 <MTIfRegistrationAllowed>
     <MTIfRegistrationRequired>
     if ( commenter_name &&
-         ( !commenter_id 
+         ( !commenter_id
         || commenter_blog_ids.indexOf("'<$MTBlogID$>'") > -1))
     {
         hideDocumentElement('comment-form-name');
@@ -114,10 +115,10 @@ function individualArchivesOnLoad(commenter_name) {
         hideDocumentElement('comments-open-text');
         hideDocumentElement('comments-open-footer');
     }
-    <MTElse> 
+    <MTElse>
     // comments are allowed but registration not required
     if ( commenter_name &&
-         ( !commenter_id 
+         ( !commenter_id
         || commenter_blog_ids.indexOf("'<$MTBlogID$>'") > -1))
     {
         hideDocumentElement('comment-form-name');
@@ -137,7 +138,7 @@ function individualArchivesOnLoad(commenter_name) {
         if (!commenter_name && (document.comments_form.author != undefined) &&
             (mtcmtauth = getCookie("mtcmtauth")))
             document.comments_form.author.value = mtcmtauth;
-        if (document.comments_form.url != undefined && 
+        if (document.comments_form.url != undefined &&
             (mtcmthome = getCookie("mtcmthome")))
             document.comments_form.url.value = mtcmthome;
         if (document.comments_form["bakecookie"]) {
@@ -153,7 +154,7 @@ function individualArchivesOnLoad(commenter_name) {
 function writeCommenterGreeting(commenter_name, entry_id, blog_id, commenter_id, commenter_url) {
 <MTIfRegistrationAllowed>
     if ( commenter_name &&
-         ( !commenter_id 
+         ( !commenter_id
         || commenter_blog_ids.indexOf("'" + blog_id + "'") > -1))
     {
         var url;

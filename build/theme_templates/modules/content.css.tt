@@ -1,0 +1,50 @@
+[% IF theme.find_file('post-ornament') %]
+.asset {
+    background: [% PROCESS bg_image file='post-ornament' %] no-repeat [% theme.content.post_header.position || '1px 0' %];
+}
+
+.asset-header {
+    margin-top: 15px;
+}
+
+.asset-header,
+.asset-content,
+.asset-footer {
+    margin-left: [% theme.content.post_header.padding_left %];
+    margin-right: [% theme.content.post_header.padding_left %];
+}
+[% END %]
+
+.asset-name,
+.asset-name a,
+.archive-title {
+    color: [% theme.content.post_name.color || theme.default.header.color %];
+}
+
+.asset-footer,
+.asset-footer a,
+.comment-footer,
+.comment-footer a,
+.trackback-footer {
+    color: [% theme.default.meta.color || "#999" %];
+}
+
+.asset-footer {
+    border-top-color: [% theme.default.border.color || "#e0ebd6" %];
+}
+
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    color: [% theme.widget.header.color || theme.default.header.color %];
+}
+
+[%+ IF theme.content.post_header.template -%]
+[% templatename = "postheader/" _ theme.content.post_header.template _ ".css.tt" %]
+[% INCLUDE $templatename %]
+[%+ END -%]
+
+.archive-list-item {
+    margin-bottom: 5px;
+}

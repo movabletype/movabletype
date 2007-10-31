@@ -247,7 +247,7 @@ ListingPanel = new Class(Panel, {
         // FIXME: name != type...
         this.datasource = new Datasource(this.listData, name);
         this.pager = new Pager(TC.getElementsByTagAndClassName("div",
-            "pager", this.element)[0]);
+            "pagination", this.element)[0]);
         this.datasource.setPager(this.pager);
         this.datasource.onUpdate = function(ds) {
             // synchronize selections in table with selections in

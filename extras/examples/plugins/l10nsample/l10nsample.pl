@@ -21,6 +21,24 @@ $plugin = MT::Plugin::l10nsample->new({
     l10n_class => 'l10nsample::L10N',
 });
 MT->add_plugin($plugin);
-MT->add_plugin_action('blog', 'l10nsample.cgi', 'This is localizable');
 
 sub instance { $plugin }
+
+sub init_registry {
+    my $plugin = shift;
+    $plugin->registry({
+        applications => {
+            cms => {
+                page_actions => {
+                    entry => {
+                        l10nsample => {
+                            key => 'plugin:l10n_sample:l10n_sample',
+                            label => 'This is localizable',
+                            link => 'l10nsample.cgi',
+                        },
+                    },
+                },
+            },
+        },
+    });
+}

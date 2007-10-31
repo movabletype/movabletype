@@ -36,7 +36,7 @@
         </mt:if>
 
         <mt:loop name="auth_loop">
-        <li id="signin_option_<mt:var name="name">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><img src="<$mt:var name="static_uri"$>images/comment/signin_<mt:var name="name">.png" width="36" height="26"></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name">');"><mt:var name="name"></a></div></li>
+        <li id="signin_option_<mt:var name="name">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><mt:if name="logo"><img src="<$mt:var name="static_uri"$><$mt:var name="logo"$>" width="36" height="26"></mt:if></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name">');"><mt:var name="name"></a></div></li>
         </mt:loop>
 
         </ul>
@@ -56,14 +56,6 @@
         class="error">
         <mt:var name="error">
     </mtapp:statusmsg>
-</mt:if>
-
-<mt:if name="enabled_MovableType">
-<mt:setvar name="default_signin" value="MovableType">
-<mt:else>
-<mt:loop name="auth_loop">
-<mt:if name="__first__"><mt:setvar name="default_signin" value="$name"></mt:if>
-</mt:loop>
 </mt:if>
 
 <div class="signin">

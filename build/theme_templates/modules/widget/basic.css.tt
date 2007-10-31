@@ -1,0 +1,42 @@
+[%#
+    Basic Widget Styling
+    - border, colors, fonts, background images
+    - sample themes: flowers, landscape, trees, urban, pixipets
+%]
+
+[% IF theme.find_file('content-tw') %]
+[% INCLUDE widget/columns.css.tt %]
+[% END %]
+
+.widget-header {
+[% IF theme.widget.header.border.top_width || theme.widget.header.border.bottom_width %]
+    border-width: [% theme.widget.header.border.top_width || 0 %] 0 [% theme.widget.header.border.bottom_width || 0 %];
+    border-style: [% theme.widget.header.border.style || 'solid' %];
+    border-color: [% theme.widget.header.border.color || theme.default.border.color %];
+[% END %]
+    padding: [% theme.widget.header.padding || 0 %];
+    font-size: 14px;
+[% font_family = theme.widget.header.font.family ||  theme.default.header.font.family || theme.default.font.family || 'arial' %]
+    font-family: [% FONT_FAMILIES.$font_family || font_family %];
+[% IF theme.content.post_header.template == 'bottom_border' || 'border_and_image' %]
+    margin-bottom: 8px;
+    padding-bottom: .3em;
+[% END %]
+}
+
+.widget-header,
+.widget-header a {
+    color: [% theme.widget.header.color || theme.default.header.color || theme.default.link.color %];
+    font-weight: [% theme.widget.header.font.weight || theme.default.header.font.weight || 'bold' %];
+}
+
+.widget-content a {
+    color: [% theme.widget.beta.link.color || "#999" %];
+}
+
+.widget-powered .widget-content {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border: 1px solid [% theme.default.border.color %];
+    background-color: [% theme.default.background.color %];
+}

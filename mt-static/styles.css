@@ -13,6 +13,9 @@
 /* messaging */
 @import url("css/messaging.css");
 
+/* debug messages */
+@import url("css/debug.css");
+
 /* branding */
 @import url("css/paint.css");
 

@@ -1,0 +1,53 @@
+[%#
+    Block Widget Styling
+    - border, colors, fonts, background images
+    - sample themes: Manga, Scribble
+    if widget border-bottom-color is not the default border color use theme.widget.header.border.color
+%]
+
+[% INCLUDE widget/columns.css.tt %]
+
+.widget {
+    border-bottom: 1px solid [% theme.widget.header.border.color || theme.default.border.color %];
+}
+
+.widget-header {
+    margin-top: 10px;
+}
+
+.widget-header,
+.widget-header a {
+    color: [% theme.widget.header.color || theme.default.header.color || theme.default.link.color %];
+    font-weight: [% theme.widget.header.font.weight || theme.default.header.font.weight || 'bold' %];
+}
+
+.widget-content {
+    margin-bottom: 15px;
+}
+
+.widget-content a {
+    color: [% theme.widget.beta.link.color || "#999" %];
+}
+
+.widget-about .widget-header {
+    margin-bottom: 10px;
+}
+
+.widget-powered .widget-content {
+    margin: 0 1px 0 0;
+    background-color: [% theme.default.background.color %];
+}
+
+.layout-wtt #beta .widget-powered .widget-content,
+.layout-wtt #gamma .widget-powered .widget-content,
+.layout-twt #gamma .widget-powered .widget-content,
+.layout-wt #beta .widget-powered .widget-content {
+    margin-right: 0;
+    margin-left: 1px;
+}
+
+.widget-email .widget-content,
+.widget-subscribe .widget-content,
+.widget-syndicate .widget-content {
+    margin-top: 15px;
+}

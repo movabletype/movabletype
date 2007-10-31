@@ -174,6 +174,10 @@ sub init_core_registry {
 		link => 'http://search.cpan.org/dist/Digest-SHA1',
                 label => 'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.',
             },
+            'Mail::Sendmail' => {
+		link => 'http://search.cpan.org/dist/Mail-Sendmail',
+                label => 'This module is required for sending mail via SMTP Server.',
+            },
         },
         required_packages => {
             'Image::Size' => {
@@ -460,7 +464,8 @@ sub configure {
             $cfg->DBPassword($param{dbpass}) if $param{dbpass};
             $cfg->DBPort($param{dbport}) if $param{dbport};
             $cfg->DBSocket($param{dbsocket}) if $param{dbsocket};
-            $cfg->DBHost($param{dbserver}) if $param{dbserver};
+            $cfg->DBHost($param{dbserver}) 
+              if $param{dbserver} && ( $param{dbtype} ne 'oracle' );
             $cfg->PublishCharset($param{publish_charset})
                 if $param{publish_charset};
             if ($dbtype eq 'sqlite' || $dbtype eq 'sqlite2') {
@@ -866,7 +871,7 @@ sub is_valid_static_path {
     my $ua = LWP::UserAgent->new;
     my $request = HTTP::Request->new(HEAD => $path);
     my $response = $ua->request($request);
-    $response->is_success;
+    $response->is_success and ($response->content_length() != 0);
 }
 1;
 __END__

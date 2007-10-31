@@ -12,6 +12,13 @@ function smarty_function_mtinclude($args, &$ctx) {
     $cache_id = '';
     if (isset($args['module']) && ($args['module'])) {
         $module = $args['module'];
+        if (preg_match('/^Widget:/', $module)) {
+            $args['widget'] = preg_replace('/^Widget: ?/', '', $module);
+            unset($args['module']);
+        }
+    }
+    if (isset($args['module']) && ($args['module'])) {
+        $module = $args['module'];
         $cache_id = 'module::' . $blog_id . '::' . $module;
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];

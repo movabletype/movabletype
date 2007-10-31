@@ -2,12 +2,12 @@
 <!--
 var customizable_fields = new Array('category','extended','excerpt','keywords','tags','feedback', 'publishing');
 var custom_fields = new Array();
-<TMPL_IF NAME=DISP_PREFS_SHOW_CATEGORY>custom_fields.push('category');</TMPL_IF>
-<TMPL_IF NAME=DISP_PREFS_SHOW_EXCERPT>custom_fields.push('excerpt');</TMPL_IF>
-<TMPL_IF NAME=DISP_PREFS_SHOW_KEYWORDS>custom_fields.push('keywords');</TMPL_IF>
-<TMPL_IF NAME=DISP_PREFS_SHOW_TAGS>custom_fields.push('tags');</TMPL_IF>
-<TMPL_IF NAME=DISP_PREFS_SHOW_PUBLISHING>custom_fields.push('publishing');</TMPL_IF>
-<TMPL_IF NAME=DISP_PREFS_SHOW_FEEDBACK>custom_fields.push('feedback');</TMPL_IF>
+<mt:if NAME=DISP_PREFS_SHOW_CATEGORY>custom_fields.push('category');</mt:if>
+<mt:if NAME=DISP_PREFS_SHOW_EXCERPT>custom_fields.push('excerpt');</mt:if>
+<mt:if NAME=DISP_PREFS_SHOW_KEYWORDS>custom_fields.push('keywords');</mt:if>
+<mt:if NAME=DISP_PREFS_SHOW_TAGS>custom_fields.push('tags');</mt:if>
+<mt:if NAME=DISP_PREFS_SHOW_PUBLISHING>custom_fields.push('publishing');</mt:if>
+<mt:if NAME=DISP_PREFS_SHOW_FEEDBACK>custom_fields.push('feedback');</mt:if>
 
 function setFieldGroup(selection) {
     var i, j, selected_fields, disable_fields, field_object;
@@ -78,9 +78,9 @@ function setCustomFields() {
 <div class="entry-prefs">
 <div class="display_options">
 <ul>
-<li><label><input type="radio" name="entry_prefs" value="Default" onclick="setFieldGroup(this); return true"<TMPL_IF NAME=DISP_PREFS_DEFAULT> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Default"></label></li>
-<li><label><input type="radio" name="entry_prefs" value="Advanced" onclick="setFieldGroup(this); return true"<TMPL_IF NAME=DISP_PREFS_ADVANCED> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="All"></label></li>
-<li><label><input type="radio" name="entry_prefs" value="Custom" onclick="setFieldGroup(this); return true"<TMPL_IF NAME=DISP_PREFS_CUSTOM> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Custom"></label></li>
+<li><label><input type="radio" name="entry_prefs" value="Default" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_DEFAULT> checked="checked"</mt:if> class="rb" /> <__trans phrase="Default"></label></li>
+<li><label><input type="radio" name="entry_prefs" value="Advanced" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_ADVANCED> checked="checked"</mt:if> class="rb" /> <__trans phrase="All"></label></li>
+<li><label><input type="radio" name="entry_prefs" value="Custom" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_CUSTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Custom"></label></li>
 </ul>
 </div>
 </div>
@@ -89,16 +89,16 @@ function setCustomFields() {
 <div class="custom-prefs">
 <div class="custom-prefs-inner">
 <ul class="custom-prefs-fields">
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Title"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Body"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_CATEGORY> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Category"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_EXCERPT> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Excerpt"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Title"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Body"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_CATEGORY> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Category"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_EXCERPT> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Excerpt"></label></li>
 </ul>
 <ul class="custom-prefs-fields-more">
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_KEYWORDS> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Keywords"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-tags" value="tags" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_TAGS> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Tags"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_PUBLISHING> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Publishing"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_FEEDBACK> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Feedback"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_KEYWORDS> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Keywords"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-tags" value="tags" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_TAGS> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Tags"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_PUBLISHING> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Publishing"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_FEEDBACK> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Feedback"></label></li>
 </ul>
 </div>
 </div>
@@ -113,9 +113,9 @@ function setCustomFields() {
 <div class="entry-prefs">
 <div class="display_options">
 <ul>
-<li><label><input type="radio" name="bar_position" value="Bottom"<TMPL_IF NAME=POSITION_BUTTONS_BOTTOM> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Below"></label></li>
-<li><label><input type="radio" name="bar_position" value="Top"<TMPL_IF NAME=POSITION_BUTTONS_TOP> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Above"></label></li>
-<li><label><input type="radio" name="bar_position" value="Both"<TMPL_IF NAME=POSITION_BUTTONS_BOTH> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Both"></label></li>
+<li><label><input type="radio" name="bar_position" value="Bottom"<mt:if NAME=POSITION_ACTIONS_BOTTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Below"></label></li>
+<li><label><input type="radio" name="bar_position" value="Top"<mt:if NAME=POSITION_ACTIONS_TOP> checked="checked"</mt:if> class="rb" /> <__trans phrase="Above"></label></li>
+<li><label><input type="radio" name="bar_position" value="Both"<mt:if NAME=POSITION_ACTIONS_BOTH> checked="checked"</mt:if> class="rb" /> <__trans phrase="Both"></label></li>
 </ul>
 </div>
 </div>

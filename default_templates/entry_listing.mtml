@@ -1,139 +1,33 @@
-<MTSetVar name="main_template" value="1">
-<MTSetVar name="archive_template" value="1">
+<MTSetVarBlock name="body_class">mt-archive-listing mt-<MTVar name="archive_class"></MTSetVarBlock>
 <MTSetVar name="sidebar" value="1">
 <MTSetVar name="module_about_context" value="1">
-<MTSetVarBlock name="page_title"><MT_TRANS phrase="[_1] Archives" params="<$MTArchiveTitle$>"></MTSetVarBlock>
 
-<MTIfArchiveType archive_type="Daily">
-    <MTSetVar name="page_id" value="date-based-daily-archive">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="datebased_only_archive" value="1">
-    <MTSetVar name="datebased_daily_archive" value="1">
-</MTIfArchiveType>
+<MTSetVarBlock name="page_title"><__trans phrase="[_1] Archives" params="<$MTArchiveTitle$>"></MTSetVarBlock>
 
-<MTIfArchiveType archive_type="Weekly">
-    <MTSetVar name="page_id" value="date-based-weekly-archive">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="datebased_only_archive" value="1">
-    <MTSetVar name="datebased_weekly_archive" value="1">
-</MTIfArchiveType>
+<$MTInclude module="<__trans phrase="Header">"$>
 
-<MTIfArchiveType archive_type="Monthly">
-    <MTSetVar name="page_id" value="date-based-monthly-archive">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="datebased_only_archive" value="1">
-    <MTSetVar name="datebased_monthly_archive" value="1">
-    <MTSetVar name="module_monthly_archives" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Yearly">
-    <MTSetVar name="page_id" value="date-based-yearly-archive">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="datebased_only_archive" value="1">
-    <MTSetVar name="datebased_yearly_archive" value="1">
-    <MTSetVar name="module_yearly_archives" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Category">
-    <MTSetVar name="page_id" value="category-archive">
-    <MTSetVar name="category_archive" value="1">
-    <MTSetVar name="datebased_archive" value="0">
-    <MTSetVar name="module_category-monthly_archives" value="1">
-    <MTSetVar name="module_category_archives" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Category-Daily">
-    <MTSetVar name="page_id" value="category-daily-archive">
-    <MTSetVar name="category_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="category_daily_archive" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Category-Weekly">
-    <MTSetVar name="page_id" value="category-weekly-archive">
-    <MTSetVar name="category_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="category_weekly_archive" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Category-Monthly">
-    <MTSetVar name="page_id" value="category-monthly-archive">
-    <MTSetVar name="category_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="category_monthly_archive" value="1">
-    <MTSetVar name="module_category-monthly_archives" value="1">
-    <MTSetVar name="module_category_archives" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Category-Yearly">
-    <MTSetVar name="page_id" value="category-yearly-archive">
-    <MTSetVar name="category_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="category_yearly_archive" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Author">
-    <MTSetVar name="page_id" value="author-archive">
-    <MTSetVar name="author_archive" value="1">
-    <MTSetVar name="datebased_archive" value="0">
-    <MTSetVar name="module_author-monthly_archives" value="1">
-    <MTSetVar name="module_author_archives" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Author-Daily">
-    <MTSetVar name="page_id" value="author-daily-archive">
-    <MTSetVar name="author_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="author_daily_archive" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Author-Weekly">
-    <MTSetVar name="page_id" value="author-weekly-archive">
-    <MTSetVar name="author_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="author_weekly_archive" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Author-Monthly">
-    <MTSetVar name="page_id" value="author-monthly-archive">
-    <MTSetVar name="author_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="author_monthly_archive" value="1">
-    <MTSetVar name="module_author-monthly_archives" value="1">
-    <MTSetVar name="module_author_archives" value="1">
-</MTIfArchiveType>
-
-<MTIfArchiveType archive_type="Author-Yearly">
-    <MTSetVar name="page_id" value="author-yearly-archive">
-    <MTSetVar name="author_archive" value="1">
-    <MTSetVar name="datebased_archive" value="1">
-    <MTSetVar name="author_yearly_archive" value="1">
-</MTIfArchiveType>
-
-<$MTInclude module="<MT_TRANS phrase="Header">"$>
-
-<h2 id="archive-title">
+<h1 class="archive-title">
 <MTUnless name="datebased_archive">
     <MTIfArchiveType archive_type="Category">
-<MT_TRANS phrase="Recently in <em>[_1]</em> Category" params="<$MTArchiveTitle$>">
+<__trans phrase="Recently in <em>[_1]</em> Category" params="<$MTArchiveTitle$>">
     </MTIfArchiveType>
     <MTIfArchiveType archive_type="Author">
-<MT_TRANS phrase="Recently by <em>[_1]</em>" params="<$MTArchiveTitle$>">
+<__trans phrase="Recently by <em>[_1]</em>" params="<$MTArchiveTitle$>">
     </MTIfArchiveType>
 <MTElse>
 <$MTGetVar name="page_title"$>
 </MTUnless>
-</h2>
+</h1>
 
 <MTIf name="datebased_archive">
     <MTEntries>
 <$MTEntryTrackbackData$>
-<$MTInclude module="<MT_TRANS phrase="Entry Summary">"$>    
+<$MTInclude module="<__trans phrase="Entry Summary">"$>
     </MTEntries>
 <MTElse>
         <MTEntries limit="auto">
 <$MTEntryTrackbackData$>
-<$MTInclude module="<MT_TRANS phrase="Entry Summary">"$>    
+<$MTInclude module="<__trans phrase="Entry Summary">"$>
         </MTEntries>
 </MTIf>
 
@@ -148,4 +42,4 @@
     </MTArchiveNext>
 </div>
 
-<$MTInclude module="<MT_TRANS phrase="Footer">"$>
+<$MTInclude module="<__trans phrase="Footer">"$>

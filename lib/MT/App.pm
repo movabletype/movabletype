@@ -405,7 +405,6 @@ sub listing {
     }
 
     if ($json) {
-        local $app->{defer_build_page} = 0;
         $pre_build->($param) if $pre_build;
         my $html = $app->build_page( $tmpl, $param );
         my $data = {
@@ -420,7 +419,15 @@ sub listing {
     else {
         $app->load_list_actions( $type, $param );
         $pre_build->($param) if $pre_build;
-        $no_html ? $param : $app->build_page( $tmpl, $param );
+        if ($no_html) {
+            return $param;
+        }
+        if (ref $tmpl) {
+            $tmpl->param( $param );
+            return $tmpl;
+        } else {
+            return $app->load_tmpl( $tmpl, $param );
+        }
     }
 }
 
@@ -1024,6 +1031,44 @@ sub start_session {
     \%arg;
 }
 
+sub _is_commenter {
+    my $app = shift;
+    my ($author) = @_;
+
+    # Check if the user is a commenter and keep them from logging in to the app
+    my @author_perms = $app->model('permission')->load(
+        { author_id => $author->id, blog_id => '0' },
+        { not => { blog_id => 1 } });
+    my $commenter = -1;
+    my $commenter_blog_id;
+    for my $perm (@author_perms) {
+        my $permissions = $perm->permissions;
+        next unless $permissions;
+        if ( $permissions eq "'comment'" ) {
+            $commenter_blog_id = $perm->blog_id unless $commenter_blog_id;
+            $commenter = 1;
+            next;
+        }
+        return 0;
+    }
+    if ( -1 == $commenter ) {
+        # this user does not have any permission to any blog
+        # check for system permission
+        my $sys_perms = MT::Permission->perms('system');
+        my $has_system_permission = 0;
+        foreach (@$sys_perms) {
+            if ( $author->permissions(0)->has( $_->[0] ) ) {
+                $has_system_permission = 1;
+                last;
+            }
+        }
+        return $app->error($app->translate('Permission denied.'))
+            unless $has_system_permission;
+        return -1;
+    } 
+    return $commenter_blog_id;
+}
+
 # MT::App::login
 #   Working from the query object, determine whether the session is logged in,
 #   perform any session/cookie maintenance, and if we're logged in, 
@@ -1132,12 +1177,41 @@ sub login {
     if ($author) {
         # Login valid
         if ($new_login) {
-            # Presence of 'password' indicates this is a login request;
-            # do session/cookie management.
+
+            my $commenter_blog_id = $app->_is_commenter($author);
+            return unless defined $commenter_blog_id;
+            # $commenter_blog_id
+            #  0: user has more permissions than comment
+            #  N: user has only comment permission on some blog
+            # -1: user has only system permissions
+            # undef: user does not have any permission
+ 
+            if ( $commenter_blog_id >= 0 ) {
+                # Presence of 'password' indicates this is a login request;
+                # do session/cookie management.
+                $app->_make_commenter_session(
+                    $app->make_magic_token, 
+                    $author->email, 
+                    $author->name, 
+                    ($author->nickname || 'User#' . $author->id), 
+                    $author->id, 
+                    undef, 
+                    $ctx->{permanent} ? '+10y' : 0
+                );
+
+                if ($commenter_blog_id) {
+                    my $blog = $app->model('blog')->load($commenter_blog_id);
+                    my $url = $app->config('CGIPath') . $app->config('CommentScript');
+                    $url .= '?__mode=edit_profile';
+                    $url .= '&commenter=' . $author->id;
+                    $url .= '&blog_id=' . $commenter_blog_id;
+                    $url .= '&static=' . $blog->site_url;
+                    return $app->redirect($url);
+                }
+            }
+            ## commenter_blog_id can be -1 - user who has only system permissions
+
             $app->start_session($author, $ctx->{permanent} ? 1 : 0);
-            $app->_make_commenter_session(
-                $app->make_magic_token, $author->email, $author->name, 
-                ($author->nickname || 'User#' . $author->id), $author->id, undef, $ctx->{permanent} ? '+10y' : 0);
             $app->request('fresh_login', 1);
             $app->log($app->translate("User '[_1]' (ID:[_2]) logged in successfully", $author->name, $author->id));
         } else {
@@ -1216,7 +1290,7 @@ sub logout {
     }
 
     # Displaying the login box
-    $app->build_page('login.tmpl', {
+    $app->load_tmpl('login.tmpl', {
         logged_out => 1, 
         no_breadcrumbs => 1,
         login_fields => MT::Auth->login_form($app),
@@ -1453,7 +1527,6 @@ sub run {
             if ($requires_login) {
                 my ($author) = $app->login;
                 if (!$author || !$app->is_authorized) {
-                    local $app->{defer_build_page} = 0;
                     $body = ref ($author) eq $app->user_class
                         ? $app->show_error( $app->errstr )
                         : $app->build_page('login.tmpl',{
@@ -1529,11 +1602,13 @@ sub run {
             $body = $app->response_content();
 
             if (ref($body) && ($body->isa('MT::Template'))) {
-                local $app->{defer_build_page} = 0;
-                my $out = $app->build_deferred_page($body)
+                my $out = $app->build_page($body)
                     or die $body->errstr;
                 $body = $out;
             }
+
+            # Some browsers throw you to quirks mode if the doctype isn't
+            # up front.
             $body =~ s/^\s+(<!DOCTYPE)/$1/s if defined $body;
 
             unless (defined $body || $app->{redirect} || $app->{login_again}) {
@@ -1984,6 +2059,10 @@ sub load_tmpl {
     }
 
     my($file, @p) = @_;
+    my $param;
+    if (@p && (ref($p[$#p]) eq 'HASH')) {
+        $param = pop @p;
+    }
     my $cfg = $app->config;
     require MT::Template;
     my $tmpl;
@@ -2020,7 +2099,9 @@ sub load_tmpl {
     return $app->error(
         $app->translate("Loading template '[_1]' failed: [_2]", $file, $err))
         if $err;
+    $tmpl->{__file} = $file if $type eq 'file';
     $app->set_default_tmpl_params($tmpl);
+    $tmpl->param($param) if $param;
     $tmpl;
 }
 
@@ -2061,30 +2142,6 @@ sub process_mt_template {
     # Strip out placeholder wrappers to facilitate tmpl_* callbacks
     $body =~ s/<\/?MT_(\w+):(\w+)>//g;
     $body;
-}
-
-sub tmpl_prepend {
-    my $app = shift;
-    my ($tmpl, $section, $id, $content) = @_;
-    $$tmpl =~ s/(<MT_\U$section:$id>)/$1$content/;
-}
-
-sub tmpl_replace {
-    my $app = shift;
-    my ($tmpl, $section, $id, $content) = @_;
-    $$tmpl =~ s/(<MT_\U$section:$id>).*?(<\/MT_\U$section:$id>)/$1$content$2/s;
-}
-
-sub tmpl_append {
-    my $app = shift;
-    my ($tmpl, $section, $id, $content) = @_;
-    $$tmpl =~ s/(<\/MT_\U$section:$id>)/$content$1/;
-}
-
-sub tmpl_select {
-    my $app = shift;
-    my ($tmpl, $section, $id) = @_;
-    $$tmpl =~ m/<MT_\U$section:$id>(.*?)<\/MT_\U$section:$id>/s ? $1 : '';
 }
 
 sub build_page {
@@ -2152,12 +2209,6 @@ sub build_page {
     my $blog = $app->blog;
     $tmpl->context()->stash('blog', $blog) if $blog;
 
-    if ($app->{defer_build_page} && !($app->{component})) {
-        $tmpl->{__file} = $tmpl_file if $tmpl_file;
-        $tmpl->param($param);
-        return $tmpl;
-    }
-
     $tmpl_file ||= $tmpl->{__file} if exists $tmpl->{__file};
 
     my $output = $app->build_page_in_mem($tmpl, $param);
@@ -2168,21 +2219,6 @@ sub build_page {
         $app->run_callbacks('template_output', $app, \$output, $param, $tmpl);
     }
     $output;
-}
-
-sub build_deferred_page {
-    my $app = shift;
-    my ($tmpl) = @_;
-    my $output = $app->build_page_in_mem($tmpl);
-    return $app->error($tmpl->errstr)
-        unless defined $output;
-    my $tmpl_file = $tmpl->{__file};
-    if ($tmpl_file) {
-        $app->run_callbacks('template_output.'.$tmpl_file, $app, \$output, $tmpl->param(), $tmpl);
-    } else {
-        $app->run_callbacks('template_output', $app, \$output, $tmpl->param(), $tmpl);
-    }
-    return $output;
 }
 
 sub build_page_in_mem {

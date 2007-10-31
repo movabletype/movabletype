@@ -284,8 +284,6 @@ class MTViewer extends Smarty {
     function tag($tag, $args = array()) {
         $tag = preg_replace('/^mt/', '', strtolower($tag));
         if ((array_key_exists('mt' . $tag, $this->conditionals)) || (preg_match('/^if/i', $tag) || preg_match('/^has/', $tag) || preg_match('/[a-z](header|footer|previous|next)$/i', $tag))) {
-        print_r($tag);
-        print "<br />";
             @require_once("block.mt$tag.php");
             $fntag = 'smarty_block_mt' . $tag;
             if (function_exists($fntag)) {

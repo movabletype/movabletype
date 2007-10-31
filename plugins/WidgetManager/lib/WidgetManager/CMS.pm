@@ -156,9 +156,7 @@ sub edit {
       $tmpl->param(breadcrumbs       => $app->{breadcrumbs});
       $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
       $tmpl->param(rebuild           => $opt{rebuild});
-      # return plugin()->l10n_filter($tmpl->output);
-      local $app->{defer_build_page} = 0;
-      return $app->build_page($tmpl);
+      return $tmpl;
 }
 
 sub list {
@@ -234,8 +232,7 @@ sub list {
     $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
     $tmpl->param(rebuild           => $opt{rebuild});
     $tmpl->param(deleted           => $opt{deleted});
-    local $app->{defer_build_page} = 0;
-    return $app->build_page($tmpl);
+    return $tmpl;
 }
 
 sub build_module_list {

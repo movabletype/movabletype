@@ -21,10 +21,10 @@ function smarty_function_mtarchivecount($args, &$ctx) {
                     # start and end date
                     $eargs['current_timestamp'] = $ts;
                     $eargs['current_timestamp_end'] = $tse;
-                    $eargs['lastn'] = -1;
                 }
                 $archiver->setup_args($ctx, $eargs);
             }
+            $eargs['lastn'] = -1;
             $entries =& $ctx->mt->db->fetch_entries($eargs);
             return count($entries);
         }

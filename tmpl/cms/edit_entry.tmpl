@@ -565,16 +565,6 @@ function init() {
         }
 </mt:if>
     }
-    var el = getByID("dialog-container");
-    if (navigator.appVersion.indexOf('MSIE') != -1) {
-        var temp = navigator.appVersion.split('MSIE');
-        var version = parseFloat(temp[1]);
-    }
-    if (version < 7) {
-    if (el) el.style.position = '';
-    } else {
-        if (el) el.style.position = 'fixed';
-    }
     <mt:if name="defer_tag_load">window.setTimeout("deferredTagLoad()", 500);<mt:else>
     <mt:if name="tags_js">initTags();</mt:if></mt:if>
     <mt:unless name="id">title.focus();</mt:unless>
@@ -645,17 +635,6 @@ function highlightSwitch(selection) {
     return false;
 }
 
-function doValidateNotifyRecips(f) {
-    if (f.send_notify_list && f.send_notify_list.checked)
-        return true
-
-    if (f.send_notify_emails && !f.send_notify_emails.value) {
-        alert('<__trans phrase="You must specify at least one recipient." escape="singlequotes">');
-        return false;
-    }
-
-    return true;
-}
     Template.templates.autoSave = '<mt:section encode_js="1">
     [# if ( saving ) { #]
         [#= trans("Auto-saving..." ) #]
@@ -740,11 +719,9 @@ function doValidateNotifyRecips(f) {
     <mt:if name="id">
     <div id="entry-nav" class="pkg">
         <ul class="inline-nav right">
-<mt:ignore>
             <mt:if name="can_send_notifications">
-            <li><a href="javascript:void(0)"><__trans phrase="Share this [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
+            <li><a href="javascript:void(0)" onclick="openDialog(null,'entry_notify','blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="id">');return false;"><__trans phrase="Share this [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
             </mt:if>
-</mt:ignore>
             <mt:if name="status_publish">
                 <mt:if name="entry_permalink">
             <li class="view-entry-link"><a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View published [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
@@ -825,7 +802,7 @@ function doValidateNotifyRecips(f) {
                         </div>
                         <mt:setvarblock name="editor_content_height"><mt:if name="disp_prefs_height_body"><$mt:var name="disp_prefs_height_body"$><mt:else>194</mt:if></mt:setvarblock>
                         <div class="editor" id="editor-content-enclosure" mt:min-height="66" mt:update-field-height="editor-content-height" style="height: <$mt:var name="editor_content_height"$>px">
-                            <textarea tabindex="3" id="editor-content-textarea" name="_text_" class="full-width" style="height: <$mt:var name="editor_content_height"$>px" mt:allow-tabs="1"></textarea>
+                            <textarea id="editor-content-textarea" name="_text_" class="full-width" style="height: <$mt:var name="editor_content_height"$>px" mt:allow-tabs="1"></textarea>
                             <!-- the iframe bootstraps the js -->
                             <$mt:setvar name="delayed_bootstrap" value="1"$>
                             <iframe tabindex="3" id="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html" style="height: <$mt:var name="editor_content_height"$>px"></iframe>
@@ -893,6 +870,7 @@ function doValidateNotifyRecips(f) {
             MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
             Template.templates.categoryList = '<mt:section encode_js="1">
                 [# if ( !items.length ) { #]
+                    <span class="disabled">[#|h trans("None selected") #]</span>
                     [#* return #]
                 [# } #]
                 <ul class="<$mt:var name="container_type" lower_case="1"$>-list pkg">

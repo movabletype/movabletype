@@ -1,18 +1,20 @@
 <?php
 global $Lexicon_ja;
 $Lexicon_ja = array(
+
 ## php/plugins/init.AuthorArchives.php
-	'Author' => 'ユーザー別',
-	'Author Yearly' => 'ユーザー-年別',
-	'Author Monthly' => 'ユーザー-月別',
-	'Author Daily' => 'ユーザー-日別',
-	'Author Weekly' => 'ユーザー-週別',
+	'Author' => 'ユーザー',
+	'Author (#' => 'ユーザー (#',
+	'Author Yearly' => 'ユーザー 年別',
+	'Author Monthly' => 'ユーザー 月別',
+	'Author Daily' => 'ユーザー 日別',
+	'Author Weekly' => 'ユーザー 週別',
 
 ## php/plugins/init.Date-basedCategoryArchives.php
-	'Category Yearly' => 'カテゴリ-年別',
-	'Category Monthly' => 'カテゴリ-月別',
-	'Category Daily' => 'カテゴリ-日別',
-	'Category Weekly' => 'カテゴリ-週別',
+	'Category Yearly' => 'カテゴリ 年別',
+	'Category Monthly' => 'カテゴリ 月別',
+	'Category Daily' => 'カテゴリ 日別',
+	'Category Weekly' => 'カテゴリ 週別',
 
 ## php/lib/archive_lib.php
 	'Individual' => 'ブログ記事',
@@ -32,11 +34,10 @@ $Lexicon_ja = array(
 	'Type the characters you see in the picture above.' => '画像の中に見える文字を入力してください。',
 
 ## php/lib/block.mtassets.php
-## php/lib/block.mtentries.php
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
 
 ## php/lib/function.mtcommentfields.php
-	'Thanks for signing in,' => '', # Translate - New 
+	'Thanks for signing in,' => '', # Translate - New
 	'Now you can comment.' => 'コメントできます。',
 	'sign out' => 'サインアウト',
 	'(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(初めてコメントする場合、承認されるまではコメントが表示されない場合があります。)',
@@ -56,6 +57,10 @@ $Lexicon_ja = array(
 	'Email Address' => 'メールアドレス',
 	'URL' => 'URL',
 	'(You may use HTML tags for style)' => '(スタイル用のHTMLタグを使うことができます)',
+
+## php/lib/block.mtentries.php
+
+## php/lib/function.mtauthordisplayname.php
 
 ## php/lib/function.mtassettype.php
     'image' => '画像',

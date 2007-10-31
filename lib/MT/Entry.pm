@@ -775,6 +775,10 @@ sub to_hash {
     $hash;
 }
 
+#trans('Draft')
+#trans('Review')
+#trans('Future')
+
 1;
 __END__
 

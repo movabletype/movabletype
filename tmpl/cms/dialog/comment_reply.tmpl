@@ -1,0 +1,49 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Reply to comment">"$>
+<$mt:include name="dialog/header.tmpl"$>
+<mt:if name="closing">
+<script type="text/javascript">
+<!--
+closeDialog('<mt:var name="return_url">');
+//-->
+</script>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+<form action="<mt:var name="comment_script_url">" method="post" name="comments_form" id="comments-form" class="<mt:if name="preview_html">preview</mt:if>">
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="reply_to" value="<mt:var name="reply_to">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="return_url" value="<mt:if name="return_url"><mt:var name="return_url"><mt:else><mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id"></mt:if>" />
+    <div id="comment">
+        <p class="comment-meta"><__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html"$></span>"></p>
+        <div class="comment-body">
+            <$mt:var name="comment_text"$>
+        </div>
+    </div>
+<mt:if name="preview_html">
+    <div id="comment-preview">
+        <div class="intro"><__trans phrase="Preview of your comment"></div>
+        <div id="reply-body">
+            <$mt:var name="preview_html"$>
+        </div>
+    </div>
+</mt:if>
+    <div id="comment-reply">
+        <div class="intro"><__trans phrase="Your reply:"></div>
+        <textarea id="reply-body" name="text" rows="" cols="" class="full-width medium"><$mt:var name="text"$></textarea>
+    </div>
+    <div class="actions-bar">
+        <div class="actions-bar-inner">
+            <input type="button" accesskey="x" value="<__trans phrase="Cancel">" onclick="closeDialog()" />
+            <input type="button" accesskey="r" name="edit_reply" id="re-edit-comment-action" value="<__trans phrase="Re-edit">" title="<__trans phrase="Re-edit (r)">" onclick="DOM.removeClassName( DOM.getElement('comments-form'), 'preview' )" />
+            <input type="submit" accesskey="v" name="reply_preview" id="preview-comment-action" value="<__trans phrase="Preview">" title="<__trans phrase="Preview reply (v)">" />
+            <input type="submit" accesskey="s" name="reply" id="publish-comment-action" value="<__trans phrase="Post">" title="<__trans phrase="Post reply (s)">" />
+        </div>
+    </div>
+</form>
+<mt:include name="dialog/footer.tmpl">

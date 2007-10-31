@@ -42,10 +42,11 @@ function selectBlog() {
 <fieldset style="margin-top: 0px;">
 
     <mtapp:setting
+        id="import_to"
         label="<__trans phrase="Import to">"
         hint="<__trans phrase="Select a blog for importing.">">
         <p><strong><span id="import_blog_name"><mt:if name="blog_id"><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)<mt:else>(<__trans phrase="None selected.">)</mt:if></span></strong>
-        <input type="button" onclick="return selectBlog();" value="<__trans phrase="Select...">" /></p>
+        <mt:unless name="blog_id"><input type="button" onclick="return selectBlog();" value="<__trans phrase="Select...">" /></mt:unless></p>
     </mtapp:setting>
 
 <mt:if name="importer_loop">
@@ -84,23 +85,25 @@ function selectBlog() {
 </mt:if>
     </mtapp:setting>
 
-
-    <mtapp:setting
-        id="file"
-        label="<__trans phrase="Upload import file (optional)">"
-        hint="<__trans phrase="If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder of your Movable Type directory.">"
-        help_page="entry_import"
-        help_section="source_file">
-
-<input name="file" id="file" type="file" />
-    </mtapp:setting>
-
 <mt:else>
 
 <p class="page-desc"><input type="hidden" name="import_as_me" value="1" />
 <__trans phrase="You will be assigned the user of all imported entries.  If you wish the original user to keep ownership, you must contact your MT system administrator to perform the import so that new users can be created if necessary."></p>
 
 </mt:if>
+
+<mtapp:setting
+    id="file"
+    label="<__trans phrase="Upload import file (optional)">"
+    hint="<__trans phrase="If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder of your Movable Type directory.">"
+    help_page="entry_import"
+    help_section="source_file">
+
+<input name="file" id="file" type="file" />
+    </mtapp:setting>
+
+</mtapp:setting>
+
 
 <div id="choose-destination">
 <div class="spinner">

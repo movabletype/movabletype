@@ -15,7 +15,7 @@
                 <TMPL_IF NAME=CAN_EDIT_ENTRIES><li><a<TMPL_IF NAME=NAV_COMMENTS> class="here"</TMPL_IF> id="nav-comments" title="<MT_TRANS phrase="List Comments">" href="<TMPL_VAR NAME=MT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Comments"></a></li></TMPL_IF>
                 <TMPL_IF NAME=CAN_MANAGE_FEEDBACK><li><a<TMPL_IF NAME=NAV_COMMENTERS> class="here"</TMPL_IF> id="nav-commenters" title="<MT_TRANS phrase="List Commenters">" href="<TMPL_VAR NAME=MT_URL>?__mode=list_commenter&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Commenters"></a></li></TMPL_IF>
                 <TMPL_IF NAME=CAN_EDIT_ENTRIES><li><a<TMPL_IF NAME=NAV_TRACKBACKS> class="here"</TMPL_IF> id="nav-trackbacks" title="<MT_TRANS phrase="List TrackBacks">" href="<TMPL_VAR NAME=MT_URL>?__mode=list_pings&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="TrackBacks"></a></li></TMPL_IF>
-                <TMPL_IF NAME=CAN_EDIT_NOTIFICATIONS><li><a<TMPL_IF NAME=NAV_NOTIFICATIONS> class="here"</TMPL_IF> id="nav-notifications" title="<MT_TRANS phrase="Edit Notification List">" href="<TMPL_VAR NAME=MT_URL>?__mode=list&amp;_type=notification&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Notifications"></a></li></TMPL_IF>
+                <TMPL_IF NAME=CAN_EDIT_NOTIFICATIONS><li><a<TMPL_IF NAME=NAV_NOTIFICATIONS> class="here"</TMPL_IF> id="nav-notifications" title="<MT_TRANS phrase="Edit Address Book">" href="<TMPL_VAR NAME=MT_URL>?__mode=list&amp;_type=notification&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Address Book"></a></li></TMPL_IF>
             </ul>
         </li>
 <TMPL_ELSE><TMPL_IF NAME=CAN_MANAGE_FEEDBACK>

@@ -1,0 +1,337 @@
+/* Vox Theme for Movable Type ============================================= */
+
+/* Default ---------------------------------------------------------------- */
+
+/* Global */
+
+body {
+    font: normal 13px arial, helvetica, hirakakupro-w3, osaka, "ms pgothic", sans-serif;
+}
+
+
+/* Header */
+
+#header {
+    border-top-width: 10px;
+    border-top-style: solid;
+}
+
+#header-name {
+    margin: 0 0 5px;
+    line-height: 1;
+}
+
+#header-description {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.125;
+}
+
+#header a {
+    text-decoration: none;
+}
+
+#header a:hover {
+    text-decoration: underline;
+}
+
+
+/* Content */
+
+.asset-name {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.asset-name a {
+    text-decoration: none;
+}
+
+.asset-name a:hover {
+    text-decoration: underline;
+}
+
+.asset-content {
+    margin: 5px 0;
+}
+
+.asset-more-link {
+    font-weight: bold;
+}
+
+.asset-footer {
+    margin-top: 10px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    padding-top: 5px;
+    font-weight: normal;
+}
+
+.asset-footer a,
+.comment-footer a {
+    font-weight: normal;
+}
+
+.content-nav {
+    margin: 5px 0 10px;
+}
+
+.archive-title {
+    margin: 5px 0 30px;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.trackbacks-info,
+.trackback-content,
+.comment-content,
+.comments-open-content,
+.comments-closed {
+    margin: 5px 0;
+}
+
+.module-header,
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    margin: 0;
+    padding: 5px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+/* Utility */
+
+.module-header,
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    /* ie win (5, 5.5, 6) bugfix */
+    p\osition: relative;
+    width: 100%;
+    w\idth: auto;
+}
+
+.asset-more-link,
+.asset-footer,
+.comment-footer,
+.trackback-footer,
+.typelist-thumbnailed {
+    font-size: 11px;
+}
+
+
+/* Global ----------------------------------------------------------------- */
+
+body {
+    color: #333;   
+    background: #ffebfd url(body.gif) repeat-x fixed top center; 
+}
+
+a {
+    color: #99385e; 
+    font-weight: bold; 
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+
+/* Layout ----------------------------------------------------------------- */
+
+#container-inner,
+#content {
+    background-color: #fff;
+}
+
+
+/* Header ----------------------------------------------------------------- */
+
+#header { 
+    border-color: #82003e;  
+    background: #cfc4f7 url(header.png) no-repeat bottom left; 
+    padding: 20px 0 116px 20px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#header a {
+    color: #a2005c;
+    font-weight: normal;
+}
+
+#header-name {
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #a2005c; 
+    font-size: 28px;
+    font-weight: normal;
+}
+
+#header-description {
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #6f6f6f; 
+    font-weight: normal; 
+}
+
+#header {
+    margin-bottom: 10px;
+}
+
+#header-name {
+    padding: 10px 70px 0;
+}
+
+#header-description {
+    padding: 0 70px 4px;
+}
+
+
+/* Content ---------------------------------------------------------------- */
+
+.asset {
+    background: url(post-ornament.gif) no-repeat 0 0;
+}
+
+.asset-header {
+    margin-top: 15px;
+}
+
+.asset-header,
+.asset-content,
+.asset-footer {
+    margin-left: 27px;
+    margin-right: 27px;
+} 
+
+.asset-name,
+.asset-name a,
+.archive-title {
+    color: #82003e;
+}
+
+.asset-footer,
+.asset-footer a,
+.comment-footer,
+.comment-footer a,
+.trackback-footer {
+    color: #999;
+}
+
+.asset-footer {
+    border-top-color: #f7c5dd;
+}
+
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    color: #99385e;
+}
+
+
+.archive-list-item {
+    margin-bottom: 5px;
+}
+
+
+/* Widget ----------------------------------------------------------------- */
+
+.layout-wtt #content-inner { background: transparent url(content-wtt.gif) repeat-y scroll right top; }
+.layout-twt #content-inner { background: transparent url(content-twt.gif) repeat-y scroll left top; }
+.layout-wt #content-inner { background: transparent url(content-wt.gif) repeat-y scroll right top; }
+.layout-tw #content-inner { background: transparent url(content-tw.gif) repeat-y scroll left top; }
+
+.widget {
+    border-bottom: 1px solid #f7c5dd;
+}
+
+.widget-header {
+    margin-top: 10px;
+}
+
+.widget-header,
+.widget-header a {
+    color: #99385e;
+    font-weight: bold;
+}
+
+.widget-content {
+    margin-bottom: 15px;
+}
+
+.widget-content a {
+    color: #999;
+}
+
+.widget-about .widget-header {
+    margin-bottom: 10px;
+}
+
+.widget-powered .widget-content {
+    margin: 0 1px 0 0;
+    background-color: #fff2fe;
+}
+
+.layout-wtt #beta .widget-powered .widget-content,
+.layout-wtt #gamma .widget-powered .widget-content,
+.layout-twt #gamma .widget-powered .widget-content,
+.layout-wt #beta .widget-powered .widget-content {
+    margin-right: 0;
+    margin-left: 1px;
+}
+
+.widget-email .widget-content,
+.widget-subscribe .widget-content,
+.widget-syndicate .widget-content {
+    margin-top: 15px;
+} 
+
+.widget-header,
+.widget-content {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.widget-header {
+    font-size: 14px;
+}
+
+.widget-header a {
+    text-decoration: none;
+}
+
+.widget-header a:hover {
+    text-decoration: underline;
+}
+
+.widget-content {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 11px;
+}
+
+
+/* "Powered By" Module */
+
+.widget-powered .widget-content {
+    padding: 10px;
+    text-align: center;
+}
+
+.widget-powered .widget-content,
+.widget-powered .widget-content a {
+    color: #333;
+}
+
+
+/* Calendar Module */
+
+.widget-calendar .widget-content table {
+    font-size: 10px;
+}

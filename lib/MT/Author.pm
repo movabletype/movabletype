@@ -164,7 +164,7 @@ sub commenter_status {
         { author_id=>$this->id, blog_id => $blog_id } );
     return PENDING if !$perm;
     return BANNED if $perm->is_restricted('comment');
-    return APPROVED if $perm->can_comment();
+    return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();
     return PENDING;
 }
 

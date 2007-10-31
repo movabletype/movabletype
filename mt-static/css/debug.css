@@ -1,0 +1,31 @@
+/* Debug Panel ---------------------------------------------------------------------------------- */
+
+.debug-panel {
+    width: 100%;
+    border-top: 1px dotted #f55;
+    margin-top: 5px;
+    background-color: #daa;
+}
+.debug-panel h3 {
+    padding: 5px;
+    font-size: 12px;
+    margin: 0;
+    background-color: #f55;
+    color: #fff;
+}
+
+.debug-panel-inner li {
+    white-space: pre;
+}
+
+.debug-panel-inner li:hover {
+    background-color: #eaa;
+}
+
+.debug-panel-inner {
+    padding: 5px;
+    font-family: 'Andale Mono', monospace;
+    font-size: 10px;
+    max-height: 200px;
+    overflow: auto;
+}

@@ -1,4 +1,5 @@
 package MT::Plugin::MultiBlog;
+
 # $Id$
 use strict;
 use warnings;
@@ -6,11 +7,9 @@ use warnings;
 use base qw( MT::Plugin );
 
 use MT;
-use MT::Comment;
-use MT::TBPing;
 use MT::Template::Context;
 
-my $VERSION = '2.0';
+our $VERSION = '2.0';
 my $plugin  = MT::Plugin::MultiBlog->new({
     name        =>  'MultiBlog',
     description =>  '<MT_TRANS phrase="MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.">',
@@ -29,9 +28,6 @@ my $plugin  = MT::Plugin::MultiBlog->new({
         [ 'default_mtmultiblog_action', { Default =>  1, Scope => 'blog' } ],
         [ 'default_mtmulitblog_blogs',  { Default => '', Scope => 'blog' } ],
     ]),
-    app_methods => {
-        'MT::App::CMS' => { 'multiblog_add_trigger' => \&add_trigger }
-    },
     l10n_class => 'MultiBlog::L10N',
 });
 MT->add_plugin($plugin);
@@ -43,29 +39,17 @@ my @overridden_tags =
       Categories    Pings               BlogCommentCount
       Include       BlogCategoryCount   Tags
       Blogs         BlogEntryCount      TagSearchLink
-      Assets
+      Assets        Authors
     );
 
-# Programmatically register all template tags
-add_template_tags(
-    variable => [],
-    container => [
-        'OtherBlog',          'MultiBlog',
-        'MultiBlogLocalBlog'
-    ],
-    conditional => [
-        'MultiBlogIfLocalBlog',     
-    ],
-);
-
 # Register entry post-save callback for rebuild triggers
-MT->add_callback( 'CMSPostSave.entry', 10, $plugin,
+MT->add_callback( 'cms_post_save.entry', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
 
 # Register Comment/TB post-save callbacks for rebuild triggers
-MT::Comment->add_callback( 'post_save', 10, $plugin,
+MT->add_callback( 'MT::Comment::post_save', 10, $plugin,
     sub { $plugin->runner( 'post_feedback_save', 'comment_pub', @_ ) } );
-MT::TBPing->add_callback( 'post_save', 10, $plugin,
+MT->add_callback( 'MT::TBPing::post_save', 10, $plugin,
     sub { $plugin->runner( 'post_feedback_save', 'tb_pub', @_ ) } );
 
 sub init_app {
@@ -74,6 +58,26 @@ sub init_app {
     intercept_tags(); 
 }
 
+sub init_registry {
+    my $plugin = shift;
+    $plugin->{registry} = {
+        applications => {
+            'cms' => {
+                methods => {
+                    multiblog_add_trigger => \&add_trigger,
+                },
+            },
+        },
+        tags => {
+            block => {
+                OtherBlog => sub { $plugin->tagrunner( 'OtherBlog', @_ ) },
+                MultiBlog => sub { $plugin->tagrunner( 'MultiBlog', @_ ) },
+                MultiBlogLocalBlog => sub { $plugin->tagrunner( 'MultiBlogLocalBlog', @_ ) },
+                MultiBlogIfLocalBlog => sub { $plugin->tagrunner( 'MultiBlogIfLocalBlog', @_ ) },
+            },
+        },
+    };
+}
 sub instance { $plugin }
 
 sub add_trigger {
@@ -85,37 +89,24 @@ sub add_trigger {
 
     my $blog_id = $app->blog->id;
 
-    my $cb;
-    if (!$app->param('search')) {
-        $cb = $app->add_callback('AppTemplateParam',
-            5, undef, sub {
-                my ($eh, $app, $param, $tmpl) = @_;
-                $param->{object_loop} ||= [];
-                unshift @{$param->{object_loop}}, {
-                    id => '_all',
-                    label => $plugin->translate('* All Weblogs'),
-                    description => $plugin->translate('Select to apply this trigger to all weblogs'),
-                };
-            }
-        );
-    }
-    my $out = $app->listing({
-        Template => $plugin->load_tmpl('dialog_create_trigger.tmpl'),
-        Type => 'blog',
-        Code => sub {
+    my $dialog_tmpl = $plugin->load_tmpl('dialog_create_trigger.tmpl');
+    my $tmpl = $app->listing({
+        template => $dialog_tmpl,
+        type => 'blog',
+        code => sub {
             my ($obj, $row) = @_;
             if ($obj) {
                 $row->{label} = $obj->name;
                 $row->{link} = $obj->site_url;
             }
         },
-        Terms => {
+        terms => {
             id => [ $blog_id ],
         },
-        Args => {
+        args => {
             not => { id => 1 },
         },
-        Params => {
+        params => {
             panel_type => 'blog',
             dialog_title => $plugin->translate('MultiBlog'),
             panel_title => $plugin->translate('Create New Trigger'),
@@ -132,8 +123,16 @@ sub add_trigger {
             trigger_caption => $plugin->translate('When this'),
         },
     });
-    $app->remove_callback($cb) if $cb;
-    $out;
+    if (!$app->param('search')) {
+        if (my $loop = $tmpl->param('object_loop')) {
+            unshift @$loop, {
+                id => '_all',
+                label => $plugin->translate('* All Weblogs'),
+                description => $plugin->translate('Select to apply this trigger to all weblogs'),
+            };
+        }
+    }
+    return $tmpl;
 }
 
 sub trigger_loop {
@@ -152,7 +151,7 @@ sub trigger_loop {
         },
         {
             trigger_key  => 'tb_pub',
-            trigger_name => $plugin->translate('publishes a ping'),
+            trigger_name => $plugin->translate('publishes a TrackBack'),
         },
     ];
 }
@@ -329,24 +328,6 @@ sub reset_config {
     }
 }
 
-sub add_template_tags {
-    my %tags       = @_;
-    my $add_method = {
-        variable    => 'add_tag',
-        conditional => 'add_conditional_tag',
-        container   => 'add_container_tag',
-    };
-    foreach my $tag_type ( keys %tags ) {
-        foreach my $tag ( @{ $tags{$tag_type} } ) {
-            eval {
-                my $add = $add_method->{$tag_type};
-                MT::Template::Context->$add(
-                    $tag => sub { $plugin->tagrunner( $tag, @_ ) } );
-            };
-        }
-    }
-}
-
 # Run-time loading for MultiBlog core methods
 sub runner {
     my $plugin = shift;
@@ -369,27 +350,16 @@ sub intercept_tags {
     my %orig_handler_for;
     my $ctx = MT::Template::Context->new;
 
-    my $handler_for = \%MT::Template::Context::Handlers;
-    
     foreach my $tag (@overridden_tags) {
-
-        my ($newcode, $code, $flag);
-        if (ref($handler_for->{$tag}) eq 'ARRAY') {
-            ($code, $flag) = @{ $handler_for->{$tag} };
-            $orig_handler_for{$tag} = $code;
-        }
-        else {
-            $orig_handler_for{$tag} = $handler_for->{$tag};
-        }
-        $newcode = sub { 
+        $tag = lc $tag;
+        my $newcode = sub {
             $plugin->runner( 
-                'preprocess_native_tags', 
-                $orig_handler_for{$tag}, 
+                'preprocess_native_tags',
+                $orig_handler_for{$tag},
                 @_, 
             ) 
         };
-        $handler_for->{$tag} = $flag ? [$newcode, $flag] 
-                                     : $newcode;
+        $orig_handler_for{$tag} = $ctx->replace_handler($tag, $newcode);
     }
 }
 

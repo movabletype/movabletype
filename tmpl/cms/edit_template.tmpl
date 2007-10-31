@@ -1,7 +1,6 @@
 <mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="content_header">
-<div id="msg-block">
     <mt:unless name="recovered_object">
         <mt:if name="autosaved_object_exists">
             <mtapp:statusmsg
@@ -64,7 +63,6 @@
             <__trans phrase="Your [_1] has been published." params="<mt:var name="name">">
         </mtapp:statusmsg>
     </mt:if>
-</div>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
     <mtapp:widget
@@ -92,13 +90,13 @@
     </mt:if>
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
-    <button type="submit" accesskey="s" title="<__trans phrase="Save (s)">" onclick="return validate(this.form);" class="positive"><__trans phrase="Save"></button>
+    <button type="submit" accesskey="s" tabindex="12" title="<__trans phrase="Save (s)">" onclick="return validate(this.form);" class="positive"><__trans phrase="Save"></button>
     <!-- <input type="submit" accesskey="s" value="<__trans phrase="Save">" title="<__trans phrase="Save this template (s)">" onclick="return validate(this.form);" /> -->
     <mt:unless name="new_object">
         <mt:unless name="build_dynamic">
             <mt:if name="has_rebuild">
                 <mt:if name="can_rebuild">
-    <button type="submit" accesskey="r" title="<__trans phrase="Save and Publish this template (r)">" onclick="return validate(this.form, 1);" class="positive"><__trans phrase="Save and Publish"></button>
+    <button type="submit" accesskey="r" tabindex="13" title="<__trans phrase="Save and Publish this template (r)">" onclick="return validate(this.form, 1);" class="positive"><__trans phrase="Save and Publish"></button>
     <!-- <input type="submit" value="<__trans phrase="Save and Publish">" accesskey="r" title="<__trans phrase="Save and Publish this template (r)">" onclick="return validate(this.form, 1);" /> -->
                 </mt:if>
             </mt:if>
@@ -212,6 +210,8 @@ function savedArchiveMapChange(c) {
         map.innerHTML = res;
 }
 function deleteMap(mapid) {
+    if (!confirm('<__trans phrase="Are you sure you want to remove this template map?">'))
+        return;
     var tr = getByID(mapid);
     if (tr) {
         var tbody = tr.parentNode;
@@ -352,7 +352,7 @@ TC.attachLoadEvent( init );
             <a href="javascript: void 0;" title="<__trans phrase="Syntax Highlight Off" escape="singlequotes">" mt:command="set-mode-codepress-off" class="command-toggle-codepress-off toolbar button"><b>Syntax Hightlight Off</b><s></s></a>
         </span>
         <mt:if name="template_snippets">
-        <select id="tag-insert" name="tag-insert" onchange="insertSnippet(this)">
+        <select id="tag-insert" tabindex="2" name="tag-insert" onchange="insertSnippet(this)">
             <option value=""><__trans phrase="Insert..."></option>
             <mt:loop name="template_snippets">
             <option value="<mt:var name="id">"><mt:var name="label" escape="html"><mt:if name="trigger"> (<mt:var name="trigger" escape="html">)</mt:if></option>
@@ -361,7 +361,7 @@ TC.attachLoadEvent( init );
         </mt:if>
     </div>
     <div id="textarea-enclosure" style="position: relative; padding-bottom: 10px; height: <mt:var name="disp_prefs_height_text" default="290">px" mt:min-height="66" mt:update-field-height="text_height">
-        <textarea class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
+        <textarea tabindex="3" class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
         <input type="hidden" name="text_height" id="text_height" value="<mt:var name="disp_prefs_height_text" default="290">" />
         <div class="resizer" mt:delegate="resizer" mt:target="textarea-enclosure" mt:lock="x">
             <img src="<$mt:var name="static_uri"$>images/spacer.gif" width="100%" height="10"/>
@@ -376,7 +376,7 @@ TC.attachLoadEvent( init );
     help_page="templates"
     help_section="template_type">
 
-<select name="identifier" id="identifier" class="full-width">
+<select name="identifier" id="identifier" tabindex="4" class="full-width">
 <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
 <mt:loop name="index_identifiers">
 <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
@@ -392,7 +392,7 @@ TC.attachLoadEvent( init );
     help_page="templates"
     help_section="output_file">
     <div class="textarea-wrapper">
-        <input name="outfile" id="outfile" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
+        <input name="outfile" id="outfile" tabindex="5" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
     </div>
 </mtapp:setting>
 </mt:if>
@@ -405,11 +405,11 @@ TC.attachLoadEvent( init );
         help_section="enable_dynamic_publishing">
         <ul>
         <mt:if name="custom_dynamic">
-            <li><input type="checkbox" id="build_dynamic" name="build_dynamic" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic publishing for this template"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
+            <li><input type="checkbox" id="build_dynamic" name="build_dynamic" tabindex="6" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic publishing for this template"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
         </mt:if>
         <mt:unless name="build_dynamic">
             <mt:if name="has_rebuild">
-            <li><input type="checkbox" id="rebuild_me" name="rebuild_me" value="1" <mt:if name="rebuild_me">checked="checked" </mt:if> mt:watch-change="1" /> <label for="rebuild_me"><__trans phrase="Publish this template automatically when rebuilding index templates"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></li>
+            <li><input type="checkbox" id="rebuild_me" name="rebuild_me" tabindex="7" value="1" <mt:if name="rebuild_me">checked="checked" </mt:if> mt:watch-change="1" /> <label for="rebuild_me"><__trans phrase="Publish this template automatically when rebuilding index templates"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></li>
             </mt:if>
         </mt:unless>
         </ul>
@@ -422,7 +422,7 @@ TC.attachLoadEvent( init );
     help_page="templates"
     help_section="linked_templates">
     <div class="textarea-wrapper">
-        <input name="linked_file" id="linked_file" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
+        <input name="linked_file" id="linked_file" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
     </div>
 </mtapp:setting>
 
@@ -437,14 +437,14 @@ TC.attachLoadEvent( init );
         <div class="create-inline" id="create-inline-mapping">
             <p>
                 <label for="new_archive_type"><__trans phrase="Archive Type:"></label>
-                <select name="new_archive_type" id="new_archive_type">
+                <select name="new_archive_type" id="new_archive_type" tabindex="9">
     <mt:loop name="archive_types">
                     <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
     </mt:loop>
                 </select>
                 &nbsp;
-                <input type="button" name="add" value="<__trans phrase="Add">" onclick="addMap(this.form)" />
-                <input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="return cancelCreateMode()" />
+                <input type="button" name="add" tabindex="10" value="<__trans phrase="Add">" onclick="addMap(this.form)" />
+                <input type="button" name="cancel" tabindex="11" value="<__trans phrase="Cancel">" onclick="return cancelCreateMode()" />
             </p>
         </div>
         <div id="template-maps">

@@ -142,8 +142,9 @@ sub login {
     my %param = @_;
 
     my $param = {
-        blog_id => $app->param('blog_id'),
-        static  => $app->param('static'),
+        blog_id => ($app->param('blog_id') || 0),
+        static  => ($app->param('static') || ''),
+        return_url => ($app->param('return_url') || ''),
     };
     $param->{entry_id} = $app->param('entry_id') if $app->param('entry_id');
     while ( my ( $key, $val ) = each %param ) {
@@ -160,6 +161,7 @@ sub login {
     foreach my $key (@auths) {
         if ( $key eq 'MovableType' ) {
             $param->{enabled_MovableType} = 1;
+            $param->{default_signin} = 'MovableType';
             my $cfg = $app->config;
             if ( my $registration = $cfg->CommenterRegistration ) {
                 if (   ( $cfg->AuthenticationModule eq 'MT' )
@@ -185,6 +187,7 @@ sub login {
                 name       => $auth->{label},
                 key        => $auth->{key},
                 login_form => $app->_get_options_html($key),
+                exists($auth->{logo}) ? (logo => $auth->{logo}) : (),
               };
         }
         else {
@@ -192,6 +195,7 @@ sub login {
                 name       => $auth->{label},
                 key        => $auth->{key},
                 login_form => $app->_get_options_html($key),
+                exists($auth->{logo}) ? (logo => $auth->{logo}) : (),
             };
         }
     }
@@ -205,7 +209,11 @@ sub login {
     unshift @$external_authenticators, $otherauths{'OpenID'}
       if exists $otherauths{'OpenID'};
 
-    $param->{auth_loop} = $external_authenticators if @$external_authenticators;
+    if ( @$external_authenticators ) {
+        $param->{auth_loop}      = $external_authenticators;
+        $param->{default_signin} = $external_authenticators->[0]->{key}
+          unless exists $param->{default_signin};
+    }
 
     $app->build_page( 'login.tmpl', $param );
 }
@@ -315,8 +323,8 @@ sub do_login {
             $app->_make_commenter_session( $app->make_magic_token,
                 $commenter->email, $commenter->name,
                 ($commenter->nickname || 'User#' . $commenter->id),
-                $commenter->id );
-            $app->start_session( $commenter, $ctx->{permanent} );
+                $commenter->id, undef, $ctx->{permanent} ? '+10y' : 0 );
+            #$app->start_session( $commenter, $ctx->{permanent} ? 1 : 0 );
             return $app->redirect_to_target;
         }
         $message =
@@ -1153,11 +1161,18 @@ sub post {
     if ( $blog->use_comment_confirmation ) {
         my $tmpl =
           MT::Template->load(
-            { type => 'comment_pending', blog_id => $entry->blog_id } )
-          or return $app->error(
-            $app->translate("You must define a Comment Pending template.") );
+            { type => 'comment_response', blog_id => $entry->blog_id } );
+        unless ($tmpl) {
+            require MT::DefaultTemplates;
+            ($tmpl) = MT::DefaultTemplates->load({ type => 'comment_response' });
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+        }
+        my $ctx = $tmpl->context;
         $tmpl->param(
-            { 'type' => 'confirm', 'comment_link' => $comment_link } );
+            { 'body_class' => 'mt-comment-confirmation', 'comment_link' => $comment_link } );
+        $ctx->stash('entry', $entry);
+        $ctx->stash('comment', $comment);
+        $ctx->stash('commenter', $commenter) if $commenter;
         my $html = $tmpl->output();
         $html = $tmpl->errstr unless defined $html;
         return $html;
@@ -1632,17 +1647,17 @@ sub handle_sign_in {
     my $result = 0;
     if ( $q->param('logout') ) {
         my ( $s, $commenter ) = $app->_get_commenter_session();
-        if ($commenter) {
-            require MT::Auth;
-            my $ctx = MT::Auth->fetch_credentials( { app => $app } );
-            my $cmntr_sess =
-              $app->session_user( $commenter, $ctx->{session_id},
-                permanent => $ctx->{permanent} );
-            if ($cmntr_sess) {
-                $app->user($commenter);
-                MT::Auth->invalidate_credentials( { app => $app } );
-            }
-        }
+        #if ($commenter) {
+        #    require MT::Auth;
+        #    my $ctx = MT::Auth->fetch_credentials( { app => $app } );
+        #    my $cmntr_sess =
+        #      $app->session_user( $commenter, $ctx->{session_id},
+        #        permanent => $ctx->{permanent} );
+        #    if ($cmntr_sess) {
+        #        $app->user($commenter);
+        #        MT::Auth->invalidate_credentials( { app => $app } );
+        #    }
+        #}
 
         my %cookies = $app->cookies();
         $app->_invalidate_commenter_session( \%cookies );
@@ -1806,36 +1821,19 @@ sub view {
     $ctx->stash( 'commenter', $cmntr ) if ($cmntr);
     $ctx->{current_timestamp} = $entry->authored_on;
     my %cond;
-    my $tmpl =
-      ( $q->param('arch') )
-      ? (
-        MT::Template->load(
+    my $tmpl = MT::Template->load(
             {
                 type    => 'individual',
                 blog_id => $entry->blog_id
             }
-          )
-          or return $app->error(
-            $app->translate(
-                    "You must define an Individual template in order to "
-                  . "display dynamic comments."
-            )
-          )
-      )
-      : (
-        MT::Template->load(
-            {
-                type    => 'comments',
-                blog_id => $entry->blog_id
-            }
-          )
-          or return $app->error(
-            $app->translate(
-                    "You must define a Comment Listing template in order to "
-                  . "display dynamic comments."
-            )
-          )
-      );
+          );
+
+    unless ($tmpl) {
+        # Load default template and translate it
+        require MT::DefaultTemplates;
+        ($tmpl) = MT::DefaultTemplates->load( { type => 'individual' } );
+        $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+    }
 
     my $html = $tmpl->build( $ctx, \%cond );
     $html = MT::Util::encode_html( $tmpl->errstr ) unless defined $html;
@@ -1903,26 +1901,25 @@ sub do_preview {
     $ctx->stash( 'commenter', $commenter );
     my ($tmpl);
     $err ||= '';
-    if ( $err eq 'pending' ) {
+    if ($err) {
         $tmpl = MT::Template->load(
             {
-                type    => 'comment_pending',
+                type    => 'comment_response',
                 blog_id => $entry->blog_id
             }
-          )
-          or return $app->error(
-            $app->translate("You must define a Comment Pending template.") );
-    }
-    elsif ($err) {
-        $ctx->stash( 'error_message', $err );
-        $tmpl = MT::Template->load(
-            {
-                type    => 'comment_error',
-                blog_id => $entry->blog_id
-            }
-          )
-          or return $app->error(
-            $app->translate("You must define a Comment Error template.") );
+          );
+        unless ($tmpl) {
+            require MT::DefaultTemplates;
+            ($tmpl) = MT::DefaultTemplates->load({ type => 'comment_response' });
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+        }
+        if ( $err eq 'pending' ) {
+            $tmpl->param('body_class', 'mt-comment-pending');
+        }
+        else {
+            $ctx->stash( 'error_message', $err );
+            $tmpl->param('body_class', 'mt-comment-error');
+        }
     }
     else {
         $tmpl = MT::Template->load(
@@ -1930,9 +1927,13 @@ sub do_preview {
                 type    => 'comment_preview',
                 blog_id => $entry->blog_id
             }
-          )
-          or return $app->error(
-            $app->translate("You must define a Comment Preview template.") );
+          );
+        unless ($tmpl) {
+            require MT::DefaultTemplates;
+            ($tmpl) = MT::DefaultTemplates->load({ type => 'comment_preview' });
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
+        }
+        $tmpl->param('body_class', 'mt-comment-preview');
     }
     my %cond;
     my $html = $tmpl->build( $ctx, \%cond );
@@ -1961,13 +1962,13 @@ sub edit_commenter_profile {
 
     my ( $session, $commenter ) = $app->_get_commenter_session();
     if ($commenter) {
-        require MT::Auth;
-        my $ctx = MT::Auth->fetch_credentials( { app => $app } );
-        my $cmntr_sess =
-          $app->session_user( $commenter, $ctx->{session_id},
-            permanent => $ctx->{permanent} );
-        return $app->handle_error( $app->translate('Invalid login') )
-          unless $cmntr_sess;
+        #require MT::Auth;
+        #my $ctx = MT::Auth->fetch_credentials( { app => $app } );
+        #my $cmntr_sess =
+        #  $app->session_user( $commenter, $ctx->{session_id},
+        #    permanent => $ctx->{permanent} );
+        #return $app->handle_error( $app->translate('Invalid login') )
+        #  unless $cmntr_sess;
 
         my $blog_id = $app->param('blog_id');
         return $app->handle_error( $app->translate('Permission denied') )
@@ -1995,7 +1996,7 @@ sub save_commenter_profile {
 
     my %param =
       map { $_ => scalar( $q->param($_) ) }
-      qw( id name nickname email password pass_verify hint url entry_url external_auth);
+      qw( id name nickname email password pass_verify hint url entry_url return_url external_auth);
     $param{ 'auth_mode_' . $app->config->AuthenticationModule } = 1;
 
     unless ( $param{id} =~ /\d+/ ) {
@@ -2009,13 +2010,13 @@ sub save_commenter_profile {
         return $app->build_page( 'profile.tmpl', \%param );
     }
 
-    require MT::Auth;
-    my $ctx = MT::Auth->fetch_credentials( { app => $app } );
-    my $cmntr_sess =
-      $app->session_user( $cmntr, $ctx->{session_id},
-        permanent => $ctx->{permanent} );
-    return $app->handle_error( $app->translate('Invalid login') )
-      unless $cmntr_sess;
+    #require MT::Auth;
+    #my $ctx = MT::Auth->fetch_credentials( { app => $app } );
+    #my $cmntr_sess =
+    #  $app->session_user( $cmntr, $ctx->{session_id},
+    #    permanent => $ctx->{permanent} );
+    #return $app->handle_error( $app->translate('Invalid login') )
+    #  unless $cmntr_sess;
 
     $app->user($cmntr);
     $app->validate_magic
@@ -2063,7 +2064,7 @@ sub save_commenter_profile {
             $cmntr->name,
             ($cmntr->nickname || 'User#' . $cmntr->id),
             $cmntr->id );
-        $app->start_session( $cmntr, $ctx->{permanent} );
+        #    $app->start_session( $cmntr, $ctx->{permanent} );
     }
     $param{ 'auth_mode_' . $app->config->AuthenticationModule } = 1;
     return $app->build_page( 'profile.tmpl', \%param );
@@ -2178,7 +2179,7 @@ sub do_reply {
       $app->config('CGIPath') . $app->config('CommentScript');
 
     $app->{template_dir} = 'cms';
-    return $app->build_page( 'dialog/post_comment.tmpl',
+    return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, error => $app->errstr } )
       unless $comment;
 
@@ -2198,8 +2199,8 @@ sub do_reply {
                 MT::Blog->load( $param->{blog_id} ), $commenter );
         }
     );
-    return $app->build_page( 'dialog/post_comment_end.tmpl',
-        { return_url => $q->param('return_url') } );
+    return $app->build_page( 'dialog/comment_reply.tmpl',
+        { closing => 1, return_url => $q->param('return_url') } );
 }
 
 sub reply_preview {
@@ -2223,11 +2224,13 @@ sub reply_preview {
       $app->config('CGIPath') . $app->config('CommentScript');
 
     $app->{template_dir} = 'cms';
-    return $app->build_page( 'dialog/post_comment.tmpl',
+    return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, error => $app->errstr } )
       unless $comment;
 
-    my $tmpl_name = $app->translate('Comment Detail');
+    my $cmt_tmpl = $app->model('template')->load(
+      { identifier => 'comment_detail' });
+    my $tmpl_name = $cmt_tmpl->name;
     require MT::Template;
     my $tmpl = MT::Template->new(
         type   => 'scalarref',
@@ -2255,11 +2258,11 @@ sub reply_preview {
     $ctx->stash( 'blog',      $parent->blog );
     my %cond;
     my $html = $tmpl->build( $ctx, \%cond );
-    return $app->build_page( 'dialog/post_comment.tmpl',
+    return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, error => $tmpl->errstr } )
       unless defined $html;
 
-    return $app->build_page( 'dialog/post_comment_end.tmpl',
+    return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, text => $q->param('text'), preview_html => $html } );
 }
 

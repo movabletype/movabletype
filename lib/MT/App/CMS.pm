@@ -15,7 +15,7 @@ use MT::Util qw( encode_html format_ts offset_time_list offset_time epoch2ts
   remove_html get_entry mark_odd_rows first_n_words
   perl_sha1_digest_hex is_valid_email relative_date ts2epoch
   perl_sha1_digest encode_url dirify encode_js is_valid_date
-  archive_file_for );
+  archive_file_for is_valid_url );
 use MT::I18N qw( substr_text const length_text wrap_text encode_text
   break_up_text first_n_text guess_encoding );
 use CGI;
@@ -38,7 +38,6 @@ sub init {
     $app->{plugin_template_path} = '';
     $app->{is_admin}             = 1;
     $app->{default_mode}         = 'dashboard';
-    $app->{defer_build_page}     = 1;
     $app;
 }
 
@@ -118,14 +117,12 @@ sub core_methods {
         'rebuild_new_phase'  => \&rebuild_new_phase,
         'start_rebuild'      => \&start_rebuild_pages,
         'rebuild_confirm'    => \&rebuild_confirm,
+        'entry_notify'       => \&entry_notify,
         'send_notify'        => \&send_notify,
         'start_upload'       => \&start_upload,
         'upload_file'        => \&upload_file,
         'complete_insert'    => \&complete_insert,
         'complete_upload'    => \&complete_upload,
-        'author_bulk'        => \&author_bulk,
-        'upload_author_bulk' => \&upload_author_bulk,
-        'export_authors'     => \&export_authors,
         'start_upload_entry' => \&start_upload_entry,
         'logout'             => {
             code           => \&logout,
@@ -378,7 +375,12 @@ sub js_add_category {
         return $app->json_error( $app->translate("Invalid request.") );
     }
 
-    my $label    = $app->param('label');
+    my $label = $app->param('label');
+    my $enc   = $app->config->PublishCharset;
+    # XMLHttpRequest always send text in UTF-8... right?
+    if ( 'utf-8' ne lc($enc) ) {
+        $label = MT::I18N::encode_text( $label, 'utf-8', $enc );
+    }
     my $basename = $app->param('basename');
     if ( !defined($label) || ( $label =~ m/^\s*$/ ) ) {
         return $app->json_error( $app->translate("Invalid request.") );
@@ -455,13 +457,13 @@ sub convert_to_html {
 sub tools {
     my $app = shift;
     my %param;
-    $app->build_page( 'system_check.tmpl', \%param );
+    $app->load_tmpl( 'system_check.tmpl', \%param );
 }
 
 sub system_check {
     my $app = shift;
     my %param;
-    $app->build_page( 'system_check.tmpl', \%param );
+    $app->load_tmpl( 'system_check.tmpl', \%param );
 }
 
 sub init_plugins {
@@ -515,7 +517,9 @@ sub core_list_actions {
                 code       => \&publish_entries,
                 permission => 'edit_all_posts,publish_post',
                 condition   => sub {
-                    return $app->mode ne 'view';
+                    return 0 if ($app->mode ne 'view')
+                        && ($app->mode ne 'itemset_action');
+                    return $app->blog && $app->blog->site_path ? 1 : 0;
                 }
             },
             'set_draft' => {
@@ -524,7 +528,9 @@ sub core_list_actions {
                 code       => \&draft_entries,
                 permission => 'edit_all_posts,publish_post',
                 condition   => sub {
-                    return $app->mode ne 'view';
+                    return 0 if ($app->mode ne 'view')
+                        && ($app->mode ne 'itemset_action');
+                    return $app->blog && $app->blog->site_path ? 1 : 0;
                 }
             },
             'add_tags' => {
@@ -567,12 +573,22 @@ sub core_list_actions {
                 order      => 100,
                 code       => \&publish_entries,
                 permission => 'manage_pages',
+                condition   => sub {
+                    return 0 if ($app->mode ne 'view')
+                        && ($app->mode ne 'itemset_action');
+                    return $app->blog && $app->blog->site_path ? 1 : 0;
+                }
             },
             'set_draft' => {
                 label      => "Unpublish Pages",
                 order      => 200,
                 code       => \&draft_entries,
                 permission => 'manage_pages',
+                condition   => sub {
+                    return 0 if ($app->mode ne 'view')
+                        && ($app->mode ne 'itemset_action');
+                    return $app->blog && $app->blog->site_path ? 1 : 0;
+                }
             },
             'add_tags' => {
                 label       => "Add Tags...",
@@ -1000,7 +1016,8 @@ sub core_list_filters {
                 order => 400,
                 handler => sub {
                     my ($terms) = @_;
-                    $terms->{type} = ['dynamic_error', 'comment_error', 'comment_pending', 'comment_preview', 'pings', 'popup_image', 'search_results'];
+                    my $sys_tmpl = MT->registry('default_templates', 'system') || {};
+                    $terms->{type} = [ keys %$sys_tmpl ];
                 },
             },
         },
@@ -1048,60 +1065,60 @@ sub core_menus {
         'create:blog' => {
             label => "Blog",
             order => 100,
-            view => "system",
+            view  => "system",
         },
         'create:blog' => {
-            label => "Blog",
-            order => 200,
-            view => "system",
-            mode => "view",
-            args => { _type => "blog" },
+            label      => "Blog",
+            order      => 200,
+            view       => "system",
+            mode       => "view",
+            args       => { _type => "blog" },
             permission => "create_blog",
         },
         'create:user' => {
-            label => "User",
-            order => 300,
-            view => "system",
-            mode => "view",
-            args => { _type => "author" },
+            label      => "User",
+            order      => 300,
+            view       => "system",
+            mode       => "view",
+            args       => { _type => "author" },
             permission => "administer",
         },
         'create:entry' => {
-            label         => "Entry",
-            order         => 100,
-            mode          => 'view',
-            args          => { _type => 'entry' },
-            permission    => 'create_post',
-            view => "blog",
+            label      => "Entry",
+            order      => 100,
+            mode       => 'view',
+            args       => { _type => 'entry' },
+            permission => 'create_post',
+            view       => "blog",
         },
         'create:page' => {
-            label         => "Page",
-            order         => 200,
-            mode          => 'view',
-            args          => { _type => 'page' },
-            permission    => 'manage_pages',
-            view => "blog",
+            label      => "Page",
+            order      => 200,
+            mode       => 'view',
+            args       => { _type => 'page' },
+            permission => 'manage_pages',
+            view       => "blog",
         },
         'create:file' => {
-            label         => "Upload File",
-            order         => 300,
-            dialog        => 'start_upload',
-            permission    => 'upload,edit_assets',
-            view => "blog",
+            label      => "Upload File",
+            order      => 300,
+            dialog     => 'start_upload',
+            permission => 'upload,edit_assets',
+            view       => "blog",
         },
 
         'manage:blog' => {
             label => "Blogs",
-            mode => "list_blog",
+            mode  => "list_blog",
             order => 100,
-            view => "system",
+            view  => "system",
         },
         'manage:user' => {
-            label => "Users",
-            mode => "list_user",
-            order => 200,
+            label      => "Users",
+            mode       => "list_user",
+            order      => 200,
             permission => "administer",
-            view => "system",
+            view       => "system",
         },
         'manage:entry' => {
             label      => "Entries",
@@ -1135,19 +1152,19 @@ sub core_menus {
             permission => 'post,edit_all_posts,manage_feedback',
         },
         'manage:category' => {
-            label         => "Categories",
-            mode          => 'list_cat',
-            order         => 6000,
-            permission    => 'edit_categories',
-            view => "blog",
+            label      => "Categories",
+            mode       => 'list_cat',
+            order      => 6000,
+            permission => 'edit_categories',
+            view       => "blog",
         },
         'manage:folder' => {
-            label         => "Folders",
-            mode          => 'list_cat',
-            args          => { _type => 'folder' },
-            order         => 7000,
-            permission    => 'manage_pages',
-            view => "blog",
+            label      => "Folders",
+            mode       => 'list_cat',
+            args       => { _type => 'folder' },
+            order      => 7000,
+            permission => 'manage_pages',
+            view       => "blog",
         },
         'manage:tag' => {
             label             => "Tags",
@@ -1164,33 +1181,33 @@ sub core_menus {
             order         => 100,
             permission    => 'edit_templates',
             requires_blog => 1,
-            view => "blog",
+            view          => "blog",
         },
 
         'prefs:general' => {
-            label => "General",
-            order => 100,
-            mode => "cfg_system",
-            view => "system",
+            label      => "General",
+            order      => 100,
+            mode       => "cfg_system",
+            view       => "system",
             permission => "administer",
         },
         'prefs:feedback' => {
-            label => "Feedback",
-            order => 200,
-            mode => "cfg_system_feedback",
-            view => "system",
+            label      => "Feedback",
+            order      => 200,
+            mode       => "cfg_system_feedback",
+            view       => "system",
             permission => "administer",
         },
         'prefs:spam' => {
             label => "Spam",
             order => 300,
-            view => "system",
+            view  => "system",
         },
         'prefs:plugins' => {
-            label => "Plugins",
-            order => 400,
-            mode => "cfg_plugins",
-            permission => "manage_plugins",
+            label             => "Plugins",
+            order             => 400,
+            mode              => "cfg_plugins",
+            permission        => "administer_blog",
             system_permission => "manage_plugins",
         },
         'prefs:settings' => {
@@ -1199,75 +1216,75 @@ sub core_menus {
             order             => 100,
             permission        => 'administer_blog,set_publish_paths',
             system_permission => 'administer',
-            view => "blog",
+            view              => "blog",
         },
         'prefs:member' => {
             label             => "Members",
             mode              => 'list_member',
             order             => 200,
             permission        => 'administer_blog',
-            view     => "blog",
+            view              => "blog",
             system_permission => 'administer',
         },
         'prefs:notification' => {
-            label         => "Address Book",
-            mode          => 'list',
-            args          => { _type => 'notification' },
-            order         => 300,
-            permission    => 'edit_notifications',
-            view => "blog",
+            label      => "Address Book",
+            mode       => 'list',
+            args       => { _type => 'notification' },
+            order      => 300,
+            permission => 'edit_notifications',
+            view       => "blog",
         },
 
         'tools:main' => {
             label => "System Information",
             order => 100,
-            mode => "tools",
-            view => "system",
+            mode  => "tools",
+            view  => "system",
         },
         'tools:activity_log' => {
-            label => "Activity Log",
-            order => 200,
-            mode => "view_log",
-            permission => "view_blog_log",
+            label             => "Activity Log",
+            order             => 200,
+            mode              => "view_log",
+            permission        => "view_blog_log",
             system_permission => "view_log",
-            view => "system",
+            view              => "system",
         },
         'tools:import' => {
-            label => "Import",
-            order => 300,
-            mode => "start_import",
-            view => "blog",
-            permission => "administer",
-            view => "system",
+            label      => "Import",
+            order      => 300,
+            mode       => "start_import",
+            view       => "blog",
+            permission => "administer_blog",
+            view       => "system",
         },
         'tools:export' => {
-            label => "Export",
-            order => 400,
-            mode => "start_export",
-            view => "blog",
+            label      => "Export",
+            order      => 400,
+            mode       => "start_export",
+            view       => "blog",
             permission => "administer_blog",
-            view => "system",
+            view       => "system",
         },
         'tools:backup' => {
-            label => "Backup",
-            order => 500,
-            mode => "start_backup",
+            label      => "Backup",
+            order      => 500,
+            mode       => "start_backup",
             permission => "administer_blog",
-            view => "system",
+            view       => "system",
         },
         'tools:restore' => {
-            label => "Restore",
-            order => 600,
-            mode => "start_restore",
-            permission => "administer",
-            view => "system",
+            label      => "Restore",
+            order      => 600,
+            mode       => "start_restore",
+            permission => "administer_blog",
+            view       => "system",
         },
 
         # System menu which is actually separate
         # in the CMS navigation
         'system' => {
             label => "System Overview",
-            mode => 'dashboard',
+            mode  => 'dashboard',
             order => 10000,
         },
         'system:user' => {
@@ -1298,7 +1315,6 @@ sub core_menus {
             label             => "Activity Log",
             mode              => 'view_log',
             order             => 500,
-            permission        => 'administer_blog',
             system_permission => 'view_log',
         },
         'system:tools' => {
@@ -1558,7 +1574,7 @@ sub logout {
 sub start_recover {
     my $app = shift;
     $app->add_breadcrumb( $app->translate('Password Recovery') );
-    $app->build_page('popup/recover.tmpl');
+    $app->load_tmpl('popup/recover.tmpl');
 }
 
 sub recover_password {
@@ -1579,7 +1595,7 @@ sub recover_password {
 
     if ($rc) {
         $app->add_breadcrumb( $app->translate('Password Recovery') );
-        $app->build_page(
+        $app->load_tmpl(
             'popup/recover.tmpl',
             {
                 recovered => 1,
@@ -1805,7 +1821,7 @@ sub recover_passwords {
         push @msg_loop, { message => $res };
     }
 
-    $app->build_page( 'recover_password_result.tmpl',
+    $app->load_tmpl( 'recover_password_result.tmpl',
         { message_loop => \@msg_loop, return_url => $app->return_uri } );
 }
 
@@ -1956,7 +1972,7 @@ sub list_assets {
             type     => 'asset',
             code     => $hasher,
             template => $app->param('dialog_view')
-            ? 'dialog/list_assets.tmpl'
+            ? 'dialog/asset_list.tmpl'
             : '',
             params => {
                 (
@@ -1980,9 +1996,7 @@ sub list_assets {
                 ),
                 nav_assets       => 1,
                 panel_searchable => 1,
-                search_label    => $app->translate("Search Files") . ":",
-
-                #search_label => $app->translate("Files"),
+                search_label    => $app->translate("Files"),
                 object_type => 'asset',
             },
         }
@@ -2617,7 +2631,7 @@ sub list_tag_for {
     $param{nav_tags}      = 1;
     $app->add_breadcrumb( $app->translate('Tags') );
 
-    $app->build_page( 'list_tag.tmpl', \%param );
+    $app->load_tmpl( 'list_tag.tmpl', \%param );
 }
 
 sub rename_tag {
@@ -3069,7 +3083,7 @@ sub build_blog_selector {
     @fav_blogs = grep { $_ != $blog_id } @fav_blogs if $blog_id;
 
     # Special case for when a user only has access to a single blog.
-    if ( @blogs == 1 ) {
+    if ( ( @blogs == 1 ) && ( scalar @fav_blogs <= 1 ) ) {
         # User only has visibility to a single blog. Don't
         # bother giving them a dashboard link for 'all blogs', or
         # to 'select a blog'.
@@ -3095,7 +3109,7 @@ sub build_blog_selector {
             }
         }
     }
-    elsif ( @blogs <= 10 ) {
+    elsif ( @blogs && ( @blogs <= 10 ) ) {
         # This user only has visibility to 10 or fewer blogs;
         # no need to reference their 'favorite' blogs list.
         my @ids = map { $_->id } @blogs;
@@ -3247,10 +3261,10 @@ sub build_menus {
                 }
                 $sub->{allowed} = 0 if $sub->{view} && ($sub->{view} ne $view);
                 if ( $sub->{allowed} ) {
-                    $perms = $app->user->permissions(0)
-                      unless $blog_id && $perms;
+                    my $sub_perms = ($sys_only || ( $sub->{view} || '' ) eq 'system')
+                      ? $app->user->permissions(0) : $perms;
                     if (
-                        $perms
+                        $sub_perms
                         && (
                             my $p =
                               $blog_id
@@ -3266,13 +3280,13 @@ sub build_menus {
                         foreach my $p (@p) {
                             my $perm = 'can_' . $p;
                             $allowed = 1, last
-                              if ( $perms && $perms->$perm() ) || $admin;
+                              if ( $sub_perms && $sub_perms->$perm() ) || $admin;
                         }
                         $sub->{allowed} = $allowed;
                     }
-                    elsif ( !$perms && !$blog_id ) {
+                    elsif ( !$sub_perms && !$blog_id ) {
                         $sub->{allowed} = 0
-                          if $sub->{system_permission} && !$admin;
+                          if ($sub->{system_permission} || $sub->{permission}) && !$admin;
                     }
                     $has_sub = 1 if $sub->{allowed};
                 }
@@ -3581,8 +3595,7 @@ sub dashboard {
     $app->build_blog_selector($param);
     $app->load_widget_list('dashboard', $param, $default_widgets);
     $param = $app->load_widgets('dashboard', $param, $default_widgets);
-    my $tmpl = $app->load_tmpl("dashboard.tmpl");
-    $app->build_page( $tmpl, $param );
+    return $app->load_tmpl("dashboard.tmpl", $param);
 }
 
 sub mt_blog_stats_widget {
@@ -3917,7 +3930,7 @@ sub list_blogs {
     $param{feed_url}  = $app->make_feed_link('blog');
     $app->add_breadcrumb( $app->translate("Blogs") );
     $param{nav_weblogs} = 1;
-    return $app->build_page( 'list_blog.tmpl', \%param );
+    return $app->load_tmpl( 'list_blog.tmpl', \%param );
 }
 
 # list of all users, regardless of commenter/author on a blog
@@ -4121,20 +4134,20 @@ sub list_authors {
         $param{nav_authors} = 1;
         $param{return_args} = "__mode=list_authors&group_id=$group_id";
         $app->add_breadcrumb( $app->translate("Group Members") );
-        $app->build_page( 'list_group_member.tmpl', \%param );
+        $app->load_tmpl( 'list_group_member.tmpl', \%param );
     }
     else {
         $app->add_breadcrumb( $app->translate("Users & Groups") );
         $param{nav_authors} = 1;
         $app->add_breadcrumb( $app->translate("Users") );
-        $app->build_page( 'list_author.tmpl', \%param );
+        $app->load_tmpl( 'list_author.tmpl', \%param );
     }
 }
 
 sub bookmarklets {
     my $app = shift;
     $app->add_breadcrumb( $app->translate('QuickPost') );
-    $app->build_page('bookmarklets.tmpl');
+    $app->load_tmpl('bookmarklets.tmpl');
 }
 
 sub make_feed_link {
@@ -4173,7 +4186,7 @@ sub make_bm_link {
     $param{bm_height} = $height;
     $param{bm_js}     = $app->_bm_js( $param{bm_show}, $height );
     $app->add_breadcrumb( $app->translate('QuickPost') );
-    $app->build_page( 'bookmarklets.tmpl', \%param );
+    $app->load_tmpl( 'bookmarklets.tmpl', \%param );
 }
 
 sub build_author_table {
@@ -4407,7 +4420,7 @@ sub view_log {
     unless ( $app->param('blog_id') ) {
         $param{system_overview_nav} = 1;
     }
-    $app->build_page( 'view_log.tmpl', \%param );
+    $app->load_tmpl( 'view_log.tmpl', \%param );
 }
 
 sub build_log_table {
@@ -4752,15 +4765,16 @@ sub start_import {
         filter_key   => '0',
         filter_label => $app->translate('None'),
       };
+    my $blog = $app->model('blog')->load($blog_id);
     unshift @{ $param{text_filters} },
       {
-        filter_key      => '-1',
+        filter_key      => $blog->convert_paras || '-1',
         filter_label    => $app->translate('Default'),
         filter_selected => 1,
       };
 
     $app->add_breadcrumb( $app->translate('Import/Export') );
-    $app->build_page( 'import.tmpl', \%param );
+    $app->load_tmpl( 'import.tmpl', \%param );
 }
 
 sub _populate_archive_loop {
@@ -5071,7 +5085,7 @@ sub edit_object {
             # $app->add_breadcrumb($obj->label);
             my $parent = $obj->parent_category;
             $param{path_prefix} =
-              $blog->site_url . '/'
+              $blog->site_url
               . ( $parent ? $parent->publish_path . '/' : '' );
             require MT::Trackback;
             my $tb = MT::Trackback->load( { category_id => $obj->id } );
@@ -5167,8 +5181,13 @@ sub edit_object {
             $app->load_list_actions( 'template', \%param );
 
             $obj->compile;
-            if ($obj->errstr) {
-                $param{error} = $app->translate("An error was found in this template: [_1]", MT::Util::encode_html($obj->errstr));
+            if ($obj->{errors} && @{$obj->{errors}}) {
+                $param{error} = $app->translate("One or more errors were found in this template.");
+                $param{error} .= "<ul>\n";
+                foreach my $err (@{$obj->{errors}}) {
+                    $param{error} .= "<li>" . MT::Util::encode_html($err->{message}) . "</li>\n";
+                }
+                $param{error} .= "</ul>\n";
             }
 
             # Populate list of included templates
@@ -5429,12 +5448,11 @@ sub edit_object {
                   defined $blog->use_comment_confirmation
                   ? $blog->use_comment_confirmation
                   : 0;
-                my @cps;
-                foreach my $cp ( MT->captcha_providers() ) {
-                    if ( $blog->captcha_provider eq $cp->{key} ) {
+                my @cps = MT->captcha_providers;
+                foreach my $cp ( @cps ) {
+                    if ( ($blog->captcha_provider || '') eq $cp->{key} ) {
                         $cp->{selected} = 1;
                     }
-                    push @cps, $cp;
                 }
                 $param{captcha_loop} = \@cps;
                 $param{'require_typekey_emails'} = $obj->require_typekey_emails;
@@ -5473,6 +5491,9 @@ sub edit_object {
                     for my $at (@at) {
                         $param{ 'archive_type_' . $at } = 1;
                     }
+                }
+                if ($blog->publish_queue) {
+                    $param{publish_queue} = 1;
                 }
             }
             elsif ( $output eq 'cfg_plugin.tmpl' ) {
@@ -6606,10 +6627,10 @@ sub edit_object {
         $param{show_feedback} = $param{show_allow_pings}
           || $param{show_allow_comments};
         $param{refocus} = 1;
-        return $app->build_page( "popup/bm_entry.tmpl", \%param );
+        return $app->load_tmpl( "popup/bm_entry.tmpl", \%param );
     }
     elsif ( $param{output} ) {
-        return $app->build_page( $param{output}, \%param );
+        return $app->load_tmpl( $param{output}, \%param );
     }
     else {
         $param{object_type} ||= $type;
@@ -6619,7 +6640,7 @@ sub edit_object {
               if $param{object_type} ne
               $type;    # to piggyback on edit-entry styles
         }
-        return $app->build_page( "edit_${type}.tmpl", \%param );
+        return $app->load_tmpl( "edit_${type}.tmpl", \%param );
     }
 }
 
@@ -7008,7 +7029,12 @@ sub CMSSaveFilter_author {
     return $eh->error(
         MT->translate("Email Address is required for password recovery") )
       unless $app->param('email');
-
+    if ($app->param('url')) {
+        my $url = $app->param('url');
+        return $eh->error(
+            MT->translate("Website URL is imperfect") )
+          unless is_valid_url($url);
+    }
     1;
 }
 
@@ -7744,44 +7770,40 @@ sub CMSPostSave_blog {
     my $screen = $app->param('cfg_screen') || '';
     if ( $screen eq 'cfg_archives' ) {
         if ( my $dcty = $app->param('dynamicity') ) {
-            $app->update_dynamicity(
-                $obj,
-                $app->param('dynamic_cache')       ? 1 : 0,
-                $app->param('dynamic_conditional') ? 1 : 0
-            );
-            $app->rebuild( BlogID => $obj->id, NoStatic => 1 );
+            if ( $dcty ne $original->custom_dynamic_templates ) {
+                $app->update_dynamicity(
+                    $obj,
+                    $app->param('dynamic_cache')       ? 1 : 0,
+                    $app->param('dynamic_conditional') ? 1 : 0
+                );
+                if ( $dcty ne 'none' ) {
+                    $app->rebuild( BlogID => $obj->id, NoStatic => 1 );
+                }
+            }
         }
         $app->cfg_archives_save($obj);
     }
     if ( $screen eq 'cfg_prefs' ) {
-        require MT::Permission;
         my $blog_id = $obj->id;
 
         # FIXME: Needs to exclude MT::Permission records for groups
-        my $perms =
-          MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
+        $app->model('permission')
+          ->load( { blog_id => $blog_id, author_id => 0 } );
         if ( !$perms ) {
-            $perms = MT::Permission->new;
+            $perms = $app->model('permission')->new;
             $perms->blog_id($blog_id);
             $perms->author_id(0);
         }
-        my $prefs = $app->_entry_prefs_from_params;
-        if ($prefs) {
-            $perms->entry_prefs($prefs);
-            $perms->save
-              or return $app->errtrans( "Saving permissions failed: [_1]",
-                $perms->errstr );
-        }
     }
     if ( $screen eq 'cfg_entry' ) {
-        require MT::Permission;
         my $blog_id = $obj->id;
 
         # FIXME: Needs to exclude MT::Permission records for groups
         my $perms =
-          MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
+          $app->model('permission')
+          ->load( { blog_id => $blog_id, author_id => 0 } );
         if ( !$perms ) {
-            $perms = MT::Permission->new;
+            $perms = $app->model('permission')->new;
             $perms->blog_id($blog_id);
             $perms->author_id(0);
         }
@@ -7801,11 +7823,10 @@ sub CMSPostSave_blog {
 
         # Add this blog to the user's "favorite blogs", pushing any 10th
         # blog off the list
-        my $auth    = $app->user;
+        my $auth = $app->user;
 
         # FIXME: Should we still be doing this?
-        require MT::Permission;
-        my $perms = MT::Permission->new;
+        my $perms = $app->model('permission')->new;
         $perms->author_id( $auth->id );
         $perms->blog_id( $obj->id );
         $perms->set_full_permissions;
@@ -7995,13 +8016,15 @@ sub CMSPostSave_template {
         if ( $obj->type eq 'index' ) {
             $app->rebuild_indexes(
                 BlogID   => $obj->blog_id,
-                Template => $obj
+                Template => $obj,
+                NoStatic => 1,
             );    # XXXX
         }
         else {
             $app->rebuild(
                 BlogID     => $obj->blog_id,
-                TemplateID => $obj->id
+                TemplateID => $obj->id,
+                NoStatic => 1,
             );
         }
     }
@@ -8921,6 +8944,7 @@ sub list_template {
         return $app->return_to_dashboard( permission => 1 );
     }
 
+    require MT::Template;
     my $blog_id = $app->param('blog_id');
     my $filter = $app->param('filter_key');
     if (!$filter) {
@@ -8929,9 +8953,9 @@ sub list_template {
     }
     my $terms   = { blog_id => $blog_id };
     my $args    = { sort => 'name' };
+
     my $hasher = sub {
         my ($obj, $row) = @_;
-        my $label = $MT::Template::TYPES{$obj->type} || 'Custom';
         my $template_type;
         my $type = $row->{type} || '';
         if ($type =~ m/^(individual|page|category|archive)$/) {
@@ -8947,68 +8971,11 @@ sub list_template {
         }
         $row->{template_type} = $template_type;
         $row->{type} = 'entry' if $type eq 'individual';
-        $row->{type_label} = $app->translate($label);
         my $published_url = $obj->published_url;
         $row->{published_url} = $published_url if $published_url;
     };
 
     my $params = {};
-    # my @tt_loop;
-    # 
-    # my $def_tmpl = $app->registry("default_templates") || {};
-    # 
-    # for my $type_id (keys %$def_tmpl) {
-    #     next if $type_id eq 'system';
-    # 
-    #     my $tmpls = \%{ $def_tmpl->{$type_id} || {} };
-    # 
-    #     # For organization, group archive, page and entry templates together
-    #     if ($type_id eq 'archive') {
-    #         my $ind = $def_tmpl->{'individual'} || {};
-    #         for (keys %$ind) {
-    #             $tmpls->{$_} = $ind->{$_};
-    #             $tmpls->{$_}->{archive_type} = 'individual';
-    #         }
-    # 
-    #         my $page = $def_tmpl->{'page'} || {};
-    #         for (keys %$page) {
-    #             $tmpls->{$_} = $page->{$_};
-    #             $tmpls->{$_}->{archive_type} = 'page';
-    #         }
-    #     }
-    # 
-    #     my @tmpl_loop;
-    #     if (($type_id ne 'individual') && ($type_id ne 'page')) {
-    #         foreach my $tmpl_id (keys %$tmpls) {
-    #             next unless ref($tmpls->{$tmpl_id}) eq 'HASH';
-    #             my $label = $tmpls->{$tmpl_id}{label};
-    #             $label = $label->() if ref($label) eq 'CODE';
-    #             my $tid = $type_id;
-    #             if ( $type_id eq 'archive'
-    #               && exists $tmpls->{$tmpl_id}->{archive_type} )
-    #             {
-    #                 $tid = $tmpls->{$tmpl_id}->{archive_type}
-    #             }
-    #             push @tmpl_loop, {
-    #                 id => $tmpl_id,
-    #                 type_id => $tid,
-    #                 label => $label,
-    #             };
-    #         }
-    #         @tmpl_loop = sort { $a->{label} cmp $b->{label} } @tmpl_loop;
-    #     }
-    # 
-    #     my $tmpl_type_label = $app->translate($type_id);
-    #     if ($tmpl_type_label eq $type_id) {
-    #         $tmpl_type_label = "\u$type_id";
-    #     }
-    # 
-    #     push @tt_loop, {
-    #         id => $type_id,
-    #         label => $app->translate("[_1] Template", $tmpl_type_label),
-    #         template_loop => \@tmpl_loop,
-    #     };
-    # }
     my $template_type = $filter;
     $template_type =~ s/_templates//;
     my $template_type_label = $app->translate($template_type);
@@ -9234,7 +9201,7 @@ sub list_objects {
     $param{saved}         = $q->param('saved');
     $param{saved_deleted} = $q->param('saved_deleted');
     $param{page_actions}  = $app->page_actions( 'list_' . $type );
-    $app->build_page( "list_${type}.tmpl", \%param );
+    $app->load_tmpl( "list_${type}.tmpl", \%param );
 }
 
 sub _delete_pseudo_association {
@@ -9453,6 +9420,8 @@ sub delete {
         $app->rebuild_entry( Entry => $entry, BuildDependencies => 1 );
     }
     for my $cat_id (@rebuild_cats) {
+        # FIXME: What about other category-based archives?
+        # What if user is not publishing category archives?
         my $cat = MT::Category->load($cat_id);
         $app->rebuild(
             Category    => $cat,
@@ -9552,7 +9521,7 @@ sub asset_insert {
     my $app  = shift;
     my $text = $app->_process_post_upload();
     return unless defined $text;
-    $app->build_page(
+    $app->load_tmpl(
         'dialog/asset_insert.tmpl',
         {
             upload_html => $text || '',
@@ -9868,13 +9837,18 @@ sub update_entry_status {
         if ( $app->config('DeleteFilesAtRebuild')
             && ( MT::Entry::RELEASE() eq $entry->status ) )
         {
-            $app->publisher->remove_entry_archive_file( Entry => $entry );
+            my $archive_type = $entry->class eq 'page'
+              ? 'Page'
+              : 'Individual';
+            $app->publisher->remove_entry_archive_file(
+                Entry => $entry, ArchiveType => $archive_type );
         }
         my $old_status = $entry->status;
         $entry->status($new_status);
         $entry->save() and $rebuild_these{$id} = 1;
         my $message = $app->translate(
-            "Entry '[_1]' (ID:[_2]) status changed from [_3] to [_4]",
+            "[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]",
+            $entry->class_label,
             $entry->title,
             $entry->id,
             $app->translate( MT::Entry::status_text($old_status) ),
@@ -9884,7 +9858,7 @@ sub update_entry_status {
             {
                 message  => $message,
                 level    => MT::Log::INFO(),
-                class    => 'entry',
+                class    => $entry->class,
                 category => 'edit',
                 metadata => $entry->id
             }
@@ -10157,7 +10131,7 @@ sub list_commenter {
     for my $msg (qw(trusted untrusted banned unbanned)) {
         $param{$msg} = 1 if $app->param($msg);
     }
-    return $app->build_page( 'list_commenter.tmpl', \%param );
+    return $app->load_tmpl( 'list_commenter.tmpl', \%param );
 }
 
 sub build_commenter_table {
@@ -10873,8 +10847,7 @@ sub list_pings {
     my $blog_id   = $q->param('blog_id');
     my $blog;
     if ($blog_id) {
-        require MT::Blog;
-        $blog = MT::Blog->load($blog_id);
+        $blog = $app->model('blog')->load($blog_id);
     }
     my %param = %$list_pref;
     my %terms;
@@ -10900,7 +10873,10 @@ sub list_pings {
     ## entries.
     my %arg;
     if ( ( $app->param('tab') || '' ) eq 'junk' ) {
-        $terms{'junk_status'} = -1;
+        $app->param('filter', 'junk_status');
+        $app->param('filter_val', '-1');
+        $param{filter_special} = 1;
+        $param{filter_phrase} = $app->translate('Junk TrackBacks');
     }
     else {
         $terms{'junk_status'} = [ 0, 1 ];
@@ -10928,7 +10904,7 @@ sub list_pings {
                 my $entry = $pkg->load($val);
                 $param{filter_phrase} =
                   $app->translate(
-                    "<strong>[_1]</strong> is &quot;[_2]&quot;",
+                    "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
                     $entry->class_label, encode_html( $entry->title ) );
             }
             elsif ( $filter_col eq 'category_id' ) {
@@ -10936,7 +10912,7 @@ sub list_pings {
                 my $cat = $pkg->load($val);
                 $param{filter_phrase} =
                   $app->translate(
-                    "<strong>[_1]</strong> is &quot;[_2]&quot;",
+                    "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
                     $cat->class_label, encode_html( $cat->label ) );
             }
             $param{filter_special} = 1;
@@ -10961,8 +10937,9 @@ sub list_pings {
         $param{is_ip_filter} = $filter_col eq "ip";
     }
 
-    my $total = MT::TBPing->count( \%terms, \%arg ) || 0;
-    my @rows = MT::TBPing->load( \%terms, \%arg );
+    my $ping_class = $app->model('ping');
+    my $total = $ping_class->count( \%terms, \%arg ) || 0;
+    my @rows = $ping_class->load( \%terms, \%arg );
     $arg{'sort'}    = 'created_on';
     $arg{direction} = $sort_direction;
     $arg{limit}     = $limit + 1;
@@ -11031,7 +11008,7 @@ sub list_pings {
             $blog_id ? { blog_id => $blog_id } : undef );
     }
     $app->add_breadcrumb( $app->translate('TrackBacks') );
-    $app->build_page( "list_ping.tmpl", \%param );
+    $app->load_tmpl( "list_ping.tmpl", \%param );
 }
 
 # takes param and one of load_args, iter, or items
@@ -11480,7 +11457,7 @@ sub list_entries {
     if ( my $blog = MT::Blog->load($blog_id) ) {
         $param{sitepath_unconfigured} = $blog->site_path ? 0 : 1;
     }
-    $app->build_page( "list_entry.tmpl", \%param );
+    $app->load_tmpl( "list_entry.tmpl", \%param );
 }
 
 # FIXME: hack to add pages in here and above. search for "list_pages"
@@ -11540,6 +11517,8 @@ sub build_entry_table {
         $param->{category_loop} = $c_data;
     }
 
+    my ($date_format, $datetime_format);
+
     ## Load list of users for display in filter pulldown (and selection
     ## pulldown on power edit page).
     my ( @a_data, %authors );
@@ -11568,6 +11547,12 @@ sub build_entry_table {
             $row->{author_index} = $i++;
         }
         $param->{author_loop} = \@a_data;
+        $date_format     = "%Y.%m.%d";
+        $datetime_format = "%Y-%m-%d %H:%M:%S";
+    }
+    else {
+        $date_format     = LISTING_DATE_FORMAT;
+        $datetime_format = LISTING_DATETIME_FORMAT;
     }
 
     my ( @cat_list, @auth_list );
@@ -11598,9 +11583,9 @@ sub build_entry_table {
         if ( my $ts =
             ( $type eq 'page' ) ? $obj->modified_on : $obj->authored_on )
         {
-            $row->{created_on_formatted} = format_ts( LISTING_DATE_FORMAT, $ts );
+            $row->{created_on_formatted} = format_ts( $date_format, $ts, $obj->blog );
             $row->{created_on_time_formatted} =
-              format_ts( LISTING_DATETIME_FORMAT, $ts );
+              format_ts( $datetime_format, $ts, $obj->blog );
             $row->{created_on_relative} =
               relative_date( $ts, time, $obj->blog );
         }
@@ -11840,7 +11825,8 @@ sub save_entries {
         my $message;
         if ( $orig_obj->status ne $entry->status ) {
             $message = $app->translate(
-"Entry '[_1]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
+"[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
+                $entry->class_label,
                 $entry->title,
                 $entry->id,
                 $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
@@ -11850,14 +11836,14 @@ sub save_entries {
         }
         else {
             $message =
-              $app->translate( "Entry '[_1]' (ID:[_2]) edited by user '[_3]'",
-                $entry->title, $entry->id, $this_author->name );
+              $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
+                $entry->class_label, $entry->title, $entry->id, $this_author->name );
         }
         $app->log(
             {
                 message  => $message,
                 level    => MT::Log::INFO(),
-                class    => 'entry',
+                class    => $entry->class,
                 category => 'edit',
                 metadata => $entry->id
             }
@@ -12233,7 +12219,7 @@ sub save_entry {
             my $file = archive_file_for( $obj, $blog, $archive_type );
             if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
                 $app->publisher->remove_entry_archive_file(
-                    Entry => $orig_obj );
+                    Entry => $orig_obj, ArchiveType => $archive_type );
             }
         }
 
@@ -12301,7 +12287,7 @@ sub ping_continuation {
     require MT::Entry;
     if ( $entry->status == MT::Entry::RELEASE() && $list ) {
         my @urls = map { { url => $_ } } @$list;
-        $app->build_page(
+        $app->load_tmpl(
             'pinging.tmpl',
             {
                 blog_id    => $blog->id,
@@ -12332,7 +12318,7 @@ sub _finish_rebuild_ping {
             entry_id        => $entry->id,
             status_released => $entry->status == MT::Entry::RELEASE()
         );
-        $app->build_page( "popup/bm_posted.tmpl", \%param );
+        $app->load_tmpl( "popup/bm_posted.tmpl", \%param );
     }
     else {
         $app->redirect(
@@ -12554,7 +12540,7 @@ sub list_category {
     $param{screen_class} .= " list-category"
       if $type eq 'folder';    # to piggyback on list-category styles
     my $tmpl_file = 'list_' . $type . '.tmpl';
-    $app->build_page( $tmpl_file, \%param );
+    $app->load_tmpl( $tmpl_file, \%param );
 }
 
 sub move_category {
@@ -12762,17 +12748,21 @@ sub cfg_plugins {
         $app->add_breadcrumb( $app->translate("Plugin Settings") );
         $param{screen_class} = "system-plugin-settings";
 
-        $app->build_page( 'cfg_plugin.tmpl', \%param );
+        $app->load_tmpl( 'cfg_plugin.tmpl', \%param );
     }
 }
 
 sub cfg_comments {
-    my $q = $_[0]->{query};
+    my $app = shift;
+    my $q = $app->param;
+    my $blog_id = scalar $q->param('blog_id');
+    return $app->return_to_dashboard(redirect => 1)
+        unless $blog_id;
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     eval { require Digest::SHA1; };
     my $openid_available = $@ ? 0 : 1;
-    $_[0]->edit_object(
+    $app->edit_object(
         {
             output         => 'cfg_comments.tmpl',
             screen_class   => 'settings-screen comments-screen',
@@ -12782,10 +12772,14 @@ sub cfg_comments {
 }
 
 sub cfg_trackbacks {
-    my $q = $_[0]->{query};
+    my $app = shift;
+    my $q = $app->param;
+    my $blog_id = scalar $q->param('blog_id');
+    return $app->return_to_dashboard(redirect => 1)
+        unless $blog_id;
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
-    $_[0]->edit_object(
+    $app->edit_object(
         {
             output       => 'cfg_trackbacks.tmpl',
             screen_class => 'settings-screen trackbacks-screen'
@@ -12872,10 +12866,14 @@ sub cfg_spam {
 }
 
 sub cfg_entry {
-    my $q = $_[0]->{query};
+    my $app = shift;
+    my $q = $app->param;
+    my $blog_id = scalar $q->param('blog_id');
+    return $app->return_to_dashboard(redirect => 1)
+        unless $blog_id;
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
-    $_[0]->edit_object(
+    $app->edit_object(
         {
             output       => 'cfg_entry.tmpl',
             screen_class => 'settings-screen entry-screen'
@@ -12884,10 +12882,14 @@ sub cfg_entry {
 }
 
 sub cfg_web_services {
-    my $q = $_[0]->{query};
+    my $app = shift;
+    my $q = $app->param;
+    my $blog_id = scalar $q->param('blog_id');
+    return $app->return_to_dashboard(redirect => 1)
+        unless $blog_id;
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
-    $_[0]->edit_object(
+    $app->edit_object(
         {
             output       => 'cfg_web_services.tmpl',
             screen_class => 'settings-screen web-services-settings'
@@ -12994,7 +12996,10 @@ sub cfg_archives {
     $param{dynamic_archives}    = $blog->custom_dynamic_templates eq 'archives';
     $param{dynamic_custom}      = $blog->custom_dynamic_templates eq 'custom';
     $param{dynamic_all}         = $blog->custom_dynamic_templates eq 'all';
-    $param{show_build_options}  = 1;
+    if ( $app->config->ObjectDriver =~ qr/(db[id]::)?sqlite/i ) {
+        $param{hide_build_option} = 1
+          unless $app->config->UseSQLite2;
+    }
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
 
     if ( -f $mtview_path ) {
@@ -13022,7 +13027,8 @@ sub cfg_archives_save {
 
     my $at = $app->param('preferred_archive_type');
     $blog->archive_type_preferred($at);
-    $blog->touch;
+    my $pq = $app->param('publish_queue');
+    $blog->publish_queue($pq ? 1 : 0);
     $blog->save
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );
@@ -13072,7 +13078,7 @@ sub cfg_system_general {
     $param{saved}                = $app->param('saved');
     $param{error}                = $app->param('error');
     $param{screen_class}         = "settings-screen system-general-settings";
-    $app->build_page( 'cfg_system_general.tmpl', \%param );
+    $app->load_tmpl( 'cfg_system_general.tmpl', \%param );
 }
 
 sub save_cfg_system_general {
@@ -13200,7 +13206,7 @@ sub cfg_system_feedback {
     }
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
-    $app->build_page( 'cfg_system_feedback.tmpl', \%param );
+    $app->load_tmpl( 'cfg_system_feedback.tmpl', \%param );
 }
 
 sub save_cfg_system_feedback {
@@ -13536,9 +13542,9 @@ sub preview_entry {
     $param{object_type}  = $type;
     $param{object_label} = $pkg->class_label;
     if ($fullscreen) {
-        return $app->build_page( 'preview_entry.tmpl', \%param );
+        return $app->load_tmpl( 'preview_entry.tmpl', \%param );
     } else {
-        return $app->build_page( 'preview_strip.tmpl', \%param );
+        return $app->load_tmpl( 'preview_strip.tmpl', \%param );
     }
 }
 
@@ -13573,20 +13579,10 @@ sub rebuild_confirm {
     }
     my $order         = join ',', @at, 'index';
     my $entry_pkg     = $app->model('entry');
-    my $total_entries = $entry_pkg->count(
-        { blog_id => $blog_id, status => MT::Entry::RELEASE() } );
-    my $page_pkg   = $app->model('page');
-    my $total_pages = $page_pkg->count(
-        { blog_id => $blog_id, status => MT::Entry::RELEASE() } );
-    my $category_pkg  = $app->model('category');
-    my $total_cats = $category_pkg->count( { blog_id => $blog_id } );
     my %param = (
         archive_type_loop => \@data,
         build_order       => $order,
         build_next        => 0,
-        total_cats        => $total_cats,
-        total_pages       => $total_pages,
-        total_entries     => $total_entries
     );
     $param{index_selected} = ( $app->param('prompt') || "" ) eq 'index';
 
@@ -13609,18 +13605,8 @@ sub rebuild_confirm {
     $param{rebuild_option_loop} = $rebuild_options;
     $param{refocus}             = 1;
     $app->add_breadcrumb( $app->translate('Publish Site') );
-    $app->build_page( 'popup/rebuild_confirm.tmpl', \%param );
+    $app->load_tmpl( 'popup/rebuild_confirm.tmpl', \%param );
 }
-
-my %Limit_Multipliers = (
-    Individual => 1,
-    Category   => 1,
-    Daily      => 2,
-    Weekly     => 5,
-    Monthly    => 10,
-    Dynamic    => 5,
-    Page       => 1,
-);
 
 sub start_rebuild_pages {
     my $app           = shift;
@@ -13628,54 +13614,54 @@ sub start_rebuild_pages {
     my $type          = $q->param('type');
     my $next          = $q->param('next') || 0;
     my @order         = split /,/, $type;
+    my $total         = $q->param('total') || 0;
     my $type_name     = $order[$next];
     my $archiver      = $app->publisher->archiver($type_name);
     my $archive_label = $archiver ? $archiver->archive_label : '';
     $archive_label = $app->translate($type_name) unless $archive_label;
     $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
-    my $total_entries = $q->param('total_entries');
-    my $total_pages   = $q->param('total_pages');
-    my $total_cats    = $q->param('total_cats');
+    my $blog_id = $q->param('blog_id');
+
+    if ($archiver) {
+        if ($archiver->entry_based || $archiver->date_based) {
+            my $entry_class = $archiver->entry_class || 'entry';
+            require MT::Entry;
+            my $terms = {
+                class => $entry_class,
+                status => MT::Entry::RELEASE(),
+                blog_id => $blog_id,
+            };
+            $total = MT::Entry->count($terms);
+        } elsif ($archiver->category_based) {
+            require MT::Category;
+            my $terms = {
+                blog_id => $blog_id,
+            };
+            $total = MT::Category->count($terms);
+        } elsif ($archiver->author_based) {
+            require MT::Author;
+            require MT::Entry;
+            my $terms = {
+                blog_id => $blog_id,
+                status => MT::Entry::RELEASE(),
+                class => '*',
+            };
+            $total = MT::Author->count(undef, {
+                join => MT::Entry->join_on('author_id', $terms),
+                unique => 1,
+            });
+        }
+    }
+
     my %param         = (
         build_type      => $type,
         build_next      => $next,
-        total_entries   => $total_entries,
-        total_pages     => $total_pages,
-        total_cats      => $total_cats,
+        total           => $total,
+        complete        => 0,
         build_type_name => $archive_label
     );
-    my $static_count;
-    my $entries_per_rebuild = $app->config('EntriesPerRebuild');
 
-    if ( my $mult = $Limit_Multipliers{$type_name} ) {
-        $param{offset} = 0;
-        $static_count =
-          MT::Blog->load( $q->param('blog_id') )
-          ->count_static_templates($type_name) || 0;
-        if ( !$static_count ) {
-            $param{limit} =
-              $entries_per_rebuild * $mult * $Limit_Multipliers{'Dynamic'};
-            $param{dynamic} = 1;
-        }
-        else {
-            my $total;
-            if ( $type_name eq 'Category' ) {
-                $total = $total_cats;
-            }
-            elsif ( $type_name eq 'Page' ) {
-                $total = $total_pages;
-            }
-            else {
-                $total = $total_entries;
-            }
-            $param{limit} = int( $entries_per_rebuild * $mult / $static_count );
-            $param{is_individual} = $archiver->entry_based;
-            $param{limit}         = $entries_per_rebuild * $mult;
-            $param{indiv_range} =
-              "1 - " . ( $param{limit} > $total ? $total : $param{limit} );
-        }
-    }
-    elsif ( $type_name =~ /^index-(\d+)$/ ) {
+    if ( $type_name =~ /^index-(\d+)$/ ) {
         my $tmpl_id = $1;
         require MT::Template;
         my $tmpl = MT::Template->load($tmpl_id);
@@ -13698,7 +13684,7 @@ sub start_rebuild_pages {
     $param{is_full_screen} = ( $param{is_entry} && !$param{is_bm} )
       || $q->param('single_template');
     $param{page_titles} = [ { bc_name => 'Rebuilding' } ];
-    $app->build_page( 'rebuilding.tmpl', \%param );
+    $app->load_tmpl( 'rebuilding.tmpl', \%param );
 }
 
 sub object_edit_uri {
@@ -13739,21 +13725,7 @@ sub rebuild_pages {
     $next++;
     $done++ if $next >= @order;
     my $offset = 0;
-    my ($limit) = $q->param('limit');
-
-    my $total_entries = $q->param('total_entries');
-    my $total_pages   = $q->param('total_pages');
-    my $total_cats    = $q->param('total_cats');
-    my $total;
-    if ( $type eq 'Category' ) {
-        $total = $total_cats;
-    }
-    elsif ( $type eq 'Page' ) {
-        $total = $total_pages;
-    }
-    else {
-        $total = $total_entries;
-    }
+    my ($total) = $q->param('total');
 
     ## Tells MT::_rebuild_entry_archive_type to cache loaded templates so
     ## that each template is only loaded once.
@@ -13778,6 +13750,7 @@ sub rebuild_pages {
     if ( $type eq 'all' ) {
         return $app->error( $app->translate("Permission denied.") )
           unless $perms->can_rebuild;
+        # FIXME: Rebuild the entire blog????
         $app->rebuild( BlogID => $blog_id )
           or return;
     }
@@ -13813,43 +13786,26 @@ sub rebuild_pages {
         ) or return;
         $order = "entry '" . $entry->title . "'";
     }
-    elsif ( $type eq 'Category' ) {
+    elsif ( $archiver->category_based ) {
         return $app->error( $app->translate("Permission denied.") )
           unless $perms->can_rebuild;
         $offset = $q->param('offset') || 0;
+        my $start = time;
+        my $count = 0;
+        my $cb = sub {
+            return 0 if time - $start > 10; # 10 seconds
+            $count++;
+            return 1;
+        };
         if ( $offset < $total ) {
             $app->rebuild(
                 BlogID      => $blog_id,
                 ArchiveType => $type,
                 NoIndexes   => 1,
                 Offset      => $offset,
-                Limit       => $limit
+                FilterCallback => $cb,
             ) or return;
-            $offset += $limit;
-        }
-        if ( $offset < $total ) {
-            $done-- if $done;
-            $next--;
-        }
-        else {
-            $offset = 0;
-        }
-    }
-    elsif ( $Limit_Multipliers{$type} && $limit ne '*' ) {
-        return $app->error( $app->translate("Permission denied.") )
-          unless $perms->can_rebuild;
-        $offset = $q->param('offset') || 0;
-        if ( $offset < $total ) {
-            $app->rebuild(
-                BlogID      => $blog_id,
-                ArchiveType => $type,
-                NoIndexes   => 1,
-                Offset      => $offset,
-                Limit       => $limit,
-
-                # EntryCallback => sub { $app->print(".") }
-            ) or return;
-            $offset += $limit;
+            $offset += $count;
         }
         if ( $offset < $total ) {
             $done-- if $done;
@@ -13872,11 +13828,31 @@ sub rebuild_pages {
         if ( !$special ) {
             return $app->error( $app->translate("Permission denied.") )
               unless $perms->can_rebuild;
-            $app->rebuild(
-                BlogID      => $blog_id,
-                ArchiveType => $type,
-                NoIndexes   => 1
-            ) or return;
+            $offset = $q->param('offset') || 0;
+            if ($offset < $total) {
+                my $start = time;
+                my $count = 0;
+                my $cb = sub {
+                    return 0 if time - $start > 10; # 10 seconds
+                    $count++;
+                    return 1;
+                };
+                $app->rebuild(
+                    BlogID         => $blog_id,
+                    ArchiveType    => $type,
+                    NoIndexes      => 1,
+                    Offset         => $offset,
+                    FilterCallback => $cb,
+                ) or return;
+                $offset += $count;
+            }
+            if ( $offset < $total ) {
+                $done-- if $done;
+                $next--;
+            }
+            else {
+                $offset = 0;
+            }
         }
     }
 
@@ -13887,8 +13863,6 @@ sub rebuild_pages {
 
         ## If we're moving on to the next rebuild step, recalculate the
         ## limit.
-        my $mult = $Limit_Multipliers{$type_name} || 1;
-        my $entries_per_rebuild = $app->config('EntriesPerRebuild');
         my $static_count;
         if ( $type_name !~ m/^index/ ) {
             $static_count = $blog->count_static_templates($type_name) || 0;
@@ -13897,42 +13871,67 @@ sub rebuild_pages {
             $static_count = 1;
         }
         if ( !$static_count ) {
-            $limit =
-              $entries_per_rebuild * $mult * $Limit_Multipliers{'Dynamic'};
             $dynamic = 1;
         }
         elsif ( defined($offset) && $offset == 0 ) {
-            if ($mult) {
-                $limit = int( $entries_per_rebuild * $mult / $static_count );
-            }
             $dynamic = 0;
         }
+        if ($offset == 0) {
+            # determine total
+            if (my $archiver      = $app->publisher->archiver($type_name)) {
+                if ($archiver->entry_based || $archiver->date_based) {
+                    my $entry_class = $archiver->entry_class || 'entry';
+                    require MT::Entry;
+                    my $terms = {
+                        class => $entry_class,
+                        status => MT::Entry::RELEASE(),
+                        blog_id => $blog_id,
+                    };
+                    $total = MT::Entry->count($terms);
+                } elsif ($archiver->category_based) {
+                    require MT::Category;
+                    my $terms = {
+                        blog_id => $blog_id,
+                    };
+                    $total = MT::Category->count($terms);
+                } elsif ($archiver->author_based) {
+                    require MT::Author;
+                    require MT::Entry;
+                    my $terms = {
+                        blog_id => $blog_id,
+                        status => MT::Entry::RELEASE(),
+                        class => '*',
+                    };
+                    $total = MT::Author->count(undef, {
+                        join => MT::Entry->join_on('author_id', $terms),
+                        unique => 1,
+                    });
+                }
+            }
+        }
+
+        my $type          = $order[$next];
+        if ($type) {
+            $archiver      = $app->publisher->archiver($type);
+            $archive_label = $archiver ? $archiver->archive_label : '';
+            $archive_label = $app->translate($type) unless $archive_label;
+            $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
+        }
+
         my %param = (
             build_type      => $order,
             build_next      => $next,
             build_type_name => $archive_label,
-            total_entries   => $total_entries,
-            total_pages     => $total_pages,
-            total_cats      => $total_cats,
+            total           => $total,
             offset          => $offset,
-            limit           => $limit,
+            complete        => $total ? ($total == $offset ? 100 : int(($offset / $total) * 100)) : 0,
             is_bm           => scalar $q->param('is_bm'),
             entry_id        => scalar $q->param('entry_id'),
             dynamic         => $dynamic,
             is_new          => scalar $q->param('is_new'),
             old_status      => scalar $q->param('old_status')
         );
-        if ( $Limit_Multipliers{$type} ) {
-            if ( $limit && !$dynamic ) {
-                $param{is_individual} = $archiver->entry_based;
-                $param{indiv_range} =
-                  sprintf "%d - %d", $offset + 1,
-                  $offset + $limit > $total
-                  ? $total
-                  : $offset + $limit;
-            }
-        }
-        $app->build_page( 'rebuilding.tmpl', \%param );
+        $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
     else {
         if ( $q->param('entry_id') ) {
@@ -13990,7 +13989,7 @@ sub rebuild_pages {
             }
             else {    # popup--just go to cnfrmn. page
                 $app->run_callbacks( 'rebuild', $blog );
-                return $app->build_page( 'popup/rebuilt.tmpl', \%param );
+                return $app->load_tmpl( 'popup/rebuilt.tmpl', \%param );
             }
         }
     }
@@ -14108,7 +14107,7 @@ sub edit_role {
     $param{screen_class} = "settings-screen edit-role";
     $param{object_type}  = 'role';
     $param{search_label} = $app->translate('Users');
-    $app->build_page( 'edit_role.tmpl', \%param );
+    $app->load_tmpl( 'edit_role.tmpl', \%param );
 }
 
 sub save_role {
@@ -14172,6 +14171,27 @@ sub languages_list {
     [ sort { $a->{l_name} cmp $b->{l_name} } @data ];
 }
 
+sub entry_notify {
+    my $app = shift;
+    my $user = $app->user;
+    my $perms = $app->permissions;
+    return $app->error( $app->translate("No permissions."))
+        unless $perms->can_send_notifications;
+
+    my $q        = $app->param;
+    my $entry_id = $q->param('entry_id')
+      or return $app->error( $app->translate("No entry ID provided") );
+    require MT::Entry;
+    require MT::Blog;
+    my $entry = MT::Entry->load($entry_id)
+      or return $app->error(
+        $app->translate( "No such entry '[_1]'", $entry_id ) );
+    my $blog   = MT::Blog->load( $entry->blog_id );
+    my $param = {};
+    $param->{entry_id} = $entry_id;
+    return $app->load_tmpl("dialog/entry_notify.tmpl", $param);
+}
+
 sub send_notify {
     my $app = shift;
     $app->validate_magic() or return;
@@ -14184,6 +14204,13 @@ sub send_notify {
       or return $app->error(
         $app->translate( "No such entry '[_1]'", $entry_id ) );
     my $blog   = MT::Blog->load( $entry->blog_id );
+
+    my $user = $app->user;
+    $app->blog($blog);
+    my $perms = $user->permissions($blog);
+    return $app->error( $app->translate("No permissions."))
+        unless $perms->can_send_notifications;
+
     my $author = $entry->author;
     return $app->error(
         $app->translate( "No email address for user '[_1]'", $author->name ) )
@@ -14379,7 +14406,17 @@ sub start_upload {
           && ( -d $blog->site_path || -d $blog->archive_path ) ) ? 0 : 1;
     $param{entry_insert} = $app->param('entry_insert');
     $param{edit_field}   = $app->param('edit_field');
-    $app->build_page( 'dialog/upload.tmpl', \%param );
+
+    if ($param{missing_paths}) {
+        if ( $app->user->is_superuser ||
+             $app->run_callbacks( 'cms_view_permission_filter.blog',
+                $app, $blog_id, $blog ))
+        {
+            $param{have_permissions} = 1;
+        }
+    }
+
+    $app->load_tmpl( 'dialog/asset_upload.tmpl', \%param );
 }
 
 sub complete_insert {
@@ -14475,7 +14512,7 @@ sub complete_insert {
         }
     }
 
-    $app->build_page( 'dialog/upload_complete.tmpl', $param );
+    $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
 }
 
 sub _make_string_csv {
@@ -14677,8 +14714,8 @@ sub upload_file {
                 )
               );
             my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
-            return $app->build_page(
-                'dialog/upload_confirm.tmpl',
+            return $app->load_tmpl(
+                'dialog/asset_replace.tmpl',
                 {
                     temp         => $tmp,
                     extra_path   => $relative_path_save,
@@ -14876,7 +14913,7 @@ sub search_replace {
     $app->add_breadcrumb( $app->translate('Search & Replace') );
     $param->{nav_search}   = 1;
     $param->{screen_class} = "search-replace";
-    $app->build_page( 'search_replace.tmpl', $param );
+    $app->load_tmpl( 'search_replace.tmpl', $param );
 }
 
 sub do_search_replace {
@@ -15408,7 +15445,7 @@ sub start_export {
       if ($perms && !$perms->can_administer_blog);
 
     $param{blog_id} = $blog_id;
-    $app->build_page( 'export.tmpl', \%param );
+    $app->load_tmpl( 'export.tmpl', \%param );
 }
 
 sub export {
@@ -15511,21 +15548,18 @@ sub do_import {
         $no_upload = !$fh;
     }
 
+    my $encoding = $q->param('encoding');
     my $stream;
-    my $encoding;
     if ($no_upload) {
         $stream = $app->config('ImportPath');
     }
     else {
         $stream   = $fh;
-        $encoding = $q->param('encoding');
     }
 
-    local $app->{defer_build_page} = 0;
     $app->{no_print_body} = 1;
 
     local $| = 1;
-    local $app->{defer_build_page} = 0;
     $app->send_http_header('text/html');
 
     my $param;
@@ -15729,7 +15763,7 @@ sub pinged_urls {
     $param{failed_url_loop} =
       [ map { { url => $_ } }
           @{ $entry->pinged_url_list( OnlyFailures => 1 ) } ];
-    $app->build_page( 'popup/pinged_urls.tmpl', \%param );
+    $app->load_tmpl( 'popup/pinged_urls.tmpl', \%param );
 }
 
 sub reg_file {
@@ -15783,7 +15817,7 @@ sub category_add {
     $app->add_breadcrumb( $app->translate( 'Add a [_1]', $pkg->class_label ) );
     $param{object_type}  = $type;
     $param{object_label} = $pkg->class_label;
-    $app->build_page( 'popup/category_add.tmpl', \%param );
+    $app->load_tmpl( 'popup/category_add.tmpl', \%param );
 }
 
 sub category_do_add {
@@ -15830,7 +15864,7 @@ sub category_do_add {
     my %param = ( javascript => <<SCRIPT);
     o.doAddCategoryItem('$name', '$id');
 SCRIPT
-    $app->build_page( 'reload_opener.tmpl', \%param );
+    $app->load_tmpl( 'reload_opener.tmpl', \%param );
 }
 
 sub cc_return {
@@ -15845,7 +15879,7 @@ sub cc_return {
     else {
         $param{license_code} = $code;
     }
-    $app->build_page( 'cc_return.tmpl', \%param );
+    $app->load_tmpl( 'cc_return.tmpl', \%param );
 }
 
 sub reset_blog_templates {
@@ -16188,7 +16222,7 @@ sub handshake {
 
     my %param = ();
     $param{remote_auth_token} = $remote_auth_token;
-    $app->build_page( 'handshake_return.tmpl', \%param );
+    $app->load_tmpl( 'handshake_return.tmpl', \%param );
 }
 
 sub do_list_action {
@@ -16277,7 +16311,7 @@ sub rebuild_these {
                 args => $params
             )
         );
-        return $app->build_page( 'rebuilding.tmpl', \%param );
+        return $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
     else {
         my @blogs = $app->param('blog_ids');
@@ -16325,7 +16359,7 @@ sub rebuild_these {
                 args => $params
             )
         );
-        return $app->build_page( 'rebuilding.tmpl', \%param );
+        return $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
 }
 
@@ -16781,6 +16815,7 @@ sub dialog_grant_role {
                 code    => $hasher,
                 params  => $params,
                 template => 'include/listing_panel.tmpl',
+                $app->param('search') ? () : (
                 pre_build => sub {
                     my ($param) = @_;
                     if ( $type && $type eq 'author' ) {
@@ -16789,7 +16824,7 @@ sub dialog_grant_role {
                             unshift @$objs, $pseudo_user_row;
                         }
                     }
-                },
+                }),
             }
         );
     }
@@ -16923,7 +16958,7 @@ sub dialog_grant_role {
 
         # save the arguments from whence we came...
         $params->{return_args} = $app->return_args;
-        $app->build_page( 'dialog/grant_role.tmpl', $params );
+        $app->load_tmpl( 'dialog/create_association.tmpl', $params );
     }
 }
 
@@ -17067,7 +17102,7 @@ sub start_backup {
 'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
           );
     }
-    $app->build_page( 'backup.tmpl', \%param );
+    $app->load_tmpl( 'backup.tmpl', \%param );
 }
 
 sub start_restore {
@@ -17102,7 +17137,7 @@ sub start_restore {
 'Temporary directory needs to be writable for restore to work correctly.  Please check TempDir configuration directive.'
           );
     }
-    $app->build_page( 'restore.tmpl', \%param );
+    $app->load_tmpl( 'restore.tmpl', \%param );
 }
 
 sub _backup_finisher {
@@ -17210,7 +17245,6 @@ sub backup {
     $param->{nav_backup} = 1;
 
     local $| = 1;
-    local $app->{defer_build_page} = 0;
     $app->send_http_header('text/html');
     $app->print( $app->build_page( 'include/backup_start.tmpl', $param ) );
     require File::Temp;
@@ -17267,7 +17301,7 @@ sub backup {
                 $arc->write($z);
                 $z->close;
                 $app->_backup_finisher( $fname, $param );
-              }
+            };
         }
         elsif ( '2' eq $archive ) {    # zip
             require Archive::Zip;
@@ -17346,14 +17380,27 @@ sub backup {
                 print $fh "<file type='backup' name='$name' />\n";
             }
             for my $id ( keys %$asset_files ) {
+                my $name = $id . '-' . $asset_files->{$id}->[2];
+                my $tmp = File::Spec->catfile( $temp_dir, $name );
+                unless ( copy( $asset_files->{$id}->[1], $tmp ) ) {
+                    $app->log(
+                        {
+                            message => $app->translate(
+                                'Copying file [_1] to [_2] failed: [_3]',
+                                $asset_files->{$id}->[1], $tmp, $!
+                            ),
+                            level    => MT::Log::INFO(),
+                            class    => 'system',
+                            category => 'backup'
+                        }
+                    );
+                    next;
+                }
                 print $fh "<file type='asset' name='"
                   . $asset_files->{$id}->[2]
                   . "' asset_id='"
                   . $id
                   . "' />\n";
-                my $name = $id . '-' . $asset_files->{$id}->[2];
-                my $tmp = File::Spec->catfile( $temp_dir, $name );
-                copy( $asset_files->{$id}->[1], $tmp );
                 my $url =
                     $app->uri
                   . "?__mode=backup_download&assetname=$name&magic_token="
@@ -17599,7 +17646,6 @@ sub restore {
     $app->{no_print_body} = 1;
 
     local $| = 1;
-    local $app->{defer_build_page} = 0;
     $app->send_http_header('text/html');
 
     $app->print( $app->build_page( 'restore_start.tmpl', $param ) );
@@ -17972,7 +18018,8 @@ sub restore_upload_manifest {
       : $app->config('SchemaVersion');
     $param->{dialog_mode} = 'dialog_restore_upload';
     $param->{dialog_params} =
-        'magic_token='
+        'start=1'
+      . '&amp;magic_token='
       . $app->current_magic
       . '&amp;files='
       . $param->{files}
@@ -17985,7 +18032,7 @@ sub restore_upload_manifest {
       . '&amp;schema_version='
       . $param->{schema_version}
       . '&amp;redirect=1';
-    $app->build_page( 'restore.tmpl', $param );
+    $app->load_tmpl( 'restore.tmpl', $param );
 
     #close $fh if !$no_upload;
 }
@@ -18029,6 +18076,7 @@ sub dialog_restore_upload {
     }
 
     my $param = {};
+    $param->{start}          = $q->param('start') || 0;
     $param->{is_asset}       = $is_asset;
     $param->{name}           = $current;
     $param->{files}          = $files;
@@ -18050,20 +18098,19 @@ sub dialog_restore_upload {
             close $fh;
             $param->{error} =
               $app->translate( 'Please upload [_1] in this page.', $current );
-            return $app->build_page( 'dialog/restore_upload.tmpl', $param );
+            return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
         }
     }
 
     if ($no_upload) {
         $param->{error} = $app->translate('File was not uploaded.')
           if !( $q->param('redirect') );
-        return $app->build_page( 'dialog/restore_upload.tmpl', $param );
+        return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
     }
 
     $app->{no_print_body} = 1;
 
     local $| = 1;
-    local $app->{defer_build_page} = 0;
     $app->send_http_header('text/html');
 
     $app->print( $app->build_page( 'dialog/restore_start.tmpl', $param ) );
@@ -18305,7 +18352,7 @@ sub dialog_adjust_sitepath {
         $param->{$key} = $q->param($key) if $q->param($key);
     }
     $param->{name} = $q->param('current_file');
-    $app->build_page( 'dialog/adjust_sitepath.tmpl', $param );
+    $app->load_tmpl( 'dialog/adjust_sitepath.tmpl', $param );
 }
 
 sub adjust_sitepath {
@@ -18324,7 +18371,6 @@ sub adjust_sitepath {
     $app->{no_print_body} = 1;
 
     local $| = 1;
-    local $app->{defer_build_page} = 0;
     $app->send_http_header('text/html');
 
     $app->print( $app->build_page( 'dialog/restore_start.tmpl', {} ) );
@@ -18534,7 +18580,7 @@ sub dialog_post_comment {
           . $app->param('return_args'),
     };
 
-    $app->build_page( 'dialog/post_comment.tmpl', $param );
+    $app->load_tmpl( 'dialog/comment_reply.tmpl', $param );
 }
 
 1;
@@ -18918,10 +18964,6 @@ Applies a set of tags to one or more entries.
 
 Approves a comment or trackback for publication.
 
-=item * author_bulk
-
-Displays the "Bulk Management" screen.
-
 =item * ban_commenter
 
 Bans a commenter for a particular blog.
@@ -19049,10 +19091,6 @@ Handler for the display of the export screen.
 =item * export
 
 Handles the request to export the data for a blog.
-
-=item * export_authors
-
-Handles the request to export the MT authors in a CSV format.
 
 =item * export_log
 
@@ -19352,8 +19390,6 @@ Handler for saving the change to the blog's welcome message.
 
 Transient mode handler used to redirect user to the mt-upgrade script
 for either installation of upgrade of their database.
-
-=item * upload_author_bulk
 
 =item * upload_file
 

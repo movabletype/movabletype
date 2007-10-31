@@ -1,6 +1,5 @@
-<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
-<mt:include name="dialog/header.tmpl">
-<h2><__trans phrase="Restoring [_1]..." params="<mt:var name="name">"></h2>
+<$mt:setvar name="page_title" value="<__trans phrase="Configure New Publishing Paths">"$>
+<mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 <!--
 function validate (f) {
@@ -53,50 +52,69 @@ function is_valid_path(path_){
 }
 //-->
 </script>
-
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
 <form name="adjust_sitepath" id="adjust_sitepath" method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
-<input type="hidden" name="__mode" value="adjust_sitepath" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<input type="hidden" name="tmp_dir" value="<mt:var name="tmp_dir" escape="html">" />
-<input type="hidden" name="restore_upload" value="<mt:var name="restore_upload">" />
-<input type="hidden" name="error" value="<mt:var name="error" escape="html">" />
-<input type="hidden" name="asset_ids" value="<mt:var name="asset_ids">" />
-<input type="hidden" name="files" value="<mt:var name="files">" />
-<input type="hidden" name="assets" value="<mt:var name="assets" escape="html">" />
-<input type="hidden" name="current_file" value="<mt:var name="name">" />
-<input type="hidden" name="last" value="<mt:var name="last">" />
-<input type="hidden" name="redirect" value="<mt:var name="redirect">" />
-<input type="hidden" name="is_dirty" value="<mt:var name="is_dirty">" />
-<input type="hidden" name="is_asset" value="<mt:var name="is_asset">" />
-<input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
-<input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
-<input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
-<dl>
+    <input type="hidden" name="__mode" value="adjust_sitepath" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="tmp_dir" value="<mt:var name="tmp_dir" escape="html">" />
+    <input type="hidden" name="restore_upload" value="<mt:var name="restore_upload">" />
+    <input type="hidden" name="error" value="<mt:var name="error" escape="html">" />
+    <input type="hidden" name="asset_ids" value="<mt:var name="asset_ids">" />
+    <input type="hidden" name="files" value="<mt:var name="files">" />
+    <input type="hidden" name="assets" value="<mt:var name="assets" escape="html">" />
+    <input type="hidden" name="current_file" value="<mt:var name="name">" />
+    <input type="hidden" name="last" value="<mt:var name="last">" />
+    <input type="hidden" name="redirect" value="<mt:var name="redirect">" />
+    <input type="hidden" name="is_dirty" value="<mt:var name="is_dirty">" />
+    <input type="hidden" name="is_asset" value="<mt:var name="is_asset">" />
+    <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
+    <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
+    <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
+    <dl>
 <mt:loop name="blogs_loop">
-<dt><mt:var name="name">(<mt:var name="id">)</dt>
-<dd>
-<p>
-<mt:if name="old_site_path"><input type="hidden" name="old_site_path_<mt:var name="id">" id="old_site_path_<mt:var name="id">" value="<mt:var name="old_site_path" escape="html">" />Old Path: <span><mt:var name="old_site_path" escape="html"></span><br /></mt:if>
-<__trans phrase="New Site Path">:<input class="path_field" name="site_path_<mt:var name="id">" id="site_path_<mt:var name="id">" size="50" />
-</p>
-<p>
-<mt:if name="old_site_url"><input type="hidden" name="old_site_url_<mt:var name="id">" id="old_site_url_<mt:var name="id">" value="<mt:var name="old_site_url" escape="html">" />Old URL: <span><mt:var name="old_site_url" escape="html"></span><br /></mt:if>
-<__trans phrase="New Site URL">:<input class="path_field" class ="site_url" name="site_url_<mt:var name="id">" id="site_url_<mt:var name="id">" size="50" />
-</p>
-<mt:if name="old_archive_path"><p>
-<input type="hidden" name="old_archive_path_<mt:var name="id">" id="old_archive_path_<mt:var name="id">" value="<mt:var name="old_archive_path" escape="html">" />Old Archive Path: <span><mt:var name="old_archive_path" escape="html"></span><br />
-<__trans phrase="New Archive Path">:<input class="path_field" name="archive_path_<mt:var name="id">" id="archive_path_<mt:var name="id">" size="50" />
-</p></mt:if>
-<mt:if name="old_archive_url"><p>
-<input type="hidden" name="old_archive_url_<mt:var name="id">" id="old_archive_url_<mt:var name="id">" value="<mt:var name="old_archive_url" escape="html">" />Old Archive URL: <span><mt:var name="old_archive_url" escape="html"></span><br />
-<__trans phrase="New Archive URL">:<input class="path_field" class ="archive_url" name="archive_url_<mt:var name="id">" id="archive_url_<mt:var name="id">" size="50" />
-</p></mt:if>
-</dd>
-</mt:loop>
-</dl>
-<div class="panel-commands">
-    <input type="submit" value="<__trans phrase="Continue">"/>
-</div>
+        <dt><mt:var name="name">(<mt:var name="id">)</dt>
+        <dd>
+            <p>
+    <mt:if name="old_site_path">
+                <input type="hidden" name="old_site_path_<mt:var name="id">" id="old_site_path_<mt:var name="id">" value="<mt:var name="old_site_path" escape="html">" />
+                Old Path: <span><mt:var name="old_site_path" escape="html"></span>
+                <br />
+    </mt:if>
+                <__trans phrase="New Site Path:"> <input class="path_field" name="site_path_<mt:var name="id">" id="site_path_<mt:var name="id">" size="50" />
+            </p>
+            <p>
+    <mt:if name="old_site_url">
+                <input type="hidden" name="old_site_url_<mt:var name="id">" id="old_site_url_<mt:var name="id">" value="<mt:var name="old_site_url" escape="html">" />
+                Old URL: <span><mt:var name="old_site_url" escape="html"></span>
+                <br />
+    </mt:if>
+                <__trans phrase="New Site URL:"> <input class="path_field" class ="site_url" name="site_url_<mt:var name="id">" id="site_url_<mt:var name="id">" size="50" />
+            </p>
+    <mt:if name="old_archive_path">
+            <p>
+                <input type="hidden" name="old_archive_path_<mt:var name="id">" id="old_archive_path_<mt:var name="id">" value="<mt:var name="old_archive_path" escape="html">" />
+                Old Archive Path: <span><mt:var name="old_archive_path" escape="html"></span>
+                <br />
+                <__trans phrase="New Archive Path:"> <input class="path_field" name="archive_path_<mt:var name="id">" id="archive_path_<mt:var name="id">" size="50" />
+            </p>
+    </mt:if>
+    <mt:if name="old_archive_url">
+            <p>
+                <input type="hidden" name="old_archive_url_<mt:var name="id">" id="old_archive_url_<mt:var name="id">" value="<mt:var name="old_archive_url" escape="html">" />
+                Old Archive URL: <span><mt:var name="old_archive_url" escape="html"></span>
+                <br />
+                <__trans phrase="New Archive URL:"> <input class="path_field" class ="archive_url" name="archive_url_<mt:var name="id">" id="archive_url_<mt:var name="id">" size="50" />
+            </p>
+    </mt:if>
+        </dd>
+    </mt:loop>
+    </dl>
+    <div class="actions-bar">
+        <div class="actions-bar-inner">
+            <input type="submit" value="<__trans phrase="Continue">" />
+        </div>
+    </div>
 </form>
 
 <mt:include name="dialog/footer.tmpl">

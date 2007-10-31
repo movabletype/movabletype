@@ -5,6 +5,9 @@
 /* utilities */
 @import url("utilities.css");
 
+/* debug messages */
+@import url("debug.css");
+
 /* messaging */
 @import url("messaging.css");
 

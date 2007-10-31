@@ -85,8 +85,7 @@ TC.attachLoadEvent( init );
             <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
             <input type="hidden" name="basename_old" id="basename_old" value="<mt:var name="basename_old" escape="html">" />
 
-            <$mt:var name="path_prefix" escape="html"$>
-            <input name="basename" id="basename" maxlength="250" value="<mt:var name="basename" escape="html">" class="quarter-width" onchange="setElementValue('basename', dirify(this.value))" />
+            <$mt:var name="path_prefix" escape="html"$><input name="basename" id="basename" maxlength="250" value="<mt:var name="basename" escape="html">" class="quarter-width" onchange="setElementValue('basename', dirify(this.value))" style="float: none;" />
         </mtapp:setting>
 
         <mtapp:setting

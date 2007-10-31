@@ -39,6 +39,10 @@ my $printer = sub { $backup_data .= $_[0] };
 my %skip = (
     'session' => 1,
     'config'  => 1,
+    'schwartz_job' => 1,
+    'schwartz_error' => 1,
+    'schwartz_funcmap' => 1,
+    'schwartz_exitstatus' => 1,
 );
 my %oldies;
 my $types = MT->registry('object_types');

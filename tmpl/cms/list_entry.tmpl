@@ -1,11 +1,16 @@
 <mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<$mt:var name="object_label_plural"$>"></mt:setvarblock>
 <mt:setvarblock name="content_header">
     <div id="msg-container">
+    <mt:if name="dynamic_all">
+        <mt:setvar name="rebuild" value="">
+    <mt:else>
+        <mt:setvar name="rebuild" value="all">
+    </mt:if>
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
             class="success"
-            rebuild="all">
+            rebuild="$rebuild">
             <__trans phrase="Your changes have been saved.">
         </mtapp:statusmsg>
     </mt:if>
@@ -13,7 +18,7 @@
         <mtapp:statusmsg
             id="saved-deleted"
             class="success"
-            rebuild="all">
+            rebuild="$rebuild">
             <__trans phrase="Your [_1] has been deleted from the database." params="<mt:var name="object_label">">
         </mtapp:statusmsg>
     </mt:if>

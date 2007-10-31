@@ -30,10 +30,11 @@ use constant ENCODING_NAMES => [
     { 'name' => 'guess', 'display_name' => 'AUTO DETECT' },
     { 'name' => 'utf8', 'display_name' => 'UTF-8' },
     { 'name' => 'ascii', 'display_name' => 'ISO-8859-1' },
+    { 'name' => 'WinLatin1', 'display_name' => 'Windows Latin1' },
 ];
 
 my @ENCODINGS_ENCODE =
-    qw( utf-8 euc-jp shiftjis 7bit-jis iso-2022-jp
+    qw( cp1252 utf-8 euc-jp shiftjis 7bit-jis iso-2022-jp
         iso-2022-jp-1 jis0201-raw jis0208-raw
         jis0212-raw cp932 Macjapanese iso-8859-1 );
 

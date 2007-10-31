@@ -1,75 +1,63 @@
 <mt:setvarblock name="page_title"><__trans phrase="Widgets"></mt:setvarblock>
-<TMPL_INCLUDE NAME="include/header.tmpl">
-
-<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/js/app.js"></script>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="uri">plugins/WidgetManager/js/app.js"></script>
 <script type="text/javascript">
 <!--
 var tableSelect;
-function init()
-{
-<TMPL_UNLESS NAME=IS_POWER_EDIT>
+function init() {
     // setup
     tableSelect = new TC.TableSelect( "selector" );
     tableSelect.rowSelect = true;
-</TMPL_UNLESS>
-
-    setFilterCol(<TMPL_IF NAME=FILTER>'<TMPL_VAR NAME=FILTER>'<TMPL_ELSE>'none'</TMPL_IF>);<TMPL_IF NAME=FILTER>
-    setFilterVal('<TMPL_VAR NAME=FILTER_VAL>');
-</TMPL_IF>
-}
-
-function setFilterCol(choice) {
-    var sel = getByID('filter-select');
-    if (!sel) return;
-    sel.className = "filter-" + choice;
-    if (choice == 'none')
-        getByID('filter-mode').selectedIndex = 0;
-    else {
-        getByID('filter-mode').selectedIndex = 1;
-        var fld = getByID('filter-col');
-        if (choice == 'status')
-            fld.selectedIndex = 0;
-        else if (choice == 'commenter')
-            fld.selectedIndex = 1;
-        col_span = getByID("filter-text-col");
-        if (fld.selectedIndex > -1 && col_span)
-            col_span.innerHTML = '<strong>' +
-                fld.options[fld.selectedIndex].text + '</strong>';
-    }
 }
 
 TC.attachLoadEvent( init );
 // -->
 </script>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+<input type="button" name="delete" value="<__trans phrase="Delete">" onclick="doRemoveItems(this.form, '<__trans phrase="Widget Set">', '<__trans phrase="Widget Sets">', '', '', 'delete_widget')" accesskey="x" title="<__trans phrase="Delete selected Widget Sets (x)">" />
+</mt:setvarblock>
+<mt:setvarblock name="related_content">
+<mtapp:widget id="tips" label="<__trans phrase="Helpful Tips">">
+<p><__trans phrase="To add a widget set to your templates, use the following syntax:"></p>
+<p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
+</mtapp:widget>
 
-<TMPL_IF NAME=REBUILD>
-<h4 class="message"><__trans phrase="Your changes to the widget container have been saved."> <TMPL_INCLUDE NAME="include/rebuild_stub.tmpl"></h4>
-</TMPL_IF>
+</mt:setvarblock>
 
-<TMPL_IF NAME=DELETED>
-<h4 class="message"><__trans phrase="You have successfully deleted the selected widget container(s) from your blog."> <TMPL_INCLUDE NAME="include/rebuild_stub.tmpl"></h4>
-</TMPL_IF>
+<mt:include name="include/header.tmpl">
 
-<p><__trans phrase="To add a widget container to your templates, use the following syntax:"></p>
-<p><__trans phrase="<strong>&lt;$MTWidgetManager name=&quot;Name of the Widget Manager&quot;$&gt;</strong>"></p>
+<div id="msg-block">
+<mt:if name="rebuild">
+    <mtapp:statusmsg id="saved-msg" class="success" rebuild="all">
+    <__trans phrase="Your changes to the widget set have been saved.">
+    </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="deleted">
+    <mtapp:statusmsg id="delete-msg" class="info" rebuild="all">
+    <__trans phrase="You have successfully deleted the selected widget set(s) from your blog.">
+    </mtapp:statusmsg>
+</mt:if>
+</div>
 
 <div class="list-wrapper">
 
-<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<__trans phrase="Add Widget Manager">" width="9" height="9" />
-    <a href="?__mode=edit_widget&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=New+Widget+Manager"><__trans phrase="Create Widget Container"></a>
+<a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">&amp;widgetmanager=<__trans phrase="New Widget Set" escape="url">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a>
 </div>
 
-<form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<form method="get" action="<mt:var name="url">">
 <input type="hidden" name="__mode" value="delete_widget" />
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="blog_id" value="<mt:var name="id">" />
 
-<div class="list-actions">
-<div class="button-bar">
-<input type="button" name="delete" value="<__trans phrase="Delete">" onclick="doRemoveItems(this.form, '<__trans phrase="Widget Manager">', '<__trans phrase="Widget Managers">', '', '', 'delete_widget')" accesskey="x" title="<__trans phrase="Delete selected Widget Managers (x)">" />
-</div>
+<div class="listing" id="selector">
+
+<div class="actions-bar-inner pkg">
+<span class="button-actions">
+<mt:var name="action_buttons">
+</span>
 </div>
 
-<div class="list" id="selector">
 <table cellspacing="0">
   <thead>
   <tr>
@@ -79,18 +67,15 @@ TC.attachLoadEvent( init );
   </tr>
   </thead>
   <tbody>
-<TMPL_LOOP NAME=WIDGETMANAGERS>
-  <tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
-    <td class="cb"><input type="checkbox" name="id" value="<TMPL_VAR NAME=WIDGETMANAGER>" class="select" /></td>
-    <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=<TMPL_VAR NAME=WIDGETMANAGER>"><TMPL_VAR NAME=WIDGETMANAGER></a></td>
-    <td class="widgetmanager-widgets"><TMPL_VAR NAME=NAMES></td>
+<mt:loop name="widgetmanagers">
+  <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+    <td class="cb"><input type="checkbox" name="id" value="<mt:var name="widgetmanager">" class="select" /></td>
+    <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&widgetmanager=<mt:var name="widgetmanager">"><mt:var name="widgetmanager"></a></td>
+    <td class="widgetmanager-widgets"><mt:var name="names"></td>
   </tr>
-</TMPL_LOOP>
-</form>
+</mt:loop>
 </table>
 </div>
+</form>
 
-</div>
-
-
-<TMPL_INCLUDE NAME="include/footer.tmpl">
+<mt:include name="include/footer.tmpl">

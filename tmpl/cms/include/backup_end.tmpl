@@ -1,4 +1,4 @@
-</pre>
+</pre> 
 </div>
 
 <script type="text/javascript">
@@ -10,37 +10,36 @@ if (progress) {
 // -->
 </script>
 
-<TMPL_IF NAME=BACKUP_SUCCESS>
-<p><strong><MT_TRANS phrase="All of the data has been backed up successfully!"></strong></p>
-<TMPL_IF NAME=FILES_LOOP>
+<mt:if name="backup_success">
+<p><strong><__trans phrase="All of the data has been backed up successfully!"></strong></p>
+    <mt:if name="files_loop">
 <div class="list" id="list-files">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th id="ft-filename"><MT_TRANS phrase="Filename"></th>
-<th id="ft-view">&nbsp;</th>
-</tr>
-</thead>
-<tbody>
-
-<TMPL_LOOP NAME=FILES_LOOP>
-<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
-<td><TMPL_VAR NAME=FILENAME></td>
-<td class="status-view"><TMPL_IF NAME=URL><a href="<TMPL_VAR NAME=URL>" target="<MT_TRANS phrase="_external_link_target">" title="<MT_TRANS phrase="Download This File">"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Download This File">" width="13" height="9" /></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
-</tr>
-</TMPL_LOOP>
-
-</tbody>
-</table>
-<p><strong><MT_TRANS phrase="_BACKUP_TEMPDIR_WARNING" params="<TMPL_VAR NAME=TEMPDIR>"></strong></p>
+    <table cellspacing="0">
+        <thead>
+            <tr>
+                <th id="ft-filename"><__trans phrase="Filename"></th>
+                <th id="ft-view">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        <mt:loop name="files_loop">
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                <td><mt:var name="filename"></td>
+                <td class="status-view"><mt:if name="url"><a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Download This File">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+            </tr>
+        </mt:loop>
+        </tbody>
+    </table>
+    <p><strong><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></strong></p>
 </div>
-<TMPL_ELSE>
-<form name="file_download" id="file_download" method="POST" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<input type="hidden" name="__mode" value="backup_download" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-<input type="hidden" name="filename" value="<TMPL_VAR NAME=FILENAME ESCAPE=HTML>" />
-<TMPL_IF NAME=BLOG_ID><input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" /></TMPL_IF>
+    <mt:else>
+<form name="file_download" id="file_download" method="POST" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="backup_download" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="filename" value="<mt:var name="filename" escape="html">" />
+        <mt:if name="blog_id">
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        </mt:if>
 </form>
 <script type="text/javascript">
 var timer;
@@ -58,10 +57,10 @@ function submit_form() {
 
 timer = window.setTimeout("submit_form()", 3000);
 </script>
-<p id="download_message"><strong><MT_TRANS phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong></p>
-</TMPL_IF>
-<TMPL_ELSE>
-<p><strong><MT_TRANS phrase="An error occurred during the backup process: [_1]" params="<TMPL_VAR NAME=ERROR>"></strong></p>
-</TMPL_IF>
+<p id="download_message"><strong><__trans phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong></p>
+    </mt:if>
+<mt:else>
+<p><strong><__trans phrase="An error occurred during the backup process: [_1]" params="<mt:var name="error">"></strong></p>
+</mt:if>
 
-<TMPL_INCLUDE NAME="include/footer.tmpl">
+<mt:include name="include/footer.tmpl">

@@ -50,15 +50,18 @@ class MT {
     }
 
     function init($blog_id = null, $cfg_file = null) {
-        $mtdir = dirname(dirname(__FILE__));
+        if (isset($blog_id)) {
+            $this->blog_id = $blog_id;
+        }
+
         if (!file_exists($cfg_file)) {
+            $mtdir = dirname(dirname(__FILE__));
             $cfg_file = $mtdir . DIRECTORY_SEPARATOR . "mt-config.cgi";
         }
 
         $this->configure($cfg_file);
-        if (isset($blog_id)) {
-            $this->blog_id = $blog_id;
-        }
+        $this->init_addons();
+        $this->configure_from_db();
 
         $lang = substr(strtolower($this->config('DefaultLanguage')), 0, 2);
         if (!@include_once("l10n_$lang.php"))
@@ -71,10 +74,30 @@ class MT {
         }
     }
 
+    function init_addons() {
+        $mtdir = dirname(dirname(__FILE__));
+        $path = $mtdir . DIRECTORY_SEPARATOR . "addons";
+        if (is_dir($path)) {
+            $ctx =& $this->context();
+            if ($dh = opendir($path)) {
+                while (($file = readdir($dh)) !== false) {
+                    if ($file == "." || $file == "..") {
+                        continue;
+                    }
+                    $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
+                        . DIRECTORY_SEPARATOR . 'php';
+                    if (is_dir($plugin_dir)) {
+                        $ctx->plugins_dir[] = $plugin_dir;
+                        $this->load_plugin($plugin_dir);
+                    }
+                }
+                closedir($dh);
+            }
+        }
+    }
+
     function init_plugins() {
         $plugin_paths = $this->config('PluginPath');
-        $mtdir = dirname(dirname(__FILE__));
-        array_unshift($plugin_paths, $mtdir . DIRECTORY_SEPARATOR . "addons");
         $ctx =& $this->context();
         foreach ($plugin_paths as $path) {
             if ($dh = opendir($path)) {
@@ -82,7 +105,8 @@ class MT {
                      if ($file == "." || $file == "..") {
                          continue;
                      }
-                     $plugin_dir = $path . DIRECTORY_SEPARATOR . $file . DIRECTORY_SEPARATOR . 'php';
+                     $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
+                         . DIRECTORY_SEPARATOR . 'php';
                      if (is_dir($plugin_dir)) {
                          $ctx->plugins_dir[] = $plugin_dir;
                          $this->load_plugin($plugin_dir);
@@ -92,7 +116,8 @@ class MT {
             }
         }
 
-        $plugin_dir = $this->config('PHPDir') . DIRECTORY_SEPARATOR . 'plugins';
+        $plugin_dir = $this->config('PHPDir') . DIRECTORY_SEPARATOR
+            . 'plugins';
         if (is_dir($plugin_dir)) {
             $this->load_plugin($plugin_dir);
         }
@@ -219,7 +244,10 @@ class MT {
             $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "smarty" . DIRECTORY_SEPARATOR . "libs" . $path_sep .
             ini_get('include_path')
         );
-    
+    }
+
+    function configure_from_db() {
+        $cfg =& $this->config;
         $mtdb =& $this->db();
         $db_config = $mtdb->fetch_config();
         if ($db_config) {
@@ -433,6 +461,20 @@ class MT {
 
         $cache_id = $blog_id.';'.$fi_path;
         if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
+            if (isset($at)) {
+                global $_archivers;
+                require_once("archive_lib.php");
+                global $_archivers;
+                if (!isset($_archivers[$at])) {
+                    // 404
+                    $this->http_errr = 404;
+                    header("HTTP/1.1 404 Not Found");
+                    return $ctx->error("Page not found - $at", E_USER_ERROR);
+                }
+                $archiver = $_archivers[$at];
+                $archiver->template_params($ctx);
+            }
+
             if ($cat) {
                 $archive_category = $mtdb->fetch_category($cat);
                 $ctx->stash('category', $archive_category);
@@ -445,15 +487,7 @@ class MT {
             }
             if (isset($at)) {
                 if (($at != 'Category') && isset($ts)) {
-                    require_once("archive_lib.php");
-                    global $_archivers;
-                    if (!isset($_archivers[$at])) {
-                        // 404
-                        $this->http_errr = 404;
-                        header("HTTP/1.1 404 Not Found");
-                        return $ctx->error("Page not found - $at", E_USER_ERROR);
-                    }
-                    list($ts_start, $ts_end) = $_archivers[$at]->get_range($ctx, $ts);
+                    list($ts_start, $ts_end) = $archiver->get_range($ctx, $ts);
                     $ctx->stash('current_timestamp', $ts_start);
                     $ctx->stash('current_timestamp_end', $ts_end);
                 }

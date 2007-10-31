@@ -1,12 +1,12 @@
-<div class="entry-meta">
+<div class="asset-meta">
     <span class="byline">
 <MTIfNonEmpty tag="EntryAuthorDisplayName">
-        <MT_TRANS phrase="Posted by [_1] on [_2]" params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>">
+        <__trans phrase="Posted by [_1] on [_2]" params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>">
 <MTElse>
-        <MT_TRANS phrase="Posted on [_1]" params="<$MTEntryDate format="%x %X"$>">
+        <__trans phrase="Posted on [_1]" params="<$MTEntryDate format="%x %X"$>">
 </MTIfNonEmpty>
-    </span> 
-    <span class="separator">|</span> <a class="permalink" href="<$MTEntryPermalink$>"><MT_TRANS phrase="Permalink"></a>
-    <MTIfCommentsActive>| <a href="<$MTEntryPermalink$>#comments"><MT_TRANS phrase="Comments ([_1])" params="<$MTEntryCommentCount$>"></a></MTIfCommentsActive>
-    <MTIfPingsActive>| <a href="<$MTEntryPermalink$>#trackback"><MT_TRANS phrase="TrackBacks ([_1])" params="<$MTEntryTrackbackCount$>"></a></MTIfPingsActive>
+    </span>
+    <span class="separator">|</span> <a class="permalink" href="<$MTEntryPermalink$>"><__trans phrase="Permalink"></a>
+    <MTIfCommentsActive>| <a href="<$MTEntryPermalink$>#comments"><__trans phrase="Comments ([_1])" params="<$MTEntryCommentCount$>"></a></MTIfCommentsActive>
+    <MTIfPingsActive>| <a href="<$MTEntryPermalink$>#trackback"><__trans phrase="TrackBacks ([_1])" params="<$MTEntryTrackbackCount$>"></a></MTIfPingsActive>
 </div>

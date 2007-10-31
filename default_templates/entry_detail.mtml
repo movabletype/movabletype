@@ -1,20 +1,24 @@
-<div class="entry" id="entry-<$MTEntryID$>">
-    <h3 class="entry-header"><$MTEntryTitle$></h3>
-    <div class="entry-content">
+<div id="entry-<$MTEntryID$>" class="entry-asset asset">
+    <div class="asset-header">
+        <h1 class="asset-name"><$MTEntryTitle$></h1>
+    </div>
+    <div class="asset-content">
 <MTIfNonEmpty tag="EntryBody">
-        <div class="entry-body">
+        <div class="asset-body">
             <$MTEntryBody$>
         </div>
 </MTIfNonEmpty>
 <MTIfNonEmpty tag="EntryMore" convert_breaks="0">
-        <div id="more" class="entry-more">
+        <div id="more" class="asset-more">
             <$MTEntryMore$>
         </div>
 </MTIfNonEmpty>
 <MTIf name="entry_template">
-    <$MTInclude module="<MT_TRANS phrase="Categories">"$>
+        <$MTInclude module="<__trans phrase="Categories">"$>
 </MTIf>
-<$MTInclude module="<MT_TRANS phrase="Tags">"$>
+        <$MTInclude module="<__trans phrase="Tags">"$>
     </div>
-    <$MTInclude module="<MT_TRANS phrase="Entry Metadata">"$>
+    <div class="asset-footer">
+        <$MTInclude module="<__trans phrase="Entry Metadata">"$>
+    </div>
 </div>

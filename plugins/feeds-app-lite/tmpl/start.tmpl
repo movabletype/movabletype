@@ -1,33 +1,31 @@
-<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
 <$mt:var name="page_title" value="<__trans phrase="Feeds.App Lite Widget Creator">"$>
 <mt:include name="dialog/header.tmpl">
-
-<form method="post" action="<$mt:var name="script_url"$>">
-<input type="hidden" name="blog_id" value="<$mt:var name="blog_id">" />
-<input type="hidden" name="__mode" value="feedswidget_select" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<div class="field">
-
-<p style="width: 400px"><__trans phrase="Feeds.App Lite creates modules that include feed data. Once you've used it to create those modules, you can then use them in your blog templates."></p>
-
 <mt:if name="need_uri">
-<mtapp:statusmsg class="error" can_close="0">
-    <__trans phrase="You must enter an address to proceed">
-</mtapp:statusmsg>
+    <mtapp:statusmsg class="error" can_close="0">
+        <__trans phrase="You must enter a feed or site URL to proceed">
+    </mtapp:statusmsg>
+<mt:else>
+<p><__trans phrase="Create a widget from a feed"></p>
 </mt:if>
-
-<div class="label-column"><h5><label for="uri"><__trans phrase="Enter the URL of a feed, or the URL of a site that has a feed."></label></h5></div>
-<div class="field-column">
-<input style="width:300px;" type="text" name="uri" id="uri" />
-</div>
-</div>
-
-<div class="actions-bar">
-    <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
-    <input type="submit" value="<__trans phrase="Continue">" />
-</div>
-
+<form method="post" action="<$mt:var name="script_url"$>">
+    <input type="hidden" name="blog_id" value="<$mt:var name="blog_id">" />
+    <input type="hidden" name="__mode" value="feedswidget_select" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mtapp:setting
+    id="feed_url"
+    label="Feed or Site URL"
+    label_class="top-label"
+    hint="<__trans phrase="Enter the URL of a feed, or the URL of a site that has a feed.">"
+    show_hint="0">
+    <div class="textarea-wrapper">
+        <input type="text" name="uri" id="uri" class="full-width" />
+    </div>
+</mtapp:setting>
+    <div class="actions-bar">
+        <div class="actions-bar-inner">
+            <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
+            <input type="submit" value="<__trans phrase="Continue">" />
+        </div>
+    </div>
 </form>
-
 <mt:include name="dialog/footer.tmpl">

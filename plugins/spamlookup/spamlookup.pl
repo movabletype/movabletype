@@ -45,18 +45,20 @@ sub BEGIN {
 # This will match sixapart.com and any of its subdomains:
 sixapart.com}}],
         ]),
-        junk_filters => {
-            spamlookup_ipbl => {
-                label => "SpamLookup IP Lookup",
-                code => sub { $plugin->runner('ipbl', @_) },
-            },
-            spamlookup_domainbl => {
-                label => "SpamLookup Domain Lookup",
-                code => sub { $plugin->runner('domainbl', @_) },
-            },
-            spamlookup_tborigin => {
-                label => "SpamLookup TrackBack Origin",
-                code => sub { $plugin->runner('tborigin', @_) },
+        registry => {
+            junk_filters => {
+                spamlookup_ipbl => {
+                    label => "SpamLookup IP Lookup",
+                    code => sub { $plugin->runner('ipbl', @_) },
+                },
+                spamlookup_domainbl => {
+                    label => "SpamLookup Domain Lookup",
+                    code => sub { $plugin->runner('domainbl', @_) },
+                },
+                spamlookup_tborigin => {
+                    label => "SpamLookup TrackBack Origin",
+                    code => sub { $plugin->runner('tborigin', @_) },
+                },
             },
         },
     });

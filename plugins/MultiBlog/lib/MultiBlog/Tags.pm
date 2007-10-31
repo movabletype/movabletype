@@ -10,7 +10,7 @@ sub MultiBlog {
     require MultiBlog::Tags::MultiBlog;
     &MultiBlog::Tags::MultiBlog::multiblog($plugin, @_);    
 }
-sub OtherBlog { Multiblog(@_); }
+sub OtherBlog { MultiBlog(@_); }
 
 sub MultiBlogLocalBlog {
     my $plugin = shift;
@@ -26,7 +26,7 @@ sub MultiBlogIfLocalBlog {
     return (    defined( $local ) 
             and defined( $blog_id ) 
             and $blog_id == $local) 
-        ? 1 : 0;
+        ? $ctx->slurp : $ctx->else;
 }
 
 1;

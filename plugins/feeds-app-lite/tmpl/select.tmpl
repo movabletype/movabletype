@@ -1,43 +1,42 @@
-<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
 <$mt:var name="page_title" value="<__trans phrase="Feeds.App Lite Widget Creator">"$>
 <mt:include name="dialog/header.tmpl">
-
-<p><__trans phrase="Multiple feeds were discovered. Select the feed you wish to use. Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds."></p>
-
+    <mtapp:statusmsg
+        id="found"
+        class="success"
+        can_close="0">
+        <__trans phrase="Multiple feeds were found">
+    </mtapp:statusmsg>
+<p><__trans phrase="Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>"></p>
 <form method="post" action="<$mt:var name="script_url"$>">
-<input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>"/>
-<input type="hidden" name="__mode" value="feedswidget_config"/>
+    <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>"/>
+    <input type="hidden" name="__mode" value="feedswidget_config"/>
 
-<div class="list">
-<table class="compact" cellspacing="0" style="width:600px;">
-<thead>
-<tr>
-<th style="width:10%;" class="cb"></th>
-<th style="width:50%;"><__trans phrase="Type"></th>
-<th style="width:40%;"><__trans phrase="URI"></th>
-</tr>
-</thead>
-<tbody>
-
+    <div class="listing">
+        <table cellspacing="0">
+            <thead>
+                <tr>
+                    <th class="cb">&nbsp;</th>
+                    <th><__trans phrase="Type"></th>
+                    <th><__trans phrase="URI"></th>
+                </tr>
+            </thead>
+            <tbody>
 <mt:loop name="feeds">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="cb"><input type="radio" name="uri" value="<$mt:var name="uri" escape="html"$>" /></td>
-<td><$mt:var name="title" escape="html"$></td>
-<td><$mt:var name="uri" escape="html"$></td>
-</tr>
+                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                    <td class="cb"><input type="radio" name="uri" value="<$mt:var name="uri" escape="html"$>" id="feed<$mt:var name="__counter__"$>" /></td>
+                    <td><label for="feed<$mt:var name="__counter__"$>"><$mt:var name="title" escape="html"$></label></td>
+                    <td><label for="feed<$mt:var name="__counter__"$>"><$mt:var name="uri" escape="html"$></label></td>
+                </tr>
 </mt:loop>
+            </tbody>
+        </table>
+    </div>
 
-</tbody>
-</table>
-</div>
-
-<br />
-
-<div class="actions-bar">
-    <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
-    <input type="submit" value="<__trans phrase="Continue">" />
-</div>
-
+    <div class="actions-bar">
+        <div class="actions-bar-inner">
+            <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
+            <input type="submit" value="<__trans phrase="Continue">" />
+        </div>
+    </div>
 </form>
-
 <mt:include name="dialog/footer.tmpl">

@@ -45,6 +45,14 @@ sub init_registry {
             dynamic_template => 'author/<$MTEntryAuthorID$>/<$MTEntryID$>',
             dynamic_support => 1,
             author_based => 1,
+            template_params => {
+                archive_class => "author-archive",
+                'module_author-monthly_archives' => 1,
+                module_author_archives => 1,
+                main_template => 1,
+                author_archive => 1,
+                archive_template => 1,
+            },
         ),
         'Author-Yearly' =>
         ArchiveType(
@@ -66,6 +74,12 @@ sub init_registry {
             dynamic_support => 1,
             author_based => 1,
             date_based => 1,
+            template_params => {
+                archive_class => "author-yearly-archive",
+                author_yearly_archive => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         ),
         'Author-Monthly' =>
         ArchiveType(
@@ -87,6 +101,14 @@ sub init_registry {
             dynamic_support => 1,
             author_based => 1,
             date_based => 1,
+            template_params => {
+                archive_class => "author-monthly-archive",
+                author_monthly_archive => 1,
+                'module_author-monthly_archives' => 1,
+                module_author_archives => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         ),
         'Author-Weekly' =>
         ArchiveType(
@@ -108,6 +130,12 @@ sub init_registry {
             dynamic_support => 1,
             author_based => 1,
             date_based => 1,
+            template_params => {
+                archive_class => "author-weekly-archive",
+                author_weekly_archive => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         ),
         'Author-Daily' =>
         ArchiveType(
@@ -115,8 +143,8 @@ sub init_registry {
             archive_label => \&author_daily_archive_label,
             archive_file => \&author_daily_archive_file,
             archive_title => \&author_daily_archive_title,
-            archive_groupIter => \&author_daily_group_iter,
-            archive_groupEntries => \&author_daily_group_entries,
+            archive_group_iter => \&author_daily_group_iter,
+            archive_group_entries => \&author_daily_group_entries,
             date_range => \&author_daily_date_range,
             default_archive_templates => [
                 ArchiveFileTemplate(label => 'author_display_name/yyyy/mm/dd/index.html',
@@ -129,6 +157,12 @@ sub init_registry {
             dynamic_support => 1,
             author_based => 1,
             date_based => 1,
+            template_params => {
+                archive_class => "author-daily-archive",
+                author_daily_archive => 1,
+                main_template => 1,
+                archive_template => 1,
+            },
         ),
     }});
 }
@@ -137,7 +171,7 @@ sub init_registry {
 sub author_archive_title {
     my ($ctx) = @_;
     my $a = $ctx->stash('author');
-    $a ? $a->nickname || $plugin->translate('Author #[_1]', $a->id) : '';
+    $a ? $a->nickname || $plugin->translate('Author (#[_1])', $a->id) : '';
 }
 
 sub author_archive_label {
@@ -216,7 +250,7 @@ sub _display_name {
         $author = $author ?
                     $author->nickname ?
                         $author->nickname.": "
-                        : $plugin->translate('Author #[_1]: ', $author->id)
+                        : $plugin->translate('Author (#[_1])', $author->id)
                     : '';
     }
     return $author;

@@ -1,4 +1,4 @@
-<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
+<$mt:setvar name="page_title" value="<__trans phrase="Restoring...">"$>
 <mt:include name="dialog/header.tmpl">
 <script type="text/javascript">
 function progress(str, id) {
@@ -6,8 +6,6 @@ function progress(str, id) {
     if (el) el.innerHTML = str;
 }
 </script>
-
-<h2><__trans phrase="Restoring [_1]..." params="<mt:var name="name">"></h2>
 
 <div class="modal_width dialog import-process">
 

@@ -1,49 +1,34 @@
-<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
 <$mt:var name="page_title" value="<__trans phrase="Feeds.App Lite Widget Creator">"$>
 <mt:include name="dialog/header.tmpl">
-
+<p><__trans phrase="Configure feed widget settings"></p>
 <form method="post" action="<$mt:var name="script_url"$>">
-
-    <fieldset>
-        <h3><__trans phrase="Feed Configuration">: <$mt:var name="feed_title" escape="html"$></h3>
-
-    <div class="inner">
-
-<input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
-<input type="hidden" name="__mode" value="feedswidget_save" />
-<input type="hidden" name="uri" value="<$mt:var name="feed_uri" escape="html"$>" />
-
-    <mtapp:setting
-        id="feed_url"
-        label="<__trans phrase="Feed URL">">
-        <p><$mt:var name="feed_uri" escape="html"$></p>
-    </mtapp:setting>
-
+    <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+    <input type="hidden" name="__mode" value="feedswidget_save" />
+    <input type="hidden" name="uri" value="<$mt:var name="feed_uri" escape="html"$>" />
     <mtapp:setting
         id="feed_title"
         label="<__trans phrase="Title">"
         hint="<__trans phrase="Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.">">
-        <input name="feed_title" id="feed_title" value="<$mt:var name="feed_title" escape="html"$>" maxlength="42" type="text" />
+        <div class="textarea-wrapper">
+            <input name="feed_title" id="feed_title" class="full-width" value="<__trans phrase="[_1] Feed Widget" params="<$mt:var name="feed_title" escape="html"$>">" maxlength="42" type="text" />
+        </div>
     </mtapp:setting>
-
     <mtapp:setting
         id="lastn"
-        label="<__trans phrase="Display">"
+        label="<__trans phrase="Entries">"
         hint="<__trans phrase="Select the maximum number of entries to display.">">
-<select name="lastn" id="lastn">
-<option value="3"><__trans phrase="3"></option>
-<option value="5" selected="selected"><__trans phrase="5"></option>
-<option value="10"><__trans phrase="10"></option>
-<option value=""><__trans phrase="All"></option>
-</select>
+        <select name="lastn" id="lastn">
+            <option value="3"><__trans phrase="3"></option>
+            <option value="5" selected="selected"><__trans phrase="5"></option>
+            <option value="10"><__trans phrase="10"></option>
+            <option value=""><__trans phrase="All"></option>
+        </select>
     </mtapp:setting>
-
-</fieldset>
-<div class="actions-bar">
-    <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
-    <input type="submit" value="<__trans phrase="Save">" />
-</div>
-
+    <div class="actions-bar">
+        <div class="actions-bar-inner">
+            <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
+            <input type="submit" value="<__trans phrase="Save">" />
+        </div>
+    </div>
 </form>
-
 <mt:include name="dialog/footer.tmpl">

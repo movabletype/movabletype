@@ -79,6 +79,14 @@ sub core_archive_types {
                     ],
                 dynamic_support => 1,
                 date_based => 1,
+                template_params => {
+                    datebased_only_archive => 1,
+                    datebased_yearly_archive => 1,
+                    module_yearly_archives => 1,
+                    main_template => 1,
+                    archive_template => 1,
+                    archive_class => "datebased-yearly-archive",
+                },
             ),
         'Monthly' =>
             ArchiveType( name => 'Monthly',
@@ -95,6 +103,14 @@ sub core_archive_types {
                     ],
                 dynamic_support => 1,
                 date_based => 1,
+                template_params => {
+                    datebased_only_archive => 1,
+                    datebased_monthly_archive => 1,
+                    module_monthly_archives => 1,
+                    main_template => 1,
+                    archive_template => 1,
+                    archive_class => "datebased-monthly-archive",
+                },
             ),
         'Weekly' =>
             ArchiveType( name => 'Weekly',
@@ -111,6 +127,13 @@ sub core_archive_types {
                     ],
                 dynamic_support => 1,
                 date_based => 1,
+                template_params => {
+                    datebased_only_archive => 1,
+                    datebased_weekly_archive => 1,
+                    main_template => 1,
+                    archive_template => 1,
+                    archive_class => "datebased-weekly-archive",
+                },
             ),
         'Individual' =>
             ArchiveType( name => 'Individual',
@@ -147,6 +170,15 @@ sub core_archive_types {
                     ],
                 dynamic_support => 1,
                 entry_based => 1,
+                template_params => {
+                    main_template => 1,
+                    archive_template => 1,
+                    entry_template => 1,
+                    feedback_template => 1,
+                    archive_class => "entry-archive",
+                    # module_recent_posts => 0,
+                    # module_monthly_archives => 0,
+                },
             ),
         'Page' =>
             ArchiveType( name => 'Page',
@@ -168,6 +200,14 @@ sub core_archive_types {
                 dynamic_support => 1,
                 entry_class => 'page',
                 entry_based => 1,
+                template_params => {
+                    archive_class => "page-archive",
+                    page_archive => 1,
+                    main_template => 1,
+                    archive_template => 1,
+                    page_template => 1,
+                    feedback_template => 1,
+                },
             ),
         # 'Folder' =>
         #     ArchiveType( name => 'Folder',
@@ -201,6 +241,13 @@ sub core_archive_types {
                     ],
                 dynamic_support => 1,
                 date_based => 1,
+                template_params => {
+                    archive_class => "datebased-daily-archive",
+                    datebased_only_archive => 1,
+                    datebased_daily_archive => 1,
+                    main_template => 1,
+                    archive_template => 1,
+                },
             ),
         'Category' =>
             ArchiveType( name => 'Category',
@@ -218,6 +265,12 @@ sub core_archive_types {
                     ],
                 dynamic_support => 1,
                 category_based => 1,
+                template_params => {
+                    archive_class => "category-archive",
+                    category_archive => 1,
+                    main_template => 1,
+                    archive_template => 1,
+                },
             ),
     };
 
@@ -229,7 +282,7 @@ sub rebuild {
     my $blog;
     unless ($blog = $param{Blog}) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id, {cached_ok=>1}) or
+        $blog = MT::Blog->load($blog_id) or
             return $mt->error(
                 MT->translate("Load of blog '[_1]' failed: [_2]",
                     $blog_id, MT::Blog->errstr));
@@ -237,6 +290,7 @@ sub rebuild {
     return 1 if $blog->is_dynamic;
     my $at = $blog->archive_type || '';
     my @at = split /,/, $at;
+    my $entry_class;
     if (my $set_at = $param{ArchiveType}) {
         my %at = map { $_ => 1 } @at;
         return $mt->error(
@@ -244,6 +298,10 @@ sub rebuild {
                 $set_at)) unless $at{$set_at};
 
         @at = ($set_at);
+        my $archiver = $mt->archiver($at);
+        $entry_class = $archiver->{entry_class} || "entry";
+    } else {
+        $entry_class = '*';
     }
 
     if ($param{ArchiveType} &&
@@ -252,15 +310,18 @@ sub rebuild {
         return $mt->rebuild_categories(%param);
     }
 
+    if ($param{ArchiveType} &&
+        (!$param{Author}) && ($param{ArchiveType} eq 'Author')) {
+        return $mt->rebuild_authors(%param);
+    }
+
     if (@at) {
         require MT::Entry;
         my %arg = ('sort' => 'authored_on', direction => 'descend');
-        if ($param{Limit}) {
-            $arg{offset} = $param{Offset};
-            $arg{limit} = $param{Limit};
-        }
+        $arg{offset} = $param{Offset} if $param{Offset};
+        $arg{limit} = $param{Limit} if $param{Limit};
         my $pre_iter = MT::Entry->load_iter({ blog_id => $blog->id,
-                                              class => '*',
+                                              class => $entry_class,
                                               status => MT::Entry::RELEASE() },
                                               \%arg);
         my ($next, $curr);
@@ -273,9 +334,13 @@ sub rebuild {
             $curr;
         };
         my $cb = $param{EntryCallback};
+        my $fcb = $param{FilterCallback};
         while (my $entry = $iter->()) {
             if ($cb) {
                 $cb->($entry) || $mt->log($cb->errstr());
+            }
+            if ($fcb) {
+                $fcb->($entry) or last;
             }
             for my $at (@at) {
                 my $archiver = $mt->archiver($at);
@@ -290,6 +355,9 @@ sub rebuild {
                             Entry => $entry, Blog => $blog,
                             Category => $cat, ArchiveType => $at,
                             NoStatic => $param{NoStatic},
+                            $param{TemplateMap}
+                             ? (TemplateMap => $param{TemplateMap})
+                             : (),
                             $param{TemplateID}
                              ? (TemplateID =>
                                  $param{TemplateID})
@@ -301,6 +369,9 @@ sub rebuild {
                         $mt->_rebuild_entry_archive_type( Entry => $entry,
                                                           Blog => $blog,
                                                           ArchiveType => $at,
+                                                          $param{TemplateMap}
+                                                           ? (TemplateMap => $param{TemplateMap})
+                                                           : (),
                                                           $param{TemplateID}
                                                            ? (TemplateID =>
                                                                $param{TemplateID})
@@ -313,6 +384,9 @@ sub rebuild {
                     $mt->_rebuild_entry_archive_type( Entry => $entry,
                                                       Blog => $blog,
                                                       ArchiveType => $at,
+                                                      $param{TemplateMap}
+                                                       ? (TemplateMap => $param{TemplateMap})
+                                                       : (),
                                                       $param{TemplateID}
                                                        ? (TemplateID =>
                                                            $param{TemplateID})
@@ -338,7 +412,7 @@ sub rebuild_categories {
     my $blog;
     unless ($blog = $param{Blog}) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id, {cached_ok=>1}) or
+        $blog = MT::Blog->load($blog_id) or
             return $mt->error(
                 MT->translate("Load of blog '[_1]' failed: [_2]",
                     $blog_id, MT::Blog->errstr));
@@ -346,14 +420,56 @@ sub rebuild_categories {
     my %arg;
     $arg{'sort'} = 'id';
     $arg{direction} = 'ascend';
-    if ($param{Limit}) {
-        $arg{offset} = $param{Offset};
-        $arg{limit} = $param{Limit};
-    }
+    $arg{offset} = $param{Offset} if $param{Offset};
+    $arg{limit} = $param{Limit} if $param{Limit};
     my $cat_iter = MT::Category->load_iter({ blog_id => $blog->id }, \%arg);
+    my $fcb = $param{FilterCallback};
     while (my $cat = $cat_iter->()) {
+        if ($fcb) {
+            $fcb->($cat) or last;
+        }
         $mt->_rebuild_entry_archive_type(
             Blog => $blog, Category => $cat, ArchiveType => 'Category',
+            $param{TemplateMap}
+             ? (TemplateMap => $param{TemplateMap})
+             : (),
+            NoStatic => $param{NoStatic},
+        ) or return;
+    }
+    1;
+}
+
+sub rebuild_authors {
+    my $mt = shift;
+    my %param = @_;
+    my $blog;
+    unless ($blog = $param{Blog}) {
+        my $blog_id = $param{BlogID};
+        $blog = MT::Blog->load($blog_id) or
+            return $mt->error(
+                MT->translate("Load of blog '[_1]' failed: [_2]",
+                    $blog_id, MT::Blog->errstr));
+    }
+    my %arg;
+    $arg{'sort'} = 'id';
+    $arg{direction} = 'ascend';
+    $arg{offset} = $param{Offset} if $param{Offset};
+    $arg{limit} = $param{Limit} if $param{Limit};
+    require MT::Entry;
+    local $arg{join} = MT::Entry->join_on('author_id', { blog_id => $blog->id, class => '*' });
+    local $arg{unique} = 1;
+    local $arg{status} = MT::Entry::RELEASE();
+    my $auth_iter = MT::Author->load_iter(undef, \%arg);
+    my $fcb = $param{FilterCallback};
+    while (my $a = $auth_iter->()) {
+        if ($fcb) {
+            $fcb->($a) or last;
+        }
+        $mt->_rebuild_entry_archive_type(
+            Blog => $blog, Author => $a, ArchiveType => 'Author',
+            $param{TemplateMap}
+             ? (TemplateMap => $param{TemplateMap})
+             : (),
             NoStatic => $param{NoStatic},
         ) or return;
     }
@@ -408,11 +524,11 @@ sub rebuild_entry {
         return $mt->error(MT->translate("Parameter '[_1]' is required",
             'Entry'));
     require MT::Entry;
-    $entry = MT::Entry->load($entry, {cached_ok=>1}) unless ref $entry;
+    $entry = MT::Entry->load($entry) unless ref $entry;
     my $blog;
     unless ($blog = $param{Blog}) {
         my $blog_id = $entry->blog_id;
-        $blog = MT::Blog->load($blog_id, {cached_ok=>1}) or
+        $blog = MT::Blog->load($blog_id) or
             return $mt->error(MT->translate("Load of blog '[_1]' failed: [_2]",
                 $blog_id, MT::Blog->errstr));
     }
@@ -431,13 +547,19 @@ sub rebuild_entry {
                     $mt->_rebuild_entry_archive_type(
                         Entry => $entry, Blog => $blog,
                         ArchiveType => $at, Category => $cat,
-                        NoStatic => $param{NoStatic}
+                        NoStatic => $param{NoStatic},
+                        $param{TemplateMap}
+                         ? (TemplateMap => $param{TemplateMap})
+                         : (),
                     ) or return;
                 }
             } else {
                 $mt->_rebuild_entry_archive_type( Entry => $entry,
                                                   Blog => $blog,
                                                   ArchiveType => $at,
+                                                  $param{TemplateMap}
+                                                   ? (TemplateMap => $param{TemplateMap})
+                                                   : (),
                                                   NoStatic => $param{NoStatic},
                                                   Author => $entry->author,
                 ) or return;
@@ -463,16 +585,14 @@ sub rebuild_entry {
 
             ## Rebuild the old previous and next entries, if we have some.
             if ($param{OldPrevious} && 
-                               (my $old_prev = MT::Entry->load($param{OldPrevious},
-                                                               {cached_ok=>1}))) {
+                               (my $old_prev = MT::Entry->load($param{OldPrevious}))) {
                 $mt->rebuild_entry( Entry => $old_prev ) or return;
             }
         }
         if (my $next = $entry->next(1)) {
             $mt->rebuild_entry( Entry => $next ) or return;
 
-            if ($param{OldNext} && (my $old_next = MT::Entry->load($param{OldNext},
-                                                                   {cached_ok=>1}))) {
+            if ($param{OldNext} && (my $old_next = MT::Entry->load($param{OldNext}))) {
                 $mt->rebuild_entry( Entry => $old_next ) or return;
             }
         }
@@ -504,6 +624,9 @@ sub rebuild_entry {
                                       Entry => $prev_arch,
                                       Blog => $blog,
                                       Category => $cat,
+                                      $param{TemplateMap}
+                                       ? (TemplateMap => $param{TemplateMap})
+                                       : (),
                                       ArchiveType => $at) or return;
                         }
                     } else {
@@ -511,6 +634,9 @@ sub rebuild_entry {
                                   Entry => $prev_arch,
                                   Blog => $blog,
                                   ArchiveType => $at,
+                                  $param{TemplateMap}
+                                   ? (TemplateMap => $param{TemplateMap})
+                                   : (),
                                   Author => $prev_arch->author) or return;
                     }
                 }
@@ -522,6 +648,9 @@ sub rebuild_entry {
                                       Entry => $next_arch,
                                       Blog => $blog,
                                       Category => $cat,
+                                      $param{TemplateMap}
+                                       ? (TemplateMap => $param{TemplateMap})
+                                       : (),
                                       ArchiveType => $at) or return;
                         }
                     } else {
@@ -529,6 +658,9 @@ sub rebuild_entry {
                                   Entry => $next_arch,
                                   Blog => $blog,
                                   ArchiveType => $at,
+                                  $param{TemplateMap}
+                                   ? (TemplateMap => $param{TemplateMap})
+                                   : (),
                                   Author => $next_arch->author) or return;
                     }
                 }
@@ -553,7 +685,7 @@ sub _rebuild_entry_archive_type {
     my $blog;
     unless ($blog = $param{Blog}) {
         my $blog_id = $entry->blog_id;
-        $blog = MT::Blog->load($blog_id, {cached_ok=>1}) or
+        $blog = MT::Blog->load($blog_id) or
             return $mt->error(MT->translate("Load of blog '[_1]' failed: [_2]",
                 $blog_id, MT::Blog->errstr));
     }
@@ -565,21 +697,22 @@ sub _rebuild_entry_archive_type {
     ## we save some time by not loading the list of entries.
     require MT::TemplateMap;
     my @map;
-    my $cached_maps = MT->instance->request('__cached_maps') || MT->instance->request('__cached_maps', {});
-    if (my $maps = $cached_maps->{$at . $blog->id}) {
-        @map = @$maps;
+    if ($param{TemplateMap}) {
+        @map = ($param{TemplateMap});
     } else {
-        @map = MT::TemplateMap->load({ archive_type => $at,
-                                       blog_id => $blog->id,
-                                       $param{TemplateID}
-                                         ? (template_id => $param{TemplateID})
-                                         : ()
-                                     });
-        $cached_maps->{$at . $blog->id} = \@map;
+        my $cached_maps = MT->instance->request('__cached_maps') || MT->instance->request('__cached_maps', {});
+        if (my $maps = $cached_maps->{$at . $blog->id}) {
+            @map = @$maps;
+        } else {
+            @map = MT::TemplateMap->load({ archive_type => $at,
+                                           blog_id => $blog->id,
+                                           $param{TemplateID}
+                                             ? (template_id => $param{TemplateID})
+                                             : ()
+                                         });
+            $cached_maps->{$at . $blog->id} = \@map;
+        }
     }
-#     return $mt->trans_error(
-#         "You selected the archive type '[_1]', but you did not " .
-#         "define a template for this archive type.", $at) unless @map;
     return 1 unless @map;
     my @map_build;
 
@@ -614,11 +747,12 @@ sub _rebuild_entry_archive_type {
     $ctx->{__stash}{author} = $param{Author} if $param{Author};
 
     my $fmgr = $blog->file_mgr;
-    my $arch_root = $blog->archive_path;
-    if ($param{Entry} && $param{Entry}->class eq 'page') {
-        $arch_root = $blog->site_path;
-    }
-    return $mt->error(MT->translate("You did not set your weblog Archive Path"))
+
+    # Special handling for pages-- they are always published to the
+    # 'site' path instead of the 'archive' path, which is reserved for blog
+    # content.
+    my $arch_root = ($at eq 'Page') ? $blog->site_path : $blog->archive_path;
+    return $mt->error(MT->translate("You did not set your blog publishing path"))
         unless $arch_root;
 
     my $range = $archiver->date_range;
@@ -648,14 +782,30 @@ sub rebuild_file {
     my $mt = shift;
     my ($blog, $root_path, $map, $at, $ctx, $cond, 
         $build_static, %specifier) = @_;
+    my $finfo;
     my $archiver = $mt->archiver($at);
     my ($entry, $start, $end, $category, $author);
+
+    if ($finfo = $specifier{FileInfo}) {
+        $specifier{Author} = $finfo->author_id if $finfo->author_id;
+        $specifier{Category} = $finfo->category_id if $finfo->category_id;
+        $specifier{Entry} = $finfo->entry_id if $finfo->entry_id;
+        $map ||= MT::TemplateMap->load($finfo->templatemap_id);
+        $at ||= $finfo->archive_type;
+        if ($finfo->startdate) {
+            if (my $range = $archiver->date_range) {
+                my ($start, $end) = $range ? $range->($finfo->startdate) : ();
+                $specifier{StartDate} = $start;
+                $specifier{EndDate} = $end;
+            }
+        }
+    }
 
     if ($archiver->category_based) {
         $category = $specifier{Category};
         die "Category archive type requires Category parameter"
             unless $specifier{Category};
-        $category = MT::Category->load($category, {cached_ok=>1}) 
+        $category = MT::Category->load($category) 
             unless ref $category;
         $ctx->var('category_archive', 1);
     }
@@ -664,7 +814,7 @@ sub rebuild_file {
         die "$at archive type requires Entry parameter"
             unless $entry;
         require MT::Entry;
-        $entry = MT::Entry->load($entry, {cached_ok=>1}) if !ref $entry;
+        $entry = MT::Entry->load($entry) if !ref $entry;
         $ctx->var('entry_archive', 1);
     }
     if ($archiver->date_based) {
@@ -681,7 +831,7 @@ sub rebuild_file {
         die "Author-based archive type requires Author parameter"
             unless $specifier{Author};
         require MT::Author;
-        $author = MT::Author->load($author, {cached_ok => 1})
+        $author = MT::Author->load($author)
             unless ref $author;
         $ctx->var('author_archive', 1);
     }
@@ -691,15 +841,17 @@ sub rebuild_file {
     my $file = File::Spec->catfile($root_path, $map->{__saved_output_file});
 
     require MT::FileInfo;
-    if ($archiver->entry_based) {
-        my $fcount = MT::FileInfo->count({
-            blog_id => $blog->id,
-            entry_id => $entry->id,
-            file_path => $file},
-            { not => { entry_id => 1 } });
-        die MT->translate('The same archive file exists. You should change the basename or the archive path. ([_1])', $file) if $fcount > 0;
-    }
-    
+    # This kind of testing should be done at the time we save a post,
+    # not during publishing!!!
+    # if ($archiver->entry_based) {
+    #     my $fcount = MT::FileInfo->count({
+    #         blog_id => $blog->id,
+    #         entry_id => $entry->id,
+    #         file_path => $file},
+    #         { not => { entry_id => 1 } });
+    #     die MT->translate('The same archive file exists. You should change the basename or the archive path. ([_1])', $file) if $fcount > 0;
+    # }
+
     my $url = $blog->archive_url;
     $url = $blog->site_url if $archiver->entry_based && $archiver->entry_class eq 'page';
     $url .= '/' unless $url =~ m|/$|;
@@ -720,13 +872,18 @@ sub rebuild_file {
 
     my $tmpl = $cached_tmpl->{$tmpl_id};
     unless ($tmpl) {
-        $tmpl = MT::Template->load($tmpl_id, {cached_ok=>1});
+        $tmpl = MT::Template->load($tmpl_id);
         if ($cached_tmpl) {
             $cached_tmpl->{$tmpl_id} = $tmpl;
         }
     }
-     
+
+    $tmpl->context($ctx);
+
     # From Here
+    if (my $tmpl_param = $archiver->template_params) {
+        $tmpl->param($tmpl_param);
+    }
 
     my ($rel_url) = ($url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)|);
     $rel_url =~ s|//+|/|g;
@@ -735,7 +892,6 @@ sub rebuild_file {
     ## the archive_path, and nothing else is based on user input.
     ($file) = $file =~ /(.+)/s;
 
-    my $finfo;
     # Clear out all the FileInfo records that might point at the page 
     # we're about to create
     # FYI: if it's an individual entry, we don't use the date as a 
@@ -743,36 +899,38 @@ sub rebuild_file {
     #      the FileInfo was last built. When the date does change, 
     #      the old date-based archive doesn't necessarily get fixed,
     #      but if another comes along it will get corrected
-    my %terms;
-    $terms{blog_id} = $blog->id;
-    $terms{category_id} = $category->id if $archiver->category_based;
-    $terms{author_id} = $author->id if $archiver->author_based;
-    $terms{entry_id} = $entry->id if $archiver->entry_based;
-    $terms{startdate} = $start if $archiver->date_based && (!$archiver->entry_based);
-    $terms{archive_type} = $at;
-    $terms{templatemap_id} = $map->id;
-    my @finfos = MT::FileInfo->load(\%terms);
+    unless ($finfo) {
+        my %terms;
+        $terms{blog_id} = $blog->id;
+        $terms{category_id} = $category->id if $archiver->category_based;
+        $terms{author_id} = $author->id if $archiver->author_based;
+        $terms{entry_id} = $entry->id if $archiver->entry_based;
+        $terms{startdate} = $start if $archiver->date_based && (!$archiver->entry_based);
+        $terms{archive_type} = $at;
+        $terms{templatemap_id} = $map->id;
+        my @finfos = MT::FileInfo->load(\%terms);
 
-    if ((scalar @finfos == 1) && ($finfos[0]->file_path eq $file) && (($finfos[0]->url || '') eq $rel_url) && ($finfos[0]->template_id == $tmpl_id)) {
-        # if the shoe fits, wear it
-        $finfo = $finfos[0];
-    } else {
-        # if the shoe don't fit, remove all shoes and create the perfect shoe
-        foreach (@finfos) { $_->remove(); }
-        
-        $finfo = MT::FileInfo->set_info_for_url($rel_url, $file, $at,
-                     { Blog => $blog->id,
-                       TemplateMap => $map->id,
-                       Template => $tmpl_id,
-                       ($archiver->entry_based && $entry)
-                           ? (Entry => $entry->id): (),
-                       StartDate => $start,
-                       ($archiver->category_based && $category)
-                           ? (Category => $category->id) : (),
-                       ($archiver->author_based)
-                           ? (Author => $author->id) : (),
-                     })
-            || die "Couldn't create FileInfo because " . MT::FileInfo->errstr();
+        if ((scalar @finfos == 1) && ($finfos[0]->file_path eq $file) && (($finfos[0]->url || '') eq $rel_url) && ($finfos[0]->template_id == $tmpl_id)) {
+            # if the shoe fits, wear it
+            $finfo = $finfos[0];
+        } else {
+            # if the shoe don't fit, remove all shoes and create the perfect shoe
+            foreach (@finfos) { $_->remove(); }
+
+            $finfo = MT::FileInfo->set_info_for_url($rel_url, $file, $at,
+                         { Blog => $blog->id,
+                           TemplateMap => $map->id,
+                           Template => $tmpl_id,
+                           ($archiver->entry_based && $entry)
+                               ? (Entry => $entry->id): (),
+                           StartDate => $start,
+                           ($archiver->category_based && $category)
+                               ? (Category => $category->id) : (),
+                           ($archiver->author_based)
+                               ? (Author => $author->id) : (),
+                         })
+                || die "Couldn't create FileInfo because " . MT::FileInfo->errstr();
+        }
     }
 
     # If you rebuild when you've just switched to dynamic pages,
@@ -814,6 +972,7 @@ sub rebuild_file {
 
             my $html = undef;
             $ctx->stash('blog', $blog);
+            $ctx->stash('entry', $entry) if $entry;
             $html = $tmpl->build($ctx, $cond);
             defined($html) or
                 return $mt->error(($category ?
@@ -899,13 +1058,13 @@ sub rebuild_indexes {
     my $blog;
     unless ($blog = $param{Blog}) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id, {cached_ok=>1}) or
+        $blog = MT::Blog->load($blog_id) or
             return $mt->error(MT->translate("Load of blog '[_1]' failed: [_2]",
                 $blog_id, MT::Blog->errstr));
     }
     my $tmpl = $param{Template};
     unless ($blog) {
-        $blog = MT::Blog->load($tmpl->blog_id, {cached_ok=>1});
+        $blog = MT::Blog->load($tmpl->blog_id);
     }
     return 1 if $blog->is_dynamic;
     my $iter;
@@ -918,7 +1077,7 @@ sub rebuild_indexes {
     }
     local *FH;
     my $site_root = $blog->site_path;
-    return $mt->error(MT->translate("You did not set your weblog Site Root"))
+    return $mt->error(MT->translate("You did not set your blog publishing path"))
         unless $site_root;
     my $fmgr = $blog->file_mgr;
     while (my $tmpl = $iter->()) {
@@ -1043,6 +1202,84 @@ sub rebuild_indexes {
     1;
 }
 
+sub rebuild_from_fileinfo {
+    my $pub = shift;
+    my ($fi) = @_;
+
+    require MT::Blog;
+    require MT::Entry;
+    require MT::Category;
+    require MT::Template;
+    require MT::TemplateMap;
+    require MT::Template::Context;
+
+    my $at = $fi->archive_type or
+        return $pub->error(MT->translate("Parameter '[_1]' is required",
+            'ArchiveType'));
+
+    # callback for custom archive types
+    return unless MT->run_callbacks( 'build_archive_filter',
+        archive_type => $at,
+        file_info => $fi );
+
+    if ($at ne 'index') {
+        return 1 if $at eq 'None';
+        my $blog = MT::Blog->load($fi->blog_id)
+            if $fi->blog_id;
+        my $entry = MT::Entry->load($fi->entry_id) or
+            return $pub->error(MT->translate("Parameter '[_1]' is required",
+                    'Entry')) if $fi->entry_id;
+        if ($fi->startdate) {
+            my $archiver = $pub->archiver($at);
+            my ($start, $end);
+
+            if (my $range = $archiver->date_range) {
+                ($start, $end) = $range ? $range->($fi->startdate) : ();
+                $entry = MT::Entry->load({authored_on => [$start, $end]},
+                    { range_incl => { authored_on => 1 }, limit => 1}) or
+                    return $pub->error(MT->translate("Parameter '[_1]' is required",
+                        'Entry'));
+            }
+        }
+        my $cat = MT::Category->load($fi->category_id)
+            if $fi->category_id;
+
+        ## Load the template-archive-type map entries for this blog and
+        ## archive type. We do this before we load the list of entries, because
+        ## we will run through the files and check if we even need to rebuild
+        ## anything. If there is nothing to rebuild at all for this entry,
+        ## we save some time by not loading the list of entries.
+        my $map = MT::TemplateMap->load($fi->templatemap_id);
+        my $file = $pub->archive_file_for($entry, $blog, $at, $cat, $map);
+        if (!defined($file)) {
+            return $pub->error($blog->errstr());
+        }
+        $map->{__saved_output_file} = $file;
+
+        my $ctx = MT::Template::Context->new;
+        $ctx->{current_archive_type} = $at;
+        # $ctx->{current_timestamp} = $start if $start;
+        # $ctx->{current_timestamp_end} = $start if $end;
+
+        my $arch_root = ($at eq 'Page') ? $blog->site_path : $blog->archive_path;
+        return $pub->error(MT->translate("You did not set your blog publishing path"))
+            unless $arch_root;
+
+        my %cond;
+        $pub->rebuild_file($blog, $arch_root, $map, $at, $ctx, \%cond,
+                          1,
+                          FileInfo => $fi,
+                          ) or return;
+    } else {
+        $pub->rebuild_indexes(
+            BlogID => $fi->blog_id,
+            Template => MT::Template->load($fi->template_id),
+            Force => 1,
+        ) or return;
+    }
+    1;
+}
+
 sub trans_error {
     my $this = shift;
     return $this->error(MT->translate(@_));
@@ -1155,7 +1392,7 @@ sub remove_entry_archive_file {
     return 1 unless @map;
 
     my $fmgr = $blog->file_mgr;
-    my $arch_root = $blog->archive_path;
+    my $arch_root = ($at eq 'Page') ? $blog->site_path : $blog->archive_path;
 
     require File::Spec;
     for my $map (@map) {
@@ -1768,6 +2005,7 @@ sub default_archive_templates { shift->_getset('default_archive_templates', @_) 
 sub dynamic_template { shift->_getset('dynamic_template', @_) } 
 sub dynamic_support { shift->_getset('dynamic_support', @_) } 
 sub entry_class { shift->_getset('entry_class', @_) || 'entry' } 
+sub template_params { shift->_getset('template_params') } 
 
 1;
 

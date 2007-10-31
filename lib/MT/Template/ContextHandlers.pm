@@ -16,18 +16,14 @@ use MT::Util qw( start_end_day start_end_week
                  decode_xml relative_date );
 use MT::Request;
 use Time::Local qw( timegm timelocal );
-use MT::ErrorHandler;
 use MT::Promise qw(lazy delay force);
 use MT::Category;
 use MT::Entry;
 use MT::I18N qw( first_n_text const uppercase lowercase substr_text length_text );
 use MT::Asset;
 
-sub init_default_handlers {
-}
-
-sub init_default_filters {
-}
+sub init_default_handlers {}
+sub init_default_filters {}
 
 sub core_tags {
     return {
@@ -1117,6 +1113,8 @@ EOT
 sub _hdlr_app_setting_group {
     my ($ctx, $args, $cond) = @_;
     my $id = $args->{id};
+    return $ctx->error("'id' attribute missing") unless $id;
+
     my $class = $args->{class} || "";
     my $shown = exists $args->{shown} ? ($args->{shown} ? 1 : 0) : 1;
     $class .= ($class ne '' ? " " : "") . "hidden" unless $shown;
@@ -1133,6 +1131,8 @@ EOT
 sub _hdlr_app_setting {
     my ($ctx, $args, $cond) = @_;
     my $id = $args->{id};
+    return $ctx->error("'id' attribute missing") unless $id;
+
     my $label = $args->{label};
     my $show_label = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown = exists $args->{shown} ? ($args->{shown} ? 1 : 0) : 1;
@@ -1151,9 +1151,9 @@ sub _hdlr_app_setting {
     }
     my $label_help = "";
     if ($label && $show_label) {
-	# do nothing;
+        # do nothing;
     } else {
-	$label = ''; # zero it out, because the user turned it off
+        $label = ''; # zero it out, because the user turned it off
     }
     if ($hint && $show_hint) {
         $hint = "\n<p class=\"hint\">$hint$help</p>";
@@ -1810,6 +1810,11 @@ sub _hdlr_include {
     if (my $tmpl_name = $arg->{module} || $arg->{widget} || $arg->{identifier}) {
         my $name = $arg->{widget} ? 'widget' : $arg->{identifier} ? 'identifier' : 'module';
         my $type = $arg->{widget} ? 'widget' : 'custom';
+        if (($type eq 'custom') && ($tmpl_name =~ m/^Widget:/)) {
+            # handle old-style widget include references
+            $type = 'widget';
+            $tmpl_name =~ s/^Widget: ?//;
+        }
         my $stash_id = 'template_' . $type . '::' . $blog_id . '::' . $tmpl_name;
         return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
             if $include_stack{$stash_id};
@@ -1824,7 +1829,7 @@ sub _hdlr_include {
                 or return $ctx->error(MT->translate(
                     "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
             return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
-                if $cur_tmpl && ($cur_tmpl->id == $tmpl->id);
+                if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
             $tokens = $builder->compile($ctx, $tmpl->text);
             return $ctx->error($builder->errstr) unless defined $tokens;
             $req->stash($stash_id, $tokens);
@@ -2227,14 +2232,22 @@ sub _hdlr_authors {
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
 
-    require MT::Permission;
+    require MT::Entry;
     require MT::Author;
+
+    my (%blog_terms, %blog_args);
+    $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
+        or return $ctx->error($ctx->errstr);
     my (%terms, %args);
+
     if ($args->{display_name}) {
         $terms{nickname} = $args->{display_name};
     }
     $terms{status} = 1;         # only enabled
-    $args{'join'} = MT::Permission->join_on('author_id', { blog_id => $blog_id, });
+
+    $blog_args{'unique'} = 1;
+    $blog_terms{'status'} = MT::Entry::RELEASE();
+    $args{'join'} = MT::Entry->join_on('author_id', \%blog_terms, \%blog_args);
     $args{'sort'} = $args->{sort_by} ?
         (lc $args->{sort_by} eq 'display_name' ?
             'nickname' : $args->{sort_by})
@@ -2250,6 +2263,7 @@ sub _hdlr_authors {
             $iter->('finish');
             last;
         }
+        # TBD: add __first__, __last__, __odd__, etc.
         local $ctx->{__stash}{author} = $author;
         local $ctx->{__stash}{author_id} = $author->id;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
@@ -2282,7 +2296,7 @@ sub _hdlr_author_display_name {
         $a = $e->author if $e; 
     } 
     return $_[0]->_no_author_error('MTAuthorDisplayName') unless $a;
-    $a->nickname || 'Author (#' . $a->id . ')';
+    $a->nickname || MT->translate('Author (#[_1])', $a->id);
 } 
 
 sub _hdlr_author_email {
@@ -2739,7 +2753,7 @@ sub _hdlr_entries {
     }
 
     # Adds an ID filter to the filter list.
-    if (my $target_id = $args->{id}) {
+    if ((my $target_id = $args->{id}) && (ref($args->{id}) || ($args->{id} =~ m/^\d+$/))) {
         if ($entries) {
             if (ref $target_id eq 'ARRAY') {
                 my %ids = map { $_ => 1 } @$target_id;
@@ -3778,9 +3792,14 @@ sub _hdlr_date {
     return $_[0]->error(MT->translate(
         "You used an [_1] tag without a date context set up.", "MT$tag" ))
         unless defined $ts;
+    my $blog = $_[0]->stash('blog');
+    unless (ref $blog) {
+        my $blog_id = $blog || $args->{offset_blog_id};
+        $blog = MT->model('blog')->load($blog_id)
+          if $blog_id;
+    }
+    my $lang = $args->{language} || ($blog && $blog->language);
     if ($args->{utc}) {
-        my $blog = $_[0]->stash('blog');
-        $blog = ref $blog ? $blog : MT::Blog->load($blog);
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
         my $server_offset = $blog->server_offset;
@@ -3802,8 +3821,6 @@ sub _hdlr_date {
         if ($format eq 'rfc822') {
             my $tz = 'Z';
             unless ($args->{utc}) {
-                my $blog = $_[0]->stash('blog');
-                $blog = ref $blog ? $blog : MT::Blog->load($blog);
                 my $so = $blog->server_offset;
                 my $partial_hour_offset = 60 * abs($so - int($so));
                 $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
@@ -3818,11 +3835,6 @@ sub _hdlr_date {
         if ($r eq 'js') {
             # output javascript here to render relative date
         } else {
-            my $blog = $_[0]->stash('blog');
-            if ( !$blog && ( my $blog_id = $args->{offset_blog_id} ) ) {
-                $blog = MT->model('blog')->load($blog_id);
-            }
-            my $lang = $args->{language} || ($blog && $blog->language);
             my $old_lang = MT->current_language;
             MT->set_language($lang) if $lang && ($lang ne $old_lang);
             my $date = relative_date($ts, time, $blog, $args->{format}, $r);
@@ -3836,8 +3848,7 @@ sub _hdlr_date {
             }
         }
     }
-    return format_ts($args->{'format'}, $ts, $_[0]->stash('blog'),
-        $args->{language});
+    return format_ts($args->{'format'}, $ts, $blog, $lang);
 }
 
 sub _no_comment_error {

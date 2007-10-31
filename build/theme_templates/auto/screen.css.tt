@@ -1,0 +1,47 @@
+[% PROCESS config.tt %]
+
+/* Vox Theme for Movable Type ============================================= */
+
+[%+ IF theme.title || theme.creator || theme.creator_uri -%]
+/*
+[% IF theme.title %]
+    Theme: [% theme.title %]
+[% END %]
+[% IF theme.creator %]
+    Creator: [% theme.creator %]
+[% END %]
+[% IF theme.creator_uri %]
+    URL: [% theme.creator_uri %]
+[% END %]
+*/
+
+
+[%+ END -%]
+/* Default ---------------------------------------------------------------- */
+
+[%+ INCLUDE default/screen.css.tt %]
+
+
+/* Global ----------------------------------------------------------------- */
+
+[%+ INCLUDE global.css.tt %]
+
+
+/* Layout ----------------------------------------------------------------- */
+
+[%+ INCLUDE layout.css.tt %]
+
+
+/* Header ----------------------------------------------------------------- */
+
+[%+ INCLUDE header.css.tt %]
+
+
+/* Content ---------------------------------------------------------------- */
+
+[%+ INCLUDE content.css.tt %]
+
+
+/* Widget ----------------------------------------------------------------- */
+
+[%+ INCLUDE widget.css.tt %]

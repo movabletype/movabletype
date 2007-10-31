@@ -291,8 +291,7 @@ function toggleDynamicOptions(selection) {
 <p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
 </mt:unless>
     </mtapp:setting>
-
-<mt:if name="show_build_options">
+<mt:unless name="hide_build_option">
     <mtapp:setting
         id="dynamicity"
         label="<__trans phrase="Method">"
@@ -326,8 +325,7 @@ function toggleDynamicOptions(selection) {
     </mtapp:setting>
 
 </div>
-</mt:if>
-
+</mt:unless>
 <fieldset>
     <mtapp:setting
         id="file_extension"

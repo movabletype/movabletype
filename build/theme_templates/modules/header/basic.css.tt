@@ -1,0 +1,39 @@
+#header {
+[% IF theme.control_strip.background.color %]
+    border-color: [% theme.control_strip.background.color %];
+[% END %]
+[% IF theme.find_file('header') %]
+    background: [% theme.header.background.color %] [% PROCESS bg_image file='header' %] [% theme.header.background.repeat || 'no-repeat' %] [% theme.header.background.position || 'bottom left' %];
+[% ELSIF theme.header.background.color %]
+    background-color: [% theme.header.background.color %];
+[% END %]
+    padding: [% theme.header.content.margin || '20px 0 60px 20px' %];
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#header a {
+    color: [% theme.header.name.color %];
+    font-weight: [% theme.header.name.weight || 'bold' %];
+}
+
+#header-name {
+    padding-left: 20px;
+    padding-right: 20px;
+    color: [% theme.header.name.color %];
+[% IF theme.header.name.font.family %]
+[% font_family = theme.header.name.font.family %]
+    font-family: [% FONT_FAMILIES.$font_family %];
+[% END %]
+    font-size: [% theme.header.name.font.item('size') || '28px' %];
+    font-weight: [% theme.header.name.weight || 'bold' %];
+}
+
+#header-description {
+    padding-left: 20px;
+    padding-right: 20px;
+    color: [% theme.header.description.color || theme.header.name.color %];
+[% IF theme.header.description.weight %]
+    font-weight: [% theme.header.description.weight %];
+[% END %]
+}

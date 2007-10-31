@@ -2,25 +2,25 @@
 <mt:unless name="limit_none">
     <mt:unless name="pager_json">
         <mt:if name="offset">
-    <a href="<$mt:var name="script_url"$>?offset=0&amp;<$mt:var name="return_args" escape="html"$>">&lt;&lt;</a>&nbsp;
+    <a href="<$mt:var name="script_url"$>?offset=0&amp;<$mt:var name="return_args" escape="html"$>" class="start"><em>&lt;&lt;</em>&nbsp;</a>
         <mt:else>
-    &lt;&lt;&nbsp;
+    <span class="start-disabled"><em>&lt;&lt;</em>&nbsp;</span>
         </mt:if>
         <mt:if name="prev_offset">
-    <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="prev_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>">&lt; <mt:if name="list_noncron"><__trans phrase="Previous"><mt:else><__trans phrase="Newer"></mt:if></a>&nbsp;
+    <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="prev_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>" class="to-start"><em>&lt;</em>&nbsp;</a>
         <mt:else>
-    &lt; <mt:if name="list_noncron"><__trans phrase="Previous"><mt:else><__trans phrase="Newer"></mt:if>&nbsp;
+    <span class="to-start-disabled"><em>&lt;</em>&nbsp;</span>
         </mt:if>
-    <span class="current-page"><__trans phrase="[_1] &ndash; [_2] of [_3]" params="<$mt:var name="list_start"$>%%<$mt:var name="list_end"$>%%<$mt:var name="list_total"$>"></span>
+    <span class="current-rows"><__trans phrase="[_1] &ndash; [_2] of [_3]" params="<$mt:var name="list_start"$>%%<$mt:var name="list_end"$>%%<$mt:var name="list_total"$>"></span>
         <mt:if name="next_offset">
-    &nbsp;<a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>"><mt:if name="list_noncron"><__trans phrase="Next"><mt:else><__trans phrase="Older"></mt:if> &gt;</a>
+    <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>" class="to-end">&nbsp;<em>&gt;</em></a>
         <mt:else>
-    &nbsp;<mt:if name="list_noncron"><__trans phrase="Next"><mt:else><__trans phrase="Older"></mt:if> &gt;
+    <span class="to-end-disabled">&nbsp;<em>&gt;</em></span>
         </mt:if>
         <mt:if name="next_max">
-    &nbsp;<a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_max"$>&amp;<$mt:var name="return_args" escape="html"$>">&gt;&gt;</a>
+    <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_max"$>&amp;<$mt:var name="return_args" escape="html"$>" class="end">&nbsp;<em>&gt;&gt;</em></a>
         <mt:else>
-    &nbsp;&gt;&gt;
+    <span class="end-disabled">&nbsp;<em>&gt;&gt;</em></span>
         </mt:if>
     </mt:unless>
 </mt:unless>
