@@ -189,7 +189,7 @@ sub init_core_registry {
                 label => 'This module is required for file uploads (to determine the size of uploaded images in many different formats).',
             },
             'CGI::Cookie' => {
-                link => 'http://search.cpan.org/dist/CGI-Cookie',
+                link => 'http://search.cpan.org/search?query=cgi-cookie&mode=module',
                 label => 'This module is required for cookie authentication.',
             },
             'DBI' => {

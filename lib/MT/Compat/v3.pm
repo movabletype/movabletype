@@ -183,7 +183,7 @@ sub add_task {
     my $key;
     if (ref $task eq 'HASH') {
         $key = $task->{key};
-    } elsif (ref($task) eq 'MT::Task') {
+    } elsif (ref($task) && UNIVERSAL::isa($task, 'MT::Task')) {
         $key = $task->key;
     }
     if (!$key) {

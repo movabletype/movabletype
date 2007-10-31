@@ -156,6 +156,9 @@ TC.attachLoadEvent( init );
         title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1" escape="js">">"
         ><__trans phrase="Delete"></a>
 </mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <$MTApp:PageActions from="list_cat"$>
+</mt:setvarblock>
 <mt:var name="position_actions_top" value="1">
 
 <mt:include name="include/header.tmpl">
@@ -292,7 +295,7 @@ TC.attachLoadEvent( init );
     <mt:if __last__>
         </tbody>
     </mt:if>
-<mt:else>
+</mtapp:listing>
     <form id="category-listing-form" method="post" action="<$mt:var name="script_url"$>">
         <input type="hidden" name="__mode" value="save_cat" />
         <input type="hidden" name="_type" value="category" />
@@ -330,5 +333,4 @@ TC.attachLoadEvent( init );
             </tr>
         </table>
     </form>
-</mtapp:listing>
 <mt:include name="include/footer.tmpl">

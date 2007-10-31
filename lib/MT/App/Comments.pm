@@ -13,7 +13,7 @@ use MT::App;
 use MT::Comment;
 use MT::I18N qw( wrap_text encode_text );
 use MT::Util
-  qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url escape_unicode format_ts );
+  qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url escape_unicode format_ts encode_js );
 use MT::Entry qw(:constants);
 use MT::Author;
 use MT::JunkFilter qw(:constants);
@@ -1635,11 +1635,14 @@ sub commenter_name_js {
         }
         $blog_ids = "'" . join("','", map { $_->id } @blogs) . "'";
     }
+    $commenter_name = encode_js( $commenter_name );
+    $commenter_url  = encode_js( $commenter_url );
+    $commenter_id   = encode_js( $commenter_id );
     return <<JS;
-commenter_name = '$commenter_name';\n
-commenter_id = '$commenter_id';\n
-commenter_url = '$commenter_url';\n
-commenter_blog_ids = "$blog_ids";\n
+commenter_name = '$commenter_name';
+commenter_id = '$commenter_id';
+commenter_url = '$commenter_url';
+commenter_blog_ids = "$blog_ids";
 JS
 }
 

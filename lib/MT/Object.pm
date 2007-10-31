@@ -557,7 +557,7 @@ sub assign_audited_fields {
         my $app = MT->instance;
         if ($app && $app->can('user')) {
             if (my $user = $app->user) {
-                unless ($obj->created_by) {
+                if (!defined $obj->created_on) {
                     $obj->created_by($user->id);
                     $orig_obj->created_by($obj->created_by);
                 }
@@ -863,7 +863,8 @@ sub to_hash {
             $hash->{"${pfx}.$_"} = $obj->meta($_);
         }
     }
-    if (my $blog_id = $obj->has_column('blog_id')) {
+    if ($obj->has_column('blog_id')) {
+        my $blog_id = $obj->blog_id;
         require MT::Blog;
         if (my $blog = MT::Blog->lookup($blog_id)) {
             my $blog_hash = $blog->to_hash;

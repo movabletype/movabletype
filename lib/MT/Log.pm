@@ -73,7 +73,7 @@ sub description {
     }
     if ($msg ne '') {
         require MT::Util;
-        $msg = '<pre>' . MT::Util::encode_html($msg) . '</pre>';
+        $msg = MT::Util::encode_html($msg);
     }
                             
     $msg;

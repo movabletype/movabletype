@@ -233,6 +233,27 @@ fieldset {
     display: none;
 }
 
+h3 {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+table.show-admin {
+    margin-bottom: 10px;
+    width: 99%;
+    border: 1px solid #cfdde5;
+    background-color: #fff;
+}
+table.show-admin th {
+    color: #666;
+    padding: 1%;
+    overflow: hidden;
+}
+table.show-admin td {
+    width: 32%;
+    padding: 1px 1% 0 1%;
+    overflow: hidden;
+}
+
 /* Corners -------------------------------------------------------------------------------- */
 
 #ctl, #ctr,

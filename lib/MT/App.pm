@@ -696,11 +696,6 @@ sub init_request {
     $app->{return_args} = $app->{query}->param('return_args');
     $app->cookies;
 
-    # Backward compatible assignment; now that plugin actions are
-    # actually stored in the app object, the MT::PluginActions
-    # hash variable needs to point to it.
-    # *MT::PluginActions = $app->{plugin_actions};
-
     ## Initialize the MT::Request singleton for this particular request.
     $app->request->reset();
     $app->request('App-Class', ref $app);
@@ -1100,7 +1095,7 @@ sub _is_commenter {
                 last;
             }
         }
-        return $app->error($app->translate('Permission denied.'))
+        return $app->error($app->translate('You do not have rights; please contact your Movable Type system administrator for gaining access to this installation.'))
             unless $has_system_permission;
         return -1;
     } 
@@ -2030,8 +2025,7 @@ sub load_widgets {
     # Any numeric suffix is just a means to distinguish
     # the instance of the widget from other instances.
     # The actual widget id is this minus the instance number.
-    my $html_head = '';
-    my $js_include = '';
+    my @passthru_param = qw( html_head js_include );
     foreach my $widget_inst (@ordered_list) {
         my $widget_id = $widget_inst;
         $widget_id =~ s/-\d+$//;
@@ -2039,6 +2033,9 @@ sub load_widgets {
         next unless $widget;
         my $widget_cfg = $widgets->{$widget_inst} || {};
         my $widget_param = { %$param, %{ $widget_cfg->{param} || {} } };
+        foreach (@passthru_param) {
+            $widget_param->{$_} = '';
+        }
         my $tmpl_name = $widget->{template};
 
         my $p = $widget->{plugin};
@@ -2075,8 +2072,6 @@ sub load_widgets {
         if (!defined $content) {
             return $app->error("Error processing template for widget $widget_id: " . $tmpl->errstr);
         }
-        $html_head = $tmpl->param('html_head');
-        $js_include = $tmpl->param('js_include');
         $param->{$set} ||= '';
         $param->{$set} .= $content;
         # Widgets often need to populate script/styles/etc into
@@ -2085,10 +2080,9 @@ sub load_widgets {
         # header. No other widget-parameters are to leak into the
         # parent template parameter namespace (ie, a widget cannot
         # set/alter the page_title).
-        $param->{html_head} = ($param->{html_head} || '') . $html_head
-            if defined $html_head;
-        $param->{js_include} = ($param->{js_include} || '') . $js_include
-            if defined $js_include;
+        foreach (@passthru_param) {
+            $param->{$_} = ($param->{$_} || '') . "\n" . $tmpl->param($_);
+        }
     }
 
     if ($resave_widgets) {

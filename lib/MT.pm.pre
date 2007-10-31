@@ -1068,17 +1068,22 @@ sub _init_plugins_core {
                     eval { require $plugin };
                     if ($@) {
                         $Plugins{$plugin_sig}{error} = $@;
-                        require MT::Log;
-                        $mt->log(
-                            {
-                                message => $mt->translate(
-                                    "Plugin error: [_1] [_2]", $plugin,
-                                    $Plugins{$plugin_sig}{error}
-                                ),
-                                class => 'system',
-                                level => MT::Log::ERROR()
-                            }
-                        );
+                        # Issue MT log within another eval block in the
+                        # event that the plugin error is happening before
+                        # the database has been initialized...
+                        eval {
+                            require MT::Log;
+                            $mt->log(
+                                {
+                                    message => $mt->translate(
+                                        "Plugin error: [_1] [_2]", $plugin,
+                                        $Plugins{$plugin_sig}{error}
+                                    ),
+                                    class => 'system',
+                                    level => MT::Log::ERROR()
+                                }
+                            );
+                        };
                         return 0;
                     }
                     else {
@@ -1148,6 +1153,8 @@ sub _init_plugins_core {
                         # rebless? based on config?
                         local $plugin_sig = $plugin_dir;
                         MT->add_plugin($p);
+                        $p->init_callbacks()
+                            if $pclass eq 'MT::Plugin';
                         next;
                     }
 

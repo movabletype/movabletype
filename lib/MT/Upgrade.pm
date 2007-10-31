@@ -1637,7 +1637,7 @@ sub post_schema_upgrade {
 
             if ($func->{plugin} && (UNIVERSAL::isa($func->{plugin}, 'MT::Component'))) {
                 my $id = $func->{plugin}->id;
-                $from = $plugin_ver->{$id};
+                $from = $plugin_ver->{$id} || $from;
             }
             if ($func->{version_limit}
                 && (defined $from)
@@ -2234,8 +2234,8 @@ sub core_update_records {
         $self->progress($msg, $param{step});
     }
 
-    my $cond = $param{condition};
-    my $code = $param{code};
+    my $cond = MT->handler_to_coderef($param{condition});
+    my $code = MT->handler_to_coderef($param{code});
     my $sql = $param{sql};
 
     my $continue = 0;

@@ -2273,8 +2273,6 @@ sub yearly_archive_title {
         { ts => $start, 'format' => "%Y" } );
     my $lang = lc MT->current_language || 'en_us';
     $lang = 'ja' if lc($lang) eq 'jp';
-    MT::Template::Context::_hdlr_date( $ctx,
-        { ts => $start, 'format' => "%Y" } );
 
     sprintf( "%s%s", $year, ( $lang eq 'ja' ? '&#24180;' : '' ) );
 }

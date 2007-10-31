@@ -115,15 +115,15 @@ sub as_sql {
 
         ## Check if we generated an unbounded query for mt_session, since we're seeing those in production.
         ## TODO: remove this. Or generalize it into query auditing.
-        my @from_tbls = @{ $stmt->from };
-        if (1 == scalar @from_tbls && $from_tbls[0] eq 'mt_session') {
-            if (!$stmt->where || !@{ $stmt->where } || $sql !~ m{ where }xmsi) {
-                MT->log({
-                    message => Carp::longmess("Generated unbounded query on mt_session [$sql]"),
-                    level => MT::Log::DEBUG()
-                });
-            }
-        }
+        ## my @from_tbls = @{ $stmt->from };
+        ## if (1 == scalar @from_tbls && $from_tbls[0] eq 'mt_session') {
+        ##     if (!$stmt->where || !@{ $stmt->where } || $sql !~ m{ where }xmsi) {
+        ##         MT->log({
+        ##             message => Carp::longmess("Generated unbounded query on mt_session [$sql]"),
+        ##             level => MT::Log::DEBUG()
+        ##         });
+        ##     }
+        ## }
     }
 
     $stmt->select($old_sel) if $old_sel;

@@ -29,14 +29,14 @@ function dirify_blog_name(fld) {
     if (!dir_blog_name.length) return;
     var url = fld.form['site_url'];
     var path = fld.form['site_path'];
+    /* detect linux/mac or windows path separator */
+    var slash = orig_site_path.match( /(\\|\/)/ )[ 0 ];
     var basic_site_url = orig_site_url.replace(/\/BLOG-NAME\/$/, '/');
-    var basic_site_path = orig_site_path.replace(/\/BLOG-NAME$/, '/');
-    if (basic_site_url && (url.value.indexOf(basic_site_url) == 0)) {
+    var basic_site_path = orig_site_path.replace(/(\/|\\)BLOG-NAME(\/|\\)?$/, slash);
+    if (basic_site_url && (url.value.indexOf(basic_site_url) == 0))
         url.value = basic_site_url + dir_blog_name + '/';
-    }
-    if (basic_site_path && (path.value.indexOf(basic_site_path) == 0)) {
-        path.value = basic_site_path + dir_blog_name;
-    }
+    if (basic_site_path && (path.value.indexOf(basic_site_path) == 0))
+        path.value = basic_site_path + dir_blog_name + slash;
 }
 function validate (f) {
 <mt:if name="can_edit_config">

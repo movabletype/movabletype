@@ -71,7 +71,7 @@
     <MTIf name="archive_index">
                 <p><__trans phrase="Find recent content on the <a href="[_1]">main index</a>." params="<$MTBlogURL$>"></p>
     <MTElse>
-                <p><__trans phrase="Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content." params="<$MTBlogURL$>%%<$MTBlogURL$>archives.html"></p>
+                <p><__trans phrase="Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content." params="<$MTBlogURL$>%%<$MTLink template="archive_index"$>"></p>
     </MTIf>
             </div>
         </div>
@@ -111,7 +111,7 @@
         <MTArchiveList archive_type="Monthly">
             <MTArchiveListHeader>
         <div class="widget-archives widget">
-            <h3 class="widget-header"><__trans phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveTypeLabel$>%%<$MTBlogURL$>archives.html"></h3>
+            <h3 class="widget-header"><__trans phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveTypeLabel$>%%<$MTLink template="archive_index"$>"></h3>
             <div class="widget-content">
                 <ul class="widget-list">
             </MTArchiveListHeader>

@@ -86,7 +86,8 @@ sub login {
                 # try checking old-style cookie using crypt'd password
                 # then try the magic token if user is using new cookie
                 # format...
-                if ($author->is_valid_password($cookie_middle, 1)) {
+                if ( ( 'MT' eq $app->config->AuthenticationModule )
+                  && ( $author->is_valid_password($cookie_middle, 1) ) ) {
                     $valid = 1;
                 } elsif ($cookie_middle eq $author->magic_token) {
                     $valid = 1;

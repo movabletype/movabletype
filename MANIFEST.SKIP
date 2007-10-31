@@ -38,7 +38,8 @@ mt-static/themes/unity-green
 mt-static/themes/unity-purple
 #mt-static/themes/unity-tricolor
 
-#^addons
+# Conditional SKIP rule; format: #?(var=value) RULE
+#?package=MT ^addons
 
 ^schemas
 \bknown-issues

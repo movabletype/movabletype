@@ -92,9 +92,9 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '_USAGE_AUTHORS_LDAP' => 'This is a list of all of the users in the Movable Type system. You can edit a user\'s profile by clicking on his/her name. You can disable users by checking the checkbox next to their name, then pressing DISABLE. By doing this, the user will not be able to login to Movable Type.',
     '_USAGE_AUTHORS_2' => 'You can create, edit and delete users in bulk by uploading a CSV-formatted file containing those commands and relevant data.',
 
-    '_USAGE_GROUPS' => 'Below is a list of all groups in the Movable Type system. You can enable or disable a group by checking the checbox next to its name, then pressing either the Enable or Disable button. You can edit a group by clicking on its name.',
+    '_USAGE_GROUPS' => 'Below is a list of all groups in the Movable Type system. You can enable or disable a group by checking the checkbox next to its name, then pressing either the Enable or Disable button. You can edit a group by clicking on its name.',
     '_USAGE_GROUPS_USER' => 'Below is a list of the groups in which the user is a member. You can remove the user from a group by checking the checkbox next to that group and clicking REMOVE.',
-    '_USAGE_GROUPS_LDAP' => 'Below is a list of all groups in the Movable Type system. You can enable or disable a group by checking the checbox next to its name, then pressing either the Enable or Disable button.',
+    '_USAGE_GROUPS_LDAP' => 'Below is a list of all groups in the Movable Type system. You can enable or disable a group by checking the checkbox next to its name, then pressing either the Enable or Disable button.',
     '_USAGE_GROUPS_USER_LDAP' => 'Below is a list of the groups in which the user is a member.',
 
     '_USAGE_PLUGINS' => 'This is a list of all plugins currently registered with Movable Type.',

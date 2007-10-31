@@ -22,6 +22,8 @@ GetOptions(
     'stamp:s' => \$stamp,
 ) or die "ERROR: Couldn't get the command-line options";
 
+my %options;
+
 my $make = 'make';
 $make .= ' -s' if $silent;
 $ExtUtils::Manifest::Quiet = $silent; # XXX This appears to be broken.
@@ -36,9 +38,17 @@ my $orig = eval {
     $package . '-' . MT->VERSION;
 } or die "ERROR: Failed to get version from package $package";
 
+my $skip_rules = `cat $skip`;
+if ($skip_rules =~ m/^#\?/m) { # conditional rule
+	move($skip, $skip_bak);
+}
+
 my @languages = split(/,/, $langlist);
 @languages = qw( en_US nl fr de es ja ) unless @languages;
 for my $lang (@languages) {
+	$options{language} = $lang;
+	$options{package} = $package;
+
     print join(" ", @languages), "\n";
     my $short_lang = $lang;
     # If there are not any _'s in the language double it: xx_XX.
@@ -55,11 +65,13 @@ for my $lang (@languages) {
     verbose_command("$make clean");  # to clean MT.pm
     verbose_command($make);
 
-    my $lang_skip = "$skip.$lang";
-    if (-e $lang_skip) {
-        move($skip, $skip_bak);
-        move($lang_skip, $skip);
-    }           
+	make_manifest_skip($skip_rules, $skip);
+
+    # my $lang_skip = "$skip.$lang";
+    # if (-e $lang_skip) {
+    #     move($skip, $skip_bak);
+    #     move($lang_skip, $skip);
+    # }           
 
     mkmanifest();
     manicopy(maniread(), $distname, 'best');
@@ -80,6 +92,33 @@ for my $lang (@languages) {
 
 END {
     move($skip_bak, $skip) if -e $skip_bak;
+}
+
+sub make_manifest_skip {
+	my ($rules, $file) = @_;
+	my @rules = split /\n/, $rules;
+
+	my @result;
+	foreach my $rule (@rules) {
+		if ($rule =~ m/^#\?([^=]+)=([^ ]+) +(.+)$/) {
+			# a conditional rule
+			my $var = $1;
+			my $val = $2;
+			my $skip = $3;
+
+			if (($options{$var} || '') eq $val) {
+				push @result, $skip;
+			}
+		}
+		push @result, $rule;
+	}
+
+	my $result = join "\n", @result;
+
+	local *FOUT;
+	open *FOUT, ">$file";
+	print FOUT $result;
+	close FOUT;
 }
 
 sub verbose_command {

@@ -1,8 +1,9 @@
 <mt:setvarblock name="html_title">
     <mt:if name="version_warning">
         <__trans phrase="Welcome to Movable Type">
+    <mt:else>
+        <__trans phrase="Create Your Account">
     </mt:if>
-    <__trans phrase="Create Your First User">
 </mt:setvarblock>
 <mt:setvarblock name="page_title">
     <mt:if name="version_warning">
@@ -11,7 +12,7 @@
     </span>
     </mt:if>
     <span id="welcome-header"<mt:if name="version_warning"> style="display: none;"</mt:if>>
-        <__trans phrase="Create Your First User">
+        <__trans phrase="Create Your Account">
     </span>
 </mt:setvarblock>
 <mt:setvar name="complete" value="1">

@@ -1,4 +1,5 @@
 <mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
+<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="has_name"><mt:var name="name"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="content_header">
     <mt:unless name="recovered_object">

@@ -304,7 +304,6 @@ sub insert_options {
 sub on_upload {
     my $asset = shift;
     my ($param) = @_;
-    $asset->remove_cached_files;
     1;
 }
 

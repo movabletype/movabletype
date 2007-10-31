@@ -569,6 +569,7 @@ sub _fltr_filters {
 }
 sub _fltr_trim_to {
     my ($str, $val, $ctx) = @_;
+    return '' if $val <= 0;
     $str = substr_text($str, 0, $val) if $val < length_text($str);
     $str;
 }
@@ -790,7 +791,7 @@ sub _fltr_spacify {
 sub _fltr_strip {
     my ($str, $val, $ctx) = @_;
     $val = ' ' unless defined $val;
-    $str = s/\s+/$val/g;
+    $str =~ s/\s+/$val/g;
     return $str;
 }
 
@@ -3568,231 +3569,7 @@ sub _hdlr_remote_sign_out_link {
 
 sub _hdlr_comment_fields {
     my ($ctx, $args, $cond) = @_;
-
-    my $blog = $ctx->stash('blog_id');
-    $blog = MT::Blog->load($blog) if defined $blog && !(ref $blog);
-    my $cfg = $ctx->{config};
-
-    return '' unless (($blog->allow_reg_comments
-                       && $blog->effective_remote_auth_token)
-                      || $blog->allow_unreg_comments) && $cfg->AllowComments;
-
-    my $path = _hdlr_cgi_path($ctx);
-    my $comment_script = $cfg->CommentScript;
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error('MTEntryID');
-    my $entry_id = $e->id();
-
-    my $signon_url = $cfg->SignOnURL;
-
-    my $allow_comment_html_note = (($blog->allow_comment_html)
-                                   ? ($args->{html_ok_msg} || 
-                                      MT->translate("(You may use HTML tags for style)")) : "");
-    my $lang = "&amp;lang=" . ($args->{lang} || $blog->language || $cfg->DefaultLanguage);
-    my $needs_email = $blog->require_typekey_emails ? "&need_email=1" : "";
-    my $registration_required = ($blog->allow_reg_comments
-                                 && $blog->effective_remote_auth_token
-                                 && !$blog->allow_unreg_comments);
-    my $registration_allowed = ($blog->allow_reg_comments
-                                && $blog->effective_remote_auth_token);
-    my $unregistered_allowed = $blog->allow_unreg_comments;
-
-    my $static_arg = $args->{static} ? "static=1" : "static=0";
-    my $static_field = ($args->{static} || !defined($args->{static}))
-                        ? (q{<input type="hidden" name="static" value="1" />})
-                        : (q{<input type="hidden" name="static" value="0" />});
-
-    my $typekey_version = $cfg->TypeKeyVersion;
-
-    my $comment_author = "";
-    my $comment_email = "";
-    my $comment_text = "";
-    my $comment_url = "";
-    if ($args->{preview}) {
-        local $ctx->{__stash}->{tag} = 'Preview';
-        $comment_author = encode_html($ctx->_hdlr_comment_author()) || "";
-        $comment_email = encode_html($ctx->_hdlr_comment_email()) || "";
-        $comment_text = encode_html($ctx->_hdlr_comment_body({convert_breaks=>0}), 1);
-        $comment_text = '' unless defined $comment_text;
-        $comment_url = encode_html($ctx->_hdlr_comment_url()) || "";
-    }
-
-    my $rem_auth_token = $blog->effective_remote_auth_token() || "";
-    die "To enable comment registration, you need to add a TypeKey token "
-        . "in your weblog config or author profile."
-        if !$rem_auth_token && $registration_required;
-    
-    my $tk_version = $cfg->TypeKeyVersion;
-
-    my $javascript = "";
-
-    if ($registration_allowed || $unregistered_allowed) {
-        $javascript = <<JAVASCRIPT;
-<script type="text/javascript">
-function getCookie (name) {
-    var prefix = name + \'=\';
-    var c = document.cookie;
-    var nullstring = \'\';
-    var cookieStartIndex = c.indexOf(prefix);
-    if (cookieStartIndex == -1)
-        return nullstring;
-    var cookieEndIndex = c.indexOf(";", cookieStartIndex + prefix.length);
-    if (cookieEndIndex == -1)
-        cookieEndIndex = c.length;
-    return unescape(c.substring(cookieStartIndex + prefix.length, cookieEndIndex));
-}
-</script>
-JAVASCRIPT
-    }
-    if ($registration_required) {
-        return MT->translate_templatized(<<"HTML");
-$javascript
-<div id="thanks">
-<p><MT_TRANS phrase="Thanks for signing in,">
-<script>document.write(getCookie("commenter_name"))</script>.
-<MT_TRANS phrase="Now you can comment."> (<a href="$path$comment_script?__mode=handle_sign_in&amp;$static_arg&amp;entry_id=$entry_id&amp;logout=1"><MT_TRANS phrase="sign out"></a>)</p>
-
-<MT_TRANS phrase="(If you haven't left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won't appear on the entry. Thanks for waiting.)">
-
-<form method="post" action="$path$comment_script" name="comments_form" onsubmit="if (this.bakecookie[0].checked) rememberMe(this)">
-$static_field
-<input type="hidden" name="entry_id" value="$entry_id" />
-
-<p><label for="url"><MT_TRANS phrase="URL">:</label><br />
-<input tabindex="1" type="text" name="url" id="url" value="$comment_url" />
-
-<MT_TRANS phrase="Remember personal info?">
-<input type="radio" id="remember" name="bakecookie" onclick="rememberMe(this.form)" /><label for="bakecookie"><label for="remember"><MT_TRANS phrase="Yes"></label><input type="radio" id="forget" name="bakecookie" onclick="forgetMe(this.form)" value="Forget Info" style="margin-left: 15px;" /><label for="forget"><MT_TRANS phrase="No"></label><br style="clear: both;" /></p>
-
-<p><label for="text"><MT_TRANS phrase="Comments">:</label><br />
-<textarea tabindex="2" id="text" name="text" rows="" cols="" id="text" class="full-width medium">$comment_text</textarea></p>
-
-<div align="center">
-<input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
-<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Submit">&nbsp;" />
-</div>
-
-</form>
-</div>
-
-<script type="text/javascript">
-<!--
-if (getCookie("commenter_name")) {
-    document.getElementById('thanks').style.display = 'block';
-} else {
-    document.write('<MT_TRANS phrase="You are not signed in. You need to be registered to comment on this site." escape="singlequotes"> <a href="$signon_url$lang$needs_email&t=$rem_auth_token&v=$tk_version&_return=$path$comment_script%3f__mode=handle_sign_in%26$static_arg%26entry_id=$entry_id"><MT_TRANS phrase="Sign in" escape="singlequotes"></a>');
-    document.getElementById('thanks').style.display = 'none';
-}
-// -->
-</script>
-<script type="text/javascript">
-<!--
-if (document.comments_form.email != undefined)
-    document.comments_form.email.value = getCookie("mtcmtmail");
-if (document.comments_form.author != undefined)
-    document.comments_form.author.value = getCookie("mtcmtauth");
-if (document.comments_form.url != undefined)
-    document.comments_form.url.value = getCookie("mtcmthome");
-if (getCookie("mtcmtauth") || getCookie("mtcmthome")) {
-    document.comments_form.bakecookie[0].checked = true;
-} else {
-    document.comments_form.bakecookie[1].checked = true;
-}
-//-->
-</script>
-HTML
-    ;
-    } else {
-        my $result = "";
-        if ($rem_auth_token && $registration_allowed) {
-            $result .= $javascript;
-            $result .= MT->translate_templatized(<<"HTML");
-<script type="text/javascript">
-<!--
-if (getCookie("commenter_name")) {
-    document.write('<MT_TRANS phrase="Thanks for signing in,"> ', getCookie("commenter_name"), '<MT_TRANS phrase=". Now you can comment."> (<a href="$path$comment_script?__mode=handle_sign_in&$static_arg&entry_id=$entry_id&logout=1"><MT_TRANS phrase="sign out"></a>)');
-} else {
-    document.write('<MT_TRANS phrase="If you have a TypeKey identity, you can " escape="singlequotes"><a href="$signon_url$lang$needs_email&t=$rem_auth_token&v=$tk_version&_return=$path$comment_script%3f__mode=handle_sign_in%26$static_arg%26entry_id=$entry_id"> <MT_TRANS phrase="sign in" escape="singlequotes"></a> <MT_TRANS phrase="to use it here." escape="singlequotes">');
-}
-// -->
-</script>
-HTML
-        };
-        $result .= MT->translate_templatized(<<"HTML");
-<form method="post" action="$path$comment_script" name="comments_form" onsubmit="if (this.bakecookie[0].checked) rememberMe(this)">
-$static_field
-<input type="hidden" name="entry_id" value="$entry_id" />
-
-<div id="name_email">
-<p><label for="author"><MT_TRANS phrase="Name">:</label><br />
-<input tabindex="1" name="author" id="author" value="$comment_author" /></p>
-
-<p><label for="email"><MT_TRANS phrase="Email Address">:</label><br />
-<input tabindex="2" name="email" id="email" value="$comment_email" /></p>
-</div>
-HTML
-        if ($rem_auth_token && $registration_allowed) {
-            $result .= MT->translate_templatized(<<"HTML")
-<script type="text/javascript">
-<!--
-if (getCookie("commenter_name")) {
-    document.getElementById('name_email').style.display = 'none';
-}
-// -->
-</script>
-HTML
-        }
-        $result .= MT->translate_templatized(<<"HTML");
-<p><label for="url"><MT_TRANS phrase="URL">:</label><br />
-<input tabindex="3" type="text" name="url" id="url" value="$comment_url" />
-
-<MT_TRANS phrase="Remember me?">
-<input type="radio" id="remember" name="bakecookie" /><label for="remember"><MT_TRANS phrase="Yes"></label><input type="radio" id="forget" name="bakecookie" onclick="forgetMe(this.form)" value="Forget Info" style="margin-left: 15px;" /><label for="forget"><MT_TRANS phrase="No"></label><br style="clear: both;" /></p>
-
-<p><label for="text"><MT_TRANS phrase="Comments">:</label> $allow_comment_html_note<br />
-<textarea tabindex="4" name="text" rows="" cols="" id="text" class="full-width medium">$comment_text</textarea></p>
-
-<div align="center">
-<input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
-<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Submit">&nbsp;" />
-</div>
-
-</form>
-
-HTML
-    if ($args->{preview}) {
-        $result .= <<HTML;
-<script type="text/javascript" language="javascript">
-<!--
-if (getCookie("mtcmtauth") || getCookie("mtcmthome")) {
-    document.comments_form.bakecookie[0].checked = true;
-} else {
-    document.comments_form.bakecookie[1].checked = true;
-}
-//-->
-</script>
-HTML
-    } else {
-        $result .= <<HTML;
-<script type="text/javascript">
-<!--
-if (document.comments_form.email != undefined && !document.comments_form.email.value)
-    document.comments_form.email.value = getCookie("mtcmtmail");
-if (document.comments_form.author != undefined && !document.comments_form.author.value)
-    document.comments_form.author.value = getCookie("mtcmtauth");
-if (document.comments_form.url != undefined && !document.comments_form.url.value)
-    document.comments_form.url.value = getCookie("mtcmthome");
-if (getCookie("mtcmtauth") || getCookie("mtcmthome")) {
-    document.comments_form.bakecookie[0].checked = true;
-} else {
-    document.comments_form.bakecookie[1].checked = true;
-}
-//-->
-</script>
-HTML
-    }
-        return $result;
-    }
+    return $ctx->error(MT->translate("The MTCommentFields tag is no longer available; please include the [_1] template module instead.", MT->translate("Comment Form")));
 }
 
 sub _hdlr_entry_comments {
@@ -4381,7 +4158,14 @@ sub _hdlr_if_comment_parent {
 
     my $c = $ctx->stash('comment');
     return 0 if !$c;
-    return $c->parent_id;
+
+    my $parent_id = $c->parent_id;
+    return 0 unless $parent_id;
+
+    require MT::Comment;
+    my $parent = MT::Comment->load($c->parent_id);
+    return 0 unless $parent;
+    return $parent->visible ? 1 : 0;
 }
 
 sub _hdlr_if_comment_replies {

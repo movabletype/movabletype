@@ -140,9 +140,9 @@ class MTDatabaseBase extends ezsql {
         $tmpl_name = $this->escape($tmpl);
         $sql = "select * from mt_template" .
             " where template_blog_id=$blog_id ".
-            ($tmpl ? " and (template_name='".$this->escape($tmpl) . "'" .
-            " or template_outfile='" . $tmpl_name ."')" .
-            " or template_identifier='" . $tmpl_name . "'" : "").
+            ($tmpl ? " and (template_name='". $tmpl_name . "'" .
+            " or template_outfile='" . $tmpl_name ."'" .
+            " or template_identifier='" . $tmpl_name . "')" : "").
             " and template_type='".$this->escape($type)."'";
         list($row) = $this->get_results($sql, ARRAY_A);
         if (!$row) return null;

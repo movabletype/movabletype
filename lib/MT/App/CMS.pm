@@ -4992,7 +4992,8 @@ sub _populate_archive_loop {
         my $tmpl_loop = [];
         foreach (@$tmpls) {
             my $name = $_->{label};
-            $name =~ s/index.html$/$index$ext/;
+            $name =~ s/\.html$/$ext/;
+            $name =~ s/index$ext$/$index$ext/;
             push @$tmpl_loop,
               {
                 name    => $name,
@@ -5114,7 +5115,11 @@ sub edit_object {
         }
     }
     else {
-        if ( ( !$perms || !$blog_id ) && ( $type ne 'blog' ) ) {
+        if ( ( !$perms || !$blog_id )
+            && ( $type eq 'entry' || $type eq 'page'
+                 || $type eq 'category' || $type eq 'folder'
+                 || $type eq 'comment'  || $type eq 'commenter'
+                 || $type eq 'ping' || $type eq 'template' ) ) {
             return $app->return_to_dashboard( redirect => 1 );
         }
     }
@@ -5636,13 +5641,13 @@ sub edit_object {
                 $param{system_allow_comments} = $cfg->AllowComments
                   && ( $blog->allow_reg_comments
                     || $blog->allow_unreg_comments );
-                my $replace_fields = $cfg->NwcReplaceField || '';
+                my $replace_fields = $blog->smart_replace_fields || '';
                 my @replace_fields = split( /,/, $replace_fields );
                 foreach my $fld (@replace_fields) {
                     $param{ 'nwc_' . $fld } = 1;
                 }
-                $param{ 'nwc_smart_replace_' . ( $cfg->NwcSmartReplace || 0 ) } = 1;
-                $param{ 'nwc_replace_none' } = ( $cfg->NwcSmartReplace || 0 ) == 2;
+                $param{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) } = 1;
+                $param{ 'nwc_replace_none' } = ( $blog->smart_replace || 0 ) == 2;
             }
             elsif ( $output eq 'cfg_web_services.tmpl' ) {
                 $param{system_disabled_notify_pings} =
@@ -7719,7 +7724,8 @@ sub _convert_word_chars {
     return '' unless $s;
     return $s if 'utf-8' ne lc( $app->charset );
 
-    if ( $app->config('NwcSmartReplace') ) {
+    my $blog = $app->blog;
+    if ( $blog->smart_replace ) {
 
         # html character entity replacements
         $s =~ s/\342\200\231/&#8217;/g;
@@ -7745,9 +7751,13 @@ sub _convert_word_chars {
 sub _translate_naughty_words {
     my $app = shift;
     my ($entry) = @_;
-    return unless $app->config('NwcReplaceField');
+    my $blog = $app->blog;
+    return unless $blog->smart_replace;
 
-    my @fields = split( /,/, $app->config('NwcReplaceField') || '' );
+    my $fields = $blog->smart_replace_fields;
+    return unless $fields;
+
+    my @fields = split( /\s*,\s*/, $fields || '' );
     foreach my $field (@fields) {
         if ( $entry->can($field) ) {
             $entry->$field( _convert_word_chars( $app, $entry->$field ) );
@@ -7774,7 +7784,9 @@ sub CMSPreSave_entry {
     # save tags
     my $tags = $app->param('tags');
     if ( defined $tags ) {
-        if ( $app->config('NwcReplaceField') =~ m/tags/ig ) {
+        my $blog = $app->blog;
+        my $fields = $blog->smart_replace_fields;
+        if ( $fields =~ m/tags/ig ) {
             $tags = _convert_word_chars( $app, $tags );
         }
 
@@ -8929,7 +8941,6 @@ sub save_object {
     # Save NWC settings
     my $screen = $q->param('cfg_screen') || '';
     if ( $type eq 'blog' && $screen eq 'cfg_entry' ) {
-        my $cfg = $app->config;
         my @fields;
         push( @fields, 'title' )     if $q->param('nwc_title');
         push( @fields, 'text' )      if $q->param('nwc_text');
@@ -8938,9 +8949,9 @@ sub save_object {
         push( @fields, 'excerpt' )   if $q->param('nwc_excerpt');
         push( @fields, 'tags' )      if $q->param('nwc_tags');
         my $fields = @fields ? join( ',', @fields ) : 0;
-        $app->config( 'NwcReplaceField', $fields, 1 );
-        $app->config( 'NwcSmartReplace', $q->param('nwc_smart_replace'), 1 );
-        $cfg->save_config();
+        $obj->smart_replace_fields( $fields );
+        $obj->smart_replace( $q->param('nwc_smart_replace') );
+        $obj->save;
     }
 
     # Finally, decide where to go next, depending on the object type.
@@ -13678,7 +13689,9 @@ sub preview_entry {
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
         $archive_file = $entry->archive_file;
-        my $blog_path = $blog->archive_path || $blog->site_path;
+        my $blog_path = $type eq 'page' ?
+            $blog->site_path :
+            ($blog->archive_path || $blog->site_path);
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
     }
     else {
@@ -14963,7 +14976,9 @@ sub upload_file {
     }
     my $relative_url =
       File::Spec->catfile( $relative_path, encode_url($basename) );
-    $relative_path = File::Spec->catfile( $relative_path, $basename );
+    $relative_path = $relative_path
+      ? File::Spec->catfile( $relative_path, $basename )
+      : $basename;
     my $asset_file = $q->param('site_path') ? '%r' : '%a';
     $asset_file = File::Spec->catfile( $asset_file, $relative_path );
     my $local_file = File::Spec->catfile( $path, $basename );
@@ -15280,7 +15295,7 @@ sub core_search_apis {
         'entry' => {
             'order' => 100,
             'permission' => 'create_post,publish_post,edit_all_posts',
-            'label' => $app->translate('Entries'),
+            'label' => 'Entries',
             'perm_check' => sub {
                 grep { $_->can_edit_entry( $_[0], $author ) } @perms;
             },
@@ -15300,7 +15315,7 @@ sub core_search_apis {
         'comment' => {
             'order' => 200,
             'permission' => 'publish_post,create_post,edit_all_posts,manage_feedback',
-            'label' => $app->translate('Comments'),
+            'label' => 'Comments',
             'perm_check' => sub {
                 require MT::Entry;
                 my $entry = MT::Entry->load( $_[0]->entry_id );
@@ -15320,7 +15335,7 @@ sub core_search_apis {
         'ping' => {
             'order' => 300,
             'permission' => 'create_post,publish_post,edit_all_posts,manage_feedback',
-            'label' => $app->translate('TrackBacks'),
+            'label' => 'TrackBacks',
             'perm_check' => sub {
                 my $ping = shift;
                 my $tb   = MT::Trackback->load( $ping->tb_id );
@@ -15348,7 +15363,7 @@ sub core_search_apis {
         'page' => {
             'order' => 400,
             'permission' => 'manage_pages',
-            'label' => $app->translate('Pages'),
+            'label' => 'Pages',
             'perm_check' => sub {
                 grep { $_->can_manage_pages( $_[0], $author ) } @perms;
             },
@@ -15369,7 +15384,7 @@ sub core_search_apis {
         'template' => {
             'order'         => 500,
             'permission'    => 'edit_templates',
-            'label'         => $app->translate('Templates'),
+            'label'         => 'Templates',
             'view'          => 'blog',
             'perm_check' => sub {
                 my ($obj) = @_;
@@ -15396,7 +15411,7 @@ sub core_search_apis {
         'asset' => {
             'order' => 600,
             'permission' => 'manage_assets',
-            'label' => $app->translate('Assets'),
+            'label' => 'Assets',
             'perm_check' => sub {
                 1;
             },
@@ -15417,7 +15432,7 @@ sub core_search_apis {
             'order' => 700,
             'permission'        => "view_blog_log",
             'system_permission' => "view_log",
-            'label' => $app->translate('Activity Log'),
+            'label' => 'Activity Log',
             'perm_check' => sub {
                 my ($obj) = @_;
                 return 1 if $author->can_view_log;
@@ -15439,7 +15454,7 @@ sub core_search_apis {
         'author' => {
             'order' => 800,
             'system_permission' => 'administer',
-            'label' => $app->translate('Users'),
+            'label' => 'Users',
             'perm_check' => sub {
                 return 1 if $author->is_superuser;
                 if ($blog_id) {
@@ -15477,7 +15492,7 @@ sub core_search_apis {
         'blog' => {
             'order' => 900,
             'system_permission' => 'administer',
-            'label' => $app->translate('Blogs'),
+            'label' => 'Blogs',
             'perm_check' => sub {
                 return 1 if $author->is_superuser;
                 my ($obj) = @_;
@@ -16105,7 +16120,7 @@ sub add_to_favorite_blogs {
 
     my $auth = $app->user;
     my @current = @{ $auth->favorite_blogs || [] };
-    return if $current[0] == $fav;
+    return if @current && ( $current[0] == $fav );
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
     @current = @current[ 0 .. 9 ]
@@ -18931,8 +18946,8 @@ sub adjust_sitepath {
         my @assets =
           $app->model('asset')->load( { blog_id => $id, class => '*' } );
         foreach my $asset (@assets) {
-            my $path = $asset->file_path;
-            my $url  = $asset->url;
+            my $path = $asset->column('file_path');
+            my $url  = $asset->column('url');
             if ($archive_path) {
                 $path =~ s/^\Q$old_archive_path\E/$archive_path/i;
                 $asset->file_path($path);
@@ -19003,7 +19018,10 @@ sub adjust_sitepath {
     else {
         $param->{restore_end} = 1;
     }
-    $param->{error} = $error if $error;
+    if ($error) {
+        $param->{error}     = $error;
+        $param->{error_url} = $app->uri( mode => 'view_log', args => {} );
+    }
     for my $key (
         qw(files last redirect is_dirty is_asset objects_json deferred_json))
     {

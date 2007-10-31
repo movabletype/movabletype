@@ -109,6 +109,8 @@ __PACKAGE__->install_meta({
         'update_pings',
         'captcha_provider',
         'publish_queue',
+        'nwc_smart_replace',
+        'nwc_replace_field',
     ],
 });
 
@@ -223,7 +225,7 @@ sub create_default_templates {
     my @arch_tmpl;
     for my $val (@$tmpl_list) {
         my $obj = MT::Template->new;
-        local $val->{name} = MT->translate($val->{name});
+        local $val->{name} = $val->{name}; # name field is translated in "templates" call
         local $val->{text} = MT->translate_templatized($val->{text});
         $obj->build_dynamic(0);
         foreach my $v (keys %$val) {
@@ -663,35 +665,39 @@ sub clone_with_children {
                     my $cat_tb = MT::Trackback->load(
                         { category_id => $cid }
                     );
-                    my $changed;
-                    if ($tb->passphrase) {
-                        $cat_tb->passphrase($tb->passphrase);
-                        $changed = 1;
+                    if ($cat_tb) {
+                        my $changed;
+                        if ($tb->passphrase) {
+                            $cat_tb->passphrase($tb->passphrase);
+                            $changed = 1;
+                        }
+                        if ($tb->is_disabled) {
+                            $cat_tb->is_disabled(1);
+                            $changed = 1;
+                        }
+                        $cat_tb->save if $changed;
+                        $tb_map{$tb_id} = $cat_tb->id;
+                        next;
                     }
-                    if ($tb->is_disabled) {
-                        $cat_tb->is_disabled(1);
-                        $changed = 1;
-                    }
-                    $cat_tb->save if $changed;
-                    $tb_map{$tb_id} = $cat_tb->id;
-                    next;
                 }
             }
             elsif ($tb->entry_id) {
                 if (my $eid = $entry_map{$tb->entry_id}) {
                     my $entry_tb = MT::Entry->load($eid)->trackback;
-                    my $changed;
-                    if ($tb->passphrase) {
-                        $entry_tb->passphrase($tb->passphrase);
-                        $changed = 1;
+                    if ($entry_tb) {
+                        my $changed;
+                        if ($tb->passphrase) {
+                            $entry_tb->passphrase($tb->passphrase);
+                            $changed = 1;
+                        }
+                        if ($tb->is_disabled) {
+                            $entry_tb->is_disabled(1);
+                            $changed = 1;
+                        }
+                        $entry_tb->save if $changed;
+                        $tb_map{$tb_id} = $entry_tb->id;
+                        next;
                     }
-                    if ($tb->is_disabled) {
-                        $entry_tb->is_disabled(1);
-                        $changed = 1;
-                    }
-                    $entry_tb->save if $changed;
-                    $tb_map{$tb_id} = $entry_tb->id;
-                    next;
                 }
             }
 
@@ -742,6 +748,11 @@ sub clone_with_children {
             $counter++;
             delete $tmpl->{column_values}->{id};
             delete $tmpl->{changed_cols}->{id};
+            # linked_file won't be cloned for now because
+            # new blog does not have site_path - breaks relative path
+            delete $tmpl->{column_values}->{linked_file};
+            delete $tmpl->{column_values}->{linked_file_mtime};
+            delete $tmpl->{column_values}->{linked_file_size};
             $tmpl->blog_id($new_blog_id);
             $tmpl->save or die $tmpl->errstr;
             $tmpl_map{$tmpl_id} = $tmpl->id;
@@ -778,6 +789,26 @@ sub clone_with_children {
         Callback => $callback, callback => $callback,
     );
     $new_blog;
+}
+
+sub smart_replace {
+    my $blog = shift;
+    if (@_) {
+        $blog->nwc_smart_replace(@_);
+        return;
+    }
+    my $val = $blog->nwc_smart_replace;
+    return defined($val) ? $val : MT->config->NwcSmartReplace;
+}
+
+sub smart_replace_fields {
+    my $blog = shift;
+    if (@_) {
+        $blog->nwc_replace_field(@_);
+        return;
+    }
+    my $val = $blog->nwc_replace_field;
+    return defined($val) ? $val : MT->config->NwcReplaceField;
 }
 
 #trans('blog')

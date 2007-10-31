@@ -1361,7 +1361,7 @@ MT.App = new Class( App, {
                     /* don't attach to the editor textarea in this form */
                     if ( this.editor && es[ j ].id == this.editor.textarea.element.id )
                         continue;
-                    DOM.addEventListener( es[ j ], "keydown", this.getIndirectEventListener( "setDirty" ) );
+                    DOM.addEventListener( es[ j ], "keydown", this.getIndirectEventListener( "setDirtyKeyDown" ) );
                 }
             }
         }
@@ -1657,6 +1657,13 @@ MT.App = new Class( App, {
             for ( var i = 0; i < areas.length; i++ )
                 if ( areas[ i ] )
                     areas[ i ].innerHTML = ''
+    },
+
+
+    setDirtyKeyDown: function( event ) {
+        if ( this.dirtyKeyDownTimer )
+            this.dirtyKeyDownTimer.stop();
+        this.dirtyKeyDownTimer = new Timer( this.getIndirectMethod( "setDirty" ), 5000, 1 );
     },
 
 

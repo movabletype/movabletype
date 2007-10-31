@@ -572,7 +572,7 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
 
         // cleanup innerHTML garbage browser regurgitates
         // #1 - lowercase tag names (open and closing tags)
-        html = html.replace(/<\/?[A-Z]+[\s>]/g, function (m) {
+        html = html.replace(/<\/?[A-Z0-9]+[\s>]/g, function (m) {
             return m.toLowerCase();
         });
 
@@ -590,49 +590,6 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
         html = html.replace(/<(br|img|input|param)([^>]+)?([^\/])?>/g, "<$1$2$3 />");
         return html;
     }
-    // 
-    // 
-    // getNodeXHTML: function( node ) {
-    //     var xhtml = '';
-    //     for ( var i = 0; i < node.childNodes.length; i++ ) {
-    //         var element = node.childNodes[ i ];
-    // 
-    //         switch ( element.nodeType ) {
-    // 
-    //             case Node.ELEMENT_NODE:
-    //                 var tag = element.nodeName.toLowerCase();
-    //                 var regex = new RegExp( '<' + tag + ' +?([^>]*?)>', 'i' );
-    //                 var m = element.parentNode.innerHTML.match( regex );
-    //                 xhtml += ( "<" + tag );
-    //                 if ( m )
-    //                     xhtml += ' ' + m[1].replace( /^\s+/, '' );
-    //                 // tags intentionally unsupported:
-    //                 //   spacer (proprietary)
-    //                 //   frame (only used in standalone documents; not an inline tag)
-    //                 //   bgsound (proprietary)
-    //                 //   wbr (invalid for xhtml)
-    //                 //   embed (proprietary; see http://www.alistapart.com/stories/flashsatay/)
-    //                 if ( element.childNodes.length == 0 && tag.match( /^(br|hr|img|input|param)$/ ) )
-    //                     xhtml += " />";
-    //                 else
-    //                     xhtml += '>' + this.getNodeXHTML( element ) + '</' + tag + '>';
-    // 
-    //                 break;
-    // 
-    //             case Node.TEXT_NODE:
-    //                 if ( !element.nodeValue.match( /^[\r\n\t ]+$/ ) )
-    //                     xhtml += element.nodeValue;
-    //                 break;
-    // 
-    //             case 5: // ENTITY_REFERENCE_NODE
-    //                 xhtml += "&" + element.nodeName.toLowerCase() + ";"
-    //                 break;
-    //             
-    //         }
-    //     }
-    //     return xhtml;
-    // }
-
 } );
 
 

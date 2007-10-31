@@ -397,19 +397,27 @@ sub on_upload {
         my ( $base, $path, $ext ) =
           File::Basename::fileparse( $thumbnail, qr/[A-Za-z0-9]+$/ );
         my $img_pkg         = MT::Asset->handler_for_file($thumbnail);
-        my $asset_thumb     = new $img_pkg;
-        my $original        = $asset_thumb->clone;
-        $asset_thumb->blog_id($blog_id);
-        $asset_thumb->url($pseudo_thumbnail_url);
-        $asset_thumb->file_path($pseudo_thumbnail_path);
-        $asset_thumb->file_name("$base$ext");
-        $asset_thumb->file_ext($ext);
-        $asset_thumb->image_width($w);
-        $asset_thumb->image_height($h);
-        $asset_thumb->created_by( $app->user->id );
-        $asset_thumb->label($app->translate("Thumbnail image for [_1]", $asset->label || $asset->file_name));
-        $asset_thumb->parent( $asset->id );
-        $asset_thumb->save;
+        my $original;
+        my $asset_thumb = $img_pkg->load({
+            file_name => "$base$ext",
+            parent   => $asset->id,});
+        if (!$asset_thumb) {
+            $asset_thumb     = new $img_pkg;
+            $original        = $asset_thumb->clone;
+            $asset_thumb->blog_id($blog_id);
+            $asset_thumb->url($pseudo_thumbnail_url);
+            $asset_thumb->file_path($pseudo_thumbnail_path);
+            $asset_thumb->file_name("$base$ext");
+            $asset_thumb->file_ext($ext);
+            $asset_thumb->image_width($w);
+            $asset_thumb->image_height($h);
+            $asset_thumb->created_by( $app->user->id );
+            $asset_thumb->label($app->translate("Thumbnail image for [_1]", $asset->label || $asset->file_name));
+            $asset_thumb->parent( $asset->id );
+            $asset_thumb->save;
+        } else {
+            $original = $asset_thumb->clone;
+        }
 
         # force these to calculate now, giving a full URL / file path
         # for callbacks
@@ -528,17 +536,25 @@ sub on_upload {
             $url = MT::Util::caturl($url, $extra_url, $rel_url_ext);
 
             my $html_pkg   = MT::Asset->handler_for_file($abs_file_path);
-            my $asset_html = new $html_pkg;
-            my $original   = $asset_html->clone;
-            $asset_html->blog_id($blog_id);
-            $asset_html->url($url);
-            $asset_html->label($app->translate("Popup Page for [_1]", $asset->label || $asset->file_name));
-            $asset_html->file_path($pseudo_path);
-            $asset_html->file_name($basename);
-            $asset_html->file_ext( $blog->file_extension );
-            $asset_html->created_by( $app->user->id );
-            $asset_html->parent( $asset->id );
-            $asset_html->save;
+            my $original;
+            my $asset_html = $html_pkg->load({
+                file_name => "$basename",
+                parent => $asset->id});
+            if (!$asset_html) {
+                $asset_html = new $html_pkg;
+                $original   = $asset_html->clone;
+                $asset_html->blog_id($blog_id);
+                $asset_html->url($url);
+                $asset_html->label($app->translate("Popup Page for [_1]", $asset->label || $asset->file_name));
+                $asset_html->file_path($pseudo_path);
+                $asset_html->file_name($basename);
+                $asset_html->file_ext( $blog->file_extension );
+                $asset_html->created_by( $app->user->id );
+                $asset_html->parent( $asset->id );
+                $asset_html->save;
+            } else {
+                $original   = $asset_html->clone;
+            }                
 
             # Select back the real URL for callbacks
             $url = $asset_html->url;
