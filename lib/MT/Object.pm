@@ -265,7 +265,7 @@ sub class_label {
 
 sub class_label_plural {
     my $pkg = shift;
-    my $label = $pkg->class_label;
+    my $label = $pkg->datasource;
     $label =~ s/y$/ie/;
     $label .= 's';
     return MT->translate($label);
@@ -522,6 +522,9 @@ sub assign_audited_fields {
         unless ($obj->created_on) {
             $obj->created_on($ts);
             $orig_obj->created_on($ts);
+            # intentionally not calling modified_by to distinguish
+            $obj->modified_on($ts);
+            $orig_obj->modified_on($ts);
         }
     }
 }

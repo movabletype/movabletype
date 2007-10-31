@@ -54,6 +54,8 @@ sub magic_token {
     MT::Util::perl_sha1_digest_hex($pw);
 }
 
+# trans('authors');
+
 1;
 __END__
 

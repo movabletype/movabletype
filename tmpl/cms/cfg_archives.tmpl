@@ -203,7 +203,7 @@ function toggleDynamicOptions(selection) {
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_url">
-        <input name="site_url" id="site_url" <mt:if name="site_url">disabled="disabled"</mt:if> value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" size="50" /><mt:if name="site_url"> <a href="#" title="<__trans phrase="Unlock this blog&rsquo;s site URL for editing">" onclick="return toggleFile('site_url')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Site URL Lock" id="site_url-lock" height="14" width="14" /></a></mt:if>
+        <input name="site_url" id="site_url" <mt:if name="site_url">disabled="disabled"</mt:if> value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" size="50" /><mt:if name="site_url"> <a href="javascript:void(0)" title="<__trans phrase="Unlock this blog&rsquo;s site URL for editing">" onclick="return toggleFile('site_url')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Site URL Lock" id="site_url-lock" height="14" width="14" /></a></mt:if>
 
         <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the site URL can result in breaking all the links in your blog."></p>
     </mtapp:setting>
@@ -215,7 +215,7 @@ function toggleDynamicOptions(selection) {
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <input name="site_path" id="site_path" <mt:if name="site_path">disabled="disabled"</mt:if> value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" /><mt:if name="site_path"> <a href="#" title="<__trans phrase="Unlock this blog&rsquo;s site path for editing">" onclick="return toggleFile('site_path')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Site Root Lock" id="site_path-lock" height="14" width="14" /></a></mt:if>
+        <input name="site_path" id="site_path" <mt:if name="site_path">disabled="disabled"</mt:if> value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" /><mt:if name="site_path"> <a href="javascript:void(0)" title="<__trans phrase="Unlock this blog&rsquo;s site path for editing">" onclick="return toggleFile('site_path')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Site Root Lock" id="site_path-lock" height="14" width="14" /></a></mt:if>
 
         <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your site root requires a complete rebuild of your site."></p>
     </mtapp:setting>
@@ -241,7 +241,7 @@ function toggleDynamicOptions(selection) {
         help_section="archive_url">
         <input name="archive_url" id="archive_url" <mt:if name="archive_url">disabled="disabled"</mt:if> value="<$mt:var name="archive_url" escape="html"$>" size="50" />
         <mt:if name="archive_url">
-            <a href="#" title="<__trans phrase="Unlock this blog&rsquo;s archive url for editing">" onclick="return toggleFile('archive_url')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Archive URL Lock" id="archive_url-lock" height="14" width="14" /></a>
+            <a href="javascript:void(0)" title="<__trans phrase="Unlock this blog&rsquo;s archive url for editing">" onclick="return toggleFile('archive_url')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Archive URL Lock" id="archive_url-lock" height="14" width="14" /></a>
             <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL can result in breaking all the links in your blog."></p>
         </mt:if>
     </mtapp:setting>
@@ -255,7 +255,7 @@ function toggleDynamicOptions(selection) {
         help_section="archive_path">
             <input name="archive_path" id="archive_path" <mt:if name="archive_path">disabled="disabled"</mt:if> value="<mt:var name="archive_path" escape="html">" size="50" />
             <mt:if name="archive_path">
-                <a href="#" title="<__trans phrase="Unlock this blog&rsquo;s site path for editing">" onclick="return toggleFile('archive_path')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Archive Path Lock" id="archive_path-lock" height="14" width="14" /></a>
+                <a href="javascript:void(0)" title="<__trans phrase="Unlock this blog&rsquo;s site path for editing">" onclick="return toggleFile('archive_path')"><img src="<mt:var name="static_uri">images/locked.gif" alt="Archive Path Lock" id="archive_path-lock" height="14" width="14" /></a>
                 <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
             </mt:if>
     </mtapp:setting>
@@ -278,16 +278,16 @@ function toggleDynamicOptions(selection) {
         help_page="blog_settings_publishing"
         help_section="preferred_archive_type">
 
-<mt:loop name="blog_archive_types">
+<mt:loop name="entry_archive_types">
 <mt:if name="__first__">
 <select name="preferred_archive_type" id="preferred_archive_type">
 </mt:if>
-<mt:if name="entry"><option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred">selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option></mt:if>
+<option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred">selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option>
 <mt:if name="__last__">
 </select>
 </mt:if>
 </mt:loop>
-<mt:unless name="blog_archive_types">
+<mt:unless name="entry_archive_types">
 <p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
 </mt:unless>
     </mtapp:setting>
@@ -304,7 +304,7 @@ function toggleDynamicOptions(selection) {
     <option value="custom"<mt:if name="dynamic_custom"> selected="selected"</mt:if>><__trans phrase="Set each template's Build Options separately"></option>
     <option value="all"<mt:if name="dynamic_all"> selected="selected"</mt:if>><__trans phrase="Build all templates dynamically"></option>
 </select>
-<a href="#" onclick="return openManual('blog_settings_publishing', 'dynamic_publishing')" class="help-link">?</a>
+<a href="javascript:void(0)" onclick="return openManual('blog_settings_publishing', 'dynamic_publishing')" class="help-link">?</a>
 
     </mtapp:setting>
 
@@ -336,23 +336,6 @@ function toggleDynamicOptions(selection) {
         help_page="blog_setting_publishing"
         help_section="archive_file_extension">
 <input name="file_extension" id="file_extension" size="5" value="<mt:var name="file_extension" escape="html">" />
-    </mtapp:setting>
-
-</fieldset>
-
-<h3><__trans phrase="Archive Types"></h3>
-<fieldset>
-    <mtapp:setting
-        id="archive_types"
-        label="<__trans phrase="Archive Types">"
-        hint="<__trans phrase="Archive types to publish.">"
-        help_page="blog_setting_publishing"
-        help_section="archive_mapping">
-<ul>
-<mt:loop name="blog_archive_types">
-<li><input type="checkbox" name="archive_type_<mt:var name="archive_type">" id="archive_type_<mt:var name="archive_type">" value="1"<mt:unless name="available"> disabled="disabled"</mt:unless><mt:if name="enabled"> checked="checked"</mt:if> />&nbsp;<label for="archive_type_<mt:var name="archive_type">"><mt:var name="archive_type_translated"><mt:unless name="available">&nbsp;<__trans phrase="(TemplateMap Not Found)"></mt:unless></label></li>
-</mt:loop>
-</ul>
     </mtapp:setting>
 
 </fieldset>

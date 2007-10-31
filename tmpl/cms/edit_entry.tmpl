@@ -12,6 +12,12 @@
     <mt:setvar name="basename_label" value="<__trans phrase="Basename">">
     <mt:setvar name="container_label_plural" value="<__trans phrase="Categories">">
     <mt:setvar name="container_type" value="Category">
+    <mt:ignore>
+        <__trans phrase="folder">
+        <__trans phrase="folders">
+        <__trans phrase="category">
+        <__trans phrase="categories">
+    </mt:ignore>
 </mt:if>
 <mt:if name="new_object">
     <mt:setvarblock name="page_title"><__trans phrase="Create [_1]" params="<$mt:var name="object_label"$>"></mt:setvarblock>
@@ -127,7 +133,7 @@
             <mt:if name="status_publish">
                 <p><__trans phrase="Published [_1]." params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted"$>"></p>
             </mt:if>
-            <p><__trans phrase="This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and [quant,_3,trackback,trackbacks]." params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="num_comments"$>%%<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></p>
+            <p><__trans phrase="This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and <a href="[_5]">[quant,_3,trackback,trackbacks]</a>." params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="num_comments"$>%%<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>%%<$mt:var name="script_url">?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></p>
         </mtapp:widget>
     </mt:unless>
     <mtapp:widget
@@ -160,9 +166,9 @@
                     label="<__trans phrase="Actions">"
                     label_class="display-options">
                     <ul class="action-button-options">
-                        <li><label><input type="radio" name="bar_position" value="Top"<mt:if name="position_buttons_top"> checked="checked"</mt:if> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Top"></label></li>
-                        <li><label><input type="radio" name="bar_position" value="Both"<mt:if name="position_buttons_both"> checked="checked"</mt:if> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Both"></label></li>
-                        <li><label><input type="radio" name="bar_position" value="Bottom"<mt:if name="position_buttons_bottom"> checked="checked"</mt:if> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Bottom"></label></li>
+                        <li><label><input type="radio" name="bar_position" value="Top"<mt:unless name="position_actions_both"><mt:if name="position_actions_top"> checked="checked"</mt:if></mt:unless> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Top"></label></li>
+                        <li><label><input type="radio" name="bar_position" value="Both"<mt:if name="position_actions_both"> checked="checked"</mt:if> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Both"></label></li>
+                        <li><label><input type="radio" name="bar_position" value="Bottom"<mt:unless name="position_actions_both"><mt:if name="position_actions_bottom"> checked="checked"</mt:if></mt:unless> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Bottom"></label></li>
                     </ul>
                 </mtapp:setting>
             <input type="button" onclick="saveEntryFieldOptions(); return toggleEntryDisplayOptions();" name="save_and_close" value="<__trans phrase="OK">" />
@@ -301,22 +307,6 @@ function changedTextFormat(sel) {
     } else {
         cur_text_format = option;
         app.editor.textarea.focus();
-    }
-}
-
-function setBarPosition(radio) {
-    var mode = radio.value.toLowerCase();
-    var c = TC.elementOrId('container');
-    var s = "show-actions-bar-";
-    if (mode == 'bottom') {
-        TC.removeClassName(c, s + "top");
-        TC.addClassName(c, s + "bottom");
-    } else if (mode == 'both') {
-        TC.addClassName(c, s + "top");
-        TC.addClassName(c, s + "bottom");
-    } else if (mode == 'top') {
-        TC.addClassName(c, s + "top");
-        TC.removeClassName(c, s + "bottom");
     }
 }
 
@@ -604,19 +594,29 @@ function tagsLoaded(c, result) {
             return;
         }
         tags = x.result.tags;
-        initTags();
     } catch (e) {
     }
+    initTags();
 }
 </mt:if>
 
 var tagPos = 0;
 function initTags() {
+    /* browsers don't want to cache the tags field, so we use a hidden input field to cache them */
+    var t = getByID('tags-cache');
+    if ( t ) {
+        log('tag cache:'+t.value);
+        var v = getByID('tags');
+        if ( t.value )
+            v.value = t.value;
+        DOM.addEventListener( v, "change", function() { log('caching tags'); t.value = v.value; } );
+    }
     if (!tags || tags.length == 0) return;
 
     tagList = [];
     for (var tag in tags)
-        tagList[tagList.length] = tag;
+        if ( tags.hasOwnProperty( tag ) )
+            tagList.push( tag );
     autoTag = new TC.TagComplete("tags", tagList);
     autoTag.delimiter = tag_delim;
 }
@@ -735,7 +735,7 @@ function doValidateNotifyRecips(f) {
         <ul class="inline-nav right">
 <mt:ignore>
             <mt:if name="can_send_notifications">
-            <li><a href="#"><__trans phrase="Share this [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
+            <li><a href="javascript:void(0)"><__trans phrase="Share this [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
             </mt:if>
 </mt:ignore>
             <mt:if name="status_publish">
@@ -857,7 +857,8 @@ function doValidateNotifyRecips(f) {
         help_page="entries"
         help_section="entry_tags">
         <div class="textarea-wrapper">
-            <input name="tags" id="tags" class="full-width" tabindex="5" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="0" />
+            <input name="tags" id="tags" class="full-width" tabindex="5" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+            <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
         </div>
         <!-- FIXME - move this styling to the ie hacks css file -->
         <!--[if lte IE 6.5]><div style="position:relative;"><![endif]-->
@@ -938,7 +939,7 @@ function doValidateNotifyRecips(f) {
         label="<__trans phrase="Excerpt">"
         help_page="entries"
         help_section="excerpt">
-        <textarea name="excerpt" id="excerpt" class="full-width three-line-height" tabindex="7" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
+        <textarea name="excerpt" id="excerpt" class="full-width short" tabindex="7" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
     </mtapp:setting>
 
     <mtapp:setting
@@ -948,7 +949,7 @@ function doValidateNotifyRecips(f) {
         help_page="entries"
         help_section="keywords">
         <div class="textarea-wrapper">
-            <input name="keywords" id="keywords" class="full-width" tabindex="8" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="0" />
+            <input name="keywords" id="keywords" class="full-width" tabindex="8" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
         </div>
     </mtapp:setting>
 </fieldset>
@@ -1061,10 +1062,10 @@ function doValidateNotifyRecips(f) {
         label="<__trans phrase="Outbound TrackBack URLs">"
         help_page="entries"
         help_section="urls_to_ping">
-            <textarea name="to_ping_urls" id="to_ping_urls" class="full-width three-line-height" tabindex="16" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
+            <textarea name="to_ping_urls" id="to_ping_urls" class="full-width short" tabindex="16" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
         <mt:unless name="new_object">
             <mt:if name="has_any_pinged_urls">
-            <div id="sent-tb"><a href="#" onclick="listPreviousPings(); return false"><__trans phrase="View Previously Sent TrackBacks"></a></div>
+            <div id="sent-tb"><a href="javascript:void(0)" onclick="listPreviousPings(); return false"><__trans phrase="View Previously Sent TrackBacks"></a></div>
             </mt:if>
         </mt:unless>
     </mtapp:setting>

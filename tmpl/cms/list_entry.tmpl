@@ -103,7 +103,7 @@ function init()
 {
 <mt:unless name="is_power_edit">
     // setup
-    tableSelect = new TC.TableSelect( "selector" );
+    tableSelect = new TC.TableSelect( "entry-listing-table" );
     tableSelect.rowSelect = true;
 </mt:unless>
 
@@ -145,9 +145,9 @@ TC.attachLoadEvent( init );
         <mt:else>
             <mt:unless name="filter">
             <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
-            <a href="#" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
+            <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
             <mt:else>
-            <strong><a href="#" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
+            <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
             <a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>"><__trans phrase="Remove filter"></a>
             </mt:unless>
         </mt:if>

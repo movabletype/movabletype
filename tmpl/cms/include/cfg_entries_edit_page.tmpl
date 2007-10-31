@@ -90,7 +90,6 @@ function setCustomFields() {
 <div class="custom-prefs-inner">
 <ul class="custom-prefs-fields">
 <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Title"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-post-status" value="post_status" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Status"></label></li>
 <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Body"></label></li>
 <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_CATEGORY> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Category"></label></li>
 <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_EXCERPT> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Excerpt"></label></li>

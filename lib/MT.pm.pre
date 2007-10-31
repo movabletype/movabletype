@@ -1120,7 +1120,7 @@ sub ping {
         }
     }
 
-    if ($send_updates) {
+    if ( $send_updates && !(MT->config->DisableNotificationPings) ) {
         ## Send update pings.
         my @updates = $mt->update_ping_list($blog);
         for my $url (@updates) {
@@ -1261,7 +1261,8 @@ sub needs_ping {
     my %list;
     ## If this is a new entry (!$old_status) OR the status was previously
     ## set to draft, and is now set to publish, send the update pings.
-    if (!$old_status || $old_status ne MT::Entry::RELEASE()) {
+    if ( (!$old_status || $old_status ne MT::Entry::RELEASE())
+      && !(MT->config->DisableNotificationPings) ) {
         my @updates = $mt->update_ping_list($blog);
         @list{ @updates } = (1) x @updates;
         $list{$mt->{cfg}->MTPingURL} = 1 if $blog && $blog->mt_update_key;
@@ -1671,20 +1672,24 @@ sub captcha_provider {
 
 sub captcha_providers {
     my $self = shift;
-    my $key = $self->config->CaptchaProvider;
     $self->init_captcha_providers() unless %Captcha_Providers;
-    $Captcha_Providers{$key}->{enabled_selected} = 1 if defined $key;
     my $def = delete $Captcha_Providers{'mt_default'};
     my @vals = values %Captcha_Providers;
-    unshift @vals, $def;
+    if ( $def->{condition}->() ) {
+        unshift @vals, $def;
+    }
     @vals;
 }
 
 sub core_captcha_providers {
     return {
         'mt_default' => {
-            label => 'Movable Type default',
-            class => 'MT::Util::Captcha',
+            label     => 'Movable Type default',
+            class     => 'MT::Util::Captcha',
+            condition => sub {
+                eval "require Image::Magick;";
+                return $@ ? 0 : 1;
+            },
         }
     };
 }
@@ -1692,20 +1697,23 @@ sub core_captcha_providers {
 sub init_captcha_providers {
     my $self = shift;
     my $providers = $self->registry("captcha_providers") || {};
+    foreach my $provider ( keys %$providers ) {
+        delete $providers->{$provider}
+          if exists( $providers->{$provider}->{condition} )
+            && !( $providers->{$provider}->{condition} );
+    }
     %Captcha_Providers = %$providers;
     $Captcha_Providers{$_}{key} ||= $_ for keys %Captcha_Providers;
 }
 
 sub effective_captcha_provider {
     my $class = shift;
-    my $cfg = $class->config;
-
-    if (@_) {
-        $cfg->CaptchaProvider($_[0], 1);
-    }
-    my $key = $cfg->CaptchaProvider;
+    my ($key) = @_;
 	return undef unless $key;
     my $cp = $class->captcha_provider($key);
+    if ( exists $cp->{condition} ) {
+        return undef unless $cp->{condition}->();
+    }
     my $pkg = $cp->{class};
     $pkg =~ s/;//g;
     eval "require $pkg";

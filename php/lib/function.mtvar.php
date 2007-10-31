@@ -2,7 +2,7 @@
 function smarty_function_mtvar($args, &$ctx) {
     // status: complete
     // parameters: name
-    if (array_key_exists($args['value'])) {
+    if (array_key_exists('value', $args)) {
         require_once("function.mtsetvar.php");
         return smarty_function_mtsetvar($args, $ctx);
     }

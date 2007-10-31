@@ -13,8 +13,12 @@
         <li><a href="<mt:var name="script_url">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left icon-left-xwide icon-log"><__trans phrase="Activity Log"></a></li>
         </mt:if>
         <mt:if name="blog_id">
+        <mt:if name="can_administer_blog">
         <li><a href="<mt:var name="script_url">?__mode=start_import&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-left-xwide icon-import"><__trans phrase="Import Content"></a></li>
+        </mt:if>
+        <mt:if name="can_edit_config">
         <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-left-xwide icon-settings"><__trans phrase="Blog Preferences"></a></li>
+        </mt:if>
         </mt:if>
     </ul>
 </mtapp:widget>

@@ -1,3 +1,4 @@
+<mt:setvarblock name="page_title"><__trans phrase="Edit [_1]"  params="<mt:var name="object_label">"></mt:setvarblock>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvarblock name="page_title"><__trans phrase="Edit [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
 <mt:setvarblock name="content_header">
@@ -34,25 +35,6 @@
         </mt:if>
     </mt:if>
 </mt:setvartemplate>
-<mt:setvarblock name="html_head" append="1">
-    <script type="text/javascript">
-    function setBarPosition(radio) {
-        var mode = radio.value.toLowerCase();
-        var c = TC.elementOrId('container');
-        var s = "show-actions-bar-";
-        if (mode == 'bottom') {
-            TC.removeClassName(c, s + "top");
-            TC.addClassName(c, s + "bottom");
-        } else if (mode == 'both') {
-            TC.addClassName(c, s + "top");
-            TC.addClassName(c, s + "bottom");
-        } else if (mode == 'top') {
-            TC.addClassName(c, s + "top");
-            TC.removeClassName(c, s + "bottom");
-        }
-    }
-    </script>
-</mt:setvarblock>
 <mt:setvarblock name="related_content">
     <mtapp:widget
         id="useful-links"
@@ -107,7 +89,7 @@
         <mt:if name="commenter_id">
             <mt:if name="commenter_approved">
                 <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">/"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
-                <img src="<mt:var name="static_uri">images/status_icons/commenter-trusted.gif" alt="<__trans phrase="Trusted">" width="13" height="9" />
+                <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" width="13" height="9" />
                 <span class="hint"><__trans phrase="(Trusted)"></span>
                 <mt:if name="can_edit_commenters">
                     <span class="commenter-actions">
@@ -118,7 +100,7 @@
             <mt:else>
                 <mt:if name="commenter_banned">
                     <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">/"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
-                    <img src="<mt:var name="static_uri">images/status_icons/commenter-banned.gif" alt="<__trans phrase="Banned">" width="13" height="9" />
+                    <img src="<mt:var name="static_uri">images/status_icons/banned.gif" alt="<__trans phrase="Banned">" width="13" height="9" />
                     <span class="hint"><__trans phrase="(Banned)"></span>
                     <mt:if name="can_edit_commenters">
                         <span class="commenter-actions">
@@ -128,7 +110,7 @@
                     </mt:if>
                 <mt:else>
                     <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">/"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
-                    <img src="<mt:var name="static_uri">images/status_icons/commenter-authenticated.gif" alt="<__trans phrase="Pending">" width="7" height="9" />
+                    <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" width="7" height="9" />
                     <mt:if name="can_edit_commenters">
                         <span class="commenter-actions">
                             <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-trust"><__trans phrase="Trust&nbsp;Commenter"></a>
@@ -216,33 +198,33 @@
         label="<__trans phrase="Comment Text">"
         hint="<__trans phrase="Fulltext of the comment entry">"
         show_hint="0">
-        <textarea rows="" cols="" name="text" id="text"><mt:var name="text" escape="html"></textarea>
+        <textarea rows="" cols="" name="text" id="text" class="full-width medium"><mt:var name="text" escape="html"></textarea>
     </mtapp:setting>
 
 <mtignore>
-    <mt:if name="object_loop">
-    <h2><__trans phrase="Responses to this comment"></h2>
-    <mt:include name="include/comment_table.tmpl">
-    </mt:if>
-    <mt:if name="junk_log_loop">
-        <h3><__trans phrase="Final Feedback Rating">: <mt:var name="junk_score"></h3>
-        <div class="list" id="junk-log">
-            <table cellspacing="0">
-                <tr>
-                    <th id="jl-test"><__trans phrase="Test"></th>
-                    <th id="jl-score"><__trans phrase="Score"></th>
-                    <th id="jl-results"><__trans phrase="Results"></th>
-                </tr>
-        <mt:loop name="junk_log_loop">
-                <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-                    <td><mt:var name="test" escape="html"></td>
-                    <td><mt:var name="score"></td>
-                    <td><mt:var name="log"></td>
-                </tr>
-        </mt:loop>
-            </table>
-        </div>
-    </mt:if>
+                        <mt:if name="object_loop">
+                        <h2><__trans phrase="Responses to this comment"></h2>
+                        <mt:include name="include/comment_table.tmpl">
+                        </mt:if>
+                        <mt:if name="junk_log_loop">
+                            <h3><__trans phrase="Final Feedback Rating">: <mt:var name="junk_score"></h3>
+                            <div class="list" id="junk-log">
+                                <table cellspacing="0">
+                                    <tr>
+                                        <th id="jl-test"><__trans phrase="Test"></th>
+                                        <th id="jl-score"><__trans phrase="Score"></th>
+                                        <th id="jl-results"><__trans phrase="Results"></th>
+                                    </tr>
+                            <mt:loop name="junk_log_loop">
+                                    <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                                        <td><mt:var name="test" escape="html"></td>
+                                        <td><mt:var name="score"></td>
+                                        <td><mt:var name="log"></td>
+                                    </tr>
+                            </mt:loop>
+                                </table>
+                            </div>
+                        </mt:if>
 </mtignore>
 
 <mt:if name="position_actions_bottom">

@@ -7,10 +7,9 @@
 package WidgetManager::CMS;
 
 use strict;
-use WidgetManager::Util;
 
 sub plugin {
-    return MT::Plugin::WidgetManager->instance;
+    return MT->component('WidgetManager');
 }
 
 sub _permission_check {
@@ -19,7 +18,7 @@ sub _permission_check {
 }
 
 sub save {
-    WidgetManager::Util::debug('Calling save...');
+    warn 'Calling save...' if $MT::DebugMode;
     my $app = shift;
 
     return $app->error($app->translate('Permission denied.'))
@@ -30,12 +29,11 @@ sub save {
     my $blog_id = $q->param('blog_id');
 
     my $str = build_module_list($q->param('modules'));
-    WidgetManager::Util::debug('Saving modules to blog #'.$blog_id.": $str");
+    warn 'Saving modules to blog #'.$blog_id.": $str" if $MT::DebugMode;
 
     # Load the current widgetmanager data
     my $current = $q->param('widgetmanager') || '';
     $current = $q->param('name') if $current eq 'New Widget Manager';
-    require WidgetManager::Plugin;
     my $modulesets = plugin()->load_selected_modules($blog_id);
     $modulesets = {} unless $modulesets;
 
@@ -57,7 +55,7 @@ sub save {
 }
 
 sub delete {
-    WidgetManager::Util::debug('Calling delete...');
+    warn 'Calling delete...' if $MT::DebugMode;
     my $app = shift;
 
     return $app->error($app->translate('Permission denied.'))
@@ -74,11 +72,11 @@ sub delete {
 
     plugin()->set_config_value('modulesets',$modulesets,"blog:$blog_id");
     
-    return list(deleted => 1);
+    return list($app, deleted => 1);
 }
 
 sub edit {
-    WidgetManager::Util::debug('Calling edit...');
+    warn 'Calling edit...' if $MT::DebugMode;
     my $app = shift;
     my (%opt) = @_;
 
@@ -128,7 +126,7 @@ sub edit {
       foreach my $mid (@selected) {
           for (my $i = 0; $i <= $#avail_modules; $i++) {
               if ($avail_modules[$i]->{id} == $mid) {
-                  WidgetManager::Util::debug($app->translate("Moving [_1] to list of installed modules", $mid));
+                  warn $app->translate("Moving [_1] to list of installed modules", $mid) if $MT::DebugMode;
                   push @inst_modules,$avail_modules[$i];
                   splice(@avail_modules,$i,1);
               }
@@ -165,7 +163,7 @@ sub edit {
 
 sub list {
     my $app = shift;
-    WidgetManager::Util::debug('Calling list...');
+    warn 'Calling list...' if $MT::DebugMode;
     my (%opt) = @_;
 
     return $app->return_to_dashboard(redirect => 1)

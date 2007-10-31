@@ -9,26 +9,43 @@
         </mtapp:statusmsg>
     </mt:if>
     <p class="page-desc">
-    <__trans phrase="The Movable Type activity log contains a record of notable actions in the system.">
     <mt:if name="time_offset">
     <__trans phrase="All times are displayed in GMT[_1]." params="<mt:var name="time_offset">">
     <mt:else>
     <__trans phrase="All times are displayed in GMT.">
     </mt:if>
     </p>
-    <ul>
-    <mt:if name="filter">
-        <li><a href="<mt:var name="feed_url" escape="html">" title="<__trans phrase="Filtered"> <mt:var name="feed_name" escape="html">" class="icon-left icon-feed"><__trans phrase="Filtered Activity Feed"></a></li>
-        <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Filtered Log (CSV)"></a></li>
-    <mt:else>
-        <li><mt:include name="include/feed_link.tmpl"></li>
-        <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Log (CSV)"></a></li>
-    </mt:if>
-    </ul>
 </mt:setvarblock>
-<MTSetVarBlock name="content_nav">
-    <mt:include name="include/tools_content_nav.tmpl">
-</MTSetVarBlock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="quickfilters"
+        label="<__trans phrase="Quickfilters">">
+        <$mtapp:ListFilters$>
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=level&amp;filter_val=4"><__trans phrase="Show only errors"></a></li>
+        </ul>
+    </mtapp:widget>
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <mt:if name="is_administrator">
+                <mt:if name="blog_id">
+                <li><a href="<mt:var name="script_url">?__mode=view_log"><__trans phrase="System Activity Log"></a></li>
+                </mt:if>
+            </mt:if>
+        <mt:if name="filter">
+            <li><a href="<mt:var name="feed_url" escape="html">" title="<__trans phrase="Filtered"> <mt:var name="feed_name" escape="html">" class="icon-left icon-feed"><__trans phrase="Filtered Activity Feed"></a></li>
+            <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Filtered Log (CSV)"></a></li>
+        <mt:else>
+            <li><mt:include name="include/feed_link.tmpl"></li>
+            <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Log (CSV)"></a></li>
+        </mt:if>
+        </ul>
+    </mtapp:widget>
+    <$mt:include name="include/display_options.tmpl"$>
+    <$mtapp:PageActions from="$mode"$>
+</mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:unless name="search_replace_template">
     <input type="button" onclick="doResetLog(this.form)" value="<MT_TRANS phrase="Clear Activity Log">" />
@@ -47,13 +64,13 @@
         getByID("filter-button").style.display = "inline";
     }
     function toggleFilter() {
-        var filterActive = getByID("filter-active");
+        var filterActive = getByID("filter-title");
         if (filterActive.style.display == "none") {
             filterActive.style.display = "block";
             getByID("filter-select").style.display = "none";
         } else {
             filterActive.style.display = "none";
-            getByID("filter-select").style.display = "block";
+            getByID("filter-select").style.display = "block";<mt:unless name="filter">setFilterCol('status');</mt:unless>
         }
     }
 
@@ -61,20 +78,15 @@
         var sel = getByID('filter-select');
         if (!sel) return;
         sel.className = "filter-" + choice;
-        if (choice == 'none')
-            getByID('filter-mode').selectedIndex = 0;
-        else {
-            getByID('filter-mode').selectedIndex = 1;
-            var fld = getByID('filter-col');
-            if (choice == 'level')
-                fld.selectedIndex = 0;
-            else if (choice == 'class')
-                fld.selectedIndex = 1;
-            col_span = getByID("filter-text-col");
-            if (fld.selectedIndex > -1 && col_span)
-                col_span.innerHTML = '<strong>' +
-                    fld.options[fld.selectedIndex].text + '</strong>';
-        }
+        var fld = getByID('filter-col');
+        if (choice == 'level')
+            fld.selectedIndex = 0;
+        else if (choice == 'class')
+            fld.selectedIndex = 1;
+        col_span = getByID("filter-text-col");
+        if (fld.selectedIndex > -1 && col_span)
+            col_span.innerHTML = '<strong>' +
+                fld.options[fld.selectedIndex].text + '</strong>';
     }
 
     function init() {
@@ -88,6 +100,8 @@
     </script>
 </mt:setvarblock>
 <mt:setvarblock name="list_filter_form">
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
 <form id="filter-form" method="get" action="<mt:var name="mt_url">">
     <input type="hidden" name="__mode" value="view_log" />
     <mt:if name="blog_id">
@@ -99,26 +113,18 @@
     <input id="filter" type="hidden" name="filter" value="" />
     <input id="filter_val" type="hidden" name="filter_val" value="" />
     <div class="filter">
-        <div id="filter-active">
-            <strong><__trans phrase="Filter">:</strong>
+        <div id="filter-title">
     <mt:unless name="filter">
-                <a href="#" onclick="toggleFilter()"><__trans phrase="Showing all log records"></a>
-            <strong><__trans phrase="Quickfilter:"></strong> <a href="<mt:var name="script_url">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=level&amp;filter_val=4"><__trans phrase="Show only errors."></a>
+            <__trans phrase="Showing all log records">
+            <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
     <mt:else>
-            <a href="#" onclick="toggleFilter()"><__trans phrase="Showing only log records where"> <span id="filter-text-col">&nbsp;</span> <__trans phrase="is"> <span id="filter-text-val"></span>.</a> (<a href="<mt:var name="script_url">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>"><__trans phrase="Reset"></a>)
+            <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="Showing log records where"> <span id="filter-text-col">&nbsp;</span> <__trans phrase="is"> <span id="filter-text-val"></span></a>
+            <a href="<mt:var name="script_url" class="filter-link">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Reset"> ]</a>
     </mt:unless>
         </div>
         <div id="filter-select" style="display: none">
-            <__trans phrase="Show">
-            <select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('level') } enableFilterButton()">
-                <option value="all"><__trans phrase="all"></option>
-                <option value="only"><__trans phrase="only"></option>
-            </select>
-            <span id="filter-mode-all" style="display: none">
-                <__trans phrase="log records.">
-            </span>
+            <__trans phrase="Show log records where">
             <span id="filter-mode-only" style="display: none">
-                <__trans phrase="log records where">
                 <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
                     <option value="level"><__trans phrase="level"></option>
     <mt:if name="class_loop">
@@ -155,9 +161,10 @@
         </div>
     </div>
 </form>
+        </div>
+    </div>
 </mt:setvarblock>
-<mt:include name="include/header.tmpl">
+<$mt:include name="include/header.tmpl"$>
 <$mt:var name="list_filter_form"$>
-<mt:include name="include/log_table.tmpl">
-<$mt:include name="include/display_options.tmpl"$>
-<mt:include name="include/footer.tmpl">
+<$mt:include name="include/log_table.tmpl"$>
+<$mt:include name="include/footer.tmpl"$>

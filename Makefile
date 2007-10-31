@@ -88,7 +88,9 @@ mt-config.cgi-original: mt-config.cgi-original.pre build-language-stamp
         $< > $@
 
 mt-check.cgi: %: %.pre build-language-stamp
-	sed 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' $< > $@
+	sed -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
+	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	$< > $@
 	chmod +x $@
 
 $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm

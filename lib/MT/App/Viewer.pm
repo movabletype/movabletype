@@ -5,118 +5,115 @@
 # $Id$
 
 package MT::App::Viewer;
-use strict;
 
-use MT::App;
-@MT::App::Viewer::ISA = qw( MT::App );
+use strict;
+use base qw( MT::App );
 
 use MT::Entry;
 use MT::Template;
 use MT::Template::Context;
 use MT::Promise qw(delay);
 
-use constant INDEX => 'Main Index';
-
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
-    $app->add_methods(main => \&view);
     $app->{default_mode} = 'main';
-    $app;
+    $app->add_methods(
+        'main' => \&view,
+    );
+    return $app;
 }
+
+my %view_handlers = (
+    'index' => \&_view_index,
+    'Individual' => \&_view_entry,
+    'Page' => \&_view_entry,
+    'Category' => \&_view_category,
+    'Author' => \&_view_author,
+    '*' => \&_view_archive,
+);
 
 sub view {
     my $app = shift;
-    return $app->error($app->translate("This is an experimental feature; turn off SafeMode (in mt.cfg) in order to use it."))
-        if $app->{cfg}->SafeMode;
 
     my $R = MT::Request->instance;
     $R->stash('live_view', 1);
 
     ## Process the path info.
-    my $uri = $app->path_info;
-    unless ($uri =~ s!^/(\d+)!!) {
-        return $app->error($app->translate("No blog_id"));
-    }
-    my $blog_id = $1;
+    my $uri = $app->param('uri') || $app->path_info;
+    my $blog_id = $app->param('blog_id');
 
     ## Check ExcludeBlogs and IncludeBlogs to see if this blog is
     ## private or not.
-    my $cfg = $app->{cfg};
-    my %okay;
-    for my $type (qw( IncludeBlogs ExcludeBlogs )) {
-        if (my $list = $cfg->$type()) {
-            $okay{$type} = { map { $_ => 1 } split /\s*,\s*/, $list };
-        }
-    }
-    if (keys %{ $okay{IncludeBlogs} }) {
-        return $app->error($app->translate("Not allowed to view blog [_1]", $blog_id))
-            unless $okay{IncludeBlogs}{$blog_id};
-    }
-    if (keys %{ $okay{ExcludeBlogs} }) {
-        return $app->error($app->translate("Not allowed to view blog [_1]", $blog_id))
-            if $okay{ExcludeBlogs}{$blog_id};
-    }
+    my $cfg = $app->config;
     $app->{__blog_id} = $blog_id;
 
     require MT::Blog;
     my $blog = $app->{__blog} = MT::Blog->load($blog_id)
         or return $app->error($app->translate("Loading blog with ID [_1] failed", $blog_id));
 
-    if (!$uri || $uri eq '/') {
-        return $app->_view_index;
-    } elsif ($uri =~ m!^/archives/(.*)$!) {
-        return $app->_view_date_archive($1);
-    } elsif ($uri =~ m!^/entry/(\d+)(?:/([^/]+))?/?$!) {
-        return $app->_view_entry($1, $2);
-    } elsif ($uri =~ m!^/section/(\d+)/?$!) {
-        return $app->_view_section($1);
-    } else {
-        return $app->_view_index($uri);
+    my $idx = $cfg->IndexBasename || 'index';
+    my $ext = $blog->file_extension || '';
+    $idx .= '.' . $ext if $ext ne '';
+
+    my @urls = ( $uri );
+    if ($uri !~ m!\Q/$idx\E$!) {
+        push @urls, $uri . '/' . $idx;
     }
+
+    require MT::FileInfo;
+    my @fi = MT::FileInfo->load({
+        blog_id => $blog_id,
+        url => \@urls
+    });
+    if (@fi) {
+        if (my $tmpl = MT::Template->load($fi[0]->template_id)) {
+            my $handler = $view_handlers{$tmpl->type};
+            $handler ||= $view_handlers{'*'};
+            return $handler->($app, $fi[0], $tmpl);
+        }
+    }
+    if (my $tmpl = MT::Template->load({ blog_id => $blog_id,
+        type => 'dynamic_error' })) {
+        my $ctx = $tmpl->context;
+        $ctx->stash('blog', $blog);
+        $ctx->stash('blog_id', $blog_id);
+        return $tmpl->output();
+    }
+    return $app->error("File not found");
 }
 
 my %MimeTypes = (
-    css => 'text/css',
-    txt => 'text/plain',
-    rdf => 'text/xml',
-    rss => 'text/xml',
-    xml => 'text/xml',
+    css  => 'text/css',
+    txt  => 'text/plain',
+    rdf  => 'text/xml',
+    rss  => 'text/xml',
+    xml  => 'text/xml',
+    js   => 'text/javascript',
+    json => 'text/javascript+json',
 );
 
 sub _view_index {
     my $app = shift;
-    my($uri) = @_;
-    my $q = $app->{query};
-    my $tmpl;
-    if ($uri) {
-        $uri =~ s!^/!!;
-        my $iter = MT::Template->load_iter({ blog_id => $app->{__blog_id} });
-        while (my $t = $iter->()) {
-            $tmpl = $t, last
-                if $t->type eq 'index' && $t->outfile eq $uri;
-        }
-    } else {
-        $tmpl = MT::Template->load({ blog_id => $app->{__blog_id},
-                                     name => INDEX });
-    }
-## xxx 404?
-    return $app->error($app->translate("Can't load '[_1]' template.", $uri || INDEX))
-        unless $tmpl;
+    my($fi, $tmpl) = @_;
+    my $q = $app->param;
 
-    my($limit, $offset) = map $q->param($_), qw( limit offset );
-    my $ctx = MT::Template::Context->new;
-    if ($limit || $offset) {
-        $limit ||= 20;
-        my %arg = (
-            'sort' => 'authored_on',
-            direction => 'descend',
-            limit => $limit,
-            ($offset ? (offset => $offset) : ()),
-        );
-        my @entries = MT::Entry->load({ blog_id => $app->{__blog_id},
-            status => MT::Entry::RELEASE() }, \%arg);
-        $ctx->stash('entries', delay(sub{\@entries}));
+    my $ctx = $tmpl->context;
+    if ($tmpl->text =~ m/<MT:?Entries/i) {
+        my $limit = $q->param('limit');
+        my $offset = $q->param('offset');
+        if ($limit || $offset) {
+            $limit ||= 20;
+            my %arg = (
+                'sort' => 'authored_on',
+                direction => 'descend',
+                limit => $limit,
+                ($offset ? (offset => $offset) : ()),
+            );
+            my @entries = MT::Entry->load({ blog_id => $app->{__blog_id},
+                status => MT::Entry::RELEASE() }, \%arg);
+            $ctx->stash('entries', delay(sub{\@entries}));
+        }
     }
     my $out = $tmpl->build($ctx)
         or return $app->error($app->translate("Building template failed: [_1]", $tmpl->errstr));
@@ -202,7 +199,7 @@ sub _view_entry {
     $out;
 }
 
-sub _view_section {
+sub _view_category {
     my $app = shift;
     my($cat_id) = @_;
     require MT::Category;

@@ -161,7 +161,7 @@
     function init()
     {
     	// setup
-    	tableSelect = new TC.TableSelect( "selector" );
+    	tableSelect = new TC.TableSelect( "tag-listing-table" );
     }
 
     TC.attachLoadEvent( init );
@@ -171,75 +171,33 @@
 
 <mt:include name="include/header.tmpl">
 
-<div id="list-tags">
-
-<form id="selector-form" class="selector-form" method="post" action="<mt:var name="script_url">">
-
-<mt:if name="position_actions_top">
-    <mt:include name="include/actions_bar.tmpl">
-</mt:if>
-
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="tag" />
-<input type="hidden" name="id" value="" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<input type="hidden" name="tag_name" value="" />
-
-<mt:if name="tag_table">
-<mt:loop name="tag_table">
-<div class="tableselect" id="selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th id="tag-name"><__trans phrase="Tag Name"></th>
-<th id="tag-count"><mt:var name="tag_object_label_plural"></th>
-</tr>
-</thead>
-
-<tbody>
-<mt:loop name="object_loop">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>" id="tag-<mt:var name="tag_id">">
-<td class="cb" id="delete-<mt:var name="tag_id">"><input type="checkbox" name="id" value="<mt:var name="tag_id">" class="select" /></td>
-<td class="edit-col" id="tag-cell-<mt:var name="tag_id">">
-<a href="#" title="<__trans phrase="Click to edit tag name">" class="edit-link" id="tag-link-<mt:var name="tag_id">" onclick="return edit_tag(<mt:var name="tag_id">)"><mt:var name="tag_name" escape="html"></a>
-<span id="tag-field-<mt:var name="tag_id">" style="display: none">
-<input type="text" name="tag-name-<mt:var name="tag_id">" id="tag-name-<mt:var name="tag_id">" value="<mt:var name="tag_name" escape="html">" />
-<input type="submit" value="<__trans phrase="Rename">" onclick="return submit_edit(<mt:var name="tag_id">)" />
-<input type="button" value="<__trans phrase="Cancel">" onclick="cancel_edit(<mt:var name="tag_id">)" />
-</span>
-</td>
-<td class="tag-count"><mt:if name="tag_count"><a href="<mt:var name="script_url">?__mode=list_entries<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=exacttag&amp;filter_val=<mt:var name="tag_name" escape="url">" title="<__trans phrase="Show all entries with this tag">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></a><mt:else><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></mt:if></td>
-</tr>
-</mt:loop>
-</tbody>
-
-</table>
-</div>
-<mt:if name="position_actions_bottom">
-    <mt:include name="include/actions_bar.tmpl" bar_position="bottom">
-</mt:if>
-</mt:loop>
-
-<mt:else>
-
-<mtapp:statusmsg
-    id="no-tags"
-    class="info">
-    <__trans phrase="No tags could be found.">
-</mtapp:statusmsg>
-
-</mt:if>
-
-</mt:if>
-
-</form>
-
-</div>
+<mtapp:listing
+    type="tag">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+            <th id="tag-name"><__trans phrase="Tag Name"></th>
+            <th id="tag-count"><mt:var name="tag_object_label_plural"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>" id="tag-<mt:var name="tag_id">">
+            <td class="cb" id="delete-<mt:var name="tag_id">"><input type="checkbox" name="id" value="<mt:var name="tag_id">" class="select" /></td>
+            <td class="edit-col" id="tag-cell-<mt:var name="tag_id">">
+                <a href="javascript:void(0)" title="<__trans phrase="Click to edit tag name">" class="edit-link" id="tag-link-<mt:var name="tag_id">" onclick="return edit_tag(<mt:var name="tag_id">)"><mt:var name="tag_name" escape="html"></a>
+                <span id="tag-field-<mt:var name="tag_id">" style="display: none">
+                    <input type="text" name="tag-name-<mt:var name="tag_id">" id="tag-name-<mt:var name="tag_id">" value="<mt:var name="tag_name" escape="html">" />
+                    <input type="submit" value="<__trans phrase="Rename">" onclick="return submit_edit(<mt:var name="tag_id">)" />
+                    <input type="button" value="<__trans phrase="Cancel">" onclick="cancel_edit(<mt:var name="tag_id">)" />
+                </span>
+            </td>
+            <td class="tag-count"><mt:if name="tag_count"><a href="<mt:var name="script_url">?__mode=list_entries<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=exacttag&amp;filter_val=<mt:var name="tag_name" escape="url">" title="<__trans phrase="Show all entries with this tag">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></a><mt:else><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></mt:if></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>
 
 <mt:include name="include/footer.tmpl">

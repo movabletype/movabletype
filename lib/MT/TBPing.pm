@@ -11,8 +11,6 @@ use base qw( MT::Object MT::Scorable );
 
 use constant JUNK => -1;
 use constant NOT_JUNK => 1;
-use MT::Trackback;
-use MT::Entry;
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -77,10 +75,10 @@ sub blog {
     my $blog = $ping->{__blog};
     unless ($blog) {
         my $blog_id = $ping->blog_id;
-        require MT::Blog;
-        $blog = MT::Blog->load($blog_id) or
+        my $blog_class = MT->model('blog');
+        $blog = $blog_class->load($blog_id) or
             return $ping->error(MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));   
+                "Load of blog '[_1]' failed: [_2]", $blog_id, $blog_class->errstr));   
         $ping->{__blog} = $blog;
     }
     return $blog;
@@ -88,19 +86,17 @@ sub blog {
 
 sub parent {
     my ($ping) = @_;
-    require MT::Trackback;
-    my $tb = MT::Trackback->load($ping->tb_id);
+    my $tb = MT->model('trackback')->load($ping->tb_id);
     if ($tb->entry_id) {
-        return MT::Entry->load($tb->entry_id);
+        return MT->model('entry')->load($tb->entry_id);
     } else {
-        return MT::Category->load($tb->category_id);
+        return MT->model('category')->load($tb->category_id);
     }
 }
 
 sub parent_id {
     my ($ping) = @_;
-    require MT::Trackback;
-    my $tb = MT::Trackback->load($ping->tb_id);
+    my $tb = MT->model('trackback')->load($ping->tb_id);
     if ($tb->entry_id) {
         return ('MT::Entry', $tb->entry_id);
     } else {

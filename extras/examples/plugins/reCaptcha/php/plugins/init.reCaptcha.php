@@ -19,6 +19,7 @@ class reCaptcha extends BaseCaptchaProvider {
         }
 
         $fields = "
+<div id=\"recaptcha_script\" style=\"display:none\">
 <script type=\"text/javascript\"
    src=\"http://api.recaptcha.net/challenge?k=$publickey\">
 </script>
@@ -31,6 +32,15 @@ class reCaptcha extends BaseCaptchaProvider {
    <input type=\"hidden\" name=\"recaptcha_response_field\" 
        value=\"manual_challenge\">
 </noscript>
+</div>
+<script type=\"text/javascript\">
+var div = document.getElementById(\"recaptcha_script\");
+if (commenter_name) {
+    div.style.display = \"none\";
+} else {
+    div.style.display = \"block\";
+}
+</script>
 ";
         return $fields;
     }

@@ -35,7 +35,11 @@ __PACKAGE__->install_properties ({
         $ser ||= MT::Serialize->new('MT');  # force MT serialization for plugins
         if (@_) {
             my $data = shift;
-            $self->column('data', $ser->serialize( \$data ));
+            if (ref($data)) {
+                $self->column('data', $ser->serialize( \$data ));
+            } else {
+                $self->column('data', $data);
+            }
             $data;
         } else {
             my $data = $self->column('data');

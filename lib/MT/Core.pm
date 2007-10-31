@@ -34,14 +34,13 @@ BEGIN {
             'sqlite' => {
                 label => 'SQLite Database',
                 dbd_package => 'DBD::SQLite',
-                dbd_version => '1.11',
                 config_package => 'DBI::sqlite',
             },
-            #'sqlite2' => {
-            #    label => 'SQLite Database (v2)',
-            #    dbd_package => 'DBD::SQLite2',
-            #    config_package => 'DBI::sqlite',
-            #},
+            'sqlite2' => {
+                label => 'SQLite Database (v2)',
+                dbd_package => 'DBD::SQLite2',
+                config_package => 'DBI::sqlite',
+            },
         },
         object_types   => {
             'entry'           => 'MT::Entry',
@@ -189,7 +188,7 @@ BEGIN {
                 order => 200,
             },
             'blog.edit_assets' => {
-                label => trans('Manage Assets'),
+                label => trans('Manage Files'),
                 group => 'blog_upload',
                 order => 300,
             },
@@ -417,13 +416,6 @@ BEGIN {
             },
             'DefaultListPrefs' => {
                 type    => 'HASH',
-                default => {
-                    Rows       => 20,
-                    Format     => 'Compact',     # Compact|Expanded
-                    SortOrder  => 'Ascend',      # Ascend|Descend
-                    Button     => 'Above',       # Above|Below|Both
-                    DateFormat => 'Relative',    # Relative|Full
-                },
             },
             'DefaultEntryPrefs' => {
                 type    => 'HASH',
@@ -463,14 +455,13 @@ BEGIN {
                     Notify => q(),
                 },
             },
-            'UseCommentConfirmationPage' => { default => 1, },
             'CaptchaSourceImageBase'     => undef,
-            'CaptchaProvider'            => undef,
             'SecretToken'                => { handler => \&SecretToken, },
             ## NaughtyWordChars settings
             'NwcSmartReplace' => { default => 0, },
             'NwcReplaceField' =>
               { default => 'title,text,text_more,keywords,excerpt,tags', },
+            'DisableNotificationPings'   => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -532,6 +523,7 @@ BEGIN {
         captcha_providers        => \&load_captcha_providers,
         tasks                    => \&load_core_tasks,
         default_templates        => \&load_default_templates,
+        junk_filters             => \&load_junk_filters,
         template_snippets        => {
             'insert_entries' => {
                 label   => '<MTEntries>',
@@ -543,6 +535,11 @@ BEGIN {
 
 sub id {
     return 'core';
+}
+
+sub load_junk_filters {
+    require MT::JunkFilter;
+    return MT::JunkFilter->core_filters;
 }
 
 sub load_core_tasks {

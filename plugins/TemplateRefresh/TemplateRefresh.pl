@@ -627,7 +627,7 @@ sub refresh_blog_templates {
             my $terms = {};
             $terms->{blog_id} = $blog_id;
             if ( $val->{type} =~
-                m/^(archive|individual|category|index|custom)$/ )
+                m/^(archive|individual|page|category|index|custom)$/ )
             {
                 $terms->{name} = $val->{name};
             }
@@ -659,7 +659,7 @@ sub refresh_blog_templates {
                     $backup->name(
                         $backup->name . ' (Backup from ' . $ts . ')' );
                     if ( $backup->type !~
-                        m/^(archive|individual|category|index|custom)$/ )
+                        m/^(archive|individual|page|category|index|custom)$/ )
                     {
                         $backup->type('custom')
                           ;      # system templates can't be created
@@ -672,7 +672,7 @@ sub refresh_blog_templates {
                     $backup->save;
                     push @msg,
                       $app->translate(
-"Refreshing (with <a href=\"?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]\">backup</a>) template '[_3]'.",
+'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.',
                         $blog_id, $backup->id, $tmpl->name );
                 }
                 else {
@@ -749,7 +749,7 @@ sub refresh_individual_templates {
     foreach my $tmpl (@$tmpl_list) {
         $tmpl->{text} = $app->translate_templatized( $tmpl->{text} );
         $trnames->{ $app->translate( $tmpl->{name} ) } = $tmpl->{name};
-        if ( $tmpl->{type} !~ m/^(archive|individual|category|index|custom)$/ )
+        if ( $tmpl->{type} !~ m/^(archive|individual|page|category|index|custom)$/ )
         {
             $tmpl_types->{ $tmpl->{type} } = $tmpl;
         }
@@ -800,7 +800,7 @@ sub refresh_individual_templates {
             delete $backup->{changed_cols}->{id};
             $backup->name( $backup->name . ' (Backup from ' . $ts . ')' );
             if ( $backup->type !~
-                m/^(archive|individual|category|index|custom)$/ )
+                m/^(archive|individual|page|category|index|custom)$/ )
             {
                 $backup->type('custom');    # system templates can't be created
             }
@@ -812,8 +812,8 @@ sub refresh_individual_templates {
             $backup->save;
             push @msg,
               $app->translate(
-"Refreshing (with <a href=\"?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]\">backup</a>) template '[_3]'.",
-                $blog_id, $backup->id, $tmpl->name );
+'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.',
+                  $blog_id, $backup->id, $tmpl->name );
         }
         else {
             push @msg,

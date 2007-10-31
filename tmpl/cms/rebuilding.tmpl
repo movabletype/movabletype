@@ -44,7 +44,11 @@ setTimeout('doRedirect()', 200);
 <mt:if name="dynamic">
 <__trans phrase="Rebuilding [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">
 <mt:else>
+<mt:if name="build_type_name">
 <__trans phrase="Rebuilding [_1] pages" params="<mt:var name="build_type_name" escape="html"> ">
+<mt:else>
+<__trans phrase="Rebuilding">
+</mt:if>
 </mt:if>
 </mt:if>
 </mt:if>

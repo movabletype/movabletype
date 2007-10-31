@@ -531,7 +531,6 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
 } );
 
 
-Editor.strings.enterEmailAddress = trans('Enter email address:');
 
 MT.App.CategorySelector = new Class( Transient, {
     
@@ -756,7 +755,8 @@ MT.App.CategorySelector = new Class( Transient, {
             catlist.push( cat );
             /* update the cache */
             app.catCache.setItem( "cat:"+cat.id, cat );
-            this.list.addItem( cat );
+            this.list.addItem( cat, true );
+            this.listItemsSelected( this.list );
         }
     },
 
@@ -860,4 +860,9 @@ MT.App.CategoryList = new Class( Object, {
     
 
 } );
+
+
+Editor.strings.enterEmailAddress = trans('Enter email address:');
+Editor.strings.enterLinkAddress = trans('Enter the link address:');
+Editor.strings.enterTextToLinkTo = trans('Enter the text to link to:');
 

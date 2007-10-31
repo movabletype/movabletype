@@ -427,8 +427,8 @@ sub configure {
             $_->{id} = 'mssqlserver';
         } elsif ($_->{module} eq 'DBD::SQLite') {
             $_->{id} = 'sqlite';
-        #} elsif ($_->{module} eq 'DBD::SQLite2') {
-        #    $_->{id} = 'sqlite2';
+        } elsif ($_->{module} eq 'DBD::SQLite2') {
+            $_->{id} = 'sqlite2';
         }
         if ($param{dbtype} && ($param{dbtype} eq $_->{id})) {
             $_->{selected} = 1;

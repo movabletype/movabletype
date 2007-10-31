@@ -1,57 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=<mt:var name="language_encoding">" />
-	<meta http-equiv="content-language" content="en" />
-	
-	<title>Movable Type Publishing Platform</title>
-	
-    <style type="text/css" media="screen">
-    body {
-        font-family: Candara, "Helvetica Neue", Arial, sans-serif;
-        font-size: 12px;
-    }
-
-    .chromeless body {
-        text-align: center;
-        height: 100%;
-    }
-
-    .chromeless #container {
-        position: relative;
-        margin: 0 auto;
-        text-align: left;
-    }
-    .chromeless #container {
-        margin-top: 50px;
-        width: 450px;
-    }
-    
-    .chromeless body {
-        background-color: #FFF;
-    }
-
-    .chromeless #content {
-        border: 1px solid #cfdde5;
-        background-color: #fafbfc;
-        padding: 20px;
-    }
-
-
-    h1 {
-        margin-top: 0;
-    }
-    
-    .msg-error .close-me { display:none; }
-
-    </style>
-</head>
-
-<body class="chromeless">
-<div id="container">
-    <div id="content">
-        <h1>Movable Type</h1>
+<mt:var name="error_page" value="1">
+<mt:setvarblock name="page_title"><__trans phrase="Movable Type"></mt:setvarblock>
+<mt:include name="cms/include/chromeless_header.tmpl">
 
         <mt:if name="error_config_file">
         <h2><__trans phrase="Missing Configuration File"></h2>
@@ -80,8 +29,5 @@
         </mt:if>
         </mt:if>
         </mt:if>
-    </div>
-</div>
-</body>
 
-</html>
+<mt:include name="../cms/include/chromeless_footer.tmpl">

@@ -33,6 +33,8 @@ sub prefix {
     return "mt_";
 }
 
+# Be mindful of SQLite when you modify the method.
+# SQLite has its own count method in its DBD.
 sub count {
     my $driver = shift;
     my($class, $terms, $args) = @_;
@@ -214,7 +216,7 @@ sub prepare_statement {
     ## so for any set of column names we send the statement, we must pre-
     ## decorate the column names.
 
-    for my $arg (qw( transform range range_incl not null not_null like binary )) {
+    for my $arg (qw( transform range range_incl not null not_null like binary count_distinct )) {
         if(exists $args->{$arg}) {
             my %stmt_data = %{ delete $args->{$arg} };
             $driver->_decorate_column_names_in(\%stmt_data, $class);

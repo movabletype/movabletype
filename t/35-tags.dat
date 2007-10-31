@@ -31,7 +31,7 @@
 { "r" : "1", "t" : "<MTBlogs><MTBlogTimezone></MTBlogs>", "e" : "-03:30"}, #30
 { "r" : "1", "t" : "<MTBlogs><MTBlogTimezone no_colon=\"1\"></MTBlogs>", "e" : "-0330"}, #31
 { "r" : "1", "t" : "<MTBlogs><MTBlogEntryCount></MTBlogs>", "e" : "6"}, #32
-{ "r" : "1", "t" : "<MTBlogs><MTBlogCommentCount></MTBlogs>", "e" : "7"}, #33
+{ "r" : "1", "t" : "<MTBlogs><MTBlogCommentCount></MTBlogs>", "e" : "9"}, #33
 { "r" : "0", "t" : "<MTBlogs><MTBlogIfCCLicense><MTBlogCCLicenseURL>
 <MTBlogCCLicenseImage>
 <MTCCLicenseRDF></MTBlogIfCCLicense></MTBlogs>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/
@@ -216,7 +216,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"4\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : ""}, #164
 { "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"5\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : ""}, #165
 { "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"5\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : ""}, #166
-{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTEntryID> <MTEntryCommentCount>; </MTEntries>", "e" : "1 3; 8 1; 7 0; 6 1; 5 1; 4 0; "}, #167
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTEntryID> <MTEntryCommentCount>; </MTEntries>", "e" : "1 3; 8 1; 7 0; 6 3; 5 1; 4 0; "}, #167
 { "r" : "1", "t" : "<MTIfRegistrationNotRequired>yes<MTElse>no</MTElse></MTIfRegistrationNotRequired>", "e" : "no"}, #168
 { "r" : "1", "t" : "<MTIfRegistrationRequired>yes<MTElse>no</MTElse></MTIfRegistrationRequired>", "e" : "yes"}, #169
 { "r" : "1", "t" : "<MTBlogIfCommentsOpen>yes<MTElse>no</MTElse></MTBlogIfCommentsOpen>", "e" : "yes"}, #170
@@ -391,7 +391,17 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTFolders><MTFolderDescription>;</MTFolders>", "e" : "download top;information;nightly build;"}, #339
 { "r" : "1", "t" : "<MTFolders><MTFolderLabel>;</MTFolders>", "e" : "download;info;nightly;"}, #340
 { "r" : "1", "t" : "<MTFolders><MTFolderPath>;</MTFolders>", "e" : "download;info;download/nightly;"}, #341
-{ "r" : "1", "t" : "<MTComments><MTCommentEntry><MTEntryClass>;</MTCommentEntry></MTComments>", "e" : "Page;Entry;Entry;Entry;Entry;Entry;Entry;"}, #342
+{ "r" : "1", "t" : "<MTComments><MTCommentEntry><MTEntryClass>;</MTCommentEntry></MTComments>", "e" : "Page;Entry;Entry;Entry;Entry;Entry;Entry;Entry;Entry;"}, #342
 { "r" : "1", "t" : "<MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>", "e" : "Page;Entry;"}, #343
-{ "r" : "1", "t" : "<MTArchiveList archive_type='Individual' sort_order='ascend'><$MTArchiveDate format='%Y.%m.%d.%H.%M.%S'$>;</MTArchiveList>", "e" : "1961.01.31.07.45.01;1962.01.31.07.45.01;1963.01.31.07.45.01;1964.01.31.07.45.01;1965.01.31.07.45.01;1978.01.31.07.45.00;"} #344
+{ "r" : "1", "t" : "<MTArchiveList archive_type='Individual' sort_order='ascend'><$MTArchiveDate format='%Y.%m.%d.%H.%M.%S'$>;</MTArchiveList>", "e" : "1961.01.31.07.45.01;1962.01.31.07.45.01;1963.01.31.07.45.01;1964.01.31.07.45.01;1965.01.31.07.45.01;1978.01.31.07.45.00;"}, #344
+{ "r" : "1", "t" : "<MTAuthors sort_by='id' lastn=\"2\"><MTAuthorID>;</MTAuthors>", "e" : "1;2;"}, #345
+{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorName>;</MTAuthors>", "e" : "Melody;Chuck D;Bob D;John Doe;"}, #346
+{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorDisplayName>;</MTAuthors>", "e" : "Author (#1);Chucky Dee;Dylan;Author (#4);"}, #347
+{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorEmail>;</MTAuthors>", "e" : ";chuckd@example.com;bobd@example.com;jdoe@doe.com;"}, #348
+{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorURL>;</MTAuthors>", "e" : ";http://chuckd.com/;;;"}, #349
+{ "r" : "1", "t" : "<MTAuthors display_name=\"Chucky Dee\"><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</MTAuthors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #350
+{ "r" : "1", "t" : "<MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>", "e" : "Watching the River Flow" }, #351
+{ "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "4;3;2;1;"}, #352
+{ "r" : "1", "t" : "<MTArchives><MTArchiveLabel></MTArchives>", "e" : "IndividualMonthlyWeeklyDailyCategoryPage"}, #353
+{ "r" : "1", "t" : "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>", "e" : "1:0;0;0;8:0;7:6:2;1;0;5:0;4:"} #354
 ]

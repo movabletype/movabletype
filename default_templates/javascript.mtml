@@ -183,7 +183,7 @@ function writeCommenterGreeting(commenter_name, entry_id, blog_id, commenter_id,
 <MTIfRegistrationRequired>
         document.write('<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&entry_id=' + entry_id + '&blog_id=' + blog_id + '&static=1"><__trans phrase="Sign in</a> to comment on this post.">');
 <MTElse>
-        document.write('<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&entry_id=' + entry_id + '&blog_id=' + blog_id + '&static=1"><__trans phrase="Sign in</a> to comment on this post,"> <__trans phrase="or "><a href="javascript:void(0);" onclick="showAnonymousForm();"><__trans phrase="comment anonymously"></a>.');
+        document.write('<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&entry_id=' + entry_id + '&blog_id=' + blog_id + '&static=1"><__trans phrase="Sign in</a> to comment on this post,"> <__trans phrase="or "><a href="javascript:void(0);" onclick="showAnonymousForm();"><__trans phrase="comment anonymously."></a>');
 </MTIfRegistrationRequired>
     }
 </MTIfRegistrationAllowed>

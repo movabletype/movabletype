@@ -1,70 +1,37 @@
-<TMPL_LOOP NAME=AUTHOR_TABLE>
-
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return this.form['__mode'] ? false : true">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="author" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-<TMPL_IF NAME=BLOG_ID>
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-</TMPL_IF>
-
-<TMPL_IF NAME=POSITION_ACTIONS_TOP>
-<TMPL_INCLUDE NAME="include/author_actions.tmpl">
-</TMPL_IF>
-
-<div class="list" id="list-author">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th id="at-flag"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/flag.gif" alt="<MT_TRANS phrase="Status">" title="<MT_TRANS phrase="Status">" width="9" height="9" /></th>
-<th id="at-username"><MT_TRANS phrase="Username"></th>
-<th id="at-name"><MT_TRANS phrase="Name"></th>
-<th id="at-email"><MT_TRANS phrase="Email"></th>
-<th id="at-url"><MT_TRANS phrase="URL"></th>
-<th id="at-entries"><MT_TRANS phrase="Entries"></th>
-</tr>
-</thead>
-<tbody>
-
-<TMPL_LOOP NAME=OBJECT_LOOP>
-<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
-<td class="cb"><input type="checkbox" name="id" value="<TMPL_VAR NAME=ID>" class="select" /></td>
-
-<td class="<TMPL_IF NAME=STATUS_ENABLED>user-status-enabled<TMPL_ELSE><TMPL_IF NAME=STATUS_PENDING>user-status-pending<TMPL_ELSE>user-status-disabled</TMPL_ELSE></TMPL_IF></TMPL_ELSE></TMPL_IF>">
-<TMPL_IF NAME=STATUS_ENABLED>
-<!-- <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_authors<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=status&amp;filter_val=1" title="<MT_TRANS phrase="Only show enabled users">"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="_USER_ENABLED">" width="7" height="9" /><!-- </a> -->
-<TMPL_ELSE><TMPL_IF NAME=STATUS_PENDING>
-<!-- <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_authors<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=status&amp;filter_val=3" title="<MT_TRANS phrase="Only show pending users">"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="_USER_PENDING">" width="7" height="9" /><!-- </a> -->
-<TMPL_ELSE>
-<!-- <a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_author<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=status&amp;filter_val=2" title="<MT_TRANS phrase="Only show disabled users">"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="_USER_DISABLED">" width="13" height="9" /><!-- </a> -->
-</TMPL_ELSE></TMPL_IF></TMPL_ELSE></TMPL_IF>
-</td>
-
-<td><TMPL_IF NAME=HAS_EDIT_ACCESS><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=author&amp;id=<TMPL_VAR NAME=ID>"></TMPL_IF><TMPL_VAR NAME=AUTHOR_NAME ESCAPE=HTML><TMPL_IF NAME=HAS_EDIT_ACCESS></a></TMPL_IF></td>
-<td><TMPL_IF NAME=AUTHOR_NICKNAME><TMPL_VAR NAME=AUTHOR_NICKNAME ESCAPE=HTML><TMPL_ELSE>&nbsp;</TMPL_IF></td>
-<td class="status-email"><TMPL_IF NAME=AUTHOR_EMAIL><a href="mailto:<TMPL_VAR NAME=AUTHOR_EMAIL ESCAPE=HTML>" title="<TMPL_VAR NAME=AUTHOR_EMAIL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Email">" width="16" height="9" /></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
-<td class="status-link"><TMPL_IF NAME=AUTHOR_URL><a href="<TMPL_VAR NAME=AUTHOR_URL ESCAPE=HTML>" title="<TMPL_VAR NAME=AUTHOR_URL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Link">" width="16" height="9" /></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
-<td><TMPL_IF NAME=ENTRY_COUNT><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_entries<TMPL_IF NAME=BLOG_ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID></TMPL_IF>&amp;filter=author_id&amp;filter_val=<TMPL_VAR NAME=ID>"><TMPL_VAR NAME=ENTRY_COUNT></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
-</tr>
-</TMPL_LOOP>
-
-</tbody>
-</table>
-</div>
-
-<!--
-<TMPL_IF NAME=POSITION_ACTIONS_BOTTOM>
-<div class="list-actions-footer">
-<TMPL_INCLUDE NAME="include/author_actions.tmpl">
-</div>
-</TMPL_IF>
- -->
-</form>
-
-</TMPL_LOOP>
+<mtapp:listing>
+    <mt:if name="__first__">
+        <thead>
+            <tr>
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                <th id="at-flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+                <th id="at-username"><__trans phrase="Username"></th>
+                <th id="at-name"><__trans phrase="Name"></th>
+                <th id="at-email"><__trans phrase="Email"></th>
+                <th id="at-url"><__trans phrase="URL"></th>
+                <th id="at-created"><__trans phrase="Created By"></th>
+                <th id="at-entries"><__trans phrase="Entries"></th>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb"><input<mt:if name="is_administrator"><mt:if name="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+            <td class="<mt:if name="status_enabled">user-status-enabled<mt:else>user-status-disabled</mt:if> si">
+    <mt:if name="status_enabled">
+            <a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=status&amp;filter_val=1" title="<__trans phrase="Only show enabled users">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="_USER_ENABLED">" width="7" height="9" /></a>
+    <mt:else>
+            <a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=status&amp;filter_val=2" title="<__trans phrase="Only show disabled users">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="_USER_DISABLED">" width="13" height="9" /></a>
+    </mt:if>
+            </td>
+            <td><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+            <td><mt:if name="nickname"><mt:var name="nickname" escape="html"><mt:else>&nbsp;</mt:if></td>
+            <td class="status-email"><mt:if name="email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+            <td class="status-link"><mt:if name="url"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+            <td><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
+            <td align="right"><mt:if name="entry_count"><a href="<mt:var name="script_url">?__mode=list_entries<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a><mt:else>&nbsp;</mt:if></td>
+            </tr>
+    <mt:if name="__last__">
+        </tbody>
+    </mt:if>
+</mtapp:listing>
 

@@ -205,14 +205,14 @@ function toggleDisplay(id, info) {
     <mt:unless name="blog_id">
     <p>
     <mt:if name="plugin_error">
-        <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span> (<a href="#" onclick="togglePlugin(0, '<mt:var name="plugin_sig">')"><__trans phrase="Disable"></a>)
+        <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span> (<a href="javascript:void(0)" onclick="togglePlugin(0, '<mt:var name="plugin_sig">')"><__trans phrase="Disable"></a>)
     <mt:else>
         <mt:unless name="plugin_disabled">
-        <span class="icon-left icon-success"><__trans phrase="Enabled"></span> (<a href="#" onclick="return togglePlugin(0, '<mt:var name="plugin_sig">')"><__trans phrase="Disable"></a>)
+        <span class="icon-left icon-success"><__trans phrase="Enabled"></span> (<a href="javascript:void(0)" onclick="return togglePlugin(0, '<mt:var name="plugin_sig">')"><__trans phrase="Disable"></a>)
         <mt:else>
             <span class="icon-left icon-neutral"><__trans phrase="Disabled"></span>
             <mt:if name="use_plugins">
-            <a href="#" onclick="return togglePlugin(1, '<mt:var name="plugin_sig">')">(<__trans phrase="Enable">)</a>
+            <a href="javascript:void(0)" onclick="return togglePlugin(1, '<mt:var name="plugin_sig">')">(<__trans phrase="Enable">)</a>
             </mt:if>
         </mt:unless>
     </mt:if>
@@ -246,7 +246,7 @@ function toggleDisplay(id, info) {
 </mt:if>
 
 <mt:if name="plugin_resources">
-<li><a href="#" onclick="return toggleDisplay('resources-<mt:var name="plugin_id">', 'plugin-info-<mt:var name="plugin_id">')" class="icon-mini-left icon-mini-templates"><__trans phrase="Show Resources"></a></li>
+<li><a href="javascript:void(0)" onclick="return toggleDisplay('resources-<mt:var name="plugin_id">', 'plugin-info-<mt:var name="plugin_id">')" class="icon-mini-left icon-mini-templates"><__trans phrase="Show Resources"></a></li>
 </mt:if>
 
 <mt:if name="can_config">
@@ -260,7 +260,7 @@ function toggleDisplay(id, info) {
 </mt:if>
 
 <mt:if name="plugin_config_html">
-<li><a href="#" onclick="return toggleDisplay('config-<mt:var name="plugin_id">', 'plugin-info-<mt:var name="plugin_id">')" class="icon-mini-left icon-mini-settings"><__trans phrase="Show Settings"></a></li>
+<li><a href="javascript:void(0)" onclick="return toggleDisplay('config-<mt:var name="plugin_id">', 'plugin-info-<mt:var name="plugin_id">')" class="icon-mini-left icon-mini-settings"><__trans phrase="Show Settings"></a></li>
 </mt:if>
 
 </mt:if>

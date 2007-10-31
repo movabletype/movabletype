@@ -58,7 +58,7 @@ function setFilterCol(choice) {
 var tableSelect;
 function init() {
     // setup
-    tableSelect = new TC.TableSelect( "selector" );
+    tableSelect = new TC.TableSelect( "asset-listing-table" );
     tableSelect.rowSelect = true;
 
     setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
@@ -83,9 +83,9 @@ TC.attachLoadEvent( init );
                 <div id="filter-title">
             <mt:unless name="filter">
                     <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
-                    <a href="#" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
+                    <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
             <mt:else>
-                    <strong><a href="#" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
+                    <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
                     <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
             </mt:unless>
                 </div>

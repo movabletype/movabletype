@@ -18,9 +18,14 @@ use constant JUNK    => 'JUNK';
 
 use Exporter;
 *import = \&Exporter::import;
-use vars qw(@EXPORT_OK %EXPORT_TAGS);
+our (@EXPORT_OK, %EXPORT_TAGS);
 @EXPORT_OK = qw(ABSTAIN HAM SPAM APPROVE JUNK);
 %EXPORT_TAGS = ( constants => [qw(ABSTAIN HAM SPAM APPROVE JUNK)] );
+
+sub core_filters {
+    # MT Registry style list of core filters
+    return {};
+}
 
 sub filter {
     my $pkg       = shift;

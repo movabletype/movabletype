@@ -569,15 +569,18 @@ sub _straight_search {
         $blog_id = $terms{blog_id}[0];
     }
 
-    require MT::Log;
-    $app->log({
-        message => $app->translate("Search: query for '[_1]'",
-              $app->{search_string}),
-        level => MT::Log::INFO(),
-        class => 'search',
-        category => 'straight_search',
-        $blog_id ? (blog_id => $blog_id) : ()
-    });
+    #FIXME: template name may not be 'feed' for search feed
+    unless ($app->{searchparam}{Template} eq 'feed') {
+        require MT::Log;
+        $app->log({
+            message => $app->translate("Search: query for '[_1]'",
+                  $app->{search_string}),
+            level => MT::Log::INFO(),
+            class => 'search',
+            category => 'straight_search',
+            $blog_id ? (blog_id => $blog_id) : ()
+        });
+    }
 
     $terms{class} = $app->{searchparam}{entry_type} || '*';
     my $iter = MT::Entry->load_iter(\%terms, \%args);

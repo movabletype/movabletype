@@ -74,7 +74,7 @@ foreach my $test_item (@$test_suite) {
     }
     local $ctx->{__stash}{entry} = $entry if $test_item->{t} =~ m/<MTEntry/;
     $ctx->{__stash}{entry} = undef if $test_item->{t} =~ m/MTComments|MTPings/;
-    $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries/;
+    $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries|MTPages/;
     my $result = build($ctx, $test_item->{t});
     is($result, $test_item->{e}, "perl test " . $num++);
 }
@@ -153,7 +153,7 @@ function run(&$ctx, $suite) {
         else {
             $ctx->__stash['entry'] = null;
         }
-        if ( preg_match('/MTEntries/', $test_item->t) ) {
+        if ( preg_match('/MTEntries|MTPages/', $test_item->t) ) {
             $ctx->__stash['entries'] = null;
         }
         if ( preg_match('/MTCategoryArchiveLink/', $test_item->t) ) {

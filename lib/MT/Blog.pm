@@ -107,6 +107,7 @@ __PACKAGE__->install_meta({
         'nofollow_urls',
         'follow_auth_links',
         'update_pings',
+        'captcha_provider',
     ],
 });
 

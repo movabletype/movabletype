@@ -60,24 +60,55 @@
         var box_color = '006699';
         var bar_color = '0066CC';
         var slider_variable = '<__trans phrase="Entries" escape="js">';
+        var slider_variable_singular = '<__trans phrase="Entry" escape="js">';
         var file_name = '<mt:var name="entry_stat_url">';
 
-        var entriesSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable, 540, 122);
+        var entriesSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable+"&slider_variable_singular="+slider_variable_singular+"&lang=<mt:var name="language_tag">&static_path="+escape(StaticURI+"flash"), 540, 122);
         entriesSlider.setFlashvars("lcId=" + lcId);
         entriesSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
         var activeStatsPanel = '<mt:var name="tab" escape="js" default="comment">';
 
         slider_variable = '<__trans phrase="Comments" escape="js">';
+        slider_variable_singular = '<__trans phrase="Comment" escape="js">';
         file_name = '<mt:var name="comment_stat_url">';
 
-        var commentsSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable, 540, 122);
+        var commentsSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable+"&slider_variable_singular="+slider_variable_singular+"&lang=<mt:var name="language_tag">&static_path="+escape(StaticURI+"flash"), 540, 122);
         commentsSlider.setFlashvars("lcId=" + lcId);
         commentsSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+
+        var months = {
+            '01': '<__trans phrase="Jan." escape="js">',
+            '02': '<__trans phrase="Feb." escape="js">',
+            '03': '<__trans phrase="March" escape="js">',
+            '04': '<__trans phrase="April" escape="js">',
+            '05': '<__trans phrase="May" escape="js">',
+            '06': '<__trans phrase="June" escape="js">',
+            '07': '<__trans phrase="July." escape="js">',
+            '08': '<__trans phrase="Aug." escape="js">',
+            '09': '<__trans phrase="Sept." escape="js">',
+            '10': '<__trans phrase="Oct." escape="js">',
+            '11': '<__trans phrase="Nov." escape="js">',
+            '12': '<__trans phrase="Dec." escape="js">'
+        };
 
         function updatePage(raw_range, clean_range, total_count) {
             var str;
             var from = raw_range.match(/^(\d\d\d\d\d\d\d\d)/)[1];
-            var to = raw_range.match(/-(\d\d\d\d\d\d\d\d)/)[1];
+            var to;
+            if (raw_range.match(/-(\d\d\d\d\d\d\d\d)/)) {
+                to = raw_range.match(/-(\d\d\d\d\d\d\d\d)/)[1];
+            } else {
+                to = from;
+            }
+            if ('<mt:var name="language_tag">' != 'en') {
+                var from_month = months[from.substr(4,2)];
+                var to_month = months[to.substr(4,2)];
+                if (from != to) {
+                    clean_range = trans("[_1] [_2] - [_3] [_4]", from_month, from.substr(6, 2), to_month, to.substr(6,2));
+                } else {
+                    clean_range = trans("[_1] [_2]", from_month, from.substr(6, 2));
+                }
+            }
             var search_url = '<mt:var name="script_url">?__mode=list_' + activeStatsPanel + '&filter_key=_by_date<mt:if name="blog_id">&blog_id=<mt:var name="blog_id"></mt:if>&filter_val=' + from + '-' + to;
             if (activeStatsPanel == 'comment') {
                 str = trans("You have <a href='[_3]'>[quant,_1,comment,comments] from [_2]</a>", total_count, clean_range, search_url);
@@ -182,7 +213,7 @@
                     <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
                 </MTIfNonEmpty>
                 <MTEntryIfTagged>
-                    <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a></li></MTEntryTags>">
+                    <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a></MTEntryTags>">
                 </MTEntryIfTagged>
                 </div>
             </div>
@@ -198,7 +229,7 @@
         <div id="tag-cloud">
             <ul id="tag-cloud-list">
             <MTTags blog_ids="$blog_scope" limit="100" sort_by="rank">
-                <li class="tag-<$MTTagRank$>"><a href="#" onclick="recentEntriesForTag('<MTTagName escape="js">', 'tag-cloud-recent-entries'); return false"><$MTTagName$></a></li>
+                <li class="tag-<$MTTagRank$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<MTTagName escape="js">', 'tag-cloud-recent-entries'); return false"><$MTTagName$></a></li>
             </MTTags>
             </ul>
         </div>

@@ -90,7 +90,8 @@ function countMarked (f, nameRestrict) {
 //trans('to remove');
 //trans('to enable');
 //trans('to disable');
-function doRemoveItems (f, singular, plural, nameRestrict, args) {
+function doRemoveItems (f, singular, plural, nameRestrict, args, actionMode) {
+    actionMode = actionMode || 'delete';
     var toRemove = "";
     for (var i = 0; i < f.childNodes.length; i++) {
         if (f.childNodes[i].name == '_type') {
@@ -115,9 +116,9 @@ function doRemoveItems (f, singular, plural, nameRestrict, args) {
     } else {
         singularMessage = trans('Are you sure you want to [_2] this [_1]?');
         pluralMessage = trans('Are you sure you want to [_3] the [_1] selected [_2]?');
-    } 
+    }
     if (confirm(count == 1 ? trans(singularMessage, singular, trans_mode) : trans(pluralMessage, count, plural, trans_mode))) {
-        return doForMarkedInThisWindow(f, singular, plural, nameRestrict, 'delete', args, trans('to ' + mode));
+        return doForMarkedInThisWindow(f, singular, plural, nameRestrict, actionMode, args, trans('to ' + mode));
     }
 }
 
@@ -454,9 +455,10 @@ function closeDialog(url) {
     var w = window;
     while (w.parent && (w.parent != w))
         w = w.parent;
-    hide("dialog-container", w.document);
     if (url)
         w.location = url;
+    else
+        hide("dialog-container", w.document);
     return false;
 }
 
@@ -675,6 +677,9 @@ function show(id, d) {
     var el = getByID(id, d);
     if (!el) return;
     el.style.display = 'block';
+    /* hack */
+    if ( DOM.hasClassName( el, "autolayout-height-parent" ) )
+        DOM.setHeight( el, finiteInt( el.parentNode.clientHeight ) );
 }
 
 function hide(id, d) {
@@ -688,10 +693,20 @@ function toggleSubPrefs(c) {
     if (div) {
         if (c.type) {
             var on = c.type == 'checkbox' ? c.checked : c.value != 0;
-            div.style.display = on ? "block" : "none";
+            if (on) {
+                TC.removeClassName(div, "hidden");
+            } else {
+                TC.addClassName(div, "hidden");
+            }
+            // div.style.display = on ? "block" : "none";
         } else {
             var on = div.style.display && div.style.display != "none";
-            div.style.display = on ? "none" : "block";
+            if (on) {
+                TC.addClassName(div, "hidden");
+            } else {
+                TC.removeClassName(div, "hidden");
+            }
+            // div.style.display = on ? "none" : "block";
         }
     }
     return false;
@@ -1348,7 +1363,9 @@ MT.App = new Class( App, {
 
     initComponents: function() {
         arguments.callee.applySuper( this, arguments );
-        
+                    
+        this.setDelegate( "navMenu", new this.constructor.NavMenu() );
+
         this.initFormElements();
         
         if ( this.constructor.Resizer ) {
@@ -1393,7 +1410,7 @@ MT.App = new Class( App, {
         }
 
         if ( MT.App.dirty )
-            this.changed = true;
+            this.changed = true;    
     },
 
 
@@ -1401,6 +1418,7 @@ MT.App = new Class( App, {
         this.autoSaveReq = null;
         this.autoSaveTimer = null;
         this.form = null;
+        this.cpeList = null;
         arguments.callee.applySuper( this, arguments );
     },
 
@@ -1412,10 +1430,22 @@ MT.App = new Class( App, {
             DOM.addEventListener( forms[ i ], "submit", this.getIndirectEventListener( "eventSubmit" ) );
             var tareas = forms[ i ].getElementsByTagName( "textarea" );
             var tabs = 0;
-            for ( var j = 0; j < tareas.length; j++ )
+            for ( var j = 0; j < tareas.length; j++ ) {
                 if ( ( tabs = tareas[ j ].getAttribute( "mt:allow-tabs" ) ) )
                     if ( truth ( tabs ) )
                         this.attachTabsToTextarea( tareas[ j ] );
+
+                if ( tareas[ j ].getAttribute( "mt:editor" ) == "codepress" ) {
+                    if ( this.constructor.CodePress.isSupported() ) {
+                        var ed = new this.constructor.CodePress( tareas[ j ] );
+                        if ( ed ) {
+                            if ( !this.cpeList )
+                                this.cpeList = [];
+                            this.cpeList.push( ed );
+                        }
+                    }
+                }
+            }
         }
     },
 
@@ -1432,6 +1462,9 @@ MT.App = new Class( App, {
         
             this.toggleSubmit( form, true );
         }
+
+        if ( this.cpeList )
+            this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
         form.submitted = true;
     },
@@ -1477,6 +1510,14 @@ MT.App = new Class( App, {
             
             case "autoSave":
                 this.autoSave();
+                break;
+
+            case "setModeCodepressOn":
+                this.cpeList.forEach( function( cpe ) { cpe.toggleOn(); } );
+                break;
+
+            case "setModeCodepressOff":
+                this.cpeList.forEach( function( cpe ) { cpe.toggleOff(); } );
                 break;
 
             default:
@@ -1554,9 +1595,12 @@ MT.App = new Class( App, {
         
         switch ( target.id ) {
             case "textarea-enclosure":
-                var element = DOM.getElement( "text" );
-                if ( element )
-                    DOM.setHeight( element, height );
+                var es = [ "text", "text_cpe" ];
+                for ( var i = 0; i < es.length; i++ ) {
+                    es[ i ] = DOM.getElement( es[ i ] );
+                    if ( es[ i ] )
+                        DOM.setHeight( es[ i ], height );
+                }
                 break;
 
             /* expand here */
@@ -1568,6 +1612,9 @@ MT.App = new Class( App, {
     autoSave: function() {
         var data = DOM.getFormData( this.form );
         data["_autosave"] = 1;
+
+        if ( this.cpeList )
+            this.cpeList.forEach( function( cpe ) { cpe.autoSave( data ) } );
 
         /* don't cancel a pending save */
         if ( defined( this.autoSaveReq ) )
@@ -1647,6 +1694,19 @@ MT.App = new Class( App, {
 
     clearDirty: function( event ) {
         this.changed = false;
+    },
+
+    
+    insertCode: function( code ) {
+        if ( this.cpeList )
+            this.cpeList[ 0 ].insertCode( code );
+        else if ( this.editor )
+            this.editor.insertHTML( code );
+        else {
+            var txt = DOM.getElement( "text" );
+            setSelection( txt, code );
+            DOM.focus( txt );
+        }
     }
     
 
@@ -1749,6 +1809,8 @@ MT.App.Resizer = new Class( Object, {
         mask.insertBefore( this.element, mask.firstChild );
         DOM.addClassName( this.element, "moving" );
         DOM.removeClassName( mask, "hidden" );
+        /* TODO autolayout this */
+        DOM.setHeight( mask, finiteInt( mask.parentNode.clientHeight ) );
 
         return event.stop();
     },
@@ -1929,7 +1991,7 @@ MT.App.DefaultValue = new Class( Object, {
 MT.App.TabContainer = new Class( Object, {
 
     init: function() {
-        var es = DOM.getElementsByAttributeAndValue( document.body, "mt:delegate", "tab-container" );
+        var es = DOM.getElementsByAttributeAndValue( document, "mt:delegate", "tab-container" );
         var t;
         for ( var i = 0; i < es.length; i++ ) {
             if ( t = es[ i ].getAttribute( "mt:selected-tab" ) ) {
@@ -2011,6 +2073,337 @@ MT.App.TabContainer = new Class( Object, {
 } );
 
 
+MT.App.NavMenu = new Class( Object, {
+
+    opened: false,
+    outTimer: null,
+    inTimer: null,
+    el: null,
+    al: null,
+
+
+    eventMouseOver: function( event ) {
+        var el = DOM.getFirstAncestorByClassName( event.target, "nav-menu", true );
+        if ( !el )
+            return;
+        
+        /* if they moused in, but moved to a new menu, reset the in timer */
+        if ( this.inTimer && this.el && this.el !== el )
+            this.inTimer.stop();
+        
+        this.al = event.attributeElement;
+        this.el = el;
+
+        if ( this.outTimer )
+            this.outTimer.stop();
+
+        if ( this.opened )
+            return this.openMenu();
+       
+        var delay = event.attributeElement.getAttribute( "mt:nav-delayed-open" ); // ms
+
+        if ( delay ) {
+            delay = parseInt( delay );
+            if ( this.inTimer )
+                this.inTimer.stop();
+            this.inTimer = new Timer( this.getIndirectMethod( "openMenu" ), delay, 1 );
+            return;
+        } else
+            this.openMenu();
+    },
+
+
+    eventMouseOut: function( event ) {
+        var el = DOM.getFirstAncestorByClassName( event.target, "nav-menu", true );
+        if ( !el )
+            return;
+
+        this.al = event.attributeElement;
+        this.el = el;
+
+        var delay = event.attributeElement.getAttribute( "mt:nav-delayed-close" ); // ms
+        if ( delay ) {
+            delay = parseInt( delay );
+            if ( this.outTimer )
+                this.outTimer.stop();
+            this.outTimer = new Timer( this.getIndirectMethod( "closeMenu" ), delay, 1 );
+        } else
+            this.closeMenu();
+    },
+
+
+    eventClick: function( event ) {
+        var command = app.getMouseEventCommand( event );
+        if ( !command ) {
+            if ( this.inTimer )
+                this.inTimer.stop();
+            return;
+        }
+
+        var el = DOM.getFirstAncestorByClassName( event.target, "nav-menu", true );
+        if ( !el )
+            return;
+        this.al = event.attributeElement;
+
+        if ( command == "openMenu" ) {
+            event.stop();
+            this.openMenu( el );
+        }
+    },
+
+
+    openMenu: function() {
+        if ( !this.el )
+            return;
+
+        if ( this.outTimer )
+            this.outTimer.stop();
+        if ( this.inTimer )
+            this.inTimer.stop();
+        
+        var es = DOM.getElementsByClassName( window.document, "show-nav" );
+        for ( var i = 0; i < es.length; i++ )
+            if ( es[ i ] !== this.el )
+                DOM.removeClassName( es[ i ], "show-nav" );
+
+        DOM.addClassName( this.el, "show-nav" );
+
+        this.opened = true;
+
+        /* actually hides select boxes, not the dropdown */
+        hideDropDown();
+        this.inTimer = null;
+        this.outTimer = null;
+    },
+
+
+    closeMenu: function() {
+        if ( this.al ) {
+            var es = DOM.getElementsByClassName( window.document, "show-nav" );
+            for ( var i = 0; i < es.length; i++ )
+                DOM.removeClassName( es[ i ], "show-nav" );
+        }
+        
+        if ( this.inTimer )
+            this.inTimer.stop();
+
+        this.opened = false;
+
+        /* actually shows select boxes, not the dropdown */
+        showDropDown();
+        this.outTimer = null;
+        this.inTimer = null;
+    }
+
+
+} );
+
+
+MT.App.CodePress = new Class( Object, {
+
+    init: function( textarea ) {
+        var iframe = this.iframe = document.createElement('iframe');
+        this.textarea = textarea;
+
+        /* XXX do we need this id swapping */
+        var id = this.textarea.id;
+        this.textarea.id = id + '_cpe';
+        this.iframe.id = id;
+
+        this.textarea.disabled = true;
+        this.textarea.style.overflow = 'hidden';
+        iframe.style.height = this.textarea.clientHeight +'px';
+        iframe.style.width = this.textarea.clientWidth +'px';
+        this.textarea.style.overflow = 'auto';
+        iframe.style.border = 'none';
+        iframe.frameBorder = 0;
+        iframe.style.visibility = 'hidden';
+        iframe.style.position = 'absolute';
+
+        this.options = this.textarea.getAttribute( "mt:editor-options" );
+        
+        this.textarea.parentNode.insertBefore( this.iframe, this.textarea );
+        
+        log('textarea attached to editor: codepress');
+        this.edit();
+    },
+
+
+    eventIframeLoaded: function( event ) {
+        this.editor = this.iframe.contentWindow.CodePress;
+        this.editor.body = this.iframe.contentWindow.document.getElementsByTagName( 'body' )[0];
+        if ( this.editor.body.spellcheck )
+            this.editor.body.spellcheck = false;
+        this.editor.setCode( this.textarea.value );
+        this.setOptions();
+        this.editor.syntaxHighlight( 'init' );
+        this.textarea.style.display = 'none';
+        this.iframe.style.position = 'static';
+        this.iframe.style.visibility = 'visible';
+        this.iframe.style.display = 'inline';
+        this.editor.onModified = app.getIndirectMethod( "setDirty" );
+        DOM.addClassName( document.body, "codepress-editor-enabled" );
+    },
+
+
+    // obj can by a textarea id or a string (code)
+    edit: function( obj, language ) {
+        if ( obj ) {
+            var el = DOM.getElement( obj );
+            this.textarea.value = ( el ) ? el.value : obj;
+        }
+        if ( !this.textarea.disabled )
+            return;
+        this.language = language ? language : this.getLanguage();
+        this.iframe.src = window.StaticURI + 'codepress/index.html?language=' + this.language + '&r=' + (new Date).getTime();
+        DOM.addEventListener( this.iframe, "load", this.eventIframeLoaded.bind( this ) );
+    },
+
+
+    getLanguage: function() {
+        var languages = MT.App.CodePress.languages;
+        for ( lang in languages ) {
+            if ( !languages.hasOwnProperty( lang ) )
+                continue;
+            if ( this.options.match( 'lang:' + lang ) ) {
+                log('matched code language: '+languages[ lang ] );
+                return lang;
+            }
+        }
+        log('defaulting to code language: generic');
+        return 'generic';
+    },
+
+    
+    setOptions: function() {
+        if ( this.options.match( 'readonly:on' ) )
+            this.toggleReadOnly();
+        
+        if ( this.options.match( 'autocomplete:off' ) )
+            this.toggleAutoComplete();
+        
+        if ( this.options.match( 'linenumbers:off' ) )
+            this.toggleLineNumbers();
+    },
+
+
+    toString: function() {
+        return this.getCode();
+    },
+
+
+    onSubmit: function() {
+        if ( this.textarea.disabled )
+            this.toggleOff();
+    },
+
+
+    autoSave: function( data ) {
+        if ( !this.textarea.disabled )
+            return;
+        log('setting autosave data on: '+this.textarea.name);
+        data[ this.textarea.name ] = this.editor.getCode();
+    },
+
+    
+    getCode: function() {
+        return this.textarea.disabled ? this.editor.getCode() : this.textarea.value;
+    },
+
+
+    setCode: function(code) {
+        this.textarea.disabled ? this.editor.setCode( code ) : this.textarea.value = code;
+    },
+
+
+    toggleAutoComplete: function() {
+        this.editor.autocomplete = this.editor.autocomplete ? false : true;
+    },
+
+    
+    toggleReadOnly: function() {
+        this.textarea.readOnly = ( this.textarea.readOnly ) ? false : true;
+        // prevent exception on FF + iframe with display:none
+        if ( this.iframe.style.display != 'none' )
+            this.editor.readOnly( this.textarea.readOnly ? true : false );
+    },
+
+    
+    toggleLineNumbers: function() {
+        var cn = this.editor.body.className;
+        this.editor.body.className = ( cn == '' || cn == 'show-line-numbers' )
+            ? 'hide-line-numbers' : 'show-line-numbers';
+    },
+ 
+   
+    toggleEditor: function() {
+        if ( this.textarea.disabled )
+            this.toggleOff();
+        else
+            this.toggleOn();
+    },
+
+
+    toggleOff: function() {
+        if ( !this.textarea.disabled )
+            return;
+        this.textarea.value = this.getCode();
+        this.textarea.disabled = false;
+        this.iframe.style.display = 'none';
+        this.textarea.style.display = 'inline';
+    },
+    
+    
+    toggleOn: function() {
+        if ( this.textarea.disabled )
+            return;
+        this.textarea.disabled = true;
+        this.setCode( this.textarea.value );
+        this.editor.syntaxHighlight('init');
+        this.iframe.style.display = 'inline';
+        this.textarea.style.display = 'none';
+    },
+
+
+    insertCode: function( code, putCursorBefore ) {
+        if ( this.textarea.disabled ) {
+            this.editor.insertCode( code, putCursorBefore );
+		 	this.editor.syntaxHighlight('generic');
+        } else {
+		    TC.setSelectionValue( this.textarea, code );
+            DOM.focus( this.textarea );
+        }
+    }
+
+
+} );
+
+extend( MT.App.CodePress, {
+   
+
+    isSupported: function() {
+        return ( navigator.userAgent.toLowerCase().match(/webkit/) ) ? false : true;
+    },
+
+
+    languages: {
+        csharp : 'C#', 
+        css : 'CSS', 
+        generic : 'Generic',
+        html : 'HTML',
+        java : 'Java', 
+        javascript : 'JavaScript', 
+        perl : 'Perl', 
+        ruby : 'Ruby',  
+        php : 'PHP', 
+        text : 'Text', 
+        sql : 'SQL',
+        vbscript : 'VBScript',
+        mt: 'Movable Type'
+    }
+
+} );
+
 } /* if window.App */
 
 
@@ -2051,4 +2444,20 @@ function showDropDown() {
     	}
     }
 	return;
+}
+
+function setBarPosition(radio) {
+    var mode = radio.value ? radio.value.toLowerCase() : radio;
+    var c = TC.elementOrId('container');
+    var s = "show-actions-bar-";
+    if (mode == 'bottom') {
+        TC.removeClassName(c, s + "top");
+        TC.addClassName(c, s + "bottom");
+    } else if (mode == 'both') {
+        TC.addClassName(c, s + "top");
+        TC.addClassName(c, s + "bottom");
+    } else if (mode == 'top') {
+        TC.addClassName(c, s + "top");
+        TC.removeClassName(c, s + "bottom");
+    }
 }

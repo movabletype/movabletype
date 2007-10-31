@@ -1,6 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Database Configuration"></mt:setvarblock>
 
-<mt:include name="include/header.tmpl">
+<mt:include name="../cms/include/chromeless_header.tmpl">
 
 <script type="text/javascript">
 <!--
@@ -98,11 +98,20 @@ window.onload = function() {
 <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 
 <mt:if name="connect_error">
-<h4 class="error-message"><mt:var name="error"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()">More</a>. <div id="error_more" style="display:none"><mt:var name="error_more"></div></mt:if></h4>
+    <mtapp:statusmsg
+        id="connect_error"
+        class="error">
+        <mt:var name="error"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()">More</a>.</mt:if>
+    </mtapp:statusmsg>
+    <div id="error_more" style="display:none"><mt:var name="error_more"></div>
 <mt:else>
-<mt:if name="error">
-<h4 class="error-message"><mt:var name="error"></h4>
-</mt:if>
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
 </mt:if>
 
 <mt:if name="success">
@@ -123,7 +132,7 @@ window.onload = function() {
 </mt:if>
 
 <mt:if name="success">
-    <p id="show_settings"><a href="#" onclick="show('db_settings'); hide('show_settings'); return false;"><__trans phrase="Show Current Settings"></a></p>
+    <p id="show_settings"><a href="javascript:void(0)" onclick="show('db_settings'); hide('show_settings'); return false;"><__trans phrase="Show Current Settings"></a></p>
 </mt:if>
 
 <fieldset id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
@@ -142,7 +151,7 @@ window.onload = function() {
     </mtapp:setting>
 
 <mt:unless name="success">
-<p id="db_hint" class="hint"><__trans phrase="If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="#" onclick="[_2]">re-test your installation</a>." params="http://www.sixapart.com/movabletype/kb/installation/database_option.html%%reTest();"></p>
+<p id="db_hint" class="hint"><__trans phrase="If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>." params="http://www.sixapart.com/movabletype/kb/installation/database_option.html%%reTest();"></p>
 </mt:unless>
 
 <div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>
@@ -167,8 +176,8 @@ window.onload = function() {
     <mtapp:setting
         id="dbserver"
         label="<__trans phrase="Database Server">">
-<p><input type="text" name="dbserver" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" /><mt:unless name="dbserver"><br />
-<span class="hint"><__trans phrase="This is usually 'localhost'."></span></p></mt:unless>
+<p><input type="text" name="dbserver" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" /><mt:unless name="dbserver"></p>
+<p class="hint"><__trans phrase="This is usually 'localhost'."></p></p></mt:unless>
     </mtapp:setting>
 
     <mtapp:setting
@@ -199,7 +208,7 @@ window.onload = function() {
 
 </div>
 
-    <p id="more"><a href="#" onclick="show('db_port_socket'); hide('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
+    <p id="more"><a href="javascript:void(0)" onclick="show('db_port_socket'); hide('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
     <div id="db_port_socket" style="display: none;">
     <mtapp:setting
         id="dbport"
@@ -262,4 +271,4 @@ window.onload = function() {
 
 </fieldset>
 </form>
-<mt:include name="include/footer.tmpl">
+<mt:include name="../cms/include/chromeless_footer.tmpl">

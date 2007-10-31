@@ -1,6 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Temporary Directory Configuration"></mt:setvarblock>
 
-<mt:include name="include/header.tmpl">
+<mt:include name="../cms/include/chromeless_header.tmpl">
 
 <form method="post">
 <input type="hidden" name="__mode" value="" />
@@ -27,15 +27,27 @@ function go(mode) {
 
 
 <mt:if name="not_found_error">
-<div class="error-message"><__trans phrase="[_1] could not be found." params="<mt:var name="temp_dir" escape="html">"></div>
+    <mtapp:statusmsg
+        id="not_found_error"
+        class="error">
+        <__trans phrase="[_1] could not be found." params="<mt:var name="temp_dir" escape="html">">
+    </mtapp:statusmsg>
 </mt:if>
 
 <mt:if name="not_write_error">
-<div class="error-message"><__trans phrase="[_1] is not writable." params="<mt:var name="temp_dir" escape="html">"></div>
+    <mtapp:statusmsg
+        id="not_write_error"
+        class="error">
+        <__trans phrase="[_1] is not writable." params="<mt:var name="temp_dir" escape="html">">
+    </mtapp:statusmsg>
 </mt:if>
 
 <mt:if name="invalid_error">
-<div class="error-message"><__trans phrase="TempDir is required."></div>
+    <mtapp:statusmsg
+        id="invalid_error"
+        class="error">
+        <__trans phrase="TempDir is required.">
+    </mtapp:statusmsg>
 </mt:if>
 
 <fieldset>
@@ -77,4 +89,4 @@ function go(mode) {
 </fieldset>
 </form>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="../cms/include/chromeless_footer.tmpl">

@@ -101,7 +101,7 @@
     function init()
     {
     	// setup
-    	tableSelect = new TC.TableSelect( "selector" );
+    	tableSelect = new TC.TableSelect( "commenter-listing-table" );
     	tableSelect.rowSelect = true;
     	setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
     	setFilterVal('<mt:var name="filter_val">');
@@ -123,9 +123,9 @@
                     <div id="filter-active">
                     <strong><__trans phrase="Filter">:</strong>
                     <mt:unless name="filter">
-                    <a href="#" onclick="toggleFilter()"><__trans phrase="None."></a> <span class="hint"><__trans phrase="(Showing all commenters.)"></span>
+                    <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="None."></a> <span class="hint"><__trans phrase="(Showing all commenters.)"></span>
                     <mt:else>
-                    <a href="#" onclick="toggleFilter()"><__trans phrase="Showing only commenters whose [_1] is [_2]." params='<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a>
+                    <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="Showing only commenters whose [_1] is [_2]." params='<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a>
                     <mt:if name="feed_url">
                     <img src="<mt:var name="static_uri">images/status_icons/feed.gif" alt="<__trans phrase="Commenter Feed">" width="9" height="9" />
                     <a href="<mt:var name="feed_url" escape="html">" title="<mt:var name="feed_name" escape="html">"><__trans phrase="Commenter Feed"></a>

@@ -50,9 +50,8 @@ sub load_config {
     my $setting_obj = $plugin->get_config_obj($scope);
     my $settings = $setting_obj->data;
     %$param = %$settings;
-    foreach my $key (%$settings) {
+    foreach my $key (keys %$settings) {
         next unless defined $key;
-        next unless exists $settings->{$key};
         my $value = $settings->{$key};
         next if !defined $value or $value =~ m/\s/ or length($value) > 100;
         $param->{$key.'_'.$value} = 1;

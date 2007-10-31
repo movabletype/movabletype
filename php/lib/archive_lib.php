@@ -32,6 +32,7 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
 
 class BaseArchiver {
     // Abstract Method (needs override)
+    function get_label($args, $ctx) { }
     function get_title($args, $ctx) { }
     function get_range(&$ctx, &$row) { }
     function get_archive_name() { }
@@ -43,6 +44,10 @@ class BaseArchiver {
 
 class IndividualArchiver extends BaseArchiver {
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate("Individual");
+    }
+
     function get_title($args, $ctx) {
         return $ctx->tag('EntryTitle', $args);
     }
@@ -204,6 +209,9 @@ class YearlyArchiver extends DateBasedArchiver {
     function YearlyArchiver() { }
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Yearly');
+    }
     function get_archive_name() {
         return 'Yearly';
     }
@@ -248,6 +256,9 @@ class MonthlyArchiver extends DateBasedArchiver {
     function MonthlyArchiver() { }
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Monthly');
+    }
     function get_archive_name() {
         return 'Monthly';
     }
@@ -283,6 +294,9 @@ class DailyArchiver extends DateBasedArchiver {
     function DailyArchiver() { }
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Daily');
+    }
     function get_archive_name() {
         return 'Daily';
     }
@@ -318,6 +332,9 @@ class WeeklyArchiver extends DateBasedArchiver {
     function WeeklyArchiver() { }
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Weekly');
+    }
     function get_archive_name() {
         return 'Weekly';
     }

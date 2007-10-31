@@ -1,50 +1,46 @@
-<TMPL_INCLUDE NAME="include/header.tmpl">
+<$mt:var name="page_title" value="<__trans phrase="Feeds.App Lite Widget Creator">"$>
 
-<h2><MT_TRANS phrase="Feeds.App Lite Widget Creator"></h2>
+<mt:include name="include/header.tmpl">
 
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+<form method="post" action="<$mt:var name="script_url"$>">
 
     <fieldset>
-        <h3><MT_TRANS phrase="Feed Configuration">: <TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML></h3>
+        <h3><__trans phrase="Feed Configuration">: <$mt:var name="feed_title" escape="html"$></h3>
 
     <div class="inner">
 
-
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-<input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="uri" value="<TMPL_VAR NAME=FEED_URI ESCAPE=HTML>" />
+<input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+<input type="hidden" name="__mode" value="feedswidget_save" />
+<input type="hidden" name="uri" value="<$mt:var name="feed_uri" escape="html"$>" />
 
     <mtapp:setting
         id="feed_url"
         label="<__trans phrase="Feed URL">">
-        <p><TMPL_VAR NAME=FEED_URI ESCAPE=HTML></p>
+        <p><$mt:var name="feed_uri" escape="html"$></p>
     </mtapp:setting>
 
     <mtapp:setting
         id="feed_title"
         label="<__trans phrase="Title">"
         hint="<__trans phrase="Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.">">
-        <input name="feed_title" id="feed_title" value="<TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML>" maxlength="42" type="text" />
+        <input name="feed_title" id="feed_title" value="<$mt:var name="feed_title" escape="html"$>" maxlength="42" type="text" />
     </mtapp:setting>
 
-        
     <mtapp:setting
         id="lastn"
         label="<__trans phrase="Display">"
         hint="<__trans phrase="Select the maximum number of entries to display.">">
 <select name="lastn" id="lastn">
-<option value="3"><MT_TRANS phrase="3"></option>
-<option value="5" selected="selected"><MT_TRANS phrase="5"></option>
-<option value="10"><MT_TRANS phrase="10"></option>
-<option value=""><MT_TRANS phrase="All"></option>
+<option value="3"><__trans phrase="3"></option>
+<option value="5" selected="selected"><__trans phrase="5"></option>
+<option value="10"><__trans phrase="10"></option>
+<option value=""><__trans phrase="All"></option>
 </select>
     </mtapp:setting>
 
-
-<div style="margin-left:70px;">
-<input type="submit" value="<MT_TRANS phrase="Save">" />&nbsp;
-</div>
+<div style="margin-left:70px;"><input type="submit" value="<__trans phrase="Save">" /></div>
 </div>
 </fieldset>
 </form>
-<TMPL_INCLUDE NAME="include/footer.tmpl">
+
+<mt:include name="include/footer.tmpl">

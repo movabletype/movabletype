@@ -134,6 +134,9 @@ class DateBasedCategoryArchiver extends DateBasedArchiver {
 
 class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
     // Override method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Category Yearly');
+    }
     function get_title($args, $ctx) {
         $cat_name = '';
         $cat = $ctx->stash('archive_category');
@@ -222,6 +225,9 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
 
 class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
     // Override method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Category Monthly');
+    }
     function get_title($args, $ctx) {
         $cat_name = '';
         $cat = $ctx->stash('archive_category');
@@ -306,6 +312,9 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
 
 class DailyCategoryArchiver extends DateBasedCategoryArchiver {
     // Override method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Category Daily');
+    }
     function get_title($args, $ctx) {
         $cat_name = '';
         $cat = $ctx->stash('archive_category');
@@ -394,6 +403,9 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
 
 class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
     // Override method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Category Weekly');
+    }
     function get_title($args, $ctx) {
         $cat_name = '';
         $cat = $ctx->stash('archive_category');

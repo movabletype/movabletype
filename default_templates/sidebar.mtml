@@ -38,7 +38,7 @@
                     <input type="hidden" name="IncludeBlogs" value="<$MTBlogID$>" />
                     <label for="search" accesskey="4"><MT_TRANS phrase="Search this blog:"></label><br />
                     <input id="search" name="search" size="20" value="<$MTSearchString encode_html="1"$>" />
-                    <input type="submit" value="Search" />
+                    <input type="submit" value="<MT_TRANS phrase="Search">" />
                 </form>
             </div>
         </div>
@@ -175,7 +175,7 @@
 <MTIf name="module_category_archives">
     <MTIfArchiveTypeEnabled archive_type="Category">
         <div class="module-categories module">
-            <h2 class="module-header">Categories</h2>
+            <h2 class="module-header"><MT_TRANS phrase="Categories"></h2>
             <div class="module-content">
         <MTTopLevelCategories>
             <MTSubCatIsFirst>
@@ -221,7 +221,7 @@
         <MTArchiveList archive_type="Monthly">
             <MTArchiveListHeader>
         <div class="module-archives module">
-            <h2 class="module-header"><MT_TRANS phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveType$>%%<$MTBlogURL$>archives.html"></h2>
+            <h2 class="module-header"><MT_TRANS phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveLabel$>%%<$MTBlogURL$>archives.html"></h2>
             <div class="module-content">
                 <ul class="module-list">
             </MTArchiveListHeader>

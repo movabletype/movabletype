@@ -90,7 +90,7 @@ $static_field
 <input type="radio" id="remember" name="bakecookie" /><label for="bakecookie"><label for="remember"><MT_TRANS phrase="Yes"></label><input type="radio" id="forget" name="bakecookie" onclick="forgetMe(this.form)" value="Forget Info" style="margin-left: 15px;" /><label for="forget"><MT_TRANS phrase="No"></label><br style="clear: both;" /></p>
 
 <p><label for="text"><MT_TRANS phrase="Comments">:</label><br />
-<textarea tabindex="2" id="text" name="text" rows="10" cols="50" id="text">$comment_text</textarea></p>
+<textarea tabindex="2" id="text" name="text" rows="" cols="" class="full-width medium">$comment_text</textarea></p>
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
@@ -156,7 +156,7 @@ HTML;
 <input type="radio" id="remember" name="bakecookie" /><label for="remember"><MT_TRANS phrase="Yes"></label><input type="radio" id="forget" name="bakecookie" onclick="forgetMe(this.form)" value="Forget Info" style="margin-left: 15px;" /><label for="forget"><MT_TRANS phrase="No"></label><br style="clear: both;" /></p>
 
 <p><label for="text"><MT_TRANS phrase="Comments">:</label> $allow_comment_html_note<br />
-<textarea tabindex="4" name="text" rows="10" cols="50" id="text">$comment_text</textarea></p>
+<textarea tabindex="4" name="text" rows="" cols="" id="text" class="full-width medium">$comment_text</textarea></p>
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />

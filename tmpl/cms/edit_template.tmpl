@@ -1,4 +1,5 @@
 <mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
+<mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="content_header">
     <mt:unless name="recovered_object">
         <mt:if name="autosaved_object_exists">
@@ -71,8 +72,8 @@
         <mt:if name="published_url">
             <li><a href="<mt:var name="published_url">" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
         </mt:if>
-            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;tab=<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
-            <li><a href="#" onclick="return openManual('foo', 'bar')" class="icon-left icon-related help-link"><__trans phrase="Template tag reference"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=<$mt:var name="template_group"$>_templates" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
+            <li><a href="javascript:void(0)" onclick="return openManual('foo', 'bar')" class="icon-left icon-related help-link"><__trans phrase="Template tag reference"></a></li>
         </ul>
     </mtapp:widget>
 
@@ -82,7 +83,7 @@
             label="<__trans phrase="Includes and Widgets">">
         <ul>
         <mt:loop name="include_loop">
-            <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<__trans phrase="Unknown">)</mt:if></li>
+            <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
         </mt:loop>
         </ul>
         </mtapp:widget>
@@ -145,18 +146,13 @@ function archiveFileSelect(sel) {
 }
 
 function insertSnippet(el) {
-    var o = getByID('text');
-    if (o) {
-        if (el.selectedIndex == -1) return false;
-        var opt = el.options[el.selectedIndex].value;
-        if (!opt) return false;
-        if (tag_inserts[opt]) {
-            setSelection(o, tag_inserts[opt]);
-        }
-        el.selectedIndex = 0;
-        o.focus();
+    if (el.selectedIndex == -1) return false;
+    var opt = el.options[el.selectedIndex].value;
+    if (!opt) return false;
+    el.selectedIndex = 0;
+    if (tag_inserts[opt]) {
+        app.insertCode( tag_inserts[opt] );
     }
-    return false;
 }
 function setRebuild(f) {
     f['rebuild'].value = 'Y';
@@ -225,6 +221,8 @@ function deleteMap(mapid) {
     saveArchiveMapChange(param);
 }
 function setCreateMode () {
+    var el = getByID('map-message');
+    if (el) el.style.display = 'none';
     getByID('create-inline-mapping').style.display = 'block';
     return false;
 }
@@ -234,6 +232,7 @@ function cancelCreateMode () {
     return false;
 }
 function addMap(f) {
+    getByID('create-inline-mapping').style.display = 'none';
     var frm = document.forms['archive_map_form'];
     if (!frm) return false;
     var param = '__mode=add_map'
@@ -316,6 +315,10 @@ function togglePreferred(checkbox, mapid) {
     help_page="templates"
     help_section="template_name">
     <div id="template-body-actions">
+        <span class="codepress-toolbar" style="float:right">
+            <a href="javascript: void 0;" title="<__trans phrase="Syntax Highlight On" escape="singlequotes">" mt:command="set-mode-codepress-on" class="command-toggle-codepress-on toolbar button"><b>Syntax Hightlight On</b><s></s></a>
+            <a href="javascript: void 0;" title="<__trans phrase="Syntax Highlight Off" escape="singlequotes">" mt:command="set-mode-codepress-off" class="command-toggle-codepress-off toolbar button"><b>Syntax Hightlight Off</b><s></s></a>
+        </span>
         <mt:if name="template_snippets">
         <select id="tag-insert" name="tag-insert" onchange="insertSnippet(this)">
             <option value=""><__trans phrase="Insert..."></option>
@@ -325,9 +328,8 @@ function togglePreferred(checkbox, mapid) {
         </select>
         </mt:if>
     </div>
-
     <div id="textarea-enclosure" style="position: relative; padding-bottom: 10px; height: <mt:var name="disp_prefs_height_text" default="290">px" mt:min-height="66" mt:update-field-height="text_height">
-        <textarea class="full-width monospace" spellcheck="false" name="text" id="text" cols="72" rows="15" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:allow-tabs="1" /><mt:var name="text" escape="html"></textarea>
+        <textarea class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
         <input type="hidden" name="text_height" id="text_height" value="<mt:var name="disp_prefs_height_text" default="290">" />
         <div class="resizer" mt:delegate="resizer" mt:target="textarea-enclosure" mt:lock="x">
             <img src="<$mt:var name="static_uri"$>images/spacer.gif" width="100%" height="10"/>
@@ -337,7 +339,7 @@ function togglePreferred(checkbox, mapid) {
 
 <mt:if name="type" eq="index">
 <mtapp:setting
-    label="<__trans pharse="Template Type">"
+    label="<__trans phrase="Template Type">"
     id="identifier"
     help_page="templates"
     help_section="template_type">
@@ -371,11 +373,11 @@ function togglePreferred(checkbox, mapid) {
         help_section="enable_dynamic_publishing">
         <ul>
         <mt:if name="custom_dynamic">
-            <li><input type="checkbox" id="build_dynamic" name="build_dynamic" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic building for this template"></label> <a href="#" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
+            <li><input type="checkbox" id="build_dynamic" name="build_dynamic" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic building for this template"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
         </mt:if>
         <mt:unless name="build_dynamic">
             <mt:if name="has_rebuild">
-            <li><input type="checkbox" id="rebuild_me" name="rebuild_me" value="1" <mt:if name="rebuild_me">checked="checked" </mt:if> mt:watch-change="1" /> <label for="rebuild_me"><__trans phrase="Rebuild this template automatically when rebuilding index templates"></label> <a href="#" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></li>
+            <li><input type="checkbox" id="rebuild_me" name="rebuild_me" value="1" <mt:if name="rebuild_me">checked="checked" </mt:if> mt:watch-change="1" /> <label for="rebuild_me"><__trans phrase="Rebuild this template automatically when rebuilding index templates"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></li>
             </mt:if>
         </mt:unless>
         </ul>
@@ -393,37 +395,31 @@ function togglePreferred(checkbox, mapid) {
 </mtapp:setting>
 
 <mt:if name="archive_types">
-
-<div id="cfg-archives">
-
-<h4><__trans phrase="Archive Mapping"></h4>
-<div id="msg-block"></div>
-<img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Create New Archive Mapping">" width="9" height="9" />
-<a href="#" onclick="return setCreateMode()"><__trans phrase="Create New Archive Mapping"></a>
-
-<div id="selector" class="tableselect">
-<div class="create-inline" id="create-inline-mapping">
-<p>
-<label for="new_archive_type"><__trans phrase="Archive Type:"></label>
-<select name="new_archive_type" id="new_archive_type">
-<mt:loop name="archive_types">
-<option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
-</mt:loop>
-</select>
-&nbsp;
-<input type="button" name="add" value="<__trans phrase="Add">" onclick="addMap(this.form)" />
-<input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="return cancelCreateMode()" />
-</p>
-</div>
-
-<div id="template-maps">
-<mt:include name="include/archive_maps.tmpl">
-</div>
-</div>
-
-</div>
-
-</mt:if name="has_name">
+    <mtapp:setting
+        id="archive_mapping"
+        label="<__trans phrase="Archive Mapping">"
+        hint=""
+        show_hint="0">
+        <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create New Archive Mapping"></a></p>
+        <div id="msg-block"></div>
+        <div class="create-inline" id="create-inline-mapping">
+            <p>
+                <label for="new_archive_type"><__trans phrase="Archive Type:"></label>
+                <select name="new_archive_type" id="new_archive_type">
+    <mt:loop name="archive_types">
+                    <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
+    </mt:loop>
+                </select>
+                &nbsp;
+                <input type="button" name="add" value="<__trans phrase="Add">" onclick="addMap(this.form)" />
+                <input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="return cancelCreateMode()" />
+            </p>
+        </div>
+        <div id="template-maps">
+            <mt:include name="include/archive_maps.tmpl">
+        </div>
+    </mtapp:setting>
+</mt:if>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 </form>

@@ -114,9 +114,9 @@ function scoreNudge(amount) {
         hint="<__trans phrase="Comments and TrackBacks receive a spam score between -10 (complete spam) and +10 (not spam). Feedback with a score which is lower than the threshold shown above will be reported as spam.">"
         help_page="blog_settings_feedback"
         help_section="junk_score_threshold">
-<a href="#" id="decrease-threshold" onclick="return scoreNudge(-1)"><__trans phrase="Less Aggressive"> <img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" width="12" height="8" /></a>
+<a href="javascript:void(0)" id="decrease-threshold" onclick="return scoreNudge(-1)"><__trans phrase="Less Aggressive"> <img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" width="12" height="8" /></a>
 <input type="text" id="junk_score_threshold" name="junk_score_threshold" value="<mt:var name="junk_score_threshold">" size="3" />
-<a href="#" id="increase-threshold" onclick="return scoreNudge(1)"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" width="12" height="8" /> <__trans phrase="More Aggressive"></a>
+<a href="javascript:void(0)" id="increase-threshold" onclick="return scoreNudge(1)"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" width="12" height="8" /> <__trans phrase="More Aggressive"></a>
     </mtapp:setting>
 
 </fieldset>

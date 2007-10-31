@@ -20,6 +20,7 @@ use MT::Session;
 
 sub form_fields {
     my $self = shift;
+    my ($blog_id) = @_;
 
     require MT::App;
     my $token = MT::App->make_magic_token;
@@ -35,7 +36,7 @@ sub form_fields {
 <div class="label"><label for="captcha_code">$caption:</label></div>
 <div class="field">
 <input type="hidden" name="token" value="$token" />
-<img src="$cgipath$commentscript/captcha/$token" width="150" height="35" /><br />
+<img src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><br />
 <input name="captcha_code" id="captcha-code" value="" />
 <p>$description</p>
 </div>
@@ -44,15 +45,7 @@ FORM_FIELDS
 
 sub generate_captcha {
     my $self = shift;
-    my ($app) = @_;
-
-    my $pi = $app->path_info; 
-    $pi =~ s,/captcha/,,; #remove prefix.. 
-    my ($token) = split '/', $pi;
-    unless ($token) {
-        $app->error('Required parameter was missing.');
-        return undef;
-    }
+    my ($app, $blog_id, $token) = @_;
 
     my $code = $self->_generate_code(LENGTH());
 

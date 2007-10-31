@@ -132,7 +132,7 @@ function presubmit(f) {
     <div class="upload_indent_choices">
         <mt:unless name="entry_insert">
         <mt:if name="can_create_post">
-        <p><label><input type="checkbox" name="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" /> <__trans phrase="Create a new entry using this uploaded file."></label> <a href="#" onclick="return openManual('file_upload', 'creating_a_new_entry')" class="help-link">?</a><br /></p>
+        <p><label><input type="checkbox" name="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" /> <__trans phrase="Create a new entry using this uploaded file."></label> <a href="javascript:void(0)" onclick="return openManual('file_upload', 'creating_a_new_entry')" class="help-link">?</a><br /></p>
         </mt:if>
         </mt:unless>
     </div>
@@ -149,7 +149,7 @@ function presubmit(f) {
 <mtapp:setting
     id="file_desc"
     label="<__trans phrase="Description">">
-    <textarea name="description" cols="45" rows="3"></textarea><br/></p>
+    <textarea name="description" cols="" rows="" class="full-width short"></textarea><br/></p>
 </mtapp:setting>
 
 <mtapp:setting

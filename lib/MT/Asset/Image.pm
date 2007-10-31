@@ -191,7 +191,7 @@ sub as_html {
                 ? sprintf('<img src="%s" %s alt="%s" %s />',
                     MT::Util::encode_html($thumb->url),
                     $dimensions,
-                    MT::Util::encode_html($fname),
+                    MT::Util::encode_html($asset->label),
                     $wrap_style
                   )
                 : MT->translate('View image');
@@ -206,14 +206,14 @@ sub as_html {
                 $text = sprintf(
                     '<a href="%s"><img alt="%s" src="%s" %s %s/></a>',
                     MT::Util::encode_html($asset->url),
-                    MT::Util::encode_html($fname),
+                    MT::Util::encode_html($asset->label),
                     MT::Util::encode_html($thumb->url),
                     $dimensions, $wrap_style,
                 );
             } else {
                  $text = sprintf(
                     '<img alt="%s" src="%s" %s %s/>',
-                    MT::Util::encode_html($fname),
+                    MT::Util::encode_html($asset->label),
                     MT::Util::encode_html($asset->url),
                     $dimensions, $wrap_style,
                 );

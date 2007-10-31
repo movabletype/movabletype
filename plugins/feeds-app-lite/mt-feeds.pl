@@ -4,23 +4,10 @@ package MT::FeedsLite;
 use strict;
 
 use vars qw($VERSION);
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 my $plugin = MT::Plugin::FeedsLite->new;
 MT->add_plugin($plugin);
-
-MT->add_plugin_action('blog',          'index.cgi?', "Create a feed widget");
-MT->add_plugin_action('list_template', 'index.cgi?', "Create a feed widget");
-
-use MT::Template::Context;
-
-MT::Template::Context->add_container_tag(Feed => \&feed);
-MT::Template::Context->add_tag(FeedTitle => \&feed_title);
-MT::Template::Context->add_tag(FeedLink  => \&feed_link);
-MT::Template::Context->add_container_tag(FeedEntries => \&entries);
-MT::Template::Context->add_tag(FeedEntryTitle => \&entry_title);
-MT::Template::Context->add_tag(FeedEntryLink  => \&entry_link);
-MT::Template::Context->add_tag(FeedInclude    => \&include);
 
 use constant LITE  => 'MT::Plugin::FeedsLite';
 use constant ENTRY => 'MT::Plugin::FeedsLite::entry';
@@ -178,6 +165,7 @@ package MT::Plugin::FeedsLite;
 use strict;
 use base qw( MT::Plugin );
 
+sub id          { 'FeedsAppLite' }
 sub key         { __PACKAGE__ }
 sub name        { 'Feeds.App Lite' }
 sub author_name { 'Appnel Solutions' }
@@ -192,7 +180,49 @@ sub description {
 DESC
 }
 
-sub init { }
+sub init {
+    my $plugin = shift;
+    $plugin->SUPER::init(@_);
+    $plugin->{registry} = {
+        applications => {
+            cms => {
+                methods => {
+                    feedswidget_start => '$FeedsAppLite::FeedsWidget::CMS::start',
+                    feedswidget_select => '$FeedsAppLite::FeedsWidget::CMS::select',
+                    feedswidget_config   => '$FeedsAppLite::FeedsWidget::CMS::configuration',
+                    feedswidget_save     => '$FeedsAppLite::FeedsWidget::CMS::save',
+                },
+                page_actions => {
+                    blog => {
+                        feeds_app_lite => {
+                            label => "Feeds.App Lite",
+                            link => "mt.cgi?__mode=feedswidget_start",
+                        }
+                    },
+                    list_templates => {
+                        'feeds_app_lite' => {
+                            label => "Feeds.App Lite",
+                            link => "mt.cgi?__mode=feedswidget_start",
+                        }
+                    },
+                },
+            },
+        },
+        tags => {
+            block => {
+                Feed => \&MT::FeedsLite::feed,
+                FeedEntries => \&MT::FeedsLite::entries,
+            },
+            function => {
+                FeedTitle => \&MT::FeedsLite::feed_title,
+                FeedLink => \&MT::FeedsLite::feed_link,
+                FeedEntryTitle => \&MT::FeedsLite::entry_title,
+                FeedEntryLink => \&MT::FeedsLite::entry_link,
+                FeedInclude => \&MT::FeedsLite::include,
+            },
+        },
+    };
+}
 
 sub load_config {
     my $plugin = shift;
@@ -201,7 +231,9 @@ sub load_config {
     my $blog_id = $scope;
     $blog_id =~ s{\D}{}g;
     $param->{blog_id}    = $blog_id;
-    $param->{wizard_uri} = $plugin->envelope . '/index.cgi';
 }
+
+# TODO: remove this and fix how to create page_actions link
+sub envelope { q() }
 
 1;

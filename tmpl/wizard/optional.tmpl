@@ -1,5 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="Mail Configuration"></mt:setvarblock>
-<mt:include name="include/header.tmpl">
+<mt:include name="../cms/include/chromeless_header.tmpl">
 
 <form method="post">
 <input type="hidden" name="__mode" value="" />
@@ -52,7 +52,7 @@ function mail_select(sel) {
 </div>
 </div>
 
-<br /><p id="more"><a href="#" onclick="hide('buttons'); hide('more'); show('settings');"><__trans phrase="Show current mail settings"></a></p>
+<br /><p id="more"><a href="javascript:void(0)" onclick="hide('buttons'); hide('more'); show('settings');"><__trans phrase="Show current mail settings"></a></p>
 </mt:if>
 
 <div id="settings"<mt:if name="success"> style="display: none;"</mt:if>>
@@ -62,10 +62,18 @@ function mail_select(sel) {
 </p>
 
 <mt:if name="send_error">
-<h4 class="error-message"><__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error"></h4>
+    <mtapp:statusmsg
+        id="send_error"
+        class="error">
+        <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error">
+    </mtapp:statusmsg>
 <mt:else>
 <mt:if name="error">
-<h4 class="error-message"><mt:var name="error"></h4>
+    <mtapp:statusmsg
+        id="error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
 </mt:if>
 </mt:if>
 
@@ -143,4 +151,4 @@ function mail_select(sel) {
 
 </fieldset>
 </form>
-<mt:include name="include/footer.tmpl">
+<mt:include name="../cms/include/chromeless_footer.tmpl">

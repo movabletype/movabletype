@@ -1,6 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Requirements Check"></mt:setvarblock> 
 
-<mt:include name="include/header.tmpl">
+<mt:include name="../cms/include/chromeless_header.tmpl">
 
 <script type="text/javascript">
 <!--
@@ -42,9 +42,11 @@ function toggleList() {
 <input type="hidden" name="set_static_uri_to" value="<mt:var name="static_uri">" />
 
 <mt:if name="missing_db">
-<h4 class="error-message">
-<__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog's data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
-</h4>
+    <mtapp:statusmsg
+        id="missing_db"
+        class="error">
+        <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog's data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
+    </mtapp:statusmsg>
 </mt:if>
 <mt:if name="optional">
 <p class="intro"><span class="ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type."></p>
@@ -52,13 +54,15 @@ function toggleList() {
    <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
 </div>
 <p class="note"><__trans phrase="Note: One or more optional Perl modules could not be found. You may install them now and click 'Retry' or continue without them. They can be installed at any time if needed."></p>
-<p id="show-more"><__trans phrase="<a href="#" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
+<p id="show-more"><__trans phrase="<a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
 </mt:if>
 <mt:if name="required">
-<h4 class="error-message">
-<__trans phrase="One or more Perl modules required by Movable Type could not be found.">
-</h4>
-<p><__trans phrase="The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages."></p>
+    <mtapp:statusmsg
+        id="required"
+        class="error">
+        <__trans phrase="One or more Perl modules required by Movable Type could not be found.">
+    </mtapp:statusmsg>
+    <p><__trans phrase="The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages."></p>
 </mt:if>
 
 <mt:if name="optional">
@@ -66,13 +70,25 @@ function toggleList() {
 </mt:if>
 
 <mt:if name="missing_db">
-<h4><__trans phrase="Missing Database Modules"></h4>
+    <mtapp:statusmsg
+        id="missing_db"
+        class="error">
+        <__trans phrase="Missing Database Modules">
+    </mtapp:statusmsg>
 </mt:if>
 <mt:if name="optional">
-<h4><__trans phrase="Missing Optional Modules"></h4>
+    <mtapp:statusmsg
+        id="optional"
+        class="error">
+        <__trans phrase="Missing Optional Modules">
+    </mtapp:statusmsg>
 </mt:if>
 <mt:if name="required">
-<h4><__trans phrase="Missing Required Modules"></h4>
+    <mtapp:statusmsg
+        id="required"
+        class="error">
+        <__trans phrase="Missing Required Modules">
+    </mtapp:statusmsg>
 </mt:if>
 <ul id="packages-list">
 <mt:loop name="package_loop">
@@ -125,4 +141,4 @@ function toggleList() {
 </div>
 
 </form>
-<mt:include name="include/footer.tmpl">
+<mt:include name="../cms/include/chromeless_footer.tmpl">

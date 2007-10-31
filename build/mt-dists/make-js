@@ -9,6 +9,7 @@ use MT::Util qw(encode_js);
 
 my $js = `cat mt-static/mt.js`;
 $js .= `cat mt-static/js/dialog.js`;
+$js .= `cat mt-static/js/assetdetail.js`;
 $js .= `cat tmpl/cms/edit_template.tmpl`;
 $js .= `cat tmpl/cms/edit_entry.tmpl`;
 $js .= `cat tmpl/cms/widget/blog_stats.tmpl`;

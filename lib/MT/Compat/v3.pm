@@ -17,6 +17,7 @@ BEGIN {
     %api_map = (
         'MT::Template::Context::add_tag' => "Registry (path: tags, function)",
         'MT::Template::Context::add_container_tag' => "Registry (path: tags, block)",
+        'MT::Template::Context::add_conditional_tag' => "Registry (path: tags, block)",
         'MT::Template::Context::add_global_filter' => "Registry (path: tags, modifier)",
         'MT::add_text_filter' => "Registry (path: text_filters)",
         'MT::add_itemset_action' => "Registry (path: application, [app_id], list_actions)",

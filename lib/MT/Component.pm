@@ -342,29 +342,29 @@ sub load_tmpl {
         $mt->translate( "Loading template '[_1]' failed: [_2]", $file, $err ) )
       if $err;
 
-    my %param = (
-        static_uri        => $mt->static_path,
-        script_path       => $mt->path,
-        mt_version        => MT->version_id,
-        language_tag      => $mt->current_language,
-        language_encoding => $mt->charset,
-    );
-
-    if ( my $author = $mt->user ) {
-        $param{author_id}   = $author->id;
-        $param{author_name} = $author->name;
-        $param{can_logout} = MT::Auth->can_logout;
-    }
-
     ## We do this in load_tmpl because show_error and login don't call
     ## build_page; so we need to set these variables here.
     if ( $mt->isa('MT::App') ) {
-        $param{script_url}      = $mt->uri;
-        $param{mt_url}          = $mt->mt_uri;
-        $param{script_full_url} = $mt->base . $mt->uri;
+        $mt->set_default_tmpl_params($tmpl);
+    }
+    else {
+        my %param = (
+            static_uri        => $mt->static_path,
+            script_path       => $mt->path,
+            mt_version        => MT->version_id,
+            language_tag      => $mt->current_language,
+            language_encoding => $mt->charset,
+        );
+    
+        if ( my $author = $mt->user ) {
+            $param{author_id}   = $author->id;
+            $param{author_name} = $author->name;
+            $param{can_logout} = MT::Auth->can_logout;
+        }
+
+        $tmpl->param( \%param );
     }
 
-    $tmpl->param( \%param );
     return $tmpl;
 }
 

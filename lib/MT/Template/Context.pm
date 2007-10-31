@@ -103,8 +103,7 @@ sub var {
 sub tag {
     my $ctx = shift;
     my $tag = lc shift;
-    my $v = $ctx->{__handlers}{$tag} or return undef;
-    my $h = ref($v) eq 'ARRAY' ? $v->[0] : $v;
+    my ($h) = $ctx->handler_for($tag) or return undef;
     return $h->($ctx, @_);
 }
 
@@ -112,7 +111,16 @@ sub handler_for {
     my $ctx = shift;
     my $tag = lc $_[0];
     my $v = $ctx->{__handlers}{$tag};
-    ref($v) eq 'ARRAY' ? @$v : $v
+    my @h = ref($v) eq 'ARRAY' ? @$v : $v;
+    if (!ref($h[0])) {
+        $h[0] = MT->handler_to_coderef($h[0]);
+        if (ref($v)) {
+            $ctx->{__handlers}{$tag}[0] = $h[0];
+        } else {
+            $ctx->{__handlers}{$tag} = $h[0];
+        }
+    }
+    return ref($v) eq 'ARRAY' ? @h : $h[0];
 }
 
 {

@@ -23,19 +23,30 @@ sub new_user {
     0;
 }
 
+sub remote_user {
+    my $auth = shift;
+    my ($ctx) = @_;
+    if ($ENV{MOD_PERL}) {
+        my $app = $ctx->{app} or return;
+        return $app->{apache}->connection->user;
+    }
+    return $ENV{REMOTE_USER}
+}
+
 sub fetch_credentials {
     my $auth = shift;
     my ($ctx) = @_;
-    my $fallback = { %$ctx, username => $ENV{'REMOTE_USER'} };
+    my $remote_user = $auth->remote_user($ctx);
+    my $fallback = { %$ctx, username => $remote_user };
     $ctx = $auth->SUPER::session_credentials(@_);
     if (!defined $ctx) {
-        if ($ENV{'REMOTE_USER'}) {
+        if ($remote_user) {
             $ctx = $fallback;
         } else {
             return undef;
         }
     }
-    if ($ctx->{username} ne $ENV{'REMOTE_USER'}) {
+    if ($ctx->{username} ne $remote_user) {
         $ctx = $fallback;
     }
     $ctx;

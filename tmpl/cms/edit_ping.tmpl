@@ -172,26 +172,28 @@
     label="<__trans phrase="TrackBack Text">"
     hint="<__trans phrase="Excerpt of the TrackBack entry">"
     show_hint="0">
-    <textarea rows="10" cols="30" name="excerpt" id="excerpt"><mt:var name="excerpt" escape="html"></textarea>
+    <textarea rows="" cols="" name="excerpt" id="excerpt" class="full-width medium"><mt:var name="excerpt" escape="html"></textarea>
 </mtapp:setting>
 
-<mt:if name="junk_log_loop">
-<h3><__trans phrase="Final Feedback Rating">: <mt:var name="junk_score"></h3>
-<table cellspacing="0">
-<tr>
-<th id="jl-test"><__trans phrase="Test"></th>
-<th id="jl-score"><__trans phrase="Score"></th>
-<th id="jl-results"><__trans phrase="Results"></th>
-</tr>
-<mt:loop name="junk_log_loop">
-<tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td><mt:var name="test" escape="html"></td>
-<td><mt:var name="score"></td>
-<td><mt:var name="log"></td>
-</tr>
-</mt:loop>
-</table>
-</mt:if>
+<mtignore>
+                        <mt:if name="junk_log_loop">
+                        <h3><__trans phrase="Final Feedback Rating">: <mt:var name="junk_score"></h3>
+                        <table cellspacing="0">
+                        <tr>
+                        <th id="jl-test"><__trans phrase="Test"></th>
+                        <th id="jl-score"><__trans phrase="Score"></th>
+                        <th id="jl-results"><__trans phrase="Results"></th>
+                        </tr>
+                        <mt:loop name="junk_log_loop">
+                        <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                        <td><mt:var name="test" escape="html"></td>
+                        <td><mt:var name="score"></td>
+                        <td><mt:var name="log"></td>
+                        </tr>
+                        </mt:loop>
+                        </table>
+                        </mt:if>
+</mtignore>
 
 <mt:if name="position_actions_bottom">
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">

@@ -10,14 +10,7 @@ function smarty_function_mtcategoryarchivelink($args, &$ctx) {
     if (!isset($args['blog_id']))
         $args['blog_id'] = $ctx->stash('blog_id');
     if (!$category) return '';
-    $at = $args['type'];
-    $at or $at = $args['archive_type'];
-    $at or $at = $ctx->stash('current_archive_type');
-    if ($at == 'Category') {
-        $link = $ctx->mt->db->category_link($category['category_id'], $args);
-    } else {
-        return '';
-    }
+    $link = $ctx->mt->db->category_link($category['category_id'], $args);
     if ($args['with_index'] && preg_match('/\/(#.*)$/', $link)) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');

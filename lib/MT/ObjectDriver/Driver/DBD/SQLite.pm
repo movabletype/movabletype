@@ -88,6 +88,44 @@ sub init_dbh {
     return $dbh;
 }
 
+sub configure {
+    my $dbd = shift;
+    my ($driver) = @_;
+    no warnings 'redefine';
+    *MT::ObjectDriver::Driver::DBI::count = \&count;
+    $dbd;
+}
+
+sub count {
+    my $driver = shift;
+    my($class, $terms, $args) = @_;
+
+    my $join = $args->{join};
+    my $select = 'COUNT(*)';
+    if ($join && $join->[3]->{unique}) {
+        my $col;
+        if ($join->[3]{unique} =~ m/\D/) {
+            $col = $args->{join}[3]{unique};
+        } else {
+            $col = $class->properties->{primary_key};
+        }
+        my $dbcol = $driver->dbd->db_column_name($class->datasource, $col);
+        ## the line below is the only difference from the DBI::count method.
+        $args->{count_distinct} = { $col => 1 };
+    }
+
+    return $driver->_select_aggregate(
+        select   => $select,
+        class    => $class,
+        terms    => $terms,
+        args     => $args,
+        override => {
+                     order  => '',
+                     limit  => undef,
+                     offset => undef,
+                    },
+    );
+}
 1;
 __END__
 

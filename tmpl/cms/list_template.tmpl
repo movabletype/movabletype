@@ -1,14 +1,10 @@
-<mt:setvarblock name="page_title"><__trans phrase="Edit Templates"></mt:setvarblock>
-<MTSetVarBlock name="content_nav">
-    <ul>
-        <li<mt:if name="tab_index"> class="active"</mt:if> id="templates-index-tab"><a href="#" onclick="sectionToggle('index')"><__trans phrase="Indexes"></a></li>
-        <li<mt:if name="tab_archive"> class="active"</mt:if> id="templates-archive-tab"><a href="#" onclick="sectionToggle('archive')"><__trans phrase="Archives"></a></li>
-        <li<mt:if name="tab_module"> class="active"</mt:if> id="templates-module-tab"><a href="#" onclick="sectionToggle('module')"><__trans phrase="Modules"></a></li>
-        <li<mt:if name="tab_widget"> class="active"</mt:if> id="templates-widget-tab"><a href="#" onclick="sectionToggle('widget')"><__trans phrase="Widgets"></a></li>
-        <li<mt:if name="tab_system"> class="active"</mt:if> id="templates-system-tab"><a href="#" onclick="sectionToggle('system')"><__trans phrase="System"></a></li>
-    </ul>
-</MTSetVarBlock>
+<mt:setvarblock name="page_title"><__trans phrase="Blog Templates"></mt:setvarblock>
 <mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="quickfilters"
+        label="<__trans phrase="Quickfilters">">
+        <$mtapp:ListFilters$>
+    </mtapp:widget>
     <mtapp:widget
         id="useful-links"
         label="<__trans phrase="Useful links">">
@@ -18,32 +14,23 @@
         </ul>
         </mt:if>
     </mtapp:widget>
-    <$MTApp:PageActions from="list_templates"$>
+    <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
+<mt:unless name="template_type" eq="system">
     <input class="deleteButton" type="button" name="delete" value="<MT_TRANS phrase="Delete">" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="template">', '<__trans phrase="templates">')" />
+</mt:unless>
 </mt:setvarblock>
-<mt:include name="include/header.tmpl">
-
+<mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 <!--
-var indexTableSelect;
-var archiveTableSelect;
-var systemTableSelect;
-var moduleTableSelect;
-var widgetTableSelect;
+var tableSelect;
 function init() {
-    indexTableSelect = new TC.TableSelect( 'index-selector' );
-    indexTableSelect.rowSelect = true;
-    archiveTableSelect = new TC.TableSelect( 'archive-selector' );
-    archiveTableSelect.rowSelect = true;
-    systemTableSelect = new TC.TableSelect( 'system-selector' );
-    systemTableSelect.rowSelect = true;
-    moduleTableSelect = new TC.TableSelect( 'module-selector' );
-    moduleTableSelect.rowSelect = true;
-    widgetTableSelect = new TC.TableSelect( 'widget-selector' );
-    widgetTableSelect.rowSelect = true;
+    tableSelect = new TC.TableSelect( 'template-listing-table' );
+    tableSelect.rowSelect = true;
+    <mt:if name="template_group">
     sectionToggle('<mt:var name="template_group" escape="js">');
+    </mt:if>
 }
 TC.attachLoadEvent(init);
 
@@ -59,28 +46,51 @@ function doEditTemplate (type, id) {
 function sectionToggle(selectedTab) {
     var tabs = new Array('index','archive','system','module', 'widget');
 
+    var t = getByID("template-listing-table");
     for (var i = 0; i < tabs.length; i++) {
-        var titleObject = getByID('page-title');
-        var descriptionObject = getByID('templates-' + tabs[i] + '-description');
-        var tabObject = getByID('templates-' + tabs[i] + '-tab');
-        var createObject = getByID('templates-' + tabs[i] + '-create');
-        var contentObject = getByID('templates-' + tabs[i] + '-content');
-        if (descriptionObject && tabObject && createObject && contentObject) {
-            if (tabs[i] == selectedTab) {
-                titleObject.innerHTML = descriptionObject.innerHTML;
-                tabObject.className = 'active';
-                createObject.style.display = 'block';
-                contentObject.style.display = 'block';
-            } else {
-                tabObject.className = '';
-                createObject.style.display = 'none';
-                contentObject.style.display = 'none';
-            }
+        if (tabs[i] == selectedTab) {
+            TC.addClassName(t, "show-" + tabs[i]);
+        } else {
+            TC.removeClassName(t, "show-" + tabs[i]);
         }
     }
+    TC.removeClassName(t, "show-all");
 }
 //-->
 </script>
+</mt:setvarblock>
+<mt:setvarblock name="list_filter_form">
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+<form id="filter-form" method="get" action="<mt:var name="mt_url">">
+    <input type="hidden" name="__mode" value="<mt:var name="mode">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input id="filter" type="hidden" name="filter" value="" />
+    <input id="filter_val" type="hidden" name="filter_val" value="" />
+    <div class="filter">
+        <div id="filter-title">
+        <mt:if name="filter_key">
+            <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
+            <!-- <a class="filter-link" href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">">[ <__trans phrase="Remove filter"> ]</a> -->
+        <mt:else>
+            <mt:unless name="filter">
+            <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
+            <!-- <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a> -->
+            <mt:else>
+            <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
+            <a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>"><__trans phrase="Remove filter"></a>
+            </mt:unless>
+        </mt:if>
+        </div>
+    </div>
+</form>
+    </div>
+</div>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<div id="msg-block">
 
 <mt:if name="saved_deleted">
     <mtapp:statusmsg
@@ -97,303 +107,47 @@ function sectionToggle(selectedTab) {
         <__trans phrase="Your settings have been saved.">
     </mtapp:statusmsg>
 </mt:if>
-
-<span id="templates-index-description" style="display: none"><__trans phrase="Index Templates"></span>
-<span id="templates-archive-description" style="display: none"><__trans phrase="Archive Templates"></span>
-<span id="templates-system-description" style="display: none"><__trans phrase="System Templates"></span>
-<span id="templates-module-description" style="display: none"><__trans phrase="Template Modules"></span>
-<span id="templates-widget-description" style="display: none"><__trans phrase="Template Widgets"></span>
-
-<div id="templates-index-create"<mt:unless name="tab_index"> style="display: none"</mt:unless>><p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="New Index Template"></a></p></div>
-<div id="templates-archive-create"<mt:unless name="tab_archive"> style="display: none"</mt:unless>><p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="New Archive Template"></a></p></div>
-<div id="templates-system-create"<mt:unless name="tab_system"> style="display: none"</mt:unless>></div>
-<div id="templates-module-create"<mt:unless name="tab_module"> style="display: none"</mt:unless>><p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=custom&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="New Template Module"></a></p></div>
-<div id="templates-widget-create"<mt:unless name="tab_widget"> style="display: none"</mt:unless>><p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="New Template Widget"></a></p></div>
-
-<div id="templates-index-content"<mt:unless name="tab_index"> style="display: none"</mt:unless>>
-
-<mt:if name="object_index_loop">
-<form class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this.form['__mode'] ? true : false;">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="template" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<mt:if name="blog_id">
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-</mt:if>
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<mt:if name="position_actions_top">
-    <$mt:include name="include/actions_bar.tmpl" hide_pager="1"$>
-</mt:if>
-
-<div class="tableselect" id="index-selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th class="tt-name"><__trans phrase="Template Name"></th>
-<th class="tt-output-file"><__trans phrase="Output File"></th>
-<th class="tt-dynamic si"><span><__trans phrase="Dynamic"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Dymanic Template">" title="<__trans phrase="Dymanic Template">" width="7" height="11" /></th>
-<th class="tt-linked si"><span><__trans phrase="Linked"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-<th class="tt-rebuild si"><span><__trans phrase="Built w/Indexes"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Built Template w/Indexes">" title="<__trans phrase="Built Template w/Indexes">" width="9" height="9" /></th>
-<th class="tt-view si">&nbsp;</th>
-</tr>
-</thead>
-<tbody>
-
-<mt:loop name="object_index_loop">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-<td><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
-<td><mt:var name="outfile" escape="html"></td>
-<td class="si status-<mt:if name="build_dynamic">dynamic<mt:else>static</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="build_dynamic"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
-<td class="si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
-<td class="si status-<mt:if name="rebuild_me">rebuild<mt:else>norebuild</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="rebuild_me"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
-<td class="si status-view"><mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
-</tr>
-</mt:loop>
-
-</tbody>
-</table>
 </div>
 
-<mt:if name="position_actions_bottom">
-    <$mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1"$>
-</mt:if>
-
-</form>
+<mt:unless name="template_type" eq="system">
+<mt:if name="template_type" eq="archive">
+<p>
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Entry template"></a>
+&nbsp;
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Page template"></a>
+&nbsp;
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Entry Listing template"></a>
+&nbsp;
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=category&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Category template"></a>
+</p>
 <mt:else>
-    <mtapp:statusmsg
-        id="no-index"
-        class="info">
-        <__trans phrase="No index templates could be found.">
-    </mtapp:statusmsg>
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=<mt:var name="template_type" escape="url">&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="   [_1] template" params="<mt:var name="template_type_label">"></a></p>
 </mt:if>
+</mt:unless>
 
-</div>
+<mt:ignore>
+<mtapp:form mode="view" object_type="template">
+<select name="create_new_template">
+    <option value="blank:index"><__trans phrase="Create Template..."></option>
+        <optgroup label="<__trans phrase="Blank Template">">
+    <mt:loop name="template_type_loop">
+            <option value="blank:<mt:var name="id">"><mt:var name="label" escape="html"></option>
+    </mt:loop>
+        </optgroup>
+    <mt:loop name="template_type_loop">
+        <optgroup label="<mt:var name="label" escape="html">">
+        <mt:loop name="template_loop">
+            <option value="default:<mt:var name="type_id">:<mt:var name="id">"><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </optgroup>
+    </mt:loop>
+</select>
+<input type="submit" value="<__trans phrase="Go">">
+</mtapp:form>
+</mt:ignore>
 
-<div id="templates-archive-content"<mt:unless name="tab_archive"> style="display: none"</mt:unless>>
+<$mt:var name="list_filter_form"$>
 
-<mt:if name="object_archive_loop">
-<form class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this.form['__mode'] ? true : false;">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="template" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="tab" value="archive" />
-<mt:if name="blog_id">
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-</mt:if>
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<mt:if name="position_actions_top">
-    <$mt:include name="include/actions_bar.tmpl" hide_pager="1"$>
-</mt:if>
-
-<div class="tableselect" id="archive-selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th class="tt-name"><__trans phrase="Template Name"></th>
-<th class="tt-dynamic si"><span><__trans phrase="Dynamic"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Dymanic Template">" title="<__trans phrase="Dymanic Template">" width="7" height="11" /></th>
-<th class="tt-linked si"><span><__trans phrase="Linked"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-</tr>
-</thead>
-
-<mt:loop name="object_archive_loop">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-<td><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name"></a></td>
-<td class="si status-<mt:if name="build_dynamic">dynamic<mt:else>static</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="build_dynamic"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
-<td class="si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
-</tr>
-</mt:loop>
-
-</table>
-</div>
-
-<mt:if name="position_actions_bottom">
-    <$mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1"$>
-</mt:if>
-
-</form>
-<mt:else>
-    <mtapp:statusmsg
-        id="no-archive"
-        class="info">
-        <__trans phrase="No archive templates could be found.">
-    </mtapp:statusmsg>
-</mt:if>
-
-</div>
-
-<div id="templates-module-content"<mt:unless name="tab_module"> style="display: none"</mt:unless>>
-
-<mt:if name="object_custom_loop">
-<form class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this.form['__mode'] ? true : false;">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="template" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="tab" value="module" />
-<mt:if name="blog_id">
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-</mt:if>
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<mt:if name="position_actions_top">
-    <$mt:include name="include/actions_bar.tmpl" hide_pager="1"$>
-</mt:if>
-
-<div class="tableselect" id="module-selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th class="tt-name"><__trans phrase="Template Name"></th>
-<th class="tt-linked si"><span><__trans phrase="Linked"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-</tr>
-</thead>
-
-<mt:loop name="object_custom_loop">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-<td><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name"></a></td>
-<td class="si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
-</tr>
-</mt:loop>
-
-</table>
-</div>
-
-<mt:if name="position_actions_bottom">
-    <$mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1"$>
-</mt:if>
-
-</form>
-<mt:else>
-    <mtapp:statusmsg
-        id="no-module"
-        class="info">
-        <__trans phrase="No template modules could be found.">
-    </mtapp:statusmsg>
-</mt:if>
-
-</div>
-
-<div id="templates-widget-content"<mt:unless name="tab_widget"> style="display: none"</mt:unless>>
-
-<mt:if name="object_widget_loop">
-<form class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this.form['__mode'] ? true : false;">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="template" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="tab" value="widget" />
-<mt:if name="blog_id">
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-</mt:if>
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<mt:if name="position_actions_top">
-    <$mt:include name="include/actions_bar.tmpl" hide_pager="1"$>
-</mt:if>
-
-<div class="tableselect" id="widget-selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th class="tt-name"><__trans phrase="Template Name"></th>
-<th class="tt-linked si"><span><__trans phrase="Linked"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-</tr>
-</thead>
-
-<mt:loop name="object_widget_loop">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-<td><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name"></a></td>
-<td class="si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
-</tr>
-</mt:loop>
-
-</table>
-</div>
-
-<mt:if name="position_actions_bottom">
-    <$mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1"$>
-</mt:if>
-
-</form>
-<mt:else>
-    <mtapp:statusmsg
-        id="no-widget"
-        class="info">
-        <__trans phrase="No widgets could be found.">
-    </mtapp:statusmsg>
-</mt:if>
-
-</div>
-
-<div id="templates-system-content"<mt:unless name="tab_system"> style="display: none"</mt:unless>>
-
-<form class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this.form['__mode'] ? true : false;">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="template" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="tab" value="system" />
-<mt:if name="blog_id">
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-</mt:if>
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<mt:if name="position_actions_top">
-    <$mt:include name="include/actions_bar.tmpl" hide_pager="1"$>
-</mt:if>
-
-<div class="tableselect" id="system-selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th class="tt-name"><__trans phrase="Template Name"></th>
-<th class="tt-description"><__trans phrase="Description"></th>
-<th class="tt-linked si"><span><__trans phrase="Linked"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-</tr>
-</thead>
-
-<mt:loop name="object_system_loop">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-<td><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;type=<mt:var name="type" escape="url">&amp;id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
-<td><mt:var name="description"></td>
-<td class="si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
-</tr>
-</mt:loop>
-
-</table>
-</div>
-
-<mt:if name="position_actions_bottom">
-    <$mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1"$>
-</mt:if>
-
-</form>
-
-</div>
-
+<$mt:include name="include/template_table.tmpl"$>
 
 <mt:include name="include/footer.tmpl">

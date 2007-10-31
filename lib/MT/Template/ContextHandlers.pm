@@ -82,6 +82,10 @@ sub core_tags {
 
             IfCommenterTrusted => \&_hdlr_commenter_trusted,
             CommenterIfTrusted => \&_hdlr_commenter_trusted,
+            IfCommenterIsAuthor => \&_hdlr_commenter_isauthor,
+            IfCommenterIsEntryAuthor => \&_hdlr_commenter_isauthor,
+
+            Authors => \&_hdlr_authors,
 
             Blogs => \&_hdlr_blogs,
             BlogIfCCLicense => \&_hdlr_blog_if_cc_license,
@@ -245,6 +249,14 @@ sub core_tags {
             CommenterEmail => \&_hdlr_commenter_email,
             FeedbackScore => \&_hdlr_feedback_score,
 
+            AuthorID => \&_hdlr_author_id,
+            AuthorName => \&_hdlr_author_name,
+            AuthorDisplayName =>\&_hdlr_author_display_name,
+            AuthorEmail => \&_hdlr_author_email,
+            AuthorURL => \&_hdlr_author_url,
+            AuthorNext => \&_hdlr_author_prev_next,
+            AuthorPrevious => \&_hdlr_author_prev_next,
+
             BlogID => \&_hdlr_blog_id,
             BlogName => \&_hdlr_blog_name,
             BlogDescription => \&_hdlr_blog_description,
@@ -344,6 +356,7 @@ sub core_tags {
             ArchiveLink => \&_hdlr_archive_link,
             ArchiveTitle => \&_hdlr_archive_title,
             ArchiveType => \&_hdlr_archive_type,
+            ArchiveLabel => \&_hdlr_archive_label,
             ArchiveCount => \&_hdlr_archive_count,
             ArchiveDate => \&_hdlr_date,
             ArchiveDateEnd => \&_hdlr_archive_date_end,
@@ -410,11 +423,6 @@ sub core_tags {
             AssetThumbnailLink => \&_hdlr_asset_thumbnail_link,
 
             AssetCount => \&_hdlr_asset_count,
-
-            # Author handlers
-            AuthorDisplayName =>\&_hdlr_author_display_name,
-            AuthorNext => \&_hdlr_author_prev_next,
-            AuthorPrevious => \&_hdlr_author_prev_next,
 
             PageID => \&_hdlr_page_id,
             PageTitle=> \&_hdlr_page_title,
@@ -821,13 +829,24 @@ sub _hdlr_app_listing {
     }
 
     my $id = $args->{id} || $type . '-listing';
+    my $listing_class = $args->{listing_class} || "";
     my $hide_pager = $args->{hide_pager} || 0;
+    my $show_actions = exists $args->{show_actions} ? $args->{show_actions} : 1;
     my $return_args = $ctx->var('return_args') || '';
     $return_args = qq{\n        <input type="hidden" name="return_args" value="$return_args" />} if $return_args;
     my $blog_id = $ctx->var('blog_id') || '';
     $blog_id = qq{\n        <input type="hidden" name="blog_id" value="$blog_id" />} if $blog_id;
     my $token = $ctx->var('magic_token') || MT->app->current_magic;
     my $action = $args->{action} || '<mt:var name="script_url">';
+
+    my $actions_top = "";
+    my $actions_bottom = "";
+    if ($show_actions) {
+        $actions_top = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager"\$>};
+        $actions_bottom = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager"\$>};
+    } else {
+        $listing_class .= " hide_actions";
+    }
 
     my $insides;
     {
@@ -837,8 +856,15 @@ sub _hdlr_app_listing {
     }
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
-    return $ctx->build(<<EOT);
-<div id="$id" class="listing">
+    my $table = <<TABLE;
+        <table id="$id-table" class="$id-table$view" cellspacing="0">
+$insides
+        </table>
+TABLE
+
+    if ($show_actions) {
+        return $ctx->build(<<EOT);
+<div id="$id" class="listing $listing_class">
     <form id="$id-form" class="listing-form"
         action="$action" method="post"
         onsubmit="return this['__mode'] ? true : false">
@@ -850,17 +876,23 @@ $return_args
 $blog_id
         <input type="hidden" name="magic_token" value="$token" />
 
-        <\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager"\$>
+        $actions_top
 
-        <table id="selector" class="$id-table$view" cellspacing="0">
-$insides
-        </table>
+        $table
 
-        <\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager"\$>
+        $actions_bottom
 
     </form>
 </div>
 EOT
+    }
+    else {
+        return $ctx->build(<<EOT);
+<div id="$id" class="listing $listing_class">
+        $table
+</div>
+EOT
+    }
 }
 
 sub _hdlr_app_link {
@@ -943,9 +975,10 @@ sub _hdlr_app_widget {
     my $tabbed = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
     my $header_class = $tabbed ? 'widget-header-tabs' : '';
     my $return_args = $app->make_return_args;
+    my $cgi = $app->uri;
     if ($hosted_widget && (!$insides !~ m/<form\s/i)) {
         $insides = <<"EOT";
-        <form id="$id-form" method="post" onsubmit="updateWidget('$id'); return false">
+        <form id="$id-form" method="post" action="$cgi" onsubmit="updateWidget('$id'); return false">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
         <input type="hidden" name="widget_id" value="$id" />
         $blog_field
@@ -989,10 +1022,12 @@ sub _hdlr_app_statusmsg {
     $rebuild = qq{<__trans phrase="[_1]Republish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id', 'prompt=index');">%%</a>">} if $rebuild eq 'index';
     my $close = '';
     if ($args->{can_close} || (!exists $args->{can_close})) {
-        $close = qq{<a href="javascript:void(0)" onclick="javascript:hide('$id-msg');" class="close-me"><span>close</span></a>};
+        $close = qq{<a href="javascript:void(0)" onclick="javascript:hide('$id');" class="close-me"><span>close</span></a>};
     }
+    $id = defined $id ? qq{ id="$id"} : "";
+    $class = defined $class ? qq{msg msg-$class} : "msg";
     return <<"EOT";
-    <div id="$id-msg" class="msg msg-$class">$close$msg $rebuild</div>
+    <div$id class="$class">$close$msg $rebuild</div>
 EOT
 }
 
@@ -1002,12 +1037,15 @@ sub _hdlr_app_list_filters {
     my $filters = $ctx->var("list_filters");
     return '' if (ref($filters) ne 'ARRAY') || (! @$filters );
     my $mode = $app->mode;
+    my $type = $app->param('_type');
+    my $type_param = "";
+    $type_param = "&amp;_type=" . encode_url($type) if defined $type;
     return $ctx->build(<<EOT, $cond);
     <mt:loop name="list_filters">
         <mt:if name="__first__">
     <ul>
         </mt:if>
-        <li><mt:if name="key" eq="\$filter_key"><strong></mt:if><a href="<mt:var name="script_url">?__mode=$mode<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=<mt:var name="key" escape="url">"><mt:var name="label"></a><mt:if name="key" eq="\$filter_key"></strong></mt:if></li>
+        <li><mt:if name="key" eq="\$filter_key"><strong></mt:if><a href="<mt:var name="script_url">?__mode=$mode$type_param<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=<mt:var name="key" escape="url">"><mt:var name="label"></a><mt:if name="key" eq="\$filter_key"></strong></mt:if></li>
     <mt:if name="__last__">
     </ul>
     </mt:if>
@@ -1022,7 +1060,7 @@ sub _hdlr_app_page_actions {
     return '' if (ref($loop) ne 'ARRAY') || (! @$loop);
     return $ctx->build(<<EOT, $cond);
     <mtapp:widget
-        id="plugin_actions"
+        id="page_actions"
         label="<__trans phrase="Plugin Actions">">
         <mt:loop name="page_actions">
             <mt:if name="__first__">
@@ -1106,7 +1144,7 @@ sub _hdlr_app_setting {
     if ($help = $args->{help_page} || "") {
         my $section = $args->{help_section} || '';
         $section = qq{, '$section'} if $section;
-        $help = qq{ <a href="#" onclick="return openManual('$help'$section)" class="help-link">?</a><br />};
+        $help = qq{ <a href="javascript:void(0)" onclick="return openManual('$help'$section)" class="help-link">?</a><br />};
     }
     my $label_help = "";
     if ($label && $show_label) {
@@ -2163,6 +2201,91 @@ sub _hdlr_atom_script {
     return $ctx->{config}->AtomScript;
 }
 
+sub _no_author_error {
+    return $_[0]->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of a author; " .
+        "perhaps you mistakenly placed it outside of an 'MTAuthors' " .
+        "container?", $_[1] ));
+}
+
+sub _hdlr_authors {
+    my($ctx, $args, $cond) = @_;
+    my $blog_id = $ctx->stash('blog_id');
+    my $builder = $ctx->stash('builder');
+    my $tokens = $ctx->stash('tokens');
+
+    require MT::Permission;
+    require MT::Author;
+    my (%terms, %args);
+    if ($args->{display_name}) {
+        $terms{nickname} = $args->{display_name};
+    }
+    $terms{status} = 1;         # only enabled
+    $args{'join'} = MT::Permission->join_on('author_id', { blog_id => $blog_id, });
+    $args{'sort'} = $args->{sort_by} ?
+        (lc $args->{sort_by} eq 'display_name' ?
+            'nickname' : $args->{sort_by})
+        : 'created_on';
+    $args{'direction'} = $args->{sort_order} || 'ascend';
+    my $iter = MT::Author->load_iter(\%terms, \%args);
+    my $count = 0;
+    my $n = $args->{lastn};
+    my $res = '';
+    while (my $author = $iter->()) {
+        $count++;
+        if ($n && ($count > $n)) {
+            $iter->('finish');
+            last;
+        }
+        local $ctx->{__stash}{author} = $author;
+        local $ctx->{__stash}{author_id} = $author->id;
+        defined(my $out = $builder->build($ctx, $tokens, $cond))
+            or return $ctx->error( $builder->errstr );
+        $res .= $out;
+    }
+    $res;
+}
+
+sub _hdlr_author_id {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorID');
+    $author->id;
+}
+
+sub _hdlr_author_name {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorName');
+    $author->name;
+}
+
+sub _hdlr_author_display_name { 
+    my $curr_auth = $_[0]->stash('current_author_name');
+    if ($curr_auth) {
+        return $curr_auth;
+    }
+    my $a = $_[0]->stash('author'); 
+    unless ($a) { 
+        my $e = $_[0]->stash('entry'); 
+        $a = $e->author if $e; 
+    } 
+    return $_[0]->_no_author_error('MTAuthorDisplayName') unless $a;
+    $a->nickname || 'Author (#' . $a->id . ')';
+} 
+
+sub _hdlr_author_email {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorEmail');
+    my $email = $author->email;
+    defined $email ? $email : '';
+}
+
+sub _hdlr_author_url {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorURL');
+    my $url = $author->url;
+    defined $url ? $url : '';
+}
+
 sub _hdlr_blogs {
     my($ctx, $args, $cond) = @_;
     my (%terms, %args);
@@ -2441,6 +2564,11 @@ sub _hdlr_entries {
     my $class = MT->model($class_type);
     my $cat_class = MT->model(
         $class_type eq 'entry' ? 'category' : 'folder');
+
+    if ($entries && @$entries) {
+        my $entry = @$entries[0];
+        $entries = undef if $entry->class ne $class_type;
+    }
 
     # handle automatic offset based on 'offset' query parameter
     # in case we're invoked through mt-view.cgi or some other
@@ -3237,7 +3365,11 @@ sub _hdlr_entry_class {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
-    $e->class_label;
+    my $class = $e->properties->{class_type};
+    if ( exists $args->{'upper_case'} || exists $args->{'lower_case'} ) {
+        return $class; # to have global filters handle it.
+    }
+    uc(substr($class, 0, 1)) . substr($class, 1);
 }
 
 sub _hdlr_entry_category {
@@ -3425,7 +3557,7 @@ $static_field
 <input type="radio" id="remember" name="bakecookie" onclick="rememberMe(this.form)" /><label for="bakecookie"><label for="remember"><MT_TRANS phrase="Yes"></label><input type="radio" id="forget" name="bakecookie" onclick="forgetMe(this.form)" value="Forget Info" style="margin-left: 15px;" /><label for="forget"><MT_TRANS phrase="No"></label><br style="clear: both;" /></p>
 
 <p><label for="text"><MT_TRANS phrase="Comments">:</label><br />
-<textarea tabindex="2" id="text" name="text" rows="10" cols="50" id="text">$comment_text</textarea></p>
+<textarea tabindex="2" id="text" name="text" rows="" cols="" id="text" class="full-width medium">$comment_text</textarea></p>
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
@@ -3510,7 +3642,7 @@ HTML
 <input type="radio" id="remember" name="bakecookie" /><label for="remember"><MT_TRANS phrase="Yes"></label><input type="radio" id="forget" name="bakecookie" onclick="forgetMe(this.form)" value="Forget Info" style="margin-left: 15px;" /><label for="forget"><MT_TRANS phrase="No"></label><br style="clear: both;" /></p>
 
 <p><label for="text"><MT_TRANS phrase="Comments">:</label> $allow_comment_html_note<br />
-<textarea tabindex="4" name="text" rows="10" cols="50" id="text">$comment_text</textarea></p>
+<textarea tabindex="4" name="text" rows="" cols="" id="text" class="full-width medium">$comment_text</textarea></p>
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
@@ -3673,6 +3805,11 @@ sub _hdlr_date {
             # output javascript here to render relative date
         } else {
             my $blog = $_[0]->stash('blog');
+            if ($args->{blog_id}) {
+                require MT::Blog;
+                $blog = MT::Blog->load($args->{blog_id})
+                    or return $_[0]->error("invalid blog_id attribute: " . $args->{blog_id});
+            }
             my $lang = $args->{language} || ($blog && $blog->language);
             my $old_lang = MT->current_language;
             MT->set_language($lang) if $lang && ($lang ne $old_lang);
@@ -4152,6 +4289,26 @@ sub _hdlr_commenter_trusted {
         return _hdlr_pass_tokens_else(@_);
     }
 }
+
+sub _hdlr_commenter_isauthor {
+    my ($ctx, $args, $cond) = @_;
+    my $a = $ctx->stash('commenter');
+    return _hdlr_pass_tokens_else(@_)
+      unless $a;
+    if ($a->type == MT::Author::AUTHOR()) {
+        my $tag = lc $ctx->stash('tag');
+        if ($tag eq 'ifcommenterisentryauthor') {
+            if (my $e = $ctx->stash('entry')) {
+                if ($e->author_id == $a->id) {
+                    return _hdlr_pass_tokens(@_);
+                }
+            }
+        } else {
+            return _hdlr_pass_tokens(@_);
+        }
+    }
+    return _hdlr_pass_tokens_else(@_);
+}
 sub _hdlr_feedback_score {
     my $fb = $_[0]->stash('comment') || $_[0]->stash('ping');
     $fb ? $fb->junk_score || 0 : '';
@@ -4490,6 +4647,20 @@ sub _hdlr_archive_type {
     my $at = $ctx->{archive_type} || $ctx->{current_archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
     defined $at ? $at : '';
+}
+
+sub _hdlr_archive_label {
+    my ($ctx, $args, $cond) = @_;
+
+    my $at = $ctx->{archive_type} || $ctx->{current_archive_type};
+    $at = 'Category' if $ctx->{inside_mt_categories};
+    return q() unless defined $at;
+    my $archiver = MT->publisher->archiver($at);
+    my $al = $archiver->archive_label;
+    if ( 'CODE' eq ref($al) ) {
+        $al = $al->();
+    }
+    $al;
 }
 
 sub _hdlr_archive_file {
@@ -6428,24 +6599,12 @@ sub _no_asset_error {
 
 }
 
-sub _hdlr_author_display_name { 
-    my $curr_auth = $_[0]->stash('current_author_name');
-    if ($curr_auth) {
-        return $curr_auth;
-    }
-    my $a = $_[0]->stash('author'); 
-    unless ($a) { 
-        my $e = $_[0]->stash('entry'); 
-        $a = $e->author if $e; 
-    } 
-    return $_[0]->error('No author in context for MTAuthorDisplayName') unless $a;
-    $a ? $a->nickname || $a->name || '' : ''; 
-} 
-
 sub _hdlr_captcha_fields {
     my ($ctx, $args, $cond) = @_;
-    if (my $provider = MT->effective_captcha_provider) {
-        my $fields = $provider->form_fields;
+    my $blog_id = $ctx->stash('blog_id');
+    my $blog = MT->model('blog')->load($blog_id);
+    if (my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
+        my $fields = $provider->form_fields($blog_id);
         $fields =~ s/[\r\n]//g;
         $fields =~ s/'/\\'/g;
         return $fields;

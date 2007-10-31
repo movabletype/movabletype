@@ -2,7 +2,7 @@
 function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
     $localvars = array('category', 'entries');
     $tag = $ctx->this_tag();
-    if (($tag == 'mtcategoryprevious') || $tag == 'mtfolderprevious') {
+    if (($tag == 'mtcategoryprevious') || $tag == 'mtfolderprevious' || $tag == 'mtarchiveprevious') {
         $step = -1;
     } else {
         $step = 1;

@@ -131,7 +131,7 @@ var tableSelect;
 function init()
 {
     // setup
-    tableSelect = new TC.TableSelect( "selector" );
+    tableSelect = new TC.TableSelect( "category-listing-table" );
     tableSelect.rowSelect = true;
 }
 
@@ -139,7 +139,7 @@ TC.attachLoadEvent( init );
 //-->
 </script>
 
-<p><a href="#" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create new top level [_1]" params="<mt:var name="object_label" lower_case="1">"></a></p>
+<p><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create new top level [_1]" params="<mt:var name="object_label" lower_case="1">"></a></p>
 
 <mtapp:listing
     hide_pager="1">
@@ -177,16 +177,16 @@ TC.attachLoadEvent( init );
                 <td class="category">
 <mt:if name="category_has_children">
     <mt:if name="category_is_expanded">
-                    <a href="#" onclick="return doCollapse(<mt:var name="category_id">)" title="<__trans phrase="Collapse">"><img alt="<__trans phrase="Collapse">" src="<mt:var name="static_uri">images/status_icons/collapse.gif" width="9" height="9" class="expcol" /></a>
+                    <a href="javascript:void(0)" onclick="return doCollapse(<mt:var name="category_id">)" title="<__trans phrase="Collapse">"><img alt="<__trans phrase="Collapse">" src="<mt:var name="static_uri">images/status_icons/collapse.gif" width="9" height="9" class="expcol" /></a>
     <mt:else>
-                    <a href="#" onclick="return doExpand(<mt:var name="category_id">)" title="<__trans phrase="Expand">"><img alt="<__trans phrase="Expand">" src="<mt:var name="static_uri">images/status_icons/expand.gif" width="9" height="9" class="expcol" /></a>
+                    <a href="javascript:void(0)" onclick="return doExpand(<mt:var name="category_id">)" title="<__trans phrase="Expand">"><img alt="<__trans phrase="Expand">" src="<mt:var name="static_uri">images/status_icons/expand.gif" width="9" height="9" class="expcol" /></a>
     </mt:if>
 </mt:if>
                     <div style="margin-left: <mt:var name="category_pixel_depth">px;"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">"><mt:var name="category_label_full"></a></div>
                 </td>
                 <td id="action-<mt:var name="category_id">" class="actions">
-                    <a href="#" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label" lower_case="1">">"><__trans phrase="Create"></a>
-                    <a href="#" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [_1]" params="<mt:var name="object_label" lower_case="1">">"><__trans phrase="Move"></a>
+                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label" lower_case="1">">"><__trans phrase="Create"></a>
+                    <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [_1]" params="<mt:var name="object_label" lower_case="1">">"><__trans phrase="Move"></a>
                 </td>
                 <td class="entry"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=<mt:var name="entry_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"></mt:if></mt:if><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="category_entrycount">%%<mt:var name="entry_label" lower_case="1">%%<mt:var name="entry_label_plural" lower_case="1">"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"></a></mt:if></mt:if></td>
                 <td class="trackback status-disabled"><mt:if name="has_tb"><mt:if name="category_tbcount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">&amp;tab=pings"></mt:if></mt:if><__trans phrase="[quant,_1,TrackBack,TrackBacks]" params="<mt:var name="category_tbcount">"><mt:if name="category_tbcount"><mt:if name="can_edit_entries"></a></mt:if></mt:if><mt:else></mt:if></td>

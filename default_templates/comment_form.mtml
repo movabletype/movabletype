@@ -20,6 +20,7 @@
         <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
             <input type="hidden" name="static" value="1" />
             <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
+            <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
             <div id="comments-open-data">
                 <div id="comment-form-name">
                     <label for="comment-author"><MT_TRANS phrase="Name"></label>

@@ -1,13 +1,9 @@
 <$mt:setvar name="list_users" value="1"$>
 <mt:setvarblock name="page_title"><__trans phrase="Users: System-wide"></mt:setvarblock>
 <mt:setvarblock name="content_header">
-    <p class="page-desc">
     <mt:if name="external_user_management">
-    <__trans phrase="_USAGE_AUTHORS_LDAP">
-    <mt:else>
+        <p class="page-desc"><__trans phrase="_USAGE_AUTHORS_LDAP"></p>
     </mt:if>
-    </p>
-
     <mt:if name="saved_status_disabled">
         <mtapp:statusmsg
             id="saved-status-disabled"
@@ -53,6 +49,11 @@
             <__trans phrase="An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information." params="<mt:var name="script_url">?__mode=view_log">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:unless name="external_user_management">
+        <mt:if name="can_create_user">
+    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></p>
+        </mt:if>
+    </mt:unless>
 </mt:setvarblock>
 <mtsetvarblock name="content_nav">
     <mt:include name="include/users_content_nav.tmpl">
@@ -118,7 +119,7 @@
     function init()
     {
     	// setup
-    	tableSelect = new TC.TableSelect( "selector" );
+    	tableSelect = new TC.TableSelect( "author-listing-table" );
     	tableSelect.rowSelect = true;
     	setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
     	setFilterVal('<mt:var name="filter_val">');
@@ -129,15 +130,6 @@
     // -->
     </script>
 </mt:setvarblock>
-
-<mt:include name="include/header.tmpl">
-
-<mt:unless name="external_user_management">
-    <mt:if name="can_create_user">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></p>
-    </mt:if>
-</mt:unless>
-
 <mt:ignore>
                 <mt:setvarblock name="list_filter_form">
                     <form id="filter-form" method="get" action="<mt:var name="mt_url">">
@@ -151,9 +143,9 @@
                         <div id="filter-active">
                         <strong><__trans phrase="Filter">:</strong>
                         <mt:unless name="filter">
-                        <a href="#" onclick="toggleFilter()"><__trans phrase="None."></a> <span class="hint"><__trans phrase="(Showing all users.)"></span>
+                        <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="None."></a> <span class="hint"><__trans phrase="(Showing all users.)"></span>
                         <mt:else>
-                        <a href="#" onclick="toggleFilter()"><__trans phrase="Showing only users whose [_1] is [_2]." params='<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a> (<a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>"><__trans phrase="Reset"></a>)
+                        <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="Showing only users whose [_1] is [_2]." params='<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a> (<a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>"><__trans phrase="Reset"></a>)
                         </mt:unless>
                         </div>
                         <div id="filter-select" style="display: none">
@@ -187,71 +179,7 @@
                     </form>
                 </mt:setvarblock>
 </mt:ignore>
-
-<mt:if name="object_loop">
-<form id="selector-form" class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="author" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<mt:if name="position_actions_top">
-    <mt:include name="include/actions_bar.tmpl">
-</mt:if>
-<div class="tableselect" id="selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-<th id="at-flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-<th id="at-username"><__trans phrase="Username"></th>
-<th id="at-name"><__trans phrase="Name"></th>
-<th id="at-email"><__trans phrase="Email"></th>
-<th id="at-url"><__trans phrase="URL"></th>
-<th id="at-created"><__trans phrase="Created By"></th>
-<th id="at-entries"><__trans phrase="Entries"></th>
-</tr>
-</thead>
-<tbody>
-
-<mt:loop name="object_loop">
-<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="cb">
-
-<input<mt:if name="is_administrator"><mt:if name="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<mt:var name="id">" class="select" />
-
-</td>
-<td class="<mt:if name="status_enabled">user-status-enabled<mt:else>user-status-disabled</mt:if> si">
-<mt:if name="status_enabled">
-<a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=status&amp;filter_val=1" title="<__trans phrase="Only show enabled users">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="_USER_ENABLED">" width="7" height="9" /></a>
-<mt:else>
-<a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=status&amp;filter_val=2" title="<__trans phrase="Only show disabled users">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="_USER_DISABLED">" width="13" height="9" /></a>
-</mt:if>
-</td>
-<td><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
-<td><mt:if name="nickname"><mt:var name="nickname" escape="html"><mt:else>&nbsp;</mt:if></td>
-<td class="status-email"><mt:if name="email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
-<td class="status-link"><mt:if name="url"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
-<td><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
-<td align="right"><mt:if name="entry_count"><a href="<mt:var name="script_url">?__mode=list_entries<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a><mt:else>&nbsp;</mt:if></td>
-</tr>
-</mt:loop>
-
-</tbody>
-</table>
-</div>
-<mt:if name="position_actions_bottom">
-    <mt:include name="include/actions_bar.tmpl" bar_position="bottom">
-</mt:if>
-</form>
-<mt:else>
-    <mtapp:statusmsg
-        id="no-users"
-        class="info">
-        <__trans phrase="No users could be found.">
-    </mtapp:statusmsg>
-</mt:if>
+<mt:include name="include/header.tmpl">
+<$mt:var name="list_filter_form"$>
+<$mt:include name="include/author_table.tmpl"$>
 <mt:include name="include/footer.tmpl">

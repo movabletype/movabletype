@@ -1,33 +1,34 @@
-<table width="100%">
-<thead>
-<tr>
-    <th><__trans phrase="Type"></th>
-    <th><__trans phrase="Path"></th>
-    <th><__trans phrase="Preferred"></th>
-    <th><__trans phrase="Delete"></th>
-</tr>
-</thead>
-
-<tbody>
-<mt:loop name="template_map_loop">
-<tr id="<mt:var name="map_id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="map-archive-name"><mt:var name="archive_label"></td>
-<td class="map-archive-tmpl">
-<select id="archive_file_sel_<mt:var name="map_id">" name="archive_file_sel_<mt:var name="map_id">" onchange="archiveFileSelect(this)">
-<mt:loop name="archive_tmpl_loop">
-<option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name"></option>
-</mt:loop>
-<option value=""><__trans phrase="Custom..."></option>
-</select>
-<input id="archive_file_tmpl_<mt:var name="map_id">" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">" />
-</td>
-
-<td class="archive_map"><mt:if name="has_multiple_archives"><input type="checkbox" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">" id="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">"<mt:if name="map_is_preferred"> checked="checked"</mt:if> value="1" onchange="togglePreferred(this, '<mt:var name="map_id">')" /><input type="hidden" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" value="<mt:if name="map_is_preferred">1<mt:else>0</mt:if>" /></mt:if></td> 
-
-<td class="archive_map"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')"><img src="<mt:var name="static_uri">images/nav_icons/mini/delete.gif" width="9" height="11" alt="<__trans phrase="Delete">" /></a></td>
-</tr>
-
-</mt:loop>
-</tbody>
-
-</table>
+<mtapp:listing
+    show_actions="0"
+    type="templatemap">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="archive-type"><__trans phrase="Type"></th>
+            <th class="archive-path"><__trans phrase="Path"></th>
+            <th class="archive-delete si"><div><span><__trans phrase="Delete"></span></div></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr id="<mt:var name="map_id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="archive-type"><mt:var name="archive_label">
+                <mt:if name="has_multiple_archives">
+                    <input type="checkbox" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">" id="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">"<mt:if name="map_is_preferred"> checked="checked"</mt:if> value="1" onchange="togglePreferred(this, '<mt:var name="map_id">')" /><input type="hidden" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" value="<mt:if name="map_is_preferred">1<mt:else>0</mt:if>" />
+                </mt:if>
+            </td> 
+            <td class="archive-path">
+                <select id="archive_file_sel_<mt:var name="map_id">" name="archive_file_sel_<mt:var name="map_id">" onchange="archiveFileSelect(this)">
+    <mt:loop name="archive_tmpl_loop">
+                    <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name"></option>
+    </mt:loop>
+                    <option value=""><__trans phrase="Custom..."></option>
+                </select>
+                <input id="archive_file_tmpl_<mt:var name="map_id">" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">" />
+            </td>
+            <td class="archive-delete si"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')" class="delete-archive-link"><span><__trans phrase="Delete"></span></a></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>

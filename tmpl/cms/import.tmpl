@@ -24,6 +24,9 @@ function toggleDisplay(selection) {
     }
     return false;
 }
+function selectBlog() {
+    return openDialog(this.form, 'dialog_select_weblog', 'multi=0&amp;return_args=__mode%3Dstart_import');
+}
 //-->
 </script>
 
@@ -33,10 +36,17 @@ function toggleDisplay(selection) {
 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
 <input type="hidden" name="__mode" value="import" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" id="import_blog_id" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset style="margin-top: 0px;">
+
+    <mtapp:setting
+        label="<__trans phrase="Import to">"
+        hint="<__trans phrase="Select a blog for importing.">">
+        <p><strong><span id="import_blog_name"><mt:if name="blog_id"><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)<mt:else>(<__trans phrase="None selected.">)</mt:if></span></strong>
+        <input type="button" onclick="return selectBlog();" value="<__trans phrase="Select...">" /></p>
+    </mtapp:setting>
 
 <mt:if name="importer_loop">
     <mtapp:setting
@@ -60,8 +70,8 @@ function toggleDisplay(selection) {
     <mtapp:setting
         id="import_as_me"
         label="<__trans phrase="Ownership of imported entries">">
-<p><input type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="hide('setpassworddiv');"</mt:if> checked="checked"> <label for="import_as_me"><__trans phrase="Import as me"></label> <a href="#" onclick="return openManual('entry_import', 'import_as_me')" class="help-link">?</a></p>
-<p><input type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="show('setpassworddiv');"</mt:if>> <label for="setpassword"><__trans phrase="Preserve original user"></label> <a href="#" onclick="return openManual('entry_import', 'password')" class="help-link">?</a>
+<p><input type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="hide('setpassworddiv');"</mt:if> checked="checked"> <label for="import_as_me"><__trans phrase="Import as me"></label> <a href="javascript:void(0)" onclick="return openManual('entry_import', 'import_as_me')" class="help-link">?</a></p>
+<p><input type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="show('setpassworddiv');"</mt:if>> <label for="setpassword"><__trans phrase="Preserve original user"></label> <a href="javascript:void(0)" onclick="return openManual('entry_import', 'password')" class="help-link">?</a>
 </p>
 
 <mt:if name="password_needed">

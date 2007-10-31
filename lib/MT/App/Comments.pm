@@ -124,7 +124,7 @@ sub _get_commenter_session {
     if (   !$sess_obj
         || ( $sess_obj->start() + $timeout < time )
         || ( $q->param('email') && ( $sess_obj->email ne $q->param('email') ) )
-        || ( $q->param('author') && ( $sess_obj->name ne $q->param('author') ) )
+        || ( $q->param('author') && ( $user->nickname ne $q->param('author') ) )
       )
     {
         $app->_invalidate_commenter_session( \%cookies );
@@ -362,14 +362,14 @@ sub signup {
     my %opt   = @_;
     my $param = {};
     $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static);
-    my $blog = MT::Blog->load( $param->{blog_id} );
+    my $blog = $app->model('blog')->load( $param->{blog_id} );
     my $cfg  = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
         return $app->handle_error(
             $app->translate('Signing up is not allowed.') )
           unless $registration->{Allow} && $blog->allow_commenter_regist;
-        if ( my $provider = MT->effective_captcha_provider ) {
-            $param->{captcha_fields} = $provider->form_fields;
+        if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
+            $param->{captcha_fields} = $provider->form_fields( $blog->id );
         }
         $param->{error} = $opt{error} if $opt{error};
         $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
@@ -389,8 +389,10 @@ sub do_signup {
       qw(blog_id entry_id static email url username nickname email hint);
     $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
 
-    if ( my $provider = MT->effective_captcha_provider ) {
-        $param->{captcha_fields} = $provider->form_fields;
+    my $blog = $app->model('blog')->load( $param->{blog_id} );
+
+    if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
+        $param->{captcha_fields} = $provider->form_fields( $blog->id );
     }
 
     if ( $q->param('password') ne $q->param('pass_verify') ) {
@@ -454,11 +456,11 @@ sub do_signup {
         return $app->build_page( 'signup.tmpl', $param );
     }
 
-    if ( my $provider = MT->effective_captcha_provider ) {
+    if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
         unless ( $provider->validate_captcha($app) ) {
             $param->{error} =
               $app->translate("Text entered was wrong.  Try again.");
-            $param->{captcha_fields} = $provider->form_fields;
+            $param->{captcha_fields} = $provider->form_fields( $blog->id );
             return $app->build_page( 'signup.tmpl', $param );
         }
     }
@@ -607,6 +609,7 @@ sub do_register {
     my $param = {};
     $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static);
 
+    my $blog = $app->model('blog')->load($blog_id);
     ## Token expiration check
     require MT::Session;
     my $commenter;
@@ -621,8 +624,8 @@ sub do_register {
         }
     }
     unless ($sess) {
-        if ( my $provider = MT->effective_captcha_provider ) {
-            $param->{captcha_fields} = $provider->form_fields;
+        if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
+            $param->{captcha_fields} = $provider->form_fields( $blog->id );
         }
         return $app->build_page( 'signup.tmpl', $param );
     }
@@ -645,7 +648,7 @@ sub do_register {
         require MT::Role;
         require MT::Association;
         my $role = MT::Role->load_same( undef, undef, 1, 'comment' );
-        if ( $role && ( my $blog = MT::Blog->load($blog_id) ) ) {
+        if ( $role && $blog ) {
             MT::Association->link( $commenter => $role => $blog );
         }
         else {
@@ -664,8 +667,8 @@ sub do_register {
         }
     }
     else {
-        if ( my $provider = MT->effective_captcha_provider ) {
-            $param->{captcha_fields} = $provider->form_fields;
+        if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
+            $param->{captcha_fields} = $provider->form_fields( $blog->id );
         }
         $param->{error} = $commenter->errstr;
         return $app->build_page( 'signup.tmpl', $param );
@@ -763,8 +766,20 @@ sub _send_registration_notification {
 
 sub generate_captcha {
     my $app = shift;
-    if ( my $provider = MT->effective_captcha_provider ) {
-        my $image_data = $provider->generate_captcha($app);
+
+    my $pi = $app->path_info; 
+    $pi =~ s!^/!!;
+    my $cmtscript = $app->config('CommentScript');
+    $pi =~ s!.*\Q$cmtscript\E/!!;
+    $pi =~ s,captcha/,,; #remove prefix.. 
+    my ($blog_id, $token) = split '/', $pi;
+    unless ( $blog_id && $token ) {
+        $app->error('Required parameter was missing.');
+        return undef;
+    }
+    my $blog = $app->model('blog')->load($blog_id);
+    if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
+        my $image_data = $provider->generate_captcha($app, $blog_id, $token);
         if ($image_data) {
             $app->{no_print_body} = 1;
             $app->set_header( 'Cache-Control' => 'no-cache' );
@@ -960,8 +975,7 @@ sub post {
             $app->translate("Comments are not allowed on this entry.") );
     }
 
-    require MT::Blog;
-    my $blog = MT::Blog->load( $entry->blog_id );
+    my $blog = $app->model('blog')->load( $entry->blog_id );
 
     my $text = $q->param('text') || '';
     $text =~ s/^\s+|\s+$//g;
@@ -1032,7 +1046,7 @@ sub post {
         }
     }
 
-    if ( !$commenter && ( my $provider = MT->effective_captcha_provider ) ) {
+    if ( !$commenter && ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) ) {
         unless ( $provider->validate_captcha($app) ) {
             return $app->handle_error(
                 $app->translate("Text entered was wrong.  Try again.") );
@@ -1139,9 +1153,7 @@ sub post {
         }
     );
 
-    my $confirm = $blog->use_comment_confirmation;
-    $confirm = $cfg->UseCommentConfirmationPage || 0 unless defined($confirm);
-    if ($confirm) {
+    if ( $blog->use_comment_confirmation ) {
         my $tmpl =
           MT::Template->load(
             { type => 'comment_pending', blog_id => $entry->blog_id } )

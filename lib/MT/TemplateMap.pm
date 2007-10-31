@@ -29,15 +29,78 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    return MT->translate("Archive Mapping");
+}
+
+sub class_label_plural {
+    return MT->translate("Archive Mappings");
+}
+
+sub save {
+    my $map = shift;
+    $map->SUPER::save();
+    my $at   = $map->archive_type;
+    my $blog = MT->model('blog')->load($map->blog_id);
+    my $blog_at   = $blog->archive_type;
+    my @ats = map { $_ } 
+        grep { $map->archive_type ne $_ }
+            split /,/, $blog_at
+                if $blog_at ne 'None';
+    push @ats, $map->archive_type;
+    $blog->archive_type(join ',', @ats);
+    $blog->save;
+}
+
 sub remove {
     my $map = shift;
+    $map->remove_children({ key => 'templatemap_id' });
+    my $result = $map->SUPER::remove(@_);
+    
     if (ref $map) {
-        if ($map->is_preferred) {
-            $map->_prefer_next_map;
+        my $remaining = MT::TemplateMap->load(
+          {
+            blog_id => $map->blog_id,
+            archive_type => $map->archive_type,
+            id => [ $map->id ],
+          },
+          {
+            limit => 1,
+            not => { id => 1 }
+          }
+        );
+        if ($remaining) {
+            $remaining->is_preferred(1);
+            $remaining->save;
+        }
+        else {
+            my $blog = MT->model('blog')->load($map->blog_id);
+            my $at   = $blog->archive_type;
+            if ( $at && $at ne 'None' ) {
+                my @newat = map { $_ } grep { $map->archive_type ne $_ } split /,/, $at;
+                $blog->archive_type(join ',', @newat);
+                $blog->save;
+            }
         }
     }
-    $map->remove_children({ key => 'templatemap_id' });
-    $map->SUPER::remove(@_);
+    else {
+        my $maps_iter = MT::TemplateMap->count_group_by(
+            undef,
+            { group => [ 'blog_id', 'archive_type' ] }
+        );
+        my %ats;
+        while ( my ( $count, $blog_id, $at ) = $maps_iter->() ) {
+            my $ats = $ats{$blog_id};
+            push @$ats, $at if $count > 0;
+            $ats{$blog_id} = $ats;
+        }
+        foreach my $blog_id (keys %ats) {
+            my $blog = MT->model('blog')->load($blog_id);
+            $blog->archive_type(join ',', @{ $ats{$blog_id} });
+            $blog->save;
+        }
+    }
+    $result;
 }
 
 sub prefer {
@@ -155,6 +218,21 @@ archive type.
 =head1 METHODS
 
 =over 4
+
+=item * save()
+
+Saves the object.  It also rearranges blog's archive type.  If the saved
+template map is new and there is no other template maps with the same 
+archive type has been, the archive type is also added to the blog.
+
+=item * remove()
+
+Removes template maps specified in terms and args (if called as class method)
+or the template map (if called as instance method).  It also rearrange blog's
+archive types which are used to determine what types of archive will be 
+published during rebuild.  If template map is removed and there remains no
+template map with the archive type, the archive type is removed from blog's
+archive types to be rebuilt.
 
 =item * prefer(boolean)
 

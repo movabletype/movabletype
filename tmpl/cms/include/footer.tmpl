@@ -2,12 +2,6 @@
 <mt:if name="related_content">
         <div id="related-content"><div id="related-content-inner">
             <$mt:var name="related_content"$>
-            <!-- <div class="box widget">
-                <h4><a href="#"><__trans phrase="Widget Title"></a></h4>
-                <div class="widget-content">
-                    <p>Content of widget will be here. This content may be </p>
-                </div>
-            </div> -->
         </div></div> <!-- /related-content -->
 </mt:if>
     </div></div><!-- /content -->
@@ -41,23 +35,15 @@
             </mt:if>
         </div>
     </div></div> 
-    <div id="resize-mask" class="hidden" mt:delegate="resizer">
-        <div class="modal-mask resize-mask"></div>
-        <iframe frameborder="0" scrolling="no" src="about:blank"></iframe>
-    </div>
-    <div id="dialog-container">
-        <div class="modal-mask opaque-mask"></div>
-        <div id="dialog"><iframe frameborder="0" scrolling="auto" src="about:blank" id="dialog-iframe" name="dialog_iframe"></iframe></div>
-    </div>
-    <div id="bootstrapper" class="hidden"></div>
-    <mt:unless name="delayed_bootstrap">
-    <script type="text/javascript">
-        // <![CDATA[
-            App.bootstrapInline( false );
-        // ]]>
-    </script>
-    </mt:unless>
 </div><!-- /container -->
+<div id="resize-mask" class="hidden modal-mask resize-mask autolayout-height-parent" mt:delegate="resizer">
+    <div class="modal-mask"></div>
+    <iframe frameborder="0" scrolling="no" src="about:blank"></iframe>
+</div>
+<div id="dialog-container" class="autolayout-height-parent">
+    <div class="modal-mask opaque-mask"></div>
+    <div id="dialog"><iframe frameborder="0" scrolling="auto" src="about:blank" id="dialog-iframe" name="dialog_iframe"></iframe></div>
+</div>
 <mt:if name=open_dialog> 
 <script type="text/javascript"> 
 <!-- 
@@ -65,5 +51,13 @@ openDialog(false, '<mt:var name="dialog_mode">', '<mt:var name="dialog_params">'
 //--> 
 </script> 
 </mt:if> 
+<div id="bootstrapper" class="hidden"></div>
+<mt:unless name="delayed_bootstrap">
+<script type="text/javascript">
+    // <![CDATA[
+        App.bootstrapInline( false );
+    // ]]>
+</script>
+</mt:unless>
 </body>
 </html>

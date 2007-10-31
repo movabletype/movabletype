@@ -85,7 +85,7 @@
         label="<__trans phrase="Accept Comments">"
         help_page="blog_settings_feedback"
         help_section="accept_comments_from">
-<input type="checkbox" name="allow_comments" value="1" id="allow_comments" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> If enabled, comments will be accepted.
+<input type="checkbox" name="allow_comments" value="1" id="allow_comments" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <__trans phrase="If enabled, comments will be accepted.">
     </mtapp:setting>
 
 <div id="allow_comments_prefs" style="display:<mt:if name="allow_comments">block<mt:else>none</mt:if>">
@@ -113,7 +113,7 @@
 <div id="enabled_TypeKey_prefs" style="display:<mt:if name="enabled">block<mt:else>none</mt:if>">
   <p style="margin-left: 25px;"><input type="checkbox" value="1" id="require_typekey_emails" name="require_typekey_emails"<mt:if name="require_typekey_emails"> checked="checked"</mt:if> class="cb" />&nbsp;<__trans phrase="Require E-mail Address for Comments via TypeKey"><br />
   <span class="hint"><__trans phrase="If enabled, visitors must allow their TypeKey account to share e-mail address when commenting."></span>
-  <a href="#" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help-link">?</a></p>
+  <a href="javascript:void(0)" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help-link">?</a></p>
 </div>
 <mt:else>
 <p><input type="checkbox" id="enabled_<mt:var name="key">" name="enabled_<mt:var name="key">" value="1"<mt:if name="enabled"> checked="checked"</mt:if> /> <label for="enabled_<mt:var name="key">"><mt:var name="label"></label></p>
@@ -231,6 +231,24 @@
 <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
 </mt:loop>
 </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="capthca_provider"
+        label="<__trans phrase="CAPTCHA Provider">">
+        <mt:if name="captcha_loop">
+            <select name="captcha_provider">
+            <option value="none"><__trans phrase="Don't use CAPTCHA"></option>
+            <mt:loop name="captcha_loop">
+            <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+            </mt:loop>
+            </select>
+        <mt:else>
+            <p>
+            <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="No CAPTCHA provider available">" width="9" height="9" />
+            <span class="alert-warning-inline"><__trans phrase="No CAPTCHA provider is available in this system.  Movable Type's default provider requires Image::Magick."></span>
+            </p>
+        </mt:if>
     </mtapp:setting>
 
     <mtapp:setting

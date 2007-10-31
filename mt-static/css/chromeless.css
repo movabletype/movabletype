@@ -1,0 +1,327 @@
+/* codebase */
+@import url("reset.css");
+@import url("fonts.css");
+
+/* utilities */
+@import url("utilities.css");
+
+/* messaging */
+@import url("messaging.css");
+
+
+/* Chromeless ------------------------------------------------------------ */
+
+body{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+h2, p {
+    margin-bottom: 12px;
+}
+
+a:link,
+a:visited {
+    color: #61889b;
+}
+
+a:hover,
+a:active {
+    color: #a2ad00;
+}
+
+#container {
+    margin: 50px auto 0;
+    text-align: left;
+    width: 360px;
+}
+#footer {
+    padding: 5px 20px 20px;
+    bottom: 0px;
+    border-top: 0;
+}
+
+.ready {
+    font-weight: bold;
+    color: #93b06b;
+}
+.note {
+    clear: both;
+    padding: 10px 0 10px 0;
+}
+#page-title {
+    font-size: 24px;
+    font-weight: normal;
+    margin-top: 10px;
+}
+p.intro {
+    font-size: 14px;
+    font-weight: normal;
+}
+.hint {
+    line-height: 110%;
+    font-size: 11px;
+    padding-top: 2px;
+}
+#db_hint {
+    margin-top: -10px;
+}
+#error_more {
+    margin: 10px 0 15px;
+    font-weight: normal;
+    overflow: auto;
+    padding: 5px 0 10px 0;
+}
+#continue {
+    margin-bottom: 20px;
+}
+.module-name {
+    font-weight: bold;
+}
+.module-name a {
+    color: black;
+    text-decoration: none;
+}
+.module-name a:hover {
+    text-decoration: underline;
+}
+
+#brand {
+    position: relative;
+    margin: 30px 0 0 20px;
+    background: url('../images/chromeless/mt_logo.gif') no-repeat;
+    height: 34px;
+    width: 192px;
+}
+
+#container-inner {
+    border: 1px solid #cfdde5;
+    background: url('../images/chromeless/chromeless_bg_b.png') repeat-x bottom center;
+}
+
+#content #content-inner {
+    margin: 0 18px;
+    padding-bottom: 20px;
+}
+
+#nav {
+    float: right;
+    margin-right: 20px;
+}
+
+#nav .step {
+    float: left;
+    background: url('../images/chromeless/nav_off.png');
+    height: 15px;
+    width: 14px;
+}
+
+#nav .step_active {
+    float: left;
+    background: url('../images/chromeless/nav_on.png');
+    height: 15px;
+    width: 14px;
+}
+
+.edit-entry .actions-bar-top,
+.edit-entry .actions-bar-bottom {
+    display: none;
+}
+#container.show-actions-bar-top .actions-bar-top {
+    display: block;
+}
+#container.show-actions-bar-bottom .actions-bar-bottom {
+    display: block;
+}
+
+ul li {
+    list-style-type: disc;
+    margin-left: 15px;
+}
+
+fieldset {
+    margin: 0;
+}
+
+.field {
+    padding-bottom: .75em;
+    border: 0;
+    margin-bottom: .75em;
+}
+
+.field-left-label .field-header {
+    float: none;
+    text-align: left;
+    width: 95%;
+    padding: 5px 0;
+}
+
+.field-header label {
+    font-weight: bold;
+}
+
+.field-left-label .field-content,
+.field-left-label .field-content select,
+.field-left-label .field-content input {
+    margin: 0;
+    width: 95%
+}
+
+#footer,
+#footer .inner {
+    background: transparent;
+    position: relative;
+    text-align: left;
+    width: 320px;
+    color: #999;
+}
+
+#header {
+    background: transparent #fff;
+}
+#header .comment_signin_title {
+    margin-left: 20px;
+}
+
+#main-content .signin {
+    height: 170px;
+}
+
+#main-content {
+    position: relative;
+}
+
+#footer .comment_signin_footer {
+    height: 23px;
+    background: url('../images/comment/signin_footer.png') no-repeat;
+}
+
+.comment_signin_options {
+    position: absolute;
+    left: 341px;
+    width: 200px;
+}
+
+.comment_signin_options p {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.comment_signin_options li {
+    margin-left: 0;
+    list-style: none;
+    height: 26px;
+}
+
+.choice_on,
+.choice_on a {
+    color: #fff;
+    background: #a3becc url('../images/comment/signin_on.png') no-repeat right center;
+}
+
+.choice_off,
+.choice_off a {
+    color: #000;
+    background-color: #fff;
+}
+
+.signin_logo {
+    float: left;
+    width: 36px;
+    height: 26px;
+}
+
+.choice_on .signin_logo {
+    background: url('../images/comment/signin_logo_on.png') no-repeat center;
+}
+
+.auth_name {
+    padding-top: .45em;
+}
+
+#packages-list li {
+    margin-bottom: .5em;
+}
+
+.input-hint {
+    color:#999999;
+}
+
+/* Corners -------------------------------------------------------------------------------- */
+
+#ctl, #ctr,
+#cbl, #cbr {
+    background: url('../images/chromeless/chromeless_corners.gif') no-repeat;
+}
+#ctl, #ctr {
+    width: 10px;
+    height: 20px;
+    position: relative;
+    top: -1px;
+    z-index:5;
+}
+#ctl {
+    background-position: top left;
+    left: -1px;
+    float: left;
+}
+#ctr {
+    background-position: top right;
+    left: 1px;
+    float: right;
+}
+#cbl, #cbr {
+    width: 14px;
+    height: 115px;
+    position: relative;
+    top: -114px;
+    z-index:4;
+}
+#cbl {
+    background-position: bottom left;
+    left: -1px;
+    float: left;
+}
+#cbr {
+    background-position: bottom right;
+    left: 1px;
+    float: right;
+}
+
+/* Wide Styles -------------------------------------------------------------------------------- */
+
+.error-screen #container {
+    width: 760px;
+}
+.chromeless-wide #ctl, .chromeless-wide #ctr,
+.chromeless-wide #cbl, .chromeless-wide #cbr {
+    display: none;
+}
+.chromeless-wide #container-inner {
+    background: none;
+}
+.chromeless-wide #brand {
+    position: absolute;
+    top: 0;
+    margin: 15px 0 0 20px;
+    background: url('../images/chromeless/movable-type-logo.gif') no-repeat;
+    height: 34px;
+    width: 192px;
+}
+.chromeless-wide {
+    background: url('../images/chromeless/chromeless_top_bg.gif') repeat-x;
+    padding-top:59px;
+}
+.chromeless-wide #content {
+    margin: 0;
+}
+.chromeless-wide #container {
+    margin-top: 10px;
+}
+.chromeless-wide #container-inner {
+    border:0;
+}
+.chromeless-wide #footer .inner {
+    border-top: 1px solid #CCC;
+    padding-top: 10px;
+}

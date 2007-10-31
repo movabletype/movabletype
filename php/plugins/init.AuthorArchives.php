@@ -4,6 +4,9 @@ require_once("archive_lib.php");
 
 class AuthorBasedArchiver extends BaseArchiver {
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Author');
+    }
     function get_title($args, $ctx) {
         $author_name = '';
         $author = $ctx->stash('archive_author');
@@ -250,6 +253,9 @@ class DateBasedAuthorArchiver extends DateBasedArchiver {
 class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Author Yearly');
+    }
     function get_title($args, $ctx) {
         $author_name = '';
         $author = $ctx->stash('archive_author');
@@ -341,6 +347,9 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Author Monthly');
+    }
     function get_title($args, $ctx) {
         $author_name = '';
         $author = $ctx->stash('archive_author');
@@ -436,6 +445,9 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Author Daily');
+    }
     function get_title($args, $ctx) {
         $author_name = '';
         $author = $ctx->stash('archive_author');
@@ -535,6 +547,9 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     // Override Method
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate('Author Weekly');
+    }
     function get_title($args, $ctx) {
         $author_name = '';
         $author = $ctx->stash('archive_author');

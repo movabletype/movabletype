@@ -1,5 +1,21 @@
 <mt:setvarblock name="page_title"><__trans phrase="Export"></mt:setvarblock>
 <mt:setvar name="export" value="1">
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+<!--
+function validate(f) {
+    if (!f['blog_id'].value) {
+        alert("<__trans phrase="You must select a blog to export." escape="js">");
+        return false;
+    }
+    return true;
+}
+function selectBlog() {
+    return openDialog(this.form, 'dialog_select_weblog', 'multi=0&amp;return_args=__mode%3Dstart_export');
+}
+// -->
+</script>
+</mt:setvarblock>
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/tools_content_nav.tmpl">
 </MTSetVarBlock>
@@ -9,23 +25,26 @@
 
 <div id="export-panel">
 
-<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <input type="hidden" name="__mode" value="export" />
+<mt:if name="blog_id">
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<mt:else>
+<input type="hidden" id="export_blog_id" name="blog_id" value="" />
+</mt:if>
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-<p style="text-align: center;"><input type="submit" value="<__trans phrase="Export Entries From [_1]" params="<mt:var name="blog_name" escape="html">">" title="<__trans phrase="Export Entries (e)">" accesskey="e" /></p>
+<mtapp:setting
+    id="export_blog_id_field"
+    label="<__trans phrase="Export from">"
+    hint="<__trans phrase="Select a blog for exporting.">">
+    <p><strong><span id="export_blog_name"><mt:if name="blog_id"><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)<mt:else>(<__trans phrase="None selected.">)</mt:if></span></strong>
+    <input type="button" onclick="return selectBlog()" value="<__trans phrase="Select...">" /></p>
+</mtapp:setting>
+
+<p style="text-align: center;"><input type="submit" value="<__trans phrase="Export Blog">" title="<__trans phrase="Export Blog (e)">" accesskey="e" /></p>
 </form>
 
-<mt:if name="have_tangent">
-<hr />
-
-<h4><__trans phrase="Export Entries to Tangent"></h4>
-
-<p><__trans phrase="_USAGE_EXPORT_3" params="<mt:var name="blog_name" escape="html">"></p>
-
-<p><a href="<mt:var name="script_url">?__mode=tangent_export&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Export Entries From [_1]" params="<mt:var name="blog_name" escape="html">"></a></p>
-</mt:if>
 </div>
 <div id="bottom"></div>
 

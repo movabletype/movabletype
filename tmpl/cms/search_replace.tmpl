@@ -6,7 +6,7 @@
     function init()
     {
     	// setup
-    	tableSelect = new TC.TableSelect( "selector" );
+    	tableSelect = new TC.TableSelect( "entry-listing-table" );
     	tableSelect.rowSelect = true;
     <mt:unless name="have_results">
     	getByID('search').focus();
@@ -153,35 +153,35 @@
 <div class="tabs">
     <ul>
         <mt:if name="blog_id"><mt:if name="can_edit_entries">
-        <li<mt:if name="search_entry"> class="yah"</mt:if> id="results-entry-tab"><a href="#" onclick="reSearch('entry')"><span><__trans phrase="Entries"></span></a></li>
-        <li<mt:if name="search_comment"> class="yah"</mt:if> id="results-comment-tab"><a href="#" onclick="reSearch('comment')"><span><__trans phrase="Comments"></span></a></li>
-        <li<mt:if name="search_ping"> class="yah"</mt:if> id="results-ping-tab"><a href="#" onclick="reSearch('ping')"><span><__trans phrase="TrackBacks"></span></a></li>
+        <li<mt:if name="search_entry"> class="yah"</mt:if> id="results-entry-tab"><a href="javascript:void(0)" onclick="reSearch('entry')"><span><__trans phrase="Entries"></span></a></li>
+        <li<mt:if name="search_comment"> class="yah"</mt:if> id="results-comment-tab"><a href="javascript:void(0)" onclick="reSearch('comment')"><span><__trans phrase="Comments"></span></a></li>
+        <li<mt:if name="search_ping"> class="yah"</mt:if> id="results-ping-tab"><a href="javascript:void(0)" onclick="reSearch('ping')"><span><__trans phrase="TrackBacks"></span></a></li>
         </mt:if>
         <mt:if name="can_manage_pages">
-        <li<mt:if name="search_page"> class="yah"</mt:if> id="results-page-tab"><a href="#" onclick="reSearch('page')"><span><__trans phrase="Pages"></span></a></li>
+        <li<mt:if name="search_page"> class="yah"</mt:if> id="results-page-tab"><a href="javascript:void(0)" onclick="reSearch('page')"><span><__trans phrase="Pages"></span></a></li>
         </mt:if>
         <mt:if name="can_edit_templates">
-        <li<mt:if name="search_template"> class="yah"</mt:if> id="results-template-tab"><a href="#" onclick="reSearch('template')"><span><__trans phrase="Templates"></span></a></li>
+        <li<mt:if name="search_template"> class="yah"</mt:if> id="results-template-tab"><a href="javascript:void(0)" onclick="reSearch('template')"><span><__trans phrase="Templates"></span></a></li>
         </mt:if>
         <mt:if name="can_edit_config">
-        <li<mt:if name="search_commenter"> class="yah"</mt:if> id="results-commenter-tab"><a href="#" onclick="reSearch('commenter')"><span><__trans phrase="Commenters"></span></a></li>
+        <li<mt:if name="search_commenter"> class="yah"</mt:if> id="results-commenter-tab"><a href="javascript:void(0)" onclick="reSearch('commenter')"><span><__trans phrase="Commenters"></span></a></li>
         </mt:if>
         <mt:else>
-        <li<mt:if name="search_entry"> class="yah"</mt:if> id="results-entry-tab"><a href="#" onclick="reSearch('entry')"><span><__trans phrase="Entries"></span></a></li>
-        <li<mt:if name="search_comment"> class="yah"</mt:if> id="results-comment-tab"><a href="#" onclick="reSearch('comment')"><span><__trans phrase="Comments"></span></a></li>
-        <li<mt:if name="search_ping"> class="yah"</mt:if> id="results-ping-tab"><a href="#" onclick="reSearch('ping')"><span><__trans phrase="TrackBacks"></span></a></li>
-        <li<mt:if name="search_page"> class="yah"</mt:if> id="results-page-tab"><a href="#" onclick="reSearch('page')"><span><__trans phrase="Pages"></span></a></li>
-        <li<mt:if name="search_template"> class="yah"</mt:if> id="results-template-tab"><a href="#" onclick="reSearch('template')"><span><__trans phrase="Templates"></span></a></li>
+        <li<mt:if name="search_entry"> class="yah"</mt:if> id="results-entry-tab"><a href="javascript:void(0)" onclick="reSearch('entry')"><span><__trans phrase="Entries"></span></a></li>
+        <li<mt:if name="search_comment"> class="yah"</mt:if> id="results-comment-tab"><a href="javascript:void(0)" onclick="reSearch('comment')"><span><__trans phrase="Comments"></span></a></li>
+        <li<mt:if name="search_ping"> class="yah"</mt:if> id="results-ping-tab"><a href="javascript:void(0)" onclick="reSearch('ping')"><span><__trans phrase="TrackBacks"></span></a></li>
+        <li<mt:if name="search_page"> class="yah"</mt:if> id="results-page-tab"><a href="javascript:void(0)" onclick="reSearch('page')"><span><__trans phrase="Pages"></span></a></li>
+        <li<mt:if name="search_template"> class="yah"</mt:if> id="results-template-tab"><a href="javascript:void(0)" onclick="reSearch('template')"><span><__trans phrase="Templates"></span></a></li>
         </mt:if>
         <mt:if name="can_view_log">
-        <li<mt:if name="search_log"> class="yah"</mt:if> id="results-log-tab"><a href="#" onclick="reSearch('log')"><span><__trans phrase="Activity Log"></span></a></li>
+        <li<mt:if name="search_log"> class="yah"</mt:if> id="results-log-tab"><a href="javascript:void(0)" onclick="reSearch('log')"><span><__trans phrase="Activity Log"></span></a></li>
         </mt:if>
         <mt:if name="system_overview_nav"><mt:if name="is_administrator">
-        <li<mt:if name="search_author"> class="yah"</mt:if> id="results-author-tab"><a href="#" onclick="reSearch('author')"><span><__trans phrase="Users"></span></a></li>
+        <li<mt:if name="search_author"> class="yah"</mt:if> id="results-author-tab"><a href="javascript:void(0)" onclick="reSearch('author')"><span><__trans phrase="Users"></span></a></li>
         </mt:if>
         </mt:if>
         <mt:if name="system_overview_nav">
-        <li<mt:if name="search_blog"> class="yah"</mt:if> id="results-blog-tab"><a href="#" onclick="reSearch('blog')"><span><__trans phrase="Weblogs"></span></a></li>
+        <li<mt:if name="search_blog"> class="yah"</mt:if> id="results-blog-tab"><a href="javascript:void(0)" onclick="reSearch('blog')"><span><__trans phrase="Weblogs"></span></a></li>
         </mt:if></mt:if>
     </ul>
 </div>
@@ -393,7 +393,7 @@
 
 <mt:if name="have_more">
 <__trans phrase="Showing first [_1] results." params="<mt:var name="limit">">
-<p><a href="#" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
+<p><a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
 <mt:else>
 <mt:if name="have_results">
 <p><__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">"></p>

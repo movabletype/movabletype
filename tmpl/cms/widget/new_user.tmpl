@@ -4,14 +4,18 @@
     <p>Welcome to Movable Type, the world's most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:</p>
     <ul>
 <mt:if name="blog_id">
+    <mt:if name="can_create_post">
         <li>
             <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">">Write your first post</a>
             <p>What would a blog be without content? Start your Movable Type experience by creating your very first post.</p>
         </li>
+    </mt:if>
+    <mt:if name="can_edit_templates">
         <li>
             <a href="<mt:var name="script_url">?__mode=stylecatcher_theme&amp;blog_id=<mt:var name="blog_id">">Design your blog</a>
             <p>Customize the look and feel of your blog quickly by selecting a design from one of our professionally designed themes.</p>
         </li>
+    </mt:if>
 </mt:if>
         <li>
             <a href="http://www.movabletype.com/mt4/">Explore what's new in Movable Type 4</a>

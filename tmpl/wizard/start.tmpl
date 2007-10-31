@@ -96,7 +96,7 @@
     </mt:setvarblock>
 </mt:unless>
 
-<mt:include name="include/header.tmpl">
+<mt:include name="../cms/include/chromeless_header.tmpl">
 
 <mt:if name="cfg_exists">
     <p><__trans phrase="Your Movable Type configuration file already exists. The Wizard cannot continue with this file present."><br /></p>
@@ -112,7 +112,11 @@
     <p class="intro"><__trans phrase="This wizard will help you configure the basic settings needed to run Movable Type."></p>
 
     <mt:if name="uri_invalid">
-    <h4 class="error-message"><__trans phrase="Error: '[_1]' could not be found.  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to"$>"></h4>
+        <mtapp:statusmsg
+            id="uri_invalid"
+            class="error">
+            <__trans phrase="Error: '[_1]' could not be found.  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to"$>">
+        </mtapp:statusmsg>
     </mt:if>
 
     <mt:if name="valid_static_path">
@@ -146,12 +150,13 @@
                 hint="$hintfoo">
                 <input type="text" name="set_static_uri_to" id="set_static_uri_to" value="<$mt:var name="set_static_uri_to"$>" size="">
             </mtapp:setting>
+            </fieldset>
+        </div>
     </mt:if>
             <div class="right"><input type="submit" value="<__trans phrase="Begin">" /></div>
-        </fieldset>
-    </div>
 
 </form>
 
 </mt:if>
-<mt:include name="include/footer.tmpl">
+
+<mt:include name="../cms/include/chromeless_footer.tmpl">

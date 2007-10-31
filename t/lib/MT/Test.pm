@@ -48,8 +48,12 @@ sub init_test_db {
     require MT::Upgrade;
     # Add our test 'Foo' and 'Bar' classes to the list of
     # object classes to install.
-    %MT::Upgrade::classes = ();
-    MT::Upgrade->register_class(['Foo', 'Bar']);
+    %MT::Upgrade::classes = (foo=>'Foo',bar=>'Bar');
+    #MT::Upgrade->register_class(['Foo', 'Bar']);
+    MT->instance;
+    MT->registry->{object_types}->{foo} = 'Foo';
+    MT->registry->{object_types}->{bar} = 'Bar';
+
     # Replace the standard seed_database/install_template functions
     # with stubs since we're not creating a full schema.
     MT::Upgrade->register_upgrade_function({
@@ -70,17 +74,27 @@ sub init_db {
     my $types = MT->registry('object_types');
     my @classes = map { $types->{$_} } grep { $_ !~ /\./ } keys %$types;
     foreach my $class (@classes) {
-        eval 'require '.$class or die $@;
+        if (ref($class) eq 'ARRAY') {
+            next; #TODO for now - it won't hurt when we do driver-tests.
+        }
+        else {
+            eval 'require '.$class or die $@;
+        }
     }
 
     # Clear existing database tables
     my $driver = MT::Object->driver();
     foreach my $class (@classes) {
-        if ($driver->dbd->ddl_class->table_exists($class)) {
-            $driver->sql(
-                $driver->dbd->ddl_class->drop_table_sql($class),
-            );
-            $driver->dbd->ddl_class->drop_sequence($class),
+        if (ref($class) eq 'ARRAY') {
+            next; #TODO for now - it won't hurt when we do driver-tests.
+        }
+        else {
+            if ($driver->dbd->ddl_class->table_exists($class)) {
+                $driver->sql(
+                    $driver->dbd->ddl_class->drop_table_sql($class),
+                );
+                $driver->dbd->ddl_class->drop_sequence($class),
+            }
         }
     }
 
@@ -92,8 +106,10 @@ sub init_db {
         User    => {},
         Blog    => {}
     );
-    MT::Entry->remove;
-    MT::Comment->remove;
+    eval {
+        MT::Entry->remove;
+        MT::Comment->remove;
+    };
 }
 
 sub progress {}
@@ -445,7 +461,7 @@ It\'s a hard rain\'s a-gonna fall',
         $cmt->junk_score(1.5);
         $cmt->save() or die "Couldn't save comment record 2: ".$cmt->errstr;
     }
-    # entry id 6 - 1 comment visible, 1 moderated
+    # entry id 6 - 3 comment visible, 1 moderated
     unless (MT::Comment->count({entry_id => 6})) {
         my $cmt = new MT::Comment();
         $cmt->set_values({
@@ -468,6 +484,18 @@ It\'s a hard rain\'s a-gonna fall',
         $cmt->text('Comment for entry 6, moderated');
         $cmt->created_on('20040910182800');
         $cmt->save() or die "Couldn't save comment record 4: ".$cmt->errstr;
+        
+        $cmt->text("All your comments are belonged to me.");
+        $cmt->commenter_id($chuckd->id);
+        $cmt->visible(1);
+        $cmt->id(14);
+        $cmt->save or die "Couldn't save comment record 1: ".$cmt->errstr;
+
+        $cmt->text("All your comments are belonged to us MT Authors.");
+        $cmt->commenter_id($bobd->id);
+        $cmt->visible(1);
+        $cmt->id(15);
+        $cmt->save or die "Couldn't save comment record 1: ".$cmt->errstr;
     }
     # entry id 7 - 0 comment visible, 1 moderated
     unless (MT::Comment->count({entry_id => 7})) {

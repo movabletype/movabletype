@@ -17,7 +17,7 @@ BEGIN {
     $ENV{MT_CONFIG} = "$driver-test.cfg";
 }
 
-use Test::More tests => 228;
+use Test::More tests => 227;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:testdb);
 
@@ -37,7 +37,7 @@ package main;
 print "Please configure for this test by creating $ENV{MT_CONFIG} with your database, username, and password\n"
     unless -r $ENV{MT_CONFIG};
 SKIP: {
-    skip("$ENV{MT_CONFIG} configuration not found", 190)
+    skip("$ENV{MT_CONFIG} configuration not found", 227)
         unless ok(-r $ENV{MT_CONFIG}, "$ENV{MT_CONFIG} configuration");
 
 my(@foo, @bar);
@@ -440,7 +440,8 @@ ok(!$iter->(), 'no $iter');
 is(Foo->count(undef,
     { join => [ 'Bar', 'foo_id',
                 undef,
-                { sort => 'created_on',
+                { unique => 1,
+                  sort => 'created_on',
                   direction => 'descend', } ] }), 3, 'count');
 
 ## Now load all Foo objects in order of most recently
@@ -571,7 +572,7 @@ $vals = {
     text => 'quux',
     created_on => 13209,
     created_by => 'bar',
-    modified_on => 39023,
+    #modified_on => 39023, modified_by auto-set modified_on in our new code.
     modified_by => 'foo',
 };
 $foo[0]->set_values($vals);

@@ -207,6 +207,7 @@ sub listing {
     my $terms   = $opt->{terms}   || $opt->{Terms} || {};
     my $args    = $opt->{args}    || $opt->{Args} || {};
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
+    my $no_limit = $opt->{no_limit} || 0;
     my $json    = $opt->{json}    || $app->param('json');
     my $pre_build = $opt->{pre_build} if ref($opt->{pre_build}) eq 'CODE';
     $param->{json} = 1 if $json;
@@ -216,8 +217,9 @@ sub listing {
     $param->{$_} = $list_pref->{$_} for keys %$list_pref;
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
-    $args->{offset} = $offset if $offset;
-    $args->{limit} = $limit + 1;
+    $args->{offset} = $offset if $offset && !$no_limit;
+    $args->{limit} = $limit + 1 unless $no_limit;
+    $param->{limit_none} = 1 if $no_limit;
 
     # handle search parameter
     if ( my $search = $app->param('search') ) {
@@ -338,7 +340,7 @@ sub listing {
             my $row = $obj->column_values();
             $hasher->( $obj, $row ) if $hasher;
             push @data, $row;
-            last if scalar @data == $limit;
+            last if (scalar @data == $limit) && (!$no_limit);
         }
 
         $param->{object_loop} = \@data;
@@ -2016,7 +2018,7 @@ sub set_default_tmpl_params {
     $param->{mt_version} = MT->version_id;
     $param->{mt_product_code} = MT->product_code;
     $param->{mt_product_name} = $app->translate(MT->product_name);
-    $param->{language_tag} = $app->current_language;
+    $param->{language_tag} = substr($app->current_language, 0, 2);
     $param->{language_encoding} = $app->charset;
     $tmpl->param($param);
 }

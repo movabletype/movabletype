@@ -153,7 +153,7 @@ TC.attachLoadEvent(init);
                     </div>
 </mt:if>
                     <div class="box permission-box">
-                        <h3><__trans phrase="System Permissions"> <a href="#" onclick="return openManual('author_permissions', 'introduction')">?</a></h3>
+                        <h3><__trans phrase="System Permissions"> <a href="javascript:void(0)" onclick="return openManual('author_permissions', 'introduction')">?</a></h3>
                         <div class="inner">
                             <ul class="last" id="permission-list">
                                 <li><input name="is_superuser" id="is_superuser" type="checkbox" value="1"<mt:if name="perm_is_superuser"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this)" /> <label for="is_superuser"><__trans phrase="System Administrator"></label></li>
@@ -252,7 +252,7 @@ TC.attachLoadEvent(init);
         label="<__trans phrase="Web Services Password">"
         hint="<__trans phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients.">">
         <input type="password" name="api_password" id="api_password" class="full-width" value="<mt:var name="api_password" escape="html">" />
-        <a href="#" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
+        <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
     </mtapp:setting>
 </mt:if>
                 </div>

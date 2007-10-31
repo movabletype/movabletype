@@ -6,8 +6,7 @@
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
-            class="success"
-            rebuild="all">
+            class="success">
             <__trans phrase="Your feedback preferences have been saved.">
         </mtapp:statusmsg>
     </mt:if>
@@ -15,8 +14,7 @@
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/cfg_system_content_nav.tmpl">
 </MTSetVarBlock>
-<mt:include name="include/header.tmpl">
-
+<mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 <!--
 function clearNotifyUsers() {
@@ -29,6 +27,9 @@ function clearNotifyUsers() {
 }
 -->
 </script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
 
 <form action="<mt:var name="script_url">" method="post">
 <input type="hidden" name="__mode" value="save_cfg_system_feedback" />
@@ -64,25 +65,6 @@ function clearNotifyUsers() {
     </mtapp:setting>
 
     <mtapp:setting
-        id="use_confirmation"
-        label="<__trans phrase="Use Comment Confirmation">">
-        <input type="checkbox" id="use_confirmation" name="use_confirmation"<mt:if name="use_confirmation"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Use comment confirmation page">
-    </mtapp:setting>
-
-<mt:if name="captcha_loop">
-    <mtapp:setting
-        id="capthca_provider"
-        label="<__trans phrase="CAPTCHA Provider">">
-        <select name="captcha_provider">
-        <option value="none"><__trans phrase="Don't use CAPTCHA"></option>
-        <mt:loop name="captcha_loop">
-        <option value="<mt:var name="key">"<mt:if name="enabled_selected"> selected="selected"</mt:if>><mt:var name="label"></option>
-        </mt:loop>
-        </select>
-    </mtapp:setting>
-</mt:if>
-
-    <mtapp:setting
         id="ping_disable"
         label="<__trans phrase="Disable TrackBacks">"
         hint="<__trans phrase="This will override all individual weblog TrackBack settings.">">
@@ -95,9 +77,16 @@ function clearNotifyUsers() {
 
 <fieldset>
 
-<h3><__trans phrase="Outbound TrackBack Control"></h3>
+<h3><__trans phrase="Privacy"></h3>
 
 <div class="inner">
+
+    <mtapp:setting
+        id="disable_notify_ping"
+        label="<__trans phrase="Outbound Notifications">"
+        hint="<__trans phrase="This feature allows you to disable sending notification pings when a new entry is created.">">
+<input type="checkbox" id="disable_notify_ping" name="disable_notify_ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings"></label>
+    </mtapp:setting>
 
     <mtapp:setting
         id="trackback_send"
@@ -109,7 +98,7 @@ function clearNotifyUsers() {
 <li><input type="radio" name="trackback_send" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <__trans phrase="No site"> <span class="hint"><__trans phrase="(Disable all outbound TrackBacks.)"></span></li>
 <li><input type="radio" name="trackback_send" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only the weblogs on this installation"></li>
 <li><input type="radio" name="trackback_send" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only the sites on the following domains:"><br />
-<textarea rows="5" cols="60" name="trackback_send_domains"><mt:var name="trackback_send_domains" escape="html"></textarea></li>
+<textarea rows="" cols="" name="trackback_send_domains" class="full-width medium"><mt:var name="trackback_send_domains" escape="html"></textarea></li>
 </ul>
     </mtapp:setting>
 

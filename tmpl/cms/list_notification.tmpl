@@ -12,7 +12,7 @@
         <mtapp:statusmsg
             id="saved"
             class="success">
-            <__trans phrase="You have added [_1] to your address book." params="<mt:var name="saved" escape="html">">
+            <__trans phrase="You have added [_1] to your address book." params="<strong><$mt:var name="saved" escape="html"$></strong>">
         </mtapp:statusmsg>
     </mt:if>
 
@@ -138,21 +138,27 @@
     }
 
     function setCreateMode () {
-    	getByID('email').value = '';
-    	getByID('url').value = '';
-    	getByID('create-inline-notification').style.display = 'block';
-    	getByID('email').focus();
+        getByID('email').value = '';
+        getByID('url').value = '';
+        getByID('create-inline-notification').style.display = 'block';
+        getByID('create-contact').style.display = 'none';
+        var el = getByID('saved-msg');
+        if (el) el.style.display = 'none';
+        var el = getByID('saved-deleted-msg');
+        if (el) el.style.display = 'none';
+        getByID('email').focus();
     }
 
     function cancelCreateMode () {
     	getByID('create-inline-notification').style.display = 'none';
+        getByID('create-contact').style.display = 'block';
     }
 
     var tableSelect;
     function init()
     {
     	// setup
-    	tableSelect = new TC.TableSelect( "selector" );
+    	tableSelect = new TC.TableSelect( "notification-listing-table" );
     }
 
     TC.attachLoadEvent( init );
@@ -165,7 +171,7 @@
 
 <mt:include name="include/header.tmpl">
 
-<p><a href="#" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Contact"></a></p>
+<p id="create-contact"><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Contact"></a></p>
 
 <div class="create-inline" id="create-inline-notification">
 <form method="post" action="<mt:var name="script_url">">

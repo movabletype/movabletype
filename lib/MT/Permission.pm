@@ -216,6 +216,8 @@ sub blog {
         $Perms{ $ref->[0] } = $ref;
         my $set = $ref->[2];
 
+        return if defined *$meth;
+
         *$meth = sub {
             my $cur_perm = $_[0]->permissions;
             return undef if !$cur_perm && ( @_ < 2 );
@@ -350,6 +352,18 @@ sub can_edit_entry {
         ? ( $perms->can_publish_post && $entry->author_id == $author->id )
         : ( $perms->can_create_post && $entry->author_id == $author->id )
       );
+}
+
+sub can_upload {
+    my $perms = shift;
+    if (@_) {
+        if (my $can = shift) {
+            $perms->set_these_permissions('upload');
+        } else {
+            $perms->clear_permissions('upload');
+        }
+    }
+    return $perms->can_edit_assets || $perms->has('upload');
 }
 
 sub can_view_feedback {

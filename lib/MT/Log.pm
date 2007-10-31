@@ -46,6 +46,10 @@ __PACKAGE__->install_properties({
     class_type => 'system',
 });
 
+sub class_label {
+    return MT->translate('System');
+}
+
 sub init {
     my $log = shift;
     $log->SUPER::init(@_);
@@ -56,8 +60,6 @@ sub init {
     $log->modified_on($ts);
     $log;
 }
-
-sub class_label { MT->translate("System") }
 
 sub description {
     my $log = shift;

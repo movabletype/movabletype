@@ -16,7 +16,7 @@ function toggleAndUncheck(obj, target) {
         return;
     }
 
-    var targetObj = document.getElementById(target);
+    var targetObj = getByID(target);
     if (!targetObj) {
         return;
     }
@@ -31,13 +31,32 @@ function toggleAndUncheck(obj, target) {
     }
 }
 
+function toggleAndDisable(obj, target) {
+    if (!obj || !target) {
+        return;
+    }
+
+    var targetObj = getByID(target);
+    if (!targetObj) {
+        return;
+    }
+
+    if (obj.checked) {
+        targetObj.checked = true;
+        targetObj.disabled = true;
+    } else {
+        targetObj.disabled = false;
+        // targetObj.checked = true;
+    }
+}
+
 function on_edit_config_changed(obj) {
     toggleAndUncheck(obj, 'permission-set_publish_paths');
 }
 
 function on_create_post_changed(obj) {
     toggleAndUncheck(obj, 'permission-publish_post');
-    var eap = document.getElementById('permission-edit_all_posts');
+    var eap = getByID('permission-edit_all_posts');
     if (eap && eap.checked) {
         return;
     }
@@ -45,14 +64,21 @@ function on_create_post_changed(obj) {
 }
 
 function on_edit_all_posts_changed(obj) {
-    var cp = document.getElementById('permission-create_post');
+    var cp = getByID('permission-create_post');
     if (cp && cp.checked) {
         return;
     }
     toggleAndUncheck(obj, 'permission-send_notifications');
 }
 
+function on_edit_assets_changed(obj) {
+    toggleAndDisable(obj, 'permission-upload');
+    getByID("permission-save_image_defaults").disabled = false;
+}
+
 function on_upload_changed(obj) {
+    if (getByID("permission-edit_assets").checked)
+        return;
     toggleAndUncheck(obj, 'permission-save_image_defaults');
 }
 
@@ -166,7 +192,7 @@ TC.attachLoadEvent( rectifyAll );
 
 <div id="edit-role" onclick="handleClick(event)">
 
-<p class="page-desc"><__trans phrase="_USAGE_ROLE_PROFILE"><a href="#" onclick="return openManual('author_permissions', 'permissions')" class="help-link">?</a></p>
+<p class="page-desc"><__trans phrase="_USAGE_ROLE_PROFILE"><a href="javascript:void(0)" onclick="return openManual('author_permissions', 'permissions')" class="help-link">?</a></p>
 
 <p><mt:if name="id"><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="There are [_1] User(s) with this role." params="<mt:var name="user_count">"></a></mt:if></p>
 
@@ -202,7 +228,7 @@ TC.attachLoadEvent( rectifyAll );
             id="description"
             label="<__trans phrase="Description">"
             hint="">
-            <textarea name="description" id="description" class="full-width" cols="" rows=""><mt:var name="description" escape="html"></textarea>
+            <textarea name="description" id="description" class="full-width short" cols="" rows=""><mt:var name="description" escape="html"></textarea>
         </mtapp:setting>
         <mt:if name="id">
             <mtapp:setting
@@ -219,8 +245,8 @@ TC.attachLoadEvent( rectifyAll );
 <div id="permission-list" class="permission-list">
 
 <mt:if name="is_enabled">
-<!-- <a href="#" onclick="return allPerms('permission', true)"><__trans phrase="Check All"></a> | -->
-<!-- <a href="#" onclick="return allPerms('permission', false)"><__trans phrase="Uncheck All"></a> -->
+<!-- <a href="javascript:void(0)" onclick="return allPerms('permission', true)"><__trans phrase="Check All"></a> | -->
+<!-- <a href="javascript:void(0)" onclick="return allPerms('permission', false)"><__trans phrase="Uncheck All"></a> -->
 </mt:if>
 
     <mtapp:setting
@@ -266,9 +292,9 @@ TC.attachLoadEvent( rectifyAll );
         label="<__trans phrase="File Upload">"
         hint="">
         <ul>
-            <li><label for="permission-upload"><input id="permission-upload" type="checkbox" onchange="checkPerms(this);" class="upload cb" name="permission" value="upload"<mt:if name="have_access-upload"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-upload" escape="html"></label></li>
-            <li><label for="permission-save_image_defaults"><input id="permission-save_image_defaults" type="checkbox" onchange="checkPerms(this);" class="save_image_defaults cb" name="permission" value="save_image_defaults"<mt:if name="have_access-save_image_defaults"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-save_image_defaults" escape="html"></label></li>
             <li><label for="permission-edit_assets"><input id="permission-edit_assets" type="checkbox" onchange="checkPerms(this);" class="edit_assets cb" name="permission" value="edit_assets"<mt:if name="have_access-edit_assets"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_assets" escape="html"></label></li>
+            <li><label for="permission-upload"><input id="permission-upload" type="checkbox" onchange="checkPerms(this);" class="upload cb" name="permission" value="upload"<mt:if name="have_access-upload"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-upload" escape="html"></label></li>
+            <li><label for="permission-save_image_defaults"><input id="permission-save_image_defaults" type="checkbox" onchange="checkPerms(this);" class="save_image_defaults cb" name="permission" value="save_image_defaults"<mt:if name="have_access-save_image_defaults"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"><mt:unless name="have_access-edit_assets"> disabled="disabled"</mt:unless></mt:unless></mt:if> /> <mt:var name="prompt-save_image_defaults" escape="html"></label></li>
         </ul>
     </mtapp:setting>
 

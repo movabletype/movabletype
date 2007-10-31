@@ -22,7 +22,7 @@ parameters:
 </TMPL_IF>
             <!-- ListingPanel -->
             <div id="<TMPL_VAR NAME=PANEL_TYPE>-panel" class="hidden panel">
-                <h2><span class="weblog-title-highlight"><TMPL_VAR NAME=DIALOG_TITLE></span>: <TMPL_VAR NAME=PANEL_TITLE> <TMPL_IF NAME=PANEL_HAS_STEPS>(<MT_TRANS phrase="Step [_1] of [_2]" params="<TMPL_VAR NAME=PANEL_NUMBER>%%<TMPL_VAR NAME=PANEL_TOTAL>">)</TMPL_IF></h2>
+                <h2><TMPL_VAR NAME=PANEL_TITLE> &nbsp; <TMPL_IF NAME=PANEL_HAS_STEPS>(<MT_TRANS phrase="Step [_1] of [_2]" params="<TMPL_VAR NAME=PANEL_NUMBER>%%<TMPL_VAR NAME=PANEL_TOTAL>">)</TMPL_IF></h2>
 
                 <TMPL_IF NAME=PANEL_MULTI><div class="items-wrapper">
                     <span class="modal_added"><TMPL_VAR NAME=ITEMS_PROMPT>:</span> <span class="items"></span>

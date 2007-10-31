@@ -1,6 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Config File Created"></mt:setvarblock>
 <mt:setvar name="complete" value="1">
-<mt:include name="include/header.tmpl">
+<mt:include name="../cms/include/chromeless_header.tmpl">
 
 <script type="text/javascript">
 <!--
@@ -35,13 +35,21 @@ function toggleConfig() {
 <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name=static_uri escape="html">">
 
 <mt:if name="file_not_found">
-<div class="error-message"><__trans phrase="You selected to create the mt-config.cgi file manually, however it could not be found. Please cut and paste the following text into a file called 'mt-config.cgi' into the root directory of Movable Type (the same directory in which mt.cgi is found)."></div>
+    <mtapp:statusmsg
+        id="file_not_found"
+        class="error">
+        <__trans phrase="You selected to create the mt-config.cgi file manually, however it could not be found. Please cut and paste the following text into a file called 'mt-config.cgi' into the root directory of Movable Type (the same directory in which mt.cgi is found).">
+    </mtapp:statusmsg>
 
 <p><__trans phrase="If you would like to check the directory permissions and retry, click the 'Retry' button."></p>
 <mt:else>
 <mt:unless name="config_created">
 
-<div class="error-message"><__trans phrase="We were unable to create your Movable Type configuration file. This is most likely the result of a permissions problem. To resolve this problem you will need to make sure that your Movable Type home directory (the directory that contains mt.cgi) is writable by your web server."></div>
+    <mtapp:statusmsg
+        id="config_created"
+        class="error">
+        <__trans phrase="We were unable to create your Movable Type configuration file. This is most likely the result of a permissions problem. To resolve this problem you will need to make sure that your Movable Type home directory (the directory that contains mt.cgi) is writable by your web server.">
+    </mtapp:statusmsg>
 
 <p><__trans phrase="If you would like to check the directory permissions and retry, click the 'Retry' button."></p>
 
@@ -94,4 +102,4 @@ function toggleConfig() {
 
 </form>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="../cms/include/chromeless_footer.tmpl">

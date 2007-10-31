@@ -7,6 +7,9 @@
             <__trans phrase="You have successfully deleted the blogs from the Movable Type system.">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="can_create_blog">
+    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog" class="icon-left icon-create"><__trans phrase="Create Blog"></a></p>
+    </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
@@ -15,6 +18,7 @@
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
     <$mt:include name="include/display_options.tmpl"$>
+    <$mtapp:pageactions from="list_blog"$>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript">
@@ -32,7 +36,7 @@
     function init()
     {
     	// setup
-    	tableSelect = new TC.TableSelect( "selector" );
+    	tableSelect = new TC.TableSelect( "blog-listing-table" );
     	tableSelect.rowSelect = true;
     }
 
@@ -40,17 +44,6 @@
     //-->
     </script> 
 </mt:setvarblock>
-
-<mt:include name="include/header.tmpl">
-
-<mt:if name="can_create_blog">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog" class="icon-left icon-create"><__trans phrase="Create Blog"></a></p>
-</mt:if>
-
-<div class="list-wrapper" id="system-list-blog">
-
-<mt:include name="include/blog_table.tmpl">
-
-</div>
-
-<mt:include name="include/footer.tmpl">
+<$mt:include name="include/header.tmpl"$>
+<$mt:include name="include/blog_table.tmpl"$>
+<$mt:include name="include/footer.tmpl"$>

@@ -147,7 +147,7 @@ var tableSelect;
 function init()
 {
 	// setup
-	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect = new TC.TableSelect( "comment-listing-table" );
 	tableSelect.rowSelect = true;
 	setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
 	setFilterVal('<mt:var name="filter_val">');
@@ -172,7 +172,7 @@ TC.attachLoadEvent( init );
                 <div class="filter-title">
             <mt:unless name="filter">
                     <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
-                    <!-- <a href="#" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a> -->
+                    <!-- <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a> -->
             <mt:else>
                 <mt:if name="filter_key">
                     <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>

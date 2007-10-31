@@ -22,7 +22,11 @@ our %TYPES = (
     comment_preview => 'Comment Preview',
     comment_error => 'Comment Error',
     comment_pending => 'Comment Pending',
-    custom => 'Custom',
+    dynamic_error => 'Dynamic Error',
+    popup_image => 'Uploaded Image',
+    search_results => 'Search Results',
+    custom => 'Module',
+    widget => 'Widget',
 );
 
 my $resync_to_db;
@@ -402,7 +406,9 @@ sub tokens {
     if (@_) {
         return bless( $tmpl->{__tokens} = shift ), 'MT::Template::Tokens';
     } else {
-        return bless( $tmpl->{__tokens} ||= $tmpl->compile ), 'MT::Template::Tokens';
+        my $t = $tmpl->{tokens} || $tmpl->compile;
+        return bless $t, 'MT::Template::Tokens' if $t;
+        return undef;
     }
 }
 
@@ -598,6 +604,22 @@ sub removeChild {
 *append_child = \&appendChild;
 *insert_before = \&insertBefore;
 *remove_child = \&removeChild;
+
+# trans('Index')
+# trans('Archive')
+# trans('Category Archive')
+# trans('Individual')
+# trans('Page')
+# trans('Comment Listing')
+# trans('Ping Listing')
+# trans('Comment Preview')
+# trans('Comment Error')
+# trans('Comment Pending')
+# trans('Dynamic Error')
+# trans('Uploaded Image')
+# trans('Search Results')
+# trans('Module')
+# trans('Widget')
 
 1;
 __END__

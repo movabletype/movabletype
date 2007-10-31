@@ -23,7 +23,7 @@ var tableSelect;
 function init()
 {
 	// setup
-	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect = new TC.TableSelect( "<$mt:var name="asset_type"$>-listing-table" );
 	tableSelect.rowSelect = true;
 }
 
@@ -57,7 +57,7 @@ TC.attachLoadEvent( init );
 
 <mt:if name="show_ip_info">
 <p><img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Ban New IP Address">" width="9" height="9" />
-<a href="#" onclick="setCreateMode()"><__trans phrase="Ban New IP Address"></a></p>
+<a href="javascript:void(0)" onclick="setCreateMode()"><__trans phrase="Ban New IP Address"></a></p>
 </mt:if>
 
 <div class="create-inline" id="create-inline-ipban">
@@ -76,50 +76,28 @@ TC.attachLoadEvent( init );
     </form>
 </div>
 
-<mt:if name="object_loop">
-<form method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false;" id="myform">
-    <input type="hidden" name="__mode" value="" />
-    <input type="hidden" name="_type" value="banlist" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="action_name" value="" />
-    <input type="hidden" name="itemset_action_input" value="" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<mtapp:listing
+    show_actions="0">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="cb"><input type="checkbox" value="all" class="select" /></th>
+            <th id="bt-ip"><__trans phrase="IP Address"></th>
+            <th id="bt-date"><__trans phrase="Date Banned"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
+            <td><mt:var name="ip"></td>
+            <td><mt:var name="created_on_formatted"></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>
 
-    <div class="list" id="selector">
-        <table cellspacing="0">
-            <thead>
-                <tr>
-                <th class="cb"><input type="checkbox" value="all" class="select" /></th>
-                <th id="bt-ip"><__trans phrase="IP Address"></th>
-                <th id="bt-date"><__trans phrase="Date Banned"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <mt:loop name="object_loop">
-                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-                <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-                <td><mt:var name="ip"></td>
-                <td><mt:var name="created_on_formatted"></td>
-                </tr>
-                </mt:loop>
-            </tbody>
-        </table>
-    </div>
-    <div class="list-actions">
-        <div class="button-bar">
-            <input onclick="doRemoveItems(this.form, '<__trans phrase="IP address">', '<__trans phrase="IP addresses">')" type="button" value="<__trans phrase="Delete">" />
-        </div>
-    </div>
-
-</form>
-<mt:else>
-    <mtapp:statusmsg
-        id="no-ip"
-        class="info">
-        <__trans phrase="No banned IPs have been added.">
-    </mtapp:statusmsg>
-</mt:if>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

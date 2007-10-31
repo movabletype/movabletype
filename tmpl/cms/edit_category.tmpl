@@ -1,8 +1,6 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Category">">
 <MTSetVarBlock name="content_header">
-<mt:unless name="tab_details">
-    <p class="page-desc"><__trans phrase="Use this page to edit the attributes of the category <strong>[_1]</strong>. You can set a description for your category to be used in your public pages, as well as configuring the TrackBack options for this category." params="<mt:var name="label" escape="html">"></p>
-</mt:unless>
+<p class="page-desc"><__trans phrase="Use this page to edit the attributes of the category <strong>[_1]</strong>. You can set a description for your category to be used in your public pages, as well as configuring the TrackBack options for this category." params="<mt:var name="label" escape="html">"></p>
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -20,9 +18,6 @@
         </mtapp:statusmsg>
     </mt:if>
 </MTSetVarBlock>
-<mt:setvarblock name="related_content">
-    <$mt:include name="include/display_options.tmpl"$>
-</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
@@ -35,23 +30,6 @@ function validate(form) {
     return false;
 }
 
-function sectionToggle(selectedTab) {
-        var tabs = new Array('details','pings');
-
-        for (var i = 0; i < tabs.length; i++) {
-                var tabObject = getByID('category-' + tabs[i] + '-tab');
-                var contentObject = getByID('category-' + tabs[i] + '-content');
-
-                if (contentObject) {
-                        if (tabs[i] == selectedTab) {
-                                contentObject.style.display = 'block';
-                        } else {
-                                contentObject.style.display = 'none';
-                        }
-                }
-        }
-}
- 
 function toggleFile() {
     var fld = getByID("basename");
     if (fld) {
@@ -72,7 +50,7 @@ var tableSelect;
 function init()
 {
     // setup
-    tableSelect = new TC.TableSelect( "selector" );
+    tableSelect = new TC.TableSelect( "<$mt:var name="asset_type"$>-listing-table" );
     tableSelect.rowSelect = true;
 }
 TC.attachLoadEvent( init );
@@ -80,7 +58,7 @@ TC.attachLoadEvent( init );
 </script>
 
 
-<div id="category-details-content"<mt:unless name="tab_details"> style="display:none;"</mt:unless>>
+<div id="category-details-content">
 <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="__mode" value="save" />
@@ -90,7 +68,6 @@ TC.attachLoadEvent( init );
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="category_parent" value="<mt:var name="parent">" />
 
-    <h3><__trans phrase="Details"></h3>
     <fieldset>
 <mtapp:setting
     id="label"
@@ -107,7 +84,7 @@ TC.attachLoadEvent( init );
     hint="<__trans phrase="This is the basename assigned to your category.">"
     help_page="categories"
     help_section="category_basename">
-    <input name="basename" id="basename" maxlength="250" value="<mt:var name="basename" escape="html">" disabled="disabled" class="wide" onchange="setElementValue('basename', dirify(this.value))" />&nbsp;<a href="#" title="<__trans phrase="Unlock this category&rsquo;s output filename for editing">" onclick="return toggleFile()"><img src="<mt:var name="static_uri">images/locked.gif" alt="Filename Lock" id="basename-lock" height="14" width="14" /></a>
+    <input name="basename" id="basename" maxlength="250" value="<mt:var name="basename" escape="html">" disabled="disabled" class="wide" onchange="setElementValue('basename', dirify(this.value))" />&nbsp;<a href="javascript:void(0)" title="<__trans phrase="Unlock this category&rsquo;s output filename for editing">" onclick="return toggleFile()"><img src="<mt:var name="static_uri">images/locked.gif" alt="Filename Lock" id="basename-lock" height="14" width="14" /></a>
 
     <p class="alert-warning-inline" id="basename-warning" style="display: none;">
     <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
@@ -118,7 +95,7 @@ TC.attachLoadEvent( init );
 <mtapp:setting
     id="description"
     label="<__trans phrase="Description">">
-    <textarea name="description" id="description" rows="5" cols="72" class="wide"><mt:var name="description" escape="html"></textarea>
+    <textarea name="description" id="description" rows="" cols="" class="full-width short"><mt:var name="description" escape="html"></textarea>
 </mtapp:setting>
     </fieldset>
 
@@ -133,13 +110,15 @@ TC.attachLoadEvent( init );
     <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> 
 </mtapp:setting>
 
-        <div id="allow_pings_prefs" style="display:<mt:if name="allow_pings">block<mt:else>none</mt:if>">
-<mt:if name="tb_url">
+<mt:if name="tb">
     <mtapp:setting
         id="view_trackbacks"
         label="<__trans phrase="TrackBacks">">
-        <div id="view_trackbacks"><strong><a href="#" onclick="sectionToggle('pings')"><__trans phrase="View TrackBacks"></a></strong></div>
+        <div id="view_trackbacks"><strong><a href="<$mt:var name="script_url">?__mode=list_pings&amp;filter=category_id&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View TrackBacks"></a></strong></div>
     </mtapp:setting>
+</mt:if>
+        <div id="allow_pings_prefs" style="display:<mt:if name="allow_pings">block<mt:else>none</mt:if>">
+<mt:if name="tb_url">
     <mtapp:setting
         id="trackback_url"
         label="<__trans phrase="TrackBack URL for this category">"
@@ -165,7 +144,7 @@ TC.attachLoadEvent( init );
     hint="<__trans phrase="Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)">"
     help_page="categories"
     help_section="categories_urls_to_ping">
-    <textarea name="ping_urls" id="ping_urls" cols="50" rows="5"><mt:var name="ping_urls" escape="html"></textarea>
+    <textarea name="ping_urls" id="ping_urls" cols="" rows="" class="full-width short"><mt:var name="ping_urls" escape="html"></textarea>
 </mtapp:setting>
     </fieldset>
 
@@ -174,27 +153,5 @@ TC.attachLoadEvent( init );
     </div>
 </form>
 
-</div>
-<div id="category-pings-content"<mt:unless name="tab_pings"> style="display:none;"</mt:unless>>
-
-    <strong><a href="#" onclick="sectionToggle('details')"><__trans phrase="View Category Details"></a></strong>
-<mt:include name="include/ping_table.tmpl">
-
-<mt:if name="plugin_action_loop">
-    <mt:loop name="plugin_action_loop">
-        <mt:if name="__first__">
-    <div class="box" id="plugin-actions-box">
-        <h4><__trans phrase="Plugin Actions"></h4>
-        <div class="inner">
-            <ul>
-        </mt:if>
-                <li><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=edit_category&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="link_text"></a></li>
-        <mt:if name="__first__">
-            </ul>
-        </div>
-    </div>
-        </mt:if>
-    </mt:loop>
-</mt:if>
 </div>
 <mt:include name="include/footer.tmpl">

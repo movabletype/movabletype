@@ -1,10 +1,4 @@
 <?php
-global $mt;
-
-# This retrieves the Smarty instance we use to
-# declare our template compilation hints...
-$ctx = &$mt->context();
-
 function smarty_function_mtwidgetmanager($args, &$ctx) {
     $blog_id = $ctx->stash('blog_id');
     $widgetmanager = $args['name']; // Should we try to load is there's only one?
@@ -34,6 +28,4 @@ function widgetmanager_config($ctx) {
     }
     return $config;
 }
-
-
 ?>

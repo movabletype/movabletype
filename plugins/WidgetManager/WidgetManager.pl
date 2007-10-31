@@ -1,5 +1,3 @@
-#!/usr/bin/perl -w
-
 # WidgetManager plugin for Movable Type
 # Author: Byrne Reese, Six Apart (http://www.sixapart.com)
 # Released under the Artistic License
@@ -32,7 +30,8 @@ sub init_registry {
     $plugin->registry({
         tags => {
             function => {
-                WidgetManager => sub { $plugin->runner('_hdlr_widget_manager', @_) },
+                WidgetManager => '$WidgetManager::WidgetManager::Plugin::_hdlr_widget_manager',
+                WidgetSet => '$WidgetManager::WidgetManager::Plugin::_hdlr_widget_manager',
             },
         },
         applications => {
@@ -49,20 +48,31 @@ sub init_registry {
                         mode => 'list_widget',
                         order => 201,
                         permission => 'edit_templates',
-                        requires_blog => 1,
+                        view => "blog",
+                    },
+                },
+                template_snippets => {
+                    'widget_manager' => {
+                        label => 'Widget Set',
+                        content => '<$mt:WidgetSet name="$0"$>',
+                        trigger => 'widget',
+                    },
+                },
+                list_filters => {
+                    template => {
+                        widget_templates => {
+                            label => "Widgets",
+                            order => 500,
+                            handler => sub {
+                                my ($terms) = @_;
+                                $terms->{type} = 'widget';
+                            },
+                        },
                     },
                 },
             },
         },
     });
-}
-
-sub runner {
-    my $plugin = shift;
-    my $method = shift;
-    require WidgetManager::Plugin;
-    return $_->($plugin, @_) if $_ = \&{"WidgetManager::Plugin::$method"};
-    die $plugin->translate("Failed to find WidgetManager::Plugin::[_1]", $method);
 }
 
 sub load_selected_modules { 

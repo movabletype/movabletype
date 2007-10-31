@@ -61,14 +61,9 @@
         help_page="blog_settings_entry_defaults"
         help_section="update_pings">
 
-<mt:if name="system_allow_selected_pings">
-<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" />
-<span class="alert-warning-inline"><__trans phrase="Note: The above option may be affected since outbound pings are constrained system-wide."></span></p>
-<mt:else>
-<mt:unless name="system_allow_outbound_pings">
+<mt:if name="system_disabled_notify_pings">
 <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-<span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since outbound pings are disabled system-wide."></span></p>
-</mt:unless>
+<span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since outbound notification pings are disabled system-wide."></span></p>
 </mt:if>
 <ul>
 <mt:if name="pings_loop">
@@ -77,7 +72,7 @@
 </mt:loop>
 </mt:if>
 <li><label for="ping_others"><__trans phrase="Others:"> <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span></label><br />
-<textarea name="ping_others" id="ping_others" rows="4" cols="50"><mt:var name="ping_others" escape="html"></textarea></li>
+<textarea name="ping_others" id="ping_others" rows="" cols="" class="full-width short"><mt:var name="ping_others" escape="html"></textarea></li>
 </ul>
     </mtapp:setting>
 

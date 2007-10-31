@@ -1188,6 +1188,9 @@ class MTDatabaseBase extends ezsql {
             $author_id = intval($args['author_id']);
             array_push($filters, "author_id = $author_id");
         }
+        if (isset($args['author_nickname'])) {
+            array_push($filters, "author_nickname = '".$args['author_nickname']."'");
+        }
 
         # Adds entry filter
         if ($args['need_entry']) {

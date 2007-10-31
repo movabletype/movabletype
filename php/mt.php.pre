@@ -73,6 +73,7 @@ class MT {
 
     function init_plugins() {
         $plugin_paths = $this->config('PluginPath');
+        $ctx =& $this->context();
         foreach ($plugin_paths as $path) {
             if ($dh = opendir($path)) {
                  while (($file = readdir($dh)) !== false) {
@@ -81,6 +82,7 @@ class MT {
                      }
                      $plugin_dir = $path . DIRECTORY_SEPARATOR . $file . DIRECTORY_SEPARATOR . 'php';
                      if (is_dir($plugin_dir)) {
+                         $ctx->plugins_dir[] = $plugin_dir;
                          $this->load_plugin($plugin_dir);
                      }
                  }
@@ -404,7 +406,9 @@ class MT {
             $ctx->stash('index_archive', false);
         }
         $tts = $data['template']['template_modified_on'];
-        $tts = offset_time(datetime_to_timestamp($tts), $blog);
+        if ($tts) {
+            $tts = offset_time(datetime_to_timestamp($tts), $blog);
+        }
         $ctx->stash('template_timestamp', $tts);
         $ctx->stash('template_created_on', $data['template']['template_created_on']);
 

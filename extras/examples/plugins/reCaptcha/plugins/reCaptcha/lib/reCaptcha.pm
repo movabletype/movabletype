@@ -20,6 +20,7 @@ sub form_fields {
 	return q() unless $publickey && $privatekey;
 
     return <<FORM_FIELD;
+<div id="recaptcha_script" style="display:none">
 <script type="text/javascript"
    src="http://api.recaptcha.net/challenge?k=$publickey">
 </script>
@@ -32,6 +33,15 @@ sub form_fields {
    <input type="hidden" name="recaptcha_response_field" 
        value="manual_challenge">
 </noscript>
+</div>
+<script type="text/javascript">
+var div = document.getElementById("recaptcha_script");
+if (commenter_name) {
+    div.style.display = "none";
+} else {
+    div.style.display = "block";
+}
+</script>
 FORM_FIELD
 }
 

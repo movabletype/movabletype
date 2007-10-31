@@ -26,7 +26,7 @@
             </thead>
             <tbody>
     </mt:if>
-                <tr class="<mt:if name="visible">status-publish<mt:else>status-pending</mt:if> <mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="visible"> onmouseover="show('replyto_<mt:var name="id">');" onmouseout="hide('replyto_<mt:var name="id">');"</mt:if>>
+                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="visible"> onmouseover="show('replyto_<mt:var name="id">');" onmouseout="hide('replyto_<mt:var name="id">');"</mt:if>>
                     <td class="cb">
             <mt:if name="has_edit_access">
                         <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
@@ -35,7 +35,7 @@
             </mt:if>
                     </td>
             <mt:unless name="tab_junk">
-                    <td class="si">
+                    <td class="si <mt:if name="visible">status-publish<mt:else>status-pending</mt:if>">
                 <mt:if name="visible">
                         <a href="<mt:var name="script_url">?__mode=list_comments<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show published comments">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
                 <mt:else>

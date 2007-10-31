@@ -980,7 +980,7 @@ sub check_schema {
     my $class;
     foreach my $type (keys %classes) {
         $class = MT->model($type)
-            or return $self->error($self->translate_escape("Error loading class [_1].", $class));
+            or return $self->error($self->translate_escape("Error loading class [_1].", $type));
         $self->check_type($type);
     }
     1;
@@ -1169,6 +1169,24 @@ sub seed_database {
     1;
 }
 
+## Translation
+# translate('Blog Administrator')
+# translate('Can administer the blog.')
+# translate('Editor')
+# translate('Can upload files, edit all entries/categories/tags on a blog and rebuild.')
+# translate('Author')
+# translate('Can create entries, edit their own, upload files and publish.')
+# translate('Designer')
+# translate('Can edit, manage and rebuild blog templates.')
+# translate('Webmaster')
+# translate('Can manage pages and rebuild blog templates.')
+# translate('Contributor')
+# translate('Can create entries, edit their own and comment.')
+# translate('Moderator')
+# translate('Can comment and manage feedback.')
+# translate('Commenter')
+# translate('Can comment.')
+
 sub create_default_roles {
     my $self = shift;
     my (%param) = @_;
@@ -1191,7 +1209,7 @@ sub create_default_roles {
           perms => ['edit_templates', 'rebuild'] },
         { name => 'Webmaster',
           description => 'Can manage pages and rebuild blog templates.',
-          perms => ['manage_pages'] },
+          perms => ['manage_pages', 'rebuild'] },
         { name => 'Contributor',
           description => 'Can create entries, edit their own and comment.',
           perms => ['comment', 'create_post'], },

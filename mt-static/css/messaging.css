@@ -1,0 +1,41 @@
+/* Status Messages -------------------------------------------------------------------------------- */
+.msg {
+    margin: 0 0 10px 0;
+    padding: 16px 10px 16px 46px;
+    background-repeat: no-repeat;
+    background-position: 12px center;
+}
+.msg-success {
+    background-color: #CFC;
+    background-image: url('../images/icon_success.png');
+}
+.msg-error {
+    background-color: #FF9;
+    background-image: url('../images/icon_error.png');
+}
+.msg-info {
+    background-color: #FFF;
+    background-image: url('../images/icon_info.gif');
+    border: 1px solid #999;
+}
+.msg-alert {
+    background-color: #FF9;
+    background-image: url('../images/icon_alert.png');
+}
+
+.msg a.close-me {
+    background: transparent url('../images/icon_close.png') no-repeat scroll 3px 4px;
+    display: block;
+    float: right;
+    height: 18px;
+    min-width: 0;
+    padding: 2px;
+    width: 22px;
+    margin: 0;
+}
+.msg-error a.close-me {
+    display: none;
+}
+.msg a.close-me span {
+    display: none;
+}
