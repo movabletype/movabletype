@@ -1,6 +1,7 @@
 <div id="entry-<$MTEntryID$>" class="entry-asset asset">
     <div class="asset-header">
         <h1 class="asset-name"><$MTEntryTitle$></h1>
+        <$MTInclude module="<__trans phrase="Entry Metadata">"$>
     </div>
     <div class="asset-content">
 <MTIfNonEmpty tag="EntryBody">
@@ -18,7 +19,5 @@
 </MTIf>
         <$MTInclude module="<__trans phrase="Tags">"$>
     </div>
-    <div class="asset-footer">
-        <$MTInclude module="<__trans phrase="Entry Metadata">"$>
-    </div>
+    <div class="asset-footer"></div>
 </div>

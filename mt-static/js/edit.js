@@ -570,13 +570,16 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
 
         // cleanup innerHTML garbage browser regurgitates
         // #1 - lowercase tag names (open and closing tags)
-        html = html.replace(/<\/?[A-Z]+\s/g, function (m) {
+        html = html.replace(/<\/?[A-Z]+[\s>]/g, function (m) {
             return m.toLowerCase();
         });
 
         // #2 - lowercase attribute names
         html = html.replace(/(<[\w\d]+\s+)([^>]+)>/g, function (x, m1, m2) {
             return m1 + m2.replace(/\b([\w\d:-]+)\s*=\s*(?:'([^']*?)'|"([^"]*?)"|(\S+))/g, function (x, m1, m2, m3, m4) {
+                if ( !m2 ) m2 = ''; // for ie
+                if ( !m3 ) m3 = ''; // for ie
+                if ( !m4 ) m4 = ''; // for ie
                 return m1.toLowerCase() + '="' + m2 + m3 + m4 + '"';
             }) + ">";
         });

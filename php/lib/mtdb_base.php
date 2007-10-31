@@ -235,6 +235,8 @@ class MTDatabaseBase extends ezsql {
                 $ts = $ws;
             } elseif (preg_match('/Yearly$/', $at)) {
                 $ts = substr($ts, 0, 4) . '0101000000';
+            } elseif ($at == 'Individual') {
+                $filter .= "and fileinfo_entry_id = $eid";
             }
             if ($ts != $entry['entry_authored_on']) {
                 $filter .= " and fileinfo_startdate = '$ts'";

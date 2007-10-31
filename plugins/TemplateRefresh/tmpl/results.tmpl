@@ -1,5 +1,6 @@
-<$mt:setvar name="page_title" value="<__trans phrase="Backup and Refresh Templates">"$>
+<mt:setvarblock name="page_title"><$mt:var name="plugin_name"$></mt:setvarblock>
 <mt:include name="include/header.tmpl">
+
 <mt:unless name="message_loop">
 <p class="message"><__trans phrase="No templates were selected to process."></p>
 <mt:else>

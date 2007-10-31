@@ -19,11 +19,9 @@ sub import_contents {
 
     my($root_path, $root_url, $relative_path);
     if (my $p = delete $param{'mt_site_path'}) {
-        $root_path = $blog->site_path;
-        $root_url = $blog->site_url;
+        $root_path = $root_url = '%r';
     } else {
-        $root_path = $blog->archive_path;
-        $root_url = $blog->archive_url;
+        $root_path = $root_url = '%a';
     }
 
     if ($root_path && $root_url) {
@@ -40,7 +38,6 @@ sub import_contents {
         ## $path should be local path to file now (we don't create/upload files nor mkpath)
 
         my $url = $path;
-        $url =~ s!\Q$root_path\E!$root_url!;
         $url =~ s!\\!/!g;
 
         $param{'mt_path'} = $path;

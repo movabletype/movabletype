@@ -215,12 +215,12 @@
     
     <mtapp:setting
         id="entry"
-        label="<__trans phrase="Entry">"
+        label="$entry_class_label"
         content_class="field-content-text"
-        hint="<__trans phrase="Entry this comment was made on">"
+        hint="<__trans phrase="[_1] this comment was made on" params="$entry_class_label">"
         show_hint="0">
-        <mt:if name="no_entry">[<__trans phrase="Entry no longer exists">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="entry_title" escape="html"></a></mt:if>
-        <a title="<__trans phrase="View all comments on this entry">" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id" escape="html">&amp;tab=comments"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <mt:if name="no_entry">[<__trans phrase="[_1] no longer exists" params="<mt:var name="entry_class_label">">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="entry_title" escape="html"></a></mt:if>
+        <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id" escape="html">&amp;tab=comments"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mtapp:setting>
     
     <mtapp:setting

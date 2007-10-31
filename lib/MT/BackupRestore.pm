@@ -119,10 +119,10 @@ sub backup {
         {
             MT->model('config') => 1, 
             MT->model('session') => 1,
-            MT->model('schwartz_job') => 1,
-            MT->model('schwartz_error') => 1,
-            MT->model('schwartz_exitstatus') => 1,
-            MT->model('schwartz_funcmap') => 1,
+            MT->model('ts_job') => 1,
+            MT->model('ts_error') => 1,
+            MT->model('ts_exitstatus') => 1,
+            MT->model('ts_funcmap') => 1,
         },
         {
             MT->model('placement') => 1, 

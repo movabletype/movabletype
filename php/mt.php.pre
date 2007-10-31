@@ -291,7 +291,7 @@ class MT {
         isset($cfg['staticwebpath']) or
             $cfg['staticwebpath'] = $cfg['cgipath'] . 'mt-static/';
         isset($cfg['publishcharset']) or
-            $cfg['publishcharset'] = 'utf-8';
+            $cfg['publishcharset'] = '__PUBLISH_CHARSET__';
         isset($cfg['trackbackscript']) or
             $cfg['trackbackscript'] = 'mt-tb.cgi';
         isset($cfg['adminscript']) or
@@ -305,7 +305,7 @@ class MT {
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
         isset($cfg['defaultlanguage']) or
-            $cfg['defaultlanguage'] = 'en_US';
+            $cfg['defaultlanguage'] = '__BUILD_LANGUAGE__';
         isset($cfg['globalsanitizespec']) or
             $cfg['globalsanitizespec'] = 'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre';
         isset($cfg['signonurl']) or

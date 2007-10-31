@@ -1153,6 +1153,9 @@ sub mark_odd_rows {
                'juillet', "ao&#xfb;t", 'septembre', 'octobre', 'novembre',
                "d&#xe9;cembre") ],
             [ qw( AM PM ) ],
+              "%e %B %Y %kh%M",
+              "%e %B %Y",
+	      "%kh%M",
           ],
 
     'es' => [
@@ -1161,6 +1164,8 @@ sub mark_odd_rows {
             [ qw( Enero Febrero Marzo Abril Mayo Junio Julio Agosto
                   Septiembre Octubre Noviembre Diciembre ) ],
             [ qw( AM PM ) ],
+              "%e de %B %Y a las %I:%M %p",
+              "%e de %B %Y",
           ],
 
     'pt' => [
@@ -1178,8 +1183,9 @@ sub mark_odd_rows {
             [ qw( januari februari maart april mei juni juli augustus
                   september oktober november december ) ],
             [ qw( am pm ) ],
-              "%d %B %Y %H:%M",
-              "%d %B %Y"
+              "%e %B %Y %k:%M",
+              "%e %B %Y",
+	      "%k:%M",
           ],
 
     'dk' => [
@@ -1216,9 +1222,9 @@ sub mark_odd_rows {
                'Juli', 'August', 'September', 'Oktober', 'November',
                'Dezember') ],
             [ qw( FM EM ) ],
-            "%d.%m.%y %H:%M",
-            "%d.%m.%y",
-            "%H:%M",
+            "%e.%m.%y %k:%M",
+            "%e.%m.%y",
+            "%k:%M",
           ],
 
     'it' => [

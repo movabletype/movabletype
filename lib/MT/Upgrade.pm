@@ -790,6 +790,20 @@ sub update_3x_system_search_templates {
             not => { id => 1 } });
         $tmpl->remove if $tmpl;
     }
+
+    my %terms;
+    my %args;
+    if (my @blog_ids = keys %blogs) {
+        $terms{id} = \@blog_ids;
+        $args{not} = { id => 1 };
+    }
+    my $blog_iter = MT::Blog->load_iter(\%terms, \%args);
+    # These blogs does not have search results - upgrades from 3.2 or before.
+    while (my $blog = $blog_iter->()) {
+        my $tmpl = MT::Template->load(
+          { type => 'search_results', blog_id => $blog->id,});
+        $tmpl->remove if $tmpl;
+    }
     0;
 }
 

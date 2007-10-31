@@ -23,8 +23,7 @@
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 <mt:if name="blog_id">
             <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
-            <input type="hidden" id="backup_what" name="backup_what" value="custom" />
-            <input type="hidden" id="selected_blog_ids" name="selected_blog_ids" value="<mt:var name="blog_id">" />
+            <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="blog_id">" />
 <mt:else>
     <mtapp:setting
         id="backup_what"

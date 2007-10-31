@@ -673,6 +673,7 @@ sub _upload_to_asset {
     return $app->error(400, "Invalid or empty filename")
         if $fname =~ m!/|\.\.|\0|\|!;
 
+    my $local_relative = File::Spec->catfile('%r', $fname);
     my $local = File::Spec->catfile($blog->site_path, $fname);
     my $fmgr = $blog->file_mgr;
     my($base, $path, $ext) = File::Basename::fileparse($local, '\.[^\.]*');
@@ -703,7 +704,7 @@ sub _upload_to_asset {
                 { file_path => $local, blog_id => $blog->id })))
     {
         $asset = $asset_pkg->new();
-        $asset->file_path($local);
+        $asset->file_path($local_relative);
         $asset->file_name($base.$ext);
         $asset->file_ext($ext_copy);
         $asset->blog_id($blog->id);
@@ -713,7 +714,7 @@ sub _upload_to_asset {
         $asset->modified_by( $user->id );
     }
     my $original = $asset->clone;
-    my $url = $blog->site_url . $base . $ext;
+    my $url = '%r/' . $base . $ext;
     $asset->url($url);
     if ($is_image) {
         $asset->image_width($w);

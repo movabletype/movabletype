@@ -822,7 +822,8 @@ sub asset_list_filters {
         $order += 100;
     }
     $filters{'asset'}{order} = 0;
-    $filters{'asset'}{label} = MT->translate("All Assets");
+    $filters{'asset'}{label} = "All Assets"; # labels are translated later
+                                             # translate("All Assets");
     return \%filters;
 }
 
@@ -2305,6 +2306,7 @@ sub list_roles {
                     has_expanded_mode  => 1,
                     search_label       => $app->translate('Users'),
                     object_type        => 'role',
+                    group_support      => 1,
                 },
             }
         );
@@ -2374,6 +2376,7 @@ sub list_roles {
                     has_expanded_mode => 1,
                     search_label      => $app->translate('Users'),
                     object_type       => 'association',
+                    group_support      => $app->model('group') ? 1 : 0,
                 },
             }
         );
@@ -2450,6 +2453,7 @@ sub list_roles {
                     has_expanded_mode => 1,
                     search_label      => $app->translate('Users'),
                     object_type       => 'role',
+                    group_support      => $app->model('group') ? 1 : 0,
                 },
             }
         );
@@ -6102,6 +6106,9 @@ sub edit_object {
             $param{approved}   = $app->param('approved');
             $param{unapproved} = $app->param('unapproved');
             $param{is_junk}    = $obj->is_junk;
+
+            $param{entry_class_label} = $obj->entry->class_label;
+            $param{entry_class} = $obj->entry->class;
 
             ## Load next and previous entries for next/previous links
             if ( my $next = $obj->next ) {
@@ -18409,12 +18416,14 @@ sub restore {
                     close $z;
                     my ( $blog_ids, $asset_ids ) =
                       $app->restore_directory( $tmp, \$error );
-                    $param->{open_dialog} = 1;
-                    $param->{blog_ids} = join( ',', @$blog_ids )
-                      if defined $blog_ids;
-                    $param->{asset_ids} = join( ',', @$asset_ids )
-                      if defined $asset_ids;
-                    $param->{tmp_dir} = $tmp;
+                    if (defined $blog_ids) {
+                        $param->{open_dialog} = 1;
+                        $param->{blog_ids} = join( ',', @$blog_ids )
+                          if defined $blog_ids;
+                        $param->{asset_ids} = join( ',', @$asset_ids )
+                          if defined $asset_ids;
+                        $param->{tmp_dir} = $tmp;
+                    }
                 }
             }
         }
@@ -18439,12 +18448,14 @@ sub restore {
                 }
                 my ( $blog_ids, $asset_ids ) =
                   $app->restore_directory( $tmp, \$error );
-                $param->{open_dialog} = 1;
-                $param->{blog_ids} = join( ',', @$blog_ids )
-                  if defined $blog_ids;
-                $param->{asset_ids} = join( ',', @$asset_ids )
-                  if defined $asset_ids;
-                $param->{tmp_dir} = $tmp;
+                if (defined $blog_ids) {
+                    $param->{open_dialog} = 1;
+                    $param->{blog_ids} = join( ',', @$blog_ids )
+                      if defined $blog_ids;
+                    $param->{asset_ids} = join( ',', @$asset_ids )
+                      if defined $asset_ids;
+                    $param->{tmp_dir} = $tmp;
+                }
             }
         }
         else {
@@ -18766,7 +18777,7 @@ sub dialog_restore_upload {
         my ( $volume, $directories, $uploaded_filename ) =
           File::Spec->splitpath($uploaded);
         if ( $current ne $uploaded_filename ) {
-            close $fh;
+            close $fh if $uploaded_filename;
             $param->{error} =
               $app->translate( 'Please upload [_1] in this page.', $current );
             return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );

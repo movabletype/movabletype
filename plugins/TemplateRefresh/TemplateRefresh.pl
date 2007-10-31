@@ -720,7 +720,7 @@ sub refresh_blog_templates {
     $app->param('__mode', '');
     $app->mode('');
     $app->build_page( $plugin->load_tmpl('results.tmpl'),
-        { message_loop => \@msg_loop, return_url => $app->return_uri } );
+        { message_loop => \@msg_loop, return_url => $app->return_uri, plugin_name => $plugin->name } );
 }
 
 sub refresh_individual_templates {
@@ -830,7 +830,7 @@ sub refresh_individual_templates {
     push @msg_loop, { message => $_ } foreach @msg;
 
     $app->build_page( $plugin->load_tmpl('results.tmpl'),
-        { message_loop => \@msg_loop, return_url => $app->return_uri } );
+        { message_loop => \@msg_loop, return_url => $app->return_uri, plugin_name => $plugin->name } );
 }
 
 1;

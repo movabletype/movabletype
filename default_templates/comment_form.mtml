@@ -12,11 +12,6 @@
                 </script>
             </div>
     </MTIfRegistrationAllowed>
-    <MTIfCommentsModerated>
-            <div class="comments-open-moderated">
-                <__trans phrase="(If you haven't left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won't appear on the entry. Thanks for waiting.)">
-            </div>
-    </MTIfCommentsModerated>
         <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
             <input type="hidden" name="static" value="1" />
             <input type="hidden" name="entry_id" value="<$MTEntryID$>" />

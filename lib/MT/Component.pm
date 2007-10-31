@@ -353,10 +353,9 @@ sub load_tmpl {
             return $str;
         }) : ()),
     );
-    my $err = $tmpl->errstr unless defined $tmpl;
     return $c->error(
-        $mt->translate( "Loading template '[_1]' failed: [_2]", $file, $err ) )
-      if $err;
+        $mt->translate( "Loading template '[_1]' failed: [_2]", $file, MT::Template->errstr ) )
+      unless defined $tmpl;
     $tmpl->{__file} = $file if $type eq 'filename';
 
     ## We do this in load_tmpl because show_error and login don't call

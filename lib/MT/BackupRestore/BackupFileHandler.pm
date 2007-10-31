@@ -84,23 +84,36 @@ sub start_element {
                 if ( 'author' eq $name ) {
                     $obj = $class->load({ name => $column_data{name} });
                     if ($obj) {
-                        $self->{callback}->("\n");
-                        MT->log({ message => MT->translate(
-                            "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
-                                                  $obj->name, $obj->id),
-                            level => MT::Log::INFO(),
-                            metadata => 'Permissions and Associations have been restored as well.',
-                            class => 'system',
-                            category => 'restore',
-                        });
-                        my $old_id = delete $column_data{id};
-                        $objects->{"$class#$old_id"} = $obj;
-                        my $child_classes = $obj->properties->{child_classes} || {};
-                        for my $class (keys %$child_classes) {
-                            eval "use $class;";
-                            $class->remove({ author_id => $obj->id, blog_id => '0' });
+                        if ( $obj->id == MT->instance->user->id ) {
+                            MT->log({ message => MT->translate(
+                                "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.", $obj->name),
+                                level => MT::Log::INFO(),
+                                metadata => 'Permissions and Associations have been restored.',
+                                class => 'system',
+                                category => 'restore',
+                            });
+                            $objects->{"$class#" . $column_data{id}} = $obj;
+                            $self->{skip} += 1;
                         }
-                        $self->{loaded} = 1;
+                        else {
+                            $self->{callback}->("\n");
+                            MT->log({ message => MT->translate(
+                                "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
+                                                  $obj->name, $obj->id),
+                                level => MT::Log::INFO(),
+                                metadata => 'Permissions and Associations have been restored as well.',
+                                class => 'system',
+                                category => 'restore',
+                            });
+                            my $old_id = delete $column_data{id};
+                            $objects->{"$class#$old_id"} = $obj;
+                            my $child_classes = $obj->properties->{child_classes} || {};
+                            for my $class (keys %$child_classes) {
+                                eval "use $class;";
+                                $class->remove({ author_id => $obj->id, blog_id => '0' });
+                            }
+                            $self->{loaded} = 1;
+                        }
                     }
                 }
                 unless ($obj) {

@@ -157,14 +157,17 @@ TC.attachLoadEvent( init );
                 <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
                 <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
             <mt:else>
-                <mt:if name="filter_key">
+                <mt:if name="filter_special">  
+                <strong><__trans phrase="Showing only: [_1]" params="<$mt:var name="filter_phrase"$>"></strong>  
+
+                <mt:else><mt:if name="filter_key">
                 <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
                 <mt:else>
                 <strong><a href="javascript:void(0)" onclick="toggleFilter()">
                     <__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'>
                 </a></strong>
                 <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
-                </mt:if>
+                </mt:if></mt:if>
             </mt:unless>
             </div>
             <div id="filter-select" class="page-title" style="display: none">

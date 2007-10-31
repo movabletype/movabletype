@@ -1,11 +1,7 @@
 [%# Post header with border underneath like Camo. No image -%]
 
 .asset-name a {
-    display: block;
     margin-bottom: 8px;
-    border-bottom: [% theme.content.post_name.border.width || '1px' %] [% theme.content.post_name.border.style || 'dashed' %] [% theme.content.post_name.border.color || theme.default.border.color %];
-    padding-bottom: .3em;
-    text-decoration: none;
 }
 
 .asset-name a:hover {

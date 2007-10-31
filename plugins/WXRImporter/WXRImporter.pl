@@ -11,7 +11,7 @@ use base qw( MT::Plugin );
 
 my $plugin = new MT::Plugin::WXRImporter({
     name => "WXR Importer",
-    version => '0.1',
+    version => '1.0',
     description => '<MT_TRANS phrase="Import WordPress exported RSS into MT.">',
     author_name => "Six Apart, Ltd.",
     author_link => "http://www.sixapart.com/",

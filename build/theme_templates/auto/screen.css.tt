@@ -1,8 +1,8 @@
 [% PROCESS config.tt %]
-
-/* Vox Theme for Movable Type ============================================= */
-
 /*
+
+A Six Apart theme adapted for Movable Type default templates
+
 [% IF theme.title %]
 name: [% theme.title %]
 [% END %]
