@@ -13,6 +13,9 @@ our %api_map;
 BEGIN {
     %app_ids = (
         'MT::App::CMS' => 'cms',
+        'MT::App::Comments' => 'comments',
+        'MT::App::Search' => 'search',
+        'MT::App::ActivityFeeds' => 'feeds',
     );
     %api_map = (
         'MT::Template::Context::add_tag' => "Registry (path: tags, function)",
@@ -390,7 +393,7 @@ sub add_rebuild_option {
     $args->{label} ||= $args->{Name} || $args->{name};
     return $class->error(
         MT->translate(
-            "Rebuild-option name must not contain special characters")
+            "Publish-option name must not contain special characters")
       )
       if ( $args->{label} ) =~
       /[\"\']/;    #/[^A-Za-z0-9.:\[\]\(\)\+=!@\#\$\%\^\&\*-]/;

@@ -101,6 +101,12 @@ class AuthorBasedArchiver extends BaseArchiver {
         $ctx->stash('author', $author);
     }
 
+    function setup_args($ctx, &$args) {
+        if ($auth = $ctx->stash('author')) {
+            $args['author'] = $auth['author_name'];
+        }
+    }
+
     // Functions
     function get_archive_list_data($args) {
         global $mt;
@@ -124,6 +130,12 @@ class AuthorBasedArchiver extends BaseArchiver {
 }
 
 class DateBasedAuthorArchiver extends DateBasedArchiver {
+    function setup_args($ctx, &$args) {
+        if ($auth = $ctx->stash('author')) {
+            $args['author'] = $auth['author_name'];
+        }
+    }
+
     function get_archive_link_sql($ctx, $ts, $at, $args) {
         $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
@@ -238,7 +250,7 @@ class DateBasedAuthorArchiver extends DateBasedArchiver {
             $args['current_timestamp_end'] = $this->dec_ts($start);
         } else {
             $args['current_timestamp'] = $this->inc_ts($end);
-            $args['sort_order'] = 'ascend'; # ascending order
+            $args['base_sort_order'] = 'ascend'; # ascending order
         }
         $args['lastn'] = 1;
         $args['blog_id'] = $blog_id;

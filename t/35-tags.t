@@ -155,6 +155,8 @@ function run(&$ctx, $suite) {
         }
         if ( preg_match('/MTEntries|MTPages/', $test_item->t) ) {
             $ctx->__stash['entries'] = null;
+            $ctx->__stash['author'] = null;
+            $ctx->__stash['category'] = null;
         }
         if ( preg_match('/MTCategoryArchiveLink/', $test_item->t) ) {
             $ctx->stash('current_archive_type', 'Category');

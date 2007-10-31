@@ -769,8 +769,9 @@ sub core_list_filters {
                     $ts = MT::Util::epoch2ts( MT->app->blog, $ts );
                     $args->{join} = MT::Comment->join_on(
                         'entry_id',
-                        { created_on => [ $ts,       undef ], },
-                        { range_incl => { created_on => 1 }, }
+                        { created_on => [ $ts,       undef ],
+                          junk_status => [ 0, 1 ] },
+                        { range_incl => { created_on => 1 }, unique => 1 }
                     );
                     $args->{sort}      = \'comment_created_on';
                     $args->{direction} = 'descend';
@@ -1001,6 +1002,20 @@ sub core_list_filters {
                     my ($terms) = @_;
                     $terms->{type} = ['dynamic_error', 'comment_error', 'comment_pending', 'comment_preview', 'pings', 'popup_image', 'search_results'];
                 },
+            },
+        },
+        tag => {
+            entry => {
+                label   => 'Tags with entries',
+                order   => 100,
+            },
+            page => {
+                label   => 'Tags with pages',
+                order   => 200,
+            },
+            asset => {
+                label   => 'Tags with assets',
+                order   => 300,
             },
         },
     };
@@ -1965,7 +1980,7 @@ sub list_assets {
                 ),
                 nav_assets       => 1,
                 panel_searchable => 1,
-                search_prompt    => $app->translate("Search Files") . ":",
+                search_label    => $app->translate("Search Files") . ":",
 
                 #search_label => $app->translate("Files"),
                 object_type => 'asset',
@@ -2045,7 +2060,7 @@ sub list_roles {
                     can_create_role    => $app->user->is_superuser,
                     has_expanded_mode  => 1,
                     search_label       => $app->translate('Users'),
-                    object_type        => 'author',
+                    object_type        => 'role',
                 },
             }
         );
@@ -2111,7 +2126,7 @@ sub list_roles {
                     can_create_role   => $app->user->is_superuser,
                     has_expanded_mode => 1,
                     search_label      => $app->translate('Users'),
-                    object_type       => 'author',
+                    object_type       => 'association',
                 },
             }
         );
@@ -2186,7 +2201,7 @@ sub list_roles {
                     can_create_role   => $app->user->is_superuser,
                     has_expanded_mode => 1,
                     search_label      => $app->translate('Users'),
-                    object_type       => 'author',
+                    object_type       => 'role',
                 },
             }
         );
@@ -2457,7 +2472,7 @@ sub list_associations {
                     : ()
                 ),
                 search_label => $app->translate('Users'),
-                object_type  => 'author',
+                object_type  => 'association',
             },
         }
     );
@@ -2466,7 +2481,8 @@ sub list_associations {
 sub list_tag {
     my $app = shift;
     my %param;
-    my $type = $app->param('_type') || 'entry';
+    my $filter_key = $app->param('filter_key') || 'entry';
+    my $type = $app->param('_type') || $filter_key;
     my $plural;
     $param{TagObjectType} = $type;
     $param{Package}       = $app->model($type);
@@ -2541,7 +2557,12 @@ sub list_tag_for {
             object_datasource => $pkg->datasource,
             ( $blog_id ? ( blog_id => $blog_id ) : () )
         },
-        { unique => 1 }
+        { unique => 1,
+          'join' => $pkg->join_on(
+              undef,
+              { id     => \'= objecttag_object_id',
+                ($pkg =~ m/asset/i ? () : (class => $pkg->class_type)) }) 
+              }
     );
 
     my $data = $app->build_tag_table(
@@ -2565,6 +2586,14 @@ sub list_tag_for {
         $param{next_offset_val} = $offset + $limit;
     }
 
+    # load tag filters
+    my $filters = $app->registry( "list_filters", "tag" ) || {};
+    my $filter_key = $app->param('filter_key') || 'entry';
+    my $filter_label = '';
+    if ( my $filter = $filters->{$filter_key} ) {
+        $filter_label = $filter->{label};
+    }
+
     $param{limit}                   = $limit;
     $param{offset}                  = $offset;
     $param{tag_object_type}         = $params{TagObjectType};
@@ -2577,6 +2606,11 @@ sub list_tag_for {
     $param{next_max}                = $param{list_total} - $limit;
     $param{next_max}     = 0 if ( $param{next_max} || 0 ) < $offset + 1;
     $param{list_noncron} = 1;
+    $param{list_filters}            = $app->list_filters('tag');
+    $param{filter_label}            = $filter_label;
+    $param{link_to}                 = $params{Package} =~ m/asset/i ?
+                                          'list_assets' :
+                                          'list_'. lc $params{TagObjectLabelPlural};
 
     $param{saved}         = $q->param('saved');
     $param{saved_deleted} = $q->param('saved_deleted');
@@ -2593,15 +2627,16 @@ sub rename_tag {
     ( $blog_id && $perms && $perms->can_edit_tags )
       || ( $app->user->is_superuser() )
       or return $app->errtrans("Permission denied.");
-    my $id        = $app->param('id');
+    my $id        = $app->param('__id');
     my $name      = $app->param('tag_name');
+    my $obj_type  = $app->param('__type') || 'entry';
+    my $obj_class = $app->model($obj_type);
     my $tag_class = $app->model('tag');
     my $ot_class  = $app->model('objecttag');
     my $tag       = $tag_class->load($id)
-      or return $app->error( $app->translate("No such tag") );
+        or return $app->error( $app->translate("No such tag") );
     my $tag2 =
-      $tag_class->load( { name => $name }, { binary => { name => 1 } } );
-
+        $tag_class->load( { name => $name }, { binary => { name => 1 } } );
     if ($tag2) {
         return $app->call_return if $tag->id == $tag2->id;
     }
@@ -2609,18 +2644,16 @@ sub rename_tag {
     my $terms = { tag_id => $tag->id };
     $terms->{blog_id} = $blog_id if $blog_id;
 
-    # FIXME: This is too specific for tag rename.
-    require MT::Entry;
     my $iter =
-      MT::Entry->load_iter( undef,
+      $obj_class->load_iter( {( $obj_type =~ m/asset/i ? (class => '*') : (class => $obj_type) )},
         { join => MT::ObjectTag->join_on( 'object_id', $terms ) } );
-    my @entries;
-    while ( my $entry = $iter->() ) {
-        $entry->remove_tags( $tag->name );
-        $entry->add_tags($name);
-        push @entries, $entry;
+    my @tagged_objects;
+    while ( my $o = $iter->() ) {
+        $o->remove_tags( $tag->name );
+        $o->add_tags($name);
+        push @tagged_objects, $o;
     }
-    $_->save foreach @entries;
+    $_->save foreach @tagged_objects;
 
     if ($tag2) {
         $app->add_return_arg( merged => 1 );
@@ -2656,7 +2689,8 @@ sub build_tag_table {
     while ( my $tag = $iter->() ) {
         my $count =
           $pkg->tagged_count( $tag->id,
-            { ( $blog_id ? ( blog_id => $blog_id ) : () ) } );
+            { ( $blog_id ? ( blog_id => $blog_id ) : () ), 
+              ( $pkg =~ m/asset/i ?(class => '*') : () ) } );
         $count ||= 0;
         my $row = {
             tag_id    => $tag->id,
@@ -3016,6 +3050,7 @@ sub build_blog_selector {
 
     my $blog = $app->blog;
     my $blog_id = $blog->id if $blog;
+    $param->{dynamic_all} = $blog->custom_dynamic_templates eq 'all' if $blog;
 
     my $blog_class = $app->model('blog');
     my $auth = $app->user or return;
@@ -3184,6 +3219,7 @@ sub build_menus {
         elsif ( !$perms && !$blog_id ) {
             $menu->{allowed} = 0 if $menu->{system_permission} && !$admin;
         }
+        # next unless $menu->{allowed};  ## EXPERIMENTAL
 
         if (@sub) {
             if ( $id eq 'system' ) {
@@ -3252,6 +3288,7 @@ sub build_menus {
                 );
             }
             @sub = sort { $a->{order} <=> $b->{order} } @sub;
+            # @sub = grep { $_->{allowed} } @sub; ## EXPERIMENTAL
             if ( !$menu->{link} ) {
                 $menu->{link} = $sub[0]->{link};
             }
@@ -3262,6 +3299,8 @@ sub build_menus {
             }
         }
     }
+    # @top = grep { $_->{allowed} } @top; ## EXPERIMENTAL
+    # @sys = grep { $_->{allowed} } @sys; ## EXPERIMENTAL
     @top = sort { $a->{order} <=> $b->{order} } @top;
     $param->{top_nav_loop} = \@top;
     $param->{sys_nav_loop} = \@sys;
@@ -3528,6 +3567,7 @@ sub dashboard {
     $param->{quick_search}        = 0;
     $param->{no_breadcrumbs}      = 1;
     $param->{screen_class}        = "dashboard";
+    $param->{screen_id}           = "dashboard";
 
     my $default_widgets = {
         'blog_stats' => { param => { tab => 'entry' }, order => 1, set => 'main' },
@@ -4160,12 +4200,10 @@ sub build_author_table {
     my ( %blogs, %entry_count_refs );
     while ( my $author = $iter->() ) {
         my $row = {
-            author_name       => $author->name,
-            author_nickname   => $author->nickname,
-            author_email      => $author->email,
-            author_url        => $author->url,
-            author_created_by => $author->email,
-            author_url        => $author->url,
+            name       => $author->name,
+            nickname   => $author->nickname,
+            email      => $author->email,
+            url        => $author->url,
             status_enabled    => $author->is_active,
             status_pending    => ( $author->status == MT::Author::PENDING() )
             ? 1
@@ -4175,6 +4213,15 @@ sub build_author_table {
             is_me => ( $app->user->id == $author->id ? 1 : 0 )
         };
         $entry_count_refs{ $author->id } = \$row->{entry_count};
+        if ( $author->created_by ) {
+            if ( my $parent_author = 
+                    $app->model('author')->load( $author->created_by ) ) {
+                $row->{created_by} = $parent_author->name;
+            }
+            else {
+                $row->{created_by} = $app->translate('(user deleted)');
+            }
+        }
         $row->{object} = $author;
         push @author, $row;
     }
@@ -4202,6 +4249,14 @@ sub _bm_js {
     my %args = ( is_bm => 1, bm_show => $show, '_type' => 'entry' );
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
 qq!javascript:d=document;w=window;t='';if(d.selection)t=d.selection.createRange().text;else{if(d.getSelection)t=d.getSelection();else{if(w.getSelection)t=w.getSelection()}}void(w.open('$uri&link_title='+escape(d.title)+'&link_href='+escape(d.location.href)+'&text='+escape(t),'_blank','scrollbars=yes,width=400,height=$height,status=yes,resizable=yes'))!;
+}
+
+sub quickpost_js {
+    my $app = shift;
+    my $blog_id = $app->blog->id;
+    my %args = ( '_type' => 'entry', blog_id => $blog_id );
+    my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
+qq!javascript:d=document;w=window;t='';if(d.selection)t=d.selection.createRange().text;else{if(d.getSelection)t=d.getSelection();else{if(w.getSelection)t=w.getSelection()}}void(w.open('$uri&title='+escape(d.title)+'&text='+escape(d.location.href)+escape('<br/><br/>')+escape(t),'_blank','scrollbars=yes,status=yes,resizable=yes,location=yes'))!;
 }
 
 sub apply_log_filter {
@@ -5241,6 +5296,11 @@ sub edit_object {
             $param{ "moderate_pings_" . ( $obj->moderate_pings || 0 ) } = 1;
 
             my $cmtauth_reg = $app->registry('commenter_authenticators');
+            foreach my $auth ( keys %$cmtauth_reg ) {
+                $cmtauth_reg->{$auth}->{disabled} = 1
+                  if exists( $cmtauth_reg->{$auth}->{condition} )
+                    && !( $cmtauth_reg->{$auth}->{condition}->() );
+            }
             if ( my $auths = $blog->commenter_authenticators ) {
                 foreach ( split ',', $auths ) {
                     if ( 'MovableType' eq $_ ) {
@@ -6301,6 +6361,7 @@ sub edit_object {
             $type = 'entry';    # for template name
         }
         $param{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
+        $param{quickpost_js} = $app->quickpost_js();
     }
     elsif ( $type eq 'template' ) {
         require MT::DefaultTemplates;
@@ -6333,13 +6394,17 @@ sub edit_object {
 
         if ( my $snippets = $app->registry('template_snippets') || {} ) {
             my @snippets;
-            push @snippets,
-              {
-                id      => $_,
-                label   => $snippets->{$_}{label},
-                content => $snippets->{$_}{content},
-              }
-              for keys %$snippets;
+            for my $snip_id (keys %$snippets) {
+                my $label = $snippets->{$snip_id}{label};
+                $label = $label->() if ref($label) eq 'CODE';
+                push @snippets,
+                  {
+                    id      => $snip_id,
+                    trigger => $snippets->{$snip_id}{trigger},
+                    label   => $label,
+                    content => $snippets->{$snip_id}{content},
+                  };
+            }
             @snippets = sort { $a->{label} cmp $b->{label} } @snippets;
             $param{template_snippets} = \@snippets;
         }
@@ -7684,6 +7749,7 @@ sub CMSPostSave_blog {
                 $app->param('dynamic_cache')       ? 1 : 0,
                 $app->param('dynamic_conditional') ? 1 : 0
             );
+            $app->rebuild( BlogID => $obj->id, NoStatic => 1 );
         }
         $app->cfg_archives_save($obj);
     }
@@ -7925,7 +7991,7 @@ sub CMSPostSave_template {
         );
     }
 
-    if ( $obj->build_dynamic && !$original->build_dynamic ) {
+    if ( $obj->build_dynamic ) {
         if ( $obj->type eq 'index' ) {
             $app->rebuild_indexes(
                 BlogID   => $obj->blog_id,
@@ -8678,12 +8744,32 @@ sub save_object {
         ## settings to the defaults.
         if ( !$obj->id ) {
             $obj->language( $app->user->preferred_language );
-            $obj->commenter_authenticators('MovableType,LiveJournal,Vox');
+            my @authenticators = qw( MovableType );
+            foreach my $auth ( qw( Vox LiveJournal ) ) {
+                my $a = MT->commenter_authenticator($auth);
+                if ( !defined $a
+                  || ( exists $a->{condition} && ( !$a->{condition}->() ) ) )
+                {
+                  next;
+                }
+                push @authenticators, $auth;
+            }
+            $obj->commenter_authenticators( join ',', @authenticators );
         }
 
         if ( $values{file_extension} ) {
             $values{file_extension} =~ s/^\.*//
               if ( $q->param('file_extension') || '' ) ne '';
+        }
+
+        if ($values{site_path} =~ m!(/|\\)$!) {
+            my $path = $values{site_path};
+            $path =~ s!(/|\\)$!!;
+            $values{site_path} = $path;
+        }
+        unless ($values{site_url} =~ m!/$!) {
+            my $url = $values{site_url};
+            $values{site_url} = $url;
         }
     }
 
@@ -9227,13 +9313,23 @@ sub delete {
 
             # if we're in a blog context, remove ONLY tags from that weblog
             if ($blog_id) {
-                require MT::ObjectTag;
-                require MT::Entry;
-                my $iter = MT::ObjectTag->load_iter(
+                my $ot_class = $app->model('objecttag');
+                my $obj_type = $q->param('__type') || 'entry';
+                my $obj_class = $app->model($obj_type);
+                my $iter = $ot_class->load_iter(
                     {
                         blog_id           => $blog_id,
-                        object_datasource => MT::Entry->datasource,
+                        object_datasource => $obj_class->datasource,
                         tag_id            => $id
+                    },
+                    {
+                        'join' => $obj_class->join_on(
+                            undef,
+                            {
+                                id     => \'= objecttag_object_id',
+                                ($obj_class =~ m/asset/i ? () : (class => $obj_class->class_type))
+                            }
+                        ) 
                     }
                 );
 
@@ -9243,7 +9339,7 @@ sub delete {
                         push @ot, $obj->id;
                     }
                     foreach (@ot) {
-                        my $obj = MT::ObjectTag->load($_);
+                        my $obj = $ot_class->load($_);
                         $obj->remove
                           or return $app->errtrans( 'Removing tag failed: [_1]',
                             $obj->errstr );
@@ -9337,7 +9433,7 @@ sub delete {
         # FIXME: enumeration of types
         if (   $type eq 'template'
             && $obj->type !~
-            /(custom|index|archive|page|individual|category)/o )
+            /(custom|index|archive|page|individual|category|widget)/o )
         {
             $required_items++;
         }
@@ -10157,6 +10253,7 @@ sub build_commenter_table {
     $app->load_list_actions( 'commenter', $param->{commenter_table}[0] );
     $param->{commenter_table}[0]{page_actions} =
       $app->page_actions('list_commenter');
+    $param->{object_loop} = $param->{commenter_table}[0]{object_loop};
     \@data;
 }
 
@@ -10340,6 +10437,7 @@ sub build_template_table {
     $param->{template_table}[0]{object_loop} = \@data;
     $param->{template_table}[0]{object_type} = 'template';
     $app->load_list_actions( 'template', $param );
+    $param->{object_loop} = \@data;
     \@data;
 }
 
@@ -12672,10 +12770,13 @@ sub cfg_comments {
     my $q = $_[0]->{query};
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
+    eval { require Digest::SHA1; };
+    my $openid_available = $@ ? 0 : 1;
     $_[0]->edit_object(
         {
-            output       => 'cfg_comments.tmpl',
-            screen_class => 'settings-screen comments-screen'
+            output         => 'cfg_comments.tmpl',
+            screen_class   => 'settings-screen comments-screen',
+            openid_enabled => $openid_available
         }
     );
 }
@@ -13311,14 +13412,14 @@ sub preview_entry {
     my $html = $tmpl->output;
     my %param;
     unless (defined($html)) {
-        my $preview_error = $app->translate( "Build error: [_1]",
+        my $preview_error = $app->translate( "Publish error: [_1]",
             MT::Util::encode_html($tmpl->errstr) );
         $param{preview_error} = $preview_error;
         my $tmpl_plain = $app->load_tmpl('preview_entry_content.tmpl');
         $tmpl->text($tmpl_plain->text);
         $html = $tmpl->output;
         defined($html)
-            or return $app->error($app->translate("Build error: [_1]",
+            or return $app->error($app->translate("Publish error: [_1]",
                 $tmpl->errstr));
         $fullscreen = 1;
     }
@@ -13474,13 +13575,17 @@ sub rebuild_confirm {
     my $entry_pkg     = $app->model('entry');
     my $total_entries = $entry_pkg->count(
         { blog_id => $blog_id, status => MT::Entry::RELEASE() } );
-    require MT::Category;
-    my $total_cats = MT::Category->count( { blog_id => $blog_id } );
+    my $page_pkg   = $app->model('page');
+    my $total_pages = $page_pkg->count(
+        { blog_id => $blog_id, status => MT::Entry::RELEASE() } );
+    my $category_pkg  = $app->model('category');
+    my $total_cats = $category_pkg->count( { blog_id => $blog_id } );
     my %param = (
         archive_type_loop => \@data,
         build_order       => $order,
         build_next        => 0,
         total_cats        => $total_cats,
+        total_pages       => $total_pages,
         total_entries     => $total_entries
     );
     $param{index_selected} = ( $app->param('prompt') || "" ) eq 'index';
@@ -13503,7 +13608,7 @@ sub rebuild_confirm {
     my $rebuild_options = $app->filter_conditional_list( \@options );
     $param{rebuild_option_loop} = $rebuild_options;
     $param{refocus}             = 1;
-    $app->add_breadcrumb( $app->translate('Rebuild Site') );
+    $app->add_breadcrumb( $app->translate('Publish Site') );
     $app->build_page( 'popup/rebuild_confirm.tmpl', \%param );
 }
 
@@ -13529,11 +13634,13 @@ sub start_rebuild_pages {
     $archive_label = $app->translate($type_name) unless $archive_label;
     $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
     my $total_entries = $q->param('total_entries');
+    my $total_pages   = $q->param('total_pages');
     my $total_cats    = $q->param('total_cats');
     my %param         = (
         build_type      => $type,
         build_next      => $next,
         total_entries   => $total_entries,
+        total_pages     => $total_pages,
         total_cats      => $total_cats,
         build_type_name => $archive_label
     );
@@ -13551,7 +13658,16 @@ sub start_rebuild_pages {
             $param{dynamic} = 1;
         }
         else {
-            my $total = $type_name eq 'Category' ? $total_cats : $total_entries;
+            my $total;
+            if ( $type_name eq 'Category' ) {
+                $total = $total_cats;
+            }
+            elsif ( $type_name eq 'Page' ) {
+                $total = $total_pages;
+            }
+            else {
+                $total = $total_entries;
+            }
             $param{limit} = int( $entries_per_rebuild * $mult / $static_count );
             $param{is_individual} = $archiver->entry_based;
             $param{limit}         = $entries_per_rebuild * $mult;
@@ -13626,8 +13742,18 @@ sub rebuild_pages {
     my ($limit) = $q->param('limit');
 
     my $total_entries = $q->param('total_entries');
+    my $total_pages   = $q->param('total_pages');
     my $total_cats    = $q->param('total_cats');
-    my $total         = $type eq 'Category' ? $total_cats : $total_entries;
+    my $total;
+    if ( $type eq 'Category' ) {
+        $total = $total_cats;
+    }
+    elsif ( $type eq 'Page' ) {
+        $total = $total_pages;
+    }
+    else {
+        $total = $total_entries;
+    }
 
     ## Tells MT::_rebuild_entry_archive_type to cache loaded templates so
     ## that each template is only loaded once.
@@ -13691,7 +13817,7 @@ sub rebuild_pages {
         return $app->error( $app->translate("Permission denied.") )
           unless $perms->can_rebuild;
         $offset = $q->param('offset') || 0;
-        if ( $offset < $total_cats ) {
+        if ( $offset < $total ) {
             $app->rebuild(
                 BlogID      => $blog_id,
                 ArchiveType => $type,
@@ -13786,6 +13912,7 @@ sub rebuild_pages {
             build_next      => $next,
             build_type_name => $archive_label,
             total_entries   => $total_entries,
+            total_pages     => $total_pages,
             total_cats      => $total_cats,
             offset          => $offset,
             limit           => $limit,
@@ -13795,7 +13922,7 @@ sub rebuild_pages {
             is_new          => scalar $q->param('is_new'),
             old_status      => scalar $q->param('old_status')
         );
-        if ( $Limit_Multipliers{$type_name} ) {
+        if ( $Limit_Multipliers{$type} ) {
             if ( $limit && !$dynamic ) {
                 $param{is_individual} = $archiver->entry_based;
                 $param{indiv_range} =
@@ -13979,7 +14106,7 @@ sub edit_role {
         $app->add_breadcrumb( $app->translate('Create New Role') );
     }
     $param{screen_class} = "settings-screen edit-role";
-    $param{object_type}  = 'author';
+    $param{object_type}  = 'role';
     $param{search_label} = $app->translate('Users');
     $app->build_page( 'edit_role.tmpl', \%param );
 }
@@ -14914,6 +15041,13 @@ sub do_search_replace {
       )
       = map scalar $q->param($_),
       qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search );
+
+    foreach my $obj_type ( qw( role association ) ) {
+        if ($type eq $obj_type) {
+            $type = 'author';
+        }
+    }
+
     $replace && ( $app->validate_magic() or return );
     $search = $orig_search if $do_replace;    # for safety's sake
 
@@ -15571,6 +15705,13 @@ sub add_map {
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
     my $html =
       $app->_generate_map_table( $blog_id, scalar $q->param('template_id') );
+    $app->rebuild(
+        BlogID  => $blog_id,
+        ArchiveType => $at,
+        TemplateMap => $map,
+        TemplateID => scalar $q->param('template_id'),
+        NoStatic => 1
+    );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print($html);
@@ -16697,37 +16838,34 @@ sub dialog_grant_role {
                 panel_title   => $app->translate("Select Blogs"),
                 panel_label   => $app->translate("Blog Name"),
                 items_prompt  => $app->translate("Blogs Selected"),
-                search_prompt => $app->translate(
-                    "Type a blog name to filter the choices below."),
+                search_label  => $app->translate("Search Blogs"),
                 panel_description => $app->translate("Description"),
             },
             'author' => {
                 panel_title   => $app->translate("Select Users"),
                 panel_label   => $app->translate("Username"),
                 items_prompt  => $app->translate("Users Selected"),
-                search_prompt => $app->translate(
-                    "Type a username to filter the choices below."),
+                search_label  => $app->translate("Search Users"),
                 panel_description => $app->translate("Name"),
             },
             'group' => {
                 panel_title   => $app->translate("Select Groups"),
                 panel_label   => $app->translate("Group Name"),
                 items_prompt  => $app->translate("Groups Selected"),
-                search_prompt => $app->translate(
-                    "Type a group name to filter the choices below."),
+                search_label  => $app->translate("Search Groups"),
                 panel_description => $app->translate("Description"),
             },
             'role' => {
                 panel_title       => $app->translate("Select Roles"),
                 panel_label       => $app->translate("Role Name"),
                 items_prompt      => $app->translate("Roles Selected"),
-                search_prompt     => $app->translate(""),
+                search_label      => $app->translate(""),
                 panel_description => $app->translate("Description"),
             },
         };
 
         $params->{blog_id}      = $blog_id;
-        $params->{dialog_title} = $app->translate("Create an Association");
+        $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
         $params->{panel_multi}  = 1;
 
@@ -19301,7 +19439,7 @@ MTIfRegistrationNotRequired, MTIfRegistrationAllowed).
 =head2 $app->update_entry_status($new_status, @id_list)
 
 Called by the draft_entries and publish_entries handlers to actually
-apply the updates to the entries identified and republish pages that
+apply the updates to the entries identified and publish pages that
 are necessary.  If DeleteFilesAtRebuild directive is set to 1, it also
 removes the previously published individual entry archive page if the
 new status for the entry is the one other than RELEASE.

@@ -43,7 +43,7 @@
 var tableSelect;
 function init() {
 	// setup
-	tableSelect = new TC.TableSelect( "<$mt:var name="asset_type"$>-listing-table" );
+	tableSelect = new TC.TableSelect( "<$mt:var name="object_type"$>-listing-table" );
 	tableSelect.rowSelect = true;
 }
 TC.attachLoadEvent( init );
@@ -68,14 +68,14 @@ TC.attachLoadEvent( init );
     <mtapp:statusmsg
         id="saved-deleted"
         class="success">
-        <__trans phrase="You have successfully revoked the given permission(s) from [_1]." params="<$mt:var name="edit_author_name" escape="html"$>">
+        <__trans phrase="You have successfully revoked the given permission(s).">
     </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
     <mtapp:statusmsg
         id="saved"
         class="success">
-        <__trans phrase="You have successfully granted the given permission(s) to [_1]." params="<$mt:var name="edit_author_name" escape="html"$>">
+        <__trans phrase="You have successfully granted the given permission(s).">
     </mtapp:statusmsg>
 </mt:if>
 
@@ -178,18 +178,16 @@ TC.attachLoadEvent( init );
     <mt:if name="usergroup_view">
         <td>
         <mt:if name="user_id">
-            <span class="user_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span>
             <mt:if name="is_administrator">
-                <a href="<mt:var name="script_url">?__mode=list_associations&amp;author_id=<mt:var name="user_id">"><$mt:var name="user_name" escape="html"$></a>
+                <a href="<mt:var name="script_url">?__mode=list_associations&amp;author_id=<mt:var name="user_id">" class="icon-right icon-user"><$mt:var name="user_name" escape="html"$></a>
             <mt:else>
-                <$mt:var name="user_name" escape="html"$>
+                <span class="icon-right icon-user"><$mt:var name="user_name" escape="html"$></span>
             </mt:if>
         <mt:else>
-            <span class="group_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span>
             <mt:if name="is_administrator">
-                <a href="<mt:var name="script_url">?__mode=list_associations&amp;group_id=<mt:var name="group_id">"><$mt:var name="group_name" escape="html"$></a>
+                <a href="<mt:var name="script_url">?__mode=list_associations&amp;group_id=<mt:var name="group_id">" class="icon-right icon-right-xwide icon-group"><$mt:var name="group_name" escape="html"$></a>
             <mt:else>
-                <$mt:var name="group_name" escape="html"$>
+                <span class="icon-right icon-right-xwide icon-group"><$mt:var name="group_name" escape="html"$></span>
             </mt:if>
         </mt:if>
         </td>

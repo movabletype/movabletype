@@ -153,7 +153,7 @@ TC.attachLoadEvent(init);
                     </div>
 </mt:if>
                     <div class="box permission-box">
-                        <h3><__trans phrase="System Permissions"> <a href="javascript:void(0)" onclick="return openManual('author_permissions', 'introduction')">?</a></h3>
+                        <h3><__trans phrase="System Permissions"> <a href="javascript:void(0)" onclick="return openManual('author_permissions', 'introduction')" class="help-link">?</a></h3>
                         <div class="inner">
                             <ul class="last" id="permission-list">
                                 <li><input name="is_superuser" id="is_superuser" type="checkbox" value="1"<mt:if name="perm_is_superuser"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this)" /> <label for="is_superuser"><__trans phrase="System Administrator"></label></li>
@@ -212,7 +212,7 @@ TC.attachLoadEvent(init);
         id="url"
         label="<__trans phrase="Website URL">"
         hint="<__trans phrase="The URL of the site associated with this user. eg. http://www.movabletype.com/">">
-        <input name="url" id="url" class="full-width" value="<mt:if name="url"><mt:var name="url" escape="html"><mt:else>http://</mt:if>" />
+        <input name="url" id="url" class="full-width" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting

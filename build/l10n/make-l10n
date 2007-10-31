@@ -17,6 +17,9 @@ if [ -z $TARGET ]; then
     TARGET=ja
 fi
 
+echo "in php..."
+find php -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in cgi..."
 find *.cgi -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
@@ -29,17 +32,14 @@ awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/M
 echo "in mt-static..."
 find mt-static -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
-echo "in php..."
-find php -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
-awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
-echo "in plugins..."
-find plugins -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
-awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in search_templates..."
 find search_templates -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in tmpl..."
 find tmpl -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
+echo "in plugins..."
+find plugins -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 perl $SCRIPT_DIR/diff.pl -old lib/MT/L10N/$TARGET.pm -target $TEMP_DIR/$TARGET-base.pm -new $TEMP_DIR/$TARGET-nodupe.pm > $TEMP_DIR/$TARGET-old.pm
 #cat $TEMP_DIR/$TARGET-old.pm >> $TEMP_DIR/$TARGET-base.pm

@@ -120,30 +120,30 @@ sub core_archive_types {
                 archive_group_iter => \&individual_group_iter,
                 dynamic_template => 'entry/<$MTEntryID$>',
                 default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry_basename.html'),
-                        template => '%y/%m/%f', default => 1 ),
                     ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry-basename.html'),
-                        template => '%y/%m/%-f' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry_basename/index.html'),
-                        template => '%y/%m/%b/%i' ),
+                        template => '%y/%m/%-f', default => 1 ),
+                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry_basename.html'),
+                        template => '%y/%m/%f' ),
                     ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry-basename/index.html'),
                         template => '%y/%m/%-b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry_basename.html'),
-                        template => '%y/%m/%d/%f' ),
+                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry_basename/index.html'),
+                        template => '%y/%m/%b/%i' ),
                     ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry-basename.html'),
                         template => '%y/%m/%d/%-f' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry_basename/index.html'),
-                        template => '%y/%m/%d/%b/%i' ),
+                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry_basename.html'),
+                        template => '%y/%m/%d/%f' ),
                     ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry-basename/index.html'),
                         template => '%y/%m/%d/%-b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('category/sub_category/entry_basename.html'),
-                        template => '%c/%f' ),
-                    ArchiveFileTemplate( label => MT->translate('category/sub_category/entry_basename/index.html'),
-                        template => '%c/%b/%i' ),
+                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry_basename/index.html'),
+                        template => '%y/%m/%d/%b/%i' ),
                     ArchiveFileTemplate( label => MT->translate('category/sub-category/entry-basename.html'),
                         template => '%-c/%-f' ),
                     ArchiveFileTemplate( label => MT->translate('category/sub-category/entry-basename/index.html'),
                         template => '%-c/%-b/%i' ),
+                    ArchiveFileTemplate( label => MT->translate('category/sub_category/entry_basename.html'),
+                        template => '%c/%f' ),
+                    ArchiveFileTemplate( label => MT->translate('category/sub_category/entry_basename/index.html'),
+                        template => '%c/%b/%i' ),
                     ],
                 dynamic_support => 1,
                 entry_based => 1,
@@ -156,14 +156,14 @@ sub core_archive_types {
                 archive_group_iter => \&page_group_iter,
                 dynamic_template => 'page/<$MTEntryID$>',
                 default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('folder_path/page_basename.html'),
-                        template => '%c/%f', default => 1 ),
-                    ArchiveFileTemplate( label => MT->translate('folder_path/page_basename/index.html'),
-                        template => '%c/%b/%i' ),
                     ArchiveFileTemplate( label => MT->translate('folder-path/page-basename.html'),
-                        template => '%-c/%-f' ),
+                        template => '%-c/%-f', default => 1 ),
                     ArchiveFileTemplate( label => MT->translate('folder-path/page-basename/index.html'),
                         template => '%-c/%-b/%i' ),
+                    ArchiveFileTemplate( label => MT->translate('folder_path/page_basename.html'),
+                        template => '%c/%f' ),
+                    ArchiveFileTemplate( label => MT->translate('folder_path/page_basename/index.html'),
+                        template => '%c/%b/%i' ),
                     ],
                 dynamic_support => 1,
                 entry_class => 'page',
@@ -211,15 +211,16 @@ sub core_archive_types {
                 archive_group_entries => \&category_group_entries,
                 dynamic_template => 'category/<$MTCategoryID$>',
                 default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('category/sub_category/index.html'),
-                        template => '%c/%i', default => 1 ),
                     ArchiveFileTemplate( label => MT->translate('category/sub-category/index.html'),
-                        template => '%-c/%i' ),
+                        template => '%-c/%i', default => 1 ),
+                    ArchiveFileTemplate( label => MT->translate('category/sub_category/index.html'),
+                        template => '%c/%i' ),
                     ],
                 dynamic_support => 1,
                 category_based => 1,
             ),
     };
+
 }
 
 sub rebuild {
@@ -614,6 +615,9 @@ sub _rebuild_entry_archive_type {
 
     my $fmgr = $blog->file_mgr;
     my $arch_root = $blog->archive_path;
+    if ($param{Entry} && $param{Entry}->class eq 'page') {
+        $arch_root = $blog->site_path;
+    }
     return $mt->error(MT->translate("You did not set your weblog Archive Path"))
         unless $arch_root;
 
@@ -697,6 +701,7 @@ sub rebuild_file {
     }
     
     my $url = $blog->archive_url;
+    $url = $blog->site_url if $archiver->entry_based && $archiver->entry_class eq 'page';
     $url .= '/' unless $url =~ m|/$|;
     $url .= $map->{__saved_output_file};
 
@@ -812,12 +817,12 @@ sub rebuild_file {
             $html = $tmpl->build($ctx, $cond);
             defined($html) or
                 return $mt->error(($category ?
-                                   MT->translate("Building category '[_1]' failed: [_2]",
+                                   MT->translate("An error occurred publishing category '[_1]': [_2]",
                                                  $category->id, $tmpl->errstr) :
                                    $entry ?
-                                   MT->translate("Building entry '[_1]' failed: [_2]",
+                                   MT->translate("An error occurred publishing entry '[_1]': [_2]",
                                                  $entry->title, $tmpl->errstr):
-                                   MT->translate("Building date-based archive '[_1]' failed: [_2]", $at . $start, $tmpl->errstr)));
+                                   MT->translate("An error occurred publishing date-based archive '[_1]': [_2]", $at . $start, $tmpl->errstr)));
             my $orig_html = $html;
             MT->run_callbacks('build_page',
                       Context => $ctx, context => $ctx,
@@ -1105,7 +1110,7 @@ sub publish_future_posts {
                 # step. LOG the error and revert the entry/entries:
                 require MT::Log;
                 $mt->log({
-                    message => $mt->translate("An error occurred while rebuilding to publish scheduled entries: [_1]", $err),
+                    message => $mt->translate("An error occurred while publishing scheduled entries: [_1]", $err),
                     class => "system",
                     blog_id => $blog->id,
                     level => MT::Log::ERROR()

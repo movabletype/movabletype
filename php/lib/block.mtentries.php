@@ -28,25 +28,27 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
     }
     $entries = $ctx->stash('entries');
     if (!isset($entries)) {
+        global $_archivers;
+        if (!isset($_archivers)) {
+            require_once('archive_lib.php');
+        }
+        $at = $ctx->stash('current_archive_type');
+        $archiver = $_archivers[$at];
         $args['blog_id'] = $ctx->stash('blog_id');
         if (isset($args['id'])) {
             $args['entry_id'] = $args['id'];
         }
-        if ($at = $ctx->stash('current_archive_type')) {
+        if (isset($archiver)) {
             $args['lastn'] or $args['lastn'] = -1;
             $ts = $ctx->stash('current_timestamp');
             $tse = $ctx->stash('current_timestamp_end');
-            require_once("archive_lib.php");
-            global $_archivers;
-            if (!isset($_archivers)) {
-                require_once('archive_lib.php');
-            }
-            if (($ts && $tse) && isset($_archivers[$at])) {
+            if ($ts && $tse) {
                 # assign date range if we have both
                 # start and end date
                 $args['current_timestamp'] = $ts;
                 $args['current_timestamp_end'] = $tse;
             }
+            $archiver->setup_args($ctx, $args);
         }
         if ($cat = $ctx->stash('category')) {
             $args['category'] or $args['categories'] or $args['category_id'] = $cat['category_id'];
@@ -57,9 +59,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
                 $args['category'] or $args['categories'] or $args['category_id'] = $cat['category_id'];
             }
         }
-        if ($auth = $ctx->stash('author')) {
-            $args['author'] = $auth['author_name'];
-        }
+
         if ($tag = $ctx->stash('Tag')) {
             $args['tag'] or $args['tags'] or $args['tags'] = is_array($tag) ? $tag['tag_name'] : $tag;
         }

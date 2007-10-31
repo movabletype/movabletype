@@ -42,7 +42,7 @@ class MTUtilCaptcha extends BaseCaptchaProvider {
 <div class=\"label\"><label for=\"captcha_code\">$caption:</label></div>
 <div class=\"field\">
 <input type=\"hidden\" name=\"token\" value=\"$token\" />
-<img src=\"$cgipath$commentscript/captcha//$blog_id/$token\" width=\"150\" height=\"35\" /><br />
+<img src=\"$cgipath$commentscript/captcha/$blog_id/$token\" width=\"150\" height=\"35\" /><br />
 <input name=\"captcha_code\" id=\"captcha-code\" value=\"\" />
 <p>$description</p>
 </div>

@@ -4,9 +4,15 @@ function smarty_block_mtifnonzero($args, $content, &$ctx, &$repeat) {
     // parameters: tag
     if (!isset($content)) {
         $ctx->localize(array('conditional', 'else_content'));
-        $tag = $args['tag'];
-        $tag = preg_replace('/^mt/', '', $tag);
-        $output = $ctx->tag($tag, $args);
+        if (isset($args['tag'])) {
+            $tag = $args['tag'];
+            $tag = preg_replace('/^mt/', '', $tag);
+            $largs = $args; // local arguments without 'tag' element
+            unset($largs['tag']);
+            $output = $ctx->tag($tag, $largs);
+        } elseif (isset($args['var'])) {
+            $output = $ctx->__stash['vars'][$args['var']];
+        }
         $ctx->stash('conditional', ($output != '0' && $output != ''));
         $ctx->stash('else_content', null);
     } else {

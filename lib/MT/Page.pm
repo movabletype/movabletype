@@ -47,7 +47,7 @@ sub archive_url {
     my $blog = $page->blog() || return $page->error(MT->translate(
                                                      "Load of blog failed: [_1]",
                                                      MT::Blog->errstr));
-    my $url = $blog->archive_url || "";
+    my $url = $blog->site_url || "";
     $url .= '/' unless $url =~ m!/$!;
     return $url . $page->archive_file(@_);
 }

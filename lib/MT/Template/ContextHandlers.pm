@@ -426,7 +426,8 @@ sub core_tags {
 
             PageID => \&_hdlr_page_id,
             PageTitle=> \&_hdlr_page_title,
-            PageBody => \&_hdlr_page_body,
+            PageBody => \&_hdlr_page_body, 
+            PageMore => \&_hdlr_page_more,
             PageDate => \&_hdlr_page_date,
             PageModifiedDate => \&_hdlr_page_modified_date,
             PageAuthorDisplayName => \&_hdlr_page_author_display_name,
@@ -875,13 +876,9 @@ TABLE
 $return_args
 $blog_id
         <input type="hidden" name="magic_token" value="$token" />
-
         $actions_top
-
         $table
-
         $actions_bottom
-
     </form>
 </div>
 EOT
@@ -918,7 +915,7 @@ sub _hdlr_app_action_bar {
     my $pos = $args->{bar_position} || 'top';
     my $pager = $args->{hide_pager} ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl">};
-    my $buttons = $ctx->var('action_buttons');
+    my $buttons = $ctx->var('action_buttons') || '';
     return $ctx->build(<<EOT);
 <div class="actions-bar actions-bar-$pos">
     <div class="actions-bar-inner pkg">$pager
@@ -1018,8 +1015,8 @@ sub _hdlr_app_statusmsg {
     my $msg = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
     my $blog_id = $ctx->var('blog_id');
-    $rebuild = qq{<__trans phrase="[_1]Republish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id');">%%</a>">} if $rebuild eq 'all';
-    $rebuild = qq{<__trans phrase="[_1]Republish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id', 'prompt=index');">%%</a>">} if $rebuild eq 'index';
+    $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id');">%%</a>">} if $rebuild eq 'all';
+    $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id', 'prompt=index');">%%</a>">} if $rebuild eq 'index';
     my $close = '';
     if ($args->{can_close} || (!exists $args->{can_close})) {
         $close = qq{<a href="javascript:void(0)" onclick="javascript:hide('$id');" class="close-me"><span>close</span></a>};
@@ -1066,7 +1063,13 @@ sub _hdlr_app_page_actions {
             <mt:if name="__first__">
                 <ul>
             </mt:if>
+            <mt:if name="page">
                     <li class="icon-left icon-plugin"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
+            <mt:else><mt:if name="link">
+                    <li class="icon-left icon-plugin"><a href="<mt:var name="link" escape="html">&amp;from=$from&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
+            </mt:if><mt:if name="dialog">
+                    <li class="icon-left icon-plugin"><a href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', '<mt:if name="dialog_args"><mt:var name="dialog_args" escape="url">&amp;</mt:if>from=$from&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">')"><mt:var name="label"></a></li>
+            </mt:if></mt:if>
             <mt:if name="__last__">
                 </ul>
             </mt:if>
@@ -1456,7 +1459,7 @@ sub _hdlr_tags {
     my ($tags, $min, $max, $all_count) = _tags_for_blog($ctx, \%blog_terms, \%blog_args, $type);
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
-    my $needs_entries = (($ctx->stash('uncompiled') || '') =~ /<\$?MTEntries/) ? 1 : 0;
+    my $needs_entries = (($ctx->stash('uncompiled') || '') =~ /<MT:?Entries/i) ? 1 : 0;
     my $glue = $args->{glue} || '';
     my $res = '';
     local $ctx->{__stash}{all_tag_count} = undef;
@@ -1785,6 +1788,10 @@ sub nofollowfy_on {
 
 {
     my %include_stack;
+    my %restricted_include_filenames = (
+        'mt-config.cgi' => 1,
+        'passwd' => 1
+    );
 
 sub _hdlr_include {
     my($ctx, $arg, $cond) = @_;
@@ -1825,6 +1832,12 @@ sub _hdlr_include {
         my $ret = $builder->build($ctx, $tokens, $cond);
         return defined($ret) ? $ret : $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
     } elsif (my $file = $arg->{file}) {
+        require File::Basename;
+        my $base_filename = File::Basename::basename($file);
+        if (exists $restricted_include_filenames{lc $base_filename}) {
+            return $ctx->error("You cannot include a file with this name: $base_filename");
+        }
+
         my $stash_id = 'template_file::' . $blog_id . '::' . $file;
         return $ctx->error("Recursion attempt on file: [_1]", $file)
             if $include_stack{$stash_id};
@@ -3305,6 +3318,7 @@ sub _hdlr_entry_link {
         or return $ctx->_no_entry_error($ctx->stash('tag'));
     my $blog = $ctx->stash('blog');
     my $arch = $blog->archive_url;
+    $arch = $blog->site_url if $e->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
 
     my $at = $args->{type} || $args->{archive_type};
@@ -3805,10 +3819,8 @@ sub _hdlr_date {
             # output javascript here to render relative date
         } else {
             my $blog = $_[0]->stash('blog');
-            if ($args->{blog_id}) {
-                require MT::Blog;
-                $blog = MT::Blog->load($args->{blog_id})
-                    or return $_[0]->error("invalid blog_id attribute: " . $args->{blog_id});
+            if ( !$blog && ( my $blog_id = $args->{offset_blog_id} ) ) {
+                $blog = MT->model('blog')->load($blog_id);
             }
             my $lang = $args->{language} || ($blog && $blog->language);
             my $old_lang = MT->current_language;
@@ -4298,7 +4310,9 @@ sub _hdlr_commenter_isauthor {
     if ($a->type == MT::Author::AUTHOR()) {
         my $tag = lc $ctx->stash('tag');
         if ($tag eq 'ifcommenterisentryauthor') {
-            if (my $e = $ctx->stash('entry')) {
+            my $c = $ctx->stash('comment');
+            my $e = $c ? $c->entry : $ctx->stash('entry');
+            if ($e) {
                 if ($e->author_id == $a->id) {
                     return _hdlr_pass_tokens(@_);
                 }
@@ -4734,6 +4748,7 @@ sub _hdlr_archive_link {
         unless $blog->has_archive_type($at);
 
     my $arch = $blog->archive_url;
+    $arch = $blog->site_url if $entry && $entry->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
     $arch .= archive_file_for($entry, $blog, $at, $cat, undef,
                               $ctx->{current_timestamp}, $author);
@@ -4799,7 +4814,7 @@ sub _hdlr_calendar {
     } else {
         $cat_name = '';    ## For looking up cached calendars.
     }
-    my $uncompiled = $ctx->stash('uncompiled');
+    my $uncompiled = $ctx->stash('uncompiled') || '';
     my $r = MT::Request->instance;
     my $calendar_cache = $r->cache('calendar');
     unless ($calendar_cache) {
@@ -5126,9 +5141,10 @@ sub _hdlr_category_prevnext {
         "<MT$tag>" )) if !defined $cat;
     require MT::Placement;
     my $needs_entries;
+    my $uncompiled = $ctx->stash('uncompiled') || '';
     $needs_entries = $class_type eq 'category' ?
-        (($ctx->stash('uncompiled') =~ /<\$?MTEntries/) ? 1 : 0) :
-        (($ctx->stash('uncompiled') =~ /<\$?MTPages/) ? 1 : 0);
+        (($uncompiled =~ /<MT:?Entries/i) ? 1 : 0) :
+        (($uncompiled =~ /<MT:?Pages/i) ? 1 : 0);
     my $blog_id = $cat->blog_id;
     my $cats = _load_sibling_categories($ctx, $cat);
     my ($pos, $idx);
@@ -6641,7 +6657,11 @@ sub _hdlr_pages {
             $args->{categories} = "NOT ($not_folder)";
         }
     }
-    
+
+    # remove current_timestamp;
+    $ctx->{current_timestamp} = undef;
+    $ctx->{current_timestamp_end} =undef;
+
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     _hdlr_entries($ctx, $args, $cond);
@@ -6706,6 +6726,11 @@ sub _hdlr_page_title {
 sub _hdlr_page_body {
     return $_ unless &_check_page(@_);
     &_hdlr_entry_body(@_); 
+}
+
+sub _hdlr_page_more {
+    return $_ unless &_check_page(@_);
+    &_hdlr_entry_more(@_); 
 }
 
 sub _hdlr_page_date {

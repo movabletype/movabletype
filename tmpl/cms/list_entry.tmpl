@@ -103,7 +103,7 @@ function init()
 {
 <mt:unless name="is_power_edit">
     // setup
-    tableSelect = new TC.TableSelect( "entry-listing-table" );
+    tableSelect = new TC.TableSelect( "<mt:var name="object_type">-listing-table" );
     tableSelect.rowSelect = true;
 </mt:unless>
 
@@ -215,7 +215,7 @@ TC.attachLoadEvent( init );
                     <input type="submit" value="<__trans phrase="Save">" accesskey="s" title="<__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">">" mt:mode="save_entries" />
         <mt:else>
             <mt:if name="can_rebuild">
-                <input type="button" onclick="doForMarkedInThisWindow(this.form, '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to rebuild">')" name="delete_entries" value="<__trans phrase="Rebuild">" accesskey="r" title="<__trans phrase="Rebuild selected [_1] (r)" params="<mt:var name="object_label_plural" lower_case="1">">" />
+                <input type="button" onclick="doForMarkedInThisWindow(this.form, '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to publish">')" name="delete_entries" value="<__trans phrase="Publish">" accesskey="r" title="<__trans phrase="Publish selected [_1] (r)" params="<mt:var name="object_label_plural" lower_case="1">">" />
             </mt:if>
                 <input type="button" onclick="doRemoveItems(this.form, '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">')" name="delete_entries" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural">">" />
         </mt:if>
@@ -224,7 +224,7 @@ TC.attachLoadEvent( init );
                     <input type="button" value="<__trans phrase="Save">" accesskey="s" title="<__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">">" onclick="submitForm(this.form, 'save_pages')" />
         <mt:else>
             <mt:if name="can_rebuild">
-                <input type="button" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="page">', '<__trans phrase="pages">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to rebuild">')" name="delete_pages" value="<__trans phrase="Rebuild">" accesskey="r" title="<__trans phrase="Rebuild selected pages (r)">" />
+                <input type="button" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="page">', '<__trans phrase="pages">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to publish">')" name="delete_pages" value="<__trans phrase="publish">" accesskey="r" title="<__trans phrase="Publish selected pages (r)">" />
             </mt:if>
                 <input type="button" onclick="doRemoveItems(this.form, '<__trans phrase="page">', '<__trans phrase="pages">')" name="delete_pages" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete selected pages (x)">" />
         </mt:if>

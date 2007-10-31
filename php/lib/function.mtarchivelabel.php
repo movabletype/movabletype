@@ -10,6 +10,8 @@ function smarty_function_mtarchivelabel($args, &$ctx) {
     }
     if (isset($_archivers[$at])) {
         return $_archivers[$at]->get_label($args, $ctx);
+    } else {
+      return $at;
     }
 }
 ?>

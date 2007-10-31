@@ -195,14 +195,16 @@ sub init {
                 page_actions => {
                     blog => {
                         feeds_app_lite => {
-                            label => "Feeds.App Lite",
-                            link => "mt.cgi?__mode=feedswidget_start",
+                            label => 'Feeds.App Lite',
+                            mode  => 'feedswidget_start',
+                            permission => 'edit_templates',
                         }
                     },
                     list_templates => {
                         'feeds_app_lite' => {
-                            label => "Feeds.App Lite",
-                            link => "mt.cgi?__mode=feedswidget_start",
+                            label => 'Feeds.App Lite',
+                            dialog  => 'feedswidget_start',
+                            permission => 'edit_templates',
                         }
                     },
                 },
@@ -232,8 +234,5 @@ sub load_config {
     $blog_id =~ s{\D}{}g;
     $param->{blog_id}    = $blog_id;
 }
-
-# TODO: remove this and fix how to create page_actions link
-sub envelope { q() }
 
 1;

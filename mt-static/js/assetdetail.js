@@ -1,6 +1,9 @@
 /* for showing, hiding, and displaying asset details */
 
-var isModal = getByID("list-assets-dialog");
+/* assign to an element when using a modal dialog, ie:
+    isModal = getByID("list-assets-dialog")
+*/
+var isModal;
 
 function toggleScrollBar(which) {
     var el = getByID("selector");

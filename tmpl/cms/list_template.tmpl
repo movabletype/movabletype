@@ -112,16 +112,16 @@ function sectionToggle(selectedTab) {
 <mt:unless name="template_type" eq="system">
 <mt:if name="template_type" eq="archive">
 <p>
-<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Entry template"></a>
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create new Entry template"></a>
 &nbsp;
-<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Page template"></a>
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create new Page template"></a>
 &nbsp;
-<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Entry Listing template"></a>
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create new Entry Listing template"></a>
 &nbsp;
-<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=category&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Category template"></a>
+<a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=category&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create new Category template"></a>
 </p>
 <mt:else>
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=<mt:var name="template_type" escape="url">&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="   [_1] template" params="<mt:var name="template_type_label">"></a></p>
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=<mt:var name="template_type" escape="url">&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create new [_1] template" params="<mt:var name="template_type_label">"></a></p>
 </mt:if>
 </mt:unless>
 

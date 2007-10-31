@@ -70,6 +70,32 @@ sub __massage_page_action {
             && ($page !~ m!(&|;|\?)$!);
         $action->{page} = $page;
         $action->{page_has_params} = $has_params;
+    } elsif ($action->{mode} || $action->{dialog}) {
+        if ( $app->user->is_superuser ) {
+            $action->{allowed} = 1;
+        }
+        else {
+            my $perms = $app->permissions;
+            if ( my $p = $action->{permission} ) {
+                my @p = split /,/, $p;
+                foreach my $p (@p) {
+                    my $perm = 'can_' . $p;
+                    $action->{allowed} = 1, last if ( $perms && $perms->$perm() );
+                }
+            }
+        }
+        if ( $action->{mode} ) {
+            $action->{link} = $app->uri(
+                mode => $action->{mode},
+                args => $action->{args}
+            );
+        }
+        elsif ( $action->{dialog} ) {
+            if ( $action->{args} ) {
+                my @args = map { $_ . '=' . $action->{args}->{$_} } keys %{ $action->{args} };
+                $action->{dialog_args} .= join '&', @args;
+            }
+        }
     } else {
         $action->{page} = $app->uri(mode => 'page_action', args => { action_name => $action->{key}, '_type' => $type } );
         $action->{page_has_params} = 1;
@@ -887,6 +913,7 @@ sub _make_commenter_session {
 
     my $enc = $app->charset;
     $nick = encode_text($nick, $enc, 'utf-8');
+    my $nick_escaped = MT::Util::escape_unicode( $nick );
 
     $timeout = '+' . $app->{cfg}->CommentSessionTimeout . 's' unless defined $timeout;
     my %kookee = (-name => COMMENTER_COOKIE_NAME(),
@@ -895,7 +922,7 @@ sub _make_commenter_session {
                   ($timeout ? (-expires => $timeout) : ()));
     $app->bake_cookie(%kookee);
     my %name_kookee = (-name => "commenter_name",
-                       -value => $nick,
+                       -value => $nick_escaped,
                        -path => '/',
                        ($timeout ? (-expires => $timeout) : ()));
     $app->bake_cookie(%name_kookee);

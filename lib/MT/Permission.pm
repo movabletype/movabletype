@@ -271,8 +271,9 @@ sub blog {
         foreach (@list) {
             my $ref = $Perms{$_};
             die "invalid permission" unless $ref;
-            my $val = $perms->$column;
-            $val .= ',' if $val;
+            next if $perms->has($_);
+            my $val = $perms->$column || '';
+            $val .= ',' if $val ne '';
             $val .= "'" . $ref->[0] . "'";
             $perms->$column($val);
         }

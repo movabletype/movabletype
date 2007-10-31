@@ -36,7 +36,7 @@ function hideByID(id) {
 
 </head>
 
-<body id="mode_<$mt:var name="mode"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"> error-screen chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if>">
+<body id="mode_<$mt:var name="mode"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"><mt:if name="is_full_screen"> error-screen</mt:if> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if>">
 
 <div id="container">
 <div id="container-inner">
@@ -45,6 +45,7 @@ function hideByID(id) {
     <div id="header" class="pkg">
         <div id="brand"></div>
         <div id="nav">
+            <mt:if name="wizard_steps">
             <mt:unless name="complete">
             <mt:if name="step" ne="pre_start">
             <mt:loop name="wizard_steps">
@@ -54,6 +55,7 @@ function hideByID(id) {
             </mt:loop>
             </mt:if>
             </mt:unless>
+            </mt:if>
         </div>
     </div>
     <div id="content">

@@ -1179,7 +1179,7 @@ class MTDatabaseBase extends ezsql {
         # Adds blog filter
         if (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
-            $blog_filter = "left outer join mt_permission on permission_author_id = author_id and permission_blog_id = $blog_id";
+            $blog_filter = "join mt_permission on permission_author_id = author_id and permission_blog_id = $blog_id";
             $extend_column = ', mt_permission.*';
         }
 

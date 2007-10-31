@@ -28,6 +28,10 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
         }
     }
 
+    $ctx->stash('current_timestamp', null);
+    $ctx->stash('current_timestamp_end', null);
+    $ctx->stash('current_archive_type', '');
+
     return smarty_block_mtentries($args, $content, $ctx, $repeat);
 }
 ?>

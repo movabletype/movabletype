@@ -672,7 +672,7 @@ sub refresh_blog_templates {
                     $backup->save;
                     push @msg,
                       $app->translate(
-'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.',
+'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>)'." template '[_3]'.",
                         $blog_id, $backup->id, $tmpl->name );
                 }
                 else {
@@ -812,7 +812,7 @@ sub refresh_individual_templates {
             $backup->save;
             push @msg,
               $app->translate(
-'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.',
+'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>)'." template '[_3]'.",
                   $blog_id, $backup->id, $tmpl->name );
         }
         else {

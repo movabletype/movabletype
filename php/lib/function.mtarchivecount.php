@@ -13,12 +13,17 @@ function smarty_function_mtarchivecount($args, &$ctx) {
             require_once("archive_lib.php");
             $ts = $ctx->stash('current_timestamp');
             $tse = $ctx->stash('current_timestamp_end');
-            global $_archive_helpers;
-            if (($ts && $tse) && isset($_archive_helpers[$at])) {
-                # assign date range if we have both
-                # start and end date
-                $eargs['current_timestamp'] = $ts;
-                $eargs['current_timestamp_end'] = $tse;
+            global $_archivers;
+            $archiver = $_archivers[$at];
+            if (isset($archiver)) {
+                if ($ts && $tse) {
+                    # assign date range if we have both
+                    # start and end date
+                    $eargs['current_timestamp'] = $ts;
+                    $eargs['current_timestamp_end'] = $tse;
+                    $eargs['lastn'] = -1;
+                }
+                $archiver->setup_args($ctx, $eargs);
             }
             $entries =& $ctx->mt->db->fetch_entries($eargs);
             return count($entries);

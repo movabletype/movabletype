@@ -1,7 +1,6 @@
+<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
 <$mt:var name="page_title" value="<__trans phrase="Feeds.App Lite Widget Creator">"$>
-
-<mt:include name="include/header.tmpl">
-
+<mt:include name="dialog/header.tmpl">
 
 <p><__trans phrase="Multiple feeds were discovered. Select the feed you wish to use. Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds."></p>
 
@@ -34,8 +33,11 @@
 
 <br />
 
-<div><input type="submit" value="<__trans phrase="Continue">" /></div>
+<div class="actions-bar">
+    <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
+    <input type="submit" value="<__trans phrase="Continue">" />
+</div>
 
 </form>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="dialog/footer.tmpl">

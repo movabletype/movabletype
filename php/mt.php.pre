@@ -73,6 +73,8 @@ class MT {
 
     function init_plugins() {
         $plugin_paths = $this->config('PluginPath');
+        $mtdir = dirname(dirname(__FILE__));
+        array_unshift($plugin_paths, $mtdir . DIRECTORY_SEPARATOR . "addons");
         $ctx =& $this->context();
         foreach ($plugin_paths as $path) {
             if ($dh = opendir($path)) {
@@ -442,7 +444,7 @@ class MT {
                 $ctx->stash('archive_author', $archive_author);
             }
             if (isset($at)) {
-                if (isset($ts)) {
+                if (($at != 'Category') && isset($ts)) {
                     require_once("archive_lib.php");
                     global $_archivers;
                     if (!isset($_archivers[$at])) {

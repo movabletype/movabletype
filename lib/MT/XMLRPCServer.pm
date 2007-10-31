@@ -133,7 +133,7 @@ sub _publish {
     my $blog = MT::Blog->load($entry->blog_id);
     $mt->rebuild_entry( Entry => $entry, Blog => $blog,
                         BuildDependencies => 1 )
-        or return $class->error("Rebuild error: " . $mt->errstr);
+        or return $class->error("Publish error: " . $mt->errstr);
     unless ($no_ping) {
         $mt->ping_and_save(Blog => $blog, Entry => $entry)
             or return $class->error("Ping error: " . $mt->errstr);
@@ -795,13 +795,63 @@ sub newMediaObject {
         or die _fault(MT->translate("Error writing uploaded file: [_1]", $fmgr->errstr));
     my $url = $blog->site_url . $fname;
 
-    # FIXME: need to create an asset object for this upload
+    require File::Basename;
+    my $local_basename = File::Basename::basename($local_file);
+    my $ext =
+        ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+    eval { require Image::Size; };
+    die _fault(MT->translate("Perl module Image::Size is required to determine width and height of uploaded images.")) if $@;
+    my ( $w, $h, $id ) = Image::Size::imgsize($local_file);
 
-    MT->run_callbacks('api_upload_file',
-                      File => $local_file, file => $local_file,
-                      Url => $url, url => $url,
-                      Type => 'file', type => 'file',
-                      Blog => $blog, blog => $blog);
+    require MT::Asset;
+    my $asset_pkg = MT::Asset->handler_for_file($local_basename);
+    my $is_image  = defined($w)
+      && defined($h)
+      && $asset_pkg->isa('MT::Asset::Image');
+    my $asset;
+    if (!($asset = $asset_pkg->load(
+                { file_path => $local_file, blog_id => $blog_id })))
+    {
+        $asset = $asset_pkg->new();
+        $asset->file_path($local_file);
+        $asset->file_name($local_basename);
+        $asset->file_ext($ext);
+        $asset->blog_id($blog_id);
+        $asset->created_by( $author->id );
+    }
+    else {
+        $asset->modified_by( $author->id );
+    }
+    my $original = $asset->clone;
+    $asset->url($url);
+    if ($is_image) {
+        $asset->image_width($w);
+        $asset->image_height($h);
+    }
+    $asset->mime_type($file->{type});
+    $asset->save;
+
+    MT->run_callbacks(
+        'api_upload_file.' . $asset->class,
+        File => $local_file, file => $local_file,
+        Url => $url, url => $url,
+        Size => $bytes, size => $bytes,
+        Asset => $asset, asset => $asset,
+        Type => $asset->class, type => $asset->class,
+        Blog => $blog,blog => $blog);
+    if ($is_image) {
+        MT->run_callbacks(
+            'api_upload_image',
+            File => $local_file, file => $local_file,
+            Url => $url, url => $url,
+            Size => $bytes, size => $bytes,
+            Asset => $asset, asset => $asset,
+            Height => $h, height => $h,
+            Width => $w, width => $w,
+            Type => 'image', type => 'image',
+            ImageType => $id, image_type => $id,
+            Blog => $blog, blog => $blog);
+    }
 
     { url => SOAP::Data->type(string => $url) };
 }

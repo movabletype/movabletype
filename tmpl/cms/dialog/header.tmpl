@@ -6,6 +6,9 @@
 <title><mt:loop name="page_titles"><mt:var name="bc_name" escape="html"> | </mt:loop><mt:var name="mt_product_name"></title>
 <mt:setvarblock name="html_head" prepend="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">styles.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+<!--[if IE]>
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+<![endif]-->
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version" escape="url">"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version" escape="url">"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="mt_version" escape="url">"></script>

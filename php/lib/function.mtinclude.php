@@ -1,4 +1,7 @@
 <?php
+global $restricted_include_filenames;
+$restricted_include_filenames = array('mt-config.cgi' => 1, 'passwd' => 1);
+
 function smarty_function_mtinclude($args, &$ctx) {
     // status: partial
     // parameters: module, file
@@ -48,6 +51,11 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     } elseif (isset($args['file']) && ($args['file'])) {
         $file = $args['file'];
+        $base_filename = basename($file);
+        global $restricted_include_filenames;
+        if (array_key_exists(strtolower($base_filename), $restricted_include_filenames)) {
+            return "";
+        }
         $cache_id = 'file::' . $blog_id . '::' . $file;
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];

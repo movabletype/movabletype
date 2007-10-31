@@ -116,7 +116,7 @@ sub _view_index {
         }
     }
     my $out = $tmpl->build($ctx)
-        or return $app->error($app->translate("Building template failed: [_1]", $tmpl->errstr));
+        or return $app->error($app->translate("Template publishing failed: [_1]", $tmpl->errstr));
     (my $ext = $tmpl->outfile) =~ s/.*\.//;
     my $mime = $MimeTypes{$ext} || 'text/html';
     $app->send_http_header($mime);
@@ -160,7 +160,7 @@ sub _view_date_archive {
     my $tmpl = MT::Template->load($map->template_id)
         or return $app->error($app->translate("Can't load template [_1]", $map->template_id));
     my $out = $tmpl->build($ctx)
-        or return $app->error($app->translate("Building archive failed: [_1]", $tmpl->errstr));
+        or return $app->error($app->translate("Archive publishing failed: [_1]", $tmpl->errstr));
     $out;
 }
 
@@ -195,7 +195,7 @@ sub _view_entry {
             or return $app->error($app->translate("Can't load template [_1]", $map->template_id));
     }
     my $out = $tmpl->build($ctx, \%cond)
-        or return $app->error($app->translate("Building archive failed: [_1]", $tmpl->errstr));
+        or return $app->error($app->translate("Archive publishing failed: [_1]", $tmpl->errstr));
     $out;
 }
 
@@ -222,7 +222,7 @@ sub _view_category {
     my $tmpl = MT::Template->load($map->template_id)
         or return $app->error($app->translate("Can't load template [_1]", $map->template_id));
     my $out = $tmpl->build($ctx)
-        or return $app->error($app->translate("Building archive failed: [_1]", $tmpl->errstr));
+        or return $app->error($app->translate("Archive publishing failed: [_1]", $tmpl->errstr));
     $out;
 }
 

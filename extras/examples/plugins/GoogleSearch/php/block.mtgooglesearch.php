@@ -67,7 +67,7 @@ function smarty_block_mtgooglesearch($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        $wsdl = new SOAP_WSDL($mt->config('PHPDir').DIRECTORY_SEPARATOR."plugins".DIRECTORY_SEPARATOR."GoogleSearch.wsdl");
+        $wsdl = new SOAP_WSDL(dirname(__FILE__).DIRECTORY_SEPARATOR."GoogleSearch.wsdl");
         $proxy = $wsdl->getProxy();
         $result = $proxy->doGoogleSearch(
                     $key,

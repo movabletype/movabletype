@@ -384,7 +384,7 @@ sub ping {
                     $app->rebuild_indexes( Blog => $blog )
                       or return $app->_response(
                         Error => $app->translate(
-                            "Rebuild failed: [_1]",
+                            "Publish failed: [_1]",
                             $app->errstr
                         )
                       );

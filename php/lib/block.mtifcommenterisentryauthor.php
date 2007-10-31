@@ -3,7 +3,19 @@ function smarty_block_mtifcommenterisentryauthor($args, $content, &$ctx, &$repea
     # status: complete
     if (!isset($content)) {
         $cmtr = $ctx->stash('commenter');
-        $entry = $ctx->stash('entry');
+        $comment = $ctx->stash('comment');
+        if (isset($comment)) {
+            $entry_id = $comment['comment_entry_id'];
+            $method = 'fetch_entry';
+            $entry_class = $comment['entry_class'];
+            if (isset($entry_class)) {
+                $method = 'fetch_' . $entry_class;
+            }
+            $entry = $ctx->mt->db->$method($entry_id);
+        }
+        if (!isset($entry)) {
+            $entry = $ctx->stash('entry');
+        }
         if (!isset($cmtr) || !isset($entry)) {
             return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
         }

@@ -3,17 +3,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<meta http-equiv="content-language" content="en" />
-	<meta http-equiv="refresh" content="8;url=mt.cgi">
-	
-	<title>Movable Type Publishing Platform</title>
-	
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta http-equiv="refresh" content="8;url=mt.cgi">
+    
+    <title>Movable Type Publishing Platform</title>
+    
             <style type="text/css" media="screen">
             body {
-                font-family: Candara, "Helvetica Neue", Arial, sans-serif;
+                font-family: "Helvetica Neue", Arial, sans-serif;
                 font-size: 12px;
+                line-height: 160%;
                 background-color: #fff;
+            }
+
+            a:link,
+            a:visited {
+                color: #61889b;
+            }
+
+            a:hover,
+            a:active {
+                color: #a2ad00;
             }
 
             .chromeless #container {
@@ -22,7 +33,7 @@
                 text-align: left;
             }
             .chromeless #container {
-                width: 450px;
+                width: 360px;
             }
 
             .chromeless #container {
@@ -31,21 +42,40 @@
 
             .chromeless #content {
                 border: 1px solid #cfdde5;
-                background-color: #fafbfc;
                 padding: 20px;
             }
 
+            .chromeless #content h1 {
+                margin: 10px 0 20px 0;
+                padding: 0;
+                font-size: 24px;
+                font-weight: normal;
+            }
+            .chromeless #content h2 {
+                font-size: 16px;
+                margin: 0 0 10px 0;
+            }
+
+            .info {
+                font-size: 14px;
+            }
+
             .login {
-                width: 250px;
-                margin: 40px auto 40px auto;
+                margin: 30px auto 30px auto;
+                text-align: center;
+            }
+            .login a {
+                font-size: 18px;
+                color: #fff;
+                text-decoration: none;
+                background-color: #226C9C;
                 border-width: 2px;
                 border-style: solid;
-                border-color: #EEE #D5D5D5 #D5D5D5 #EEE;
-                padding: 10px 0;
-                color: #000;
-                font-size: large;
-                text-align: center;
-                background-color: #E5E5E5;
+                border-color: #6AA8C6 #1B577D #1B577D #6AA8C6;
+                padding: 4px 12px;
+            }
+            .login a:hover {
+                color: #fff;
             }
 
             </style>
@@ -58,7 +88,7 @@
         
             <h1>Movable Type</h1>
 
-            <p class="info">Bienvenue sur Movable Type, la première plateforme de blogging pour les entreprises,les organisations, les developpeurs et les webdesigners!</p>
+            <p class="info">Bienvenue sur Movable Type, la première plateforme de blogging.</p>
 
             <p class="login"><a rel="nofollow" href="mt.cgi">S'enregistrer dans Movable Type</a></p>
 

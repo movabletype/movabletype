@@ -584,7 +584,31 @@ sub core_upgrade_functions {
             priority => 3.1,
             code => \&migrate_nofollow_settings,
         },
-    };
+        'core_update_widget_template' => {
+            version_limit => 4.0022,
+            priority => 3.1,
+            code => \&update_widget_templates,
+        },
+        'core_populate_default_file_template' => {
+            version_limit => 4.0023,
+            priority => 3.1,
+            updater => {
+                type => 'templatemap',
+                label => 'Populating default file template for templatemaps...',
+                condition => sub {
+                    !defined $_[0]->file_template
+                },
+                code => sub {
+                    my %default_template = (
+                        Individual => '%y/%m/%f',
+                        Category => '%c/%i',
+                    );
+                    $_[0]->file_template($default_template{$_[0]->archive_type})
+                        if !defined $_[0]->file_template && exists($default_template{$_[0]->archive_type});
+                },
+            },
+        },
+    }
 }
 
 sub migrate_nofollow_settings {
@@ -810,6 +834,7 @@ sub deprecate_bitmask_permissions {
 sub migrate_system_privileges {
     my $self = shift;
 
+    require MT::Permission;
     my $author_iter = MT::Author->load_iter({ type => MT::Author::AUTHOR() });
     $self->progress($self->translate_escape('Migrating system level permissions to new structure...'));
     while (my $author = $author_iter->()) {
@@ -819,11 +844,14 @@ sub migrate_system_privileges {
         push @perms, 'view_log' if $author->column('can_view_log') || $author->column('is_superuser');
         push @perms, 'manage_plugins' if $author->column('is_superuser');
         if (@perms) {
-            require MT::Permission;
-            my $perm = MT::Permission->new;
-            $perm->author_id($author->id);
-            $perm->blog_id(0);
-            $perm->permissions("'" . join("','", @perms) . "'");
+            my $perm = MT::Permission->load({ author_id => $author->id,
+                blog_id => 0 });
+            if (!$perm) {
+                $perm = MT::Permission->new;
+                $perm->author_id($author->id);
+                $perm->blog_id(0);
+            }
+            $perm->set_these_permissions(@perms);
             $perm->save;
         }
     }
@@ -1173,13 +1201,13 @@ sub seed_database {
 # translate('Blog Administrator')
 # translate('Can administer the blog.')
 # translate('Editor')
-# translate('Can upload files, edit all entries/categories/tags on a blog and rebuild.')
+# translate('Can upload files, edit all entries/categories/tags on a blog and publish.')
 # translate('Author')
 # translate('Can create entries, edit their own, upload files and publish.')
 # translate('Designer')
-# translate('Can edit, manage and rebuild blog templates.')
+# translate('Can edit, manage and publish blog templates.')
 # translate('Webmaster')
-# translate('Can manage pages and rebuild blog templates.')
+# translate('Can manage pages and publish blog templates.')
 # translate('Contributor')
 # translate('Can create entries, edit their own and comment.')
 # translate('Moderator')
@@ -1403,6 +1431,28 @@ sub rename_php_plugin_filenames {
     1;
 }
 
+sub update_widget_templates {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Updating widget template records...'));
+    require MT::Template;
+    my $iter = MT::Template->load_iter(
+        { type => 'custom' },
+        { 'sort' => 'name',
+          'direction' => 'ascend' }
+    );
+
+    while (my $tmpl = $iter->()) {
+        my $name = $tmpl->name();
+        if ($name =~ s/^(?:Widget|Sidebar): ?//) {
+            $tmpl->name($name);
+            $tmpl->type('widget');
+            $tmpl->save;
+        }
+    }
+    1;
+}
+
 ###  Upgrade triggers
 
 # we don't need these yet, but it makes me feel good to have them around
@@ -1426,6 +1476,7 @@ sub post_schema_upgrade {
     my ($from) = @_;
 
     my $plugin_ver = MT->config('PluginSchemaVersion') || {};
+    $plugin_ver->{'core'} = $from;
 
     # run any functions that define a version_limit and where the schema we're
     # upgrading from is below that limit.
@@ -1433,10 +1484,14 @@ sub post_schema_upgrade {
         my $save_from = $from;
         {
             my $func = $functions{$fn};
-            if ($func->{plugin_sig}) {
-                $from = $plugin_ver->{$func->{plugin_sig}} || 0;
+
+            if ($func->{plugin} && (UNIVERSAL::isa($func->{plugin}, 'MT::Component'))) {
+                my $id = $func->{plugin}->id;
+                $from = $plugin_ver->{$id};
             }
-            if ($func->{version_limit} && ($from < $func->{version_limit})) {
+            if ($func->{version_limit}
+                && (defined $from)
+                && ($from < $func->{version_limit})) {
                 $self->add_step($fn, from => $from);
             }
         }
@@ -1709,7 +1764,8 @@ sub core_finish {
     foreach my $plugin (@MT::Plugins) {
         my $ver = $plugin->schema_version;
         next unless $ver;
-        my $old_plugin_schema = $plugin_schema->{$plugin->{plugin_sig}} || 0;
+        next if $plugin->id eq 'core';
+        my $old_plugin_schema = $plugin_schema->{$plugin->id} || 0;
         if ($old_plugin_schema && ($ver > $old_plugin_schema)) {
             $self->progress($self->translate_escape("Plugin '[_1]' upgraded successfully to version [_2] (schema version [_3]).", $plugin->label, $plugin->version || '-', $ver));
             if ($user && !$DryRun) {
@@ -1897,6 +1953,7 @@ sub core_update_records {
         if (ref $msg eq 'CODE') {
             $msg = $msg->($class_label);
         }
+        $msg = $self->translate_escape($msg);
     } else {
         $msg = $self->translate_escape($param{message} || "Updating [_1] records...", $class_label);
     }

@@ -11,6 +11,21 @@ use warnings;
 
 use Fcntl;
 use File::Basename;
+use DBI qw(:sql_types);
+
+BEGIN {
+    eval "use DBD::SQLite 1.11;";
+    if ($@) {
+        *bind_param_attributes = sub {
+            my ($dbd, $data_type) = @_;
+            if ($data_type && $data_type->{type} eq 'blob') {
+                print STDERR "hogehgo";
+                return SQL_BLOB;
+            }
+            return;
+        };
+    }
+};
 
 use base qw(
     MT::ObjectDriver::Driver::DBD::Legacy

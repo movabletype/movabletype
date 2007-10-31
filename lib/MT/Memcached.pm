@@ -17,6 +17,7 @@ sub new {
             memcached => Cache::Memcached->new({
                 servers => \@servers,
                 debug   => 0,
+                namespace => $cfg->SecretToken,
             })
         }, $class;
     } else {

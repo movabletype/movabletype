@@ -137,6 +137,13 @@
         </mtapp:widget>
     </mt:unless>
     <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful Links">">
+        <ul>
+            <li><a href="<mt:var name="quickpost_js" escape="html">"><__trans phrase="QuickPost"></a></li>
+        </ul>
+    </mtapp:widget>
+    <mtapp:widget
         id="display-options-widget"
         label="<__trans phrase="Display Options">"
         label_link="javascript:void(0)"
@@ -760,7 +767,7 @@ function doValidateNotifyRecips(f) {
         label_class = "no-header"
         help_page="entries"
         help_section="entry_title">
-        <input name="title" id="title" tabindex="1" value="<$mt:var name="title" escape="html"$>" maxlength="255" mt:watch-change="1" onchange="rebasename(this)" />
+        <input name="title" id="title" tabindex="1" value="<$mt:var name="title" escape="html"$>" maxlength="255" mt:watch-change="1" onkeyup="rebasename(this)" />
     </mtapp:setting>
 
         <div id="editor">

@@ -442,7 +442,7 @@ is(Foo->count(undef,
                 undef,
                 { unique => 1,
                   sort => 'created_on',
-                  direction => 'descend', } ] }), 3, 'count');
+                  direction => 'descend', } ] }), 2, 'count');
 
 ## Now load all Foo objects in order of most recently
 ## created Bar object. Make sure they are unique.

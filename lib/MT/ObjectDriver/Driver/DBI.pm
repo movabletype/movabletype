@@ -250,18 +250,28 @@ sub prepare_statement {
         if ('HASH' eq ref $args->{fetchonly}) {
             $args->{fetchonly} = [ keys %{ $args->{fetchonly} } ];
         }
+    }
 
-        ## Make sure to include our ORDER BY field in the SELECT fields if
-        ## we're doing a SELECT DISTINCT (for postgres).
-        if($join && $join->[3]->{unique}) {
-            my $sort = $args->{sort};
-            my $fonly = $args->{fetchonly};
-            if (defined $sort) {
-                unless (grep { $_ eq $sort } @$fonly) {
-                    push @$fonly, $sort;
-                }
+    ## Make sure to include our ORDER BY field in the SELECT fields if
+    ## we're doing a SELECT DISTINCT (for postgres).
+    if($join && $join->[3]->{unique}) {
+        my $sort = $args->{sort};
+        my $fonly = $args->{fetchonly} || [];
+        if (defined $sort) {
+            unless (grep { $_ eq $sort } @$fonly) {
+                push @$fonly, $sort;
             }
         }
+        $args->{fetchonly} = $fonly;
+
+        my $j_sort = $join->[3]->{sort};
+        my $j_fonly = $join->[3]->{fetchonly} || [];
+        if (defined $j_sort) {
+            unless (grep { $_ eq $j_sort } @$j_fonly) {
+                push @$j_fonly, $j_sort;
+            }
+        }
+        $join->[3]->{fetchonly} = $j_fonly;
     }
 
     my $start_val = $args->{sort} ? delete $args->{start_val} : undef;
@@ -360,28 +370,8 @@ sub prepare_statement {
             }
             $stmt->order(\@new_order);
 
-            ## If we're doing a SELECT DISTINCT, postgres would have us include
-            ## the order field, which means the DISTINCT isn't what we want--so
-            ## let's do a subselect.
-            if($stmt->distinct) {
-
-                my $subselect = $driver->dbd->sql_class->new;
-                $subselect->from_stmt($stmt);
-                $subselect->select([ @{ $stmt->select } ]);
-                #for my $col (@{ $subselect->select }) {
-                #    $col = $driver->dbd->fix_subselect_column($col); ## FIXME
-                #}
-                $subselect->select_map({ %{ $stmt->select_map } });
-                for my $col (keys %{ $subselect->select_map }) {
-                    my $new_col = $col;
-                    #$new_col = $driver->dbd->fix_subselect_column($new_col); ## FIXME
-                    $subselect->select_map->{$new_col} = delete $subselect->select_map->{$col};
-                }
-                $subselect->bind      ([ @{ $stmt->bind } ]);
-                $subselect->distinct  (1);
-
-                $stmt->distinct(0);
-                $major_stmt = $subselect;
+            if ($stmt->distinct) {
+                $major_stmt = $driver->dbd->sql_class->distinct_stmt($stmt);
             }
         }
 

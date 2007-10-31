@@ -983,7 +983,7 @@ function dirify (s) {
     s = s.toLowerCase();
     s = s.replace(/&[^;\s]+;/g, '');
     s = s.replace(/[^-a-z0-9_ ]/g, '');
-    s = s.replace(/\s+/g, '_');
+    s = s.replace(/\s+/g, '-');
     return s;
 }
 
@@ -1471,8 +1471,12 @@ MT.App = new Class( App, {
 
 
     eventBeforeUnload: function( event ) {
-        if ( this.constructor.Editor && this.changed )
-            return event.returnValue = Editor.strings.unsavedChanges;
+        if ( this.changed ) {
+            if ( this.constructor.Editor )
+                return event.returnValue = Editor.strings.unsavedChanges;
+            else if ( window.Editor )
+                return event.returnValue = window.Editor.strings.unsavedChanges;
+        }
         
         return undefined;
     },
@@ -2368,7 +2372,7 @@ MT.App.CodePress = new Class( Object, {
     insertCode: function( code, putCursorBefore ) {
         if ( this.textarea.disabled ) {
             this.editor.insertCode( code, putCursorBefore );
-		 	this.editor.syntaxHighlight('generic');
+		 	this.editor.syntaxHighlight( this.getLanguage() );
         } else {
 		    TC.setSelectionValue( this.textarea, code );
             DOM.focus( this.textarea );
@@ -2420,9 +2424,9 @@ function showMsg(message, id, type, rebuild, blogID) {
     }
     msg.innerHTML = "<a href=\"javascript:void(0)\" onclick=\"javascript:hide('"+id+"');\" class=\"close-me\"><span>close</span></a>"+message;
     if (rebuild == 'all')
-        msg.innerHTML += ' ' + trans('[_1]Republish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
+        msg.innerHTML += ' ' + trans('[_1]Publish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
     if (rebuild == 'index')
-        msg.innerHTML += ' ' + trans('[_1]Republish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\', prompt=\'index\');">', '</a>');
+        msg.innerHTML += ' ' + trans('[_1]Publish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\', prompt=\'index\');">', '</a>');
     getByID('msg-block').appendChild(msg);
 }
 

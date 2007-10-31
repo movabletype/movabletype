@@ -166,7 +166,7 @@ BEGIN {
                 order => 500,
             },
             'blog.rebuild' => {
-                label => trans('Rebuild Files'),
+                label => trans('Publish Files'),
                 group => 'auth_pub',
                 order => 600,
             },
@@ -526,8 +526,84 @@ BEGIN {
         junk_filters             => \&load_junk_filters,
         template_snippets        => {
             'insert_entries' => {
-                label   => '<MTEntries>',
-                content => qq{<MTEntries lastn="10">\n</MTEntries>\n},
+                trigger => 'entries',
+                label   => 'Entries List',
+                content => qq{<mt:Entries lastn="10">\n    \$0\n</mt:Entries>\n},
+            },
+            'blog_url' => {
+                trigger => 'blogurl',
+                label => 'Blog URL',
+                content => '<$mt:BlogURL$>$0',
+            },
+            'blog_id' => {
+                trigger => 'blogid',
+                label => 'Blog ID',
+                content => '<$mt:BlogID$>$0',
+            },
+            'blog_name' => {
+                trigger => 'blogname',
+                label => 'Blog Name',
+                content => '<$mt:BlogName$>$0',
+            },
+            'entry_body' => {
+                trigger => 'entrybody',
+                label => 'Entry Body',
+                content => '<$mt:EntryBody$>$0',
+            },
+            'entry_excerpt' => {
+                trigger => 'entryexcerpt',
+                label => 'Entry Excerpt',
+                content => '<$mt:EntryExcerpt$>$0',
+            },
+            'entry_link' => {
+                trigger => 'entrylink',
+                label => 'Entry Link',
+                content => '<$mt:EntryLink$>$0',
+            },
+            'entry_more' => {
+                trigger => 'entrymore',
+                label => 'Entry Extended Text',
+                content => '<$mt:EntryMore$>$0',
+            },
+            'entry_title' => {
+                trigger => 'entrytitle',
+                label => 'Entry Title',
+                content => '<$mt:EntryTitle$>$0',
+            },
+            'if' => {
+                trigger => 'mtif',
+                label => 'If Block',
+                content => qq{<mt:if name="variable">\n    \$0\n</mt:if>\n},
+            },
+            'if_else' => {
+                trigger => 'mtife',
+                label => 'If/Else Block',
+                content => qq{<mt:if name="variable">\n    \$0\n<mt:else>\n\n</mt:if>\n},
+            },
+            'include_module' => {
+                trigger => 'module',
+                label => 'Include Template Module',
+                content => '<$mt:Include module="$0"$>',
+            },
+            'include_file' => {
+                trigger => 'file',
+                label => 'Include Template File',
+                content => '<$mt:Include file="$0"$>',
+            },
+            'getvar' => {
+                trigger => 'get',
+                label => 'Get Variable',
+                content => '<$mt:var name="$0"$>',
+            },
+            'setvar' => {
+                trigger => 'set',
+                label => 'Set Variable',
+                content => '<$mt:var name="$0" value="value"$>',
+            },
+            'setvarblock' => {
+                trigger => 'setb',
+                label => 'Set Variable Block',
+                content => qq{<mt:SetVarBlock name="variable">\n    \$0\n</mt:SetVarBlock>\n},
             },
         },
     };

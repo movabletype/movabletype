@@ -18,6 +18,27 @@ use constant EXPIRE => 60 * 10;
 
 use MT::Session;
 
+sub check_availability {
+    my $class = shift;
+
+    eval "require Image::Magick;";
+    if ($@) {
+        return MT->translate('Movable Type default CAPTCHA provider requires Image::Magick.');
+    }
+
+    my $cfg = MT->config;
+    my $base = $cfg->CaptchaSourceImageBase;
+    unless ($base) {
+        require File::Spec;
+        $base = File::Spec->catfile(MT->instance->config_dir, 'mt-static', 'images', 'captcha-source');
+        $base = undef unless (-d $base);
+    }
+    unless ($base) {
+        return MT->translate('You need to configure CaptchaSourceImageBase.');
+    }
+    undef;
+}
+
 sub form_fields {
     my $self = shift;
     my ($blog_id) = @_;
@@ -117,7 +138,7 @@ sub _generate_captcha {
         $base = File::Spec->catfile(MT->instance->config_dir, 'mt-static', 'images', 'captcha-source');
         $base = undef unless (-d $base);
     }
-    return $app->error($app->translate('You need to configure CaptchaSourceImagebase.'))
+    return $app->error($app->translate('You need to configure CaptchaSourceImageBase.'))
         unless $base;
 
     require Image::Magick;

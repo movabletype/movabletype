@@ -14,7 +14,7 @@
         }
     }
     function clearRecentEntriesByTag(el_div, res) {
-        getByID(el_div).innerHTML = "<div class='error-message'>Error retrieving recent entries.</div>";
+        getByID(el_div).innerHTML = "<div class='error-message'><__trans phrase="Error retrieving recent entries."></div>";
     }
     function recentEntriesForTag(tag, el_div) {
         var el = getByID(el_div);
@@ -194,27 +194,29 @@
         <h4 class="tab-panel-header"><__trans phrase="Most Recent Entries"></h4>
 
         <MTEntries>
-            <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-                <div class="entry-title">
-                    <h4><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></a></h4>
-                </div>
-                <div class="entry-content">
-                    <p><$MTEntryExcerpt$></p>
-                </div>
-                <div class="entry-meta">
-                <MTIfNonEmpty tag="MTEntryAuthorDisplayName">
-                    <mt:setvarblock name="entry_author"><$MTEntryAuthorLink show_email="0"$></mt:setvarblock>
-                <MTElse>
-                    <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername$></mt:setvarblock>
-                </MTIfNonEmpty>
-                <MTIfNonEmpty tag="EntryCategory">
-                    <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel$></a></MTEntryCategories>">
-                <MTElse>
-                    <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
-                </MTIfNonEmpty>
-                <MTEntryIfTagged>
-                    <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a></MTEntryTags>">
-                </MTEntryIfTagged>
+            <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if> entry-status-<MTEntryStatus lower_case="1">">
+                <div class="entry-inner">
+                    <div class="entry-title">
+                        <h4><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></a></h4>
+                    </div>
+                    <div class="entry-content">
+                        <p><$MTEntryExcerpt$></p>
+                    </div>
+                    <div class="entry-meta">
+                    <MTIfNonEmpty tag="MTEntryAuthorDisplayName">
+                        <mt:setvarblock name="entry_author"><$MTEntryAuthorLink show_email="0"$></mt:setvarblock>
+                    <MTElse>
+                        <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername$></mt:setvarblock>
+                    </MTIfNonEmpty>
+                    <MTIfNonEmpty tag="EntryCategory">
+                        <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel$></a></MTEntryCategories>">
+                    <MTElse>
+                        <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
+                    </MTIfNonEmpty>
+                    <MTEntryIfTagged>
+                        <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a></MTEntryTags>">
+                    </MTEntryIfTagged>
+                    </div>
                 </div>
             </div>
             <mt:if name="__last__">

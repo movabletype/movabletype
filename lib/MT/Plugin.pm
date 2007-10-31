@@ -894,7 +894,7 @@ yourself:
 To translate individual strings of text from within your plugin code
 is done like this:
 
-    my $rebuild_str = $plugin->translate("Rebuild");
+    my $rebuild_str = $plugin->translate("Publish");
 
 Note that if your plugin does not translate a phrase, it may be translated
 by the MT translation matrix if the phrase is found there. So common

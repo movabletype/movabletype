@@ -23,6 +23,11 @@ our $drivers = [
 
 our @drivers;
 
+sub init {
+    @drivers = ();
+    __PACKAGE__->new();
+}
+
 sub new {
     my $pkg = shift;
     my ($type) = @_;

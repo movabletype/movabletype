@@ -40,6 +40,7 @@ class BaseArchiver {
     function get_archive_link_sql($ctx, $ts, $at, $args) { }
     function archive_prev_next($args, $content, &$ctx, &$repeat, $tag) { }
     function prepare_list(&$ctx, &$row) { }
+    function setup_args($ctx, &$args) { }
 }
 
 class IndividualArchiver extends BaseArchiver {

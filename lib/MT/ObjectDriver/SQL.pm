@@ -54,6 +54,39 @@ sub ts2db {
     return $ret;
 }
 
+sub distinct_stmt {
+    my $class = shift;
+    my ($stmt) = @_;
+    $stmt;
+}
+
+# This method will be used in Postgres and MSSQLServer
+sub _subselect_distinct {
+    my $class = shift;
+    my ($stmt) = @_;
+    ## If we're doing a SELECT DISTINCT, postgres would have us include
+    ## the order field, which means the DISTINCT isn't what we want--so
+    ## let's do a subselect.
+    my $subselect = $class->new;
+    $subselect->from_stmt($stmt);
+    $subselect->select([ @{ $stmt->select } ]);
+    #for my $col (@{ $subselect->select }) {
+    #    $col = $driver->dbd->fix_subselect_column($col); ## FIXME
+    #}
+    $subselect->select_map({ %{ $stmt->select_map } });
+    for my $col (keys %{ $subselect->select_map }) {
+        my $new_col = $col;
+        #$new_col = $driver->dbd->fix_subselect_column($new_col); ## FIXME
+        $subselect->select_map->{$new_col} = delete $subselect->select_map->{$col};
+    }
+    $subselect->bind      ([ @{ $stmt->bind } ]);
+    $subselect->distinct  (1);
+
+    $stmt->distinct(0);
+    $subselect;
+}
+
+
 #--------------------------------------#
 # Instance Methods
 

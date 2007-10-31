@@ -312,12 +312,9 @@ sub do_login {
         }
         MT::Auth->new_login( $app, $commenter );
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
-            my $nick_escaped =
-              $commenter->nickname
-              ? escape_unicode( $commenter->nickname )
-              : 'User#' . $commenter->id;
             $app->_make_commenter_session( $app->make_magic_token,
-                $commenter->email, $commenter->name, $nick_escaped,
+                $commenter->email, $commenter->name,
+                ($commenter->nickname || 'User#' . $commenter->id),
                 $commenter->id );
             $app->start_session( $commenter, $ctx->{permanent} );
             return $app->redirect_to_target;
@@ -1128,7 +1125,7 @@ sub post {
         # redirected to the indiv. page it will be up-to-date.
         $app->rebuild_entry( Entry => $entry->id )
           or return $app->error(
-            $app->translate( "Rebuild failed: [_1]", $app->errstr ) );
+            $app->translate( "Publish failed: [_1]", $app->errstr ) );
     }
 
     if ( $comment->is_junk ) {
@@ -1145,7 +1142,7 @@ sub post {
     MT::Util::start_background_task(
         sub {
             $app->rebuild_indexes( Blog => $blog )
-              or return $app->errtrans( "Rebuild failed: [_1]", $app->errstr );
+              or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
             $app->_send_comment_notification( $comment, $comment_link, $entry,
                 $blog, $commenter );
             _expire_sessions( $cfg->CommentSessionTimeout )
@@ -2062,12 +2059,10 @@ sub save_commenter_profile {
             $cmntr->errstr );
     }
     if ($renew_session) {
-        my $nick_escaped =
-          $cmntr->nickname
-          ? escape_unicode( $cmntr->nickname )
-          : 'User#' . $cmntr->id;
         $app->_make_commenter_session( $app->make_magic_token, $cmntr->email,
-            $cmntr->name, $nick_escaped, $cmntr->id );
+            $cmntr->name,
+            ($cmntr->nickname || 'User#' . $cmntr->id),
+            $cmntr->id );
         $app->start_session( $cmntr, $ctx->{permanent} );
     }
     $param{ 'auth_mode_' . $app->config->AuthenticationModule } = 1;
@@ -2196,9 +2191,9 @@ sub do_reply {
     MT::Util::start_background_task(
         sub {
             $app->rebuild_entry( Entry => $parent->entry_id )
-              or return $app->errtrans( "Rebuild failed: [_1]", $app->errstr );
+              or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
             $app->rebuild_indexes( Blog => $parent->blog )
-              or return $app->errtrans( "Rebuild failed: [_1]", $app->errstr );
+              or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
                 MT::Blog->load( $param->{blog_id} ), $commenter );
         }

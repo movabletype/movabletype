@@ -52,22 +52,22 @@
 <$mt:var name="js_include"$>
 </head>
 
-<body id="mode_<$mt:var name="mode"$>" class="<mt:if name="blog_id">blog blog-<$mt:var name="blog_id"$><mt:else>system</mt:if> <$mt:var name="screen_type" default="main-screen"$> <mt:if name="screen_class"> <$mt:var name="screen_class"$></mt:if><mt:if name="content_nav"> content-nav</mt:if><mt:if name="related_content"> related-content<mt:unless name="content_nav"> related-content-without-content-nav</mt:unless></mt:if><mt:if name="new_object"> create-new</mt:if>">
+<body id="<$mt:var name="screen_id"$>" class="<mt:if name="blog_id">blog blog-<$mt:var name="blog_id"$><mt:else>system</mt:if> <$mt:var name="screen_type" default="main-screen"$> <mt:if name="screen_class"> <$mt:var name="screen_class"$></mt:if><mt:if name="new_object"> create-new</mt:if>">
 <div id="modal-mask" class="autolayout-height-parent modal-mask hidden">
     <iframe frameborder="0" scrolling="no" src="about:blank"></iframe>
     <div></div>
 </div>
 <mt:var name="html_body">
-<div id="container" class="<mt:if name="position_actions_bottom">show-actions-bar-bottom</mt:if> <mt:if name="position_actions_top">show-actions-bar-top</mt:if>">
+<div id="container" class="<mt:if name="content_nav"> content-nav</mt:if><mt:if name="related_content"> related-content<mt:unless name="content_nav"> related-content-without-content-nav</mt:unless></mt:if><mt:if name="position_actions_bottom"> show-actions-bar-bottom</mt:if><mt:if name="position_actions_top"> show-actions-bar-top</mt:if>">
 
 <div id="header"><div id="header-inner" class="pkg">
     <div id="brand"><h1><a href="<$mt:var name="mt_url"$>"><span><$mt:var name="mt_product_name"$></span></a></h1></div>
 <mt:if name="author_name">
-    <div id="utility-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="300">
+    <div id="utility-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0">
         <ul id="utility-nav-list">
     <mt:if name="blog_id">
     <mt:loop name="sys_nav_loop">
-        <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
+            <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
         <mt:if name="allowed"><a href="<$mt:var name="link"$>" class="nav-menu-link"><span><$mt:var name="label"$></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
         <mt:if name="sub_nav_loop">
                 <ul>
@@ -91,7 +91,7 @@
     </div>
     <div id="main-nav">
         <div id="main-nav-inner">
-            <div id="selector-nav" mt:delegate="nav-menu" mt:nav-delayed-open="300" mt:nav-delayed-close="300">
+            <div id="selector-nav" mt:delegate="nav-menu" mt:nav-delayed-open="500" mt:nav-delayed-close="0">
                 <ul id="selector-nav-list">
             <mt:if name="top_blog_loop">
                 <mt:setvarblock name="blog_selector_dropdown">
@@ -116,7 +116,7 @@
                 </mt:setvarblock>
                 <mt:if name="blog_selector_dropdown" like="\S">
                     <li id="blog-selector-control" class="nav-menu has-sub-nav">
-                        <a href="javascript:void(0);" id="current-blog-title"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if></a>
+                        <a href="javascript:void(0);" id="current-blog-title"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if><span>&nbsp;</span></a>
                         <ul><mt:var name="blog_selector_dropdown"></ul>
                     </li>
                 <mt:else>
@@ -149,7 +149,7 @@
                 </ul>
             </div>
             <mt:if name="top_nav_loop">
-            <div id="blog-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="300">
+            <div id="blog-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0">
                 <div id="blog-nav-inner">
                     <ul id="blog-nav-list" class="blog-nav-list pkg">
                         <li id="blog-dashboard"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="blog_id"$>"><span><__trans phrase="Blog Dashboard"></span></a></li>
@@ -166,7 +166,11 @@
                         </li>
                 </mt:loop>
                 <mt:if name="blog_id">
-                        <li id="rebuild-site" class="nav-link"><a href="javascript:void(0)" title="<__trans phrase="Rebuild Site">" onclick="window.open('<$mt:var name="mt_url"$>?__mode=rebuild_confirm&amp;blog_id=<$mt:var name="blog_id"$>', 'rebuild', 'width=400,height=400,resizable=yes'); return false"><span><__trans phrase="Rebuild"></span></a></li>
+                    <mt:if name="can_rebuild">
+                    <mt:unless name="dynamic_all">
+                        <li id="rebuild-site" class="nav-link"><a href="javascript:void(0)" title="<__trans phrase="Publish Site">" onclick="window.open('<$mt:var name="mt_url"$>?__mode=rebuild_confirm&amp;blog_id=<$mt:var name="blog_id"$>', 'rebuild', 'width=400,height=400,resizable=yes'); return false"><span><__trans phrase="Publish"></span></a></li>
+                    </mt:unless>
+                    </mt:if>
                         <li id="view-site" class="nav-link"><a href="<$mt:var name="blog_url"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View"></span></a></li>
                 </mt:if>
                     </ul>
@@ -181,7 +185,9 @@
             </mt:if>
                 <input type="hidden" name="do_search" value="1" />
                 <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
-                <input accesskey="q" type="text" name="search" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" /><a href="javascript:void(0)" onclick="document.quicksearch.submit()"><img align="top" src="<$mt:var name="static_uri"$>images/search-submit.gif" alt="" width="24" height="19" /></a>
+                <span class="search-cap-left">&nbsp;</span>
+                <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                <a href="javascript:void(0)" onclick="document.quicksearch.submit()" class="search-submit"><img src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" alt="Search" width="24" height="19" /></a>
             </form>
         </mt:if>
         </div>

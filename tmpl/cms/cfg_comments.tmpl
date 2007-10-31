@@ -109,20 +109,26 @@
 <mt:loop name="cmtauth_loop">
 <mt:if name="key" eq="TypeKey">
 <mt:setvar name="typekey_enabled" value="1">
-<p><input type="checkbox" id="enabled_<mt:var name="key">" name="enabled_<mt:var name="key">" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="enabled"> checked="checked"</mt:if> /> <label for="enabled_<mt:var name="key">"><mt:var name="label"></label></p>
+<p><input type="checkbox" id="enabled_<mt:var name="key">" name="enabled_<mt:var name="key">" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key">"><mt:var name="label"></label></p>
 <div id="enabled_TypeKey_prefs" style="display:<mt:if name="enabled">block<mt:else>none</mt:if>">
   <p style="margin-left: 25px;"><input type="checkbox" value="1" id="require_typekey_emails" name="require_typekey_emails"<mt:if name="require_typekey_emails"> checked="checked"</mt:if> class="cb" />&nbsp;<__trans phrase="Require E-mail Address for Comments via TypeKey"><br />
   <span class="hint"><__trans phrase="If enabled, visitors must allow their TypeKey account to share e-mail address when commenting."></span>
   <a href="javascript:void(0)" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help-link">?</a></p>
 </div>
 <mt:else>
-<p><input type="checkbox" id="enabled_<mt:var name="key">" name="enabled_<mt:var name="key">" value="1"<mt:if name="enabled"> checked="checked"</mt:if> /> <label for="enabled_<mt:var name="key">"><mt:var name="label"></label></p>
+<p><input type="checkbox" id="enabled_<mt:var name="key">" name="enabled_<mt:var name="key">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key">"><mt:var name="label"></label></p>
 </mt:if>
 </mt:loop>
 </mt:if>
 
 <mt:unless name="typekey_enabled">
 <p><a href="<mt:var name="script_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Setup other authentication services"></a></p>
+</mt:unless>
+<mt:unless name="openid_enabled">
+<p>
+<img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="OpenID providers disabled">" width="9" height="9" />
+<span class="alert-warning-inline"><__trans phrase="Required module (Digest::SHA1) for OpenID commenter authentication is missing."></span>
+</p>
 </mt:unless>
     </mtapp:setting>
 
@@ -246,7 +252,7 @@
         <mt:else>
             <p>
             <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="No CAPTCHA provider available">" width="9" height="9" />
-            <span class="alert-warning-inline"><__trans phrase="No CAPTCHA provider is available in this system.  Movable Type's default provider requires Image::Magick."></span>
+            <span class="alert-warning-inline"><__trans phrase="No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaImageSourceBase directive points to captcha-source directory under mt-static/images."></span>
             </p>
         </mt:if>
     </mtapp:setting>

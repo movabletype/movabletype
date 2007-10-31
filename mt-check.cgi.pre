@@ -221,6 +221,13 @@ print (<<HTML);
                 border: 1px solid #999;
             }
 
+			.ready {
+				color: #fff;
+				background-color: #9C6;
+                border: 0;
+                padding-left: 5px;
+			}
+
             .msg-success {
                 background-color: #CFC;
                 background-image: url('$mt_static_path/images/icon_success.png');
@@ -233,8 +240,6 @@ print (<<HTML);
             .msg-success p {
                 font-size: 13px;
             }
-
-
 
             .info {
                 margin-left: 60px;
@@ -348,7 +353,7 @@ my @OPT = (
 
     [ 'XML::SAX', 0, 0, translate('XML::SAX and/or its dependencies is required in order to restore.')],
 
-    [ 'Digest::SHA1', 0, 0, translate('This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.')],
+    [ 'Digest::SHA1', 0, 0, translate('Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.')],
 );
 
 use Cwd;

@@ -7,7 +7,9 @@ function smarty_block_mtifnonempty($args, $content, &$ctx, &$repeat) {
         if (isset($args['tag'])) {
             $tag = $args['tag'];
             $tag = preg_replace('/^mt/', '', $tag);
-            $output = $ctx->tag($tag, $args);
+            $largs = $args; // local arguments without 'tag' element
+            unset($largs['tag']);
+            $output = $ctx->tag($tag, $largs);
         } elseif (isset($args['var'])) {
             $output = $ctx->__stash['vars'][$args['var']];
         }

@@ -1,9 +1,9 @@
 <mt:if name="is_full_screen">
-    <mt:setvarblock name="page_title"><__trans phrase="Rebuilding">...</mt:setvarblock>
+    <mt:setvarblock name="page_title"><__trans phrase="Publishing">...</mt:setvarblock>
     <mt:include name="include/header.tmpl">
 <mt:else>
     <$mt:setvar name="screen_type" value="popup-screen"$>
-    <mt:setvarblock name="page_title"><__trans phrase="Rebuilding"> <mt:var name="blog_name" escape="html">...</mt:setvarblock>
+    <mt:setvarblock name="page_title"><__trans phrase="Publishing"> <mt:var name="blog_name" escape="html">...</mt:setvarblock>
     <mt:setvar name="complete" value="1">
     <mt:include name="include/chromeless_header.tmpl">
 </mt:if>
@@ -14,7 +14,7 @@ function doRedirect () {
 <mt:if name="redirect_target">
     window.location='<mt:var name="redirect_target">';
 <mt:else>
-    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id">&type=<mt:var name="build_type">&next=<mt:var name="build_next">&offset=<mt:var name="offset">&limit=<mt:var name="limit">&total_cats=<mt:var name="total_cats">&total_entries=<mt:var name="total_entries">&is_bm=<mt:var name="is_bm">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&old_previous=<mt:var name="old_previous">&old_next=<mt:var name="old_next"><mt:if name="is_full_screen">&fs=1</mt:if>';
+    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id">&type=<mt:var name="build_type">&next=<mt:var name="build_next">&offset=<mt:var name="offset">&limit=<mt:var name="limit">&total_cats=<mt:var name="total_cats">&total_pages=<mt:var name="total_pages">&total_entries=<mt:var name="total_entries">&is_bm=<mt:var name="is_bm">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&old_previous=<mt:var name="old_previous">&old_next=<mt:var name="old_next"><mt:if name="is_full_screen">&fs=1</mt:if>';
 </mt:if>
 }
 setTimeout('doRedirect()', 200);
@@ -27,32 +27,60 @@ setTimeout('doRedirect()', 200);
 </mt:if>
 
 <h4 class="message">
-<img valign="bottom" src="<mt:var name="static_uri">images/ani-rebuild.gif" height="18" width="18" alt="" />&nbsp;
+<!-- <img valign="bottom" src="<mt:var name="static_uri">images/ani-rebuild.gif" height="18" width="18" alt="" />&nbsp; -->
 <mt:if name="is_one_index">
-<__trans phrase="Rebuilding [_1]" params="<mt:var name="build_type_name" escape="html"> ">
+    <mtapp:statusmsg
+        id="is_one_index"
+        class="publishing">
+        <__trans phrase="Publishing [_1]" params="<mt:var name="build_type_name" escape="html"> ">...
+    </mtapp:statusmsg>
 <mt:else>
 <mt:if name="is_individual">
-<__trans phrase="Rebuilding [_1] pages [_2]" params="<mt:var name="build_type_name">%%<mt:var name="indiv_range"> ">
+    <mtapp:statusmsg
+        id="is_individual"
+        class="publishing">
+        <__trans phrase="Publishing [_1] pages [_2]" params="<mt:var name="build_type_name">%%<mt:var name="indiv_range"> ">...
+    </mtapp:statusmsg>
 <mt:else>
 <mt:if name="is_entry">
 <mt:if name="dynamic">
-<__trans phrase="Rebuilding [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">
+    <mtapp:statusmsg
+        id="is_entry"
+        class="publishing">
+        <__trans phrase="Publishing [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">...
+    </mtapp:statusmsg>
 <mt:else>
-<__trans phrase="Rebuilding [_1]" params="<mt:var name="build_type_name" escape="html"> ">
+    <mtapp:statusmsg
+        id="publishing"
+        class="publishing">
+        <__trans phrase="Publishing [_1]" params="<mt:var name="build_type_name" escape="html"> ">...
+    </mtapp:statusmsg>
 </mt:if>
 <mt:else>
 <mt:if name="dynamic">
-<__trans phrase="Rebuilding [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">
+    <mtapp:statusmsg
+        id="dynamic"
+        class="publishing">
+        <__trans phrase="Publishing [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">...
+    </mtapp:statusmsg>
 <mt:else>
 <mt:if name="build_type_name">
-<__trans phrase="Rebuilding [_1] pages" params="<mt:var name="build_type_name" escape="html"> ">
+    <mtapp:statusmsg
+        id="build_type_name"
+        class="publishing">
+        <__trans phrase="Publishing [_1] pages" params="<mt:var name="build_type_name" escape="html"> ">...
+    </mtapp:statusmsg>
 <mt:else>
-<__trans phrase="Rebuilding">
+<mtapp:statusmsg
+    id="generic"
+    class="publishing">
+    <__trans phrase="Publishing">...
+</mtapp:statusmsg>
 </mt:if>
 </mt:if>
 </mt:if>
 </mt:if>
-</mt:if>...
+</mt:if>
 </h4>
 
 <mt:if name="is_full_screen">

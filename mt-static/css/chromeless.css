@@ -247,6 +247,10 @@ fieldset {
     color:#999999;
 }
 
+.msg a.close-me {
+    display: none;
+}
+
 /* Corners -------------------------------------------------------------------------------- */
 
 #ctl, #ctr,
@@ -304,7 +308,7 @@ fieldset {
     position: absolute;
     top: 0;
     margin: 15px 0 0 20px;
-    background: url('../images/chromeless/movable-type-logo.gif') no-repeat;
+    background: url('../images/chromeless/movable-type-logo.gif') no-repeat 0 7px;
     height: 34px;
     width: 192px;
 }

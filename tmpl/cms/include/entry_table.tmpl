@@ -21,7 +21,7 @@
         <mt:unless name="blog_id">
                 <th class="weblog"><__trans phrase="Blog"></th>
         </mt:unless>
-                <th class="date"><__trans phrase="Date"></th>
+                <th class="date"><mt:if name="object_type" eq="page"><__trans phrase="Last Modified"><mt:else><__trans phrase="Created"></mt:if></th>
         <mt:unless name="is_power_edit">
                 <th class="view"><span><__trans phrase="View"></span></th>
         </mt:unless>

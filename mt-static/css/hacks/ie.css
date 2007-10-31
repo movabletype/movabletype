@@ -15,6 +15,11 @@ ul.main-nav-list ul a {
     width: 736px; /* scrollbars are wider in IE */
 }
 
+/* checkboxes are bigger in IE, so remove padding */
+.listing .cb {
+    padding: 0 2px;
+}
+
 .add-category-new-parent-link {
     right: 4px;
 }
@@ -36,16 +41,11 @@ ul.main-nav-list ul a {
     width: 100%;
 }
 
-#content-header select,
-#content-header input {
-    font-size: 10px;
-}
-
 #entryfield-options li input.cb,
 #entryfield-options li input.rb { margin: -2px -4px; }
 
-#search-form .search-query {
-    margin-top: -1px;
+#basic-search .search-query {
+    margin-top: 0;
 }
 
 .dashboard .shortcuts-widget li {
@@ -59,6 +59,11 @@ ul.main-nav-list ul a {
 .dashboard .you-widget .widget-header {
     height: 1%;
 }
+
+#new_entry_prefs {
+    height: 1%;
+}
+
 
 /* 3.3x hacks that may still be needed */
 /*    body.edit-entry #entry-container select { margin: 0; }*/

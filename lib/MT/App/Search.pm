@@ -370,7 +370,7 @@ sub execute {
     my $build = MT::Builder->new;
     my $tokens = $build->compile($ctx, $str)
         or return $app->error($app->translate(
-            "Building results failed: [_1]", $build->errstr));
+            "Publishing results failed: [_1]", $build->errstr));
     defined(my $res = $build->build($ctx, $tokens, { 
         NoSearch => $app->{query}->param('help') ||
                     ($app->{searchparam}{Type} ne 'newcomments' &&
@@ -384,7 +384,7 @@ sub execute {
         SearchResults => scalar @results,
         } ))
         or return $app->error($app->translate(
-            "Building results failed: [_1]", $ctx->errstr));
+            "Publishing results failed: [_1]", $ctx->errstr));
     $res = $app->_set_form_elements($res);
 
     if (defined($ctx->stash('content_type'))) {

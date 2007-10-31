@@ -113,6 +113,12 @@ class DateBasedCategoryArchiver extends DateBasedArchiver {
         return $content;
     }
 
+    function setup_args($ctx, &$args) {
+        if ($cat = $ctx->stash('category')) {
+            $args['category_id'] = $cat['category_id'];
+        }
+    }
+
     function get_categorized_entry($ts, $blog_id, $cat_id, $at, $order) {
         $helper = $this->get_helper($at);
         list($start, $end) = $helper($ts);
@@ -121,7 +127,7 @@ class DateBasedCategoryArchiver extends DateBasedArchiver {
             $args['current_timestamp_end'] = $this->dec_ts($start);
         } else {
             $args['current_timestamp'] = $this->inc_ts($end);
-            $args['sort_order'] = 'ascend'; # ascending order
+            $args['base_sort_order'] = 'ascend'; # ascending order
         }
         $args['lastn'] = 1;
         $args['blog_id'] = $blog_id;

@@ -1,5 +1,5 @@
-<TMPL_UNLESS NAME=JSON>
-<TMPL_IF NAME=6A>
+<mt:unless name="json">
+<mt:if name="6A">
 <!--
 parameters:
     panel_type (blog, author, role, group)
@@ -19,81 +19,87 @@ parameters:
         description
         disabled (row is shown, but unselectable)
 -->
-</TMPL_IF>
-            <!-- ListingPanel -->
-            <div id="<TMPL_VAR NAME=PANEL_TYPE>-panel" class="hidden panel">
-                <h2><TMPL_VAR NAME=PANEL_TITLE> &nbsp; <TMPL_IF NAME=PANEL_HAS_STEPS>(<MT_TRANS phrase="Step [_1] of [_2]" params="<TMPL_VAR NAME=PANEL_NUMBER>%%<TMPL_VAR NAME=PANEL_TOTAL>">)</TMPL_IF></h2>
-
-                <TMPL_IF NAME=PANEL_MULTI><div class="items-wrapper">
-                    <span class="modal_added"><TMPL_VAR NAME=ITEMS_PROMPT>:</span> <span class="items"></span>
-                </div>
-
-                </TMPL_IF><div class="search-box">
-                    <TMPL_IF PANEL_SEARCHABLE>
-                    <form action="" method="get">
-                        <p class="page-desc"><TMPL_VAR NAME=SEARCH_PROMPT>
-                        <input type="text" class="search-input"<TMPL_UNLESS PANEL_SEARCHABLE> disabled="disabled"</TMPL_UNLESS> />
-                        <input type="image" class="search-command" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/color/search.gif" title="<MT_TRANS phrase="Search">"<TMPL_UNLESS PANEL_SEARCHABLE> disabled="disabled"</TMPL_UNLESS> />
-                        <input type="button" class="search-reset hidden" value="<MT_TRANS phrase="View All">"<TMPL_UNLESS PANEL_SEARCHABLE> disabled="disabled"</TMPL_UNLESS> />
-                    </p></form>
-                    <TMPL_ELSE>
-                    <p class="page-desc">&nbsp;<img border="0" src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" width="17" height="20" alt="" /></p>
-                    </TMPL_IF>
-                </div>
-
-                <div class="selector list<TMPL_IF NAME=PANEL_MULTI> list-multi</TMPL_IF>">
-                    <form action="" method="get" onsubmit="return false">
-                        <table cellspacing="0" class="list-heading">
-                            <tr>
-                                <th class="cb"><TMPL_IF NAME=PANEL_MULTI><input type="checkbox" value="all" class="select" /><TMPL_ELSE>&nbsp;</TMPL_IF></th>
-                                <th class="panel-label"><TMPL_VAR NAME=PANEL_LABEL></th>
-                                <th class="panel-description"><TMPL_VAR NAME=PANEL_DESCRIPTION></th>
+</mt:if>
+<!-- ListingPanel -->
+<div id="<mt:var name="panel_type">-panel" class="hidden panel">
+    <div class="panel-header">
+        <h2><mt:var name="panel_title">&nbsp;</h2>
+        <div class="progress"><mt:if name="panel_has_steps"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></mt:if></div>
+<mt:if name="panel_multi">
+        <div class="selected-items"><span class="modal_added"><mt:var name="items_prompt">:</span> <span class="items"></span></div>
+</mt:if>
+    </div>
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+<mt:if name="panel_searchable">
+            <form id="modal-search" action="" method="get">
+                <input type="text" value="<$mt:var name="search_label"$>" class="search-input search-query"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> />
+                <input type="button" class="search-reset hidden" value="<__trans phrase="View All">"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> />
+            </form>
+</mt:if>
+        </div>
+    </div>
+    <div class="selector listing <mt:if name="panel_multi"> list-multi</mt:if>">
+        <form action="" method="get" onsubmit="return false">
+            <table cellspacing="0" class="list-heading">
+                <thead>
+                    <tr>
+                        <th class="cb"><mt:if name="panel_multi"><input type="checkbox" value="all" class="select" style="padding:0;margin:0;" /><mt:else>&nbsp;</mt:if></th>
+                        <th class="panel-label"><mt:var name="panel_label"></th>
+                        <th class="panel-description"><mt:var name="panel_description"></th>
+                    </tr>
+                </thead>
+            </table>
+            <div class="list-data-wrapper list-data">
+</mt:unless>
+<mt:if name="object_loop">
+                <div class="listing list-data-layout">
+                    <table cellspacing="0">
+                        <tbody>
+    <mt:loop name="object_loop">
+                            <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                                <td class="cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" <mt:if name="disabled">disabled="disabled"</mt:if> /></td>
+                                <td class="panel-label"><label><mt:var name="label"></label></td>
+                                <td class="panel-description">
+                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description"><mt:if name="link"></span></mt:if>
+                                    <mt:if name="link"><span class="link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
+                                </td>
                             </tr>
-                        </table>
-                        <div class="list-data-wrapper list-data">
-</TMPL_UNLESS>
-<TMPL_IF NAME=OBJECT_LOOP>
-                            <div class="list-data-layout">
-                            <table cellspacing="0">
-    <TMPL_LOOP NAME=OBJECT_LOOP>
-                                <tr id="<TMPL_VAR NAME=PANEL_TYPE>-<TMPL_VAR NAME=ID>" class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
-                                    <td class="cb"><input type="<TMPL_IF NAME=PANEL_MULTI>checkbox<TMPL_ELSE>radio</TMPL_IF>" class="select" name="<TMPL_VAR NAME=PANEL_TYPE>-cb" value="<TMPL_VAR NAME=ID>" <TMPL_IF NAME=DISABLED>disabled="disabled"</TMPL_IF> /></td>
-                                    <td class="panel-label"><label><TMPL_VAR NAME=LABEL></label></td>
-                                    <td class="panel-description"><TMPL_IF NAME=LINK><span class="float_desc"></TMPL_IF><TMPL_VAR NAME=DESCRIPTION><TMPL_IF NAME=LINK></span></TMPL_IF><TMPL_IF NAME=LINK><span class="link"><a href="<TMPL_VAR NAME=LINK ESCAPE=HTML>" target="_blank"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" title="<MT_TRANS phrase="Go to [_1]" params="<TMPL_VAR NAME=LABEL ESCAPE=HTML>">" width="13" height="9" alt="" /></a></span></TMPL_IF></td>
-                                </tr>
-    </TMPL_LOOP>
-                            </table>
-                            </div>
-<TMPL_ELSE>
-<TMPL_IF NAME=SEARCH>
-    <mtapp:statusmsg
-        id="search"
-        class="info">
-        <__trans phrase="Sorry, there were no results for your search. Please try searching again.">
-    </mtapp:statusmsg>
-<TMPL_ELSE>
-    <mtapp:statusmsg
-        id="no-data"
-        class="info">
-        <__trans phrase="Sorry, there is no data for this object set.">
-    </mtapp:statusmsg>
-</TMPL_IF>
-</TMPL_IF>
-<TMPL_UNLESS NAME=JSON>
-                        </div>
-                        </form>
+    </mt:loop>
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="pager"></div>
-
-                <div class="panel-commands">
-                    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-                        <input type="button" class="cancel" value="<MT_TRANS phrase="Cancel">" />
-                        <TMPL_UNLESS NAME=PANEL_FIRST><input type="button" class="previous" value="<MT_TRANS phrase="Back">" />
-                        </TMPL_UNLESS><TMPL_IF NAME=PANEL_LAST><input type="button" class="close" value="<MT_TRANS phrase="Confirm">" disabled="true" />
-                        <TMPL_ELSE><input type="button" class="next" value="<MT_TRANS phrase="Continue">" disabled="true" />
-                        </TMPL_IF>
-                    </form>
-                </div>
+<mt:else>
+    <mt:if name="search">
+        <mtapp:statusmsg
+            id="search"
+            class="info">
+            <__trans phrase="Sorry, there were no results for your search. Please try searching again.">
+        </mtapp:statusmsg>
+    <mt:else>
+        <mtapp:statusmsg
+            id="no-data"
+            class="info">
+            <__trans phrase="Sorry, there is no data for this object set.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:if>
+<mt:unless name="json">
             </div>
-</TMPL_UNLESS>
+        </form>
+    </div>
+    <div class="pager"></div>
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg">
+            <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+                <input type="button" class="cancel" value="<__trans phrase="Cancel">" />
+                <mt:unless name="panel_first"><input type="button" class="previous" value="<__trans phrase="Back">" />
+                </mt:unless><mt:if name="panel_last"><input type="button" class="close" value="<__trans phrase="Confirm">" disabled="true" />
+                <mt:else><input type="button" class="next" value="<__trans phrase="Continue">" disabled="true" />
+                </mt:if>
+            </form>
+        </div>
+    </div>
+</div>
+</mt:unless>

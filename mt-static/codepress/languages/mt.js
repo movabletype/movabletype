@@ -10,6 +10,3 @@ Language.syntax.unshift(
 Language.syntax.unshift(
 	{ input : /&lt;(\/?\$?MT:?\w*)/ig, output : '&lt;<u>$1</u>' }
 );
-Language.snippets.push(
-	{ input : 'mtentries', output : '<MTEntries lastn="10">\n\t$0\n</MTEntries>' }
-);

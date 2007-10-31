@@ -201,7 +201,7 @@ sub build {
     }
     defined(my $res = $build->build($ctx, $tokens, $cond)) or
         return $tmpl->error(MT->translate(
-            "Build error in template '[_1]': [_2]",
+            "Publish error in template '[_1]': [_2]",
             $tmpl->name || $tmpl->{__file}, $build->errstr));
     return $res;
 }

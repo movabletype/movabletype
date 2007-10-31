@@ -290,7 +290,7 @@ sub init_blog {
     $param{blog_url} = $app->param('blog_url') || '';
     $param{blog_path} = $app->param('blog_path') || '';
     $param{blog_timezone} = $app->param('blog_timezone');
-    $param{blog_path} =~ s!/$!!;
+    $param{blog_path} =~ s!(/|\\)$!!;
     $param{blog_url} .= '/' if $param{blog_url} !~ m!/$!;
 
     my $tz = $app->param('blog_timezone') || $app->config('DefaultTimezone');

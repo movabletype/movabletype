@@ -14,13 +14,16 @@
     background-image: url('../images/icon_error.png');
 }
 .msg-info {
-    background-color: #FFF;
+    background-color: #E1E9ED;
     background-image: url('../images/icon_info.gif');
-    border: 1px solid #999;
 }
 .msg-alert {
     background-color: #FF9;
     background-image: url('../images/icon_alert.png');
+}
+.msg-publishing {
+    background-color: #CFC;
+    background-image: url('../images/ani-rebuild.gif');
 }
 
 .msg a.close-me {

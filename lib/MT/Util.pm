@@ -865,8 +865,8 @@ sub make_unique_basename {
     }
     my $limit = $blog->basename_limit || 30; # FIXME
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
-    my $base = substr(dirify($title), 0, $limit);
-    $base =~ s/_+$//;
+    my $base = substr(dirify($title, '-'), 0, $limit);
+    $base =~ s/[_-]+$//;
     $base = 'post' if $base eq '';
     my $i = 1;
     my $base_copy = $base;
@@ -874,7 +874,7 @@ sub make_unique_basename {
    my $class = ref $entry; 
     while ($class->count({ blog_id => $blog->id,
                               basename => $base })) {
-        $base = $base_copy . '_' . $i++;
+        $base = $base_copy . '-' . $i++;
     }
     $base;
 }
@@ -887,12 +887,12 @@ sub make_unique_category_basename {
     $label = '' if !defined $label;
     $label =~ s/^\s+|\s+$//gs;
 
-    my $name = MT::Util::dirify($label) || ($cat->basename_prefix(1) . $cat->id);
+    my $name = MT::Util::dirify($label, '-') || ($cat->basename_prefix(1) . $cat->id);
 
     my $limit = $blog->basename_limit || 30;
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
     my $base = substr($name, 0, $limit);
-    $base =~ s/_+$//;
+    $base =~ s/[-_]+$//;
     $base = $cat->basename_prefix(0) if $base eq ''; #FIXME when does this happen?
     my $i = 1;
     my $base_copy = $base;
@@ -900,7 +900,7 @@ sub make_unique_category_basename {
     my $cat_class = ref $cat;
     while ($cat_class->count({ blog_id => $cat->blog_id,
                                  basename => $base })) {
-        $base = $base_copy . '_' . $i++;
+        $base = $base_copy . '-' . $i++;
     }
     $base;
 }
@@ -1340,8 +1340,8 @@ $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
 
 sub launch_background_tasks {
-    my $cfg = MT->config;
-    return !($ENV{MOD_PERL} || $ENV{FAST_CGI} || !$cfg->LaunchBackgroundTasks);
+    return !($ENV{MOD_PERL} || $ENV{FAST_CGI}
+        || !MT->config->LaunchBackgroundTasks);
 }
 
 sub start_background_task {
@@ -1356,13 +1356,13 @@ sub start_background_task {
             close STDOUT; open STDOUT, ">/dev/null"; 
             close STDERR; open STDERR, ">/dev/null"; 
 
-            MT::Object->driver->init();
-            MT::Object->driver->configure();
+            MT::ObjectDriverFactory->init();
+            MT::ObjectDriverFactory->configure();
             $func->();
             CORE::exit(0) if defined($pid) && !$pid;
         } else {
-            MT::Object->driver->init();
-            MT::Object->driver->configure();
+            MT::ObjectDriverFactory->init();
+            MT::ObjectDriverFactory->configure();
             return 1;
         }
     }

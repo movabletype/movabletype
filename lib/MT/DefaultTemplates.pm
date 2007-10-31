@@ -38,14 +38,14 @@ BEGIN {
                 outfile => 'archives.html',
                 rebuild_me => 1,
             },
-            'base_stylesheet' => {
-                label => 'Base Stylesheet',
-                outfile => 'base_styles.css',
+            'styles' => {
+                label => 'Stylesheet - Main',
+                outfile => 'styles.css',
                 rebuild_me => 1,
             },
-            'theme_stylesheet' => {
-                label => 'Theme Stylesheet',
-                outfile => 'theme_styles.css',
+            'base_theme' => {
+                label => 'Stylesheet - Base Theme',
+                outfile => 'base_theme.css',
                 rebuild_me => 1,
             },
             'javascript' => {
@@ -145,6 +145,9 @@ BEGIN {
             },
             'trackbacks' => {
                 label => 'TrackBacks',
+            },
+            'page_detail' => {
+                label => 'Page Detail',
             },
         },
     };

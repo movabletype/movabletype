@@ -332,7 +332,7 @@ sub save_tags {
     require MT::ObjectTag;
     my $clear_cache = 0;
     my @tags = @{ $obj->{__tags} };
-    return 1 unless $obj->{__save_tags};
+    return 1 unless @tags;
     $obj->{__tag_objects} = [];
     my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id : 0;
     my @existing_tags = MT::ObjectTag->load({object_id => $obj->id,

@@ -1,12 +1,13 @@
 <mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="content_header">
+<div id="msg-block">
     <mt:unless name="recovered_object">
         <mt:if name="autosaved_object_exists">
             <mtapp:statusmsg
                 id="autosaved-object-exists"
                 class="info">
-                <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;&amp;_recover=1&amp;blog_id=<mt:var name="blog_id"><mt:if name="id">&amp;id=<mt:var name="id"></mt:if>%%<mt:date ts="$autosave_object_ts" relative="1">">
+                <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;&amp;_recover=1&amp;blog_id=<mt:var name="blog_id"><mt:if name="id">&amp;id=<mt:var name="id"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>">">
             </mtapp:statusmsg>
         </mt:if>
     </mt:unless>
@@ -35,7 +36,7 @@
             <mt:unless name="build_dynamic">
                 <mt:if name="has_rebuild">
                     <mt:if name="can_rebuild">
-                        <a href="<mt:var name="script_url">?__mode=start_rebuild&amp;blog_id=<mt:var name="blog_id">&amp;next=0&amp;type=index-<mt:var name="id">&amp;tmpl_id=<mt:var name="id">&amp;single_template=1'" class="rebuild-link">Rebuild</a> this template.
+                        <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;blog_id=<mt:var name="blog_id">&amp;next=0&amp;type=index-<mt:var name="id">&amp;tmpl_id=<mt:var name="id">&amp;single_template=1'"></a>
                     </mt:if>
                 </mt:if>
             </mt:unless>
@@ -60,9 +61,10 @@
         <mtapp:statusmsg
             id="saved-rebuild"
             class="success">
-            <__trans phrase="Your [_1] has been rebuilt." params="<mt:var name="name">">
+            <__trans phrase="Your [_1] has been published." params="<mt:var name="name">">
         </mtapp:statusmsg>
     </mt:if>
+</div>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
     <mtapp:widget
@@ -96,24 +98,29 @@
         <mt:unless name="build_dynamic">
             <mt:if name="has_rebuild">
                 <mt:if name="can_rebuild">
-    <button type="submit" accesskey="r" title="<__trans phrase="Save and Rebuild this template (r)">" onclick="return validate(this.form, 1);" class="positive"><__trans phrase="Save and Rebuild"></button>
-    <!-- <input type="submit" value="<__trans phrase="Save and Rebuild">" accesskey="r" title="<__trans phrase="Save and rebuild this template (r)">" onclick="return validate(this.form, 1);" /> -->
+    <button type="submit" accesskey="r" title="<__trans phrase="Save and Publish this template (r)">" onclick="return validate(this.form, 1);" class="positive"><__trans phrase="Save and Publish"></button>
+    <!-- <input type="submit" value="<__trans phrase="Save and Publish">" accesskey="r" title="<__trans phrase="Save and Publish this template (r)">" onclick="return validate(this.form, 1);" /> -->
                 </mt:if>
             </mt:if>
         </mt:unless>
     </mt:unless>
     <div id="autosave-notification-area-<$mt:var name="bar_position" default="top"$>" class="autosave-notification-area"></div>
 </mt:setvartemplate>
-<mt:include name="include/header.tmpl">
-
-<div id="edit-template">
-
+<mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 <script type="text/javascript">
 <!--
 var tag_inserts = {};
+var snippets = [];
 <mt:loop name="template_snippets">
-tag_inserts['<mt:var name="id" escape="js">'] = "<mt:var name="content" escape="js">";
+var content = "<mt:var name="content" escape="js">";
+<mt:if name="trigger">
+var output = content.replace(/\$(?!0)/g, '');
+snippets.push({ 'input' : '<mt:var name="trigger" escape="js">',
+    'output' : output });
+</mt:if>
+content = content.replace(/\$0/, '');
+tag_inserts['<mt:var name="id" escape="js">'] = content;
 </mt:loop>
 
 if ( !window.Editor )
@@ -272,8 +279,33 @@ function togglePreferred(checkbox, mapid) {
         [#= trans("Last auto-save at [_1]:[_2]:[_3]", hh, mm, ss ) #]
     [# } #]
     </mt:section>';
+
+function init() {
+    var txt = getByID("text");
+    if (txt) {
+        var w;
+        if (w = txt.contentWindow) {
+            if (w.Language) {
+                if (w.Language && !w.Language.snippets) {
+                    w.Language.snippets = [];
+                }
+                var fsnippets = w.Language.snippets;
+                for (var i = 0; i < snippets.length; i++) {
+                    fsnippets.push(snippets[i]);
+                }
+            }
+        }
+    }
+}
+
+TC.attachLoadEvent( init );
 //-->
 </script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<div id="edit-template">
 
 <form name="entry_form" id="entry_form" method="post" action="<mt:var name="script_url">" mt:once="1" mt:auto-save="1">
 <input type="hidden" name="id" value="<mt:var name="id">" />
@@ -323,7 +355,7 @@ function togglePreferred(checkbox, mapid) {
         <select id="tag-insert" name="tag-insert" onchange="insertSnippet(this)">
             <option value=""><__trans phrase="Insert..."></option>
             <mt:loop name="template_snippets">
-            <option value="<mt:var name="id">"><mt:var name="label" escape="html"></option>
+            <option value="<mt:var name="id">"><mt:var name="label" escape="html"><mt:if name="trigger"> (<mt:var name="trigger" escape="html">)</mt:if></option>
             </mt:loop>
         </select>
         </mt:if>
@@ -368,16 +400,16 @@ function togglePreferred(checkbox, mapid) {
 <mt:if name="has_build_options">
     <mtapp:setting
         id="build_dynamic"
-        label="<__trans phrase="Build Options">"
+        label="<__trans phrase="Publish Options">"
         help_page="templates"
         help_section="enable_dynamic_publishing">
         <ul>
         <mt:if name="custom_dynamic">
-            <li><input type="checkbox" id="build_dynamic" name="build_dynamic" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic building for this template"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
+            <li><input type="checkbox" id="build_dynamic" name="build_dynamic" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic publishing for this template"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
         </mt:if>
         <mt:unless name="build_dynamic">
             <mt:if name="has_rebuild">
-            <li><input type="checkbox" id="rebuild_me" name="rebuild_me" value="1" <mt:if name="rebuild_me">checked="checked" </mt:if> mt:watch-change="1" /> <label for="rebuild_me"><__trans phrase="Rebuild this template automatically when rebuilding index templates"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></li>
+            <li><input type="checkbox" id="rebuild_me" name="rebuild_me" value="1" <mt:if name="rebuild_me">checked="checked" </mt:if> mt:watch-change="1" /> <label for="rebuild_me"><__trans phrase="Publish this template automatically when rebuilding index templates"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></li>
             </mt:if>
         </mt:unless>
         </ul>

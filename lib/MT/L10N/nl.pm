@@ -14,64 +14,62 @@ use vars qw( @ISA %Lexicon );
 
 %Lexicon = (
 
-## mt-check.cgi
-	'Movable Type System Check' => 'Movable Type Systeemcontrole',
-	'This page provides you with information on your system\'s configuration and determines whether you have all of the components you need to run Movable Type.' => 'Op deze pagina kunt u informatie vinden over de configuratie van uw systeem en kunt u bepalen of u all componenten heeft die nodig zijn om Movable Type uit te voeren.',
-	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). While Movable Type may run, it is an <strong>untested and unsupported</strong> environment.  We <strong>strongly recommend</strong> upgrading to at least Perl [_2].' => 'De versie van Perl die op uw server geïnstalleerd is ([_1]) is lager dan de minimaal vereiste versie ([_2]).  Het kan zijn dat Movable Type uitgevoerd kan worden, maar dit is een <strong>niet getestte en niet ondersteunde</strong> omgeving.  We <strong>raden u sterk aan</strong> om een upgrade uit te voeren naar op z\'n minst Perl [_2].',
-	'Movable Type configuration file was not found.' => 'Geen Movable Type configuratiebestand gevonden.',
-	'System Information' => 'Systeeminformatie',
-	'Current working directory:' => 'Huidige werkmap',
-	'MT home directory:' => 'MT hoofdmap',
-	'Operating system:' => 'Besturingssysteem',
-	'Perl version:' => 'Perl versie:',
-	'Perl include path:' => 'Perl include pad',
-	'Web server:' => 'Webserver:',
-	'[_1] [_2] Modules:' => '[_1] [_2] modules:',
-	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides.' => 'Volgende modules zijn <strong>optioneel</strong>.  Als ze niet op uw server geïnstalleerd zijn, moet u ze enkel installeren als u de functionaliteit nodig heeft die door de module wordt toegevoegd.',
-	'Some of the following modules are required by the various data storage options in Movable Type. In order run the system, your server needs to have DBI and at least one of the other modules installed.' => 'Een aantal van de volgende modules worden vereist door de verschillende gegevensopslagopties in Movable Type.  Om het systeem te kunnen uitvoeren moet op uw server minstens DBI en één van de andere modules geïnstalleerd zijn.',
-	'Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed.' => 'Ofwel is [_1] niet op uw server geïnstalleerd, is de versie op uw server te oud of vereist [_1] een andere module die niet is geïnstalleerd.',
-	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'Op uw server is [_1] niet geïnstalleerd of [_1] vereist een andere module die niet is geïnstalleerd.',
-	'Please consult the installation instructions for help in installing [_1].' => 'Gelieve de installatie-instructies te raadplegen voor hulp bij het installeren van [_1].',
-	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN.' => 'De DBD::mysql versie die bij u is geïnstalleerd is niet compatibel met Movable Type.  Gelieve de huidige release beschikbaar op CPAN te installeren.',
-	'The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements.' => 'De $mod is geïnstalleerd maar vereist een bijgewerkte DBI module.  Zie bericht hierboven over de vereisten qua DBI modules.',
-	'Your server has [_1] installed (version [_2]).' => 'Op uw server is [_1] geïnstalleerd (versie [_2]).',
-	'Movable Type System Check Successful' => 'Movable Type Systeemcontrole voltooid!',
-	'You\'re ready to go!' => 'U bent klaar!',
-	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'Alle vereiste modules zijn op uw server geïnstalleerd; u hoeft geen bijkomende modules te installeren.  Ga verder met de installatie-instructies.',
-	'CGI is required for all Movable Type application functionality.' => 'CGI is vereist voor de werking van Movable Type.',
-	'HTML::Template is required for all Movable Type application functionality.' => 'HTML::Template is vereist voor de werking van Movable Type.',
-	'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Upload is nodig om bestanden te kunnen opladen (om het formaat van afbeeldingen te kunnen bepalen).',
-	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec is nodig om paden te kunnen manipuleren op verschillende besturingssystemen.',
-	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie is nodig voor authenticatie.',
-	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
-	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI en DBD::mysql zijn nodig als u het MySQL database backend wenst te gebruiken.',
-	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI en DBD::Pg zijn nodig als u het PostgreSQL database backend wenst te gebruiken.',
-	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'DBI en DBD::SQLite zijn nodig als u het SQLite database backend wenst te gebruiken.',
-	'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'DBI en DBD::SQLite2 zijn nodig als u het SQLite 2.x database backend wenst te gebruiken.',
-	'DBI and DBD::Oracle are required if you want to use the Oracle database backend.' => 'DBI en DBD::Oracle zijn nodig als u het Oracle database backend wenst te gebruiken.',
-	'DBI and DBD::ODBC are required if you want to use the Microsoft SQL Server database backend.' => 'DBI en DBD::ODBC zijn nodig als u het Microsoft SQL Server database backend wenst te gebruiken.',
-	'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.' => 'HTML::Entities is nodig om bepaalde karakters te encoderen, maar deze optie kan uitgeschakeld worden door de NoHTMLEntities optie in te schakelen in het configuratiebestand.',
-	'LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'LWP::UserAgent is optioneel; het is nodig om het TrackBacksysteem te kunnen gebruiken, net als de weblogs.com ping en de MT Recently Updated ping.',
-	'SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.' => 'SOAP::Lite is optioneel; het is nodig als u de MT XML-RPC serverimplementatie wenst te gebruiken.',
-	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'File::Temp is optioneel; het is nodig als u bestaande bestanden wenst te kunnen overschrijven bij het opladen.',
-	'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.' => 'Image::Magick is optioneel; het is nodig als u thumbnails wenst te kunnen aanmaken van opgeladen afbeeldingen',
-	'Storable is optional; it is required by certain MT plugins available from third parties.' => 'Storable is optioneel; het wordt vereist door bepaalde MT plugins geschreven door derden.',
-	'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSA is optioneel; indien geïnstalleerd zal registreren om te reageren iets sneller gaan.',
-	'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64 is nodig om registratie om te reageren mogelijk te maken.',
-	'XML::Atom is required in order to use the Atom API.' => 'XML::Atom is nodig om de Atom API te kunnen gebruiken',
-	'Net::LDAP is required in order to use the LDAP Authentication.' => 'Net::LDAP is nodig om LDAP authenticatie te kunnen gebruiken.',
-	'IO::Socket::SSL is required in order to use SSL/TLS connection with the LDAP Authentication.' => 'IO::Socket::SSL is nodig om een SSL/TLS verbinding te kunnen maken met LDAP authenticatie.',
-	'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.' => 'Cache::Memcached en memcached server/daemon zijn nodig om memcached te kunnen gebruiken als Movable Type caching mechanisme.',
-	'Archive::Tar is required in order to archive files in backup/restore operation.' => 'Archive::Tar is nodig om bestanden te kunnen archiveren in backup/restore operaties.',
-	'IO::Compress::Gzip is required in order to compress files in backup/restore operation.' => 'IO::Compress::Gzip is nodig om bestanden te kunnen comprimeren bij backup/restore operaties.',
-	'IO::Uncompress::Gunzip is required in order to decompress files in backup/restore operation.' => 'IO::Uncompress::Gunzip is nodig om bestanden te kunnen decomprimeren bij backup/restore operaties.',
-	'Archive::Zip is required in order to archive files in backup/restore operation.' => 'Archive::Zip is nodig om bestanden te kunnen archiveren bij backup/restore operaties.',
-	'XML::SAX and/or its dependencies is required in order to restore.' => 'XML::SAX en/of één van de modules waar het van afhankelijk is, zijn nodig om een restore operatie te kunnen uitvoeren.',
-	'Checking for' => 'Controleren op',
-	'Installed' => 'Geïnstalleerd',
-	'Data Storage' => 'Gegevensopslag',
-	'Required' => 'Vereist',
-	'Optional' => 'optionele',
+## php/plugins/init.Date-basedCategoryArchives.php
+	'Category Yearly' => 'Categorie per jaar',
+	'Category Monthly' => 'Categorie per maand',
+	'Category Daily' => 'Categorie per dag',
+	'Category Weekly' => 'Categorie per week',
+
+## php/plugins/init.AuthorArchives.php
+	'Author' => 'Auteur',
+	'Author Yearly' => 'Auteur per jaar',
+	'Author Monthly' => 'Auteur per maand',
+	'Author Daily' => 'Auteur per dag',
+	'Author Weekly' => 'Auteur per week',
+
+## php/lib/function.mtproductname.php
+	'$short_name [_1]' => '$short_name [_1]',
+
+## php/lib/function.mtcommentfields.php
+	'Thanks for signing in,' => 'Bedankt om uzelf aan te melden,',
+	'Now you can comment.' => 'Nu kunt u reageren.',
+	'sign out' => 'afmelden',
+	'(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(Als u hier nog nooit gereageerd heeft, kan het zijn dat de eigenaar van deze site eerst goedkeuring moet geven voordat uw reactie verschijnt. Eerder zal uw reactie niet zichtbaar zijn onder het bericht. Bedankt voor uw geduld.)',
+	'Remember me?' => 'Mij onthouden?',
+	'Yes' => 'Ja',
+	'No' => 'Nee',
+	'Comments' => 'Reacties',
+	'Preview' => 'Voorbeeld',
+	'Post' => 'Publiceren',
+	'You are not signed in. You need to be registered to comment on this site.' => 'U bent niet aangemeld.  U moet geregistreerd zijn om te kunnen reageren op deze website.',
+	'Sign in' => 'Aanmelden',
+	'. Now you can comment.' => '. Nu kunt u reageren.',
+	'If you have a TypeKey identity, you can ' => 'Als u een TypeKey identiteit heeft, kunt u ',
+	'sign in' => 'zich aanmelden',
+	'to use it here.' => 'om ze hier te gebruiken.',
+	'Name' => 'Naam',
+	'Email Address' => 'E-mailadres',
+	'URL' => 'URL',
+	'(You may use HTML tags for style)' => '(U mag HTML tags gebruiken voor de stijl)',
+
+## php/lib/block.mtentries.php
+	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
+
+## php/lib/function.mtremotesigninlink.php
+	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.',
+
+## php/lib/block.mtassets.php
+
+## php/lib/captcha_lib.php
+	'Captcha' => 'Captcha',
+	'Type the characters you see in the picture above.' => 'Tik te tekens in die u ziet in de afbeelding hierboven.',
+
+## php/lib/archive_lib.php
+	'Individual' => 'Individueel',
+	'Yearly' => 'Jaarlijks',
+	'Monthly' => 'Maandelijks',
+	'Daily' => 'Dagelijks',
+	'Weekly' => 'Wekelijks',
 
 ## default_templates/entry_metadata.mtml
 	'Posted by [_1] on [_2]' => 'Gepubliceerd door [_1] op [_2]',
@@ -85,7 +83,6 @@ use vars qw( @ISA %Lexicon );
 	'Header' => 'Hoofding',
 	'Previewing your Comment' => 'U ziet een voorbeeld van uw reactie',
 	'Comment Detail' => 'Details reactie',
-	'Comments' => 'Reacties',
 
 ## default_templates/header.mtml
 	'[_1]: Search Results' => '[_1]: Zoekresultaten',
@@ -163,14 +160,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_form.mtml
 	'Post a comment' => 'Reageer',
-	'(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(Als u hier nog nooit gereageerd heeft, kan het zijn dat de eigenaar van deze site eerst goedkeuring moet geven voordat uw reactie verschijnt. Eerder zal uw reactie niet zichtbaar zijn onder het bericht. Bedankt voor uw geduld.)',
-	'Name' => 'Naam',
-	'Email Address' => 'E-mailadres',
-	'URL' => 'URL',
 	'Remember personal info?' => 'Persoonijke gegevens onthouden?',
-	'(You may use HTML tags for style)' => '(U mag HTML tags gebruiken voor de stijl)',
-	'Preview' => 'Voorbeeld',
-	'Post' => 'Publiceren',
 	'Cancel' => 'Annuleren',
 
 ## default_templates/tags.mtml
@@ -192,9 +182,6 @@ use vars qw( @ISA %Lexicon );
 	'Copyright [_1]' => 'Copyright [_1]',
 
 ## default_templates/javascript.mtml
-	'Thanks for signing in,' => 'Bedankt om uzelf aan te melden,',
-	'. Now you can comment.' => '. Nu kunt u reageren.',
-	'sign out' => 'afmelden',
 	'You do not have permission to comment on this blog.' => 'U heeft geen permissie om reacties achter te laten op deze weblog',
 	'Sign in</a> to comment on this post.' => 'Meld u aan</a> om te reageren op dit bericht.',
 	'Sign in</a> to comment on this post,' => 'Meld u aan</a> om te reageren op dit bericht,',
@@ -230,6 +217,7 @@ use vars qw( @ISA %Lexicon );
 	'Continue reading <a href="[_1]">[_2]</a>.' => 'Lees de rest van <a href="[_1]">[_2]</a>.',
 
 ## default_templates/page.mtml
+	'Page Detail' => 'Pagina detail',
 
 ## default_templates/comments.mtml
 	'Comment Form' => 'Reactieformulier',
@@ -237,7 +225,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Component.pm
 	'Loading template \'[_1]\' failed: [_2]' => 'Sjabloon \'[_1]\' laden mislukt: [_2]',
-	'Rebuild' => 'Opnieuw opbouwen',
+	'Republish' => 'Opnieuw publiceren',
 	'Uppercase text' => 'Tekst in hoofdletters',
 	'Lowercase text' => 'Tekst in kleine letters',
 	'My Text Format' => 'Mijn tekstformaat',
@@ -269,6 +257,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid filename \'[_1]\'' => 'Ongeldige bestandsnaam \'[_1]\'',
 	'Error making path \'[_1]\': [_2]' => 'Fout bij aanmaken pad \'[_1]\': [_2]',
 	'Error writing uploaded file: [_1]' => 'Fout bij het schrijven van opgeladen bestand: [_1]',
+	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Perl module Image::Size is nodig om de breedte en hoogte van opgeladen afbeeldingen te bepalen.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Sjabloonmethodes zijn niet geïmplementeerd wegens het verschil tussen de Blogger API en de Movable Type API.',
 
 ## lib/MT/ObjectDriver/Driver/DBD/SQLite.pm
@@ -303,9 +292,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date format \'[_1]\'; must be \'MM/DD/YYYY HH:MM:SS AM|PM\' (AM|PM is optional)' => 'Ongeldig datumformaat \'[_1]\'; dit moet \'MM/DD/JJJJ HH:MM:SS AM|PM\' zijn (AM|PM is optioneel)',
 
 ## lib/MT/Util/Captcha.pm
-	'Captcha' => 'Captcha',
-	'Type the characters you see in the picture above.' => 'Tik te tekens in die u ziet in de afbeelding hierboven.',
-	'You need to configure CaptchaSourceImagebase.' => 'U moet CaptchaSourceImagebase nog configureren.',
+	'Movable Type default CAPTCHA provider requires Image::Magick.' => 'Standaard CAPTCHA provider van Movable Type vereist Image::Magick.',
+	'You need to configure CaptchaSourceImageBase.' => 'U moet CaptchaSourceImageBase nog configureren.',
 	'Image creation failed.' => 'Afbeelding aanmaken mislukt.',
 	'Image error: [_1]' => 'Afbeelding fout: [_1]',
 
@@ -383,11 +371,11 @@ use vars qw( @ISA %Lexicon );
 	'Send Notifications' => 'Notificaties verzenden',
 	'Edit All Entries' => 'Alle berichten bewerken',
 	'Manage Pages' => 'Pagina\'s beheren',
-	'Rebuild Files' => 'Bestanden opnieuw opbouwen',
+	'Republish Files' => 'Bestanden opnieuw publiceren',
 	'Manage Templates' => 'Sjablonen beheren',
 	'Upload File' => 'Opladen',
 	'Save Image Defaults' => 'Standaardinstellingen afbeeldingen opslaan',
-	'Manage Assets' => 'Mediabestanden beheren',
+	'Manage Files' => 'Bestandsbeheer',
 	'Post Comments' => 'Reacties publiceren',
 	'Manage Feedback' => 'Feedback beheren',
 	'MySQL Database' => 'MySQL databank',
@@ -399,7 +387,22 @@ use vars qw( @ISA %Lexicon );
 	'weblogs.com' => 'weblogs.com',
 	'technorati.com' => 'technorati.com',
 	'google.com' => 'google.com',
-	'<MTEntries>' => '<MTEntries>',
+	'Entries List' => 'Lijst berichten',
+	'Blog URL' => 'Blog-URL',
+	'Blog ID' => 'Blog ID',
+	'Blog Name' => 'Blognaam',
+	'Entry Body' => 'Berichttekst',
+	'Entry Excerpt' => 'Berichtuittreksel',
+	'Entry Link' => 'Link bericht',
+	'Entry Extended Text' => 'Uitgebreide tekst bericht',
+	'Entry Title' => 'Berichttitel',
+	'If Block' => 'If blok',
+	'If/Else Block' => 'If/Else blok',
+	'Include Template Module' => 'Sjabloonmodule includeren',
+	'Include Template File' => 'Sjabloonbestand includeren',
+	'Get Variable' => 'Haal variabele op',
+	'Set Variable' => 'Stel variabele in',
+	'Set Variable Block' => 'Stel variabel blok in',
 	'Publish Future Posts' => 'Geplande berichten publiceren',
 	'Junk Folder Expiration' => 'Vervaldatum spam-map',
 	'Remove Temporary Files' => 'Tijdelijke bestanden verwijderen',
@@ -455,8 +458,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'Archiefindex',
-	'Base Stylesheet' => 'Basisstylesheet',
-	'Theme Stylesheet' => 'Themastylesheet',
+	'Stylesheet - Main' => 'Stylesheet - Algemeen',
+	'Stylesheet - Base Theme' => 'Stylesheet - Basisthema',
 	'JavaScript' => 'JavaScript',
 	'RSD' => 'RSD',
 	'Atom' => 'Atom',
@@ -525,7 +528,7 @@ use vars qw( @ISA %Lexicon );
 	'uses: [_1], should use: [_2]' => 'gebruikt: [_1], zou moeten gebruiken: [_2]',
 	'uses [_1]' => 'gebruikt [_1]',
 	'No executable code' => 'Geen uitvoerbare code',
-	'Rebuild-option name must not contain special characters' => 'Naam van de herbouwoptie mag geen speciale karakters bevatten',
+	'Republish-option name must not contain special characters' => 'Republicatie-optie naam mag geen speciale karakters bevatten',
 
 ## lib/MT/Author.pm
 	'The approval could not be committed: [_1]' => 'De goedkeuring kon niet worden weggeschreven: [_1]',
@@ -538,15 +541,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Republish[_2] your site to see these changes take effect.' => '[_1]Herpubliceer[_2] uw site om de wijzigingen toe te passen op uw site.',
 	'Plugin Actions' => 'Plugin-mogelijkheden',
 	'Warning' => 'Waarschuwing',
-	'Now you can comment.' => 'Nu kunt u reageren.',
-	'Yes' => 'Ja',
-	'No' => 'Nee',
-	'You are not signed in. You need to be registered to comment on this site.' => 'U bent niet aangemeld.  U moet geregistreerd zijn om te kunnen reageren op deze website.',
-	'Sign in' => 'Aanmelden',
-	'If you have a TypeKey identity, you can ' => 'Als u een TypeKey identiteit heeft, kunt u ',
-	'sign in' => 'zich aanmelden',
-	'to use it here.' => 'om ze hier te gebruiken.',
-	'Remember me?' => 'Mij onthouden?',
 	'No [_1] could be found.' => 'Er werden geen [_1] gevonden',
 	'Recursion attempt on [_1]: [_2]' => 'Recursiepoging op [_1]: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => 'Kan geincludeerd sjabloon niet vinden: [_1] \'[_2]\'',
@@ -562,7 +556,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2]' => '[_1] [_2]',
 	'You used a [_1] tag without any arguments.' => 'U gebruikte een [_1] tag zonder argumenten.',
 	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'U gebruikten een \'[_1]\' tag buiten de context van een auteur; misschien plaatste u de tag per ongeluk buiten een \'MTAuthors\' container?',
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Er staat een fout in uw \'[_2]\' attribuut: [_1]',
 	'You have an error in your \'tag\' attribute: [_1]' => 'Er zit een fout in uw \'tag\' attribuut: [_1]',
 	'No such user \'[_1]\'' => 'Geen gebruiker \'[_1]\'',
@@ -570,7 +563,6 @@ use vars qw( @ISA %Lexicon );
 	'You used <$MTEntryFlag$> without a flag.' => 'U gebruikte <$MTEntryFlag$> zonder een vlag.',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'U gebruikte een [_1] tag om te linken naar \'[_2]\' archieven, maar dat type archieven wordt niet gepubliceerd.',
 	'Could not create atom id for entry [_1]' => 'Kon geen atom id aanmaken voor bericht [_1]',
-	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.',
 	'To enable comment registration, you need to add a TypeKey token in your weblog config or user profile.' => 'Om registratie van reacties in te schakelen, moet u een TypeKey token toevoegen in de configuratie van uw weblog of in uw gebruikersprofiel.',
 	'You used an [_1] tag without a date context set up.' => 'U gebruikte een [_1] tag zonder dat er een datumcontext ingesteld was.',
 	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => 'U gebruikte een \'[_1]\' tag buiten de context van een reactie; misschien plaatste u die tag per ongeluik buiten een \'MTComments\' container?',
@@ -672,39 +664,39 @@ use vars qw( @ISA %Lexicon );
 	'yyyy/index.html' => 'jjjj/index.html',
 	'yyyy/mm/index.html' => 'jjjj/mm/index.html',
 	'yyyy/mm/day-week/index.html' => 'jjjj/mm/dag-week/index.html',
-	'yyyy/mm/entry_basename.html' => 'jjjj/mm/basisnaam_bericht.html',
 	'yyyy/mm/entry-basename.html' => 'jjjj/mm/basisnaam-bericht.html',
-	'yyyy/mm/entry_basename/index.html' => 'jjjj/mm/basisnaam_bericht/index.html',
+	'yyyy/mm/entry_basename.html' => 'jjjj/mm/basisnaam_bericht.html',
 	'yyyy/mm/entry-basename/index.html' => 'jjjj/mm/basisnaam-bericht/index.html',
-	'yyyy/mm/dd/entry_basename.html' => 'jjjj/mm/dd/basisnaam_bericht.html',
+	'yyyy/mm/entry_basename/index.html' => 'jjjj/mm/basisnaam_bericht/index.html',
 	'yyyy/mm/dd/entry-basename.html' => 'jjjj/mm/dd/basisnaam-bericht.html',
-	'yyyy/mm/dd/entry_basename/index.html' => 'jjjj/mm/dd/basisnaam_bericht/index.html',
+	'yyyy/mm/dd/entry_basename.html' => 'jjjj/mm/dd/basisnaam_bericht.html',
 	'yyyy/mm/dd/entry-basename/index.html' => 'jjjj/mm/dd/basisnaam-bericht/index.html',
-	'category/sub_category/entry_basename.html' => 'categorie/sub_categorie/basisnaam_bericht.html',
-	'category/sub_category/entry_basename/index.html' => 'categorie/sub_categorie/basisnaam_bericht/index.html',
+	'yyyy/mm/dd/entry_basename/index.html' => 'jjjj/mm/dd/basisnaam_bericht/index.html',
 	'category/sub-category/entry-basename.html' => 'categorie/sub-categorie/basisnaam-bericht.html',
 	'category/sub-category/entry-basename/index.html' => 'categorie/sub-categorie/basisnaam-bericht/index.html',
-	'folder_path/page_basename.html' => 'map_pad/basisnaam_pagina.html',
-	'folder_path/page_basename/index.html' => 'map_pad/basisnaam_pagina/index.html',
+	'category/sub_category/entry_basename.html' => 'categorie/sub_categorie/basisnaam_bericht.html',
+	'category/sub_category/entry_basename/index.html' => 'categorie/sub_categorie/basisnaam_bericht/index.html',
 	'folder-path/page-basename.html' => 'map-pad/basisnaam-pagina.html',
 	'folder-path/page-basename/index.html' => 'map-pad/basisnaam-pagina/index.html',
+	'folder_path/page_basename.html' => 'map_pad/basisnaam_pagina.html',
+	'folder_path/page_basename/index.html' => 'map_pad/basisnaam_pagina/index.html',
 	'folder/sub_folder/index.html' => 'map/sub_map/index.html',
 	'folder/sub-folder/index.html' => 'map/sub-map/index.html',
 	'yyyy/mm/dd/index.html' => 'jjjj/mm/dd/index.html',
-	'category/sub_category/index.html' => 'categorie/sub_categorie/index.html',
 	'category/sub-category/index.html' => 'categorie/sub-categorie/index.html',
+	'category/sub_category/index.html' => 'categorie/sub_categorie/index.html',
 	'Archive type \'[_1]\' is not a chosen archive type' => 'Archieftype \'[_1]\' is geen gekozen archieftype',
 	'Parameter \'[_1]\' is required' => 'Parameter \'[_1]\' is vereist',
 	'You did not set your weblog Archive Path' => 'Uw stelde geen weblogarchief-pad in',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Hetzelfde archiefbestand bestaat al. U moet de basisnaam of het archiefpad wijzigen. ([_1])',
-	'Building category \'[_1]\' failed: [_2]' => 'Categorie \'[_1]\' opbouwen mislukt: [_2]',
-	'Building entry \'[_1]\' failed: [_2]' => 'Bericht \'[_1]\' opbouwen mislukt: [_2]',
-	'Building date-based archive \'[_1]\' failed: [_2]' => 'Datum-gebaseerd archief \'[_1]\' opbouwen mislukt: [_2]',
+	'An error occurred publishing category \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het publiceren van categorie \'[_1]\': [_2]',
+	'An error occurred publishing entry \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het publiceren van bericht \'[_1]\': [_2]',
+	'An error occurred publishing date-based archive \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het publiceren van datum-gebaseerd archief \'[_1]\': [_2]',
 	'Writing to \'[_1]\' failed: [_2]' => 'Schrijven naar \'[_1]\' mislukt: [_2]',
 	'Renaming tempfile \'[_1]\' failed: [_2]' => 'Tijdelijk bestand \'[_1]\' van naam veranderen mislukt: [_2]',
 	'You did not set your weblog Site Root' => 'U stelde geen site root in voor uw weblog',
 	'Template \'[_1]\' does not have an Output File.' => 'Sjabloon \'[_1]\' heeft geen uitvoerbestand.',
-	'An error occurred while rebuilding to publish scheduled entries: [_1]' => 'Er deed zich een fout voor bij het opnieuw opbouwen van geplande berichten: [_1]',
+	'An error occurred while publishing scheduled entries: [_1]' => 'Er deed zich een fout voor bij het publiceren van van geplande berichten: [_1]',
 	'YEARLY_ADV' => 'Jaarlijks',
 	'MONTHLY_ADV' => 'Maandelijks',
 	'CATEGORY_ADV' => 'Categorie',
@@ -766,7 +758,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Comment save failed with [_1]' => 'Opslaan van reactie mislukt met [_1]',
 	'Comment on "[_1]" by [_2].' => 'Reactie op "[_1]" door [_2].',
 	'Commenter save failed with [_1]' => 'Opslaan reageerder mislukt met [_1]',
-	'Rebuild failed: [_1]' => 'Opnieuw opbouwen mislukt: [_1]',
 	'You must define a Comment Pending template.' => 'U moet een sjabloon definiëren voor reacties die nog goedgekeurd moeten worden.',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Mislukte poging om een reactie achter te laten van op registratie wachtende gebruiker \'[_1]\'',
 	'Registered User' => 'Geregistreerde gebruiker',
@@ -810,9 +801,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'This module is required in order to archive files in backup/restore operation.' => 'Deze module is vereist om bestanden te archiveren bij backup/restore operaties.',
 	'This module is required in order to compress files in backup/restore operation.' => 'Deze module is vereist om bestanden te comprimeren bij backup/restore operaties.',
 	'This module is required in order to decompress files in backup/restore operation.' => 'Deze module is vereist om bestanden te decomprimeren bij backup/restore operaties.',
-	'This module and its dependencies are required in order to restore from a backup.' => 'Deze module \'n vereisten zijn vereist om te kunen restoren uit een backup.',
+	'This module and its dependencies are required in order to restore from a backup.' => 'Deze mod\'n vereisten zijn vereist om te kunen restoren uit een backup.',
+	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Deze module en de modules waar ze van afhangt zijn nodig om reageerders zichzelf te laten authenticeren via OpenID providers zoals o.a. Vox en LiveJournal.',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
+	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
 
 ## lib/MT/App/Upgrader.pm
 	'Failed to authenticate using given credentials: [_1].' => 'Authenticatie met de opgegeven aanmeldgegevens mislukt: [_1].',
@@ -854,7 +847,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'[_1] posted on or before [_2]' => '[_1] gepubliceerd op of voor [_2]',
 	'All comments by [_1] \'[_2]\'' => 'Alle reacties van [_1] \'[_2]\'',
 	'Commenter' => 'Bezoeker',
-	'Author' => 'Auteur',
 	'All comments for [_1] \'[_2]\'' => 'Alle reacties op [_1] \'[_2]\'',
 	'Comments posted between [_1] and [_2]' => 'Reacties gepubliceerd tussen [_1] en [_2]',
 	'Comments posted since [_1]' => 'Reacties gepubliceerd sinds [_1]',
@@ -902,7 +894,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Activity log for blog \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Activiteitlog van blog \'[_1]\' (ID:[_2]) leeggemaakt door \'[_3]\'',
 	'Activity log reset by \'[_1]\'' => 'Activiteitlog leeggemaakt door \'[_1]\'',
 	'No blog ID' => 'Geen blog-ID',
-	'You do not have import permissions' => 'U heeft geen importpermissies',
 	'Default' => 'Standaard',
 	'Import/Export' => 'Importeren/exporteren',
 	'Invalid parameter' => 'Ongeldige parameter',
@@ -1042,10 +1033,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Invalid ID given for personal blog clone source ID.' => 'Ongeldig ID opgegeven als kloonbron voor een persoonlijke weblog.',
 	'If personal blog is set, the default site URL and root are required.' => 'Als persoonlijke weblog is ingesteld, dan zijn de standaard URL en hoofdmap van de site vereist.',
 	'Feedback Settings' => 'Feedback instellingen',
-	'Build error: [_1]' => 'Opbouwfout: [_1]',
+	'Publish error: [_1]' => 'Publicatiefout: [_1]',
 	'Unable to create preview file in this location: [_1]' => 'Kon geen voorbeeldbestand maken op deze locatie: [_1]',
 	'New [_1]' => 'Nieuwe [_1]',
-	'Rebuild Site' => 'Site herbouwen',
+	'Republish Site' => 'Site herpubliceren',
 	'index template \'[_1]\'' => 'indexsjabloon \'[_1]\'',
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'No permissions' => 'Geen permissies',
@@ -1074,7 +1065,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'unassigned' => 'niet toegewezen',
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Bestand met de naam \'[_1]\' bestaat al; Poging tot schrijven naar tijdelijk bestand ondernomen, openen mislukt: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Fout bij schrijven van upload naar \'[_1]\': [_2]',
-	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Perl module Image::Size is nodig om de breedte en hoogte van opgeladen afbeeldingen te bepalen.',
 	'Search & Replace' => 'Zoeken & vervangen',
 	'Assets' => 'Mediabestanden',
 	'Logs' => 'Logs',
@@ -1082,6 +1072,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Error in search expression: [_1]' => 'Fout in zoekexpressie: [_1]',
 	'Saving object failed: [_2]' => 'Object opslaan mislukt: [_2]',
 	'You do not have export permissions' => 'U heeft geen exportpermissies',
+	'You do not have import permissions' => 'U heeft geen importpermissies',
 	'You do not have permission to create users' => 'U heeft geen permissie om gebruikers aan te maken',
 	'Importer type [_1] was not found.' => 'Importeertype [_1] niet gevonden.',
 	'Saving map failed: [_1]' => 'Map opslaan mislukt: [_1]',
@@ -1098,7 +1089,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Select Blog' => 'Selecteer blog',
 	'Selected Blog' => 'Geselecteerde blog',
 	'Type a blog name to filter the choices below.' => 'Typ de naam van een weblog in om de onderstaande keuzes te filteren.',
-	'Blog Name' => 'Blognaam',
 	'Select a System Administrator' => 'Selecteer een systeembeheerder',
 	'Selected System Administrator' => 'Geselecteerde systeembeheerder',
 	'Type a username to filter the choices below.' => 'Tik een gebruikersnaam in om de keuzes hieronder te filteren.',
@@ -1106,18 +1096,20 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'represents a user who will be created afterwards' => 'stelt een gebruiker voor die later zal worden aangemaakt',
 	'Select Blogs' => 'Selecteer blogs',
 	'Blogs Selected' => 'Geselecteerde blogs',
+	'Search Blogs' => 'Blogs zoeken',
 	'Select Users' => 'Gebruikers selecteren',
 	'Username' => 'Gebruikersnaam',
 	'Users Selected' => 'Gebruikers geselecteerd',
+	'Search Users' => 'Gebruikers zoeken',
 	'Select Groups' => 'Selecteer groepen',
 	'Group Name' => 'Groepsnaam',
 	'Groups Selected' => 'Geselecteerde groepen',
-	'Type a group name to filter the choices below.' => 'Tik een groepsnaam in om de keuzes hieronder te filteren.',
+	'Search Groups' => 'Groepen zoeken',
 	'Select Roles' => 'Selecteer rollen',
 	'Role Name' => 'Naam rol',
 	'Roles Selected' => 'Geselecteerde rollen',
 	'' => '', # Translate - New
-	'Create an Association' => 'Maak een associatie aan',
+	'Grant Permissions' => 'Permissies toekennen',
 	'Backup' => 'Backup',
 	'Backup & Restore' => 'Backup & Restore',
 	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om backups te kunnen doen.  Gelieve de TempDir configuratiedirectief na te kijken.',
@@ -1172,11 +1164,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Remove Tags...' => 'Tags verwijderen',
 	'Tags to remove from selected entries' => 'Tags te verwijderen van geselecteerde berichten',
 	'Batch Edit Entries' => 'Berichten bewerken in bulk',
-	'Publish Pages' => 'Gepubliceerde pa\'s',
-	'Unpublish Pages' => 'Niet gepubliceerde pa\'s',
-	'Tags to add to selected pages' => 'Tags om toe te voegen aan geselecteerde pa\'s',
-	'Tags to remove from selected pages' => 'Tags om te verwijderen van geselecteerde pa\'s',
-	'Batch Edit Pages' => 'Pa\'s bewerken in bulk',
+	'Publish Pages' => 'Gepubliceerd\'s',
+	'Unpublish Pages' => 'Niet gepubliceerd\'s',
+	'Tags to add to selected pages' => 'Tags om toe te voegen aan geselecteerd\'s',
+	'Tags to remove from selected pages' => 'Tags om te verwijderen van geselecteerd\'s',
+	'Batch Edit Pages' => 'pagin\'s bewerken in bulk',
 	'Tags to add to selected assets' => 'Tags om toe te voegen aan de geselecteerde mediabestanden',
 	'Tags to remove from selected assets' => 'Tags om te verwijderen van de geselecteerde mediabestanden',
 	'Unpublish TrackBack(s)' => 'Publicatie ongedaan maken',
@@ -1199,6 +1191,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Archive Templates' => 'Archiefsjablonen',
 	'Template Modules' => 'Sjabloonmodules',
 	'System Templates' => 'Systeemsjablonen',
+	'Tags with entries' => 'Tags met berichten',
+	'Tags with pages' => 'Tags met pagi\'s',
+	'Tags with assets' => 'Tags met mediabestanden',
 	'Create' => 'Aanmaken',
 	'Manage' => 'Beheren',
 	'Design' => 'Design',
@@ -1211,6 +1206,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Blog Settings' => 'Bloginstellingen',
 	'Members' => 'Leden',
 	'Address Book' => 'Adresboek',
+	'System Information' => 'Systeeminformatie',
 	'Import' => 'Import',
 	'Export' => 'Exporteer',
 	'System Overview' => 'Systeemoverzicht',
@@ -1219,10 +1215,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## lib/MT/App/Viewer.pm
 	'Loading blog with ID [_1] failed' => 'Laden van blog met ID [_1] mislukt',
-	'Building template failed: [_1]' => 'Opbouwen van sjabloon mislukt: [_1]',
+	'Template publishing failed: [_1]' => 'Publicatie van sjabloon mislukt: [_1]',
 	'Invalid date spec' => 'Ongeldige date spec',
 	'Can\'t load template [_1]' => 'Kan sjabloon [_1] niet laden',
-	'Building archive failed: [_1]' => 'Opbouwen van archief mislukt: [_1]',
+	'Archive publishing failed: [_1]' => 'Publicatie van archief mislukt: [_1]',
 	'Invalid entry ID [_1]' => 'Ongeldige entry ID [_1]',
 	'Entry [_1] is not published' => 'Bericht [_1] is ongepubliceerd',
 	'Invalid category ID \'[_1]\'' => 'Ongeldig categorie-ID \'[_1]\'',
@@ -1248,7 +1244,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Search failed: [_1]' => 'Zoeken mislukt: [_1]',
 	'No alternate template is specified for the Template \'[_1]\'' => 'Er is geen alternatief sjabloon opgegeven voor sjabloon \'[_1]\'',
 	'Opening local file \'[_1]\' failed: [_2]' => 'Lokaal bestand \'[_1]\' openen mislukt: [_2]',
-	'Building results failed: [_1]' => 'Resultaten opbouwen mislukt: [_1]',
+	'Publishing results failed: [_1]' => 'Publicatie van resultaten mislukt: [_1]',
 	'Search: query for \'[_1]\'' => 'Zoeken: zoekopdracht voor \'[_1]\'',
 	'Search: new comment search' => 'Zoeken: opnieuw zoeken in de reacties',
 
@@ -1321,12 +1317,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Error saving record: [_1].' => 'Fout bij opslaan gegevens: [_1].',
 	'Can administer the blog.' => 'Kan deze weblog beheren',
 	'Editor' => 'Redacteur',
-	'Can upload files, edit all entries/categories/tags on a blog and rebuild.' => 'Kan bestanden opladen, alle berichten/categoriën/tags op een blog bewerken en opnieuw opbouwen.',
+	'Can upload files, edit all entries/categories/tags on a blog and publish.' => 'Mag bestande opladen, alle berichten/categorieën/tags op een blog bewerken en publiceren.',
 	'Can create entries, edit their own, upload files and publish.' => 'Kan berichten aanmaken, eigen berichten bewerken, bestanden opladen en publiceren.',
 	'Designer' => 'Designer',
-	'Can edit, manage and rebuild blog templates.' => 'Kan blogsjablonen bewerken, beheren en opnieuw opbouwen.',
+	'Can edit, manage and republish blog templates.' => 'Mag blogsjablonen bewerken, beheren en opnieuw publiceren.',
 	'Webmaster' => 'Webmaster',
-	'Can manage pages and rebuild blog templates.' => 'Kan pagina\'s beheren en blogsjablonen opnieuw opbouwen',
+	'Can manage pages and republish blog templates.' => 'Mag pagina\'s beheren en sjablonen opnieuw publiceren.',
 	'Contributor' => 'Redactielid',
 	'Can create entries, edit their own and comment.' => 'Kan berichten aanmaken, eigen berichten bewerken en reageren.',
 	'Moderator' => 'Moderator',
@@ -1340,6 +1336,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Error opening directory: [_1].' => 'Fout bij het openen van map: [_1]',
 	'Error rename php files. Please check the Activity Log' => 'Fout bij het aanpassen van de naam van php bestanden.  Gelieve het activiteitenlog na te kijken',
 	'Cannot rename in [_1]: [_2].' => 'Kan naam niet aanpassen in [_1]: [_2]',
+	'Updating widget template records...' => 'Bezig widgetsjablooninformatie bij te werken...',
 	'Upgrading table for [_1]' => 'Bezig tabel te upgraden voor [_1]',
 	'Upgrading database from version [_1].' => 'Database wordt bijgewerkt van versie [_1].',
 	'Database has been upgraded to version [_1].' => 'Database is bijgewerkt naar versie [_1].',
@@ -1383,6 +1380,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Assigning user status...' => 'Gebruikersstatus wordt toegekend...',
 	'Migrating permissions to roles...' => 'Permissies aan het migreren naar rollen...',
 	'Populating authored and published dates for entries...' => 'Bezig creatie- en publicatiedatums voor berichten in te stellen...',
+	'Populating default file template for templatemaps...' => 'Bezig standaard sjabloonbestand voor sjabloonmappings in te stellen...',
 
 ## lib/MT/Plugin.pm
 
@@ -1409,22 +1407,21 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## lib/MT/Template.pm
 	'File not found: [_1]' => 'Bestand niet gevonden: [_1]',
 	'Parse error in template \'[_1]\': [_2]' => 'Ontleedfout in sjabloon \'[_1]\': [_2]',
-	'Build error in template \'[_1]\': [_2]' => 'Opbouwfout in sjabloon \'[_1]\': [_2]',
+	'Publish error in template \'[_1]\': [_2]' => 'Publicatiefout in sjabloon \'[_1]\': [_2]',
 	'Template with the same name already exists in this blog.' => 'Er bestaat al een sjabloon met dezelfde naam in deze weblog.',
 	'You cannot use a [_1] extension for a linked file.' => 'U kunt geen [_1] extensie gebruiken voor een gelinkt bestand.',
 	'Opening linked file \'[_1]\' failed: [_2]' => 'Gelinkt bestand \'[_1]\' openen mislukt: [_2]',
-	'Index' => 'Index', # Translate - Case
-	'Category Archive' => 'Archief per categorie', # Translate - New
-	'Individual' => 'Individueel',
-	'Comment Listing' => 'Overzicht reacties', # Translate - New
-	'Ping Listing' => 'Overzicht pings', # Translate - New
-	'Uploaded Image' => 'Opgeladen afbeelding', # Translate - New
-	'Module' => 'Module', # Translate - Case
-	'Widget' => 'Widget', # Translate - Case
+	'Index' => 'Index',
+	'Category Archive' => 'Archief per categorie',
+	'Comment Listing' => 'Overzicht reacties',
+	'Ping Listing' => 'Overzicht pings',
+	'Uploaded Image' => 'Opgeladen afbeelding',
+	'Module' => 'Module',
+	'Widget' => 'Widget',
 
 ## lib/MT/Entry.pm
 
-## lib/MT.pm
+## lib/MT.pm.pre
 	'Powered by [_1]' => 'Aangedreven door [_1]',
 	'Version [_1]' => 'Versie [_1]',
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
@@ -1459,8 +1456,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'TypeKey' => 'TypeKey',
 	'Movable Type default' => 'Standaard Movable Type',
 	'Wiki' => 'Wiki',
-
-## lib/MT.pm.pre
 
 ## mt-static/js/edit.js
 	'Enter email address:' => 'Voer e-mail adres in:',
@@ -1505,445 +1500,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Loading...' => 'Laden...',
 	'Showing: [_1] &ndash; [_2] of [_3]' => 'Getoond: [_1] &ndash; [_2] van [_3]',
 	'Showing: [_1] &ndash; [_2]' => 'Getoond: [_1] &ndash; [_2]',
-
-## php/plugins/init.Date-basedCategoryArchives.php
-	'Category Yearly' => 'Categorie per jaar',
-	'Category Monthly' => 'Categorie per maand',
-	'Category Daily' => 'Categorie per dag',
-	'Category Weekly' => 'Categorie per week',
-
-## php/plugins/init.AuthorArchives.php
-	'Author Yearly' => 'Auteur per jaar',
-	'Author Monthly' => 'Auteur per maand',
-	'Author Daily' => 'Auteur per dag',
-	'Author Weekly' => 'Auteur per week',
-
-## php/lib/function.mtproductname.php
-	'$short_name [_1]' => '$short_name [_1]',
-
-## php/lib/function.mtcommentfields.php
-
-## php/lib/block.mtentries.php
-
-## php/lib/function.mtremotesigninlink.php
-
-## php/lib/block.mtassets.php
-
-## php/lib/captcha_lib.php
-
-## php/lib/archive_lib.php
-	'Yearly' => 'Jaarlijks',
-	'Monthly' => 'Maandelijks',
-	'Daily' => 'Dagelijks',
-	'Weekly' => 'Wekelijks',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widgetmaker',
-	'Feed Configuration' => 'Feed-configuratie',
-	'Feed URL' => 'Feed-URL',
-	'Title' => 'Titel',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Vul een titel in voor uw widget.  Deze titel zal ook getoond worden als de titel van de feed wanneer die op uw gepubliceerde weblog verschijnt.',
-	'Display' => 'Toon',
-	'Select the maximum number of entries to display.' => 'Selecteer het maximum aantal berichten om te tonen.',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'Alle',
-	'Save' => 'Opslaan',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were discovered. Select the feed you wish to use. Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.' => 'Er werden meerdere feeds gevonden.  Selecteer de feed die u wenst te gebruiken.  Feeds.App Lite ondersteunt RSS 1.0, 2.0 en Atom feeds die alleen uit tekst bestaan.',
-	'Type' => 'Type',
-	'URI' => 'URI',
-	'Continue' => 'Doorgaan',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	'Feeds.App Lite creates modules that include feed data. Once you\'ve used it to create those modules, you can then use them in your blog templates.' => 'Feeds.App Lite maakt modules aan die feedgegevens bevatten.  Eens u het gebruikt heeft om deze modules aan te maken, kunt u ze daarna gebruiken in uw weblogsjablonen.',
-	'You must enter an address to proceed' => 'U moet een adres invullen om verder te kunnen gaan',
-	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Vul de URL in van een feed, of de URL van een site met een feed..',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1].' => 'Er konden geen feeds gevonden worden met [_1].',
-	'An error occurred processing [_1]. Check <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">here</a> for more detail and please try again.' => 'Er deed zich een fout voor bij het verwerken van [_1]. Kijk <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">hier</a> voor meer details en probeer eventueel opnieuw.',
-	'Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]">edit</a> to customize its display.' => 'Gefeliciteerd! Er is een sjabloonmodule van het type Widget aangemaakt met de naam <strong>[_1]</strong> die u verder kunt <a href="[_2]">bewerken</a> om te veranderen hoe het er komt uit te zien.',
-	'It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or this MTInclude tag' => 'Dit kan worden opgenomen in uw gepubliceerde weblog via de <a href="[_1]">WidgetManager</a> of deze MTInclude tag',
-	'It can be included onto your published blog using this MTInclude tag' => 'Dit kan worden opgenomen in uw gepubliceerde weblog door deze MTInclude tag te gebruiken',
-	'Create Another' => 'Maak er nog één aan',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?' => 'Feeds.App Lite helpt u om feeds te herpubliceren op uw weblogs.  Wenst u meer te doen met feeds in Movable Type?',
-	'Upgrade to Feeds.App' => 'Upgraden naar Feeds.App',
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' is een verplicht argument van [_2]',
-	'MT[_1] was not used in the proper context.' => 'MT[_1] werd niet gebruikt in de juiste context.',
-	'Feeds.App Lite' => 'Feeds.App Lite',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',
-
-## plugins/Textile/textile2.pl
-	'Textile 2' => 'Textile 2',
-
-## plugins/Markdown/SmartyPants.pl
-	'Markdown With SmartyPants' => 'Markdown met SmartyPants',
-
-## plugins/Markdown/Markdown.pl
-	'Markdown' => 'Markdown',
-
-## plugins/WXRImporter/tmpl/options.tmpl
-	'Before you import WordPress posts to Movable Type, we recommend you to <a href=\'[_1]\'>configure your weblog\'s publishing paths</a> first.' => 'Voordat u uw WordPress berichten importeert in Movable Type, raden wij aan om eerst <a href=\'[_1]\'>de publicatiepaden van uw weblog in te stellen</a>.',
-	'Upload path for this WordPress blog' => 'Oplaadpad voor deze WordPress blog',
-	'Replace with' => 'Vervangen door',
-
-## plugins/WXRImporter/WXRImporter.pl
-	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
-
-## plugins/WXRImporter/lib/WXRImporter/Import.pm
-
-## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
-	'File is not in WXR format.' => 'Bestand is niet in WXR formaat.',
-	'Saving asset (\'[_1]\')...' => 'Bezig met opslaan mediabestand (\'[_1]\')...',
-	' and asset will be tagged (\'[_1]\')...' => ' en mediabestand zal getagd worden als (\'[_1]\')...',
-	'Saving page (\'[_1]\')...' => 'Pagina aan het opslaan (\'[_1]\')...',
-
-## plugins/TemplateRefresh/tmpl/results.tmpl
-	'Backup and Refresh Templates' => 'Backup nemen en sjablonen herstellen',
-	'No templates were selected to process.' => 'Er werden geen sjablonen geselecteerd om te bewerken.',
-	'Return' => 'Terug',
-
-## plugins/TemplateRefresh/TemplateRefresh.pl
-	'Error loading default templates.' => 'Fout bij het laden van standaardsjablonen.',
-	'Insufficient permissions to modify templates for weblog \'[_1]\'' => 'Onvoldoende permissies om de sjabonen te bewerken van weblog \'[_1]\'',
-	'Processing templates for weblog \'[_1]\'' => 'Sjablonen voor weblog \'[_1]\' worden verwerkt',
-	'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.' => 'Sjabloon wordt ververst \'[_3]\' (met <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">veiligheidskopie</a>)', # Translate - New
-	'Refreshing template \'[_1]\'.' => 'Sjabloon \'[_1]\' wordt ververst.',
-	'Error creating new template: ' => 'Fout bij aanmaken nieuw sjabloon: ',
-	'Created template \'[_1]\'.' => 'Sjabloon \'[_1]\' aangemaakt.',
-	'Insufficient permissions for modifying templates for this weblog.' => 'Onvoldoende permissies voor het bewerken van de sjablonen van deze weblog.',
-	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Sjabloon \'[_1]\' wordt overgeslagen, omdat het blijkbaar een gepersonaliseerd sjabloon is.',
-	'Refresh Template(s)' => 'Sjablo(o)n(en) verversen',
-
-## plugins/ExtensibleArchives/DatebasedCategories.pl
-	'CATEGORY-YEARLY_ADV' => 'Categorie per jaar',
-	'CATEGORY-MONTHLY_ADV' => 'Categorie per maand',
-	'CATEGORY-DAILY_ADV' => 'Categorie per dag',
-	'CATEGORY-WEEKLY_ADV' => 'Categorie per week',
-	'category/sub_category/yyyy/index.html' => 'categorie/sub_categorie/jjjj/index.html',
-	'category/sub-category/yyyy/index.html' => 'categorie/sub-categorie/jjjj/index.html',
-	'category/sub_category/yyyy/mm/index.html' => 'categorie/sub_categorie/jjjj/mm/index.html',
-	'category/sub-category/yyyy/mm/index.html' => 'categorie/sub-categorie/jjjj/mm/index.html',
-	'category/sub_category/yyyy/mm/dd/index.html' => 'categorie/sub_categorie/jjjj/dd/index.html',
-	'category/sub-category/yyyy/mm/dd/index.html' => 'categorie/sub-categorie/jjjj/dd/index.html',
-	'category/sub_category/yyyy/mm/day-week/index.html' => 'categorie/sub_categorie/jjjj/mm/dag-week/index.html',
-	'category/sub-category/yyyy/mm/day-week/index.html' => 'categorie/sub-categorie/jjjj/mm/dag-week/index.html',
-
-## plugins/ExtensibleArchives/AuthorArchive.pl
-	'Author #[_1]' => 'Auteur #[_1]',
-	'AUTHOR_ADV' => 'Auteur',
-	'Author #[_1]: ' => 'Auteur #[_1]: ',
-	'AUTHOR-YEARLY_ADV' => 'Auteur per jaar',
-	'AUTHOR-MONTHLY_ADV' => 'Auteur per maand',
-	'AUTHOR-WEEKLY_ADV' => 'Auteur per week',
-	'AUTHOR-DAILY_ADV' => 'Auteur per dag',
-	'author_display_name/index.html' => 'naam_auteur/index.html',
-	'author-display-name/index.html' => 'naam-auteur/index.html',
-	'author_display_name/yyyy/index.html' => 'naam_auteur/jjjj/index.html',
-	'author-display-name/yyyy/index.html' => 'naam-auteur/jjjj/index.html',
-	'author_display_name/yyyy/mm/index.html' => 'naam_auteur/jjjj/mm/index.html',
-	'author-display-name/yyyy/mm/index.html' => 'naam-auteur/jjjj/mm/index.html',
-	'author_display_name/yyyy/mm/day-week/index.html' => 'naam_auteur/jjjj/mm/dag-week/index.html',
-	'author-display-name/yyyy/mm/day-week/index.html' => 'naam-auteur/jjjj/mm/dag-week/index.html',
-	'author_display_name/yyyy/mm/dd/index.html' => 'naam_auteur/jjjj/mm/dd/index.html',
-	'author-display-name/yyyy/mm/dd/index.html' => 'naam-auteur/jjjj/mm/dd/index.html',
-
-## plugins/Cloner/cloner.pl
-	'Cloning Weblog' => 'Bezig met klonen van weblog',
-	'Error' => 'Fout',
-	'Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">return to the weblogs listing</a> or <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">configure the Site root and URL of the new weblog</a>.' => 'Klaar! U kunt nu <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">terugkeren naar het weblog overzicht</a> of <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">de hoofdmap en URL van de site instellen</a>',
-	'No weblog was selected to clone.' => 'Er werd geen weblog geselecteerd om te klonen.',
-	'This action can only be run for a single weblog at a time.' => 'Deze actie kan maar op één weblog per keer uitgevoerd worden.',
-	'Invalid blog_id' => 'Ongeldig blog_id',
-	'Clone Weblog' => 'Weblog klonen',
-
-## plugins/WidgetManager/tmpl/header.tmpl
-	'Movable Type Publishing Platform' => 'Movable Type publicatieplatform',
-	'Main Menu' => 'Hoofdmenu',
-	'Help' => 'Hulp',
-	'Welcome' => 'Welkom',
-	'Logout' => 'Afmelden',
-	'Go to:' => 'Ga naar:',
-	'Select a blog' => 'Selecteer een blog',
-	'Weblogs' => 'Weblogs',
-	'System-wide listing' => 'Overzicht op systeemniveau',
-
-## plugins/WidgetManager/tmpl/edit.tmpl
-	'Edit Widget Container' => 'Widgetcontainer bewerken',
-	'Please use a unique name for this widget container.' => 'Gelieve een unieke naam op te geven voor deze widgetcontainer.',
-	'You already have a widget container named \'[_1].\' Please use a unique name for this widget manager.' => 'U heeft al een widgetcontainer met de naam \'[_1]\'. Gelieve een unieke naam te gebruiken voor deze widgetmanager.',
-	'Your changes to the Widget Manager have been saved.' => 'Uw wijzigingen aan de Widget Manager zijn opgeslagen.',
-	'Container Name' => 'Containernaam',
-	'Drag and drop the widgets you want into the <strong>Installed</strong> column.' => 'Klik en sleep de widgets die u wenst in de kolom <strong>Geïnstalleerde widgets</strong>.',
-	'Installed Widgets' => 'Geïnstalleerde widgets',
-	'Available Widgets' => 'Beschikbare widgets',
-	'Save Changes' => 'Wijzigingen opslaan',
-	'Save changes (s)' => 'Wijziging(en) opslaan',
-
-## plugins/WidgetManager/tmpl/list.tmpl
-	'Widgets' => 'Widgets',
-	'Your changes to the widget container have been saved.' => 'Uw wijzigingen aan de widgetcontainer zijn opgeslagen.',
-	'You have successfully deleted the selected widget container(s) from your blog.' => 'U heeft met succes de geselecteerde widgetcontainer(s) verwijderd van uw weblog.',
-	'To add a widget container to your templates, use the following syntax:' => 'Om een widgetcontainer toe te voegen aan uw sjablonen, gebruik de volgende syntax:',
-	'<strong>&lt;$MTWidgetManager name=&quot;Name of the Widget Manager&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetManager name=&quot;Naam van de Widgetmanager&quot;$&gt;</strong>',
-	'Add Widget Manager' => 'Voeg Widget Manager toe',
-	'Create Widget Container' => 'Widgetcontainer aanmaken',
-	'Widget Manager' => 'Widget Manager',
-	'Widget Managers' => 'Widget Managers',
-	'Delete selected Widget Managers (x)' => 'Geselecteerde Widget Managers verwijderen (x)',
-
-## plugins/WidgetManager/WidgetManager.pl
-
-## plugins/WidgetManager/default_widgets/monthly_archive_list.tmpl
-
-## plugins/WidgetManager/default_widgets/technorati_search.tmpl
-	'Technorati' => 'Technorati',
-	'<a href=\'http://www.technorati.com/\'>Technorati</a> search' => 'Zoek op <a href=\'http://www.technorati.com/\'>Technorati</a>',
-	'this blog' => 'deze weblog',
-	'all blogs' => 'alle blogs',
-	'Blogs that link here' => 'Blogs die hierheen linken',
-
-## plugins/WidgetManager/default_widgets/calendar.tmpl
-	'Monthly calendar with links to each day\'s posts' => 'Maandkalender met links naar de berichten van elke dag',
-	'Sunday' => 'Zondag',
-	'Sun' => 'Zon',
-	'Monday' => 'Maandag',
-	'Mon' => 'Maa',
-	'Tuesday' => 'Dinsdag',
-	'Tue' => 'Din',
-	'Wednesday' => 'Woensdag',
-	'Wed' => 'Woe',
-	'Thursday' => 'Donderdag',
-	'Thu' => 'Don',
-	'Friday' => 'Vrijdag',
-	'Fri' => 'Vri',
-	'Saturday' => 'Zaterdag',
-	'Sat' => 'Zat',
-
-## plugins/WidgetManager/default_widgets/signin.tmpl
-	'You are signed in as ' => 'U bent aangemeld als',
-	'You do not have permission to sign in to this blog.' => 'U heeft geen toestemming om aan te melden op deze weblog',
-
-## plugins/WidgetManager/default_widgets/category_archive_list.tmpl
-
-## plugins/WidgetManager/default_widgets/recent_comments.tmpl
-	'Recent Comments' => 'Recente reacties',
-
-## plugins/WidgetManager/default_widgets/monthly_archive_dropdown.tmpl
-	'Select a Month...' => 'Selecteer een maand...',
-
-## plugins/WidgetManager/default_widgets/tag_cloud_module.tmpl
-	'Tag cloud' => 'Tagcloud',
-
-## plugins/WidgetManager/default_widgets/powered_by.tmpl
-	'_POWERED_BY' => 'Aangedreven door<br /><a href="http://www.movabletype.org/sitenl/"><$MTProductName$></a>',
-
-## plugins/WidgetManager/default_widgets/creative_commons.tmpl
-	'This weblog is licensed under a' => 'Deze weblog valt onder een licentie van het type',
-	'Creative Commons License' => 'Creative Commons Licentie',
-
-## plugins/WidgetManager/default_widgets/search.tmpl
-
-## plugins/WidgetManager/default_widgets/recent_posts.tmpl
-
-## plugins/WidgetManager/default_widgets/subscribe_to_feed.tmpl
-	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.com/about/feeds',
-	'What is this?' => 'Wat is dit?',
-
-## plugins/WidgetManager/lib/WidgetManager/CMS.pm
-	'Can\'t duplicate the existing \'[_1]\' Widget Manager. Please go back and enter a unique name.' => 'Can de bestaande \'[_1]\' Widget Manager niet dupliceren.  Ga terug en vul een unieke naam in.',
-	'Moving [_1] to list of installed modules' => '[_1] wordt verplaatst naar de lijst geïnstalleerde modules',
-	'First Widget Manager' => 'Eerste Widgetmanager',
-
-## plugins/WidgetManager/lib/WidgetManager/Plugin.pm
-	'No WidgetManager modules exist for blog \'[_1]\'.' => 'Er bestaan geen WidgetManager modules voor blog \'[_1]\'.',
-	'WidgetManager \'[_1]\' has no installed widgets.' => 'WidgetManager \'[_1]\' heeft geen geïnstalleerde widgets.',
-	'Can\'t find included template module \'[_1]\'' => 'Kan sjabloonmodule \'[_1]\' niet vinden.',
-
-## plugins/MultiBlog/tmpl/system_config.tmpl
-	'Default system aggregation policy' => 'Standaard aggregatiebeleid voor het systeem',
-	'Allow' => 'Toestaan',
-	'Disallow' => 'Verbieden',
-	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'Cross-blog aggregatie zal standaard toegestaan zijn.  Individuele blgos kunnen via de MultiBlog instellingen op blogniveau worden ingesteld om toegang tot hun inhoud voor andere blogs te beperken.',
-	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'Cross-blog aggregatie zal standaard verboden zijn.  Individuele blgos kunnen via de MultiBlog instellingen op blogniveau worden ingesteld om toegang tot hun inhoud voor andere blogs te verlenen.',
-
-## plugins/MultiBlog/tmpl/blog_config.tmpl
-	'When' => 'Wanneer',
-	'Any Weblog' => 'Eender welke weblog',
-	'Remove' => 'Verwijder',
-	'Weblog' => 'Weblog',
-	'Trigger' => 'Trigger',
-	'Action' => 'Actie',
-	'Content Privacy' => 'Privacy inhoud',
-	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Geef aan of andere blogs op deze installatie inhoud van deze blog mogen publiceren.  Deze instelling krijgt voorrang op het standaard aggregatiebeleid op systeemniveau wat u kunt terugvinden in het configuratiescherm voor MultiBlog op systeemniveau.',
-	'Use system default' => 'Standaard systeeminstelling gebruiken',
-	'MTMultiBlog tag default arguments' => 'MTMultiBlog tag standaard argumenten',
-	'Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or \'all\' (include_blogs only) are acceptable values.' => 'Maakt het mogelijk om de MTMultiBlog tag te gebruiken zonder include_blogs/exclude_blogs attributen.  Toegestane waarden zijn BlogID\'s gescheden door komma\'s of \'all\' (enkel bij include_blogs).',
-	'Include blogs' => 'Includeer blogs',
-	'Exclude blogs' => 'Excludeer blogs',
-	'Current Rebuild Triggers:' => 'Huidige rebuild-triggers:',
-	'Create New Rebuild Trigger' => 'Nieuwe rebuild-trigger aanmaken',
-	'You have not defined any rebuild triggers.' => 'U heeft nog geen rebuild-triggers gedefiniëerd',
-
-## plugins/MultiBlog/multiblog.pl
-	'MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.' => 'Met MultiBlog kunt u inhoud van andere blogs ruw of in sjablonen publiceren en kunt u herbouw-afhankelijkheden en toegangscontrole tussen blogs opzetten.',
-	'* All Weblogs' => '* Alle weblogs',
-	'Select to apply this trigger to all weblogs' => 'Selecteer dit om de trigger toe te passen op alle weblogs',
-	'MultiBlog' => 'MultiBlog',
-	'Create New Trigger' => 'Nieuwe trigger aanmaken',
-	'Weblog Name' => 'Weblognaam',
-	'Search Weblogs' => 'Doorzoek weblogs',
-	'When this' => 'indien dit',
-	'saves an entry' => 'een bericht opslaat',
-	'publishes an entry' => 'een bericht publiceert',
-	'publishes a comment' => 'een reactie publiceert',
-	'publishes a ping' => 'een ping publiceert',
-	'rebuild indexes.' => 'indexen opnieuw opbouwt.',
-	'rebuild indexes and send pings.' => 'indexen opnieuw opbouwt en pings verstuurt.',
-
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'De include_blogs, exclude_blogs, blog_ids en blog_id attributen kunnen niet samen gebruikt worden.',
-	'The attribute exclude_blogs cannot take "all" for a value.' => 'Het attribuut exclude_blogs kan niet "all" als waarde hebben.',
-	'The value of the blog_id attribute must be a single blog ID.' => 'De waarde van het blog_id attribuut moet één Blog ID zijn.',
-	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'De waarde voor de include_blogs/exclude_blogs attributen moet één of meer Blog ID\'s zijn, gescheiden door komma\'s.',
-
-## plugins/MultiBlog/lib/MultiBlog/Tags/MultiBlog.pm
-	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlog tags mogen niet genest zijn.',
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Onbekende "mode" attribuutwaarde: [_1].  Geldige waarden zijn "loop" en "context".',
-
-## plugins/spamlookup/tmpl/lookup_config.tmpl
-	'Lookups monitor the source IP addresses and hyperlinks of all incoming feedback. If a comment or TrackBack comes from a blacklisted IP address or contains a blacklisted domain, it can be held for moderation or scored as junk and placed into the blog\'s Junk folder. Additionally, advanced lookups on TrackBack source data can be performed.' => 'Lookups houden het bron IP adres en de URL in het oog van alle binnenkomende feedback.  Als een reactie of TrackBack afkomstig is van een IP adres op de zwarte lijst of een domein bevat dat op de zwarte lijst staat, dan kan het worden tegengehouden voor moderatie of een score ontvangen als junk en in de spam-map worden geplaatst.  Bovendien kunnen geavanceerde opzoekingen gedaan worden op de brondata van een TrackBack.
-	',
-	'IP Address Lookups:' => 'IP adressen opzoeken:',
-	'Off' => 'Uit',
-	'Moderate feedback from blacklisted IP addresses' => 'Feedback modereren van IP adressen op de zwarte lijst',
-	'Junk feedback from blacklisted IP addresses' => 'Feedback van IP adressen op de zwarte lijst een spamscore toekennen',
-	'Adjust scoring' => 'Score bijwerken',
-	'Score weight:' => 'Scoregewicht',
-	'Less' => 'Minder',
-	'Decrease' => 'Verlaag',
-	'Increase' => 'Verhoog',
-	'More' => 'Meer',
-	'block' => 'blokkeer',
-	'none' => 'geen',
-	'IP Blacklist Services' => 'IP zwarte lijst diensten',
-	'Domain Name Lookups:' => 'Domeinnamen opzoeken:',
-	'Moderate feedback containing blacklisted domains' => 'Modereer feedback die domeinen bevat die op de zwarte lijst staan',
-	'Junk feedback containing blacklisted domains' => 'Ken een spamscore to aan feedback die domeinen bevat die op de zwarte lijst staan ',
-	'Domain Blacklist Services' => 'Domein zwarte lijst diensten',
-	'Advanced TrackBack Lookups' => 'Geavanceerde TrackBack opzoekingen',
-	'Moderate TrackBacks from suspicious sources' => 'Modereer TrackBacks uit verdachte bronnen',
-	'Junk TrackBacks from suspicious sources' => 'Ken een spamscore toe aan TrackBacks uit verdachte bronnen',
-	'To prevent lookups for some IP addresses or domains, list them below. Place each entry on a line by itself.' => 'Om te voorkomen dat bepaalde IP adressen of domeinen opgezocht worden, kunt u ze hieronder opsommen.  Gelieve elk gegeven op een aparte regel te plaatsen.',
-	'Lookup Whitelist:' => 'Witte lijst',
-
-## plugins/spamlookup/tmpl/word_config.tmpl
-	'Incomming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => 'Binnenkomende feedback kan onderzocht worden op specifieke sleutelwoorden, domeinnamen en patronen.  Feedback waar deze in gevonden worden kan worden tegengehouden voor moderatie of een spamscore krijgen.  Bovendien kunnen spamscores voor overeenkomsten gepersonaliseerd worden.',
-	'Keywords to Moderate' => 'Sleutelwoorden om te modereren',
-	'Keywords to Junk' => 'Sleutelwoorden om een spamscore toe te kennen',
-
-## plugins/spamlookup/tmpl/url_config.tmpl
-	'Link filters monitor the number of hyperlinks in incoming feedback. Feedback with many links can be held for moderation or scored as junk. Conversely, feedback that does not contain links or only refers to previously published URLs can be positively rated. (Only enable this option if you are sure your site is already spam-free.)' => 'Linkfilters houden het aantal hyperlinks in binnenkomende feedback in de gaten.  Feedback met veel links in kan tegengehouden worden voor moderatie of kan een spamscore krijgen.  Langs de andere kant kan feedback die geen links bevat of enkel verwijst naar eerder gepubliceerde URL\'s een positieve score krijgen. (Deze optie enkel inschakelen indien uw site reeds spam-vrij is).',
-	'Link Limits' => 'Linklimieten',
-	'Credit feedback rating when no hyperlinks are present' => 'Ken extra score toe indien geen hyperlinks aanwezig',
-	'Moderate when more than' => 'Modereer indien er meer dan',
-	'link(s) are given' => 'link(s) voorkomen',
-	'Junk when more than' => 'Ken een spamscore toe indien er meer dan',
-	'Link Memory' => 'Linkgeheugen',
-	'Credit feedback rating when &quot;URL&quot; element of feedback has been published before' => 'Ken een positieve score toe indien het &quot;URL&quot; element in de feedback al eens eerder gepubliceerd werd',
-	'Only applied when no other links are present in message of feedback.' => 'Enkel toegepast indien er geen andere links in het bericht van de feedback staan',
-	'Exclude URLs from comments published within last [_1] days.' => 'URL\'s uitsluiten van reacties gepubliceerd in de laastste [_1] dagen.',
-	'Email Memory' => 'E-mail geheugen',
-	'Credit feedback rating when previously published comments are found matching on the &quot;Email&quot; address' => 'Ken een positieve score toe indien er eerder gepubliceerde reacties gevonden worden met hetzelfde e-mail adres',
-	'Exclude Email addresses from comments published within last [_1] days.' => 'E-mail adressen uitsluiten van reacties gepubliceerd in de laatste [_1] dagen.',
-
-## plugins/spamlookup/spamlookup.pl
-	'SpamLookup module for using blacklist lookup services to filter feedback.' => 'SpamLookup module om zwarte lijsten te gebruiken om feedback mee te filteren.',
-	'SpamLookup IP Lookup' => 'SpamLookup IP opzoeken',
-	'SpamLookup Domain Lookup' => 'SpamLookup domein opzoeken',
-	'SpamLookup TrackBack Origin' => 'SpamLookup TrackBack origine',
-	'Despam Comments' => 'Filter spam uit reacties',
-	'Despam TrackBacks' => 'Filter spam uit TrackBacks',
-	'Despam' => 'Filter spam',
-
-## plugins/spamlookup/spamlookup_urls.pl
-	'SpamLookup - Link' => 'SpamLookup - Link',
-	'SpamLookup module for junking and moderating feedback based on link filters.' => 'SpamLookup module om feedback als spam te merken of te modereren gebaseerd op linkfilters.',
-	'SpamLookup Link Filter' => 'SpamLookup linkfilter',
-	'SpamLookup Link Memory' => 'SpamLookup linkgeheugen',
-	'SpamLookup Email Memory' => 'SpamLookup e-mail geheugen',
-
-## plugins/spamlookup/lib/spamlookup.pm
-	'Failed to resolve IP address for source URL [_1]' => 'Resolutie van IP adres mislukt voor bron URL [_1]',
-	'Moderating: Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'In moderatie: IP van domein komt niet overeen met IP van ping voor bron URL [_1]; domein IP: [_2]; ping IP: [_3]',
-	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'Domein IO komt niet overeen met ping IP van bron URL [_1]; domein IP: [_2]; ping IP: [_3]',
-	'No links are present in feedback' => 'Geen links aanwezig in feedback',
-	'Number of links exceed junk limit ([_1])' => 'Aantal links hoger dan spamlimiet ([_1])',
-	'Number of links exceed moderation limit ([_1])' => 'Aantal links hoger dan moderatielimiet ([_1])',
-	'Link was previously published (comment id [_1]).' => 'Link werd eerder al gepubliceerd (reactie id [_1])',
-	'Link was previously published (TrackBack id [_1]).' => 'Link werd eerder al gepubliceerd (TrackBack id [_1])',
-	'E-mail was previously published (comment id [_1]).' => 'E-mail werd eerder al gepubliceerd (reactie id [_1])',
-	'Word Filter match on \'[_1]\': \'[_2]\'.' => 'Woordfilter overeenkomst op \'[_1]\': \'[_2]\'.',
-	'Moderating for Word Filter match on \'[_1]\': \'[_2]\'.' => 'Te modereren wegens woordfilter overeenkomst op \'[_1]\': \'[_2]\'.',
-	'domain \'[_1]\' found on service [_2]' => 'domein \'[_1]\' gevonden op service [_2].',
-	'[_1] found on service [_2]' => '[_1] gevonden op service [_2]',
-
-## plugins/spamlookup/spamlookup_words.pl
-	'SpamLookup module for moderating and junking feedback using keyword filters.' => 'SpamLookup module voor het modereren en aanmerken als spam van feedback door sleutelwoord-filters',
-	'SpamLookup Keyword Filter' => 'SpamLookup sleutelwoord-filter',
-
-## plugins/StyleCatcher/stylecatcher.pl
-	'<p>You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it\'s own theme paths, it will use these settings directly. If a blog has it\'s own theme paths, then the theme will be copied to that location when applied to that weblog. The paths defined here must physically exist and be writable by the webserver.</p>' => '<p>U moet een globale opslagplaats instellen waar thema\'s lokaal opgeslagen kunnen worden.  Als een bepaalde weblog niet is geconfigureerd om z\'n eigen themapaden te gebruiken, dan zullen deze instellingen gebruikt worden.  Als een blog z\'n eigen themapaden heeft, dan zal het thema naar die lokatie gecopiëerd worden wanneer het wordt toegepast op die weblog.  De paden die hier gedefiniëerd zijn, moeten fysiek bestaan en beschrijfbaar zijn door de webserver.</p>',
-	'<p style="color: #f00;"><strong>NOTE:</strong> StyleCatcher must first be configured from the system-level plugins listing before it can be used on any blog.</p>' => '<p style="color: #f00;"><strong>OPMERKING:</strong> StyleCatcher moet eerst geconfigureerd worden via de plugin-instellingen op systeemniveau voordat het gebruikt kan worden op een blog.</p>',
-	'<p>If you wish to store your themes locally for this blog, you can configure your theme URL and path below.  Although downloaded themes will still be stored in the system-level directory, they will be copied to this directory when they are applied. The paths defined here must physically exist and be writable by the webserver.</p>' => '<p>Als u uw thema\'s voor deze blog lokaal wenst op te slaan, dan kunt u hieronder uw thema URL en pad installen.  Hoewel thema\'s die u download nog steeds in de map op systeemniveau opgeslagen zullen worden, zullen ze gecopiëerd worden naar deze map wanneer ze toegepast worden.  De paden die hier worden ingesteld moeten fysiek bestaan en schrijfbaar zijn door de webserver.</p>',
-	'Theme Root URL:' => 'Thema root URL',
-	'Theme Root Path:' => 'Thema root pad',
-	'Style Library URL:' => 'Stijlenbibliotheek URL',
-	'Unable to create the theme root directory. Error: [_1]' => 'Kon themaroot map niet aanmaken.  Fout: [_1]',
-	'Unable to write base-weblog.css to themeroot. File Manager gave the error: [_1]. Are you sure your theme root directory is web-server writable?' => 'Kon base-weblog.css niet schrijven naar de themaroot.  File Manager gaf de fout: [_1]. Bent u zeker dat de themaroot map schrijfbaar is voor de webserver?',
-	'Styles' => 'Stijlen',
-
-## plugins/StyleCatcher/tmpl/header.tmpl
-	'View Site' => 'Site bekijken',
-
-## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a Style' => 'Selecteer een stijl',
-	'Please select a weblog to apply this theme.' => 'Gelieve een weblog te selecteren om dit thema op toe te passen.',
-	'Please click on a theme before attempting to apply a new design to your blog.' => 'Gelieve op een thema te klikken voor te proberen het op uw weblog toe te passen.',
-	'Applying...' => 'Toepassen...',
-	'Choose this Design' => 'Kies dit design',
-	'Error applying theme: ' => 'Fout bij toepassen thema:',
-	'The selected theme has been applied!' => 'Het geselecteerde thema is toegepast',
-	'Find Style' => 'Stijl vinden',
-	'Theme or Repository URL:' => 'Thema of verzamelplaats URL:',
-	'Download Styles' => 'Stijlen downloaden',
-	'Current theme for your weblog' => 'Huidig thema voor uw weblog',
-	'Current Theme' => 'Huidig thema',
-	'Current themes for your weblogs' => 'Huidige thema\'s voor uw weblogs',
-	'Current Themes' => 'Huidige thema\'s',
-	'Locally saved themes' => 'Lokaal opgeslagen thema\'s',
-	'Saved Themes' => 'Opgeslagen thema\'s',
-	'Single themes from the web' => 'Losse thema\'s van het web',
-	'More Themes' => 'Meer thema\'s',
-	'Details' => 'Details',
-	'Show Details' => 'Details tonen',
-	'Hide Details' => 'Details verbergen',
-	'Select a Weblog...' => 'Selecteer een weblog...',
-	'Apply Selected Design' => 'Geselecteerd design toepassen',
-	'You don\'t appear to have any weblogs with a \'Theme Stylesheet\' template that you have rights to edit. Please check your blog(s) for this template.' => 'Het lijkt er op dat u geen weblogs heeft met een \'Thema stylesheet\' sjabloon waarop u rechten heeft om het te bewerken.  Gelieve uw weblog na te kijken op dit sjabloon.',
-	'Error loading themes! -- [_1]' => 'Fout bij het laden van thema\'s! -- [_1]',
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon de map [_1] niet aanmaken - Controleer of uw \'thema\'s\' map schrijfbaar is voor de webserver.',
-	'Successfully applied new theme selection.' => 'De nieuwe thema-selectie is met succes toegepast.',
 
 ## search_templates/results_feed.tmpl
 	'Search Results for [_1]' => 'Zoekresultaten voor [_1]',
@@ -1990,6 +1546,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged \'[_1]\'.' => 'Als u een RSS lezer gebruikt, kunt u inschrijven op een feed met alle toekomstige berichten met de tag \'[_1]\'.',
 	'If you use an RSS reader, you can subscribe to a feed of all future entries matching \'[_1]\'.' => 'Als u een RSS lezer gebruikt, kunt u inschrijven op een feed met alle toekomstige berichten met \'[_1]\' in.',
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => 'ZOEK/TAG FEED INSCHRIJVINGSINFORMATIE',
+	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.com/about/feeds',
+	'What is this?' => 'Wat is dit?',
 	'TAG LISTING FOR TAG SEARCH ONLY' => 'TAG OPSOMMING ENKEL VOOR TAG ZOEKEN',
 	'Other Tags' => 'Andere tags',
 	'END OF PAGE BODY' => 'EINDE VAN PAGINA BODY',
@@ -2025,6 +1583,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'New Password' => 'Nieuw wachtwoord',
 	'Confirm Password' => 'Wachtwoord bevestigen',
 	'Password recovery' => 'Wachtwoord terugvinden',
+	'Save' => 'Opslaan',
 
 ## tmpl/comment/error.tmpl
 	'An error occurred' => 'Er deed zich een probleem voor',
@@ -2078,6 +1637,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Role' => 'Rol',
 	'In Weblog' => 'Op weblog',
 	'Via Group' => 'Via groep',
+	'Weblogs' => 'Weblogs',
 	'Created By' => 'Aangemaakt door',
 	'Role Is Active' => 'Rol is actief',
 	'Role Not Being Used' => 'Rol wordt niet gebruikt',
@@ -2094,7 +1654,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Spam Score Threshold' => 'Spamscoredrempel',
 	'Comments and TrackBacks receive a spam score between -10 (complete spam) and +10 (not spam). Feedback with a score which is lower than the threshold shown above will be reported as spam.' => 'Reacties en TrackBacks ontvangen een spamscoren tussen -10 (helemaal zeker spam) en +10 (helemaal zeker geen spam).  Feedback met een score die lager is dan de drempel hierboven zal als spam gemarkeerd worden.',
 	'Less Aggressive' => 'Minder aggressief',
+	'Decrease' => 'Verlaag',
+	'Increase' => 'Verhoog',
 	'More Aggressive' => 'Aggressiever',
+	'Save Changes' => 'Wijzigingen opslaan',
+	'Save changes (s)' => 'Wijziging(en) opslaan',
 
 ## tmpl/cms/preview_entry.tmpl
 	'Preview [_1]' => 'Voorbeeld [_1]',
@@ -2129,8 +1693,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Last edited [_1] by [_2].' => 'Laatst bewerkte [_1] door [_2]',
 	'Published [_1].' => '[_1] gepubliceerd',
 	'This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and <a href="[_5]">[quant,_3,trackback,trackbacks]</a>.' => '[_1] heeft <a href="[_4]">[quant,_2,reactie,reacties]</a> en <a href="[_5]">[quant,_3,trackback,trackbacks]</a> ontvangen.',
+	'Useful Links' => 'Nuttige links',
 	'Display Options' => 'Opties voor schermindeling',
 	'Fields' => 'Velden',
+	'Title' => 'Titel',
 	'Body' => 'Romp',
 	'Excerpt' => 'Uittreksel',
 	'Keywords' => 'Trefwoorden',
@@ -2147,6 +1713,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Publish On' => 'Publiceren op',
 	'Publish Date' => 'Publicatiedatum',
 	'You must specify at least one recipient.' => 'U moet minstens één ontvanger opgeven.',
+	'Remove' => 'Verwijder',
 	'Make primary' => 'Maak dit een hoofdcategorie',
 	'Add sub category' => 'Subcategorie toevoegen',
 	'Add [_1] name' => 'Voeg [_1]naam toe',
@@ -2211,6 +1778,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/import.tmpl
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Importeer weblogberichten in Moveble Type uit andere Movable Type installaties of zelfs andere blogsystemen, of exporteer uw berichten om een backup of kopie te maken.',
+	'Import to' => 'Importeren naar',
+	'Select a blog for importing.' => 'Selecteer een blog om te importeren.',
+	'None selected.' => 'Geen geselecteerd.',
+	'Select...' => 'Selecteer...',
 	'Importing from' => 'Aan het importeren uit',
 	'Ownership of imported entries' => 'Eigenaarschap van geïmporteerde berichten',
 	'Import as me' => 'Importeer als mezelf',
@@ -2235,7 +1806,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Feedback Settings: System-wide' => 'Feedbackinstellingen: over het hele systeem',
 	'This screen allows you to configure feedback and outbound TrackBack settings for the entire installation.  These settings override any similar settings for individual weblogs.' => 'Via dit scherm kunt u de instellingen voor feedback en uitgaande TrackBacks beheren voor heel de installatie.  Deze instellingen gelden boven gelijkaardige instellingen voor individuele weblogs.',
 	'Your feedback preferences have been saved.' => 'Uw voorkeuren voor feedback zijn opgeslagen.',
-	'None selected.' => 'Geen geselecteerd.',
 	'Feedback Master Switch' => 'Feedback hoofdschakelaar',
 	'Disable Comments' => 'Reacties uitschakelen',
 	'This will override all individual weblog comment settings.' => 'Dit geldt boven alle instellingen voor reacties van alle individuele weblogs.',
@@ -2244,7 +1814,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'Selecteer een systeembeheerder die op de hoogte gebracht moet worden wanneer nieuwe reageerders zich met succes registreren.',
 	'Allow commenters to register to Movable Type' => 'Geef reageerders de optie zich te registreren via Movable Type',
 	'Notify administrators' => 'Administrators op de hoogte brengen',
-	'Select...' => 'Selecteer...',
 	'Clear' => 'Leegmaken',
 	'System Email Address Not Set' => 'Systeem e-mail adres niet ingesteld',
 	'Note: System Email Address is not set.  Emails will not be sent.' => 'Opmerking: systeem e-mail adres is niet ingesteld.  E-mails zullen niet worden verzonden.',
@@ -2267,8 +1836,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Edit Template' => 'Sjabloon bewerken',
 	'Create Template' => 'Sjabloon aanmaken',
 	'Your template changes have been saved.' => 'De wijzigingen aan uw sjabloon zijn opgeslagen.',
-	'Your [_1] has been rebuilt.' => 'Uw [_1] is opnieuw gebouwd.',
-	'Useful Links' => 'Nuttige links',
+	'<a href="[_1]" class="rebuild-link">Republish</a> this template.' => 'Dit sjabloon <a href="[_1]" class="rebuild-link">herpubliceren</a>.',
+	'Your [_1] has been published.' => 'Uw [_1] is opnieuw gepubliceerd.',
 	'View Published Template' => 'Gepubliceerd sjabloon bekijken',
 	'List [_1] templates' => 'Toon [_1] sjablonen',
 	'Template tag reference' => 'Sjabloontags referentie',
@@ -2276,9 +1845,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'create' => 'aanmaken',
 	'Save (s)' => 'Opslaan (s)',
 	'Save this template (s)' => 'Dit sjabloon opslaan (s)',
-	'Save and Rebuild this template (r)' => 'Dit sjabloon opslaan en opnieuw opbouwen (r)',
-	'Save and Rebuild' => 'Opslaan en opnieuw opbouwen',
-	'Save and rebuild this template (r)' => 'Dit sjabloon opslaan en opnieuw opbouwen (r)',
+	'Save and Republish this template (r)' => 'Dit sjabloon opslaan en opnieuw publiceren (r)',
+	'Save and Republish' => 'Opslaan en opnieuw publiceren',
 	'You must set the Template Name.' => 'U moet de naam van het sjabloon instellen',
 	'You must set the template Output File.' => 'U moet het uitvoerbestand van het sjabloon instellen.',
 	'Please wait...' => 'Even wachten...',
@@ -2293,9 +1861,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Template Type' => 'Sjabloontype',
 	'Custom Index Template' => 'Gepersonaliseerd indexsjabloon',
 	'Output File' => 'Uitvoerbestand',
-	'Build Options' => 'Bouwopties',
-	'Enable dynamic building for this template' => 'Dynamisch opbouwen inschakelen voor dit sjabloon',
-	'Rebuild this template automatically when rebuilding index templates' => 'Dit sjabloon automatisch opnieuw opbouwen bij opnieuw opbouwen van indexsjablonen',
+	'Publish Options' => 'Publicatieopties',
+	'Enable dynamic publishing for this template' => 'Dynamisch publiceren inschakelen voor dit sjabloon',
+	'Republish this template automatically when rebuilding index templates' => 'Dit sjabloon automatisch herpubliceren wanneer indexsjablonen worden geherpubliceerd',
 	'Link to File' => 'Koppelen aan bestand',
 	'Create New Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
 	'Archive Type:' => 'Archieftype:',
@@ -2404,7 +1972,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Remember these settings' => 'Deze instellingen onthouden',
 
 ## tmpl/cms/dialog/upload_complete.tmpl
-	'Upload Image' => 'Afbeelding opladen',
+	'Insert File 2' => 'Voeg bestadn 2 in',
+	'Upload File 2' => 'Laad bestand 2 op',
 	'The file named \'[_1]\' has been uploaded. Size: [quant,_2,byte,bytes].' => 'Het bestand met de naam \'[_1]\' is opgeladen.  Grootte: [quant,_2,byte,bytes].',
 	'File Options' => 'Bestandsopties',
 	'Create a new entry using this uploaded file.' => 'Maak een nieuw bericht aan met dit opgeladen bestand',
@@ -2416,6 +1985,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Restoring' => 'Bezig restore uit te voeren',
 	'Please upload the following file' => 'Gelieve volgend bestand op te laden',
 	'Upload' => 'Opladen',
+	'Continue' => 'Doorgaan',
 
 ## tmpl/cms/dialog/post_comment_end.tmpl
 	'Note: Your reply to this comment will be automatically published.' => 'Opmerking: uw antwoord op deze reactei zal onmiddellijk worden gepubliceerd',
@@ -2439,12 +2009,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'New Archive URL' => 'Nieuwe archief URL',
 
 ## tmpl/cms/dialog/list_assets.tmpl
-	'System-wide' => 'In het hele systeem',
-	'Select the image you would like to insert, or upload a new one.' => 'Selecteer de afbeelding die u wenst in te voegen of laad een nieuwe op.',
-	'Select the file you would like to insert, or upload a new one.' => 'Selecteer het bestand dat u wenst in te voegen of laad er een nieuw op.',
 	'Upload New File' => 'Nieuw bestand opladen',
 	'Upload New Image' => 'Nieuwe afbeelding opladen',
 	'View All' => 'Allen bekijken',
+	'Weblog' => 'Weblog',
 	'Size' => 'Grootte',
 	'View File' => 'Bestand bekijken',
 	'Next' => 'Volgende',
@@ -2583,7 +2151,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Warning: Changing the site URL can result in breaking all the links in your blog.' => 'Waarschuwing: de site URL aanpassen kan tot gevolg hebben dat alle links naar uw weblog niet langer werken.',
 	'The path where your index files will be published. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/blog' => 'Het pad waar uw indexbestanden gepubliceerd zullen worden.  Een absoluut pad (beginnend met \'/\') verdient de voorkeur, maar u kunt ook een pad ingeven dat relatief is t.o.v. de Movable Type map.  Voorbeeld: /home/melody/public_html/blog',
 	'Unlock this blog&rsquo;s site path for editing' => 'Maak het sitepad van deze weblog bewerkbaar',
-	'Note: Changing your site root requires a complete rebuild of your site.' => 'Opmerking: het wijzigen van de siteroot vereist het volledig herbouwen van uw site.',
+	'Note: Changing your site root requires a complete republish of your site.' => 'Opmerking: uw siteroot aanpassen vereist een volledige herpublicatie van uw site.',
 	'Advanced Archive Publishing' => 'Geavanceerde archiefpublicatie',
 	'Select this option only if you need to publish your archives outside of your Site Root.' => 'Selecteer deze optie alleen als u uw archieven buiten de root van uw site wenst te publiceren.',
 	'Publish archives outside of Site Root' => 'Archieven buiten de siteroot publiceren',
@@ -2598,10 +2166,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Used when linking to an archived entry&#8212;for a permalink.' => 'Gebruikt als link naar een gearchiveerd bericht &#8212; als permalink.',
 	'No archives are active' => 'Geen archieven actief',
 	'Method' => 'Methode',
-	'Build all templates statically' => 'Alle sjablonen statisch bouwen',
-	'Build only Archive Templates dynamically' => 'Enkel archiefsjablonen dynamisch bouwen',
-	'Set each template\'s Build Options separately' => 'Bouwopties voor elk sjabloon apart instellen',
-	'Build all templates dynamically' => 'Alle sjablonen dynamisch opbouwen',
+	'Publish all templates statically' => 'Alle sjablonen statisch publiceren',
+	'Publish only Archive Templates dynamically' => 'Enkel archiefsjablonen dynamisch publiceren',
+	'Set each template\'s Publish Options separately' => 'Publicatieinstellingen voor elk sjabloon apart instellen',
+	'Publish all templates dynamically' => 'Alle sjablonen dynamisch publiceren',
 	'Enable Dynamic Cache' => 'Dynamische cache inschakelen',
 	'Turn on caching.' => 'Caching inschakelen',
 	'Enable caching' => 'Caching mogelijk maken',
@@ -2680,8 +2248,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'association' => 'associatie',
 	'associations' => 'associaties',
 	'Group Disabled' => 'Groep uitgeschakeld',
-	'You have successfully revoked the given permission(s) from [_1].' => 'U heeft met succes de gegeven permissie(s) ingetrokken van [_1].',
-	'You have successfully granted the given permission(s) to [_1].' => 'U heeft met succes de permissie(s) toegekend aan [_1].',
+	'You have successfully revoked the given permission(s).' => 'De gekozen permissie(s) zijn met succes ingetrokken.',
+	'You have successfully granted the given permission(s).' => 'De gekozen permissie(s) zijn met succes toegekend.',
 	'Add user to a blog' => 'Gebruiker toevoegen aan blog',
 	'You can not create associations for disabled users.' => 'U kunt geen associaties aanmaken voor uitgeschakelde gebruikers.',
 	'Grant Permission' => 'Permissie toekennen',
@@ -2734,19 +2302,19 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Deletes all comments reported as spam' => 'Verwijder alle reacties gemarkeerd als spam',
 
 ## tmpl/cms/rebuilding.tmpl
-	'Rebuilding' => 'Opnieuw aan het opbouwen',
-	'Rebuilding [_1]' => '[_1] wordt opnieuw opgebouwd',
-	'Rebuilding [_1] pages [_2]' => 'Opnieuw opbouwen van [_1] pagina\'s [_2]',
-	'Rebuilding [_1] dynamic links' => 'Dynamische [_1] links worden opnieuw opgebouwd',
-	'Rebuilding [_1] pages' => 'Opnieuw opbouwen [_1] pagina\'s',
+	'Publishing [_1]' => 'Bezig [_1] te publiceren',
+	'Publishing [_1] pages [_2]' => 'Bezig [_2] pagina\'s te publiceren [_2]',
+	'Publishing [_1] dynamic links' => 'Bezig [_1] dynamische links te publiceren',
+	'Publishing [_1] pages' => 'Bezig [_1] pagina{s te publiceren',
 
 ## tmpl/cms/include/template_table.tmpl
+	'Type' => 'Type',
 	'Linked' => 'Gelinkt',
 	'Linked Template' => 'Gelinkt sjabloon',
 	'Dynamic' => 'Dynamisch',
 	'Dymanic Template' => 'Dynamisch sjabloon',
-	'Built w/Indexes' => 'Gebouwd met indexen',
-	'Built Template w/Indexes' => 'Sjabloon gebouwd met indexen',
+	'Published w/Indexes' => 'Gepubliceerd met indexen',
+	'Published Template w/Indexes' => 'Sjabloon gepubliceerd met indexen',
 	'View' => 'Bekijken',
 	'-' => '-',
 
@@ -2768,6 +2336,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/include/cfg_entries_edit_page.tmpl
 	'Editor Fields' => 'Velden van de tekstbewerker',
 	'_USAGE_ENTRYPREFS' => 'Deze instellingen bepalen welke opties verschijnen op de schermen waar men nieuwe en bestaande berichten kan bewerken. U kunt een voorgedefiniëerde configuratie selecteren (Eenvoudig of Alle) of uw persoonlijke voorkeuren instellen door op Aangepast te klikken en vervolgens de opties te selecteren die u wenst weer te geven.',
+	'All' => 'Alle',
 	'Custom' => 'Aangepast',
 	'Action Bar' => 'Actiebalk',
 	'Select the location of the entry editor\'s action bar.' => 'Selecteer de locatie voor de actiebalk van de tekstbewerker.',
@@ -2788,6 +2357,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Compose Entry' => 'Bericht opstellen',
 	'Manage Entries' => 'Berichten beheren',
 	'System Settings' => 'Systeeminstellingen',
+	'Help' => 'Hulp',
 	'<a href="[_1]">Movable Type</a> version [_2]' => '<a href="[_1]">Movable Type</a> versie [_2]',
 	'with' => 'met',
 
@@ -2817,10 +2387,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Send us your feedback on Movable Type' => 'Stuur ons feedback over Movable Type',
 	'Feedback?' => 'Feedback?',
 	'Hi [_1],' => 'Hallo [_1],',
+	'Logout' => 'Afmelden',
 	'Select another blog...' => 'Selecteer een andere blog...',
 	'Create a new blog' => 'Maak een nieuwe blog aan',
 	'Write Entry' => 'Schrijf bericht',
 	'Blog Dashboard' => 'Blogdashboard',
+	'View Site' => 'Site bekijken',
 	'Search (q)' => 'Zoeken (q)',
 
 ## tmpl/cms/include/cfg_system_content_nav.tmpl
@@ -2851,6 +2423,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Backup this weblog' => 'Maak een backup van deze weblog',
 	'Import &amp; Export Entries' => 'Berichten importeren en exporteren',
 	'Import / Export' => 'Import/export',
+	'Rebuild Site' => 'Site herbouwen',
 
 ## tmpl/cms/include/member_table.tmpl
 	'Trusted commenter' => 'Vertrouwde reageerder',
@@ -2896,6 +2469,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Profile' => 'Profiel',
 	'Groups' => 'Groepen',
 	'Group Profile' => 'Groepsprofiel',
+	'Details' => 'Details',
 	'List Roles' => 'Toon rollen',
 
 ## tmpl/cms/include/calendar.tmpl
@@ -3042,7 +2616,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Select a weblog for this entry:' => 'Selecteer een weblog voor dit bericht',
 	'Select a weblog' => 'Selecteer een weblog',
 	'Assign Multiple Categories' => 'Meerdere categorieën toewijzen',
-	'Entry Body' => 'Berichttekst',
 	'Insert Link' => 'Link invoegen',
 	'Insert Email Link' => 'E-mail link invoegen',
 	'Quote' => 'Citaat',
@@ -3059,11 +2632,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/popup/rebuilt.tmpl
 	'Success' => 'Succes',
-	'All of your files have been rebuilt.' => 'Al uw bestanden zijn opnieuw opgebouwd.',
-	'Your [_1] pages have been rebuilt.' => 'Uw [_1] pagina\'s zijn opnieuw opgebouwd.',
+	'All of your files have been published.' => 'Al uw bestanden zijn gepubliceerd.',
+	'Your [_1] pages have been published.' => 'Uw [_1] pagina\'s zijn gepubliceerd.',
 	'View your site.' => 'Uw site bekijken.',
 	'View this page.' => 'Deze pagina bekijken.',
-	'Rebuild Again' => 'Nogmaals opnieuw opbouwen',
+	'Republish Again' => 'Opnieuw publiceren',
 
 ## tmpl/cms/popup/bm_posted.tmpl
 	'Your new entry has been saved to [_1]' => 'Uw nieuwe bericht is opgeslagen op [_1]',
@@ -3085,8 +2658,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Index Template: [_1]' => 'Indexsjabloon: [_1]',
 	'Indexes Only' => 'Enkel indexen',
 	'[_1] Archives Only' => 'Enkel [_1] archieven',
-	'Rebuild (r)' => 'Opnieuw opbouwen (r)',
-	'Select the type of rebuild you would like to perform. Note: This will not rebuild any templates you have chosen to not automatically rebuild with index templates.' => 'Selecteer het soort herbouw-operatie dat u wenst uit te voeren.  Opmerking: dit zal geen sjabonen opnieuw opbouwen waarvan u heeft aangegeven dat ze niet automatisch met indexsjablonen moeten herbouwd worden.',
+	'Republish (r)' => 'Herpubliceren (r)',
 
 ## tmpl/cms/popup/pinged_urls.tmpl
 	'Here is a list of the previous TrackBacks that were successfully sent:' => 'Hier is een lijst met TrackBacks die eerder met succes werden verstuurd:',
@@ -3104,16 +2676,17 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'User Search...' => 'Zoeken naar gebruiker...',
 	'Recent Users...' => 'Recente gebruikers...',
 	'Save these [_1] (s)' => 'Sla deze [_1] op (s)',
-	'to rebuild' => 'om opnieuw op te bouwen',
-	'Rebuild selected [_1] (r)' => 'Geselecteerde [_1] opnieuw opbouwen (r)',
+	'to republish' => 'te herpubliceren',
+	'Republish selected [_1] (r)' => 'Geselecteerde [_1] herpubliceren (r)',
 	'Delete selected [_1] (x)' => 'Geselecteerde [_1] verwijderen (x)',
 	'page' => 'pagina',
-	'Rebuild selected pages (r)' => 'Bouw geselecteerde pagina\'s opnieuw op (r)',
+	'Republish selected pages (r)' => 'Geselecteerde pagina\'s herpubliceren (r)',
 	'Delete selected pages (x)' => 'Verwijder geselecteerde pagina\'s (x)',
 
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'Wachtwoorden terugvinden',
 	'No users were selected to process.' => 'Er werden geen gebruikers geselecteerd om te verwerken.',
+	'Return' => 'Terug',
 
 ## tmpl/cms/view_log.tmpl
 	'The activity log has been reset.' => 'Het activiteitlog is leeggemaakt.',
@@ -3133,6 +2706,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'level' => 'niveau',
 	'classification' => 'classificatie',
 	'Security' => 'Beveiliging',
+	'Error' => 'Fout',
 	'Information' => 'Informatie',
 	'Debug' => 'Debug',
 	'Security or error' => 'Beveiliging of fout',
@@ -3149,7 +2723,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Tag Name' => 'Tag-naam',
 	'Click to edit tag name' => 'Klik om de naam van de tag te wijzigen',
 	'Rename' => 'Naam wijzigen',
-	'Show all entries with this tag' => 'Toon alle berichten met deze tag',
+	'Show all [_1] with this tag' => 'Alle [_1] tonen met deze tag',
 	'[quant,_1,entry,entries]' => '[quant,_1,bericht,berichten]',
 	'An error occurred while testing for the new tag name.' => 'Er deed zich een fout voor bij het testen op de nieuwe tagnaam.',
 
@@ -3180,12 +2754,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/setup_initial_blog.tmpl
 	'Create Your First Blog' => 'Maak uw eerste weblog aan',
 	'The blog name is required.' => 'De naam van de blog is vereist',
-	'The blog url is required.' => 'De url van de blog is vereist',
+	'The blog URL is required.' => 'De url van de blog is vereist',
 	'The publishing path is required.' => 'Het publicatiepad is vereist',
 	'The timezone is required.' => 'De tijdzone is vereist',
 	'In order to properly publish your blog, you must provide Movable Type with your blog\'s URL and the path on the filesystem where its files should be published.' => 'Om uw blog goed te kunnen publiceren, moet u aan Movable Type de URL van uw weblog en het pad op het bestandssysteem opgeven waar de bestanden gepubliceerd moeten worden.',
 	'My First Blog' => 'Mijn eerste weblog',
-	'Blog URL' => 'Blog-URL',
 	'Publishing Path' => 'Publicatiepad',
 	'Your \'Publishing Path\' is the path on your web server\'s file system where Movable Type will publish all the files for your blog. Your web server must have write access to this directory.' => 'Uw \'publicatiepad\' is het pad op het bestandsysteem van uw webserver waar Movable Type alle bestanden zal publiceren van uw weblog.  Uw webserver moet schrijfrechten hebben op deze map. ',
 	'Finish install' => 'Installatie vervolledigen',
@@ -3195,7 +2768,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'An error occurred during the updating process. Please check your CSV file.' => 'Er deed zich een fout voor tijdens het bijwerken.  Gelieve uw CSV bestand na te kijken.',
 
 ## tmpl/cms/list_asset.tmpl
-	'Manage Files' => 'Bestandsbeheer',
 	'You have successfully deleted the file(s).' => 'U heeft met succes de bestand(en) verwijderd',
 	'Show Images' => 'Afbeeldingen tonen',
 	'Show Files' => 'Bestanden tonen',
@@ -3232,6 +2804,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Specify when Movable Type should notify you of new TrackBacks if at all.' => 'Geef aan wanneer Movable Type u op de hoogte moet brengen van nieuwe TrackBacks, indien gewenst.',
 	'On' => 'Aan',
 	'Only when attention is required' => 'Alleen wanneer er aandacht is vereist',
+	'Off' => 'Uit',
 	'Ping Options' => 'Pingopties',
 	'TrackBack Auto-Discovery' => 'Automatisch TrackBacks ontdekken',
 	'If you turn on auto-discovery, when you write a new entry, any external links will be extracted and the appropriate sites automatically sent TrackBacks.' => 'Indien u auto-discovery inschakelt dan zullen telkens u een nieuw bericht schrijft er automatisch TrackBacks worden gestuurd naar de betreffende site voor alle links in uw bericht.',
@@ -3376,6 +2949,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'TrackBack URL for this category' => 'TrackBack URL voor deze categorie',
 	'_USAGE_CATEGORY_PING_URL' => 'Dit is de URL die anderen zullen gebruiken om TrackBacks naar uw weblog te sturen.  Als u wenst dat eender wie een TrackBack naar uw weblog kan sturen indien ze een bericht hebben dat specifiek is aan deze categrie, maak deze URL dan bekend.  Als u wenst dat bekenden TrackBacks kunnen sturen, bezorg hen dan deze URL.  Om een lijst van binnengekomen TrackBacks aan uw hoofdindexsjabloon teo te voegen, kijk in de documentatie en zoek naar sjabloontags die te maken hebben met TrackBacks.',
 	'Passphrase Protection' => 'Wachtwoordbeveiliging',
+	'Optional' => 'optionele',
 	'Outbound TrackBacks' => 'Uitgaande TrackBacks',
 	'Trackback URLs' => 'TrackBack URL\'s',
 	'Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)' => 'Vul de URL(s) in van de websites waar u een TrackBack naartoe wenst te sturen elke keer u een bericht aanmaakt in deze categorie.  (Splits URL\'s van elkaar met een carriage return.)',
@@ -3438,6 +3012,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Require E-mail Address for Comments via TypeKey' => 'E-mail adres vereisen voor reacties via TypeKey',
 	'If enabled, visitors must allow their TypeKey account to share e-mail address when commenting.' => 'Indien ingeschakeld, moeten bezoekers hun TypeKey account toestaan om hun e-mail adres vrij te geven bij het reageren.',
 	'Setup other authentication services' => 'Alle authenticatiediensten instellen',
+	'OpenID providers disabled' => 'OpenID providers uitgeschakeld',
+	'Required module (Digest::SHA1) for OpenID commenter authentication is missing.' => 'Vereiste module (Digest::SHA1) voor OpenID reageerders-authenticatie ontbreekt.',
 	'Immediately approve comments from' => 'Onmiddellijk reacties goedkeuren van',
 	'Specify what should happen to comments after submission. Unapproved comments are held for moderation.' => 'Instellen wat er moet gebeuren met reacties nadat ze zijn ingevoerd.  Niet gekeurde reacties worden bewaard voor latere moderatie.',
 	'No one' => 'Niemand',
@@ -3464,7 +3040,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'CAPTCHA Provider' => 'CAPTCHA leverencier',
 	'Don\'t use CAPTCHA' => 'Geen CAPTCHA gebruiken',
 	'No CAPTCHA provider available' => 'Geen CAPTCHA provider beschikbaar',
-	'No CAPTCHA provider is available in this system.  Movable Type\'s default provider requires Image::Magick.' => 'Geen CAPTCHA provider beschikbaar op dit systeem.  Movable Type\'s standaard provider vereist Image::Magick.',
+	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaImageSourceBase directive points to captcha-source directory under mt-static/images.' => 'Er is geen CAPTCHA provider beschikbaar in dit systeem.  Gelieve te controleren of Image::Magick is geïnstalleerd en of de CaptchaImageSourceBase directief verwijst naar de captcha-source map onder mt-static/images.',
 	'Use Comment Confirmation Page' => 'Reactiebevestigingspagina gebruiken',
 	'Use comment confirmation page' => 'Reactiebevestigingspagina gebruiken',
 
@@ -3593,8 +3169,16 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/widget/new_user.tmpl
 	'Welcome to Movable Type' => 'Welkom bij Movable Type',
+	'Welcome to Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => 'Welkom in Movable Type, het meest krachtige blog-, publicatie- en mediaplatform ter wereld.  Om u te helpen van start te gaan hebben we voor u enkele links voorzien naar de vaakst voorkomende handelingen die nieuwe gebruikers wensen uit te voeren:',
+	'Write your first post' => 'Schrijf uw eerste bericht',
+	'What would a blog be without content? Start your Movable Type experience by creating your very first post.' => 'Wat is een blog zonder inhoud?  Ervaar de kracht van Movable Type door uw eerste bericht te schrijven.',
+	'Design your blog' => 'Ontwerp uw weblog',
+	'Customize the look and feel of your blog quickly by selecting a design from one of our professionally designed themes.' => 'Pas snel en eenvoudig het uitzicht van uw weblog aan door te kiezen uit één van onze vele professioneel ontworpen thema\'s.',
+	'Explore what\'s new in Movable Type 4' => 'Ontdek wat er nieuw is in Movable Type 4',
+	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Of u Movable Type nu voor de eerste keer gebruikt of u er al ervaring mee heeft, ontdek meer over wat het voor u kan doen.',
 
 ## tmpl/cms/widget/blog_stats.tmpl
+	'Error retrieving recent entries.' => 'Fout bij het ophalen van recente berichten.',
 	'Loading recent entries...' => 'Recente berichten aan het laden...',
 	'Jan.' => 'Jan.',
 	'Feb.' => 'Feb.',
@@ -3623,6 +3207,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/widget/new_install.tmpl
 	'Thank you for installing Movable Type' => 'Bedankt om Movable Type te installeren!',
+	'Congratulations on installing Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => '
+	Gelukwensen met de installatie van Movable Type, het krachtigste blog-, publicatie- en social mediaplatform ter wereld.  Om u te helpen van start te gaan hebben we enkele links verzameld naar de meest voorkomende dingen die nieuwe gebruikers willen doen:',
+	'Add more users to your blog' => 'Voeg meer gebruikers toe aan uw weblog',
+	'Start building your network of blogs and your community now. Invite users to join your blog and promote them to authors.' => 'Begin met het opbouwen van uw blognetwerk en uw gemeenschap.  Nodig gebruikers aan om lid te worden van uw blog en promoveer hen tot auteur.',
 
 ## tmpl/cms/widget/mt_news.tmpl
 	'News' => 'Nieuws',
@@ -3655,13 +3243,15 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => 'U heeft <a href="[_1]">[quant,_2,kladbericht, kladberichten]</a>.',
 	'You\'ve written <a href="[_1]">[quant,_2,post,posts]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'U heeft <a href="[_1]">[quant,_2,bericht,berichten]</a> geschreven met <a href="[_3]">[quant,_4,reactie,reactiess]</a>.',
 	'You\'ve written <a href="[_1]">[quant,_2,post,posts]</a>.' => 'U heeft <a href="[_1]">[quant,_2,bericht,berichten]</a> geschreven.',
+	'Edit your profile' => 'Bewerk uw profiel',
 
 ## tmpl/cms/export.tmpl
+	'You must select a blog to export.' => 'U moet een blog kiezen om te exporteren.',
 	'_USAGE_EXPORT_1' => 'Het exporteren van uw berichten vanuit Movable Type maakt het mogelijk om <b>persoonlijke back-ups</b> van uw blogberichten te bewaren. Het formaat van de geëxporteerde gegevens is geschikt om weer in het systeem geïmporteerd te worden m.b.v. de importfunctie (hierboven); dus kunt u, behalve het exporteren van uw berichten voor backup-doeleinden, deze functie ook gebruiken om <b>de inhoud te verplaatsen naar verschillende blogs</b>.',
-	'Export Entries From [_1]' => 'Berichten exporteren van [_1]',
-	'Export Entries (e)' => 'Berichten exporteren (e)',
-	'Export Entries to Tangent' => 'Berichten exporteren naar Tangent',
-	'_USAGE_EXPORT_3' => 'Door te klikken op de link hieronder worden al uw huidige weblog-berichten naar de Tangent-server geëxporteerd. Dit is normaliter een eenmalige push van uw berichten, die u moet uitvoeren nadat u de extra\'s voor Tangent hebt geïnstalleerd voor Movable Type, maar het mogelijk om dit te doen wanneer u dit wilt.',
+	'Export from' => 'Exporteer uit',
+	'Select a blog for exporting.' => 'Selecteer een blog om te exporteren.',
+	'Export Blog' => 'Exporteer blog',
+	'Export Blog (e)' => 'Exporteer blog (e)',
 
 ## tmpl/cms/list_commenter.tmpl
 	'_USAGE_COMMENTERS_LIST' => 'Hier is de lijst met bezoekers die reacties achterlieten op [_1].',
@@ -3689,6 +3279,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'template' => 'sjabloon',
 	'templates' => 'sjablonen',
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
+	'Create new Entry template' => 'Nieuw berichtsjabloon aanmaken',
+	'Create new Page template' => 'Nieuw paginasjabloon aanmaken',
+	'Create new Entry Listing template' => 'Nieuw berichtenlijstsjabloon aanmaken',
+	'Create new Category template' => 'Nieuw categoriesjabloon aanmaken',
+	'Create new [_1] template' => 'Nieuw [_1] sjabloon aanmaken',
 	'Create Template...' => 'Sjabloon aanmaken...',
 	'Blank Template' => 'Leeg sjabloon',
 
@@ -3871,8 +3466,394 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'By commenter email' => 'Volgens e-mail reageerders',
 	'By commenter URL' => 'Volgens URL reageerders',
 
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widgetmaker',
+	'Feed Configuration' => 'Feed-configuratie',
+	'Feed URL' => 'Feed-URL',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Vul een titel in voor uw widget.  Deze titel zal ook getoond worden als de titel van de feed wanneer die op uw gepubliceerde weblog verschijnt.',
+	'Display' => 'Toon',
+	'Select the maximum number of entries to display.' => 'Selecteer het maximum aantal berichten om te tonen.',
+	'3' => '3',
+	'5' => '5',
+	'10' => '10',
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were discovered. Select the feed you wish to use. Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.' => 'Er werden meerdere feeds gevonden.  Selecteer de feed die u wenst te gebruiken.  Feeds.App Lite ondersteunt RSS 1.0, 2.0 en Atom feeds die alleen uit tekst bestaan.',
+	'URI' => 'URI',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'Feeds.App Lite creates modules that include feed data. Once you\'ve used it to create those modules, you can then use them in your blog templates.' => 'Feeds.App Lite maakt modules aan die feedgegevens bevatten.  Eens u het gebruikt heeft om deze modules aan te maken, kunt u ze daarna gebruiken in uw weblogsjablonen.',
+	'You must enter an address to proceed' => 'U moet een adres invullen om verder te kunnen gaan',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Vul de URL in van een feed, of de URL van een site met een feed..',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'No feeds could be discovered using [_1].' => 'Er konden geen feeds gevonden worden met [_1].',
+	'An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog(\'http://www.feedvalidator.org/check.cgi?url=[_2]\')">here</a> for more detail and please try again.' => 'Er deed zich een fout voor bij het verwerken van [_1]. Kijk dit <a href="javascript:void(0)" onclick="closeDialog(\'http://www.feedvalidator.org/check.cgi?url=[_2]\')">hier</a> na voor meer details en probeer opnieuw.',
+	'Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">edit</a> to customize its display.' => 'Proficiat!  Een sjabloonmodule Widget genaamd <strong>[_1]</strong> is aangemaakt en u kunt het verder <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">bewerken</a> om het uitzicht ervan aan te passen.',
+	'It can be included onto your published blog using <a href="javascript:void(0)" onclick="closeDialog(\'[_1]\')">WidgetManager</a> or this MTInclude tag' => 'Het kan worden geïncludeerd in uw gepubliceerde weblog door middel van <a href="javascript:void(0)" onclick="closeDialog(\'[_1]\')">WidgetManager</a> of deze MTInclude tag',
+	'It can be included onto your published blog using this MTInclude tag' => 'Dit kan worden opgenomen in uw gepubliceerde weblog door deze MTInclude tag te gebruiken',
+	'Create Another' => 'Maak er nog één aan',
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?' => 'Feeds.App Lite helpt u om feeds te herpubliceren op uw weblogs.  Wenst u meer te doen met feeds in Movable Type?',
+	'Upgrade to Feeds.App' => 'Upgraden naar Feeds.App',
+	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' is een verplicht argument van [_2]',
+	'MT[_1] was not used in the proper context.' => 'MT[_1] werd niet gebruikt in de juiste context.',
+	'Feeds.App Lite' => 'Feeds.App Lite',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',
+
+## plugins/Textile/textile2.pl
+	'Textile 2' => 'Textile 2',
+
+## plugins/Markdown/SmartyPants.pl
+	'Markdown With SmartyPants' => 'Markdown met SmartyPants',
+
+## plugins/Markdown/Markdown.pl
+	'Markdown' => 'Markdown',
+
+## plugins/WXRImporter/tmpl/options.tmpl
+	'Before you import WordPress posts to Movable Type, we recommend that you <a href=\'[_1]\'>configure your weblog\'s publishing paths</a> first.' => 'Voordat u uw WordPress berichten importeert in Movable Type, raden wij aan om eerst <a href=\'[_1]\'>de publicatiepaden van uw weblog in te stellen</a>.',
+	'Upload path for this WordPress blog' => 'Oplaadpad voor deze WordPress blog',
+	'Replace with' => 'Vervangen door',
+
+## plugins/WXRImporter/WXRImporter.pl
+	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
+
+## plugins/WXRImporter/lib/WXRImporter/Import.pm
+
+## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
+	'File is not in WXR format.' => 'Bestand is niet in WXR formaat.',
+	'Saving asset (\'[_1]\')...' => 'Bezig met opslaan mediabestand (\'[_1]\')...',
+	' and asset will be tagged (\'[_1]\')...' => ' en mediabestand zal getagd worden als (\'[_1]\')...',
+	'Saving page (\'[_1]\')...' => 'Pagina aan het opslaan (\'[_1]\')...',
+
+## plugins/TemplateRefresh/tmpl/results.tmpl
+	'Backup and Refresh Templates' => 'Backup nemen en sjablonen herstellen',
+	'No templates were selected to process.' => 'Er werden geen sjablonen geselecteerd om te bewerken.',
+
+## plugins/TemplateRefresh/TemplateRefresh.pl
+	'Error loading default templates.' => 'Fout bij het laden van standaardsjablonen.',
+	'Insufficient permissions to modify templates for weblog \'[_1]\'' => 'Onvoldoende permissies om de sjabonen te bewerken van weblog \'[_1]\'',
+	'Processing templates for weblog \'[_1]\'' => 'Sjablonen voor weblog \'[_1]\' worden verwerkt',
+	'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>) template \'[_3]\'.' => 'Bezig sjabloon \'[_3]\' te verversen (met <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>).', # Translate - New
+	'Refreshing template \'[_1]\'.' => 'Sjabloon \'[_1]\' wordt ververst.',
+	'Error creating new template: ' => 'Fout bij aanmaken nieuw sjabloon: ',
+	'Created template \'[_1]\'.' => 'Sjabloon \'[_1]\' aangemaakt.',
+	'Insufficient permissions for modifying templates for this weblog.' => 'Onvoldoende permissies voor het bewerken van de sjablonen van deze weblog.',
+	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Sjabloon \'[_1]\' wordt overgeslagen, omdat het blijkbaar een gepersonaliseerd sjabloon is.',
+	'Refresh Template(s)' => 'Sjablo(o)n(en) verversen',
+
+## plugins/ExtensibleArchives/DatebasedCategories.pl
+	'CATEGORY-YEARLY_ADV' => 'Categorie per jaar',
+	'CATEGORY-MONTHLY_ADV' => 'Categorie per maand',
+	'CATEGORY-DAILY_ADV' => 'Categorie per dag',
+	'CATEGORY-WEEKLY_ADV' => 'Categorie per week',
+	'category/sub_category/yyyy/index.html' => 'categorie/sub_categorie/jjjj/index.html',
+	'category/sub-category/yyyy/index.html' => 'categorie/sub-categorie/jjjj/index.html',
+	'category/sub_category/yyyy/mm/index.html' => 'categorie/sub_categorie/jjjj/mm/index.html',
+	'category/sub-category/yyyy/mm/index.html' => 'categorie/sub-categorie/jjjj/mm/index.html',
+	'category/sub_category/yyyy/mm/dd/index.html' => 'categorie/sub_categorie/jjjj/dd/index.html',
+	'category/sub-category/yyyy/mm/dd/index.html' => 'categorie/sub-categorie/jjjj/dd/index.html',
+	'category/sub_category/yyyy/mm/day-week/index.html' => 'categorie/sub_categorie/jjjj/mm/dag-week/index.html',
+	'category/sub-category/yyyy/mm/day-week/index.html' => 'categorie/sub-categorie/jjjj/mm/dag-week/index.html',
+
+## plugins/ExtensibleArchives/AuthorArchive.pl
+	'Author #[_1]' => 'Auteur #[_1]',
+	'AUTHOR_ADV' => 'Auteur',
+	'Author #[_1]: ' => 'Auteur #[_1]: ',
+	'AUTHOR-YEARLY_ADV' => 'Auteur per jaar',
+	'AUTHOR-MONTHLY_ADV' => 'Auteur per maand',
+	'AUTHOR-WEEKLY_ADV' => 'Auteur per week',
+	'AUTHOR-DAILY_ADV' => 'Auteur per dag',
+	'author_display_name/index.html' => 'naam_auteur/index.html',
+	'author-display-name/index.html' => 'naam-auteur/index.html',
+	'author_display_name/yyyy/index.html' => 'naam_auteur/jjjj/index.html',
+	'author-display-name/yyyy/index.html' => 'naam-auteur/jjjj/index.html',
+	'author_display_name/yyyy/mm/index.html' => 'naam_auteur/jjjj/mm/index.html',
+	'author-display-name/yyyy/mm/index.html' => 'naam-auteur/jjjj/mm/index.html',
+	'author_display_name/yyyy/mm/day-week/index.html' => 'naam_auteur/jjjj/mm/dag-week/index.html',
+	'author-display-name/yyyy/mm/day-week/index.html' => 'naam-auteur/jjjj/mm/dag-week/index.html',
+	'author_display_name/yyyy/mm/dd/index.html' => 'naam_auteur/jjjj/mm/dd/index.html',
+	'author-display-name/yyyy/mm/dd/index.html' => 'naam-auteur/jjjj/mm/dd/index.html',
+
+## plugins/Cloner/cloner.pl
+	'Cloning Weblog' => 'Bezig met klonen van weblog',
+	'Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">return to the weblogs listing</a> or <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">configure the Site root and URL of the new weblog</a>.' => 'Klaar! U kunt nu <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">terugkeren naar het weblog overzicht</a> of <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">de hoofdmap en URL van de site instellen</a>',
+	'No weblog was selected to clone.' => 'Er werd geen weblog geselecteerd om te klonen.',
+	'This action can only be run for a single weblog at a time.' => 'Deze actie kan maar op één weblog per keer uitgevoerd worden.',
+	'Invalid blog_id' => 'Ongeldig blog_id',
+	'Clone Weblog' => 'Weblog klonen',
+
+## plugins/WidgetManager/tmpl/header.tmpl
+	'Movable Type Publishing Platform' => 'Movable Type publicatieplatform',
+	'Main Menu' => 'Hoofdmenu',
+	'Welcome' => 'Welkom',
+	'Go to:' => 'Ga naar:',
+	'Select a blog' => 'Selecteer een blog',
+	'System-wide listing' => 'Overzicht op systeemniveau',
+
+## plugins/WidgetManager/tmpl/edit.tmpl
+	'Edit Widget Container' => 'Widgetcontainer bewerken',
+	'Please use a unique name for this widget container.' => 'Gelieve een unieke naam op te geven voor deze widgetcontainer.',
+	'You already have a widget container named \'[_1].\' Please use a unique name for this widget manager.' => 'U heeft al een widgetcontainer met de naam \'[_1]\'. Gelieve een unieke naam te gebruiken voor deze widgetmanager.',
+	'Your changes to the Widget Manager have been saved.' => 'Uw wijzigingen aan de Widget Manager zijn opgeslagen.',
+	'Container Name' => 'Containernaam',
+	'Drag and drop the widgets you want into the <strong>Installed</strong> column.' => 'Klik en sleep de widgets die u wenst in de kolom <strong>Geïnstalleerde widgets</strong>.',
+	'Installed Widgets' => 'Geïnstalleerde widgets',
+	'Available Widgets' => 'Beschikbare widgets',
+
+## plugins/WidgetManager/tmpl/list.tmpl
+	'Widgets' => 'Widgets',
+	'Your changes to the widget container have been saved.' => 'Uw wijzigingen aan de widgetcontainer zijn opgeslagen.',
+	'You have successfully deleted the selected widget container(s) from your blog.' => 'U heeft met succes de geselecteerde widgetcontainer(s) verwijderd van uw weblog.',
+	'To add a widget container to your templates, use the following syntax:' => 'Om een widgetcontainer toe te voegen aan uw sjablonen, gebruik de volgende syntax:',
+	'<strong>&lt;$MTWidgetManager name=&quot;Name of the Widget Manager&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetManager name=&quot;Naam van de Widgetmanager&quot;$&gt;</strong>',
+	'Add Widget Manager' => 'Voeg Widget Manager toe',
+	'Create Widget Container' => 'Widgetcontainer aanmaken',
+	'Widget Manager' => 'Widget Manager',
+	'Widget Managers' => 'Widget Managers',
+	'Delete selected Widget Managers (x)' => 'Geselecteerde Widget Managers verwijderen (x)',
+
+## plugins/WidgetManager/WidgetManager.pl
+	'Widget Set' => 'Widgetset',
+
+## plugins/WidgetManager/default_widgets/monthly_archive_list.tmpl
+
+## plugins/WidgetManager/default_widgets/technorati_search.tmpl
+	'Technorati' => 'Technorati',
+	'<a href=\'http://www.technorati.com/\'>Technorati</a> search' => 'Zoek op <a href=\'http://www.technorati.com/\'>Technorati</a>',
+	'this blog' => 'deze weblog',
+	'all blogs' => 'alle blogs',
+	'Blogs that link here' => 'Blogs die hierheen linken',
+
+## plugins/WidgetManager/default_widgets/calendar.tmpl
+	'Monthly calendar with links to each day\'s posts' => 'Maandkalender met links naar de berichten van elke dag',
+	'Sunday' => 'Zondag',
+	'Sun' => 'Zon',
+	'Monday' => 'Maandag',
+	'Mon' => 'Maa',
+	'Tuesday' => 'Dinsdag',
+	'Tue' => 'Din',
+	'Wednesday' => 'Woensdag',
+	'Wed' => 'Woe',
+	'Thursday' => 'Donderdag',
+	'Thu' => 'Don',
+	'Friday' => 'Vrijdag',
+	'Fri' => 'Vri',
+	'Saturday' => 'Zaterdag',
+	'Sat' => 'Zat',
+
+## plugins/WidgetManager/default_widgets/signin.tmpl
+	'You are signed in as ' => 'U bent aangemeld als',
+	'You do not have permission to sign in to this blog.' => 'U heeft geen toestemming om aan te melden op deze weblog',
+
+## plugins/WidgetManager/default_widgets/category_archive_list.tmpl
+
+## plugins/WidgetManager/default_widgets/recent_comments.tmpl
+	'Recent Comments' => 'Recente reacties',
+
+## plugins/WidgetManager/default_widgets/monthly_archive_dropdown.tmpl
+	'Select a Month...' => 'Selecteer een maand...',
+
+## plugins/WidgetManager/default_widgets/tag_cloud_module.tmpl
+	'Tag cloud' => 'Tagcloud',
+
+## plugins/WidgetManager/default_widgets/powered_by.tmpl
+	'_POWERED_BY' => 'Aangedreven door<br /><a href="http://www.movabletype.org/sitenl/"><$MTProductName$></a>',
+
+## plugins/WidgetManager/default_widgets/creative_commons.tmpl
+	'This weblog is licensed under a' => 'Deze weblog valt onder een licentie van het type',
+	'Creative Commons License' => 'Creative Commons Licentie',
+
+## plugins/WidgetManager/default_widgets/search.tmpl
+
+## plugins/WidgetManager/default_widgets/recent_posts.tmpl
+
+## plugins/WidgetManager/default_widgets/subscribe_to_feed.tmpl
+
+## plugins/WidgetManager/lib/WidgetManager/CMS.pm
+	'Can\'t duplicate the existing \'[_1]\' Widget Manager. Please go back and enter a unique name.' => 'Can de bestaande \'[_1]\' Widget Manager niet dupliceren.  Ga terug en vul een unieke naam in.',
+	'Moving [_1] to list of installed modules' => '[_1] wordt verplaatst naar de lijst geïnstalleerde modules',
+	'First Widget Manager' => 'Eerste Widgetmanager',
+
+## plugins/WidgetManager/lib/WidgetManager/Plugin.pm
+	'Can\'t find included template widget \'[_1]\'' => 'Kan geïncludeerd sjabloonwidget \'[_1]\' niet vinden',
+
+## plugins/MultiBlog/tmpl/system_config.tmpl
+	'Default system aggregation policy' => 'Standaard aggregatiebeleid voor het systeem',
+	'Allow' => 'Toestaan',
+	'Disallow' => 'Verbieden',
+	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'Cross-blog aggregatie zal standaard toegestaan zijn.  Individuele blgos kunnen via de MultiBlog instellingen op blogniveau worden ingesteld om toegang tot hun inhoud voor andere blogs te beperken.',
+	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'Cross-blog aggregatie zal standaard verboden zijn.  Individuele blgos kunnen via de MultiBlog instellingen op blogniveau worden ingesteld om toegang tot hun inhoud voor andere blogs te verlenen.',
+
+## plugins/MultiBlog/tmpl/blog_config.tmpl
+	'When' => 'Wanneer',
+	'Any Weblog' => 'Eender welke weblog',
+	'Trigger' => 'Trigger',
+	'Action' => 'Actie',
+	'Content Privacy' => 'Privacy inhoud',
+	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Geef aan of andere blogs op deze installatie inhoud van deze blog mogen publiceren.  Deze instelling krijgt voorrang op het standaard aggregatiebeleid op systeemniveau wat u kunt terugvinden in het configuratiescherm voor MultiBlog op systeemniveau.',
+	'Use system default' => 'Standaard systeeminstelling gebruiken',
+	'MTMultiBlog tag default arguments' => 'MTMultiBlog tag standaard argumenten',
+	'Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or \'all\' (include_blogs only) are acceptable values.' => 'Maakt het mogelijk om de MTMultiBlog tag te gebruiken zonder include_blogs/exclude_blogs attributen.  Toegestane waarden zijn BlogID\'s gescheden door komma\'s of \'all\' (enkel bij include_blogs).',
+	'Include blogs' => 'Includeer blogs',
+	'Exclude blogs' => 'Excludeer blogs',
+	'Current Rebuild Triggers:' => 'Huidige rebuild-triggers:',
+	'Create New Rebuild Trigger' => 'Nieuwe rebuild-trigger aanmaken',
+	'You have not defined any rebuild triggers.' => 'U heeft nog geen rebuild-triggers gedefiniëerd',
+
+## plugins/MultiBlog/multiblog.pl
+	'MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.' => 'Met MultiBlog kunt u inhoud van andere blogs ruw of in sjablonen publiceren en kunt u herbouw-afhankelijkheden en toegangscontrole tussen blogs opzetten.',
+	'* All Weblogs' => '* Alle weblogs',
+	'Select to apply this trigger to all weblogs' => 'Selecteer dit om de trigger toe te passen op alle weblogs',
+	'MultiBlog' => 'MultiBlog',
+	'Create New Trigger' => 'Nieuwe trigger aanmaken',
+	'Weblog Name' => 'Weblognaam',
+	'Search Weblogs' => 'Doorzoek weblogs',
+	'When this' => 'indien dit',
+	'saves an entry' => 'een bericht opslaat',
+	'publishes an entry' => 'een bericht publiceert',
+	'publishes a comment' => 'een reactie publiceert',
+	'publishes a ping' => 'een ping publiceert',
+	'rebuild indexes.' => 'indexen opnieuw opbouwt.',
+	'rebuild indexes and send pings.' => 'indexen opnieuw opbouwt en pings verstuurt.',
+
+## plugins/MultiBlog/lib/MultiBlog.pm
+	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'De include_blogs, exclude_blogs, blog_ids en blog_id attributen kunnen niet samen gebruikt worden.',
+	'The attribute exclude_blogs cannot take "all" for a value.' => 'Het attribuut exclude_blogs kan niet "all" als waarde hebben.',
+	'The value of the blog_id attribute must be a single blog ID.' => 'De waarde van het blog_id attribuut moet één Blog ID zijn.',
+	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'De waarde voor de include_blogs/exclude_blogs attributen moet één of meer Blog ID\'s zijn, gescheiden door komma\'s.',
+
+## plugins/MultiBlog/lib/MultiBlog/Tags/MultiBlog.pm
+	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlog tags mogen niet genest zijn.',
+	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Onbekende "mode" attribuutwaarde: [_1].  Geldige waarden zijn "loop" en "context".',
+
+## plugins/spamlookup/tmpl/lookup_config.tmpl
+	'Lookups monitor the source IP addresses and hyperlinks of all incoming feedback. If a comment or TrackBack comes from a blacklisted IP address or contains a blacklisted domain, it can be held for moderation or scored as junk and placed into the blog\'s Junk folder. Additionally, advanced lookups on TrackBack source data can be performed.' => 'Lookups houden het bron IP adres en de URL in het oog van alle binnenkomende feedback.  Als een reactie of TrackBack afkomstig is van een IP adres op de zwarte lijst of een domein bevat dat op de zwarte lijst staat, dan kan het worden tegengehouden voor moderatie of een score ontvangen als junk en in de spam-map worden geplaatst.  Bovendien kunnen geavanceerde opzoekingen gedaan worden op de brondata van een TrackBack.
+	',
+	'IP Address Lookups:' => 'IP adressen opzoeken:',
+	'Moderate feedback from blacklisted IP addresses' => 'Feedback modereren van IP adressen op de zwarte lijst',
+	'Junk feedback from blacklisted IP addresses' => 'Feedback van IP adressen op de zwarte lijst een spamscore toekennen',
+	'Adjust scoring' => 'Score bijwerken',
+	'Score weight:' => 'Scoregewicht',
+	'Less' => 'Minder',
+	'More' => 'Meer',
+	'block' => 'blokkeer',
+	'none' => 'geen',
+	'IP Blacklist Services' => 'IP zwarte lijst diensten',
+	'Domain Name Lookups:' => 'Domeinnamen opzoeken:',
+	'Moderate feedback containing blacklisted domains' => 'Modereer feedback die domeinen bevat die op de zwarte lijst staan',
+	'Junk feedback containing blacklisted domains' => 'Ken een spamscore to aan feedback die domeinen bevat die op de zwarte lijst staan ',
+	'Domain Blacklist Services' => 'Domein zwarte lijst diensten',
+	'Advanced TrackBack Lookups' => 'Geavanceerde TrackBack opzoekingen',
+	'Moderate TrackBacks from suspicious sources' => 'Modereer TrackBacks uit verdachte bronnen',
+	'Junk TrackBacks from suspicious sources' => 'Ken een spamscore toe aan TrackBacks uit verdachte bronnen',
+	'To prevent lookups for some IP addresses or domains, list them below. Place each entry on a line by itself.' => 'Om te voorkomen dat bepaalde IP adressen of domeinen opgezocht worden, kunt u ze hieronder opsommen.  Gelieve elk gegeven op een aparte regel te plaatsen.',
+	'Lookup Whitelist:' => 'Witte lijst',
+
+## plugins/spamlookup/tmpl/word_config.tmpl
+	'Incomming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => 'Binnenkomende feedback kan onderzocht worden op specifieke sleutelwoorden, domeinnamen en patronen.  Feedback waar deze in gevonden worden kan worden tegengehouden voor moderatie of een spamscore krijgen.  Bovendien kunnen spamscores voor overeenkomsten gepersonaliseerd worden.',
+	'Keywords to Moderate' => 'Sleutelwoorden om te modereren',
+	'Keywords to Junk' => 'Sleutelwoorden om een spamscore toe te kennen',
+
+## plugins/spamlookup/tmpl/url_config.tmpl
+	'Link filters monitor the number of hyperlinks in incoming feedback. Feedback with many links can be held for moderation or scored as junk. Conversely, feedback that does not contain links or only refers to previously published URLs can be positively rated. (Only enable this option if you are sure your site is already spam-free.)' => 'Linkfilters houden het aantal hyperlinks in binnenkomende feedback in de gaten.  Feedback met veel links in kan tegengehouden worden voor moderatie of kan een spamscore krijgen.  Langs de andere kant kan feedback die geen links bevat of enkel verwijst naar eerder gepubliceerde URL\'s een positieve score krijgen. (Deze optie enkel inschakelen indien uw site reeds spam-vrij is).',
+	'Link Limits' => 'Linklimieten',
+	'Credit feedback rating when no hyperlinks are present' => 'Ken extra score toe indien geen hyperlinks aanwezig',
+	'Moderate when more than' => 'Modereer indien er meer dan',
+	'link(s) are given' => 'link(s) voorkomen',
+	'Junk when more than' => 'Ken een spamscore toe indien er meer dan',
+	'Link Memory' => 'Linkgeheugen',
+	'Credit feedback rating when &quot;URL&quot; element of feedback has been published before' => 'Ken een positieve score toe indien het &quot;URL&quot; element in de feedback al eens eerder gepubliceerd werd',
+	'Only applied when no other links are present in message of feedback.' => 'Enkel toegepast indien er geen andere links in het bericht van de feedback staan',
+	'Exclude URLs from comments published within last [_1] days.' => 'URL\'s uitsluiten van reacties gepubliceerd in de laastste [_1] dagen.',
+	'Email Memory' => 'E-mail geheugen',
+	'Credit feedback rating when previously published comments are found matching on the &quot;Email&quot; address' => 'Ken een positieve score toe indien er eerder gepubliceerde reacties gevonden worden met hetzelfde e-mail adres',
+	'Exclude Email addresses from comments published within last [_1] days.' => 'E-mail adressen uitsluiten van reacties gepubliceerd in de laatste [_1] dagen.',
+
+## plugins/spamlookup/spamlookup.pl
+	'SpamLookup module for using blacklist lookup services to filter feedback.' => 'SpamLookup module om zwarte lijsten te gebruiken om feedback mee te filteren.',
+	'SpamLookup IP Lookup' => 'SpamLookup IP opzoeken',
+	'SpamLookup Domain Lookup' => 'SpamLookup domein opzoeken',
+	'SpamLookup TrackBack Origin' => 'SpamLookup TrackBack origine',
+	'Despam Comments' => 'Filter spam uit reacties',
+	'Despam TrackBacks' => 'Filter spam uit TrackBacks',
+	'Despam' => 'Filter spam',
+
+## plugins/spamlookup/spamlookup_urls.pl
+	'SpamLookup - Link' => 'SpamLookup - Link',
+	'SpamLookup module for junking and moderating feedback based on link filters.' => 'SpamLookup module om feedback als spam te merken of te modereren gebaseerd op linkfilters.',
+	'SpamLookup Link Filter' => 'SpamLookup linkfilter',
+	'SpamLookup Link Memory' => 'SpamLookup linkgeheugen',
+	'SpamLookup Email Memory' => 'SpamLookup e-mail geheugen',
+
+## plugins/spamlookup/lib/spamlookup.pm
+	'Failed to resolve IP address for source URL [_1]' => 'Resolutie van IP adres mislukt voor bron URL [_1]',
+	'Moderating: Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'In moderatie: IP van domein komt niet overeen met IP van ping voor bron URL [_1]; domein IP: [_2]; ping IP: [_3]',
+	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'Domein IO komt niet overeen met ping IP van bron URL [_1]; domein IP: [_2]; ping IP: [_3]',
+	'No links are present in feedback' => 'Geen links aanwezig in feedback',
+	'Number of links exceed junk limit ([_1])' => 'Aantal links hoger dan spamlimiet ([_1])',
+	'Number of links exceed moderation limit ([_1])' => 'Aantal links hoger dan moderatielimiet ([_1])',
+	'Link was previously published (comment id [_1]).' => 'Link werd eerder al gepubliceerd (reactie id [_1])',
+	'Link was previously published (TrackBack id [_1]).' => 'Link werd eerder al gepubliceerd (TrackBack id [_1])',
+	'E-mail was previously published (comment id [_1]).' => 'E-mail werd eerder al gepubliceerd (reactie id [_1])',
+	'Word Filter match on \'[_1]\': \'[_2]\'.' => 'Woordfilter overeenkomst op \'[_1]\': \'[_2]\'.',
+	'Moderating for Word Filter match on \'[_1]\': \'[_2]\'.' => 'Te modereren wegens woordfilter overeenkomst op \'[_1]\': \'[_2]\'.',
+	'domain \'[_1]\' found on service [_2]' => 'domein \'[_1]\' gevonden op service [_2].',
+	'[_1] found on service [_2]' => '[_1] gevonden op service [_2]',
+
+## plugins/spamlookup/spamlookup_words.pl
+	'SpamLookup module for moderating and junking feedback using keyword filters.' => 'SpamLookup module voor het modereren en aanmerken als spam van feedback door sleutelwoord-filters',
+	'SpamLookup Keyword Filter' => 'SpamLookup sleutelwoord-filter',
+
+## plugins/StyleCatcher/stylecatcher.pl
+	'<p>You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it\'s own theme paths, it will use these settings directly. If a blog has it\'s own theme paths, then the theme will be copied to that location when applied to that weblog. The paths defined here must physically exist and be writable by the webserver.</p>' => '<p>U moet een globale opslagplaats instellen waar thema\'s lokaal opgeslagen kunnen worden.  Als een bepaalde weblog niet is geconfigureerd om z\'n eigen themapaden te gebruiken, dan zullen deze instellingen gebruikt worden.  Als een blog z\'n eigen themapaden heeft, dan zal het thema naar die lokatie gecopiëerd worden wanneer het wordt toegepast op die weblog.  De paden die hier gedefiniëerd zijn, moeten fysiek bestaan en beschrijfbaar zijn door de webserver.</p>',
+	'<p style="color: #f00;"><strong>NOTE:</strong> StyleCatcher must first be configured from the system-level plugins listing before it can be used on any blog.</p>' => '<p style="color: #f00;"><strong>OPMERKING:</strong> StyleCatcher moet eerst geconfigureerd worden via de plugin-instellingen op systeemniveau voordat het gebruikt kan worden op een blog.</p>',
+	'<p>If you wish to store your themes locally for this blog, you can configure your theme URL and path below.  Although downloaded themes will still be stored in the system-level directory, they will be copied to this directory when they are applied. The paths defined here must physically exist and be writable by the webserver.</p>' => '<p>Als u uw thema\'s voor deze blog lokaal wenst op te slaan, dan kunt u hieronder uw thema URL en pad installen.  Hoewel thema\'s die u download nog steeds in de map op systeemniveau opgeslagen zullen worden, zullen ze gecopiëerd worden naar deze map wanneer ze toegepast worden.  De paden die hier worden ingesteld moeten fysiek bestaan en schrijfbaar zijn door de webserver.</p>',
+	'Theme Root URL:' => 'Thema root URL',
+	'Theme Root Path:' => 'Thema root pad',
+	'Style Library URL:' => 'Stijlenbibliotheek URL',
+	'Unable to create the theme root directory. Error: [_1]' => 'Kon themaroot map niet aanmaken.  Fout: [_1]',
+	'Unable to write base-weblog.css to themeroot. File Manager gave the error: [_1]. Are you sure your theme root directory is web-server writable?' => 'Kon base-weblog.css niet schrijven naar de themaroot.  File Manager gaf de fout: [_1]. Bent u zeker dat de themaroot map schrijfbaar is voor de webserver?',
+	'Styles' => 'Stijlen',
+
+## plugins/StyleCatcher/tmpl/header.tmpl
+
+## plugins/StyleCatcher/tmpl/view.tmpl
+	'Select a Style' => 'Selecteer een stijl',
+	'Please select a weblog to apply this theme.' => 'Gelieve een weblog te selecteren om dit thema op toe te passen.',
+	'Please click on a theme before attempting to apply a new design to your blog.' => 'Gelieve op een thema te klikken voor te proberen het op uw weblog toe te passen.',
+	'Applying...' => 'Toepassen...',
+	'Choose this Design' => 'Kies dit design',
+	'Error applying theme: ' => 'Fout bij toepassen thema:',
+	'The selected theme has been applied!' => 'Het geselecteerde thema is toegepast',
+	'Find Style' => 'Stijl vinden',
+	'Theme or Repository URL:' => 'Thema of verzamelplaats URL:',
+	'Download Styles' => 'Stijlen downloaden',
+	'Current theme for your weblog' => 'Huidig thema voor uw weblog',
+	'Current Theme' => 'Huidig thema',
+	'Current themes for your weblogs' => 'Huidige thema\'s voor uw weblogs',
+	'Current Themes' => 'Huidige thema\'s',
+	'Locally saved themes' => 'Lokaal opgeslagen thema\'s',
+	'Saved Themes' => 'Opgeslagen thema\'s',
+	'Single themes from the web' => 'Losse thema\'s van het web',
+	'More Themes' => 'Meer thema\'s',
+	'Show Details' => 'Details tonen',
+	'Hide Details' => 'Details verbergen',
+	'Select a Weblog...' => 'Selecteer een weblog...',
+	'Apply Selected Design' => 'Geselecteerd design toepassen',
+	'You don\'t appear to have any weblogs with a \'Theme Stylesheet\' template that you have rights to edit. Please check your blog(s) for this template.' => 'Het lijkt er op dat u geen weblogs heeft met een \'Thema stylesheet\' sjabloon waarop u rechten heeft om het te bewerken.  Gelieve uw weblog na te kijken op dit sjabloon.',
+	'Error loading themes! -- [_1]' => 'Fout bij het laden van thema\'s! -- [_1]',
+
+## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon de map [_1] niet aanmaken - Controleer of uw \'thema\'s\' map schrijfbaar is voor de webserver.',
+	'Successfully applied new theme selection.' => 'De nieuwe thema-selectie is met succes toegepast.',
+
 );
 
-## New words: 28
+## New words: 20
 
 1;

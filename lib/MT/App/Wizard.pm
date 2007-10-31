@@ -170,6 +170,10 @@ sub init_core_registry {
 		link => 'http://search.cpan.org/dist/XML-SAX',
                 label => 'This module and its dependencies are required in order to restore from a backup.',
             },
+            'Digest::SHA1' => {
+		link => 'http://search.cpan.org/dist/Digest-SHA1',
+                label => 'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.',
+            },
         },
         required_packages => {
             'Image::Size' => {

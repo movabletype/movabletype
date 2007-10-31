@@ -20,7 +20,7 @@
             <td class="archive-path">
                 <select id="archive_file_sel_<mt:var name="map_id">" name="archive_file_sel_<mt:var name="map_id">" onchange="archiveFileSelect(this)">
     <mt:loop name="archive_tmpl_loop">
-                    <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name"></option>
+                    <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name" escape="html"></option>
     </mt:loop>
                     <option value=""><__trans phrase="Custom..."></option>
                 </select>

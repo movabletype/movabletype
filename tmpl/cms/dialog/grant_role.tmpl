@@ -1,4 +1,4 @@
-<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
+<$mt:setvar name="screen_type" value="dialog-screen dialog-4 dialog-grant-role"$>
 <mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
 <mt:include name="dialog/header.tmpl">
 
@@ -86,8 +86,6 @@ TC.attachLoadEvent(init);
     <input type="hidden" name="<mt:var name="panel_type">" value="" /></mt:loop>
 </form>
 
-<div class="modal_width dialog" id="dialog-grant-role">
-
 <mt:if name="missing_data">
 <mt:if name="missing_role">
 <h2><span class="weblog-title-highlight"><__trans phrase="You need to create some roles."></span></h2>
@@ -105,17 +103,17 @@ TC.attachLoadEvent(init);
 <h2><span class="weblog-title-highlight"><__trans phrase="You need to create some weblogs."></span></h2>
 <__trans phrase="Before you can do this, you need to create some weblogs. <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">Click here</a> to create a weblog." params="<mt:var name="script_url">?__mode=view&amp;_type=blog">
 </mt:if>
-<div class="panel-commands">
-<form onsubmit="return false" onclick="window.focus();">
-<input type="button" class="cancel" value="<__trans phrase="Close">" />
-</form>
+<div class="action-bar">
+    <div class="action-bar-inner">
+        <form onsubmit="return false" onclick="window.focus();">
+            <input type="button" class="cancel" value="<__trans phrase="Close">" />
+        </form>
+    </div>
 </div>
 <mt:else>
 <mt:loop name="panel_loop">
 <mt:include name="include/listing_panel.tmpl">
 </mt:loop>
 </mt:if>
-
-</div><!-- /modal_width dialog#dialog-grant-role -->
 
 <mt:include name="dialog/footer.tmpl">

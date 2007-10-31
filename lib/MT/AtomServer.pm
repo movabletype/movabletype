@@ -599,6 +599,8 @@ sub handle_upload {
     my $fmgr = $blog->file_mgr;
     my($base, $path, $ext) = File::Basename::fileparse($local, '\.[^\.]*');
     my $base_copy = $base;
+    my $ext_copy = $ext;
+    $ext_copy =~ s/\.//;
     my $i = 1;
     while ($fmgr->exists($path . $base . $ext)) {
         $base = $base_copy . '_' . $i++;
@@ -609,8 +611,62 @@ sub handle_upload {
     $atom->title($base . $ext);
     defined(my $bytes = $fmgr->put_data($data, $local, 'upload'))
         or return $app->error(500, "Error writing uploaded file");
-    # FIXME: create asset object for this file
-    # FIXME: invoke api_upload_file callback
+
+    eval { require Image::Size; };
+    return $app->error(500, MT->translate("Perl module Image::Size is required to determine width and height of uploaded images.")) if $@;
+    my ( $w, $h, $id ) = Image::Size::imgsize($local);
+
+    require MT::Asset;
+    my $asset_pkg = MT::Asset->handler_for_file($local);
+    my $is_image  = defined($w)
+      && defined($h)
+      && $asset_pkg->isa('MT::Asset::Image');
+    my $asset;
+    if (!($asset = $asset_pkg->load(
+                { file_path => $local, blog_id => $blog->id })))
+    {
+        $asset = $asset_pkg->new();
+        $asset->file_path($local);
+        $asset->file_name($base.$ext);
+        $asset->file_ext($ext_copy);
+        $asset->blog_id($blog->id);
+        $asset->created_by( $user->id );
+    }
+    else {
+        $asset->modified_by( $user->id );
+    }
+    my $original = $asset->clone;
+    my $url = $blog->site_url . $base . $ext;
+    $asset->url($url);
+    if ($is_image) {
+        $asset->image_width($w);
+        $asset->image_height($h);
+    }
+    $asset->mime_type($type);
+    $asset->save;
+
+    MT->run_callbacks(
+        'api_upload_file.' . $asset->class,
+        File => $local, file => $local,
+        Url => $url, url => $url,
+        Size => $bytes, size => $bytes,
+        Asset => $asset, asset => $asset,
+        Type => $asset->class, type => $asset->class,
+        Blog => $blog, blog => $blog);
+    if ($is_image) {
+        MT->run_callbacks(
+            'api_upload_image',
+            File => $local, file => $local,
+            Url => $url, url => $url,
+            Size => $bytes, size => $bytes,
+            Asset => $asset, asset => $asset,
+            Height => $h, height => $h,
+            Width => $w, width => $w,
+            Type => 'image', type => 'image',
+            ImageType => $id, image_type => $id,
+            Blog => $blog, blog => $blog);
+    }
+
     my $link = XML::Atom::Link->new;
     $link->type($type);
     $link->rel('alternate');

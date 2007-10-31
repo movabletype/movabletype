@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use base qw( MT::ObjectDriver::SQL );
 
+*distinct_stmt = \&MT::ObjectDriver::SQL::_subselect_distinct;
+
 #--------------------------------------#
 # Instance Methods
 

@@ -1,6 +1,6 @@
+<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
 <$mt:var name="page_title" value="<__trans phrase="Feeds.App Lite Widget Creator">"$>
-
-<mt:include name="include/header.tmpl">
+<mt:include name="dialog/header.tmpl">
 
 <form method="post" action="<$mt:var name="script_url"$>">
 
@@ -38,9 +38,12 @@
 </select>
     </mtapp:setting>
 
-<div style="margin-left:70px;"><input type="submit" value="<__trans phrase="Save">" /></div>
-</div>
 </fieldset>
+<div class="actions-bar">
+    <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
+    <input type="submit" value="<__trans phrase="Save">" />
+</div>
+
 </form>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="dialog/footer.tmpl">

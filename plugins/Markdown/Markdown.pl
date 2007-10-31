@@ -169,7 +169,10 @@ unless ($@) {
                                 }
                             }
                             $text = Markdown($text);
-                            $text = SmartyPants::SmartyPants($text, '1');
+                            if (defined &SmartyPants::SmartyPants) {
+                                $text = SmartyPants::SmartyPants($text, '1');
+                            }
+                            return $text;
                         },
                     },
                 },

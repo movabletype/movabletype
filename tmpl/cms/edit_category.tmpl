@@ -1,6 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Category">">
 <MTSetVarBlock name="content_header">
-<p class="page-desc"><__trans phrase="Use this page to edit the attributes of the category <strong>[_1]</strong>. You can set a description for your category to be used in your public pages, as well as configuring the TrackBack options for this category." params="<mt:var name="label" escape="html">"></p>
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -72,7 +71,9 @@ TC.attachLoadEvent( init );
 <mtapp:setting
     id="label"
     label="<__trans phrase="Label">">
-    <input name="label" id="label" maxlength="100" value="<mt:var name="label" escape="html">" class="wide" />
+    <div class="textarea-wrapper">
+        <input name="label" id="label" class="full-width" maxlength="100" value="<mt:var name="label" escape="html">" class="wide" />
+    </div>
 </mtapp:setting>
 
     <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
@@ -84,8 +85,9 @@ TC.attachLoadEvent( init );
     hint="<__trans phrase="This is the basename assigned to your category.">"
     help_page="categories"
     help_section="category_basename">
-    <input name="basename" id="basename" maxlength="250" value="<mt:var name="basename" escape="html">" disabled="disabled" class="wide" onchange="setElementValue('basename', dirify(this.value))" />&nbsp;<a href="javascript:void(0)" title="<__trans phrase="Unlock this category&rsquo;s output filename for editing">" onclick="return toggleFile()"><img src="<mt:var name="static_uri">images/locked.gif" alt="Filename Lock" id="basename-lock" height="14" width="14" /></a>
-
+        <input name="basename" id="basename" class="width90" maxlength="250" value="<mt:var name="basename" escape="html">" disabled="disabled" onchange="setElementValue('basename', dirify(this.value))" />
+        <a href="javascript:void(0);"id="basename-lock" title="<__trans phrase="Unlock this category&rsquo;s output filename for editing">" onclick="return toggleFile()"><span>Unlock</span></a>
+    
     <p class="alert-warning-inline" id="basename-warning" style="display: none;">
     <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
     <__trans phrase="Warning: Changing this category's basename may break inbound links.">
@@ -123,7 +125,9 @@ TC.attachLoadEvent( init );
         id="trackback_url"
         label="<__trans phrase="TrackBack URL for this category">"
         hint="<__trans phrase="_USAGE_CATEGORY_PING_URL">">
-        <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" />
+        <div class="textarea-wrapper">
+            <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" class="full-width" />
+        </div>
     </mtapp:setting>
     <mtapp:setting
         id="tb_passphrase"
@@ -131,7 +135,9 @@ TC.attachLoadEvent( init );
         hint="<__trans phrase="Optional">"
         help_page="categories"
         help_section="trackback_passphrase_protection">
-        <input name="tb_passphrase" id="tb_passphrase" value="<mt:var name="tb_passphrase" escape="html">" size="30" />
+        <div class="textarea-wrapper">
+            <input name="tb_passphrase" id="tb_passphrase" class="full-width" value="<mt:var name="tb_passphrase" escape="html">" size="30" />
+        </div>
     </mtapp:setting>
 </mt:if>
         </div>

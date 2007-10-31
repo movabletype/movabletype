@@ -115,7 +115,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
 
     '_USAGE_SEARCH' => 'You can use the Search &amp; Replace tool to find and optionally replace text or data found in many item listings within Movable Type. IMPORTANT: be careful when doing a replace, because there is <b>no undo</b>.',
 
-    '_USAGE_UPLOAD' => 'Set the upload path by selecting an option from the choices below. If you prefer, you can upload the file to a subdirectory of the selected path. The destination directory will be created if it does not exist.',
+    '_USAGE_UPLOAD' => 'You can upload the file to a subdirectory in the selected path. The subdirectory will be created if it does not exist.',
 
     '_THROTTLED_COMMENT_EMAIL' => 'A visitor to your weblog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds. This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is
 

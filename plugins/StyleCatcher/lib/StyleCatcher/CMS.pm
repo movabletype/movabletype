@@ -291,12 +291,29 @@ sub load_style_template {
 
     require MT::Template;
     my $tmpl;
+
     $tmpl = MT::Template->load({ blog_id => $blog_id,
-        identifier => 'theme_stylesheet' });
-    $tmpl ||= MT::Template->load({ blog_id => $blog_id,
-        outfile => "styles-site.css" });
+        identifier => 'styles' });
+
     $tmpl ||= MT::Template->load({ blog_id => $blog_id,
         outfile => "styles.css" });
+
+    # MT 3.x era stylesheet file
+    $tmpl ||= MT::Template->load({ blog_id => $blog_id,
+        outfile => "styles-site.css" });
+
+    unless ( $tmpl ) {
+        # Create one since we didn't find a candidate
+        $tmpl = new MT::Template;
+        $tmpl->blog_id($blog_id);
+        $tmpl->identifier('styles');
+        $tmpl->outfile("styles.css");
+        $tmpl->text(<<'EOT');
+@import url(<$MTLink template="base_theme"$>);
+@import url(<$MTStaticWebPath$>themes/minimalist-red/styles.css);
+EOT
+        $tmpl->save();
+    }
 
     $tmpl;
 }
