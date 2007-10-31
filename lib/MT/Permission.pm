@@ -57,7 +57,7 @@ sub user {
         'user',
         sub {
             require MT::Author;
-            MT::Author->load( $perm->author_id, { cached_ok => 1 } );
+            MT::Author->load( $perm->author_id );
         }
     );
 }
@@ -70,7 +70,7 @@ sub blog {
         'blog',
         sub {
             require MT::Blog;
-            MT::Blog->load( $perm->blog_id, { cached_ok => 1 } );
+            MT::Blog->load( $perm->blog_id );
         }
     );
 }

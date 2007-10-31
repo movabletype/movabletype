@@ -84,9 +84,19 @@ function setExtraPath(sel) {
     </mtapp:setting>
 
     <div class="actions-bar">
-        <div class="actions-bar-inner pkg">
-            <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
-            <input type="submit" value="<__trans phrase="Upload">" />
+        <div class="actions-bar-inner pkg actions">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Upload (s)">"
+                class="primary-button"
+                ><__trans phrase="Upload"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
         </div>
     </div>
 

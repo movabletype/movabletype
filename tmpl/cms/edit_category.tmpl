@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Category">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <MTSetVarBlock name="content_header">
     <mt:if name="error">
         <mtapp:statusmsg
@@ -101,8 +102,8 @@ TC.attachLoadEvent( init );
 </mtapp:setting>
     </fieldset>
 
-    <h3><__trans phrase="Inbound TrackBacks"></h3>
     <fieldset>
+        <h3><__trans phrase="Inbound TrackBacks"></h3>
 <mtapp:setting
     id="allow_pings"
     label="<__trans phrase="Accept Trackbacks">"
@@ -142,8 +143,9 @@ TC.attachLoadEvent( init );
 </mt:if>
         </div>
     </fieldset>
-    <h3><__trans phrase="Outbound TrackBacks"></h3>
+
     <fieldset>
+        <h3><__trans phrase="Outbound TrackBacks"></h3>
 <mtapp:setting
     id="ping_urls"
     label="<__trans phrase="Trackback URLs">"
@@ -154,9 +156,15 @@ TC.attachLoadEvent( init );
 </mtapp:setting>
     </fieldset>
 
-    <div style="text-align: center;">
-        <input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
-    </div>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 </div>

@@ -20,7 +20,7 @@
         <mtapp:statusmsg
             id="saved-deleted"
             class="success">
-            <__trans phrase="You have successfully deleted the selected notifications from your notification list.">
+            <__trans phrase="You have successfully deleted the selected contacts from your address book.">
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
@@ -166,7 +166,11 @@
     </script>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-<input type="button" name="delete" value="<__trans phrase="Delete">" onclick="doRemoveItems(this.form, '<__trans phrase="contact">', '<__trans phrase="contacts">')" accesskey="x" title="<__trans phrase="Delete selected contacts (x)">" />
+<a href="javascript:void(0)"
+    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="contact">', '<__trans phrase="contacts">')"
+    accesskey="x"
+    title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+    ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 
 <mt:include name="include/header.tmpl">
@@ -174,19 +178,43 @@
 <p id="create-contact"><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Contact"></a></p>
 
 <div class="create-inline" id="create-inline-notification">
-<form method="post" action="<mt:var name="script_url">">
+<form method="post" action="<mt:var name="script_url">" id="create-inline-notification-form">
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="__mode" value="save" />
 <input type="hidden" name="_type" value="notification" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<p>
-<__trans phrase="Email Address">: <input name="email" id="email" value="<mt:var name="email">" />
-&nbsp;
-<__trans phrase="URL (Optional):"> <input name="url" id="url" value="<mt:var name="url">">
-<input type="submit" name="save" value="<__trans phrase="Add Contact">" />
-<input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="cancelCreateMode(); return false" />
-</p>
+<mtapp:setting
+    id="email"
+    label="<__trans phrase="Email">"
+    label_class="inline"
+    hint=""
+    show_hint="0">
+    <input name="email" id="email" value="<mt:var name="email">" />
+</mtapp:setting>
+<mtapp:setting
+    id="website"
+    label="<__trans phrase="Website URL">"
+    label_class="inline"
+    hint=""
+    show_hint="0">
+    <input name="url" id="url" value="<mt:var name="url">">
+</mtapp:setting>
+<mtapp:setting
+    id="actions"
+    label="<__trans phrase="Actions">"
+    label_class="inline field-no-header"
+    hint=""
+    show_hint="0">
+    <span class="buttons">
+        <a href="javascript:void(0)"
+            onclick="submitForm(getByID('create-inline-notification-form'), '')"
+            ><__trans phrase="Add Contact"></a>
+        <a href="javascript:void(0)"
+            onclick="cancelCreateMode(); return false"
+            ><__trans phrase="Cancel"></a>
+    </span>
+</mtapp:setting>
 </form>
 </div>
 <mt:include name="include/notification_table.tmpl">

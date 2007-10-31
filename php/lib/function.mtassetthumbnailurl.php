@@ -19,13 +19,7 @@ function smarty_function_mtassetthumbnailurl($args, &$ctx) {
     if (isset($args['scale']))
         $scale = $args['scale'];
 
-    list($thumb) = get_thumbnail_file($asset['asset_id'], $asset['asset_file_path'], $blog['blog_site_path'], $width, $height, $scale);
-    if ($thumb != '') {
-        global $mt;
-        $cache_path = $mt->config('AssetCacheDir');
-        $basename = basename($thumb);
-        $thumb = $blog['blog_site_url'] . $cache_path . '/' . $basename;
-    }
+    list($thumb) = get_thumbnail_file($asset, $blog, $width, $height, $scale);
 
     return $thumb;
 }

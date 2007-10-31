@@ -104,6 +104,12 @@ sub no_utf8 {
     }
 }
 
+sub _make_token {
+    my @alpha = ('a'..'z', 'A'..'Z', 0..9);
+    my $token = join '', map $alpha[rand @alpha], 1..40;
+    $token;
+}
+
 sub _login {
     my $class = shift;
     my($user, $pass, $blog_id) = @_;
@@ -123,6 +129,19 @@ sub _login {
     require MT::Permission;
     my $perms = MT::Permission->load({ author_id => $author->id,
                                        blog_id => $blog_id });
+
+    ## update session so the user will be counted as active
+    require MT::Session;
+    my $sess_active = MT::Session->load( { kind => 'UA', name => $author->id } );
+    if (!$sess_active) {
+        $sess_active = MT::Session->new;
+        $sess_active->id(_make_token());
+        $sess_active->kind('UA'); # UA == User Activation
+        $sess_active->name($author->id);
+    }
+    $sess_active->start(time);
+    $sess_active->save;
+
     ($author, $perms);
 }
 

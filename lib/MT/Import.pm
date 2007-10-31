@@ -168,6 +168,7 @@ sub _get_options_tmpl {
 sub get_options_html {
     my $self = shift;
     my ($key, $blog_id) = @_;
+    return q() unless $blog_id;
     my $importer = $self->importer($key);
 
     my $blog_class = MT->model('blog');

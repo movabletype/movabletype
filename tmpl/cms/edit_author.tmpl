@@ -1,4 +1,5 @@
 <mt:setvar name="edit_author" value="1">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:if name="new_object">
     <mt:setvar name="page_title" value="<__trans phrase="Create User">">
     <mt:else>
@@ -191,7 +192,6 @@ TC.attachLoadEvent(init);
     </mt:if>
 </mtapp:setting>
 
-
 <mt:unless name="new_user_external_auth">
     <mtapp:setting
         id="nickname"
@@ -301,11 +301,15 @@ TC.attachLoadEvent(init);
     </fieldset>
 </mt:if>
 
-            <fieldset class="pkg">
-                <div class="leftcol" style="text-align: center;">
-                    <input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save this user (s)">" accesskey="s" />
-                </div>
-            </fieldset>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
         </form>
 
 <mt:if name="auth_mode_mt">

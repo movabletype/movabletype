@@ -18,9 +18,15 @@ if (progress) {
         <__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">">
     </mtapp:statusmsg>
 <div class="actions-bar">
-    <div class="actions-bar-inner">
+    <div class="actions-bar-inner pkg actions">
         <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-            <input type="button" value="<__trans phrase="View Activity Log">" onclick="return closeDialog('<mt:var name="error_url">')" />
+            <button
+                onclick="return closeDialog('<mt:var name="error_url">'); return false"
+                type="submit"
+                accesskey="v"
+                title="<__trans phrase="View Activity Log (v)">"
+                class="primary-button"
+                ><__trans phrase="View Activity Log"></button>
         </form>
     </div>
 </div>
@@ -31,9 +37,15 @@ if (progress) {
         <__trans phrase="All of the data have been restored successfully!">
     </mtapp:statusmsg>
 <div class="actions-bar">
-    <div class="actions-bar-inner">
+    <div class="actions-bar-inner pkg actions">
         <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-            <input type="button" value="<__trans phrase="OK">" onclick="return closeDialog('<mt:var name="ok_url">')" />
+            <button
+                onclick="return closeDialog('<mt:var name="ok_url">'); return false"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Ok (s)">"
+                class="primary-button"
+                ><__trans phrase="Ok"></button>
         </form>
     </div>
 </div>
@@ -58,7 +70,7 @@ if (progress) {
 
 </form>
 <div class="actions-bar">
-    <div class="actions-bar-inner">
+    <div class="actions-bar-inner pkg actions">
         <form id="command_form" action="" method="get" onsubmit="return false" onclick="window.focus();">
         </form>
     </div>

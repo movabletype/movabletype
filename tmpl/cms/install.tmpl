@@ -166,7 +166,7 @@ function validate(f) {
     <mtapp:setting
         id="preferred_language"
         label="<__trans phrase="Language">"
-        hint="<__trans phrase="The user's preferred language.">">
+        hint="<__trans phrase="The user&rsquo;s preferred language.">">
         <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
@@ -186,10 +186,17 @@ function validate(f) {
 </div>
 </div>
 
-<div class="button-bar">
-<div class="right pkg">
-<input type="submit" name="continue" value="<__trans phrase="Continue">" />
-</div>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions right">
+        <input type="hidden" name="continue" value="1" />
+        <button
+            value="<__trans phrase="Continue">"
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Continue (s)">"
+            class="primary-button"
+            ><__trans phrase="Continue"></button>
+    </div>
 </div>
 
 </form>

@@ -55,9 +55,20 @@ function doValidateNotifyRecips(f) {
     </mtapp:setting>
 
     <div class="actions-bar">
-        <div class="actions-bar-inner pkg">
-            <input type="button" class="cancel" value="<__trans phrase="Cancel">" onclick="closeDialog()" />
-            <input type="submit" value="<__trans phrase="Send">" title="<__trans phrase="Send notification (n)">" accesskey="n" onclick="return doValidateNotifyRecips(this.form);" />
+        <div class="actions-bar-inner pkg actions">
+            <button
+                onclick="return doValidateNotifyRecips(this.form);"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Send notification (s)">"
+                class="primary-button"
+                ><__trans phrase="Send"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
         </div>
     </div>
 </form>

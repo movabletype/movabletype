@@ -1,30 +1,30 @@
 <$mt:setvar name="screen_type" value="popup-screen"$>
-<mt:include name="include/header_popup.tmpl">
+<mt:setvarblock name="page_title"><__trans phrase="TrackBacks"></mt:setvarblock>
+<mt:include name="include/chromeless_header.tmpl">
 
-<mt:if name="url_loop">
-<p><__trans phrase="Here is a list of the previous TrackBacks that were successfully sent:"></p>
-
-<p>
 <mt:loop name="url_loop">
-<strong>&raquo;</strong> <mt:var name="url"><br />
+    <mt:if name="__first__">
+<h2><__trans phrase="Successful Trackbacks"></h2>
+<ul>
+    </mt:if>
+    <li><mt:var name="url"></li>
+    <mt:if name="__last__">
+</ul>
+    </mt:if>
 </mt:loop>
-</p>
-</mt:if>
 
-<mt:if name="failed_url_loop">
-<p><__trans phrase="Here is a list of the previous TrackBacks that failed. To retry these, include them in the Outbound TrackBack URLs list for your entry.:"></p>
-
-<p>
 <mt:loop name="failed_url_loop">
-<strong>&raquo;</strong> <mt:var name="url"><br />
+    <mt:if name="__first__">
+<h2><__trans phrase="Failed Trackbacks"></h2>
+<ul>
+    </mt:if>
+    <li><mt:var name="url"></li>
+    <mt:if name="__last__">
+</ul>
+<p><em><__trans phrase="To retry, include these TrackBacks in the Outbound TrackBack URLs list for your entry."></em></p>
+    </mt:if>
 </mt:loop>
-</p>
-</mt:if>
 
-<div align="center">
-<form action="<mt:var name="script_url">" onsubmit="return false;">
-<input type="button" onclick="window.close()" value="<__trans phrase="Close">" />
-</form>
-</div>
+<input type="button" onclick="window.close()" value="<__trans phrase="Close">" class="right" />
 
-<mt:include name="include/footer_popup.tmpl">
+<mt:include name="include/chromeless_footer.tmpl">

@@ -41,7 +41,7 @@
         <mtapp:statusmsg
             id="saved-added"
             class="success">
-            <__trans phrase="Your [_1] has been saved. You can now make any changes to the [_1] itself, edit the authored-on date, or edit comments." params="<$mt:var name="object_label" lower_case="1"$>">
+            <__trans phrase="Your [_1] has been saved." params="<$mt:var name="object_label" lower_case="1"$>">
         </mtapp:statusmsg>
     </mt:if>
 
@@ -123,17 +123,20 @@
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
     <mt:unless name="new_object">
+        <mt:setvarblock name="summary_label"><__trans phrase="[_1] Summary" params="<$mt:var name="object_label"$>"></mt:setvarblock>
         <mtapp:widget
             id="entry-summary-widget"
-            label="<__trans phrase="Summary">">
-            <p><__trans phrase="Created [_1] by [_2]." params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html"$>"></p>
+            label="$summary_label">
+            <ul>
+                <li><__trans phrase="Created [_1] by [_2]." params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html"$>"></li>
             <mt:if name="modified_by">
-            <p><__trans phrase="Last edited [_1] by [_2]." params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html"$>"></p>
+                <li><__trans phrase="Last edited [_1] by [_2]." params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html"$>"></li>
             </mt:if>
             <mt:if name="status_publish">
-                <p><__trans phrase="Published [_1]." params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted"$>"></p>
+                <li><__trans phrase="Published [_1]." params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted"$>"></li>
             </mt:if>
-            <p><__trans phrase="This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and <a href="[_5]">[quant,_3,trackback,trackbacks]</a>." params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="num_comments"$>%%<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>%%<$mt:var name="script_url">?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></p>
+                <li><__trans phrase="This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and <a href="[_5]">[quant,_3,trackback,trackbacks]</a>." params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="num_comments"$>%%<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>%%<$mt:var name="script_url">?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></li>
+            </ul>
         </mtapp:widget>
     </mt:unless>
     <mtapp:widget
@@ -178,8 +181,25 @@
                         <li><label><input type="radio" name="bar_position" value="Bottom"<mt:unless name="position_actions_both"><mt:if name="position_actions_bottom"> checked="checked"</mt:if></mt:unless> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Bottom"></label></li>
                     </ul>
                 </mtapp:setting>
-            <input type="button" onclick="saveEntryFieldOptions(); return toggleEntryDisplayOptions();" name="save_and_close" value="<__trans phrase="OK">" />
-            <input type="button" name="reset_defaults" value="<__trans phrase="Reset">" onclick="setFieldGroup('Default'); return true" />
+                <mtapp:setting
+                    id="reset_display_options"
+                    label="<__trans phrase="Reset display options">"
+                    label_class="display-options"
+                    show_label="0">
+                    <a href="javascript:void(0)" onclick="setFieldGroup('Default'); return true" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
+                </mtapp:setting>
+            <div class="actions-bar display-options-actions-bar buttons">
+                <div class="actions-bar-inner">
+                    <a href="javascript:void(0)"
+                        onclick="saveEntryFieldOptions(); return toggleEntryDisplayOptions();"
+                        title="<__trans phrase="Save display options">"
+                        ><__trans phrase="OK"></a>
+                    <a href="javascript:void(0)"
+                        onclick="toggleEntryDisplayOptions()"
+                        title="<__trans phrase="Close display options">"
+                        ><__trans phrase="Cancel"></a>
+                </div>
+            </div>
         </form>
     </mtapp:widget>
 </mt:setvarblock>
@@ -646,6 +666,10 @@ function highlightSwitch(selection) {
         <__trans phrase="Remove">
         <__trans phrase="Make primary">
     </mt:ignore>
+
+function listPreviousPings () {
+    window.open('<TMPL_VAR NAME=SCRIPT_URL>?__mode=pinged_urls&entry_id=<TMPL_VAR NAME=ID>&blog_id=<TMPL_VAR NAME=BLOG_ID>', 'urls', 'width=400,height=400,resizable=yes,scrollbars=yes');
+}
 /* ]]> */
         </script>
 </mt:setvarblock>
@@ -687,23 +711,35 @@ function highlightSwitch(selection) {
 
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
-    <button type="submit" accesskey="s" title="<__trans phrase="Save this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">" mt:mode="save_entry" class="positive"><__trans phrase="Save"></button>
-    <button type="submit" accesskey="v" title="<__trans phrase="Preview this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">" mt:mode="preview_entry" name="preview_entry"><__trans phrase="Preview"></button>
-    <mt:ignore>
-    <input type="submit" value="<__trans phrase="Save">" accesskey="s" title="<__trans phrase="Save this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">" mt:mode="save_entry" />
-    <input type="submit" name="preview_entry" value="<__trans phrase="Preview">" accesskey="v" title="<__trans phrase="Preview this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">" mt:mode="preview_entry" />
-    </mt:ignore>
+    <button
+        mt:mode="save_entry"
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save"></button>
+    <button
+        mt:mode="preview_entry" name="preview_entry"
+        type="submit"
+        accesskey="v"
+        title="<__trans phrase="Preview this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">"
+        ><__trans phrase="Preview"></button>
     <mt:if name="id">
-    <button type="submit" accesskey="x" mt:command="do-remove-items" mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">" mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">" mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">" title="<__trans phrase="Delete this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">" class="negative"><__trans phrase="Delete"></button>
-        <mt:ignore>
-    <input accesskey="x" onclick="clearDirty(); doRemoveItems(this.form, '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">', false, { 'return_args': '__mode=list_<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">' }); return true" type="button" value="<__trans phrase="Delete">" title="<__trans phrase="Delete this [_1] (x)" params="<mt:var name="object_label" lower_case="1">">" />
-        </mt:ignore>
+    <button
+        mt:command="do-remove-items"
+        mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
+        mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
+        mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
+        type="submit"
+        accesskey="x"
+        title="<__trans phrase="Delete this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">"
+        ><__trans phrase="Delete"></button>
     </mt:if>
-    <div id="autosave-notification-area-<$mt:var name="bar_position" default="top"$>" class="autosave-notification-area"></div>
+    <div id="autosave-notification-<$mt:var name="bar_position" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>
 
 <mt:include name="include/header.tmpl" id="header_include">
-<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1" mt:auto-save="1">
+<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1" mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
 <mt:if name="new_object">
     <input type="hidden" name="author_id" value="<$mt:var name="author_id"$>" />
 <mt:else>
@@ -719,10 +755,10 @@ function highlightSwitch(selection) {
     <mt:if name="id">
     <div id="entry-nav" class="pkg">
         <ul class="inline-nav right">
-            <mt:if name="can_send_notifications">
-            <li><a href="javascript:void(0)" onclick="openDialog(null,'entry_notify','blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="id">');return false;"><__trans phrase="Share this [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
-            </mt:if>
             <mt:if name="status_publish">
+                <mt:if name="can_send_notifications">
+                <li><a href="javascript:void(0)" onclick="openDialog(null,'entry_notify','blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="id">');return false;"><__trans phrase="Share this [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
+                </mt:if>
                 <mt:if name="entry_permalink">
             <li class="view-entry-link"><a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View published [_1]" params="<$mt:var name="object_label" lower_case="1"$>"></a></li>
                 </mt:if>
@@ -740,7 +776,7 @@ function highlightSwitch(selection) {
 
     <mtapp:setting
         id="title"
-        label="<__trans phrase="Tags">"
+        label="<__trans phrase="Title">"
         label_class = "no-header"
         help_page="entries"
         help_section="entry_title">
@@ -856,7 +892,8 @@ function highlightSwitch(selection) {
         shown="$disp_prefs_show_category"
         label="$container_label"
         help_page="entries"
-        help_section="entry_categories">
+        help_section="entry_categories"
+        content_class="field-content-text">
         <mt:if name="object_type" eq="page">
         <div mt:delegate="category-list" id="category-list"></div>
         <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector"><__trans phrase="Change [_1]" params="<$mt:var name="container_label" lower_case="1"$>"></a>
@@ -962,7 +999,6 @@ function highlightSwitch(selection) {
                             <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
                     </mt:unless>
                 </mt:if>
-                </mt:if>
                         </select>
             <mt:else>
                 <mt:if name="status_draft">
@@ -1037,8 +1073,8 @@ function highlightSwitch(selection) {
         help_page="entries"
         help_section="accept_comments">
         <ul>
-            <li><input type="checkbox" name="allow_comments" id="allow_comments" tabindex="14" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comments Accepted"></li>
-            <li><input type="checkbox" name="allow_pings" id="allow_pings" tabindex="15" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <__trans phrase="TrackBacks Accepted"></li>
+            <li><input type="checkbox" name="allow_comments" id="allow_comments" tabindex="14" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comments"></li>
+            <li><input type="checkbox" name="allow_pings" id="allow_pings" tabindex="15" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <__trans phrase="TrackBacks"></li>
         </ul>
     </mtapp:setting>
 

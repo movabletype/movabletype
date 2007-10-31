@@ -40,6 +40,8 @@ __PACKAGE__->install_properties({
 });
 
 require MT::Asset::Image;
+require MT::Asset::Audio;
+require MT::Asset::Video;
 
 sub extensions {
     undef;
@@ -65,11 +67,11 @@ sub url {
 # Returns a localized name for the asset type. For MT::Asset, this is simply
 # 'File'.
 sub class_label {
-    MT->translate('File');
+    MT->translate('Asset');
 }
 
 sub class_label_plural {
-    MT->translate("Files");
+    MT->translate("Assets");
 }
 
 # Removes the asset, associated tags and related file.
@@ -77,13 +79,21 @@ sub class_label_plural {
 sub remove {
     my $asset = shift;
     if (ref $asset) {
-        my $blog = MT::Blog->load($asset->blog_id, { cached_ok => 1 });
+        my $blog = MT::Blog->load($asset->blog_id);
         if ($blog) {
             my $file = $asset->file_path;
             $blog->file_mgr->delete($file);
         }
         $asset->remove_cached_files;
+
+        # remove children.
+        my $class = ref $asset;
+        my $iter = $class->load_iter({ parent => $asset->id, });
+        while(my $a = $iter->()) {
+            $a->remove;
+        }
     }
+
     $asset->SUPER::remove(@_);
 }
 
@@ -105,12 +115,11 @@ sub remove_cached_files {
     # remove any asset cache files that exist for this asset
     my $blog = $asset->blog;
     if ($asset->id && $blog) {
-        my $path = $blog->site_path;
-        my $cache_dir = MT->config('AssetCacheDir');
-        if ($path && $cache_dir) {
+        my $cache_dir = $asset->_make_cache_path;
+        if ($cache_dir) {
             my $fmgr = $blog->file_mgr;
             if ($fmgr) {
-                my $cache_glob = File::Spec->catfile($path, $cache_dir,
+                my $cache_glob = File::Spec->catfile($cache_dir,
                     $asset->id . '.*');
                 my @files = glob($cache_glob);
                 foreach my $file (@files) {
@@ -127,7 +136,7 @@ sub blog {
     $asset->cache_property(sub {
         my $blog_id = $asset->blog_id or return undef;
         require MT::Blog;
-        MT::Blog->load($blog_id, { cached_ok => 1 })
+        MT::Blog->load($blog_id)
             or return $asset->error("Failed to load blog for file");
     });
 }
@@ -213,10 +222,12 @@ sub thumbnail_url {
         if (my $thumbnail_file = $asset->thumbnail_file(@_)) {
             my $file = File::Basename::basename($thumbnail_file);
             my $site_url = $blog->site_url;
+            my $date_stamp = sprintf("%04d/%02d", unpack('A4A2', $asset->created_on));
             if ($file && $site_url) {
                 $file =~ s/%([A-F0-9]{2})/chr(hex($1))/gei;
                 $site_url .= '/' unless $site_url =~ m#/$#;
-                $site_url .= MT->config('AssetCacheDir') . '/' . $file;
+                $site_url .= MT->config('AssetCacheDir') . '/';
+                $site_url .= $date_stamp . '/' . $file;
                 return $site_url;
             }
         }
@@ -241,7 +252,7 @@ sub enclose {
     my ($html) = @_;
     my $id = $asset->id;
     my $type = $asset->class;
-    return qq{<span mt:asset-id="$id" class="mt-enclosure mt-enclosure-$type">$html</span>};
+    return qq{<form mt:asset-id="$id" contenteditable="false" class="mt-enclosure mt-enclosure-$type">$html</form>};
 }
 
 # Return a HTML snippet of form options for inserting this asset
@@ -257,6 +268,24 @@ sub on_upload {
     my ($param) = @_;
     $asset->remove_cached_files;
     1;
+}
+
+sub _make_cache_path {
+    my $asset = shift;
+    my $blog = $asset->blog or return undef;
+
+    my $year_stamp = unpack 'A4', $asset->created_on;
+    my $month_stamp = unpack 'x4 A2', $asset->created_on;
+
+    require File::Spec;
+    my $asset_cache_path = File::Spec->catdir($blog->site_path,
+        MT->config('AssetCacheDir'), $year_stamp, $month_stamp);
+
+    if (!-d $asset_cache_path) {
+        my $fmgr = $blog->file_mgr;
+        $fmgr->mkpath($asset_cache_path) or return undef;
+    }
+    $asset_cache_path;
 }
 
 1;

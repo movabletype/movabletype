@@ -1,4 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="Export"></mt:setvarblock>
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="export" value="1">
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
@@ -19,11 +20,10 @@ function selectBlog() {
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/tools_content_nav.tmpl">
 </MTSetVarBlock>
+<mt:setvarblock name="content_header">
+    <p><__trans phrase="_USAGE_EXPORT_1"></p> 
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
-
-<p class="page-desc"><__trans phrase="_USAGE_EXPORT_1"></p> 
-
-<div id="export-panel">
 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <input type="hidden" name="__mode" value="export" />
@@ -36,16 +36,24 @@ function selectBlog() {
 
 <mtapp:setting
     id="export_blog_id_field"
-    label="<__trans phrase="Export from">"
-    hint="<__trans phrase="Select a blog for exporting.">">
-    <p><strong><span id="export_blog_name"><mt:if name="blog_id"><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)<mt:else>(<__trans phrase="None selected.">)</mt:if></span></strong>
-    <input type="button" onclick="return selectBlog()" value="<__trans phrase="Select...">" /></p>
+    label="<__trans phrase="Blog to Export">"
+    hint="<__trans phrase="Select a blog for exporting.">"
+    content_class="field-content-text">
+    <mt:if name="blog_id">
+        <div><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)</div>
+    </mt:if>
+    <a href="javascript:void(0)" onclick="return selectBlog()"><mt:if name="blog_id"><__trans phrase="Change blog"><mt:else><__trans phrase="Select blog"></mt:if></a>
 </mtapp:setting>
 
-<p style="text-align: center;"><input type="submit" value="<__trans phrase="Export Blog">" title="<__trans phrase="Export Blog (e)">" accesskey="e" /></p>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Export Blog (s)">"
+        class="primary-button"
+        ><__trans phrase="Export Blog"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
-
-</div>
-<div id="bottom"></div>
 
 <mt:include name="include/footer.tmpl">

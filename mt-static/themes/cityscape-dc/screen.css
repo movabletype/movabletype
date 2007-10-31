@@ -1,0 +1,376 @@
+/* Vox Theme for Movable Type ============================================= */
+
+/* 
+name: Cityscape DC  
+designer: Tiffany Chow  
+designer_url: http://tiffany.vox.com/ 
+layouts: layout-wtt, layout-twt, layout-wt, layout-tw
+*/
+
+
+/* Default ---------------------------------------------------------------- */
+
+/* Global */
+
+body {
+    font: normal 13px arial, helvetica, hirakakupro-w3, osaka, "ms pgothic", sans-serif;
+}
+
+
+/* Header */
+
+#header {
+    border-top-width: 10px;
+    border-top-style: solid;
+}
+
+#header-name {
+    margin: 0 0 5px;
+    line-height: 1;
+}
+
+#header-description {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.125;
+}
+
+#header a {
+    text-decoration: none;
+}
+
+#header a:hover {
+    text-decoration: underline;
+}
+
+
+/* Content */
+
+.asset-name {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.asset-name a {
+    text-decoration: none;
+}
+
+.asset-name a:hover {
+    text-decoration: underline;
+}
+
+.asset-content {
+    margin: 5px 0;
+}
+
+.asset-more-link {
+    font-weight: bold;
+}
+
+.asset-footer {
+    margin-top: 10px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    padding-top: 5px;
+    font-weight: normal;
+}
+
+.asset-footer a,
+.comment-footer a {
+    font-weight: normal;
+}
+
+.content-nav {
+    margin: 5px 0 10px;
+}
+
+.archive-title {
+    margin: 5px 0 30px;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.trackbacks-info,
+.trackback-content,
+.comment-content,
+.comments-open-content,
+.comments-closed {
+    margin: 5px 0;
+}
+
+.module-header,
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    margin: 0;
+    padding: 5px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Footer */
+
+#footer-content,
+#footer-content a {
+    color: #fff;
+}
+
+
+/* Utility */
+
+.module-header,
+.trackbacks-header,
+.comments-header,
+.comments-open-header,
+.archive-header {
+    /* ie win (5, 5.5, 6) bugfix */
+    p\osition: relative;
+    width: 100%;
+    w\idth: auto;
+}
+
+.asset-more-link,
+.asset-footer,
+.comment-footer,
+.trackback-footer,
+.typelist-thumbnailed {
+    font-size: 11px;
+}
+
+
+/* Global ----------------------------------------------------------------- */
+
+body {
+    color: #333;  
+    font-family: "trebuchet ms", arial, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;   
+    background: #124344 url(body.gif) repeat-y  top center; 
+}
+
+a {
+    color: #3d6dae; 
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+
+/* Layout ----------------------------------------------------------------- */
+
+#container-inner,
+#content {
+    background-color: #fff;
+}
+
+#header-inner, #content-inner, #footer-inner {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#beta-inner, #gamma-inner {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+
+/* Header ----------------------------------------------------------------- */
+
+#header { 
+    border-color: #27455a;  
+    background: #73C0DC url(header.png) no-repeat bottom left; 
+}
+
+#header a {
+    color: #003c6a;
+    font-weight: bold;
+}
+
+#header-content {
+    margin: 20px 0 100px 20px;
+}
+
+#header-name {
+    color: #003c6a;  
+    font-family: "century gothic", futura, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif; 
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#header-description {
+    color: #003c6a;  
+    font-family: "century gothic", futura, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;  
+    font-weight: bold; 
+}
+
+
+/* Content ---------------------------------------------------------------- */
+
+.asset-name,
+.comments-header,
+.comments-open-header,
+.trackbacks-header,
+.archive-title
+.archive-header {
+    font-family: "century gothic", futura, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;
+} 
+
+.asset-name,
+.asset-name a,
+.archive-title {
+    color: #3e667e;
+}
+
+.asset-footer,
+.asset-footer a,
+.comment-footer,
+.comment-footer a,
+.trackback-footer {
+    color: #999;
+}
+
+.asset-footer {
+    border-top-color: #e0f2fe;
+}
+
+.comments-header,
+.comments-open-header,
+.trackbacks-header,
+.archive-header {
+    color: #a0cddd;
+}
+
+
+.archive-list-item {
+    margin-bottom: 5px;
+}
+
+
+/* Widget ----------------------------------------------------------------- */
+
+.layout-wtt #content-inner { background: transparent url(content-wtt.gif) repeat-y scroll right top; }
+.layout-twt #content-inner { background: transparent url(content-twt.gif) repeat-y scroll left top; }
+.layout-wt #content-inner { background: transparent url(content-wt.gif) repeat-y scroll right top; }
+.layout-tw #content-inner { background: transparent url(content-tw.gif) repeat-y scroll left top; }
+
+
+
+
+.widget a,
+.archive-widget .widget-list .item {
+    color: #4c6885;
+} 
+
+.widget-header {
+    padding: 5px 15px;
+    font-size: 12px;
+    font-weight: bold; 
+    font-family: "century gothic", futura, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif; 
+    background: url(widget-header.gif) repeat top left #587fa5; 
+}  
+.widget .widget-header {
+    border-left: 1px solid #fff;
+}
+
+.layout-tw .widget .widget-header {
+    border-left-width: 0;
+}
+
+.layout-twt #beta .widget-header,
+.layout-tw .widget-header {
+    border: 0;
+}
+
+.embed-asset-widget .widget-header {
+    margin-bottom: 10px;
+}  
+.widget-header,
+.widget-header a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.widget-header .edit a {
+    border-left-color: #fff
+} 
+.widget .widget-header a:hover {
+    text-decoration: underline;
+}
+
+.widget-content {
+    padding: 0 15px;
+}
+
+.media-stream-widget img {
+    border: 1px solid #999;
+} 
+.widget-header .edit a,
+.archive-widget .widget-list .item a,
+.archive-widget .widget-list .item {
+    font-weight: normal;
+} 
+
+.widget-header {
+    font-size: 14px;
+}
+
+.widget-header a {
+    text-decoration: none;
+}
+
+.widget-header a:hover {
+    text-decoration: underline;
+}
+
+.widget-content {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 11px;
+}
+
+
+/* "Powered By" Module */
+
+.widget-powered .widget-content {
+    padding: 10px;
+    text-align: center;
+}
+
+
+/* Calendar Module */
+
+.widget-calendar .widget-content table {
+    font-size: 10px;
+}
+
+
+/* Footer ----------------------------------------------------------------- */
+
+#footer { 
+    background-color: #27455a; 
+}
+
+#footer-content {
+    margin: 20px 0;
+}
+
+#footer .widget {
+    margin: 10px 0;
+}
+
+#footer .widget-content {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#footer .widget-powered .widget-content {
+    padding: 0;
+    text-align: left;
+}
+
+
+/* Custom Styles ---------------------------------------------------------- */
+
+#content-inner {
+    padding: 10px 0;
+}

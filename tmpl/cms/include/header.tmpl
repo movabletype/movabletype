@@ -8,7 +8,11 @@
 <mt:if name="feed_url">
     <link type="application/atom+xml" rel="alternate" <mt:if name="feed_name">title="<mt:var name="feed_name" escape="html">" </mt:if>href="<mt:var name="feed_url" escape="html">" />
 </mt:if>
+<mt:if name="mt_debug">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+<mt:else>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+</mt:if>
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
     <![endif]-->
@@ -33,7 +37,6 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cache.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version" escape="url">"></script>
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/menus.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version" escape="URL">"></script>
 <mt:else>
@@ -94,7 +97,7 @@
     </div>
     <div id="main-nav">
         <div id="main-nav-inner">
-            <div id="selector-nav" mt:delegate="nav-menu" mt:nav-delayed-open="500" mt:nav-delayed-close="0">
+            <div id="selector-nav" mt:delegate="nav-menu" mt:nav-delayed-open="-1" mt:nav-delayed-close="300">
                 <ul id="selector-nav-list">
             <mt:if name="top_blog_loop">
                 <mt:setvarblock name="blog_selector_dropdown">
@@ -155,7 +158,7 @@
             <div id="blog-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0">
                 <div id="blog-nav-inner">
                     <ul id="blog-nav-list" class="blog-nav-list pkg">
-                        <li id="blog-dashboard"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="blog_id"$>"><span><__trans phrase="Blog Dashboard"></span></a></li>
+                        <li id="blog-dashboard"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="blog_id"$>" title="<__trans phrase="Blog Dashboard">"><span><__trans phrase="Blog Dashboard"></span></a></li>
                 <mt:loop name="top_nav_loop">
                         <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
                     <mt:if name="allowed"><a href="<$mt:var name="link"$>"><span><$mt:var name="label"$><span mt:command="open-menu">&nbsp;</span></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
@@ -199,6 +202,9 @@
 <div id="content"><div id="content-inner" class="inner pkg">
     <div id="content-header"><div id="content-header-inner" class="inner">
         <h2 id="page-title"><$mt:var name="page_title"$></h2>
+<mt:if name="content_header">
+        <$mt:var name="content_header"$>
+</mt:if>
     </div></div><!-- /content-header -->
 <mt:if name="content_nav">
     <div id="content-nav">
@@ -206,6 +212,3 @@
     </div>
 </mt:if>
     <div id="main-content"><div class="inner pkg">
-<mt:if name="content_header">
-        <$mt:var name="content_header"$>
-</mt:if>

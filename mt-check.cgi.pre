@@ -418,8 +418,9 @@ INFO
 my $TMP = "test$$.tmp";
 local *FH;
 if (open(FH, ">$TMP")) {
+    close FH;
     unlink($TMP);
-    print trans_templ("    <li><MT_TRANS phrase=\"(Probably) Running under cgiwrap or suexec\"></li>\n");
+    print trans_templ('    <li><MT_TRANS phrase="(Probably) Running under cgiwrap or suexec"></li>' . "\n");
 }
 
 print "\n\n</ul>\n";

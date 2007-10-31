@@ -49,14 +49,14 @@ sub entry {
     my $tb = shift;
     return undef unless $tb->entry_id;
     require MT::Entry;
-    MT::Entry->load($tb->entry_id, { cached_ok => 1 });
+    MT::Entry->load($tb->entry_id);
 }
 
 sub category {
     my $tb = shift;
     return undef unless $tb->category_id;
     require MT::Category;
-    MT::Category->load($tb->category_id, { cached_ok => 1 });
+    MT::Category->load($tb->category_id);
 }
 
 1;

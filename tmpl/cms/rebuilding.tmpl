@@ -13,7 +13,7 @@ function doRedirect () {
 <mt:if name="redirect_target">
     window.location='<mt:var name="redirect_target">';
 <mt:else>
-    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id">&type=<mt:var name="build_type">&next=<mt:var name="build_next">&offset=<mt:var name="offset">&limit=<mt:var name="limit">&total=<mt:var name="total">&is_bm=<mt:var name="is_bm">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&old_previous=<mt:var name="old_previous">&old_next=<mt:var name="old_next"><mt:if name="is_full_screen">&fs=1</mt:if>';
+    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id">&type=<mt:var name="build_type">&next=<mt:var name="build_next">&offset=<mt:var name="offset">&limit=<mt:var name="limit">&total=<mt:var name="total">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&old_previous=<mt:var name="old_previous">&old_next=<mt:var name="old_next"><mt:if name="is_full_screen">&fs=1</mt:if>';
 </mt:if>
 }
 setTimeout('doRedirect()', 200);
@@ -73,7 +73,7 @@ setTimeout('doRedirect()', 200);
 <mtapp:statusmsg
     id="generic"
     class="publishing">
-    <__trans phrase="Publishing">...
+    <__trans phrase="_REBUILD_PUBLISH">...
 </mtapp:statusmsg>
 </mt:if>
 </mt:if>
@@ -83,9 +83,8 @@ setTimeout('doRedirect()', 200);
 </h4>
 
 <mt:if name="total">
-<div style="width: 100%; height: 20px; border: 1px solid #000; text-align: center; color: #f00; position: relative">
-    <div style="position: absolute; height: 20px; width: <mt:var name="complete">%; background-color: #000; text-align: right; line-height: 20px; color: #fff"><mt:if name="complete" ge="50"><mt:var name="complete">% Complete</mt:var>&nbsp;</mt:if></div>
-    <mt:if name="complete" lt="50"><div style="line-height: 20px"><mt:var name="complete">% Complete</mt:var></div></mt:if>
+<div class="progress-bar<mt:unless name="complete"> progress-bar-indeterminate<mt:else>" style="background-position: <mt:var name="incomplete">% 0</mt:unless>">
+    <span><$mt:var name="complete"$>% Complete</span>&nbsp;
 </div>
 </mt:if>
 

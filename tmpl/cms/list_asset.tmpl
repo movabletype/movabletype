@@ -1,10 +1,10 @@
-<$mt:setvar name="page_title" value="<__trans phrase="Manage Files">"$>
+<$mt:setvar name="page_title" value="<__trans phrase="Manage Assets">"$>
 <mt:setvarblock name="content_header">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
             id="saved-deleted"
             class="success">
-            <__trans phrase="You have successfully deleted the file(s).">
+            <__trans phrase="You have successfully deleted the asset(s).">
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
@@ -12,10 +12,7 @@
     <mtapp:widget
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
-        <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list_assets<mt:if name="edit_blog_id">&amp;blog_id=<mt:var name="edit_blog_id"></mt:if>&amp;filter=class&amp;filter_val=asset.image"><__trans phrase="Show Images"></a></li>
-            <li><a href="<mt:var name="script_url">?__mode=list_assets<mt:if name="edit_blog_id">&amp;blog_id=<mt:var name="edit_blog_id"></mt:if>&amp;filter=class&amp;filter_val=asset"><__trans phrase="Show Files"></a></li>
-        </ul>
+        <$MTApp:ListFilters$>
     </mtapp:widget>
     <$mt:include name="include/display_options.tmpl"$>
     <$mtapp:PageActions$>
@@ -81,13 +78,18 @@ TC.attachLoadEvent( init );
             <input id="filter_val" type="hidden" name="filter_val" value="" />
             <div class="filter">
                 <div id="filter-title">
-            <mt:unless name="filter">
-                    <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
-                    <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
+            <mt:if name="filter_key">
+                <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
+                <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
             <mt:else>
-                    <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
-                    <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
-            </mt:unless>
+                <mt:unless name="filter">
+                        <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
+                        <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
+                <mt:else>
+                        <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
+                        <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
+                </mt:unless>
+            </mt:if>
                 </div>
                 <div id="filter-select" style="display: none">
                     <__trans phrase="Show only [_1] where" params="<$mt:var name="object_label_plural" lower_case="1"$>">
@@ -113,7 +115,7 @@ TC.attachLoadEvent( init );
                         </span>
                     <!-- filter form ends -->
                     &nbsp;
-                    <input type="button" value="<__trans phrase="Filter">" id="filter-button" style="display: none" onclick="return execFilter(this.form)" />
+                    <input type="button" value="<__trans phrase="Filter">" id="filter-button" onclick="return execFilter(this.form)" />
                     <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />
                 </div>
             </div>
@@ -123,7 +125,11 @@ TC.attachLoadEvent( init );
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:if name="can_delete_files">
-        <input type="button" onclick="doRemoveItems(this.form, '<__trans phrase="asset">', '<__trans phrase="assets">')" name="delete_assets" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete selected assets (x)">" />
+        <a href="javascript:void(0)"
+            onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="content">', '<__trans phrase="content">')" name="delete_assets"
+            accesskey="x"
+            title="<__trans phrase="Delete selected assets (x)">"
+            ><__trans phrase="Delete"></a>
     </mt:if>
 </mt:setvarblock>
 
@@ -138,7 +144,7 @@ TC.attachLoadEvent( init );
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
                 <th id="as-file-status" class="si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-                <th id="as-file-name"><__trans phrase="Filename"></th>
+                <th id="as-file-name"><__trans phrase="Title"></th>
                 <th id="as-asset-type"><__trans phrase="Type"></th>
     <mt:unless name="edit_blog_id">
                 <th id="as-weblog"><__trans phrase="Weblog"></th>
@@ -157,7 +163,16 @@ TC.attachLoadEvent( init );
                     <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
                 </td>
                 <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" /></td>
-                <td><mt:unless name="file_is_missing"><a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id">');"></mt:unless><mt:unless name="file_label"><mt:var name="file_name" escape="html"><mt:else><mt:var name="file_label" escape="html"></mt:unless><mt:unless name="file_is_missing"></a></mt:unless><div id="asset-<mt:var name="id">-detail" class="asset-detail-panel"><div id="asset-<mt:var name="id">-detail-inner" class="asset-detail-panel-inner"></div></div></td>
+                <td>
+    <mt:unless name="file_is_missing">
+                    <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id">');" title="<$mt:var name="file_name"$>"><$mt:var name="file_label" escape="html" default="$file_name"$></a>
+    <mt:else>
+                    <$mt:var name="file_label" escape="html" default="$file_name"$>
+    </mt:unless>
+                    <div id="asset-<mt:var name="id">-preview" class="asset-preview">
+                        <div id="asset-<mt:var name="id">-preview-inner" class="asset-preview-inner"></div>
+                    </div>
+                </td>
                 <td class="as-asset-type"><mt:var name="asset_class" escape="html"></td>
     <mt:unless name="edit_blog_id">
                 <td><a href="<mt:var name="script_url">?__mode=list_assets&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
@@ -169,7 +184,7 @@ TC.attachLoadEvent( init );
     </mt:if>
                 <td class="as-created-by"><mt:if name="created_by"><mt:var name="created_by"><mt:else><em><__trans phrase="System"></em></mt:if></td>
                 <td><span title="<mt:var name="created_on_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
-                <td class="status-view"><mt:if name="url"><a href="<mt:var name="url">" target="view_uploaded" title="<__trans phrase="View File">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View File">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+                <td class="status-view"><mt:if name="url"><a href="<mt:var name="url">" target="view_uploaded" title="<__trans phrase="View">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
             </tr>
     <mt:if __last__>
         </tbody>

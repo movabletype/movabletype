@@ -261,7 +261,7 @@ sub save {
 sub blog {
     my $this = shift;
     return $this->{__blog} if $this->{__blog};
-    return $this->{__blog} = MT::Blog->load($this->blog_id, {cached_ok=>1});
+    return $this->{__blog} = MT::Blog->load($this->blog_id);
 }
 
 sub set_values_internal {

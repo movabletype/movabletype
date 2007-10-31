@@ -37,23 +37,54 @@
     <$mtapp:PageActions$>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-        <mt:if name="can_edit_commenters">
+    <mt:if name="can_edit_commenters">
         <mt:if name="id">
-        <mt:unless name="commenter_approved">
-        <input type="button" value="<__trans phrase="Trust">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon">')" accesskey="t" title="<__trans phrase="Trust commenter"> (t)" />
+            <mt:unless name="commenter_approved">
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon">')"
+            type="submit"
+            accesskey="t"
+            title="<__trans phrase="Trust [_1] (t)" params="<mt:var name="object_label" lower_case="1">">"
+            ><__trans phrase="Trust"></button>
+            <mt:else>
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'itemset_action', {action_name:'untrust'}, '<__trans phrase="to act upon">')"
+            type="submit"
+            accesskey="t"
+            title="<__trans phrase="Untrust [_1] (t)" params="<mt:var name="object_label" lower_case="1">">"
+            ><__trans phrase="Untrust"></button>
+            </mt:unless>
+            <mt:unless name="commenter_banned">
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon">')"
+            type="submit"
+            accesskey="b"
+            title="<__trans phrase="Ban [_1] (b)" params="<mt:var name="object_label" lower_case="1">">"
+            ><__trans phrase="Ban"></button>
+            <mt:else>
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'itemset_action', {action_name:'unban'}, '<__trans phrase="to act upon">')"
+            type="submit"
+            accesskey="b"
+            title="<__trans phrase="Unban [_1] (b)" params="<mt:var name="object_label" lower_case="1">">"
+            ><__trans phrase="Unban"></button>
+            </mt:unless>
         <mt:else>
-        <input type="button" value="<__trans phrase="Untrust">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'itemset_action', {action_name:'untrust'}, '<__trans phrase="to act upon">')" accesskey="u" title="<__trans phrase="Untrust commenter"> (u)" />
-        </mt:unless>
-        <mt:unless name="commenter_banned">
-        <input type="button" value="<__trans phrase="Ban">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon">')" accesskey="b" title="<__trans phrase="Ban commenter"> (b)" />
-        <mt:else>
-        <input type="button" value="<__trans phrase="Unban">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'itemset_action', {action_name:'unban'}, '<__trans phrase="to act upon">')" accesskey="n" title="<__trans phrase="Unban commenter"> (n)" />
-        </mt:unless>
-        <mt:else>
-        <input type="button" value="<__trans phrase="Trust">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon">')" accesskey="t" title="<__trans phrase="Trust selected commenters"> (t)" />
-        <input type="button" value="<__trans phrase="Ban">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon">')" accesskey="b" title="<__trans phrase="Ban selected commenters"> (b)" />
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon">')"
+            type="submit"
+            accesskey="t"
+            title="<__trans phrase="Trust [_1] (t)" params="<mt:var name="object_label" lower_case="1">">"
+            ><__trans phrase="Trust"></button>
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon">')"
+            type="submit"
+            accesskey="b"
+            title="<__trans phrase="Ban [_1] (b)" params="<mt:var name="object_label" lower_case="1">">"
+            ><__trans phrase="Ban"></button>
+            />
         </mt:if>
-        </mt:if>
+    </mt:if>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
 

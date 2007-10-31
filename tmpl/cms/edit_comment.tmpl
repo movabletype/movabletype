@@ -16,19 +16,25 @@
             <__trans phrase="The comment has been approved.">
         </mtapp:statusmsg>
     </mt:if>
-    <mt:if name="comment_pending">
-        <h3 class="pending"><__trans phrase="Pending Approval"></h3>
-    </mt:if>
-    <mt:if name="is_junk">
-        <h3 class="junky"><__trans phrase="Comment Reported as Spam"></h3>
-    </mt:if>
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
-    <input name="save" type="submit" value="<__trans phrase="Save Changes">" accesskey="s" title="<__trans phrase="Save this comment (s)">" />
-    <input accesskey="x" type="button" onclick="doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list_comments&amp;blog_id=<mt:var name="blog_id">'})" value="<__trans phrase="Delete">" title="<__trans phrase="Delete this comment (x)">" />
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+    <button
+        onclick="doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list_comments&amp;blog_id=<mt:var name="blog_id">'})"
+        type="submit"
+        accesskey="x"
+        title="<__trans phrase="Delete this [_1] (x)" params="<mt:var name="object_label" lower_case="1">">"
+        ><__trans phrase="Delete"></button>
     <mt:if name="is_ip_filter">
         <mt:if name="blog_id">
-    <input type="button" onclick="doBanIP('<mt:var name="filter_val">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')" name="banip" value="<__trans phrase="Ban This IP">" />
+    <button
+        onclick="doBanIP('<mt:var name="filter_val">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')"
+        ><__trans phrase="Ban This IP"></button>
         </mt:if>
     </mt:if>
 </mt:setvartemplate>
@@ -68,17 +74,57 @@
     <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1">
 </mt:if>
 
+<mt:if name="comment_pending">
+    <$mt:setvar name="comment_status" value="comment-status-unapproved"$>
+<mt:else>
+    <mt:if name="is_junk">
+        <$mt:setvar name="comment_status" value="comment-status-spam"$>
+    <mt:else>
+        <$mt:setvar name="comment_status" value="comment-status-approved"$>
+    </mt:if>
+</mt:if>
+
     <mtapp:setting
         id="status"
         label="<__trans phrase="Status">"
+        label_class="left-label <$mt:var name="comment_status"$>"
         hint="<__trans phrase="Update the status of this comment">"
         show_hint="0">
-        <select id="status" name="status" class="width90">
+        <select id="status" name="status" class="width90 comment-status">
             <option value="publish" <mt:if name="comment_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
             <option value="moderate" <mt:if name="comment_pending">selected="selected"</mt:if>><__trans phrase="Unapproved"></option>
             <option value="junk" <mt:if name="is_junk">selected="selected"</mt:if>><__trans phrase="Reported as Spam"></option>
         </select>
         <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">&amp;<mt:if name="is_junk">tab=junk<mt:else>filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if></mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+
+        <mt:if name="junk_log_loop">
+        <div class="width90 comment-spam-info">
+                <a href="javascript:void(0)" onclick="toggleHidden('comment-feedback-rating'); toggleActive('spam-details-toggle'); return true" id="spam-details-toggle"><__trans phrase="Spam Details"></a>
+        </div>
+        <div id="comment-feedback-rating" class="hidden">
+            <strong><__trans phrase="Total Feedback Rating: [_1]" params="<$mt:var name="junk_score"$>"></strong>
+            <div id="spam-log-listing" class="listing width90">
+                <table class="spam-log-listing-table" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th id="jl-test"><__trans phrase="Test"></th>
+                        <th id="jl-score"><__trans phrase="Score"></th>
+                        <th id="jl-results"><__trans phrase="Results"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+            <mt:loop name="junk_log_loop">
+                    <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                        <td><mt:var name="test" escape="html"></td>
+                        <td><mt:var name="score"></td>
+                        <td><mt:var name="log"></td>
+                    </tr>
+            </mt:loop>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </mt:if>
     </mtapp:setting>
     
     <mtapp:setting
@@ -201,35 +247,17 @@
         <textarea rows="" cols="" name="text" id="text" class="full-width medium"><mt:var name="text" escape="html"></textarea>
     </mtapp:setting>
 
-<mtignore>
-                        <mt:if name="object_loop">
-                        <h2><__trans phrase="Responses to this comment"></h2>
-                        <mt:include name="include/comment_table.tmpl">
-                        </mt:if>
-                        <mt:if name="junk_log_loop">
-                            <h3><__trans phrase="Final Feedback Rating">: <mt:var name="junk_score"></h3>
-                            <div class="list" id="junk-log">
-                                <table cellspacing="0">
-                                    <tr>
-                                        <th id="jl-test"><__trans phrase="Test"></th>
-                                        <th id="jl-score"><__trans phrase="Score"></th>
-                                        <th id="jl-results"><__trans phrase="Results"></th>
-                                    </tr>
-                            <mt:loop name="junk_log_loop">
-                                    <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-                                        <td><mt:var name="test" escape="html"></td>
-                                        <td><mt:var name="score"></td>
-                                        <td><mt:var name="log"></td>
-                                    </tr>
-                            </mt:loop>
-                                </table>
-                            </div>
-                        </mt:if>
-</mtignore>
-
 <mt:if name="position_actions_bottom">
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 </mt:if>
 
 </form>
+
+<mt:ignore>
+                                <mt:if name="object_loop">
+                                <h2><__trans phrase="Responses to this comment"></h2>
+                                <mt:include name="include/comment_table.tmpl">
+                                </mt:if>
+</mt:ignore>
+
 <mt:include name="include/footer.tmpl">

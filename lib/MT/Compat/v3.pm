@@ -256,9 +256,7 @@ sub add_conditional_tag {
     my $r = $MT::plugin_registry;
     $r->{tags} ||= {};
     $r->{tags}{block}{$name} = sub {
-        $condition->(@_)
-            ? MT::Template::Context::_hdlr_pass_tokens(@_)
-            : MT::Template::Context::_hdlr_pass_tokens_else(@_)
+        $condition->(@_) ? $_[0]->slurp(@_) : $_[0]->else(@_)
     };
 }
 
@@ -468,6 +466,7 @@ sub legacy_init {
             }
         }
     }
+
     # Change location of app_itemset_actions from
     #   app_itemset_actions -> app package -> stuff
     # to
@@ -493,6 +492,7 @@ sub legacy_init {
             }
         }
     }
+
     # Remap app_methods -> app pkg -> method hash
     # to applications -> app id -> method hash
     if (my $methods = delete $plugin->{app_methods} || ($plugin->can('app_methods') ? $plugin->app_methods : undef)) {
@@ -517,6 +517,7 @@ sub legacy_init {
             $r->{$fn} = $functions->{$fn};
         }
     }
+
     # Store object_classes in the plugin registry as a hash
     # with the key 'object_types'.
     if (my $classes = delete $plugin->{object_classes} || ($plugin->can('object_classes') ? $plugin->object_classes : undef)) {
@@ -524,6 +525,16 @@ sub legacy_init {
         $r = $r->{object_types} ||= {};
         foreach my $class (@$classes) {
             $r->{$class} = $class;
+        }
+    }
+
+    # Store junk_filters in the plugin registry as a hash
+    # with the key 'junk_filters'.
+    if (my $filters = delete $plugin->{junk_filters} || ($plugin->can('junk_filters') ? $plugin->junk_filters : undef)) {
+        my $r = $MT::plugin_registry;
+        $r = $r->{junk_filters} || {};
+        foreach my $f (keys %$filters) {
+            $r->{$f} = $filters->{$f};
         }
     }
 }

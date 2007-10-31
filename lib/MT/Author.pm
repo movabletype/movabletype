@@ -236,7 +236,7 @@ sub can_edit_entry {
     my($entry) = @_;
     unless (ref $entry) {
         require MT::Entry;
-        $entry = MT::Entry->load($entry, {cached_ok=>1});
+        $entry = MT::Entry->load($entry);
     }
     die unless $entry->isa('MT::Entry');
     my $perms = $author->permissions($entry->blog_id);
@@ -304,7 +304,7 @@ sub permissions {
         } elsif ($obj) {
             $blog_id = $obj;
             require MT::Blog;
-            $obj = MT::Blog->load($blog_id, { cached_ok => 1 });
+            $obj = MT::Blog->load($blog_id);
         }
         $cache_key .= "_blog_$blog_id";
         $terms->{blog_id} = [ 0, $blog_id ];

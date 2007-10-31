@@ -242,16 +242,39 @@ TC.attachLoadEvent( init );
 </div>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-        <input type="button" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', 'approve_item', {}, '<__trans phrase="to publish">')" value="<__trans phrase="Approve">" accesskey="p" title="<__trans phrase="Approve selected comments (p)">" />
-        <input type="button" onclick="doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">')" name="delete_comments" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete selected comments (x)">" />
     <mt:unless name="filter_spam">
-        <input type="button" onclick="doItemsAreJunk(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">')" value="<__trans phrase="Report as Spam">" accesskey="j" title="<__trans phrase="Report the selected comments as spam (j)">" />
+        <a href="javascript:void(0)"
+            onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', 'approve_item', {}, '<__trans phrase="to publish">')"
+            accesskey="a"
+            title="<__trans phrase="Publish selected [_1] (a)" params="<$mt:var name="object_label_plural"$>">"
+            ><__trans phrase="Publish"></a>
+    </mt:unless>
+        <a href="javascript:void(0)"
+            onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment">', '<__trans phrase="comments">')"
+            accesskey="x"
+            title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+            ><__trans phrase="Delete"></a>
+    <mt:unless name="filter_spam">
+        <a href="javascript:void(0)"
+            onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment">', '<__trans phrase="comments">')"
+            accesskey="j"
+            title="<__trans phrase="Report selected [_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
+            ><__trans phrase="Spam"></a>
     <mt:else>
-        <input type="button" onclick="doItemsAreNotJunk(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">')" value="<__trans phrase="Recover from Spam">" accesskey="j" title="<__trans phrase="Recover selected comments (j)">" />
-        <input type="button" onclick="submitFormConfirm(this.form, 'empty_junk', '<__trans phrase="Are you sure you want to remove all comments reported as spam?">')" value="<__trans phrase="Empty Spam Folder">" title="<__trans phrase="Deletes all comments reported as spam">" />
+        <a href="javascript:void(0)"
+            onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment">', '<__trans phrase="comments">')"
+            accesskey="j"
+            title="<__trans phrase="Report selected [_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
+            ><__trans phrase="Not Spam"></a>
+        <a href="javascript:void(0)"
+            onclick="submitFormConfirm(getByID('<$mt:var name="object_type"$>-listing-form'), 'empty_junk', '<__trans phrase="Are you sure you want to remove all comments reported as spam?">')"
+            title="<__trans phrase="Deletes all [_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
+            ><__trans phrase="Empty"></a>
     </mt:unless>
     <mt:if name="is_ip_filter">
-        <input type="button" onclick="doBanIP('<mt:var name="filter_val">')" name="banip" value="<__trans phrase="Ban This IP">" />
+        <a href="javascript:void(0)"
+            onclick="doBanIP('<mt:var name="filter_val">')"
+            ><__trans phrase="Ban This IP"></a>
     </mt:if>
 </mt:setvarblock>
 

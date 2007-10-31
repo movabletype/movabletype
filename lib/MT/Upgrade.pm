@@ -589,6 +589,43 @@ sub core_upgrade_functions {
             priority => 3.1,
             code => \&update_widget_templates,
         },
+        # This upgrade step is currently necessary for PostgreSQL
+        # which doesn't support adding a column, populating the existing
+        # records with a value.
+        'core_typify_category_records' => {
+            version_limit => 4.0023,
+            priority => 3.1,
+            updater => {
+                type => 'category',
+                label => 'Classifying category records...',
+                condition => sub {
+                    !$_[0]->column('class')
+                },
+                code => sub {
+                    $_[0]->class('category');
+                },
+                sql =>
+                    "update mt_category set category_class = 'category'
+                        where category_class is null",
+            },
+        },
+        'core_typify_entry_records' => {
+            version_limit => 4.0023,
+            priority => 3.1,
+            updater => {
+                type => 'entry',
+                label => 'Classifying entry records...',
+                condition => sub {
+                    !$_[0]->column('class')
+                },
+                code => sub {
+                    $_[0]->class('entry');
+                },
+                sql =>
+                    "update mt_entry set entry_class = 'entry'
+                        where entry_class is null",
+            },
+        },
         'core_merge_comment_response_templates' => {
             version_limit => 4.0023,
             priority => 3.1,
@@ -948,7 +985,7 @@ sub do_upgrade {
 
     @steps = ();
     if ($opt{Install}) {
-        my %init_params = (%{$opt{User}}, %{$opt{Blog}});
+        my %init_params = (%{$opt{User} || {}}, %{$opt{Blog} || {}});
         $self->install_database(\%init_params);
     } else {
         $self->upgrade_database();
@@ -986,7 +1023,7 @@ sub upgrade_database {
         my $needs_upgrade;
         $needs_upgrade = 1 if $config_schema_ver < MT->schema_version;
         if (!$needs_upgrade) {
-            foreach (@MT::Plugins) {
+            foreach (@MT::Components) {
                 $needs_upgrade = 1 if $_->needs_upgrade;
             }
         }
@@ -1797,7 +1834,7 @@ sub core_finish {
     }
 
     my $plugin_schema = $cfg->PluginSchemaVersion || {};
-    foreach my $plugin (@MT::Plugins) {
+    foreach my $plugin (@MT::Components) {
         my $ver = $plugin->schema_version;
         next unless $ver;
         next if $plugin->id eq 'core';

@@ -1,4 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="Restore from a Backup"></mt:setvarblock>
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="restore" value="1">
 <MTSetVarBlock name="content_header">
 </MTSetVarBlock>
@@ -27,7 +28,6 @@
     <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
         <input type="hidden" name="__mode" value="restore" />
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-        <fieldset>
         <mtapp:setting
             id="file"
             label="<__trans phrase="Backup file">"
@@ -44,12 +44,15 @@
                 <input name="ignore_schema_conflict" id="ignore_schema_conflict" type="checkbox" />
                 <label for="ignore_schema_conflict"><__trans phrase="Ignore schema version conflicts"></label>
         </mtapp:setting>
-            <div class="actions-bar actions-bar-left-label">
-                <div class="actions-bar-inner pkg">
-                    <input type="submit" value="<__trans phrase="Restore">" title="<__trans phrase="Restore (r)">" accesskey="r" />
-                </div>
-            </div>
-        </fieldset>
+        <mt:setvarblock name="action_buttons">
+            <button
+                type="submit"
+                accesskey="r"
+                title="<__trans phrase="Restore (r)">"
+                class="primary-button"
+                ><__trans phrase="Restore"></button>
+        </mt:setvarblock>
+        <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
     </form>
     </mt:if>
 </div>

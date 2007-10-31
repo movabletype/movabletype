@@ -13,25 +13,29 @@ if (progress) {
 <mt:if name="backup_success">
 <p><strong><__trans phrase="All of the data has been backed up successfully!"></strong></p>
     <mt:if name="files_loop">
-<div class="list" id="list-files">
-    <table cellspacing="0">
+<div id="files-listing" class="listing">
+    <table cellspacing="0" class="files-listing-table">
         <thead>
             <tr>
                 <th id="ft-filename"><__trans phrase="Filename"></th>
-                <th id="ft-view">&nbsp;</th>
             </tr>
         </thead>
         <tbody>
         <mt:loop name="files_loop">
             <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-                <td><mt:var name="filename"></td>
-                <td class="status-view"><mt:if name="url"><a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Download This File">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+                <td>
+            <mt:if name="url">
+                    <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">"><$mt:var name="filename"$></a>
+            <mt:else>
+                    <$mt:var name="filename"$>
+            </mt:if>
+                </td>
             </tr>
         </mt:loop>
         </tbody>
     </table>
-    <p><strong><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></strong></p>
 </div>
+<p><strong><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></strong></p>
     <mt:else>
 <form name="file_download" id="file_download" method="POST" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="backup_download" />

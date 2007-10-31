@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Spam Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="spam" value="1">
 <MTSetVarBlock name="content_header">
 
@@ -85,8 +86,6 @@ function scoreNudge(amount) {
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-<fieldset>
-
     <mtapp:setting
         id="auto_delete_junk"
         label="<__trans phrase="Auto-Delete Spam">"
@@ -119,11 +118,15 @@ function scoreNudge(amount) {
 <a href="javascript:void(0)" id="increase-threshold" onclick="return scoreNudge(1)"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" width="12" height="8" /> <__trans phrase="More Aggressive"></a>
     </mtapp:setting>
 
-</fieldset>
-
-<div style="text-align: center;">
-<input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
-</div>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
 

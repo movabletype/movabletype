@@ -178,17 +178,6 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'View your site' => '',
     'Edit this entry' => '',
 
-    ## Bookmarklet setup screen (bookmarklets.tmpl)
-    'Bookmarklets' => '',
-    'Post to MT Weblog' => '',
-    'Add MT It! to Windows right-click menu' => '',
-    '_USAGE_BOOKMARKLET_1' => '',
-    '_USAGE_BOOKMARKLET_2' => '',
-    '_USAGE_BOOKMARKLET_3' => '',
-    '_USAGE_BOOKMARKLET_4' => '',
-    '_USAGE_BOOKMARKLET_5' => '',
-    'Include:' => '',
-
     ## Blog Config: Navigation
     'Configuration' => '',
     'Core Setup' => '',
@@ -539,7 +528,6 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'Change password, contact info, select language' => '',
     'View Activity Log' => '',
     'System activity, logins' => '',
-    'Set up bookmarklets' => '',
     'Bookmarklets enable one-click publishing' => '',
 
     ## List & Edit Entries screen (list_entry.tmpl)

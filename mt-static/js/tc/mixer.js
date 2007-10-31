@@ -28,6 +28,7 @@ TC.Mixer = function( name )
 	this.tagMatches = [];
 	this.displays = [];
 	this.entryEvents = [];
+	this.onselect = null;
 	
 	var self = this;
 	this.sortEntryClosure = function( a, b ) { return self.sortEntry( a, b ); };
@@ -118,6 +119,9 @@ TC.Mixer.prototype.selectEntry = function( name )
 {
 	this.name = name;
 	this.remix();
+	if (this.onselect) {
+	    this.onselect(this, name);
+	}
 }
 
 TC.Mixer.prototype.addEntry = 

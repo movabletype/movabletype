@@ -16,6 +16,7 @@ local_js = mt-static/mt_de.js \
 core_js = mt-static/js/common/Core.js \
           mt-static/js/common/JSON.js \
           mt-static/js/common/Timer.js \
+          mt-static/js/common/Cookie.js \
           mt-static/js/common/DOM.js \
           mt-static/js/common/Observable.js \
           mt-static/js/common/Autolayout.js \
@@ -25,21 +26,37 @@ core_js = mt-static/js/common/Core.js \
           mt-static/js/common/Cache.js \
           mt-static/js/common/Client.js \
           mt-static/js/common/Template.js \
-          mt-static/js/menus.js \
           mt-static/js/tc.js \
           mt-static/js/tc/tableselect.js
+
+main_css = mt-static/css/reset.css \
+	mt-static/css/structure.css \
+	mt-static/css/messaging.css \
+	mt-static/css/mt3_styles.css \
+	mt-static/css/utilities.css
+
+simple_css = mt-static/css/reset.css \
+	mt-static/css/chromeless.css \
+	mt-static/css/messaging.css \
+	mt-static/css/utilities.css
 
 all: code
 
 mt-static/js/mt_core_compact.js: $(core_js)
 	cat $(core_js) > mt-static/js/mt_core_compact.js
 
-#all: code docs
+mt-static/css/main.css: $(main_css)
+	cat $(main_css) > mt-static/css/main.css
+
+mt-static/css/simple.css: $(simple_css)
+	cat $(simple_css) > mt-static/css/simple.css
 
 .PHONY: code-common code code-en_US code-de code-fr code-nl \
 	code-es code-ja
 code_common = lib/MT.pm php/mt.php mt-check.cgi \
         mt-static/js/mt_core_compact.js \
+        mt-static/css/main.css \
+        mt-static/css/simple.css \
 	mt-config.cgi-original index.html
 
 code: check code-$(BUILD_LANGUAGE)

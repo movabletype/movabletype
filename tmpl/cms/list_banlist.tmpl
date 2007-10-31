@@ -61,18 +61,35 @@ TC.attachLoadEvent( init );
 </mt:if>
 
 <div class="create-inline" id="create-inline-ipban">
-    <form method="post" action="<mt:var name="script_url">">
+    <form id="create-inline-ipban-form" method="post" action="<mt:var name="script_url">">
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="__mode" value="save" />
         <input type="hidden" name="_type" value="banlist" />
         <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-        <p>
-            <label for="ip"><__trans phrase="IP Address">:</label> <input name="ip" id="ip" value="<mt:var name="ip">" maxlength="15" />
-            &nbsp;
-            <input type="submit" name="save" value="<__trans phrase="Ban IP Address">" />
-            <input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="cancelCreateMode(); return false" />
-        </p>
+        <mtapp:setting
+            id="ip-address"
+            label="<__trans phrase="IP Address">"
+            label_class="inline"
+            hint=""
+            show_hint="0">
+            <input name="ip" id="ip-address" value="<mt:var name="ip">" maxlength="15" />
+        </mtapp:setting>
+        <mtapp:setting
+            id="actions"
+            label="<__trans phrase="Actions">"
+            label_class="inline field-no-header"
+            hint=""
+            show_hint="0">
+            <span class="buttons">
+                <a href="javascript:void(0)"
+                    onclick="submitForm(getByID('create-inline-ipban-form'), '')"
+                    ><__trans phrase="Save"></a>
+                <a href="javascript:void(0)"
+                    onclick="cancelCreateMode(); return false"
+                    ><__trans phrase="Cancel"></a>
+            </span>
+        </mtapp:setting>
     </form>
 </div>
 

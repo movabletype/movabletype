@@ -1,4 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="Import"></mt:setvarblock>
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="import" value="1">
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/tools_content_nav.tmpl">
@@ -43,10 +44,14 @@ function selectBlog() {
 
     <mtapp:setting
         id="import_to"
-        label="<__trans phrase="Import to">"
-        hint="<__trans phrase="Select a blog for importing.">">
-        <p><strong><span id="import_blog_name"><mt:if name="blog_id"><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)<mt:else>(<__trans phrase="None selected.">)</mt:if></span></strong>
-        <mt:unless name="blog_id"><input type="button" onclick="return selectBlog();" value="<__trans phrase="Select...">" /></mt:unless></p>
+        label="<__trans phrase="Blog to Import">"
+        hint="<__trans phrase="Select a blog to import.">"
+        content_class="field-content-text">
+        <mt:if name="blog_id">
+            <mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)
+        <mt:else>
+            <a href="javascript:void(0)" onclick="return selectBlog()"><__trans phrase="Select blog"></a>
+        </mt:if>
     </mtapp:setting>
 
 <mt:if name="importer_loop">
@@ -118,7 +123,7 @@ function selectBlog() {
         label="<__trans phrase="Text Formatting">">
 <select name="convert_breaks" id="convert_breaks">
 <mt:loop name="text_filters">
-<option value="<mt:var name="filter_key">"<mt:if name="filter_selected"> selected="selected"</mt:if>><mt:var name="filter_label"></option>
+<option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
 </mt:loop>
 </select>
     </mtapp:setting>
@@ -153,7 +158,15 @@ function selectBlog() {
 
 </div>
 
-<p style="text-align: center;"><input type="submit" value="<__trans phrase="Import Entries">" title="<__trans phrase="Import Entries (i)">" accesskey="i" /></p>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Import Entries (s)">"
+        class="primary-button"
+        ><__trans phrase="Import Entries"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </fieldset>
 </form>

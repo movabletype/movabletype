@@ -78,7 +78,7 @@ function is_valid_path(path_){
             <p>
     <mt:if name="old_site_path">
                 <input type="hidden" name="old_site_path_<mt:var name="id">" id="old_site_path_<mt:var name="id">" value="<mt:var name="old_site_path" escape="html">" />
-                Old Path: <span><mt:var name="old_site_path" escape="html"></span>
+                <__trans phrase="Old Path:"> <span><mt:var name="old_site_path" escape="html"></span>
                 <br />
     </mt:if>
                 <__trans phrase="New Site Path:"> <input class="path_field" name="site_path_<mt:var name="id">" id="site_path_<mt:var name="id">" size="50" />
@@ -86,7 +86,7 @@ function is_valid_path(path_){
             <p>
     <mt:if name="old_site_url">
                 <input type="hidden" name="old_site_url_<mt:var name="id">" id="old_site_url_<mt:var name="id">" value="<mt:var name="old_site_url" escape="html">" />
-                Old URL: <span><mt:var name="old_site_url" escape="html"></span>
+                <__trans phrase="Old URL:"> <span><mt:var name="old_site_url" escape="html"></span>
                 <br />
     </mt:if>
                 <__trans phrase="New Site URL:"> <input class="path_field" class ="site_url" name="site_url_<mt:var name="id">" id="site_url_<mt:var name="id">" size="50" />
@@ -94,7 +94,7 @@ function is_valid_path(path_){
     <mt:if name="old_archive_path">
             <p>
                 <input type="hidden" name="old_archive_path_<mt:var name="id">" id="old_archive_path_<mt:var name="id">" value="<mt:var name="old_archive_path" escape="html">" />
-                Old Archive Path: <span><mt:var name="old_archive_path" escape="html"></span>
+                <__trans phrase="Old Archive Path:"> <span><mt:var name="old_archive_path" escape="html"></span>
                 <br />
                 <__trans phrase="New Archive Path:"> <input class="path_field" name="archive_path_<mt:var name="id">" id="archive_path_<mt:var name="id">" size="50" />
             </p>
@@ -102,7 +102,7 @@ function is_valid_path(path_){
     <mt:if name="old_archive_url">
             <p>
                 <input type="hidden" name="old_archive_url_<mt:var name="id">" id="old_archive_url_<mt:var name="id">" value="<mt:var name="old_archive_url" escape="html">" />
-                Old Archive URL: <span><mt:var name="old_archive_url" escape="html"></span>
+                <__trans phrase="Old Archive URL:"> <span><mt:var name="old_archive_url" escape="html"></span>
                 <br />
                 <__trans phrase="New Archive URL:"> <input class="path_field" class ="archive_url" name="archive_url_<mt:var name="id">" id="archive_url_<mt:var name="id">" size="50" />
             </p>
@@ -111,8 +111,14 @@ function is_valid_path(path_){
     </mt:loop>
     </dl>
     <div class="actions-bar">
-        <div class="actions-bar-inner">
-            <input type="submit" value="<__trans phrase="Continue">" />
+        <div class="actions-bar-inner pkg actions">
+            <button
+                value="<__trans phrase="Continue">"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Continue (s)">"
+                class="primary-button"
+                ><__trans phrase="Continue"></button>
         </div>
     </div>
 </form>

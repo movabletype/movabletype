@@ -46,7 +46,13 @@ BEGIN {
             'entry'           => 'MT::Entry',
             'author'          => 'MT::Author',
             'asset'           => 'MT::Asset',
+            'file'            => 'MT::Asset',
             'asset.image'     => 'MT::Asset::Image',
+            'image'           => 'MT::Asset::Image',
+            'asset.audio'     => 'MT::Asset::Audio',
+            'audio'           => 'MT::Asset::Audio',
+            'asset.video'     => 'MT::Asset::Video',
+            'video'           => 'MT::Asset::Video',
             'entry.page'      => 'MT::Page',
             'page'            => 'MT::Page',
             'category.folder' => 'MT::Folder',
@@ -83,10 +89,10 @@ BEGIN {
             'objectasset'     => 'MT::ObjectAsset',
 
             # TheSchwartz tables
-            'schwartz_job'    => 'MT::TheSchwartz::Job',
-            'schwartz_error'  => 'MT::TheSchwartz::Error',
-            'schwartz_exitstatus' => 'MT::TheSchwartz::ExitStatus',
-            'schwartz_funcmap' => 'MT::TheSchwartz::FuncMap',
+            'ts_job'        => 'MT::TheSchwartz::Job',
+            'ts_error'      => 'MT::TheSchwartz::Error',
+            'ts_exitstatus' => 'MT::TheSchwartz::ExitStatus',
+            'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
         },
         permissions => {
             'system.administer' => {
@@ -450,6 +456,7 @@ BEGIN {
                 default => 1,
                 handler => \&ExternalUserManagement,
             },
+            'AutoSaveFrequency'         => { default => 5 },
             'FuturePostFrequency'       => { default => 1 },
             'ExternalUserSyncFrequency' => { default => 60 },
             'AssetCacheDir'             => { default => 'assets_c', },
@@ -457,7 +464,7 @@ BEGIN {
             'CommenterRegistration'     => {
                 type    => 'HASH',
                 default => {
-                    Allow  => '0',
+                    Allow  => '1',
                     Notify => q(),
                 },
             },
@@ -509,6 +516,10 @@ BEGIN {
             'richtext' => {
                 label   => 'Rich Text',
                 handler => 'MT::Util::rich_text_transform',
+                condition => sub {
+                    my ($type) = @_;
+                    return 1 if $type ne 'comment';
+                },
             },
         },
         ping_servers  => {
@@ -659,6 +670,13 @@ sub load_core_tasks {
                 MT::Core->remove_temporary_files;
             },
         },
+        'RemoveExpiredUserSessions' => {
+            label => 'Remove Expired User Sessions',
+            frequency => 60 * 60 * 24,   # once a day
+            code => sub {
+                MT::Core->remove_expired_sessions;
+            },
+        },
     };
 }
 
@@ -675,6 +693,16 @@ sub remove_temporary_files {
         }
     }
     # This is a silent task; no need to log removal of temporary files
+    return '';
+}
+
+sub remove_expired_sessions {
+    require MT::Session;
+
+    my $expired = MT->config->UserSessionTimeout;
+    MT::Session->remove(
+        { kind => 'US', start => [ undef, time - $expired ] },
+        { range => { start => 1 } } );
     return '';
 }
 

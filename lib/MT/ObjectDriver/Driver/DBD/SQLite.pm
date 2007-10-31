@@ -19,7 +19,6 @@ BEGIN {
         *bind_param_attributes = sub {
             my ($dbd, $data_type) = @_;
             if ($data_type && $data_type->{type} eq 'blob') {
-                print STDERR "hogehgo";
                 return SQL_BLOB;
             }
             return;
@@ -129,7 +128,7 @@ sub count {
         $args->{count_distinct} = { $col => 1 };
     }
 
-    return $driver->_select_aggregate(
+    my $result = $driver->_select_aggregate(
         select   => $select,
         class    => $class,
         terms    => $terms,
@@ -140,6 +139,8 @@ sub count {
                      offset => undef,
                     },
     );
+    delete $args->{count_distinct};
+    $result;
 }
 1;
 __END__

@@ -1,8 +1,6 @@
 <mt:setvar name="page_title" value="<__trans phrase="Entry Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="entries" value="1">
-<MTSetVarBlock name="content_header">
-
-</MTSetVarBlock>
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/cfg_content_nav.tmpl">
 </MTSetVarBlock>
@@ -28,29 +26,28 @@
 <div id="cfg-entry_display">
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
-<input type="hidden" name="id" value="<mt:var name="id">" />
-<input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="_type" value="blog" />
-<input type="hidden" name="cfg_screen" value="cfg_entry" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<h3><__trans phrase="Display Settings"></h3>
+    <input type="hidden" name="id" value="<mt:var name="id">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="cfg_screen" value="cfg_entry" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset>
+<h3><__trans phrase="Display Settings"></h3>
 
     <mtapp:setting
         id="list_on_index"
         label="<__trans phrase="Entries to Display">"
-        hint="<__trans phrase="Select the number of days' entries or the exact number of entries you would like displayed on your blog.">"
+        hint="<__trans phrase="Select the number of days of entries or the exact number of entries you would like displayed on your blog.">"
         help_page="blog_settings_general"
         help_section="entries_to_display">
-<input name="list_on_index" id="list_on_index" size="2" value="<mt:var name="list_on_index" escape="html">" />
-<select name="days_or_posts" id="days_or_posts">
-<option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
-<option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Entries"></option>
-</select>
+        <input name="list_on_index" id="list_on_index" size="2" value="<mt:var name="list_on_index" escape="html">" />
+        <select name="days_or_posts" id="days_or_posts">
+            <option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
+            <option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Entries"></option>
+        </select>
     </mtapp:setting>
 
     <mtapp:setting
@@ -59,10 +56,10 @@
         hint="<__trans phrase="Select whether you want your entries displayed in ascending (oldest at top) or descending (newest at top) order.">"
         help_page="blog_settings_general"
         help_section="entry_order">
-<select name="sort_order_posts" id="sort_order_posts">
-<option value="ascend"<mt:if name="sort_order_posts_ascend"> selected="selected"</mt:if>><__trans phrase="Ascending"></option>
-<option value="descend"<mt:if name="sort_order_posts_descend"> selected="selected"</mt:if>><__trans phrase="Descending"></option>
-</select>
+        <select name="sort_order_posts" id="sort_order_posts">
+            <option value="ascend"<mt:if name="sort_order_posts_ascend"> selected="selected"</mt:if>><__trans phrase="Ascending"></option>
+            <option value="descend"<mt:if name="sort_order_posts_descend"> selected="selected"</mt:if>><__trans phrase="Descending"></option>
+        </select>
     </mtapp:setting>
 
     <mtapp:setting
@@ -71,7 +68,7 @@
         hint="<__trans phrase="Enter the number of words that should appear in an auto-generated excerpt.">"
         help_page="blog_settings_general"
         help_section="excerpt_length">
-<input name="words_in_excerpt" id="words_in_excerpt" size="3" value="<mt:var name="words_in_excerpt" escape="html">" />
+        <input name="words_in_excerpt" id="words_in_excerpt" size="3" value="<mt:var name="words_in_excerpt" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -80,26 +77,26 @@
         hint="<__trans phrase="Select the language in which you would like dates on your blog displayed.">"
         help_page="blog_settings_general"
         help_section="date_language">
-<select name="language" id="language">
-<option value="cz"<mt:if name="language_cz"> selected="selected"</mt:if>><__trans phrase="Czech"></option>
-<option value="dk"<mt:if name="language_dk"> selected="selected"</mt:if>><__trans phrase="Danish"></option>
-<option value="nl"<mt:if name="language_nl"> selected="selected"</mt:if>><__trans phrase="Dutch"></option>
-<option value="en"<mt:if name="language_en"> selected="selected"</mt:if>><__trans phrase="English"></option>
-<option value="et"<mt:if name="language_et"> selected="selected"</mt:if>><__trans phrase="Estonian"></option>
-<option value="fr"<mt:if name="language_fr"> selected="selected"</mt:if>><__trans phrase="French"></option>
-<option value="de"<mt:if name="language_de"> selected="selected"</mt:if>><__trans phrase="German"></option>
-<option value="is"<mt:if name="language_is"> selected="selected"</mt:if>><__trans phrase="Icelandic"></option>
-<option value="it"<mt:if name="language_it"> selected="selected"</mt:if>><__trans phrase="Italian"></option>
-<option value="ja"<mt:if name="language_ja"> selected="selected"</mt:if>><__trans phrase="Japanese"></option>
-<option value="no"<mt:if name="language_no"> selected="selected"</mt:if>><__trans phrase="Norwegian"></option>
-<option value="pl"<mt:if name="language_pl"> selected="selected"</mt:if>><__trans phrase="Polish"></option>
-<option value="pt"<mt:if name="language_pt"> selected="selected"</mt:if>><__trans phrase="Portuguese"></option>
-<option value="sk"<mt:if name="language_sk"> selected="selected"</mt:if>><__trans phrase="Slovak"></option>
-<option value="si"<mt:if name="language_si"> selected="selected"</mt:if>><__trans phrase="Slovenian"></option>
-<option value="es"<mt:if name="language_es"> selected="selected"</mt:if>><__trans phrase="Spanish"></option>
-<option value="fi"<mt:if name="language_fi"> selected="selected"</mt:if>><__trans phrase="Suomi"></option>
-<option value="se"<mt:if name="language_se"> selected="selected"</mt:if>><__trans phrase="Swedish"></option>
-</select>
+        <select name="language" id="language">
+            <option value="cz"<mt:if name="language_cz"> selected="selected"</mt:if>><__trans phrase="Czech"></option>
+            <option value="dk"<mt:if name="language_dk"> selected="selected"</mt:if>><__trans phrase="Danish"></option>
+            <option value="nl"<mt:if name="language_nl"> selected="selected"</mt:if>><__trans phrase="Dutch"></option>
+            <option value="en"<mt:if name="language_en"> selected="selected"</mt:if>><__trans phrase="English"></option>
+            <option value="et"<mt:if name="language_et"> selected="selected"</mt:if>><__trans phrase="Estonian"></option>
+            <option value="fr"<mt:if name="language_fr"> selected="selected"</mt:if>><__trans phrase="French"></option>
+            <option value="de"<mt:if name="language_de"> selected="selected"</mt:if>><__trans phrase="German"></option>
+            <option value="is"<mt:if name="language_is"> selected="selected"</mt:if>><__trans phrase="Icelandic"></option>
+            <option value="it"<mt:if name="language_it"> selected="selected"</mt:if>><__trans phrase="Italian"></option>
+            <option value="ja"<mt:if name="language_ja"> selected="selected"</mt:if>><__trans phrase="Japanese"></option>
+            <option value="no"<mt:if name="language_no"> selected="selected"</mt:if>><__trans phrase="Norwegian"></option>
+            <option value="pl"<mt:if name="language_pl"> selected="selected"</mt:if>><__trans phrase="Polish"></option>
+            <option value="pt"<mt:if name="language_pt"> selected="selected"</mt:if>><__trans phrase="Portuguese"></option>
+            <option value="sk"<mt:if name="language_sk"> selected="selected"</mt:if>><__trans phrase="Slovak"></option>
+            <option value="si"<mt:if name="language_si"> selected="selected"</mt:if>><__trans phrase="Slovenian"></option>
+            <option value="es"<mt:if name="language_es"> selected="selected"</mt:if>><__trans phrase="Spanish"></option>
+            <option value="fi"<mt:if name="language_fi"> selected="selected"</mt:if>><__trans phrase="Suomi"></option>
+            <option value="se"<mt:if name="language_se"> selected="selected"</mt:if>><__trans phrase="Swedish"></option>
+        </select>
     </mtapp:setting>
 
     <mtapp:setting
@@ -113,9 +110,9 @@
 
 </fieldset>
 
+<fieldset>
 <h3><__trans phrase="New Entry Defaults"></h3>
 
-<fieldset>
     <mtapp:setting
         id="status_default"
         label="<__trans phrase="Entry Status">"
@@ -162,18 +159,23 @@
         </mt:unless>
     </mtapp:setting>
 
-
 </fieldset>
 
+<fieldset>
 <h3><__trans phrase="Default Editor Fields"></h3>
 
-<fieldset>
 <mt:include name="include/cfg_entries_edit_page.tmpl">
 </fieldset>
 
-<div style="text-align: center;">
-<input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
-</div>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
 

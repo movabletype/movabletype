@@ -115,6 +115,8 @@ sub loop {
         if $args->{ignore_archive_context};
 
     require MT::Blog;
+    $args{'sort'} = 'name';
+    $args{direction} = 'ascend';
     my $iter    = MT::Blog->load_iter(\%terms, \%args);
     my $res     = '';
     while (my $blog = $iter->()) {

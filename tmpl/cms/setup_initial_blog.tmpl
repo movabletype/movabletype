@@ -105,7 +105,11 @@ function is_valid_url(url_){
 <p class="intro"><__trans phrase="In order to properly publish your blog, you must provide Movable Type with your blog's URL and the path on the filesystem where its files should be published."></p>
 
 <mt:if name="error">
-<div class="error-message"><mt:var name="error"></div>
+    <mtapp:statusmsg
+        id="setup-blog-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
 </mt:if>
 
 <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">

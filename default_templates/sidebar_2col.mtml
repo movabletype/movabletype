@@ -11,7 +11,7 @@
         <div class="widget-search-feed widget">
             <h3 class="widget-header"><__trans phrase="Feed Subscription"></h3>
             <div class="widget-content">
-                <p><$MTGetVar name="search_feed_description"$> <__trans phrase="(<a href="[_1]">What is this?</a>)" params="http://www.sixapart.com/about/feeds"></p>
+                <p><$MTGetVar name="search_feed_description"$></p>
                 <p><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<__trans phrase="Subscribe to feed">"><__trans phrase="Subscribe to feed"></a></p>
             </div>
         </div>
@@ -42,10 +42,10 @@
         <div class="widget-welcome widget">
             <h3 class="widget-header">
     <MTIf name="entry_template">
-                <__trans phrase="About This Post">
+                <__trans phrase="About this Entry">
     <MTElse>
         <MTIf name="archive_template">
-                <__trans phrase="About This Archive">
+                <__trans phrase="About this Archive">
         </MTIf>
     </MTIf>
     <MTIf name="archive_index">
@@ -57,12 +57,12 @@
                 <p><__trans phrase="This page contains links to all the archived content."></p>
     </MTIf>
     <MTIf name="entry_template">
-                <p class="first"><__trans phrase="This page contains a single entry by [_1] posted on <em>[_2]</em>." params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>"></p>
+                <p class="first"><__trans phrase="This page contains a single entry by [_1] published on <em>[_2]</em>." params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>"></p>
         <MTEntryPrevious>
-                <p><__trans phrase="<a href="[_1]">[_2]</a> was the previous post in this blog." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p>
+                <p><__trans phrase="<a href="[_1]">[_2]</a> was the previous entry in this blog." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p>
         </MTEntryPrevious>
         <MTEntryNext>
-                <p><__trans phrase="<a href="[_1]">[_2]</a> is the next post in this blog." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p>
+                <p><__trans phrase="<a href="[_1]">[_2]</a> is the next entry in this blog." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p>
         </MTEntryNext>
     </MTIf>
     <MTIf name="category_archive">
@@ -114,45 +114,9 @@
             </div>
         </div>
 </MTIf>
-<MTIf name="module_category-monthly_archives">
-    <MTIfArchiveTypeEnabled archive_type="Category-Monthly">
-        <div class="widget-categories widget">
-            <h3 class="widget-header"><__trans phrase="[_1]: Monthly Archives" params="<$MTArchiveTitle$>"></h3>
-            <div class="widget-content">
-        <MTArchiveList archive_type="Category-Monthly">
-            <MTArchiveListHeader>
-                <ul class="widget-list">
-            </MTArchiveListHeader>
-                    <li class="widget-list-item"><a href="<$MTArchiveLink$>"><__trans phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
-            <MTArchiveListFooter>
-                </ul>
-            </MTArchiveListFooter>
-        </MTArchiveList>
-            </div>
-        </div>
-    </MTIfArchiveTypeEnabled>
-</MTIf>
-<MTIf name="module_author-monthly_archives">
-    <MTIfArchiveTypeEnabled archive_type="Author-Monthly">
-        <MTArchiveList archive_type="Author-Monthly">
-            <MTArchiveListHeader>
-        <div class="widget-categories widget">
-            <h3 class="widget-header"><__trans phrase="[_1]: Monthly Archives" params="<$MTAuthorDisplayName$>"></h3>
-            <div class="widget-content">
-                <ul class="widget-list">
-            </MTArchiveListHeader>
-                    <li class="widget-list-item"><a href="<$MTArchiveLink$>"><__trans phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
-            <MTArchiveListFooter>
-                </ul>
-            </MTArchiveListFooter>
-        </MTArchiveList>
-            </div>
-        </div>
-    </MTIfArchiveTypeEnabled>
-</MTIf>
-<MTIf name="module_recent_posts">
+<MTIf name="module_recent_entries">
         <div class="widget-archives widget">
-            <h3 class="widget-header"><__trans phrase="Recent Posts"></h3>
+            <h3 class="widget-header"><__trans phrase="Recent Entries"></h3>
             <div class="widget-content">
                 <ul class="widget-list">
     <MTEntries lastn="10">
@@ -162,6 +126,22 @@
             </div>
         </div>
 </MTIf>
+<MTIf name="main_index">
+    <MTIfNonZero tag="AssetCount">
+        <MTAssets type="image" lastn="10">
+            <MTAssetsHeader>
+        <div class="widget-assets widget">
+            <h3 class="widget-header">Photos</h3>
+            <div class="widget-content">
+                <ul class="widget-list"></MTAssetsHeader>
+                <li class="item"><a class="asset-image" href="<$MTAssetURL$>"><img src="<$MTAssetThumbnailURL height="70"$>" class="asset-img-thumb" alt="<$MTAssetLabel$>" title="<$MTAssetLabel$>" /></a></li>
+            <MTAssetsFooter></ul>
+            </div>
+        </div>
+            </MTAssetsFooter>
+        </MTAssets>
+    </MTIfNonZero>
+</MTIf> 
 <MTIf name="module_category_archives">
     <MTIfArchiveTypeEnabled archive_type="Category">
         <div class="widget-categories widget">
@@ -185,6 +165,18 @@
             </div>
         </div>
     </MTIfArchiveTypeEnabled>
+</MTIf>
+<MTIf name="main_index">
+        <div class="widget-cloud widget">
+            <h3 class="widget-header"><__trans phrase="Tag Cloud"></h3>
+            <div class="widget-content">
+                <ul class="widget-list">
+    <MTTags limit="20" max="10" sort_by="rank">
+                    <li class="rank-<$MTTagRank$> widget-list-item"><a href="<$MTTagSearchLink$>"><$MTTagName$></a></li>
+    </MTTags>
+                </ul>
+            </div>
+        </div>
 </MTIf>
 <MTIf name="module_author_archives">
     <MTIfArchiveTypeEnabled archive_type="Author">
@@ -222,20 +214,48 @@
         </MTArchiveList>
     </MTIfArchiveTypeEnabled>
 </MTIf>
+<MTIf name="module_category-monthly_archives">
+    <MTIfArchiveTypeEnabled archive_type="Category-Monthly">
+        <div class="widget-categories widget">
+            <h3 class="widget-header"><__trans phrase="[_1]: Monthly Archives" params="<$MTArchiveTitle$>"></h3>
+            <div class="widget-content">
+        <MTArchiveList archive_type="Category-Monthly">
+            <MTArchiveListHeader>
+                <ul class="widget-list">
+            </MTArchiveListHeader>
+                    <li class="widget-list-item"><a href="<$MTArchiveLink$>"><__trans phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
+            <MTArchiveListFooter>
+                </ul>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+            </div>
+        </div>
+    </MTIfArchiveTypeEnabled>
+</MTIf>
+<MTIf name="module_author-monthly_archives">
+    <MTIfArchiveTypeEnabled archive_type="Author-Monthly">
+        <MTArchiveList archive_type="Author-Monthly">
+            <MTArchiveListHeader>
+        <div class="widget-categories widget">
+            <h3 class="widget-header"><__trans phrase="[_1]: Monthly Archives" params="<$MTAuthorDisplayName$>"></h3>
+            <div class="widget-content">
+                <ul class="widget-list">
+            </MTArchiveListHeader>
+                    <li class="widget-list-item"><a href="<$MTArchiveLink$>"><__trans phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
+            <MTArchiveListFooter>
+                </ul>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+            </div>
+        </div>
+    </MTIfArchiveTypeEnabled>
+</MTIf>
         <div class="widget-syndicate widget">
             <div class="widget-content">
-                <a href="<$MTLink template="atom"$>"><__trans phrase="Subscribe to this blog's feed"></a><br />
-                <__trans phrase="(<a href="[_1]">What is this?</a>)" params="http://www.sixapart.com/about/feeds">
+                <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" />
+                <a href="<$MTLink template="atom"$>"><__trans phrase="Subscribe to this blog's feed"></a>
             </div>
         </div>
-    <MTBlogIfCCLicense>
-        <div class="widget-creative-commons widget">
-            <div class="widget-content">
-                <a href="<$MTBlogCCLicenseURL$>"><img alt="Creative Commons License" src="<$MTBlogCCLicenseImage$>" /></a><br />
-                <__trans phrase="This blog is licensed under a <a href="[_1]">Creative Commons License</a>." params="<$MTBlogCCLicenseURL$>">
-            </div>
-        </div>
-    </MTBlogIfCCLicense>
         <div class="widget-powered widget">
             <div class="widget-content">
                 <a href="http://www.movabletype.org/"><img src="<$MTStaticWebPath$>images/mt4-bug-pbmt-white.png" alt="<__trans phrase="Powered by Movable Type [_1]" params="<$MTVersion$>">" width="120" height="75" /></a>

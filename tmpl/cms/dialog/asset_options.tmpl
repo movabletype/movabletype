@@ -158,9 +158,19 @@
 <mt:var name="options_snippet">
     </div>
     <div class="actions-bar">
-        <div class="actions-bar-inner">
-            <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
-            <input type="submit" value="<__trans phrase="Finish">" />
+        <div class="actions-bar-inner actions">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Finish (s)">"
+                class="primary-button"
+                ><__trans phrase="Finish"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
         </div>
     </div>
 </form>

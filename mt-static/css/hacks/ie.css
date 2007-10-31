@@ -64,6 +64,9 @@ ul.main-nav-list ul a {
     height: 1%;
 }
 
+.actions-bar button {
+    border: none !important;
+}
 
 /* 3.3x hacks that may still be needed */
 /*    body.edit-entry #entry-container select { margin: 0; }*/

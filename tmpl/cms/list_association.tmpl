@@ -24,14 +24,11 @@
 </mt:if>
 <mt:setvarblock name="action_buttons">
     <mt:if name="can_create_association">
-    <input
-       type="button"
-       name="remove_associations"
-       accesskey="x"
-       title="<MT_TRANS phrase="Remove selected assocations (x)">"
-       value="<MT_TRANS phrase="Revoke Permission">"
-       onclick="doRemoveItems(this.form, '<MT_TRANS phrase="association">', '<MT_TRANS phrase="associations">')"
-    />
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<MT_TRANS phrase="permission">', '<MT_TRANS phrase="permissions">')"
+        accesskey="x"
+        title="<MT_TRANS phrase="Remove selected assocations (x)">"
+        ><__trans phrase="Revoke Permission"></a>
     </mt:if>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">

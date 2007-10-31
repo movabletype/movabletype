@@ -11,6 +11,11 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
         $ctx->localize($localvars);
         $blog_id = $ctx->stash('blog_id');
         $args['blog_id'] = $ctx->stash('blog_id');
+        $tag = $ctx->this_tag();
+        if (($tag == 'mtentryassets') || ($tag == 'mtpageassets')) {
+            $entry = $ctx->stash('entry');
+            if ($entry) $args['entry_id'] = $entry['entry_id'];
+        }
         $args['exclude_thumb'] = 1;
 
         $assets = $ctx->mt->db->fetch_assets($args);

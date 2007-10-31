@@ -2,10 +2,7 @@
 
 /* codebase */
 @import url("css/reset.css");
-@import url("css/fonts.css");
-
-/* shared */
-@import url("css/tableselect.css");
+/*@import url("css/fonts.css");*/
 
 /* layout */
 @import url("css/structure.css");
@@ -13,11 +10,8 @@
 /* messaging */
 @import url("css/messaging.css");
 
-/* debug messages */
-@import url("css/debug.css");
-
 /* branding */
-@import url("css/paint.css");
+/*@import url("css/paint.css");*/
 
 /* old styles... being phased out */
 @import url("css/mt3_styles.css");

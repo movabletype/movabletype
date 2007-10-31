@@ -176,6 +176,8 @@ sub core_tags {
             Ignore => sub { '' },
 
             # Asset handlers
+            EntryAssets => \&_hdlr_assets,
+            PageAssets => \&_hdlr_assets,
             Assets => \&_hdlr_assets,
             AssetTags => \&_hdlr_asset_tags,
             Asset => \&_hdlr_asset,
@@ -226,6 +228,7 @@ sub core_tags {
             CGIRelativeURL => \&_hdlr_cgi_relative_url,
             CGIHost => \&_hdlr_cgi_host,
             StaticWebPath => \&_hdlr_static_path,
+            StaticFilePath => \&_hdlr_static_file_path,
             AdminScript => \&_hdlr_admin_script,
             CommentScript => \&_hdlr_comment_script,
             TrackbackScript => \&_hdlr_trackback_script,
@@ -406,6 +409,7 @@ sub core_tags {
 
             AssetID => \&_hdlr_asset_id,
             AssetFileName => \&_hdlr_asset_file_name,
+            AssetLabel => \&_hdlr_asset_label,
             AssetURL => \&_hdlr_asset_url,
             AssetType => \&_hdlr_asset_type,
             AssetMimeType => \&_hdlr_asset_mime_type,
@@ -441,7 +445,6 @@ sub core_tags {
             FolderDescription => \&_hdlr_folder_description,
             FolderID => \&_hdlr_folder_id,
             FolderLabel => \&_hdlr_folder_label,
-            FolderPath => \&_hdlr_folder_path,
             FolderCount => \&_hdlr_folder_count,
             FolderPath => \&_hdlr_folder_path,
             SubFolderRecurse => \&_hdlr_sub_folder_recurse,
@@ -915,8 +918,8 @@ sub _hdlr_app_action_bar {
     return $ctx->build(<<EOT);
 <div class="actions-bar actions-bar-$pos">
     <div class="actions-bar-inner pkg">$pager
-        <span class="button-actions">$buttons</span>
-        <span class="plugin-actions">
+        <span class="button-actions actions">$buttons</span>
+        <span class="plugin-actions actions">
     <mt:include name="include/itemset_action_widget.tmpl">
         </span>
     </div>
@@ -1137,6 +1140,7 @@ sub _hdlr_app_setting {
     my $show_label = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown = exists $args->{shown} ? ($args->{shown} ? 1 : 0) : 1;
     my $label_class = $args->{label_class} || "";
+    my $content_class = $args->{content_class} || "";
     my $hint = $args->{hint} || "";
     my $show_hint = $args->{show_hint} || 0;
     my $warning = $args->{warning} || "";
@@ -1191,7 +1195,7 @@ sub _hdlr_app_setting {
     <div class="field-header">
         <label id="$id-label" for="$id">$label$req</label>
     </div>
-    <div class="field-content">
+    <div class="field-content $content_class">
         $insides$hint$warning
     </div>
 </div>
@@ -2170,6 +2174,19 @@ sub _hdlr_cgi_relative_url {
     return $url;
 }
 
+sub _hdlr_static_file_path {
+    my ($ctx) = @_;
+    my $cfg = $ctx->{config};
+    my $path = $cfg->StaticFilePath;
+    if (!$path) {
+        $path = MT->instance->{mt_dir};
+        $path .= '/' unless $path =~ m!/$!;
+        $path .= 'mt-static/';
+    }
+    $path .= '/' unless $path =~ m!/$!;
+    return $path;
+}
+
 sub _hdlr_static_path {
     my ($ctx) = @_;
     my $cfg = $ctx->{config};
@@ -3045,7 +3062,19 @@ sub _hdlr_entry_body {
 
     # Strip the mt:asset-id attribute from any span tags...
     if ($text =~ m/\smt:asset-id="\d+"/) {
-        $text =~ s/(<[sS][pP][aA][nN][^>]*?)\smt:asset-id="\d+"/$1/gs;
+        $text =~ s/
+            <[Ff][Oo][Rr][Mm]
+            ([^>]*?)
+            \s
+            mt:asset-id="\d+"
+            ([^>]+?>)(.*?)
+            <\/[Ff][Oo][Rr][Mm]>
+        /
+        my $attr = $1 . $2;
+        my $inner = $3;
+        $attr =~ s!\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=(['"][^'"]*?['"]|[Ff][Aa][Ll][Ss][Ee])!!;
+        '<span' . $attr . $inner . '<\/span>'
+        /gsex;
     }
 
     return $text;
@@ -3069,9 +3098,20 @@ sub _hdlr_entry_more {
 
     # Strip the mt:asset-id attribute from any span tags...
     if ($text =~ m/\smt:asset-id="\d+"/) {
-        $text =~ s/(<[sS][pP][aA][nN][^>]*?)\smt:asset-id="\d+"/$1/gs;
+        $text =~ s/
+            <[Ff][Oo][Rr][Mm]
+            ([^>]*?)
+            \s
+            mt:asset-id="\d+"
+            ([^>]+?>)(.*?)
+            <\/[Ff][Oo][Rr][Mm]>
+        /
+        my $attr = $1 . $2;
+        my $inner = $3;
+        $attr =~ s!\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=(['"][^'"]*?['"]|[Ff][Aa][Ll][Ss][Ee])!!;
+        '<span' . $attr . $inner . '<\/span>'
+        /gsex;
     }
-
     return $text;
 }
 
@@ -3589,7 +3629,7 @@ $static_field
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
-<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Post">&nbsp;" />
+<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Submit">&nbsp;" />
 </div>
 
 </form>
@@ -3674,7 +3714,7 @@ HTML
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
-<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Post">&nbsp;" />
+<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Submit">&nbsp;" />
 </div>
 
 </form>
@@ -4605,48 +4645,48 @@ sub _hdlr_archives {
 }
 
 sub _hdlr_archive_title {
+    my($ctx, $args) = @_;
+
     ## Since this tag can be called from inside <MTCategories>,
     ## we need a way to map this tag to <$MTCategoryLabel$>.
-    return _hdlr_category_label(@_) if $_[0]->{inside_mt_categories};
+    return _hdlr_category_label(@_) if $ctx->{inside_mt_categories};
 
-    my($ctx, $args) = @_;
-    my $entries = force($ctx->stash('entries'));
-    if (!$entries && (my $e = $ctx->stash('entry'))) {
-        push @$entries, $e;
-    }
-    my @entries;
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     return _hdlr_category_label(@_) if $at eq 'Category';
 
     my $archiver = MT->publisher->archiver($at);
-    if ($entries && ref($entries) eq 'ARRAY' && $at) {
-        @entries = @$entries;
-    } else {
-        my $blog = $ctx->stash('blog');
-        if (!@entries) {
-        
-            ## This situation arises every once in awhile. We have
-            ## a date-based archive page, but no entries to go on it--this
-            ## might happen, for example, if you have daily archives, and
-            ## you post an entry, and then you change the status to draft.
-            ## The page will be rebuilt in order to empty it, but in the
-            ## process, there won't be any entries in $entries. So, we
-            ## build a stub MT::Entry object and set the created_on date
-            ## to the current timestamp (start of day/week/month).
+    my @entries;
+    if ($archiver->entry_based) {
+        my $entries = force($ctx->stash('entries'));
+        if (!$entries && (my $e = $ctx->stash('entry'))) {
+            push @$entries, $e;
+        }
+        if ($entries && ref($entries) eq 'ARRAY' && $at) {
+            @entries = @$entries;
+        } else {
+            my $blog = $ctx->stash('blog');
+            if (!@entries) {
+                ## This situation arises every once in awhile. We have
+                ## a date-based archive page, but no entries to go on it--this
+                ## might happen, for example, if you have daily archives, and
+                ## you post an entry, and then you change the status to draft.
+                ## The page will be rebuilt in order to empty it, but in the
+                ## process, there won't be any entries in $entries. So, we
+                ## build a stub MT::Entry object and set the created_on date
+                ## to the current timestamp (start of day/week/month).
             
-            ## But, it's not generally true that draft-izing an entry
-            ## erases all of its manifestations. The individual 
-            ## archive lingers, for example. --ez
-            if ($at && $archiver->date_based()) {
-                my $e = MT::Entry->new;
-                $e->authored_on($ctx->{current_timestamp});
-                @entries = ($e);
-            } elsif ($at eq 'Category') {
-                # nop
-            } else {
-                return $ctx->error(MT->translate(
-                    "You used an [_1] tag outside of the proper context.",
-                    '<$MTArchiveTitle$>' ));
+                ## But, it's not generally true that draft-izing an entry
+                ## erases all of its manifestations. The individual 
+                ## archive lingers, for example. --ez
+                if ($at && $archiver->date_based()) {
+                    my $e = MT::Entry->new;
+                    $e->authored_on($ctx->{current_timestamp});
+                    @entries = ($e);
+                } else {
+                    return $ctx->error(MT->translate(
+                        "You used an [_1] tag outside of the proper context.",
+                        '<$MTArchiveTitle$>' ));
+                }
             }
         }
     }
@@ -4693,13 +4733,10 @@ sub _hdlr_archive_file {
 
     my $at = $ctx->{archive_type} || $ctx->{current_archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
+    my $archiver = MT->publisher->archiver($at);
     my $f;
-    if (!$at || ($at eq 'Individual') || ($at eq 'Page')) {
+    if (!$at || ($archiver->entry_based)) {
         my $e = $ctx->stash('entry');
-        unless ($e) {
-            my $entries = $ctx->stash('entries');
-            $e = $entries->[0];
-        }
         return $ctx->error(MT->translate("Could not determine entry")) if !$e;
         $f = $e->basename;
     } else {
@@ -4724,32 +4761,29 @@ sub _hdlr_archive_link {
     my($ctx, $args) = @_;
     ## Since this tag can be called from inside <MTCategories>,
     ## we need a way to map this tag to <$MTCategoryArchiveLink$>.
-    my $at = $args->{archive_type} || $args->{type};
     return _hdlr_category_archive(@_) if $ctx->{inside_mt_categories};
-    $at = $args->{type} || $args->{archive_type};
+    my $at = $args->{type} || $args->{archive_type};
     return _hdlr_category_archive(@_)
         if ($at && ('Category' eq $at)) ||
            ($ctx->{current_archive_type} && 'Category' eq $ctx->{current_archive_type});
 
-    my $blog = $ctx->stash('blog');
-    my $entries = $ctx->stash('entries');
-    if (!$entries && (my $e = $ctx->stash('entry'))) {
-        push @$entries, $e;
-    }
-    my $author = $ctx->stash('author');
-
-    return $ctx->error(MT->translate(
-        "You used an [_1] tag outside of the proper context.",
-        '<$MTArchiveLink$>' ))
-        unless ($ctx->{current_timestamp} ||
-                ($entries && ref($entries)) eq 'ARRAY');
-    # We assume there's an entry, but if there's no entry, 
-    #   archive_file_for will use the current_timestamp instead
-    my $entry = $entries->[0];
     $at ||= $ctx->{current_archive_type} || $ctx->{archive_type};
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
-    my $cat = undef;
+
+    my $blog = $ctx->stash('blog');
+    my $entry;
+    if ($archiver->entry_based) {
+        $entry = $ctx->stash('entry');
+    }
+    my $author = $ctx->stash('author');
+
+    #return $ctx->error(MT->translate(
+    #    "You used an [_1] tag outside of the proper context.",
+    #    '<$MTArchiveLink$>' ))
+    #    unless $ctx->{current_timestamp} || $entry;
+
+    my $cat;
     if ($archiver->category_based) {
         $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     }
@@ -5068,6 +5102,7 @@ sub _hdlr_category_archive {
     my $cat_based = 0;
     foreach my $type (@at) {
         my $archiver = MT->publisher->archiver($type);
+        next unless defined $archiver;
         if ($archiver->category_based) {
             $cat_based = 1;
             last;
@@ -6132,7 +6167,21 @@ sub _hdlr_assets {
     return $ctx->error(MT->translate('sort_by="score" must be used in combination with namespace.'))
         if ((exists $args->{sort_by}) && ('score' eq $args->{sort_by}) && (!exists $args->{namespace}));
 
-    my $assets = $ctx->stash('assets');
+    my $assets;
+    my $tag = lc $ctx->stash('tag');
+    if ($tag eq 'entryassets' || $tag eq 'pageassets') {
+        my $e = $ctx->stash('entry')
+            or return $ctx->_no_entry_error($tag);
+
+        require MT::ObjectAsset;
+        my @assets = MT::Asset->load(undef, { join => MT::ObjectAsset->join_on(undef, {
+            asset_id => \'= asset_id', object_ds => 'entry', object_id => $e->id })});
+        return '' unless @assets;
+        $assets = \@assets;
+    } else {
+        $assets = $ctx->stash('assets');
+    }
+
     local $ctx->{__stash}{assets};
     my (@filters, %blog_terms, %blog_args, %terms, %args);
     my $blog_id = $ctx->stash('blog_id');
@@ -6211,7 +6260,6 @@ sub _hdlr_assets {
             return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tag} || $args->{tags}));
         }
     }
-
 
     require MT::Asset;
     my $no_resort = 0;
@@ -6431,6 +6479,13 @@ sub _hdlr_asset_file_name {
     $a->file_name;
 }
 
+sub _hdlr_asset_label {
+    my $args = $_[1];
+    my $a = $_[0]->stash('asset')
+        or return $_[0]->_no_asset_error('MTAssetLabel');
+    defined $a->label ? $a->label : '';
+}
+
 sub _hdlr_asset_url {
     my $args = $_[1];
     my $a = $_[0]->stash('asset')
@@ -6528,25 +6583,13 @@ sub _hdlr_asset_thumbnail_url {
     my $args = $_[1];
     my $a = $_[0]->stash('asset')
         or return $_[0]->_no_asset_error('MTAssetThumbnailURL');
-    my $class = ref($a);
-    return '' if $class !~ m/Image/;
-    
-    # Load MT::Image
-    require MT::Image;
-    my $img = new MT::Image(Filename => $a->file_path)
-        or return $_[0]->error(MT->translate(MT::Image->errstr));
+    return '' unless UNIVERSAL::isa($a, 'MT::Asset::Image');
 
-    # Get dimensions
     my %arg;
-    if ($args->{scale}) {
-        $arg{Scale} = $args->{scale};
-    } else {
-        $arg{Width} = $args->{width};
-        $arg{Height} = $args->{height};
-    }
-    my ($w, $h) = $img->get_dimensions(%arg);
-
-    $a->thumbnail_url(Height => $h, Width => $w);
+    $arg{Width} = $args->{width} if $args->{width};
+    $arg{Height} = $args->{height} if $args->{height};
+    $arg{Scale} = $args->{scale} if $args->{scale};
+    $a->thumbnail_url(%arg) || '';
 }
 
 sub _hdlr_asset_link {
@@ -6567,7 +6610,7 @@ sub _hdlr_asset_thumbnail_link {
     my $a = $_[0]->stash('asset')
         or return $_[0]->_no_asset_error('MTAssetThumbnailLink');
     my $class = ref($a);
-    return '' if $class !~ m/Image/;
+    return '' unless UNIVERSAL::isa($a, 'MT::Asset::Image');
 
     # Load MT::Image
     require MT::Image;
@@ -6616,7 +6659,6 @@ sub _hdlr_asset_if_tagged {
         return @tags ? 1 : 0;
     }
 }
-
 
 sub _no_asset_error {
     return $_[0]->error(MT->translate(

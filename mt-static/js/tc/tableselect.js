@@ -57,7 +57,9 @@ TC.TableSelect.prototype.init = function( container ) {
 TC.TableSelect.prototype.eventKeyPress = function( evt ) {
     evt = evt || event;
     var element = evt.target || evt.srcElement;
-    if (element && element.type) return evt;
+    /* this was preventing keypress detection when a checkbox is selected
+     *if (element && element.type) return evt;
+     */
     var c = ( String.fromCharCode( evt.charCode || evt.keyCode ) || "" );
 
     switch (c) {
@@ -92,14 +94,14 @@ TC.TableSelect.prototype.eventKeyPress = function( evt ) {
 }
 
 TC.TableSelect.prototype.focusNext = function() {
-    var next = this.focusRow.nextSibling;
+    var next = this.getNextSibling( this.focusRow );
     var n;
     while ( next && (
             ((next.tagName ? next.tagName.toLowerCase() : '') != 'tr')
             || (TC.hasClassName( next, "slave" ))
             || !( ( n = TC.getComputedStyle( next ) ) && n["display"] != "none" )
         ) ) {
-        next = next.nextSibling;
+        next = this.getNextSibling( next );
     }
     if (next) {
         this.setFocus( next );
@@ -107,14 +109,14 @@ TC.TableSelect.prototype.focusNext = function() {
 }
 
 TC.TableSelect.prototype.focusPrevious = function() {
-    var prev = this.focusRow.previousSibling;
+    var prev = this.getPreviousSibling( this.focusRow );
     var n;
     while (prev && (
             ((prev.tagName ? prev.tagName.toLowerCase() : '') != 'tr')
             || (TC.hasClassName( prev, "slave" ))
             || !( ( n = TC.getComputedStyle( prev ) ) && n["display"] != "none" )
         ) ) {
-        prev = prev.previousSibling;
+        prev = this.getPreviousSibling( prev );
     }
     if (prev) {
         this.setFocus( prev );
@@ -157,7 +159,7 @@ TC.TableSelect.prototype.click = function( evt ) {
         return;
     var parent = TC.getParentByTagName( element, "tr" );
     while ( TC.hasClassName( parent, "slave" ) )
-        parent = parent.previousSibling;
+        parent = this.getPreviousSibling( parent );
 
     if ( parent ) {
         this.setFocus( parent );
@@ -182,6 +184,7 @@ TC.TableSelect.prototype.select = function( checkbox ) {
     if ( all ) {
         this.thisClicked = null;
         this.lastClicked = null;
+        this.focusRow = null;
         return this.selectAll( checkbox );
     }
 
@@ -213,19 +216,19 @@ TC.TableSelect.prototype.clearOthers = function( sel_row ) {
 TC.TableSelect.prototype.setFocus = function( row ) {
     if (this.focusRow) {
         TC.removeClassName(this.focusRow, "has-focus");
-        var next = this.focusRow.nextSibling;
+        var next = this.getNextSibling( this.focusRow );
         while (next && TC.hasClassName(next, "slave")) {
             TC.removeClassName(next, "has-focus");
-            next = next.nextSibling;
+            next = this.getNextSibling( next );
         }
     }
     this.focusRow = row;
     if (this.focusRow) {
         TC.addClassName(this.focusRow, "has-focus");
-        var next = this.focusRow.nextSibling;
+        var next = this.getNextSibling( this.focusRow );
         while (next && TC.hasClassName(next, "slave")) {
             TC.addClassName(next, "has-focus");
-            next = next.nextSibling;
+            next = this.getNextSibling( next );
         }
     }
 }
@@ -408,13 +411,13 @@ TC.TableSelect.prototype.selectRow = function( row, checked ) {
             input.checked = checked;
         }
 
-        var next = row.nextSibling;
+        var next = this.getNextSibling( row );
         while (next && TC.hasClassName( next, "slave" )) {
             if ( checked )
                 TC.addClassName( next, "selected" );
             else
                 TC.removeClassName( next, "selected" );
-            next = next.nextSibling;
+            next = this.getNextSibling( next );
         }
     }
     return changed;
@@ -427,4 +430,22 @@ TC.TableSelect.prototype.selectThese = function(list) {
         this.selectRow(el, true);
     }
     this.selectAll();
+}
+
+TC.TableSelect.prototype.getNextSibling = function( el ) {
+    while ( el ) {
+        el = el.nextSibling;
+        if ( el && el.tagName && el.tagName.toLowerCase() == 'tr' )
+            break;
+    }
+    return el;
+}
+
+TC.TableSelect.prototype.getPreviousSibling = function( el ) {
+    while ( el ) {
+        el = el.previousSibling;
+        if ( el && el.tagName && el.tagName.toLowerCase() == 'tr' )
+            break;
+    }
+    return el;
 }

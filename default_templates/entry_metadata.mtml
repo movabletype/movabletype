@@ -1,9 +1,9 @@
 <div class="asset-meta">
     <span class="byline">
 <MTIfNonEmpty tag="EntryAuthorDisplayName">
-        <__trans phrase="Posted by [_1] on [_2]" params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>">
+        <__trans phrase="By [_1] on [_2]" params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>">
 <MTElse>
-        <__trans phrase="Posted on [_1]" params="<$MTEntryDate format="%x %X"$>">
+        <$MTEntryDate format="%x %X"$>
 </MTIfNonEmpty>
     </span>
     <span class="separator">|</span> <a class="permalink" href="<$MTEntryPermalink$>"><__trans phrase="Permalink"></a>

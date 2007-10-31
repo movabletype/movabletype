@@ -70,6 +70,8 @@ sub db2type {
         return 'integer';
     } elsif ($type eq 'varchar') {
         return 'string';
+    } elsif ($type eq 'varbinary') {
+        return 'string';
     } elsif ($type eq 'char') {
         return 'string';
     } elsif ($type eq 'mediumtext') {

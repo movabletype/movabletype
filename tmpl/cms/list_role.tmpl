@@ -23,15 +23,18 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
-    <input
-       type="button"
-       name="delete_roles"
-       accesskey="x"
-       title="<__trans phrase="Delete selected roles (x)">"
-       value="<__trans phrase="Delete">"
-       onclick="doRemoveItems(this.form, '<__trans phrase="role">', '<__trans phrase="roles">')"
-    />
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="role">', '<__trans phrase="roles">')"
+        accesskey="x"
+        title="<__trans phrase="Delete selected [_1] (x)">"
+        ><__trans phrase="Delete"></a>
     </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="list_filter_form">
+<div class="listing-filter">
+    <div class="listing-filter-inner inner pkg listing-filter-inner-empty">
+    </div>
+</div>
 </mt:setvarblock>
 <mt:if name="object_loop">
     <mt:setvarblock name="related_content">
@@ -64,7 +67,7 @@
     </mt:unless>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
-
+<$mt:var name="list_filter_form"$>
 <mtapp:listing
     type="role">
     <mt:if name="__first__">
@@ -112,9 +115,11 @@
         </mt:if>
     </mt:if>
         </tr>
+    <mt:if name="view_expanded">
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave<mt:unless name="edit_author_id"><mt:unless name="edit_group_id"><mt:unless name="members"> inactive</mt:unless></mt:unless></mt:unless>">
             <td>&nbsp;</td><td colspan="<mt:if name="edit_group_id">4<mt:else><mt:if name="edit_author_id">4<mt:else>6</mt:if></mt:if>"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
         </tr>
+    </mt:if>
     <mt:if name="__last__">
     </tbody>
     </mt:if>

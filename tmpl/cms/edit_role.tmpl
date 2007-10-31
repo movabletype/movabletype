@@ -1,4 +1,5 @@
 <mt:setvar name="edit_role" value="1">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:if name="id">
     <mt:setvar name="page_title" value="<__trans phrase="Role Details">">    
     <MTSetVarBlock name="content_nav">
@@ -314,7 +315,8 @@ TC.attachLoadEvent( rectifyAll );
 <mt:if name="same_perm_loop">
     <mtapp:setting
         id="same_permissions"
-        label="<__trans phrase="Roles with the same permissions">">
+        label="<__trans phrase="Duplicate Roles">"
+        hint="<__trans phrase="These roles have the same permissions as this role">">
         <div class="static">
         <mt:loop name="same_perm_loop">
         <a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id">"><mt:var name="name" escape="html"></a> 
@@ -327,14 +329,19 @@ TC.attachLoadEvent( rectifyAll );
 </fieldset>
 
 
-<div style="text-align: center">
-<mt:if name="id">
-<input type="button" onclick="checkChanged();" value="<__trans phrase="Save Changes">" accesskey="s" title="<__trans phrase="Save this role">" />
-<mt:else>
-<input type="submit" value="<__trans phrase="Save Changes">" accesskey="s" alt="<__trans phrase="Save this role">" />
-</mt:if>
-</div>
 
+<mt:setvarblock name="action_buttons">
+    <button
+    <mt:if name="id">
+        onclick="checkChanged();"
+    </mt:if>
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 </div>

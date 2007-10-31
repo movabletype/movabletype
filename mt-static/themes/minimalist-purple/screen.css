@@ -1,5 +1,13 @@
 /* Vox Theme for Movable Type ============================================= */
 
+/* 
+name: Minimalist Purple  
+designer: Lilia Ahner  
+designer_url: http://lilia.vox.com/ 
+layouts: layout-wtt, layout-twt, layout-wt, layout-tw
+*/
+
+
 /* Default ---------------------------------------------------------------- */
 
 /* Global */
@@ -101,6 +109,13 @@ body {
     font-weight: bold;
 }
 
+/* Footer */
+
+#footer-content,
+#footer-content a {
+    color: #fff;
+}
+
 
 /* Utility */
 
@@ -148,20 +163,30 @@ a:hover {
     background-color: #fff;
 }
 
+#header-inner, #content-inner, #footer-inner {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#beta-inner, #gamma-inner {
+    padding-right: 0;
+    padding-left: 0;
+}
+
 #content { 
     margin-top: 20px;  
     margin-bottom: 30px;  
 }
 
-#container {
+#container-inner {
     margin-right: 0;
     margin-left: 0;
 }
 
-.layout-wtt #container,
-.layout-twt #container,
-.layout-wt #container,
-.layout-tw #container {
+.layout-wtt #container-inner,
+.layout-twt #container-inner,
+.layout-wt #container-inner,
+.layout-tw #container-inner {
     width: 100%;
 }
 
@@ -179,9 +204,6 @@ a:hover {
 #header { 
     border-color: #975fbe;  
     background: #dbacfa url(header.png) repeat-x bottom right; 
-    padding: 30px 0 40px 20px;
-    padding-left: 0;
-    padding-right: 0;
 }
 
 #header a {
@@ -189,18 +211,18 @@ a:hover {
     font-weight: bold;
 }
 
+#header-content {
+    margin: 30px 0 40px 20px;
+}
+
 #header-name {
-    padding-left: 20px;
-    padding-right: 20px;
     color: #fff; 
     font-size: 34px;
     font-weight: bold;
 }
 
 #header-description {
-    padding-left: 20px;
-    padding-right: 20px;
-    color: #fff; 
+    color: #fff;  
 }
 
 
@@ -224,11 +246,11 @@ a:hover {
     border-top-color: #f2e0ff;
 }
 
-.trackbacks-header,
 .comments-header,
 .comments-open-header,
+.trackbacks-header,
 .archive-header {
-    color: #a480bd;
+    color: #975fbe;
 }
 
  .asset-name a {
@@ -249,6 +271,12 @@ a:hover {
 
 
 /* Widget ----------------------------------------------------------------- */
+
+.widget-header,
+.widget-content {
+    margin-right: 15px;
+    margin-left: 15px;
+}
 
 .widget-header { 
     border-width: 0 0 1px;
@@ -271,18 +299,12 @@ a:hover {
     color: #999;
 }
 
-.widget-powered .widget-content {
+#content .widget-powered .widget-content {
     margin-top: 15px;
     margin-bottom: 15px;
     border: 1px solid #f2e0ff;
     background-color: #faf2ff;
 } 
-
-.widget-header,
-.widget-content {
-    margin-right: 15px;
-    margin-left: 15px;
-}
 
 .widget-header {
     font-size: 14px;
@@ -310,14 +332,43 @@ a:hover {
     text-align: center;
 }
 
-.widget-powered .widget-content,
-.widget-powered .widget-content a {
-    color: #333;
-}
-
 
 /* Calendar Module */
 
 .widget-calendar .widget-content table {
     font-size: 10px;
+}
+
+
+/* Footer ----------------------------------------------------------------- */
+
+#footer { 
+    background-color: #975fbe; 
+}
+
+#footer-content {
+    margin: 20px 0;
+}
+
+#footer .widget {
+    margin: 10px 0;
+}
+
+#footer .widget-content {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#footer .widget-powered .widget-content {
+    padding: 0;
+    text-align: left;
+}
+
+
+/* Custom Styles ---------------------------------------------------------- */
+
+#group-nav-inner {
+    position: relative;
+    width: 900px;
+    margin: 0 auto;
 }

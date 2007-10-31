@@ -91,11 +91,15 @@ sub sum_group_by {
 sub _do_group_by {
     my $driver = shift;
     my ($agg_func, $class, $terms, $args) = @_;
-    unless ($terms->{class}) {
-        $terms->{class} = $class->class_type if $class->class_type;
+    my $props = $class->properties;
+    if ($props->{class_type}) {
+        my $class_col = $props->{class_column};
+        unless ($terms->{$class_col}) {
+            $terms->{$class_col} = $class->class_type;
+        }
     }
     if ($args->{no_class}) {
-        delete $terms->{class};
+        delete $terms->{$props->{class_column}};
         delete $args->{no_class};
     }
     my $order = delete $args->{sort};

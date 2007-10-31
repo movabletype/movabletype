@@ -1,0 +1,26 @@
+#footer {
+[% IF theme.find_file('footer') %]
+    padding-top: [% IF theme.footer.background.height %][% theme.footer.background.height %][% ELSE %]100px[% END %];
+    background: [% PROCESS bg_image file='footer' %] top center [% theme.footer.background.repeat || 'repeat-x' %] [% theme.footer.background.color || theme.control_strip.background.color %];
+[% ELSE %]
+    background-color: [% theme.footer.background.color || theme.control_strip.background.color %];
+[% END %]
+}
+
+#footer-content {
+    margin: 20px 0;
+}
+
+#footer .widget {
+    margin: 10px 0;
+}
+
+#footer .widget-content {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#footer .widget-powered .widget-content {
+    padding: 0;
+    text-align: left;
+}

@@ -180,6 +180,12 @@ Panel = new Class(Object, {
 
 /* Structure of a ListingPanel...
  *
+ *
+ *
+ *  THIS IS OUT OF DATE
+ *
+ *
+ *
  *   var panel = new ListingPanel("panelname");
  *   dialog.setPanels([panel]);
  *   dialog.open({}, close_callback);
@@ -229,10 +235,20 @@ ListingPanel = new Class(Panel, {
                 this.selectionList.remove(row.id);
         } else {
             var count = ts.selected().length;
-            if (this.nextButton)
+            if (this.nextButton) {
+                if (count == 0)
+                    TC.addClassName(this.nextButton, "disabled-button");
+                else
+                    TC.removeClassName(this.nextButton, "disabled-button");
                 this.nextButton.disabled = count == 0;
-            if (this.closeButton)
+            }
+            if (this.closeButton) {
+                if (count == 0)
+                    TC.addClassName(this.closeButton, "disabled-button");
+                else
+                    TC.removeClassName(this.closeButton, "disabled-button");
                 this.closeButton.disabled = count == 0;
+            }
         }
     },
     init: function(name) {
@@ -278,7 +294,7 @@ ListingPanel = new Class(Panel, {
             };
         }
 
-        var next = TC.getElementsByTagAndClassName("input",
+        var next = TC.getElementsByTagAndClassName("button",
             "next", this.element);
         if (next && next.length) {
             this.nextButton = next[0];
@@ -287,7 +303,7 @@ ListingPanel = new Class(Panel, {
             };
         }
 
-        var previous = TC.getElementsByTagAndClassName("input",
+        var previous = TC.getElementsByTagAndClassName("button",
             "previous", this.element);
         if (previous && previous.length) {
             this.previousButton = previous[0];
@@ -296,7 +312,7 @@ ListingPanel = new Class(Panel, {
             };
         }
 
-        var cancel = TC.getElementsByTagAndClassName("input",
+        var cancel = TC.getElementsByTagAndClassName("button",
             "cancel", this.element);
         if (cancel && cancel.length) {
             this.cancelButton = cancel[0];
@@ -305,7 +321,7 @@ ListingPanel = new Class(Panel, {
             };
         }
 
-        var close = TC.getElementsByTagAndClassName("input",
+        var close = TC.getElementsByTagAndClassName("button",
             "close", this.element);
         if (close && close.length) {
             this.closeButton = close[0];
@@ -337,10 +353,20 @@ ListingPanel = new Class(Panel, {
                     self.tableSelect.selectAll();
                 }
                 var items = sl.items();
-                if (self.nextButton)
+                if (self.nextButton) {
+                    if (items.length == 0)
+                        TC.addClassName(self.nextButton, "disabled-button");
+                    else
+                        TC.removeClassName(self.nextButton, "disabled-button");
                     self.nextButton.disabled = items.length == 0;
-                if (self.closeButton)
+                }
+                if (self.closeButton) {
+                    if (items.length == 0)
+                        TC.addClassName(self.closeButton, "disabled-button");
+                    else
+                        TC.removeClassName(self.closeButton, "disabled-button");
                     self.closeButton.disabled = items.length == 0;
+                }
             };
         }
     }

@@ -74,7 +74,7 @@ function setMoveMode (id) {
     if (getByID('msg-block')) {
         getByID('msg-block').style.display = 'none'; // hide any messaging 
     }
-    getByID('category-' + id).style.backgroundColor = '#FFB13E'; // set background color of selected row to orange
+    DOM.addClassName( getByID('category-' + id), "selected" );
     getByID('move-radio-' + id).style.display = 'none'; // hide radio button of selected row
     if (document.all) {
         getByID('move-col-head').style.display = 'block'; // show header of radio button column
@@ -135,7 +135,11 @@ TC.attachLoadEvent( init );
     </div>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-    <input type="button" name="delete" value="<__trans phrase="Delete">" onclick="doRemoveItems(this.form, '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">')" accesskey="x" title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1" escape="js">">" />
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="weblog">', '<__trans phrase="weblogs">')"
+        accesskey="x"
+        title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1" escape="js">">"
+        ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 <mt:var name="position_actions_top" value="1">
 
@@ -159,9 +163,33 @@ TC.attachLoadEvent( init );
         </thead>
         <tbody>
     </mt:if>
-            <tr class="create-row" id="create-0">
+            <tr class="create-row create-inline" id="create-0">
                 <td class="move-col" colspan="2">&nbsp;</td>
-                <td colspan="4"><input type="text" name="category-new-parent-0" id="category-new-parent-0" value="" maxlength="100" /> <input type="submit" name="save" value="<__trans phrase="Create [_1]" params="<mt:var name="object_label" lower_case="1">">" /> <input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="cancelCreateMode(0); return false" /></td>
+                <td colspan="4">
+                    <mtapp:setting
+                        id="new-parent-category"
+                        label="<__trans phrase="New Parent [_1]" params="<mt:var name="object_label">">"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <input type="text" name="category-new-parent-0" id="category-new-parent-0" value="" maxlength="100" />
+                    </mtapp:setting>
+                    <mtapp:setting
+                        id="actions"
+                        label="<__trans phrase="Actions">"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <span class="buttons"> 
+                            <a href="javascript:void(0)" 
+                                onclick="submitForm(getByID('category-listing-form'), '')"
+                                title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label">">" 
+                                ><__trans phrase="Save"></a> 
+                            <a href="javascript:void(0)" 
+                                onclick="cancelCreateMode(0); return false"
+                                ><__trans phrase="Cancel"></a> 
+                        </span> 
+                    </mtapp:setting>
             </tr>
 
             <tr class="move-row" id="move-0">
@@ -194,9 +222,35 @@ TC.attachLoadEvent( init );
                 <td class="trackback status-disabled"><mt:if name="has_tb"><mt:if name="category_tbcount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">&amp;tab=pings"></mt:if></mt:if><__trans phrase="[quant,_1,TrackBack,TrackBacks]" params="<mt:var name="category_tbcount">"><mt:if name="category_tbcount"><mt:if name="can_edit_entries"></a></mt:if></mt:if><mt:else></mt:if></td>
             </tr>
 
-            <tr class="create-row" id="create-<mt:var name="category_id">">
+            <tr class="create-row create-inline" id="create-<mt:var name="category_id">">
                 <td class="move-col" colspan="2">&nbsp;</td>
-                <td colspan="4" style="padding-left: 15px;"><span style="margin-left: <mt:var name="category_pixel_depth">px;"><input type="text" name="category-new-parent-<mt:var name="category_id">" id="category-new-parent-<mt:var name="category_id">" value="" maxlength="100"/> <input type="submit" name="save" value="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label">">" /> <input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="cancelCreateMode(<mt:var name="category_id">); return false" /></span></td>
+                <td colspan="4" style="padding-left: 15px;">
+                    <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+                        <mtapp:setting
+                            id="new-category"
+                            label="<__trans phrase="New [_1]" params="<mt:var name="object_label">">"
+                            label_class="inline field-no-header"
+                            hint=""
+                            show_hint="0">
+                            <input type="text" name="category-new-parent-<mt:var name="category_id">" id="category-new-parent-<mt:var name="category_id">" value="" maxlength="100"/>
+                        </mtapp:setting>
+                        <mtapp:setting
+                            id="actions"
+                            label="<__trans phrase="Actions">"
+                            label_class="inline field-no-header"
+                            hint=""
+                            show_hint="0">
+                            <span class="buttons"> 
+                                <a href="javascript:void(0)" 
+                                    onclick="submitForm(getByID('category-listing-form'), '')"
+                                    title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label">">" 
+                                    ><__trans phrase="Save"></a> 
+                                <a href="javascript:void(0)" 
+                                    onclick="cancelCreateMode(<mt:var name="category_id">); return false"
+                                    ><__trans phrase="Cancel"></a> 
+                            </span> 
+                        </mtapp:setting>
+                    </span></td>
             </tr>
     <mt:if __last__>
         </tbody>

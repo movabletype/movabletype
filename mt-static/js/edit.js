@@ -168,20 +168,28 @@ MT.App = new Class( MT.App, {
         var inserted = this.editor.insertHTML( html );
 
         /* fix firefox's tendency to convert the src attribute to relative */
+        /* anchor tag is also similar */
         if ( window.controllers && this.editor.mode == "iframe" ) {
             log.debug('fixing relative path in image tags');
             var imgs;
+            var ancs;
             if ( inserted && inserted.getElementsByTagName ) {
                 log.debug('using inserted method');
                 imgs = inserted.getElementsByTagName( "img" );
+                ancs = inserted.getElementsByTagName( "a" );
             } else {
                 log.debug('using iframe method');
                 imgs = this.editor.iframe.document.getElementsByTagName( "img" );
+                ancs = this.editor.iframe.document.getElementsByTagName( "a" );
             }
                 
             if ( imgs )
                 for ( var i = 0; i < imgs.length; i++ )
                     imgs[ i ].src = imgs[ i ].src;
+                
+            if ( ancs )
+                for ( var i = 0; i < ancs.length; i++ )
+                    ancs[ i ].href = ancs[ i ].href;
         }
     },
 

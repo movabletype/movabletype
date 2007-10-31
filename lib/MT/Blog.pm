@@ -141,6 +141,8 @@ sub set_defaults {
         convert_paras_comments => 1,
         email_new_pings => 1,
         email_new_comments => 1,
+        allow_commenter_regist => 1,
+        use_comment_confirmation => 1,
         sanitize_spec => 0,
         ping_weblogs => 0,
         ping_blogs => 0,
@@ -148,7 +150,7 @@ sub set_defaults {
         ping_google => 0,
         archive_type => 'Individual,Monthly,Category,Category-Monthly,Page',
         archive_type_preferred => 'Individual',
-        status_default => 1,
+        status_default => 2,
         junk_score_threshold => 0,
         junk_folder_expiry => 14, # 14 days
         custom_dynamic_templates => 'none',
@@ -630,6 +632,42 @@ sub clone_with_children {
             delete $tb->{column_values}->{id};
             delete $tb->{changed_cols}->{id};
 
+            if ($tb->category_id) {
+                if (my $cat_tb = $cat_map{$tb->category_id}->trackback) {
+                    my $changed;
+                    if ($tb->passphrase) {
+                        $cat_tb->passphrase($tb->passphrase);
+                        $changed = 1;
+                    }
+                    if ($tb->is_disabled) {
+                        $cat_tb->is_disabled(1);
+                        $changed = 1;
+                    }
+                    $cat_tb->save if $changed;
+                    $tb_map{$tb_id} = $cat_tb->id;
+                    next;
+                }
+            }
+            elsif ($tb->entry_id) {
+                if (my $entry_tb = $cat_map{$tb->entry_id}->trackback) {
+                    my $changed;
+                    if ($tb->passphrase) {
+                        $entry_tb->passphrase($tb->passphrase);
+                        $changed = 1;
+                    }
+                    if ($tb->is_disabled) {
+                        $entry_tb->is_disabled(1);
+                        $changed = 1;
+                    }
+                    $entry_tb->save if $changed;
+                    $tb_map{$tb_id} = $entry_tb->id;
+                    next;
+                }
+            }
+
+            # A trackback wasn't created when saving the entry/category,
+            # (perhaps trackbacks are now disabled for the entry/category?)
+            # so create one now
             $tb->entry_id($entry_map{$tb->entry_id})
                 if $tb->entry_id && $entry_map{$tb->entry_id};
             $tb->category_id($cat_map{$tb->category_id})

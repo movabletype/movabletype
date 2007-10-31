@@ -20,9 +20,19 @@
     </mtapp:statusmsg>
     </div>
     <div class="actions-bar">
-        <div class="actions-bar-inner pkg">
-            <input type="submit" name="overwrite_no" value="<__trans phrase="No">" />
-            <input type="submit" name="overwrite_yes" value="<__trans phrase="Yes">" />
+        <div class="actions-bar-inner pkg actions">
+            <button
+                value="overwrite_yes"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Yes (s)">"
+                class="primary-button"
+                ><__trans phrase="Yes"></button>
+            <button
+                value="overwrite_no"
+                type="submit"
+                title="<__trans phrase="No">"
+                ><__trans phrase="No"></button>
         </div>
     </div>
 </form>

@@ -22,7 +22,7 @@ use vars qw( @ISA %Lexicon );
 
 ## php/plugins/init.AuthorArchives.php
 	'Author' => 'Auteur',
-	'Author (#' => 'Auteur (#', # Translate - New
+	'Author (#' => 'Auteur (#',
 	'Author Yearly' => 'Auteur annuel',
 	'Author Monthly' => 'Auteur mensuel',
 	'Author Daily' => 'Auteur journalier',
@@ -43,7 +43,7 @@ use vars qw( @ISA %Lexicon );
 	'No' => 'Non',
 	'Comments' => 'Commentaires',
 	'Preview' => 'Aperçu',
-	'Post' => 'Publier',
+	'Submit' => 'Envoyer', # Translate - New
 	'You are not signed in. You need to be registered to comment on this site.' => 'Vous n\'êtes pas enregistré.  Vous devez être enregistré pour pouvoir commenter sur ce site.',
 	'Sign in' => 'Inscription',
 	'. Now you can comment.' => '. Maintenant vous pouvez commenter.',
@@ -68,6 +68,7 @@ use vars qw( @ISA %Lexicon );
 	'Type the characters you see in the picture above.' => 'Saisissez les caractères que vous voyez dans l\'image ci-dessus.',
 
 ## php/lib/archive_lib.php
+	'Page' => 'Page',
 	'Individual' => 'Individuel',
 	'Yearly' => 'Annuel',
 	'Monthly' => 'Mensuel',
@@ -75,8 +76,7 @@ use vars qw( @ISA %Lexicon );
 	'Weekly' => 'Hebdomadaire',
 
 ## default_templates/entry_metadata.mtml
-	'Posted by [_1] on [_2]' => 'Postée par [_1] dans [_2]',
-	'Posted on [_1]' => 'Publiée le [_1]',
+	'By [_1] on [_2]' => 'Par [_1] sur [_2]', # Translate - New
 	'Permalink' => 'Lien permanent',
 	'Comments ([_1])' => 'Commentaires ([_1])',
 	'TrackBacks ([_1])' => 'TrackBacks ([_1])',
@@ -127,7 +127,7 @@ use vars qw( @ISA %Lexicon );
 	'Author Monthly Archives' => 'Archives mensuelles de l\'auteur',
 
 ## default_templates/comment_form.mtml
-	'Post a comment' => 'Poster un commentaire',
+	'Leave a comment' => 'Laisser un commentaire', # Translate - New
 	'Remember personal info?' => 'Mémoriser mes infos personnelles?',
 	'Cancel' => 'Annuler',
 
@@ -143,9 +143,9 @@ use vars qw( @ISA %Lexicon );
 	'Main Index' => 'Index principal',
 
 ## default_templates/comment_response.mtml
-	'Comment Posted' => 'Commentaire envoyé', # Translate - New
-	'Confirmation...' => 'Confirmation...', # Translate - New
-	'Your comment has been posted!' => 'Votre commentaire a été envoyé !', # Translate - New
+	'Comment Submitted' => 'Commentaire déposé', # Translate - New
+	'Confirmation...' => 'Confirmation...',
+	'Your comment has been submitted!' => 'Votre commentaire a été déposé !', # Translate - New
 	'Comment Pending' => 'Commentaires en attente',
 	'Thank you for commenting.' => 'Merci de votre commentaire.',
 	'Your comment has been received and held for approval by the blog owner.' => 'Votre commentaire a été reçu et est en attente de validation par le propriétaire de ce blog.',
@@ -154,19 +154,13 @@ use vars qw( @ISA %Lexicon );
 	'Return to the <a href="[_1]">original entry</a>.' => 'Retourner à la <a href="[_1]">note originale</a>.',
 
 ## default_templates/sidebar_3col.mtml
-	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&ldquo;.' => 'Si vous utilisez un lecteur RSS, vous pouvez vous abonner à un flux de toutes les prochaines notes possédant le tag &ldquo;<$MTSearchString$>&ldquo;.',
-	'If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&ldquo;.' => 'Si vous utilisez un lecteur RSS, vous pouvez vous abonner à un flux de toutes les futures notes contenant &ldquo;<$MTSearchString$>&ldquo;.',
-	'Feed Subscription' => 'Abonnement au flux',
-	'(<a href="[_1]">What is this?</a>)' => '(<a href="[_1]">C\'est quoi ?</a>)',
-	'Subscribe to feed' => 'S\'abonner au flux',
-	'[_1] ([_2])' => '[_1] ([_2])',
-	'About This Post' => 'A propos de cette note',
-	'About This Archive' => 'A propos de cette archive',
+	'About this Entry' => 'A propos de cette note', # Translate - New
+	'About this Archive' => 'A propos de cette archive', # Translate - Case
 	'About Archives' => 'A propos des archives',
 	'This page contains links to all the archived content.' => 'Cette page contient des liens vers toutes les archives.',
-	'This page contains a single entry by [_1] posted on <em>[_2]</em>.' => 'Cette page contient une seule note de [_1] postée le <em>[_2]</em>.',
-	'<a href="[_1]">[_2]</a> was the previous post in this blog.' => '<a href="[_1]">[_2]</a> était la note précédente dans ce blog.',
-	'<a href="[_1]">[_2]</a> is the next post in this blog.' => '<a href="[_1]">[_2]</a> est dans la note suivante dans ce blog.',
+	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Ceet page contient une unique note de [_1] publiée le <em>[_2]</em>.', # Translate - New
+	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> est la note précédente de ce blog.', # Translate - New
+	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> est la note suivante de ce blog.', # Translate - New
 	'This page is a archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Cette page est une archive des notes dans la catégorie <strong>[_1]</strong> par <strong>[_2]</strong>.',
 	'<a href="[_1]">[_2]</a> is the previous archive.' => '<a href="[_1]">[_2]</a> est l\'archive précédente.',
 	'<a href="[_1]">[_2]</a> is the next archive.' => '<a href="[_1]">[_2]</a> est l\'archive suivante.',
@@ -178,9 +172,15 @@ use vars qw( @ISA %Lexicon );
 	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'Cette page est une archive des notes de <strong>[_2]</strong> listées de la plus récente à la plus ancienne.',
 	'Find recent content on the <a href="[_1]">main index</a>.' => 'Trouver le contenu récent sur <a href="[_1]">l\'index principal</a>.',
 	'Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content.' => 'Trouvez du contenu récent sur <a href="[_1]">l\'index principal</a> ou allez dans les <a href="[_2]">archives</a> pour trouver tout le contenu.',
-	'Recent Posts' => 'Notes récentes',
+	'Recent Entries' => 'Notes récentes', # Translate - New
+	'[_1] ([_2])' => '[_1] ([_2])',
 	'[_1] <a href="[_2]">Archives</a>' => '[_1] <a href="[_2]">Archives</a>',
-	'Search this blog:' => 'Chercher dans ce blog :',
+	'Tag Cloud' => 'Nuage de Tag', # Translate - Case
+	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&ldquo;.' => 'Si vous utilisez un lecteur RSS, vous pouvez vous abonner à un flux de toutes les prochaines notes possédant le tag &ldquo;<$MTSearchString$>&ldquo;.',
+	'If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&ldquo;.' => 'Si vous utilisez un lecteur RSS, vous pouvez vous abonner à un flux de toutes les futures notes contenant &ldquo;<$MTSearchString$>&ldquo;.',
+	'Feed Subscription' => 'Abonnement au flux',
+	'(<a href="[_1]">What is this?</a>)' => '(<a href="[_1]">C\'est quoi ?</a>)',
+	'Subscribe to feed' => 'S\'abonner au flux',
 	'[_1]: Monthly Archives' => '[_1]: Archives Mensuelles',
 	'Subscribe to this blog\'s feed' => 'S\'abonner au flux de ce blog',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Ce blog possède une licence <a href="[_1]">Creative Commons</a>.',
@@ -191,10 +191,10 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/javascript.mtml
 	'You do not have permission to comment on this blog.' => 'vous n\'avez pas la permission de commenter sur ce blog.',
-	'Sign in</a> to comment on this post.' => 'Identifiez-vous</a> pour commenter sur cette note.',
-	'Sign in</a> to comment on this post,' => 'Identifiez-vous</a> pour commenter sur cette note,',
+	'Sign in</a> to comment on this entry.' => 'Identifiez-vous</a> pour commenter sur cette note.', # Translate - New
+	'Sign in</a> to comment on this entry,' => 'Identifiez-vous</a> pour commenter sur cette note,', # Translate - New
 	'or ' => 'ou ',
-	'comment anonymously.' => 'commentez anonymement',
+	'comment anonymously.' => 'commentez anonymement.',
 
 ## default_templates/entry_detail.mtml
 	'Entry Metadata' => 'Metadonnées de note',
@@ -203,14 +203,14 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/trackbacks.mtml
 	'[_1] TrackBacks' => '[_1] TrackBacks',
-	'Listed below are links to blogs that reference this post: <a href="[_1]">[_2]</a>.' => 'Liens vers des blogs qui référencent cette note : <a href="[_1]">[_2]</a>.',
+	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'Ci-dessous des liens vers les blogs qui réferencent cette note : <a href="[_1]">[_2]</a>.', # Translate - New
 	'TrackBack URL for this entry: <span id="trackbacks-link">[_1]</span>' => 'URL de TrackBack pour cette note : <span id="trackbacks-link">[_1]</span>',
 	'&raquo; <a rel="nofollow" href="[_1]">[_2]</a> from [_3]' => '&raquo; <a rel="nofollow" href="[_1]">[_2]</a> de [_3]',
 	'[_1] <a rel="nofollow" href="[_2]">Read More</a>' => '[_1] <a rel="nofollow" href="[_2]">Lire la suite</a>',
 	'Tracked on <a href="[_1]">[_2]</a>' => 'Tracké le <a href="[_1]">[_2]</a>',
 
 ## default_templates/footer.mtml
-	'Sidebar - 3 Column Layout' => 'Colonne latérale - Mise en page 3 colonnes', # Translate - New
+	'Sidebar - 3 Column Layout' => 'Colonne latérale - Mise en page 3 colonnes',
 
 ## default_templates/comment_detail.mtml
 	'[_1] [_2] said:' => '[_1] [_2] a dit :',
@@ -230,10 +230,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Component.pm
 	'Loading template \'[_1]\' failed: [_2]' => 'Echec lors du chargement du modèle \'[_1]\': [_2]',
-	'Publish' => 'Publier',
-	'Uppercase text' => 'Texte majuscule',
-	'Lowercase text' => 'Texte minuscule',
-	'My Text Format' => 'Format de mon texte.',
 
 ## lib/MT/XMLRPCServer.pm
 	'Invalid timestamp format' => 'Format de date invalide',
@@ -298,7 +294,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Util/Captcha.pm
 	'Movable Type default CAPTCHA provider requires Image::Magick.' => 'Le fournisseur de CAPTCHA par défaut de Movable Type nécessite Image::Magick.',
-	'You need to configure CaptchaSourceImageBase.' => 'Vous devez configurer CaptchaSourceImagebase.', # Translate - Case
+	'You need to configure CaptchaSourceImageBase.' => 'Vous devez configurer CaptchaSourceImagebase.',
 	'Image creation failed.' => 'Création de l\'image échouée.',
 	'Image error: [_1]' => 'Erreur image : [_1]',
 
@@ -328,6 +324,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Le Blog \'[_1] (ID: [_2])\' pour l\'utilisateur \'[_3] (ID: [_4])\' a été créé.',
 	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Erreur dans l\'attribution des droits d\'administration à l\'utilisateur \'[_1] (ID: [_2])\' pour le weblog \'[_3] (ID: [_4])\'. Aucun rôle d\'administrateur de weblog approprié n\'a été trouvé.',
 	'The login could not be confirmed because of a database error ([_1])' => 'Le login ne peut pas être confirmé en raison d\'une erreur de base de données ([_1])',
+	'Permission denied.' => 'Permission refusée.',
 	'Invalid login.' => 'Identifiant invalide.',
 	'Failed login attempt by unknown user \'[_1]\'' => 'Echec de tentative d\'identification par utilisateur inconnu\'[_1]\'',
 	'This account has been disabled. Please see your system administrator for access.' => 'Ce compte a été désactivé. Merci de vérifier les accès auprès votre administrateur système.',
@@ -337,17 +334,16 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (ID:[_2]) logged in successfully' => 'L\'utilisateur \'[_1]\' (ID:[_2]) s\'est identifié correctement',
 	'Invalid login attempt from user \'[_1]\'' => 'Tentative d\'authentification invalide de l\'utilisateur \'[_1]\'',
 	'User \'[_1]\' (ID:[_2]) logged out' => 'L\'utilisateur \'[_1]\' (ID:[_2]) s\'est déconnecté',
+	'New Comment Added to \'[_1]\'' => 'Nouveau commentaire ajouté à \'[_1]\'',
 	'Close' => 'Fermer',
 	'Go Back' => 'Retour',
 	'The file you uploaded is too large.' => 'Le fichier téléchargé est trop lourd.',
 	'Unknown action [_1]' => 'Action inconnue [_1]',
-	'Permission denied.' => 'Permission refusée.',
 	'Warnings and Log Messages' => 'Mises en gardes et Messages de Log',
 	'Removed [_1].' => '[_1] supprimés.',
 	'http://www.movabletype.com/' => 'http://www.movabletype.com/',
 
 ## lib/MT/Page.pm
-	'Page' => 'Page',
 	'Pages' => 'Pages',
 	'Folder' => 'Répertoire',
 	'Load of blog failed: [_1]' => 'Echec lors du chargement du blog : [_1]',
@@ -375,7 +371,7 @@ use vars qw( @ISA %Lexicon );
 	'Send Notifications' => 'Envoyer des notifications',
 	'Edit All Entries' => 'Modifier toutes les notes',
 	'Manage Pages' => 'Gérer les Pages',
-	'Publish Files' => 'Publier les fichiers', # Translate - New
+	'Publish Files' => 'Publier les fichiers',
 	'Manage Templates' => 'Gérer les Modèles',
 	'Upload File' => 'Télécharger un fichier',
 	'Save Image Defaults' => 'Enregistrer les valeurs par défaut Image',
@@ -391,8 +387,8 @@ use vars qw( @ISA %Lexicon );
 	'weblogs.com' => 'weblogs.com',
 	'technorati.com' => 'technorati.com',
 	'google.com' => 'google.com',
-	'Publishes content.' => 'Publication de contenu.', # Translate - New
-	'Synchronizes content to other server(s).' => 'Synchronise le contenu vers d\'autres serveurs.', # Translate - New
+	'Publishes content.' => 'Publication de contenu.',
+	'Synchronizes content to other server(s).' => 'Synchronise le contenu vers \'autres serveurs.',
 	'Entries List' => 'Liste des notes',
 	'Blog URL' => 'URL du blog',
 	'Blog ID' => 'ID du blog',
@@ -412,14 +408,23 @@ use vars qw( @ISA %Lexicon );
 	'Publish Future Posts' => 'Notes publiées dans le futur',
 	'Junk Folder Expiration' => 'Expiration du répertoire de spam',
 	'Remove Temporary Files' => 'Supprimer les fichiers temporaires',
+	'Remove Expired User Sessions' => 'Supprimer les sessions utilisateur expirées', # Translate - New
+
+## lib/MT/Asset/Audio.pm
+	'Audio' => 'Audio', # Translate - New
+
+## lib/MT/Asset/Video.pm
+	'Video' => 'Video', # Translate - New
+	'Videos' => 'Videos', # Translate - New
 
 ## lib/MT/Asset/Image.pm
 	'Image' => 'Image',
 	'Images' => 'Images',
 	'Actual Dimensions' => 'Dimensions réelles',
-	'[_1] wide, [_2] high' => '[_1] de large, [_2] de haut',
+	'[_1] x [_2] pixels' => '[_1] x [_2] pixels', # Translate - New
 	'Error scaling image: [_1]' => 'Erreur de redimentionnement de l\'image: [_1]',
 	'Error creating thumbnail file: [_1]' => 'Erreur lors de la création de la vignette: [_1]',
+	'%f-thumb-%wx%h%x' => '%f-thumb-%wx%h%x', # Translate - New
 	'Can\'t load image #[_1]' => 'Impossible de charger l\'image #[_1]',
 	'View image' => 'Voir l\'image',
 	'Permission denied setting image defaults for blog #[_1]' => 'Permission interdite de configurer les réglages par défaut des images pour le blog #[_1]',
@@ -472,17 +477,17 @@ use vars qw( @ISA %Lexicon );
 	'RSS' => 'RSS',
 	'Entry' => 'Note',
 	'Entry Listing' => 'Liste des notes',
-	'Comment Response' => 'Réponse au commentaire', # Translate - New
-	'Shown for a comment error, pending or confirmation message.' => 'Affiché pour une erreur de commentaire, ou un message de confirmation ou d\'attente.', # Translate - New
+	'Comment Response' => 'Réponse au commentaire',
+	'Shown for a comment error, pending or confirmation message.' => 'Affiché pour une erreur de commentaire, ou un message de confirmation ou \'attente.',
 	'Comment Preview' => 'Pré visualisation du commentaire',
-	'Shown when a commenter previews their comment.' => 'Affiché lo\'un commentateur pré-visualise son commentaire.',
+	'Shown when a commenter previews their comment.' => 'Affiché l\'un commentateur pré-visualise son commentaire.',
 	'Dynamic Error' => 'Erreur dynamique',
-	'Shown when an error is encountered on a dynamic blog page.' => 'Affiché lo\'une erreur se produit sur une page dynamique du blog.',
+	'Shown when an error is encountered on a dynamic blog page.' => 'Affiché l\'une erreur se produit sur une page dynamique du blog.',
 	'Popup Image' => 'Image dans une fenêtre popup',
-	'Shown when a visitor clicks a popup-linked image.' => 'Affiché lo\'un visiteur clique une image avec pop-up.',
-	'Shown when a visitor searches the weblog.' => 'Affiché lo\'un visiteur recherche dans le weblog.',
+	'Shown when a visitor clicks a popup-linked image.' => 'Affiché l\'un visiteur clique une image avec pop-up.',
+	'Shown when a visitor searches the weblog.' => 'Affiché l\'un visiteur recherche dans le weblog.',
 	'Footer' => 'Pied',
-	'Sidebar - 2 Column Layout' => 'Colonne latérale - Mise en page 2 colonnes', # Translate - New
+	'Sidebar - 2 Column Layout' => 'Colonne latérale - Mise en page 2 colonnes',
 
 ## lib/MT/Plugin/JunkFilter.pm
 	'[_1]: [_2][_3] from rule [_4][_5]' => '[_1]: [_2][_3] de la règle [_4][_5]',
@@ -501,14 +506,14 @@ use vars qw( @ISA %Lexicon );
 	'Can not set score to the object \'[_1]\'(ID: [_2])' => 'Impossible de noter cet object \'[_1]\'(ID: [_2])',
 
 ## lib/MT/Notification.pm
-	'Contact' => 'Contact', # Translate - New
-	'Contacts' => 'Contacts', # Translate - New
+	'Contact' => 'Contact',
+	'Contacts' => 'Contacts',
 
 ## lib/MT/Compat/v3.pm
 	'uses: [_1], should use: [_2]' => 'utilise: [_1], devrait utiliser: [_2]',
 	'uses [_1]' => 'utilise [_1]',
 	'No executable code' => 'Pas de code exécutable',
-	'Publish-option name must not contain special characters' => 'Le nom publish-option ne doit pas contenir de caractères spéciaux', # Translate - New
+	'Publish-option name must not contain special characters' => 'Le nom publish-option ne doit pas contenir de caractères spéciaux',
 
 ## lib/MT/Author.pm
 	'The approval could not be committed: [_1]' => 'L\'aprobation ne peut être réalisée : [_1]',
@@ -518,7 +523,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/ContextHandlers.pm
 	'Remove this widget' => 'Supprimer ce widget',
-	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publiez[_2] votre site pour que ces changements soient appliqués.', # Translate - New
+	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publiez[_2] votre site pour que ces changements soient appliqués.',
 	'Plugin Actions' => 'Actions du plugin',
 	'Warning' => 'Attention',
 	'No [_1] could be found.' => 'Aucun [_1] n\'a pu être trouvé.',
@@ -536,7 +541,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2]' => '[_1] [_2]',
 	'You used a [_1] tag without any arguments.' => 'Vous utilisez un [_1] tag sans aucun argument.',
 	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'Vous avez utilisé une balise \'[_1]\' en dehors du contexte d\'un auteur; peut-être l\'avez vous mise en dehors du conteneur \'MTAuthors\' ?',
-	'Author (#[_1])' => 'Auteur (#[_1])', # Translate - New
+	'Author (#[_1])' => 'Auteur (#[_1])',
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Vous avez une erreur dans votre attribut \'[_2]\' : [_1]',
 	'You have an error in your \'tag\' attribute: [_1]' => 'Vous avez une erreur dans votre attribut \'tag\': [_1]',
 	'No such user \'[_1]\'' => 'L\'utilisateur \'[_1]\' n\'existe pas',
@@ -668,7 +673,7 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/index.html' => 'categorie/sous_categorie/index.html',
 	'Archive type \'[_1]\' is not a chosen archive type' => 'Le Type d\'archive\'[_1]\' n\'est pas un type d\'archive sélectionné',
 	'Parameter \'[_1]\' is required' => 'Le Paramètre \'[_1]\' est requis',
-	'You did not set your blog publishing path' => 'Vous n\'avez pas configuré le chemin de publication de votre blog', # Translate - New
+	'You did not set your blog publishing path' => 'Vous n\'avez pas configuré le chemin de publication de votre blog',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Le même fichier d\'archive existe déjà. Vous devez changer le nom de base ou le chemin de l\'archive ([_1])',
 	'An error occurred publishing category \'[_1]\': [_2]' => 'Une erreur s\'est produite en publiant la catégorie \'[_1]\': [_2]',
 	'An error occurred publishing entry \'[_1]\': [_2]' => 'Une erreur s\'est produite en publiant la note \'[_1]\': [_2]',
@@ -690,6 +695,10 @@ use vars qw( @ISA %Lexicon );
 	'Files' => 'Fichiers',
 	'Description' => 'Description',
 	'Location' => 'Adresse',
+
+## lib/MT/Role.pm
+	'Role' => 'Rôle',
+	'Roles' => 'Roles',
 
 ## lib/MT/BasicAuthor.pm
 	'authors' => 'auteurs',
@@ -740,7 +749,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Commenter save failed with [_1]' => 'L\'enregistrement de l\'auteur de commentaires a échoué [_1]',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Tentative de commentaire échouée par utilisateur  \'[_1]\' en cours d\'inscription',
 	'Registered User' => 'Utilisateur enregistré',
-	'New Comment Added to \'[_1]\'' => 'Nouveau commentaire ajouté à \'[_1]\'',
 	'The sign-in attempt was not successful; please try again.' => 'La tentative d\'enregistrement a échoué; veuillez essayer de nouveau.',
 	'The sign-in validation was not successful. Please make sure your weblog is properly configured and try again.' => 'La procédure d\'enrgistrement a échoué. Veuillez vérifier que votre weblog est configuré correctement et essayez de nouveau.',
 	'No such entry ID \'[_1]\'' => 'Aucune ID pour la Note \'[_1]\'',
@@ -752,9 +760,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'All required fields must have valid values.' => 'Tous les champs obligatoires doivent avoir des valeurs valides.',
 	'Commenter profile has successfully been updated.' => 'Le profil du commentateur a été modifié avec succès.',
 	'Commenter profile could not be updated: [_1]' => 'Le profil du commentateur n\'a pu être modifié: [_1]',
-	'You can\'t reply to unpublished comment.' => 'Vous ne pouvez pas répondre à un commentaire non publié.',
-	'Your session has been ended.  Cancel the dialog and login again.' => 'Votre session a expiré. Annulez le dialogue et identifiez-vous à nouveau.',
-	'Invalid request.' => 'Demande invalide.',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] database driver is required to use [_2].' => 'Le driver de base de données [_1] est obligatoire pour utiliser [_2].',
@@ -766,21 +771,21 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'This is the test email sent by your new installation of Movable Type.' => 'Ceci est un email de test envoyé par votre nouvelle installation Movable Type.',
 	'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.' => 'Ce module est nécessaire pour encoder les caractères spéciaux, mais cette option peut être désactivée en utilisant NoHTMLEntities dans mt-config.cgi.',
 	'This module is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'Ce module est nécessaire si vous souhaitez utiliser le système de TrackBack, les pings weblogs.com, ou le ping Mises à jour récentes MT.',
-	'This module is needed if you wish to use the MT XML-RPC server implementation.' => 'Ce module est nécessaire si vous souhaitez utilis\'implémentation du serveur XML-RPC MT.',
+	'This module is needed if you wish to use the MT XML-RPC server implementation.' => 'Ce module est nécessaire si vous souhaitez utili\'implémentation du serveur XML-RPC MT.',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'Ce module est nécessaire si vous voulez pouvoir écraser les fichiers existants lorsque vous envoyez un nouveau fichier.',
 	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Ce module est nécessaire si vous souhaitez pouvoir créer des vignettes pour les images envoyées.',
 	'This module is required by certain MT plugins available from third parties.' => 'Ce module est nécessaire pour certains plugins MT disponibles auprès de partenaires.',
 	'This module accelerates comment registration sign-ins.' => 'Ce module accélère les enregistrements de commentateurs.',
-	'This module is needed to enable comment registration.' => 'Ce module est nécessaire pour activ\'enregistrement de commentateurs.',
-	'This module enables the use of the Atom API.' => 'Ce module perm\'utilisation \'APi Atom.',
+	'This module is needed to enable comment registration.' => 'Ce module est nécessaire pour acti\'enregistrement de commentateurs.',
+	'This module enables the use of the Atom API.' => 'Ce module per\'utilisation\'APi Atom.',
 	'This module is required in order to archive files in backup/restore operation.' => 'Ce module est nécessaire pour archiver les fichiers lors des opérations de sauvegarde/restauration.',
 	'This module is required in order to compress files in backup/restore operation.' => 'Ce module est nécessaire pour compresser les fichiers lors des opérations de sauvegarde et restauration.',
-	'This module is required in order to decompress files in backup/restore operation.' => 'Ce module est nécessaire pour décompresser les fichiers lo\'une opération de sauvegarde/restauration.',
-	'This module and its dependencies are required in order to restore from a backup.' => 'Ce module et ses dépendances sont nécessaires pour restaurer à part\'une sauvegarde.',
-	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Ce module et ses dépendences sont obligatoires pour permettre aux commentateurs \'être authentifiés par des fournisseurs OpenID comme Vox et LiveJournal.',
-	'This module is required for sending mail via SMTP Server.' => 'Ce module est nécessaire pour envoyer des emails via un serveur SMTP.', # Translate - New
+	'This module is required in order to decompress files in backup/restore operation.' => 'Ce module est nécessaire pour décompresser les fichiers l\'une opération de sauvegarde/restauration.',
+	'This module and its dependencies are required in order to restore from a backup.' => 'Ce module et ses dépendances sont nécessaires pour restaurer à par\'une sauvegarde.',
+	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Ce module et ses dépendences sont obligatoires pour permettre aux commentateurs\'être authentifiés par des fournisseurs OpenID comme Vox et LiveJournal.',
+	'This module is required for sending mail via SMTP Server.' => 'Ce module est nécessaire pour envoyer des emails via un serveur SMTP.',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Ce module est nécessaire pour les envois de fichiers (pour déterminer la taille des images dans différents formats).',
-	'This module is required for cookie authentication.' => 'Ce module est nécessaire po\'authentification par cookies.',
+	'This module is required for cookie authentication.' => 'Ce module est nécessaire p\'authentification par cookies.',
 	'DBI is required to store data in database.' => 'DBI est nécessaire pour stoquer les données en base de données.',
 
 ## lib/MT/App/Upgrader.pm
@@ -808,6 +813,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Tagged: [_1]' => 'Avec le Tag : [_1]',
 	'View all entries tagged &ldquo;[_1]&rdquo;' => 'Voir toutes les notes avec le tag &ldquo;[_1]&rdquo;',
 	'No entries available.' => 'Aucune note disponible.',
+	'Invalid request.' => 'Demande invalide.',
 	'_WARNING_PASSWORD_RESET_MULTI' => 'Vous êtes sur le point de réinitialiser le mot de passe des utilisateurs sélectionnés. Les nouveaux mots de passe sont générés automatiquement et serront envoyés directement aux utilisateurs par e-mail.\n\nEtes-vous sûr de vouloir continuer ?',
 	'_WARNING_DELETE_USER_EUM' => 'Supprimer une utilisateur est une action définitive qui va créer des notes oprhelines. Si vous voulez retirer un utilisateur ou lui supprimer ses accès nous vous recommandons de désactiver son compte. Etes-vous sur de vouloir supprimer cet utilisateur? Attention il pourra se re-créer un accès s\'il existe encore dans le répertoire externe',
 	'_WARNING_DELETE_USER' => 'Supprimer un utilisateur est une action définitive qui va créer des notes orphelines. Si vous souhaitez retirer un utilisateur ou supprimer un accès utilisateur désactiver son compte est recommandé. Etes-vous sur de vouloir supprimer cet utilisateur?',
@@ -838,14 +844,12 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Password was reset for user \'[_1]\' (user #[_2]). Password was sent to the following address: [_3]' => 'Le mot de passe a été rétabli pour l\'utilisateur \'[_1]\' (utilisateur #[_2]). Le mot de passe a été envoyé à l\'adresse suivante: [_3]',
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Erreur d\'envoi du mail ([_1]); merci de corriger le problème, puis essayez à nouveau de récupérer votre mot de passe.',
 	'(newly created user)' => '(utilisateur nouvellement créé)',
-	'Search Files' => 'Rechercher Fichiers',
 	'Invalid group id' => 'Identifiant de Groupe Invalide',
 	'Users & Groups' => 'Utilisateurs et Groupes',
 	'Group Roles' => 'Rôles du Groupe',
 	'Users' => 'Utilisateurs',
 	'Invalid user id' => 'Identifiant Utilisateur Invalide',
 	'User Roles' => 'Rôles de l\'utilisateur',
-	'Roles' => 'Roles',
 	'Group Associations' => 'Associations de Groupe',
 	'User Associations' => 'Associations d\'utilisateur',
 	'Role Users & Groups' => 'Role Utilisateurs et Groupes',
@@ -860,15 +864,12 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Blogs' => 'Blogs',
 	'Blog Activity Feed' => 'Flux Activité du Blog',
 	'*User deleted*' => '*Utilisateur supprimé*',
-	'Group Members' => 'Membres du groupe',
-	'QuickPost' => 'QuickPost',
 	'All Feedback' => 'Tous les retours lecteurs',
 	'Activity Log' => 'Journal des activités',
 	'System Activity Feed' => 'Flux d\'activité du système',
 	'Activity log for blog \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Journal d\'activité pour le blog \'[_1]\' (ID:[_2]) réinitialisé par \'[_3]\'',
 	'Activity log reset by \'[_1]\'' => 'Journal d\'activité réinitialisé par \'[_1]\'',
 	'No blog ID' => 'Aucun blog ID',
-	'Default' => 'Par défaut',
 	'Import/Export' => 'Importer / Exporter',
 	'Invalid parameter' => 'Paramètre Invalide',
 	'Permission denied: [_1]' => 'Autorisation refusée: [_1]',
@@ -881,7 +882,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'widget' => 'widget',
 	'system' => 'système',
 	'Templates' => 'Modèles',
-	'One or more errors were found in this template.' => 'Une erreur ou plus ont été trouvées dans ce modèle.', # Translate - New
+	'One or more errors were found in this template.' => 'Une erreur ou plus ont été trouvées dans ce modèle.',
 	'General Settings' => 'Paramètres généraux',
 	'Publishing Settings' => 'Paramètres de publication',
 	'Plugin Settings' => 'Paramètres des plugins',
@@ -904,7 +905,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'User requires password' => 'L\'utilisateur a besoin d\'un mot de passe',
 	'User requires password recovery word/phrase' => 'L\'utilisateur demande la phrase de récupération de mot de passe',
 	'Email Address is required for password recovery' => 'L\'adresse email est nécessaire pour récupérer le mot de passe',
-	'Website URL is imperfect' => 'L\'URL du site web est imparfaite', # Translate - New
+	'Website URL is imperfect' => 'L\'URL du site web est imparfaite',
 	'The value you entered was not a valid email address' => 'Vous devez saisir une adresse e-mail valide',
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'L\'adresse email saisie est déjà sur la liste de notification de ce blog.',
 	'You did not enter an IP address to ban.' => 'Vous devez saisir une adresse IP à bannir.',
@@ -928,7 +929,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'You cannot delete your own user record.' => 'Vous ne pouvez pas effacer vos propres données Utilisateur.',
 	'You have no permission to delete the user [_1].' => 'Vous n\'avez pas l\'autorisation d\'effacer l\'utilisateur [_1].',
 	'Blog \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Blog \'[_1]\' (ID:[_2]) effacé par \'[_3]\'',
-	'Subscriber \'[_1]\' (ID:[_2]) deleted from notification list by \'[_3]\'' => 'Abonné \'[_1]\' (ID:[_2]) supprimé de la liste de notifications par \'[_3]\'',
+	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonné \'[_1]\' (ID:[_2]) supprimé du carnet d\'adresse par \'[_3]\'', # Translate - New
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Utilisateur \'[_1]\' (ID:[_2]) supprimé par \'[_3]\'',
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Répertoire \'[_1]\' (ID:[_2]) supprimé par \'[_3]\'',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Catégorie \'[_1]\' (ID:[_2]) supprimée par \'[_3]\'',
@@ -967,7 +968,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Need a status to update entries' => 'Statut nécessaire pour mettre à jour les notes',
 	'Need entries to update status' => 'Notes nécessaires pour mettre à jour le statut',
 	'One of the entries ([_1]) did not actually exist' => 'Une des notes ([_1]) n\'existait pas',
-	'[_1] \'[_2]\' (ID:[_3]) status changed from [_4] to [_5]' => '[_1] \'[_2]\' (ID:[_3]) statut changé de [_4] à [_5]', # Translate - New
+	'[_1] \'[_2]\' (ID:[_3]) status changed from [_4] to [_5]' => '[_1] \'[_2]\' (ID:[_3]) statut changé de [_4] à [_5]',
 	'You don\'t have permission to approve this comment.' => 'Vous n\'avez pas la permission d\'approuver ce commentaire.',
 	'Comment on missing entry!' => 'Commentaire su une note maquante !',
 	'Orphaned comment' => 'Commentaire orphelin',
@@ -975,8 +976,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Orphaned' => 'Orphelin',
 	'Plugin Set: [_1]' => 'Eventail de Plugin : [_1]',
 	'Plugins' => 'Plugins',
-	'Junk TrackBacks' => 'TrackBacks spam', # Translate - New
-	'TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.' => 'TrackBacks où <strong>[_1]</strong> est &quot;[_2]&quot;.', # Translate - New
+	'Junk TrackBacks' => 'TrackBacks spam',
+	'TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.' => 'TrackBacks où <strong>[_1]</strong> est &quot;[_2]&quot;.',
 	'TrackBack Activity Feed' => 'Flux d\'activité des TrackBacks ',
 	'No Excerpt' => 'Pas d\'extrait',
 	'No Title' => 'Pas de Titre',
@@ -1009,7 +1010,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Publish error: [_1]' => 'Erreur de publication: [_1]',
 	'Unable to create preview file in this location: [_1]' => 'Impossible de créer le fichier de pré-visualisation à cet endroit : [_1]',
 	'New [_1]' => 'Nouveau [_1]',
-	'Publish Site' => 'Publier le site', # Translate - New
+	'Publish Site' => 'Publier le site',
 	'index template \'[_1]\'' => 'modèle d\'index \'[_1]\'',
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'No permissions' => 'Aucun Droit',
@@ -1027,7 +1028,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Archive Root' => 'Archive Racine',
 	'Site Root' => 'Site Racine',
 	'Can\'t load blog #[_1].' => 'Impossible de charger le blog #[_1].',
-	'You did not choose a file to upload.' => 'Vous n\'avez pas sélectionné de fichier à envoyer.',
+	'Please select a file to upload.' => 'Merci de sélectionner un fichier à envoyer.', # Translate - New
 	'Before you can upload a file, you need to publish your blog.' => 'Avant de pouvoir envoyer un fichier, vous devez publier votre blog.',
 	'Invalid extra path \'[_1]\'' => 'Chemin supplémentaire invalide \'[_1]\'',
 	'Can\'t make path \'[_1]\': [_2]' => 'Impossible de créer le chemin \'[_1]\' : [_2]',
@@ -1096,7 +1097,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Archive::Tar is required to archive in tar.gz format.' => 'Archive::Tar est obligatoire pour sauvegarder dans le format tar.gz .',
 	'IO::Compress::Gzip is required to archive in tar.gz format.' => 'IO::Compress::Gzip est obligatoire pour sauvegarder dans le format tar.gz .',
 	'Archive::Zip is required to archive in zip format.' => 'Archive::Zip est obligatoire pour sauvegarder dans le format zip.',
-	'Copying file [_1] to [_2] failed: [_3]' => 'La copie du fichier [_1] vers [_2] a échoué: [_3]', # Translate - New
+	'Copying file [_1] to [_2] failed: [_3]' => 'La copie du fichier [_1] vers [_2] a échoué: [_3]',
 	'Specified file was not found.' => 'Le fichier spécifié n\'a pas été trouvé.',
 	'[_1] successfully downloaded backup file ([_2])' => '[_1] a téléchargé avec succès le fichier de sauvegarde ([_2])',
 	'Restore' => 'Restaurer',
@@ -1127,8 +1128,9 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Parent comment id was not specified.' => 'id du commentaire parent non spécifié.',
 	'Parent comment was not found.' => 'Commentaire parent non trouvé.',
 	'You can\'t reply to unapproved comment.' => 'Vous ne pouvez répondre à un commentaire non approuvé.',
+	'You can\'t reply to unpublished comment.' => 'Vous ne pouvez pas répondre à un commentaire non publié.',
 	'entries' => 'notes',
-	'This is You' => '\'est vous',
+	'This is You' => 'C\'est vous',
 	'Handy Shortcuts' => 'Raccourcis pratiques',
 	'Movable Type News' => 'Infos Movable Type',
 	'Blog Stats' => 'Statistiques du blog',
@@ -1162,8 +1164,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'My comments' => 'Mes commentaires',
 	'All comments in the last 7 days' => 'Tous les commentaires dans les 7 derniers jours',
 	'All comments in the last 24 hours' => 'Tous les commentaires dans les dernières 24 heures',
-	'Index Templates' => 'Modèle\'index',
-	'Archive Templates' => 'Modèle\'archives',
+	'Index Templates' => 'Modèl\'index',
+	'Archive Templates' => 'Modèl\'archives',
 	'Template Modules' => 'Modules de modèles',
 	'System Templates' => 'Modèles Système',
 	'Tags with entries' => 'Tags avec les notes',
@@ -1177,10 +1179,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Blog' => 'Blog',
 	'General' => 'Général',
 	'Feedback' => 'Feedback',
-	'Spam' => 'Spam',
 	'Blog Settings' => 'Réglages du blog',
-	'Members' => 'Membres',
-	'Address Book' => 'Carne\'adresse',
+	'Address Book' => 'Carn\'adresse',
 	'System Information' => 'Informations système',
 	'Import' => 'Importer',
 	'Export' => 'Exporter',
@@ -1211,8 +1211,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'All Weblog Activity' => 'Toutes l activité du weblog',
 	'Movable Type System Activity' => 'Movable Type activité du système',
 	'Movable Type Debug Activity' => 'Activité Debug Movable Type',
-	'[_1] Weblog Pages' => 'Pages du weblog [_1]', # Translate - New
-	'All Weblog Pages' => 'Toutes les pages du weblog', # Translate - New
+	'[_1] Weblog Pages' => 'Pages du weblog [_1]',
+	'All Weblog Pages' => 'Toutes les pages du weblog',
 
 ## lib/MT/App/Search.pm
 	'You are currently performing a search. Please wait until your search is completed.' => 'Vous êtes en train d\'effectuer une recherche. Merci d\'attendre que la recherche soit finie.',
@@ -1278,9 +1278,11 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Cloning TrackBack pings for blog...' => 'Clonage des pings de TrackBack du blog...',
 	'Cloning templates for blog...' => 'Clonage des modèles du blog...',
 	'Cloning template maps for blog...' => 'Clonage des mappages de modèle du blog...',
-	'blogs' => 'Blogs', # Translate - Case
+	'blogs' => 'Blogs',
 
 ## lib/MT/Upgrade.pm
+	'Comment Posted' => 'Commentaire envoyé',
+	'Your comment has been posted!' => 'Votre commentaire a été envoyé !',
 	'Migrating Nofollow plugin settings...' => 'Migration des réglages du plugin Nofollow...',
 	'Updating system search template records...' => 'Mise à jour des données du modèle de recherche du système...',
 	'Custom ([_1])' => '([_1]) personnalisé ',
@@ -1297,9 +1299,9 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Can upload files, edit all entries/categories/tags on a blog and publish.' => 'Peut charger des fichiers, modifier toutes les notes/catégories/tags sur un blog et republier.',
 	'Can create entries, edit their own, upload files and publish.' => 'Peut créer des notes, modifier les leurs, envoyer des fichiers et publier.',
 	'Designer' => 'Designer',
-	'Can edit, manage and publish blog templates.' => 'Peut modifier, gérer et publier les modèles du blog.', # Translate - New
+	'Can edit, manage and publish blog templates.' => 'Peut modifier, gérer et publier les modèles du blog.',
 	'Webmaster' => 'Webmaster',
-	'Can manage pages and publish blog templates.' => 'Peut gérer les pages et publier les modèles du blog.', # Translate - New
+	'Can manage pages and publish blog templates.' => 'Peut gérer les pages et publier les modèles du blog.',
 	'Contributor' => 'Contributeur',
 	'Can create entries, edit their own and comment.' => 'Peut créer des notes, modifier les siennes et commenter.',
 	'Moderator' => 'Modérateur',
@@ -1309,10 +1311,11 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Fixing binary data for Microsoft SQL Server storage...' => 'Correction des données binaires pour le stockage Microsoft SQL Server...',
 	'Creating new template: \'[_1]\'.' => 'Creation d\'un nouveau modèle: \'[_1]\'.',
 	'Mapping templates to blog archive types...' => 'Mapping des modèles vers les archives des blogs...',
-	'Renaming PHP plugin file names...' => 'Renommage des noms de fichier des plugins php...', # Translate - Case
-	'Error renaming PHP files. Please check the Activity Log.' => 'Erreur pendant le renommage des fichiers PHP. Merci de vérifier le journal des activités.', # Translate - New
+	'Renaming PHP plugin file names...' => 'Renommage des noms de fichier des plugins php...',
+	'Error renaming PHP files. Please check the Activity Log.' => 'Erreur pendant le renommage des fichiers PHP. Merci de vérifier le journal des activités.',
 	'Cannot rename in [_1]: [_2].' => 'Impossible de renommer dans [_1]: [_2].',
 	'Updating widget template records...' => 'Mise à jour des données du modèle de widget...',
+	'Removing unused template maps...' => 'Suppression des mappages de modèles non-utilisés...', # Translate - New
 	'Upgrading table for [_1]' => 'Mise à jour des tables pour [_1]',
 	'Upgrading database from version [_1].' => 'Mise à jour de la Base de données de la version [_1].',
 	'Database has been upgraded to version [_1].' => 'La base de données a été mise à jour version [_1].',
@@ -1323,7 +1326,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'User \'[_1]\' installed plugin \'[_2]\', version [_3] (schema version [_4]).' => 'Utilisateur \'[_1]\' a installé le plugin \'[_2]\', version [_3] (schéma version [_4]).',
 	'Setting your permissions to administrator.' => 'Paramétrage des permissions pour administrateur.',
 	'Creating configuration record.' => 'Création des infos de configuration.',
-	'Creating template maps...' => 'Création des liens de modèles...',
+	'Creating template maps...' => 'Création des mappages de modèles...',
 	'Mapping template ID [_1] to [_2] ([_3]).' => 'Lien du modèle [_1] vers [_2] ([_3]).',
 	'Mapping template ID [_1] to [_2].' => 'Lien du modèle [_1] vers [_2].',
 	'Error loading class: [_1].' => 'Erreur de chargement de classe : [_1].',
@@ -1331,21 +1334,21 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Updating category placements...' => 'Modification des placements de catégories...',
 	'Assigning comment/moderation settings...' => 'Mise en place des réglages commentaire/modération ...',
 	'Setting blog basename limits...' => 'Setting blog basename limits...',
-	'Setting default blog file extension...' => 'Ajout \'extension de fichier par défaut du blog...',
+	'Setting default blog file extension...' => 'Ajout\'extension de fichier par défaut du blog...',
 	'Updating comment status flags...' => 'Modification des statuts des commentaires...',
 	'Updating commenter records...' => 'Modification des données du commentateur...',
-	'Assigning blog administration permissions...' => 'Ajout des permissio\'administration du blog...',
-	'Setting blog allow pings status...' => 'Mise en place du stat\'autorisation des pings...',
+	'Assigning blog administration permissions...' => 'Ajout des permissi\'administration du blog...',
+	'Setting blog allow pings status...' => 'Mise en place du sta\'autorisation des pings...',
 	'Updating blog comment email requirements...' => 'Mise à jour des prérequis des emails pour les commentaires du blog...',
 	'Assigning entry basenames for old entries...' => 'Ajout des racines des notes pour les anciennes notes...',
-	'Updating user web services passwords...' => 'Mise à jour des mots de passe des services web \'utilisateur...',
-	'Updating blog old archive link status...' => 'Modification \'ancien statut du li\'archive du blog...',
+	'Updating user web services passwords...' => 'Mise à jour des mots de passe des services web\'utilisateur...',
+	'Updating blog old archive link status...' => 'Modification\'ancien statut du l\'archive du blog...',
 	'Updating entry week numbers...' => 'Mise à jour des numéros des semaines de la note...',
 	'Updating user permissions for editing tags...' => 'Modification des permissions des utilisateurs pour modifier les balises...',
 	'Setting new entry defaults for blogs...' => 'Réglage des valeurs par défaut des nouvelles notes pour les blogs...',
 	'Migrating any "tag" categories to new tags...' => 'Migration des catégories de "tag" vers de nouveaux tags...',
 	'Assigning custom dynamic template settings...' => 'Ajout des réglages spécifiques de template dynamique...',
-	'Assigning user types...' => 'Ajout des typ\'utilisateurs...',
+	'Assigning user types...' => 'Ajout des ty\'utilisateurs...',
 	'Assigning category parent fields...' => 'Ajout des champs parents de la catégorie...',
 	'Assigning template build dynamic settings...' => 'Ajout des réglages de construction dynamique du template...',
 	'Assigning visible status for comments...' => 'Ajout du statut visible pour les commentaires...',
@@ -1356,10 +1359,14 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Assigning user status...' => 'Attribue le statut utilisateur...',
 	'Migrating permissions to roles...' => 'Migre les autorisations vers les roles...',
 	'Populating authored and published dates for entries...' => 'Mise en place des dates de création et de publication des notes...',
-	'Merging comment system templates...' => 'Assemblage des modèles du système de commentaire...', # Translate - New
+	'Merging comment system templates...' => 'Assemblage des modèles du système de commentaire...',
 	'Populating default file template for templatemaps...' => 'Mise en place du fichier modèle par défaut pour les templatemaps...',
 
 ## lib/MT/Plugin.pm
+	'Publish' => 'Publier',
+	'Uppercase text' => 'Texte majuscule',
+	'Lowercase text' => 'Texte minuscule',
+	'My Text Format' => 'Format de mon texte.',
 
 ## lib/MT/Auth.pm
 	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'Mauvaise configuration du module d\'Authentification \'[_1]\': [_2]',
@@ -1372,7 +1379,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## lib/MT/Builder.pm
 	'<[_1]> at line [_2] is unrecognized.' => '<[_1]> à la ligne [_2] n\'est pas reconnu.',
 	'<[_1]> with no </[_1]> on line #' => '<[_1]> sans </[_1]> à la ligne #',
-	'<[_1]> with no </[_1]> on line [_2].' => '<[_1]> sans </[_1]> à la ligne [_2].', # Translate - New
+	'<[_1]> with no </[_1]> on line [_2].' => '<[_1]> sans </[_1]> à la ligne [_2].',
 	'<[_1]> with no </[_1]> on line [_2]' => '<[_1]> sans </[_1]> à la ligne [_2]',
 	'Error in <mt:[_1]> tag: [_2]' => 'Erreur dans balise <mt:[_1]> : [_2]',
 	'No handler exists for tag [_1]' => 'Pas de handler existant pour balise [_1]',
@@ -1382,7 +1389,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Category loop detected' => 'Loop de catégorie détecté',
 
 ## lib/MT/Template.pm
-	'Error reading file \'[_1]\': [_2]' => 'Erreur à la lecture du fichier \'[_1]\': [_2]', # Translate - New
+	'Error reading file \'[_1]\': [_2]' => 'Erreur à la lecture du fichier \'[_1]\': [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'Erreur de publication dans le modèle \'[_1]\': [_2]',
 	'Template with the same name already exists in this blog.' => 'Un modèle avec le même nom exite déjà dans ce blog.',
 	'You cannot use a [_1] extension for a linked file.' => 'Vous ne pouvez pas utiliser l\'extension [_1] pour un fichier joint.',
@@ -1397,9 +1404,9 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Widget' => 'Widget',
 
 ## lib/MT/Entry.pm
-	'Draft' => 'Brouillon', # Translate - New
-	'Review' => 'Vérification', # Translate - New
-	'Future' => 'Futur', # Translate - New
+	'Draft' => 'Brouillon',
+	'Review' => 'Vérification',
+	'Future' => 'Futur',
 
 ## lib/MT.pm.pre
 	'Powered by [_1]' => 'Powered by [_1]',
@@ -1447,7 +1454,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 
 ## mt-static/js/assetdetail.js
 	'No Preview Available' => 'Pas de pré-visualisation disponible',
-	'Click to see uploaded file.' => 'Cliquer pour voir le fichier envoyé.',
+	'View uploaded file' => 'Voir le fichier envoyé', # Translate - New
 
 ## mt-static/mt.js
 	'to delete' => 'effacer',
@@ -1479,7 +1486,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?' => 'Le tag \'[_2]\' existe déjà. Etes-vous sûr de vouloir combiner \'[_1]\' avec \'[_2]\'\' sur tous les weblogs?',
 	'Loading...' => 'Chargement...',
 	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] de [_3]',
-	'[_1] &ndash; [_2]' => '[_1] &ndash; [_2]', # Translate - New
+	'[_1] &ndash; [_2]' => '[_1] &ndash; [_2]',
 
 ## search_templates/results_feed.tmpl
 	'Search Results for [_1]' => 'Résultats de la recherche sur [_1]',
@@ -1609,14 +1616,14 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Roles for [_1] in' => 'Rôles pour [_1] dans',
 	'Roles: System-wide' => 'Rôles : Pour tout le système',
 	'You have successfully deleted the role(s).' => 'Vous avez supprimé avec succès le(s) rôle(s).',
-	'Delete selected roles (x)' => 'Effacer les roles séelctionnés (x)',
 	'role' => 'rôle',
 	'roles' => 'rôles',
+	'Delete selected [_1] (x)' => 'Effacer [_1] sélectionné (x)',
 	'Grant another role to [_1]' => 'Attribuer un autre rôle à [_1]',
 	'Create Role' => 'Créer un rôle',
-	'Role' => 'Rôle',
 	'In Weblog' => 'Dans le Weblog',
 	'Via Group' => 'Via le Groupe',
+	'Members' => 'Membres',
 	'Weblogs' => 'Weblogs',
 	'Created By' => 'Créé par',
 	'Role Is Active' => 'Le role est actif',
@@ -1637,8 +1644,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Decrease' => 'Baisser',
 	'Increase' => 'Augmenter',
 	'More Aggressive' => 'Plus Agressif',
+	'Save changes to this [_1] (s)' => 'Enregistrer les modifications de ce [_1] (s)', # Translate - New
 	'Save Changes' => 'Enregistrer les modifications',
-	'Save changes (s)' => 'Enregistrer les modifications',
 
 ## tmpl/cms/preview_entry.tmpl
 	'Preview [_1]' => 'Pré-visualiser [_1]',
@@ -1657,23 +1664,24 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Create [_1]' => 'Créer [_1]',
 	'Edit [_1]' => 'Modifier [_1]',
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>' => 'Une version de sauvegarde de [_1] a été automatiquement sauvegardée [_3]. <a href="[_2]">Récupérer le contenu sauvegardé</a>',
-	'Your [_1] has been saved. You can now make any changes to the [_1] itself, edit the authored-on date, or edit comments.' => 'Votre [_1] a été sauvegardé. Vous pouvez maintenant modifier [_1], modifier la date de création, ou modifier les commentaires.',
+	'Your [_1] has been saved.' => 'Votre [_1] a été enregistré.', # Translate - New
 	'Your changes have been saved.' => 'Les modifications ont été enregistrées.',
 	'One or more errors occurred when sending update pings or TrackBacks.' => 'Erreur lors de l\'envoi des pings ou des TrackBacks.',
 	'_USAGE_VIEW_LOG' => 'L\'erreur est enregistrée dans le <a href="[_1]">journal des activité</a>.',
 	'Your customization preferences have been saved, and are visible in the form below.' => 'Vos préférences ont été enregistrées et sont affichées dans le formulaire ci-dessous.',
 	'Your changes to the comment have been saved.' => 'Les modifications apportées aux commentaires ont été enregistrées.',
 	'Your notification has been sent.' => 'Votre notification a été envoyé.',
-	'You have successfully recovered your saved [_1].' => 'Vous avez supprimé avec succès votre [_1] sauvegardé.',
+	'You have successfully recovered your saved [_1].' => 'Vous avez récupéré avec succès votre [_1] sauvegardée.',
 	'An error occurred while trying to recover your saved [_1].' => 'Une erreur s\'est produite en essayant de récupérer votre [_1] sauvegardée.',
 	'You have successfully deleted the checked comment(s).' => 'Les commentaires sélectionnés ont été supprimés.',
 	'You have successfully deleted the checked TrackBack(s).' => 'Le(s) TrackBack(s) sélectionné(s) ont été correctement supprimé(s).',
-	'Summary' => 'Résumé',
+	'[_1] Summary' => 'Résumé [_1]', # Translate - New
 	'Created [_1] by [_2].' => 'Créé le [_1] par [_2].',
 	'Last edited [_1] by [_2].' => 'Dernière modification le [_1] par [_2].',
 	'Published [_1].' => 'Publié le [_1]',
 	'This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and <a href="[_5]">[quant,_3,trackback,trackbacks]</a>.' => 'Cette [_1] a reçu <a href="[_4]">[quant,_2,commentaire,commentaires]</a> et <a href="[_5]">[quant,_3,trackback,trackbacks]</a>.',
 	'Useful Links' => 'Liens utiles',
+	'QuickPost' => 'QuickPost',
 	'Display Options' => 'Options d\'affichage',
 	'Fields' => 'Champs',
 	'Title' => 'Titre',
@@ -1685,8 +1693,12 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Top' => 'Haut',
 	'Both' => 'Les deux',
 	'Bottom' => 'Bas',
+	'Reset display options' => 'Ré-initialiser les options d\'affichage', # Translate - New
+	'Reset display options to blog defaults' => 'Ré-initialiser les options d\'affichage avec les valeurs par défaut du blog', # Translate - New
+	'Reset defaults' => 'Ré-initialiser les valeurs par défaut', # Translate - New
+	'Save display options' => 'Enregistrer les options d\'affichage', # Translate - New
 	'OK' => 'OK',
-	'Reset' => 'Mettre à jour',
+	'Close display options' => 'Fermer les options d\'affichage', # Translate - New
 	'Your entry screen preferences have been saved.' => 'Vos préférences d\'édition ont été enregistrées.',
 	'Are you sure you want to use the Rich Text editor?' => 'Etes-vous sûr de vouloir utiliser l\'éditeur de texte enrichi ?',
 	'You have unsaved changes to your [_1] that will be lost.' => 'Vous avez des modifications non sauvegardées dans votre [_1] qui seront perdues.',
@@ -1700,7 +1712,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Add new' => 'Ajouter nouveau',
 	'Preview this [_1] (v)' => 'Pré visualiser ce [_1] (v)',
 	'Delete this [_1] (v)' => 'Effacer ce [_1] (v)',
-	'Delete this [_1] (x)' => 'Effacer cet [_1] (x)',
 	'Share this [_1]' => 'Partager ce [_1]',
 	'_external_link_target' => '_haut',
 	'View published [_1]' => 'Voir [_1] publié',
@@ -1746,22 +1757,19 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Warning: If you set the basename manually, it may conflict with another entry.' => 'ATTENTION : Editer le nom de base manuellement peut créer des conflits avec d\'autres notes.',
 	'Warning: Changing this entry\'s basename may break inbound links.' => 'ATTENTION : Changer le nom de base de cette note peut casser des liens entrants.',
 	'Accept' => 'Accepter',
-	'Comments Accepted' => 'Commentaires acceptés',
-	'TrackBacks Accepted' => 'TrackBacks Acceptés',
 	'Outbound TrackBack URLs' => 'URLs TrackBacks sortants',
 	'View Previously Sent TrackBacks' => 'Afficher les TrackBacks envoyés précédemment',
 	'Auto-saving...' => 'Sauvegarde automatique...',
 	'Last auto-save at [_1]:[_2]:[_3]' => 'Dernière sauvegarde automatique le [_1]:[_2]:[_3]',
-	'None selected' => 'Aucun sélectionné', # Translate - New
+	'None selected' => 'Aucun sélectionné',
 
 ## tmpl/cms/system_check.tmpl
 
 ## tmpl/cms/import.tmpl
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Transférer les notes Movable Type vers une autre installation Movable Type ou à partir d\'un autre outil de blogging pour faire une sauvegarde ou une copie.',
-	'Import to' => 'Importer dans',
-	'Select a blog for importing.' => 'Choisissez un blog pour l\'import.',
-	'None selected.' => 'Aucun sélectionné.',
-	'Select...' => 'Selection...',
+	'Blog to Import' => 'Blog à importer', # Translate - New
+	'Select a blog to import.' => 'Sélectionner un blog à importer.', # Translate - New
+	'Select blog' => 'Sélectionner le blog', # Translate - Case
 	'Importing from' => 'Importation à partir de',
 	'Ownership of imported entries' => 'Propriétaire des notes importées',
 	'Import as me' => 'Importer en me considérant comme auteur',
@@ -1779,13 +1787,14 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Default category for entries (optional)' => 'Catégorie par défaut pour les notes (optionnel)',
 	'You can specify a default category for imported entries which have none assigned.' => 'Vous pouvez spécifier une catégorie par défaut pour les notes importées qui n\'ont pas été assignées.',
 	'Select a category' => 'Sélectionnez une catégorie',
+	'Import Entries (s)' => 'Importer les notes (s)', # Translate - New
 	'Import Entries' => 'Importer des notes',
-	'Import Entries (i)' => 'Importer les notes (i)',
 
 ## tmpl/cms/cfg_system_feedback.tmpl
 	'Feedback Settings: System-wide' => 'Réglages des feedbacks : Pour tout le système.',
 	'This screen allows you to configure feedback and outbound TrackBack settings for the entire installation.  These settings override any similar settings for individual weblogs.' => 'Cet écran vous permet de configurer les paramètres des feedbacks et des TrackBacks sortants pour l\'ensemble de l\'installation. Ces paramètres priment sur les paramétrages que vous auriez pu faire sur un weblog donné.',
 	'Your feedback preferences have been saved.' => 'Vos préférences feedback sont enregistrées.',
+	'None selected.' => 'Aucun sélectionné.',
 	'Feedback Master Switch' => 'Contrôle principal des Feedbacks',
 	'Disable Comments' => 'Désactiver les commentaires',
 	'This will override all individual weblog comment settings.' => 'Cette action prime sur tout paramétrage des commentaires mis en place au niveau de chaque weblog.',
@@ -1794,6 +1803,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'Sélectionnez un administrateur que vous souhaitez notifier quand les commentateurs s\'enregistrent avec succès.',
 	'Allow commenters to register to Movable Type' => 'Autoriser les commentateurs à s\'enregistrer dans Movable Type',
 	'Notify administrators' => 'Notifier les administrateurs',
+	'Select...' => 'Selection...',
 	'Clear' => 'Clair',
 	'System Email Address Not Set' => 'Adresse email du système non renseignée',
 	'Note: System Email Address is not set.  Emails will not be sent.' => 'Remarque : l\'adresse email du système n\'est pas configurée.  Les emails ne seront pas envoyés.',
@@ -1816,7 +1826,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Edit Template' => 'Modifier un modèle',
 	'Create Template' => 'Créer le modèle',
 	'Your template changes have been saved.' => 'Les modifications apportées ont été enregistrées.',
-	'<a href="[_1]" class="rebuild-link">Publish</a> this template.' => '<a href="[_1]" class="rebuild-link">Publier</a> ce modèle.', # Translate - New
+	'<a href="[_1]" class="rebuild-link">Publish</a> this template.' => '<a href="[_1]" class="rebuild-link">Publier</a> ce modèle.',
 	'Your [_1] has been published.' => 'Votre [_1] a été publiée.',
 	'View Published Template' => 'Voir les modèles publiés',
 	'List [_1] templates' => 'Lister les modèles [_1]',
@@ -1824,15 +1834,14 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Includes and Widgets' => 'Includes et Widgets',
 	'create' => 'Créer',
 	'Save (s)' => 'Enregistrer (s)',
-	'Save this template (s)' => 'Enregistrer ce modèle (s)',
-	'Save and Publish this template (r)' => 'Enregistrer et publier ce modèle (r)', # Translate - New
-	'Save and Publish' => 'Enregistrer et publier', # Translate - New
+	'Save and Publish this template (r)' => 'Enregistrer et publier ce modèle (r)',
+	'Save &amp; Publish' => 'Enregistrer &amp; publier', # Translate - New
 	'You must set the Template Name.' => 'Vous devez mettre un nom de modèle.',
 	'You must set the template Output File.' => 'Vous devez configurer le fichier de sortie du modèle.',
 	'Please wait...' => 'Merci de patienter...',
 	'Error occurred while updating archive maps.' => 'Une erreur s\'est produite en mettant à jour les archive maps.',
 	'Archive map has been successfully updated.' => 'L\'Archive map a été modifiée avec succès.',
-	'Are you sure you want to remove this template map?' => 'Etes-vous sûr de vouloir supprimer ce mappage de modèle ?', # Translate - New
+	'Are you sure you want to remove this template map?' => 'Etes-vous sûr de vouloir supprimer ce mappage de modèle ?',
 	'Template Name' => 'Nom du modèle',
 	'Module Body' => 'Corps du module',
 	'Template Body' => 'Corps du modèle',
@@ -1844,7 +1853,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Output File' => 'Fichier de sortie',
 	'Publish Options' => 'Options de publication',
 	'Enable dynamic publishing for this template' => 'Activer la publication dynamique pour ce modèle',
-	'Publish this template automatically when rebuilding index templates' => 'Publier ce modèle automatiquement lorsque les modèles d\'index sont republiés.', # Translate - New
+	'Publish this template automatically when rebuilding index templates' => 'Publier ce modèle automatiquement lorsque les modèles d\'index sont republiés.',
 	'Link to File' => 'Lien vers le fichier',
 	'Create New Archive Mapping' => 'Créer une nouvelle table de correspondance des archives',
 	'Archive Type:' => 'Type d\'archive :',
@@ -1854,17 +1863,16 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'The comment has been approved.' => 'Ce commentaire a été approuvé.',
 	'Pending Approval' => 'En attente d\'approbation',
 	'Comment Reported as Spam' => 'Commentaire notifié comme spam',
-	'Save this comment (s)' => 'Sauvegarder ce commentaire (s)',
 	'comment' => 'commentaire',
 	'comments' => 'commentaires',
-	'Delete this comment (x)' => 'Effacer ce commentaire (x)',
+	'Delete this [_1] (x)' => 'Effacer cet [_1] (x)',
 	'Ban This IP' => 'Bannir cette adresse IP',
 	'Useful links' => 'Liens utiles',
 	'Previous Comment' => 'Commentaire précédent',
 	'Next Comment' => 'Commentaire suivant',
-	'Manage Comments' => 'Gérer les commentaires', # Translate - New
-	'View entry comment was left on' => 'Voir la note sur laquelle ce commentaire a été déposé', # Translate - New
-	'Reply to this comment' => 'Répondre à ce commentaire', # Translate - New
+	'Manage Comments' => 'Gérer les commentaires',
+	'View entry comment was left on' => 'Voir la note sur laquelle ce commentaire a été déposé',
+	'Reply to this comment' => 'Répondre à ce commentaire',
 	'Update the status of this comment' => 'Mettre à jour le statut de ce commentaire',
 	'Approved' => 'Approuvé',
 	'Unapproved' => 'Non-approuvé',
@@ -1917,29 +1925,34 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Designing' => 'Designer',
 	'File Upload' => 'Envoi de Fichier',
 	'Commenting' => 'Commenter',
-	'Roles with the same permissions' => 'Roles avec les mêmes autorisations',
-	'Save this role' => 'Sauvegarder ce rôle',
+	'Duplicate Roles' => 'Dupliquer les rôles', # Translate - New
+	'These roles have the same permissions as this role' => 'Ces rôles ont les même permissions que celui-ci', # Translate - New
 
 ## tmpl/cms/dialog/restore_end.tmpl
 	'An error occurred during the restore process: [_1] Please check your restore file.' => 'Une erreur s\'est produite pendant la procédure de restauration: [_1] Merci de vérifier votre fichier de restauration.',
+	'View Activity Log (v)' => 'Voir le journal d\'activité (v)', # Translate - New
 	'All of the data have been restored successfully!' => 'Toutes les données ont été restaurées avec succès !',
+	'Ok (s)' => 'Ok (s)', # Translate - New
+	'Ok' => 'OK', # Translate - Case
 	'Next Page' => 'Page suivante',
-	'The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]' => 'Cette page va être redirigée vers une nouvelle page dans 3 secondes. [_1]Arréter la redirection.[_2]', # Translate - New
+	'The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]' => 'Cette page va être redirigée vers une nouvelle page dans 3 secondes. [_1]Arréter la redirection.[_2]',
 
 ## tmpl/cms/dialog/comment_reply.tmpl
 	'Reply to comment' => 'Répondre au commentaire',
-	'On [_1], [_2] commented on [_3]' => 'Le [_1], [_2] a commenté sur [_3]', # Translate - New
-	'Preview of your comment' => 'Prévisualisation de votre commentaire', # Translate - New
+	'On [_1], [_2] commented on [_3]' => 'Le [_1], [_2] a commenté sur [_3]',
+	'Preview of your comment' => 'Prévisualisation de votre commentaire',
 	'Your reply:' => 'Votre réponse :',
-	'Re-edit' => 'Re-modifier', # Translate - New
-	'Re-edit (r)' => 'Re-modifier (r)', # Translate - New
-	'Preview reply (v)' => 'Prévisualiser la réponse (v)', # Translate - New
-	'Publish reply (s)' => 'Publier la réponse (s)', # Translate - New
+	'Submit reply (s)' => 'Envoyer la réponse (s)', # Translate - New
+	'Preview reply (v)' => 'Prévisualiser la réponse (v)',
+	'Re-edit reply (r)' => 'Re-modifier la réponse (r)', # Translate - New
+	'Re-edit' => 'Re-modifier',
+	'Cancel (x)' => 'Annuler (x)', # Translate - New
 
 ## tmpl/cms/dialog/restore_upload.tmpl
-	'Restore: Multiple Files' => 'Restauration : Plusieurs fichiers', # Translate - New
+	'Restore: Multiple Files' => 'Restauration : Plusieurs fichiers',
 	'Canceling the process will create orphaned objects.  Are you sure you want to cancel the restore operation?' => 'L\'annulation de la procédure va créer des objets orphelins.  Etes-vous sûr de vouloir annuler l\'opération de restauration ?',
-	'Please upload the file [_1]' => 'Merci d\'envoyer le fichier [_1]', # Translate - New
+	'Please upload the file [_1]' => 'Merci d\'envoyer le fichier [_1]',
+	'Continue (s)' => 'Continuer (s)(', # Translate - New
 	'Continue' => 'Continuer',
 
 ## tmpl/cms/dialog/asset_list.tmpl
@@ -1949,68 +1962,77 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Weblog' => 'Weblog',
 	'Size' => 'Taille',
 	'View File' => 'Voir le fichier',
+	'Next (s)' => 'Suivant (s)', # Translate - New
+	'Insert (s)' => 'Insérer (s)', # Translate - New
 	'Next' => 'Suivant',
 	'Insert' => 'Insérer',
 	'No assets could be found.' => 'Aucun élément n\'a été trouvé.',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry' => 'Afficher l\'image dans la note', # Translate - Case
+	'Display image in entry' => 'Afficher l\'image dans la note',
 	'Alignment' => 'Alignement',
 	'Left' => 'Gauche',
 	'Center' => 'Centrer',
 	'Right' => 'Droite',
-	'Use thumbnail' => 'Utiliser une vignette', # Translate - New
-	'width:' => 'largeur:', # Translate - New
-	'pixels' => 'pixels', # Translate - Case
+	'Use thumbnail' => 'Utiliser une vignette',
+	'width:' => 'largeur:',
+	'pixels' => 'pixels',
 	'Link image to full-size version in a popup window.' => 'Lier l\'image à une version de taille complète dans une fenêtre pop-up.',
 	'Remember these settings' => 'Se souvenir de ces paramètres',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Options fichier',
 	'The file named \'[_1]\' has been uploaded. Size: [quant,_2,byte,bytes].' => 'Le fichier nommé \'[_1]\' a été chargé. Taille : [quant,_2,octet,octets].',
-	'Create entry using this uploaded file' => 'Créer une note à l\'aide de ce fichier', # Translate - New
+	'Create entry using this uploaded file' => 'Créer une note à l\'aide de ce fichier',
 	'Create a new entry using this uploaded file.' => 'Créer une nouvelle note avec ce fichier envoyé.',
+	'Finish (s)' => 'Finir (s)', # Translate - New
 	'Finish' => 'Finir',
 
 ## tmpl/cms/dialog/entry_notify.tmpl
-	'Send a Notification' => 'Envoyer une notification', # Translate - New
+	'Send a Notification' => 'Envoyer une notification',
 	'You must specify at least one recipient.' => 'Vos devez définir au moins un destinataire.',
-	'Your blog\'s name, this entry\'s title and a link to view it will be sent in the notification.  Additionally, you can add a  message, include an excerpt of the entry and/or send the entire entry.' => 'Le nom de votre blog, le titre de cette note et un lien pour la voir seront envoyés dans la notification. De plus, vous pouvez ajouter un message, inclure un extrait de la note et/ou envoyer la note entière.', # Translate - New
-	'Recipients' => 'Destinataires', # Translate - New
-	'Enter email addresses on separate lines, or comma separated.' => 'Saisissez les adresses email sur des lignes séparées, ou séparées par une virgule.', # Translate - New
-	'All addresses from Address Book' => 'Toutes les adresses de carnet d\'adresse', # Translate - New
-	'Optional Message' => 'Message optionnel', # Translate - New
-	'Optional Content' => 'Contenu optionnel', # Translate - New
-	'(Entry Body will be sent without any text formatting applied)' => '(Le corps de la note sera envoyé sans mise en forme du texte)', # Translate - New
-	'Send' => 'Envoyer', # Translate - New
-	'Send notification (n)' => 'Envoyer la notification (n)', # Translate - New
+	'Your blog\'s name, this entry\'s title and a link to view it will be sent in the notification.  Additionally, you can add a  message, include an excerpt of the entry and/or send the entire entry.' => 'Le nom de votre blog, le titre de cette note et un lien pour la voir seront envoyés dans la notification. De plus, vous pouvez ajouter un message, inclure un extrait de la note et/ou envoyer la note entière.',
+	'Recipients' => 'Destinataires',
+	'Enter email addresses on separate lines, or comma separated.' => 'Saisissez les adresses email sur des lignes séparées, ou séparées par une virgule.',
+	'All addresses from Address Book' => 'Toutes les adresses de carnet d\'adresse',
+	'Optional Message' => 'Message optionnel',
+	'Optional Content' => 'Contenu optionnel',
+	'(Entry Body will be sent without any text formatting applied)' => '(Le corps de la note sera envoyé sans mise en forme du texte)',
+	'Send notification (s)' => 'Envoyer la notification (s)', # Translate - New
+	'Send' => 'Envoyer',
 
 ## tmpl/cms/dialog/asset_upload.tmpl
 	'You need to configure your blog.' => 'Vous devez configurer votre blog.',
-	'Your blog has not been published.' => 'Votre blog n\'a pas été publié.', # Translate - New
-	'Before you can upload a file, you need to publish your blog. [_1]Configure your blog\'s publishing paths[_2] and rebuild your blog.' => 'Avant de pouvoir envoyer un fichier, vous devez publier votre blog. [_1]Configurez les chemins de publication de votre blog[_2] et republiez votre blog.', # Translate - New
-	'Your system or blog administrator needs to publish the blog before you can upload files. Please contact your system or blog administrator.' => 'L\'administrateur du système ou du blog doit publier le blog avant que vous puissiez envoyer des fichiers.', # Translate - New
+	'Your blog has not been published.' => 'Votre blog n\'a pas été publié.',
+	'Before you can upload a file, you need to publish your blog. [_1]Configure your blog\'s publishing paths[_2] and rebuild your blog.' => 'Avant de pouvoir envoyer un fichier, vous devez publier votre blog. [_1]Configurez les chemins de publication de votre blog[_2] et republiez votre blog.',
+	'Your system or blog administrator needs to publish the blog before you can upload files. Please contact your system or blog administrator.' => 'L\'administrateur du système ou du blog doit publier le blog avant que vous puissiez envoyer des fichiers.',
 	'Select File to Upload' => 'Sélectionnez le fichier à envoyer',
 	'_USAGE_UPLOAD' => 'Vous pouvez télécharger le fichier ci-dessus dans le chemin local de votre site <a href="javascript:alert(\'[_1]\')">(?)</a> ou dans le chemin des archives de votre site <a href="javascript:alert(\'[_2]\')">(?)</a>. Vous pouvez également télécharger le fichier dans un répertoire compris dans les répertoires mentionnés ci-dessus, en spécifiant le chemin dans les champs de droite (<i>images</i>, par exemple). Les répertoires qui n\'existent pas encore seront créés.',
-	'Upload Destination' => 'Destination du fichier', # Translate - New
-	'Upload' => 'Télécharger',
+	'Upload Destination' => 'Destination du fichier',
+	'Upload (s)' => 'Envoyer (s)', # Translate - New
+	'Upload' => 'Envoyer',
 
 ## tmpl/cms/dialog/asset_replace.tmpl
 	'A file named \'[_1]\' already exists. Do you want to overwrite this file?' => 'Le fichier \'[_1]\' existe déjà Souhaitez-vous le remplacer ?',
+	'Yes (s)' => 'Oui (s)', # Translate - New
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
-	'Configure New Publishing Paths' => 'Configurer de nouveaux chemins de publication', # Translate - New
+	'Configure New Publishing Paths' => 'Configurer de nouveaux chemins de publication',
 	'URL is not valid.' => 'L\'URL n\'est pas valide.',
 	'You can not have spaces in the URL.' => 'Vous ne pouvez pas avoir d\'espace dans l\'URL.',
 	'You can not have spaces in the path.' => 'Vous ne pouvez pas avoir d\'espace dans le chemin.',
 	'Path is not valid.' => 'Le chemin n\'est pas valide.',
-	'New Site Path:' => 'Nouveau chemin du site:', # Translate - New
-	'New Site URL:' => 'Nouvelle URL du site:', # Translate - New
-	'New Archive Path:' => 'Nouveau chemin d\'archive:', # Translate - New
-	'New Archive URL:' => 'Nouvelle URL d\'archive:', # Translate - New
+	'Old Path:' => 'Ancien chemin:', # Translate - New
+	'New Site Path:' => 'Nouveau chemin du site:',
+	'Old URL:' => 'Ancienne URL:', # Translate - New
+	'New Site URL:' => 'Nouvelle URL du site:',
+	'Old Archive Path:' => 'Ancien chemin d\'archive:', # Translate - New
+	'New Archive Path:' => 'Nouveau chemin d\'archive:',
+	'Old Archive URL:' => 'Ancienne URL d\'archive:', # Translate - New
+	'New Archive URL:' => 'Nouvelle URL d\'archive:',
 
 ## tmpl/cms/dialog/restore_start.tmpl
-	'Restoring...' => 'Restauration...', # Translate - New
+	'Restoring...' => 'Restauration...',
 
 ## tmpl/cms/dialog/create_association.tmpl
 	'You need to create some roles.' => 'Vous devez créer des rôles.',
@@ -2039,6 +2061,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Select a password for your account.' => 'Selectionnez un Mot de Passe pour votre compte.',
 	'This word or phrase will be required to recover your password if you forget it.' => 'Ce mot ou cette expression vous seront nécessaires pour retrouver votre mot de passe. Ne les oubliez pas.',
 	'Your LDAP username.' => 'Votre nom d\'utilisateur LDAP.',
+	'The user&rsquo;s preferred language.' => 'Langue préférée de l\'utilisateur.', # Translate - New
 	'Enter your LDAP password.' => 'Saisissez votre mot de passe LDAP.',
 
 ## tmpl/cms/pinging.tmpl
@@ -2084,7 +2107,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Enter preferred password.' => 'Saisissez le mot de passe préféré.',
 	'Enter the new password.' => 'Saisissez le nouveau mot de passe.',
 	'This word or phrase will be required to recover a forgotten password.' => 'Ce mot ou cette phrase sera nécessaire pour récupérer un mot de passe oublié.',
-	'Save this user (s)' => 'Sauvegarder cet utilisateur (s)',
 	'_USAGE_PASSWORD_RESET' => 'Ci-dessous, vous pouvez réinitialiser le mot de passe pour cet utilisateur. Si vous faites cela un mot de passe généré aléatoirement sera créé et envoyé par e-mail à : [_1].',
 	'Initiate Password Recovery' => 'Débuter la récupération du mot de passe',
 
@@ -2107,18 +2129,16 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'approved' => 'Approuvé',
 	'unapproved' => 'non-approuvé',
 	'to publish' => 'pour publier',
-	'Publish selected TrackBacks (p)' => 'Publier les TrackBacks sélectionnés (p)',
-	'Delete selected TrackBacks (x)' => 'Effacer les TrackBacks sélectionnés (x)',
-	'Report as Spam' => 'Notifier comme spam',
-	'Report selected TrackBacks as spam (j)' => 'Notifier les TrackBacks sélectionnés comme spam (j)',
-	'Not Junk' => 'Non Indésirable',
-	'Recover selected TrackBacks (j)' => 'Retrouver les TrackBacks sélectionnés (j)',
+	'Publish selected [_1] (p)' => 'Publier le [_1] sélectionné (p)', # Translate - New
+	'Report selected [_1] as Spam (j)' => 'Notifier le [_1] sélectionné comme spam (j)', # Translate - New
+	'Spam' => 'Spam',
+	'Report selected [_1] as Not Spam and Publish (j)' => 'Notifier le [_1] sélectionné comme non-spam et publier (j)', # Translate - New
+	'Not Spam' => 'Non-spam', # Translate - New
 	'Are you sure you want to remove all TrackBacks reported as spam?' => 'Etes-vous sûr de vouloir supprimer tous les TrackBacks notifiés comme spam?',
-	'Empty Spam Folder' => 'Vider le répertoire de spam',
-	'Deletes all TrackBacks reported as spam' => 'Efface tous les TrackBacks notifiés comme spam',
+	'Deletes all [_1] reported as Spam' => 'Efface tous les [_1] notifiés comme spam', # Translate - New
+	'Empty' => 'Vide', # Translate - New
 
 ## tmpl/cms/login.tmpl
-	'Signed out' => 'Identification terminée',
 	'Your Movable Type session has ended.' => 'Votre session Movable Type a été fermée.',
 	'Your Movable Type session has ended. If you wish to sign in again, you can do so below.' => 'Votre session Movable Type est terminée. Si vous souhaitez vous identifier à nouveau, vous pouvez le faire ci-dessous.',
 	'Your Movable Type session has ended. Please sign in again to continue this action.' => 'Votre session Movable Type est terminée. Merci de vous identifier à nouveau pour continuer cette action.',
@@ -2139,7 +2159,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Warning: Changing the site URL can result in breaking all the links in your blog.' => 'Attention : Modifier l\'URL du site peut rompre tous les liens de votre blog.',
 	'The path where your index files will be published. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/blog' => 'Le chemin où votre fichiers d\'index seront publiés. Un chemin absolu (commençant par \'/\') est préférable, mais vous pouvez utiliser un chemin relatif au répertoire de Movable Type. Exemple : /home/melody/public_html/blog',
 	'Unlock this blog&rsquo;s site path for editing' => 'Déverrouiller le chemin du site de ce blog pour le modifier',
-	'Note: Changing your site root requires a complete publish of your site.' => 'Remarque : La modification de la racine de votre site nécessite une publication complète de votre site.', # Translate - New
+	'Note: Changing your site root requires a complete publish of your site.' => 'Remarque : La modification de la racine de votre site nécessite une publication complète de votre site.',
 	'Advanced Archive Publishing' => 'Publication avancée des archives',
 	'Select this option only if you need to publish your archives outside of your Site Root.' => 'Sélectionnez cette option si vous avez besoin de publier vos archives en dehors de la racine du Site.',
 	'Publish archives outside of Site Root' => 'Publier les archives en dehors de la racine du site',
@@ -2231,10 +2251,10 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Permissions: System-wide' => 'Permissions : pour tout le système',
 	'Users &amp; Groups for [_1]' => 'Utilisateurs &amp; groupes pour [_1]',
 	'Users for [_1]' => 'Utilisateurs pour [_1]',
+	'permission' => 'Autorisation', # Translate - New
+	'permissions' => 'Autorisations', # Translate - Case
 	'Remove selected assocations (x)' => 'Supprimer les associations sélectionnées (x)',
 	'Revoke Permission' => 'Révoquer la permission',
-	'association' => 'association',
-	'associations' => 'associations',
 	'Group Disabled' => 'Groupe désactivé',
 	'You have successfully revoked the given permission(s).' => 'Vous avez révoqué avec succès les permissions sélectionnées.',
 	'You have successfully granted the given permission(s).' => 'Vous avez attribué avec succès les permissions sélectionnées.',
@@ -2280,29 +2300,24 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	' is unauthenticated' => ' n\'est pas authentifié',
 	' is authenticated' => ' est authentifié',
 	' is trusted' => ' est fiable',
-	'Approve' => 'Approuver',
-	'Approve selected comments (p)' => 'Approuver les commentaires sélectionnés (p)',
-	'Delete selected comments (x)' => 'Effacer les commentaires sélectionnés (x)',
-	'Report the selected comments as spam (j)' => 'Notifier les commentaires sélectionnés comme spam (j)',
-	'Recover from Spam' => 'Récupérer du spam',
-	'Recover selected comments (j)' => 'Récupérer les commentaires sélectionnés (j)',
+	'Publish selected [_1] (a)' => 'Publier le [_1] sélectionné (a)', # Translate - New
 	'Are you sure you want to remove all comments reported as spam?' => 'Etes-vous certain de vouloir supprimer tous les commentaires notifiés comme spam?',
-	'Deletes all comments reported as spam' => 'Effacer tous les commentaires notifiés comme spam',
 
 ## tmpl/cms/rebuilding.tmpl
-	'Publishing...' => 'Publication...', # Translate - New
-	'Publishing [_1]...' => 'Publication [_1]...', # Translate - New
+	'Publishing...' => 'Publication...',
+	'Publishing [_1]...' => 'Publication [_1]...',
 	'Publishing [_1]' => 'Publication de [_1]',
 	'Publishing [_1] pages [_2]' => 'Publication [_1] pages [_2]',
 	'Publishing [_1] dynamic links' => 'Publication de [_1] liens dynamiques',
 	'Publishing [_1] pages' => 'Publication de [_1] pages',
+    '_REBUILD_PUBLISH' => 'Publier',
 
 ## tmpl/cms/include/template_table.tmpl
 	'Type' => 'Type',
 	'Linked' => 'Lié',
 	'Linked Template' => 'Modèle lié',
 	'Dynamic' => 'Dynamique',
-	'Dynamic Template' => 'Modèle dynamique', # Translate - New
+	'Dynamic Template' => 'Modèle dynamique',
 	'Published w/Indexes' => 'Publication avec indexes',
 	'Published Template w/Indexes' => 'Publication du modèle avec indexes',
 	'View' => 'Voir',
@@ -2326,10 +2341,11 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/cms/include/cfg_entries_edit_page.tmpl
 	'Editor Fields' => 'Champs d\'édition',
 	'_USAGE_ENTRYPREFS' => 'La configuration des champs détermine les champs de saisie qui apparaîtront dans les écrans de création et de modification des notes. Vous pouvez sélectionner une configuration existante (basique ou avancée), ou personnaliser vos écrans en activant le bouton Personnalisée, puis en sélectionnant les champs que vous souhaitez voir apparaître.',
+	'Default' => 'Par défaut',
 	'All' => 'Toutes',
 	'Custom' => 'Perso',
 	'Action Bar' => 'Barre d\'action',
-	'Select the location of the entry editor\'s action bar.' => 'Choisissez l\'emplacement de la barre d\'action d\'édition de Notes.',
+	'Select the location of the entry editor&rsquo;s action bar.' => 'Sélectionner l\'emplacement de la barre d\'action de l\'éditeur de note.', # Translate - New
 	'Below' => 'Sous',
 	'Above' => 'Dessus',
 
@@ -2395,7 +2411,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'List Comments' => 'Afficher les commentaires',
 	'List Commenters' => 'Lister les auteurs de commentaires',
 	'List TrackBacks' => 'Lister les TrackBacks',
-	'Edit Address Book' => 'Modifier le carnet d\'adresse', # Translate - New
+	'Edit Address Book' => 'Modifier le carnet d\'adresse',
 	'Configure' => 'Configurer',
 	'List Users &amp; Groups' => 'Liste des utilisateurs &amp; Groupes',
 	'Users &amp; Groups' => 'Utilisateurs &amp; Groupes',
@@ -2415,8 +2431,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Trusted commenter' => 'Commentateur fiable',
 
 ## tmpl/cms/include/entry_table.tmpl
-	'Last Modified' => 'Dernière modification', # Translate - New
-	'Created' => 'Créé', # Translate - New
+	'Last Modified' => 'Dernière modification',
+	'Created' => 'Créé',
 	'Only show unpublished [_1]' => 'Afficher uniquement les [_1] non publiées.',
 	'Only show published [_1]' => 'Afficher uniquement les [_1] publiés',
 	'Only show scheduled [_1]' => 'Afficher uniquement les [_1] planifiés',
@@ -2424,7 +2440,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 
 ## tmpl/cms/include/notification_table.tmpl
 	'Date Added' => 'Ajouté(e) le',
-	'Click to edit contact' => 'Cliquer pour modifier le contact', # Translate - New
+	'Click to edit contact' => 'Cliquer pour modifier le contact',
+	'Save changes' => 'Enregistrer les modifications', # Translate - Case
 
 ## tmpl/cms/include/display_options.tmpl
 	'_DISPLAY_OPTIONS_SHOW' => 'Afficher',
@@ -2535,8 +2552,10 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Go to [_1]' => 'Aller à [_1]',
 	'Sorry, there were no results for your search. Please try searching again.' => 'Desolé, aucun résultat trouvé pour cette recherche. Merci d\'essayer à nouveau.',
 	'Sorry, there is no data for this object set.' => 'Désolé, mais il n\'y a pas de données pour cet ensemble d\'objets.',
-	'Back' => 'Retour',
+	'Confirm (s)' => 'Confirmer (s)', # Translate - New
 	'Confirm' => 'Confirmer',
+	'Back (b)' => 'Retour (b)', # Translate - New
+	'Back' => 'Retour',
 
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'Le blog a été correctement supprimé du système Movable Type.',
@@ -2572,13 +2591,14 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Show All Users' => 'Montrer tous les utilisateurs',
 	'user' => 'utilisateur',
 	'users' => 'utilisateurs',
-	'_USER_ENABLE' => 'Activer',
 	'Enable selected users (e)' => 'Activer les utilisateurs sélectionnés (e)',
+	'_USER_ENABLE' => 'Activer',
 	'_NO_SUPERUSER_DISABLE' => 'Puisque vous êtes administrateur du système Movable Type, vous ne pouvez vous désactiver vous-même.',
-	'_USER_DISABLE' => 'Désactiver',
 	'Disable selected users (d)' => 'Désactiver les utilisateurs sélectionnés (d)',
+	'_USER_DISABLE' => 'Désactiver',
 	'None.' => 'Aucun',
 	'(Showing all users.)' => '(Affiche tous les utilisateurs.)',
+	'Reset' => 'Mettre à jour',
 	'users.' => 'utilisateurs.',
 	'users where' => 'utilisateurs pour lesquels',
 	'.' => '.',
@@ -2590,23 +2610,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Enter your password recovery word/phrase:' => 'Enter your password recovery word/phrase :',
 	'Recover' => 'Récupérer',
 
-## tmpl/cms/popup/bm_entry.tmpl
-	'Select' => 'Sélectionner',
-	'Add new category...' => 'Ajouter une catégorie...',
-	'You must choose a weblog in which to create the new entry.' => 'Vous devez choisir un weblog dans lequel cette nouvelle note sera créée .',
-	'Select a weblog for this entry:' => 'Choisir un weblog pour cette note :',
-	'Select a weblog' => 'Sélectionnez un weblog',
-	'Assign Multiple Categories' => 'Affecter plusieurs catégories',
-	'Insert Link' => 'Insérer un lien',
-	'Insert Email Link' => 'Insérer le lien vers l\'e-mail',
-	'Quote' => 'Citation',
-	'Extended Entry' => 'Suite de la note',
-	'Send an outbound TrackBack:' => 'Envoyer un TrackBack :',
-	'Select an entry to send an outbound TrackBack:' => 'Choisissez une note pour envoyer un TrackBack :',
-	'Unlock this entry\'s output filename for editing' => 'Dévérouiller le nom du fichier de  cette note pour l\'éditer',
-	'Save this entry (s)' => 'Sauvegarder cette note (s)',
-	'You do not have entry creation permission for any weblogs on this installation. Please contact your system administrator for access.' => 'Vous n\'avez pas accès à la création de weblog dans cette installation. Merci de contacter votre Administrateur Système pour avoir un accès.',
-
 ## tmpl/cms/popup/show_upload_html.tmpl
 	'Copy and paste this HTML into your entry.' => 'Copiez/collez ce code HTML dans votre note.',
 	'Upload Another' => 'Télécharger un autre fichier',
@@ -2617,14 +2620,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Your [_1] pages have been published.' => 'Vos [_1] pages ont été publiées.',
 	'View your site.' => 'Voir votre site.',
 	'View this page.' => 'Voir cette page.',
-	'Publish Again' => 'Publier à nouveau', # Translate - New
-
-## tmpl/cms/popup/bm_posted.tmpl
-	'Your new entry has been saved to [_1]' => 'Votre nouvelle note a été enregistrée dans [_1]',
-	', and it has been published to your site' => ', et il a été publié sur votre site',
-	'. ' => '. ',
-	'View your site' => 'Voir votre site',
-	'Edit this entry' => 'Modifier cette note',
+	'Publish Again' => 'Publier à nouveau',
 
 ## tmpl/cms/popup/category_add.tmpl
 	'Add A [_1]' => 'Ajouter un [_1]',
@@ -2635,16 +2631,17 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Save [_1] (s)' => 'Enregistrer [_1] (s)',
 
 ## tmpl/cms/popup/rebuild_confirm.tmpl
-	'Publish [_1]' => 'Publier [_1]', # Translate - New
+	'Publish [_1]' => 'Publier [_1]',
 	'All Files' => 'Tous les fichiers',
 	'Index Template: [_1]' => 'Modèle d\'index: [_1]',
 	'Indexes Only' => 'Indexes seulement',
 	'[_1] Archives Only' => 'Archives [_1] uniquement',
-	'Publish (r)' => 'Publier (r)', # Translate - New
+	'Publish (r)' => 'Publier (r)',
 
 ## tmpl/cms/popup/pinged_urls.tmpl
-	'Here is a list of the previous TrackBacks that were successfully sent:' => 'Voici la liste des TrackBacks envoyés avec succès :',
-	'Here is a list of the previous TrackBacks that failed. To retry these, include them in the Outbound TrackBack URLs list for your entry.:' => 'Voici la liste des Trackbacks précédents qui ont échoué. Pour essayer à nouveau, il faut les inclure dans la liste des URLs de TrackBacks sortants de votre note :',
+	'Successful Trackbacks' => 'TrackBacks réussis', # Translate - New
+	'Failed Trackbacks' => 'TrackBacks échoués', # Translate - New
+	'To retry, include these TrackBacks in the Outbound TrackBack URLs list for your entry.' => 'Pour ré-essayer, incluez ces TrackBacks dans la liste des URLs de TrackBacks sortants pour cette note.', # Translate - New
 
 ## tmpl/cms/list_entry.tmpl
 	'Your [_1] has been deleted from the database.' => 'Votre [_1] a été supprimé de la base de données.',
@@ -2658,12 +2655,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'User Search...' => 'Recherche utilisateur...',
 	'Recent Users...' => 'Utilisateurs récents...',
 	'Save these [_1] (s)' => 'Enregistrer ces [_1] (s)',
-	'Publish selected [_1] (r)' => 'Publier les [_1] sélectionnées (r)', # Translate - New
-	'Delete selected [_1] (x)' => 'Effacer [_1] sélectionné (x)',
+	'Publish selected [_1] (r)' => 'Publier les [_1] sélectionnées (r)',
 	'page' => 'Page',
-	'publish' => 'publier', # Translate - Case
-	'Publish selected pages (r)' => 'Publier les pages sélectionnées (r)', # Translate - New
-	'Delete selected pages (x)' => 'Effacer les pages sélectionnées (x)',
 
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'Retrouver les mots de passe',
@@ -2701,7 +2694,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'You have successfully deleted the selected tags.' => 'Vous avez effacé correctement les tags sélectionnés.',
 	'tag' => 'tag',
 	'tags' => 'tags',
-	'Delete selected tags (x)' => 'Effacer les tags sélectionnés (x)',
 	'Tag Name' => 'Nom du Tag',
 	'Click to edit tag name' => 'Cliquez pour modifier le nom du tag',
 	'Rename' => 'Changer le nom',
@@ -2712,7 +2704,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/cms/restore.tmpl
 	'Restore from a Backup' => 'Restaurer à partir d\'une sauvegarde',
 	'Perl module XML::SAX and/or its dependencies are missing - Movable Type can not restore the system without it.' => 'Le module Perl XML::SAX et/ou ses dépendences sont manquantes - Movable Type ne peut restaurer le système sans lui.',
-	'Backup file' => 'Sauvegarder le fichier', # Translate - New
+	'Backup file' => 'Sauvegarder le fichier',
 	'If your backup file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the \'import\' folder of your Movable Type directory.' => 'Si votre fichier de sauvegarde est situé sur votre ordinateur, vous pouvez l\'envoyer ici.  Autrement, Movable Type cherchera automatiquement dans le répertoire \'import\' de votre répertoire Movable Type.',
 	'Options' => 'Options',
 	'Check this and files backed up from newer versions can be restored to this system.  NOTE: Ignoring Schema Version can damage Movable Type permanently.' => 'Cochez ceci et les fichiers sauvegardés à partir d\'une version plus récente pourront être restaurés dans ce système. NOTE : Ignorer la version du schéma peut endommager Movable Type de manière permanente.',
@@ -2723,6 +2715,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Your [_1] changes and additions have been made.' => 'Vos changements et additions [_1] ont été faites.',
 	'You have successfully deleted the selected [_1].' => 'Vous avez effacé avec succès les [_1] sélectionnés.',
 	'Create new top level [_1]' => 'Créer un nouveau niveau racine [_1]',
+	'New Parent [_1]' => 'Nouveau [_1] parent', # Translate - New
 	'Collapse' => 'Réduire',
 	'Expand' => 'Développer',
 	'Move [_1]' => 'Déplacer [_1]',
@@ -2732,7 +2725,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/cms/setup_initial_blog.tmpl
 	'Create Your First Blog' => 'Créez votre premier blog',
 	'The blog name is required.' => 'Le nom du blog est nécessaire.',
-	'The blog URL is required.' => 'L\'url du blog est obligatoire.', # Translate - Case
+	'The blog URL is required.' => 'L\'url du blog est obligatoire.',
 	'The publishing path is required.' => 'Le chemin de publication est nécessaire.',
 	'The timezone is required.' => 'Le fuseau horaire est nécessaire.',
 	'In order to properly publish your blog, you must provide Movable Type with your blog\'s URL and the path on the filesystem where its files should be published.' => 'Pour pouvoir publier correctement votre blog, vous devez fournir à Movable Type l\'URL du blog et le chemin sur le disque où les fichiers doivent être publiés.',
@@ -2743,8 +2736,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 
 ## tmpl/cms/list_asset.tmpl
 	'You have successfully deleted the file(s).' => 'Vous avez supprimé les fichiers avec succès.',
-	'Show Images' => 'Montrer les images',
-	'Show Files' => 'Montrer les fichiers',
 	'type' => 'Type',
 	'asset' => 'élément',
 	'assets' => 'Eléments',
@@ -2759,7 +2750,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'You have successfully deleted the selected IP addresses from the list.' => 'L\'adresse IP sélectionnée a été supprimée de la liste.',
 	'Ban New IP Address' => 'Bannir une nouvelle adresse IP',
 	'IP Address' => 'Adresse IP',
-	'Ban IP Address' => 'Bannir l\'adresse IP',
 	'Date Banned' => 'Bannie le :',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2779,7 +2769,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'On' => 'Activé',
 	'Only when attention is required' => 'Uniquement quand l\'attention est requise',
 	'Off' => 'Désactivé',
-	'Ping Options' => 'Options de Ping',
+	'TrackBack Options' => 'Options de TrackBack', # Translate - New
 	'TrackBack Auto-Discovery' => 'Découverte automatique des TrackBacks',
 	'If you turn on auto-discovery, when you write a new entry, any external links will be extracted and the appropriate sites automatically sent TrackBacks.' => 'Si vous activez la découverte automatique, quand vous écrivez une nouvelle note, tous les liens externes seront extraits et les sites correspondants recevront un TrackBack.',
 	'Enable External TrackBack Auto-Discovery' => 'Activer Auto-découverte Trackback Externe',
@@ -2795,8 +2785,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Previous' => 'Précédent',
 	'List &amp; Edit TrackBacks' => 'Lister &amp; Editer les TrackBacks',
 	'View Entry' => 'Afficher la note',
-	'Save this TrackBack (s)' => 'Sauvegarder ce Trackback (s)',
-	'Delete this TrackBack (x)' => 'Effacer ce TrackBack (x)',
 	'Update the status of this TrackBack' => 'Modifier le statut de ce TrackBack',
 	'Junk' => 'Indésirable',
 	'View all TrackBacks with this status' => 'Voir tous les Trackbacks avec ce statut',
@@ -2822,15 +2810,17 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Find Plugins' => 'Trouver des plugins',
 	'Your plugin settings have been saved.' => 'Les paramètres de votre plugin ont été enregistrés.',
 	'Your plugin settings have been reset.' => 'Les paramètres de votre plugin on été réinitialisés.',
-	'Your plugins have been reconfigured.' => 'Votre plugin a été reconfiguré.',
 	'Your plugins have been reconfigured. Since you\'re running mod_perl, you will need to restart your web server for these changes to take effect.' => 'Vos plugins ont été reconfigurés. Si vous êtes sous mod_perl vous devez redémarrer votre serveur web pour la prise en compte de ces changements.',
+	'Your plugins have been reconfigured.' => 'Votre plugin a été reconfiguré.',
+	'Disable all plugins system-wide' => 'Désactiver tous les plugins sur tout le système', # Translate - New
+	'Disable Plugins' => 'Désactiver les plugins',
+	'Enable all plugins system-wide' => 'Activer tous les plugins sur tout le système', # Translate - New
+	'Enable Plugins' => 'Activer les plugins',
 	'Are you sure you want to reset the settings for this plugin?' => 'Etes-vous sur de vouloir réinitialiser les paramètres pour ce plugin ?',
 	'Disable plugin system?' => 'Désactiver le système de plugin ?',
 	'Disable this plugin?' => 'Désactiver ce plugin ?',
 	'Enable plugin system?' => 'Activer le système de plugin ?',
 	'Enable this plugin?' => 'Activer ce plugin ?',
-	'Disable Plugins' => 'Désactiver les plugins',
-	'Enable Plugins' => 'Activer les plugins',
 	'Failed to Load' => 'Erreur de chargement',
 	'Disable' => 'Désactiver',
 	'Enabled' => 'Activé',
@@ -2846,9 +2836,10 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Settings for [_1]' => 'Paramètres pour [_1]',
 	'Version' => 'Version',
 	'Resources Provided by [_1]' => 'Ressources fournies par [_1]',
-	'Tag Attributes' => 'Attributs de tag',
+	'Tags:' => 'Tags:', # Translate - New
+	'Tag Attributes:' => 'Attributs de tag:', # Translate - New
 	'Text Filters' => 'Filtres de texte',
-	'Junk Filters' => 'Filtres d\'indésirables',
+	'Junk Filters:' => 'Filtres de spam:', # Translate - New
 	'[_1] Settings' => '[_1] Paramètres',
 	'Reset to Defaults' => 'Rénitialiser pour remettre les paramètres par défaut',
 	'Plugin error:' => 'Erreur plugin :',
@@ -2861,37 +2852,23 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Your folder changes have been made.' => 'Vos modifications du répertoire ont été faites.',
 	'You must specify a label for the folder.' => 'Vous devez spécifier un nom pour le répertoire.',
 	'Label' => 'Etiquette',
-	'Save this folder (s)' => 'Sauvegarder ce répertoire(s)',
-
-## tmpl/cms/bookmarklets.tmpl
-	'Configure QuickPost' => 'Configurer QuickPost',
-	'_USAGE_BOOKMARKLET_1' => 'La configuration de la fonction QuickPost vous permet de publier vos notes en un seul clic sans même utiliser l\'interface principale de Movable Type.',
-	'_USAGE_BOOKMARKLET_2' => 'La structure de la fonction QuickPost de Movable Type vous permet de personnaliser la mise en page et les champs de votre page QuickPost. Par exemple, vous pouvez ajouter une option d\'ajout d\'extraits par l\'intermédiaire de la fenêtre QuickPost. Une fenêtre QuickPost comprend, par défaut, les éléments suivants: un menu déroulant permettant de sélectionner le weblog dans lequel publier la note ; un menu déroulant permettant de sélectionner l\'état de publication (brouillon ou publié) de la nouvelle note ; un champ de saisie du titre de la note ; et un champ de saisie du corps de la note.',
-	'Include:' => 'Inclure :',
-	'TrackBack Items' => 'Eléments de TrackBack',
-	'Allow Comments' => 'Autoriser les commentaires',
-	'Allow TrackBacks' => 'Autoriser les TrackBacks',
-	'Create QuickPost' => 'Créer le QuickPost',
-	'_USAGE_BOOKMARKLET_3' => 'Pour installer le signet QuickPost de Movable Type: déposez le lien suivant dans le menu ou la barre d\'outils des liens favoris de votre navigateur.',
-	'_USAGE_BOOKMARKLET_5' => 'Vous pouvez également, si vous utilisez Internet Explorer sous Windows, installer une option QuickPost dans le menu contextuel (clic droit) de Windows. Cliquez sur le lien ci-dessous et acceptez le message affiché pour ouvrir le fichier. Fermez et redémarrez votre navigateur pour ajouter le menu au système.',
-	'Add QuickPost to Windows right-click menu' => 'Ajouter QuickPost au menu contextuel de Windows (clic droit)',
-	'_USAGE_BOOKMARKLET_4' => 'QuickPost vous permet de publier vos notes à partir de n\'importe quel point du web. Vous pouvez, en cours de consultation d\'une page que vous souhaitez mentionner, cliquez sur QuickPost pour ouvrir une fenêtre popup contenant des options Movable Type spéciales. Cette fenêtre vous permet de sélectionner le weblog dans lequel vous souhaitez publier la note, puis de la créer et de la publier.',
 
 ## tmpl/cms/backup.tmpl
+	'(None selected)' => '(Aucune sélection)', # Translate - New
 	'What to backup' => 'Ce qu\'il faut sauvegarder',
 	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'Cette option va sauvegarder les utilisateurs, rôles, associations, blogs, notes, catégories, modèles et tags.',
 	'Everything' => 'Tout',
 	'Choose blogs to backup' => 'Choisir les blogs à sauvegarder',
-	'Type of archive format' => 'Type de format d\'archive',
+	'Archive Format' => 'Format d\'archive', # Translate - New
 	'The type of archive format to use.' => 'Le type de format d\'archive à utiliser.',
 	'tar.gz' => 'tar.gz',
 	'zip' => 'zip',
 	'Don\'t compress' => 'Ne pas compresser',
-	'Number of megabytes per file' => 'Nombre de megaoctets par fichier',
+	'Target File Size' => 'Taille de fichier cible', # Translate - New
 	'Approximate file size per backup file.' => 'Taille de fichier approximative par fichier de sauvegarde.',
 	'Don\'t Divide' => 'Ne pas diviser',
-	'Make Backup' => 'Effectuer la sauvegarde',
 	'Make Backup (b)' => 'Faire une sauvegarde (b)',
+	'Make Backup' => 'Effectuer la sauvegarde',
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Configuration des services Web',
@@ -2930,18 +2907,15 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 
 ## tmpl/cms/list_notification.tmpl
 	'You have added [_1] to your address book.' => 'Vous avez ajouté [_1] à votre carnet d\'adresse.',
-	'You have successfully deleted the selected notifications from your notification list.' => 'Les avis sélectionnés ont été supprimés de la liste de notifications.',
+	'You have successfully deleted the selected contacts from your address book.' => 'Vous avez supprimé avec succès les contacts sélectionnés de votre carnet d\'ardresse.', # Translate - New
 	'Download Address Book (CSV)' => 'Télécharger le carnet d\'adresse (CSV)',
-	'contact' => 'contact', # Translate - New
-	'contacts' => 'contacts', # Translate - New
-	'Delete selected contacts (x)' => 'Effacer les contacts sélectionnés (x)', # Translate - New
+	'contact' => 'contact',
+	'contacts' => 'contacts',
 	'Create Contact' => 'Créer un contact',
-	'URL (Optional):' => 'URL (facultatif) :',
-	'Add Contact' => 'Ajouter un contact', # Translate - New
+	'Add Contact' => 'Ajouter un contact',
 
 ## tmpl/cms/cfg_system_general.tmpl
 	'General Settings: System-wide' => 'Réglages généraux : Pour tout le système',
-	'This screen allows you to set system-wide new user defaults.' => 'Cette écran vous permet de mettre en place les paramètres par défaut dans tout le système pour les nouveaux utilisateurs.',
 	'Your settings have been saved.' => 'Vos paramètres ont été enregistrés.',
 	'You must set a valid Default Site URL.' => 'Vous devez définir une URL par défaut valide pour le site.',
 	'You must set a valid Default Site Root.' => 'Vous devez définir une URL par défaut valide pour la Racine du Site.',
@@ -3027,6 +3001,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Your Local Site Path is not valid.' => 'Le chemin local de votre site n\'est pas valide.',
 	'Enter the URL of your public website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/weblog/' => 'Saisir l\'URL de votre site web public. N\'incluez pas un nom de fichier (comme index.html). Exemple : http://www.exemple.com/weblog/',
 	'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog' => 'Saisissez le chemin où votre fichier d\'index principal sera situé. Un chemin absolu (qui commence par \'/\') est préféré, mais vous pouvez aussi utiliser un chemin relatif au répertoire Movable Type. Exemple : /home/melody/public_html/weblog',
+	'Create [_1] (s)' => 'Créer [_1] (s)', # Translate - New
 
 ## tmpl/cms/upgrade_runner.tmpl
 	'Initializing database...' => 'Initialisation de la base de données...',
@@ -3046,17 +3021,15 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'The commenter has been trusted.' => 'L\'auteur de commentaires est fiable.',
 	'The commenter has been banned.' => 'L\'auteur de commentaires a été banni.',
 	'Comments from [_1]' => 'Commentaires de [_1]',
+	'commenters' => 'Auteurs de commentaire',
+	'Trust [_1] (t)' => 'Marquer comme fiable [_1] (t)', # Translate - New
 	'Trust' => 'Fiable',
-	'commenters' => 'auteurs de commentaire',
-	'Trust commenter' => 'Auteur de commentaires Fiable',
+	'Untrust [_1] (t)' => 'Marquer comme non-fiable [_1] (t)', # Translate - New
 	'Untrust' => 'Non Fiable',
-	'Untrust commenter' => 'Auteur de commentaires Non Fiable',
+	'Ban [_1] (b)' => 'Bannir [_1] (b)', # Translate - New
 	'Ban' => 'Bannir',
-	'Ban commenter' => 'Auteur de commentaires Banni',
+	'Unban [_1] (b)' => 'Ne pas bannir [_1] (b)', # Translate - New
 	'Unban' => 'Non banni',
-	'Unban commenter' => 'Auteur de commentaires réactivé',
-	'Trust selected commenters' => 'Attribuer le statut Fiable au(x) auteur(s) de commentaires sélectionné(s)',
-	'Ban selected commenters' => 'Bannir le(s) auteur(s) de commentaires sélectionné(s)',
 	'The Name of the commenter' => 'Le nom du commentateur',
 	'View all comments with this name' => 'Afficher tous les commentaires associés à ce nom',
 	'The Identity of the commenter' => 'L\'identité du commentateur',
@@ -3071,7 +3044,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Entry Settings' => 'Réglages note',
 	'Display Settings' => 'Préférences d\'affichage',
 	'Entries to Display' => 'Notes à afficher',
-	'Select the number of days\' entries or the exact number of entries you would like displayed on your blog.' => 'Sélectionner le nombre de jours de notes ou le nombre exact de notes que vous voulez afficher sur votre blog.',
+	'Select the number of days of entries or the exact number of entries you would like displayed on your blog.' => 'Sélectionner le nombre de jours de notes ou le nombre exact de notes que vous voulez afficher sur votre blog.', # Translate - New
 	'Days' => 'Jours',
 	'Entry Order' => 'Ordre des notes',
 	'Select whether you want your entries displayed in ascending (oldest at top) or descending (newest at top) order.' => 'Choisissez si vous voulez afficher vos notes en ascendant (les plus anciennes en haut) ou descendant (les plus récentes en haut).',
@@ -3111,7 +3084,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/cms/search_replace.tmpl
 	'You must select one or more item to replace.' => 'Vous devez sélectionner un ou plusieurs objets à remplacer.',
 	'Search Again' => 'Chercher encore',
-	'Submit search (s)' => 'Soumettre la recherche (s)', # Translate - New
+	'Submit search (s)' => 'Soumettre la recherche (s)',
 	'Replace' => 'Remplacer',
 	'Replace Checked' => 'Remplacer les objets selectionnés',
 	'Case Sensitive' => 'Restreint à',
@@ -3120,6 +3093,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Date Range' => 'Période (date)',
 	'Reported as Spam?' => 'Notifié comme spam ?',
 	'Search Fields:' => 'Rechercher les champs :',
+	'Extended Entry' => 'Suite de la note',
 	'E-mail Address' => 'Adresse email',
 	'Source URL' => 'URL Source',
 	'Page Body' => 'Corps de la page',
@@ -3128,7 +3102,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Output Filename' => 'Nom du fichier de sortie',
 	'Linked Filename' => 'Lien du fichier lié',
 	'To' => 'Vers',
-	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,enregistrement,enregistrements] remplacés avec succès.', # Translate - New
+	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,enregistrement,enregistrements] remplacés avec succès.',
 	'Showing first [_1] results.' => 'Afficher d\'abord [_1] résultats.',
 	'Show all matches' => 'Afficher tous les résultats',
 	'[quant,_1,result,results] found' => '[quant,_1,resultat trouvé,resultats trouvés]',
@@ -3222,10 +3196,11 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/cms/export.tmpl
 	'You must select a blog to export.' => 'Vous devez sélectionner un blog à exporter.',
 	'_USAGE_EXPORT_1' => 'L\'exportation de vos notes de Movable Type vous permet de créer une <b>version de sauvegarde</b> du contenu de votre weblog. Le format des notes exportées convient à leur importation dans le système à l\'aide du mécanisme d\'importation (voir ci-dessus), ce qui vous permet, en plus d\'exporter vos notes à des fins de sauvegarde, d\'utiliser cette fonction pour <b>transférer vos notes d\'un weblog à un autre</b>.',
-	'Export from' => 'Exporter à partir de',
+	'Blog to Export' => 'Blog à exporter', # Translate - New
 	'Select a blog for exporting.' => 'Sélectionnez un blog à exporter.',
+	'Change blog' => 'Changer de blog', # Translate - New
+	'Export Blog (s)' => 'Exporter le blog (s)', # Translate - New
 	'Export Blog' => 'Exporter le blog',
-	'Export Blog (e)' => 'Exporter le blog (e)',
 
 ## tmpl/cms/list_commenter.tmpl
 	'_USAGE_COMMENTERS_LIST' => 'Cette liste est la liste des auteurs de commentaires pour [_1].',
@@ -3233,6 +3208,12 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Trusted status has been removed from the selected commenter(s).' => 'Le(s) auteur(s) de commentaires sélectionné(s) ne bénéficie plus du statut fiable.',
 	'The selected commenter(s) have been blocked from commenting.' => 'Le(s) auteurs(s) de commentaires sélectionné(s) ne sont plus autorisés à commenter.',
 	'The selected commenter(s) have been unbanned.' => 'Le(s) auteurs(s) de commentaires sélectionné(s) n\'est plus banni.',
+	'Trust commenter' => 'Auteur de commentaires Fiable',
+	'Untrust commenter' => 'Auteur de commentaires Non Fiable',
+	'Ban commenter' => 'Auteur de commentaires Banni',
+	'Unban commenter' => 'Auteur de commentaires réactivé',
+	'Trust selected commenters' => 'Attribuer le statut Fiable au(x) auteur(s) de commentaires sélectionné(s)',
+	'Ban selected commenters' => 'Bannir le(s) auteur(s) de commentaires sélectionné(s)',
 	'(Showing all commenters.)' => '(Afficher tous les auteurs de commentaires).',
 	'Showing only commenters whose [_1] is [_2].' => 'Ne montrer que les auteurs de commentaires dont [_1] est [_2].',
 	'Commenter Feed' => 'Flux auteur de commentaire',
@@ -3252,12 +3233,8 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Blog Publishing Settings' => 'Réglages de publication du blog',
 	'template' => 'modèle',
 	'templates' => 'modèles',
-	'Delete selected templates (x)' => 'Effacer les modèles sélectionnés (x)', # Translate - New
 	'You have successfully deleted the checked template(s).' => 'Les modèles sélectionnés ont été supprimés.',
-	'Create new Entry template' => 'Créer un nouveau modèle de note',
-	'Create new Page template' => 'Créer un nouveau modèle de page',
-	'Create new Entry Listing template' => 'Créer un nouveau modèle de liste de notes',
-	'Create new Category template' => 'Créer un nouveau modèle de catégorie',
+	'Create Archive Template:' => 'Créer une archive de modèle', # Translate - New
 	'Create new [_1] template' => 'Créer un nouveau modèle de [_1]',
 	'Create Template...' => 'Créer le modèle...',
 	'Blank Template' => 'Modèle vide',
@@ -3348,10 +3325,10 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog\'s data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'Les modules Perl suivants sont nécessaires pour réaliser une connexion à une base de données.  Movable Type nécessite une base de données pour stocker les données de votre blog.  Merci d\'installer un des packages listés ici avant de continuer.  quand vous êtes prêt, cliquez sur le bouton \'Réessayer\'.',
 	'All required Perl modules were found.' => 'Tous les modules Perl obligatoires ont été trouvés.',
 	'You are ready to proceed with the installation of Movable Type.' => 'Vous êtes prêt à procéder à l\'installation de Movable Type.',
-	'Note: One or more optional Perl modules could not be found. You may install them now and click \'Retry\' or continue without them. They can be installed at any time if needed.' => 'Remarque : Un ou plusieurs modules Perl n\'ont pas été trouvés. Vous pouvez les installer maintenant et cliquer sur \'Réessayer\' ou continuer sans eux. Vous pouvez les installer n\'importe quand si besoin.',
-	'<a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => '<a href="javascript:void(0)" onclick="[_1]">Afficher la liste des modules optionnels</a>',
+	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'Certains modules Perl optionnels ne peuvent être trouvés. <a href="javascript:void(0)" onclick="[_1]">Afficher la liste des modules optionnels</a>', # Translate - New
 	'One or more Perl modules required by Movable Type could not be found.' => 'Un ou plusieurs modules Perl nécessaires pour Movable Type n\'ont pu être trouvés.',
 	'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'Les modules PERL suivants sont nécessaires au bon fonctionnement de Movable Type. Dès que vous disposez de ces éléments, cliquez sur le bouton \'Recommencer\' pour vérifier ces élements..',
+	'Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click \'Retry\' to test for the modules again.' => 'Certains modules Perl optionnels n\'ont pu être trouvés. Vous pouvez continuer sans installer ces modules Perl. Ils peuvent être installés n\'importe quand si besoin. Cliquez \'Réessayer\' pour tester à nouveau ces modules.', # Translate - New
 	'Missing Database Modules' => 'Modules de base de données manquants',
 	'Missing Optional Modules' => 'Modules optionnels manquants',
 	'Missing Required Modules' => 'Modules nécessaires absents',
@@ -3405,7 +3382,6 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/email/notify-entry.tmpl
 	'A new post entitled \'[_1]\' has been published to [_2].' => 'Une nouvelle note titrée \'[_1]\' a été publiée sur [_2].',
 	'View post' => 'Voir la note',
-	'Post Title' => 'Titre de la note',
 	'Message from Sender' => 'Message de l\'expéditeur',
 	'You are receiving this email either because you have elected to receive notifications about new content on [_1], or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:' => 'Vous recevez cet email car vous avez demandé à recevoir les notifications de nouveau contenu sur [_1], ou l\'auteur de la note a pensé que vous seriez intéressé. Si vous ne souhaitez plus recevoir ces emails, merci de contacter la personne suivante:',
 
@@ -3445,30 +3421,30 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 
 ## plugins/feeds-app-lite/tmpl/config.tmpl
 	'Feeds.App Lite Widget Creator' => 'Créateur de widget Feeds.App',
-	'Configure feed widget settings' => 'Configurer les réglages du widget de flux', # Translate - New
+	'Configure feed widget settings' => 'Configurer les réglages du widget de flux',
 	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Saisissez un titre pour votre widget. Il sera aussi utilisé comme titre pour le flux qui sera utilisé sur votre blog.',
-	'[_1] Feed Widget' => 'Widget de flux [_1]', # Translate - New
+	'[_1] Feed Widget' => 'Widget de flux [_1]',
 	'Select the maximum number of entries to display.' => 'Sélectionnez le nombre maximum de notes que vous voulez afficher.',
 	'3' => '3',
 	'5' => '5',
 	'10' => '10',
 
 ## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'Plusieurs flux ont été trouvés', # Translate - New
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Sélectionnez le flux que vous voulez utiliser. <em>Feeds.App Lite supporte les flux texte uniquement en RSS 1.0, 2.0 et Atom.</em>', # Translate - New
+	'Multiple feeds were found' => 'Plusieurs flux ont été trouvés',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Sélectionnez le flux que vous voulez utiliser. <em>Feeds.App Lite supporte les flux texte uniquement en RSS 1.0, 2.0 et Atom.</em>',
 	'URI' => 'URI',
 
 ## plugins/feeds-app-lite/tmpl/start.tmpl
-	'You must enter a feed or site URL to proceed' => 'Vous devez saisir l\'URL d\'un flux ou d\'un site pour poursuivre', # Translate - New
-	'Create a widget from a feed' => 'Créer un widget à partir d\'un flux', # Translate - New
+	'You must enter a feed or site URL to proceed' => 'Vous devez saisir l\'URL d\'un flux ou d\'un site pour poursuivre',
+	'Create a widget from a feed' => 'Créer un widget à partir d\'un flux',
 	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Saisissez l\'adresse d\'un flux ou l\'adresse d\'un site possédant un flux.',
 
 ## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1]' => 'Aucun flux n\'a pu être trouvé en utilisant [_1]', # Translate - New
+	'No feeds could be discovered using [_1]' => 'Aucun flux n\'a pu être trouvé en utilisant [_1]',
 	'An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog(\'http://www.feedvalidator.org/check.cgi?url=[_2]\')">here</a> for more detail and please try again.' => 'Une erreur s\'est produite en traitant [_1]. Vérifiez <a href="javascript:void(0)" onclick="closeDialog(\'http://www.feedvalidator.org/check.cgi?url=[_2]\')">ici</a> pour plus de détails et essayez à nouveau.',
-	'A widget named <strong>[_1]</strong> has been created.' => 'Un widget nommé <strong>[_1]</strong> a été créé.', # Translate - New
-	'You may now <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog(\'[_3]\')">WidgetManager</a> or the following MTInclude tag:' => 'Vous pouvez maintenant <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">modifier &ldquo;[_1]&rdquo;</a> ou inclure le widget dans votre blog en utilisant <a href="javascript:void(0)" onclick="closeDialog(\'[_3]\')">WidgetManager</a> ou la balise MTInclude suivante :', # Translate - New
-	'You may now <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:' => 'Vous pouvez maintenant <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">modifier &ldquo;[_1]&rdquo;</a> ou inclure le widget dans votre blog en utilisant la balise  MTInclude suivante :', # Translate - New
+	'A widget named <strong>[_1]</strong> has been created.' => 'Un widget nommé <strong>[_1]</strong> a été créé.',
+	'You may now <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog(\'[_3]\')">WidgetManager</a> or the following MTInclude tag:' => 'Vous pouvez maintenant <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">modifier &ldquo;[_1]&rdquo;</a> ou inclure le widget dans votre blog en utilisant <a href="javascript:void(0)" onclick="closeDialog(\'[_3]\')">WidgetManager</a> ou la balise MTInclude suivante :',
+	'You may now <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:' => 'Vous pouvez maintenant <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">modifier &ldquo;[_1]&rdquo;</a> ou inclure le widget dans votre blog en utilisant la balise  MTInclude suivante :',
 	'Create Another' => 'En créer un autre',
 
 ## plugins/feeds-app-lite/mt-feeds.pl
@@ -3476,7 +3452,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Upgrade to Feeds.App' => 'Mise à jour Feeds.App',
 	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' est un argument nécessaire de [_2]',
 	'MT[_1] was not used in the proper context.' => 'Le [_1] MT n\'a pas été utilisé dans le bon contexte.',
-	'Feeds.App Lite' => 'Feeds.App Lite', # Translate - New
+	'Feeds.App Lite' => 'Feeds.App Lite',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Une erreur s\'est produite en traitant [_1]. La version précédente du flux a été utilisée. Un statut HTTP de [_2] a été retourné.',
@@ -3492,7 +3468,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Markdown' => 'Markdown',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
-	'Before you import WordPress posts to Movable Type, we recommend that you <a href=\'[_1]\'>configure your blog\'s publishing paths</a> first.' => 'Avant d\'importer des notes Wordpress dans Movable Type, nous vous recommandons d\'abord de <a href=\'[_1]\'>configurer les chemins de publication de votre blog</a>.', # Translate - New
+	'Before you import WordPress posts to Movable Type, we recommend that you <a href=\'[_1]\'>configure your blog\'s publishing paths</a> first.' => 'Avant d\'importer des notes Wordpress dans Movable Type, nous vous recommandons d\'abord de <a href=\'[_1]\'>configurer les chemins de publication de votre blog</a>.',
 	'Upload path for this WordPress blog' => 'Chemin d\'envoi pour ce blog WordPress',
 	'Replace with' => 'Remplacer par',
 
@@ -3571,27 +3547,28 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'System-wide listing' => 'Listing sur la totalité du système',
 
 ## plugins/WidgetManager/tmpl/edit.tmpl
-	'Edit Widget Set' => 'Modifier le groupe de widget', # Translate - New
-	'Please use a unique name for this widget set.' => 'Merci d\'utiliser un nom unique pour ce groupe de widget.', # Translate - New
-	'You already have a widget set named \'[_1].\' Please use a unique name for this widget set.' => 'Vous avez déjà un widget nommé \'[_1].\' Merci d\'utiliser un nom unique pour ce groupe de widget.', # Translate - New
-	'Your changes to the Widget Set have been saved.' => 'Les modifications apportées au groupe de widget ont été enregistrées.', # Translate - New
-	'Set Name' => 'Nom du groupe', # Translate - New
+	'Edit Widget Set' => 'Modifier le groupe de widget',
+	'Please use a unique name for this widget set.' => 'Merci d\'utiliser un nom unique pour ce groupe de widget.',
+	'You already have a widget set named \'[_1].\' Please use a unique name for this widget set.' => 'Vous avez déjà un widget nommé \'[_1].\' Merci d\'utiliser un nom unique pour ce groupe de widget.',
+	'Your changes to the Widget Set have been saved.' => 'Les modifications apportées au groupe de widget ont été enregistrées.',
+	'Set Name' => 'Nom du groupe',
 	'Drag and drop the widgets you want into the <strong>Installed</strong> column.' => 'Glissez-déposez les widgets de votre choix dans la colonne <strong>Widgets installés</strong>.',
 	'Installed Widgets' => 'Widgets installés',
 	'Available Widgets' => 'Widgets disponibles',
+	'Save changes (s)' => 'Enregistrer les modifications',
 
 ## plugins/WidgetManager/tmpl/list.tmpl
 	'Widgets' => 'Widgets',
 	'Widget Set' => 'Groupe de widget',
-	'Widget Sets' => 'Groupes de widget', # Translate - New
-	'Delete selected Widget Sets (x)' => 'Effacer les groupes de widget sélectionnés (x)', # Translate - New
-	'Helpful Tips' => 'Trucs utiles', # Translate - New
-	'To add a widget set to your templates, use the following syntax:' => 'Pour ajouter un widget à vos modèles, utilisez la syntaxe suivante :', # Translate - New
-	'<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetSet name=&quot;Nom du groupe de widget&quot;$&gt;</strong>', # Translate - New
-	'Your changes to the widget set have been saved.' => 'Les modifications apportées au widget ont été enregistrées.', # Translate - New
-	'You have successfully deleted the selected widget set(s) from your blog.' => 'Vous avez effacé de votre blog avec succès les groupes de widget sélectionnés.', # Translate - New
-	'New Widget Set' => 'Nouveau groupe de widget', # Translate - New
-	'Create Widget Set' => 'Créer un groupe de widget', # Translate - New
+	'Widget Sets' => 'Groupes de widget',
+	'Delete selected Widget Sets (x)' => 'Effacer les groupes de widget sélectionnés (x)',
+	'Helpful Tips' => 'Trucs utiles',
+	'To add a widget set to your templates, use the following syntax:' => 'Pour ajouter un widget à vos modèles, utilisez la syntaxe suivante :',
+	'<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>' => '<strong>&lt;$MTWidgetSet name=&quot;Nom du groupe de widget&quot;$&gt;</strong>',
+	'Your changes to the widget set have been saved.' => 'Les modifications apportées au widget ont été enregistrées.',
+	'You have successfully deleted the selected widget set(s) from your blog.' => 'Vous avez effacé de votre blog avec succès les groupes de widget sélectionnés.',
+	'New Widget Set' => 'Nouveau groupe de widget',
+	'Create Widget Set' => 'Créer un groupe de widget',
 
 ## plugins/WidgetManager/WidgetManager.pl
 
@@ -3644,8 +3621,10 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Creative Commons License' => 'Creative Commons',
 
 ## plugins/WidgetManager/default_widgets/search.tmpl
+	'Search this blog:' => 'Chercher dans ce blog :',
 
 ## plugins/WidgetManager/default_widgets/recent_posts.tmpl
+	'Recent Posts' => 'Notes récentes',
 
 ## plugins/WidgetManager/default_widgets/subscribe_to_feed.tmpl
 
@@ -3666,7 +3645,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'L\'agrégation inter-blog sera désactivée par défaut. Les blogs individuels peuvent être configurés via les réglages MultiBlog du blog en question, pour autoriser l\'accès à leur contenu par les autres blogs.',
 
 ## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
-	'Create MultiBlog Trigger' => 'Créer un événement MultiBlog', # Translate - New
+	'Create MultiBlog Trigger' => 'Créer un événement MultiBlog',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Quand',
@@ -3696,7 +3675,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'saves an entry' => 'sauvegarde une note',
 	'publishes an entry' => 'publie une note',
 	'publishes a comment' => 'publie un commentaire',
-	'publishes a TrackBack' => 'publie un TrackBack', # Translate - New
+	'publishes a TrackBack' => 'publie un TrackBack',
 	'rebuild indexes.' => 'reconstruire les indexes.',
 	'rebuild indexes and send pings.' => 'reconstruire les indexes et envoyer les pings.',
 
@@ -3788,50 +3767,45 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'SpamLookup Keyword Filter' => 'SpamLookup filtre de mots-clés',
 
 ## plugins/StyleCatcher/stylecatcher.pl
-	'<p>You must define a global theme repository where themes can be stored locally.  If a particular blog has not been configured for it\'s own theme paths, it will use these settings directly. If a blog has it\'s own theme paths, then the theme will be copied to that location when applied to that weblog. The paths defined here must physically exist and be writable by the webserver.</p>' => 'Vous devez définir un espace de stockage global pour les thèmes où les thèmes peuvent être stoqués en local. Si un blog en particulier n\'a pas été configuré pour utiliser ses propres chemins de thèmes, il utilisera ces paramètres directement. Si un weblog a ses propres chemins de thèmes, alors le thème sera copié à cet emplacement quand il sera appliqué à ce weblog. Les chemins définis ici doivent exister physiquement et être accessibles en écriture par le serveur web.</p>',
-	'<p style="color: #f00;"><strong>NOTE:</strong> StyleCatcher must first be configured from the system-level plugins listing before it can be used on any blog.</p>' => '<p style="color: #f00;"><strong>REMARQUE:</strong> StyleCatcher doit d\'abord être configuré dans les plugins pour tout le système, avant de pouvoir être utilisé sur un blog.</p>',
-	'<p>If you wish to store your themes locally for this blog, you can configure your theme URL and path below.  Although downloaded themes will still be stored in the system-level directory, they will be copied to this directory when they are applied. The paths defined here must physically exist and be writable by the webserver.</p>' => '<p>Si vous souhaitez stoquer vos thèmes en local pour ce blog, vous pouvez configurer l\'URL de votre thème et son chemin ci-dessous. Bien que les thèmes téléchargés seront toujours stockés dans le répertoire global au système, ils seront copiés dans ce répertoire quands ils seront appliqués. Les chemins définis ici doivent exister physiquement et être accessibles en écriture par le serveur web.</p>',
-	'Theme Root URL:' => 'URL racine du thème:',
-	'Theme Root Path:' => 'Chemin racine du thème:',
-	'Style Library URL:' => 'URL de la librairie de styles:',
-	'Unable to create the theme root directory. Error: [_1]' => 'Impossible de créer le répertoire racine du thème. Erreur : [_1]',
-	'Unable to write base-weblog.css to themeroot. File Manager gave the error: [_1]. Are you sure your theme root directory is web-server writable?' => 'Impossible d\'écrire base-weblog.css dans themeroot. File Manager a généré l\'erreur: [_1]. Etes-vous sûr que le répertoire racine du thème est accessible en écriture par le serveur web ?',
+	'MT Style Library' => 'Librairie de styles MT', # Translate - New
 	'Styles' => 'Styles',
 
 ## plugins/StyleCatcher/tmpl/header.tmpl
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
 	'Select a Style' => 'Sélectionner un style',
-	'Please select a weblog to apply this theme.' => 'Merci de sélectionner un weblog où appliquer ce style.',
-	'Please click on a theme before attempting to apply a new design to your blog.' => 'Merci de cliquer sur un thème avant d\'essayer d\'appliquer un nouveau design à votre blog.',
+	'3-Columns, Wide, Thin, Thin' => '3-colonnes, large, fin, fin', # Translate - New
+	'3-Columns, Thin, Wide, Thin' => '3-colonnes, fin, large, fin', # Translate - New
+	'2-Columns, Thin, Wide' => '2-colonnes, fin, large', # Translate - New
+	'2-Columns, Wide, Thin' => '2-colonnes, large, fin', # Translate - New
+	'None available' => 'Aucun disponible', # Translate - New
 	'Applying...' => 'Application...',
-	'Choose this Design' => 'Choisir ce design',
 	'Error applying theme: ' => 'Erreur en appliquant le thème:',
+	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Le thème sélectionné a été appliqué, mais comme vous avez changé la mise en page, vous devez republier votre blog pour appliquer la nouvelle mise en page.', # Translate - New
 	'The selected theme has been applied!' => 'Le thème sélectionné a été appliqué!',
-	'Find Style' => 'Trouver le style',
-	'Theme or Repository URL:' => 'URL du thème ou du répertoire:',
+	'Error loading themes! -- [_1]' => 'Erreur en chargeant les thèmes ! -- [_1]',
+	'Stylesheet or Repository URL' => 'URL de la feuille de style ou du répertoire', # Translate - New
+	'Stylesheet or Repository URL:' => 'URL de la feuille de style ou du répertoire:', # Translate - New
 	'Download Styles' => 'Télécharger les styles',
 	'Current theme for your weblog' => 'Thème actuel pour votre weblog',
-	'Current Theme' => 'Thème actuel',
-	'Current themes for your weblogs' => 'Thèmes actuels pour vos weblogs',
-	'Current Themes' => 'Thèmes actuels',
+	'Current Style' => 'Style actuel', # Translate - New
 	'Locally saved themes' => 'Thèmes enregistrés en local',
-	'Saved Themes' => 'Thèmes enregistrés',
+	'Saved Styles' => 'Styles enregistrés', # Translate - New
+	'Default Styles' => 'Styles par défaut', # Translate - New
 	'Single themes from the web' => 'Thèmes uniques provenant du web',
-	'More Themes' => 'Plus de thèmes',
-	'Show Details' => 'Montrer les détails',
-	'Hide Details' => 'Cacher les détails',
-	'Select a Weblog...' => 'Sélectionner un weblog...',
-	'Apply Selected Design' => 'Appliquer le design sélectionné',
-	'You don\'t appear to have any weblogs with a \'Theme Stylesheet\' template that you have rights to edit. Please check your blog(s) for this template.' => 'Vous ne semblez pas avoir de weblog avec un modèle de feuille de style de thème que vous avez le droit de modifier. Merci de vérifier vos blogs pour ce modèle.',
-	'Error loading themes! -- [_1]' => 'Erreur en chargeant les thèmes ! -- [_1]',
+	'More Styles' => 'Plus de styles', # Translate - New
+	'Selected Design' => 'Design sélectionné', # Translate - New
+	'Layout' => 'Mise en page', # Translate - New
+	'Apply Design' => 'Appliquer le design', # Translate - New
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Impossible de créer le répertoire [_1] - Vérifier que votre répertoire \'themes\' est accessible en écriture par le serveur web.',
+	'Error downloading image: [_1]' => 'Erreur en téléchargeant l\'image : [_1]', # Translate - New
 	'Successfully applied new theme selection.' => 'Application avec succès du nouveau thème.',
+	'Invalid URL: [_1]' => 'URL invalide : [_1]', # Translate - New
 
 );
 
-## New words: 752
+## New words: 504
 
 1;

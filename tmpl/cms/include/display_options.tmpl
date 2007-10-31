@@ -3,7 +3,7 @@
     label="<__trans phrase="Display Options">"
     label_link="javascript:void(0)"
     label_onclick="return toggleEntryDisplayOptions();">
-    <form method="get" action="<mt:var name="SCRIPT_URL">">
+    <form method="get" action="<mt:var name="SCRIPT_URL">" id="display-options-form">
         <input type="hidden" name="__mode" value="update_list_prefs" />
         <input type="hidden" name="_type" value="<mt:var name="OBJECT_TYPE">" />
         <input type="hidden" name="return_args" value="<mt:var name="RETURN_ARGS" escape="HTML">" />
@@ -56,9 +56,17 @@
         </mtapp:setting>
     </mt:unless>
 </mt:unless>
-        <div class="buttons">
-            <input type="submit" name="save" value="<__trans phrase="Save">" />
-            <input type="button" value="<__trans phrase="Cancel">" onclick="toggleEntryDisplayOptions()" />
+        <div class="actions-bar display-options-actions-bar buttons">
+            <div class="actions-bar-inner">
+                <a href="javascript:void(0)"
+                    onclick="submitForm(getByID('display-options-form'), '')"
+                    title="<__trans phrase="Save display options">"
+                    ><__trans phrase="Save"></a>
+                <a href="javascript:void(0)"
+                    onclick="toggleEntryDisplayOptions()"
+                    title="<__trans phrase="Close display options">"
+                    ><__trans phrase="Cancel"></a>
+            </div>
         </div>
     </form>
 </mtapp:widget>

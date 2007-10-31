@@ -40,9 +40,6 @@ sub init {
         save_profile     => \&save_commenter_profile,
         red              => \&do_red,
         generate_captcha => \&generate_captcha,
-        reply            => \&reply,
-        do_reply         => \&do_reply,
-        reply_preview    => \&reply_preview,
     );
     $app->{template_dir} = 'comment';
     $app->init_commenter_authenticators;
@@ -521,7 +518,9 @@ sub _send_signup_confirmation {
     my $token = $app->make_magic_token;
 
     my $subject = $app->translate('Movable Type Account Confirmation');
-    my $url     = $app->mt_path 
+    my $cgi_path = $app->config('CGIPath');
+    $cgi_path .= '/' unless $cgi_path =~ m!/$!;
+    my $url     = $cgi_path
       . $cfg->CommentScript
       . $app->uri_params(
         'mode' => 'do_register',
@@ -685,7 +684,7 @@ sub do_register {
             MT::Util::start_background_task(
                 sub {
                     $app->_send_registration_notification( $commenter->name,
-                        $email, $entry_id, $blog_id, $ids );
+                        $commenter->nickname, $email, $entry_id, $blog_id, $ids );
                 }
             );
         }
@@ -699,7 +698,7 @@ sub do_register {
 
 sub _send_registration_notification {
     my $app = shift;
-    my ( $username, $email, $entry_id, $blog_id, $ids ) = @_;
+    my ( $username, $nickname, $email, $entry_id, $blog_id, $ids ) = @_;
     my $cfg = $app->config;
 
     my @ids = split ',', $ids;
@@ -728,6 +727,8 @@ sub _send_registration_notification {
         my $param = {
             blogname => $blog->name,
             username => $username,
+            fullname => $nickname,
+            email => $email,
         };
         my $body = MT->build_email( 'commenter_notify.tmpl', $param );
 
@@ -1193,12 +1194,6 @@ sub eval_comment {
         return undef;
     }
 
-    # Before saving this comment, check whether this commenter has
-    # placed any other comments on the entry's author's other entries.
-    # (on any other entries by the same author as this one)
-
-    my $commenter_has_comment = _commenter_has_comment( $commenter, $entry );
-
     my $commenter_status;
     if ($commenter) {
         if ( MT::Author::COMMENTER() eq $commenter->type ) {
@@ -1435,149 +1430,6 @@ sub _make_comment {
     }
 
     return ( $comment, $commenter );
-}
-
-sub _commenter_has_comment {
-    my ( $commenter, $entry ) = @_;
-
-    my $commenter_has_comment = 0;
-    if ($commenter) {
-        my $other_comment =
-          MT::Comment->load( { commenter_id => $commenter->id } );
-        if ($other_comment) {
-            my $other_entry = MT::Entry->load(
-                { author_id => $entry->author_id },
-                {
-                    join => [
-                        'MT::Comment', 'entry_id',
-                        { commenter_id => $commenter->id }, {}
-                    ]
-                }
-            );
-            $commenter_has_comment = !!$other_entry;
-        }
-    }
-    $commenter_has_comment;
-}
-
-sub _send_comment_notification {
-    my $app = shift;
-    my ( $comment, $comment_link, $entry, $blog, $commenter ) = @_;
-
-    return unless $blog->email_new_comments;
-
-    my $cfg                   = $app->config;
-    my $commenter_has_comment = _commenter_has_comment( $commenter, $entry );
-    my $attn_reqd             = $comment->is_moderated;
-
-    if ( $blog->email_attn_reqd_comments && !$attn_reqd ) {
-        return;
-    }
-
-    require MT::Mail;
-    my $author = $entry->author;
-    $app->set_language( $author->preferred_language )
-      if $author && $author->preferred_language;
-    my $from_addr;
-    my $reply_to;
-    if ( $cfg->EmailReplyTo ) {
-        $reply_to = $comment->email;
-    }
-    else {
-        $from_addr = $comment->email;
-    }
-    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
-    if ( $author && $author->email ) {  # } && is_valid_email($author->email)) {
-        if ( !$from_addr ) {
-            $from_addr = $cfg->EmailAddressMain || $author->email;
-            $from_addr = $comment->author . ' <' . $from_addr . '>'
-              if $comment->author;
-        }
-        my %head = (
-            To => $author->email,
-            $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
-            Subject => '['
-              . $blog->name . '] '
-              . $app->translate( "New Comment Added to '[_1]'", $entry->title )
-        );
-        my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
-        $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        my $base;
-        {
-            local $app->{is_admin} = 1;
-            $base = $app->base . $app->mt_uri;
-        }
-        if ( $base =~ m!^/! ) {
-            my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
-            $base = $blog_domain . $base;
-        }
-        my $nonce =
-          MT::Util::perl_sha1_digest_hex( $comment->id
-              . $comment->created_on
-              . $blog->id
-              . $cfg->SecretToken );
-        my $approve_link = $base
-          . $app->uri_params(
-            'mode' => 'approve_item',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id,
-                nonce   => $nonce
-            }
-          );
-        my $spam_link = $base
-          . $app->uri_params(
-            'mode' => 'unapprove_item',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id,
-                nonce   => $nonce
-            }
-          );
-        my %param = (
-            blog_name   => $blog->name,
-            entry_id    => $entry->id,
-            entry_title => $entry->title,
-            view_url    => $comment_link,
-            approve_url => $approve_link,
-            spam_url    => $spam_link,
-            edit_url    => $base
-              . $app->uri_params(
-                'mode' => 'view',
-                args   => {
-                    blog_id => $blog->id,
-                    '_type' => 'comment',
-                    id      => $comment->id
-                }
-              ),
-            ban_url => $base
-              . $app->uri_params(
-                'mode' => 'save',
-                args   => {
-                    '_type' => 'banlist',
-                    blog_id => $blog->id,
-                    ip      => $comment->ip
-                }
-              ),
-            comment_ip   => $comment->ip,
-            comment_name => $comment->author,
-            (
-                is_valid_email( $comment->email )
-                ? ( comment_email => $comment->email )
-                : ()
-            ),
-            comment_url  => $comment->url,
-            comment_text => wrap_text( $comment->text, 72 ),
-            unapproved   => !$comment->visible(),
-        );
-        my $body = MT->build_email( 'new-comment.tmpl', \%param );
-        MT::Mail->send( \%head, $body )
-          or return $app->handle_error( MT::Mail->errstr() );
-    }
 }
 
 sub preview { my $app = shift; do_preview( $app, $app->{query}, @_ ) }
@@ -1914,10 +1766,12 @@ sub do_preview {
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         if ( $err eq 'pending' ) {
+            $tmpl->context($ctx);
             $tmpl->param('body_class', 'mt-comment-pending');
         }
         else {
             $ctx->stash( 'error_message', $err );
+            $tmpl->context($ctx);
             $tmpl->param('body_class', 'mt-comment-error');
         }
     }
@@ -1933,6 +1787,7 @@ sub do_preview {
             ($tmpl) = MT::DefaultTemplates->load({ type => 'comment_preview' });
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
+        $tmpl->context($ctx);
         $tmpl->param('body_class', 'mt-comment-preview');
     }
     my %cond;
@@ -2068,202 +1923,6 @@ sub save_commenter_profile {
     }
     $param{ 'auth_mode_' . $app->config->AuthenticationModule } = 1;
     return $app->build_page( 'profile.tmpl', \%param );
-}
-
-sub _prepare_reply {
-    my $app = shift;
-    my $q   = $app->param;
-
-    my $parent = MT::Comment->load( $q->param('reply_to') );
-    my $entry  = MT::Entry->load( $parent->entry_id );
-    unless ( $parent->is_published ) {
-        $app->error(
-            $app->translate("You can't reply to unpublished comment.") );
-        return ( undef, undef, $parent, $entry );
-    }
-
-    my $blog = MT::Blog->load( $entry->blog_id );
-    my ( $comment, $commenter ) = $app->_make_comment( $entry, $blog );
-    unless ( $comment
-        && $commenter
-        && ( MT::Author::AUTHOR() == $commenter->type ) )
-    {
-        unless ($commenter) {
-            $app->error(
-                $app->translate(
-"Your session has been ended.  Cancel the dialog and login again."
-                )
-            );
-        }
-        else {
-            $app->error(
-                $app->translate( "An error occurred: [_1]", $app->errstr() ) );
-        }
-        return ( undef, undef, $parent, $entry );
-    }
-
-    require MT::Auth;
-    my $ctx = MT::Auth->fetch_credentials( { app => $app } );
-    $commenter =
-      $app->session_user( $commenter, $ctx->{session_id},
-        permanent => $ctx->{permanent} );
-    unless ($commenter) {
-        $app->error(
-            $app->translate(
-"Your session has been ended.  Cancel the dialog and login again."
-            )
-        );
-        return ( undef, undef, $parent, $entry );
-    }
-
-    $app->user($commenter);
-    unless ( $app->validate_magic ) {
-        $app->error( $app->translate("Invalid request.") );
-        return ( undef, undef, $parent, $entry );
-    }
-
-    ( $comment, $commenter, $parent, $entry );
-}
-
-#TODO: this should be refactored for more general use
-sub reply {
-    my $app = shift;
-    my $q   = $app->param;
-
-    my $reply_to    = encode_html( $q->param('reply_to') );
-    my $magic_token = encode_html( $q->param('magic_token') );
-    my $blog_id     = encode_html( $q->param('blog_id') );
-    my $return_url  = encode_html( $q->param('return_url') );
-    my $text        = encode_html( $q->param('text') );
-    my $indicator   = $app->static_path . 'images/indicator.gif';
-    my $url         = $app->uri;
-    <<SPINNER;
-<html><head><style type="text/css">
-#dialog-indicator {position: relative;top: 200px;
-background: url($indicator)
-no-repeat;width: 66px;height: 66px;margin: 0 auto;
-}</style><script type="text/javascript">
-function init() { var f = document.getElementById('f'); f.submit(); }
-window.setTimeout("init()", 1500);
-</script></head><body>
-<div align="center"><div id="dialog-indicator"></div>
-<form id="f" method="post" action="$url">
-<input type="hidden" name="__mode" value="do_reply" />
-<input type="hidden" name="reply_to" value="$reply_to" />
-<input type="hidden" name="magic_token" value="$magic_token" />
-<input type="hidden" name="blog_id" value="$blog_id" />
-<input type="hidden" name="return_url" value="$return_url" />
-<input type="hidden" name="text" value="$text" />
-</form></div></body></html>
-SPINNER
-}
-
-sub do_reply {
-    my $app = shift;
-    my $q   = $app->param;
-
-    my $param = {
-        reply_to    => $q->param('reply_to'),
-        magic_token => $q->param('magic_token'),
-        blog_id     => $q->param('blog_id'),
-    };
-
-    my ( $comment, $commenter, $parent, $entry ) = $app->_prepare_reply;
-
-    $param->{commenter_name} = $parent->author;
-    $param->{entry_title}    = $entry->title;
-    $param->{comment_created_on} =
-      format_ts( "%Y-%m-%d %H:%M:%S", $parent->created_on );
-    $param->{comment_text} = $parent->text;
-    $param->{comment_script_url} =
-      $app->config('CGIPath') . $app->config('CommentScript');
-
-    $app->{template_dir} = 'cms';
-    return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, error => $app->errstr } )
-      unless $comment;
-
-    $comment->parent_id( $param->{reply_to} );
-    $comment->approve;
-    return $app->handle_error(
-        $app->translate( "An error occurred: [_1]", $comment->errstr() ) )
-      unless $comment->save;
-
-    MT::Util::start_background_task(
-        sub {
-            $app->rebuild_entry( Entry => $parent->entry_id )
-              or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
-            $app->rebuild_indexes( Blog => $parent->blog )
-              or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
-            $app->_send_comment_notification( $comment, q(), $entry,
-                MT::Blog->load( $param->{blog_id} ), $commenter );
-        }
-    );
-    return $app->build_page( 'dialog/comment_reply.tmpl',
-        { closing => 1, return_url => $q->param('return_url') } );
-}
-
-sub reply_preview {
-    my $app = shift;
-    my $q   = $app->param;
-    my $cfg = $app->config;
-
-    my $param = {
-        reply_to    => $q->param('reply_to'),
-        magic_token => $q->param('magic_token'),
-        blog_id     => $q->param('blog_id'),
-    };
-    my ( $comment, $commenter, $parent, $entry ) = $app->_prepare_reply;
-
-    $param->{commenter_name} = $parent->author;
-    $param->{entry_title}    = $entry->title;
-    $param->{comment_created_on} =
-      format_ts( "%Y-%m-%d %H:%M:%S", $parent->created_on );
-    $param->{comment_text} = $parent->text;
-    $param->{comment_script_url} =
-      $app->config('CGIPath') . $app->config('CommentScript');
-
-    $app->{template_dir} = 'cms';
-    return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, error => $app->errstr } )
-      unless $comment;
-
-    my $cmt_tmpl = $app->model('template')->load(
-      { identifier => 'comment_detail' });
-    my $tmpl_name = $cmt_tmpl->name;
-    require MT::Template;
-    my $tmpl = MT::Template->new(
-        type   => 'scalarref',
-        source => \"<\$MTInclude module=\"$tmpl_name\"\$>",
-    );
-    my $ctx = MT::Template::Context->new;
-    ## Set timestamp as we would usually do in ObjectDriver.
-    my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
-    my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900, $ts[4] + 1,
-      @ts[ 3, 2, 1, 0 ];
-    $comment->created_on($ts);
-    $comment->commenter_id( $commenter->id ) if $commenter;
-    $ctx->stash( 'comment', $comment );
-
-    require MT::Serialize;
-    my $ser   = MT::Serialize->new( $cfg->Serializer );
-    my $state = $comment->column_values;
-    $state->{static} = $q->param('static');
-    $ctx->stash( 'comment_state', unpack 'H*', $ser->serialize( \$state ) );
-    $ctx->stash( 'comment_is_static', 1 );
-    $ctx->stash( 'entry',             $entry );
-    $ctx->{current_timestamp} = $ts;
-    $ctx->stash( 'commenter', $commenter );
-    $ctx->stash( 'blog_id',   $parent->blog_id );
-    $ctx->stash( 'blog',      $parent->blog );
-    my %cond;
-    my $html = $tmpl->build( $ctx, \%cond );
-    return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, error => $tmpl->errstr } )
-      unless defined $html;
-
-    return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, text => $q->param('text'), preview_html => $html } );
 }
 
 sub blog {

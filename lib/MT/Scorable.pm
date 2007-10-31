@@ -20,7 +20,7 @@ sub get_score {
         author_id => $user->id,
         object_ds => $obj->datasource,
     };
-    my $s = MT::ObjectScore->load($term);
+    my $s = MT::ObjectScore->load($term) or return undef;
     $s->score;
 }
 

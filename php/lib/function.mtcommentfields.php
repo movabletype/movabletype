@@ -94,7 +94,7 @@ $static_field
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
-<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Post">&nbsp;" />
+<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Submit">&nbsp;" />
 </div>
 
 </form>
@@ -160,7 +160,7 @@ HTML;
 
 <div align="center">
 <input type="submit" name="preview" value="&nbsp;<MT_TRANS phrase="Preview">&nbsp;" />
-<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Post">&nbsp;" />
+<input style="font-weight: bold;" type="submit" name="post" value="&nbsp;<MT_TRANS phrase="Submit">&nbsp;" />
 </div>
 
 </form>

@@ -8,6 +8,12 @@
 [% INCLUDE widget/columns.css.tt %]
 [% END %]
 
+.widget-header,
+.widget-content {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
 .widget-header {
 [% IF theme.widget.header.border.top_width || theme.widget.header.border.bottom_width %]
     border-width: [% theme.widget.header.border.top_width || 0 %] 0 [% theme.widget.header.border.bottom_width || 0 %];
@@ -34,7 +40,7 @@
     color: [% theme.widget.beta.link.color || "#999" %];
 }
 
-.widget-powered .widget-content {
+#content .widget-powered .widget-content {
     margin-top: 15px;
     margin-bottom: 15px;
     border: 1px solid [% theme.default.border.color %];

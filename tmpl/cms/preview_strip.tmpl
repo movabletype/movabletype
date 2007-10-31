@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
     <title><__trans phrase="Preview"> | <$mt:var name="mt_product_name"$></title>
-    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<$mt:var name="mt_version" escape="url"$>" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<$mt:var name="mt_version" escape="url"$>" type="text/css" />
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<$mt:var name="mt_version" escape="url"$>" type="text/css" />
     <![endif]-->
@@ -18,8 +18,26 @@
         <td id="entry-preview-control-strip">
             <div id="preview-label"><__trans phrase="You are previewing the [_1] titled &ldquo;[_2]&rdquo;" params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="title" escape="html"$>"></div>
             <form method="post" action="<$mt:var name="script_url"$>">
-                <input type="submit" name="reedit" accesskey="e" value="<__trans phrase="Re-Edit this [_1]" params="<$mt:var name="object_label"$>">" title="<__trans phrase="Re-Edit this [_1] (e)" params="<$mt:var name="object_label"$>">" />
-                <input type="submit" name="save" accesskey="s" value="<__trans phrase="Save this [_1]" params="<$mt:var name="object_label"$>">" title="<__trans phrase="Save this [_1] (s)" params="<$mt:var name="object_label"$>">" />
+                <div class="actions-bar">
+                    <div class="actions-bar-inner pkg actions">
+                        <button
+                            type="submit"
+                            name="save"
+                            value="save"
+                            accesskey="s"
+                            title="<__trans phrase="Save this [_1] (s)" params="<$mt:var name="object_label"$>">"
+                            class="primary-button"
+                            ><__trans phrase="Save this [_1]" params="<$mt:var name="object_label"$>"></button>
+                        <button
+                            type="submit"
+                            name="reedit"
+                            value="reedit"
+                            accesskey="e"
+                            title="<__trans phrase="Re-Edit this [_1] (e)" params="<$mt:var name="object_label"$>">"
+                            class="primary-button"
+                            ><__trans phrase="Re-Edit this [_1]" params="<$mt:var name="object_label"$>"></button>
+                    </div>
+                </div>
                 <input type="hidden" name="__mode" value="save_entry" />
                 <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
                 <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />

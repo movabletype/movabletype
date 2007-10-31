@@ -81,7 +81,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '_USAGE_ENTRYPREFS' => 'Select the set of fields to be displayed on the entry editor.',
 
     '_USAGE_IMPORT' => 'You can import entries for your weblog from a file in the <code>import</code> directory where Movable Type is installed, or uploaded by following forms. Entries can be imported from other Movable Type installations or other applications.',
-    '_USAGE_EXPORT_1' => 'From here you can export the entries, comments and TrackBacks of the currently selected blog. An export is not considered a <em>complete</em> backup of a blog.',
+    '_USAGE_EXPORT_1' => 'Export the entries, comments and TrackBacks of a blog. An export is not considered a <em>complete</em> backup of a blog.',
     '_USAGE_EXPORT_2' => 'To export your entries, click on the link below ("Export Entries From [_1]"). To save the exported data to a file, you can hold down the <code>option</code> key on the Macintosh, or the <code>Shift</code> key on a PC, while clicking on the link. Alternatively, you can select all of the data, then copy it into another document. (<a href="javascript:void(0)" onclick="openManual(\'importing\', \'export_ie\');return false;">Exporting from Internet Explorer?</a>)',
     '_USAGE_EXPORT_3' => 'Clicking the link below will export all of your current weblog entries to the Tangent server. This is generally a one-time push of your entries, to be done after you have installed the Tangent add-on for Movable Type, but conceivably it could be executed whenever you wish.',
 
@@ -129,6 +129,7 @@ the address you provided is correct and belongs to you.',
 
     '_INDEX_INTRO' => '<p>If you are installing Movable Type, you may want to review the <a href="http://www.sixapart.com/movabletype/docs/mtinstall.html">installation instructions</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>',
     '_LOG_TABLE_BY' => 'By',
+    '_REBUILD_PUBLISH' => 'Publish',
 
     '_AUTO' => 1,
     'DAILY_ADV' => 'Daily',

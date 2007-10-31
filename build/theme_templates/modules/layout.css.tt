@@ -3,6 +3,16 @@
     background-color: [% theme.layout.page.background.color || '#fff' %];
 }
 
+#header-inner, #content-inner, #footer-inner {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#beta-inner, #gamma-inner {
+    padding-right: 0;
+    padding-left: 0;
+}
+
 [%+ IF theme.layout.content.margin_bottom || theme.layout.content.margin_top || theme.layout.content.margin -%]
 #content {
 [% IF theme.layout.content.margin_top %]

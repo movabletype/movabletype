@@ -590,7 +590,7 @@ sub main {
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;
-    foreach my $plugin (@MT::Plugins) {
+    foreach my $plugin (@MT::Components) {
         if ($plugin->needs_upgrade) {
             push @plugins, { name => $plugin->label,
                 version => $plugin->version };

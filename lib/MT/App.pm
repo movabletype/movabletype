@@ -11,8 +11,8 @@ use base qw( MT );
 
 use File::Spec;
 use MT::Request;
-use MT::Util qw( encode_html offset_time_list decode_html encode_url );
-use MT::I18N qw( encode_text );
+use MT::Util qw( encode_html offset_time_list decode_html encode_url is_valid_email );
+use MT::I18N qw( encode_text wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
 use constant COMMENTER_COOKIE_NAME => "mt_commenter";
@@ -173,7 +173,8 @@ sub page_actions {
     my $actions = $app->registry("page_actions", $type) or return;
     foreach my $a (keys %$actions) {
         $actions->{$a}{key} = $a;
-        $actions->{$a}{core} = 1 if $actions->{$a}{plugin}->id eq 'core';
+        $actions->{$a}{core} = 1
+            unless UNIVERSAL::isa($actions->{$a}{plugin}, 'MT::Plugin');
         __massage_page_action($app, $actions->{$a}, $type);
     }
     my @actions = values %$actions;
@@ -191,7 +192,8 @@ sub list_actions {
     my @actions;
     foreach my $a (keys %$actions) {
         $actions->{$a}{key} = $a;
-        $actions->{$a}{core} = 1 if $actions->{$a}{plugin}->id eq 'core';
+        $actions->{$a}{core} = 1
+            unless UNIVERSAL::isa($actions->{$a}{plugin}, 'MT::Plugin');
         push @actions, $actions->{$a};
     }
     $actions = $app->filter_conditional_list(\@actions, @param);
@@ -379,6 +381,7 @@ sub listing {
             listTotal     => $class->count( $terms, $args ),
             chronological => $param->{list_noncron} ? 0 : 1,
             return_args   => $app->make_return_args,
+            method        => $app->request_method,
         };
         $param->{object_type} ||= $type;
         require JSON;
@@ -438,6 +441,7 @@ sub json_result {
     $app->{no_print_body} = 1;
     require JSON;
     $app->print(JSON::objToJson( { error => undef, result => $result }));
+    return undef;
 }
 
 sub json_error {
@@ -447,6 +451,7 @@ sub json_error {
     $app->{no_print_body} = 1;
     require JSON;
     $app->print(JSON::objToJson( { error => $error } ));
+    return undef;
 }
 
 sub response_code {
@@ -491,13 +496,13 @@ sub send_http_header {
         $app->{apache}->send_http_header($type);
         if ($MT::DebugMode & 128) {
             print "Status: " . ($app->response_code || 200)
-                . ($app->{response_message} ? $app->{response_message} : '')
+                . ($app->{response_message} ? ' ' . $app->{response_message} : '')
                 . "\n";
             print "Content-Type: $type\n\n";
         }
     } else {
         $app->{cgi_headers}{-status} = ($app->response_code || 200) . " "
-                                     . ($app->{response_message} || "");
+                                     . ($app->{response_message} ? ' ' . $app->{response_message} : '');
         $app->{cgi_headers}{-type} = $type;
         $app->print($app->{query}->header(%{ $app->{cgi_headers} }));
     }
@@ -822,7 +827,7 @@ sub touch_blogs {
     my $blogs_touched = MT->instance->request('blogs_touched') or return;
     foreach my $blog_id (keys %$blogs_touched) {
         next unless $blog_id;
-        my $blog = MT::Blog->load($blog_id, {cached_ok=>1});
+        my $blog = MT::Blog->load($blog_id);
         if (($blog->custom_dynamic_templates || '') ne 'none') {
             $blog->touch();
             $blog->save() or die $blog->errstr;
@@ -1299,6 +1304,125 @@ sub logout {
     });
 }
 
+sub _send_comment_notification {
+    my $app = shift;
+    my ( $comment, $comment_link, $entry, $blog, $commenter ) = @_;
+
+    return unless $blog->email_new_comments;
+
+    my $cfg                   = $app->config;
+    my $attn_reqd             = $comment->is_moderated;
+
+    if ( $blog->email_attn_reqd_comments && !$attn_reqd ) {
+        return;
+    }
+
+    require MT::Mail;
+    my $author = $entry->author;
+    $app->set_language( $author->preferred_language )
+      if $author && $author->preferred_language;
+    my $from_addr;
+    my $reply_to;
+    if ( $cfg->EmailReplyTo ) {
+        $reply_to = $comment->email;
+    }
+    else {
+        $from_addr = $comment->email;
+    }
+    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
+    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
+    if ( $author && $author->email ) {  # } && is_valid_email($author->email)) {
+        if ( !$from_addr ) {
+            $from_addr = $cfg->EmailAddressMain || $author->email;
+            $from_addr = $comment->author . ' <' . $from_addr . '>'
+              if $comment->author;
+        }
+        my %head = (
+            To => $author->email,
+            $from_addr ? ( From       => $from_addr ) : (),
+            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
+            Subject => '['
+              . $blog->name . '] '
+              . $app->translate( "New Comment Added to '[_1]'", $entry->title )
+        );
+        my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
+        $head{'Content-Type'} = qq(text/plain; charset="$charset");
+        my $base;
+        {
+            local $app->{is_admin} = 1;
+            $base = $app->base . $app->mt_uri;
+        }
+        if ( $base =~ m!^/! ) {
+            my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
+            $base = $blog_domain . $base;
+        }
+        my $nonce =
+          MT::Util::perl_sha1_digest_hex( $comment->id
+              . $comment->created_on
+              . $blog->id
+              . $cfg->SecretToken );
+        my $approve_link = $base
+          . $app->uri_params(
+            'mode' => 'approve_item',
+            args   => {
+                blog_id => $blog->id,
+                '_type' => 'comment',
+                id      => $comment->id,
+                nonce   => $nonce
+            }
+          );
+        my $spam_link = $base
+          . $app->uri_params(
+            'mode' => 'unapprove_item',
+            args   => {
+                blog_id => $blog->id,
+                '_type' => 'comment',
+                id      => $comment->id,
+                nonce   => $nonce
+            }
+          );
+        my %param = (
+            blog_name   => $blog->name,
+            entry_id    => $entry->id,
+            entry_title => $entry->title,
+            view_url    => $comment_link,
+            approve_url => $approve_link,
+            spam_url    => $spam_link,
+            edit_url    => $base
+              . $app->uri_params(
+                'mode' => 'view',
+                args   => {
+                    blog_id => $blog->id,
+                    '_type' => 'comment',
+                    id      => $comment->id
+                }
+              ),
+            ban_url => $base
+              . $app->uri_params(
+                'mode' => 'save',
+                args   => {
+                    '_type' => 'banlist',
+                    blog_id => $blog->id,
+                    ip      => $comment->ip
+                }
+              ),
+            comment_ip   => $comment->ip,
+            comment_name => $comment->author,
+            (
+                is_valid_email( $comment->email )
+                ? ( comment_email => $comment->email )
+                : ()
+            ),
+            comment_url  => $comment->url,
+            comment_text => wrap_text( $comment->text, 72 ),
+            unapproved   => !$comment->visible(),
+        );
+        my $body = MT->build_email( 'new-comment.tmpl', \%param );
+        MT::Mail->send( \%head, $body )
+          or return $app->handle_error( MT::Mail->errstr() );
+    }
+}
+
 sub clear_login_cookie {
     my $app = shift;
     $app->bake_cookie(-name => $COOKIE_NAME, -value => '', -expires => '-1y',
@@ -1555,6 +1679,7 @@ sub run {
             }
 
             $app->response_content(undef);
+            $app->{forward} = undef;
 
             $app->pre_run;
 
@@ -1599,6 +1724,11 @@ sub run {
 
             $app->post_run;
 
+            if (my $new_mode = $app->{forward}) {
+                $app->mode($new_mode);
+                goto REQUEST;
+            }
+
             $body = $app->response_content();
 
             if (ref($body) && ($body->isa('MT::Template'))) {
@@ -1611,12 +1741,8 @@ sub run {
             # up front.
             $body =~ s/^\s+(<!DOCTYPE)/$1/s if defined $body;
 
-            unless (defined $body || $app->{redirect} || $app->{login_again}) {
-                if ($app->{no_print_body}) {
-                    $app->print($app->errstr);
-                } else {
-                    $body = $app->show_error( $app->errstr );
-                }
+            unless (defined $body || $app->{redirect} || $app->{login_again} || $app->{no_print_body}) {
+                $body = $app->show_error( $app->errstr );
             }
             $app->error(undef);
         }  ## end REQUEST block
@@ -1681,6 +1807,13 @@ sub run {
         }
     }
     $app->takedown();
+}
+
+sub forward {
+    my $app = shift;
+    my ($new_mode) = @_;
+    $app->{forward} = $new_mode;
+    return undef;
 }
 
 sub handlers_for_mode {
@@ -2099,7 +2232,7 @@ sub load_tmpl {
     return $app->error(
         $app->translate("Loading template '[_1]' failed: [_2]", $file, $err))
         if $err;
-    $tmpl->{__file} = $file if $type eq 'file';
+    $tmpl->{__file} = $file if $type eq 'filename';
     $app->set_default_tmpl_params($tmpl);
     $tmpl->param($param) if $param;
     $tmpl;
@@ -2185,13 +2318,16 @@ sub build_page {
     my $tmpl_file;
     if (UNIVERSAL::isa($file, 'MT::Template')) {
         $tmpl = $file;
-        $app->run_callbacks('template_param', $app, $param, $tmpl);
+        $tmpl_file = (exists $file->{__file}) ? '.'.$file->{__file} : '';
     } else {
         $tmpl = $app->load_tmpl($file) or return;
-        $tmpl_file = $file;
-        $tmpl_file =~ s/\.tmpl$//;
-        $app->run_callbacks('template_param.' . $tmpl_file, $app, $param, $tmpl);
+        $tmpl_file = '.' . $file;
     }
+    if ($tmpl_file) {
+        $tmpl_file =~ s/\.tmpl$//;
+    }
+    $app->run_callbacks('template_param' . $tmpl_file, $app, $param, $tmpl);
+
     if (($mode && ($mode !~ m/delete/)) && ($app->{login_again} ||
         ($app->{requires_login} && !$app->user))) {
         ## If it's a login screen, direct the user to where they were going
@@ -2209,15 +2345,9 @@ sub build_page {
     my $blog = $app->blog;
     $tmpl->context()->stash('blog', $blog) if $blog;
 
-    $tmpl_file ||= $tmpl->{__file} if exists $tmpl->{__file};
-
     my $output = $app->build_page_in_mem($tmpl, $param);
     return unless defined $output;
-    if ($tmpl_file) {
-        $app->run_callbacks('template_output.'.$tmpl_file, $app, \$output, $param, $tmpl);
-    } else {
-        $app->run_callbacks('template_output', $app, \$output, $param, $tmpl);
-    }
+    $app->run_callbacks('template_output'.$tmpl_file, $app, \$output, $param, $tmpl);
     $output;
 }
 
@@ -2382,7 +2512,8 @@ sub app_path {
     } elsif ($app->{query}) {
         $path = $app->{query}->url;
         $path =~ s!/[^/]*$!!;
-        $path =~ s/%40/@/;    # '@' within path is okay
+        # '@' within path is okay; this is for Yahoo!'s hosting environment.
+        $path =~ s/%40/@/;
     } else {
         $path = $app->mt_path;
     }
@@ -2505,7 +2636,7 @@ sub blog {
     return undef unless $app->{query};
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
-        $app->{_blog} = MT::Blog->load($blog_id, {cached_ok=>1});
+        $app->{_blog} = MT::Blog->load($blog_id);
     }
     return $app->{_blog};
 }

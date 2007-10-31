@@ -16,15 +16,13 @@ sub init {
         || exists $plugin->{app_itemset_actions}
         || exists $plugin->{upgrade_functions}
         || exists $plugin->{app_methods}
+        || exists $plugin->{junk_filters}
         || exists $plugin->{object_classes}) {
         # Found in MT::Compat::v3
         $plugin->legacy_init();
     }
     $plugin->SUPER::init(@_) or return;
     return $plugin;
-}
-
-sub init_app {
 }
 
 sub id {
@@ -367,28 +365,28 @@ A URL pointing to the home page for the plugin itself.
 
 =item * config_template
 
-Defines a C<HTML::Template> file by name to use for plugin configuration.
+Defines a C<MT::Template> file by name to use for plugin configuration.
 This value may also be a code reference, which MT would call
 passing three arguments: the plugin object instance, a hashref of
-C<HTML::Template> parameter data and the scope value (either "system"
+C<MT::Template> parameter data and the scope value (either "system"
 for system-wide configuration or "blog:N" where N is the active blog id).
 
 =item * system_config_template
 
-Defines a C<HTML::Template> file by name to use for system-wide
+Defines a C<MT::Template> file by name to use for system-wide
 plugin configuration. If not defined, MT will fall back to the config_template
 setting. This value may also be a code reference, which MT would call
 passing three arguments: the plugin object instance, a hashref of
-C<HTML::Template> parameter data and the scope value (always "system" in
+C<MT::Template> parameter data and the scope value (always "system" in
 this case).
 
 =item * blog_config_template
 
-Defines a C<HTML::Template> file by name to use for weblog-specific
+Defines a C<MT::Template> file by name to use for weblog-specific
 plugin configuration. If not defined, MT will fall back to the config_template
 setting. This value may also be a code reference, which MT would call
 passing three arguments: the plugin object instance, a hashref of
-C<HTML::Template> parameter data and the scope value (for weblogs, this
+C<MT::Template> parameter data and the scope value (for weblogs, this
 would be "blog:N", where N is the active blog id).
 
 =item * settings
@@ -693,7 +691,7 @@ the 'system' scope is assumed.
 
 =head2 $plugin->config_template($params[, $scope])
 
-Called to retrieve a HTML::Template object which will be output as the
+Called to retrieve a MT::Template object which will be output as the
 configuration form for this plugin. Optionally a scope may be specified
 (defaults to 'system').
 
@@ -728,10 +726,10 @@ Handles loading configuration data from the plugindata table.
 
 =head2 $plugin->load_tmpl($file[, ...])
 
-Used to load a HTML::Template object relative to the plugin's directory.
+Used to load a MT::Template object relative to the plugin's directory.
 It will scan both the plugin's directory and a directory named 'tmpl'
 underneath it. It will passthrough parameters that follow the $file
-parameter into the HTML::Template constructor.
+parameter into the MT::Template constructor.
 
 =head2 MT::Plugin->select([$class])
 

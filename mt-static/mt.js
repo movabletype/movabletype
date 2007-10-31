@@ -654,6 +654,17 @@ function toggleActive( id ) {
     return false;
 }
 
+function toggleHidden( id ) {
+    var div = DOM.getElement( id );
+    if ( !div )
+        return false;
+    if ( DOM.hasClassName( div, 'hidden' ) )
+        DOM.removeClassName( div, 'hidden' );
+    else
+        DOM.addClassName( div, 'hidden' );
+    return false;
+}
+
 function tabToggle(selectedTab, tabs) {
     log.warn('tabToggle is deprecated. use mt tab delegate');
     for (var i = 0; i < tabs.length; i++) {
@@ -1188,6 +1199,9 @@ Pager = new Class(Object, {
         // traditional navigation...
         var doc = TC.getOwnerDocument(this.element);
         new_loc = doc.location.href;
+        if (this.state.method == 'POST') {
+            new_loc += '?' + this.state.return_args;
+        }
         new_loc = new_loc.replace(/&?offset=\d+/, '');
         new_loc += '&offset=' + offset;
         window.location = new_loc;
@@ -1533,6 +1547,11 @@ MT.App = new Class( App, {
                     }
                 }
 
+                if ( command == "submit" ) {
+                    event.stop();
+                    form.submit();
+                }
+
                 return;
 
         }
@@ -1563,6 +1582,12 @@ MT.App = new Class( App, {
         /*  handle escape key for closing modal dialog */
         window.onkeypress = dialogKeyPress;
         openDialogUrl( ScriptURI + "?" + params );
+        /* IE hack to get the dialog modal to reflow */
+        if ( document.all ) {
+            var container = DOM.getElement( "dialog-container" );
+            DOM.addClassName( container, "hidden" );
+            DOM.removeClassName( container, "hidden" );
+        }
     },
 
 
@@ -1616,9 +1641,9 @@ MT.App = new Class( App, {
             return;
         
         var areas = [
-            DOM.getElement( "autosave-notification-area" ),
-            DOM.getElement( "autosave-notification-area-top" ),
-            DOM.getElement( "autosave-notification-area-bottom" )
+            DOM.getElement( "autosave-notification" ),
+            DOM.getElement( "autosave-notification-top" ),
+            DOM.getElement( "autosave-notification-bottom" )
         ];
         if ( areas )
             for ( var i = 0; i < areas.length; i++ )
@@ -1643,9 +1668,9 @@ MT.App = new Class( App, {
             return log.error( "Error auto-saving post: "+r );
         
         var areas = [
-            DOM.getElement( "autosave-notification-area" ),
-            DOM.getElement( "autosave-notification-area-top" ),
-            DOM.getElement( "autosave-notification-area-bottom" )
+            DOM.getElement( "autosave-notification" ),
+            DOM.getElement( "autosave-notification-top" ),
+            DOM.getElement( "autosave-notification-bottom" )
         ];
         var d = new Date();
         if ( areas )
@@ -1665,9 +1690,9 @@ MT.App = new Class( App, {
         
         log.error( "Error auto-saving post" );
         var areas = [
-            DOM.getElement( "autosave-notification-area" ),
-            DOM.getElement( "autosave-notification-area-top" ),
-            DOM.getElement( "autosave-notification-area-bottom" )
+            DOM.getElement( "autosave-notification" ),
+            DOM.getElement( "autosave-notification-top" ),
+            DOM.getElement( "autosave-notification-bottom" )
         ];
         if ( areas )
             for ( var i = 0; i < areas.length; i++ )
@@ -2032,8 +2057,11 @@ MT.App.TabContainer = new Class( Object, {
                 if ( tab ) {
                     this.selectTab( event.attributeElement, tab );
                     var cookie = event.attributeElement.getAttribute( "mt:persist-tab-cookie" );
-                    if ( cookie )
-                        Cookie.bake( cookie, tab );
+                    if ( cookie ) {
+                        var d = new Date();
+                        d.setYear( d.getYear() + 1902 ); /* two years */
+                        Cookie.bake( cookie, tab, undefined, undefined, d );
+                    }
                 }
                 
                 event.stop();
@@ -2099,6 +2127,9 @@ MT.App.NavMenu = new Class( Object, {
 
         if ( delay ) {
             delay = parseInt( delay );
+            /* no hover in? */
+            if ( delay < 0 )
+                return;
             if ( this.inTimer )
                 this.inTimer.stop();
             this.inTimer = new Timer( this.getIndirectMethod( "openMenu" ), delay, 1 );
@@ -2119,6 +2150,9 @@ MT.App.NavMenu = new Class( Object, {
         var delay = event.attributeElement.getAttribute( "mt:nav-delayed-close" ); // ms
         if ( delay ) {
             delay = parseInt( delay );
+            /* no hover out? */
+            if ( delay < 0 )
+                return;
             if ( this.outTimer )
                 this.outTimer.stop();
             this.outTimer = new Timer( this.getIndirectMethod( "closeMenu" ), delay, 1 );
@@ -2241,6 +2275,11 @@ MT.App.CodePress = new Class( Object, {
         if ( this.textarea[ "tabIndex" ] )
             this.iframe.setAttribute( "tabIndex", this.textarea[ "tabIndex" ] );
         DOM.addClassName( document.body, "codepress-editor-enabled" );
+        var t = Cookie.fetch( "codepressoff" );
+        if ( t && t.value && t.value != "" ) {
+            log( 'codepress editor off: '+t.value);
+            this.toggleOff();
+        }
     },
 
 
@@ -2349,6 +2388,9 @@ MT.App.CodePress = new Class( Object, {
         this.textarea.disabled = false;
         this.iframe.style.display = 'none';
         this.textarea.style.display = 'inline';
+        var d = new Date();
+        d.setYear( d.getYear() + 1902 ); /* two years */
+        Cookie.bake( "codepressoff", 1, undefined, undefined, d );
     },
     
     
@@ -2360,6 +2402,7 @@ MT.App.CodePress = new Class( Object, {
         this.editor.syntaxHighlight('init');
         this.iframe.style.display = 'inline';
         this.textarea.style.display = 'none';
+        Cookie.remove( "codepressoff" );
     },
 
 

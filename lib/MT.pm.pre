@@ -8,37 +8,28 @@ package MT;
 
 use strict;
 use base qw( MT::ErrorHandler );
+use File::Spec;
+use File::Basename;
 
 our ($VERSION, $SCHEMA_VERSION);
 our ($PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID);
+our ($MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX);
+our ($plugin_sig, $plugin_envelope, $plugin_registry, %Plugins,  @Components, %Components, $DebugMode, $mt_inst, %mt_inst);
+my %Text_filters;
+
 BEGIN {
     ($VERSION, $SCHEMA_VERSION) = ('__API_VERSION__', '__SCHEMA_VERSION__');
     ($PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID) =
         ('__PRODUCT_NAME__', '__PRODUCT_CODE__', '__PRODUCT_VERSION__', '__PRODUCT_VERSION_ID__');
-}
-our ($MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX);
-our ($plugin_sig, $plugin_envelope, $plugin_registry, @Plugins, %Plugins, %Components);
-my %Text_filters;
 
-# use MT::Blog;
-# use MT::Entry;
-# use MT::Log;
-# use MT::Util qw( start_end_day start_end_week start_end_month start_end_period
-#                  archive_file_for get_entry extract_domains encode_js
-#                  encode_html);
-use File::Spec;
-use File::Basename;
-
-use vars qw( $DebugMode );
-sub BEGIN {
     $DebugMode = 0;
-}
 
-BEGIN {
     # Alias lowercase to uppercase package; note: this is an equivalence
     # as opposed to having @mt::ISA set to 'MT'. so @mt::Plugins would
     # resolve as well as @MT::Plugins.
     *{mt::} = *{MT::};
+    # Alias these; Components is the preferred array for MT 4
+    *Plugins = \@Components;
 }
 
 # On-demand loading of compatibility module, if a plugin asks for it, using
@@ -195,8 +186,6 @@ sub run_app {
         }
     }
 }
-
-use vars qw($mt_inst %mt_inst);
 
 sub app {
     my $class = shift;
@@ -446,15 +435,12 @@ sub add_plugin {
             $class->config->define($settings);
         }
     }
-    push @Plugins, $plugin;
+    push @Components, $plugin;
     1;
 }
- 
-use vars '@JunkFilters';
 
-use vars qw(%CallbackAlias $CallbacksEnabled);
-
-$CallbacksEnabled = 1;
+our %CallbackAlias;
+our $CallbacksEnabled = 1;
 my %CallbacksEnabled;
 my @Callbacks;
 sub add_callback {
@@ -544,8 +530,7 @@ sub register_callbacks {
     1;
 }
 
-use vars qw( $CB_ERR );
-
+our $CB_ERR;
 sub callback_error { $CB_ERR = $_[0]; }
 sub callback_errstr { $CB_ERR }
 
@@ -861,7 +846,7 @@ sub init_core {
     my $c = MT::Core->new({ id => 'core', path => $MT_DIR })
         or die MT::Core->errstr;
     $Components{'core'} = $c;
-    push @Plugins, $c;
+    push @Components, $c;
     return 1;
 }
 
@@ -889,11 +874,6 @@ sub init {
 }
 
 sub init_callbacks {
-    my $mt = shift;
-    MT->add_callback('init_tasks', 5, $mt, \&on_init_tasks);
-}
-
-sub on_init_tasks {
 }
 
 sub init_plugins {
@@ -1736,7 +1716,7 @@ sub effective_captcha_provider {
     my $class = shift;
     my ($key) = @_;
 	return undef unless $key;
-    my $cp = $class->captcha_provider($key);
+    my $cp = $class->captcha_provider($key) or return;
     if ( exists $cp->{condition} ) {
         return undef unless $cp->{condition}->();
     }
@@ -1845,9 +1825,6 @@ sub handler_to_coderef {
     }
     return $code;
 }
-
-# Finally, make sure MT knows about itself, even if MT->init is never run.
-# BEGIN { MT->bootstrap }
 
 1;
 

@@ -11,11 +11,15 @@ function go(mode) {
 
 function toggleList() {
     var list = getByID('package-list');
+    var list_msg = getByID('package-list-msg');
     if (list) {
-        if (list.style.display == 'none')
+        if (list.style.display == 'none') {
             list.style.display = 'block';
-        else
+            list_msg.style.display = 'none';
+        } else {
             list.style.display = 'none';
+            list_msg.style.display = 'block';
+        }
     }
     var bttns = getByID('buttons');
     if (bttns) {
@@ -53,8 +57,7 @@ function toggleList() {
 <div class="right pkg">
    <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
 </div>
-<p class="note"><__trans phrase="Note: One or more optional Perl modules could not be found. You may install them now and click 'Retry' or continue without them. They can be installed at any time if needed."></p>
-<p id="show-more"><__trans phrase="<a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
+<p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
 </mt:if>
 <mt:if name="required">
     <mtapp:statusmsg
@@ -69,6 +72,8 @@ function toggleList() {
 <div id="package-list" style="display: none">
 </mt:if>
 
+    <p class="note"><__trans phrase="Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click 'Retry' to test for the modules again."></p>
+
 <mt:if name="missing_db">
     <mtapp:statusmsg
         id="missing_db"
@@ -79,7 +84,7 @@ function toggleList() {
 <mt:if name="optional">
     <mtapp:statusmsg
         id="optional"
-        class="error">
+        class="info">
         <__trans phrase="Missing Optional Modules">
     </mtapp:statusmsg>
 </mt:if>

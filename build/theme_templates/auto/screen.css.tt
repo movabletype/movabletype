@@ -2,21 +2,20 @@
 
 /* Vox Theme for Movable Type ============================================= */
 
-[%+ IF theme.title || theme.creator || theme.creator_uri -%]
 /*
 [% IF theme.title %]
-    Theme: [% theme.title %]
+name: [% theme.title %]
 [% END %]
 [% IF theme.creator %]
-    Creator: [% theme.creator %]
+designer: [% theme.creator %]
 [% END %]
 [% IF theme.creator_uri %]
-    URL: [% theme.creator_uri %]
+designer_url: [% theme.creator_uri %]
 [% END %]
+layouts: layout-wtt, layout-twt, layout-wt, layout-tw
 */
 
 
-[%+ END -%]
 /* Default ---------------------------------------------------------------- */
 
 [%+ INCLUDE default/screen.css.tt %]
@@ -45,3 +44,13 @@
 /* Widget ----------------------------------------------------------------- */
 
 [%+ INCLUDE widget.css.tt %]
+
+
+/* Footer ----------------------------------------------------------------- */
+
+[%+ INCLUDE footer.css.tt %]
+
+
+/* Custom Styles ---------------------------------------------------------- */
+
+[%+ theme.custom_styles %]

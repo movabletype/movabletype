@@ -235,8 +235,7 @@ sub author {
         my $author = $author_cache->{$entry->author_id};
         unless ($author) {
             require MT::Author;
-            $author = MT::Author->load($entry->author_id,
-                                       {cached_ok=>1});
+            $author = MT::Author->load($entry->author_id);
             $author_cache->{$entry->author_id} = $author;
             $req->stash('author_cache', $author_cache);
         }
@@ -643,7 +642,7 @@ sub sync_assets {
         object_ds => $entry->datasource
     });
     my %assets = map { $_->asset_id => $_->id } @assets;
-    while ($text =~ m!<span[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</span>!gis) {
+    while ($text =~ m!<form[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</form>!gis) {
         my $id = $1;
         my $innards = $2;
         # reference to an existing asset...
@@ -748,7 +747,7 @@ sub blog {
     $entry->cache_property('blog', sub {
         my $blog_id = $entry->blog_id;
         require MT::Blog;
-        MT::Blog->load($blog_id, {cached_ok=>1}) or
+        MT::Blog->load($blog_id) or
             $entry->error(MT->translate(
             "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));
     });

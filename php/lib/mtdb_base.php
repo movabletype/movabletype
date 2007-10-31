@@ -1985,8 +1985,18 @@ class MTDatabaseBase extends ezsql {
         }
 
         # Adds an author filter
-        if (isset($args['author']))
+        if (isset($args['author'])) {
             $author_filter = 'and author_name = \''.$this->escape($args['author']) . "'";
+            $author_join = ', mt_author.*';
+            $author_join_tbl = ', mt_author';
+        }
+
+        # Adds an entry filter
+        if (isset($args['entry_id'])) {
+            $entry_filter = 'and (objectasset_object_ds = \'entry\' and objectasset_object_id = \'' . $this->escape($args['entry_id']) . '\' and asset_id = objectasset_asset_id)';
+            $entry_join = ', mt_objectasset.*';
+            $entry_join_tbl = ', mt_objectasset';
+        }
 
         # Adds an ID filter
         if (isset($args['id']))
@@ -2025,13 +2035,14 @@ class MTDatabaseBase extends ezsql {
 
         # Build SQL
         $sql = "
-            select mt_asset.*, mt_author.*
-            from mt_asset, mt_author
+            select mt_asset.* $author_join $entry_join
+            from mt_asset $author_join_tbl $entry_join_tbl
             where
-                asset_created_by = author_id
+                1 = 1
                 $id_filter
                 $blog_filter
                 $author_filter
+                $entry_filter
                 $day_filter
                 $type_filter
                 $ext_filter

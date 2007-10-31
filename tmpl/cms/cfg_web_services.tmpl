@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Web Services Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="web_services" value="1">
 <MTSetVarBlock name="content_header">
 
@@ -52,6 +53,9 @@
 <input name="mt_update_key" id="mt_update_key" value="<mt:var name="mt_update_key" escape="html">" />
     </mtapp:setting>
 
+</fieldset>
+<fieldset>
+
 <h3><__trans phrase="External Notifications"></h3>
 
     <mtapp:setting
@@ -78,9 +82,15 @@
 
 </fieldset>
 
-<div style="text-align: center;">
-<input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
-</div>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
 

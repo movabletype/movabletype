@@ -97,6 +97,13 @@ body {
     font-weight: bold;
 }
 
+/* Footer */
+
+#footer-content,
+#footer-content a {
+    color: #fff;
+}
+
 
 /* Utility */
 

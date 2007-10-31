@@ -1,6 +1,7 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Folder">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <MTSetVarBlock name="content_header">
-    <p class="page-desc"><__trans phrase="Use this page to edit the attributes of the folder [_1]. You can set a description for your folder to be used in your public pages, as well as configuring the TrackBack options for this folder." params="<mt:var name="label" escape="html">"></p>
+    <p class="page-desc"><__trans phrase="Use this page to edit the attributes of the folder [_1]. You can set a description for your folder to be used in your public pages." params="<mt:var name="label" escape="html">"></p>
 
     <mt:if name="error">
         <mtapp:statusmsg
@@ -96,11 +97,16 @@ TC.attachLoadEvent( init );
             <textarea name="description" id="description" rows="" cols="" class="full-width short"><mt:var name="description" escape="html"></textarea>
         </mtapp:setting>
 
-        <div>
-            <input accesskey="s" type="submit" value="<__trans phrase="Save">" title="<__trans phrase="Save this folder (s)">" />
-        </div>
-
-    </form>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
 
 </div>
 

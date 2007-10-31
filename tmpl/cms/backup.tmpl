@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Backup">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="backup" value="1">
 <MTSetVarBlock name="content_header">
 </MTSetVarBlock>
@@ -14,7 +15,7 @@ function highlightSwitch(selection) {
         var el_name = getByID('selected_blogs');
         if (el_name) {
             el_name.style.display = 'block';
-            el_name.innerHTML = '(<__trans phrase="None selected.">)';
+            el_name.innerHTML = '(<__trans phrase="(None selected)">)';
         }
         openDialog(false, 'dialog_select_weblog', 'multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs');
     } else {
@@ -27,7 +28,7 @@ function highlightSwitch(selection) {
 }
 </script>
 
-    <a href="javascript:void(0)" onclick="return openManual('backup_restore', 'backup_restore_main')" class="help-link">?</a></p>
+    <a href="javascript:void(0)" onclick="return openManual('backup_restore', 'backup_restore_main')" class="help-link">?</a>
 
     <mt:if name="error">
         <mtapp:statusmsg
@@ -40,7 +41,6 @@ function highlightSwitch(selection) {
     <form method="post" action="<mt:var name="script_url">">
         <input type="hidden" name="__mode" value="backup" />
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-        <fieldset style="margin-top: 0px;">
 <mt:if name="blog_id">
             <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
             <input type="hidden" id="backup_what" name="backup_what" value="custom" />
@@ -57,32 +57,29 @@ function highlightSwitch(selection) {
                         <option value="custom"><__trans phrase="Choose blogs to backup"></option>
                     </select>
                     <input type="hidden" id="selected_blog_ids" name="selected_blog_ids" value="" />
-                    <p><strong><span id="selected_blogs" style="display:none;">(<__trans phrase="None selected.">)</span></strong></p>
+                    <div><span id="selected_blogs" style="display: none;"><__trans phrase="(None selected)"></span></div>
     </mtapp:setting>
 </mt:if>
     <mtapp:setting
         id="backup_archive_format"
-        label="<__trans phrase="Type of archive format">"
+        label="<__trans phrase="Archive Format">"
         hint="<__trans phrase="The type of archive format to use.">"
         help_page="backup_restore"
         help_section="backup_format">
-                    <p>
 <mt:if name="targz">
                         <input type="radio" id="tar.gz" name="backup_archive_format" value="1" checked="checked" />
                         <label for="tar.gz"><__trans phrase="tar.gz"></label>
 </mt:if>
 <mt:if name="zip">
-                        <input type="radio" id="zip" name="backup_archive_format" value="2"<mt:unless name="targz">checked="checked"</mt:unless> />
+                        <input type="radio" id="zip" name="backup_archive_format" value="2"<mt:unless name="targz"> checked="checked"</mt:unless> />
                         <label for="zip"><__trans phrase="zip"></label>
 </mt:if>
-                        <input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="targz"><mt:unless name="zip">checked="checked"</mt:unless></mt:unless> />
+                        <input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="targz"><mt:unless name="zip"> checked="checked"</mt:unless></mt:unless> />
                         <label for="no_archive"><__trans phrase="Don't compress"></label>
-                    </p>
     </mtapp:setting>
-
     <mtapp:setting
         id="size_limit"
-        label="<__trans phrase="Number of megabytes per file">"
+        label="<__trans phrase="Target File Size">"
         hint="<__trans phrase="Approximate file size per backup file.">"
         help_page="backup_restore"
         help_section="backup_num_size">
@@ -102,8 +99,15 @@ function highlightSwitch(selection) {
 </mt:if>
                     </select>
     </mtapp:setting>
-            <p style="text-align: center;"><input type="submit" value="<__trans phrase="Make Backup">" title="<__trans phrase="Make Backup (b)">" accesskey="b" /></p>
-        </fieldset>
+        <mt:setvarblock name="action_buttons">
+            <button
+                type="submit"
+                accesskey="b"
+                title="<__trans phrase="Make Backup (b)">"
+                class="primary-button"
+                ><__trans phrase="Make Backup"></button>
+        </mt:setvarblock>
+        <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
     </form>
 </div>
 

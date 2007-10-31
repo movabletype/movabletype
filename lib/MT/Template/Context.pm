@@ -283,7 +283,7 @@ sub compile_category_filter {
                 } else {
                     $repl = "#$catid";
                 }
-                if ($cat_expr =~ s/(?<!#)(?:\Q$catl\E)/$repl/g) {
+                if ($cat_expr =~ s/(?<![#\d])(?:\Q$catl\E)/$repl/g) {
                     $cats_used{$_->id} = $_ for @cats;
                 }
                 # for multi blog case
@@ -353,7 +353,7 @@ sub compile_tag_filter {
     foreach my $tag (@$tags) {
         my $name = $tag->name;
         my $id = $tag->id;
-        if ($tag_expr =~ s/(?<!#)\Q$name\E/#$id/g) {
+        if ($tag_expr =~ s/(?<![#\d])\Q$name\E/#$id/g) {
             $tags_used{$id} = $tag;
         }
     }

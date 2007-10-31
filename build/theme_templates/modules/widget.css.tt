@@ -5,12 +5,6 @@
 [%+ INCLUDE widget/basic.css.tt %]
 [% END %]
 
-.widget-header,
-.widget-content {
-    margin-right: 15px;
-    margin-left: 15px;
-}
-
 .widget-header {
     font-size: 14px;
 }
@@ -37,11 +31,17 @@
     text-align: center;
 }
 
-.widget-powered .widget-content,
+[%+ IF theme.find_file('mt-powered') -%]
 .widget-powered .widget-content a {
-    color: [% theme.default.color || "#333" %];
+    display: block;
+    background: [% PROCESS bg_image file='mt-powered' %] no-repeat 50% 50%;
 }
 
+.widget-powered .widget-content img {
+    visibility: hidden;
+}
+
+[%+ END -%]
 
 /* Calendar Module */
 

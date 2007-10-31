@@ -7,9 +7,6 @@
 [% ELSIF theme.header.background.color %]
     background-color: [% theme.header.background.color %];
 [% END %]
-    padding: [% theme.header.content.margin || '20px 0 60px 20px' %];
-    padding-left: 0;
-    padding-right: 0;
 }
 
 #header a {
@@ -17,12 +14,14 @@
     font-weight: [% theme.header.name.weight || 'bold' %];
 }
 
+#header-content {
+    margin: [% theme.header.content.margin || '20px 0 60px 20px' %];
+}
+
 #header-name {
-    padding-left: 20px;
-    padding-right: 20px;
     color: [% theme.header.name.color %];
-[% IF theme.header.name.font.family %]
-[% font_family = theme.header.name.font.family %]
+[% IF theme.header.name.font.family || theme.default.header.font.family %]
+[% font_family = theme.header.name.font.family || theme.default.header.font.family %]
     font-family: [% FONT_FAMILIES.$font_family %];
 [% END %]
     font-size: [% theme.header.name.font.item('size') || '28px' %];
@@ -30,9 +29,11 @@
 }
 
 #header-description {
-    padding-left: 20px;
-    padding-right: 20px;
     color: [% theme.header.description.color || theme.header.name.color %];
+[% IF theme.header.description.font.family || theme.default.header.font.family %]
+[% font_family = theme.header.description.font.family || theme.default.header.font.family %]
+    font-family: [% FONT_FAMILIES.$font_family %];
+[% END %]
 [% IF theme.header.description.weight %]
     font-weight: [% theme.header.description.weight %];
 [% END %]

@@ -1005,7 +1005,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
             $catl = $cat[$col];
             $catid = $cat['category_id'];
             $catre = preg_quote($catl, "/");
-            if (!preg_match("/(?:(?<!#)\[$catre\]|$catre)|(?:#$catid\b)/", $expr))
+            if (!preg_match("/(?:(?<![#\d])\[$catre\]|$catre)|(?:#$catid\b)/", $expr))
                 continue;
             if ($include_children) {
                 $kids = array($cat);
@@ -1138,11 +1138,12 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
         $tagn = $tag['tag_name'];
         $tagid = $tag['tag_id'];
         $oldexpr = $expr;
-	    $expr = preg_replace("/(?:\Q[$tagn]\E|\Q$tagn\E)/", "#$tagid",
+	    $expr = preg_replace("!(?:\Q[$tagn]\E|\Q$tagn\E)!", "#$tagid",
 	        $expr);
 	    if ($oldexpr != $expr)
 	        $tags_used[$tagid] = $tag;
 	}
+
     # Replace logical constructs with their PHP equivalents
     $expr = preg_replace('/\bAND\b/i', '&&', $expr);
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
@@ -1192,7 +1193,12 @@ function tag_normalize($str) {
     return $str;
 }
 
-function get_thumbnail_file($prefix, $filename, $site_path, $width = 0, $height = 0, $scale = 0) {
+function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h%x') {
+    # Get parameter
+    $filename = $asset['asset_file_path'];
+    $site_path = $blog['blog_site_path'];
+    $site_url = $blog['blog_site_url'];
+
     # Get source image information
     list($src_w, $src_h, $src_type, $src_attr) = getimagesize($filename);
 
@@ -1233,23 +1239,34 @@ function get_thumbnail_file($prefix, $filename, $site_path, $width = 0, $height 
     }
 
     # Generate thumbnail file name
-    $hash = '';
-    $hash_src = "height:$thumb_h;width:$thumb_w";
-    if (floatval(PHP_VERSION) >= 4.3) {
-        $hash = @sha1($hash_src);
-    } else {
-        if (extension_loaded('mhash')) {
-            $hash = bin2hex(mhash(MHASH_SHA1, $hash_src));
-        }
-    }
+    $basename = basename($asset['asset_file_name'], '.' . $asset['asset_file_ext']);
+    $id = $asset['asset_id'];
+    $ext = '.' . $asset['asset_file_ext'];
+    $patterns[0] = '/%w/';
+    $patterns[1] = '/%h/';
+    $patterns[2] = '/%f/';
+    $patterns[3] = '/%i/';
+    $patterns[4] = '/%x/';
+    $replacement[0] = $thumb_w;
+    $replacement[1] = $thumb_h;
+    $replacement[2] = $basename;
+    $replacement[3] = $id;
+    $replacement[4] = $ext;
+    $thumb_filename = preg_replace($patterns, $replacement, $format);
 
     # Retrieve thumbnail
     global $mt;
     $path_parts = pathinfo($filename);
     $cache_path = $mt->config('AssetCacheDir');
-    $thumb_name = $site_path . '/' . $cache_path . '/' . $prefix . '.' . $hash . '.' . $path_parts['extension'];
 
+    $ts = preg_replace('![^0-9]!', '', $asset['asset_created_on']);
+    $date_stamp = format_ts('%Y/%m', $ts, $blog);
+    $cache_dir = $site_path . DIRECTORY_SEPARATOR . $cache_path . DIRECTORY_SEPARATOR . $date_stamp . DIRECTORY_SEPARATOR;
+    $thumb_name = $cache_dir . $thumb_filename;
     if(!file_exists($thumb_name)) {
+        if (!file_exists($cache_dir)) {
+          mkdir($cache_dir, 0777, true);
+        }
         # Create thumbnail
         $dst_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
         $result = imagecopyresampled ( $dst_img, $src_img, 0, 0, 0, 0,
@@ -1271,6 +1288,10 @@ function get_thumbnail_file($prefix, $filename, $site_path, $width = 0, $height 
 
     imagedestroy($src_img);
 
-    return array($thumb_name, $thumb_w, $thumb_h);
+    # make url
+    $basename = basename($thumb_name);
+    $thumb_url = $blog['blog_site_url'] . $cache_path . '/' . $date_stamp . '/' . $basename;
+
+    return array($thumb_url, $thumb_w, $thumb_h, $thumb_name);
 }
 ?>

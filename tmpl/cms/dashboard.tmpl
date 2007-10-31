@@ -33,12 +33,10 @@
 </mt:setvartemplate>
 
 <mt:setvarblock name="related_content">
-<$mt:var name="select_widget_form" set="sidebar"$>
-
 <div id="widget-container-sidebar">
 <mt:section id="sidebar" class="widget-container"><mt:var name="sidebar"></mt:section>
 </div>
-
+<$mt:var name="select_widget_form" set="sidebar"$>
 </mt:setvarblock>
 
 <mt:include name="include/header.tmpl">
@@ -80,10 +78,10 @@
 
 </div>
 
-<$mt:var name="select_widget_form" set="main"$>
 
 <div id="widget-container-main">
 <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
 </div>
+<$mt:var name="select_widget_form" set="main"$>
 
 <mt:include name="include/footer.tmpl">

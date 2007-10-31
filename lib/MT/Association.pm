@@ -70,7 +70,7 @@ sub user {
     my $assoc = shift;
     $assoc->cache_property('user', sub {
         require MT::Author;
-        $assoc->author_id ? MT::Author->load($assoc->author_id, { cached_ok => 1 }) : undef;
+        $assoc->author_id ? MT::Author->load($assoc->author_id) : undef;
     });
 }
 
@@ -78,7 +78,7 @@ sub blog {
     my $assoc = shift;
     $assoc->cache_property('blog', sub {
         require MT::Blog;
-        $assoc->blog_id ? MT::Blog->load($assoc->blog_id, { cached_ok => 1 }) : undef;
+        $assoc->blog_id ? MT::Blog->load($assoc->blog_id) : undef;
     });
 }
 
@@ -86,7 +86,7 @@ sub group {
     my $assoc = shift;
     $assoc->cache_property('group', sub {
         require MT::Group;
-        $assoc->group_id ? MT::Group->load($assoc->group_id, { cached_ok => 1 }) : undef;
+        $assoc->group_id ? MT::Group->load($assoc->group_id) : undef;
     });
 }
 
@@ -94,7 +94,7 @@ sub role {
     my $assoc = shift;
     $assoc->cache_property('role', sub {
         require MT::Role;
-        $assoc->role_id ? MT::Role->load($assoc->role_id, { cached_ok => 1 }) : undef;
+        $assoc->role_id ? MT::Role->load($assoc->role_id) : undef;
     });
 }
 

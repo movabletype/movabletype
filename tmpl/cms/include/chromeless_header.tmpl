@@ -6,7 +6,14 @@
     <title><mt:var name="PAGE_TITLE"> | <$mt:var name="mt_product_name"$></title>
 
 <mt:setvarblock name="html_head" prepend="1">
-    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/chromeless.css?v=<mt:var name="MT_VERSION" escape="URL">" type="text/css" />
+<mt:if name="mt_debug">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/reset.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/utilities.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/messaging.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/chromeless.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+<mt:else>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/simple.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+</mt:if>
 
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="MT_VERSION" escape="URL">" type="text/css" />

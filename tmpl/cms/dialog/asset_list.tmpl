@@ -67,11 +67,11 @@
     <mt:if name="panel_searchable">
             <form action="" method="get" id="modal-search">
                 <input type="text" value="<__trans phrase="Search">" class="search-input search-query"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
-                <input type="image" class="search-command search-submit" src="<mt:var name="static_uri">images/nav_icons/color/search.gif" title="<__trans phrase="Search">" />
+                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> />
                 <input type="button" class="search-reset hidden" value="<__trans phrase="View All">" />
-                &nbsp;
             </form>
     </mt:if>
+            &nbsp;
         </div>
     </div>
 
@@ -125,8 +125,8 @@
         <mt:else>
                                         <mt:var name="file_name" escape="html">
         </mt:unless>
-                                    <div id="asset-<mt:var name="id">-detail" class="asset-detail-modal">
-                                        <div id="asset-<mt:var name="id">-detail-inner-modal" class="asset-detail-modal-inner"></div>
+                                    <div id="asset-<mt:var name="id">-preview" class="asset-preview">
+                                        <div id="asset-<mt:var name="id">-preview-inner" class="asset-preview-inner"></div>
                                     </div>
                                 </td>
         <mt:unless name="edit_blog_id">
@@ -160,10 +160,22 @@
 <div class="insert_button_spacing">&nbsp;</div>
 
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg">
+    <div class="actions-bar-inner pkg actions">
         <form action="" method="get" onsubmit="return false">
-            <input class="cancel" type="button" value="<__trans phrase="Cancel">" />
-            <input class="close" type="submit" value="<mt:if name="is_image"><__trans phrase="Next"><mt:else><__trans phrase="Insert"></mt:if>" disabled="disabled" />
+            <button
+                type="submit"
+                accesskey="s"
+                title="<mt:if name="is_image"><__trans phrase="Next (s)"><mt:else><__trans phrase="Insert (s)"></mt:if>"
+                class="primary-button close disabled-button"
+                disabled="true"
+                ><mt:if name="is_image"><__trans phrase="Next"><mt:else><__trans phrase="Insert"></mt:if></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                class="cancel"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
         </form>
     </div>
 </div>

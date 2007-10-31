@@ -84,10 +84,21 @@
 </mtapp:setting>
 </form>
 <div class="actions-bar">
-    <div class="actions-bar-inner">
+    <div class="actions-bar-inner pkg actions">
         <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-            <input type="button" class="cancel" value="<__trans phrase="Cancel">" />
-            <input type="button" class="next" value="<__trans phrase="Continue">" />
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Continue (s)">"
+                class="primary-button next"
+                ><__trans phrase="Continue"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                class="cancel"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
         </form>
     </div>
 </div>

@@ -83,7 +83,7 @@ img
 }
 
 .inputs p {
-   line-height: 2.1em;
+   line-height: 2.1;
 }
 
 .one-five {
@@ -186,7 +186,7 @@ input.repo-url {
 	display: block;
 	position: relative;
 	left: 22px;
-	width: 104px;
+	width: 400px;
 	margin: 0;
 	border: 0;
 	padding: 0;
@@ -267,7 +267,7 @@ h2
 
 #wrapper
 {
-	width: 720px;
+	width: 920px;
 	margin: 8px 0px;
 }
 
@@ -291,19 +291,18 @@ h2
 #templates-wrapper
 {
 	position: absolute;
-	left: 172px;
+	left: 170px;
 	top: 0;
+	width: 440px;
+	height: 450px;
 }
-
-.templates-wrapper-wide { width: 575px; }
-.templates-wrapper-narrow { width: 180px; }
 
 #details-wrapper
 {
 	position: absolute;
-	left: 364px;
+	left: 618px;
 	top: 0;
-	width: 356px;
+	width: 300px;
 }
 
 .scrollbox
@@ -325,12 +324,24 @@ h2
 	position: relative;
 	left: 0;
 	top: 0;
-	height: 354px;
+	height: 398px;
 	width: auto;
 	overflow: clip;
 	border: 1px #999 solid;
 	background-color: #eee;
-	padding: 32px 24px;
+	padding: 10px 10px;
+}
+
+#select-design-controls {
+    position: absolute;
+    width: 280px;
+    top: auto;
+    bottom: 10px;
+    margin-right: 10px;
+}
+
+.actions-bar .button-actions {
+    float: right;
 }
 
 #display-details .tc-mixer-entry

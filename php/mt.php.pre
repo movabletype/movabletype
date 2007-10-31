@@ -461,7 +461,7 @@ class MT {
 
         $cache_id = $blog_id.';'.$fi_path;
         if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
-            if (isset($at)) {
+            if (isset($at) && ($at != 'Category')) {
                 global $_archivers;
                 require_once("archive_lib.php");
                 global $_archivers;
@@ -502,6 +502,14 @@ class MT {
                 }
                 $ctx->stash('entry', $entry);
                 $ctx->stash('current_timestamp', $entry['entry_authored_on']);
+            }
+
+            if ($at == 'Category') {
+                $vars =& $ctx->__stash['vars'];
+                $vars['archive_class'] = "category-archive";
+                $vars['category_archive'] = 1;
+                $vars['main_template'] = 1;
+                $vars['archive_template'] = 1;
             }
         }
 

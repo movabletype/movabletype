@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Comment Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="comments" value="1">
 <MTSetVarBlock name="content_header">
 
@@ -66,8 +67,6 @@
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-<fieldset>
-
 <mt:unless name="system_allow_comments">
     <mtapp:statusmsg
         id="system-allow-comments"
@@ -80,15 +79,19 @@
 <p><__trans phrase="Comment authentication is not available because one of the needed modules, MIME::Base64 or LWP::UserAgent is not installed. Talk to your host about getting this module installed."></p>
 </mt:unless>
 
+<fieldset>
+
     <mtapp:setting
         id="allow_comments"
         label="<__trans phrase="Accept Comments">"
         help_page="blog_settings_feedback"
         help_section="accept_comments_from">
-<input type="checkbox" name="allow_comments" value="1" id="allow_comments" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <__trans phrase="If enabled, comments will be accepted.">
+        <input type="checkbox" name="allow_comments" value="1" id="allow_comments" onclick="toggleHidden('commenting-policy'); toggleHidden('commenting-display-options'); return true"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <__trans phrase="If enabled, comments will be accepted.">
     </mtapp:setting>
 
-<div id="allow_comments_prefs" style="display:<mt:if name="allow_comments">block<mt:else>none</mt:if>">
+</fieldset>
+
+<fieldset id="commenting-policy"<mt:unless name="allow_comments"> class="hidden"</mt:unless>>
 
 <h3><__trans phrase="Commenting Policy"></h3>
 
@@ -110,7 +113,7 @@
 <mt:if name="key" eq="TypeKey">
 <mt:setvar name="typekey_enabled" value="1">
 <p><input type="checkbox" id="enabled_<mt:var name="key">" name="enabled_<mt:var name="key">" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key">"><mt:var name="label"></label></p>
-<div id="enabled_TypeKey_prefs" style="display:<mt:if name="enabled">block<mt:else>none</mt:if>">
+<div id="enabled_TypeKey_prefs"<mt:unless name="enabled"> class="hidden"</mt:unless>>
   <p style="margin-left: 25px;"><input type="checkbox" value="1" id="require_typekey_emails" name="require_typekey_emails"<mt:if name="require_typekey_emails"> checked="checked"</mt:if> class="cb" />&nbsp;<__trans phrase="Require E-mail Address for Comments via TypeKey"><br />
   <span class="hint"><__trans phrase="If enabled, visitors must allow their TypeKey account to share e-mail address when commenting."></span>
   <a href="javascript:void(0)" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help-link">?</a></p>
@@ -154,7 +157,7 @@
 <input type="checkbox" name="allow_comment_html" id="allow_comment_html" onclick="toggleSubPrefs(this);" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" /> <__trans phrase="If enabled, users will be able to enter a limited set of HTML in their comments. If not, all HTML will be stripped out.">
     </mtapp:setting>
 
-    <div id="allow_comment_html_prefs" style="display: <mt:if name="allow_comment_html">block<mt:else>none</mt:if>;">
+    <div id="allow_comment_html_prefs"<mt:unless name="allow_comment_html"> class="hidden"</mt:unless>>
     <mtapp:setting
         id="sanitize_spec"
         label="<__trans phrase="Limit HTML Tags">"
@@ -177,7 +180,7 @@
         <input type="checkbox" value="1" name="nofollow_urls" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" onclick="toggleSubPrefs(this)" /> <label for="nofollow_urls"><__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation."></label>
     </mtapp:setting>
 
-    <div id="nofollow_urls_prefs" style="display: <mt:if name="nofollow_urls">block<mt:else>none</mt:if>;">
+    <div id="nofollow_urls_prefs"<mt:unless name="nofollow_urls"> class="hidden"</mt:unless>>
 
         <mtapp:setting
             id="follow_auth_links"
@@ -203,6 +206,9 @@
 <li><label><input type="radio" name="email_new_comments" value="0"<mt:unless name="email_new_comments"> checked="checked"</mt:unless> class="rb" /> <__trans phrase="Off"></label></li>
 </ul>
     </mtapp:setting>
+
+</fieldset>
+<fieldset id="commenting-display-options"<mt:unless name="allow_comments"> class="hidden"</mt:unless>>
 
 <h3><__trans phrase="Display Options"></h3>
 
@@ -263,16 +269,17 @@
 <p><input type="checkbox" value="1" id="use_comment_confirmation" name="use_comment_confirmation"<mt:if name="use_comment_confirmation"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Use comment confirmation page"></p>
     </mtapp:setting>
 
-</div>
-
-
 </fieldset>
 
-
-<div style="text-align: center;">
-<input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
-</div>
-
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 

@@ -73,52 +73,33 @@ function setCustomFields() {
         id="entry_prefs"
         label="<__trans phrase="Editor Fields">"
         hint="<__trans phrase="_USAGE_ENTRYPREFS">">
-
-<div class="editor-fields">
-<div class="entry-prefs">
-<div class="display_options">
-<ul>
-<li><label><input type="radio" name="entry_prefs" value="Default" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_DEFAULT> checked="checked"</mt:if> class="rb" /> <__trans phrase="Default"></label></li>
-<li><label><input type="radio" name="entry_prefs" value="Advanced" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_ADVANCED> checked="checked"</mt:if> class="rb" /> <__trans phrase="All"></label></li>
-<li><label><input type="radio" name="entry_prefs" value="Custom" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_CUSTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Custom"></label></li>
-</ul>
-</div>
-</div>
-<p>&nbsp;</p>
-<div class="custom-prefs-wrapper">
-<div class="custom-prefs">
-<div class="custom-prefs-inner">
-<ul class="custom-prefs-fields">
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Title"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Body"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_CATEGORY> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Category"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_EXCERPT> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Excerpt"></label></li>
-</ul>
-<ul class="custom-prefs-fields-more">
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_KEYWORDS> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Keywords"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-tags" value="tags" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_TAGS> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Tags"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_PUBLISHING> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Publishing"></label></li>
-<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_FEEDBACK> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Feedback"></label></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
+    <ul>
+        <li><label><input type="radio" name="entry_prefs" value="Default" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_DEFAULT> checked="checked"</mt:if> class="rb" /> <__trans phrase="Default"></label></li>
+        <li><label><input type="radio" name="entry_prefs" value="Advanced" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_ADVANCED> checked="checked"</mt:if> class="rb" /> <__trans phrase="All"></label></li>
+        <li><label><input type="radio" name="entry_prefs" value="Custom" onclick="setFieldGroup(this); return true"<mt:if NAME=DISP_PREFS_CUSTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Custom"></label></li>
+    </ul>
+    <br />
+    <ul>
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Title"></label></li>
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Body"></label></li>
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_CATEGORY> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Category"></label></li>
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_EXCERPT> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Excerpt"></label></li>
+    </ul>
+    <ul class="custom-prefs-fields-more">
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_KEYWORDS> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Keywords"></label></li>
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-tags" value="tags" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_TAGS> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Tags"></label></li>
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_PUBLISHING> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Publishing"></label></li>
+        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if NAME=DISP_PREFS_SHOW_FEEDBACK> checked="checked"</mt:if><mt:unless NAME=DISP_PREFS_CUSTOM> disabled="disabled"</mt:unless> class="cb" /> <__trans phrase="Feedback"></label></li>
+    </ul>
     </mtapp:setting>
 
     <mtapp:setting
         id="bar_position"
         label="<__trans phrase="Action Bar">"
-        hint="<__trans phrase="Select the location of the entry editor's action bar.">">
-<div class="entry-prefs">
-<div class="display_options">
-<ul>
-<li><label><input type="radio" name="bar_position" value="Bottom"<mt:if NAME=POSITION_ACTIONS_BOTTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Below"></label></li>
-<li><label><input type="radio" name="bar_position" value="Top"<mt:if NAME=POSITION_ACTIONS_TOP> checked="checked"</mt:if> class="rb" /> <__trans phrase="Above"></label></li>
-<li><label><input type="radio" name="bar_position" value="Both"<mt:if NAME=POSITION_ACTIONS_BOTH> checked="checked"</mt:if> class="rb" /> <__trans phrase="Both"></label></li>
-</ul>
-</div>
-</div>
-<br clear="all" />
+        hint="<__trans phrase="Select the location of the entry editor&rsquo;s action bar.">">
+        <ul>
+            <li><label><input type="radio" name="bar_position" value="Bottom"<mt:if NAME=POSITION_ACTIONS_BOTTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Below"></label></li>
+            <li><label><input type="radio" name="bar_position" value="Top"<mt:if NAME=POSITION_ACTIONS_TOP> checked="checked"</mt:if> class="rb" /> <__trans phrase="Above"></label></li>
+            <li><label><input type="radio" name="bar_position" value="Both"<mt:if NAME=POSITION_ACTIONS_BOTH> checked="checked"</mt:if> class="rb" /> <__trans phrase="Both"></label></li>
+        </ul>
     </mtapp:setting>
-

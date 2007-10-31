@@ -13,7 +13,11 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
-    <input onclick="doRemoveItems(this.form, '<__trans phrase="weblog">', '<__trans phrase="weblogs">')" type="button" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete selected blogs (x)">" />
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="weblog">', '<__trans phrase="weblogs">')"
+        accesskey="x"
+        title="<__trans phrase="Delete selected blogs (x)">"
+        ><__trans phrase="Delete"></a>
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">

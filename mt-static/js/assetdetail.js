@@ -34,7 +34,7 @@ function notOpened(id) {
 
 function checkOpened() {
     if (opened) {
-        hide('asset-' + asset_id + '-detail');
+        hide('asset-' + asset_id + '-preview');
         detailRowClass.className = origRowClass;
         notOpened(asset_id);
         toggleScrollBar('right');
@@ -45,7 +45,7 @@ function toggleAssetDetails(id) {
     var radio_val = false;
     var button_val = true;
     if (asset_id == id) {
-        hide('asset-' + asset_id + '-detail');
+        hide('asset-' + asset_id + '-preview');
         detailRowClass.className = origRowClass;
         notOpened(asset_id);
         if (isModal) {
@@ -68,6 +68,10 @@ function toggleAssetDetails(id) {
     if (window.dlg) {
         var panel = window.dlg.panel;
         var button = panel.closeButton;
+        if (button_val)
+            TC.addClassName(button, "disabled-button");
+        else
+            TC.removeClassName(button, "disabled-button");
         button.disabled = button_val;
     }
 }
@@ -114,12 +118,8 @@ function showPage(id) {
 
     /* display popup panel showing details of selected asset */
     detailRowClass.className = 'selected';
-    var detail = getByID("asset-" + id + "-detail");
-    if (isModal) {
-        var detail_inner = getByID("asset-" + id + "-detail-inner-modal");
-    } else {
-        var detail_inner = getByID("asset-" + id + "-detail-inner");
-    }
+    var detail = getByID("asset-" + id + "-preview");
+    var detail_inner = getByID("asset-" + id + "-preview-inner");
     var asset = assets[id];
     if (!asset) {
         var detail_json = getByID("asset-" + id + "-json");
@@ -130,11 +130,10 @@ function showPage(id) {
     }
 
     var close = trans('Close');
-    var close_link = "<a href=\"javascript:void(0)\" onclick=\"toggleAssetDetails('" + id + "'); notOpened('" + id + "');\">" + close + "</a>";
-    var close_icon = "<a href=\"javascript:void(0)\" onclick=\"toggleAssetDetails('" + id + "'); notOpened('" + id + "');\"><img class=\"close_asset_icon\" align=\"bottom\" src=\"" + StaticURI + "images/spacer.gif\" width=\"9\" height=\"9\"></a>";
+    var close_link = "<a href=\"javascript:void(0)\" onclick=\"toggleAssetDetails('" + id + "'); notOpened('" + id + "');\" class=\"close-preview-link\"><span>" + close + "</span>&nbsp;</a>";
     var preview;
     if (asset.thumbnail_url) {
-        preview = "<img src=\"" + asset.thumbnail_url + "\" class=\"preview\" /><br />";
+        preview = "<img src=\"" + asset.thumbnail_url + "\" class=\"preview\" />";
     } else {
         ext = asset.ext;
         var icons = ("doc,eps,fla,gif,jpg,mp3,mpg,pdf,png,ppt,psd,txt,xls,zip");
@@ -148,35 +147,30 @@ function showPage(id) {
             }
         }
         var noPreview = trans('No Preview Available');
-        var clickToSee = trans('Click to see uploaded file.');
-        preview = "<div class=\"asset-icon-area\"><div class=\"asset-icon-layout\"><div class=\"asset-icon-" + asset.ext + "\"><img src=\"" + StaticURI + "images/spacer.gif\" width=\"90\" height=\"96\"></div></div></div><b>" + noPreview + "</b><br /><a href=\"" + asset.url + "\" target=\"view_uploaded\">" + clickToSee + "</a>";
-    }
-    var metadata = '';
-    var meta_names = [];
-    var meta_name;
-    for (meta_name in asset) {
-        if (meta_name.match(/^[a-z_]/)) continue;
-        if (!asset[meta_name]) continue;
-        meta_names[meta_names.length] = meta_name;
-    }
-    meta_names.sort();
-    var i;
-    for (i = 0; i < meta_names.length; i++) {
-        meta_name = meta_names[i];
-        metadata += '<dt>' + meta_name + ":</dt> <dd>" + asset[meta_name] + "</dd>";
-    }
-    iam = asset.name;
-    var metadataClass = 'metadata';
-    if (isModal) {
-        metadataClass = 'metadata_dialog';
-    }
-    detail_inner.innerHTML = "<div class=\"close_asset_detail\">" + close_link + " " + close_icon + "</div>"
-        + "<div class=\"asset-detail-title\">" + iam + "</div>"
-        + "<div class=\"asset_detail_left\">" + preview + "</div>"
-        + "<div class=\"asset_detail_right\">"
-        + "<div class=\"" + metadataClass + "\"><dl>" + metadata + "</dl></div>"
+        var clickToSee = trans('View uploaded file');
+        preview = ""
+        + "<div class=\"asset-icon asset-icon-" + asset.ext + "\">"
+        + "<strong>" + noPreview + "</strong>"
+        + "<a href=\"" + asset.url + "\" target=\"view_uploaded\">" + clickToSee + "</a>"
         + "</div>";
-    show("asset-" + id + "-detail");
+    }
+    var metadata;
+    if (asset['Actual Dimensions']) {
+        var metadata = "<div class=\"asset-preview-meta\">" + asset['Actual Dimensions'] + "</div>";
+    } else {
+        var metadata = ""
+    };
+    var label;
+    if (asset['Name']) {
+        label = asset['Name'];
+    } else {
+        label = asset.name;
+    };
+    detail_inner.innerHTML = close_link
+        + "<div class=\"asset-preview-image\">" + preview + "</div>"
+        + "<div class=\"asset-preview-title\">" + label + "</div>"
+        + metadata;
+    show("asset-" + id + "-preview");
     return false;
 }
 

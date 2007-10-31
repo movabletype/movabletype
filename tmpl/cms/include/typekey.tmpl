@@ -24,7 +24,7 @@
 <p>
 <__trans phrase="Enter API Key:">
 <input type="text" name="remote_auth_token" value="<mt:var name="REMOTE_AUTH_TOKEN" escape="HTML">" />
-&nbsp;or&nbsp;
+&nbsp;<__trans phrase="or ">
 <input type="button" name="auth_setup" value="<__trans phrase="Obtain TypeKey API Key">" onclick="window.open('<mt:var name="IDENTITY_SYSTEM">/handshake?<mt:if name="LANG">lang=<mt:var name="LANG">&</mt:if>url=<mt:var name="HANDSHAKE_RETURN" escape="URL">&blog_id=<mt:var name="BLOG_ID">');return false"/>
 </p>
 <p id="save_token_msg" style="display:none">

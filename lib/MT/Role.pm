@@ -37,6 +37,14 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    return MT->translate('Role');
+}
+
+sub class_label_plural {
+    return MT->translate('Roles');
+}
+
 sub save {
     my $role = shift;
     my $res = $role->SUPER::save(@_) or return;

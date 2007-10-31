@@ -14,7 +14,8 @@ closeDialog('<mt:var name="return_url">');
         <mt:var name="error">
     </mtapp:statusmsg>
 </mt:if>
-<form action="<mt:var name="comment_script_url">" method="post" name="comments_form" id="comments-form" class="<mt:if name="preview_html">preview</mt:if>">
+<form action="<mt:var name="script_url">" method="post" name="comments_form" id="comments-form" class="<mt:if name="preview_html">preview</mt:if>">
+    <input type="hidden" name="__mode" value="" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="reply_to" value="<mt:var name="reply_to">" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -38,11 +39,35 @@ closeDialog('<mt:var name="return_url">');
         <textarea id="reply-body" name="text" rows="" cols="" class="full-width medium"><$mt:var name="text"$></textarea>
     </div>
     <div class="actions-bar">
-        <div class="actions-bar-inner">
-            <input type="button" accesskey="x" value="<__trans phrase="Cancel">" onclick="closeDialog()" />
-            <input type="button" accesskey="r" name="edit_reply" id="re-edit-comment-action" value="<__trans phrase="Re-edit">" title="<__trans phrase="Re-edit (r)">" onclick="DOM.removeClassName( DOM.getElement('comments-form'), 'preview' )" />
-            <input type="submit" accesskey="v" name="reply_preview" id="preview-comment-action" value="<__trans phrase="Preview">" title="<__trans phrase="Preview reply (v)">" />
-            <input type="submit" accesskey="s" name="reply" id="publish-comment-action" value="<__trans phrase="Post">" title="<__trans phrase="Post reply (s)">" />
+        <div class="actions-bar-inner pkg actions">
+            <button
+                onclick="return submitForm(this.form, 'reply'); return false"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Submit reply (s)">"
+                id="publish-comment-action"
+                class="primary-button"
+                ><__trans phrase="Submit"></button>
+            <button
+                onclick="return submitForm(this.form, 'reply_preview'); return false"
+                type="submit"
+                accesskey="v"
+                title="<__trans phrase="Preview reply (v)">"
+                id="preview-comment-action"
+                ><__trans phrase="Preview"></button>
+            <button
+                onclick="DOM.removeClassName( DOM.getElement('comments-form'), 'preview' ); return false"
+                type="submit"
+                accesskey="r"
+                title="<__trans phrase="Re-edit reply (r)">"
+                id="re-edit-comment-action"
+                ><__trans phrase="Re-edit"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
         </div>
     </div>
 </form>

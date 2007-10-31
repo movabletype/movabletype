@@ -13,7 +13,7 @@
             body {
                 font-family: "Helvetica Neue", Arial, sans-serif;
                 font-size: 12px;
-                line-height: 160%;
+                line-height: 1.6;
                 background-color: #fff;
             }
 

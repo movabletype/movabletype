@@ -13,6 +13,8 @@ $archiver = new WeeklyArchiver();
 $_archivers[$archiver->get_archive_name()] = $archiver;
 $archiver = new IndividualArchiver();
 $_archivers[$archiver->get_archive_name()] = $archiver;
+$archiver = new PageArchiver();
+$_archivers[$archiver->get_archive_name()] = $archiver;
 
 function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
     global $_archivers;
@@ -42,6 +44,26 @@ class BaseArchiver {
     function prepare_list(&$ctx, &$row) { }
     function setup_args($ctx, &$args) { }
     function template_params(&$ctx) { }
+}
+
+class PageArchiver extends BaseArchiver {
+    function get_label($args, $ctx) {
+        return $ctx->mt->translate("Page");
+    }
+
+    function get_archive_name() {
+        return 'Page';
+    }
+
+    function template_params(&$ctx) {
+        $vars =& $ctx->__stash['vars'];
+        $vars['main_template'] = 1;
+        $vars['archive_template'] = 1;
+        $vars['page_template'] = 1;
+        $vars['feedback_template'] = 1;
+        $vars['page_archive'] = 1;
+        $vars['archive_class'] = 'page-archive';
+    }
 }
 
 class IndividualArchiver extends BaseArchiver {

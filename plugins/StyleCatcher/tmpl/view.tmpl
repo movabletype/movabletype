@@ -1,6 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="Select a Style"></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
-
 <!-- stylecatcher -->
 <link rel="stylesheet" type="text/css" title="Default Layout" href="<mt:var name="plugin_static_uri">templates.css" />
 
@@ -12,21 +11,31 @@
 <!-- javascripts for this page -->
 
 <script type="text/javascript">
+<!--
     var repoImg = "<mt:var name="plugin_static_uri">images/mixed-media.gif";
     var selected;
-    var selected_blog_id;
+    var blog_id = '<mt:var name="blog_id" escape="js">';
+    var dynamic_blog = <mt:if name="dynamic_blog">true<mt:else>false</mt:if>;
     var mixer;          
     var matchCategory = /^category-/;
     var categories = [];
     var firstCategoryId;
     var repo_urls = {};
     var repos = [];
+    var libraries = <mt:var name="style_library" to_json="1">;
+    var current_theme = '<mt:var name="current_theme">';
+    var current_layout = '<mt:var name="current_layout">';
+    var layout_names = {
+        "layout-wtt": "<__trans phrase="3-Columns, Wide, Thin, Thin" escape="js">",
+        "layout-twt": "<__trans phrase="3-Columns, Thin, Wide, Thin" escape="js">",
+        "layout-tw": "<__trans phrase="2-Columns, Thin, Wide" escape="js">",
+        "layout-wt": "<__trans phrase="2-Columns, Wide, Thin" escape="js">"
+    };
 
     TC.attachLoadEvent( init );
 
     function init() {
         initMixer();
-        showDetails( false );
 
 <mt:if name="themes_json">
         var data = <mt:var name="themes_json">;
@@ -39,8 +48,15 @@
         initCategories();
         chooseCategory( firstCategoryId );
 
-        if (data.themes)
-            loadThemes(data.themes, 'local');
+        if (data.themes) {
+            loadThemes(data.themes);
+            if (current_theme) {
+                mixer.name = current_theme;
+                selectDesign();
+            } else {
+                showDetails();
+            }
+        }
 
         <mt:if name="auto_fetch">
         getStyles();
@@ -54,15 +70,14 @@
             el.style.display = 'block';
     }
 
-    function initMixer()
-    {
+    function initMixer() {
         mixer = new TC.Mixer();
         // initialize mixer object
-        mixer.addSelectedDisplay( "display-details" );
+        mixer.addSelectedDisplay( "display-details-content" );
+        mixer.onselect = selectDesign;
     }
 
-    function initCategories()
-    {
+    function initCategories() {
         var element = getByID( "categories" );
         if( !element )
             return;
@@ -88,119 +103,167 @@
             element.onclick = chooseCategoryClosure( categoryId );
             TC.removeClassName( element, "category-selected" );
 
-            categories[ categoryId ] =
-            {
+            categories[ categoryId ] = {
                 "element" : element,
                 "display" : display
             };
         }
     }
 
-    function chooseCategoryClosure( categoryId )
-    {
+    function chooseCategoryClosure( categoryId ) {
         var func = function() { return chooseCategory( categoryId ); };
         return func;
     }
 
-    function chooseCategory( categoryId )
-    {
+    function chooseCategory( categoryId ) {
         var titleElement = getByID( "selected-category-title" );
-        
-        for( var id in categories )
-        {
+
+        for( var id in categories ) {
             var element = categories[ id ].element;
             if (!element) continue;
             var display = categories[ id ].display;
 
-            if( id == categoryId )
-            {
+            if( id == categoryId ) {
+                var repo_match = element.id.match(/^category-repo-(.+)$/);
+                if (repo_match) {
+                    var repo_id = repo_match[1];
+                    var repo;
+                    for (var i = 0; i < libraries.length; i++) {
+                        if (libraries[i].key == repo_id) {
+                            repo = libraries[i];
+                            break;
+                        }
+                    }
+                    if (repo.url && !repo.loaded) {
+                        getStyles(repo_id, repo.url);
+                    }
+                }
                 TC.addClassName( element, "category-selected" );
                 display.style.display = "block";
                 
                 if( titleElement )
                     titleElement.innerHTML = trans(element.firstChild.nextSibling.innerHTML);
-                if (element.title.match(/^https?:/)) {
-                    var url_element = getByID("repo-url");
-                    url_element.value = element.title;
-                }
             }
-            else
-            {
+            else {
                 TC.removeClassName( element, "category-selected" );
                 if (display) display.style.display = "none";
             }
         }
 
+        // select first theme in category
+        mixer.name = '';
+        var select_design = getByID("select-design-controls");
+        TC.addClassName(select_design, "hidden");
         mixer.display();
+        mixer.remix();
     }
 
-    function showDetails( show )
-    {
-        var showElement = getByID( "show-details" );
-        var hideElement = getByID( "hide-details" );
-        var detailsElement = getByID( "details-wrapper" );
-        var templatesElement = getByID( "templates-wrapper" );
-        
-        if( show )
-        {
-            showElement.style.display = "none";
-            hideElement.style.display = "block";
-            detailsElement.style.display = "block";
-            TC.removeClassName( templatesElement, "templates-wrapper-wide" );
-            TC.addClassName( templatesElement, "templates-wrapper-narrow" );
+    function showDetails() {
+        mixer.remix();
+    }
+
+    function selectDesign() {
+        var apply_button = getByID("apply-button");
+        var layout_select = getByID("layout-list");
+
+        var layouts;
+        if (mixer.name && mixer.entries[mixer.name])
+            layouts = mixer.entries[mixer.name].layouts;
+        var layout_list;
+        if (layouts) layout_list = layouts.split(/\s*,\s*/);
+        if (layouts && layout_list && layout_list.length) {
+            layout_select.options.length = 0;
+            var selected_layout = 0;
+            for (var i = 0; i < layout_list.length; i++) {
+                var opt = new Option(layout_names[layout_list[i]] ? layout_names[layout_list[i]] : layout_list[i], layout_list[i]);
+                layout_select.options[layout_select.options.length] = opt;
+                if (layout_list[i] == current_layout) {
+                    selected_layout = i;
+                }
+            }
+            layout_select.selectedIndex = selected_layout;
+            layout_select.disabled = false;
+        } else {
+            layout_select.options.length = 0;
+            layout_select.options[0] = new Option("<__trans phrase="None available" escape="js">", "");
+            layout_select.disabled = true;
         }
-        else
-        {
-            showElement.style.display = "block";
-            hideElement.style.display = "none";
-            detailsElement.style.display = "none";
-            TC.addClassName( templatesElement, "templates-wrapper-wide" );
-            TC.removeClassName( templatesElement, "templates-wrapper-narrow" );
+        showDetails();
+        var select_design = getByID("select-design-controls");
+        TC.removeClassName(select_design, "hidden");
+        updateApplyButton();
+    }
+
+    function updateApplyButton() {
+        var apply_button = getByID("apply-button");
+        var layout_select = getByID("layout-list");
+        var new_layout;
+        if (layout_select && layout_select.selectedIndex != -1) {
+            new_layout = layout_select.options[layout_select.selectedIndex].value;
         }
-        
-        return false;
+        var current_entry = mixer.entries[mixer.name];
+        if ((mixer.name == current_theme) && ((!new_layout || !current_layout) || ((new_layout && current_layout) && (new_layout == current_layout)))) {
+            // same theme, same layout. don't allow apply design to be enabled
+            apply_button.disabled = true;
+            TC.addClassName(apply_button, "disabled-button");
+        } else {
+            apply_button.disabled = false;
+            TC.removeClassName(apply_button, "disabled-button");
+        }
     }
 
     function applyDesign() {
         // disable apply button; change text to "Applying..."
-<mt:if name="single_blog">
-        var blog_id = '<mt:var name="single_blog">';
-<mt:else>
-        var sel = getByID("select-blog");
-        var blog_id = sel.options[sel.selectedIndex].value;
-        if (!blog_id) {
-            alert("<__trans phrase="Please select a weblog to apply this theme.">");
-            return;
-        }
-</mt:if>
         var btn = getByID("apply-button");
-        if (!btn) return;
+        var layout = getByID("layout-list");
+        if (layout && layout.selectedIndex != -1) {
+            layout = layout.options[layout.selectedIndex].value;
+        }
 
         selected = mixer.name;
-        if (!selected) {
-            alert("<__trans phrase="Please click on a theme before attempting to apply a new design to your blog.">");
-            return;
-        }
         var url = mixer.entries[mixer.name].url;
 
+        TC.addClassName(btn, "disabled-button");
         btn.disabled = true;
         btn.value = "<__trans phrase="Applying...">";
-        selected_blog_id = blog_id;
+
+        var args = {
+            '__mode': 'stylecatcher_apply',
+            'url': url,
+            'magic_token': '<mt:var name="magic_token">',
+            'blog_id': blog_id,
+            'name': mixer.name
+        };
+        if (layout)
+            args['layout'] = layout;
         var client = TC.Client.call({
             'load': designApplied,
             'uri': '<mt:var name="script_url">',
             'method': 'POST',
-            'arguments': {
-                '__mode': 'stylecatcher_apply',
-                'url': url,
-                'magic_token': '<mt:var name="magic_token">',
-                'blog_id': blog_id
-            }
+            'arguments': args
         });
     }
 
     function designApplied(client, result) {
         var btn = getByID("apply-button");
+
+        var res;
+        try {
+            res = eval('(' + result + ')');
+        } catch (e) {
+        }
+        if (res && res.error) {
+            showMsg("<__trans phrase="Error applying theme: " escape="js">" + res.error, "theme-applied", "error");
+            TC.removeClassName(btn, "disabled-button");
+            btn.disabled = false;
+            return;
+        }
+
+        var layout = getByID("layout-list");
+        var new_layout;
+        if (layout && layout.selectedIndex != -1) {
+            new_layout = layout.options[layout.selectedIndex].value;
+        }
         var entry = mixer.entries[selected];
         if (entry) {
             // make this the new 'current' theme
@@ -217,12 +280,12 @@
             found = false;
             if (entry.blogs && entry.blogs.length) {
                 for (var i = 0; i < entry.blogs.length; i++) {
-                    if (entry.blogs[i] == selected_blog_id)
+                    if (entry.blogs[i] == blog_id)
                         found = true;
                 }
             }
             if (!found)
-                entry.blogs[entry.blogs.length] = selected_blog_id;
+                entry.blogs[entry.blogs.length] = blog_id;
 
             /* loop through all the 'current' themes and strip
                this blog id from any that don't match the
@@ -231,7 +294,7 @@
                 if (i == selected)
                     continue;
                 for (var j = 0; j < mixer.entries[i].blogs.length; j++) {
-                    if (mixer.entries[i].blogs[j] == selected_blog_id) {
+                    if (mixer.entries[i].blogs[j] == blog_id) {
                         mixer.entries[i].blogs.splice(j,1);
                         break;
                     }
@@ -247,27 +310,26 @@
                 }
             }
             mixer.createTagIndexes();
-            mixer.remix();
         }
+
         chooseCategory('category-current');
-        if (!btn) return;
-        btn.value = "<__trans phrase="Choose this Design">";
-        btn.disabled = false;
-        var res;
-        try {
-            res = eval('(' + result + ')');
-        } catch (e) {
-        }
-        if (res && res.error) {
-            alert("<__trans phrase="Error applying theme: ">" + res.error);
+        current_theme = selected;
+        mixer.name = selected;
+        selectDesign();
+
+        if ((current_layout && new_layout) && (current_layout != new_layout) && (!dynamic_blog)) {
+            showMsg("<__trans phrase="The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout." escape="js">", 'theme-applied', "info", "all", blog_id);
+            current_layout = new_layout;
         } else {
-            alert("<__trans phrase="The selected theme has been applied!">");
+            showMsg("<__trans phrase="The selected theme has been applied!" escape="js">", 'theme-applied', "info");
         }
     }
 
-    function stylesLoaded(client, styles) {
+    function stylesLoaded(client, styles, repo_id) {
         var btn = getByID("find-button");
-        if (!btn) return;
+        TC.addClassName(TC.elementOrId("loading-styles"), "hidden");
+        TC.removeClassName(btn, "hidden");
+
         var repo_num;
         var cat;
 
@@ -275,46 +337,61 @@
         try {
             data = eval('('+styles+')');
         } catch (e) {
-            alert(trans("Error loading themes! -- [_1]", styles));
-            btn.value = "<__trans phrase="Find Style">";
-            btn.disabled = false;
+            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR">".replace(/ERROR/, styles), "error", "error");
             return;
         }
-        log(data);
-        if (data.repo) {
-            url = data.repo['url'];
-            if (repo_urls[url] != undefined) {
-                repo_num = repo_urls[url];
-                cat = 'repo_' + repo_num;
-            } else {
-                repo_num = repos.length;
-                repo_urls[url] = repo_num;
+        if (data.error) {
+            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR">".replace(/ERROR/, data.error), "error", "error");
+            return;
+        }
+        log(data.result);
+        if (!repo_id) {
+            if (data.result.repo) {
+                url = data.result.repo['url'];
+                if (repo_urls[url] != undefined) {
+                    repo_num = repo_urls[url];
+                    cat = 'repo_' + repo_num;
+                } else {
+                    repo_num = repos.length;
+                    repo_urls[url] = repo_num;
 
-                // new repo -- create new
-                // category for it
-                cat = 'repo_' + repo_num;
-                createCategory(cat, data.repo['display_name'], url);
+                    // new repo -- create new
+                    // category for it
+                    cat = 'repo_' + repo_num;
+                    createCategory(cat, data.result.repo['display_name'], url);
+                }
+                repos[repo_num] = url;
             }
-            repos[repo_num] = url;
+            if (data.result.auto) {
+                cat = 'more';
+                enableCategory(cat);
+            }
+            chooseCategory('category-' + cat);
+        } else {
+            var repo;
+            for (var i = 0; i < libraries.length; i++) {
+                if (libraries[i].key == repo_id) {
+                    repo = libraries[i];
+                    break;
+                }
+            }
+            if (repo) {
+                repo.loaded = true;
+                cat = 'repo-' + repo_id;
+                enableCategory(cat);
+                chooseCategory('category-' + cat);
+            }
         }
-        if (data.auto) {
-            cat = 'more';
-            enableCategory(cat);
-        }
-        chooseCategory('category-' + cat);
-        if (data.themes)
-            loadThemes(data.themes, cat);
-
-        TC.addClassName(TC.elementOrId("loading-styles"), "hidden");
-        TC.removeClassName(btn, "hidden");
+        if (data.result.themes)
+            loadThemes(data.result.themes, cat);
     }
 
     function createCategory(cat_name, cat_title, url) {
         // things to create...
         //   #1: new scrollbox under id 'categories'
         /*
-                <div class="category" id="category-repo" title="Remote Themes" style="display: none">
-                    <img src="<mt:var name="plugin_static_uri">images/mixed-media.gif" alt="" /><span id="repo-name">Remote Themes</span>
+                <div class="category" id="category-repo" title="Remote Styles" style="display: none">
+                    <img src="<mt:var name="plugin_static_uri">images/mixed-media.gif" alt="" /><span id="repo-name">Remote Styles</span>
                 </div>
         */
         var cats = getByID("categories");
@@ -357,10 +434,12 @@
         enableCategory(cat_name);
     }
 
-    function loadThemes(themes, prefix) {
+    function loadThemes(themes, pfx) {
         var names = {};
         for (var i = 0; i < themes.length; i++) {
-            var name = prefix + '-' + themes[i]['name'];
+            var prefix = themes[i]['prefix'];
+            if (!prefix) prefix = pfx;
+            var name = prefix + ':' + themes[i]['name'];
             if (names[themes[i]['name']]) {
                 names[themes[i]['name']]++;
                 name += "_" + names[themes[i]['name']];
@@ -388,17 +467,21 @@
         }
         mixer.display();
     }
-    function getStyles() {
+
+    function downloadStyles() {
+        var url;
+        if (url = prompt("<__trans phrase="Stylesheet or Repository URL" escape="js">")) {
+            getStyles(null, url);
+        }
+    }
+
+    function getStyles(repo_id, url) {
         var btn = getByID("find-button");
-        if (!btn) return;
         TC.addClassName(btn, "hidden");
         TC.removeClassName(TC.elementOrId("loading-styles"), "hidden");
 
-        var el = getByID('repo-url');
-        if (!el) return;
-        var url = el.value;
         var client = TC.Client.call({
-            'load': stylesLoaded,
+            'load': function(c,s) { stylesLoaded(c,s,repo_id) },
             'uri': '<mt:var name="script_url">',
             'method': 'POST',
             'arguments': {
@@ -407,85 +490,106 @@
             }
         });
     }
+// -->
 </script>
 <!-- end stylecatcher script section -->
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
-        <div id="wrapper">
+<div id="msg-block">
+</div>
 
-<mt:if name="blog_loop">
+<div id="wrapper">
 
-           <form method="get" action="<mt:var name="script_url">">
-                <strong><__trans phrase="Theme or Repository URL:"></strong>
-                <input class="repo-url" style="width:350px;" name="url" id="repo-url" value="<mt:var name="last_theme_url">" />
-                <input type="button" id="find-button" value="<__trans phrase="Download Styles">" onclick="getStyles()" />
-                <span class="hidden" id="loading-styles">
-                    <img src="<mt:var name="static_uri">images/indicator.white.gif" height="16" width="16" alt="" />
-                    <__trans phrase="Loading...">
-                </span>
-           </form>
+<!--
+<form method="get" action="<mt:var name="script_url">">
+    <strong><__trans phrase="Stylesheet or Repository URL:"></strong>
+    <input class="repo-url" style="width:350px;" name="url" id="repo-url" value="<mt:var name="last_theme_url">" />
+    <input type="button" id="find-button" value="<__trans phrase="Download Styles">" onclick="getStyles()" />
+    <span class="hidden" id="loading-styles">
+        <img src="<mt:var name="static_uri">images/indicator.white.gif" height="16" width="16" alt="" />
+        <__trans phrase="Loading...">
+    </span>
+</form>
+-->
 
-            <p id="status-message" class="message" style="display: none"></p>
-            
-            <div id="template-picker">
-                <div id="categories-wrapper">
-                    <h2><__trans phrase="Categories"></h2>
-                    <div class="scrollbox" id="categories">
-<mt:if name="single_blog">
-                        <div class="category" id="category-current" title="<__trans phrase="Current theme for your weblog">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/top-rated.gif" alt="Your Current Theme" /><span><__trans phrase="Current Theme"></span>
-<mt:else>
-                        <div class="category" id="category-current" title="<__trans phrase="Current themes for your weblogs">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/top-rated.gif" alt="Your Current Themes" /><span><__trans phrase="Current Themes"></span>
-</mt:if>
-                        </div>
-                        <div class="category" id="category-my-designs" title="<__trans phrase="Locally saved themes">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/my-designs.gif" alt="my-designs" /><span><__trans phrase="Saved Themes"></span>
-                        </div>
-                        <div class="category" id="category-more" title="<__trans phrase="Single themes from the web">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="my-designs" /><span><__trans phrase="More Themes"></span>
-                        </div>
-                    </div>
-                </div>
+<p id="status-message" class="message" style="display: none"></p>
 
-                <div id="templates-wrapper">
-                    <h2 id="selected-category-title"><__trans phrase="Templates"></h2>
-                    <div class="scrollbox" id="display-current" style="display: none;"></div>
-                    <div class="scrollbox" id="display-my-designs" style="display: none;"></div>
-                    <div class="scrollbox" id="display-more" style="display: none;"></div>
-                </div>
+<div id="template-picker">
+    <div id="categories-wrapper">
 
-                <div id="details-wrapper" style="display: none">
-                    <h2><__trans phrase="Details"></h2>
-                    <div id="display-details">
-                        <div class="tc-mixer-entry"></div>
-                    </div>
-                </div>
+        <h2>
+            <span style="float:right">
+                <a href="javascript:void(0)" id="find-button" onclick="return downloadStyles()" class="icon-right icon-create" title="Download new styles">&nbsp;</a>
 
-                <a id="show-details" href="javascript:void(0);" onclick="return showDetails( true );" style="display: none"><__trans phrase="Show Details"></a>
-                <a id="hide-details" href="javascript:void(0);" onclick="return showDetails( false );" style="display: none"><__trans phrase="Hide Details"></a>
+            <span class="hidden" id="loading-styles">
+                <img src="<mt:var name="static_uri">images/indicator.white.gif" height="16" width="16" alt="" />
+            </span>
+
+            </span>
+
+            <__trans phrase="Categories">
+        </h2>
+
+        <div class="scrollbox" id="categories">
+            <div class="category" id="category-current" title="<__trans phrase="Current theme for your weblog">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/top-rated.gif" alt="Your Current Style" /><span><__trans phrase="Current Style"></span>
             </div>
-            
-            <br class="clr" />
-
-            <div id="select-design-controls">
-<mt:unless name="single_blog">
-            <select name="blog_id" id="select-blog">
-            <option value=""><__trans phrase="Select a Weblog..."></option>
-            <mt:loop name="blog_loop">
-            <option value="<mt:var name="blog_id">"><mt:var name="blog_name"></option>
+            <div class="category" id="category-my-designs" title="<__trans phrase="Locally saved themes">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/my-designs.gif" alt="my-designs" /><span><__trans phrase="Saved Styles"></span>
+            </div>
+            <div class="category" id="category-mt-designs" title="<__trans phrase="Default Styles">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/gear.gif" alt="mt-designs" /><span><__trans phrase="Default Styles"></span>
+            </div>
+            <div class="category" id="category-more" title="<__trans phrase="Single themes from the web">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="my-designs" /><span><__trans phrase="More Styles"></span>
+            </div>
+            <mt:loop name="style_library">
+            <div class="category" id="category-repo-<mt:var name="key">" title="Styles from <mt:var name="label">"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="more-designs" /><span><mt:var name="label"></span>
+            </div>
             </mt:loop>
-            </select>
-</mt:unless>
+        </div>
+    </div>
 
-            <input type="button" name="choose" id="apply-button" onclick="applyDesign()" value="<__trans phrase="Apply Selected Design">" />
-            </div>
-            <br class="clr" />
+    <div id="templates-wrapper">
+        <h2 id="selected-category-title"><__trans phrase="Templates"></h2>
+        <div class="scrollbox" id="display-current" style="display: none;"></div>
+        <div class="scrollbox" id="display-my-designs" style="display: none;"></div>
+        <div class="scrollbox" id="display-mt-designs" style="display: none;"></div>
+        <div class="scrollbox" id="display-more" style="display: none;"></div>
+        <mt:loop name="style_library">
+        <div class="scrollbox" id="display-repo-<mt:var name="key">" style="display: none;"></div>
+        </mt:loop>
+    </div>
+
+    <div id="details-wrapper">
+        <h2><__trans phrase="Selected Design"></h2>
+        <div id="display-details">
+        <div id="select-design-controls" class="actions-bar">
+            <form method="get" action="">
+                <p>
+                    <label for="layout-list"><__trans phrase="Layout">:</label>
+                    <select id="layout-list" onchange="updateApplyButton()">
+                    </select>
+                </p>
+
+                <span class="button-actions actions">
+                <button
+                    type="button"
+                    accesskey="s"
+                    id="apply-button"
+                    title="<__trans phrase="Apply Design"> (s)"
+                    onclick="applyDesign()"
+                    class="primary-button"><__trans phrase="Apply Design"></button>
+                </span>
+            </form>
         </div>
 
-<mt:else>
+        <div id="display-details-content"></div>
 
-<p class="message">
-<__trans phrase="You don't appear to have any weblogs with a 'Theme Stylesheet' template that you have rights to edit. Please check your blog(s) for this template.">
-</p>
 
-</mt:if>
+    </div>
+
+</div>
+
+<br class="clr" />
+
+</div>
 
 <mt:include name="include/footer.tmpl">

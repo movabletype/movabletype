@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Create Blog">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvarblock name="content_header">
     <mt:if name="error">
         <mtapp:statusmsg
@@ -125,7 +126,6 @@ TC.attachLoadEvent(init);
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-    <fieldset>
 <mt:if name="can_edit_config">
 
     <mtapp:setting
@@ -198,12 +198,16 @@ TC.attachLoadEvent(init);
             </select>
     </mtapp:setting>
 </mt:if>
-</fieldset>
 
-<div style="text-align: center;">
-    <input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
-</div>
-
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Create [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        class="primary-button"
+        ><__trans phrase="Create [_1]" params="<mt:var name="object_label">"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 <mt:include name="include/footer.tmpl">

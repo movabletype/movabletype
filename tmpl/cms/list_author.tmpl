@@ -74,8 +74,16 @@
 
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
-    <input onclick="setObjectStatus(this.form, '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 1)" type="button" value="<__trans phrase="_USER_ENABLE" escape="js">" accesskey="e" title="<__trans phrase="Enable selected users (e)">" />
-    <input onclick="var sysadmin = getByID('sysadmin'); if (sysadmin &amp;&amp; sysadmin.checked) { alert('<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">'); sysadmin.click(); } setObjectStatus(this.form, '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 0)" type="button" value="<__trans phrase="_USER_DISABLE" escape="js">" accesskey="d" title="<__trans phrase="Disable selected users (d)">" />
+    <a href="javascript:void(0)"
+        onclick="setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 1)"
+        accesskey="e"
+        title="<__trans phrase="Enable selected users (e)">"
+        ><__trans phrase="_USER_ENABLE" escape="js"></a>
+    <a href="javascript:void(0)"
+        onclick="var sysadmin = getByID('sysadmin'); if (sysadmin && sysadmin.checked) { alert('<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">'); sysadmin.click(); return false; } setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 0)"
+        accesskey="d"
+        title="<__trans phrase="Disable selected users (d)">"
+        ><__trans phrase="_USER_DISABLE" escape="js"></a>
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
@@ -179,6 +187,21 @@
                     </form>
                 </mt:setvarblock>
 </mt:ignore>
+<mt:setvarblock name="list_filter_form">
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+    <div class="filter">
+        <div id="filter-title">
+        <mt:if name="filter_title">
+            <$mt:var name="filter_title"$>
+        <mt:else>
+            <__trans phrase="Show All Users">
+        </mt:if>
+        </div>
+    </div>
+        </div>
+    </div>
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 <$mt:var name="list_filter_form"$>
 <$mt:include name="include/author_table.tmpl"$>

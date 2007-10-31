@@ -38,7 +38,11 @@
 </div>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-    <input type="button" name="delete" value="<MT_TRANS phrase="Delete">" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="tag">', '<MT_TRANS phrase="tags">')" accesskey="x" title="<MT_TRANS phrase="Delete selected tags (x)">" />
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<MT_TRANS phrase="tag">', '<MT_TRANS phrase="tags">')"
+        accesskey="x"
+        title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+        ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>

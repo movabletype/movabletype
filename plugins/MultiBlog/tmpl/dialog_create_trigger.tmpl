@@ -9,7 +9,7 @@
 <style type="text/css">
 /* some styles here to resize/position the blog listing */
 #blog-panel div.selector .list-data-wrapper {
-    height: 275px;
+    height: 240px;
 }
 .dialog .actions-bar form.multiblog-trigger {
     width: 450px;
@@ -21,6 +21,10 @@
 .dialog .actions-bar form.multiblog-trigger fieldset {
     margin: 0;
     padding: 0;
+}
+.dialog #options {
+    clear: both;
+    padding-top: 10px;
 }
 </style>
 
@@ -64,30 +68,17 @@ function init() {
     dialog = new Dialog.MultiPanel("select-weblog");
     var blogPanel = new ListingPanel("blog");
     blogPanel.pager.setState(<mt:var name="pager_json">);
-    addControls(blogPanel);
     dialog.setPanels([blogPanel]);
     dialog.open({}, returnTrigger);
 }
 
-function addControls(panel) {
-    var div = document.createElement('div');
-    var opt = getByID("options");
-    div.innerHTML = opt.innerHTML;
-    var cmd = TC.getElementsByTagAndClassName('div', 'actions-bar', panel.element);
-    if (cmd)
-        cmd[0].insertBefore(div, cmd[0].firstChild);
-}
 TC.attachLoadEvent( init );
 //-->
 </script>
 </mt:setvarblock>
-
-<mt:include name="dialog/header.tmpl">
-
-<div id="options" class="hidden">
+<mt:setvarblock name="after_listing_panel">
+<div id="options">
     <form class="multiblog-trigger" method="<mt:var name="script_url">" method="post" target="_top">
-    <fieldset>
-        <table cellspacing="0" cellpadding="0"><tr valign="top"><td>
         <mt:var name="trigger_caption">
         <select name="multiblog_blog_trigger" size="1">
             <mt:loop name="multiblog_trigger_loop">
@@ -98,10 +89,11 @@ TC.attachLoadEvent( init );
         <mt:loop name="multiblog_action_loop">
         <option value="<mt:var name="action_id">"><mt:var name="action_name"></option>
         </mt:loop>
-        </select> </td></tr></table>
-    </fieldset>
+        </select>
     </form>
 </div>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
 
 <div class="modal_width" id="select-weblog-dialog">
 

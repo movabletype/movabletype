@@ -298,7 +298,7 @@ sub rebuild {
                 $set_at)) unless $at{$set_at};
 
         @at = ($set_at);
-        my $archiver = $mt->archiver($at);
+        my $archiver = $mt->archiver($set_at);
         $entry_class = $archiver->{entry_class} || "entry";
     } else {
         $entry_class = '*';
@@ -1762,7 +1762,7 @@ sub page_group_iter {
         status => MT::Entry::RELEASE() }, { sort => 'title', direction => 'ascend' } );
     return sub {
         while (my $entry = $iter->()) {
-            return (1, entries => [ $entry ]);
+            return (1, entries => [ $entry ], entry => $entry);
         }
         undef;
     }
@@ -1780,7 +1780,7 @@ sub individual_archive_file {
     my $entry = $ctx->{__stash}{entry};
 
     my $file;
-    Carp::croak "archive_file_for Individual archive needs an entry" 
+    Carp::confess "archive_file_for Individual archive needs an entry" 
         unless $entry;
     if ($file_tmpl) {
         $ctx->{current_timestamp} = $entry->authored_on;
@@ -1811,7 +1811,7 @@ sub individual_group_iter {
     );
     return sub {
         while (my $entry = $iter->()) {
-            return (1, entries => [ $entry ]);
+            return (1, entries => [ $entry ], entry => $entry);
         }
         undef;
     }
