@@ -4,6 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<mt:var name="language_encoding">" />
 <title><mt:loop name="page_titles"><mt:var name="bc_name" escape="html"> | </mt:loop><mt:var name="mt_product_name"></title>
+<mt:setvarblock name="html_head" prepend="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">styles.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version" escape="url">"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version" escape="url">"></script>
@@ -18,6 +19,8 @@
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/tableselect.js"></script>
+</mt:setvarblock>
+<$mt:var name="html_head"$>
 <script type="text/javascript" src="<mt:var name="static_uri">mt.js"></script>
 <mt:if name="local_lang_id"><link rel="stylesheet" href="<mt:var name="static_uri">styles_<mt:var name="local_lang_id">.css" />
 <script type="text/javascript" src="<mt:var name="static_uri">mt_<mt:var name="local_lang_id">.js" charset="utf-8"></script></mt:if>

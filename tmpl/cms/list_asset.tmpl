@@ -1,4 +1,4 @@
-<mt:setvar name="page_title" value="<__trans phrase="Files">">
+<$mt:setvar name="page_title" value="<__trans phrase="Manage Files">"$>
 <mt:setvarblock name="content_header">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
@@ -34,7 +34,7 @@ function toggleFilter() {
         getByID("filter-select").style.display = "none";
     } else {
         filterActive.style.display = "none";
-        getByID("filter-select").style.display = "block";
+        getByID("filter-select").style.display = "block";<mt:unless name="filter">setFilterCol('class');</mt:unless>
     }
 }
 
@@ -42,22 +42,17 @@ function setFilterCol(choice) {
     var sel = getByID('filter-form');
     if (!sel) return;
     sel.className = "filter-" + choice;
-    if (choice == 'none')
-        getByID('filter-mode').selectedIndex = 0;
-    else {
-        getByID('filter-mode').selectedIndex = 1;
-        var fld = getByID('filter-col');
-        if (choice == 'class')
-            fld.selectedIndex = 0;
-        else if (choice == 'exacttag')
-            fld.selectedIndex = 1;
-        else if (choice == 'normalizedtag')
-            fld.selectedIndex = 2;
-        col_span = getByID("filter-text-col");
-        if (fld.selectedIndex > -1 && col_span)
-            col_span.innerHTML = '<strong>' +
-                fld.options[fld.selectedIndex].text + '</strong>';
-    }
+    var fld = getByID('filter-col');
+    if (choice == 'class')
+        fld.selectedIndex = 0;
+    else if (choice == 'exacttag')
+        fld.selectedIndex = 1;
+    else if (choice == 'normalizedtag')
+        fld.selectedIndex = 2;
+    col_span = getByID("filter-text-col");
+    if (fld.selectedIndex > -1 && col_span)
+        col_span.innerHTML = '<strong>' +
+            fld.options[fld.selectedIndex].text + '</strong>';
 }
 
 var tableSelect;
@@ -95,16 +90,8 @@ TC.attachLoadEvent( init );
             </mt:unless>
                 </div>
                 <div id="filter-select" style="display: none">
-                    <__trans phrase="Show">
-                    <select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('class') } enableFilterButton()">
-                        <option value="all"><__trans phrase="all"></option>
-                        <option value="only"><__trans phrase="only"></option>
-                    </select>
-                    <span id="filter-mode-all" style="display: none">
-                        <$mt:var name="object_label_plural"$>
-                    </span>
-                    <span id="filter-mode-only" style="display: none">
-                        <__trans phrase="[_1] where" params="<$mt:var name="object_label_plural"$>">
+                    <__trans phrase="Show only [_1] where" params="<$mt:var name="object_label_plural" lower_case="1"$>">
+                    <!-- filter form starts -->
                         <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
                             <option value="class"><__trans phrase="type"></option>
                             <option value="exacttag"><__trans phrase="tag (exact match)"></option>
@@ -124,7 +111,7 @@ TC.attachLoadEvent( init );
                         <span id="filter-normalizedtag" style="display: none">
                             <input type="text" id="normalizedtag-val" name="filter_val" value="<mt:if name="filter_col_exacttag"><mt:var name="filter_val" escape="html"></mt:if><mt:if name="filter_col_normalizedtag"><mt:var name="filter_val" escape="html"></mt:if>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
                         </span>
-                    </span>
+                    <!-- filter form ends -->
                     &nbsp;
                     <input type="button" value="<__trans phrase="Filter">" id="filter-button" style="display: none" onclick="return execFilter(this.form)" />
                     <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />
@@ -170,7 +157,7 @@ TC.attachLoadEvent( init );
                     <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
                 </td>
                 <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" /></td>
-                <td><mt:unless name="file_is_missing"><a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id">');"></mt:unless><mt:var name="file_name" escape="html"><mt:unless name="file_is_missing"></a></mt:unless><div id="asset-<mt:var name="id">-detail" class="asset-detail-panel"><div id="asset-<mt:var name="id">-detail-inner" class="asset-detail-panel-inner"></div></div></td>
+                <td><mt:unless name="file_is_missing"><a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id">');"></mt:unless><mt:unless name="file_label"><mt:var name="file_name" escape="html"><mt:else><mt:var name="file_label" escape="html"></mt:unless><mt:unless name="file_is_missing"></a></mt:unless><div id="asset-<mt:var name="id">-detail" class="asset-detail-panel"><div id="asset-<mt:var name="id">-detail-inner" class="asset-detail-panel-inner"></div></div></td>
                 <td class="as-asset-type"><mt:var name="asset_class" escape="html"></td>
     <mt:unless name="edit_blog_id">
                 <td><a href="<mt:var name="script_url">?__mode=list_assets&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>

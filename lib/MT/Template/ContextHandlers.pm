@@ -447,6 +447,8 @@ sub core_tags {
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
 
+            BuildTemplateID => \&_hdlr_build_template_id,
+
             CaptchaFields => \&_hdlr_captcha_fields,
 
             # Rating related handlers
@@ -899,11 +901,17 @@ EOT
 
 sub _hdlr_app_widget {
     my ($ctx, $args, $cond) = @_;
-    my $id = $args->{id};
+    my $hosted_widget = $ctx->var('widget_id') ? 1 : 0;
+    my $id = $args->{id} || $ctx->var('widget_id') || '';
     my $label = $args->{label};
-    my $class = $args->{class} || "";
+    my $class = $args->{class} || $id . '-widget';
     my $label_link = $args->{label_link} || "";
+    my $closable = $args->{can_close} ? 1 : 0;
     my $label_onclick = $args->{label_onclick} || "";
+    my $close_html = '';
+    if ($closable) {
+        $close_html = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id')" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
+    }
     my $widget_header = "";
     if ($label_link && $label_onclick) {
         $widget_header = "\n<h3 class=\"widget-label\"><a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a></h3>";
@@ -912,20 +920,59 @@ sub _hdlr_app_widget {
     } else {
         $widget_header = "\n<h3 class=\"widget-label\"><span>$label</span></h3>";
     }
+    my $token = $ctx->var('magic_token') || '';
+    my $scope = $ctx->var('widget_scope') || 'system';
+    my $singular = $ctx->var('widget_singular') || '';
+    # Make certain widget_id is set
+    my $vars = $ctx->{__stash}{vars};
+    local $vars->{widget_id} = $id;
+    local $vars->{widget_header} = '';
+    local $vars->{widget_footer} = '';
+    my $app = MT->instance;
+    my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
+    my $blog_field = $blog ? qq{<input type="hidden" name="blog_id" value="} . $blog->id . q{" />} : "";
+    local $vars->{blog_id} = $blog->id if $blog;
     my $insides = $ctx->slurp($args, $cond);
+    my $widget_footer = ($ctx->var('widget_footer') || '');
+    my $var_header = ($ctx->var('widget_header') || '');
+    if ($var_header =~ m/<h3[ >]/i) {
+        $widget_header = $var_header;
+    } else {
+        $widget_header .= $var_header;
+    }
+    my $tabbed = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
+    my $header_class = $tabbed ? 'widget-header-tabs' : '';
+    my $return_args = $app->make_return_args;
+    if ($hosted_widget && (!$insides !~ m/<form\s/i)) {
+        $insides = <<"EOT";
+        <form id="$id-form" method="post" onsubmit="updateWidget('$id'); return false">
+        <input type="hidden" name="__mode" value="update_widget_prefs" />
+        <input type="hidden" name="widget_id" value="$id" />
+        $blog_field
+        <input type="hidden" name="widget_action" value="save" />
+        <input type="hidden" name="widget_scope" value="$scope" />
+        <input type="hidden" name="widget_singular" value="$singular" />
+        <input type="hidden" name="magic_token" value="$token" />
+        <input type="hidden" name="return_args" value="$return_args" />
+$insides
+        </form>
+EOT
+    }
     return <<"EOT";
-<div id="$id-widget" class="widget pkg $class">
+<div id="$id" class="widget pkg $class"$tabbed>
     <div class="widget-inner inner">
-        <div class="widget-header">
-            <div class="widget-header-inner">
+        <div class="widget-header $header_class">
+            <div class="widget-header-inner pkg">
+                $close_html
                 $widget_header
             </div>
         </div>
         <div class="widget-content">
             <div class="widget-content-inner">
-                $insides
+$insides
             </div>
         </div>
+        <div class="widget-footer">$widget_footer</div>
     </div>
 </div>
 EOT
@@ -940,8 +987,12 @@ sub _hdlr_app_statusmsg {
     my $blog_id = $ctx->var('blog_id');
     $rebuild = qq{<__trans phrase="[_1]Republish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id');">%%</a>">} if $rebuild eq 'all';
     $rebuild = qq{<__trans phrase="[_1]Republish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id', 'prompt=index');">%%</a>">} if $rebuild eq 'index';
+    my $close = '';
+    if ($args->{can_close} || (!exists $args->{can_close})) {
+        $close = qq{<a href="javascript:void(0)" onclick="javascript:hide('$id-msg');" class="close-me"><span>close</span></a>};
+    }
     return <<"EOT";
-    <div id="$id-msg" class="msg msg-$class"><a href="javascript:void(0)" onclick="javascript:hide('$id-msg');" class="close-me"><span>close</span></a>$msg $rebuild</div>
+    <div id="$id-msg" class="msg msg-$class">$close$msg $rebuild</div>
 EOT
 }
 
@@ -1042,6 +1093,7 @@ sub _hdlr_app_setting {
     my ($ctx, $args, $cond) = @_;
     my $id = $args->{id};
     my $label = $args->{label};
+    my $show_label = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown = exists $args->{shown} ? ($args->{shown} ? 1 : 0) : 1;
     my $label_class = $args->{label_class} || "";
     my $hint = $args->{hint} || "";
@@ -1054,9 +1106,14 @@ sub _hdlr_app_setting {
     if ($help = $args->{help_page} || "") {
         my $section = $args->{help_section} || '';
         $section = qq{, '$section'} if $section;
-        $help = qq{ <a href="#" onclick="return openManual('$help'$section)" class="help">?</a><br />};
+        $help = qq{ <a href="#" onclick="return openManual('$help'$section)" class="help-link">?</a><br />};
     }
     my $label_help = "";
+    if ($label && $show_label) {
+	# do nothing;
+    } else {
+	$label = ''; # zero it out, because the user turned it off
+    }
     if ($hint && $show_hint) {
         $hint = "\n<p class=\"hint\">$hint$help</p>";
     } else {
@@ -1104,6 +1161,14 @@ sub _hdlr_if {
     my ($ctx, $args, $cond) = @_;
     my $var = $args->{name} || $args->{var};
     my $value = $ctx->var($var);
+    if (ref($value)) {
+        if (UNIVERSAL::isa($value, 'MT::Template')) {
+            $value = $value->output();
+        } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
+            local $ctx->{__stash}{tokens} = $value;
+            $value = _hdlr_pass_tokens(@_) or return;
+        }
+    }
     my $numeric = qr/^[-]?\d+(\.\d+)?$/;
     no warnings;
     if (exists $args->{eq}) {
@@ -1205,15 +1270,23 @@ sub _hdlr_loop {
 
 sub _hdlr_get_var {
     my ($ctx, $args, $cond) = @_;
+    if (exists $args->{value}) {
+        return &_hdlr_set_var(@_);
+    }
     my $value = $ctx->var($args->{name} || $args->{var});
     if (ref($value) eq 'CODE') { # handle coderefs
         $value = $value->(@_);
     }
     if (ref($value)) {
         if (UNIVERSAL::isa($value, 'MT::Template')) {
-            $value = $value->output();
+            local $args->{name} = undef;
+            local $args->{var} = undef;
+            $value = $value->output($args);
         } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
             local $ctx->{__stash}{tokens} = $value;
+            local $args->{name} = undef;
+            local $args->{var} = undef;
+            $ctx->var($_, $args->{$_}) for keys %{$args || {}};
             $value = _hdlr_pass_tokens(@_) or return;
         }
     }
@@ -1230,6 +1303,15 @@ sub _hdlr_get_var {
         $value = join $glue, @$value;
     }
     return defined $value ? $value : "";
+}
+
+sub _hdlr_build_template_id {
+    my ($ctx, $args, $cond) = @_;
+    my $tmpl = $ctx->stash('template');
+    if ($tmpl && $tmpl->id) {
+        return $tmpl->id;
+    }
+    return 0;
 }
 
 sub _hdlr_entry_if_tagged {
@@ -1961,7 +2043,7 @@ sub _hdlr_set_var {
         "You used a [_1] tag without any arguments.", "<MT$tag>" ))
         unless defined $name;
     my $val;
-    if ($tag eq 'setvar') {
+    if (($tag eq 'setvar') || ($tag eq 'var')) {
         $val = defined $args->{value} ? $args->{value} : '';
     } elsif ($tag eq 'setvarblock') {
         $val = _hdlr_pass_tokens(@_);
@@ -2562,14 +2644,14 @@ sub _hdlr_entries {
 
             if (!$found_valid_args) {
                 # Uses weblog settings
-                if (my $days = $ctx->stash('blog')->days_on_index) {
+                if (my $days = $blog ? $blog->days_on_index : 10) {
                     my @ago = offset_time_list(time - 3600 * 24 * $days,
                         $blog_id);
                     my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                         $ago[5]+1900, $ago[4]+1, @ago[3,2,1,0];
                     $terms{authored_on} = [ $ago ];
                     $args{range_incl}{authored_on} = 1;
-                } elsif (my $limit = $ctx->stash('blog')->entries_on_index) {
+                } elsif (my $limit = $blog ? $blog->entries_on_index : 10) {
                     $args->{lastn} = $limit;
                 }
             }
@@ -2612,11 +2694,13 @@ sub _hdlr_entries {
     } else {
         my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : undef) || '';
         my $col = $args->{sort_by} || 'authored_on';
-        # TBD: check column being sorted; if it is numeric, use numeric sort
-        @$entries = $so eq 'ascend' ?
-            sort { $a->$col() cmp $b->$col() } @$entries :
-            sort { $b->$col() cmp $a->$col() } @$entries;
-        $no_resort = 1;
+        if ( $col ne 'score' ) {
+            # TBD: check column being sorted; if it is numeric, use numeric sort
+            @$entries = $so eq 'ascend' ?
+                sort { $a->$col() cmp $b->$col() } @$entries :
+                sort { $b->$col() cmp $a->$col() } @$entries;
+            $no_resort = 1;
+        }
 
         if (@filters) {
             my $i = 0; my $j = 0;
@@ -2675,7 +2759,7 @@ sub _hdlr_entries {
             push @tmp, $_ foreach (values %e);
             @entries = @tmp;
         } else {
-            my $so = $args->{sort_order} || $ctx->stash('blog')->sort_order_posts || '';
+            my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : 'descend') || '';
             # TBD: check column being sorted; if it is numeric, use numeric sort
             @entries = $so eq 'ascend' ?
                 sort { $a->$col() cmp $b->$col() } @entries :
@@ -3592,7 +3676,7 @@ sub _hdlr_date {
             my $lang = $args->{language} || ($blog && $blog->language);
             my $old_lang = MT->current_language;
             MT->set_language($lang) if $lang && ($lang ne $old_lang);
-            my $date = relative_date($ts, time, $blog);
+            my $date = relative_date($ts, time, $blog, $args->{format}, $r);
             MT->set_language($old_lang) if $lang && ($lang ne $old_lang);
             if ($date) {
                 return $date;
@@ -4095,7 +4179,7 @@ sub _get_adjacent_category_entry {
 }
 
 sub _get_adjacent_author_entry {
-    my($ts, $author, $order) = @_;
+    my($ts, $blog_id, $author, $order) = @_;
     if ($order eq 'previous') {
         $order = 'descend';
     } else {
@@ -4104,7 +4188,8 @@ sub _get_adjacent_author_entry {
     require MT::Entry;
     my $entry = MT::Entry->load(
         { status => MT::Entry::RELEASE(),
-          author_id => $author->id },
+          author_id => $author->id,
+          blog_id => $blog_id },
         { limit => 1,
           'sort' => 'authored_on',
           direction => $order,
@@ -4133,12 +4218,13 @@ sub _hdlr_archive_prev_next {
         }
     } elsif ($arctype->date_based && $arctype->author_based) {
         my $author = $ctx->stash('author');
+        my $blog = $ctx->stash('blog');
         $start = $ctx->{current_timestamp};
         $end = $ctx->{current_timestamp_end};
         if ($is_prev) {
-            $entry = _get_adjacent_author_entry( $start, $author, 'previous' );
+            $entry = _get_adjacent_author_entry( $start, $blog->id, $author, 'previous' );
         } else {
-            $entry = _get_adjacent_author_entry( $end, $author, 'next' );
+            $entry = _get_adjacent_author_entry( $end, $blog->id, $author, 'next' );
         }
     } elsif ($arctype->category_based) {
         return _hdlr_category_prevnext(@_);
@@ -6158,7 +6244,7 @@ sub _hdlr_asset_type {
     my $args = $_[1];
     my $a = $_[0]->stash('asset')
         or return $_[0]->_no_asset_error('MTAssetType');
-    $a->class_label;
+    lc $a->class_label;
 }
 
 sub _hdlr_asset_mime_type {

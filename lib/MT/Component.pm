@@ -303,9 +303,9 @@ sub template_paths {
     my $path = $mt->config('TemplatePath');
 
     my @paths;
-    my $dir = File::Spec->catdir( $mt->mt_dir, $c->envelope, 'tmpl' );
+    my $dir = File::Spec->catdir( $c->path, 'tmpl' );
     push @paths, $dir if -d $dir;
-    $dir = File::Spec->catdir( $mt->mt_dir, $c->envelope );
+    $dir = $c->path;
     push @paths, $dir if -d $dir;
     if ( my $alt_path = $mt->config('AltTemplatePath') ) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
@@ -353,6 +353,7 @@ sub load_tmpl {
     if ( my $author = $mt->user ) {
         $param{author_id}   = $author->id;
         $param{author_name} = $author->name;
+        $param{can_logout} = MT::Auth->can_logout;
     }
 
     ## We do this in load_tmpl because show_error and login don't call

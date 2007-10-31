@@ -148,8 +148,8 @@ sub add_column_sql {
     my $default_value;
     if (exists $def->{default}) {
         $default_value = $def->{default};
-        if (($def->{type} =~ m/time/) || $driver->is_date_col($name)) {
-            $default_value = $dbh->quote($driver->ts2db($default_value));
+        if (($def->{type} =~ m/time/) || $driver->dbd->is_date_col($name)) {
+            $default_value = $dbh->quote($driver->dbd->ts2db($default_value));
         } elsif ($def->{type} !~ m/int|float|boolean/) {
             $default_value = $dbh->quote($default_value);
         }

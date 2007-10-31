@@ -1,8 +1,13 @@
 <mt:setvar name="edit_author" value="1">
 <mt:if name="new_object">
-    <mt:setvar name="page_title" value="<__trans phrase="Create New User">">
+    <mt:setvar name="page_title" value="<__trans phrase="Create User">">
     <mt:else>
-    <mt:setvarblock name="page_title"><__trans phrase="User Profile for [_1]" params="<mt:var name="name" escape="html">"></mt:setvarblock>
+      <mt:if name="nickname">
+        <mt:setvarblock name="page_title_name"><mt:var name="nickname" escape="html"></mt:setvarblock>
+      <mt:else>
+        <mt:setvarblock name="page_title_name"><mt:var name="name" escape="html"></mt:setvarblock>
+      </mt:if>    
+      <mt:setvarblock name="page_title"><__trans phrase="Profile for [_1]" params="<mt:var name="page_title_name">"></mt:setvarblock>
     </mt:if>
 <mt:setvarblock name="content_nav">
     <mt:include name="include/users_content_nav.tmpl">
@@ -81,16 +86,6 @@ TC.attachLoadEvent(init);
 
 <div id="edit-author">
 
-<mt:if name="new_object">
-    <p><__trans phrase="_USAGE_NEW_AUTHOR"></p>
-<mt:else>
-    <mt:if name="is_me">
-    <p><__trans phrase="_USAGE_PROFILE"></p>
-    <mt:else>
-    <p><__trans phrase="_GENL_USAGE_PROFILE" params="<mt:var name="name" escape="html">"></p>
-    </mt:if>
-</mt:if>
-
 <mt:if name="editing_other_profile">
     <mt:if name="status_pending">
     <h3 class="user_disabled"><__trans phrase="User Pending"></h3>
@@ -146,8 +141,6 @@ TC.attachLoadEvent(init);
 </mt:if>
 
             <fieldset class="pkg">
-                <h3><__trans phrase="Profile"></h3>
-
                 <div class="rightcol">
 <mt:if name="new_object">
                     <div class="box permission-box">

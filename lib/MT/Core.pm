@@ -364,9 +364,18 @@ BEGIN {
                 ,    # FIXME: make a handler for this
             },
             'NewsboxURL' => {
-                default => 'http://www.movabletype.org/news/newsbox.html'
+                default => 'http://www.movabletype.org/mt4_news_widget.html'
                 ,    # FIXME: make a handler for this
             },
+            # 'MTNewsURL' => {
+            #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+            # },
+            # 'LearningNewsURL' => {
+            #     default => 'http://learning.movabletype.org/newsbox.html',
+            # },
+            # 'HackingNewsURL' => {
+            #     default => 'http://hacking.movabletype.org/newsbox.html',
+            # },
             'EmailAddressMain'      => undef,
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },
@@ -486,6 +495,7 @@ BEGIN {
                 list_filters   => sub { MT->app->core_list_filters(@_) },
                 menus          => sub { MT->app->core_menus() },
                 methods        => sub { MT->app->core_methods() },
+                widgets        => sub { MT->app->core_widgets() },
                 import_formats => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();

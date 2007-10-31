@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Restore"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Restore from a Backup"></mt:setvarblock>
 <mt:setvar name="restore" value="1">
 <MTSetVarBlock name="content_header">
 </MTSetVarBlock>
@@ -39,9 +39,9 @@
     </mtapp:setting>
     <mtapp:setting
         id="ignore_schema_conflict"
-        label="<__trans phrase="Version verification">"
+        label="<__trans phrase="Options">"
         hint="<__trans phrase="Check this and files backed up from newer versions can be restored to this system.  NOTE: Ignoring Schema Version can damage Movable Type permanently.">">
-                    <input name="ignore_schema_conflict" type="checkbox" />&nbsp;<label for="ignore_schema_conflict"><__trans phrase="Ignore schema version conflict"></label>
+                    <input name="ignore_schema_conflict" type="checkbox" />&nbsp;<label for="ignore_schema_conflict"><__trans phrase="Ignore schema version conflicts"></label>
     </mtapp:setting>
             <p style="text-align: center;"><input type="submit" value="<__trans phrase="Restore">" title="<__trans phrase="Restore (r)">" accesskey="r" /></p>
         </fieldset>

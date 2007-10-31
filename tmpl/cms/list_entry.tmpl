@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><$mt:var name="object_label_plural"$></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<$mt:var name="object_label_plural"$>"></mt:setvarblock>
 <mt:setvarblock name="content_header">
     <div id="msg-container">
     <mt:if name="saved">
@@ -72,7 +72,7 @@ function toggleFilter() {
         getByID("filter-select").style.display = "none";
     } else {
         filterActive.style.display = "none";
-        getByID("filter-select").style.display = "block";
+        getByID("filter-select").style.display = "block";<mt:unless name="filter">setFilterCol('status');</mt:unless>
     }
 }
 
@@ -80,10 +80,7 @@ function setFilterCol(choice) {
     var sel = getByID('filter-select');
     if (!sel) return;
     sel.className = "filter-" + choice;
-    if (choice == 'none')
-        getByID('filter-mode').selectedIndex = 0;
-    else {
-        getByID('filter-mode').selectedIndex = 1;
+    if (choice != 'none') {
         var fld = getByID('filter-col');
         if (choice == 'status')
             fld.selectedIndex = 0;
@@ -156,23 +153,15 @@ TC.attachLoadEvent( init );
         </mt:if>
         </div>
         <div id="filter-select" class="page-title" style="display: none">
-            <__trans phrase="Show">
-            <select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('status') } enableFilterButton()">
-                <option value="all"><__trans phrase="all"></option>
-                <option value="only"><__trans phrase="only"></option>
-            </select>
-            <span id="filter-mode-all" style="display: none">
-                <__trans phrase="[_1]." params="<mt:var name="object_label_plural">">
-            </span>
-            <span id="filter-mode-only" style="display: none">
-                <__trans phrase="[_1] where" params="<mt:var name="object_label_plural">">
+            <__trans phrase="Show only [_1] where" params="<mt:var name="object_label_plural" lower_case="1">">
+            <!-- start filter form -->
                 <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton(this)">
                     <option value="status"><__trans phrase="status"></option>
                     <option value="author_id"><__trans phrase="user"></option>
                     <option value="exacttag"><__trans phrase="tag (exact match)"></option>
                     <option value="normalizedtag"><__trans phrase="tag (fuzzy match)"></option>
     <mt:if name="category_loop">
-                    <option value="category_id"><mt:if name="object_type" eq="entry"><__trans phrase="Category"><mt:else><__trans phrase="Folder"></mt:if></option>
+                    <option value="category_id"><__trans phrase="Category"></option>
     </mt:if>
                 </select>
                 <__trans phrase="is">
@@ -209,7 +198,7 @@ TC.attachLoadEvent( init );
                         </optgroup>
                     </select>
                 </span>
-            </span>
+            <!-- end of filter form -->
             &nbsp;
             <input type="button" value="<__trans phrase="Filter">" id="filter-button" style="display: none" onclick="return execFilter(this.form)" />
             <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />

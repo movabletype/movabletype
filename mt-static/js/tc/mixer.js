@@ -80,6 +80,8 @@ TC.Mixer.prototype.remix = function()
 	for( var i in this.tagMatches )
 	{
 		var tagMatch = this.tagMatches[ i ];
+        if (typeof(tagMatch) != 'object')
+            continue;
 		if( tagMatch.match( this.entry ) )
 			this.dirtyDisplays( tagMatch.matches );
 		
@@ -103,7 +105,9 @@ TC.Mixer.prototype.display = function()
 	for( var i in this.displays )
 	{
 		var display = this.displays[ i ];
-		display.display();
+        if (typeof(display) != 'object')
+            continue;
+		if (display) display.display();
 	}
 }
 
@@ -238,6 +242,8 @@ TC.Mixer.prototype.dirtyDisplays = function( source )
 	for( var i in this.displays )
 	{
 		var display = this.displays[ i ];
+        if (typeof(display) != 'object')
+            continue;
 		if( !source || display.source == source )
 			display.dirty = true;
 	}

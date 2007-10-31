@@ -81,6 +81,13 @@ function reTest() {
   go('retry'); 
   document.forms[0].submit();
 }
+
+<mt:if one_db>
+window.onload = function() {
+    document.forms[0].dbtype.selectedIndex = 0;
+    db_select(document.forms[0].dbtype);
+}
+</mt:if>
 // -->
 </script>
 
@@ -125,7 +132,9 @@ function reTest() {
         id="dbtype"
         label="<__trans phrase="Database Type">">
 <select id="dbtype" name="dbtype" onchange="db_select(this); hide('db_hint');">
+<mt:unless one_db>
 <option value=""><__trans phrase="Select One..."></option>
+</mt:unless>
 <mt:loop name="db_loop">
 <option value="<mt:var name="id">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
 </mt:loop>

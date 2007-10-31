@@ -10,7 +10,7 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
-    <input onclick="doRemoveItems(this.form, '<__trans phrase="weblog">', '<__trans phrase="weblogs">')" type="button" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete selected weblogs (x)">" />
+    <input onclick="doRemoveItems(this.form, '<__trans phrase="weblog">', '<__trans phrase="weblogs">')" type="button" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete selected blogs (x)">" />
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
@@ -20,7 +20,7 @@
     <script type="text/javascript">
     <!--
     function doRemoveBlog(id) {
-        if (confirm("<__trans phrase="Are you sure you want to delete this weblog?">")) {
+        if (confirm("<__trans phrase="Are you sure you want to delete this blog?">")) {
             var f = getByID('delete_blog');
             f['id'].value = id;
             f.submit();
@@ -44,7 +44,7 @@
 <mt:include name="include/header.tmpl">
 
 <mt:if name="can_create_blog">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog" class="icon-left icon-create"><__trans phrase="Create New Weblog"></a></p>
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog" class="icon-left icon-create"><__trans phrase="Create Blog"></a></p>
 </mt:if>
 
 <div class="list-wrapper" id="system-list-blog">

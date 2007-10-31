@@ -12,7 +12,6 @@
     <mt:include name="include/users_content_nav.tmpl">
 </MTSetVarBlock>
 <mt:setvarblock name="content_header">
-    <p class="page-desc"><__trans phrase="_USAGE_ROLES"> <a href="#" onclick="return openManual('author_permissions', 'roles')" class="help-link">?</a></p>
 
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
@@ -63,7 +62,7 @@ TC.attachLoadEvent( init );
 <p><a href="javascript:void(0)" onclick="return openDialog(false, 'dialog_grant_role')" class="icon-left icon-create"><__trans phrase="Grant another role to [_1]" params="<mt:var name="edit_author_name" escape="html">"></a></p>
     <mt:else>
         <mt:if name="can_create_role">
-<p><a href="<mt:var name="script_url">?__mode=edit_role" class="icon-left icon-create"><__trans phrase="Create New Role"></a></p>
+<p><a href="<mt:var name="script_url">?__mode=edit_role" class="icon-left icon-create"><__trans phrase="Create Role"></a></p>
         </mt:if>
     </mt:if>
 </mt:unless>

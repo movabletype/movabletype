@@ -1,87 +1,41 @@
 <html>
 <head>
-    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
+    <title><__trans phrase="Preview"> | <$mt:var name="mt_product_name"$></title>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<$mt:var name="mt_version" escape="url"$>" type="text/css" />
     <!--[if IE]>
-    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<$mt:var name="mt_version" escape="url"$>" type="text/css" />
     <![endif]-->
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version" escape="url">"></script>
-
-<style type="text/css">
-body {
-    margin: 0px;
-    padding: 0px;
-    overflow: hidden; /* ie 6 needs this to eliminate parent document scrollbar */
-}
-form {
-    /* for ie, which adds margins to forms */
-    margin: 0;
-    padding: 0;
-}
-#container {
-    height: 100%; /* ie 6 needs this */
-}
-#preview-layout {
-    margin: 0;
-    padding: 0;
-}
-#preview-label {
-    font-size: 16px;
-}
-#entry-preview-control-strip {
-    background-color: #000;
-    color: #fff;
-    height: 60px;
-    text-align: center;
-}
-#entry-preview-control-strip form {
-    padding-top: 10px;
-}
-#entry-preview-content {
-    height: 100%; /* ie 6 needs this */
-}
-#entry-preview-content iframe {
-    border: 0; /* Safari needs this */
-}
-</style>
+<mt:if name="local_lang_id">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version" escape="url">" />
+</mt:if>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<$mt:var name="mt_version" escape="url"$>"></script>
 </head>
-
-<body class="main-screen">
-
+<body class="main-screen preview-screen">
 <div id="brand"><h1><a href="<$mt:var name="mt_url"$>"><span><$mt:var name="mt_product_name"$></span></a></h1></div>
-
-<table width="100%" height="100%" cellspacing="0" id="preview-layout">
-<tr>
-<td id="entry-preview-control-strip">
-
-<div id="preview-label"><__trans phrase="You are previewing the [_1] titled &ldquo;[_2]&rdquo;" params="<mt:var name="object_label" lower_case="1">%%<mt:var name="title" escape="html">"></div>
-
-<form method="post" action="<mt:var name="script_url">">
-
-<input type="submit" name="reedit" accesskey="e" value="<__trans phrase="Re-Edit this [_1]" params="<mt:var name="object_label">">" title="<__trans phrase="Re-Edit this [_1] (e)" params="<mt:var name="object_label">">" />
-
-<input type="submit" name="save" accesskey="s" value="<__trans phrase="Save this [_1]" params="<mt:var name="object_label">">" title="<__trans phrase="Save this [_1] (s)" params="<mt:var name="object_label">">" />
-
-<input type="hidden" name="__mode" value="save_entry" />
-<input type="hidden" name="_type" value="<mt:var name="object_type">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<input type="hidden" name="_preview_file" value="<mt:var name="preview_file" escape="html">" />
-
-<mt:loop name="entry_loop">
-<input type="hidden" name="<mt:var name="data_name" escape="html">" value="<mt:var name="data_value" escape="html">" /></mt:loop>
-
-</form>
-
-</td>
-</tr>
-
-<tr>
-<td id="entry-preview-content">
-
-<iframe id="frame" frameborder="0" scrolling="auto" src="<mt:var name="preview_url">" height="100%" width="100%" marginheight="0" marginwidth="0" onclick="return TC.stopEvent(event);"></iframe>
-
-</td>
-</tr>
+<table id="preview-layout">
+    <tr>
+        <td id="entry-preview-control-strip">
+            <div id="preview-label"><__trans phrase="You are previewing the [_1] titled &ldquo;[_2]&rdquo;" params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="title" escape="html"$>"></div>
+            <form method="post" action="<$mt:var name="script_url"$>">
+                <input type="submit" name="reedit" accesskey="e" value="<__trans phrase="Re-Edit this [_1]" params="<$mt:var name="object_label"$>">" title="<__trans phrase="Re-Edit this [_1] (e)" params="<$mt:var name="object_label"$>">" />
+                <input type="submit" name="save" accesskey="s" value="<__trans phrase="Save this [_1]" params="<$mt:var name="object_label"$>">" title="<__trans phrase="Save this [_1] (s)" params="<$mt:var name="object_label"$>">" />
+                <input type="hidden" name="__mode" value="save_entry" />
+                <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
+                <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
+                <input type="hidden" name="_preview_file" value="<$mt:var name="preview_file" escape="html"$>" />
+                <input type="hidden" name="dirty" value="1" />
+    <mt:loop name="entry_loop">
+                <input type="hidden" name="<$mt:var name="data_name" escape="html"$>" value="<$mt:var name="data_value" escape="html"$>" />
+    </mt:loop>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td id="entry-preview-content">
+            <iframe id="frame" frameborder="0" scrolling="auto" src="<$mt:var name="preview_url"$>" onclick="return TC.stopEvent(event);"></iframe>
+        </td>
+    </tr>
 </table>
-
 </body>
 </html>

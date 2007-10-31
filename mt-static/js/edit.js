@@ -47,9 +47,6 @@ MT.App = new Class( MT.App, {
 
         }
 
-        if ( this.constructor.TabBar )
-            this.setDelegate( "tabBar", new this.constructor.TabBar() );
-        
         if ( this.constructor.CategoryList && DOM.getElement( "category-list" ) ) {
             this.catList = new this.constructor.CategoryList( "category-list" );
             this.setDelegate( "categoryList", this.catList );
@@ -775,47 +772,6 @@ MT.App.CategorySelector = new Class( Transient, {
             return;
         MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
         app.catList.redraw();
-    }
-
-
-} );
-
-
-MT.App.TabBar = new Class( Object, {
-
-
-    eventClick: function( event ) {
-        var command = app.getMouseEventCommand( event );
-        if (!event.commandElement) return;
-        var tab = event.commandElement.getAttribute( "mt:tab" );
-        if ( tab )
-            this.selectTab( event.attributeElement, tab );
-
-        switch( command ) {
-
-            case "setEditorContent":
-                app.setEditor( "content" );
-                break;
-
-            case "setEditorExtended":
-                app.setEditor( "extended" );
-                break;
-
-        }
-        event.stop();
-    },
-
-
-    selectTab: function( element, name ) {
-        var es = DOM.getElementsByAttribute( element, "mt:tab" );
-        var tab;
-        for ( var i = 0; i < es.length; i++ ) {
-            tab = es[ i ].getAttribute( "mt:tab" );
-            if ( tab == name )
-                DOM.addClassName( es[ i ], "selected-tab" );
-            else
-                DOM.removeClassName( es[ i ], "selected-tab" );
-        }
     }
 
 

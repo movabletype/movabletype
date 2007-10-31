@@ -250,9 +250,9 @@ sub _create_category {
         }
         $cb->(MT->translate("Creating new category ('[_1]')...", $cat->label));
         if ($cat->save) {
-            $cb->(MT->translate("ok\n"));
+            $cb->(MT->translate("ok") . "\n");
         } else {
-            $cb->(MT->translate("failed\n"));
+            $cb->(MT->translate("failed") . "\n");
             return die MT->translate(
                  "Saving category failed: [_1]", $cat->errstr);
         }
@@ -413,9 +413,9 @@ sub _create_asset {
     $asset->add_tags(@tags) if 0 < scalar(@tags);
     $cb->(MT->translate(" and asset will be tagged ('[_1]')...", join(',', @tags)));
     if ($asset->save) {
-        $cb->(MT->translate("ok (ID [_1])\n", $asset->id));
+        $cb->(MT->translate("ok (ID [_1])", $asset->id) . "\n");
     } else {
-        $cb->(MT->translate("failed\n"));
+        $cb->(MT->translate("failed") . "\n");
         die MT->translate(
             "Saving entry failed: [_1]", $asset->errstr);
     }
@@ -564,9 +564,9 @@ sub _create_post {
         $cb->(MT->translate("Saving page ('[_1]')...", $post->title));
     }
     if ($post->save) {
-        $cb->(MT->translate("ok (ID [_1])\n", $post->id));
+        $cb->(MT->translate("ok (ID [_1])", $post->id) . "\n");
     } else {
-        $cb->(MT->translate("failed\n"));
+        $cb->(MT->translate("failed") . "\n");
         die MT->translate(
             "Save failed: [_1]", $post->errstr);
     }
@@ -601,9 +601,9 @@ sub _create_post {
         $comment->entry_id($post->id);
         $cb->(MT->translate("Creating new comment (from '[_1]')...", $comment->author));
         if ($comment->save) {
-            $cb->(MT->translate("ok (ID [_1])\n", $comment->id));
+            $cb->(MT->translate("ok (ID [_1])", $comment->id) . "\n");
         } else {
-            $cb->(MT->translate("failed\n"));
+            $cb->(MT->translate("failed") . "\n");
             die MT->translate(
                 "Saving comment failed: [_1]", $comment->errstr);
         }
@@ -631,9 +631,9 @@ sub _create_post {
             $ping->tb_id($tb->id);
             $cb->(MT->translate("Creating new ping ('[_1]')...", $ping->title));
             if ($ping->save) {
-                $cb->(MT->translate("ok (ID [_1])\n", $ping->id));
+                $cb->(MT->translate("ok (ID [_1])", $ping->id) . "\n");
             } else {
-                $cb->(MT->translate("failed\n"));
+                $cb->(MT->translate("failed") . "\n");
                 die MT->translate(
                     "Saving ping failed: [_1]", $ping->errstr);
             }
@@ -665,9 +665,9 @@ sub _get_author_id {
             }
             $cb->(MT->translate("Creating new user ('[_1]')...", $value));
             if ($author->save) {
-                $cb->(MT->translate("ok\n"));
+                $cb->(MT->translate("ok") . "\n");
             } else {
-                $cb->(MT->translate("failed\n"));
+                $cb->(MT->translate("failed") . "\n");
                 die MT->translate(
                     "Saving user failed: [_1]", $author->errstr);
             }
@@ -678,9 +678,9 @@ sub _get_author_id {
             if ($role) {
                 my $assoc;
                 if ($assoc = MT::Association->link($author => $role => $self->{blog})) {
-                    $cb->(MT->translate("ok\n"));
+                    $cb->(MT->translate("ok") . "\n");
                 } else {
-                    $cb->(MT->translate("failed\n"));
+                    $cb->(MT->translate("failed") . "\n");
                     die MT->translate(
                          "Saving permission failed: [_1]", $assoc->errstr);
                 }

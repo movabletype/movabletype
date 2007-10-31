@@ -56,6 +56,7 @@ __PACKAGE__->install_properties({
 __PACKAGE__->install_meta({
     columns => [
         'favorite_blogs',
+        'widgets',
     ],
 });
 

@@ -1,7 +1,7 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create Your First Blog"></mt:setvarblock>
 <mt:setvar name="complete" value="1">
-<mt:include name="include/chromeless_header.tmpl">
 
+<mt:setvarblock name="html_head" append="1">
 <style type="text/css">
 div.warning#version-warning {
     position: relative;
@@ -10,7 +10,25 @@ div.warning#version-warning {
 </style>
 
 <script type="text/javascript">
+<!--
 window.onload = init;
+
+var orig_site_url = "<mt:var name="blog_url" escape="js">";
+var orig_site_path = "<mt:var name="blog_path" escape="js">";
+function dirify_blog_name(fld) {
+    var dir_blog_name = dirify(fld.value);
+    if (!dir_blog_name.length) return;
+    var url = fld.form['blog_url'];
+    var path = fld.form['blog_path'];
+    var basic_site_url = orig_site_url.replace(/BLOG-NAME\/$/, '');
+    var basic_site_path = orig_site_path.replace(/BLOG-NAME$/, '');
+    if (basic_site_url && (url.value.indexOf(basic_site_url) == 0)) {
+        url.value = basic_site_url + dir_blog_name + '/';
+    }
+    if (basic_site_path && (path.value.indexOf(basic_site_path) == 0)) {
+        path.value = basic_site_path + dir_blog_name;
+    }
+}
 
 function init() {
     if (!getByID) {
@@ -75,7 +93,11 @@ function validate(f) {
 function is_valid_url(url_){
     return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
 }
+// -->
 </script>
+</mt:setvarblock>
+
+<mt:include name="include/chromeless_header.tmpl">
 
 <div class="upgrade">
 
@@ -95,7 +117,7 @@ function is_valid_url(url_){
     <mtapp:setting
         id="blog_name"
         label="<__trans phrase="Blog Name">">
-        <input type="text" id="blog_name" name="blog_name" value="<mt:if name="blog_name"><mt:var name="blog_name" escape="html"><mt:else><__trans phrase="My First Blog"></mt:if>" />
+        <input type="text" id="blog_name" name="blog_name" value="<mt:if name="blog_name"><mt:var name="blog_name" escape="html"><mt:else><__trans phrase="My First Blog"></mt:if>" onkeyup="dirify_blog_name(this)" />
     </mtapp:setting>
 
     <mtapp:setting

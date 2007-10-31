@@ -20,11 +20,10 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
             $repeat = false;
             return '';
         }
-        if (!isset($_archivers[$at])) {
+        if (!isset($_archivers[$at]) && $at != 'Category') {
           $repeat = false;
           return '';
         }
-
         $ctx->localize($localvars);
         $ctx->stash('current_archive_type', $at);
         ## If we are producing a Category archive list, don't bother to
@@ -65,7 +64,12 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         } else {
             $cnt = array_shift($grp);
         }
-        list($start, $end) = $_archivers[$at]->get_range($ctx, $grp);
+        if ($at == 'Individual' ) {
+            $entry = $ctx->stash('entry');
+            $start = $end = $entry['entry_authored_on'];
+        } else {
+            list($start, $end) = $_archivers[$at]->get_range($ctx, $grp);
+        }
         $start = preg_replace('/[^0-9]/', '', $start);
         $end = preg_replace('/[^0-9]/', '', $end);
         $ctx->stash('current_timestamp', $start);

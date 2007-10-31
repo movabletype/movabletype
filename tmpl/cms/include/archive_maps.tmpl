@@ -11,7 +11,7 @@
 <tbody>
 <mt:loop name="template_map_loop">
 <tr id="<mt:var name="map_id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-<td class="map-archive-name"><mt:var name="archive_type"></td>
+<td class="map-archive-name"><mt:var name="archive_label"></td>
 <td class="map-archive-tmpl">
 <select id="archive_file_sel_<mt:var name="map_id">" name="archive_file_sel_<mt:var name="map_id">" onchange="archiveFileSelect(this)">
 <mt:loop name="archive_tmpl_loop">

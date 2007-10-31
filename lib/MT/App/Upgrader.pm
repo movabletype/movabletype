@@ -287,9 +287,11 @@ sub init_blog {
 
     $param{config} = $param->{config} || $app->param('config');
     $param{blog_name} = $app->param('blog_name');
-    $param{blog_url} = $app->param('blog_url');
-    $param{blog_path} = $app->param('blog_path');
+    $param{blog_url} = $app->param('blog_url') || '';
+    $param{blog_path} = $app->param('blog_path') || '';
     $param{blog_timezone} = $app->param('blog_timezone');
+    $param{blog_path} =~ s!/$!!;
+    $param{blog_url} .= '/' if $param{blog_url} !~ m!/$!;
 
     my $tz = $app->param('blog_timezone') || $app->config('DefaultTimezone');
     my $param_name = 'blog_timezone_'.$tz;
@@ -318,8 +320,6 @@ sub init_blog {
         return $app->build_page('setup_initial_blog.tmpl', \%param);
     }
 
-    # url validation
-    
     # check to publishing path (writable?)
     my $site_path;
     if ( -d $param{blog_path} ){

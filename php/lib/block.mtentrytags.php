@@ -2,11 +2,15 @@
 function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
     $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count');
     if (!isset($content)) {
+        $class = 'entry';
+        if (isset($args['class'])) {
+            $class = $args['class'];
+        }
         $ctx->localize($localvars);
         require_once("MTUtil.php");
         $entry = $ctx->stash('entry');
         $blog_id = $entry['entry_blog_id'];
-        $tags = $ctx->mt->db->fetch_entry_tags(array('blog_id' => $blog_id));
+        $tags = $ctx->mt->db->fetch_entry_tags(array('blog_id' => $blog_id, 'class' => $class));
         if (!is_array($tags)) $tags = array();
 
         $min = 0; $max = 0;
@@ -23,7 +27,7 @@ function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
         $ctx->stash('all_tag_count', $all_count);
 
         $entry = $ctx->stash('entry');
-        $tags = $ctx->mt->db->fetch_entry_tags(array('entry_id' => $entry['entry_id'], 'blog_id' => $blog_id));
+        $tags = $ctx->mt->db->fetch_entry_tags(array('entry_id' => $entry['entry_id'], 'blog_id' => $blog_id, 'class' => $class));
         if (!is_array($tags)) $tags = array();
         $ctx->stash('_tags', $tags);
         

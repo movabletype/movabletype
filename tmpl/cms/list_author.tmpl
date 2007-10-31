@@ -5,7 +5,6 @@
     <mt:if name="external_user_management">
     <__trans phrase="_USAGE_AUTHORS_LDAP">
     <mt:else>
-    <__trans phrase="_USAGE_AUTHORS_1">
     </mt:if>
     </p>
 
@@ -135,7 +134,7 @@
 
 <mt:unless name="external_user_management">
     <mt:if name="can_create_user">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create New User"></a></p>
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></p>
     </mt:if>
 </mt:unless>
 

@@ -74,7 +74,7 @@ function clearNotifyUsers() {
         id="capthca_provider"
         label="<__trans phrase="CAPTCHA Provider">">
         <select name="captcha_provider">
-        <option value="none">Don't use CAPTCHA provider</option>
+        <option value="none"><__trans phrase="Don't use CAPTCHA"></option>
         <mt:loop name="captcha_loop">
         <option value="<mt:var name="key">"<mt:if name="enabled_selected"> selected="selected"</mt:if>><mt:var name="label"></option>
         </mt:loop>

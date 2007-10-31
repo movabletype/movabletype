@@ -12,7 +12,7 @@
     <input type="hidden" name="reply_to" value="<mt:var name="reply_to">" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="return_url" value="<mt:if name="return_url"><mt:var name="return_url"><mt:else><mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id"></mt:if>" />
-    <div class="pkg">
+    <div id="form-content" class="pkg">
         <div id="comment">
             <div class="intro"><__trans phrase="<strong>[_2]</strong> wrote:" params="<mt:var name="comment_created_on">%%<mt:var name="commenter_name">"></div>
             <div id="comment-body"><mt:var name="comment_text"></div>

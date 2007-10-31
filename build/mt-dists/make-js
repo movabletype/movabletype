@@ -9,6 +9,10 @@ use MT::Util qw(encode_js);
 
 my $js = `cat mt-static/mt.js`;
 $js .= `cat mt-static/js/dialog.js`;
+$js .= `cat tmpl/cms/edit_template.tmpl`;
+$js .= `cat tmpl/cms/edit_entry.tmpl`;
+$js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
+$js .= `cat tmpl/cms/list_tag.tmpl`;
 
 foreach my $lang (qw(ja de nl fr es)) {
     open(FOUT, ">./mt-static/mt_$lang.js")
@@ -21,8 +25,8 @@ foreach my $lang (qw(ja de nl fr es)) {
 
     my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }';
     $js =~ s/\\'/\t\t/g;
-    while ($js =~ m/trans\('([^'|\\\']+?)'/g) {
-	my $str = $1;
+    while ($js =~ m/trans\((["'])([^\1|\\\1]+?)\1/g) {
+        my $str = $2;
         $str =~ s/\t\t/'/g;
         my $local = $lex->{$str} || $str;
         $str = encode_js($str);

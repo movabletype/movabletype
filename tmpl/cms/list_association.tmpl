@@ -2,14 +2,17 @@
 <mt:if name="blog_id">
     <mt:setvarblock name="page_title"><__trans phrase="Members"></mt:setvarblock>
 <mt:else>
+    <mt:setvarblock name="content_nav">
+        <mt:include name="include/users_content_nav.tmpl">
+    </mt:setvarblock>
     <mt:if name="user_view">
-        <mt:setvarblock name="page_title"><__trans phrase="User Associations for [_1]" params="<mt:var name="edit_author_name" escape="html">"></mt:setvarblock>
+        <mt:setvarblock name="page_title"><__trans phrase="Permissions for [_1]" params="<mt:var name="edit_author_name" escape="html">"></mt:setvarblock>
     </mt:if>
     <mt:if name="group_view">
         <mt:setvarblock name="page_title"><__trans phrase="Group Associations for [1]" params="<mt:var name="group_name" escape="html">"></mt:setvarblock>
     </mt:if>
     <mt:if name="usergroup_view">
-        <mt:setvarblock name="page_title"><__trans phrase="Associations"></mt:setvarblock>
+        <mt:setvarblock name="page_title"><__trans phrase="Permissions: System-wide"></mt:setvarblock>
     </mt:if>
     <mt:if name="role_view">
         <mt:if name="group_support">
@@ -26,7 +29,7 @@
        name="remove_associations"
        accesskey="x"
        title="<MT_TRANS phrase="Remove selected assocations (x)">"
-       value="<MT_TRANS phrase="Remove">"
+       value="<MT_TRANS phrase="Revoke Permission">"
        onclick="doRemoveItems(this.form, '<MT_TRANS phrase="association">', '<MT_TRANS phrase="associations">')"
     />
     </mt:if>
@@ -64,20 +67,18 @@ TC.attachLoadEvent( init );
     </mt:if>
 </mt:unless>
 
-<p class="page-desc"><__trans phrase="_USAGE_ASSOCIATIONS"> <a href="#" onclick="return openManual('author_permissions', 'associations')" class="help-link">?</a></p>
-
 <mt:if name="saved_deleted">
     <mtapp:statusmsg
         id="saved-deleted"
         class="success">
-        <__trans phrase="You have successfully removed the association(s).">
+        <__trans phrase="You have successfully revoked the given permission(s) from [_1]." params="<mt:var name="edit_author_name" escape="html"">
     </mtapp:statusmsg>
 </mt:if>
 <mt:if name="saved">
     <mtapp:statusmsg
         id="saved"
         class="success">
-        <__trans phrase="You have successfully created the association(s).">
+        <__trans phrase="You have successfully granted the given permission(s) to [_1]." params="<mt:var name="edit_author_name" escape="html"">
     </mtapp:statusmsg>
 </mt:if>
 
@@ -85,13 +86,13 @@ TC.attachLoadEvent( init );
 <mt:if name="user_view">
     <mt:if name="can_create_association">
     <li>
-        <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="status_enabled">create<mt:else>create-disabled</mt:if>.gif" alt="<__trans phrase="Add user to a weblog">" width="9" height="9" />
+        <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="status_enabled">create<mt:else>create-disabled</mt:if>.gif" alt="<__trans phrase="Add user to a blog">" width="9" height="9" />
         <mt:if name="status_enabled">
         <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')">
         <mt:else>
         <span class="disabled" title="<__trans phrase="You can not create associations for disabled users.">">
         </mt:if>
-        <__trans phrase="Add [_1] to a weblog" params="<mt:var name="edit_author_name">">
+        <__trans phrase="Grant Permission" params="<mt:var name="edit_author_name">">
         <mt:if name="status_enabled">
         </a>
         <mt:else>
@@ -103,13 +104,13 @@ TC.attachLoadEvent( init );
 <mt:if name="group_view">
     <mt:if name="can_create_association">
     <li>
-        <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="status_enabled">create<mt:else>create-disabled</mt:if>.gif" alt="<__trans phrase="Add group to a weblog">" width="9" height="9" />
+        <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="status_enabled">create<mt:else>create-disabled</mt:if>.gif" alt="<__trans phrase="Add group to a blog">" width="9" height="9" />
         <mt:if name="status_enabled">
         <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'group_id=<mt:var name="group_id">&amp;return_args=<mt:var name="return_args" escape="url">%26group_id=<mt:var name="group_id">')">
         <mt:else>
         <span class="disabled" title="<__trans phrase="You can not create associations for disabled groups.">">
         </mt:if>
-        <__trans phrase="Add [_1] to a weblog" params="<mt:var name="group_name">">
+        <__trans phrase="Add [_1] to a blog" params="<mt:var name="group_name">">
         <mt:if name="status_enabled">
         </a>
         <mt:else>
@@ -136,25 +137,25 @@ TC.attachLoadEvent( init );
             <mt:if name="can_add_groups">
             <mt:if name="group_support">
     <li>
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a group to this weblog">" width="9" height="9" />
-        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a group to this weblog"></a>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a group to this blog">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a group to this blog"></a>
     </li>
             </mt:if>
             </mt:if>
     <li>
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a user to this weblog">" width="9" height="9" />
-        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a user to this weblog"></a>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a user to this blog">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a user to this blog"></a>
     </li>
         <mt:else>
             <mt:if name="group_support">
     <li>
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Create a Group Association">" width="9" height="9" />
-        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Create a Group Association"></a>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Grant permission to a group">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Grant permission to a group"></a>
     </li>
             </mt:if>
     <li>
-        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Create a User Association">" width="9" height="9" />
-        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Create a User Association"></a>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Grant permission to a user">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Grant permission to a user"></a>
     </li>
         </mt:if>
     </mt:if>
@@ -206,7 +207,7 @@ TC.attachLoadEvent( init );
 </mt:if>
 </mt:unless>
 <mt:unless name="blog_view">
-<th id="pt-weblog"><__trans phrase="In Weblog"></th>
+<th id="pt-weblog"><__trans phrase="Blog"></th>
 <mt:else>
 <th id="pt-created-by"><__trans phrase="Created By"></th>
 </mt:unless>

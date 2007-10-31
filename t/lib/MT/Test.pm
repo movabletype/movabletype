@@ -529,11 +529,6 @@ It\'s a hard rain\'s a-gonna fall',
     $tmpl->type('custom');
     $tmpl->save or die "Couldn't save template record 1: ".$tmpl->errstr;
 
-    MT->instance->rebuild(
-        BlogId => 1,
-        EntryCallback => sub { print STDERR "# Rebuilding entry " . $_[0]->id . "\n" }
-    );
-    
     ### Asset
     use MT::Asset;
 
@@ -713,8 +708,8 @@ It\'s a hard rain\'s a-gonna fall',
         or die "Couldn't save placement record: ".$folder_place->errstr;
 
     unless (MT::Comment->count({entry_id => $page->id})) {
-        my $cmt = new MT::Comment();
-        $cmt->set_values({
+        my $page_cmt = new MT::Comment();
+        $page_cmt->set_values({
             text => "Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma - which is living with the results of other people's thinking. Don't let the noise of others' opinions drown out your own inner voice. And most important, have the courage to follow your heart and intuition. They somehow already know what you truly want to become. Everything else is secondary.",
             entry_id => 23,
             author => 'Steve Jobs',
@@ -726,7 +721,8 @@ It\'s a hard rain\'s a-gonna fall',
             created_on => '20040114182800',
             modified_on => '20040114182800',
         });
-        $cmt->save() or die "Couldn't save comment record 1: ".$cmt->errstr;
+        $page_cmt->id(13);
+        $page_cmt->save() or die "Couldn't save comment record 1: ".$page_cmt->errstr;
     }
 
     my $page_tb = MT::Trackback->new;
@@ -735,6 +731,7 @@ It\'s a hard rain\'s a-gonna fall',
     $page_tb->title("Page TrackBack Title");
     $page_tb->description("Page TrackBack Description");
     $page_tb->category_id(0);
+    $page_tb->id(3);
     $page_tb->save or die "Couldn't save Trackback record 1: " . $tb->errstr;;
 
     my $page_ping = MT::TBPing->new;
@@ -748,7 +745,14 @@ It\'s a hard rain\'s a-gonna fall',
     $page_ping->created_on('20040101000000');
     $page_ping->modified_on('20040101000000');
     $page_ping->visible(1);
+    $page_ping->id(3);
     $page_ping->save or die "Couldn't save TBPing record 1: " . $ping->errstr;
+
+    MT->instance->rebuild(
+        BlogId => 1,
+        EntryCallback => sub { print STDERR "# Rebuilding entry " . $_[0]->id . "\n" }
+    );
+    
 
     1;
 }

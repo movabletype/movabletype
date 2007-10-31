@@ -43,20 +43,20 @@ TC.attachLoadEvent( init );
 </script>
 
 <TMPL_IF NAME=REBUILD>
-<h4 class="message"><__trans phrase="Your changes to the Widget Manager have been saved."> <TMPL_INCLUDE NAME="include/rebuild_stub.tmpl"></h4>
+<h4 class="message"><__trans phrase="Your changes to the widget container have been saved."> <TMPL_INCLUDE NAME="include/rebuild_stub.tmpl"></h4>
 </TMPL_IF>
 
 <TMPL_IF NAME=DELETED>
-<h4 class="message"><__trans phrase="You have successfully deleted the selected Widget Manager(s) from your weblog."> <TMPL_INCLUDE NAME="include/rebuild_stub.tmpl"></h4>
+<h4 class="message"><__trans phrase="You have successfully deleted the selected widget container(s) from your blog."> <TMPL_INCLUDE NAME="include/rebuild_stub.tmpl"></h4>
 </TMPL_IF>
 
-<p><__trans phrase="To add a Widget Manager to your templates, use the following syntax:"></p>
+<p><__trans phrase="To add a widget container to your templates, use the following syntax:"></p>
 <p><__trans phrase="<strong>&lt;$MTWidgetManager name=&quot;Name of the Widget Manager&quot;$&gt;</strong>"></p>
 
 <div class="list-wrapper">
 
 <img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<__trans phrase="Add Widget Manager">" width="9" height="9" />
-    <a href="?__mode=edit_widget&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=New+Widget+Manager"><__trans phrase="Create Widget Manager"></a>
+    <a href="?__mode=edit_widget&blog_id=<TMPL_VAR NAME=BLOG_ID>&widgetmanager=New+Widget+Manager"><__trans phrase="Create Widget Container"></a>
 </div>
 
 <form method="get" action="<TMPL_VAR NAME=SCRIPT_URL>">

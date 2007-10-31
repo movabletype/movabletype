@@ -77,8 +77,9 @@ TC.TableSelect.prototype.eventKeyPress = function( evt ) {
         case 'k':  // k -- up
             this.focusPrevious();
             break;
-        case 'x':  // x -- select
         case 'X':   // X -- select
+            this.shiftKey = true;
+        case 'x':  // x -- select
             this.focusSelect();
             break;
         // case 35:   // # (trash)
@@ -145,6 +146,8 @@ TC.TableSelect.prototype.click = function( evt ) {
     if ( tagName == "input" &&
         TC.hasClassName( element, "select" ) ) {
         if ((element.type == "checkbox") || (element.type == "radio"))
+            var parent = TC.getParentByTagName( element, "tr" );
+            if (parent) this.setFocus( parent );
             return this.select( element );
     }
 
@@ -157,6 +160,7 @@ TC.TableSelect.prototype.click = function( evt ) {
         parent = parent.previousSibling;
 
     if ( parent ) {
+        this.setFocus( parent );
         var elements = TC.getElementsByTagAndClassName( "input", "select", parent );
         for ( var i = 0; i < elements.length; i++ ) {
             element = elements[ i ];
@@ -346,6 +350,7 @@ TC.TableSelect.prototype.selectAll = function( checkbox ) {
         } else
             alls[ i ].checked = false;
     }
+    this.shiftKey = false;
     this.updating = false;
 }
 

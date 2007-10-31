@@ -1,0 +1,23 @@
+<mtapp:widget class="widget you-widget" label="<__trans phrase="This is you">" can_close="1">
+    <div class="user-pic">
+        <img src="<$mt:var name="static_uri"$>images/user-pic.gif" alt="" width="50px" height="50px" />
+    </div>
+    <div class="user-stats">
+        <h4><mt:var name="author_display_name" escape="html"></h4>
+        <ul class="user-stats-list">
+        <mt:if name="last_post_id">
+            <li><__trans phrase="Your <a href="[_1]">last post</a> was [_2]." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1">"></li>
+        </mt:if>
+        <mt:if name="draft_count">
+            <li><__trans phrase="You have <a href="[_1]">[quant,_2,draft,drafts]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter=status&amp;filter_val=1%%<mt:var name="draft_count">"></li>
+        </mt:if>
+        <mt:if name="publish_count">
+            <mt:if name="comment_count">
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,post,posts]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=list_comment&amp;filter_key=my_posts%%<mt:var name="comment_count">">
+            <mt:else>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,post,posts]</a>." params="<mt:var name="script_url">?__mode=list_entry%%<mt:var name="publish_count">">
+            </mt:if>
+        </mt:if>
+        </ul>
+    </div>
+</mtapp:widget>

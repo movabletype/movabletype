@@ -1,9 +1,5 @@
-<mt:setvar name="page_title" value="<__trans phrase="Notifications">">
+<mt:setvar name="page_title" value="<__trans phrase="Address Book">">
 <mt:setvarblock name="content_header">
-    <p class="page-desc"><__trans phrase="Below is the notification list for this blog. When you manually send notifications on published entries, you can select from this list."></p>
-
-    <p><__trans phrase="You have [quant,_1,user,users,no users] in your notification list. To delete an address, check the Delete box and press the Delete button." params="<mt:var name="list_total">"></p>
-
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -16,7 +12,7 @@
         <mtapp:statusmsg
             id="saved"
             class="success">
-            <__trans phrase="You have added [_1] to your notification list." params="<mt:var name="saved" escape="html">">
+            <__trans phrase="You have added [_1] to your address book." params="<mt:var name="saved" escape="html">">
         </mtapp:statusmsg>
     </mt:if>
 
@@ -34,7 +30,7 @@
             id="useful-links"
             label="<__trans phrase="Useful links">">
             <ul>
-                <li><a href="<MT_ACTION mode="export_notification" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">">" class="icon-left icon-download"><__trans phrase="Download Notifications (CSV)"></a></li>
+                <li><a href="<MT_ACTION mode="export_notification" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">">" class="icon-left icon-download"><__trans phrase="Download Address Book (CSV)"></a></li>
             </ul>
         </mtapp:widget>
     </mt:if>
@@ -169,7 +165,7 @@
 
 <mt:include name="include/header.tmpl">
 
-<p><a href="#" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create New Notification"></a></p>
+<p><a href="#" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Contact"></a></p>
 
 <div class="create-inline" id="create-inline-notification">
 <form method="post" action="<mt:var name="script_url">">

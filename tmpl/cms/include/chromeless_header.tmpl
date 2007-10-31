@@ -6,6 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title><mt:var name="PAGE_TITLE"> | <$mt:var name="mt_product_name"$></title>
 
+<mt:setvarblock name="html_head" prepend="1">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="MT_VERSION" escape="URL">" type="text/css" />
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="MT_VERSION" escape="URL">" type="text/css" />
@@ -16,6 +17,8 @@
 
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+</mt:setvarblock>
+<$mt:var name="html_head"$>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
 
 <script language="javascript" type="text/javascript">
@@ -103,7 +106,7 @@ function hideByID(id) {
 
 </head>
 
-<body id="mode_<$mt:var name="mode"$>" class="chromeless">
+<body id="mode_<$mt:var name="mode"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"> error-screen</mt:if>">
 
 <div id="container">
 

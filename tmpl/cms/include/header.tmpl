@@ -3,7 +3,7 @@
 <html lang="<$mt:var name="language_tag"$>" xmlns="http://www.w3.org/1999/xhtml" xmlns:mt="http://www.sixapart.com/ns/mt">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
-    <title><mt:if name="page_title"><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
+    <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
 <mt:setvarblock name="html_head" prepend="1">
 <mt:if name="feed_url">
     <link type="application/atom+xml" rel="alternate" <mt:if name="feed_name">title="<mt:var name="feed_name" escape="html">" </mt:if>href="<mt:var name="feed_url" escape="html">" />
@@ -19,6 +19,7 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Devel.js?v=<mt:var name="mt_version" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Observable.js?v=<mt:var name="mt_version" escape="url">"></script>
@@ -83,7 +84,7 @@
     <mtignore>
             <li id="help" class="help"><a href="<$mt:var name="help_url"$>"><__trans phrase="Help"></a></li>
     </mtignore>
-            <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>"><__trans phrase="Hi [_1]" params="<$mt:var name="author_name"$>"></a></li>
+            <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>"><__trans phrase="Hi [_1]," params="<$mt:var name="author_name"$>"></a></li>
         <mt:if name="can_logout">
             <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Logout"></a></li>
         </mt:if>

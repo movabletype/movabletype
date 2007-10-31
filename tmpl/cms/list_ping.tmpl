@@ -1,4 +1,4 @@
-<$mt:setvar name="page_title" value="<__trans phrase="Trackbacks">"$>
+<$mt:setvar name="page_title" value="<__trans phrase="Manage Trackbacks">"$>
 <mt:setvarblock name="content_header">
     <mt:if name="saved">
         <mtapp:statusmsg
@@ -104,7 +104,7 @@ function toggleFilter() {
         getByID("filter-select").style.display = "none";
     } else {
         filterActive.style.display = "none";
-        getByID("filter-select").style.display = "block";
+        getByID("filter-select").style.display = "block";<mt:unless name="filter">setFilterCol('status');</mt:unless>
     }
 }
 
@@ -173,16 +173,8 @@ TC.attachLoadEvent( init );
             </mt:unless>
             </div>
             <div id="filter-select" class="page-title" style="display: none">
-                <__trans phrase="Show">
-                <select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('status') } enableFilterButton()">
-                    <option value="all"><__trans phrase="all"></option>
-                    <option value="only"><__trans phrase="only"></option>
-                </select>
-                <span id="filter-mode-all" style="display: none">
-                    <$mt:var name="object_label_plural"$>
-                </span>
-                <span id="filter-mode-only" style="display: none">
-                    <__trans phrase="[_1] where" params="<$mt:var name="object_label_plural"$>">
+                <__trans phrase="Show only [_1] where" params="<$mt:var name="object_label_plural"$>">
+                <!-- begin filter form -->
                     <select id="filter-col" name="filter-col" onchange="setFilterCol(this.options[this.selectedIndex].value); enableFilterButton()">
                         <option value="status"><__trans phrase="status"></option>
                     </select>
@@ -193,7 +185,7 @@ TC.attachLoadEvent( init );
                             <option value="pending"><__trans phrase="unapproved"></option>
                         </select>
                     </span>
-                </span>
+                <!-- end filter form -->
                 &nbsp;
                 <input type="button" value="<__trans phrase="Filter">" id="filter-button" style="display: none" onclick="return execFilter(this.form)" />
                 <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />

@@ -1,7 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Create Blog">">
 <mt:setvarblock name="content_header">
-    <p class="page-desc"><__trans phrase="From this screen you can specify the basic information needed to create a blog.  Once you click the save button, your blog will be created and you can continue to customize its settings and templates, or just simply start creating entries."></p>
-
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -20,14 +18,29 @@
     </mt:if>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl">
-
+<mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 <!--
+var orig_site_url = "<mt:var name="site_url" _default="$suggested_site_url" escape="js">";
+var orig_site_path = "<mt:var name="site_path" _default="$suggested_site_path" escape="js">";
+function dirify_blog_name(fld) {
+    var dir_blog_name = dirify(fld.value);
+    if (!dir_blog_name.length) return;
+    var url = fld.form['site_url'];
+    var path = fld.form['site_path'];
+    var basic_site_url = orig_site_url.replace(/\/BLOG-NAME\/$/, '/');
+    var basic_site_path = orig_site_path.replace(/\/BLOG-NAME$/, '/');
+    if (basic_site_url && (url.value.indexOf(basic_site_url) == 0)) {
+        url.value = basic_site_url + dir_blog_name + '/';
+    }
+    if (basic_site_path && (path.value.indexOf(basic_site_path) == 0)) {
+        path.value = basic_site_path + dir_blog_name;
+    }
+}
 function validate (f) {
 <mt:if name="can_edit_config">
     if (!f.name.value) {
-        alert('<__trans phrase="You must set your Weblog Name." escape="singlequotes">');
+        alert('<__trans phrase="You must set your Blog Name." escape="singlequotes">');
         return false;
     } else if (f.server_offset.value == '') {
         alert('<__trans phrase="You did not select a timezone." escape="singlequotes">');
@@ -98,7 +111,9 @@ TC.attachLoadEvent(init);
 
 //-->
 </script>
+</mt:setvarblock>
 
+<mt:include name="include/header.tmpl">
 
 <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <mt:unless name="new_object">
@@ -119,7 +134,7 @@ TC.attachLoadEvent(init);
         hint="<__trans phrase="Name your blog. The blog name can be changed at any time.">"
         help_page="blog_settings_general"
         help_section="blog_name">
-                <input name="name" id="name" value="<mt:var name="name" escape="html">" size="30" />
+                <input name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onkeyup="dirify_blog_name(this)" />
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_set_publish_paths">

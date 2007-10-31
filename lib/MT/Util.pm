@@ -141,7 +141,9 @@ sub substr_wref {
 }
 
 sub relative_date {
-    my ($ts1, $ts2, $blog, $fmt) = @_;
+    my ($ts1, $ts2, $blog, $fmt, $style) = @_;
+
+    $style ||= 1;
 
     # TBD: Fix this
     my $ts = $ts1;
@@ -154,37 +156,68 @@ sub relative_date {
         $future = 1;
         $delta = $ts1 - $ts2;
     }
-    if ($delta <= 60) {
-        $future ? MT->translate("Less than 1 minute from now") : MT->translate("Less than 1 minute ago");
-    } elsif ($delta <= 86400) {
-        # less than 1 day
-        my $hours = int($delta / 3600);
-        my $min = int(($delta % 3600) / 60);
-        my $result;
-        if ($hours && $min) {
-            $result = $future ? MT->translate("[quant,_1,hour], [quant,_2,minute] from now", $hours, $min) : MT->translate("[quant,_1,hour], [quant,_2,minute] ago", $hours, $min);
-        } elsif ($hours) {
-            $result = $future ? MT->translate("[quant,_1,hour] from now", $hours) : MT->translate("[quant,_1,hour] ago", $hours);
-        } elsif ($min) {
-            $result = $future ? MT->translate("[quant,_1,minute] from now", $min) : MT->translate("[quant,_1,minute] ago", $min);
+    if ($style == 1) {
+        if ($delta <= 60) {
+            return $future ? MT->translate("moments from now") : MT->translate("moments ago");
+        } elsif ($delta <= 86400) {
+            # less than 1 day
+            my $hours = int($delta / 3600);
+            my $min = int(($delta % 3600) / 60);
+            if ($hours) {
+                return $future ? MT->translate("[quant,_1,hour,hours] from now", $hours, $min) : MT->translate("[quant,_1,hour,hours] ago", $hours, $min);
+            } else {
+                return $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes] ago", $min);
+            }
+        } elsif ($delta <= 604800) {
+            # less than 1 week
+            my $days = int($delta / 86400);
+            my $hours = int(($delta % 86400) / 3600);
+            my $result;
+            if ($days) {
+                return $future ? MT->translate("[quant,_1,day,days] from now", $days, $hours) : MT->translate("[quant,_1,day,days] ago", $days, $hours);
+            } else {
+                return $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours] ago", $hours);
+            }
+        } else {
+            # more than a week, same year
+            if ((localtime($ts1))[5] == (localtime($ts2))[5]) {
+                $fmt ||= "%b %e";
+            } else {
+                $fmt ||= "%b %e %Y";
+            }
         }
-        $result;
-    } elsif ($delta <= 604800) {
-        # less than 1 week
-        my $days = int($delta / 86400);
-        my $hours = int(($delta % 86400) / 3600);
-        my $result;
-        if ($days && $hours) {
-            $result = $future ? MT->translate("[quant,_1,day], [quant,_2,hour] from now", $days, $hours) : MT->translate("[quant,_1,day], [quant,_2,hour] ago", $days, $hours);
-        } elsif ($days) {
-            $result = $future ? MT->translate("[quant,_1,day] from now", $days) : MT->translate("[quant,_1,day] ago", $days);
-        } elsif ($hours) {
-            $result = $future ? MT->translate("[quant,_1,hour] from now", $hours) : MT->translate("[quant,_1,hour] ago", $hours);
+    } elsif ($style == 2) {
+        if ($delta <= 60) {
+            return $future ? MT->translate("less than 1 minute from now") : MT->translate("less than 1 minute ago");
+        } elsif ($delta <= 86400) {
+            # less than 1 day
+            my $hours = int($delta / 3600);
+            my $min = int(($delta % 3600) / 60);
+            my $result;
+            if ($hours && $min) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", $hours, $min) : MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] ago", $hours, $min);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours] ago", $hours);
+            } elsif ($min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes] ago", $min);
+            }
+            return $result;
+        } elsif ($delta <= 604800) {
+            # less than 1 week
+            my $days = int($delta / 86400);
+            my $hours = int(($delta % 86400) / 3600);
+            my $result;
+            if ($days && $hours) {
+                $result = $future ? MT->translate("[quant,_1,day,days], [quant,_2,hour,hours] from now", $days, $hours) : MT->translate("[quant,_1,day,days], [quant,_2,hour,hours] ago", $days, $hours);
+            } elsif ($days) {
+                $result = $future ? MT->translate("[quant,_1,day,days] from now", $days) : MT->translate("[quant,_1,day,days] ago", $days);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours] ago", $hours);
+            }
+            return $result;
         }
-        $result;
-    } else {
-        $fmt ? format_ts($fmt, $ts) : "";
     }
+    return $fmt ? format_ts($fmt, $ts) : "";
 }
 
 use vars qw( %Languages );

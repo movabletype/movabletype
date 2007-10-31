@@ -53,6 +53,7 @@ class IndividualArchiver extends BaseArchiver {
         } else {
             $period_start = $row;
         }
+        $period_start = preg_replace('/[^0-9]/', '', $period_start);
         return start_end_day($period_start, $ctx->stash('blog'));
     }
 

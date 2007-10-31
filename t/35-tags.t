@@ -68,7 +68,10 @@ $ctx->{current_timestamp} = '20040816135142';
 
 my $num = 1;
 foreach my $test_item (@$test_suite) {
-    $num++, next unless $test_item->{r};
+    unless ($test_item->{r}) {
+        pass("perl test skip " . $num++);
+        next;
+    }
     local $ctx->{__stash}{entry} = $entry if $test_item->{t} =~ m/<MTEntry/;
     $ctx->{__stash}{entry} = undef if $test_item->{t} =~ m/MTComments|MTPings/;
     $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries/;
@@ -115,9 +118,11 @@ $output_results = 0;
 $mt = new MT(1, $cfg_file);
 $ctx =& $mt->context();
 
-$path = $mt->config['MTDir'];
+$path = $mt->config['mtdir'];
 if (substr($path, strlen($path) - 1, 1) == '/')
-    $path = substr($path, 1, strlen($path)-1); 
+    $path = substr($path, 1, strlen($path)-1);
+if (substr($path, strlen($path) - 2, 2) == '/t')
+    $path = substr($path, 0, strlen($path) - 2);
 $const['CURRENT_WORKING_DIRECTORY'] = $path;
 
 $db = $mt->db();
@@ -127,16 +132,14 @@ $blog = $db->fetch_blog(1);
 $ctx->stash('blog', $blog);
 $ctx->stash('current_timestamp', '20040816135142');
 $mt->init_plugins();
-
 $entry = $db->fetch_entry(1);
 
 $suite = load_tests();
 
-$test_num = 0;
 run($ctx, $suite);
 
 function run(&$ctx, $suite) {
-    global $test_num;
+    $test_num = 0;
     global $entry;
     global $mt;
     global $tmpl;
@@ -150,11 +153,21 @@ function run(&$ctx, $suite) {
         else {
             $ctx->__stash['entry'] = null;
         }
+        if ( preg_match('/MTEntries/', $test_item->t) ) {
+            $ctx->__stash['entries'] = null;
+        }
+        if ( preg_match('/MTCategoryArchiveLink/', $test_item->t) ) {
+            $ctx->stash('current_archive_type', 'Category');
+        } else {
+            $ctx->stash('current_archive_type', '');
+        }
         $test_num++;
         if ($test_item->r == 1) {
             $tmpl = $test_item->t;
             $result = build($ctx, $test_item->t);
-            ok($result, $test_item->e);
+            ok($result, $test_item->e, $test_num);
+        } else {
+            echo "ok - php test $test_num\n";
         }
     }
 }
@@ -190,8 +203,7 @@ function build(&$ctx, $tmpl) {
     }
 }
 
-function ok($str, $that) {
-    global $test_num;
+function ok($str, $that, $test_num) {
     global $mt;
     global $tmpl;
     $str = trim($str);
@@ -200,9 +212,9 @@ function ok($str, $that) {
         echo "ok - php test $test_num\n";
         return true;
     } else {
-        echo "not ok - php test $test_num\n";
-        echo "#     expected: $that\n";
-        echo "#          got: $str\n";
+        echo "not ok - php test $test_num\n".
+             "#     expected: $that\n".
+             "#          got: $str\n";
         return false;
     }
 }
@@ -227,9 +239,9 @@ PHP
         while (@lines) {
             my $result = shift @lines;
             if ($result =~ m/^ok/) {
-                pass("php test " . $num++);
+                pass($result);
             } elsif ($result =~ m/^not ok/) {
-                fail("php test " . $num++);
+                fail($result);
             } elsif ($result =~ m/^#/) {
                 print STDERR $result . "\n";
             } else {

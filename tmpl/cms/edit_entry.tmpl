@@ -118,20 +118,20 @@
 <mt:setvarblock name="related_content">
     <mt:unless name="new_object">
         <mtapp:widget
-            id="entry-summary"
+            id="entry-summary-widget"
             label="<__trans phrase="Summary">">
-            <p><__trans phrase="Created [_1] by [_2]." params="<$mt:date ts="$created_on_ts" lower_case="1" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html"$>"></p>
+            <p><__trans phrase="Created [_1] by [_2]." params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html"$>"></p>
             <mt:if name="modified_by">
-            <p><__trans phrase="Last edited [_1] by [_2]." params="<$MTDate ts="$modified_on_ts" lower_case="1" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html"$>"></p>
+            <p><__trans phrase="Last edited [_1] by [_2]." params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html"$>"></p>
             </mt:if>
             <mt:if name="status_publish">
-                <p><__trans phrase="Published [_1]." params="<$MTDate ts="$authored_on_ts" relative="1" lower_case="1" _default="$authored_on_formatted"$>"></p>
+                <p><__trans phrase="Published [_1]." params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted"$>"></p>
             </mt:if>
-            <p><__trans phrase="This [_1] has received <a href="[_4]">[quant,_2,comment]</a> and [quant,_3,trackback]." params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="num_comments"$>%%<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></p>
+            <p><__trans phrase="This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and [quant,_3,trackback,trackbacks]." params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="num_comments"$>%%<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></p>
         </mtapp:widget>
     </mt:unless>
     <mtapp:widget
-        id="display-options"
+        id="display-options-widget"
         label="<__trans phrase="Display Options">"
         label_link="javascript:void(0)"
         label_onclick="return toggleEntryDisplayOptions();">
@@ -666,6 +666,9 @@ function doValidateNotifyRecips(f) {
 <mt:setvarblock name="html_body" append="1">
 <script type="text/javascript">
     /* <![CDATA[ */
+        <mt:if name="dirty">
+        MT.App.dirty = true;
+        </mt:if>
         MT.App.categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1"$><mt:else>[]</mt:if>;
         Template.templates.categorySelectorList = '<mt:section encode_js="1">
                 [# DOM.addClassName( div, "pkg" ) #]
@@ -705,7 +708,7 @@ function doValidateNotifyRecips(f) {
     <input type="submit" name="preview_entry" value="<__trans phrase="Preview">" accesskey="v" title="<__trans phrase="Preview this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">" mt:mode="preview_entry" />
     </mt:ignore>
     <mt:if name="id">
-    <button type="submit" accesskey="x" mt:command="do-remove-items" mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">" mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">" mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">" title="<__trans phrase="Delete this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">" class="negative">Delete</button>
+    <button type="submit" accesskey="x" mt:command="do-remove-items" mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">" mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">" mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">" title="<__trans phrase="Delete this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">" class="negative"><__trans phrase="Delete"></button>
         <mt:ignore>
     <input accesskey="x" onclick="clearDirty(); doRemoveItems(this.form, '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">', false, { 'return_args': '__mode=list_<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">' }); return true" type="button" value="<__trans phrase="Delete">" title="<__trans phrase="Delete this [_1] (x)" params="<mt:var name="object_label" lower_case="1">">" />
         </mt:ignore>
@@ -743,7 +746,7 @@ function doValidateNotifyRecips(f) {
         </ul>
         <ul class="inline-nav left">
             <li id="previous-link"><mt:if name="previous_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="&laquo; Previous"></a><mt:else><__trans phrase="&laquo; Previous"></mt:if></li>
-            <li><a href="<$mt:var name="script_url"$>?__mode=list_<$mt:var name="object_type" lower_case="1"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Edit [_1]" params="<$mt:var name="object_label_plural"$>"></a></li>
+            <li><a href="<$mt:var name="script_url"$>?__mode=list_<$mt:var name="object_type" lower_case="1"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage [_1]" params="<$mt:var name="object_label_plural"$>"></a></li>
             <li id="next-link"><mt:if name="next_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next &raquo;"></a><mt:else><__trans phrase="Next &raquo;"></mt:if></li>
         </ul>
     </div>
@@ -761,7 +764,7 @@ function doValidateNotifyRecips(f) {
     </mtapp:setting>
 
         <div id="editor">
-            <div class="editor-header pkg" mt:delegate="tab-bar">
+            <div class="editor-header pkg" mt:delegate="tab-container">
                 <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
                     <label><a href="javascript:void(0);"><__trans phrase="Body"></a></label>
                 </div>

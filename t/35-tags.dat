@@ -301,7 +301,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTAssets sort_order='ascend'><$MTAssetID$>;</MTAssets>", "e" : "2;1;"}, #249
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetFileName$></MTAssets>", "e" : "test.jpg"}, #250
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetURL$></MTAssets>", "e" : "http://narnia.na/nana/images/test.jpg"}, #251
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetType$></MTAssets>", "e" : "Image"}, #252
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetType$></MTAssets>", "e" : "image"}, #252
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetMimeType$></MTAssets>", "e" : "image/jpeg"}, #253
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetFilePath$></MTAssets>", "e" : "CURRENT_WORKING_DIRECTORY/t/images/test.jpg"}, #254
 { "r" : "1", "t" : "<MTAssets lastn='1' sort_order='ascend'><$MTAssetDateAdded$></MTAssets>", "e" : "January 31, 1978  7:45 AM"}, #255
@@ -392,5 +392,6 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTFolders><MTFolderLabel>;</MTFolders>", "e" : "download;info;nightly;"}, #340
 { "r" : "1", "t" : "<MTFolders><MTFolderPath>;</MTFolders>", "e" : "download;info;download/nightly;"}, #341
 { "r" : "1", "t" : "<MTComments><MTCommentEntry><MTEntryClass>;</MTCommentEntry></MTComments>", "e" : "Page;Entry;Entry;Entry;Entry;Entry;Entry;"}, #342
-{ "r" : "1", "t" : "<MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>", "e" : "Page;Entry;"} #343
+{ "r" : "1", "t" : "<MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>", "e" : "Page;Entry;"}, #343
+{ "r" : "1", "t" : "<MTArchiveList archive_type='Individual' sort_order='ascend'><$MTArchiveDate format='%Y.%m.%d.%H.%M.%S'$>;</MTArchiveList>", "e" : "1961.01.31.07.45.01;1962.01.31.07.45.01;1963.01.31.07.45.01;1964.01.31.07.45.01;1965.01.31.07.45.01;1978.01.31.07.45.00;"} #344
 ]

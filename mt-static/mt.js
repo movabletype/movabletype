@@ -121,6 +121,110 @@ function doRemoveItems (f, singular, plural, nameRestrict, args) {
     }
 }
 
+/* Widget support functions */
+// function addWidget(el, f) {
+//     if (!TC.Client) return;
+//     // Add a new widget to the top of the 'el' element
+//     var args = DOM.getFormData( f );
+//     args['json'] = '1';
+//     TC.Client.call({
+//         'load': function(c) { addWidgetToPage(el, c); },
+//         'error': function() { showMsg("Error adding widget.", "widget-updated", "alert"); },
+//         'method': 'POST',
+//         'uri': ScriptURI,
+//         'arguments': args
+//     });
+//     return false;
+// }
+//
+// function addWidgetToPage(el, c) {
+//     el = TC.elementOrId(el);
+//     var result;
+//     try {
+//         result = eval('(' + c.responseText + ')');
+//     } catch(e) {
+//         showMsg("Error adding widget.", "widget-updated", "alert");
+//         return;
+//     }
+//     var new_node = document.createElement('div');
+//     new_node.innerHTML = result.result.html;
+//     var next;
+//     if (el.hasChildNodes()) {
+//         if (el.firstChild.nodeType != Node.ELEMENT_NODE)
+//             next = DOM.getNextElement(el.firstChild);
+//         else
+//             next = el.firstChild;
+//     }
+//     if (next) {
+//         el.insertBefore(new_node, next);
+//     } else {
+//         el.appendChild(new_node);
+//     }
+// }
+
+function removeWidget(id) {
+    var f = getByID(id + '-form');
+    f['widget_action'].value = 'remove';
+    if ((f['widget_singular'].value == '1') || (!TC.Client)) {
+        f.submit();
+        return;
+    }
+    var args = DOM.getFormData(f);
+    args['json'] = '1';
+    TC.Client.call({
+        'load': function(c) { removedWidget(id, c); },
+        'error': function() { showMsg("Error removing widget.", "widget-updated", "alert"); },
+        'method': 'POST',
+        'uri': ScriptURI,
+        'arguments': args
+    });
+}
+
+function removedWidget(id, c) {
+    var el = getByID(id);
+    var parent = el.parentNode;
+    parent.removeChild(el);
+}
+
+function updateWidget(id) {
+    var f = getByID(id + "-form");
+    if (!f) return false;
+    f['widget_action'].value = 'save';
+    if (!TC.Client) return true;
+    // if (f['widget_refresh'] && f['widget_refresh'].value) {
+    //     return true;
+    // }
+
+    var args = DOM.getFormData( f );
+    args['json'] = '1';
+    TC.Client.call({
+        'load': function(c) { updatedWidget(id, c); },
+        'error': function() { showMsg("Error updating widget.", "widget-updated", "alert"); },
+        'method': 'POST',
+        'uri': ScriptURI,
+        'arguments': args
+    });
+    return false;
+}
+
+function updatedWidget(id, c) {
+    var el = TC.elementOrId(id);
+    var result;
+    try {
+        result = eval('(' + c.responseText + ')');
+    } catch(e) {
+        showMsg("Error updating widget.", "widget-updated", "alert");
+        return;
+    }
+    if (result.result.html) {
+        // updatePrefs has returned a new widget
+        el.innerHTML = result.result.html;
+    }
+    if (result.result.message) {
+        showMsg(result.result.message, "widget-updated", "info");
+    }
+}
+
 function doRemoveMembers (f, singular, plural, nameRestrict, args) {
     var count = countMarked(f, nameRestrict);
     if (!count) {
@@ -307,6 +411,7 @@ function openDialog(f, mode, params) {
     var url = ScriptURI;
     url += '?__mode=' + mode;
     if (params) url += '&' + params;
+    url += '&__type=dialog';
     show("dialog-container");
     // handle escape key for closing modal dialog
     window.onkeypress = dialogKeyPress;
@@ -487,29 +592,22 @@ function doCheckboxCheckAll(t) {
 }
 
 function execFilter(f) {
-    if (f['filter-mode'].selectedIndex == 0) {  // no filter
-        getByID('filter').value = '';
-        getByID('filter_val').value = '';
-        getByID('filter-form').submit();
-    } else {
-        var filter_col = f['filter-col'].options[f['filter-col'].selectedIndex].value;
-        var opts = f[filter_col+'-val'].options;
-        var filter_val = '';
-        if (opts) {
-            filter_val = opts[f[filter_col+'-val'].selectedIndex].value;
-        } else if (f[filter_col+'-val'].value) {
-            filter_val = f[filter_col+'-val'].value;
-        }
-        getByID('filter').value = filter_col;
-        getByID('filter_val').value = filter_val;
-        getByID('filter-form').submit();
+    var filter_col = f['filter-col'].options[f['filter-col'].selectedIndex].value;
+    var opts = f[filter_col+'-val'].options;
+    var filter_val = '';
+    if (opts) {
+        filter_val = opts[f[filter_col+'-val'].selectedIndex].value;
+    } else if (f[filter_col+'-val'].value) {
+        filter_val = f[filter_col+'-val'].value;
     }
+    getByID('filter').value = filter_col;
+    getByID('filter_val').value = filter_val;
+    getByID('filter-form').submit();
     return false;
 }
 
 function setFilterVal(value) {
     var f = getByID('filter-form');
-    if (f['filter-mode'].selectedIndex == 0) return;
     if (value == '') return;
     var filter_col = f['filter-col'].options[f['filter-col'].selectedIndex].value;
     var val_span = getByID("filter-text-val");
@@ -555,6 +653,7 @@ function toggleActive( id ) {
 }
 
 function tabToggle(selectedTab, tabs) {
+    log.warn('tabToggle is deprecated. use mt tab delegate');
     for (var i = 0; i < tabs.length; i++) {
         var tabObject = getByID(tabs[i] + '-tab');
         var contentObject = getByID(tabs[i] + '-panel');
@@ -1026,8 +1125,8 @@ Datasource = new Class(Object, {
     }
 });
 //These two lines are to translate phrases in list_tags.tmpl
-//trans('The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?');
-//trans('The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?');
+//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?");
+//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?");
 
 /***
  * Pager class
@@ -1260,7 +1359,10 @@ MT.App = new Class( App, {
 
         if ( this.constructor.DefaultValue )
             this.setDelegate( "defaultValue", new this.constructor.DefaultValue() );
-
+        
+        if ( this.constructor.TabContainer )
+            this.setDelegate( "tabContainer", new this.constructor.TabContainer() );
+        
 
         if ( this.form = DOM.getElement( "entry_form" ) ) {
             window.onbeforeunload = this.getIndirectEventListener( "eventBeforeUnload" );
@@ -1288,8 +1390,10 @@ MT.App = new Class( App, {
                     DOM.addEventListener( es[ i ], "keydown", this.getIndirectEventListener( "setDirty" ) );
                 }
             }
-        }     
+        }
 
+        if ( MT.App.dirty )
+            this.changed = true;
     },
 
 
@@ -1334,7 +1438,7 @@ MT.App = new Class( App, {
 
 
     eventBeforeUnload: function( event ) {
-        if ( this.changed )
+        if ( this.constructor.Editor && this.changed )
             return event.returnValue = Editor.strings.unsavedChanges;
         
         return undefined;
@@ -1822,6 +1926,91 @@ MT.App.DefaultValue = new Class( Object, {
 } );
 
 
+MT.App.TabContainer = new Class( Object, {
+
+    init: function() {
+        var es = DOM.getElementsByAttributeAndValue( document.body, "mt:delegate", "tab-container" );
+        var t;
+        for ( var i = 0; i < es.length; i++ ) {
+            if ( t = es[ i ].getAttribute( "mt:selected-tab" ) ) {
+                this.selectTab( es[ i ], t );
+                continue;
+            }
+
+            if ( t = es[ i ].getAttribute( "mt:persist-tab-cookie" ) ) {
+                log( 'found persisted tab setting: '+t);
+                t = Cookie.fetch( t );
+                if ( t && t.value && t.value != "" ) {
+                    log( 'cookie: '+t.value);
+                    this.selectTab( es[ i ], t.value );
+                }
+            }
+        }
+    },
+
+
+    eventClick: function( event ) {
+        var command = app.getMouseEventCommand( event );
+        if (!event.commandElement) return;
+        var tab = event.commandElement.getAttribute( "mt:tab" );
+        if ( tab && command != "selectTab" )
+            this.selectTab( event.attributeElement, tab );
+
+        switch( command ) {
+            
+            case "setEditorContent":
+                event.stop();
+                app.setEditor( "content" );
+                break;
+
+            case "setEditorExtended":
+                event.stop();
+                app.setEditor( "extended" );
+                break;
+            
+            case "selectTab":
+                if ( !tab )
+                    tab = event.commandElement.getAttribute( "mt:select-tab" );
+
+                if ( tab ) {
+                    this.selectTab( event.attributeElement, tab );
+                    var cookie = event.attributeElement.getAttribute( "mt:persist-tab-cookie" );
+                    if ( cookie )
+                        Cookie.bake( cookie, tab );
+                }
+                
+                event.stop();
+                break;
+
+        }
+    },
+
+
+    selectTab: function( element, name ) {
+        log('select tab '+name);
+        var es = DOM.getElementsByAttribute( element, "mt:tab" );
+        for ( var i = 0; i < es.length; i++ ) {
+            if ( es[ i ].getAttribute( "mt:tab" ) == name )
+                DOM.addClassName( es[ i ], "selected-tab" );
+            else
+                DOM.removeClassName( es[ i ], "selected-tab" );
+        }
+
+        /* look for tab contents elements matching 'name' */
+        es = DOM.getElementsByAttribute( element, "mt:tab-content" );
+        for ( var i = 0; i < es.length; i++ ) {
+            /* then hide everything except the tab content we want to show */
+            if ( es[ i ].getAttribute( "mt:tab-content" ) == name )
+                DOM.removeClassName( es[ i ], "hidden" );
+            else
+                DOM.addClassName( es[ i ], "hidden" );
+        }
+    }
+
+
+} );
+
+
 } /* if window.App */
 
 
@@ -1838,30 +2027,28 @@ function showMsg(message, id, type, rebuild, blogID) {
     }
     msg.innerHTML = "<a href=\"javascript:void(0)\" onclick=\"javascript:hide('"+id+"');\" class=\"close-me\"><span>close</span></a>"+message;
     if (rebuild == 'all')
-        msg.innerHTML += trans(' [_1]Republish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
+        msg.innerHTML += ' ' + trans('[_1]Republish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
     if (rebuild == 'index')
-        msg.innerHTML += trans(' [_1]Republish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\', prompt=\'index\');">', '</a>');
+        msg.innerHTML += ' ' + trans('[_1]Republish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\', prompt=\'index\');">', '</a>');
     getByID('msg-block').appendChild(msg);
 }
 
 function hideDropDown() { // hides SELECT lists under the nav on IE6
-    if ((!(navigator.appVersion.indexOf('MSIE') != -1) &&
-          (parseInt(navigator.appVersion)==4))) {
-        return;
+    if((/MSIE/.test(navigator.userAgent)) && parseInt(navigator.appVersion)==4) {
+        var dd = document.getElementsByTagName('select');
+    	for (var i=0; i<dd.length; i++) {
+    		dd[i].style.visibility='hidden';
+    	}
     }
-	var dd = document.getElementsByTagName('select');
-	for (var i=0; i<dd.length; i++) {
-		dd[i].style.visibility='hidden';
-	}
+	return;
 }
 
 function showDropDown() {
-    if ((!(navigator.appVersion.indexOf('MSIE') != -1) &&
-          (parseInt(navigator.appVersion)==4))) {
-        return;
+    if ((/MSIE/.test(navigator.userAgent)) && parseInt(navigator.appVersion)==4) {
+        var dd = document.getElementsByTagName('select');
+    	for (var i=0; i<dd.length; i++) {
+    		dd[i].style.visibility='visible';
+    	}
     }
-	var dd = document.getElementsByTagName('select');
-	for (var i=0; i<dd.length; i++) {
-		dd[i].style.visibility='visible';
-	}
+	return;
 }

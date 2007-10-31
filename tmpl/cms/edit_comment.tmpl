@@ -1,6 +1,6 @@
 <$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvarblock name="page_title"><__trans phrase="Edit [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
 <mt:setvarblock name="content_header">
-<mt:setvar name="page_title" value="<__trans phrase="Edit [_1]"  params="<mt:var name="object_label">>
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
@@ -14,6 +14,12 @@
             class="success">
             <__trans phrase="The comment has been approved.">
         </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="comment_pending">
+        <h3 class="pending"><__trans phrase="Pending Approval"></h3>
+    </mt:if>
+    <mt:if name="is_junk">
+        <h3 class="junky"><__trans phrase="Comment Reported as Spam"></h3>
     </mt:if>
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
@@ -59,19 +65,12 @@
             <mt:if name="next_comment_id">
                 <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Next Comment"></a></li>
             </mt:if>
-            <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View the entry this comment was left on"></a></mt:if></li>            
+                <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View the entry this comment was left on"></a></mt:if></li>            
         </ul>
     </mtapp:widget>
     <$mtapp:PageActions$>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
-
-    <mt:if name="comment_pending">
-        <h3 class="pending"><__trans phrase="Pending Approval"></h3>
-    </mt:if>
-    <mt:if name="is_junk">
-        <h3 class="junky"><__trans phrase="Comment Reported as Spam"></h3>
-    </mt:if>
 
 <form method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="id" value="<mt:var name="id">" />
@@ -92,7 +91,7 @@
         label="<__trans phrase="Status">"
         hint="<__trans phrase="Update the status of this comment">"
         show_hint="0">
-        <select id="status" name="status">
+        <select id="status" name="status" class="width90">
             <option value="publish" <mt:if name="comment_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
             <option value="moderate" <mt:if name="comment_pending">selected="selected"</mt:if>><__trans phrase="Unapproved"></option>
             <option value="junk" <mt:if name="is_junk">selected="selected"</mt:if>><__trans phrase="Reported as Spam"></option>
@@ -158,14 +157,14 @@
                 <__trans phrase="None given">
             <mt:else>
                 <mt:if name="email">
-                    <input name="email" id="email" value="<mt:var name="email" escape="html">" disabled="disabled" class="short" />
+                    <input name="email" id="email" value="<mt:var name="email" escape="html">" disabled="disabled" class="width90" />
                     <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/email.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a>
                 <mt:else>
                     <__trans phrase="None given">
                 </mt:if>
             </mt:if>
         <mt:else>
-            <input name="email" id="email" value="<mt:var name="email" escape="html">"<mt:if name="email"> class="short"</mt:if> />
+            <input name="email" id="email" value="<mt:var name="email" escape="html">" class="width90" />
             <mt:if name="email">
                 <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/email.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a>
             </mt:if>
@@ -178,7 +177,7 @@
         label="<__trans phrase="URL">"
         hint="<__trans phrase="URL of commenter">"
         show_hint="0">
-        <input name="url" id="url" value="<mt:var name="url" escape="html">"<mt:if name="url"> class="short"</mt:if> />
+        <input name="url" id="url" value="<mt:var name="url" escape="html">" class="width90" />
         <mt:if name="url">
             <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/link.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a>
         </mt:if>

@@ -294,7 +294,7 @@ sub restore_directory {
         return (undef, undef);
     }
 
-    $callback->(MT->translate("Manifest file: [_1]\n", $manifest));
+    $callback->(MT->translate("Manifest file: [_1]", $manifest) . "\n");
 
     my %objects;
     my $deferred = {};
@@ -424,8 +424,8 @@ sub _restore_asset_multi {
             $asset->url($url);
         }
         $callback->(MT->translate("Changing path for the file '[_1]' (ID:[_2])...", $asset->label, $asset->id));
-        $asset->save or $callback->(MT->translate("failed\n"));
-        $callback->(MT->translate("ok\n"));
+        $asset->save or $callback->(MT->translate("failed") . "\n");
+        $callback->(MT->translate("ok") . "\n");
 
         my $blog = MT->model('blog')->load($asset->blog_id);
         $fmgr = $blog->file_mgr;

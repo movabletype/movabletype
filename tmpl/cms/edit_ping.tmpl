@@ -1,169 +1,188 @@
-<mt:setvar name="page_title" value="<__trans phrase="Edit TrackBack">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvarblock name="page_title"><__trans phrase="Edit [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="approved">
+        <mtapp:statusmsg
+            id="approved"
+            class="success">
+            <__trans phrase="The TrackBack has been approved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="ping_pending">
+    <h3 class="pending"><__trans phrase="Pending Approval"></h3>
+    </mt:if>
+    <mt:if name="is_junk">
+    <h3 class="junky"><__trans phrase="TrackBack Marked as Spam"></h3>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <mt:if name="previous_ping_id">
+                <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="previous_ping_id">&amp;blog_id=<mt:var name="blog_id">">&laquo; <__trans phrase="Previous"></a></li>
+            </mt:if>
+                <li><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="List &amp; Edit TrackBacks"></a></li>
+            <mt:if name="next_ping_id">
+                <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="next_ping_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Next"> &raquo;</a></li>
+            </mt:if>
+                <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View Entry"></a></mt:if></li>
+        </ul>
+    </mtapp:widget>
+    <$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:setvartemplate name="action_buttons">
+    <input name="save" type="submit" value="<__trans phrase="Save Changes">" accesskey="s" title="<__trans phrase="Save this TrackBack (s)">" />
+    <input type="button" onclick="doRemoveItems(this.form, '<__trans phrase="TrackBack">', '<__trans phrase="TrackBack">', false, { 'return_args' : '__mode=list_pings&blog_id=<mt:var name="blog_id">'})" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete this TrackBack (x)">" />
+    <mt:if name="is_ip_filter">
+        <mt:if name="blog_id">
+    <input type="button" onclick="doBanIP('<mt:var name="filter_val">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')" name="banip" value="<__trans phrase="Ban This IP">" />
+        </mt:if>
+    </mt:if>
+</mt:setvartemplate>
 <mt:include name="include/header.tmpl">
 
-<div id="edit-ping">
-
-<mt:if name="saved">
-    <mtapp:statusmsg
-        id="saved"
-        class="success">
-        <__trans phrase="Your changes have been saved.">
-    </mtapp:statusmsg>
-</mt:if>
-
-<mt:if name="approved">
-    <mtapp:statusmsg
-        id="approved"
-        class="success">
-        <__trans phrase="The TrackBack has been approved.">
-    </mtapp:statusmsg>
-</mt:if>
-
-<div class="flt-wrppr">
-<div class="object-nav">
-<mt:if name="previous_ping_id">
-<a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="previous_ping_id">&amp;blog_id=<mt:var name="blog_id">">&laquo; <__trans phrase="Previous"></a> |
-</mt:if>
-<a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="List &amp; Edit TrackBacks"></a>
-<mt:if name="next_ping_id">
-| <a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="next_ping_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Next"> &raquo;</a>
-</mt:if>
-</div>
-<div class="view-entry">
-<mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View Entry"></a></mt:if>
-</div>
-</div>
-
 <form method="post" action="<mt:var name="script_url">">
-<input type="hidden" name="id" value="<mt:var name="id">" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-<input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="action_name" value="save" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="_type" value="ping" />
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="id" value="<mt:var name="id">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="action_name" value="save" />
+    <input type="hidden" name="itemset_action_input" value="" />
+    <input type="hidden" name="_type" value="ping" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-<mt:if name="ping_pending">
-<h3 class="pending"><__trans phrase="Pending Approval"></h3>
-</mt:if>
-<mt:if name="is_junk">
-<h3 class="junky"><__trans phrase="TrackBack Marked as Spam"></h3>
-</mt:if>
+    <mt:if name="position_actions_top">
+        <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1">
+    </mt:if>
 
-<div class="flt-wrppr">
-<div class="leftcol">
 
-<textarea rows="10" cols="30" name="excerpt" id="excerpt"><mt:var name="excerpt" escape="html"></textarea>
+<mtapp:setting
+    id="status"
+    label="<__trans phrase="Status">"
+    hint="<__trans phrase="Update the status of this TrackBack">"
+    show_hint="0">
+        <mt:if name="has_publish_access">
+        <select name="status" class="width90">
+            <option value="publish" <mt:if name="ping_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
+            <option value="moderate" <mt:if name="ping_pending">selected="selected"</mt:if>><__trans phrase="Unapproved"></option>
+            <option value="junk" <mt:if name="is_junk">selected="selected"</mt:if>><__trans phrase="Reported as Spam"></option>
+        </select>
+        <mt:else>
+            <mt:if name="ping_approved">
+        <span><__trans phrase="Approved"></span><input type="hidden" name="status" value="publish" />
+        <mt:else>
+            <mt:if name="ping_pending">
+        <span><__trans phrase="Unapproved"></span><input type="hidden" name="status" value="moderate" />
+            <mt:else>
+                <mt:if name="is_junk">
+        <span><__trans phrase="Junk"></span><input type="hidden" name="status" value="junk" />
+                </mt:if>
+            </mt:if>
+        </mt:if>
+        </mt:if>
+        <a title="<__trans phrase="View all TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id"><mt:if name="is_junk">&amp;tab=junk<mt:else>&amp;filter=status&amp;filter_val=<mt:if name="ping_approved">approved</mt:if><mt:if name="ping_pending">pending</mt:if></mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+</mtapp:setting>
 
-</div>
-<div class="rightcol">
+<mtapp:setting
+    id="source_blog"
+    label="<__trans phrase="Source Site">"
+    hint=""
+    show_hint="0">
+    <input name="blog_name" id="blog_name" value="<mt:var name="source_blog_name" escape="html">" class="width90" />
+    <a title="<__trans phrase="Search for other TrackBacks from this site">" href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">&amp;_type=ping&amp;search=<mt:var name="source_blog_name" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+</mtapp:setting>
 
-<div class="list">
-<table cellspacing="0">
+<mtapp:setting
+    id="source_title"
+    label="<__trans phrase="Source Title">"
+    hint=""
+    show_hint="0">
+    <input name="title" id="title" value="<mt:var name="title" escape="html">" class="width90" />
+    <a title="<__trans phrase="Search for other TrackBacks with this title">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search=<mt:var name="title" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+</mtapp:setting>
 
-<tr class="even">
-<td class="label" id="edit-ping-label"><label for="status"><__trans phrase="Status">:</label></td>
-<td id="edit-ping-field">
-<mt:if name="has_publish_access">
-<select name="status">
-<option value="publish" <mt:if name="ping_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
-<option value="moderate" <mt:if name="ping_pending">selected="selected"</mt:if>><__trans phrase="Unapproved"></option>
-<option value="junk" <mt:if name="is_junk">selected="selected"</mt:if>><__trans phrase="Reported as Spam"></option>
-</select>
-<mt:else>
-<mt:if name="ping_approved"><span><__trans phrase="Approved"></span><input type="hidden" name="status" value="publish" /><mt:else>
-<mt:if name="ping_pending"><span><__trans phrase="Unapproved"></span><input type="hidden" name="status" value="moderate" /><mt:else>
-<mt:if name="is_junk"><span><__trans phrase="Junk"></span><input type="hidden" name="status" value="junk" /></mt:if></mt:if></mt:if>
-</mt:if>
-</td>
-<td class="filter" id="edit-ping-filter"><a title="<__trans phrase="View all TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id"><mt:if name="is_junk">&amp;tab=junk<mt:else>&amp;filter=status&amp;filter_val=<mt:if name="ping_approved">approved</mt:if><mt:if name="ping_pending">pending</mt:if></mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
-
-<tr class="odd">
-<td class="label"><label for="blog_name"><__trans phrase="Source Site:"></label></td>
-<td><input name="blog_name" id="blog_name" value="<mt:var name="source_blog_name" escape="html">" /></td>
-<td class="filter"><a title="<__trans phrase="Search for other TrackBacks from this site">" href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">&amp;_type=ping&amp;search=<mt:var name="source_blog_name" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
-
-<tr class="even">
-<td class="label"><label for="title"><__trans phrase="Source Title:"></label></td>
-<td><input name="title" id="title" value="<mt:var name="title" escape="html">" /></td>
-<td class="filter"><a title="<__trans phrase="Search for other TrackBacks with this title">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search=<mt:var name="title" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
-
-<tr class="odd">
-<td class="label"><label for="source_url"><__trans phrase="URL">:</label></td>
-<td>
-<input name="source_url" id="source_url" value="<mt:var name="source_url" escape="html">" class="short" />
-<a href="<mt:var name="source_url" escape="html">" title="<mt:var name="source_url" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/link.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a>
-</td>
-<td class="filter"><a title="<__trans phrase="Search for other TrackBacks with this status">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search=<mt:var name="source_url" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
+<mtapp:setting
+    id="source_url"
+    label="<__trans phrase="URL">"
+    hint=""
+    show_hint="0">
+    <input name="source_url" id="source_url" value="<mt:var name="source_url" escape="html">" class="width90" />
+    <a title="<__trans phrase="Search for other TrackBacks with this status">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search=<mt:var name="source_url" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+</mtapp:setting>
 
 <mt:if name="entry_ping">
-<tr class="even">
-<td class="label"><__trans phrase="Target Entry:"></td>
-<td><mt:if name="no_entry">[<__trans phrase="Entry no longer exists">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a></mt:if></td>
-<td class="filter"><a title="<__trans phrase="View all TrackBacks on this entry">" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">&amp;tab=pings"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
+    <mtapp:setting
+        id="target_entry"
+        label="<__trans phrase="Target Entry">"
+        hint=""
+        show_hint="0">
+        <mt:if name="no_entry">
+            [<__trans phrase="Entry no longer exists">]
+        <mt:else>
+            <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
+        </mt:if>
+        <a title="<__trans phrase="View all TrackBacks on this entry">" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">&amp;tab=pings"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+    </mtapp:setting>
 </mt:if>
 
 <mt:if name="category_ping">
-<tr class="even">
-<td class="label"><__trans phrase="Target Category:"></td>
-<td><mt:if name="no_category">[<__trans phrase="Category no longer exists">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=category&amp;id=<mt:var name="category_id">&amp;blog_id=<mt:var name="blog_id">"><mt:if name="category_label"><mt:var name="category_label" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a></mt:if></td>
-<td class="filter"><a title="<__trans phrase="View all TrackBacks on this category">" href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id" escape="html">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
+    <mtapp:setting
+        id="target_category"
+        label="<__trans phrase="Target Category:">"
+        hint=""
+        show_hint="0">
+        <mt:if name="no_category">
+            [<__trans phrase="Category no longer exists">]
+        <mt:else>
+            <a href="<mt:var name="script_url">?__mode=view&amp;_type=category&amp;id=<mt:var name="category_id">&amp;blog_id=<mt:var name="blog_id">"><mt:if name="category_label"><mt:var name="category_label" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
+        </mt:if>
+        <a title="<__trans phrase="View all TrackBacks on this category">" href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id" escape="html">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+    </mtapp:setting>
 </mt:if>
 
-<tr class="odd">
-<td class="label"><label for="created_on"><__trans phrase="Date">:</label></td>
-<td><mt:var name="created_on_time_formatted" escape="html"></td>
-<td class="filter"><a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;from=<mt:var name="created_on_day_formatted" escape="html">&amp;to=<mt:var name="created_on_day_formatted" escape="html">&amp;show_all=1&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
+<mtapp:setting
+    id="date"
+    label="<__trans phrase="Date">"
+    hint=""
+    show_hint="0">
+    <mt:var name="created_on_time_formatted" escape="html">
+    <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;from=<mt:var name="created_on_day_formatted" escape="html">&amp;to=<mt:var name="created_on_day_formatted" escape="html">&amp;show_all=1&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+</mtapp:setting>
 
-<tr class="even">
-<td class="label"><__trans phrase="IP">:</td>
-<td><mt:var name="ip" escape="html"></td>
-<td class="filter"><a title="<__trans phrase="View all TrackBacks from this IP address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a></td>
-</tr>
+<mtapp:setting
+    id="source_ip"
+    label="<__trans phrase="IP">"
+    hint=""
+    show_hint="0">
+    <mt:var name="ip" escape="html">
+    <a title="<__trans phrase="View all TrackBacks from this IP address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+</mtapp:setting>
 
-</table>
-</div>
-
-</div>
-</div>
-
-<div class="list-actions">
-
-<div class="button-bar">
-<input name="save" type="submit" value="<__trans phrase="Save Changes">" accesskey="s" title="<__trans phrase="Save this TrackBack (s)">" />
-<input type="button" onclick="doRemoveItems(this.form, '<__trans phrase="TrackBack">', '<__trans phrase="TrackBack">', false, { 'return_args' : '__mode=list_pings&blog_id=<mt:var name="blog_id">'})" value="<__trans phrase="Delete">" accesskey="x" title="<__trans phrase="Delete this TrackBack (x)">" />
-<mt:if name="is_ip_filter"><mt:if name="blog_id">
-<input type="button" onclick="doBanIP('<mt:var name="filter_val">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')" name="banip" value="<__trans phrase="Ban This IP">" />
-</mt:if></mt:if>
-</div>
-
-<div class="button-bar-alt">
-<mt:include name="include/itemset_action_widget.tmpl">
-</div>
-
-</div>
-
+<mtapp:setting
+    id="text"
+    label="<__trans phrase="TrackBack Text">"
+    hint="<__trans phrase="Excerpt of the TrackBack entry">"
+    show_hint="0">
+    <textarea rows="10" cols="30" name="excerpt" id="excerpt"><mt:var name="excerpt" escape="html"></textarea>
+</mtapp:setting>
 
 <mt:if name="junk_log_loop">
-
 <h3><__trans phrase="Final Feedback Rating">: <mt:var name="junk_score"></h3>
-
-<div class="list" id="junk-log">
 <table cellspacing="0">
 <tr>
 <th id="jl-test"><__trans phrase="Test"></th>
 <th id="jl-score"><__trans phrase="Score"></th>
 <th id="jl-results"><__trans phrase="Results"></th>
 </tr>
-
 <mt:loop name="junk_log_loop">
 <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
 <td><mt:var name="test" escape="html"></td>
@@ -172,24 +191,11 @@
 </tr>
 </mt:loop>
 </table>
-</div>
+</mt:if>
+
+<mt:if name="position_actions_bottom">
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 </mt:if>
 
 </form>
-
-<mt:if name="plugin_action_loop">
-<div class="box" id="plugin-actions-box">
-<h4><__trans phrase="Plugin Actions"></h4>
-<div class="inner">
-<ul>
-<mt:loop name="plugin_action_loop">
-<li><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=edit_ping&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="link_text"></a></li>
-</mt:loop>
-</ul>
-</div>
-</div>
-</mt:if>
-
-</div>
-
 <mt:include name="include/footer.tmpl">

@@ -24,7 +24,7 @@ function smarty_function_mtassetproperty($args, &$ctx) {
         }
         return $filesize;
     } elseif (($args['property'] == 'image_width') || ($args['property'] == 'image_height')) {
-        if ($asset['asset_class'] == 'Image')
+        if ($asset['asset_class'] == 'image')
             return $asset['asset_'.$args['property']];
         else
             return 0;

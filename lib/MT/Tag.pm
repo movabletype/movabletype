@@ -30,6 +30,14 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    return MT->translate('Tag');
+}
+
+sub class_label_plural {
+    return MT->translate('Tags');
+}
+
 sub save {
     my $tag = shift;
     my $name = $tag->name;

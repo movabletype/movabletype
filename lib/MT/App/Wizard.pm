@@ -435,6 +435,7 @@ sub configure {
         }
     }
     $param{db_loop} = $dbmod;
+    $param{one_db} = $#$dbmod == 0; # db module is only one or not
     $param{config} = $app->serialize_config(%param);
 
     my $ok = 1;

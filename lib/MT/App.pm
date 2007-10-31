@@ -48,6 +48,10 @@ sub core_list_filters {
     {}
 }
 
+sub core_widgets {
+    {}
+}
+
 sub __massage_page_action {
     my ($app, $action, $type) = @_;
     return if exists $action->{__massaged};
@@ -87,34 +91,54 @@ sub __massage_page_action {
 sub filter_conditional_list {
     my ($app, $list, @param) = @_;
 
+    # $list may either be an array of things or a hashref of things
+
     my $perms = $app->permissions;
     my $user = $app->user;
     my $admin = ($user && $user->is_superuser())
         || ($perms && $perms->blog_id && $perms->has('administer_blog'));
 
-    my @list;
-    if (@$list) {
-        # translate the link text here...
-        foreach my $item (@$list) {
-            if (my $p = $item->{permission}) {
-                my $allowed = 0;
-                my @p = split /,/, $p;
-                foreach my $p (@p) {
-                    my $perm = 'can_' . $p;
-                    $allowed = 1, last if $admin || ($perms && $perms->can($perm) && $perms->$perm());
-                }
-                next unless $allowed;
+    my $test = sub {
+        my ($item) = @_;
+        if (my $p = $item->{permission}) {
+            my $allowed = 0;
+            my @p = split /,/, $p;
+            foreach my $p (@p) {
+                my $perm = 'can_' . $p;
+                $allowed = 1, last
+                    if $admin || ($perms && $perms->can($perm) && $perms->$perm());
             }
-            if (my $cond = $item->{condition}) {
-                if (!ref($cond)) {
-                    $cond = $item->{condition} = $app->handler_to_coderef($cond);
-                }
-                next unless $cond->(@param);
-            }
-            push @list, $item;
+            return 0 unless $allowed;
         }
+        if (my $cond = $item->{condition}) {
+            if (!ref($cond)) {
+                $cond = $item->{condition} = $app->handler_to_coderef($cond);
+            }
+            return 0 unless $cond->(@param);
+        }
+        return 1;
+    };
+
+    if (ref $list eq 'ARRAY') {
+        my @list;
+        if (@$list) {
+            # translate the link text here...
+            foreach my $item (@$list) {
+                push @list, $item if $test->($item);
+            }
+        }
+        return \@list;
+    } elsif (ref $list eq 'HASH') {
+        my %list;
+        if (%$list) {
+            # translate the link text here...
+            foreach my $item (keys %$list) {
+                $list{$item} = $list->{$item}
+                    if $test->($list->{$item});
+            }
+        }
+        return \%list;
     }
-    return \@list;
 }
 
 sub page_actions {
@@ -184,6 +208,7 @@ sub listing {
     my $args    = $opt->{args}    || $opt->{Args} || {};
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
     my $json    = $opt->{json}    || $app->param('json');
+    my $pre_build = $opt->{pre_build} if ref($opt->{pre_build}) eq 'CODE';
     $param->{json} = 1 if $json;
 
     my $class = $app->model($type) or return;
@@ -197,19 +222,21 @@ sub listing {
     # handle search parameter
     if ( my $search = $app->param('search') ) {
         $app->param( 'do_search', 1 );
-        my $search_param = $app->do_search_replace();
-        if ($hasher) {
-            my $data = $search_param->{object_loop};
-            if ( $data && @$data ) {
-                foreach my $row (@$data) {
-                    my $obj = $row->{object};
-                    $row = $obj->column_values();
-                    $hasher->( $obj, $row );
+        if ($app->can('do_search_replace')) {
+            my $search_param = $app->do_search_replace();
+            if ($hasher) {
+                my $data = $search_param->{object_loop};
+                if ( $data && @$data ) {
+                    foreach my $row (@$data) {
+                        my $obj = $row->{object};
+                        $row = $obj->column_values();
+                        $hasher->( $obj, $row );
+                    }
                 }
             }
+            $param->{$_} = $search_param->{$_} for keys %$search_param;
+            $param->{limit_none} = 1;
         }
-        $param->{$_} = $search_param->{$_} for keys %$search_param;
-        $param->{limit_none} = 1;
     }
     else {
         # handle filter options
@@ -315,7 +342,6 @@ sub listing {
         }
 
         $param->{object_loop} = \@data;
-        $param->{object_type} = $type;
 
         # handle pagination
         my $pager = {
@@ -326,6 +352,7 @@ sub listing {
             chronological => $param->{list_noncron} ? 0 : 1,
             return_args   => $app->make_return_args,
         };
+        $param->{object_type} ||= $type;
         require JSON;
         $param->{pager_json} = $json ? $pager : JSON::objToJson($pager);
 
@@ -349,10 +376,9 @@ sub listing {
         $param->{is_superuser} = 1;
     }
 
-    $app->load_list_actions( $type, $param );
-
     if ($json) {
         local $app->{defer_build_page} = 0;
+        $pre_build->($param) if $pre_build;
         my $html = $app->build_page( $tmpl, $param );
         my $data = {
             html  => $html,
@@ -364,6 +390,8 @@ sub listing {
         $app->{no_print_body} = 1;
     }
     else {
+        $app->load_list_actions( $type, $param );
+        $pre_build->($param) if $pre_build;
         $no_html ? $param : $app->build_page( $tmpl, $param );
     }
 }
@@ -1294,13 +1322,14 @@ sub show_error {
         $error = '<pre>'.encode_html($error).'</pre>';
     } else {
         $error = encode_html($error);
+        $error =~ s!(https?://\S+)!<a href="$1" target="_blank">$1</a>!g;
     }
-    $error =~ s!(http://\S+)!<a href="$1" target="_blank">$1</a>!g;
     $tmpl = $app->load_tmpl('error.tmpl') or
         return "Can't load error template; got error '" . $app->errstr .
                "'. Giving up. Original error was <pre>$error</pre>";
     $tmpl->param(ERROR => $error);
-    if ($mode =~ m/dialog/) {
+    my $type = $app->param('__type') || '';
+    if ($type eq 'dialog') {
         $tmpl->param(NAME => $app->{name} || 'dialog' );
         $tmpl->param(GOBACK => $app->{goback} || 'closeDialog()');
         $tmpl->param(VALUE => $app->{value} || $app->translate("Close"));
@@ -1656,6 +1685,243 @@ sub find_file {
     undef;
 }
 
+sub load_widgets {
+    my $app = shift;
+    my ($page, $param, $default_widgets) = @_;
+
+    my $user = $app->user;
+    my $blog = $app->blog;
+    my $blog_id = $blog->id if $blog;
+    my $scope = $blog_id ? 'blog:'.$blog_id : 'system';
+    my $resave_widgets = 0;
+    my $widget_set = $page . ':' . $scope;
+
+    # TBD: Fetch list of widgets from user object, or
+    # use a default list
+
+    my $widget_store = $user->widgets;
+    my $widgets = $widget_store->{$widget_set} if $widget_store;
+
+    unless ($widgets) {
+        $resave_widgets = 1;
+        $widgets = $default_widgets;
+
+        # add the 'new_user' / 'new_install' widget...
+        unless ($widget_store) {
+            # Special case for the MT CMS dashboard and initial
+            # widgets used there.
+            if ($page eq 'dashboard') {
+                if ($user->id == 1) {
+                    # first user! good enough guess at this.
+                    $widgets->{new_install} = { order => -1, set => 'main' };
+                } else {
+                    $widgets->{new_user} = { order => -1, set => 'main' };
+                }
+            }
+        }
+    }
+
+    my $all_widgets = $app->registry("widgets");
+    $all_widgets = $app->filter_conditional_list($all_widgets, $page, $scope);
+
+    my @loop;
+    my $num = 0;
+    my @ordered_list;
+    my %orders;
+    my $order_num = 0;
+    foreach my $widget_id (keys %$widgets) {
+        my $widget_param = $widgets->{$widget_id} ||= {};
+        my $order;
+        if (!($order = $widget_param->{order})) {
+            $order = ++$order_num;
+            $widget_param->{order} = $order_num;
+            $resave_widgets = 1;
+        }
+        push @ordered_list, $widget_id;
+        $orders{$widget_id} = $order;
+    }
+    @ordered_list = sort { $orders{$a} <=> $orders{$b} } @ordered_list;
+
+    # The list of widgets in a user's record
+    # is going to look like this:
+    #    xxx-1
+    #    xxx-2
+    #    yyy-1
+    #    zzz
+    # Any numeric suffix is just a means to distinguish
+    # the instance of the widget from other instances.
+    # The actual widget id is this minus the instance number.
+    foreach my $widget_inst (@ordered_list) {
+        my $widget_id = $widget_inst;
+        $widget_id =~ s/-\d+$//;
+        my $widget = $all_widgets->{$widget_id};
+        next unless $widget;
+        my $widget_cfg = $widgets->{$widget_inst} || {};
+        my $widget_param = $widget_cfg->{param} || {};
+        my $tmpl_name = $widget->{template};
+
+        my $p = $widget->{plugin};
+        my $tmpl;
+        if ($p) {
+            $tmpl = $p->load_tmpl($tmpl_name);
+            $app->set_default_tmpl_params($tmpl);
+        } else {
+            # This is probably never used since all
+            # widgets in reality are provided through
+            # some sort of component/plugin.
+            $tmpl = $app->load_tmpl($tmpl_name);
+        }
+        next unless $tmpl;
+
+        $num++;
+        my $set = $widget->{set} || $widget_cfg->{set} || 'main';
+        local $param->{blog_id} = $blog_id;
+        local $param->{widget_block} = $set;
+        local $param->{widget_id} = $widget_inst;
+        local $param->{widget_scope} = $widget_set;
+        local $param->{widget_singular} = $widget->{singular} || 0;
+        local $param->{magic_token} = $app->current_magic;
+        my @opt_names = keys %$widget_param;
+        local @{$param}{@opt_names};
+        $param->{$_} = $widget_param->{$_} for @opt_names;
+        if (my $h = $widget->{code} || $widget->{handler}) {
+            $h = $app->handler_to_coderef($h);
+            $h->($app, $tmpl, $param);
+        }
+        $tmpl->param($param);
+        my $content = $tmpl->output($param);
+        if (!defined $content) {
+            return $app->error("Error processing template for widget $widget_id: " . $tmpl->errstr);
+        }
+        $param = $tmpl->param;
+        $param->{$set} ||= '';
+        $param->{$set} .= $content;
+    }
+
+    if ($resave_widgets) {
+        my $widget_store = $user->widgets();
+        $widget_store->{$widget_set} = $widgets;
+        $user->widgets($widget_store);
+        $user->save;
+    }
+
+    return $param;
+}
+
+sub update_widget_prefs {
+    my $app = shift;
+    my $user = $app->user;
+    $app->validate_magic or return;
+
+    my $blog = $app->blog;
+    my $blog_id = $blog->id if $blog;
+    my $widget_id = $app->param('widget_id');
+    my $action = $app->param('widget_action');
+    my $widget_scope = $app->param('widget_scope');
+    my $widgets = $user->widgets || {};
+    my $these_widgets = $widgets->{$widget_scope} ||= {};
+    my $resave_widgets;
+    my $result = {};
+    if (($action eq 'remove') && $these_widgets) {
+        $result->{message} = $app->translate("Removed [_1].", $widget_id);
+        if (delete $these_widgets->{$widget_id}) {
+            $resave_widgets = 1;
+        }
+    }
+    if ($action eq 'add') {
+        my $set = $app->param('widget_set') || 'main';
+        my $all_widgets = $app->registry("widgets");
+        if (my $widget = $all_widgets->{$widget_id}) {
+            my $widget_inst = $widget_id;
+            unless ($widget->{singular}) {
+                my $num = 1;
+                while (exists $these_widgets->{$widget_inst}) {
+                    $widget_inst = $widget_id . '-' . $num;
+                    $num++;
+                }
+            }
+            $these_widgets->{$widget_inst} = { set => $set };
+        }
+        $resave_widgets = 1;
+    }
+    if (($action eq 'save') && $these_widgets) {
+        my %all_params = $app->param_hash;
+        my $refresh = $all_params{widget_refresh} ? 1 : 0;
+        delete $all_params{$_}
+          for qw( json widget_id widget_action __mode widget_set widget_singular widget_refresh magic_token widget_scope return_args );
+        $these_widgets->{$widget_id}{param} = {};
+        $these_widgets->{$widget_id}{param}{$_} = $all_params{$_}
+            for keys %all_params;
+        $widgets->{$widget_scope} = $these_widgets;
+        $resave_widgets = 1;
+        if ($refresh) {
+            $result->{html} = 'widget!'; # $app->render_widget();
+        }
+    }
+    if ($resave_widgets) {
+        $user->widgets($widgets);
+        $user->save;
+    }
+    if ($app->param('json')) {
+        return $app->json_result($result);
+    } else {
+        $app->add_return_arg( 'saved' => 1 );
+        $app->call_return;
+    }
+}
+
+sub load_widget_list {
+    my $app = shift;
+    my ($page, $param, $default_set) = @_;
+
+    my $blog = $app->blog;
+    my $blog_id = $blog->id if $blog;
+    my $scope = $page . ':' . ($blog_id ? 'blog:'.$blog_id : 'system');
+
+    my $user_widgets = $app->user->widgets || {};
+    $user_widgets = $user_widgets->{$scope} || $default_set || {};
+    my %in_use;
+    foreach my $uw (keys %$user_widgets) {
+        $uw =~ s/-\d+$//;
+        $in_use{$uw} = 1;
+    }
+
+    my $all_widgets = $app->registry("widgets");
+    my $widgets = [];
+    # First, filter out any 'singular' widgets that are already
+    # in the user's widget bag
+    foreach my $id (keys %$all_widgets) {
+        my $w = $all_widgets->{$id};
+        if ($w->{singular}) {
+            # don't allow multiple widgets
+            next if exists $in_use{$id};
+        }
+        $w->{id} = $id;
+        push @$widgets, $w;
+    }
+    # Now filter remaining widgets based on any permission
+    # or declared condition
+    $widgets = $app->filter_conditional_list($widgets, $page, $scope);
+    # Finally, build the widget loop, but don't include
+    # any widgets that are unlabeled, since these are
+    # added by the system and cannot be manually added.
+    my @widget_loop;
+    foreach my $w (@$widgets) {
+        my $label = $w->{label} or next;
+        $label = $label->() if ref($label) eq 'CODE';
+        next unless $label;
+        push @widget_loop, {
+            widget_id => $w->{id},
+            ($w->{set} ? ( widget_set => $w->{set} ) : ()),
+            widget_label => $label,
+        }
+    }
+    @widget_loop = sort { $a->{widget_label} cmp $b->{widget_label} }
+        @widget_loop;
+    $param->{widget_scope} = $scope;
+    $param->{all_widget_loop} = \@widget_loop;
+}
+
 sub load_list_actions {
     my $app = shift;
     my ( $type, $param, @p ) = @_;
@@ -1857,7 +2123,7 @@ sub build_page {
     my $blog = $app->blog;
     $tmpl->context()->stash('blog', $blog) if $blog;
 
-    if ($app->{defer_build_page}) {
+    if ($app->{defer_build_page} && !($app->{component})) {
         $tmpl->{__file} = $tmpl_file if $tmpl_file;
         $tmpl->param($param);
         return $tmpl;
@@ -1988,14 +2254,16 @@ sub return_args {
 sub add_return_arg {
     my $app = shift;
     if (scalar @_ == 1) {
-        $app->{return_args} .= '&' . shift;
+        $app->{return_args} .= '&' if $app->{return_args};
+        $app->{return_args} .= shift;
     } else {
         my (%args) = @_;
         foreach my $a (sort keys %args) {
+            $app->{return_args} .= '&' if $app->{return_args};
             if (ref $args{$a} eq 'ARRAY') {
-                $app->{return_args} .= '&' . $a . '=' . encode_url($_) foreach @{$args{$a}};
+                $app->{return_args} .= $a . '=' . encode_url($_) foreach @{$args{$a}};
             } else {
-                $app->{return_args} .= '&' . $a . '=' . encode_url($args{$a});
+                $app->{return_args} .= $a . '=' . encode_url($args{$a});
             }
         }
     }

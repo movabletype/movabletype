@@ -71,7 +71,7 @@
         <mt:if name="published_url">
             <li><a href="<mt:var name="published_url">" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
         </mt:if>
-            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;tab=<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group"$>"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;tab=<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
             <li><a href="#" onclick="return openManual('foo', 'bar')" class="icon-left icon-related help-link"><__trans phrase="Template tag reference"></a></li>
         </ul>
     </mtapp:widget>
@@ -337,7 +337,7 @@ function togglePreferred(checkbox, mapid) {
 
 <mt:if name="type" eq="index">
 <mtapp:setting
-    label="Template Type"
+    label="<__trans pharse="Template Type">"
     id="identifier"
     help_page="templates"
     help_section="template_type">
@@ -349,19 +349,7 @@ function togglePreferred(checkbox, mapid) {
 </mt:loop>
 </select>
 </mtapp:setting>
-<mt:else><mt:if name="type_archive">
-<mtapp:setting
-    label="Archive Template Type"
-    id="identifier"
-    help_page="templates"
-    help_section="template_type">
-<select name="archive_type" id="archive_type" class="full-width">
-<mt:loop name="new_archive_types">
-<option value="<mt:var name="key" escape="html">"><$mt:var name="label" escape="html"$></option>
-</mt:loop>
-</select>
-</mtapp:setting>
-</mt:if></mt:if>
+</mt:if>
 
 <mt:if name="has_outfile">
 <mtapp:setting

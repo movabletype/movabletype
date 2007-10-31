@@ -1012,10 +1012,11 @@ function create_cat_expr_function($expr, &$cats, $param) {
                 $child_cats = array();
                 while ($c = array_shift($kids)) {
                     $child_cats[$c['category_id']] = $c;
-                    $children = $mt->db->fetch_categories(array('category_id' => $c['category_id'], 'children' => 1, 'show_empty' => 1));
+                    $children = $mt->db->fetch_categories(array('category_id' => $c['category_id'], 'children' => 1, 'show_empty' => 1, 'class' => $c['category_class']));
                     if ($children) {
-                        foreach ($children as $child)
+                        foreach ($children as $child) {
                             $kids[] = $child;
+                        }
                     }
                 }
                 $repl = '';

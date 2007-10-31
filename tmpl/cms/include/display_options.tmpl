@@ -1,5 +1,5 @@
 <mtapp:widget
-    id="display-options"
+    id="display-options-widget"
     label="<__trans phrase="Display Options">"
     label_link="javascript:void(0)"
     label_onclick="return toggleEntryDisplayOptions();">
@@ -9,16 +9,16 @@
         <input type="hidden" name="return_args" value="<mt:var name="RETURN_ARGS" escape="HTML">" />
         <mtapp:setting
             id="per_page"
-            label="<__trans phrase="Show">"
+            label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
             label_class="display-options">
             <select name="limit">
-                <option value="5"<mt:if name="LIMIT_5"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row]" params="5"></option>
-                <option value="10"<mt:if name="LIMIT_10"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row]" params="10"></option>
-                <option value="15"<mt:if name="LIMIT_15"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row]" params="15"></option>
-                <option value="20"<mt:if name="LIMIT_20"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row]" params="20"></option>
-                <option value="50"<mt:if name="LIMIT_50"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row]" params="50"></option>
-                <option value="75"<mt:if name="LIMIT_75"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row]" params="75"></option>
-                <option value="100"<mt:if name="LIMIT_100"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row]" params="100"></option>
+                <option value="5"<mt:if name="LIMIT_5"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="5"></option>
+                <option value="10"<mt:if name="LIMIT_10"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="10"></option>
+                <option value="15"<mt:if name="LIMIT_15"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="15"></option>
+                <option value="20"<mt:if name="LIMIT_20"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="20"></option>
+                <option value="50"<mt:if name="LIMIT_50"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="50"></option>
+                <option value="75"<mt:if name="LIMIT_75"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="75"></option>
+                <option value="100"<mt:if name="LIMIT_100"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="100"></option>
             </select>
         </mtapp:setting>
                 
@@ -28,8 +28,8 @@
             label="<__trans phrase="View">"
             label_class="display-options">
             <ul>
-                <li><input type="radio" name="verbosity" value="compact" <mt:unless name="VIEW_EXPANDED">checked="checked"</mt:unless> class="rb" /> <__trans phrase="Compact"></li>
-                <li><input type="radio" name="verbosity" value="expanded" <mt:if name="VIEW_EXPANDED">checked="checked"</mt:if> class="rb" /> <__trans phrase="Expanded"></li>
+                <li><input type="radio" name="verbosity" value="compact" <mt:unless name="VIEW_EXPANDED">checked="checked"</mt:unless> id="view-compact" class="rb" /> <label for="view-compact"><__trans phrase="Compact"></label></li>
+                <li><input type="radio" name="verbosity" value="expanded" <mt:if name="VIEW_EXPANDED">checked="checked"</mt:if> id="view-expanded" class="rb" /> <label for="view-expanded"><__trans phrase="Expanded"></label></li>
             </ul>
         </mtapp:setting>
 </mt:if>
@@ -38,9 +38,9 @@
             label="<__trans phrase="Actions">"
             label_class="display-options">
             <ul>
-                <li><input type="radio" name="actions" value="below" <mt:unless name="POSITION_ACTIONS_BOTH"><mt:if name="POSITION_ACTIONS_BOTTOM">checked="checked"</mt:if></mt:unless> class="rb" /> <__trans phrase="Below"></li>
-                <li><input type="radio" name="actions" value="both" <mt:if name="POSITION_ACTIONS_BOTH">checked="checked"</mt:if> class="rb" /> <__trans phrase="Both"></li>
-                <li><input type="radio" name="actions" value="above" <mt:unless name="POSITION_ACTIONS_BOTH"><mt:if name="POSITION_ACTIONS_TOP">checked="checked"</mt:if></mt:unless> class="rb" /> <__trans phrase="Above"></li>
+                <li><input type="radio" name="actions" value="below" <mt:unless name="POSITION_ACTIONS_BOTH"><mt:if name="POSITION_ACTIONS_BOTTOM">checked="checked"</mt:if></mt:unless> id="view-actions-top" class="rb" /> <label for="view-actions-top"><__trans phrase="Below"></label></li>
+                <li><input type="radio" name="actions" value="both" <mt:if name="POSITION_ACTIONS_BOTH">checked="checked"</mt:if> id="view-actions-both" class="rb" /> <label for="view-actions-both"><__trans phrase="Both"></label></li>
+                <li><input type="radio" name="actions" value="above" <mt:unless name="POSITION_ACTIONS_BOTH"><mt:if name="POSITION_ACTIONS_TOP">checked="checked"</mt:if></mt:unless> id="view-actions-bottom" class="rb" /> <label for="view-actions-bottom"><__trans phrase="Above"></label></li>
             </ul>
         </mtapp:setting>
 <mt:unless name="LIST_NONCRON">
@@ -50,8 +50,8 @@
             label="<__trans phrase="Date Format">"
             label_class="display-options">
             <ul>
-                <li><input type="radio" name="dates" value="relative" <mt:if name="DATES_RELATIVE">checked="checked"</mt:if> class="rb" /> <__trans phrase="Relative"></li>
-                <li><input type="radio" name="dates" value="full" <mt:if name="DATES_FULL">checked="checked"</mt:if> class="rb" /> <__trans phrase="Full"></li>
+                <li><input type="radio" name="dates" value="relative" <mt:if name="DATES_RELATIVE">checked="checked"</mt:if> id="view-relative-date" class="rb" /> <label for="view-relative-date"><__trans phrase="Relative"></label></li>
+                <li><input type="radio" name="dates" value="full" <mt:if name="DATES_FULL">checked="checked"</mt:if> id="view-full-date" class="rb" /> <label for="view-full-date"><__trans phrase="Full"></label></li>
             </ul>
         </mtapp:setting>
     </mt:unless>

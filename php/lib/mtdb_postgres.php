@@ -30,7 +30,7 @@ class MTDatabase_postgres extends MTDatabaseBase {
         return $sql;
     }
     function limit_by_day_sql($column, $days) {
-        return '(' . $column . '+\'' . $days . ' days\' >= current_timestamp)';
+        return '(' . $column . '+\'' . $days . ' days\' >= current_date)';
     }
 
     function entries_recently_commented_on_sql($subsql) {

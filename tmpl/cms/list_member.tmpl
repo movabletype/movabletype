@@ -1,0 +1,168 @@
+<$mt:setvar name="list_members" value="1"$>
+<mt:setvarblock name="page_title"><__trans phrase="Members"></mt:setvarblock>
+<mt:setvarblock name="content_header"></mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="quickfilters"
+        label="<__trans phrase="Quickfilters">">
+        <$mtapp:listfilters$>
+    </mtapp:widget>
+    <$mt:include name="include/display_options.tmpl"$>
+</mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript">
+    <!--
+    function enableFilterButton() {
+        getByID("filter-button").style.display = "inline";
+    }
+    function toggleFilter() {
+        var filterActive = getByID("filter-title");
+        if (filterActive.style.display == "none") {
+            filterActive.style.display = "block";
+            getByID("filter-select").style.display = "none";
+        } else {
+            filterActive.style.display = "none";
+            getByID("filter-select").style.display = "block";<mt:unless name="filter">setFilterCol('status');</mt:unless>
+        }
+    }
+
+    function setFilterCol(choice) {
+        var sel = getByID('filter-select');
+        if (!sel) return;
+        sel.className = "filter-" + choice;
+        var fld = getByID('filter-col');
+        if (choice == 'type')
+            fld.selectedIndex = 0;
+        else if (choice == 'commenter')
+            fld.selectedIndex = 1;
+        col_span = getByID("filter-text-col");
+        if (fld.selectedIndex > -1 && col_span)
+            col_span.innerHTML = '<strong>' +
+                fld.options[fld.selectedIndex].text + '</strong>';
+    }
+
+    var tableSelect;
+    function init()
+    {
+        // setup
+        tableSelect = new TC.TableSelect( "selector" );
+        tableSelect.rowSelect = true;
+        setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+        setFilterVal('<mt:var name="filter_val">');
+    </mt:if>
+    }
+
+    TC.attachLoadEvent( init );
+    // -->
+    </script>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+    <mt:if name="is_administrator">
+    <input onclick="setObjectStatus(this.form, '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 1)" type="button" value="<__trans phrase="_USER_ENABLE" escape="js">" accesskey="e" title="<__trans phrase="Enable selected users (e)">" />
+    <input onclick="var sysadmin = getByID('sysadmin'); if (sysadmin &amp;&amp; sysadmin.checked) { alert('<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">'); sysadmin.click(); } setObjectStatus(this.form, '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 0)" type="button" value="<__trans phrase="_USER_DISABLE" escape="js">" accesskey="d" title="<__trans phrase="Disable selected users (d)">" />
+    </mt:if>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<ul class="actions-foo">
+        <mt:if name="group_support">
+        <mt:if name="can_add_groups">
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a group to this blog">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a group to this blog"></a>
+    </li>
+        </mt:if>
+        </mt:if>
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a user to this blog">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a user to this blog"></a>
+    </li>
+</ul>
+
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+<form id="filter-form" method="get" action="<mt:var name="mt_url">">
+    <input type="hidden" name="__mode" value="list_member" />
+<mt:if name="blog_id">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+</mt:if>
+    <input id="filter" type="hidden" name="filter" value="" />
+    <input id="filter_val" type="hidden" name="filter_val" value="" />
+    <div class="filter">
+        <div id="filter-title">
+    <mt:unless name="filter">
+            <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
+            <a href="#" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
+    <mt:else>
+            <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="Showing only users whose [_1] is [_2]." params='<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a>
+            <a href="<mt:var name="script_url">?__mode=list_member<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="filter-link">[ <__trans phrase="remove"> ]</a>
+    </mt:unless>
+        </div>
+        <div id="filter-select" style="display: none">
+            <__trans phrase="Show only [_1] where" params="<$mt:var name="object_label_plural"$>">
+            <!-- begin filter form -->
+            <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton();">
+                <option value="status"><__trans phrase="_USER_STATUS_CAPTION"></option>
+            </select>
+            <__trans phrase="is">
+            <span id="filter-status" style="display: none">
+                <select id="status-val" name="filter_val" onchange="enableFilterButton()">
+                    <option value="1"><__trans phrase="enabled"></option>
+                    <option value="2"><__trans phrase="disabled"></option>
+                </select>
+            </span>
+            <!-- end filter form -->
+            &nbsp;
+            <input type="button" value="<__trans phrase="Filter">" id="filter-button" style="display: none" onclick="return execFilter(this.form)" />
+            <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />
+        </div>
+    </div>
+</form>
+    </div>
+</div>
+
+<mtapp:listing>
+    <mt:if __first__>
+        <thead>
+        <tr>
+        <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+        <th id="at-flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+        <th id="at-username"><__trans phrase="Username"></th>
+        <th id="at-name"><__trans phrase="Name"></th>
+        <th id="at-email"><__trans phrase="Email"></th>
+        <th id="at-url"><__trans phrase="URL"></th>
+        <th id="at-created"><__trans phrase="Created By"></th>
+        </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+        <td class="cb">
+
+        <input<mt:if name="is_administrator"><mt:if name="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<mt:var name="id">" class="select" />
+
+        </td>
+        <mt:if name="usertype_author">
+        <td class="user-status-<mt:if name="status_enabled">enabled<mt:else>disabled</mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="status_enabled"><__trans phrase="_USER_ENABLED"><mt:else><__trans phrase="_USER_DISABLED"></mt:if>" width="7" height="9" />
+        </td>
+
+        <td><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+
+        <mt:else>
+        <td class="<mt:if name="status_trusted">status-trusted<mt:else><mt:if name="status_enabled">user-status-enabled<mt:else>user-status-disabled</mt:if></mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="status_trusted"><__trans phrase="Trusted commenter"><mt:else><__trans phrase="Commenter"></mt:if>" width="7" height="9" />
+        </td>
+
+        <td><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a> (c)</td>
+        </mt:if>
+        <td><mt:if name="nickname"><mt:var name="nickname" escape="html"><mt:else>&nbsp;</mt:if></td>
+        <td class="status-email"><mt:if name="email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+        <td class="status-link"><mt:if name="url"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+        <td><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
+        </tr>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+</mtapp:listing>
+<mt:include name="include/footer.tmpl">

@@ -46,7 +46,7 @@ sub set_score {
     $s->save
       or return $obj->error(
         MT->translate(
-            'Can not set score to the object \'[_1]\'(ID: [_2])',
+            "Can not set score to the object '[_1]'(ID: [_2])",
             $obj->datasource, $obj->id
         )
       );

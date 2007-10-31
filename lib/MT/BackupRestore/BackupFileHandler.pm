@@ -177,9 +177,10 @@ sub end_element {
                     $exists = 1;
                     $self->{objects}->{"$class#$old_id"} = $tag;
                     $self->{callback}->(
-                        MT->translate("Tag '[_1]' exists in the system.\n",
+                        MT->translate("Tag '[_1]' exists in the system.",
                             $obj->name)
                     );
+                    $self->{callback}->("\n");
                 }
             } elsif ('trackback' eq $name) {
                 my $term;
@@ -192,12 +193,12 @@ sub end_element {
                 if (my $tb = $class->load($term)) {
                     $exists = 1;
                     my $message = exists($term->{entry_id})
-                        ?   MT->translate("Trackback for entry (ID: [_1]) already exists in the system.\n",
+                        ?   MT->translate("Trackback for entry (ID: [_1]) already exists in the system.",
                                 $obj->entry_id)
-                        :   MT->translate("Trackback for category (ID: [_1]) already exists in the system.\n",
+                        :   MT->translate("Trackback for category (ID: [_1]) already exists in the system.",
                                 $obj->category_id);
                     $self->{objects}->{"$class#$old_id"} = $tb;
-                    $self->{callback}->($message);
+                    $self->{callback}->("$message\n");
                 }
             }
             unless ($exists) {

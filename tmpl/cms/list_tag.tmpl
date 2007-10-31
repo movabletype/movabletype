@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Tags"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<$mt:var name="object_label_plural"$>"></mt:setvarblock>
 <mt:setvar name="organize-tags" value="1">
 <mt:setvarblock name="content_header">
     <mt:if name="saved">
@@ -28,6 +28,8 @@
 
     <script type="text/javascript">
     <!--
+//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?");
+//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?");
     var current_edit = 0;
     var old_tag_name = '';
     <mt:if name="blog_id">var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?";

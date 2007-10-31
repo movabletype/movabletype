@@ -458,7 +458,7 @@ class MTDatabaseBase extends ezsql {
         $entry_list = array();
 
         # Adds a category filter to the filters list.
-        $cat_class = 'category'; 
+        $cat_class = 'category';
         if (!isset($args['class'])) {
             $args['class'] = 'entry';
         }
@@ -547,9 +547,9 @@ class MTDatabaseBase extends ezsql {
             }
             
             if (isset($blog_ctx_arg))
-                $tags =& $this->fetch_entry_tags(array($blog_ctx_arg, 'tag' => $tag_arg, 'include_private' => $include_private));
+                $tags =& $this->fetch_entry_tags(array($blog_ctx_arg, 'tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class']));
             else
-                $tags =& $this->fetch_entry_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg, 'include_private' => $include_private));
+                $tags =& $this->fetch_entry_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class']));
             if (!is_array($tags)) $tags = array();
             $cexpr = create_tag_expr_function($tag_arg, $tags);
 
@@ -705,7 +705,6 @@ class MTDatabaseBase extends ezsql {
         } else {
             $sql = $this->apply_limit_sql($sql . " <LIMIT>", $limit, $offset);
         }
-
         $result = $this->query_start($sql);
         if (!$result) return null;
 
@@ -835,19 +834,21 @@ class MTDatabaseBase extends ezsql {
 
         # load tags
         if (isset($args['entry_id'])) {
-            if (!isset($args['tags'])) {
-                if (isset($this->_entry_tag_cache[$args['entry_id']]))
+            if (!isset($args['tags']) && !isset($args['tag'])) {
+                if (isset($this->_entry_tag_cache[$args['entry_id']])) {
                     return $this->_entry_tag_cache[$args['entry_id']];
+                }
             }
             $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['entry_id']).')';
         }
 
         $blog_filter = $this->include_exclude_blogs($args);
         if ($blog_filter == '' and isset($args['blog_id'])) {
-            if (!isset($args['tags'])) {
+            if (!isset($args['tags']) && !isset($args['tag'])) {
                 if (!isset($args['entry_id'])) {
-                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"]))
+                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
                         return $this->_blog_tag_cache[$args['blog_id'].":$class"];
+                    }
                 }
             }
             $blog_filter = ' = '. intval($args['blog_id']);
@@ -1174,10 +1175,12 @@ class MTDatabaseBase extends ezsql {
         # make filters
         $filters = array();
 
+        $entend_column = '';
         # Adds blog filter
         if (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = "left outer join mt_permission on permission_author_id = author_id and permission_blog_id = $blog_id";
+            $extend_column = ', mt_permission.*';
         }
 
         # Adds author filter
@@ -1234,11 +1237,12 @@ class MTDatabaseBase extends ezsql {
         $sql = "
             select $unique_filter
                    mt_author.*
+                   $extend_column
               from mt_author
                    $blog_filter
                    $entry_filter
-           $filter
-           $order_sql
+              $filter
+              $order_sql
                    <LIMIT>
         ";
         $sql = $this->apply_limit_sql($sql, $args['lastn'], $args['offset']);
@@ -1294,8 +1298,10 @@ class MTDatabaseBase extends ezsql {
 
     function fetch_sum_scores($namespace, $datasource, $order, $filters) {
         $othertables = '';
+        $otherwhere = '';
         if ($datasource == 'asset') {
             $othertables = ', mt_author';
+            $otherwhere = 'AND (objectscore_author_id = author_id)';
         }
         $join_column = $datasource . '_id';
         $join_where = "AND ($join_column = objectscore_object_id)";
@@ -1303,8 +1309,9 @@ class MTDatabaseBase extends ezsql {
             "SELECT SUM(objectscore_score) AS sum_objectscore_score, objectscore_object_id
              FROM mt_objectscore, mt_$datasource $othertables
              WHERE (objectscore_namespace = '$namespace')
-             AND (objectscore_object_ds = '$datasource') 
+             AND (objectscore_object_ds = '$datasource')
              $join_where
+             $otherwhere
              $filters
              GROUP BY objectscore_object_id 
              ORDER BY sum_objectscore_score " . $order;
@@ -1411,10 +1418,15 @@ class MTDatabaseBase extends ezsql {
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
         }
+        $class = 'entry';
+        if (isset($args['class'])) {
+            $class = $args['class'];
+        }
         $count = $this->get_var("
           select count(*)
             from mt_entry
             where entry_status = 2
+            and entry_class='$class'
             $blog_filter
             ");
         return $count;
@@ -2033,6 +2045,7 @@ class MTDatabaseBase extends ezsql {
                     if (!$f($e, $ctx)) continue 2;
                 }
             }
+            $e = $this->expand_meta($e);
             $assets[] = $e;
         }
 

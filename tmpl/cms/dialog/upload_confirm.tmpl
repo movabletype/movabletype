@@ -26,8 +26,9 @@
         <div class="error-message">
             <mtapp:statusmsg
                 id="error-message"
-                class="error">
-                <__trans phrase="Plugin error:"><br /><code style="white-space: pre"><mt:var name="plugin_error"></code>
+                class="alert"
+                can_close="0">
+                <__trans phrase="A file named '[_1]' already exists. Do you want to overwrite this file?" params="<mt:var name="fname" escape="html">">
             </mtapp:statusmsg>
         </div>
     </div>

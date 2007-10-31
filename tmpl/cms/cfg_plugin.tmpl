@@ -5,14 +5,14 @@
         <mt:include name="include/cfg_content_nav.tmpl">
     </MTSetVarBlock>
 <mt:else>
-    <mt:setvar name="page_title" value="<__trans phrase="Plugin Settings: System-wide">">
+    <mt:setvar name="page_title" value="<__trans phrase="Installed Plugins">">
     <mt:setvar name="system-plugin-settings" value="1">
     <mt:setvarblock name="related_content">
         <mtapp:widget
             id="useful-links"
             label="<__trans phrase="Useful links">">
             <ul>
-                <li><a href="<__trans phrase="http://www.sixapart.com/pronet/plugins/">" target="_blank"><__trans phrase="Six Apart Plugin Directory"></a></li>
+                <li><a href="<__trans phrase="http://www.sixapart.com/pronet/plugins/">" target="_blank"><__trans phrase="Find Plugins"></a></li>
             </ul>
         </mtapp:widget>
     </mt:setvarblock>
@@ -20,7 +20,6 @@
 <mt:setvarblock name="plugins"> class="active"</mt:setvarblock>
 <MTSetVarBlock name="content_header">
     <mt:if name="blog_id">
-    <p class="page-desc"><__trans phrase="This screen allows you to control the weblog-level settings of any configurable plugins you've installed.">  <a href="#" onclick="return openManual('blog_settings_plugins', 'index')" class="help-link">?</a></p>
         <mt:if name="saved">
             <mtapp:statusmsg
                 id="saved"
@@ -51,7 +50,6 @@
             </mt:if>
         </mt:if>
     <mt:else>
-    <p class="page-desc"><__trans phrase="_USAGE_PLUGINS">  <a href="#" onclick="return openManual('system_settings_plugins', 'index')" class="help-link">?</a></p>
         <mt:if name="saved">
             <mtapp:statusmsg
                 id="saved"

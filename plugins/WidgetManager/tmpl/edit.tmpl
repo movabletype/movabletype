@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Edit"> <TMPL_VAR NAME=NAME></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Edit Widget Container"></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
     <link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/styles/app.css" type="text/css" />
 </mt:setvarblock>
@@ -7,8 +7,8 @@
 <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>plugins/WidgetManager/js/app.js"></script>
 <script type="text/javascript">
 <!--
-var colWidth = 180;
-var modWidth = 175;
+var colWidth = 300;
+var modWidth = 225;
 var modHeight = 30;
 var gCols;
 
@@ -22,7 +22,7 @@ var topZIndex = 10;
 function checkName() {
         widgetname = document.getElementById('name').value;
         if (!widgetname) {
-            alert('<MT_TRANS phrase="Please use a unique name for this widget manager." escape="js">');
+            alert('<MT_TRANS phrase="Please use a unique name for this widget container." escape="js">');
             return false;
         }
 
@@ -33,7 +33,7 @@ function checkName() {
 
         for (var i=0; i < var2.length; i++) {
             if (var2[i] == widgetname && (widgetname != oldname)) {
-                alert('<MT_TRANS phrase="You already have a widget manager named [_1]. Please use a unique name for this widget manager." params="$name" escape="js">'.replace(/\$name/, widgetname));
+                alert('<MT_TRANS phrase="You already have a widget container named '[_1].' Please use a unique name for this widget manager." params="$name" escape="js">'.replace(/\$name/, widgetname));
                 return false;
             }
         }
@@ -55,7 +55,7 @@ function initialize () {
 	gCols[0].addModule('<TMPL_VAR NAME=ID>');
 </TMPL_LOOP>
 
-	gCols[1] = new Column('available-column', 1, 220);
+	gCols[1] = new Column('available-column', 1, 272);
 
 <TMPL_LOOP NAME=AVAILABLE>
 	gCols[1].addModule('<TMPL_VAR NAME=ID>');
@@ -126,20 +126,20 @@ Column.prototype.moveModule = function (module, index) {
 }
 
 function Module (key, label, row, col, colObj) {
-	this.key = key;
-	this.label = label;
-	this.row = row;
-	this.col = col;
-	this.colObj = colObj;
-	this.node = document.getElementById('module-' + key);
-	this.node.onmousedown = this.dragStart;
-	this.node.module = this;
-	this.x = colObj.startX;
-	this.y = colObj.startY + modHeight * row;
-	this.move(this.x, this.y);
-	this.node.style.width = modWidth + 'px';
-	this.node.style.display = 'block';
-	return this;
+        this.key = key;
+        this.label = label;
+        this.row = row;
+        this.col = col;
+        this.colObj = colObj;
+        this.node = document.getElementById('module-' + key);
+        this.node.onmousedown = this.dragStart;
+        this.node.module = this;
+        this.x = colObj.startX;
+        this.y = colObj.startY + modHeight * row;
+        this.move(this.x, this.y);
+        this.node.style.width = modWidth + 'px';
+        this.node.style.display = 'block';
+        return this;
 }
 
 Module.prototype.move = function (x, y) {
@@ -303,7 +303,7 @@ onload = initialize;
       <fieldset>
       <mtapp:setting
           id="name"
-          label="<__trans phrase="Name">">
+          label="<__trans phrase="Container Name">">
           <input name="name" id="name" value="<TMPL_VAR NAME=NAME>" />
       </mtapp:setting>
 
@@ -311,16 +311,22 @@ onload = initialize;
           id="name"
           label="<__trans phrase="Drag and drop the widgets you want into the <strong>Installed</strong> column.">">
 
-        <div id="stage">
-            <div id="installed-column"><p><MT_TRANS phrase="Installed Widgets"></p></div>
-            <div id="center-column">&nbsp;</div>
-            <div id="available-column"><p><MT_TRANS phrase="Available Widgets"></p></div>
+        <div id="stage" class="pkg">
+            <div id="installed-column" class="pkg"><p><MT_TRANS phrase="Installed Widgets"></p></div>
+            <div id="center-column" class="pkg">&nbsp;</div>
+            <div id="available-column" class="pkg"><p><MT_TRANS phrase="Available Widgets"></p></div>
         
         <TMPL_LOOP NAME=INSTALLED>
-            <div id="module-<TMPL_VAR NAME=ID>" class="module"><a href="javascript:void(0)"><TMPL_VAR NAME=NAME></a></div>
+            <div id="module-<TMPL_VAR NAME=ID>" class="module pkg">
+              <div class="module-name"><a href="javascript:void(0)"><TMPL_VAR NAME=NAME></a></div>
+              <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new">edit</a></div>
+            </div>
         </TMPL_LOOP>
         <TMPL_LOOP NAME=AVAILABLE>
-            <div id="module-<TMPL_VAR NAME=ID>" class="module"><a href="javascript:void(0)"><TMPL_VAR NAME=NAME></a></div>
+            <div id="module-<TMPL_VAR NAME=ID>" class="module pkg">
+              <div class="module-name"><a href="javascript:void(0)"><TMPL_VAR NAME=NAME></a></div>
+              <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new">edit</a></div>
+            </div>
         </TMPL_LOOP>
         
             <div id="stage-drop">&nbsp;</div>

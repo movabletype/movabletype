@@ -400,9 +400,9 @@ sub token_ids {
 sub tokens {
     my $tmpl = shift;
     if (@_) {
-        return $tmpl->{__tokens} = shift;
+        return bless( $tmpl->{__tokens} = shift ), 'MT::Template::Tokens';
     } else {
-        return $tmpl->{__tokens} ||= $tmpl->compile;
+        return bless( $tmpl->{__tokens} ||= $tmpl->compile ), 'MT::Template::Tokens';
     }
 }
 

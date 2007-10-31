@@ -130,7 +130,7 @@ class MTDatabase_sqlite extends MTDatabaseBase {
 
     function limit_by_day_sql($column, $days) {
         return 'datetime(' . $column . ', \'+' .
-            $days . ' days\') >= datetime(\'now\', \'localtime\')';
+            $days . ' days\') >= date(\'now\', \'localtime\')';
     }
 
     function query_start($query)

@@ -2,6 +2,10 @@
 function smarty_function_mtvar($args, &$ctx) {
     // status: complete
     // parameters: name
+    if (array_key_exists($args['value'])) {
+        require_once("function.mtsetvar.php");
+        return smarty_function_mtsetvar($args, $ctx);
+    }
     $vars =& $ctx->__stash['vars'];
     $value = '';
     $name = $args['name'];

@@ -1,5 +1,7 @@
 #! /usr/bin/perl -w
 
+my $wc =0; # New: count the number of words left to translate!
+
 BEGIN {
     my $LANG = $ARGV[0];
     shift @ARGV unless (-e $LANG);
@@ -33,15 +35,19 @@ while (<>) {
         next if ($_ =~ /^\s*$/);
         print $l;
     }
-    if (/^[#\s]+'(.+)' => '(.+)',$/) {
+    if (/^[#\s]+'(.+)' => '(.*)',($|\s*\#)/) { # Now also reads empty/to be translated strings
         my $base = $1; 
         my $trans = $2;
-        if (defined $conv{$base}) {
-	    s/^(\s+)'/$1# '/;
+        unless (defined $conv{$base}) {
+		print $_;
+		$words = wordcount($base);
+		$wc += $words unless ($trans);
         }
         $conv{$base} = 1;
     }
-    print $_;
+    else{
+	    print $_;
+    }
 }
 
 END {
@@ -49,7 +55,17 @@ END {
 
 );
 
+## New words: $wc
+
 1;
 EOF
 
 }
+sub wordcount {
+        my $l = shift;
+    $l =~ s/[`!"$%^&*()_+={[}\];:@~#,.<>?\\\/]/ /g; #`
+    $l =~ s/\ ([ei])\ ([ge])\ / $1.$2./g;
+    my @words = split(/\W*\s+\W*/, $l);         # see the Camel book p.39
+        return ($#words + 1);
+}
+

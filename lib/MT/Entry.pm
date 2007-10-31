@@ -668,6 +668,7 @@ sub sync_assets {
 
 sub save {
     my $entry = shift;
+    my $is_new = $entry->id ? 0 : 1;
 
     ## If there's no basename specified, create a unique basename.
     if (!defined($entry->basename) || ($entry->basename eq '')) {
@@ -731,7 +732,8 @@ sub save {
 
     delete $entry->{__next} if exists $entry->{__next};
     delete $entry->{__previous} if exists $entry->{__previous};
-
+    delete $entry->{__cache}{category}
+        if $is_new && exists $entry->{__cache}{category};
     1;
 }
 

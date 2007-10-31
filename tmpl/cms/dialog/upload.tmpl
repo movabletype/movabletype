@@ -1,8 +1,8 @@
 <$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
 <mt:if name="missing_paths">
-<mt:setvarblock name="page_title"><__trans phrase="You need to configure your weblog."></span></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="You need to configure your blog."></span></mt:setvarblock>
 <mt:else>
-<mt:setvarblock name="page_title"><mt:var name="blog_name" escape="html">:</span> <__trans phrase="Upload New File"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Upload File">: <mt:var name="blog_name" escape="html"></mt:setvarblock>
 </mt:if>
 <mt:include name="dialog/header.tmpl">
 
@@ -19,7 +19,7 @@ function setExtraPath(sel) {
 </script>
 
 <mt:if name="missing_paths">
-<__trans phrase="Before you can upload a file, you need to publish your weblog. <a href="javascript:void(0);" onclick="closeDialog('[_1]');">Click here</a> to configure your weblog's publishing paths and rebuild your weblog." params="<mt:var name="script_url">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">">
+<__trans phrase="Before you can upload a file, you need to publish your blog. <a href="javascript:void(0);" onclick="closeDialog('[_1]');">Click here</a> to configure your blog's publishing paths and rebuild your blog." params="<mt:var name="script_url">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">">
 
 <div class="panel-commands">
 <form onsubmit="return false" onclick="window.focus();">
@@ -43,21 +43,16 @@ function setExtraPath(sel) {
 <input type="hidden" name="entry_insert" value="<mt:var name="entry_insert">" />
 <input type="hidden" name="edit_field" value="<mt:var name="edit_field">" />
 
-<div class="items-wrapper">
-    <span class="modal_added"><__trans phrase="Choose a file from your computer to upload"></span>
-</div>
-
 <p class="page-desc"><img border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="5"></p>
 
 <div class="selector list">
     <div class="upload-data-wrapper">
-    <b><__trans phrase="File to Upload"></b>
+    <b><__trans phrase="Select File to Upload"></b>
     <div class="upload_indent_choices">
-    <p><__trans phrase="Click the button below and select a file on your computer to upload."></p>
     <p><input type="file" name="file" /></p>
     </div>
 
-    <p><b><__trans phrase="Set Upload Path"></b> (<span class="hint"><__trans phrase="Optional">)</span></p>
+    <p><b><__trans phrase="Set Upload Path"></b></span></p>
 
     <div class="upload_indent_choices">
     <p><__trans phrase="_USAGE_UPLOAD" params="<mt:var name="blog_name" escape="html">"></p>

@@ -3,57 +3,19 @@
 #
 # $Id$
 
-package StyleCatcher;
+package StyleCatcher::CMS;
 
 use strict;
-use base 'MT::App';
-use vars qw($VERSION);
 use File::Basename qw(basename);
 
-$VERSION = '1.1';
-use vars qw($DEFAULT_STYLE_LIBRARY);
+our $DEFAULT_STYLE_LIBRARY;
 
-sub init {
-    my $app = shift;
-    $app->SUPER::init(@_) or return;
-    $app->add_methods(
-        view => \&view,
-        gm => \&gm,
-        js => \&js,                     # AJAX
-        apply => \&apply,               # AJAX
-    );
-    $app->{default_mode} = 'view';
-    $app->{requires_login} = 1;
-    $app;
-}
-
-sub init_request {
-    my $app = shift;
-    $app->SUPER::init_request(@_);
+sub style_library {
     $DEFAULT_STYLE_LIBRARY ||= 'http://www.sixapart.com/movabletype/styles/library';
 }
 
-sub build_page {
-    my $app = shift;
-    my $plugin = $app->plugin;
-    if ($plugin) {
-        my $path = $app->static_path;
-        $path .= '/' unless $path =~ m!/$!;
-        $path .= $app->plugin->envelope . "/";
-        $path = $app->base . $path if $path =~ m!^/!;
-        $_[1]->{plugin_static_uri} = $path;
-    }
-    $app->SUPER::build_page(@_);
-}
-
-# passthru for L10N
-sub translate_templatized {
-    my $app = shift;
-    $app->plugin->translate_templatized(@_);
-}
-
 sub file_mgr {
-    my $app = shift;
+    my $app = MT->instance;
     require MT::FileMgr;
     my $filemgr = MT::FileMgr->new('Local')
         or return $app->error(MT::FileMgr->errstr);
@@ -62,42 +24,26 @@ sub file_mgr {
 
 sub view {
     my $app = shift;
-
     my $blog_id = $app->param('blog_id');
-    my $config = $app->plugin->get_config_hash();
-    my $blog_config;
-    if ($blog_id) {
-        $blog_config = $app->plugin->get_config_hash('blog:'.$blog_id);
-    }
-    my $themeroot = $config->{themeroot};
-    my $webthemeroot = $config->{webthemeroot};
 
-    unless ($themeroot && $webthemeroot) {
-        my $errmsg = $app->plugin->translate('StyleCatcher must first be configured system-wide before it can be used.');
+    my $themeroot = File::Spec->catdir($app->static_file_path, 'support', 'themes');
+    my $webthemeroot = $app->static_path . 'support/themes';
+    my $stylelibrary = style_library();
 
-        if ($app->user->is_superuser()) {
-            $errmsg .= '  <a href="'.$app->mt_uri(mode => 'cfg_plugins').'">'. $app->plugin->translate('Configure plugin').'</a>';
-        } 
-
-        return $app->build_page('error.tmpl', {error => $errmsg, GOBACK => $app->{goback} || 'history.back()', VALUE => $app->{value} || $app->plugin->translate('Go Back')});
-    }
-        
-    my $stylelibrary = $blog_config ? $blog_config->{stylelibrary} || $DEFAULT_STYLE_LIBRARY : $DEFAULT_STYLE_LIBRARY;
-
-    my $theme_data = $app->make_themes;
-    my $styled_blogs = $app->fetch_blogs;
+    my $theme_data = make_themes();
+    my $styled_blogs = fetch_blogs();
 
     my @blog_loop;
     my %current_themes;
     foreach my $blog (@$styled_blogs) {
-        my $curr_theme = $config->{"current_theme_" . $blog->id} || '';
+        my $curr_theme; # = $config->{"current_theme_" . $blog->id} || '';
         push @blog_loop, {
             blog_id => $blog->id,
             blog_name => $blog->name,
             theme_id => $curr_theme,
             view_link => $blog->site_url,
         };
-        if ($theme_data->{themes}) {
+        if ($theme_data->{themes} && $curr_theme) {
             foreach my $theme (@{$theme_data->{themes}}) {
                 if ($theme->{name} eq $curr_theme) {
                     push @{$theme->{blogs}}, $blog->id;
@@ -115,7 +61,7 @@ sub view {
     require JSON;
     my $url = $app->param('url');
     my %param = (
-        version => $VERSION,
+        version => plugin()->version,
         blog_loop => \@blog_loop,
         single_blog => $blog_id,
         themes_json => JSON::objToJson($theme_data, {pretty => 1, indent => 2, delimiter => 1}),
@@ -123,31 +69,25 @@ sub view {
         last_theme_url => $url || $stylelibrary
     );
     
-    $param{help_url} = $app->{cfg}->HelpURL;
-
     if ($blog_id && @$styled_blogs) {
         my $blog = $styled_blogs->[0];
         $param{blog_name} = $blog->name;
         $param{blog_url} = $blog->site_url;
-        $app->add_breadcrumb($app->plugin->translate("Main Menu"), $app->mt_uri);
-        $app->add_breadcrumb($blog->name, $app->mt_uri(mode => 'menu', args => { blog_id => $blog_id }));
-        $app->add_breadcrumb($app->plugin->translate('Templates'), $app->mt_uri(mode => 'list', args => { _type => 'template', blog_id => $blog_id }));
-    } else {
-        $app->add_breadcrumb($app->plugin->translate("Main Menu"), $app->mt_uri);
-        $app->add_breadcrumb($app->plugin->translate("System Overview"), $app->mt_uri(mode => 'admin'));
-        $app->add_breadcrumb($app->plugin->translate("Plugins"), $app->mt_uri(mode => 'cfg_plugins'));
     }
-    $app->add_breadcrumb("StyleCatcher", $app->uri);
+
+    my $path = $app->static_path;
+    $path .= '/' unless $path =~ m!/$!;
+    $path .= plugin()->envelope . "/";
+    $path = $app->base . $path if $path =~ m!^/!;
+    $param{plugin_static_uri} = $path;
 
     $app->build_page('view.tmpl', \%param);
 }
 
 sub gm {
     my $app = shift;
-
     my %param;
-
-    my $blogs = $app->fetch_blogs;
+    my $blogs = fetch_blogs();
 
     my @loop;
     foreach my $blog (@$blogs) {
@@ -184,7 +124,7 @@ sub js {
     $app->{no_print_body} = 1;
 
     my $url = $app->param('url');
-    my $data = $app->fetch_themes;
+    my $data = fetch_themes();
     $app->print(JSON::objToJson($data, {pretty => 1, indent => 2, delimiter => 1}));
 }
 
@@ -195,25 +135,14 @@ sub apply {
     my $blog_id = $app->param('blog_id');
     my $url = $app->param('url');
     # Load the default stylesheet for this blog
-    my $tmpl = $app->load_style_template($blog_id);
+    my $tmpl = load_style_template($blog_id);
 
     $app->validate_magic or return $app->json_error("Invalid request");
     return $app->json_error("Invalid request")
         unless $blog_id && $url && $tmpl;
 
-    my $sys_config = $app->plugin->get_config_hash;
-    my $blog_config = $app->plugin->get_config_hash('blog:' . $blog_id);
-
-    # Load up the themeroot and webthemeroot
-    my $sys_themeroot = $sys_config->{themeroot};
-    my $sys_webthemeroot = $sys_config->{webthemeroot};
-    $sys_webthemeroot =~ s!/$!!;
-
-    my $blog_themeroot = $blog_config->{themeroot};
-    my $blog_webthemeroot = $blog_config->{webthemeroot};
-    $blog_webthemeroot =~ s!/$!! if $blog_webthemeroot;
-
-    my $webthemeroot;
+    my $themeroot = File::Spec->catdir($app->static_file_path, 'support', 'themes');
+    my $webthemeroot = $app->static_path . 'support/themes';
 
     # Break up the css url in to a couple useful pieces 
     my @url = split(/\//, $url);
@@ -225,10 +154,10 @@ sub apply {
 
     # if this isn't a local url, then we have to grab some files from
     # yonder...
-    my $filemgr = $app->file_mgr
+    my $filemgr = file_mgr()
         or return $app->json_error(MT::FileMgr->errstr);
 
-    if ($url !~ m/^\Q$sys_webthemeroot\E/) {
+    if ($url !~ m/^\Q$webthemeroot\E/) {
         # Pick up the stylesheet
         my $user_agent = $app->new_ua;
         my $css_request = HTTP::Request->new( GET => $url );
@@ -246,14 +175,14 @@ sub apply {
         my $content = $response->content;
         $content =~ s!/\*.*?\*/!!gs;  # strip all comments first
         my @images = $content =~ m/\b(?:url\(\s*)([a-zA-Z0-9_.-]+\.(?:gif|jpe?g|png))(?:\s*?\))/gi;
-        $filemgr->mkpath(File::Spec->catdir($sys_themeroot, $basename))
-            or return $app->json_error($app->plugin->translate("Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.", $basename));
+        $filemgr->mkpath(File::Spec->catdir($themeroot, $basename))
+            or return $app->json_error($app->translate("Could not create [_1] folder - Check that your 'themes' folder is webserver-writable.", $basename));
         $filemgr->put_data($response->content,
-            File::Spec->catfile($sys_themeroot,$basename,$basename . '.css'));
+            File::Spec->catfile($themeroot,$basename,$basename . '.css'));
         $filemgr->put_data($thumbnail_response->content,
-            File::Spec->catfile($sys_themeroot, $basename, "thumbnail.gif"), 'upload');
+            File::Spec->catfile($themeroot, $basename, "thumbnail.gif"), 'upload');
         $filemgr->put_data($thumbnail_large_response->content,
-            File::Spec->catfile($sys_themeroot, $basename, "thumbnail-large.gif"), 'upload');
+            File::Spec->catfile($themeroot, $basename, "thumbnail-large.gif"), 'upload');
 
         # Pick up the images we parsed earlier and write them to the theme folder
         for my $image_url (@images) {
@@ -264,26 +193,11 @@ sub apply {
             my $image_filename = $image_url[-1];
 
             $filemgr->put_data($image_response->content,
-                File::Spec->catfile($sys_themeroot, $basename, $image_filename), 'upload')
+                File::Spec->catfile($themeroot, $basename, $image_filename), 'upload')
                 or return $app->json_error($filemgr->errstr);
         }
     }
-    if ($blog_themeroot) {
-        # we have to copy stuff over from $sys_themeroot to $blog_themeroot
-        $webthemeroot = $blog_webthemeroot;
-        my @theme_files = glob(File::Spec->catfile($sys_themeroot,$basename,"*"));
-        my $blog_fmgr = MT::Blog->load($blog_id)->file_mgr;
-        $blog_fmgr->mkpath(File::Spec->catdir($blog_themeroot, $basename))
-            or return $app->json_error($blog_fmgr->errstr);
-        foreach my $file (@theme_files) {
-            my $data = $filemgr->get_data($file);
-            my $blog_file = File::Spec->catfile($blog_themeroot, $basename, basename($file));
-            $blog_fmgr->put_data($data, $blog_file, 'upload')
-                or return $app->json_error($blog_fmgr->errstr);
-        }
-    } else {
-        $webthemeroot = $sys_webthemeroot;
-    }
+
     $url = "$webthemeroot/$basename/$basename.css";
     my $url2 = "$webthemeroot/base-weblog.css";
 
@@ -329,31 +243,17 @@ EOT
     $tmpl->text(join("\n", @template_lines));
     $tmpl->save or return $app->json_error($tmpl->errstr);
 
-    # Store our current theme information
-    $app->plugin->set_config_value("current_theme_$blog_id", $basename);
-
     # rebuild only the stylesheet! forcibly. with prejudice.
     $app->rebuild_indexes(BlogID => $tmpl->blog_id,
         Template => $tmpl, Force => 1);
 
-    $app->send_http_header('text/plain');
-    $app->{no_print_body} = 1;
-    $app->print($app->plugin->translate("Successfully applied new theme selection."));
-}
-
-sub json_error {
-    my $app = shift;
-    my ($msg) = @_;
-    $app->send_http_header('text/plain');
-    $app->{no_print_body} = 1;
-    $app->print("Error: $msg");
+    return $app->json_result({message => $app->translate("Successfully applied new theme selection.")});
 }
 
 # Utility methods
 
 sub fetch_blogs {
-    my $app = shift;
-
+    my $app = MT->app;
     my $user = $app->user;
     my $blog_id = $app->param('blog_id');
 
@@ -376,7 +276,7 @@ sub fetch_blogs {
     }
     my @styled_blogs;
     foreach my $blog (@blogs) {
-        my $tmpl = $app->load_style_template($blog->id);
+        my $tmpl = load_style_template($blog->id);
         if ($tmpl) {
             push @styled_blogs, $blog;
         }
@@ -387,28 +287,23 @@ sub fetch_blogs {
 }
 
 sub load_style_template {
-    my $app = shift;
     my ($blog_id) = @_;
 
     require MT::Template;
     my $tmpl;
-    if (MT::Object->driver->isa('MT::ObjectDriver::DBI')) {
-        $tmpl = MT::Template->load({ blog_id => $blog_id,
-            outfile => "styles-site.css" });
-        $tmpl ||= MT::Template->load({ blog_id => $blog_id,
-            outfile => "styles.css" });
-    } else {
-        my @tmpl = MT::Template->load({ blog_id => $blog_id });
-        ($tmpl) = grep { ($_->outfile || '') eq 'styles-site.css' } @tmpl;
-        ($tmpl) ||= grep { ($_->outfile || '') eq 'styles.css' } @tmpl;
-    }
+    $tmpl = MT::Template->load({ blog_id => $blog_id,
+        identifier => 'theme_stylesheet' });
+    $tmpl ||= MT::Template->load({ blog_id => $blog_id,
+        outfile => "styles-site.css" });
+    $tmpl ||= MT::Template->load({ blog_id => $blog_id,
+        outfile => "styles.css" });
 
     $tmpl;
 }
 
 # pulls a list of themes available from a particular url
 sub fetch_themes {
-    my $app = shift;
+    my $app = MT->app;
 
     my $blog_id = $app->param('blog_id');
     my $data = {};
@@ -425,7 +320,7 @@ sub fetch_themes {
         $type = shift @$type if ref $type eq 'ARRAY';
         if ($type =~ m!^text/css!) {
             $data->{auto}{url} = $url;
-            my $theme = $app->fetch_theme($url, ['collection:auto']);
+            my $theme = fetch_theme($url, ['collection:auto']);
             $data->{themes} = [ $theme ];
         } elsif ($type =~ m!^text/html!) {
             my @repo_themes;
@@ -449,7 +344,7 @@ sub fetch_themes {
 
             my $themes = [];
             for my $repo_theme (@repo_themes) {
-                my $theme = $app->fetch_theme($repo_theme, []);
+                my $theme = fetch_theme($repo_theme, []);
                 push @$themes, $theme if $theme;
             }
             $data->{themes} = $themes;
@@ -471,7 +366,7 @@ sub fetch_themes {
 # sets up the object structure we return through json to populate
 # the mixer.
 sub make_themes {
-    my $app = shift;
+    my $app = MT->instance;
 
     # categories
     #   current    (for active theme)
@@ -508,12 +403,8 @@ sub make_themes {
 
     my ($categories, $themes);
 
-    # Load our plugin data for the current theme and roots
-    my $config = $app->plugin->get_config_hash;
-
-    my $themeroot = $config->{themeroot};
-    my $webthemeroot = $config->{webthemeroot};
-    $webthemeroot =~ s!/$!!;
+    my $themeroot = File::Spec->catdir($app->static_file_path, 'support', 'themes');
+    my $webthemeroot = $app->static_path . 'support/themes';
 
     # Generate our list of themes within the themeroot directory
     my @themeroot_list = glob(File::Spec->catfile($themeroot,"*"));
@@ -522,7 +413,7 @@ sub make_themes {
         my $theme_dir = $theme;
         next unless -d $theme;
         $theme =~ s/.*[\\\/]//;
-        $themes->{$theme} = $app->fetch_theme($theme_dir, ['collection:my-designs']);
+        $themes->{$theme} = fetch_theme($theme_dir, ['collection:my-designs']);
     }
 
     my $data = {
@@ -534,7 +425,7 @@ sub make_themes {
 }
 
 sub fetch_theme {
-    my $app = shift;
+    my $app = MT->app;
     my ($url, $tags) = @_;
 
     my $theme;
@@ -556,12 +447,12 @@ sub fetch_theme {
             $new_url .= $url[$_].'/';
         }
     } else {
-        my $config = $app->plugin->get_config_hash;
-        my $webthemeroot = $config->{webthemeroot};
-        $webthemeroot =~ s!/$!!;
+        my $themeroot = File::Spec->catdir($app->static_file_path, 'support', 'themes');
+        my $webthemeroot = $app->static_path . 'support/themes';
+
         $theme = $url;
         $theme =~ s/.*[\\\/]//;
-        $stylesheet = $app->file_mgr->get_data(File::Spec->catfile($url, "$theme.css"));
+        $stylesheet = file_mgr()->get_data(File::Spec->catfile($url, "$theme.css"));
         $new_url = "$webthemeroot/$theme/";
         $url = $new_url . "$theme.css";
     }
@@ -619,7 +510,7 @@ sub fetch_theme {
 }
 
 sub plugin {
-    MT::Plugin::StyleCatcher->instance;
+    return MT->component('StyleCatcher');
 }
 
 1;

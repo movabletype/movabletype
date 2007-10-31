@@ -42,8 +42,8 @@ sub import {
         require MT::Auth;
         $pass = $param{NewAuthorPassword}
             or return __PACKAGE__->error(MT->translate(
-                "You need to provide a password if you are going to\n" .
-                "create new users for each user listed in your blog.\n"))
+                "You need to provide a password if you are going to " .
+                "create new users for each user listed in your blog."))
                if (MT::Auth->password_exists);
     } else {
         return __PACKAGE__->error(MT->translate(
@@ -136,9 +136,9 @@ sub import {
                                 }
                                 $cb->(MT->translate("Creating new user ('[_1]')...", $val));
                                 if ($author->save) {
-                                    $cb->(MT->translate("ok\n"));
+                                    $cb->(MT->translate("ok") . "\n");
                                 } else {
-                                    $cb->(MT->translate("failed\n"));
+                                    $cb->(MT->translate("failed") . "\n");
                                     return __PACKAGE__->error(MT->translate(
                                         "Saving user failed: [_1]", $author->errstr));
                                 }
@@ -149,9 +149,9 @@ sub import {
                                 $perms->author_id($author->id);
                                 $perms->can_create_post(1);
                                 if ($perms->save) {
-                                    $cb->(MT->translate("ok\n"));
+                                    $cb->(MT->translate("ok") . "\n");
                                 } else {
-                                    $cb->(MT->translate("failed\n"));
+                                    $cb->(MT->translate("failed") . "\n");
                                     return __PACKAGE__->error(MT->translate(
                                      "Saving permission failed: [_1]", $perms->errstr));
                                 }
@@ -173,9 +173,9 @@ sub import {
                                     $cat->parent(0);
                                     $cb->(MT->translate("Creating new category ('[_1]')...", $val));
                                     if ($cat->save) {
-                                        $cb->(MT->translate("ok\n"));
+                                        $cb->(MT->translate("ok") . "\n");
                                     } else {
-                                        $cb->(MT->translate("failed\n"));
+                                        $cb->(MT->translate("failed") . "\n");
                                         return __PACKAGE__->error(MT->translate(
                                          "Saving category failed: [_1]", $cat->errstr));
                                     }
@@ -234,10 +234,10 @@ sub import {
                         $entry = MT::Entry->load({ created_on => $ts,
                             blog_id => $blog_id });
                         if (!$entry) {
-                            $cb->(MT->translate("Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.\n", $ts));
+                            $cb->(MT->translate("Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.", $ts) . "\n");
                             next ENTRY_BLOCK;
                         } else {
-                            $cb->(MT->translate("Importing into existing entry [_1] ('[_2]')\n", $entry->id, $entry->title));
+                            $cb->(MT->translate("Importing into existing entry [_1] ('[_2]')", $entry->id, $entry->title) . "\n");
                         }
                     }
 
@@ -371,9 +371,9 @@ sub import {
                     unless ($no_save) {
                         $cb->(MT->translate("Saving entry ('[_1]')...", $entry->title));
                         if ($entry->save) {
-                            $cb->(MT->translate("ok (ID [_1])\n", $entry->id));
+                            $cb->(MT->translate("ok (ID [_1])", $entry->id) . "\n");
                         } else {
-                            $cb->(MT->translate("failed\n"));
+                            $cb->(MT->translate("failed") . "\n");
                             return __PACKAGE__->error(MT->translate(
                                 "Saving entry failed: [_1]", $entry->errstr));
                         }
@@ -427,9 +427,9 @@ sub import {
                         $comment->entry_id($entry->id);
                         $cb->(MT->translate("Creating new comment (from '[_1]')...", $comment->author));
                         if ($comment->save) {
-                            $cb->(MT->translate("ok (ID [_1])\n", $comment->id));
+                            $cb->(MT->translate("ok (ID [_1])", $comment->id) . "\n");
                         } else {
-                            $cb->(MT->translate("failed\n"));
+                            $cb->(MT->translate("failed") . "\n");
                             return __PACKAGE__->error(MT->translate(
                                 "Saving comment failed: [_1]", $comment->errstr));
                         }
@@ -444,9 +444,9 @@ sub import {
                             $ping->tb_id($tb->id);
                             $cb->(MT->translate("Creating new ping ('[_1]')...", $ping->title));
                             if ($ping->save) {
-                                $cb->(MT->translate("ok (ID [_1])\n", $ping->id));
+                                $cb->(MT->translate("ok (ID [_1])", $ping->id) . "\n");
                             } else {
-                                $cb->(MT->translate("failed\n"));
+                                $cb->(MT->translate("failed") . "\n");
                                 return __PACKAGE__->error(MT->translate(
                                     "Saving ping failed: [_1]", $ping->errstr));
                             }

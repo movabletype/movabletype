@@ -2,7 +2,7 @@
 # $Id$
 use strict;
 use warnings;
-
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 13;
 
 use MT;
@@ -22,7 +22,7 @@ my $str2 = $String . 'bar';
 ok($fmgr->content_is_updated($File, \$str2), "content_is_updated($File,$str2)");
 ok($str2, $String . 'bar');
 
-my($copy) = $String = "bjørn";
+my($copy) = $String = "bj淡rn";
 ok($fmgr->put_data($String, $File), "put_data($String, $File)");
 ok(!$fmgr->content_is_updated($File, \$String), "content_is_updated($File,$String)");
 is($copy, $String, "$copy is $String");

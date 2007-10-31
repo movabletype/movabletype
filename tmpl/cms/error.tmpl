@@ -1,5 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="An error occurred"></mt:setvarblock>
-<mt:setvar name="complete" value="1">
+<mt:setvar name="complete" value="1"><mt:setvar name="error_page" value="1">
 <mt:include name="include/chromeless_header.tmpl">
 
 <mtapp:statusmsg
@@ -7,8 +7,6 @@
     class="error">
     <mt:var name="error">
 </mtapp:statusmsg>
-
-<mt:var name="mode">
 
 <div class="right">
 <input type="button" onclick="<mt:var name="goback">" value="<mt:var name="value">" />

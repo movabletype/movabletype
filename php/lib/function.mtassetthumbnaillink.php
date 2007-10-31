@@ -2,7 +2,7 @@
 function smarty_function_mtassetthumbnaillink($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
-    if ($asset['asset_class'] != 'Image') return '';
+    if ($asset['asset_class'] != 'image') return '';
     $blog = $ctx->stash('blog');
     if (!$blog) return '';
 

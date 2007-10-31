@@ -413,6 +413,7 @@ class MT {
         // start populating our stash
         $ctx->stash('blog_id', $blog_id);
         $ctx->stash('blog', $blog);
+        $ctx->stash('build_template_id', $tpl_id);
 
         // conditional get support...
         if ($this->caching) {
@@ -657,7 +658,7 @@ class MT {
 
     function translate_templatized($tmpl) {
         $cb = array($this, 'translate_templatized_item');
-        $out = preg_replace_callback('/<MT_TRANS phrase="(.+?)".*?>/', $cb, $tmpl);
+        $out = preg_replace_callback('/<(?:_|mt)_trans phrase="(.+?)".*?>/i', $cb, $tmpl);
         return $out;
     }
 }

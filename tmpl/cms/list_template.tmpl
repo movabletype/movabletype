@@ -1,9 +1,4 @@
 <mt:setvarblock name="page_title"><__trans phrase="Edit Templates"></mt:setvarblock>
-<span id="templates-index-description" style="display: none"><__trans phrase="Index Templates"></span>
-<span id="templates-archive-description" style="display: none"><__trans phrase="Archive Templates"></span>
-<span id="templates-system-description" style="display: none"><__trans phrase="System Templates"></span>
-<span id="templates-module-description" style="display: none"><__trans phrase="Template Modules"></span>
-<span id="templates-widget-description" style="display: none"><__trans phrase="Template Widgets"></span>
 <MTSetVarBlock name="content_nav">
     <ul>
         <li<mt:if name="tab_index"> class="active"</mt:if> id="templates-index-tab"><a href="#" onclick="sectionToggle('index')"><__trans phrase="Indexes"></a></li>
@@ -102,6 +97,12 @@ function sectionToggle(selectedTab) {
         <__trans phrase="Your settings have been saved.">
     </mtapp:statusmsg>
 </mt:if>
+
+<span id="templates-index-description" style="display: none"><__trans phrase="Index Templates"></span>
+<span id="templates-archive-description" style="display: none"><__trans phrase="Archive Templates"></span>
+<span id="templates-system-description" style="display: none"><__trans phrase="System Templates"></span>
+<span id="templates-module-description" style="display: none"><__trans phrase="Template Modules"></span>
+<span id="templates-widget-description" style="display: none"><__trans phrase="Template Widgets"></span>
 
 <div id="templates-index-create"<mt:unless name="tab_index"> style="display: none"</mt:unless>><p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="New Index Template"></a></p></div>
 <div id="templates-archive-create"<mt:unless name="tab_archive"> style="display: none"</mt:unless>><p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="New Archive Template"></a></p></div>

@@ -147,6 +147,8 @@ TC.Mixer.Display.prototype.display = function()
 	for( var i in entryElements )
 	{
 		var element = entryElements[ i ];
+        if (typeof(element) != 'object')
+            continue;
 		this.displayElement.appendChild( element );
 		if( this.events )
 		{

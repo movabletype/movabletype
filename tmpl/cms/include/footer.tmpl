@@ -14,21 +14,21 @@
     <div id="footer"><div id="footer-inner" class="inner">
 <mt:if name="author_name">
         <ul id="footer-nav" class="inline-nav">
-            <li class="first"><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Dashboard"></a></li>
-    <mt:if name="can_create_post">
+            <li class="first"><a href="<$mt:var name="mt_url"$><mt:if name="blog_id">?blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Dashboard"></a></li>
+    <mt:if name="blog_id"><mt:if name="can_create_post">
             <li><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Compose Entry"></a></li>
-    </mt:if>
+    </mt:if></mt:if>
     <mt:if name="can_edit_entries">
-            <li><a href="<$mt:var name="mt_url"$>?__mode=list_entries&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Entries"></a></li>
+            <li><a href="<$mt:var name="mt_url"$>?__mode=list_entries<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Manage Entries"></a></li>
     </mt:if>
-            <li><a href="<$mt:var name="mt_url"$>?__mode=list_blogs&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Blogs"></a></li>
+            <li><a href="<$mt:var name="mt_url"$>?__mode=list_blogs"><__trans phrase="Blogs"></a></li>
     <mt:if name="is_administrator">
             <li><a href="<$mt:var name="mt_url"$>?__mode=cfg_system"><__trans phrase="System Settings"></a></li>
     </mt:if>
     <mt:if name="can_administer_blog">
-            <li><a href="<$mt:var name="mt_url"$>?__mode=tools&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Tools"></a></li>
+            <li><a href="<$mt:var name="mt_url"$>?__mode=tools<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Tools"></a></li>
     </mt:if>
-            <li><a href="<$mt:var name="mt_url"$>?__mode=search_replace&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Search"></a></li>
+            <li><a href="<$mt:var name="mt_url"$>?__mode=search_replace<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Search"></a></li>
             <!-- <li class="help"><a href="<$mt:var name="help_url"$>"><__trans phrase="Help"></a></li> -->
         </ul>
 </mt:if>

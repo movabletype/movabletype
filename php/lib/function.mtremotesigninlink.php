@@ -5,7 +5,6 @@ function smarty_function_mtremotesigninlink($args, &$ctx) {
     global $_typekeytoken_cache;
     $blog = $ctx->stash('blog');
     $auths = $blog['blog_commenter_authenticators'];
-    print_r($auths);
     if (!preg_match('/TypeKey/', $auths)) {
         return $ctx->error($ctx->mt->translate("TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."));
     }
@@ -24,6 +23,7 @@ function smarty_function_mtremotesigninlink($args, &$ctx) {
     $path = smarty_function_mtcgipath($args, $ctx);
     $return = $path . $ctx->mt->config('CommentScript') .
               '%3f__mode=handle_sign_in%26' .
+              'key=TypeKey%26'.
               ($args['static'] ? 'static=1' : 'static=0') .
               '%26entry_id=' . $entry['entry_id'];
     $lang = $args['lang'];

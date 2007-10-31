@@ -134,7 +134,7 @@ function validate (f) {
 
     <mtapp:setting
         id="has-license"
-        label="<__trans phrase="Creative Commons License">"
+        label="<__trans phrase="Creative Commons">"
         help_page="blog_settings_general"
         help_section="creative_commons_license">
 
@@ -159,10 +159,6 @@ function validate (f) {
 </script>
 </mt:if>
 <input type="hidden" name="cc_license" value="<mt:var name="cc_license" escape="html">" />
-<p><__trans phrase="Select a Creative Commons license for the entries on your blog (optional).">
-<a href="#" onclick="return openManual('blog_settings_general', 'creative_commons_license')" class="help-link">?</a></p>
-<p><strong><__trans phrase="Be sure that you understand these licenses before applying them to your own work."></strong>
-<a href="#" onclick="return openManual('blog_settings_general', 'creative_commons_license')"><__trans phrase="Read more."></a></p>
     </mtapp:setting>
 
 

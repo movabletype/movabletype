@@ -22,33 +22,27 @@ td.widgetmanager-name {
 
 #stage {
 	position: relative;
-	width: 400px;
+	width: 520px;
         background-color: #eee;
 }
 
 #installed-column {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 200px;
+	width: 250px;
 	background-color: #e6ecf2;
+	float: left;
 }
 
 #center-column {
-	position: absolute;
-	top: 0;
-	left: 200px;
 	width: 20px;
 	text-align: center;
 	background-color: #fff;
+	float: left;
 }
 
 #available-column {
-	position: absolute;
-	top: 0;
-	left: 220px;
-	width: 200px;
+	width: 250px;
 	background-color: #e6ecf2;
+	float: left;
 }
 
 #installed-column p,
@@ -61,9 +55,7 @@ td.widgetmanager-name {
 }
 
 #stage-drop {
-	position: absolute;
 	display: none;
-	width: 200px;
 	height: 7px;
 	background: #e6ecf2 url('../images/drop.gif') no-repeat;
 }
@@ -75,10 +67,20 @@ td.widgetmanager-name {
 	padding: 5px;
 	font-size: x-small;
 	line-height: 1;
-	text-align: left;
-	text-transform: uppercase;
 	background-color: #fff;
+	width: 100%;
 }
+
+	.module-name {
+		float: left;
+		text-transform: uppercase;
+		text-align: left;
+	}
+	.module-edit {
+		float: right;
+		text-align: right;
+		text-transform: lowercase;
+	}
 
 .module a:link,
 .module a:hover,
@@ -96,14 +98,3 @@ td.widgetmanager-name {
 	text-align: center;
 }
 
-.clr {
-	clear: both;
-	overflow: hidden;
-	width: 1px;
-	height: 1px;
-	margin: 0 -1px -1px 0;
-	border: 0;
-	padding: 0;
-	font-size: 0;
-	line-height: 0;
-}

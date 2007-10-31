@@ -74,12 +74,12 @@
                     <td class="commenter status-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>">
                 <mt:if name="commenter_id">
                     <mt:if name="commenter_approved">
-                            <$mt:setvar name="commenter_status" value="Trusted"$>
+                            <$mt:setvar name="commenter_status" value="<__trans phrase="Trusted">"$>
                     <mt:else>
                         <mt:if name="commenter_banned">
-                            <$mt:setvar name="commenter_status" value="Blocked"$>
+                            <$mt:setvar name="commenter_status" value="<__trans phrase="Blocked">"$>
                         <mt:else>
-                            <$mt:setvar name="commenter_status" value="Authenticated"$>
+                            <$mt:setvar name="commenter_status" value="<__trans phrase="Authenticated">"$>
                         </mt:if>
                     </mt:if>
                         <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">"><mt:var name="author" escape="html"></a>
@@ -116,7 +116,7 @@
             </mt:if>
             <mt:if name="has_edit_access">
                     <td class="replyto">
-                        <div id="replyto_<mt:var name="id">" style="display:none;"><a href="#" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token" encode="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>')"><__trans phrase="Reply"></a></div>
+                        <div id="replyto_<mt:var name="id">" style="display:none;"><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token" encode="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>')"><__trans phrase="Reply"></a></div>
                     </td>
             <mt:else>
                     <td>&nbsp;</td>

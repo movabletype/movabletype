@@ -13,11 +13,14 @@
         </mt:unless>
                 </th>
                 <th class="title"><__trans phrase="Title"></th>
-                <th class="author"><__trans phrase="Author"></th>
-        <mt:if name="system_overview_nav">
-                <th class="weblog"><__trans phrase="Blog"></th>
+                <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></th>
+        <mt:if name="object_type" eq="page">
+                <th class="basename"><__trans phrase="Filename"></th>
         </mt:if>
-                <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Location"><mt:else><__trans phrase="Category"></mt:if></th>
+                <th class="author"><__trans phrase="Author"></th>
+        <mt:unless name="blog_id">
+                <th class="weblog"><__trans phrase="Blog"></th>
+        </mt:unless>
                 <th class="date"><__trans phrase="Date"></th>
         <mt:unless name="is_power_edit">
                 <th class="view"><span><__trans phrase="View"></span></th>
@@ -57,11 +60,11 @@
             </mt:if>
                 </td>
         </mt:if>
-                <td class="title"<mt:if name="view_expanded"> colspan="<mt:if name="system_overview_nav">6<mt:else>5</mt:if>"</mt:if>>
+                <td class="title"<mt:if name="view_expanded"> colspan="<mt:if name="object_type" eq="page"><mt:if name="blog_id">6<mt:else>7</mt:if><mt:else><mt:if name="blog_id">5<mt:else>6</mt:if></mt:if>"</mt:if>>
         <mt:if name="view_expanded">
-                    <strong><$mt:var name="title_long"$></strong>
+                    <strong><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="title_long"$></a></strong>
             <mt:if name="excerpt">
-                    &mdash; <$mt:var name="excerpt"$>
+                    &#8212; <$mt:var name="excerpt"$>
             </mt:if>
         <mt:else>
             <mt:if name="has_edit_access">
@@ -87,6 +90,25 @@
                 <td>&#160;</td>
                 <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Edit [_1]" params="<mt:var name="object_label">"></a><mt:else>&#160;</mt:if></td>
         </mt:if>
+                <td class="category">
+        <mt:if name="is_editable">
+                    <select name="category_id_<$mt:var name="id"$>">
+                        <option value=""><__trans phrase="None"></option>
+            <mt:loop name="row_category_loop">
+                        <option value="<$mt:var name="category_id"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label"$></option>
+            </mt:loop>
+                    </select>
+        <mt:else>
+            <mt:if name="object_type" eq="entry">
+                <$mt:var name="category_label" escape="html" default="-"$>
+            <mt:else>
+                <$mt:var name="category_label" escape="html" default="(root)"$>
+            </mt:if>
+        </mt:if>
+                </td>
+        <mt:if name="object_type" eq="page">
+                <td class="basename"><$mt:var name="basename" escape="html"$></td>
+        </mt:if>
                 <td class="author">
         <mt:if name="is_editable">
                     <select name="author_id_<$mt:var name="id"$>">
@@ -101,25 +123,9 @@
                     <$mt:var name="author_name"$>
         </mt:if>
                 </td>
-        <mt:if name="system_overview_nav">
+        <mt:unless name="blog_id">
                 <td class="weblog"><a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
-        </mt:if>
-                <td class="category">
-        <mt:if name="is_editable">
-                    <select name="category_id_<$mt:var name="id"$>">
-                        <option value=""><__trans phrase="None"></option>
-            <mt:loop name="row_category_loop">
-                        <option value="<$mt:var name="category_id"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label"$></option>
-            </mt:loop>
-                    </select>
-        <mt:else>
-            <mt:if name="category_name">
-                    <$mt:var name="category_name" escape="html"$><mt:if name="object_type" eq="page">/<$mt:var name="basename" escape="html"$>.<$mt:var name="file_extension" escape="html"$></mt:if>
-            <mt:else>
-                    &#160;
-            </mt:if>
-        </mt:if>
-                </td>
+        </mt:unless>
                 <td class="date">
         <mt:if name="has_publish_access">
                     <input name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
