@@ -181,7 +181,6 @@ sub core_methods {
         'plugin_control'           => \&plugin_control,
         'recover_profile_password' => \&recover_profile_password,
         'rename_tag'               => \&rename_tag,
-        'synchronize'              => \&synchronize,
         'remove_user_assoc'        => \&remove_user_assoc,
         'revoke_role'              => \&revoke_role,
         'grant_role'               => \&grant_role,
@@ -204,7 +203,6 @@ sub core_methods {
         'dialog_adjust_sitepath' => \&dialog_adjust_sitepath,
         'dialog_post_comment'    => \&dialog_post_comment,
         'dialog_select_weblog'   => \&dialog_select_weblog,
-        'dialog_select_user'     => \&dialog_select_user,
         'dialog_select_sysadmin' => \&dialog_select_sysadmin,
         'dialog_grant_role'      => \&dialog_grant_role,
 
@@ -292,6 +290,9 @@ sub js_recent_entries_for_tag {
     my $blog_id      = $app->param('blog_id');
     my $obj_class    = $app->model($obj_ds) or return;
     my $tag_name     = $app->param('tag') or return;
+    if ( 'utf-8' ne lc( $app->config->PublishCharset) ) {
+        $tag_name = MT::I18N::encode_text( $tag_name, 'utf-8', $app->config->PublishCharset );
+    }
     my $tag_obj =
       $tag_class->load( { name => $tag_name }, { binary => { name => 1 } } );
 
@@ -1314,6 +1315,9 @@ sub core_menus {
             mode       => "view",
             args       => { _type => "author" },
             permission => "administer",
+            condition  => sub {
+                return !MT->config->ExternalUserManagement;
+            },
         },
         'create:entry' => {
             label      => "Entry",
@@ -1362,7 +1366,7 @@ sub core_menus {
             label      => "Comments",
             mode       => 'list_comments',
             order      => 2000,
-            permission => 'post,edit_all_posts,manage_feedback,comment',
+            permission => 'create_post,edit_all_posts,manage_feedback,comment',
         },
         'manage:asset' => {
             label      => "Assets",
@@ -1380,7 +1384,7 @@ sub core_menus {
             label      => "TrackBacks",
             mode       => 'list_pings',
             order      => 5000,
-            permission => 'post,edit_all_posts,manage_feedback',
+            permission => 'create_post,edit_all_posts,manage_feedback',
         },
         'manage:category' => {
             label      => "Categories",
@@ -2126,18 +2130,15 @@ sub list_assets {
         my ( $obj, $row ) = @_;
         my $blog = $blogs{ $obj->blog_id } ||= $obj->blog;
         $row->{blog_name} = $blog ? $blog->name : '-';
-        $row->{file_path} = $obj->file_path; # has to be called to calculate
         $row->{url} = $obj->url; # this has to be called to calculate
-        $row->{file_name} = File::Basename::basename( $row->{file_path} );
-        my $meta = $obj->metadata;
-        $row->{file_label} = $obj->label;
-        if ( -f $row->{file_path} ) {
-            my @stat = stat( $row->{file_path} );
+        $row->{asset_class} = $obj->class_label;
+        my $file_path = $obj->file_path; # has to be called to calculate
+        if ( $file_path && ( -f $file_path ) ) {
+            $row->{file_path} = $file_path;
+            $row->{file_name} = File::Basename::basename( $file_path );
+            my @stat = stat( $file_path );
             my $size = $stat[7];
-            my ($thumb_file) = $obj->thumbnail_url( Height => 240, Width => 350 );
-            $row->{thumbnail_url} = $meta->{thumbnail_url} = $thumb_file;
-            $row->{asset_class} = $obj->class_label;
-            $row->{file_size}   = $size;
+            $row->{file_size} = $size;
             if ( $size < 1024 ) {
                 $row->{file_size_formatted} = sprintf( "%d Bytes", $size );
             }
@@ -2151,8 +2152,17 @@ sub list_assets {
             }
         }
         else {
-            $row->{file_is_missing} = 1;
+            $row->{file_is_missing} = 1 if $file_path;
         }
+        $row->{file_label} = $row->{label} = $obj->label || $row->{file_name} || $app->translate('Untitled');
+
+        my $meta = $obj->metadata;
+        if ($obj->has_thumbnail) { 
+            $row->{has_thumbnail} = 1;
+            my ($thumb_file) = $obj->thumbnail_url( Height => 240, Width => 350 );
+            $row->{thumbnail_url} = $meta->{thumbnail_url} = $thumb_file;
+        }
+
         my $ts = $obj->created_on;
         if ( my $by = $obj->created_by ) {
             my $user = MT::Author->load($by);
@@ -2238,9 +2248,6 @@ sub list_roles {
 
     $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
 
-    my $group_id  = $app->param('group_id');
-    my $author_id = $app->param('author_id');
-
     my $pref = $app->list_pref('role');
     my $all_perms;
     if ( $pref->{view_expanded} ) {
@@ -2251,213 +2258,69 @@ sub list_roles {
         }
     }
 
-    if ($group_id) {
-        my $grp_class = $app->model('group') or return;
-        if ( !$app->user->is_superuser ) {
-            return $app->errtrans("Permission denied.");
-        }
-        my $grp = $grp_class->load($group_id)
-          or return $app->error( $app->translate("Invalid group id") );
-        $app->add_breadcrumb(
-            $app->translate("Users & Groups"),
-            $app->uri(
-                mode => 'list_authors',
-                args => { group_id => $group_id }
-            )
-        );
-        $app->add_breadcrumb( $app->translate("Group Roles") );
-        my $assoc_class = $app->model('association');
-        my $hasher      = sub {
-            my ( $role, $param ) = @_;
-
-            # populate permissions for the expanded view
-            if ( $pref->{view_expanded} ) {
-                my @perms;
-                foreach (@$all_perms) {
-                    next unless length( $_->[1] || '' );
-                    push @perms, { name => $app->translate( $_->[1] ) }
-                      if $role->has( $_->[0] );
-                }
-                $param->{perm_loop} = \@perms;
-            }
-        };
-        $app->listing(
+    my $author_class = $app->model('author');
+    my $assoc_class  = $app->model('association');
+    my $hasher       = sub {
+        my ( $obj, $row ) = @_;
+        my $user_count = $assoc_class->count(
             {
-                type => 'role',
-                args => {
-                    sort => 'name',
-                    join => MT::Association->join_on(
-                        'role_id',
-                        {
-                            type     => MT::Association::GROUP_BLOG_ROLE(),
-                            group_id => $group_id,
-                        }
-                    ),
-                },
-                code   => $hasher,
-                params => {
-                    nav_authors        => 1,
-                    edit_group_id      => $group_id,
-                    group_display_name => $grp->display_name,
-                    group_name         => $grp->name,
-                    user_count         => $grp->user_count(),
-                    list_noncron       => 1,
-                    can_create_role    => $app->user->is_superuser,
-                    has_expanded_mode  => 1,
-                    search_label       => $app->translate('Users'),
-                    object_type        => 'role',
-                    group_support      => 1,
-                },
+                role_id   => $obj->id,
+                author_id => [ 1, undef ],
+            },
+            {
+                unique     => 'author_id',
+                range_incl => { author_id => 1 },
             }
         );
+        $row->{members} = $user_count;
+        $row->{weblogs} = $assoc_class->count(
+            {
+                role_id => $obj->id,
+                blog_id => [ 1, undef ],
+            },
+            {
+                unique     => 'blog_id',
+                range_incl => { blog_id => 1 },
+            }
+        );
+        if ( $obj->created_by ) {
+            my $user = $author_class->load( $obj->created_by );
+            $row->{created_by} = $user ? $user->name : '';
+        }
+        else {
+            $row->{created_by} = '';
+        }
+
+        # populate permissions for the expanded view
+        if ( $pref->{view_expanded} ) {
+            my @perms;
+            foreach (@$all_perms) {
+                next unless length( $_->[1] || '' );
+                push @perms, { name => $app->translate( $_->[1] ) }
+                  if $obj->has( $_->[0] );
+            }
+            $row->{perm_loop} = \@perms;
+        }
+    };
+    unless ( $app->user->is_superuser() ) {
+        return $app->errtrans("Permission denied.");
     }
-    elsif ($author_id) {
-        unless ( $app->user->is_superuser || ( $app->user->id == $author_id ) )
+    $app->add_breadcrumb( $app->translate("Roles") );
+    $app->listing(
         {
-            return $app->errtrans("Permission denied.");
+            args   => { sort => 'name' },
+            type   => 'role',
+            code   => $hasher,
+            params => {
+                nav_privileges    => 1,
+                list_noncron      => 1,
+                can_create_role   => $app->user->is_superuser,
+                has_expanded_mode => 1,
+                search_label      => $app->translate('Users'),
+                object_type       => 'role',
+            },
         }
-        my $author_class = $app->model('author');
-        my $role_class   = $app->model('role');
-        my $assoc_class  = $app->model('association');
-        my $user         = $author_class->load($author_id)
-          or return $app->error( $app->translate("Invalid user id") );
-        $app->add_breadcrumb(
-            $app->translate("Users & Groups"),
-            $app->user->is_superuser
-            ? $app->uri(
-                mode => 'list_authors',
-                args => { author_id => $author_id }
-              )
-            : undef
-        );
-        $app->add_breadcrumb( $app->translate("User Roles") );
-        my $hasher = sub {
-            my ( $obj, $param ) = @_;
-            my $role = $obj->role;
-            $param->{name} = $role->name;
-            my $group = $obj->group;
-            $param->{group_name} =
-                $group
-              ? $group->display_name || $group->name
-              : '-';
-            my $blog = $obj->blog;
-            $param->{blog_name} = $blog ? $blog->name : '-';
-
-            # populate permissions for the expanded view
-            if ( $pref->{view_expanded} ) {
-                my @perms;
-                foreach (@$all_perms) {
-                    next unless length( $_->[1] || '' );
-                    push @perms, { name => $app->translate( $_->[1] ) }
-                      if $obj->has( $_->[0] );
-                }
-                $param->{perm_loop} = \@perms;
-            }
-        };
-        $app->listing(
-            {
-                args     => { sort => 'name' },
-                type     => 'association',
-                template => 'list_role.tmpl',
-                terms    => {
-                    type      => MT::Association::USER_BLOG_ROLE(),
-                    author_id => $author_id
-                },
-                code   => $hasher,
-                params => {
-                    nav_authors      => 1,
-                    edit_author_name => $user->nickname
-                    ? $user->nickname
-                    : $user->name,
-                    edit_author_id    => $author_id,
-                    list_noncron      => 1,
-                    group_count       => $user->group_count,
-                    can_create_role   => $app->user->is_superuser,
-                    has_expanded_mode => 1,
-                    search_label      => $app->translate('Users'),
-                    object_type       => 'association',
-                    group_support      => $app->model('group') ? 1 : 0,
-                },
-            }
-        );
-    }
-    else {
-        my $author_class = $app->model('author');
-        my $assoc_class  = $app->model('association');
-        my $hasher       = sub {
-            my ( $obj, $row ) = @_;
-            my $user_count = $assoc_class->count(
-                {
-                    role_id   => $obj->id,
-                    author_id => [ 1, undef ],
-                },
-                {
-                    unique     => 'author_id',
-                    range_incl => { author_id => 1 },
-                }
-            );
-            my $group_count = $assoc_class->count(
-                {
-                    role_id  => $obj->id,
-                    group_id => [ 1, undef ],
-                },
-                {
-                    unique     => 'group_id',
-                    range_incl => { group_id => 1 },
-                }
-            );
-            $row->{members} = $user_count + $group_count;
-            $row->{weblogs} = $assoc_class->count(
-                {
-                    role_id => $obj->id,
-                    blog_id => [ 1, undef ],
-                },
-                {
-                    unique     => 'blog_id',
-                    range_incl => { blog_id => 1 },
-                }
-            );
-            if ( $obj->created_by ) {
-                my $user = $author_class->load( $obj->created_by );
-                $row->{created_by} = $user ? $user->name : '';
-            }
-            else {
-                $row->{created_by} = '';
-            }
-
-            # populate permissions for the expanded view
-            if ( $pref->{view_expanded} ) {
-                my @perms;
-                foreach (@$all_perms) {
-                    next unless length( $_->[1] || '' );
-                    push @perms, { name => $app->translate( $_->[1] ) }
-                      if $obj->has( $_->[0] );
-                }
-                $row->{perm_loop} = \@perms;
-            }
-        };
-        unless ( $app->user->is_superuser() ) {
-            return $app->errtrans("Permission denied.");
-        }
-        $app->add_breadcrumb( $app->translate("Roles") );
-        $app->listing(
-            {
-                args   => { sort => 'name' },
-                type   => 'role',
-                code   => $hasher,
-                params => {
-                    nav_privileges    => 1,
-                    group_id          => $group_id,
-                    list_noncron      => 1,
-                    can_create_role   => $app->user->is_superuser,
-                    has_expanded_mode => 1,
-                    search_label      => $app->translate('Users'),
-                    object_type       => 'role',
-                    group_support      => $app->model('group') ? 1 : 0,
-                },
-            }
-        );
-    }
+    );
 }
 
 sub list_associations {
@@ -2465,7 +2328,6 @@ sub list_associations {
 
     my $blog_id   = $app->param('blog_id');
     my $author_id = $app->param('author_id');
-    my $group_id  = $app->param('group_id');
     my $role_id   = $app->param('role_id');
 
     my $this_user = $app->user;
@@ -2482,28 +2344,11 @@ sub list_associations {
         }
     }
 
-    my ( $grp, $user, $role );
-    my $grp_class = $app->model('group');
+    my ( $user, $role );
     $app->error(undef);
 
-    if ($group_id) {
-        return unless $grp_class;
-        $grp = $grp_class->load($group_id);
-        $app->add_breadcrumb(
-            $app->translate('Users & Groups'),
-            $app->uri( mode => 'list_groups' )
-        );
-        $app->add_breadcrumb(
-            $grp->name,
-            $app->uri(
-                mode => 'view',
-                args => { _type => 'group', id => $group_id }
-            )
-        );
-        $app->add_breadcrumb( $app->translate('Group Associations') );
-    }
     if ($author_id) {
-        $app->add_breadcrumb( $app->translate('Users & Groups'),
+        $app->add_breadcrumb( $app->translate('Users'),
               $app->user->is_superuser
             ? $app->uri( mode => 'list_authors' )
             : undef );
@@ -2537,9 +2382,9 @@ sub list_associations {
         );
         $app->add_breadcrumb( $app->translate("Role Users & Groups") );
     }
-    if ( !$role_id && !$group_id && !$author_id ) {
+    if ( !$role_id  && !$author_id ) {
         if ($blog_id) {
-            $app->add_breadcrumb( $app->translate("Users & Groups") );
+            $app->add_breadcrumb( $app->translate("Users") );
         }
         else {
             $app->add_breadcrumb( $app->translate("Associations") );
@@ -2561,13 +2406,9 @@ sub list_associations {
     $users{ $this_user->id } = $this_user;
     my $hasher = sub {
         my ( $obj, $row ) = @_;
-        my $group;
         if ( my $user = $obj->user ) {
             $row->{user_id}   = $user->id;
             $row->{user_name} = $user->name;
-        }
-        elsif ( $grp_class && ( $group = $obj->group ) ) {
-            $row->{group_name} = $group->name;
         }
         if ( my $role = $obj->role ) {
             $row->{role_name} = $role->name;
@@ -2610,27 +2451,20 @@ sub list_associations {
     };
     $app->model('association') or return;
     my $types;
-    if ( !$group_id && !$author_id && !$blog_id ) {
+    if ( !$author_id && !$blog_id ) {
         $types = [
             MT::Association::USER_BLOG_ROLE(),
-            MT::Association::GROUP_BLOG_ROLE(),
             MT::Association::USER_ROLE(),
-            MT::Association::GROUP_ROLE()
         ];
     }
-    elsif ( !$group_id && !$author_id ) {
+    elsif ( !$author_id ) {
         $types = [
             MT::Association::USER_BLOG_ROLE(),
-            MT::Association::GROUP_BLOG_ROLE()
         ];
     }
     elsif ($author_id) {
         $types =
           [ MT::Association::USER_BLOG_ROLE(), MT::Association::USER_ROLE() ];
-    }
-    elsif ($group_id) {
-        $types =
-          [ MT::Association::GROUP_BLOG_ROLE(), MT::Association::GROUP_ROLE() ];
     }
 
     my $pre_build = sub {
@@ -2664,23 +2498,21 @@ sub list_associations {
             code  => $hasher,
             terms => {
                 type => $types,
-                $group_id  ? ( group_id  => $group_id )  : (),
                 $author_id ? ( author_id => $author_id ) : (),
                 $blog_id   ? ( blog_id   => $blog_id )   : (),
                 $role_id   ? ( role_id   => $role_id )   : (),
             },
+            pre_build => $pre_build,
             params => {
                 can_create_association => $app->user->is_superuser || ( $blog_id
                     && $app->user->permissions($blog_id)->can_administer_blog ),
                 has_expanded_mode => 1,
                 nav_privileges =>
-                  ( $group_id || $author_id || $blog_id ? 0 : 1 ) || $role_id,
-                nav_authors => ( $group_id || $author_id || $blog_id ? 1 : 0 )
+                  ( $author_id || $blog_id ? 0 : 1 ) || $role_id,
+                nav_authors => ( $author_id || $blog_id ? 1 : 0 )
                   && !$role_id,
                 blog_view     => $blog_id   ? 1 : 0,
                 user_view     => $author_id ? 1 : 0,
-                group_support => $grp_class ? 1 : 0,
-                group_view    => $group_id  ? 1 : 0,
                 role_view     => $role_id   ? 1 : 0,
                 $role_id
                 ? (
@@ -2691,9 +2523,10 @@ sub list_associations {
                 $author_id
                 ? (
                     edit_author_id   => $author_id,
-                    edit_author_name => $user
+                    edit_name => $user
                     ? ( $user->nickname ? $user->nickname : $user->name )
                     : $app->translate('(newly created user)'),
+                    edit_object => $app->translate('The user'),
                     group_count => $user ? $user->group_count() : 0,
                     status_enabled => $user ? ( $user->is_active ? 1 : 0 ) : 0,
                     status_pending => $user
@@ -2701,33 +2534,13 @@ sub list_associations {
                     : 0,
                   )
                 : (),
-                $group_id
-                ? (
-                    group_id       => $group_id,
-                    group_name     => $grp->name,
-                    user_count     => $grp->user_count(),
-                    status_enabled => $grp->is_active ? 1 : 0,
-                  )
-                : (),
                 saved         => $app->param('saved')         || 0,
                 saved_deleted => $app->param('saved_deleted') || 0,
-                usergroup_view => !$author_id && !$group_id && !$role_id,
+                usergroup_view => !$author_id  && !$role_id,
                 blog_id => $blog_id,
-                (
-                    $grp_class
-                    ? (
-                        can_add_groups => !$app->config->ExternalGroupManagement
-                          || (
-                            $app->config->ExternalGroupManagement
-                            && $grp_class->count(
-                                { status => MT::Group::ACTIVE() }
-                            ) > 0
-                          )
-                      )
-                    : ()
-                ),
                 search_label => $app->translate('Users'),
                 object_type  => 'association',
+                pt_name => $app->translate('User'),
             },
         }
     );
@@ -3463,6 +3276,12 @@ sub build_menus {
     foreach my $id (@top_ids) {
         my $menu = $menus->{$id};
         next if $menu->{view} && $menu->{view} ne $view;
+        if (my $cond = $menu->{condition}) {
+            if (!ref($cond)) {
+                $cond = $menu->{condition} = $app->handler_to_coderef($cond);
+            }
+            next unless $cond->();
+        }
 
         $menu->{allowed} = 1;
         $menu->{'id'} = $id;
@@ -3470,11 +3289,18 @@ sub build_menus {
         my @sub_ids = grep { m/^$id:/ } keys %$menus;
         my @sub;
         foreach my $sub_id (@sub_ids) {
+            my $sub = $menus->{$sub_id};
             next
-              if $menus->{$sub_id}{view}
-              && ( $menus->{$sub_id}{view} ne $view );
-            $menus->{$sub_id}->{'id'} = $sub_id;
-            push @sub, $menus->{$sub_id};
+              if $sub->{view}
+              && ( $sub->{view} ne $view );
+            $sub->{'id'} = $sub_id;
+            if (my $cond = $sub->{condition}) {
+                if (!ref($cond)) {
+                    $cond = $sub->{condition} = $app->handler_to_coderef($cond);
+                }
+                next unless $cond->();
+            }
+            push @sub, $sub;
         }
 
         if (
@@ -4301,8 +4127,6 @@ sub list_member {
     $args->{direction}  = 'descend';
 
     $param->{saved} = 1 if $app->param('saved');
-    $param->{group_support} = $app->model('group') ? 1 : 0;
-    $param->{can_add_groups} = 1 if $super_user && $param->{group_support};
     $param->{search_label} = $app->translate('Users');
     $param->{object_type} = 'author';
 
@@ -4416,12 +4240,9 @@ sub list_authors {
     $args->{limit} = $limit + 1;
     my %author_entry_count;
     $param{tab_users} = 1;
-    my ( $filter_col, $val, $group_id, $group );
+    my ( $filter_col, $val );
     $param{filter_args} = "";
     my %terms = ( type => MT::Author::AUTHOR() );
-
-    my $grp_class = $app->model('group');
-    $param{group_support} = 1 if $grp_class;
 
     my $filter_key = $app->param('filter_key');
     if (   ( $filter_col = $app->param('filter') )
@@ -4448,24 +4269,9 @@ sub list_authors {
         }
     }
     $param{can_create_user}           = $this_author->is_superuser;
-    $param{external_user_management}  = $app->config->ExternalUserManagement;
-    $param{external_group_management} = $app->config->ExternalGroupManagement;
     $param{synchronized}              = 1 if $app->param('synchronized');
     $param{error}                     = 1 if $app->param('error');
-    my $author_iter;
-    if ( $group_id = $app->param('group_id') ) {
-        return unless $grp_class;
-        $group                     = $grp_class->load($group_id);
-        $param{group_id}           = $group_id;
-        $param{group_display_name} = $group->display_name;
-        $param{group_name}         = $group->name;
-        $param{user_count}         = $group->user_count;
-        $param{status_enabled} = 1 if $group->is_active;
-        $author_iter = $group->user_iter( \%terms, $args );
-    }
-    else {
-        $author_iter = MT::Author->load_iter( \%terms, $args );
-    }
+    my $author_iter = MT::Author->load_iter( \%terms, $args );
     my ( @data, %authors, %entry_count_refs );
     my $entry_class = $app->model('entry');
     while ( my $au = $author_iter->() ) {
@@ -4488,10 +4294,10 @@ sub list_authors {
               MT::Author->load( $au->created_by )
               if $au->created_by;
             if ($parent_author) {
-                $row->{created_by} = $parent_author->name;
+                $row->{created_by_name} = $parent_author->name;
             }
             else {
-                $row->{created_by} = $app->translate('(user deleted)');
+                $row->{created_by_name} = $app->translate('(user deleted)');
             }
         }
         push @data, $row;
@@ -4901,18 +4707,19 @@ sub reset_log {
     else {
         return $app->error( $app->translate("Permission denied.") )
           unless $author->can_view_log;
-        $log_class->remove_all;
-        $app->log(
-            {
-                message => $app->translate(
-                    "Activity log reset by '[_1]'",
-                    $author->name
-                ),
-                level    => MT::Log::INFO(),
-                class    => 'system',
-                category => 'reset_log'
-            }
-        );
+        if ( $log_class->remove( { class => '*' } ) ) {
+            $app->log(
+                {
+                    message => $app->translate(
+                        "Activity log reset by '[_1]'",
+                        $author->name
+                    ),
+                    level    => MT::Log::INFO(),
+                    class    => 'system',
+                    category => 'reset_log'
+                }
+            );
+        }
     }
     $app->add_return_arg( 'reset' => 1 );
     $app->call_return;
@@ -5301,7 +5108,7 @@ sub edit_object {
     my $author = $app->user;
     my $cfg    = $app->config;
     $param{styles} = '';
-    if ( $type eq 'author' || $type eq 'group' ) {
+    if ( $type eq 'author' ) {
         if ( $perms || $blog_id ) {
             return $app->return_to_dashboard( redirect => 1 );
         }
@@ -6179,46 +5986,11 @@ sub edit_object {
             if ( $app->user->is_superuser ) {
                 $param{search_label} = $app->translate('Users');
                 $param{object_type}  = 'author';
-                if ( $app->config->ExternalUserManagement ) {
-                    if ( MT::Auth->synchronize_author( User => $obj ) ) {
-                        $obj = $class->load($id);
-                        ## we only sync name and status here
-                        $param{name}   = $obj->name;
-                        $param{status} = $obj->status;
-                        if ( ( $id == $author->id ) && ( !$obj->is_active ) ) {
-                            ## superuser has been attempted to disable herself - something bad
-                            $obj->status( MT::Author::ACTIVE() );
-                            $obj->save;
-                            $param{superuser_attempted_disabled} = 1;
-                        }
-                    }
-                }
-                else {
-                    $param{can_edit_username} = 1;
-                }
-            }
-            else {
-                if ( !$app->config->ExternalUserManagement ) {
-                    $param{can_edit_username} = 1;
-                }
+                $param{can_edit_username} = 1;
             }
             $param{status_enabled} = $obj->is_active ? 1 : 0;
             $param{status_pending} =
               $obj->status == MT::Author::PENDING() ? 1 : 0;
-            if ( $app->model('group') ) {
-                $param{group_support} = 1;
-                $param{group_count}   = $obj->group_count;
-                if ( $cfg->AuthenticationModule ne 'MT' ) {
-                    if ( $cfg->ExternalGroupManagement ) {
-                        my $id = $obj->external_id;
-                        $id = '' unless defined $id;
-                        if ( length($id) && ( $id !~ m/[\x00-\x1f\x80-\xff]/ ) )
-                        {
-                            $param{show_external_id} = 1;
-                        }
-                    }
-                }
-            }
             $param{can_modify_password} =
               ( $param{editing_other_profile} || $param{is_me} )
               && MT::Auth->password_exists;
@@ -6445,11 +6217,6 @@ sub edit_object {
             $param{create_personal_weblog} =
               $app->config->NewUserAutoProvisioning ? 1 : 0
               unless exists $param{create_personal_weblog};
-            if ( !$app->config->ExternalUserManagement ) {
-                if ( $app->config->AuthenticationModule ne 'MT' ) {
-                    $param{new_user_external_auth} = '1';
-                }
-            }
             $param{can_modify_password}  = MT::Auth->password_exists;
             $param{can_recover_password} = MT::Auth->can_recover_password;
 
@@ -6902,7 +6669,7 @@ sub edit_object {
         }
     }
     elsif ( $type eq 'author' ) {
-        $app->add_breadcrumb( $app->translate("Users & Groups"),
+        $app->add_breadcrumb( $app->translate("Users"),
               $app->user->is_superuser
             ? $app->uri( mode => 'list_authors' )
             : undef );
@@ -6914,7 +6681,7 @@ sub edit_object {
             $auth_prefs = $obj->entry_prefs;
         }
         else {
-            $app->add_breadcrumb( $app->translate("Create New User") );
+            $app->add_breadcrumb( $app->translate("Create User") );
             $param{languages} =
               $app->languages_list( $app->config('DefaultUserLanguage') )
               unless ( exists $param{languages} );
@@ -6938,10 +6705,6 @@ sub edit_object {
             $param{'auth_pref_tag_delim'} = $delim;
         }
         $param{'nav_authors'} = 1;
-        $param{'external_user_management'} =
-          $app->config->ExternalUserManagement;
-        $param{'external_group_management'} =
-          $app->config->ExternalGroupManagement;
     }
     if ( ( $q->param('msg') || "" ) eq 'nosuch' ) {
         $param{nosuch} = 1;
@@ -7568,42 +7331,6 @@ sub CMSPreSave_author {
     # Authors should only be of type AUTHOR when created from
     # the CMS app; COMMENTERs are created from the Comments app.
     $obj->type( MT::Author::AUTHOR() );
-
-    if ( $app->config->ExternalUserManagement ) {
-        if ( 'save_profile' eq $app->mode ) {
-            if ( $obj->is_active ) {
-                require MT::Auth;
-                my $error = MT::Auth->sanity_check($app);
-                return $eh->error($error)
-                  if ( defined $error ) && ( $error ne '' );
-            }
-        }
-        elsif ( $original->id && ( $original->name ne $obj->name ) ) {
-            return $eh->error(
-                $app->translate(
-"A user can't change his/her own username in this environment."
-                )
-            );
-        }
-
-        if ( $obj->id ) {
-            if ( $original->status != $obj->status ) {
-                if ( $obj->status == MT::Author::ACTIVE() ) {
-
-                    # trying to reactivate an author...
-                    MT::Auth->synchronize_author( User => $obj );
-                    if ( $obj->status != MT::Author::ACTIVE() ) {
-
-                        # status was reverted for whatever reason...
-                        return $eh->error(
-                            $app->translate(
-                                "An errror occurred when enabling this user.")
-                        );
-                    }
-                }
-            }
-        }
-    }
 
     my $pass = $app->param('pass');
     if ($pass) {
@@ -11171,6 +10898,12 @@ sub build_plugin_table {
                 plugin_id            => $id,
                 plugin_compat_errors => $registry->{compat_errors},
             };
+            my $block_tags = $plugin->registry('tags', 'block');
+            my $function_tags = $plugin->registry('tags', 'function');
+            my $modifiers = $plugin->registry('tags', 'modifier');
+            my $junk_filters = $plugin->registry('junk_filters');
+            my $text_filters = $plugin->registry('text_filters');
+
             $row->{plugin_tags} = listify(
                 [
 
@@ -11180,41 +10913,41 @@ sub build_plugin_table {
 
                             # Format all 'block' tags with <MT(name)>
                             map { s/\?$//; "<MT$_>" }
-                              ( keys %{ $registry->{tags}{block} || {} } )
+                              ( keys %{ $block_tags || {} } )
                         ),
                         (
 
                             # Format all 'function' tags with <$MT(name)$>
                             map { "<\$MT$_\$>" }
-                              ( keys %{ $registry->{tags}{function} || {} } )
+                              ( keys %{ $function_tags || {} } )
                         )
                     )
                 ]
-            ) if $registry->{tags}{block} || $registry->{tags}{function};
+            ) if $block_tags || $function_tags;
             $row->{plugin_attributes} = listify(
                 [
 
                     # Filter out 'plugin' registry entry
                     grep { $_ ne 'plugin' }
-                      keys %{ $registry->{tags}{modifier} || {} }
+                      keys %{ $modifiers || {} }
                 ]
-            ) if $registry->{tags}{modifier};
+            ) if $modifiers;
             $row->{plugin_junk_filters} = listify(
                 [
 
                     # Filter out 'plugin' registry entry
                     grep { $_ ne 'plugin' }
-                      keys %{ $registry->{junk_filters} || {} }
+                      keys %{ $junk_filters || {} }
                 ]
-            ) if $registry->{junk_filters};
+            ) if $junk_filters;
             $row->{plugin_text_filters} = listify(
                 [
 
                     # Filter out 'plugin' registry entry
                     grep { $_ ne 'plugin' }
-                      keys %{ $registry->{text_filters} || {} }
+                      keys %{ $text_filters || {} }
                 ]
-            ) if $registry->{text_filters};
+            ) if $text_filters;
             if (   $row->{plugin_tags}
                 || $row->{plugin_attributes}
                 || $row->{plugin_junk_filters}
@@ -11242,8 +10975,6 @@ sub build_plugin_table {
             }
 
             # no registered plugin objects--
-            # are there any tags/attributes/filters to expose?
-            my $registry = $plugin->{registry};
             $row = {
                 first                => $next_is_first,
                 plugin_major         => $fld ? 0 : 1,
@@ -11253,28 +10984,7 @@ sub build_plugin_table {
                 plugin_error         => $profile->{error},
                 plugin_disabled      => $profile->{enabled} ? 0 : 1,
                 plugin_id            => $id,
-                plugin_compat_errors => $registry->{compat_errors},
             };
-            $row->{plugin_tags} = listify(
-                [ keys %{ $registry->{tags}{block} || {} } ],
-                keys %{ $registry->{tags}{function} || {} }
-            ) if $profile->{tags}{block} || $profile->{tags}{function};
-            $row->{plugin_attributes} =
-              listify( [ keys %{ $registry->{tags}{modifier} || {} } ] )
-              if $profile->{tags}{modifier};
-            $row->{plugin_junk_filters} =
-              listify( [ keys %{ $registry->{junk_filters} || {} } ] )
-              if $registry->{junk_filters};
-            $row->{plugin_text_filters} =
-              listify( [ keys %{ $registry->{text_filters} || {} } ] )
-              if $registry->{text_filters};
-            if (   $row->{plugin_tags}
-                || $row->{plugin_attributes}
-                || $row->{plugin_junk_filters}
-                || $row->{plugin_text_filters} )
-            {
-                $row->{plugin_resources} = 1;
-            }
             push @$data, $row;
         }
         $next_is_first = 0;
@@ -14710,7 +14420,7 @@ sub edit_role {
         $app->add_breadcrumb( $role->name );
     }
     else {
-        $app->add_breadcrumb( $app->translate('Create New Role') );
+        $app->add_breadcrumb( $app->translate('Create Role') );
     }
     $param{screen_class}        = "settings-screen edit-role";
     $param{object_type}         = 'role';
@@ -15538,15 +15248,20 @@ sub _write_upload {
 sub search_replace {
     my $app = shift;
     my $param = $app->do_search_replace(@_) or return;
+    my $blog_id = $app->param('blog_id');
     $app->add_breadcrumb( $app->translate('Search & Replace') );
     $param->{nav_search}   = 1;
     $param->{screen_class} = "search-replace";
-    $param->{screen_id} = "search-replace";
-    $app->load_tmpl( 'search_replace.tmpl', $param );
+    $param->{screen_id}    = "search-replace";
+    $param->{search_tabs}  = $app->search_apis($blog_id ? 'blog' : 'system');
+    my $tmpl = $app->load_tmpl( 'search_replace.tmpl', $param );
+    my $placeholder = $tmpl->getElementById('search_results');
+    $placeholder->innerHTML(delete $param->{results_template});
+    return $tmpl;
 }
 
-sub do_search_replace {
-    my $app     = shift;
+sub core_search_apis {
+    my $app = shift;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
     my $author  = $app->user;
@@ -15561,40 +15276,51 @@ sub do_search_replace {
         @perms = ( $app->permissions )
           or return $app->error( $app->translate("No permissions") );
     }
-
-    my $search_api = {
-        'asset' => {
-            'perm_check' => sub {
-                1;
-            },
-            'search_cols'        => [qw(file_name description)],
-            'replace_cols'       => [],
-            'can_replace'        => 0,
-            'can_search_by_date' => 1,
-        },
+    return {
         'entry' => {
+            'order' => 100,
+            'permission' => 'create_post,publish_post,edit_all_posts',
+            'label' => $app->translate('Entries'),
             'perm_check' => sub {
                 grep { $_->can_edit_entry( $_[0], $author ) } @perms;
             },
-            'search_cols' =>
-              [qw(title text text_more keywords excerpt basename)],
+            'search_cols' => {
+                'title' => sub { $app->translate('Title') },
+                'text' => sub { $app->translate('Entry Body') },
+                'text_more' => sub { $app->translate('Extended Entry') },
+                'keywords' => sub { $app->translate('Keywords') },
+                'excerpt' => sub { $app->translate('Excerpt') },
+                'basename' => sub { $app->translate('Basename') },
+            },
             'replace_cols'       => [qw(title text text_more keywords excerpt)],
             'can_replace'        => 1,
             'can_search_by_date' => 1,
             'date_column'        => 'authored_on',
         },
-        'page' => {
+        'comment' => {
+            'order' => 200,
+            'permission' => 'publish_post,create_post,edit_all_posts,manage_feedback',
+            'label' => $app->translate('Comments'),
             'perm_check' => sub {
-                grep { $_->can_manage_pages( $_[0], $author ) } @perms;
+                require MT::Entry;
+                my $entry = MT::Entry->load( $_[0]->entry_id );
+                grep { $_->can_edit_entry( $entry, $author ) } @perms;
             },
-            'search_cols' =>
-              [qw(title text text_more keywords excerpt basename)],
-            'replace_cols'       => [qw(title text text_more keywords excerpt)],
+            'search_cols' => {
+                'url' => sub { $app->translate('URL') },
+                'text' => sub { $app->translate('Comment Text') },
+                'email' => sub { $app->translate('Email Address') },
+                'ip' => sub { $app->translate('IP Address') },
+                'author' => sub { $app->translate('Name') },
+            },
+            'replace_cols'       => [qw(text)],
             'can_replace'        => 1,
             'can_search_by_date' => 1,
-            'date_column'        => 'authored_on',
         },
         'ping' => {
+            'order' => 300,
+            'permission' => 'create_post,publish_post,edit_all_posts,manage_feedback',
+            'label' => $app->translate('TrackBacks'),
             'perm_check' => sub {
                 my $ping = shift;
                 my $tb   = MT::Trackback->load( $ping->tb_id );
@@ -15608,23 +15334,43 @@ sub do_search_replace {
                     return grep { $_->can_edit_categories } @perms;
                 }
             },
-            'search_cols'        => [qw(title excerpt source_url blog_name ip)],
+            'search_cols' => {
+                'title' => sub { $app->translate('Title') },
+                'excerpt' => sub { $app->translate('Excerpt') },
+                'source_url' => sub { $app->translate('Source URL') },
+                'ip' => sub { $app->translate('IP Address') },
+                'blog_name' => sub { $app->translate('Blog Name') },
+            },
             'replace_cols'       => [qw(title excerpt)],
             'can_replace'        => 1,
             'can_search_by_date' => 1,
         },
-        'comment' => {
+        'page' => {
+            'order' => 400,
+            'permission' => 'manage_pages',
+            'label' => $app->translate('Pages'),
             'perm_check' => sub {
-                require MT::Entry;
-                my $entry = MT::Entry->load( $_[0]->entry_id );
-                grep { $_->can_edit_entry( $entry, $author ) } @perms;
+                grep { $_->can_manage_pages( $_[0], $author ) } @perms;
             },
-            'search_cols'        => [qw(text url email ip author)],
-            'replace_cols'       => [qw(text)],
+            'search_cols' => {
+                'title' => sub { $app->translate('Title') },
+                'text' => sub { $app->translate('Page Body') },
+                'text_more' => sub { $app->translate('Extended Page') },
+                'keywords' => sub { $app->translate('Keywords') },
+                'excerpt' => sub { $app->translate('Excerpt') },
+                'basename' => sub { $app->translate('Basename') },
+            },
+            'replace_cols'       => [qw(title text text_more keywords excerpt)],
             'can_replace'        => 1,
             'can_search_by_date' => 1,
+            'date_column'        => 'authored_on',
+            'results_table_template' => '<mt:include name="include/entry_table.tmpl">',
         },
         'template' => {
+            'order'         => 500,
+            'permission'    => 'edit_templates',
+            'label'         => $app->translate('Templates'),
+            'view'          => 'blog',
             'perm_check' => sub {
                 my ($obj) = @_;
 
@@ -15637,23 +15383,63 @@ sub do_search_replace {
                 return @check;
 
             },
-            'search_cols'        => [qw(name text linked_file outfile)],
+            'search_cols' => {
+                'name' => sub { $app->translate('Template Name') },
+                'text' => sub { $app->translate('Text') },
+                'linked_file' => sub { $app->translate('Linked Filename') },
+                'outfile' => sub { $app->translate('Output Filename') },
+            },
             'replace_cols'       => [qw(name text linked_file outfile)],
             'can_replace'        => 1,
             'can_search_by_date' => 0,
         },
+        'asset' => {
+            'order' => 600,
+            'permission' => 'manage_assets',
+            'label' => $app->translate('Assets'),
+            'perm_check' => sub {
+                1;
+            },
+            'search_cols' => {
+                'file_name' => sub { $app->translate('Filename') },
+                'description' => sub { $app->translate('Description') },
+            },
+            'replace_cols'       => [],
+            'can_replace'        => 0,
+            'can_search_by_date' => 1,
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                $terms->{class} = '*';
+                $terms->{blog_id} = $blog_id if $blog_id;
+            }
+        },
         'log' => {
+            'order' => 700,
+            'permission'        => "view_blog_log",
+            'system_permission' => "view_log",
+            'label' => $app->translate('Activity Log'),
             'perm_check' => sub {
                 my ($obj) = @_;
                 return 1 if $author->can_view_log;
                 my $perm = $author->permissions( $obj->blog_id );
                 return $perm->can_view_blog_log;
             },
-            'search_cols'        => [qw(ip message)],
+            'search_cols' => {
+                'ip' => sub { $app->translate('Log Message') },
+                'message' => sub { $app->translate('IP Address') },
+            },
             'can_replace'        => 0,
             'can_search_by_date' => 1,
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                $terms->{class} = '*';
+                $terms->{blog_id} = $blog_id if $blog_id;
+            }
         },
         'author' => {
+            'order' => 800,
+            'system_permission' => 'administer',
+            'label' => $app->translate('Users'),
             'perm_check' => sub {
                 return 1 if $author->is_superuser;
                 if ($blog_id) {
@@ -15662,11 +15448,36 @@ sub do_search_replace {
                 }
                 return 0;
             },
-            'search_cols'        => [qw(name nickname email url)],
+            'search_cols' => {
+                'name'     => sub { $app->translate('Username') },
+                'nickname' => sub { $app->translate('Display Name') },
+                'email'    => sub { $app->translate('Email Address') },
+                'url'      => sub { $app->translate('URL') },
+            },
             'can_replace'        => 0,
             'can_search_by_date' => 0,
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                if ($blog_id) {
+                    $args->{'join'} =
+                      MT::Permission->join_on( 'author_id',
+                        { blog_id => $blog_id } );
+                }
+                else {
+                    $terms->{'type'} = MT::Author::AUTHOR();
+                }
+            },
+            'results_table_template' => '
+<mt:if name="blog_id">
+    <mt:include name="include/member_table.tmpl">
+<mt:else>
+    <mt:include name="include/author_table.tmpl">
+</mt:if>',
         },
         'blog' => {
+            'order' => 900,
+            'system_permission' => 'administer',
+            'label' => $app->translate('Blogs'),
             'perm_check' => sub {
                 return 1 if $author->is_superuser;
                 my ($obj) = @_;
@@ -15674,12 +15485,51 @@ sub do_search_replace {
                 $perm
                   && ( $perm->can_administer_blog || $perm->can_edit_config );
             },
-            'search_cols'        => [qw(name site_url site_path description)],
+            'search_cols' => {
+                'name' => sub { $app->translate('Name') },
+                'site_url' => sub { $app->translate('Site URL') },
+                'site_path' => sub { $app->translate('Site Root') },
+                'description' => sub { $app->translate('Description') },
+            },
             'replace_cols'       => [qw(name site_url site_path description)],
             'can_replace'        => $author->is_superuser(),
             'can_search_by_date' => 0,
+            'view'               => 'system',
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                $args->{sort}      = 'name';
+                $args->{direction} = 'ascend';
+            }
         }
     };
+
+}
+
+sub _default_results_table_template {
+    my $app = shift;
+    my ($type, $results, $plural) = @_;
+    if ($results) {
+        return "<mt:include name=\"include/${type}_table.tmpl\">";
+    }
+    else {
+        return <<TMPL;    
+        <mtapp:statusmsg
+                id="no-$plural"
+                class="info">
+                <__trans phrase="No [_1] were found that match the given criteria." params="$plural">
+            </mtapp:statusmsg>
+        </mt:if>
+TMPL
+    }
+}
+
+sub do_search_replace {
+    my $app     = shift;
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    my $author  = $app->user;
+
+    my $search_api = $app->registry("search_apis");
 
     my (
         $search,        $replace,     $do_replace,    $case,
@@ -15692,6 +15542,11 @@ sub do_search_replace {
       = map scalar $q->param($_),
       qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search );
 
+
+    if ( !$type || ( 'category' eq $type ) || ( 'folder' eq $type ) ) {
+        $type = 'entry';
+    }
+
     foreach my $obj_type (qw( role association )) {
         if ( $type eq $obj_type ) {
             $type = 'author';
@@ -15700,10 +15555,6 @@ sub do_search_replace {
 
     $replace && ( $app->validate_magic() or return );
     $search = $orig_search if $do_replace;    # for safety's sake
-
-    if ( !$type || ( 'category' eq $type ) || ( 'folder' eq $type ) ) {
-        $type = 'entry';
-    }
     my $list_pref = $app->list_pref($type);
 
     $app->assert( $search_api->{$type}, "Invalid request." ) or return;
@@ -15726,14 +15577,14 @@ sub do_search_replace {
     if ($is_limited) {
         @cols = $q->param('search_cols');
         my %search_api_cols =
-          map { $_ => 1 } @{ $search_api->{$type}{search_cols} };
+          map { $_ => 1 } keys %{ $search_api->{$type}{search_cols} };
         if ( @cols && ( $cols[0] =~ /,/ ) ) {
             @cols = split /,/, $cols[0];
         }
         @cols = grep { $search_api_cols{$_} } @cols;
     }
     else {
-        @cols = @{ $search_api->{$type}->{search_cols} };
+        @cols = keys %{ $search_api->{$type}->{search_cols} };
     }
     foreach (
         $datefrom_year, $datefrom_month, $datefrom_day,
@@ -15789,27 +15640,9 @@ sub do_search_replace {
     if ( ( $do_search && $search ne '' ) || $show_all || $do_replace ) {
         my %terms;
         my %args;
-        if ( $type eq 'author' ) {
-            $terms{'type'} = MT::Author::AUTHOR();
-            if ( 'dialog_grant_role' eq $app->param('__mode') ) {
-                @cols = qw(name nickname email url);
-            }
-            elsif ($blog_id) {
-                # Blog-level search covers both authors and commenters
-                delete $terms{'type'};
-                $args{'join'} =
-                  MT::Permission->join_on( 'author_id',
-                    { blog_id => $blog_id } );
-            }
-        }
-        elsif ( $type eq 'asset' ) {
-            $terms{class} = '*';
-        }
-        elsif ( $type eq 'log' ) {
-            $terms{class} = '*';
-            $terms{blog_id} = $blog_id if $blog_id;
-        }
-        elsif ( $type eq 'blog' ) {
+        if (exists $api->{setup_terms_args}) {
+            my $code = $app->handler_to_coderef($api->{setup_terms_args});
+            $code->(\%terms, \%args, $blog_id);
         }
         else {
             %terms = $blog_id ? ( blog_id => $blog_id ) : ();
@@ -15844,36 +15677,34 @@ sub do_search_replace {
                 }
             };
         }
-        elsif ( $type eq 'blog' ) {
-            $args{sort}      = 'name';
-            $args{direction} = 'ascend';
-            $iter = $class->load_iter( \%terms, \%args ) or die $class->errstr;
-        }
-        elsif ( $type eq 'log' ) {
-            $iter = $class->load_iter( \%terms, \%args ) or die $class->errstr;
-        }
-        elsif ($blog_id) {
+        if ( $blog_id || ($type eq 'blog') ) {
             $iter = $class->load_iter( \%terms, \%args ) or die $class->errstr;
         }
         else {
 
-            # Get an iter for each accessible blog
             my @streams;
-            if (@perms) {
-                @streams = map {
-                    {
-                        iter => $class->load_iter(
-                            {
-                                blog_id => $_->blog_id,
-                                %terms
-                            },
-                            \%args
-                        )
-                    }
-                } @perms;
-            }
-            elsif ( $author->is_superuser ) {
+            if ( $author->is_superuser ) {
                 @streams = ( { iter => $class->load_iter( \%terms, \%args ) } );
+            } 
+            else {
+                # Get an iter for each accessible blog
+                my @perms = $app->model('permission')->load(
+                    { blog_id => '0', author_id => $author->id },
+                    { not => { blog_id => 1 } },
+                );
+                if (@perms) {
+                    @streams = map {
+                        {
+                            iter => $class->load_iter(
+                                {
+                                    blog_id => $_->blog_id,
+                                    %terms
+                                },
+                                \%args
+                            )
+                        }
+                    } @perms;
+                }
             }
 
             # Pull out the head of each iterator
@@ -15987,7 +15818,8 @@ sub do_search_replace {
     }
     if (@data) {
         if (my $meth = $search_api->{$type}{handler}) {
-            $meth->(items => \@data, param => \%param, type => $type );
+            $meth = $app->handler_to_coderef($meth);
+            $meth->($app, items => \@data, param => \%param, type => $type );
         } else {
             my $meth = 'build_' . $type . '_table';
             if ( $app->can($meth) ) {
@@ -16000,6 +15832,20 @@ sub do_search_replace {
             }
         }
         $param{object_type} = $type;
+        if ( exists $api->{results_table_template} ) {
+            $param{results_template} = $api->{results_table_template};
+        }
+        else {
+            $param{results_template} = $app->_default_results_table_template($type, 1, $class->class_label_plural);
+        }
+    }
+    else {
+        if ( exists $api->{no_results_template} ) {
+            $param{results_template} = $api->{no_results_template};
+        }
+        else {
+            $param{results_template} = $app->_default_results_table_template($type, 0, $class->class_label_plural);
+        }
     }
     if ($is_dateranged) {
         ( $datefrom_year, $datefrom_month, $datefrom_day ) =
@@ -16045,7 +15891,20 @@ sub do_search_replace {
         %param
     );
     $res{'tab_junk'} = 1 if $is_junk;
-    $res{ 'search_cols_' . $_ } = 1 foreach @cols;
+    
+    my $search_cols = $search_api->{$type}{search_cols};
+    my %cols = map { $_ => 1 } @cols;
+    my @search_cols;
+    for my $field (keys %$search_cols) {
+        my %search_field;
+        $search_field{field}    = $field;
+        $search_field{selected} = 1 if exists($cols{$field});
+        $search_field{label}    = 'CODE' eq ref($search_cols->{$field})
+          ? $search_cols->{$field}->()
+          : $app->translate($search_cols->{$field});
+        push @search_cols, \%search_field;
+    }
+    $res{'search_cols'} = \@search_cols;
     \%res;
 }
 
@@ -17161,32 +17020,6 @@ sub remove_tags_from_entries {
     $app->call_return;
 }
 
-sub synchronize {
-    my $app = shift;
-    $app->validate_magic or return;
-    $app->user->is_superuser
-      or return $app->errtrans("Permission denied.");
-    my ($type) = $app->param('_type');
-
-    my $method = "synchronize_$type";
-    require MT::Auth;
-    my $count = MT::Auth->$method;
-    my $args  = ();
-    if ( defined $count ) {
-        $args->{synchronized} = 1 if $count >= 0;
-    }
-    else {
-        $args->{error} = 1;
-    }
-
-    $app->redirect(
-        $app->uri(
-            'mode' => $type eq 'author' ? 'list_authors' : 'list_groups',
-            args => $args
-        )
-    );
-}
-
 sub dialog_select_weblog {
     my $app = shift;
 
@@ -17372,7 +17205,6 @@ sub dialog_grant_role {
     my $app = shift;
 
     my $author_id = $app->param('author_id');
-    my $group_id  = $app->param('group_id');
     my $blog_id   = $app->param('blog_id');
     my $role_id   = $app->param('role_id');
 
@@ -17386,13 +17218,8 @@ sub dialog_grant_role {
     }
 
     my $type = $app->param('_type');
-    my ( $grp, $user, $role );
-    my $grp_class = $app->model("group");
-    if ($group_id) {
-        return unless $grp_class;
-        $grp = $grp_class->load($group_id);
-    }
-    elsif ($author_id) {
+    my ( $user, $role );
+    if ($author_id) {
         $user = MT::Author->load($author_id);
     }
     if ($role_id) {
@@ -17459,12 +17286,6 @@ sub dialog_grant_role {
                 edit_author_id => $user->id,
               )
             : (),
-            $group_id
-            ? (
-                group_name => $grp->name,
-                group_id   => $grp->id,
-              )
-            : (),
             $role_id
             ? (
                 role_name => $role->name,
@@ -17480,12 +17301,9 @@ sub dialog_grant_role {
         if ( !$blog_id ) {
             push @panels, 'blog';
         }
-        if ( !$author_id && !$group_id ) {
+        if ( !$author_id ) {
             if ( $type eq 'user' ) {
                 unshift @panels, 'author';
-            }
-            else {
-                unshift @panels, 'group';
             }
         }
 
@@ -17503,13 +17321,6 @@ sub dialog_grant_role {
                 items_prompt      => $app->translate("Users Selected"),
                 search_label      => $app->translate("Search Users"),
                 panel_description => $app->translate("Name"),
-            },
-            'group' => {
-                panel_title       => $app->translate("Select Groups"),
-                panel_label       => $app->translate("Group Name"),
-                items_prompt      => $app->translate("Groups Selected"),
-                search_label      => $app->translate("Search Groups"),
-                panel_description => $app->translate("Description"),
             },
             'role' => {
                 panel_title       => $app->translate("Select Roles"),
@@ -17544,9 +17355,6 @@ sub dialog_grant_role {
             if ( $source eq 'author' ) {
                 $terms->{status} = MT::Author::ACTIVE();
                 $terms->{type}   = MT::Author::AUTHOR();
-            }
-            elsif ( $source eq 'group' ) {
-                $terms->{status} = $grp_class->ACTIVE();
             }
 
             $app->listing(
@@ -17649,32 +17457,22 @@ sub grant_role {
 
     my $blogs   = $app->param('blog')   || '';
     my $authors = $app->param('author') || '';
-    my $groups  = $app->param('group')  || '';
     my $roles   = $app->param('role')   || '';
     my $author_id = $app->param('author_id');
     my $blog_id   = $app->param('blog_id');
-    my $group_id  = $app->param('group_id');
     my $role_id   = $app->param('role_id');
 
     my @blogs   = split /,/, $blogs;
     my @authors = split /,/, $authors;
-    my @groups  = split /,/, $groups;
     my @roles   = split /,/, $roles;
 
     require MT::Blog;
     require MT::Role;
-    my $grp_class = $app->model("group");
 
     foreach (@blogs) {
         my $id = $_;
         $id =~ s/\D//g;
         $_ = MT::Blog->load($id);
-    }
-    foreach (@groups) {
-        return unless $grp_class;
-        my $id = $_;
-        $id =~ s/\D//g;
-        $_ = $grp_class->load($id);
     }
     foreach (@roles) {
         my $id = $_;
@@ -17696,7 +17494,6 @@ sub grant_role {
     push @authors, MT::Author->load($author_id) if $author_id;
     push @blogs,   MT::Blog->load($blog_id)     if $blog_id;
     push @roles,   MT::Role->load($role_id)     if $role_id;
-    push @groups,  $grp_class->load($group_id)  if $group_id;
 
     if ( !$user->is_superuser ) {
         if (   ( scalar @blogs != 1 )
@@ -17718,7 +17515,7 @@ sub grant_role {
             if ($add_pseudo_new_user) {
                 push @default_assignments, $role->id . ',' . $blog->id;
             }
-            foreach my $ug ( @groups, @authors ) {
+            foreach my $ug ( @authors ) {
                 next unless ref $ug;
                 MT::Association->link( $ug => $role => $blog );
             }
@@ -20220,11 +20017,6 @@ Handler for the display of the import screen.
 =item * start_upload
 
 =item * start_upload_entry
-
-=item * synchronize
-
-Handler for the request to synchronize the users or groups with the
-configured external directory.
 
 =item * asset_insert
 

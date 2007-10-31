@@ -24,7 +24,7 @@ sub BEGIN {
 }
 
 my $cfg_exist;
-my $mt_static_path;
+my $mt_static_path = q();
 my $mt_cgi_path;
 if ((-f File::Spec->catfile($ENV{MT_HOME}, 'mt-config.cgi')) ||
     (-f File::Spec->catfile($ENV{MT_HOME}, 'mt.cfg'))) {
@@ -59,8 +59,8 @@ $version ||= '__PRODUCT_VERSION_ID__';
 my ($mt, $LH);
 my $lang = '__BUILD_LANGUAGE__';
 eval {
-    require MT;
-    $mt = MT->new();
+    require MT::App::Wizard;
+    $mt = MT::App::Wizard->new();
     my $cfg = $mt->config;
     $cfg->PublishCharset('utf-8');
     $cfg->DefaultLanguage($lang);
@@ -271,8 +271,9 @@ HTML
 }
 
 my $is_good = 1;
+my (@REQ, @DATA, @OPT);
 
-my @REQ = (
+my @CORE_REQ = (
     [ 'CGI', 0, 1, translate('CGI is required for all Movable Type application functionality.') ],
 
     [ 'Image::Size', 0, 1, translate('Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).') ],
@@ -282,7 +283,7 @@ my @REQ = (
     [ 'CGI::Cookie', 0, 1, translate('CGI::Cookie is required for cookie authentication.') ],
 );
 
-my @DATA = (
+my @CORE_DATA = (
     [ 'DBI', 1.21, 0, translate('DBI is required to store data in database.') ],
 
     [ 'DBD::mysql', 0, 0, translate('DBI and DBD::mysql are required if you want to use the MySQL database backend.') ],
@@ -295,7 +296,7 @@ my @DATA = (
 
 );
 
-my @OPT = (
+my @CORE_OPT = (
     [ 'HTML::Entities', 0, 0, translate('HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.') ],
 
     [ 'LWP::UserAgent', 0, 0, translate('LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.') ],
@@ -406,6 +407,35 @@ print "\n\n</ul>\n";
 
 exit if $ENV{QUERY_STRING} && $ENV{QUERY_STRING} eq 'sys-check';
 
+if ($mt) {
+    my $req = $mt->registry("required_packages");
+    foreach my $key (keys %$req) {
+        next if $key eq 'DBI';
+        my $pkg = $req->{$key};
+        push @REQ, [ $key, $pkg->{version} || 0, 1, $pkg->{label}, $key, $pkg->{link} ];
+    }
+    my $drivers = $mt->object_drivers;
+    foreach my $key (keys %$drivers) {
+        my $driver = $drivers->{$key};
+        my $label = $driver->{label};
+        my $link = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
+        $link =~ s/::/-/g;
+        push @DATA, [ $driver->{dbd_package}, $driver->{dbd_version}, 0,
+            $mt->translate("The [_1] database driver is required to use [_2].", $driver->{dbd_package}, $label),
+            $label, $link ];
+    }
+    unshift @DATA, [ 'DBI', 1.21, 0, translate('DBI is required to store data in database.') ]
+        if @DATA;
+    my $opt = $mt->registry("optional_packages");
+    foreach my $key (keys %$opt) {
+        my $pkg = $opt->{$key};
+        push @OPT, [ $key, $pkg->{version} || 0, 0, $pkg->{label}, $key, $pkg->{link} ];
+    }
+}
+@REQ  = @CORE_REQ  unless @REQ;
+@DATA = @CORE_DATA unless @DATA;
+@OPT  = @CORE_OPT  unless @OPT;
+
 for my $list (\@REQ, \@DATA, \@OPT) {
     my $data = ($list == \@DATA);
     my $req = ($list == \@REQ);
@@ -446,6 +476,9 @@ MSG
     my $dbi_is_okay = 0;
     for my $ref (@$list) {
         my($mod, $ver, $req, $desc) = @$ref;
+        if ('CODE' eq ref($desc)) {
+            $desc = $desc->();
+        }
         print "<blockquote>\n" if $mod =~ m/^DBD::/;
         print "    <h3>$mod" .
             ($ver ? " (version &gt;= $ver)" : "") . "</h3>";

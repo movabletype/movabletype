@@ -846,11 +846,6 @@ sub init_config {
     return $mt->trans_error("Bad ObjectDriver config")
       unless $cfg->ObjectDriver;
 
-    $cfg->read_config_db();
-
-    # Tell any instantiated drivers to reconfigure themselves as necessary
-    MT::ObjectDriverFactory->configure;
-
     if ( $MT::DebugMode = $cfg->DebugMode ) {
         require Data::Dumper;
         $Data::Dumper::Terse    = 1;
@@ -867,6 +862,18 @@ sub init_config {
     }
 
     $mt->{cfg} = $cfg;
+
+    1;
+}
+
+sub init_config_from_db {
+    my $mt = shift;
+    my ($param) = @_;
+    my $cfg = $mt->config;
+    $cfg->read_config_db();
+
+    # Tell any instantiated drivers to reconfigure themselves as necessary
+    MT::ObjectDriverFactory->configure;
 
     1;
 }
@@ -981,6 +988,8 @@ sub init {
     ## Initialize the language to the default in case any errors occur in
     ## the rest of the initialization process.
     $mt->init_config( \%param ) or return;
+    $mt->init_addons(@_)       or return;
+    $mt->init_config_from_db( \%param ) or return;
     $mt->init_plugins(@_)       or return;
     $plugins_installed = 1;
     $mt->init_schema();
@@ -998,6 +1007,15 @@ sub init_callbacks {
         sub { MT->publisher->queue_build_file_filter(@_) } );
 }
 
+sub init_addons {
+    my $mt = shift;
+    my $cfg = $mt->config;
+    my @PluginPaths;
+
+    unshift @PluginPaths, File::Spec->catdir( $MT_DIR, 'addons' );
+    return $mt->_init_plugins_core({}, 1, \@PluginPaths);
+}
+
 sub init_plugins {
     my $mt = shift;
 
@@ -1010,11 +1028,14 @@ sub init_plugins {
     my $use_plugins  = $cfg->UsePlugins;
     my @PluginPaths  = $cfg->PluginPath;
     my $PluginSwitch = $cfg->PluginSwitch || {};
+    return $mt->_init_plugins_core($PluginSwitch, $use_plugins, \@PluginPaths);
+}
 
-    # Always process 'addons' directory
-    unshift @PluginPaths, File::Spec->catdir( $MT_DIR, 'addons' );
+sub _init_plugins_core {
+    my $mt = shift;
+    my ($PluginSwitch, $use_plugins, $PluginPaths) = @_;
 
-    foreach my $PluginPath (@PluginPaths) {
+    foreach my $PluginPath (@$PluginPaths) {
         my $plugin_lastdir = $PluginPath;
         $plugin_lastdir =~ s![\\/]$!!;
         $plugin_lastdir =~ s!.*[\\/]!!;

@@ -71,13 +71,11 @@ body {
 }
 
 .asset-meta {
-    margin-top: .25em;
-    padding-top: 2px;
-    font-weight: normal;
+    border-top: 1px solid #d4e5f2;
+}
 
-    display: block;
-    border-top: 1px dashed #d4e5f2;
-    padding-bottom: .3em;
+.asset-footer {
+    border-top: 1px solid #d4e5f2;
 }
 
 .asset-footer a,
@@ -181,7 +179,7 @@ a:hover {
     padding-bottom: 0;
 }
 
-#beta-inner, #gamma-inner {
+#header-inner, #beta-inner, #gamma-inner {
     padding-right: 0;
     padding-left: 0;
 }
@@ -199,7 +197,12 @@ a:hover {
     font-weight: normal;
 }
 
+* html #header-content {  /*HACK targets IE6 but not 7, instead of min-height*/
+    height: 74px;
+}
 #header-content {
+    width: 770px; 
+    min-height: 74px; 
     margin: 20px 0 116px 20px;
 }
 
@@ -247,8 +250,6 @@ a:hover {
     color: #5e9ad2;
 }
 
-.asset-footer,
-.asset-footer a,
 .comment-footer,
 .comment-footer a,
 .trackback-footer {

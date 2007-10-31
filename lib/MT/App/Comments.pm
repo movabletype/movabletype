@@ -161,9 +161,7 @@ sub login {
             $param->{default_signin} = 'MovableType';
             my $cfg = $app->config;
             if ( my $registration = $cfg->CommenterRegistration ) {
-                if (   ( $cfg->AuthenticationModule eq 'MT' )
-                    || ( !$cfg->ExternalUserManagement ) )
-                {
+                if ( $cfg->AuthenticationModule eq 'MT' ) {
                     $param->{registration_allowed} = $registration->{Allow}
                       && $blog->allow_commenter_regist ? 1 : 0;
                 }
@@ -306,15 +304,29 @@ sub do_login {
     my $result = MT::Auth->validate_credentials($ctx);
     my $message;
     if (   ( MT::Auth::NEW_LOGIN() == $result )
+        || ( MT::Auth::NEW_USER() == $result )
         || ( MT::Auth::SUCCESS() == $result ) )
     {
         my $commenter = $app->user;
         if ( $q->param('external_auth') && !$commenter ) {
             $app->param( 'name', $name );
-            $commenter =
-              $app->_create_commenter_assign_role( $q->param('blog_id') );
-            return $app->signup( error => $app->translate('Invalid login') )
-              unless $commenter;
+            if ( MT::Auth::NEW_USER() == $result ) {
+                $commenter =
+                  $app->_create_commenter_assign_role( $q->param('blog_id') );
+                return $app->login( error => $app->translate('Invalid login') )
+                  unless $commenter;
+            }
+            elsif ( MT::Auth::NEW_LOGIN() == $result ) {
+                my $registration = $app->config->CommenterRegistration;
+                unless ( $registration && $registration->{Allow} && $blog->allow_commenter_regist ) {
+                    return $app->login( error => $app->translate('Successfully authenticated but signing up is not allowed.  Please contact system administrator.') )
+                      unless $commenter;
+                }
+                else {
+                    return $app->signup( error => $app->translate('You need to sign up first.') )
+                      unless $commenter;
+                }
+            }
         }
         MT::Auth->new_login( $app, $commenter );
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
@@ -353,19 +365,14 @@ sub do_login {
     );
     $ctx->{app} ||= $app;
     MT::Auth->invalidate_credentials($ctx);
-    if ( $q->param('external_auth') ) {
-        return $app->signup( error => $app->translate('Invalid login') );
-    }
-    else {
-        return $app->login( error => $app->translate('Invalid login.') );
-    }
+    return $app->login( error => $app->translate('Invalid login.') );
 }
 
 sub signup {
     my $app   = shift;
     my %opt   = @_;
     my $param = {};
-    $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static);
+    $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static username);
     my $blog = $app->model('blog')->load( $param->{blog_id} );
     my $cfg  = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
@@ -375,7 +382,7 @@ sub signup {
         if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
             $param->{captcha_fields} = $provider->form_fields( $blog->id );
         }
-        $param->{error} = $opt{error} if $opt{error};
+        $param->{$_} = $opt{$_} foreach keys %opt;
         $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
         return $app->build_page( 'signup.tmpl', $param );
     }
@@ -399,9 +406,32 @@ sub do_signup {
         $param->{captcha_fields} = $provider->form_fields( $blog->id );
     }
 
-    if ( $q->param('password') ne $q->param('pass_verify') ) {
-        $param->{error} = $app->translate('Passwords do not match.');
-        return $app->build_page( 'signup.tmpl', $param );
+    my ( $password, $hint, $url );
+    unless ( $q->param('external_auth') ) {
+        my $password = $q->param('password');
+        unless ($password) {
+            $param->{error} = $app->translate("User requires password.");
+            return $app->build_page( 'signup.tmpl', $param );
+        }
+
+        if ( $q->param('password') ne $q->param('pass_verify') ) {
+            $param->{error} = $app->translate('Passwords do not match.');
+            return $app->build_page( 'signup.tmpl', $param );
+        }
+
+        my $hint = $q->param('hint');
+        unless ($hint) {
+            $param->{error} =
+              $app->translate("User requires password recovery word/phrase.");
+            return $app->build_page( 'signup.tmpl', $param );
+        }
+
+        my $url = $q->param('url');
+        if ( $url && !is_valid_url($url) ) {
+            delete $param->{url};
+            $param->{error} = $app->translate("URL is invalid.");
+            return $app->build_page( 'signup.tmpl', $param );
+        }
     }
 
     my $name = $q->param('username');
@@ -414,27 +444,14 @@ sub do_signup {
         return $app->build_page( 'signup.tmpl', $param );
     }
 
-    my $nickname = $q->param('nickname');
-    unless ($nickname) {
-        $param->{error} = $app->translate("User requires display name.");
-        return $app->build_page( 'signup.tmpl', $param );
-    }
-
     my $existing = MT::Author->count( { name => $name } );
     $param->{error} =
       $app->translate("A user with the same name already exists.");
     return $app->build_page( 'signup.tmpl', $param ) if $existing;
 
-    my $password = $q->param('password');
-    unless ($password) {
-        $param->{error} = $app->translate("User requires password.");
-        return $app->build_page( 'signup.tmpl', $param );
-    }
-
-    my $hint = $q->param('hint');
-    unless ($hint) {
-        $param->{error} =
-          $app->translate("User requires password recovery word/phrase.");
+    my $nickname = $q->param('nickname');
+    unless ($nickname) {
+        $param->{error} = $app->translate("User requires display name.");
         return $app->build_page( 'signup.tmpl', $param );
     }
 
@@ -453,13 +470,6 @@ sub do_signup {
         return $app->build_page( 'signup.tmpl', $param );
     }
 
-    my $url = $q->param('url');
-    if ( $url && !is_valid_url($url) ) {
-        delete $param->{url};
-        $param->{error} = $app->translate("URL is invalid.");
-        return $app->build_page( 'signup.tmpl', $param );
-    }
-
     if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
         unless ( $provider->validate_captcha($app) ) {
             $param->{error} =
@@ -472,10 +482,15 @@ sub do_signup {
     my $commenter = $app->model('author')->new;
     $commenter->name($name);
     $commenter->nickname($nickname);
-    $commenter->set_password( $q->param('password') );
     $commenter->email($email);
-    $commenter->url($url)   if $url;
-    $commenter->hint($hint) if $hint;
+    unless ( $q->param('external_auth') ) {
+        $commenter->set_password( $q->param('password') );
+        $commenter->url($url)   if $url;
+        $commenter->hint($hint) if $hint;
+    }
+    else {
+        $commenter->password( '(none)' );
+    }
     $commenter->type( MT::Author::AUTHOR() );
     $commenter->status( MT::Author::PENDING() );
     $commenter->auth_type( $app->config->AuthenticationModule );
@@ -599,7 +614,7 @@ sub _send_signup_confirmation {
     $sess->save;
 
     MT::Mail->send( \%head, $body )
-      or return $app->handle_error( MT::Mail->errstr() );
+      or die MT::Mail->errstr() ;
 }
 
 sub do_register {

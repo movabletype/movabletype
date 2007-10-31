@@ -8,7 +8,7 @@
     padding-bottom: 0;
 }
 
-#beta-inner, #gamma-inner {
+#header-inner, #beta-inner, #gamma-inner {
     padding-right: 0;
     padding-left: 0;
 }

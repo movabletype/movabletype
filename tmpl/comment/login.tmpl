@@ -67,6 +67,7 @@
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
     <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+    <mt:unless name="auth_mode_mt"><input type="hidden" name="external_auth" value="1" /></mt:unless>
     <mtapp:setting
         id="username"
         label="<__trans phrase="Username">">

@@ -213,6 +213,39 @@ ul { list-style: disc outside; }
 
 /* Assets */
 
+.asset-body,
+.asset-more,
+.asset-more-link,
+.asset-excerpt,
+.comment-content,
+.comment-footer,
+.comments-open-content,
+.comments-open-footer,
+.comments-closed,
+.trackbacks-info,
+.trackback-content,
+.trackback-footer,
+.archive-content {
+    clear: both;
+}
+
+.asset,
+.comments,
+.trackbacks,
+.archive {
+    overflow: hidden;
+    width: 100%;
+}
+
+.asset,
+.asset-content,
+.comments,
+.trackbacks,
+.archive {
+    position: static;
+    clear: both;
+}
+
 .asset,
 .comments,
 .comments-content,
@@ -225,8 +258,6 @@ ul { list-style: disc outside; }
 .asset-header,
 .asset-content,
 .asset-body,
-.entry-categories,
-.entry-tags,
 .comments-header,
 .comment-header,
 .comment-content,
@@ -252,49 +283,54 @@ ul { list-style: disc outside; }
     margin-bottom: .75em;
 }
 
+.entry-categories,
+.entry-tags {
+    margin-bottom: .5em;
+}
+
 .asset-name {
     margin-bottom: .25em;
 }
 
+.asset-footer,
 .asset-meta {
     font-size: 11px;
+}
+
+.asset-meta {
+    margin-top: .25em;
+    padding-top: 2px;
+    padding-bottom: .3em;
+    font-weight: normal;
+}
+
+.asset-footer {
+    margin-top: 1.5em;
+    padding-top: .5em;
 }
 
 .content-nav {
     text-align: center;
 }
 
-.asset,
-.comments,
-.trackbacks,
-.archive {
-    overflow: hidden;
-    width: 100%;
+.entry-tags-header,
+.entry-categories-header {
+    margin-bottom: 0;
+    margin-right: .25em;
+    display: inline;
+    font-weight: bold;
 }
 
-.asset,
-.asset-content,
-.comments,
-.trackbacks,
-.archive {
-    position: static;
-    clear: both;
+.entry-tags-list,
+.entry-categories-list {
+    display: inline;
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
 }
-
-.asset-body,
-.asset-more,
-.asset-more-link,
-.asset-excerpt,
-.comment-content,
-.comment-footer,
-.comments-open-content,
-.comments-open-footer,
-.comments-closed,
-.trackbacks-info,
-.trackback-content,
-.trackback-footer,
-.archive-content {
-    clear: both;
+.entry-tags-list .entry-tag,
+.entry-categories-list .entry-category {
+    display: inline;
 }
 
 .mt-image-left {
@@ -405,4 +441,10 @@ ul { list-style: disc outside; }
     text-align: center;
     vertical-align: middle;
     width: 70px;
+}
+
+.widget-search .search-options,
+.widget-syndicate .blog-feeds  {
+    list-style: none;
+    margin: 5px 0;
 }

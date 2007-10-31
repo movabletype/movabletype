@@ -194,9 +194,11 @@ MT.App = new Class( MT.App, {
                 for ( var i = 0; i < imgs.length; i++ )
                     imgs[ i ].src = imgs[ i ].src;
                 
+            /* fix links, skiping over any with a anchor */
             if ( ancs )
                 for ( var i = 0; i < ancs.length; i++ )
-                    ancs[ i ].href = ancs[ i ].href;
+                    if ( !ancs[ i ].href.match( /#/ ) )
+                        ancs[ i ].href = ancs[ i ].href;
 
             if ( forms )
                 for ( var i = 0; i < forms.length; i++ )

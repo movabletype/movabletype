@@ -1,6 +1,6 @@
-/* Vox Theme for Movable Type ============================================= */
+/*
 
-/* 
+A Six Apart theme adapted for Movable Type default templates 
 name: Minimalist Blue  
 designer: Lilia Ahner  
 designer_url: http://lilia.vox.com/ 
@@ -71,12 +71,14 @@ body {
     font-weight: bold;
 }
 
-.asset-footer {
-    margin-top: 10px;
-    border-top-width: 1px;
-    border-top-style: solid;
-    padding-top: 5px;
+.asset-meta {
+    margin-top: .25em;
+    padding-top: 2px;
     font-weight: normal;
+
+    display: block;
+    border-top: 1px solid #ccc;
+    padding-bottom: .3em;
 }
 
 .asset-footer a,
@@ -119,12 +121,15 @@ body {
     margin-bottom: .25em;
 }
 
+.asset-more-link,
+.asset-meta,
+.comment-footer,
+.trackback-footer,
+.typelist-thumbnailed {
+    font-size: 11px;
+}
 
 /* Footer */
-
-#header-inner {
-    position: relative;
-}
 
 #footer-content,
 #footer-content a {
@@ -145,14 +150,6 @@ body {
     p\osition: relative;
     width: 100%;
     w\idth: auto;
-}
-
-.asset-more-link,
-.asset-footer,
-.comment-footer,
-.trackback-footer,
-.typelist-thumbnailed {
-    font-size: 11px;
 }
 
 
@@ -185,7 +182,7 @@ a:hover {
     padding-bottom: 0;
 }
 
-#beta-inner, #gamma-inner {
+#header-inner, #beta-inner, #gamma-inner {
     padding-right: 0;
     padding-left: 0;
 }
@@ -223,6 +220,7 @@ a:hover {
 }
 
 #header-content {
+    width: 842px; 
     margin: 30px 0 40px 20px;
 }
 
@@ -267,11 +265,7 @@ a:hover {
 }
 
  .asset-name a {
-    display: block;
     margin-bottom: 8px;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: .3em;
-    text-decoration: none;
 }
 
 .asset-name a:hover {

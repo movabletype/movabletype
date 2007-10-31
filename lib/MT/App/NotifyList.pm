@@ -8,6 +8,7 @@ package MT::App::NotifyList;
 
 use strict;
 use MT::App;
+use MT::Util qw( encode_url );
 
 use base 'MT::App';
 
@@ -67,8 +68,15 @@ sub subscribe {
     my @pool = ('A'..'Z','a'..'z','0'..'9');
     my $salt = join '', (map {$pool[rand @pool]} 1..2);
     my $magic = crypt($secret.$subscr_addr, $salt);
+    my $cgipath = $app->config->CGIPath;
+    if ($cgipath =~ m!^/!) {
+        # relative cgipath, prepend blog domain
+        my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+        $cgipath = $blog_domain . $cgipath;
+    }
+    $cgipath .= '/' unless $cgipath =~ m!/$!;
     my $body = MT->build_email('verify-subscribe.tmpl', {
-        script_path => $app->config->CGIPath . '/mt-add-notify.cgi',
+        script_path => $cgipath . 'mt-add-notify.cgi',
         blog_id => $blog->id,
         entry_id => $entry_id,
         redirect_url => $redirect_url,

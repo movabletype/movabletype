@@ -111,7 +111,7 @@
         <MTArchiveList archive_type="Monthly">
             <MTArchiveListHeader>
         <div class="widget-archives widget">
-            <h3 class="widget-header"><__trans phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveLabel$>%%<$MTBlogURL$>archives.html"></h3>
+            <h3 class="widget-header"><__trans phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveTypeLabel$>%%<$MTBlogURL$>archives.html"></h3>
             <div class="widget-content">
                 <ul class="widget-list">
             </MTArchiveListHeader>
@@ -162,8 +162,14 @@
 </MTIf>
         <div class="widget-syndicate widget">
             <div class="widget-content">
-                <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" />
-                <a href="<$MTLink template="atom"$>"><__trans phrase="Subscribe to this blog's feed"></a>
+                <ul class="blog-feeds">
+                    <li class="blog feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTLink template="atom"$>"><__trans phrase="Subscribe to this blog's feed"></a></li>
+    <MTIf name="search_results_template">
+        <mt:ifnonempty tag="MTSearchString">
+                    <li class="search-results-feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<MTIfTagSearch>tag<MTElse>search</MTIfTagSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<__trans phrase="Subscribe to feed">"><__trans phrase="Search results matching &ldquo;<$MTSearchString$>&rdquo;"></a></li>
+        </mt:ifnonempty>
+    </MTIf>
+                </ul>
             </div>
         </div>
         <div class="widget-powered widget">
@@ -175,21 +181,25 @@
 </div>
 <div id="gamma">
     <div id="gamma-inner">
-<MTIf name="search_results_template">
-    <MTIfTagSearch>
-        <MTSetVar name="search_feed_param" value="tag">
-        <MTSetVarBlock name="search_feed_description"><__trans phrase="If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&rdquo;."></MTSetVarBlock>
-    <MTElse>
-        <MTSetVar name="search_feed_param" value="search">
-        <MTSetVarBlock name="search_feed_description"><__trans phrase="If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&rdquo;."></MTSetVarBlock>
-    </MTIfTagSearch>
-        <div class="widget-search-feed widget">
-            <h3 class="widget-header"><__trans phrase="Feed Subscription"></h3>
+        <div class="widget-search widget">
+            <h3 class="widget-header"><__trans phrase="Search"></h3>
             <div class="widget-content">
-                <p><$MTGetVar name="search_feed_description"$></p>
-                <p><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<__trans phrase="Subscribe to feed">"><__trans phrase="Subscribe to feed"></a></p>
+                <form method="get" action="<$MTCGIPath$><$MTSearchScript$>">
+                    <input id="search" name="search" size="20" value="<$MTSearchString$>" />
+        <MTIf name="search_results_template">
+                    <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
+                    <ul class="search-options">
+                        <li><input type="checkbox" name="CaseSearch" /> <__trans phrase="Case sensitive"></li>
+                        <li><input type="checkbox" name="RegexSearch" /> <__trans phrase="Regex search"></li>
+                    </ul>
+        <mt:else>
+                    <input type="hidden" name="IncludeBlogs" value="<$MTBlogID$>" />
+        </mt:if>
+                    <input type="submit" value="<__trans phrase="Search">" />
+                </form>
             </div>
         </div>
+<MTIf name="search_results_template">
     <MTIfTagSearch>
         <div class="widget-tags widget">
             <h3 class="widget-header"><__trans phrase="Tags"></h3>
@@ -203,16 +213,6 @@
         </div>
     </MTIfTagSearch>
 </MTIf>
-        <div class="widget-search widget">
-            <h3 class="widget-header"><__trans phrase="Search"></h3>
-            <div class="widget-content">
-                <form method="get" action="<$MTCGIPath$><$MTSearchScript$>">
-                    <input type="hidden" name="IncludeBlogs" value="<$MTBlogID$>" />
-                    <input id="search" name="search" size="20" value="<$MTSearchString encode_html="1"$>" />
-                    <input type="submit" value="<__trans phrase="Search">" />
-                </form>
-            </div>
-        </div>
 <MTIf name="module_recent_entries">
         <div class="widget-archives widget">
             <h3 class="widget-header"><__trans phrase="Recent Entries"></h3>

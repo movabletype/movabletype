@@ -90,6 +90,11 @@ BEGIN {
     $MT::CallbackAlias{'HandleJunk'}     = 'handle_spam';
     $MT::CallbackAlias{'HandleNotJunk'}  = 'handle_ham';
 
+    $MT::CallbackAlias{'APIPreSave.entry'}  = 'api_pre_save.entry';
+    $MT::CallbackAlias{'APIPostSave.entry'} = 'api_post_save.entry';
+    $MT::CallbackAlias{'APIUploadFile'}     = 'api_upload_file';
+    $MT::CallbackAlias{'APIUploadImage'}    = 'api_upload_image';
+
     for (@names) {
         my $x = $_;
         $x =~ s/_/./;

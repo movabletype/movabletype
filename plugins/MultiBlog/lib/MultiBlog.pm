@@ -69,10 +69,12 @@ sub post_feedback_save {
     my ( $trigger, $eh, $feedback ) = @_;
     if ( $feedback->visible ) {
         my $blog_id = $feedback->blog_id;
+        my $app = MT->instance;
         foreach my $scope ("blog:$blog_id", "system") {
             my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
             while ( my ( $id, $a ) = each( %{ $d->{$trigger} } ) ) {
-                map { perform_mb_action( MT->instance, $id, $_ ) } keys %$a;
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
             }
         }
     }
@@ -82,16 +84,19 @@ sub post_entry_save {
     my $plugin = shift;
     my ( $eh, $entry ) = @_;
     my $blog_id = $entry->blog_id;
+    my $app = MT->instance;
     foreach my $scope ("blog:$blog_id", "system") {
         my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
         while ( my ( $id, $a ) = each( %{ $d->{'entry_save'} } ) ) {
-            map { perform_mb_action( MT->instance, $id, $_ ) } keys %$a;
+            next if $id == $blog_id;
+            perform_mb_action( $app, $id, $_ ) foreach keys %$a;
         }
 
         require MT::Entry;
         if ( $entry->status == MT::Entry::RELEASE() ) {
             while ( my ( $id, $a ) = each( %{ $d->{'entry_pub'} } ) ) {
-                map { perform_mb_action( MT->instance, $id, $_ ) } keys %$a;
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
             }
         }
     }

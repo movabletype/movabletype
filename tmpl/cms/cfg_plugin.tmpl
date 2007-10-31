@@ -186,7 +186,7 @@
     <div class="plugin-group<mt:if name="__first__"> plugin-group-first</mt:if>">
         <div class="plugin-group-inner">
     <!-- START mt:loop name="plugin_loop" -->
-            <div id="plugin-<mt:var name="plugin_id">" class="plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>"<mt:unless name="plugin_error"> style="background-image: url('<mt:var name="plugin_icon">')"</mt:unless>>
+            <div id="plugin-<mt:var name="plugin_id">" class="plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>">
                 <div class="plugin-inner">
     <mt:if name="can_config">
                     <div class="plugin-status">
@@ -220,7 +220,7 @@
     <mt:if name="plugin_disabled">
             <$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if>
     <mt:else>
-            <a href="javascript:void(0)" onclick="togglePlugin(<$mt:var name="plugin_id"$>)" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">"><$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if></a>
+            <a href="javascript:void(0)" onclick="togglePlugin(<$mt:var name="plugin_id"$>)" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">"<mt:unless name="plugin_error"> style="background-image: url('<mt:var name="plugin_icon">')"</mt:unless>><$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if></a>
     </mt:if>
                     </h3>
     <mt:unless name="plugin_disabled">

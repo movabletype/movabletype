@@ -16,6 +16,7 @@ use MT::ObjectDriver::SQL;
 our $drivers = [
     [ qr/(db[id]::)?(postgres|pg(sql)?)/ => 'Pg' ],
     [ qr/(db[id]::)?mysql/               => 'mysql' ],
+    [ qr/(db[id]::)?u(ms)?sqlserver/     => 'UMSSQLServer' ],
     [ qr/(db[id]::)?(ms)?sqlserver/      => 'MSSQLServer' ],
     [ qr/(db[id]::)?sqlite/              => 'SQLite' ],
     [ qr/(db[id]::)?oracle/              => 'Oracle' ],

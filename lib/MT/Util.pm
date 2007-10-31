@@ -540,6 +540,8 @@ sub decode_url {
             $str = '<![CDATA[' . $str . ']]>';
         } else {
             $str =~ s!($RE)!$Map{$1}!g;
+            # re-replace &amp;#nnnn => &#nnnn
+            $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g;
         }
         $str;
     }

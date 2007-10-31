@@ -490,7 +490,8 @@ sub _create_post {
         } elsif ('wp_ping_status' eq $key) {
             $post->allow_pings('open' eq $value ? 1 : 0);
         } elsif ('wp_post_name' eq $key) {
-            my $base = MT::Util::dirify(MT::Util::decode_url($value));
+            my $base = MT::Util::decode_url($value);
+            $base = MT::Util::dirify($base) if $base ne $value;
             $base = substr($base, 0, $self->{basename_limit});
             $base =~ s/_+$//;
             $base = 'post' if $base eq '';

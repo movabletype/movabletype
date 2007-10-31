@@ -708,8 +708,9 @@ function trans(str) {
         str = Lexicon[str];
     if (arguments.length > 1)
         for (var i = 1; i <= arguments.length; i++) {
-            str = str.replace(new RegExp('\\[_' + i + '\\]', 'g'), arguments[i]);
-            var re = new RegExp('\\[quant,_' + i + ',(.+?)(?:,(.+?))?\\]');
+            /* This matches [_#] or [_#:comment] */
+            str = str.replace(new RegExp('\\[_' + i + '(?:\:[^\\]]+)?\\]', 'g'), arguments[i]);
+            var re = new RegExp('\\[quant,_' + i + ',(.+?)(?:,(.+?))?(?:\:[^\\]]+)?\\]');
             var matches;
             while (matches = str.match(re)) {
                 if (arguments[i] != 1)

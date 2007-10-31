@@ -61,7 +61,7 @@ sub fix_class {
 
     my @stmts;
     if ($exists) {
-        push @stmts, "CREATE TABLE ${table_name}_upgrade AS SELECT * FROM $table_name";
+        push @stmts, $ddl->create_table_as_sql($class);
         push @stmts, $ddl->drop_table_sql($class);
     }
 
@@ -105,6 +105,9 @@ sub insert_from_sql {
     }
     # now, what is left in @columns are the new fields
     my @new_fields = keys %columns;
+    # remove columns removed in new version
+    @fields_to = grep { exists $class_defs->{$_} } @fields_to;
+    @fields_from = @fields_to;
 
     my $table_name = $class->table_name;
     $sql = "INSERT INTO $table_name (";
@@ -179,6 +182,13 @@ sub drop_table_sql {
     my ($class) = @_;
     my $table_name = $class->table_name;
     return "DROP TABLE $table_name";
+}
+
+sub create_table_as_sql {
+    my $ddl = shift;
+    my ($class) = @_;
+    my $table_name = $class->table_name;
+    return "CREATE TABLE ${table_name}_upgrade AS SELECT * FROM $table_name";
 }
 
 sub create_table_sql {

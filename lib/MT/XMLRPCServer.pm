@@ -542,9 +542,13 @@ sub supportedTextFilters {
     my $filters = $mt->all_text_filters;
     my @res;
     for my $filter (keys %$filters) {
+        my $label = $filters->{$filter}{label};
+        if ('CODE' eq ref($label)) {
+            $label = $label->();
+        }
         push @res, {
             key => SOAP::Data->type(string => $filter),
-            label => SOAP::Data->type(string => $filters->{$filter}{label})
+            label => SOAP::Data->type(string => $label)
         };
     }
     \@res;

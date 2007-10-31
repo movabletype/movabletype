@@ -282,16 +282,22 @@ class MTViewer extends Smarty {
     }
 
     function tag($tag, $args = array()) {
-        $tag = preg_replace('/^mt/', '', strtolower($tag));
+        $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
         if ((array_key_exists('mt' . $tag, $this->conditionals)) || (preg_match('/^if/i', $tag) || preg_match('/^has/', $tag) || preg_match('/[a-z](header|footer|previous|next)$/i', $tag))) {
-            @require_once("block.mt$tag.php");
-            $fntag = 'smarty_block_mt' . $tag;
-            if (function_exists($fntag)) {
-                $fntag($args, NULL, $this, $repeat = true);
+            list($hdlr) = $this->handler_for($tag);
+            if (!$hdlr) {
+                $fntag = 'smarty_block_mt' . $tag;
+                if (!function_exists($fntag))
+                    @include_once("block.mt$tag.php");
+                if (function_exists($fntag))
+                    $hdlr = $fntag;
+            }
+            if ($hdlr) {
+                $hdlr($args, NULL, $this, $repeat = true);
                 if ($repeat) {
                     $content = 'true';
                     $this->_tag_stack[] = array("mt$tag", $args);
-                    $content = $fntag($args, $content, $this, $repeat = false);
+                    $content = $hdlr($args, $content, $this, $repeat = false);
                     array_pop($this->_tag_stack);
                     return isset($content) && ($content === 'true');
                 } else {
@@ -299,11 +305,17 @@ class MTViewer extends Smarty {
                 }
             }
         } else {
-            @require_once("function.mt$tag.php");
-            $fntag = 'smarty_function_mt'.$tag;
-            if (function_exists($fntag)) {
+            list($hdlr) = $this->handler_for("mt" . $tag);
+            if (!$hdlr) {
+                $fntag = 'smarty_function_mt'.$tag;
+                if (!function_exists($fntag))
+                    @include_once("function.mt$tag.php");
+                if (function_exists($fntag))
+                    $hdlr = $fntag;
+            }
+            if ($hdlr) {
                 $this->_tag_stack[] = array("mt$tag", $args);
-                $content = $fntag($args, $this);
+                $content = $hdlr($args, $this);
                 foreach ($args as $k => $v) {
                     if (array_key_exists($k, $this->global_attr)) {
                         $fnmod = 'smarty_modifier_' . $k;
@@ -340,9 +352,9 @@ class MTViewer extends Smarty {
             $fn = $old_handler[0];
         } else {
             if ($type == 'block')
-                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @require_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";');
+                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";');
             elseif ($type == 'function') {
-                $fn = create_function('$args, &$ctx', '@require_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";');
+                $fn = create_function('$args, &$ctx', '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";');
             }
         }
         return $fn;

@@ -38,7 +38,7 @@ use vars qw( %Lexicon );
 	'MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.' => 'MultiBlogを使うと、他のブログにあるテンプレートコンテンツあるいは通常のコンテンツを公開することができます。再構築時の依存関係やアクセス制御を設定する
 こともできます。',
 	'MultiBlog' => 'マルチブログ',
-	'Create New Trigger' => 'トリガーを作成',
+	'Create Trigger' => 'トリガーを作成',
 	'Weblog Name' => 'ブログ名',
 	'Search Weblogs' => 'ブログ検索',
 	'When this' => 'トリガー:',

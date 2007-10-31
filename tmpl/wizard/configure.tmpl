@@ -20,7 +20,7 @@ function validate (f) {
                 alert('<__trans phrase="You must set your Database Name." escape="js">');
                 f.dbname.focus();
                 return false;
-            } else if ((!f.dbuser.value) && (db != "mssqlserver")) {
+            } else if ((!f.dbuser.value) && (db != "mssqlserver") && (db != "umssqlserver")) {
                 alert('<__trans phrase="You must set your Username." escape="js">');
                 f.dbuser.focus();
                 return false;
@@ -40,7 +40,7 @@ function go(mode) {
 }
 function db_select(sel) {
     var db = sel.options[sel.selectedIndex].value;
-    if ((db == "mysql") || (db == "postgres") || (db == "oracle") || (db == "mssqlserver")) {
+    if ((db == "mysql") || (db == "postgres") || (db == "oracle") || (db == "mssqlserver") || (db == "umssqlserver")) {
         showByID("login"); showByID("server"); hideByID("goback");
         hideByID("path");
         showByID("submit");

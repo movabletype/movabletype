@@ -1411,7 +1411,7 @@ sub fix_blob_for_mssqlserver {
     my $self = shift;
     my (%param) = @_;
 
-    my $driver = MT::Object->driver;
+    my $driver = MT->config->ObjectDriver;
     return unless $driver =~ /MSSQLServer/i;
 
     $self->progress($self->translate_escape('Fixing binary data for Microsoft SQL Server storage...'));

@@ -104,7 +104,7 @@ sub add_trigger {
         params => {
             panel_type => 'blog',
             dialog_title => $plugin->translate('MultiBlog'),
-            panel_title => $plugin->translate('Create New Trigger'),
+            panel_title => $plugin->translate('Create Trigger'),
             panel_label => $plugin->translate("Weblog Name"),
             search_prompt => $plugin->translate("Search Weblogs") . ':',
             panel_description => $plugin->translate("Description"),

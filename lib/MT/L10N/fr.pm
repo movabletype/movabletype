@@ -971,7 +971,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'New Template' => 'Nouveau gabarit',
 	'New Blog' => 'Nouveau Blog',
 	'pages' => 'Pages',
-	'Create New User' => 'Créer un nouvel utilisateur',
+	'Create User' => 'Créer un nouvel utilisateur',
 	'User requires username' => 'Un nom d\'utilisateur est nécessaire pour l\'utilisateur',
 	'User requires password' => 'L\'utilisateur a besoin d\'un mot de passe',
 	'User requires password recovery word/phrase' => 'L\'utilisateur a besoin d\'une phrase de récupération de mot de passe',
@@ -987,7 +987,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'You did not specify an Archive Root.' => 'Vous n\'avez pas spécifié une archive racine ',
 	'The name \'[_1]\' is too long!' => 'Le nom \'[_1]\' est trop long.',
 	'A user can\'t change his/her own username in this environment.' => 'Un utilisateur ne peut pas changer son nom d\'utilisateur dans cet environnement',
-	'An errror occurred when enabling this user.' => 'Une erreur s\'est produite pendant l\'activation de cet utilisateur.',
+	'An error occurred when enabling this user.' => 'Une erreur s\'est produite pendant l\'activation de cet utilisateur.',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Répertoire \'[_1]\' créé par \'[_2]\'',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Catégorie \'[_1]\' créée par \'[_2]\'',
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'Le répertoire \'[_1]\' est en conflit avec un autre répertoire. Les répertoires qui ont le même répertoire parent doivent avoir un nom de base unique.',
@@ -1085,7 +1085,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'No permissions' => 'Aucun droit',
 	'Ping \'[_1]\' failed: [_2]' => 'Le ping \'[_1]\' n\'a pas fonctionné : [_2]',
-	'Create New Role' => 'Créer un nouveau rôle',
+	'Create Role' => 'Créer un nouveau rôle',
 	'Role name cannot be blank.' => 'Le rôle de peu pas être laissé vierge.',
 	'Another role already exists by that name.' => 'Un autre rôle existe déjà avec ce nom.',
 	'You cannot define a role without permissions.' => 'Vous ne pouvez pas définir un rôle sans autorisations.',
@@ -1935,7 +1935,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'Enable dynamic publishing for this template' => 'Activer la publication dynamique pour ce gabarit',
 	'Publish this template automatically when rebuilding index templates' => 'Publier ce gabarit automatiquement lorsque les gabarits d\'index sont republiés.',
 	'Link to File' => 'Lien vers le fichier',
-	'Create New Archive Mapping' => 'Créer une nouvelle table de correspondance des archives',
+	'Create Archive Mapping' => 'Créer une nouvelle table de correspondance des archives',
 	'Type' => 'Type',
 	'Add' => 'Ajouter',
 
@@ -2469,7 +2469,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 
 ## tmpl/cms/include/blog-left-nav.tmpl
 	'Creating' => 'Créer',
-	'Create New Entry' => 'Créer une nouvelle note',
+	'Create Entry' => 'Créer une nouvelle note',
 	'List Entries' => 'Afficher les notes',
 	'List uploaded files' => 'Lister les fichiers envoyés',
 	'Community' => 'Communauté',
@@ -2750,7 +2750,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/cms/list_category.tmpl
 	'Your [_1] changes and additions have been made.' => 'Les modifications ont été enregistrées.',
 	'You have successfully deleted the selected [_1].' => 'Vous avez supprimé avec succès les [_1] sélectionné(e)s.',
-	'Create new top level [_1]' => 'Créer un(e) [_1] à la racine',
+	'Create top level [_1]' => 'Créer un(e) [_1] à la racine',
 	'New Parent [_1]' => 'Nouveau [_1] parent',
 	'Top Level' => 'Niveau racine',
 	'Collapse' => 'Réduire',
@@ -3005,7 +3005,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'CAPTCHA Provider' => 'Fournisseur de CAPTCHA',
 	'none' => 'aucune',
 	'No CAPTCHA provider available' => 'Aucun fournisseur de CAPTCHA disponible',
-	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaImageSourceBase directive points to captcha-source directory under mt-static/images.' => 'Aucun fournisseur de CAPTCHA n\'est disponible sur ce système. Merci de vérifier si Image::Magick est installé, et si la directive CaptchaImageSourceBase contient le répertoire captcha-source dans mt-static/images.',
+	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaSourceImageBase directive points to captcha-source directory under mt-static/images.' => 'Aucun fournisseur de CAPTCHA n\'est disponible sur ce système. Merci de vérifier si Image::Magick est installé, et si la directive CaptchaSourceImageBase contient le répertoire captcha-source dans mt-static/images.',
 	'Use Comment Confirmation Page' => 'Utiliser la page de confirmation de commentaire',
 	'Use comment confirmation page' => 'Utiliser la page de confirmation de commentaire',
 
@@ -3246,7 +3246,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 	'templates' => 'gabarits',
 	'You have successfully deleted the checked template(s).' => 'Les gabarits sélectionnés ont été supprimés.',
 	'Create Archive Template:' => 'Créer une archive de gabarit',
-	'Create new [_1] template' => 'Créer un nouveau gabarit de [_1]',
+	'Create [_1] template' => 'Créer un nouveau gabarit de [_1]',
 	'Create Template...' => 'Créer le gabarit...',
 	'Blank Template' => 'Gabarit vide',
 
@@ -3686,7 +3686,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## plugins/MultiBlog/multiblog.pl
 	'MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.' => 'MultiBlog vous permet de publier du contenu, brut ou avec gabarit, d\'autres blogs et de définir des dépendances de republication et des droits d\'accès entre eux.',
 	'MultiBlog' => 'MultiBlog',
-	'Create New Trigger' => 'Créer un nouvel événement',
+	'Create Trigger' => 'Créer un nouvel événement',
 	'Weblog Name' => 'Nom du blog',
 	'Search Weblogs' => 'Rechercher les blogs',
 	'When this' => 'quand ce',

@@ -604,7 +604,7 @@ sub call_trigger {
     my $class = ref $obj || $obj;
     my $pre_trigger = $name =~ m/^pre_/;
     $obj->SUPER::call_trigger($name, @_) if $pre_trigger;
-    MT->run_callbacks($class . '::' . $name, @_);
+    MT->run_callbacks($class . '::' . $name, $obj, @_);
     $obj->SUPER::call_trigger($name, @_) unless $pre_trigger;
 }
 

@@ -8,12 +8,14 @@ use MT;
 use MT::Util qw(encode_js);
 
 my $js = `cat mt-static/mt.js`;
+$js .= `cat mt-static/js/edit.js`;
 $js .= `cat mt-static/js/dialog.js`;
 $js .= `cat mt-static/js/assetdetail.js`;
 $js .= `cat tmpl/cms/edit_template.tmpl`;
 $js .= `cat tmpl/cms/edit_entry.tmpl`;
 $js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
 $js .= `cat tmpl/cms/list_tag.tmpl`;
+$js .= `cat tmpl/cms/include/calendar.tmpl`;
 
 foreach my $lang (qw(ja de nl fr es)) {
     open(FOUT, ">./mt-static/mt_$lang.js")

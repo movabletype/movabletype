@@ -43,10 +43,14 @@
 		// ==================================================================
 		//	DB Constructor - connects to the server and selects a database
 
-		function db($dbuser, $dbpassword, $dbname, $dbhost, $dbport = '')
+		function db($dbuser, $dbpassword, $dbname, $dbhost, $dbport = '', $dbsocket = '')
 		{
-
-			if (! empty($dbport)) $dbhost .= ":$dbport";
+			// dbsocket is prior than dbport
+			if (! empty($dbport) ) {
+				$dbhost .= ":$dbport";
+			} else {
+				if (! empty($dbsocket) ) $dbhost .= ":$dbsocket";
+			}
 			$this->dbh = @mysql_connect($dbhost,$dbuser,$dbpassword);
 
 			if ( ! $this->dbh )

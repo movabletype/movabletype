@@ -13,6 +13,29 @@
 <mt:setvarblock name="content_nav">
     <mt:include name="include/users_content_nav.tmpl">
 </mt:setvarblock>
+<mt:setvarblock name="content_header" id="content_header">
+<mt:if name="saved">
+    <mtapp:statusmsg
+        id="saved"
+        class="success">
+        <__trans phrase="This profile has been updated.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="recovered">
+    <mtapp:statusmsg
+        id="recovered"
+        class="success">
+        <__trans phrase="A new password has been generated and sent to the email address [_1]." params="<mt:var name="email" escape="html">">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
@@ -84,35 +107,6 @@ function init() {
 TC.attachLoadEvent(init);
 //-->
 </script>
-
-<mt:if name="saved">
-    <mtapp:statusmsg
-        id="saved"
-        class="success">
-        <__trans phrase="This profile has been updated.">
-    </mtapp:statusmsg>
-</mt:if>
-<mt:if name="recovered">
-    <mtapp:statusmsg
-        id="recovered"
-        class="success">
-        <__trans phrase="A new password has been generated and sent to the email address [_1]." params="<mt:var name="email" escape="html">">
-    </mtapp:statusmsg>
-</mt:if>
-<mt:if name="superuser_attempted_disabled">
-    <mtapp:statusmsg
-        id="superuser-atempted-disabled"
-        class="alert">
-        <__trans phrase="Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.">
-    </mtapp:statusmsg>
-</mt:if>
-<mt:if name="error">
-    <mtapp:statusmsg
-        id="generic-error"
-        class="error">
-        <mt:var name="error">
-    </mtapp:statusmsg>
-</mt:if>
 
         <form name="profile" id="profile" method="post" action="<mt:var name="script_url">">
             <input type="hidden" name="__mode" value="save" />
@@ -216,21 +210,25 @@ TC.attachLoadEvent(init);
         </mt:unless>
 
         <mt:if name="new_object">
+            <mt:setvar name="password_required" value="1">
             <mt:setvar name="password_prompt" value="<__trans phrase="Initial Password">">
             <mt:setvar name="password_hint" value="<__trans phrase="Enter preferred password.">">
         <mt:else>
+            <mt:setvar name="password_required" value="0">
             <mt:setvar name="password_prompt" value="<__trans phrase="New Password">">
             <mt:setvar name="password_hint" value="<__trans phrase="Enter the new password.">">
         </mt:if>
         <mtapp:setting
             id="pass"
             label="$password_prompt"
+            required="$password_required"
             hint="$password_hint">
             <input type="password" name="pass" id="pass" class="half-width" value="" />
         </mtapp:setting>
         <mtapp:setting
             id="pass_verify"
             label="<__trans phrase="Confirm Password">"
+            required="$password_required"
             hint="<__trans phrase="Repeat the password for confirmation.">">
             <input type="password" name="pass_verify" id="pass_verify" class="half-width" value="" />
         </mtapp:setting>

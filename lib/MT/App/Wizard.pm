@@ -114,20 +114,20 @@ sub init_core_registry {
         },
         optional_packages => {
             'HTML::Entities' => {
-		link => 'http://search.cpan.org/dist/HTML-Entities',
+                link => 'http://search.cpan.org/dist/HTML-Entities',
                 label => 'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.',
             },
             'LWP::UserAgent' => {
-		link => 'http://search.cpan.org/dist/LWP',
+                link => 'http://search.cpan.org/dist/LWP',
                 label => 'This module is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
             },
             'SOAP::Lite' => {
-		link => 'http://search.cpan.org/dist/SOAP-Lite',
+                link => 'http://search.cpan.org/dist/SOAP-Lite',
                 version => 0.50,
                 label => 'This module is needed if you wish to use the MT XML-RPC server implementation.',
             },
             'File::Temp' => {
-		link => 'http://search.cpan.org/dist/File-Temp',
+                link => 'http://search.cpan.org/dist/File-Temp',
                 label => 'This module is needed if you would like to be able to overwrite existing files when you upload.',
             },
             'List::Util' => {
@@ -135,68 +135,77 @@ sub init_core_registry {
                 label => 'List::Util is optional; It is needed if you want to use the Publish Queue feature.',
             },
             'Image::Magick' => {
-		link => 'http://www.imagemagick.org/script/perl-magick.php',
+                link => 'http://www.imagemagick.org/script/perl-magick.php',
                 label => 'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
             'Storable' => {
-		link => 'http://search.cpan.org/dist/Storable',
+                link => 'http://search.cpan.org/dist/Storable',
                 label => 'This module is required by certain MT plugins available from third parties.',
             },
             'Crypt::DSA' => {
-		link => 'http://search.cpan.org/dist/Crypt-DSA',
+                link => 'http://search.cpan.org/dist/Crypt-DSA',
                 label => 'This module accelerates comment registration sign-ins.',
             },
             'MIME::Base64' => {
-		link => 'http://search.cpan.org/dist/MIME-Base64',
+                link => 'http://search.cpan.org/dist/MIME-Base64',
                 label => 'This module is needed to enable comment registration.',
             },
             'XML::Atom' => {
-		link => 'http://search.cpan.org/dist/XML-Atom',
+                link => 'http://search.cpan.org/dist/XML-Atom',
                 label => 'This module enables the use of the Atom API.',
             },
             'Archive::Tar' => {
-		link => 'http://search.cpan.org/dist/Archive-Tar',
+                link => 'http://search.cpan.org/dist/Archive-Tar',
                 label => 'This module is required in order to archive files in backup/restore operation.',
             },
             'IO::Compress::Gzip' => {
-		link => 'http://search.cpan.org/dist/IO-Compress-Zlib',
+                link => 'http://search.cpan.org/dist/IO-Compress-Zlib',
                 label => 'This module is required in order to compress files in backup/restore operation.',
             },
             'IO::Uncompress::Gunzip' => {
-		link => 'http://search.cpan.org/dist/IO-Compress-Zlib',
+                link => 'http://search.cpan.org/dist/IO-Compress-Zlib',
                 label => 'This module is required in order to decompress files in backup/restore operation.',
             },
             'Archive::Zip' => {
-		link => 'http://search.cpan.org/dist/Archive-Zip',
+                link => 'http://search.cpan.org/dist/Archive-Zip',
                 label => 'This module is required in order to archive files in backup/restore operation.',
             },
             'XML::SAX' => {
-		link => 'http://search.cpan.org/dist/XML-SAX',
+                link => 'http://search.cpan.org/dist/XML-SAX',
                 label => 'This module and its dependencies are required in order to restore from a backup.',
             },
             'Digest::SHA1' => {
-		link => 'http://search.cpan.org/dist/Digest-SHA1',
+                link => 'http://search.cpan.org/dist/Digest-SHA1',
                 label => 'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.',
             },
             'Mail::Sendmail' => {
-		link => 'http://search.cpan.org/dist/Mail-Sendmail',
+                link => 'http://search.cpan.org/dist/Mail-Sendmail',
                 label => 'This module is required for sending mail via SMTP Server.',
             },
         },
         required_packages => {
             'Image::Size' => {
-		link => 'http://search.cpan.org/dist/Image-Size',
+                link => 'http://search.cpan.org/dist/Image-Size',
                 label => 'This module is required for file uploads (to determine the size of uploaded images in many different formats).',
             },
             'CGI::Cookie' => {
-		link => 'http://search.cpan.org/dist/CGI-Cookie',
+                link => 'http://search.cpan.org/dist/CGI-Cookie',
                 label => 'This module is required for cookie authentication.',
             },
             'DBI' => {
-		link => 'http://search.cpan.org/dist/DBI',
+                link => 'http://search.cpan.org/dist/DBI',
                 label => 'DBI is required to store data in database.',
                 version => 1.21,
             },
+            'CGI' => {
+                link => 'http://search.cpan.org/dist/CGI.pm',
+                label => 'CGI is required for all Movable Type application functionality.',
+            },
+            'File::Spec' => {
+                link => 'http://search.cpan.org/dist/File-Spec',
+                version => 0.8,
+                label => 'File::Spec is required for path manipulation across operating systems.',
+            }
         },
     };
 }
@@ -345,8 +354,8 @@ sub start {
     foreach my $key (keys %$drivers) {
         my $driver = $drivers->{$key};
         my $label = $driver->{label};
-	my $link = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
-	$link =~ s/::/-/g;
+        my $link = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
+        $link =~ s/::/-/g;
         push @DATA, [ $driver->{dbd_package}, $driver->{dbd_version}, 0,
             $app->translate("The [_1] database driver is required to use [_2].", $driver->{dbd_package}, $label),
             $label, $link ];
@@ -363,7 +372,7 @@ sub start {
     my @OPT;
     foreach my $key (keys %$opt) {
         my $pkg = $opt->{$key};
-        push @OPT, [ $key, $pkg->{version} || 0, 1, $pkg->{label}, $key, $pkg->{link} ];
+        push @OPT, [ $key, $pkg->{version} || 0, 0, $pkg->{label}, $key, $pkg->{link} ];
     }
     my ($opt_missing) = $app->module_check(\@OPT);
     push @$opt_missing, @$db_missing;
@@ -415,8 +424,8 @@ sub configure {
     foreach my $key (keys %$drivers) {
         my $driver = $drivers->{$key};
         my $label = $driver->{label};
-	my $link = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
-	$link =~ s/::/-/g;
+        my $link = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
+        $link =~ s/::/-/g;
         push @DATA, [ $driver->{dbd_package}, $driver->{dbd_version}, 0,
             $app->translate("The [_1] driver is required to use [_2].", $driver->{dbd_package}, $label),
             $label, $link ];
@@ -435,8 +444,10 @@ sub configure {
             $_->{id} = 'postgres';
         } elsif ($_->{module} eq 'DBD::Oracle') {
             $_->{id} = 'oracle';
-        } elsif ($_->{module} eq 'DBD::ODBC') {
+        } elsif ($_->{module} eq 'DBD::ODBC1.13') {
             $_->{id} = 'mssqlserver';
+        } elsif ($_->{module} eq 'DBD::ODBC1.14') {
+            $_->{id} = 'umssqlserver';
         } elsif ($_->{module} eq 'DBD::SQLite') {
             $_->{id} = 'sqlite';
         } elsif ($_->{module} eq 'DBD::SQLite2') {
@@ -816,6 +827,7 @@ sub module_check {
     foreach my $ref (@$modules) {
         my($mod, $ver, $req, $desc, $name, $link) = @$ref;
         eval("use $mod" . ($ver ? " $ver;" : ";"));
+        $mod .= $ver if $mod eq 'DBD::ODBC';
         if ($@) {
             push @missing, { module => $mod,
                              version => $ver,

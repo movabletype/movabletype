@@ -33,6 +33,10 @@ sub metadata {
     $meta;
 }
 
+sub has_thumbnail {
+    1;
+}
+
 sub thumbnail_file {
     my $asset     = shift;
     my (%param)   = @_;

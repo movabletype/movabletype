@@ -110,7 +110,7 @@ sub super_handler {
 sub stash {
     my $ctx = shift;
     my $key = shift;
-    $ctx->{__stash}->{$key} = shift if @_;
+    return $ctx->{__stash}->{$key} = shift if @_;
     if (ref $ctx->{__stash}->{$key} eq 'MT::Promise') {
         return MT::Promise::force($ctx->{__stash}->{$key});
     } else {

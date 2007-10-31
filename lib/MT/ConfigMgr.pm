@@ -95,6 +95,7 @@ sub get {
     my $mgr = shift;
     my $var = lc shift;
     if (my $h = $mgr->{__settings}{$var}{handler}) {
+        $h = MT->handler_to_coderef($h) unless ref $h;
         return $h->($mgr);
     }
     return $mgr->get_internal($var, @_);

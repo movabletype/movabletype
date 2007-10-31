@@ -776,6 +776,7 @@ function encode_xml($str, $nocdata = 0) {
         $str = '<![CDATA[' . $str . ']]>';
     } else {
         $str = strtr($str, $_encode_xml_Map);
+        $str = preg_replace('/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/', "&$1;", $str);
     }
     return $str;
 }

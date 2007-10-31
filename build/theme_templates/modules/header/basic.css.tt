@@ -14,7 +14,16 @@
     font-weight: [% theme.header.name.weight || 'bold' %];
 }
 
+[%+ IF theme.header.text.height -%]
+* html #header-content {  /*HACK targets IE6 but not 7, instead of min-height*/
+    height: [% theme.header.text.height %];
+}
+[%+ END -%]
 #header-content {
+    width: [% theme.header.text.width || '842px' %];
+[% IF theme.header.text.height %]
+    min-height: [% theme.header.text.height %];
+[% END %]
     margin: [% theme.header.content.margin || '20px 0 60px 20px' %];
 }
 

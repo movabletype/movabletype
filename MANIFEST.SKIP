@@ -38,7 +38,7 @@ mt-static/themes/unity-green
 mt-static/themes/unity-purple
 #mt-static/themes/unity-tricolor
 
-^addons
+#^addons
 
 ^schemas
 \bknown-issues

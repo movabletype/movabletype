@@ -12,18 +12,18 @@ use MT::Util qw(encode_js);
 
 __PACKAGE__->mk_accessors(qw( id path envelope version schema_version ));
 
-BEGIN {
-
-    # my @registry_methods = qw( callbacks upgrade_functions object_types
-    #     junk_filters text_filters permissions importers rebuild_options
-    #     tasks );
-    my @registry_methods = qw( callbacks );
-    foreach my $meth (@registry_methods) {
-        my $sub = sub { &_getset( shift, $meth, @_ ) };
-        no strict 'refs';
-        *$meth = $sub;
-    }
-}
+#BEGIN {
+#
+#    # my @registry_methods = qw( callbacks upgrade_functions object_types
+#    #     junk_filters text_filters permissions importers rebuild_options
+#    #     tasks );
+#    my @registry_methods = qw( callbacks );
+#    foreach my $meth (@registry_methods) {
+#        my $sub = sub { &_getset( shift, $meth, @_ ) };
+#        no strict 'refs';
+#        *$meth = $sub;
+#    }
+#}
 
 # static method
 sub select {
@@ -117,7 +117,7 @@ sub init_callbacks {
         }
         elsif ( ref $callbacks eq 'HASH' ) {
             foreach my $cbname ( keys %$callbacks ) {
-                if ( ref $callbacks->{$cbname} eq 'CODE' ) {
+                if ( ref $callbacks->{$cbname} eq 'CODE' ||  (ref $callbacks->{$cbname} eq '' && $callbacks->{$cbname})) {
                     MT->add_callback( $cbname, 5, $c, $callbacks->{$cbname} );
                 }
                 elsif ( ref $callbacks->{$cbname} eq 'HASH' ) {
@@ -182,6 +182,22 @@ sub init_registry {
     }
     $c->name( $r->{label} ) if exists $r->{label};
     return 1;
+}
+
+sub callbacks {
+    my $c = shift;
+    my $root_cb = _getset($c, 'callbacks') || {};
+    my $apps = _getset($c, 'applications');
+    for my $app (keys %$apps) {
+        my @path = qw( applications );
+        push @path, $app;
+        my $r = $c->registry( @path );
+        if ($r) {
+            my $cb = _getset($r, 'callbacks') || {};
+            MT::__merge_hash($root_cb, $cb);
+        }
+    }
+    return $root_cb;
 }
 
 # STUB

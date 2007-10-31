@@ -5,22 +5,7 @@
     <mt:setvarblock name="content_nav">
         <mt:include name="include/users_content_nav.tmpl">
     </mt:setvarblock>
-    <mt:if name="user_view">
-        <mt:setvarblock name="page_title"><__trans phrase="Permissions for [_1]" params="<mt:var name="edit_author_name" escape="html">"></mt:setvarblock>
-    </mt:if>
-    <mt:if name="group_view">
-        <mt:setvarblock name="page_title"><__trans phrase="Group Associations for [_1]" params="<mt:var name="group_name" escape="html">"></mt:setvarblock>
-    </mt:if>
-    <mt:if name="usergroup_view">
-        <mt:setvarblock name="page_title"><__trans phrase="Permissions: System-wide"></mt:setvarblock>
-    </mt:if>
-    <mt:if name="role_view">
-        <mt:if name="group_support">
-            <mt:setvarblock name="page_title"><__trans phrase="Users &amp; Groups for [_1]" params="<mt:var name="role_name" escape="html">"></mt:setvarblock>
-        <mt:else>
-            <mt:setvarblock name="page_title"><__trans phrase="Users for [_1]" params="<mt:var name="role_name" escape="html">"></mt:setvarblock>
-        </mt:if>
-    </mt:if>
+    <mt:include name="include/list_associations/page_title.tmpl" id="page_title">
 </mt:if>
 <mt:setvarblock name="action_buttons">
     <mt:if name="can_create_association">
@@ -34,17 +19,38 @@
 <mt:setvarblock name="related_content">
     <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
+<mt:setvarblock name="actions_link" id="actions_link">
+    <mt:if name="user_view">
+        <mt:if name="can_create_association">
+        <li>
+            <mt:if name="status_enabled">
+            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
+            <mt:else>
+            <span class="disabled icon-left icon-create-disabled" title="<__trans phrase="You can not create associations for disabled users.">"><__trans phrase="Grant Permission"></span>
+            </mt:if>
+        </li>
+        </mt:if>
+    </mt:if>
+    <mt:if name="role_view">
+        <mt:if name="can_create_association">
+        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user&amp;role_id=<mt:var name="role_id">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id">')" class="icon-left icon-create"><__trans phrase="Assign Role to User"></a></li>
+        </mt:if>
+    </mt:if>
+    <mt:if name="usergroup_view">
+        <mt:if name="can_create_association">
+            <mt:if name="blog_view">
+        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Add a user to this blog"></a></li>
+            <mt:else>
+        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Grant permission to a user"></a></li>
+            </mt:if>
+        </mt:if>
+    </mt:if>
+</mt:setvarblock>
 <mt:setvarblock name="content_header">
     <mt:unless name="blog_id">
-        <mt:if name="user_view">
+        <mt:if name="edit_name">
             <mt:unless name="status_enabled">
-    <p class="icon-left icon-warning"><__trans phrase="The user <em>[_1]</em> is currently disabled." params="<mt:var name="edit_author_name" escape="html">"></p>
-            </mt:unless>
-        </mt:if>
-
-        <mt:if name="group_view">
-            <mt:unless name="status_enabled">
-    <p class="icon-left icon-warning"><__trans phrase="The group <em>[_1]</em> is currently disabled." params="<mt:var name="group_name" escape="html">"></p>
+    <p class="icon-left icon-warning"><__trans phrase="[_1] <em>[_2]</em> is currently disabled." params="<mt:var name="edit_object" escape="html">%%<mt:var name="edit_name" escape="html">"></p>
             </mt:unless>
         </mt:if>
     </mt:unless>
@@ -65,54 +71,10 @@
     </mt:if>
 
     <ul class="actions-foo">
-    <mt:if name="user_view">
-        <mt:if name="can_create_association">
-        <li>
-            <mt:if name="status_enabled">
-            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
-            <mt:else>
-            <span class="disabled icon-left icon-create-disabled" title="<__trans phrase="You can not create associations for disabled users.">"><__trans phrase="Grant Permission"></span>
-            </mt:if>
-        </li>
-        </mt:if>
-    </mt:if>
-    <mt:if name="group_view">
-        <mt:if name="can_create_association">
-        <li>
-            <mt:if name="status_enabled">
-            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'group_id=<mt:var name="group_id">&amp;return_args=<mt:var name="return_args" escape="url">%26group_id=<mt:var name="group_id">')" class="icon-left icon-create"><__trans phrase="Add [_1] to a blog" params="<mt:var name="group_name">"></a>
-            <mt:else>
-            <span class="disabled icon-left icon-create-disabled" title="<__trans phrase="You can not create associations for disabled groups.">"><__trans phrase="Add [_1] to a blog" params="<mt:var name="group_name">"></span>
-            </mt:if>
-        </li>
-        </mt:if>
-    </mt:if>
-    <mt:if name="role_view">
-        <mt:if name="can_create_association">
-            <mt:if name="group_support">
-        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group&amp;role_id=<mt:var name="role_id">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id">')" class="icon-left icon-create"><__trans phrase="Assign Role to Group"></a></li>
-            </mt:if>
-        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user&amp;role_id=<mt:var name="role_id">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id">')" class="icon-left icon-create"><__trans phrase="Assign Role to User"></a></li>
-        </mt:if>
-    </mt:if>
-    <mt:if name="usergroup_view">
-        <mt:if name="can_create_association">
-            <mt:if name="blog_view">
-                <mt:if name="can_add_groups">
-                    <mt:if name="group_support">
-        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Add a group to this blog"></a></li>
-                    </mt:if>
-                </mt:if>
-        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Add a user to this blog"></a></li><mt:else>
-                <mt:if name="group_support">
-        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Grant permission to a group"></a></li>
-                </mt:if>
-        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Grant permission to a user"></a></li>
-            </mt:if>
-        </mt:if>
-    </mt:if>
+        <$mt:var name="actions_link"$>
     </ul>
 </mt:setvarblock>
+
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript">
     <!--
@@ -136,20 +98,12 @@
         <tr>
             <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
         <mt:if name="usergroup_view">
-            <mt:if name="group_support">
-            <th id="pt-name"><__trans phrase="User/Group"></th>
-            <mt:else>
-            <th id="pt-name"><__trans phrase="User"></th>
-            </mt:if>
+            <th id="pt-name"><mt:var name="pt_name"></th>
         </mt:if>
         <mt:unless name="role_view">
             <th id="pt-role"><__trans phrase="Role"></th>
         <mt:else>
-            <mt:if name="group_support">
-            <th id="pt-name"><__trans phrase="User/Group"></th>
-            <mt:else>
-            <th id="pt-name"><__trans phrase="User"></th>
-            </mt:if>
+            <th id="pt-name"><mt:var name="pt_name"></th>
         </mt:unless>
         <mt:unless name="blog_view">
             <th id="pt-weblog"><__trans phrase="Blog"></th>
@@ -165,26 +119,10 @@
         <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
     <mt:if name="usergroup_view">
         <td>
-        <mt:if name="user_id">
-            <mt:if name="is_administrator">
-                <a href="<mt:var name="script_url">?__mode=list_associations&amp;author_id=<mt:var name="user_id">" class="icon-right icon-user"><$mt:var name="user_name" escape="html"$></a>
-            <mt:else>
-                <span class="icon-right icon-user"><$mt:var name="user_name" escape="html"$></span>
-            </mt:if>
-        <mt:else>
-            <mt:if name="is_administrator">
-                <a href="<mt:var name="script_url">?__mode=list_associations&amp;group_id=<mt:var name="group_id">" class="icon-right icon-right-xwide icon-group"><$mt:var name="group_name" escape="html"$></a>
-            <mt:else>
-                <span class="icon-right icon-right-xwide icon-group"><$mt:var name="group_name" escape="html"$></span>
-            </mt:if>
-        </mt:if>
+        <mt:include name="include/list_associations/table_user_view.tmpl" id="table_usergroup_view">
         </td>
     </mt:if>
-    <mt:unless name="role_view">
-        <td><mt:if name="is_administrator"><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="role_id">"></mt:if><mt:var name="role_name" escape="html"><mt:if name="is_administrator"></a></mt:if></td>
-    <mt:else>
-        <td><mt:if name="user_id"><span class="user_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span> <mt:if name="is_administrator"><a href="<mt:var name="script_url">?__mode=list_associations&amp;author_id=<mt:var name="user_id">"></mt:if><mt:var name="user_name" escape="html"><mt:else><span class="group_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span> <mt:if name="is_administrator"><a href="<mt:var name="script_url">?__mode=list_associations&amp;group_id=<mt:var name="group_id">"></mt:if><mt:var name="group_name" escape="html"></mt:if><mt:if name="is_administrator"></a></mt:if></td>
-    </mt:unless>
+    <mt:include name="include/list_associations/table_role_view.tmpl" id="table_role_view">
     <mt:unless name="blog_view">
         <td><a href="<mt:var name="script_url">?__mode=list_associations&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
     <mt:else>

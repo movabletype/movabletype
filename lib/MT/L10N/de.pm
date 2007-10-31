@@ -971,7 +971,7 @@ use vars qw( @ISA %Lexicon );
 	'New Template' => 'Neuer Vorlage',
 	'New Blog' => 'Neues Blog',
 	'pages' => 'Seiten',
-	'Create New User' => 'Neues Benutzerkonto anlegen',
+	'Create User' => 'Neues Benutzerkonto anlegen',
 	'User requires username' => 'Benutzername erforderlich',
 	'User requires password' => 'Passwort erforderlich',
 	'User requires password recovery word/phrase' => 'Passwort-Erinnerungssatz erforderlich',
@@ -987,7 +987,7 @@ use vars qw( @ISA %Lexicon );
 	'You did not specify an Archive Root.' => 'Kein Archiv-Wurzelverzeichnis angebeben.',
 	'The name \'[_1]\' is too long!' => 'Der Name \'[_1]\' ist zu lang!',
 	'A user can\'t change his/her own username in this environment.' => 'Benutzer kann eigenen Benutzernamen in diesem Kontext nicht ändern.',
-	'An errror occurred when enabling this user.' => 'Bei der Aktivierung dieses Benutzerkontos ist ein Fehler aufgetreten',
+	'An error occurred when enabling this user.' => 'Bei der Aktivierung dieses Benutzerkontos ist ein Fehler aufgetreten',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Ordner \'[_1]\' angelegt von \'[_2]\'',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Kategorie \'[_1]\' angelegt von \'[_2]\'',
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'Der Ordner \'[_1]\' steht im Konflikt mit einem anderen Ordner. Ordner im gleichen Unterordner müssen unterschiedliche Basenames haben.',
@@ -1085,7 +1085,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'No permissions' => 'Keine Berechtigung',
 	'Ping \'[_1]\' failed: [_2]' => 'Ping \'[_1]\' fehlgeschlagen: [_2]',
-	'Create New Role' => 'Neue Rolle anlegen',
+	'Create Role' => 'Neue Rolle anlegen',
 	'Role name cannot be blank.' => 'Rollenname erforderlich',
 	'Another role already exists by that name.' => 'Rolle mit diesem Namen bereits vorhanden',
 	'You cannot define a role without permissions.' => 'Rollen ohne Berechtigungen nicht möglich',
@@ -1936,7 +1936,7 @@ use vars qw( @ISA %Lexicon );
 	'Enable dynamic publishing for this template' => 'Vorlage dynamisch veröffentlichen',
 	'Publish this template automatically when rebuilding index templates' => 'Diese Vorlage bei Neuaufbau von Indexvorlagen automatisch veröffentlichen',
 	'Link to File' => 'Mit Datei verlinken',
-	'Create New Archive Mapping' => 'Neue Archivverknüpfung einrichten',
+	'Create Archive Mapping' => 'Neue Archivverknüpfung einrichten',
 	'Type' => 'Typ',
 	'Add' => 'Hinzufügen',
 
@@ -2470,7 +2470,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/blog-left-nav.tmpl
 	'Creating' => 'Anlegen',
-	'Create New Entry' => 'Neuen Eintrag schreiben',
+	'Create Entry' => 'Neuen Eintrag schreiben',
 	'List Entries' => 'Einträge auflisten',
 	'List uploaded files' => 'Hochgeladene Dateien auflisten',
 	'Community' => 'Feedback',
@@ -2751,7 +2751,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_category.tmpl
 	'Your [_1] changes and additions have been made.' => 'Änderungen übernommen.',
 	'You have successfully deleted the selected [_1].' => 'Änderungen übernommen.',
-	'Create new top level [_1]' => 'Neue Haupt[_1] anlegen',
+	'Create top level [_1]' => 'Neue Haupt[_1] anlegen',
 	'New Parent [_1]' => 'Neue Mutter[_1]',
 	'Top Level' => 'Hauptebene',
 	'Collapse' => 'Einklappen',
@@ -3006,7 +3006,7 @@ use vars qw( @ISA %Lexicon );
 	'CAPTCHA Provider' => 'CAPTCHA-Quelle',
 	'none' => 'Kein(e)',
 	'No CAPTCHA provider available' => 'Keine CAPTCHA-Quelle verfügbar',
-	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaImageSourceBase directive points to captcha-source directory under mt-static/images.' => 'Keine CAPTCHA-Quelle verfügbar. Bitte überprüfen Sie, ob Image::Magick installiert ist und die CaptchaImageSourceBase-Direktive auf das Captcha-Quellverzeichnis im Ordner mt-static/images verweist.',
+	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaSourceImageBase directive points to captcha-source directory under mt-static/images.' => 'Keine CAPTCHA-Quelle verfügbar. Bitte überprüfen Sie, ob Image::Magick installiert ist und die CaptchaSourceImageBase-Direktive auf das Captcha-Quellverzeichnis im Ordner mt-static/images verweist.',
 	'Use Comment Confirmation Page' => 'Bei Abgabe von Kommentaren Bestätigungsseite anzeigen',
 	'Use comment confirmation page' => 'Bei Abgabe von Kommentaren Bestätigungsseite anzeigen',
 
@@ -3247,7 +3247,7 @@ use vars qw( @ISA %Lexicon );
 	'templates' => 'Vorlagen',
 	'You have successfully deleted the checked template(s).' => 'Vorlage(n) erfolgreich gelöscht.',
 	'Create Archive Template:' => 'Archiv-Vorlage anlegen:',
-	'Create new [_1] template' => 'Neue [_1]-Vorlage anlegen',
+	'Create [_1] template' => 'Neue [_1]-Vorlage anlegen',
 	'Create Template...' => 'Lege Vorlage an...',
 	'Blank Template' => 'Leere Vorlage',
 
@@ -3687,7 +3687,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/MultiBlog/multiblog.pl
 	'MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.' => 'Mit MultiBlog können Sie Inhalte anderer Blogs dieser Installation formatiert oder in Rohform übernehmen, Abhängigkeiten zur automatischen Neuveröffentlichung bei Erscheinen neuer Inhalte definieren und Zugriffsrechte der Blogs untereinander festlegen.',
 	'MultiBlog' => 'MultiBlog',
-	'Create New Trigger' => 'Neuen Auslöser anlegen',
+	'Create Trigger' => 'Neuen Auslöser anlegen',
 	'Weblog Name' => 'Name des Blogs',
 	'Search Weblogs' => 'Weblogs suchen',
 	'When this' => 'Wenn',

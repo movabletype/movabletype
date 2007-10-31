@@ -449,14 +449,8 @@ BEGIN {
             'AuthLoginURL'         => undef,
             'AuthLogoutURL'        => undef,
             'DefaultAssignments'   => undef,
-            ## External Sync settings
-            'ExternalUserManagement' => {
-                default => 1,
-                handler => \&ExternalUserManagement,
-            },
             'AutoSaveFrequency'         => { default => 5 },
             'FuturePostFrequency'       => { default => 1 },
-            'ExternalUserSyncFrequency' => { default => 60 },
             'AssetCacheDir'             => { default => 'assets_c', },
             'MemcachedServers'          => { type    => 'ARRAY', },
             'CommenterRegistration'     => {
@@ -495,6 +489,7 @@ BEGIN {
                 page_actions   => sub { MT->app->core_page_actions(@_) },
                 list_actions   => sub { MT->app->core_list_actions(@_) },
                 list_filters   => sub { MT->app->core_list_filters(@_) },
+                search_apis    => sub { MT->app->core_search_apis(@_) },
                 menus          => sub { MT->app->core_menus() },
                 methods        => sub { MT->app->core_methods() },
                 widgets        => sub { MT->app->core_widgets() },
@@ -774,13 +769,6 @@ sub NewUserAutoProvisioning {
     return $mgr->set_internal( 'NewUserAutoProvisioning', @_ ) if @_;
     return 0 unless $mgr->DefaultSiteRoot && $mgr->DefaultSiteURL;
     $mgr->get_internal('NewUserAutoProvisioning');
-}
-
-sub ExternalUserManagement {
-    my $mgr = shift;
-    return $mgr->set_internal( 'ExternalUserManagement', @_ ) if @_;
-    ( $mgr->AuthenticationModule ne 'MT' )
-      && $mgr->get_internal('ExternalUserManagement');
 }
 
 1;

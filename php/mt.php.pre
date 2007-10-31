@@ -155,7 +155,7 @@ class MT {
         $mtdbclass = 'MTDatabase_'.$this->config('DBDriver');
         $this->db = new $mtdbclass($this->config('DBUser'),
             $this->config('DBPassword'), $this->config('Database'),
-            $this->config('DBHost'), $this->config('DBPort'));
+            $this->config('DBHost'), $this->config('DBPort'), $this->config('DBSocket'));
         return $this->db;
     }
 

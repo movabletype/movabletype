@@ -1,13 +1,5 @@
 <mt:setvar name="list_role" value="1">
-<mt:if name="edit_group_id">
-    <mt:setvarblock name="page_title"><__trans phrase="Roles for [_1] in" params="<mt:var name="group_name" escape="html">"></mt:setvarblock>
-<mt:else>
-    <mt:if name="edit_author_id">
-        <mt:setvarblock name="page_title"><__trans phrase="Roles for [_1] in" params="<mt:var name="edit_author_name" escape="html">"></mt:setvarblock>
-    <mt:else>
-        <mt:setvarblock name="page_title"><__trans phrase="Roles: System-wide"></mt:setvarblock>
-    </mt:if>
-</mt:if>
+    <mt:setvarblock name="page_title"><__trans phrase="Roles: System-wide"></mt:setvarblock>
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/users_content_nav.tmpl">
 </MTSetVarBlock>
@@ -50,15 +42,9 @@
     </script>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
-    <mt:unless name="edit_group_id">
-        <mt:if name="edit_author_id">
-    <p><a href="javascript:void(0)" onclick="return openDialog(false, 'dialog_grant_role')" class="icon-left icon-create"><__trans phrase="Grant another role to [_1]" params="<mt:var name="edit_author_name" escape="html">"></a></p>
-        <mt:else>
-            <mt:if name="can_create_role">
+    <mt:if name="can_create_role">
     <p><a href="<mt:var name="script_url">?__mode=edit_role" class="icon-left icon-create"><__trans phrase="Create Role"></a></p>
-            </mt:if>
-        </mt:if>
-    </mt:unless>
+    </mt:if>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
 <mtapp:listing
@@ -69,48 +55,28 @@
             <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
             <th id="at-flag" class="si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="_USER_STATUS_CAPTION">" title="<__trans phrase="_USER_STATUS_CAPTION">" width="9"height="9" /></th>
             <th id="rt-name"><__trans phrase="Role"></th>
-        <mt:if name="edit_group_id"><!-- group view -->
-            <th id="rt-weblog"><__trans phrase="In Blog"></th>
-            <th id="rt-user"><__trans phrase="User"></th>
-        <mt:else>
-            <mt:if name="edit_author_id"><!-- author view -->
-            <th id="rt-weblog"><__trans phrase="In Blog"></th>
-            <th id="rt-group"><__trans phrase="Via Group"></th>
-            <mt:else><!-- role view -->
             <th id="rt-description"><__trans phrase="Description"></th>
             <th id="rt-members"><__trans phrase="Members"></th>
             <th id="rt-weblogs"><__trans phrase="Blogs"></th>
             <th id="rt-created-by"><__trans phrase="Created By"></th>
-            </mt:if>
-        </mt:if>
         </tr>
     </thead>
     <tbody>
     </mt:if>
-        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:unless name="edit_author_id"><mt:unless name="edit_group_id"><mt:unless name="members"> inactive</mt:unless></mt:unless></mt:unless>">
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:unless name="members"> inactive</mt:unless>">
             <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
             <td class="si <mt:if name="members">role-status-active<mt:else>role-status-inactive</mt:if>">
                 <img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="members"><__trans phrase="Role Is Active"><mt:else><__trans phrase="Role Not Being Used"></mt:if>" width="9" height="9" />
             </td>
             <td><a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id">"><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
-    <mt:if name="edit_group_id">
-            <td><mt:var name="user_name" escape="html"></td>
-            <td><mt:var name="blog_name" escape="html"></td>
-    <mt:else>
-        <mt:if name="edit_author_id">
-            <td><mt:var name="group_name" escape="html"></td>
-            <td><mt:var name="blog_name" escape="html"></td>
-        <mt:else>
             <td><mt:var name="description" escape="html"></td>
             <td><mt:var name="members"></td>
             <td><mt:var name="weblogs"></td>
             <td><mt:if name="created_by"><mt:var name="created_by"><mt:else><em><__trans phrase="System"></em></mt:if></td>
-        </mt:if>
-    </mt:if>
         </tr>
     <mt:if name="view_expanded">
-        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave<mt:unless name="edit_author_id"><mt:unless name="edit_group_id"><mt:unless name="members"> inactive</mt:unless></mt:unless></mt:unless>">
-            <td>&nbsp;</td><td colspan="<mt:if name="edit_group_id">4<mt:else><mt:if name="edit_author_id">4<mt:else>6</mt:if></mt:if>"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave<mt:unless name="members"> inactive</mt:unless>">
+            <td>&nbsp;</td><td colspan="6"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
         </tr>
     </mt:if>
     <mt:if name="__last__">

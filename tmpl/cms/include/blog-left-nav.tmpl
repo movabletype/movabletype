@@ -3,7 +3,7 @@
 <TMPL_IF NAME=HAS_POSTING_LABEL>
         <li><MT_TRANS phrase="Creating">
             <ul class="sub">
-                <TMPL_IF NAME=CAN_CREATE_POST><li><a<TMPL_IF NAME=NAV_NEW_ENTRY> class="here"</TMPL_IF> id="nav-new-entry" title="<MT_TRANS phrase="Create New Entry">" href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="New Entry"></a></li></TMPL_IF>
+                <TMPL_IF NAME=CAN_CREATE_POST><li><a<TMPL_IF NAME=NAV_NEW_ENTRY> class="here"</TMPL_IF> id="nav-new-entry" title="<MT_TRANS phrase="Create Entry">" href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="New Entry"></a></li></TMPL_IF>
                 <TMPL_IF NAME=CAN_EDIT_ENTRIES><li><a<TMPL_IF NAME=NAV_ENTRIES> class="here"</TMPL_IF> id="nav-entries" title="<MT_TRANS phrase="List Entries">" href="<TMPL_VAR NAME=MT_URL>?__mode=list_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Entries"></a></li></TMPL_IF>
                 <TMPL_IF NAME=CAN_ACCESS_ASSETS><li><a<TMPL_IF NAME=NAV_ASSETS> class="here"</TMPL_IF> id="nav-assets" title="<MT_TRANS phrase="List uploaded files">" href="<TMPL_VAR NAME=MT_URL>?__mode=list_assets&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Assets"></a></li></TMPL_IF>
             </ul>

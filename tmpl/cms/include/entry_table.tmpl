@@ -15,9 +15,7 @@
                 </th>
                 <th class="title"><__trans phrase="Title"></th>
                 <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></th>
-        <mt:if name="object_type" eq="entry">
                 <th class="author"><__trans phrase="Author"></th>
-        </mt:if>
         <mt:unless name="blog_view">
                 <th class="weblog"><__trans phrase="Blog"></th>
         </mt:unless>
@@ -106,7 +104,6 @@
             </mt:if>
         </mt:if>
                 </td>
-        <mt:if name="object_type" eq="entry">
                 <td class="author">
             <mt:if name="is_editable">
                     <select name="author_id_<$mt:var name="id"$>">
@@ -121,7 +118,6 @@
                     <$mt:var name="author_name"$>
             </mt:if>
                 </td>
-        </mt:if>
         <mt:unless name="blog_view">
                 <td class="weblog"><a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
         </mt:unless>

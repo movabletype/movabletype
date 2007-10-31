@@ -72,13 +72,11 @@ body {
 }
 
 .asset-meta {
-    margin-top: .25em;
-    padding-top: 2px;
-    font-weight: normal;
+    border-top: 1px solid #dbe8f5;
+}
 
-    display: block;
-    border-top: 1px dashed #dbe8f5;
-    padding-bottom: .3em;
+.asset-footer {
+    border-top: 1px solid #dbe8f5;
 }
 
 .asset-footer a,
@@ -182,7 +180,7 @@ a:hover {
     padding-bottom: 0;
 }
 
-#beta-inner, #gamma-inner {
+#header-inner, #beta-inner, #gamma-inner {
     padding-right: 0;
     padding-left: 0;
 }
@@ -215,7 +213,7 @@ a:hover {
 }
 
 #header-content {
-    margin-top: 10px;
+    margin: 10px 20px 0;
 }
 
 #header-name {
@@ -249,8 +247,6 @@ a:hover {
     color: #69c;
 }
 
-.asset-footer,
-.asset-footer a,
 .comment-footer,
 .comment-footer a,
 .trackback-footer {
@@ -267,7 +263,7 @@ a:hover {
 .archive-header,
 .search-form-header,
 .search-results-header {
-    color: #fff;
+    color: #69c;
 }
 
 

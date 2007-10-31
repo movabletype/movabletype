@@ -96,6 +96,7 @@ sub remove {
         }
         foreach my $blog_id (keys %ats) {
             my $blog = MT->model('blog')->load($blog_id);
+            next unless $blog;
             $blog->archive_type(join ',', @{ $ats{$blog_id} });
             $blog->save;
         }

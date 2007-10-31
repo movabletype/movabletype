@@ -232,6 +232,10 @@ sub metadata {
     };
 }
 
+sub has_thumbnail {
+    0;
+}
+
 sub thumbnail_file {
     undef;
 }

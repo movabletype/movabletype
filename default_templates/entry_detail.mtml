@@ -14,10 +14,11 @@
             <$MTEntryMore$>
         </div>
 </MTIfNonEmpty>
-<MTIf name="entry_template">
-        <$MTInclude module="<__trans phrase="Categories">"$>
-</MTIf>
-        <$MTInclude module="<__trans phrase="Tags">"$>
     </div>
-    <div class="asset-footer"></div>
+    <div class="asset-footer">
+        <MTIf name="entry_template">
+                <$MTInclude module="<__trans phrase="Categories">"$>
+        </MTIf>
+                <$MTInclude module="<__trans phrase="Tags">"$>
+    </div>
 </div>

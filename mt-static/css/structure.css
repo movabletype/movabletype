@@ -2046,7 +2046,6 @@ optgroup option {
 }
 
 .asset-icon {
-    width: 140px;
     height: 146px;
     border: 1px solid #d7e3f5;
     background: #fff url('../images/filetype_icons/default_lg.gif') no-repeat center 5px;
@@ -3647,9 +3646,7 @@ body.dialog {
 }
 
 #list-plugins .plugin {
-    margin: 10px;
-    padding-left: 31px;
-    background: url('../images/plugin-error.gif') no-repeat 11px 0;
+/*    margin: 10px;*/
 }
 #list-plugins .plugin-expanded {
     margin: 10px 10px 0;
@@ -3661,6 +3658,10 @@ body.dialog {
 
 #list-plugins .plugin-status {
     float: right;
+    padding: 10px 10px 0 0;
+}
+#list-plugins .plugin-expanded .plugin-status {
+    padding: 0;
 }
 
 #list-plugins .plugin-name {
@@ -3673,13 +3674,17 @@ body.dialog {
 }
 
 #list-plugins .plugin-name a {
-    display: block;
-    margin: 0 0 0 -31px;
-    background: url('../images/spinner-right.gif') no-repeat 0 4px;
-    padding-left: 31px;
+    display: block !important;
+    padding: 10px 10px 10px 30px;
+    background: url('../images/plugin-error.gif') no-repeat 10px 10px;
+}
+#list-plugins .plugin-name a:hover {
+    display: block !important;
+    background-color: #f3f3f3;
 }
 #list-plugins .plugin-expanded .plugin-name a {
-    background-image: url('../images/spinner-bottom.gif');
+    padding: 0 0 0 20px;
+    background-position: 0 0;
 }
 
 #list-plugins .plugin-content {

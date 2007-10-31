@@ -60,13 +60,11 @@ body {
 }
 
 .asset-meta {
-    margin-top: .25em;
-    padding-top: 2px;
-    font-weight: normal;
+    border-top: [% theme.content.post_name.border.width || '1px' %] [% theme.content.post_name.border.style || 'solid' %] [% theme.content.post_name.border.color || theme.default.border.color %];
+}
 
-    display: block;
-    border-top: [% theme.content.post_name.border.width || '1px' %] [% theme.content.post_name.border.style || 'dashed' %] [% theme.content.post_name.border.color || theme.default.border.color %];
-    padding-bottom: .3em;
+.asset-footer {
+    border-top: [% theme.content.post_name.border.width || '1px' %] [% theme.content.post_name.border.style || 'solid' %] [% theme.content.post_name.border.color || theme.default.border.color %];
 }
 
 .asset-footer a,

@@ -675,7 +675,7 @@ Adds C<$more_perms> to C<$perms>.
 
 Adds permissions (enabling them) to the existing permission object.
 
-    $perms->set_these_permissions('view_blog_log', 'post');
+    $perms->set_these_permissions('view_blog_log', 'create_post');
 
 =head2 MT::Permission->rebuild($assoc)
 

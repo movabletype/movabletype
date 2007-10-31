@@ -35,8 +35,6 @@
     color: [% theme.content.post_name.color || theme.default.header.color %];
 }
 
-.asset-footer,
-.asset-footer a,
 .comment-footer,
 .comment-footer a,
 .trackback-footer {
@@ -53,7 +51,7 @@
 .archive-header,
 .search-form-header,
 .search-results-header {
-    color: [% theme.content.header2.color || theme.widget.header.color || theme.default.header.color %];
+    color: [% theme.content.header2.color || theme.default.header.color %];
 }
 
 [%+ IF theme.content.post_header.template -%]

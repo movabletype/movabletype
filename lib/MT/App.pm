@@ -42,6 +42,10 @@ sub core_widgets {
     {}
 }
 
+sub core_search_apis {
+    {}
+}
+
 sub __massage_page_action {
     my ($app, $action, $type) = @_;
     return if exists $action->{__massaged};
@@ -114,9 +118,21 @@ sub filter_conditional_list {
     my $user = $app->user;
     my $admin = ($user && $user->is_superuser())
         || ($perms && $perms->blog_id && $perms->has('administer_blog'));
+    my $system_perms = $user->permissions(0) unless $perms && $perms->blog_id;
 
     my $test = sub {
         my ($item) = @_;
+        if ( $system_perms
+          && (my $sp = $item->{system_permission}) ) {
+            my $allowed = 0;
+            my @sp = split /,/, $sp;
+            foreach my $sp (@sp) {
+                my $perm = 'can_' . $sp;
+                $allowed = 1, last
+                    if $admin || ($system_perms && $system_perms->can($perm) && $system_perms->$perm());
+            }
+            return 0 unless $allowed;
+        }
         if (my $p = $item->{permission}) {
             my $allowed = 0;
             my @p = split /,/, $p;
@@ -206,6 +222,25 @@ sub list_filters {
     no warnings;
     @$filters = sort { $a->{order} <=> $b->{order} } @$filters;
     return $filters;
+}
+
+sub search_apis {
+    my $app = shift;
+    my ($view, @param) = @_;
+
+    my $apis = $app->registry("search_apis") or return;
+    my @apis;
+    foreach my $a (keys %$apis) {
+        next if $apis->{$a}->{view} && $apis->{$a}->{view} ne $view;
+        $apis->{$a}{key} = $a;
+        $apis->{$a}{core} = 1
+            unless UNIVERSAL::isa($apis->{$a}{plugin}, 'MT::Plugin');
+        push @apis, $apis->{$a};
+    }
+    $apis = $app->filter_conditional_list(\@apis, @param);
+    no warnings;
+    @$apis = sort { $a->{order} <=> $b->{order} } @$apis;
+    return $apis;
 }
 
 sub listing {
@@ -349,6 +384,10 @@ sub listing {
 
         $args->{sort} = 'id'
           unless exists $args->{sort};    # must always provide sort column
+
+        $app->run_callbacks( 'app_pre_listing_'.$app->mode,
+                             $app, $terms, $args, $param, \$hasher );
+
         my $iter =
           ref($iter_method) eq 'CODE'
           ? $iter_method
@@ -358,6 +397,8 @@ sub listing {
         while ( my $obj = $iter->() ) {
             my $row = $obj->column_values();
             $hasher->( $obj, $row ) if $hasher;
+            #$app->run_callbacks( 'app_listing_'.$app->mode,
+            #                     $app, $obj, $row );
             push @data, $row;
             last if (scalar @data == $limit) && (!$no_limit);
         }
@@ -1897,9 +1938,17 @@ sub template_paths {
             push @paths, $alt_path;
         }
     }
+ 
+    for my $addon ( @{ $app->find_addons('pack') } ) {
+        push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $app->{template_dir})
+            if $app->{template_dir};
+        push @paths, File::Spec->catdir($addon->{path}, 'tmpl');
+    }
+
     push @paths, File::Spec->catdir($path, $app->{template_dir})
         if $app->{template_dir};
     push @paths, $path;
+ 
     return @paths;
 }
 

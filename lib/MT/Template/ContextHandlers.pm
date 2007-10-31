@@ -360,6 +360,7 @@ sub core_tags {
             ArchiveLink => \&_hdlr_archive_link,
             ArchiveTitle => \&_hdlr_archive_title,
             ArchiveType => \&_hdlr_archive_type,
+            ArchiveTypeLabel => \&_hdlr_archive_label,
             ArchiveLabel => \&_hdlr_archive_label,
             ArchiveCount => \&_hdlr_archive_count,
             ArchiveDate => \&_hdlr_date,
@@ -450,7 +451,6 @@ sub core_tags {
             FolderDescription => \&_hdlr_folder_description,
             FolderID => \&_hdlr_folder_id,
             FolderLabel => \&_hdlr_folder_label,
-            FolderCount => \&_hdlr_folder_count,
             FolderPath => \&_hdlr_folder_path,
             SubFolderRecurse => \&_hdlr_sub_folder_recurse,
 
@@ -606,9 +606,10 @@ sub _fltr_dirify {
 }
 sub _fltr_sanitize {
     my ($str, $val, $ctx) = @_;
+    my $blog = $ctx->stash('blog');
     require MT::Sanitize;
     if ($val eq '1') {
-        $val = $ctx->stash('blog')->sanitize_spec ||
+        $val = ($blog && $blog->sanitize_spec) ||
                 $ctx->{config}->GlobalSanitizeSpec;
     }
     MT::Sanitize->sanitize($str, $val);
@@ -3936,7 +3937,7 @@ sub _comment_follow {
     return unless $c;
 
     my $blog = $ctx->stash('blog');
-    if ($blog->nofollow_urls) {
+    if ($blog && $blog->nofollow_urls) {
         if ($blog->follow_auth_links) {
             my $cmntr = $ctx->stash('commenter');
             unless ($cmntr) {
@@ -4194,6 +4195,7 @@ sub _hdlr_comment_body {
     _comment_follow($ctx, $arg);
 
     my $blog = $ctx->stash('blog');
+    return q() unless $blog;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error('MT' . $ctx->stash('tag'));
     my $t = defined $c->text ? $c->text : '';
@@ -6090,10 +6092,10 @@ sub _hdlr_has_parent_category {
     # Get the current category
     defined (my $cat = _get_category_context($ctx))
         or return $ctx->error($ctx->errstr);
-    return if ($cat eq '');
+    return 0 if ($cat eq '');
 
     # Return the parent of the category
-    return $cat->parent_category;
+    return $cat->parent_category ? 1 : 0;
 }
 
 sub _hdlr_has_no_parent_category {
@@ -6686,9 +6688,12 @@ sub _hdlr_asset_thumbnail_url {
     my $args = $_[1];
     my $a = $_[0]->stash('asset')
         or return $_[0]->_no_asset_error('MTAssetThumbnailURL');
-    return '' unless UNIVERSAL::isa($a, 'MT::Asset::Image');
+    return '' unless $a->has_thumbnail;
 
     my %arg;
+    foreach (keys %$args) {
+	$arg{$_} = $args->{$_};
+    }
     $arg{Width} = $args->{width} if $args->{width};
     $arg{Height} = $args->{height} if $args->{height};
     $arg{Scale} = $args->{scale} if $args->{scale};

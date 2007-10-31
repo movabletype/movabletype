@@ -973,7 +973,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'New Template' => 'Nieuwe sjabloon',
 	'New Blog' => 'Nieuwe blog',
 	'pages' => 'pagina\'s',
-	'Create New User' => 'Nieuwe account aanmaken',
+	'Create User' => 'Nieuwe account aanmaken',
 	'User requires username' => 'Gebruiker vereist gebruikersnaam',
 	'User requires password' => 'Gebruiker vereist wachtwoord',
 	'User requires password recovery word/phrase' => 'Gebruiker heeft een woord/uitdrukking nodig om het wachtwoord te kunnen terugvinden',
@@ -989,7 +989,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'You did not specify an Archive Root.' => 'U gaf geen archiefroot op.',
 	'The name \'[_1]\' is too long!' => 'De naam \'[_1]\' is te lang!',
 	'A user can\'t change his/her own username in this environment.' => 'Een gebruiker kan zijn/haar gebruikersnaam niet aanpassen in deze omgeving',
-	'An errror occurred when enabling this user.' => 'Er deed zich een fout voor bij het activeren van deze gebruiker.',
+	'An error occurred when enabling this user.' => 'Er deed zich een fout voor bij het activeren van deze gebruiker.',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Map \'[_1]\' aangemaakt door \'[_2]\'',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Categorie \'[_1]\' aangemaakt door \'[_2]\'',
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'De map \'[_1]\' conflicteert met een andere map. Mappen met dezelfde ouder moeten een unieke basisnaam hebben.',
@@ -1087,7 +1087,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'No permissions' => 'Geen permissies',
 	'Ping \'[_1]\' failed: [_2]' => 'Ping \'[_1]\' mislukt: [_2]',
-	'Create New Role' => 'Nieuwe rol aanmaken',
+	'Create Role' => 'Nieuwe rol aanmaken',
 	'Role name cannot be blank.' => 'Naam van de rol mag niet leeg zijn.',
 	'Another role already exists by that name.' => 'Er bestaat al een rol met die naam.',
 	'You cannot define a role without permissions.' => 'U kunt geen rol definiëren zonder permissies.',
@@ -1937,7 +1937,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Enable dynamic publishing for this template' => 'Dynamisch publiceren inschakelen voor dit sjabloon',
 	'Publish this template automatically when rebuilding index templates' => 'Publiceer dit sjabloon automatisch wanneer indexsjablonen worden gepubliceerd',
 	'Link to File' => 'Koppelen aan bestand',
-	'Create New Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
+	'Create Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
 	'Type' => 'Type',
 	'Add' => 'Toevoegen',
 
@@ -2472,7 +2472,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/include/blog-left-nav.tmpl
 	'Creating' => 'Bezig aan te maken',
-	'Create New Entry' => 'Nieuw bericht opstellen',
+	'Create Entry' => 'Nieuw bericht opstellen',
 	'List Entries' => 'Berichten weergeven',
 	'List uploaded files' => 'Opgeladen bestanden weergeven',
 	'Community' => 'Gemeenschap',
@@ -2753,7 +2753,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/list_category.tmpl
 	'Your [_1] changes and additions have been made.' => 'De wijzigingen en toevoegingen aan uw [_1] zijn uitgevoerd.',
 	'You have successfully deleted the selected [_1].' => 'U heeft met succes de geselecteerde [_1] verwijderd.',
-	'Create new top level [_1]' => 'Maak een nieuwe [_1] aan op topniveau',
+	'Create top level [_1]' => 'Maak een nieuwe [_1] aan op topniveau',
 	'New Parent [_1]' => 'Nieuwe ouder-[_1]',
 	'Top Level' => 'Topniveau',
 	'Collapse' => 'Inklappen',
@@ -3008,7 +3008,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'CAPTCHA Provider' => 'CAPTCHA dienstverlener',
 	'none' => 'geen',
 	'No CAPTCHA provider available' => 'Geen CAPTCHA provider beschikbaar',
-	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaImageSourceBase directive points to captcha-source directory under mt-static/images.' => 'Er is geen CAPTCHA provider beschikbaar in dit systeem.  Gelieve te controleren of Image::Magick is geïnstalleerd en of de CaptchaImageSourceBase directief verwijst naar de captcha-source map onder mt-static/images.',
+	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaSourceImageBase directive points to captcha-source directory under mt-static/images.' => 'Er is geen CAPTCHA provider beschikbaar in dit systeem.  Gelieve te controleren of Image::Magick is geïnstalleerd en of de CaptchaSourceImageBase directief verwijst naar de captcha-source map onder mt-static/images.',
 	'Use Comment Confirmation Page' => 'Pagina voor bevestigen reacties gebruiken',
 	'Use comment confirmation page' => 'Pagina voor bevestigen reacties gebruiken',
 
@@ -3250,7 +3250,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'templates' => 'sjablonen',
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
 	'Create Archive Template:' => 'Archiefsjabloon aanmaken:',
-	'Create new [_1] template' => 'Nieuw [_1] sjabloon aanmaken',
+	'Create [_1] template' => 'Nieuw [_1] sjabloon aanmaken',
 	'Create Template...' => 'Sjabloon aanmaken...',
 	'Blank Template' => 'Leeg sjabloon',
 
@@ -3691,7 +3691,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## plugins/MultiBlog/multiblog.pl
 	'MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.' => 'Met MultiBlog kunt u inhoud van andere blogs ruw of in sjablonen publiceren en kunt u herbouw-afhankelijkheden en toegangscontrole tussen blogs opzetten.',
 	'MultiBlog' => 'MultiBlog',
-	'Create New Trigger' => 'Nieuwe trigger aanmaken',
+	'Create Trigger' => 'Nieuwe trigger aanmaken',
 	'Weblog Name' => 'Weblognaam',
 	'Search Weblogs' => 'Doorzoek weblogs',
 	'When this' => 'indien dit',
