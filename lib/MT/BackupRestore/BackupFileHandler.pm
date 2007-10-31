@@ -112,6 +112,15 @@ sub start_element {
                                 eval "use $class;";
                                 $class->remove({ author_id => $obj->id, blog_id => '0' });
                             }
+                            my $success = $obj->restore_parent_ids(\%column_data, $objects);
+                            if ($success) {
+                                $obj->set_values(\%column_data);
+                                $self->{current} = $obj;
+                            } else {
+                                $deferred->{$class . '#' . $column_data{id}} = 1;
+                                $self->{deferred} = $deferred;
+                                $self->{skip} += 1;
+                            }
                             $self->{loaded} = 1;
                         }
                     }
@@ -119,14 +128,16 @@ sub start_element {
                 unless ($obj) {
                     $obj = $class->new;
                 }
-                my $success = $obj->restore_parent_ids(\%column_data, $objects);
-                if ($success) {
-                    $obj->set_values(\%column_data);
-                    $self->{current} = $obj;
-                } else {
-                    $deferred->{$class . '#' . $column_data{id}} = 1;
-                    $self->{deferred} = $deferred;
-                    $self->{skip} += 1;
+                unless ($obj->id) {
+                    my $success = $obj->restore_parent_ids(\%column_data, $objects);
+                    if ($success) {
+                        $obj->set_values(\%column_data);
+                        $self->{current} = $obj;
+                    } else {
+                        $deferred->{$class . '#' . $column_data{id}} = 1;
+                        $self->{deferred} = $deferred;
+                        $self->{skip} += 1;
+                    }
                 }
             }
         } else {

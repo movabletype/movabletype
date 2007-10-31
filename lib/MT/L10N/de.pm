@@ -20,28 +20,6 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtproductname.php
 	'$short_name [_1]' => '$short_name [_1]',
 
-## php/lib/function.mtcommentfields.php
-	'Thanks for signing in,' => 'Danke für Ihre Anmeldung, ',
-	'Now you can comment.' => 'Sie können jetzt Ihren Kommentar verfassen.',
-	'sign out' => 'abmelden',
-	'(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(Wenn Sie hier noch nicht kommentiert haben, muss Ihr Kommentar möglicherweise erst vom Betreiber dieses Blogs freigeschaltet werden, bevor er angezeigt wird. Vielen Dank für Ihre Geduld.)',
-	'Remember me?' => 'Benutzername speichern?',
-	'Yes' => 'Ja',
-	'No' => 'Nein',
-	'Comments' => 'Kommentare',
-	'Preview' => 'Vorschau',
-	'Submit' => 'Abschicken',
-	'You are not signed in. You need to be registered to comment on this site.' => 'Sie sind nicht angemeldet. Nur angemeldete Benutzer können Kommentare schreiben.',
-	'Sign in' => 'Anmelden',
-	'. Now you can comment.' => '. Sie können jetzt Ihren Kommentar verfassen.',
-	'If you have a TypeKey identity, you can ' => 'Wenn Sie ein TypeKey-Konto besitzen, ',
-	'sign in' => 'melden Sie sich an',
-	'to use it here.' => ', um es hier zu verwenden.',
-	'Name' => 'Name',
-	'Email Address' => 'E-Mail-Adresse',
-	'URL' => 'URL',
-	'(You may use HTML tags for style)' => '(HTML-Tags zur Textformatierung erlaubt)',
-
 ## php/lib/block.mtentries.php
 	'sort_by="score" must be used in combination with namespace.' => 'Sort_by="score" erfordert einen Namespace.',
 
@@ -82,6 +60,7 @@ use vars qw( @ISA %Lexicon );
 	'Header' => 'Kopf',
 	'Previewing your Comment' => 'Vorschau Ihres Kommentars',
 	'Comment Detail' => 'Kommentardetails',
+	'Comments' => 'Kommentare',
 
 ## default_templates/header.mtml
 	'[_1]: Search Results' => '[_1]: Suchergebnisse',
@@ -97,16 +76,12 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/search_results.mtml
 	'Search Results' => 'Suchergebnisse',
-	'Search this site' => 'Diese Site durchsuchen',
-	'Search' => 'Suchen:',
-	'Match case' => 'Groß-/Kleinschreibung beachten',
-	'Regex search' => 'Reguläre Ausdrücke verwenden',
-	'Matching entries matching &ldquo;[_1]&rdquo; from [_2]' => 'Einträge mit &ldquo;[_1]&rdquo; von [_2]',
-	'Entries tagged with &ldquo;[_1]&rdquo; from [_2]' => 'Mit &ldquo;[_1]&rdquo; getaggte Einträge von [_2]',
+	'Results matching &ldquo;[_1]&rdquo; from [_2]' => 'Treffer mit &bdquo;[_1]&ldquo; aus [_2]', # Translate - New # OK
+	'Results tagged &ldquo;[_1]&rdquo; from [_2]' => 'Mit &bdquo;[_1]&ldquo; getaggte Treffer aus [_2]', # Translate - New # OK
 	'Entry Summary' => 'Zusammenfassung',
-	'Entries matching &ldquo;[_1]&rdquo;' => 'Einträge mit &ldquo;[_1]&rdquo',
-	'Entries tagged with &ldquo;[_1]&rdquo;' => 'Mit &ldquo;[_1]&rdquo getaggte Einträge',
-	'No pages were found containing &ldquo;[_1]&rdquo;.' => 'Keine Seiten mit &ldquo;[_1]&rdquo gefunden',
+	'Results matching &ldquo;[_1]&rdquo;' => 'Treffer mit &bdquo;[_1]&ldquo;', # Translate - New # OK
+	'Results tagged &ldquo;[_1]&rdquo;' => 'Mit &bdquo;[_1]&ldquo; getaggte Treffer', # Translate - New # OK
+	'No results found for &ldquo;[_1]&rdquo;.' => 'Keine Treffer mit &bdquo;[_1]&ldquo; gefunden', # Translate - New # OK
 	'Instructions' => 'Anleitung',
 	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Die Suchfunktion sucht nach allen angebenen Begriffen in beliebiger Reihenfolge. Um nach einem exakten Ausdruck zu suchen, setzen Sie diesen bitte in Anführungszeichen:',
 	'movable type' => 'Movable Type',
@@ -124,7 +99,13 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_form.mtml
 	'Leave a comment' => 'Jetzt kommentieren',
+	'Name' => 'Name',
+	'Email Address' => 'E-Mail-Adresse',
+	'URL' => 'URL',
 	'Remember personal info?' => 'Persönliche Angaben speichern?',
+	'(You may use HTML tags for style)' => '(HTML-Tags zur Textformatierung erlaubt)',
+	'Preview' => 'Vorschau',
+	'Submit' => 'Abschicken',
 	'Cancel' => 'Abbrechen',
 
 ## default_templates/tags.mtml
@@ -174,17 +155,23 @@ use vars qw( @ISA %Lexicon );
 	'[_1]: Monthly Archives' => '[_1]: Monatsarchive',
 	'Subscribe to feed' => 'Feed abonnieren',
 	'Subscribe to this blog\'s feed' => 'Feed dieses Blogs abonnieren',
+	'Search results matching &ldquo;<$MTSearchString$>&rdquo;' => 'Treffer mit &bdquo;<$MTSearchString$>&ldquo;', # Translate - New # OK
+	'_MTCOM_URL' => 'http://www.movabletype.com/', # Translate - New # OK
 	'Powered by Movable Type [_1]' => 'Powered by Movable Type [_1]',
-	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&rdquo;.' => 'Wenn Sie einen Feedreader verwenden, können Sie einen Feed aller neuen mit &ldquo;<$MTSearchString$>&ldquo; getaggten Einträge abonnieren.',
-	'If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&rdquo;.' => 'Wenn Sie einen Feedreader verwenden, können Sie einen Feed aller neuen Einträge, die den Begriff &ldquo;<$MTSearchString$>&ldquo; enthalten, abonnieren.',
-	'Feed Subscription' => 'Feed abonnieren',
+	'Search' => 'Suchen:',
+	'Case sensitive' => 'Groß/Kleinschreibung beachten', # Translate - Case
+	'Regex search' => 'Reguläre Ausdrücke verwenden',
 	'Recent Entries' => 'Aktuelle Einträge',
 
 ## default_templates/rss.mtml
 	'Copyright [_1]' => 'Copyright [_1]',
 
 ## default_templates/javascript.mtml
+	'Thanks for signing in,' => 'Danke für Ihre Anmeldung, ',
+	'. Now you can comment.' => '. Sie können jetzt Ihren Kommentar verfassen.',
+	'sign out' => 'abmelden',
 	'You do not have permission to comment on this blog.' => 'Sie haben nicht die notwendige Berechtigung, um in diesem Blog Kommentare zu schreiben.',
+	'Sign in' => 'Anmelden',
 	' to comment on this entry.' => ' um diesen Eintrag zu kommentieren.',
 	' to comment on this entry,' => ' um diesen Eintrag zu kommentieren,',
 	'or ' => 'oder ',
@@ -324,7 +311,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Blog \'[_1] (ID: [_2])\' für Benutzer \'[_3] (ID: [_4])\' erfolgreich angelegt.',
 	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => 'Fehler bei Zuweisung von Administratorensrechten für Blog \'[_3] (ID: [_4])\') an Benutzer \'[_1] (ID: [_2])\'. Keine passende Administratorenrolle gefunden.',
 	'The login could not be confirmed because of a database error ([_1])' => 'Anmeldung konnte aufgrund eines Datenbankfehlers nicht durchgeführt werden ([_1])',
-	'Permission denied.' => 'Keine Berechtigung.',
+	'You do not have rights; please contact your Movable Type system administrator for gaining access to this installation.' => 'Sie haben keine Berechtigungen. Bitte wenden Sie sich an den Movable Type-Systemadministrator, um Zugang zu dieser Installation zu erhalten.', # Translate - New # OK
 	'Invalid login.' => 'Benutzername oder Passwort ungültig',
 	'Failed login attempt by unknown user \'[_1]\'' => 'Fehlgeschlagener Anmeldeversuch von unbekanntem Benutzer \'[_1]\'',
 	'This account has been disabled. Please see your system administrator for access.' => 'Dieses Benutzerkonto wurde gesperrt. Bitte wenden Sie sich an den Administrator.',
@@ -339,6 +326,7 @@ use vars qw( @ISA %Lexicon );
 	'Go Back' => 'Zurück',
 	'The file you uploaded is too large.' => 'Die hochgeladene Datei ist zu gross.',
 	'Unknown action [_1]' => 'Unbekannte Aktion [_1]',
+	'Permission denied.' => 'Keine Berechtigung.',
 	'Warnings and Log Messages' => 'Warnungen und Logmeldungen',
 	'Removed [_1].' => '[_1] entfernt.',
 	'Loading template \'[_1]\' failed.' => 'Die Vorlage \'[_1]\' konnte nicht geladen werden.',
@@ -468,7 +456,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1] wird Movable Type nicht wiederhergestellt.',
 	'[_1] records restored.' => '[_1] Einträge wiederhergestellt.',
 	'Restoring [_1] records:' => 'Stelle [_1]-Einträge wieder her:',
-	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => 'Benutzer mit dem Namen des derzeit angemeldeten Benutzers ([_1]) gefunden. Eintrag übersprungen.', # Translate - New # OK
+	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => 'Benutzer mit dem Namen des derzeit angemeldeten Benutzers ([_1]) gefunden. Eintrag übersprungen.',
 	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => 'Benutzer mit gleichem Namen \'[_1]\' gefunden (ID:[_2]).  Die Benutzerdaten wurden entsprechend ersetzt.',
 	'Tag \'[_1]\' exists in the system.' => 'Tag \'[_1]\' bereits im System vorhanden.',
 	'[_1] records restored...' => '[_1] Einträge wiederhergstellt...',
@@ -573,6 +561,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Sie haben mit einem [_1]-Tag \'[_2]\'-Archive verlinkt, ohne diese vorher zu veröffentlichen.',
 	'Could not create atom id for entry [_1]' => 'Konnte keine ATOM-ID für Eintrag [_1] erzeugen',
 	'To enable comment registration, you need to add a TypeKey token in your weblog config or user profile.' => 'Um die Registrierung von Kommentarautoren zu ermöglichen, geben Sie ein TypeKey-Token in den Weblogeinstellungen oder dem Benutzerenprofil an.',
+	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'Der MTCommentFields-Befehl ist nicht mehr verfügbar. Bitte verwenden Sie stattdessen das [_1]-Vorlagenmodul.', # Translate - New # OK
 	'You used an [_1] tag without a date context set up.' => 'Sie haben einen [_1]-Tag ohne Datumskontext verwendet.',
 	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => '\'[_1]\'-Tag außerhalb eines Kommentar-Kontexts verwendet - \'MTComments\'-Container erforderlich.',
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1] kann nur mit Tages-, Wochen- oder Monatsarchiven verwendet werden.',
@@ -781,17 +770,19 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fehler bei der Zuweisung von Kommentierungsrechten an Benutzer \'[_1] (ID: [_2])\' für Weblog \'[_3] (ID: [_4])\'. Keine geeignete Kommentierungsrolle gefunden.',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ungültiger Anmeldeversuch von Kommentarautor [_1] an Weblog [_2](ID: [_3]) - native Movable Type-Authentifizierung bei diesem Weblog nicht zulässig.',
-	'Login failed: permission denied for user \'[_1]\'' => 'Login fehlgeschlagen: Zugriff verweigert für Benutzer \'[_1]\'',
-	'Login failed: password was wrong for user \'[_1]\'' => 'Login fehlgeschlagen: Passwort für Benutzer \'[_1]\' falsch',
-	'Signing up is not allowed.' => 'Anmelden nicht erlaubt',
-	'User requires username.' => 'Benutzername erforderlich',
-	'User requires display name.' => 'Anzeigename erforderlich',
-	'A user with the same name already exists.' => 'Ein Benutzer mit diesem Namen existiert bereits',
+	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'Authentifizierung erfolgreich, aber Registrierung nicht erlaubt. Bitte wenden Sie sich an den Systemadministrator.', # Translate - New # OK
+	'You need to sign up first.' => 'Sie müssen sich zuerst registrieren.', # Translate - New # OK
+	'Login failed: permission denied for user \'[_1]\'' => 'Anmeldung fehlgeschlagen: Zugriff verweigert für Benutzer \'[_1]\'', # Translate - Improved (1) # OK
+	'Login failed: password was wrong for user \'[_1]\'' => 'Anmeldung fehlgeschlagen: Passwort für Benutzer \'[_1]\' falsch', # Translate - Improved (1) # OK
+	'Signing up is not allowed.' => 'Registrierung derzeit nicht erlaubt.',
 	'User requires password.' => 'Passwort erforderlich',
 	'User requires password recovery word/phrase.' => 'Passwort-Erinnerungssatz erforderlich',
+	'URL is invalid.' => 'URL ist ungültig',
+	'User requires username.' => 'Benutzername erforderlich',
+	'A user with the same name already exists.' => 'Ein Benutzer mit diesem Namen existiert bereits',
+	'User requires display name.' => 'Anzeigename erforderlich',
 	'Email Address is invalid.' => 'E-Mail-Adresse ungültig',
 	'Email Address is required for password recovery.' => 'E-Mail-Adresse erforderlich (für Passwort-Anforderungen)',
-	'URL is invalid.' => 'URL ist ungültig',
 	'Text entered was wrong.  Try again.' => 'Der eingegebene Text ist falsch. Bitte versuchen Sie es erneut.',
 	'Something wrong happened when trying to process signup: [_1]' => 'Bei der Bearbeitung der Registrierung ist ein Fehler aufgetreten: [_1]',
 	'Movable Type Account Confirmation' => 'Movable Type-Anmeldungsbestätigung',
@@ -863,6 +854,8 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Dieses Modul ist zur Bestimmung der Größe hochgeladener Dateien erforderlich.',
 	'This module is required for cookie authentication.' => 'Dieses Modul ist zur Cookie-Authentifizierung erforderlich.',
 	'DBI is required to store data in database.' => 'DBI ist zur Nutzung von Datenbanken erforderlich.',
+	'CGI is required for all Movable Type application functionality.' => 'CGI ist für sämtliche Movable Type-Funktionen erforderlich.', # Translate - New # OK
+	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec ist zur Vereinheitlichung von Pfadangaben über Betriebssystemgrenzen hinweg erforerlich. ', # Translate - New # OK
 
 ## lib/MT/App/Upgrader.pm
 	'Failed to authenticate using given credentials: [_1].' => 'Authentifizierung fehlgeschlagen: [_1].',
@@ -884,6 +877,7 @@ use vars qw( @ISA %Lexicon );
 	'The address [_1] has been unsubscribed.' => 'Die Adresse [_1] wurde entfernt.',
 
 ## lib/MT/App/CMS.pm
+	'No [_1] were found that match the given criteria.' => 'Keine den Kriterien entsprechenden [_1] gefunden.', # Translate - New # OK
 	'_WARNING_PASSWORD_RESET_MULTI' => 'Sie sind dabei, die Passwörter mehrerer Benutzer zurücksetzen. Den Benutzern werden dazu zufällig erzeugte neue Passwörter per E-Mail zugeschickt werden.\n\nForsetzen?',
 	'_WARNING_DELETE_USER_EUM' => 'Löschen eines Benutzerkontos kann nicht rückgängig gemacht werden und führt zu verwaisten Einträgen. Es wird daher empfohlen, das Benutzerkonto zu belassen und stattdessen dem Benutzer alle Berechtigungen zu entziehen. Möchten Sie das Konto dennoch löschen?\nGelöschte Benutzer können ihre Benutzerkonten selbst solange wiederherstellen, wie sie noch im externen Verzeichnis aufgeführt sind.',
 	'_WARNING_DELETE_USER' => 'Löschen eines Benutzerkontos kann nicht rückgängig gemacht werden und führt zu verwaisten Einträgen. Es wird daher empfohlen, das Benutzerkonto zu belassen und stattdessen dem Benutzer alle Berechtigungen zu entziehen. Möchten Sie das Konto dennoch löschen?',
@@ -916,16 +910,12 @@ use vars qw( @ISA %Lexicon );
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Beim Mailversand ist ein Fehler aufgetreten ([_1]). Überprüfen Sie die entsprechenden Einstellungen und versuchen Sie dann erneut, ein neues Passwort anzufordern.',
 	'(newly created user)' => '(neu angelegter Benutzer)',
 	'Files' => 'Dateien',
-	'Invalid group id' => 'Ungültige Gruppen-ID',
-	'Users & Groups' => 'Benutzer und Gruppen',
-	'Group Roles' => 'Gruppenrollen',
-	'Invalid user id' => 'Ungültige Benutzer-ID',
-	'User Roles' => 'Benutzerrollen',
-	'Group Associations' => 'Gruppenverknüpfungen',
+	'Untitled' => 'Ohne Name',
 	'User Associations' => 'Benutzerverknüpfungen',
 	'Role Users & Groups' => 'Rollen-Benutzer und -Gruppen',
 	'(Custom)' => '(Individuell)',
 	'(user deleted)' => '(Benutzer gelöscht)',
+	'The user' => 'Der Benutzer', # Translate - New # OK
 	'Invalid type' => 'Ungültiger Typ',
 	'New name of the tag must be specified.' => 'Neuer Tagname erforderlich',
 	'No such tag' => 'Kein solcher Tag',
@@ -971,7 +961,7 @@ use vars qw( @ISA %Lexicon );
 	'New Template' => 'Neuer Vorlage',
 	'New Blog' => 'Neues Blog',
 	'pages' => 'Seiten',
-	'Create User' => 'Neues Benutzerkonto anlegen',
+	'Create User' => 'Benutzerkonto anlegen',
 	'User requires username' => 'Benutzername erforderlich',
 	'User requires password' => 'Passwort erforderlich',
 	'User requires password recovery word/phrase' => 'Passwort-Erinnerungssatz erforderlich',
@@ -986,8 +976,6 @@ use vars qw( @ISA %Lexicon );
 	'Archive URL must be an absolute URL.' => 'Archiv-URLs müssen absolut sein.',
 	'You did not specify an Archive Root.' => 'Kein Archiv-Wurzelverzeichnis angebeben.',
 	'The name \'[_1]\' is too long!' => 'Der Name \'[_1]\' ist zu lang!',
-	'A user can\'t change his/her own username in this environment.' => 'Benutzer kann eigenen Benutzernamen in diesem Kontext nicht ändern.',
-	'An error occurred when enabling this user.' => 'Bei der Aktivierung dieses Benutzerkontos ist ein Fehler aufgetreten',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Ordner \'[_1]\' angelegt von \'[_2]\'',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Kategorie \'[_1]\' angelegt von \'[_2]\'',
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'Der Ordner \'[_1]\' steht im Konflikt mit einem anderen Ordner. Ordner im gleichen Unterordner müssen unterschiedliche Basenames haben.',
@@ -1085,7 +1073,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'No permissions' => 'Keine Berechtigung',
 	'Ping \'[_1]\' failed: [_2]' => 'Ping \'[_1]\' fehlgeschlagen: [_2]',
-	'Create Role' => 'Neue Rolle anlegen',
+	'Create Role' => 'Rolle anlegen',
 	'Role name cannot be blank.' => 'Rollenname erforderlich',
 	'Another role already exists by that name.' => 'Rolle mit diesem Namen bereits vorhanden',
 	'You cannot define a role without permissions.' => 'Rollen ohne Berechtigungen nicht möglich',
@@ -1112,6 +1100,25 @@ use vars qw( @ISA %Lexicon );
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Es ist bereits eine Datei namens \'[_1]\' vorhanden. Die angelegte temporäre Datei konnte nicht geöffnet werden: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Die hochgeladene Datei konnte nicht in \'[_1]\' gespeichert werden: [_2]',
 	'Search & Replace' => 'Suchen & Ersetzen',
+	'Title' => 'Titel',
+	'Extended Entry' => 'Erweiterter Eintrag',
+	'Keywords' => 'Schlüssel- wörter',
+	'Excerpt' => 'Zusammen- fassung',
+	'Basename' => 'Basename',
+	'Comment Text' => 'Kommentartext',
+	'IP Address' => 'IP-Adresse',
+	'Source URL' => 'Quell-URL',
+	'Page Body' => 'Seitenkörper',
+	'Extended Page' => 'Erweiterte Seite',
+	'Template Name' => 'Vorlagenname',
+	'Text' => 'Text',
+	'Linked Filename' => 'Verlinkter Dateiname',
+	'Output Filename' => 'Ausgabe-Dateiname',
+	'Filename' => 'Dateiname',
+	'Log Message' => 'Eintrag',
+	'Username' => 'Benutzername',
+	'Display Name' => 'Angezeigter Name',
+	'Site URL' => 'Webadresse (URL)',
 	'Invalid date(s) specified for date range.' => 'Ungültige Datumsangabe',
 	'Error in search expression: [_1]' => 'Fehler im Suchausdruck: [_1]',
 	'Saving object failed: [_2]' => 'Das Objekt konnte nicht gespeichert werden: [_2]',
@@ -1141,13 +1148,8 @@ use vars qw( @ISA %Lexicon );
 	'Blogs Selected' => 'Gewählte Weblogs',
 	'Search Blogs' => 'Blogs suchen',
 	'Select Users' => 'Gewählte Benutzer',
-	'Username' => 'Benutzername',
 	'Users Selected' => 'Gewählte Benutzer',
 	'Search Users' => 'Benutzer suchen',
-	'Select Groups' => 'Gruppen auswählen',
-	'Group Name' => 'Gruppenname',
-	'Groups Selected' => 'Gewählte Gruppen',
-	'Search Groups' => 'Gruppen suchen',
 	'Select Roles' => 'Rollen auswählen',
 	'Role Name' => 'Rollenname',
 	'Roles Selected' => 'Gewählte Rollen',
@@ -1386,7 +1388,6 @@ use vars qw( @ISA %Lexicon );
 	'Can comment and manage feedback.' => 'Kann kommentieren und Feedback verwalten',
 	'Can comment.' => 'Kann kommentieren',
 	'Removing Dynamic Site Bootstrapper index template...' => 'Entferne Indexvorlage des Dynamic Site Bootstrappers...',
-	'Fixing binary data for Microsoft SQL Server storage...' => 'Bereite Binärdaten für Speicherung in Microsoft SQL Server vor...',
 	'Creating new template: \'[_1]\'.' => 'Erzeuge neue Vorlage: \'[_1]\'',
 	'Mapping templates to blog archive types...' => 'Verknüpfe Vorlagen mit Archiven...',
 	'Renaming PHP plugin file names...' => 'Ändere PHP-Plugin-Dateinamen...',
@@ -1450,8 +1451,8 @@ use vars qw( @ISA %Lexicon );
 	'My Text Format' => 'Mein Textformat',
 
 ## lib/MT/Auth.pm
-	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'Fehlerhafe AuthenticationModule-Konfiguration \'[_1]\': [_2]',
-	'Bad AuthenticationModule config' => 'Fehlerhafe AuthenticationModule-Konfiguration',
+	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'Fehlerhafte AuthenticationModule-Konfiguration \'[_1]\': [_2]',
+	'Bad AuthenticationModule config' => 'Fehlerhafte AuthenticationModule-Konfiguration',
 
 ## lib/MT/Tag.pm
 	'Tag must have a valid name' => 'Tags müssen gültige Namen haben',
@@ -1591,6 +1592,8 @@ use vars qw( @ISA %Lexicon );
 	'Blog Search Results' => 'Suchergebnisse',
 	'Blog search' => 'Blogsuche',
 	'STRAIGHT SEARCHES GET THE SEARCH QUERY FORM' => 'EINFACHE SUCHEN - EINFACHES FORMULAR',
+	'Search this site' => 'Diese Site durchsuchen',
+	'Match case' => 'Groß-/Kleinschreibung beachten',
 	'SEARCH RESULTS DISPLAY' => 'SUCHERGEBNISSANZEIGE',
 	'Matching entries from [_1]' => 'Treffer in [_1]',
 	'Entries from [_1] tagged with \'[_2]\'' => 'Mit \'[_2]\' getaggte Einträge aus [_1]',
@@ -1608,6 +1611,7 @@ use vars qw( @ISA %Lexicon );
 	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged \'[_1]\'.' => 'Wenn Sie einen Feedreader verwenden, können Sie einen Feed aller neuen mit \'[_1]\' getaggten Einträge abonnieren.',
 	'If you use an RSS reader, you can subscribe to a feed of all future entries matching \'[_1]\'.' => 'Wenn Sie einen Feedreader verwenden, können Sie einen Feed aller neuen Einträge mit \'[_1]\' abonnieren.',
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => 'SUCHE/TAG FEED-ABO-INFO',
+	'Feed Subscription' => 'Feed abonnieren',
 	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.com/about/feeds',
 	'What is this?' => 'Was ist das?',
 	'TAG LISTING FOR TAG SEARCH ONLY' => 'TAG-LISTE NUR FÜR SUCHE',
@@ -1617,10 +1621,9 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/comment/signup.tmpl
 	'Create an account' => 'Konto anlegen',
-	'Your login name.' => 'Ihr Benutzername',
-	'Display Name' => 'Angezeigter Name',
 	'The name appears on your comment.' => 'Dieser Name wird unter Ihren Kommentaren angezeigt.',
 	'Your email address.' => 'Ihre E-Mail-Adresse',
+	'Your login name.' => 'Ihr Benutzername',
 	'Initial Password' => 'Passwort',
 	'Select a password for yourself.' => 'Eigenes Passwort',
 	'Password Confirm' => 'Passwortbestätigung',
@@ -1629,15 +1632,14 @@ use vars qw( @ISA %Lexicon );
 	'This word or phrase will be required to recover the password if you forget it.' => 'Dieser Begriff oder Satz wird abgefragt, wenn Sie Ihr Passwort vergessen haben und daher ein neues Passwort anfordern möchten.',
 	'Website URL' => 'Website',
 	'The URL of your website. (Optional)' => 'URL Ihrer Website (optional)',
-	'Enter your login name.' => 'Geben Sie Ihren Anmeldenamen ein.',
-	'Password' => 'Passwort',
-	'Enter your password.' => 'Geben Sie Ihr Passwort ein.',
 	'Register' => 'Registrieren',
 
 ## tmpl/comment/login.tmpl
 	'Sign in to comment' => 'Anmelden zum Kommentieren',
 	'Sign in using' => 'Anmelden mit',
+	'Password' => 'Passwort',
 	'Forgot your password?' => 'Passwort vergessen?',
+	'Remember me?' => 'Benutzername speichern?',
 	'Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!' => 'Noch nicht registriert?&nbsp;&nbsp;<a href="[_1]">Einfach jetzt registrieren</a>!',
 
 ## tmpl/comment/profile.tmpl
@@ -1691,29 +1693,18 @@ use vars qw( @ISA %Lexicon );
 	'Show only [_1] where' => 'Zeige nur [_1] mit ',
 	'role' => 'Rolle',
 	'status' => 'Status',
-	'is' => '',
+	'is' => ' ', # Translate - New # OK
 	'enabled' => 'aktiviert',
 	'disabled' => 'deaktiviert',
 	'pending' => 'Nicht veröffentlicht',
 	'Filter' => 'Zeigen',
-	'user' => 'Benutzer',
-	'users' => 'Benutzer',
-	'Are you sure you want to remove the selected user from this blog?' => 'Gewählte Benutzer wirklich aus diesem Blog entfernen?',
-	'Are you sure you want to remove the [_1] selected users from this blog?' => 'Gewählte [_1] Benutzer wirklich aus diesem Blog entfernen?',
-	'Remove selected user(s) (r)' => 'Gewählte(n) Benutzer entfernen (r)',
-	'Remove' => 'Entfernen',
 
 ## tmpl/cms/list_role.tmpl
-	'Roles for [_1] in' => 'Rollen für [_1] in',
 	'Roles: System-wide' => 'System: Rollen',
 	'You have successfully deleted the role(s).' => 'Rolle(n) erfolgreich gelöscht.',
 	'roles' => 'Rollen',
 	'Delete selected [_1] (x)' => 'Gewählte [_1] löschen (x)',
-	'Grant another role to [_1]' => '[_1] weitere Rolle zuweisen',
-	'Create Role' => 'Rolle anlegen',
 	'_USER_STATUS_CAPTION' => 'Status',
-	'In Blog' => 'Im Blog',
-	'Via Group' => 'Über Gruppe',
 	'Members' => 'Mitglieder',
 	'Created By' => 'Erstellt von',
 	'Role Is Active' => 'Rolle ist aktiv',
@@ -1745,8 +1736,6 @@ use vars qw( @ISA %Lexicon );
 	'Cancel (c)' => 'Abbrechen (c)',
 
 ## tmpl/cms/edit_entry.tmpl
-	'Filename' => 'Dateiname',
-	'Basename' => 'Basename',
 	'folder' => 'Ordner',
 	'folders' => 'Ordner',
 	'categories' => 'Kategorien',
@@ -1771,10 +1760,7 @@ use vars qw( @ISA %Lexicon );
 	href="[_5]">[quant,_3,TrackBack,TrackBacks]</a>',
 	'Display Options' => 'Anzeigeoptionen',
 	'Fields' => 'Felder',
-	'Title' => 'Titel',
 	'Body' => 'Text',
-	'Excerpt' => 'Zusammen- fassung',
-	'Keywords' => 'Schlüssel- wörter',
 	'Publishing' => 'Veröffentlichung',
 	'Top' => 'Oben',
 	'Both' => 'Sowohl als auch',
@@ -1790,6 +1776,7 @@ use vars qw( @ISA %Lexicon );
 	'You have unsaved changes to your [_1] that will be lost.' => 'Es liegen nicht gespeicherte Änderungen vor, die verloren gehen werden.',
 	'Publish On' => 'Veröffentlichen um',
 	'Publish Date' => 'Veröffent- lichungs- zeitpunkt',
+	'Remove' => 'Entfernen',
 	'Make primary' => 'Als Hauptkategorie',
 	'Add sub category' => 'Unterkategorie hinzufügen',
 	'Add [_1] name' => '[_1]-Name hinzufügen',
@@ -1874,8 +1861,8 @@ use vars qw( @ISA %Lexicon );
 	'If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the \'import\' folder of your Movable Type directory.' => 'Wenn Sie eine auf Ihrem Computer gespeicherte Importdatei verwenden wollen, laden Sie diese hier hoch. Alternativ verwendet Movable Type automatisch die Importdatei, die es im \'import\'-Unterordner Ihres Movable Type-Verzeichnis findet.',
 	'More options' => 'Weitere Optionen',
 	'Text Formatting' => 'Textformatierung',
-	'Import File Encoding' => 'Kodierung der Importdatei',
-	'By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.' => 'Movable Type versucht automatisch das korrekte Encoding auszuwählen. Sollte das fehlschlagen, können Sie es auch explizit angeben.',
+	'Import File Encoding' => 'Zeichenkodierung der Importdatei', # Translate - Improved (1) # OK
+	'By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.' => 'Movable Type versucht automatisch die korrekte Zeichenkodierung auszuwählen. Sollte das fehlschlagen, können Sie sie auch explizit angeben.', # Translate - Improved (2) # OK
 	'<mt:var name="display_name">' => '<mt:var name="display_name">',
 	'Default category for entries (optional)' => 'Standard-Kategorie für Einträge (optional)',
 	'You can specify a default category for imported entries which have none assigned.' => 'Standardkdategorie für importierte Einträge ohne Kategorie',
@@ -1923,7 +1910,6 @@ use vars qw( @ISA %Lexicon );
 	'Error occurred while updating archive maps.' => 'Bei der Aktualisierung der Archivverknüpfungen ist ein Fehler aufgetreten.',
 	'Archive map has been successfully updated.' => 'Archivverknüpfung erfolgreich aktualisiert.',
 	'Are you sure you want to remove this template map?' => 'Archivverknüpfung wirklich löschen?',
-	'Template Name' => 'Vorlagenname',
 	'Module Body' => 'Modul-Code',
 	'Template Body' => 'Vorlagen-Code',
 	'Syntax Highlight On' => 'Syntaxhervorhebung an',
@@ -1979,16 +1965,15 @@ use vars qw( @ISA %Lexicon );
 	'View all comments with this email address' => 'Alle Kommentare von dieser E-Mail-Adresse anzeigen',
 	'URL of commenter' => 'URL des Kommentarautors',
 	'View all comments with this URL' => 'Alle Kommentare mit dieser URL anzeigen',
-	'[_1] this comment was made on' => '[_1] zum Kommentar', # Translate - New # OK
-	'[_1] no longer exists' => '[_1] existiert nicht mehr', # Translate - New
-	'View all comments on this [_1]' => 'Alle Kommentare zu diesem Eintrag oder dieser Seite', # Translate - New # OK
+	'[_1] this comment was made on' => '[_1] zum Kommentar',
+	'[_1] no longer exists' => '[_1] existiert nicht mehr',
+	'View all comments on this [_1]' => 'Alle Kommentare zu diesem Eintrag oder dieser Seite',
 	'Date' => 'Datum',
 	'Date this comment was made' => 'Datum, an dem dieser Kommentar abgegeben wurde',
 	'View all comments created on this day' => 'Alle Kommentare dieses Tages anzeigen',
 	'IP' => 'IP',
 	'IP Address of the commenter' => 'IP-Adresse des Kommentarautors',
 	'View all comments from this IP address' => 'Alle Kommentare von dieser IP-Adresse anzeigen',
-	'Comment Text' => 'Kommentartext',
 	'Fulltext of the comment entry' => 'Vollständiger Kommentartext',
 	'Responses to this comment' => 'Reaktionen auf diesen Kommentar',
 
@@ -2121,6 +2106,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/asset_replace.tmpl
 	'A file named \'[_1]\' already exists. Do you want to overwrite this file?' => 'Eine Datei namens \'[_1]\' ist bereits vorhanden. Möchten Sie sie überschreiben?',
 	'Yes (s)' => 'Ja (s)',
+	'Yes' => 'Ja',
+	'No' => 'Nein',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Confirm Publishing Configuration' => 'Veröffentlichungseinstellungen bestätigen',
@@ -2141,7 +2128,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/install.tmpl
 	'Welcome to Movable Type' => 'Willkommen zu Movable Type',
-	'Create Your First User' => 'Das erste Benutzerkonto anlegen',
+	'Create Your Account' => 'Legen Sie Ihr Benutzerkonto an', # Translate - New # OK
 	'The initial account name is required.' => 'Benutzername erforderlich',
 	'Password recovery word/phrase is required.' => 'Passwort-Erinnerungsfrage erforderlich',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]).' => 'Die vorhandene Perl-Version ([_1]) ist nicht aktuell genug ([_2] oder höher erforderlich).',
@@ -2165,13 +2152,11 @@ use vars qw( @ISA %Lexicon );
 	'Pinging sites...' => 'Sende Pings...',
 
 ## tmpl/cms/edit_author.tmpl
-	'Create User' => 'Benutzerkonto anlegen',
 	'Edit Profile' => 'Profil bearbeiten',
-	'Your Web services password is currently' => 'Ihr Passwort für Webdienste lautet derzeit',
-	'_WARNING_PASSWORD_RESET_SINGLE' => 'Sie sind dabei, das Passwort von [_1] zurückzusetzen. Dazu wird ein zufällig erzeugtes neues Passwort per E-Mail an [_2] verschickt werden.\n\nForsetzen?',
 	'This profile has been updated.' => 'Profil aktualisiert',
 	'A new password has been generated and sent to the email address [_1].' => 'Ein neues Passwort wurde erzeugt und an [_1] verschickt.',
-	'Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Enterprise hat während der Synchronisation versucht, Ihr Benutzerkonto zu deaktivieren. Das deutet auf einen Fehler in der externen Benutzerverwaltung hin. Überprüfen Sie daher die dortigen Einstellungen, bevor Sie Ihre Arbeit in Movable Type forsetzen.',
+	'Your Web services password is currently' => 'Ihr Passwort für Webdienste lautet derzeit',
+	'_WARNING_PASSWORD_RESET_SINGLE' => 'Sie sind dabei, das Passwort von [_1] zurückzusetzen. Dazu wird ein zufällig erzeugtes neues Passwort per E-Mail an [_2] verschickt werden.\n\nForsetzen?',
 	'Profile' => 'Profil',
 	'Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.' => 'Globaler Benutzerstatus. Deaktivierung eines Benutzerkontos führt zum Ausschluß des Benutzers. Seine Inhalte und Protokolleinträge bleiben erhalten.',
 	'_USER_ENABLED' => 'Aktiviert',
@@ -2218,15 +2203,6 @@ use vars qw( @ISA %Lexicon );
 	'Set Web Services Password' => 'Passwort für Webdienste wählen',
 	'approved' => 'Freigeschaltet',
 	'unapproved' => 'Nicht freigeschaltet',
-	'to publish' => 'zu Veröffentlichen',
-	'Publish selected [_1] (p)' => 'Ausgewählte [_1] veröffentlichen (p)',
-	'Report selected [_1] as Spam (j)' => 'Ausgewählte [_1] als Spam melden (j)',
-	'Spam' => 'Spam',
-	'Report selected [_1] as Not Spam and Publish (j)' => 'Ausgewählte [_1] als spamfrei melden und veröffentlichen',
-	'Not Spam' => 'Nicht Spam',
-	'Are you sure you want to remove all TrackBacks reported as spam?' => 'Wirklich alle als Spam gemeldeten TrackBacks löschen?',
-	'Deletes all [_1] reported as Spam' => 'Alle als Spam gemeldeten [_1] löschen',
-	'Empty' => 'Leer',
 
 ## tmpl/cms/login.tmpl
 	'Your Movable Type session has ended.' => 'Ihre Movable Type-Sitzung ist abgelaufen oder Sie haben sich abgemeldet.',
@@ -2244,7 +2220,6 @@ use vars qw( @ISA %Lexicon );
 	'You must set a valid Site URL.' => 'Bitte geben Sie eine gültige Adresse (URL) an',
 	'You must set a valid Local Site Path.' => 'Bitte geben Sie ein gültiges lokales Verzeichnis an',
 	'Publishing Paths' => 'System-Pfade',
-	'Site URL' => 'Webadresse (URL)',
 	'The URL of your website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/blog/' => 'Die URL Ihrer Website. Bitte geben Sie die Adresse ohne Dateinamen ein, beispielsweise so: http://www.beispiel.de/blog/',
 	'Unlock this blog&rsquo;s site URL for editing' => 'Blog-URL manuell bearbeiten',
 	'Warning: Changing the site URL can result in breaking all the links in your blog.' => 'Hinweis: Eine Änderung der Webadresse kann alle Link zu Ihrem Blog ungültig machen.',
@@ -2359,29 +2334,17 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/error.tmpl
 
 ## tmpl/cms/list_association.tmpl
-	'Permissions for [_1]' => 'Berechtigungen für [_1]',
-	'Group Associations for [_1]' => 'Gruppenzuweisungen für [_1]',
-	'Permissions: System-wide' => 'System: Berechtigungen',
-	'Users &amp; Groups for [_1]' => 'Benutzer und Gruppen für [_1]',
-	'Users for [_1]' => 'Benutzer für [_1]',
 	'permission' => 'Berechtigung',
 	'permissions' => 'Berechtigungen',
 	'Remove selected assocations (x)' => 'Gewählte Zuweisungen löschen',
 	'Revoke Permission' => 'Berechtigung entziehen',
-	'The user <em>[_1]</em> is currently disabled.' => 'Das Benutzerkonto von <em>[_1]</em> ist derzeit deaktiviert.',
-	'The group <em>[_1]</em> is currently disabled.' => 'Die Gruppe <em>[_1]</em> ist derzeit deaktiviert.',
-	'You have successfully revoked the given permission(s).' => 'Berechtigungen erfolgreich entzogen',
-	'You have successfully granted the given permission(s).' => 'Berechtigungen erfolgreich vergeben',
 	'Grant Permission' => 'Berechtigungen vergeben',
 	'You can not create associations for disabled users.' => 'Deaktivierte Benutzerkonten können nicht zugewiesen werden.',
-	'Add [_1] to a blog' => '[_1] zu Blog hinzufügen',
-	'You can not create associations for disabled groups.' => 'Deaktivierte Gruppen können nicht zugewiesen werden.',
-	'Assign Role to Group' => 'Rolle an Gruppe zuweisen',
 	'Assign Role to User' => 'Rolle an Benutzer zuweisen',
-	'Add a group to this blog' => 'Diesem Blog Gruppe hinzufügen',
-	'Grant permission to a group' => 'Berechtigung an Gruppe vergeben',
 	'Grant permission to a user' => 'Berechtigung an Benutzer vergeben',
-	'User/Group' => 'Benutzer/Gruppe',
+	'[_1] <em>[_2]</em> is currently disabled.' => '[_1] <em>[_2]</em> ist derzeit deaktiviert.', # Translate - New # OK
+	'You have successfully revoked the given permission(s).' => 'Berechtigungen erfolgreich entzogen',
+	'You have successfully granted the given permission(s).' => 'Berechtigungen erfolgreich vergeben',
 	'Created On' => 'Angelegt',
 
 ## tmpl/cms/list_comment.tmpl
@@ -2396,8 +2359,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1] on entries created within the last [_2] days' => '[_1] zu Einträgen, die in den letzten [_2] Tagen angelegt wurden',
 	'[_1] on entries created more than [_2] days ago' => '[_1] zu Einträgen, die vor mehr als [_2] Tagen angelegt wurden',
 	'[_1] where [_2] [_3]' => '[_1] mit [_2] [_3]',
-	'Publish selected [_1] (a)' => 'Gewählte [_1] veröffentlichen',
-	'Are you sure you want to remove all comments reported as spam?' => 'Wirklich alle als Spam gemeldeten Kommentare löschen?',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => 'Veröffentliche...',
@@ -2408,6 +2369,8 @@ use vars qw( @ISA %Lexicon );
 	'Publishing [_1] templates...' => 'Veröffentliche [_1]...',
 
 ## tmpl/cms/include/template_table.tmpl
+	'template' => 'Vorlage',
+	'templates' => 'Vorlagen',
 	'Linked' => 'Verlinkt',
 	'Linked Template' => 'Verlinkte Vorlage',
 	'Dynamic' => 'Dynamisch',
@@ -2416,6 +2379,11 @@ use vars qw( @ISA %Lexicon );
 	'Published Template w/Indexes' => 'Vorlage mit Indizes veröffentlicht',
 	'View' => 'Ansehen',
 	'-' => '-',
+
+## tmpl/cms/include/list_associations/page_title.tmpl
+	'Permissions for [_1]' => 'Berechtigungen für [_1]',
+	'Permissions: System-wide' => 'System: Berechtigungen',
+	'Users for [_1]' => 'Benutzer für [_1]',
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Path' => 'Pfad',
@@ -2440,6 +2408,15 @@ use vars qw( @ISA %Lexicon );
 	'Go' => 'Ausführen',
 
 ## tmpl/cms/include/ping_table.tmpl
+	'to publish' => 'zu Veröffentlichen',
+	'Publish selected [_1] (p)' => 'Ausgewählte [_1] veröffentlichen (p)',
+	'Report selected [_1] as Spam (j)' => 'Ausgewählte [_1] als Spam melden (j)',
+	'Spam' => 'Spam',
+	'Report selected [_1] as Not Spam and Publish (j)' => 'Ausgewählte [_1] als spamfrei melden und veröffentlichen',
+	'Not Spam' => 'Nicht Spam',
+	'Are you sure you want to remove all TrackBacks reported as spam?' => 'Wirklich alle als Spam gemeldeten TrackBacks löschen?',
+	'Deletes all [_1] reported as Spam' => 'Alle als Spam gemeldeten [_1] löschen',
+	'Empty' => 'Leer',
 	'From' => 'Von',
 	'Target' => 'Nach',
 	'Only show published TrackBacks' => 'Nur veröffentlichte TrackBacks anzeigen',
@@ -2494,10 +2471,20 @@ use vars qw( @ISA %Lexicon );
 	'Rebuild Site' => 'Neu aufbauen',
 
 ## tmpl/cms/include/member_table.tmpl
+	'user' => 'Benutzer',
+	'users' => 'Benutzer',
+	'Are you sure you want to remove the selected user from this blog?' => 'Gewählte Benutzer wirklich aus diesem Blog entfernen?',
+	'Are you sure you want to remove the [_1] selected users from this blog?' => 'Gewählte [_1] Benutzer wirklich aus diesem Blog entfernen?',
+	'Remove selected user(s) (r)' => 'Gewählte(n) Benutzer entfernen (r)',
 	'Trusted commenter' => 'Vertrauter Kommentarautor',
 	'Remove this role' => 'Rolle entfernen',
 
 ## tmpl/cms/include/entry_table.tmpl
+	'Save these [_1] (s)' => '[_1] speichern (s)',
+	'to republish' => 'zur erneuten Veröffentlichung',
+	'Republish selected [_1] (r)' => 'Gewählte [_1] erneut veröffentlichen (r)',
+	'Republish' => 'Seite',
+	'page' => 'erneut veröffentlichen',
 	'Last Modified' => 'Zuletzt geändert',
 	'Created' => 'Angelegt',
 	'Only show unpublished [_1]' => 'Nur nicht veröffentlichte [_1] zeigen',
@@ -2525,6 +2512,7 @@ use vars qw( @ISA %Lexicon );
 	'Web Services' => 'Webdienste',
 
 ## tmpl/cms/include/blog_table.tmpl
+	'Delete selected blogs (x)' => 'Gewählte Blogs löschen (x)',
 
 ## tmpl/cms/include/backup_end.tmpl
 	'All of the data has been backed up successfully!' => 'Alle Daten wurden erfolgreich gesichert!',
@@ -2540,11 +2528,43 @@ use vars qw( @ISA %Lexicon );
 	'Creating new users for each user found in the blog' => 'Lege Benutzerkonten für neu entdeckte Benutzer an...',
 
 ## tmpl/cms/include/users_content_nav.tmpl
-	'Groups' => 'Gruppen',
-	'Group Profile' => 'Gruppenprofile',
 	'Details' => 'Details',
 
 ## tmpl/cms/include/calendar.tmpl
+	'_LOCALE_WEEK_START' => '1', # Translate - New # OK
+	'Sunday' => 'Sonntag',
+	'Monday' => 'Montag',
+	'Tuesday' => 'Dienstag',
+	'Wednesday' => 'Mittwoch',
+	'Thursday' => 'Donnerstag',
+	'Friday' => 'Freitag',
+	'Saturday' => 'Samstag',
+	'S|M|T|W|T|F|S' => 'S|M|D|M|D|F|S', # Translate - New # OK
+	'January' => 'Januar', # Translate - New # OK
+	'Febuary' => 'Februar', # Translate - New # OK
+	'March' => 'März',
+	'April' => 'April',
+	'May' => 'Mai',
+	'June' => 'Juni',
+	'July' => 'Juli', # Translate - New # OK
+	'August' => 'August', # Translate - New # OK
+	'September' => 'September', # Translate - New # OK
+	'October' => 'Oktober', # Translate - New # OK
+	'November' => 'November', # Translate - New # OK
+	'December' => 'Dezember', # Translate - New # OK
+	'Jan' => 'Jan', # Translate - New # OK
+	'Feb' => 'Feb', # Translate - New # OK
+	'Mar' => 'Mrz', # Translate - New # OK
+	'Apr' => 'Apr', # Translate - New # OK
+	'_SHORT_MAY' => 'Mai', # Translate - New # OK
+	'Jun' => 'Jun', # Translate - New # OK
+	'Jul' => 'Jul', # Translate - New # OK
+	'Aug' => 'Aug', # Translate - New # OK
+	'Sep' => 'Sep', # Translate - New # OK
+	'Oct' => 'Okt', # Translate - New # OK
+	'Nov' => 'Nov', # Translate - New # OK
+	'Dec' => 'Dez', # Translate - New # OK
+	'[_1:calMonth] [_2:calYear]' => '', # Translate - New # OK
 
 ## tmpl/cms/include/overview-left-nav.tmpl
 	'List Weblogs' => 'Weblogs anzeigen',
@@ -2558,6 +2578,8 @@ use vars qw( @ISA %Lexicon );
 	'Show Activity Log' => 'Aktivitätsprotokoll anzeigen',
 
 ## tmpl/cms/include/comment_table.tmpl
+	'Publish selected [_1] (a)' => 'Gewählte [_1] veröffentlichen',
+	'Are you sure you want to remove all comments reported as spam?' => 'Wirklich alle als Spam gemeldeten Kommentare löschen?',
 	'Entry/Page' => 'Eintrag/Seite',
 	'Only show published comments' => 'Nur veröffentlichte Kommentare anzeigen',
 	'Only show pending comments' => 'Nur nicht veröffentlichte Kommentare anzeigen',
@@ -2601,7 +2623,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/log_table.tmpl
 	'No log records could be found.' => 'Keine Protokolleinträge gefunden',
-	'Log Message' => 'Eintrag',
 	'_LOG_TABLE_BY' => 'Von',
 	'IP: [_1]' => 'IP: [_1]',
 	'[_1]' => '[_1]',
@@ -2619,7 +2640,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'Blog(s) erfolgreich gelöscht',
 	'Create Blog' => 'Blog anlegen',
-	'Delete selected blogs (x)' => 'Gewählte Blogs löschen (x)',
 	'Are you sure you want to delete this blog?' => 'Dieses Blog wirklich löschen?',
 
 ## tmpl/cms/upgrade.tmpl
@@ -2687,11 +2707,6 @@ use vars qw( @ISA %Lexicon );
 	'Select A User:' => 'Benutzerkonto wählen... ',
 	'User Search...' => 'Benutzer suchen...',
 	'Recent Users...' => 'Letzte Benutzer...',
-	'Save these [_1] (s)' => '[_1] speichern (s)',
-	'to republish' => 'zur erneuten Veröffentlichung',
-	'Republish selected [_1] (r)' => 'Gewählte [_1] erneut veröffentlichen (r)',
-	'Republish' => 'Seite',
-	'page' => 'erneut veröffentlichen',
 
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'Passwörter wiederherstellen',
@@ -2777,8 +2792,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_asset.tmpl
 	'You have successfully deleted the asset(s).' => 'Assets erfolgreich gelöscht.',
 	'type' => 'Typ',
-	'content' => 'Inhalt',
-	'Delete selected assets (x)' => 'Gewählte Assets löschen (x)',
 
 ## tmpl/cms/preview_strip.tmpl
 	'You are previewing the [_1] titled &ldquo;[_2]&rdquo;' => 'Sie sehen eine Vorschau auf den [_1] namens &ldquo;[_2]&rdquo;',
@@ -2791,7 +2804,6 @@ use vars qw( @ISA %Lexicon );
 	'You have added [_1] to your list of banned IP addresses.' => 'Sie haben [_1] zur Liste mit gesperrten IP-Adressen hinzugefügt.',
 	'You have successfully deleted the selected IP addresses from the list.' => 'Sie haben die ausgewählten IP-Adressen erfolgreich aus der Liste entfernt.',
 	'Ban IP Address' => 'IP-Adresse sperren',
-	'IP Address' => 'IP-Adresse',
 	'Date Banned' => 'gesperrt am',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2863,7 +2875,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to reset the settings for this plugin?' => 'Wollen Sie die Plugin-Einstellungen wirklich zurücksezten?',
 	'Are you sure you want to disable plugin functionality?' => 'Plugin-Funktion wirklich deaktivieren?',
 	'Disable this plugin?' => 'Plugin deaktivieren?',
-	'Are you sure you want to enable plugin functionality? (This will re-enable any plugins that were not individually disabled.)' => 'Plugin-Funktion wirklich aktivieren? (Reaktiviert alle Plugins, die nicht separat deaktiviert worden sind.)', # Translate - New # OK
+	'Are you sure you want to enable plugin functionality? (This will re-enable any plugins that were not individually disabled.)' => 'Plugin-Funktion wirklich aktivieren? (Reaktiviert alle Plugins, die nicht separat deaktiviert worden sind.)',
 	'Enable this plugin?' => 'Plugin aktivieren?',
 	'Failed to Load' => 'Fehler beim Laden',
 	'(Disable)' => '(Deaktivieren)',
@@ -2964,7 +2976,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/cfg_system_general.tmpl
 	'System: General Settings' => 'System: Grundeinstellungen',
 	'System Email' => 'System- E-Mail-Adresse',
-	'The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification, entry notification and a few other minor events.' => 'Geben Sie die E-Mail-Adresse an, die als Absenderadresse der vom System verschickten E-Mails verwendet werden soll. E-Mails werden vom System verschickt bei Passwortanforderungen, Registrierungen von Kommentarautoren, für Benachrichtigungen über neue Kommentare, TrackBacks und Einträge und einigen weiteren Fällen.',
+	'The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification and a few other minor events.' => 'Geben Sie die E-Mail-Adresse an, die als Absenderadresse der vom System verschickten E-Mails verwendet werden soll. E-Mails werden vom System verschickt bei Passwortanforderungen, Registrierungen von Kommentarautoren, für Benachrichtigungen über neue Kommentare, TrackBacks u und einigen weiteren Fällen.',
 
 ## tmpl/cms/dashboard.tmpl
 	'Select a Widget...' => 'Widget wählen...',
@@ -3121,28 +3133,12 @@ use vars qw( @ISA %Lexicon );
 	'Date Range' => 'Zeitraum eingrenzen',
 	'Reported as Spam?' => 'Als Spam gemeldet?',
 	'Search Fields:' => 'Felder eingrenzen:',
-	'Extended Entry' => 'Erweiterter Eintrag',
-	'E-mail Address' => 'E-Mail-Addresse',
-	'Source URL' => 'Quell-URL',
-	'Page Body' => 'Seitenkörper',
-	'Extended Page' => 'Erweiterte Seite',
-	'Text' => 'Text',
-	'Output Filename' => 'Ausgabe-Dateiname',
-	'Linked Filename' => 'Verlinkter Dateiname',
 	'_DATE_FROM' => 'Von',
 	'_DATE_TO' => 'Bis',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,Element,Elemente] erfolgreich ersetzt.',
 	'Showing first [_1] results.' => 'Zeige die ersten [_1] Treffer.',
 	'Show all matches' => 'Zeige alle Treffer',
 	'[quant,_1,result,results] found' => '[quant,_1,Treffer,Treffer] gefunden',
-	'No entries were found that match the given criteria.' => 'Keine den Kritierien entsprechenden Einträge gefunden.',
-	'No comments were found that match the given criteria.' => 'Keine den Kritierien entsprechenden Kommentare gefunden.',
-	'No TrackBacks were found that match the given criteria.' => 'Keine den Kritierien entsprechenden TrackBacks gefunden.',
-	'No pages were found that match the given criteria.' => 'Keine den Kritierien entsprechenden Seiten gefunden.',
-	'No templates were found that match the given criteria.' => 'Keine den Kritierien entsprechenden Vorlagen gefunden.',
-	'No log messages were found that match the given criteria.' => 'Keine den Kritierien entsprechenden Logeinträge gefunden.',
-	'No users were found that match the given criteria.' => 'Keine den Kritierien entsprechenden Benutzer gefunden.',
-	'No blogs were found that match the given criteria.' => 'Keine den Kritierien entsprechenden Blogs gefunden.',
 
 ## tmpl/cms/widget/new_user.tmpl
 	'Welcome to Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => 'Willkommen zu Movable Type, der leistungsfähigsten Blogging-, Publizierungs- und Social Media-Plattfom. Um Ihnen den Einstieg zu erleichtern, haben wir Ihnen einige Links zu den Funktionen, die für neue Benutzer besonders interessant sind, zusammengestellt:',
@@ -3158,10 +3154,6 @@ use vars qw( @ISA %Lexicon );
 	'Loading recent entries...' => 'Lade aktuelle Einträge...',
 	'Jan.' => 'Januar',
 	'Feb.' => 'Februar',
-	'March' => 'März',
-	'April' => 'April',
-	'May' => 'Mai',
-	'June' => 'Juni',
 	'July.' => 'Juli',
 	'Aug.' => 'August',
 	'Sept.' => 'September',
@@ -3243,8 +3235,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Blog-Vorlagen',
 	'Blog Publishing Settings' => 'Veröffentlichtungs-Einstellungen',
-	'template' => 'Vorlage',
-	'templates' => 'Vorlagen',
 	'You have successfully deleted the checked template(s).' => 'Vorlage(n) erfolgreich gelöscht.',
 	'Create Archive Template:' => 'Archiv-Vorlage anlegen:',
 	'Create [_1] template' => 'Neue [_1]-Vorlage anlegen',
@@ -3252,9 +3242,9 @@ use vars qw( @ISA %Lexicon );
 	'Blank Template' => 'Leere Vorlage',
 
 ## tmpl/wizard/cfg_dir.tmpl
-	'Temporary Directory Configuration' => 'Konfiguration des temporären Verzeichnisses',
+	'Temporary Directory Configuration' => 'Konfigurierung des temporären Verzeichnisses',
 	'You should configure you temporary directory settings.' => 'Hier legen Sie fest, in welchem Verzeichnis temporäre Dateien gespeichert werden.',
-	'Your TempDir has been successfully configured. Click \'Continue\' below to continue configuration.' => 'TempDir erfolgreich konfiguriert. Sie können die Konfiguration nun fortsetzen.',
+	'Your TempDir has been successfully configured. Click \'Continue\' below to continue configuration.' => 'TempDir erfolgreich konfiguriert. Sie können die Konfigurierung nun fortsetzen.',
 	'[_1] could not be found.' => '[_1] nicht gefunden',
 	'TempDir is required.' => 'TempDir ist erforderlich.',
 	'TempDir' => 'TempDir',
@@ -3278,12 +3268,12 @@ use vars qw( @ISA %Lexicon );
 	'Begin' => 'Anfangen',
 
 ## tmpl/wizard/configure.tmpl
-	'Database Configuration' => 'Datenbankkonfiguration',
+	'Database Configuration' => 'Datenbankkonfigurierung',
 	'You must set your Database Path.' => 'Pfad zur Datenbank erforderlich',
 	'You must set your Database Name.' => 'Geben Sie Ihren Datenbanknamen an.',
 	'You must set your Username.' => 'Geben Sie Ihren Benutzernamen an.',
 	'You must set your Database Server.' => 'Geben Sie Ihren Datenbankserver an.',
-	'Your database configuration is complete.' => 'Ihre Datenbankkonfiguration ist abgeschlossen.',
+	'Your database configuration is complete.' => 'Ihre Datenbankkonfigurierung ist abgeschlossen.',
 	'You may proceed to the next step.' => 'Sie können mit dem nächsten Schritt fortfahren.',
 	'Please enter the parameters necessary for connecting to your database.' => 'Bitte geben Sie zur Herstellung der Datenkbankverbindung notwendigen Daten ein.',
 	'Show Current Settings' => 'Einstellungen anzeigen',
@@ -3308,8 +3298,8 @@ use vars qw( @ISA %Lexicon );
 	'Test Connection' => 'Verbindung testen',
 
 ## tmpl/wizard/optional.tmpl
-	'Mail Configuration' => 'Mailkonfiguration',
-	'Your mail configuration is complete.' => 'Ihre Mail-Konfiguration ist abgeschlossen.',
+	'Mail Configuration' => 'Mailkonfigurierung',
+	'Your mail configuration is complete.' => 'Ihre Mail-Konfigurierung ist abgeschlossen.',
 	'Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step.' => 'Überprüfen Sie den Eingang der Testmail in Ihrem Postfach und fahren Sie dann mit dem nächsten Schritt fort.',
 	'Show current mail settings' => 'Mail-Einstellungen anzeigen',
 	'Periodically Movable Type will send email to inform users of new comments as well as other other events. For these emails to be sent properly, you must instruct Movable Type how to send email.' => 'Geben Sie an, auf welchem Wege Movable Type E-Mails verschicken soll. E-Mails werden beispielsweise zur Benachrichtigung über neue Kommentare verschickt.',
@@ -3324,7 +3314,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/wizard/complete.tmpl
 	'Configuration File' => 'Konfigurationsdatei',
-	'The [_1] configuration file can\'t be located.' => 'Die [_1]-Konfigurationsdatei kann nicht lokalisiert werden.',
+	'The [_1] configuration file can\'t be located.' => 'Die [_1]-Konfigurationsdatei kann nicht gefunden werden.',
 	'Please use the configuration text below to create a file named \'mt-config.cgi\' in the root directory of [_1] (the same directory in which mt.cgi is found).' => 'Kopieren Sie folgenden Text in eine Datei namens \'mt-config.cgi\' und legen diese im Movable Type-Hauptverzeichnis ab (das Verzeichnis, in dem sich auch die Datei mt.cgi befindet)',
 	'The wizard was unable to save the [_1] configuration file.' => 'Die [_1]-Konfigurationsdatei konnte nicht gespeichert werden.',
 	'Confirm your [_1] home directory (the directory that contains mt.cgi) is writable by your web server and then click \'Retry\'.' => 'Bitte überprüfen Sie, ob der Webserver Schreibrechte für Ihr [_1]-Hauptverzeichnis hat und klicken Sie dann auf "Erneut versuchen".',
@@ -3353,11 +3343,11 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/error.tmpl
 	'Missing Configuration File' => 'Fehlende Konfigurationsdatei',
-	'_ERROR_CONFIG_FILE' => 'Ihre Movable Type-Konfigurationsdatei fehlt, ist fehlerhaft oder kann nicht gelesen werden. Anweisungen zur Konfiguration finden Sie im Abschnitt <a href="javascript:void(0)">Installation and Configuration</a> der Movable Type-Dokumentation.',
+	'_ERROR_CONFIG_FILE' => 'Ihre Movable Type-Konfigurationsdatei fehlt, ist fehlerhaft oder kann nicht gelesen werden. Anweisungen zur Konfigurierung finden Sie im Abschnitt <a href="javascript:void(0)">Installation and Configuration</a> der Movable Type-Dokumentation.',
 	'Database Connection Error' => 'Verbindung mit Datenbank fehlgeschlagen',
-	'_ERROR_DATABASE_CONNECTION' => 'Die Datenbankeinstellungen in Ihrer Konfigurationsdatei fehlen oder sind fehlerhaft. Anweisungen zur Konfiguration finden Sie im Abschnitt <a href="javascript:void(0)">Installation and Configuration</a> der Movable Type-Dokumentation.',
+	'_ERROR_DATABASE_CONNECTION' => 'Die Datenbankeinstellungen in Ihrer Konfigurationsdatei fehlen oder sind fehlerhaft. Anweisungen zur Konfigurierung finden Sie im Abschnitt <a href="javascript:void(0)">Installation and Configuration</a> der Movable Type-Dokumentation.',
 	'CGI Path Configuration Required' => 'CGI-Pfad muß eingestellt sein',
-	'_ERROR_CGI_PATH' => 'Die CGIPath-Angabe in Ihrer Konfigurationsdatei fehlt oder ist fehlerhaft. Anweisungen zur Konfiguration finden Sie im Abschnitt <a href="javascript:void(0)">Installation and Configuration</a> der Movable Type-Dokumentation.',
+	'_ERROR_CGI_PATH' => 'Die CGIPath-Angabe in Ihrer Konfigurationsdatei fehlt oder ist fehlerhaft. Anweisungen zur Konfigurierung finden Sie im Abschnitt <a href="javascript:void(0)">Installation and Configuration</a> der Movable Type-Dokumentation.',
 
 ## tmpl/email/footer-email.tmpl
 
@@ -3367,7 +3357,7 @@ use vars qw( @ISA %Lexicon );
 	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'Klicken Sie dazu auf folgenden Link (oder kopieren Sie Adresse und fügen Sie sie in Adresszeile Ihres Web-Browsers ein):',
 	'If you did not make this request, or you don\'t want to register for an account to comment on [_1], then no further action is required.' => 'Sollten Sie sich nicht angemeldet haben oder sollten Sie sich doch nicht registrieren wollen, brauchen Sie nichts weiter zu tun.',
 	'Thank you very much for your understanding.' => 'Vielen Dank',
-	'Sincerely,' => '',
+	'Sincerely,' => ' ', # Translate - New # OK
 
 ## tmpl/email/verify-subscribe.tmpl
 	'Thanks for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Vielen Dank, daß Sie die die Benachrichtungen über Aktualisierungen von [_1] abonniert haben. Bitte klicken Sie zur Bestätigung auf folgenden Link:',
@@ -3395,7 +3385,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/email/new-comment.tmpl
 	'An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => 'Ein noch nicht freigeschalteter Kommentar ist in Ihrem Weblog [_1] zum Eintrag #[_2] ("[_3]") eingegangen. Schalten Sie den Kommentar frei, damit er auf Ihrem Weblog erscheint.',
 	'A new comment has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'Ein neuer Kommentar ist in Ihrem Weblog [_1] zum Eintrag #[_2] ("[_3]") eingegangen:',
-	'Commenter name: [_1]' => 'Name des Kommentarautors: [_1]', # Translate - New
+	'Commenter name: [_1]' => 'Name des Kommentarautors: [_1]',
 	'Commenter email address: [_1]' => 'E-Mail-Adresse des Kommentarautors: [_1]',
 	'Commenter URL: [_1]' => 'Web-Adresse (URL) des Kommentarautors:',
 	'Commenter IP address: [_1]' => 'IP-Adresse des Kommentarautors:',
@@ -3406,8 +3396,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/email/notify-entry.tmpl
 	'A new [_3] entitled \'[_1]\' has been published to [_2].' => 'Ein neuer Eintrag namens \'[_1]\' wurde in [_2] veröffentlicht.',
-	'View [_1]:' => '[_1] ansehen:', # Translate - New # OK
-	'[_1] Title: [_2]' => 'Titel: [_2]', # Translate - New # OK
+	'View [_1]:' => '[_1] ansehen:',
+	'[_1] Title: [_2]' => 'Titel: [_2]',
 	'Publish Date: [_1]' => 'Veröffentlichungsdatum:',
 	'Message from Sender:' => 'Nachricht des Absenders:',
 	'You are receiving this email either because you have elected to receive notifications about new content on [_1], or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:' => 'Sie erhalten diese E-Mail, da Sie entweder Nachrichten über Aktualisierungen von [_1] bestellt haben oder da der Autor dachte, daß dieser Eintrag für Sie von Interesse sein könnte. Wenn Sie solche Mitteilungen nicht länger erhalten wollen, wenden Sie sich bitte an ',
@@ -3421,7 +3411,6 @@ use vars qw( @ISA %Lexicon );
 	'To view or edit this user, please click on or cut and paste the following URL into a web browser:' => 'Um alle Benutzerdaten zu sehen oder zu bearbeiten, klicken Sie bitte auf folgende Adresse (oder kopieren Sie sie und fügen Sie sie in Adresszeile Ihres Web-Browsers ein):',
 
 ## tmpl/feeds/feed_page.tmpl
-	'Untitled' => 'Ohne Name',
 	'Unpublish' => 'Nicht mehr veröffentlichen',
 	'More like this' => 'Ähnliche Einträge',
 	'From this blog' => 'Aus diesem Blog',
@@ -3448,6 +3437,302 @@ use vars qw( @ISA %Lexicon );
 	'By commenter name' => 'Nach Namen des Kommentarautoren',
 	'By commenter email' => 'Nach E-Mail-Adresse des Kommentarautoren',
 	'By commenter URL' => 'Nach Web-Adresse (URL) des Kommentarautoren',
+
+## addons/Enterprise.pack/config.yaml
+	'Enterprise Pack' => 'Enterprise-Pack', # Translate - New # OK
+	'Oracle Database' => 'Oracle-Datenbank', # Translate - New # OK
+	'Microsoft SQL Server Database' => 'Microsoft SQL Server-Datenbank', # Translate - New # OK
+	'Microsoft SQL Server Database (UTF-8 support)' => 'Microsoft SQL Server-Datenbank (mit UTF-8-Unterstüzung)', # Translate - New # OK
+	'External Directory Synchronization' => 'Synchronisierung mit externem Verzeichnis', # Translate - New # OK
+	'Populating author\'s external ID to have lower case user name...' => 'Populiere externe Benutzerkennungen...', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
+	'You need to create some groups.' => 'Bitte legen Sie einige Gruppen an.', # Translate - New # OK
+	'Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Click here</a> to create a group.' => 'Bitte legen Sie zuerst einige Gruppen an. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Klicken Sie hier </a> um Gruppen anzulegen.', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/include/list_associations/page_title.group.tmpl
+	'Users &amp; Groups for [_1]' => 'Benutzer und Gruppen für [_1]',
+	'Group Associations for [_1]' => 'Gruppenzuweisungen für [_1]',
+
+## addons/Enterprise.pack/tmpl/include/group_table.tmpl
+	'group' => 'Gruppe', # Translate - New # OK
+	'groups' => 'Gruppen', # Translate - Case
+	'Enable selected [_1] (e)' => 'Gewählte [_1] aktivieren (e)', # Translate - New # OK
+	'Disable selected [_1] (d)' => 'Gewählte [_1] deaktivieren (d)', # Translate - New # OK
+	'Remove selected [_1] (d)' => 'Gewählte [_1] entfernen (d)', # Translate - New # OK
+	'Only show enabled groups' => 'Nur aktivierte Gruppen zeigen', # Translate - New # OK
+	'Only show disabled groups' => 'Nur deaktivierte Gruppen zeigen', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/include/users_content_nav.tmpl
+	'Groups' => 'Gruppen',
+	'Group Profile' => 'Gruppenprofile',
+
+## addons/Enterprise.pack/tmpl/author_bulk.tmpl
+	'Manage Users in bulk' => 'Benutzerverwaltung im Stapel', # Translate - New # OK
+	'_USAGE_AUTHORS_2' => 'Sie können Benutzerkonto im Stapel anlegen, bearbeiten und löschen, indem Sie CSV-formatierte Steuerungsdatei mit den entsprechenden Daten und Befehlen hochladen.', # Translate - New # OK
+	'Upload source file' => 'Quelldatei hochladen', # Translate - New # OK
+	'Specify the CSV-formatted source file for upload' => 'Geben Sie die hochzuladende CSV-Quelldatei an', # Translate - New # OK
+	'Source File Encoding' => 'Zeichenkodierung der Quelldatei', # Translate - New # OK
+	'Upload (u)' => 'Hochladen (u)', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/create_author_bulk_start.tmpl
+	'Bulk Author Import' => 'Stapelimport von Autoren', # Translate - New # OK
+	'Updating...' => 'Aktualisiere...', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/create_author_bulk_end.tmpl
+	'All users updated successfully!' => 'Alle Benutzerkonten erfolgreich aktualisiert!', # Translate - New # OK
+	'An error occurred during the updating process. Please check your CSV file.' => 'Während der Aktualisierung ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre CSV-Datei.', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/list_group.tmpl
+	'[_1]: User&rsquo;s Groups' => '[_1]: Zugewiesene Gruppen', # Translate - New # OK
+	'Groups: System Wide' => 'Systemweite Gruppen', # Translate - New # OK
+	'The user <em>[_1]</em> is currently disabled.' => 'Das Benutzerkonto von <em>[_1]</em> ist derzeit deaktiviert.',
+	'_USAGE_GROUPS_USER_LDAP' => 'Alle Gruppen, in denen der Benutzer Mitglied ist.', # Translate - New # OK
+	'_USAGE_GROUPS_LDAP' => 'Alle Gruppen in dieser Movable Type-Installation. Um eine Gruppe zu aktivieren oder zu deaktivieren, markieren Sie die jeweilige Gruppe und klicken Sie dann auf Aktivieren bzw. auf Deaktivieren.', # Translate - New # OK
+	'_USAGE_GROUPS_USER' => 'Alle Gruppen, in denen der Benutzer Mitglied ist. Um den Benutzer aus einer Gruppe zu entfernen, markieren Sie die jeweilige Gruppe und klicken Sie dann auf Entfernen.', # Translate - New # OK
+	'_USAGE_GROUPS' => 'Alle Gruppen in dieser Movable Type-Installation. Um eine Gruppe zu aktivieren oder zu deaktivieren, markieren Sie die jeweilige Gruppen und klicken Sie dann auf Aktivieren bzw. auf Deaktivieren. Um eine Gruppe zu bearbeiten, klicken Sie auf ihren Namen.', # Translate - New # OK
+	'Synchronize groups now' => 'Gruppen jetzt synchronisieren', # Translate - New # OK
+	'You have successfully disabled the selected group(s).' => 'Gewählte Gruppe(n) erfolgreich deaktiviert.', # Translate - New # OK
+	'You have successfully enabled the selected group(s).' => 'Gewählte Gruppe(n) erfolgreich aktiviert.', # Translate - New # OK
+	'You have successfully deleted the groups from the Movable Type system.' => 'Gruppen erfolgreich aus dem System gelöscht.', # Translate - New # OK
+	'You have successfully synchronized groups\' information with the external directory.' => 'Gruppeninformationen erfolgreich mit externem Verzeichnis synchronisiert.', # Translate - New # OK
+	'You can not add disabled users to groups.' => 'Deaktivierte Benutzer können nicht zu Gruppen hinzugefügt werden.', # Translate - New # OK
+	'Add [_1] to another group' => '[_1] zu weiterer Gruppe hinzufügen', # Translate - New # OK
+	'Create Group' => 'Gruppe anlegen', # Translate - New # OK
+	'You did not select any [_1] to remove.' => 'Keine zu entfernende [_1] gewählt.', # Translate - New # OK
+	'Are you sure you want to remove this [_1]?' => '[_1] wirklich entfernen?', # Translate - New # OK
+	'Are you sure you want to remove the [_1] selected [_2]?' => '[_1] gewählte [_2] wirklich entfernen?', # Translate - New # OK
+	'to remove' => 'zu entfernen', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/cfg_ldap.tmpl
+	'Authentication Configuration' => 'Authentifizierungs-Einstellungen', # Translate - New # OK
+	'You must set your Authentication URL.' => 'Authentifizierungs-URL erforderlich', # Translate - New # OK
+	'You must set your Group search base.' => 'Groupsearchbase-Attribut erforderlich', # Translate - New # OK
+	'You must set your UserID attribute.' => 'UserID-Attribut erforderlich', # Translate - New # OK
+	'You must set your email attribute.' => 'Email-Attribut erforderlich', # Translate - New # OK
+	'You must set your user fullname attribute.' => 'Userfullname-Attribut erforderlich', # Translate - New # OK
+	'You must set your user member attribute.' => 'Usermember-Attribut erforderlich', # Translate - New # OK
+	'You must set your GroupID attribute.' => 'GroupID-Attribut erforderlich', # Translate - New # OK
+	'You must set your group name attribute.' => 'Groupname-Attribut erforderlich', # Translate - New # OK
+	'You must set your group fullname attribute.' => 'Groupfullname-Attribut erforderlich', # Translate - New # OK
+	'You must set your group member attribute.' => 'Groupmember-Attribut erforderlich', # Translate - New # OK
+	'You can configure your LDAP settings from here if you would like to use LDAP-based authentication.' => 'Wenn Sie LDAP-Authentifizierung verwenden möchten, können Sie hier die entsprechenden Einstellungen vornehmen.', # Translate - New # OK
+	'Your configuration was successful.' => 'Konfigurierung erfolgreich.', # Translate - New # OK
+	'Click \'Continue\' below to configure the External User Management settings.' => 'Klicken Sie auf \'Weiter\', um die externe Benutzerverwaltung zu konfigurieren.', # Translate - New # OK
+	'Click \'Continue\' below to configure your LDAP attribute mappings.' => 'Klicken Sie auf \'Weiter\', um die LDAP-Attribute zuzuweisen.', # Translate - New # OK
+	'Your LDAP configuration is complete.' => 'Ihre LDAP-Konfigurierung ist abgeschlossen.', # Translate - New # OK
+	'To finish with the configuration wizard, press \'Continue\' below.' => 'Mit einem Klick auf \'Weiter\' schließen Sie die Konfigurierung ab.', # Translate - New # OK
+	'An error occurred while attempting to connect to the LDAP server: ' => 'Es konnte keine Verbindung zum LDAP-Server aufgebaut werden: ', # Translate - New # OK
+	'Use LDAP' => 'LDAP verwenden', # Translate - New # OK
+	'Authentication URL' => 'Authentifizierungs-URL', # Translate - New # OK
+	'The URL to access for LDAP authentication.' => 'Adresse (URL) zur LDAP-Authentifizierung', # Translate - New # OK
+	'Authentication DN' => 'Authentifizierungs-DN', # Translate - New # OK
+	'An optional DN used to bind to the LDAP directory when searching for a user.' => 'Optionaler DN zur LDAP-Bindung bei der Benutzersuche', # Translate - New # OK
+	'Authentication password' => 'Authentifizierungs- Passwort', # Translate - New # OK
+	'Used for setting the password of the LDAP DN.' => 'Wird zur Einstellung des LDAP DN-Passworts verwendet', # Translate - New # OK
+	'SASL Mechanism' => 'SASL-Mechanismus', # Translate - New # OK
+	'The name of SASL Mechanism to use for both binding and authentication.' => 'Name des für Bindung und Authentifizierung verwendeten SASL-Mechanismus', # Translate - New # OK
+	'Test Username' => 'Test-Benutzername', # Translate - New # OK
+	'Test Password' => 'Test-Passwort', # Translate - New # OK
+	'Enable External User Management' => 'Externe Benutzerverwaltung aktivieren', # Translate - New # OK
+	'Synchronization Frequency' => 'Aktualisierungsintervall', # Translate - New # OK
+	'Frequency of synchronization in minutes. (Default is 60 minutes)' => 'Aktualisierungsintervall in Minuten (Standard: 60 Minuten)', # Translate - New # OK
+	'15 Minutes' => '15 Minuten', # Translate - New # OK
+	'30 Minutes' => '30 Minuten', # Translate - New # OK
+	'60 Minutes' => '60 Minuten', # Translate - New # OK
+	'90 Minutes' => '90 Minuten', # Translate - New # OK
+	'Group search base attribute' => 'Groupsearchbase-Attribut', # Translate - New # OK
+	'Group filter attribute' => 'Groupfilter-Attribut', # Translate - New # OK
+	'Search Results (max 10 entries)' => 'Suchergebnis (ersten 10 Treffer)', # Translate - New # OK
+	'CN' => 'CN (Common Name)', # Translate - New # OK
+	'No groups were found with these settings.' => 'Keine Gruppe mit diesen Einstellungen gefunden.', # Translate - New # OK
+	'Attribute mapping' => 'Attributzuordnung', # Translate - New # OK
+	'LDAP Server' => 'LDAP-Server', # Translate - New # OK
+	'Other' => 'Anderer', # Translate - New # OK
+	'User ID attribute' => 'UserID-Attribut', # Translate - New # OK
+	'Email Attribute' => 'Email-Attribut', # Translate - New # OK
+	'User fullname attribute' => 'Userfullname-Attribut', # Translate - New # OK
+	'User member attribute' => 'Usermember-Attribut', # Translate - New # OK
+	'GroupID attribute' => 'GroupID-Attribut', # Translate - New # OK
+	'Group name attribute' => 'Groupname-Attribut', # Translate - New # OK
+	'Group fullname attribute' => 'Groupfullname-Attribut', # Translate - New # OK
+	'Group member attribute' => 'Groupmember-Attribut', # Translate - New # OK
+	'Search result (max 10 entries)' => 'Suchergebnis (ersten 10 Treffer)', # Translate - New # OK
+	'Group Name' => 'Gruppenname',
+	'Group Fullname' => 'Groupfullname', # Translate - New # OK
+	'Group Member' => 'Groupmember', # Translate - New # OK
+	'No groups could be found.' => 'Keine Gruppen gefunden.', # Translate - New # OK
+	'User Fullname' => 'Userfullname', # Translate - New # OK
+	'No users could be found.' => 'Keine Benutzer gefunden.', # Translate - New # OK
+	'Test connection to LDAP' => 'LDAP-Verbindung testen', # Translate - New # OK
+	'Test search' => 'Testsuche', # Translate - New # OK
+
+## addons/Enterprise.pack/tmpl/edit_group.tmpl
+	'Edit Group' => 'Gruppe bearbeiten', # Translate - New # OK
+	'Group profile has been updated.' => 'Gruppenprofil aktualisiert.', # Translate - New # OK
+	'Group Disabled' => 'Gruppe deaktiviert', # Translate - New # OK
+	'_USAGE_GROUP_PROFILE' => 'Hier können Sie Gruppenprofile bearbeiten.', # Translate - New # OK
+	'_USAGE_NEW_GROUP' => 'Hier können Sie eine neue Gruppe im System anlegen.', # Translate - New # OK
+	'LDAP Group ID' => 'LDAP-Gruppen-ID', # Translate - New # OK
+	'The LDAP directory ID for this group.' => 'Die ID dieser Gruppe im LDAP-Verzeichnis', # Translate - New # OK
+	'The name used for identifying this group.' => 'Der zur Idenfifizierung diesser Gruppe verwendete Name', # Translate - New # OK
+	'The display name for this group.' => 'Der Anzeigename dieser Gruppe', # Translate - New # OK
+	'Status of group in the system. Disabling a group removes its members&rsquo; access to the system but preserves their content and history.' => 'Globaler Gruppenstatus. Deaktivierung einer Gruppe entzieht ihren Mitgliedern den Zugang zum System. Inhalte und Nutzungsverläufe der Mitglieder bleiben jedoch erhalten.', # Translate - New # OK
+	'Enter a description for your group.' => 'Geben Sie eine Gruppenbeschreibung ein.', # Translate - New # OK
+	'Created on' => 'Angelegt', # Translate - Case
+
+## addons/Enterprise.pack/tmpl/list_group_member.tmpl
+	'[_1]: Group Members' => '[_1]: Gruppenmitglieder', # Translate - New # OK
+	'<em>[_1]</em>: Group Members' => '<em>[_1]</em>: Gruppenmitglieder', # Translate - New # OK
+	'You have successfully deleted the users.' => 'Benutzer erfolgreich gelöscht.', # Translate - New # OK
+	'You have successfully added new users to this group.' => 'Benutzer erfolgreich zur Gruppe hinzugefügt.', # Translate - New # OK
+	'You have successfully synchronized users\' information with external directory.' => 'Benutzerinformationen erfolgreich mit externem Verzeichnis synchronisiert.', # Translate - New # OK
+	'Some ([_1]) of the selected users could not be re-enabled because they were no longer found in LDAP.' => 'Einige ([_1]) der gewählten Benutzerkonten konnten nicht reaktiviert werden, da sie nicht mehr im LDAP-Verzeichnis vorhanden sind.', # Translate - New # OK
+	'You have successfully removed the users from this group.' => 'Benutzer erfolgreich aus Gruppe entfernt.', # Translate - New # OK
+	'member' => 'Mitglied', # Translate - New # OK
+	'Show Enabled Members' => 'Aktivierte Mitglieder zeigen', # Translate - New # OK
+	'Show Disabled Members' => 'Deaktivierte Mitglieder zeigen', # Translate - New # OK
+	'Show All Members' => 'Alle Mitglieder zeigen', # Translate - New # OK
+	'You can not add users to a disabled group.' => 'Zu deaktivierten Gruppen können keine Benutzer hinzugefügt werden.', # Translate - New # OK
+	'Add user to [_1]' => 'Benutzer zu [_1] hinzufügen', # Translate - New # OK
+	'None.' => 'Keine.', # Translate - New # OK
+	'(Showing all users.)' => '(Zeige alle Benutzer)', # Translate - New # OK
+	'Showing only users whose [_1] is [_2].' => 'Zeige nur Benutzer mit [_2].', # Translate - New # OK
+	'Show' => 'Zeige', # Translate - New # OK
+	'all' => 'alle', # Translate - Case # OK
+	'only' => 'nur', # Translate - New # OK
+	'users where' => 'Benutzer mit', # Translate - New # OK
+	'No members in group' => 'Gruppe ohne Mitglieder', # Translate - New # OK
+	'Only show enabled users' => 'Nur aktivierte Benutzer zeigen', # Translate - New # OK
+	'Only show disabled users' => 'Nur deaktivierte Benutzer zeigen', # Translate - New # OK
+	'Are you sure you want to remove this [_1] from this group?' => '[_1] wirklich aus dieser Gruppe entfernen?', # Translate - New # OK
+	'Are you sure you want to remove the [_1] selected [_2] from this group?' => '[_1] gewählten [_2] wirklich aus dieser Gruppe entfernen?', # Translate - New # OK
+
+## addons/Enterprise.pack/app-wizard.yaml
+	'This module is required in order to use the LDAP Authentication.' => 'Dieses Modul ist zur Nutzung der LDAP-Authentifizierung erforderlich.', # Translate - New # OK
+
+## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
+	'PublishCharset [_1] is not supported in this version of MS SQL Server Driver.' => 'PublishCharset [_1] wird von dieser Version des Microsoft SQL Server-Treibers nicht unterstützt.', # Translate - New # OK
+
+## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/UMSSQLServer.pm
+	'This version of UMSSQLServer driver requires UMSSQLServer version 1.14.' => 'Diese Version des UMSSQLServer-Treibers erfordert UMSSQLServer-Version 1.14.', # Translate - New # OK
+	'This version of UMSSQLServer driver requires DBD::ODBC compiled with Unicode support.' => 'Diese Version des UMSSQLServer-Treiber erfodert ein mit Unicode-Unterstützung compiliertes DBD::ODBC.', # Translate - New # OK
+
+## addons/Enterprise.pack/lib/MT/LDAP.pm
+	'Invalid LDAPAuthURL scheme: [_1].' => 'Ungültiges LDAPAuthURL-Schema: [_1].', # Translate - New # OK
+	'Error connecting to LDAP server [_1]: [_2]' => 'Verbindung zu LDAP-Server [_1] fehlgeschlagen: [_2]', # Translate - New # OK
+	'User not found on LDAP: [_1]' => 'Benutzer nicht im LDAP-Verzeichnis gefunden:', # Translate - New # OK
+	'Binding to LDAP server failed: [_1]' => 'Bindung an LDAP-Server fehlgeschlagen: [_1]', # Translate - New # OK
+	'More than one user with the same name found on LDAP: [_1]' => 'Mehrere Benutzer mit identischem Namen im LDAP-Verzeichnis gefunden: [_1]', # Translate - New # OK
+
+## addons/Enterprise.pack/lib/MT/Group.pm
+	'Group' => 'Gruppe', # Translate - NewUMSSQLServer
+
+## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
+	'User [_1]([_2]) not found.' => 'Benutzerkonto [_1]([_2]) nicht gefunden.', # Translate - New # OK
+	'User \'[_1]\' cannot be updated.' => 'Benutzerkonto \'[_1]\' kann nicht aktualisiert werden.', # Translate - New # OK
+	'User \'[_1]\' updated with LDAP login ID.' => 'Benutzerkonto \'[_1]\' mit LDAP-Login-ID aktualisiert.', # Translate - New # OK
+	'LDAP user [_1] not found.' => 'LDAP-Benutzerkonto [_1] nicht gefunden.', # Translate - New # OK
+	'User [_1] cannot be updated.' => 'Benutzerkonto [_1] kann nicht aktualisiert werden.', # Translate - New # OK
+	'User cannot be updated: [_1].' => 'Benutzerkonto kann nicht aktualisiert werden: [_1].', # Translate - New # OK
+	'Failed login attempt by user \'[_1]\' deleted from LDAP.' => 'Fehlgeschlagener Anmeldeversuch von Benutzer \'[_1]\' aus LDAP gelöscht.', # Translate - New # OK
+	'User \'[_1]\' updated with LDAP login name \'[_2]\'.' => 'Benutzerkonto \'[_1]\' mit LDAP-Login-Name aktualisiert.', # Translate - New # OK
+	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => 'Fehlgeschlagener Anmeldeversuch von Benutzer \'[_1]\'. Ein Konto mit diesem Benutzernamen ist mit anderer UUID bereits im System vorhanden.', # Translate - New # OK
+	'User \'[_1]\' account is disabled.' => 'Benutzerkonto \'[_1]\' ist deaktiviert.', # Translate - New # OK
+	'LDAP users synchronization interrupted.' => 'LDAP-Benutzersynchronisierung unterbrochen.', # Translate - New # OK
+	'Loading MT::LDAP failed: [_1]' => 'Beim Laden von MT::LDAP ist ein Fehler aufgetreten: [_1]', # Translate - New # OK
+	'External user synchronization failed.' => 'Synchronisierung externer Benutzer fehlgeschlagen.', # Translate - New # OK
+	'An attempt to disable all system administrators in the system was made.  Synchronization of users was interrupted.' => 'Es wurde versucht, alle Administratorenkonten zu deaktivieren. Synchronisation unterbrochen.', # Translate - New # OK
+	'The following users\' information were modified:' => 'Die Daten folgender Benutzer wurden geändert:', # Translate - New # OK
+	'The following users were disabled:' => 'Die folgenden Benutzer wurden deaktiviert:', # Translate - New # OK
+	'LDAP users synchronized.' => 'LDAP-Benutzer synchronisiert.', # Translate - New # OK
+	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute is set.' => 'Gruppen können nur synchronisiert werden, wenn LDAPGroupIdAttribute und/oder LDAPGroupNameAttribute gesetzt ist.', # Translate - NewDBD::ODBC
+	'LDAP groups synchronized with existing groups.' => 'LDAP-Gruppen mit vorhandenen Gruppen sychnronisiert.', # Translate - New # OK
+	'The following groups\' information were modified:' => 'Die Daten folgender Gruppen wurden geändert:', # Translate - New # OK
+	'No LDAP group was found using given filter.' => 'Keine entsprechenden LDAP-Gruppen gefunden.', # Translate - New # OK
+	"Filter used to search for groups: [_1]\nSearch base: [_2]" => "Verwendeter Filter:  [_1]\nSuchbasis: [_2]", # Translate - New # OK
+	'(none)' => '(Keine)', # Translate - Case
+	'The following groups were deleted:' => 'Die folgenden Gruppen wurden gelöscht:', # Translate - New # OK
+	'Failed to create a new group: [_1]' => 'Fehler beim Anlegen einer neuen Gruppe: [_1]', # Translate - New # OK
+	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Enterprise.' => '[_1]-Direktive muss gesetzt sein, um LDAP-Gruppenmitgliedschaften mit Movable Type Enterprise zu synchronisieren.', # Translate - New # OK
+	'Members removed: ' => 'Entfernte Mitglieder:', # Translate - New # OK
+	'Members added: ' => 'Hinzugefügte Mitglieder:', # Translate - New # OK
+	'Memberships of the group \'[_2]\' (#[_3]) has been changed in synchronizing with external directory.' => 'Die Mitgliedschaften der Gruppe \'[_2]\' (#[_3]) wurden bei der Sychronisierung mit dem externen Verzeichnis verändert.', # Translate - New # OK
+	'LDAPUserGroupMemberAttribute must be set to enable synchronize members of groups.' => 'Zur Synchronisierung von Gruppen muss LDAPUserGroupMemberAttribute gesetzt sein.', # Translate - New # OK
+
+## addons/Enterprise.pack/lib/MT/Enterprise/Wizard.pm
+	'PLAIN' => 'PLAIN', # Translate - New # OK
+	'CRAM-MD5' => 'CRAM-MD5', # Translate - New # OK
+	'Digest-MD5' => 'Digest-MD5', # Translate - New # OK
+	'Login' => 'Login', # Translate - New # OK
+	'Found' => 'Gefunden', # Translate - New # OK
+	'Not Found' => 'Nicht gefunden', # Translate - New # OK
+
+## addons/Enterprise.pack/lib/MT/Enterprise/BulkCreation.pm
+	'Format error at line [_1]: [_2]' => 'Fehlerhaftes Format in Zeile [_1]: [_2]', # Translate - New # OK
+	'Invalid command: [_1]' => 'Unbekannter Befehl: [_1]', # Translate - New # OK
+	'Invalid number of columns for [_1]' => 'Ungültige Spaltenzahl für [_1]', # Translate - New # OK
+	'Invalid user name: [_1]' => 'Ungültiger Benutzername: [_1]', # Translate - New # OK
+	'Invalid display name: [_1]' => 'Ungültiger Anzeigename: [_1]', # Translate - New # OK
+	'Invalid email address: [_1]' => 'Ungültige E-Mail-Adresse: [_1]', # Translate - New # OK
+	'Invalid language: [_1]' => 'Ungültige Sprache: [_1]', # Translate - New # OK
+	'Invalid password: [_1]' => 'Ungültiges Passwort: [_1]', # Translate - New # OK
+	'Invalid password recovery phrase: [_1]' => 'Ungültiger Passwort-Erinnerungssatz: [_1]', # Translate - New # OK
+	'Invalid weblog name: [_1]' => 'Ungültiger Weblogname: [_1]', # Translate - New # OK
+	'Invalid weblog description: [_1]' => 'Ungültige Weblogbeschreibung: [_1]', # Translate - New # OK
+	'Invalid site url: [_1]' => 'Ungültige Webadresse: [_1]', # Translate - New # OK
+	'Invalid site root: [_1]' => 'Ungültiges Wurzelverzeichnis: [_1]', # Translate - New # OK
+	'Invalid timezone: [_1]' => 'Ungültige Zeitzone: [_1]', # Translate - New # OK
+	'Invalid new user name: [_1]' => 'Ungültiger neuer Benutzername: [_1]', # Translate - New # OK
+	'A user with the same name was found.  Register was not processed: [_1]' => 'Benutzer mit gleichem Namen gefunden, Registrierung daher nicht durchgeführt: [_1]', # Translate - New # OK
+	'Blog for user \'[_1]\' can not be created.' => 'Blog für Benutzer \'[_1]\' kann nicht angelegt werden.', # Translate - New # OK
+	'Blog \'[_1]\' for user \'[_2]\' has been created.' => 'Blog \'[_1]\' für Benutzer \'[_2]\' angelegt.', # Translate - New # OK
+	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Fehler bei der Zuweisung von Blog-Administrationsrechten für Blog \'[_3] (ID: [_4])\' an Benutzer \'[_1] (ID: [_2])\'. Keine geeignete Administratorenrolle gefunden.', # Translate - New # OK
+	'Permission granted to user \'[_1]\'' => 'Berechtigungenga an Benutzer \'[_1]\' vergeben', # Translate - New # OK
+	'User \'[_1]\' already exists. Update was not processed: [_2]' => 'Benutzerkonto \'[_1]\' bereits vorhanden, Aktualisierung daher nicht durchgeführt: [_2] ', # Translate - New # OK
+	'User \'[_1]\' not found.  Update was not processed.' => 'Benutzerkonto \'[_1]\' nicht gefunden, Aktualisierung daher nicht durchgeführt. ', # Translate - New # OK
+	'User \'[_1]\' has been updated.' => 'Benutzerkonto \'[_1]\' aktualisiert.', # Translate - New # OK
+	'User \'[_1]\' was found, but delete was not processed' => 'Benutzerkonto \'[_1]\' gefunden, aber Löschung nicht durchgeführt.', # Translate - New # OK
+	'User \'[_1]\' not found.  Delete was not processed.' => 'Benutzerkonto \'[_1]\' nicht gefunden, Löschung daher nicht durchgeführt.', # Translate - New # OK
+	'User \'[_1]\' has been deleted.' => 'Benutzerkonto \'[_1]\' gelöscht.', # Translate - New # OK
+
+## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
+	'Add [_1] to a blog' => '[_1] zu Blog hinzufügen',
+	'You can not create associations for disabled groups.' => 'Deaktivierte Gruppen können nicht zugewiesen werden.',
+	'Assign Role to Group' => 'Rolle an Gruppe zuweisen',
+	'Add a group to this blog' => 'Diesem Blog Gruppe hinzufügen',
+	'Grant permission to a group' => 'Berechtigung an Gruppe vergeben',
+	'Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Enterprise hat während der Synchronisation versucht, Ihr Benutzerkonto zu deaktivieren. Das deutet auf einen Fehler in der externen Benutzerverwaltung hin. Überprüfen Sie daher die dortigen Einstellungen, bevor Sie Ihre Arbeit in Movable Type forsetzen.',
+	'Group requires name' => 'Gruppenname erforderlich', # Translate - New # OK
+	'Invalid group' => 'Ungültige Gruppe', # Translate - New # OK
+	'Add Users to Group [_1]' => 'Benutzer zu Gruppe [_1] hinzufügen', # Translate - New # OK
+	'Users & Groups' => 'Benutzer und Gruppen',
+	'Group Members' => 'Gruppenmitglieder', # Translate - New # OK
+	'User Groups' => 'Benutzergruppen', # Translate - New # OK
+	'Group load failed: [_1]' => 'Fehler beim Laden einer Gruppe:', # Translate - New # OK
+	'User load failed: [_1]' => 'Fehler beim Laden eines Benutzers:', # Translate - New # OK
+	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Benutzer \'[_1]\' (ID:[_2]) von \'[_5]\' aus Gruppe \'[_3]\' (ID:[_4]) entfernt', # Translate - New # OK
+	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Benutzer \'[_1]\' (ID:[_2]) von \'[_5]\' zu Gruppe \'[_3]\' (ID:[_4]) hinzugefügt', # Translate - New # OK
+	'Author load failed: [_1]' => 'Fehler beim Laden eines Autoren: [_1]', # Translate - New # OK # OK
+	'Invalid user' => 'Ungültiger Benutzer', # Translate - New # OK
+	'Assign User [_1] to Groups' => 'Gruppen an Benutzer [_1] zuweisen', # Translate - New # OK
+	'Select Groups' => 'Gruppen auswählen',
+	'Groups Selected' => 'Gewählte Gruppen',
+	'Type a group name to filter the choices below.' => 'Geben Sie einen Gruppennamen ein, um die Auswahl einzuschränken.', # Translate - New # OK
+	'Search Groups' => 'Gruppen suchen',
+	'Bulk import cannot be used under external user management.' => 'Stapelimport ist nicht möglich bei externer Benutzerverwaltung.', # Translate - New # OK
+	'Bulk management' => 'Stapelverwaltung', # Translate - New # OK
+	'The group' => 'Die Gruppe', # Translate - New # OK
+	'User/Group' => 'Benutzer/Gruppe',
+	'A user can\'t change his/her own username in this environment.' => 'Benutzer kann eigenen Benutzernamen in diesem Kontext nicht ändern.',
+	'An error occurred when enabling this user.' => 'Bei der Aktivierung dieses Benutzerkontos ist ein Fehler aufgetreten',
+
+## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
+	'Fixing binary data for Microsoft SQL Server storage...' => 'Bereite Binärdaten für Speicherung in Microsoft SQL Server vor...',
+
+## addons/Enterprise.pack/app-cms.yaml
+	'Bulk Author Export' => 'Stapelexport von Autoren', # Translate - New # OK
+	'Synchronize Users' => 'Benutzer synchronisieren', # Translate - New # OK
 
 ## plugins/feeds-app-lite/tmpl/config.tmpl
 	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widget Creator',
@@ -3604,19 +3889,12 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/WidgetManager/default_widgets/calendar.tmpl
 	'Monthly calendar with links to each day\'s posts' => 'Monatskalender mit Links zu allen Einträgen',
-	'Sunday' => 'Sonntag',
 	'Sun' => 'So',
-	'Monday' => 'Montag',
 	'Mon' => 'Mo',
-	'Tuesday' => 'Dienstag',
 	'Tue' => 'Di',
-	'Wednesday' => 'Mittwoch',
 	'Wed' => 'Mi',
-	'Thursday' => 'Donnerstag',
 	'Thu' => 'Do',
-	'Friday' => 'Freitag',
 	'Fri' => 'Fr',
-	'Saturday' => 'Samstag',
 	'Sat' => 'Sa',
 
 ## plugins/WidgetManager/default_widgets/signin.tmpl
@@ -3828,6 +4106,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 70
+## New words: 1416
 
 1;

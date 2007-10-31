@@ -78,8 +78,6 @@ sub _create_obj_to_backup {
         }
     }
     
-    push @$blog_ids, '0'
-        if defined($blog_ids) && scalar(@$blog_ids);
     if ( $class->can('backup_terms_args') ) {
         push @$obj_to_backup, { $class => $class->backup_terms_args($blog_ids) };
     }
@@ -114,6 +112,8 @@ sub _default_terms_args {
 sub backup {
     my $class = shift;
     my ($blog_ids, $printer, $splitter, $finisher, $progress, $size, $enc, $metadata) = @_;
+    push @$blog_ids, '0'
+        if defined($blog_ids) && scalar(@$blog_ids);
     my $obj_to_backup = $class->_populate_obj_to_backup(
         $blog_ids,
         {

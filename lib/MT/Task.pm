@@ -37,7 +37,12 @@ sub frequency {
     my $task = shift;
     $task->{frequency} = shift if @_;
     # default to daily run
-    $task->{frequency} || 60 * 60 * 24;
+    my $freq = $task->{frequency} || 60 * 60 * 24;
+    if ( $freq =~ m/^\s*sub\s*\{/s ) {
+        $freq = MT->handler_to_coderef($freq);
+        $freq = $freq->();
+    }
+    $freq;
 }
 
 sub run {

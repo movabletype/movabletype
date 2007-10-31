@@ -838,6 +838,7 @@ sub _hdlr_app_listing {
     my $id = $args->{id} || $type . '-listing';
     my $listing_class = $args->{listing_class} || "";
     my $hide_pager = $args->{hide_pager} || 0;
+    $hide_pager = 1 if ($ctx->var('screen_class') || '') eq 'search-replace';
     my $show_actions = exists $args->{show_actions} ? $args->{show_actions} : 1;
     my $return_args = $ctx->var('return_args') || '';
     $return_args = qq{\n        <input type="hidden" name="return_args" value="$return_args" />} if $return_args;
@@ -2919,13 +2920,13 @@ sub _hdlr_entries {
         if ( $col ne 'score' ) {
             if (my $def = $class->column_def($col)) {
                 if ($def->{type} =~ m/^integer|float$/) {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() <=> $b->$col() } @entries :
-                        sort { $b->$col() <=> $a->$col() } @entries;
+                    @$entries = $so eq 'ascend' ?
+                        sort { $a->$col() <=> $b->$col() } @$entries :
+                        sort { $b->$col() <=> $a->$col() } @$entries;
                 } else {
-                    @entries = $so eq 'ascend' ?
-                        sort { $a->$col() cmp $b->$col() } @entries :
-                        sort { $b->$col() cmp $a->$col() } @entries;
+                    @$entries = $so eq 'ascend' ?
+                        sort { $a->$col() cmp $b->$col() } @$entries :
+                        sort { $b->$col() cmp $a->$col() } @$entries;
                 }
                 $no_resort = 1;
             }

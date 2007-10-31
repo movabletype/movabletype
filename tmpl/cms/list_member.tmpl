@@ -166,16 +166,6 @@
 </div>
 </mt:setvarblock>
 
-<mt:setvarblock name="action_buttons">
-<mt:if name="can_administer_blog">
-    <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 'id', {}, { 'mode': 'remove_user_assoc', 'singular_prompt': '<__trans phrase="Are you sure you want to remove the selected user from this blog?" escape="js">', 'plural_prompt': '<__trans phrase="Are you sure you want to remove the [_1] selected users from this blog?" params="[_1]" escape="js">' }); return false;"
-        accesskey="r"
-        title="<__trans phrase="Remove selected user(s) (r)">"
-        ><__trans phrase="Remove"></a>
-</mt:if>
-</mt:setvarblock>
-
 <$mt:include name="include/header.tmpl"$>
 <$mt:var name="list_filter_form"$>
 <$mt:include name="include/member_table.tmpl"$>

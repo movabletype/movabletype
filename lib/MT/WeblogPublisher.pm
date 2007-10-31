@@ -1027,7 +1027,7 @@ sub rebuild_entry {
         ## adding a new entry could cause changes to the intra-archive
         ## navigation.
         my %at = map { $_ => 1 } split /,/, $blog->archive_type;
-        my @db_at = grep { $ArchiveTypes{$_}->date_based } $mt->archive_types;
+        my @db_at = grep { $ArchiveTypes{$_} && $ArchiveTypes{$_}->date_based } $mt->archive_types;
         for my $at (@db_at) {
             if ( $at{$at} ) {
                 my @arg = ( $entry->authored_on, $entry->blog_id, $at );
@@ -1828,6 +1828,7 @@ sub rebuild_from_fileinfo {
 
     if ( $at ne 'index' ) {
         return 1 if $at eq 'None';
+		my ( $start, $end );
         my $blog = MT::Blog->load( $fi->blog_id )
           if $fi->blog_id;
         my $entry = MT::Entry->load( $fi->entry_id )
@@ -1836,10 +1837,9 @@ sub rebuild_from_fileinfo {
           if $fi->entry_id;
         if ( $fi->startdate ) {
             my $archiver = $pub->archiver($at);
-            my ( $start, $end );
 
             if ( my $range = $archiver->date_range ) {
-                ( $start, $end ) = $range ? $range->( $fi->startdate ) : ();
+                ( $start, $end ) = $range->( $fi->startdate );
                 $entry = MT::Entry->load( { authored_on => [ $start, $end ] },
                     { range_incl => { authored_on => 1 }, limit => 1 } )
                   or return $pub->error(
@@ -1863,9 +1863,10 @@ sub rebuild_from_fileinfo {
 
         my $ctx = MT::Template::Context->new;
         $ctx->{current_archive_type} = $at;
-
-        # $ctx->{current_timestamp} = $start if $start;
-        # $ctx->{current_timestamp_end} = $start if $end;
+		if ( $start && $end ) {
+        	$ctx->{current_timestamp} = $start;
+        	$ctx->{current_timestamp_end} = $end;
+		}
 
         my $arch_root =
           ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
@@ -2050,8 +2051,11 @@ sub archive_file_for {
     my $file;
     if ( $blog->is_dynamic ) {
         require MT::TemplateMap;
-        $map = MT::TemplateMap->new;
-        $map->file_template( $ArchiveTypes{$at}->dynamic_template );
+		my $archiver = $ArchiveTypes{$at};
+		if ($archiver) {
+        	$map = MT::TemplateMap->new;
+        	$map->file_template( $archiver->dynamic_template );
+		}
     }
     unless ($map) {
         my $cache = MT::Request->instance->cache('maps');
@@ -2832,8 +2836,8 @@ sub _archive_entries_count {
     my ( $start, $end );
     if ($ts) {
         init_archive_types() unless %ArchiveTypes;
-
-        ( $start, $end ) = $ArchiveTypes{$at}->date_range->($ts);
+		my $archiver = $ArchiveTypes{$at};
+        ( $start, $end ) = $archiver->date_range->($ts) if $archiver;
     }
 
     my $count = MT->model('entry')->count(
@@ -2866,10 +2870,12 @@ sub date_based_group_entries {
     my ( $start, $end );
     if ($ts) {
         init_archive_types() unless %ArchiveTypes;
-
-        ( $start, $end ) = $ArchiveTypes{$at}->date_range->($ts);
-        $ctx->{current_timestamp}     = $start;
-        $ctx->{current_timestamp_end} = $end;
+		my $archiver = $ArchiveTypes{$at};
+		if ( $archiver ) {
+        	( $start, $end ) = $archiver->date_range->($ts);
+        	$ctx->{current_timestamp}     = $start;
+        	$ctx->{current_timestamp_end} = $end;
+		}
     }
     else {
         $start = $ctx->{current_timestamp};

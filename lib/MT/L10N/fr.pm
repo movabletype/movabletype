@@ -2963,7 +2963,7 @@ S\'il s\'agit d\'une erreur, vous pouvez annuler le bannissement de l\'adresse I
 ## tmpl/cms/cfg_system_general.tmpl
 	'System: General Settings' => 'Paramètres généraux',
 	'System Email' => 'Email système',
-	'The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification, entry notification and a few other minor events.' => 'Cette adresse email sera utilisée dans l\'en-tête From: des emails envoyés par le système. L\'adresse est utilisée dans la récupération des mots de passe, l\'enregistrement d\'auteurs de commentaires, les notifications de commentaires, trackbacks, notes, ainsi que certains autres événements mineurs.',
+	'The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification and a few other minor events.' => 'Cette adresse email sera utilisée dans l\'en-tête From: des emails envoyés par le système. L\'adresse est utilisée dans la récupération des mots de passe, l\'enregistrement d\'auteurs de commentaires, les notifications de commentaires, trackbacks, ainsi que certains autres événements mineurs.',
 
 ## tmpl/cms/dashboard.tmpl
 	'Select a Widget...' => 'Sélectionner un widget...',

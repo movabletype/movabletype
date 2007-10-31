@@ -230,47 +230,6 @@ TC.attachLoadEvent( init );
 </div>
 </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="action_buttons">
-    <mt:if name="object_type" eq="entry">
-        <mt:if name="is_power_edit">
-                <a href="javascript:void(0)" mt:command="submit" mt:mode="save_entries" accesskey="s"
-                    title="<__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">">"
-                    ><__trans phrase="Save"></a>
-        <mt:else>
-            <mt:if name="can_rebuild">
-                <a href="javascript:void(0)"
-                    onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to republish" escape="js">'); return false;"
-                    accesskey="r"
-                    title="<__trans phrase="Republish selected [_1] (r)" params="<mt:var name="object_label_plural" lower_case="1">">"
-                    ><__trans phrase="Republish"></a>
-            </mt:if>
-                <a href="javascript:void(0)"
-                    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">'); return false;"
-                    accesskey="x"
-                    title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural">">"
-                    ><__trans phrase="Delete"></a>
-        </mt:if>
-    <mt:else>
-        <mt:if name="is_power_edit">
-                <a href="javascript:void(0)" mt:command="submit" mt:mode="save_pages" accesskey="s"
-                    title="<__trans phrase="Save these [_1] (s)" params="<$mt:var name="object_label_plural" lower_case="1"$>">"
-                    ><__trans phrase="Save"></a>
-        <mt:else>
-            <mt:if name="can_rebuild">
-                <a href="javascript:void(0)"
-                    onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="page" escape="js">', '<__trans phrase="pages" escape="js">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to republish" escape="js">'); return false;"
-                    accesskey="r"
-                    title="<__trans phrase="Republish selected [_1] (r)" params="<mt:var name="object_label_plural">">"
-                    ><__trans phrase="Republish"></a>
-            </mt:if>
-                <a href="javascript:void(0)"
-                    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="page" escape="js">', '<__trans phrase="pages" escape="js">'); return false;" name="delete_pages" value="<__trans phrase="Delete">"
-                    accesskey="x"
-                    title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural">">"
-                    ><__trans phrase="Delete"></a>
-        </mt:if>
-    </mt:if>
-</mt:setvarblock>
 
 <$mt:include name="include/header.tmpl"$>
 <$mt:var name="list_filter_form"$>

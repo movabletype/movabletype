@@ -258,22 +258,24 @@ sub prepare_statement {
     ## we're doing a SELECT DISTINCT (for postgres).
     if($join && $join->[3]->{unique}) {
         my $sort = $args->{sort};
-        my $fonly = $args->{fetchonly} || [];
-        if (defined $sort) {
-            unless (grep { $_ eq $sort } @$fonly) {
-                push @$fonly, $sort;
+        if (my $fonly = $args->{fetchonly}) {
+            if (defined $sort) {
+                unless (grep { $_ eq $sort } @$fonly) {
+                    push @$fonly, $sort;
+                }
             }
+            $args->{fetchonly} = $fonly;
         }
-        $args->{fetchonly} = $fonly;
 
         my $j_sort = $join->[3]->{sort};
-        my $j_fonly = $join->[3]->{fetchonly} || [];
-        if (defined $j_sort) {
-            unless (grep { $_ eq $j_sort } @$j_fonly) {
-                push @$j_fonly, $j_sort;
+        if (my $j_fonly = $join->[3]->{fetchonly}) {
+            if (defined $j_sort) {
+                unless (grep { $_ eq $j_sort } @$j_fonly) {
+                    push @$j_fonly, $j_sort;
+                }
             }
+            $join->[3]->{fetchonly} = $j_fonly;
         }
-        $join->[3]->{fetchonly} = $j_fonly;
     }
 
     my $start_val = $args->{sort} ? delete $args->{start_val} : undef;

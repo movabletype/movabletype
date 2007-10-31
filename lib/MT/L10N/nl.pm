@@ -20,28 +20,6 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtproductname.php
 	'$short_name [_1]' => '$short_name [_1]',
 
-## php/lib/function.mtcommentfields.php
-	'Thanks for signing in,' => 'Bedankt om u aan te melden,',
-	'Now you can comment.' => 'U kunt nu reageren.',
-	'sign out' => 'afmelden',
-	'(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(Als u hier nog nooit gereageerd heeft, kan het zijn dat de eigenaar van deze site eerst goedkeuring moet geven voordat uw reactie verschijnt. Eerder zal uw reactie niet zichtbaar zijn onder het bericht. Bedankt voor uw geduld.)',
-	'Remember me?' => 'Mij onthouden?',
-	'Yes' => 'Ja',
-	'No' => 'Nee',
-	'Comments' => 'Reacties',
-	'Preview' => 'Voorbeeld',
-	'Submit' => 'Invoeren',
-	'You are not signed in. You need to be registered to comment on this site.' => 'U bent niet aangemeld.  U moet geregistreerd zijn om te kunnen reageren op deze website.',
-	'Sign in' => 'Aanmelden',
-	'. Now you can comment.' => '. U kunt hieronder reageren.',
-	'If you have a TypeKey identity, you can ' => 'Als u een TypeKey identiteit heeft, kunt u ',
-	'sign in' => 'zich aanmelden',
-	'to use it here.' => 'om ze hier te gebruiken.',
-	'Name' => 'Naam',
-	'Email Address' => 'E-mailadres',
-	'URL' => 'URL',
-	'(You may use HTML tags for style)' => '(u kunt HTML tags gebruiken voor de lay-out)',
-
 ## php/lib/block.mtentries.php
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
 
@@ -82,6 +60,7 @@ use vars qw( @ISA %Lexicon );
 	'Header' => 'Hoofding',
 	'Previewing your Comment' => 'U ziet een voorbeeld van uw reactie',
 	'Comment Detail' => 'Details reactie',
+	'Comments' => 'Reacties',
 
 ## default_templates/header.mtml
 	'[_1]: Search Results' => '[_1]: Zoekresultaten',
@@ -97,16 +76,12 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/search_results.mtml
 	'Search Results' => 'Zoekresultaten',
-	'Search this site' => 'Deze website doorzoeken',
-	'Search' => 'Zoek',
-	'Match case' => 'Kapitalisering moet overeen komen',
-	'Regex search' => 'Zoeken met reguliere expressies',
-	'Matching entries matching &ldquo;[_1]&rdquo; from [_2]' => 'Berichten die overeenkomen met &ldquo;[_1]&rdquo; van [_2]',
-	'Entries tagged with &ldquo;[_1]&rdquo; from [_2]' => 'Berichten getagd als &ldquo;[_1]&rdquo; van [_2]',
+	'Results matching &ldquo;[_1]&rdquo; from [_2]' => 'Resultaten die overeenkomen met &ldquo;[_1]&rdquo; uit [_2]', # Translate - New
+	'Results tagged &ldquo;[_1]&rdquo; from [_2]' => 'Resultaten getagd als &ldquo;[_1]&rdquo; uit [_2]', # Translate - New
 	'Entry Summary' => 'Samenvatting bericht',
-	'Entries matching &ldquo;[_1]&rdquo;' => 'Berichten die overeenkomen met &ldquo;[_1]&rdquo;',
-	'Entries tagged with &ldquo;[_1]&rdquo;' => 'Berichten getagd als &ldquo;[_1]&rdquo;',
-	'No pages were found containing &ldquo;[_1]&rdquo;.' => 'Er werden geen berichten gevonden met &ldquo;[_1]&rdquo; in.',
+	'Results matching &ldquo;[_1]&rdquo;' => 'Resultaten die overeenkomen met &ldquo;[_1]&rdquo;', # Translate - New
+	'Results tagged &ldquo;[_1]&rdquo;' => 'Resultaten getagd als &ldquo;[_1]&rdquo;', # Translate - New
+	'No results found for &ldquo;[_1]&rdquo;.' => 'Geen resultaten gevonden met &ldquo;[_1]&rdquo;', # Translate - New
 	'Instructions' => 'Gebruiksaanwijzing',
 	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Standaard zoekt deze zoekmachine naar alle woorden in eender welke volgorde.  Om een exacte uitdrukking te zoeken, gelieve aanhalingstekens rond uw zoekopdracht te zetten.',
 	'movable type' => 'movable type',
@@ -124,7 +99,13 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_form.mtml
 	'Leave a comment' => 'Laat een reactie achter',
+	'Name' => 'Naam',
+	'Email Address' => 'E-mailadres',
+	'URL' => 'URL',
 	'Remember personal info?' => 'Persoonijke gegevens onthouden?',
+	'(You may use HTML tags for style)' => '(u kunt HTML tags gebruiken voor de lay-out)',
+	'Preview' => 'Voorbeeld',
+	'Submit' => 'Invoeren',
 	'Cancel' => 'Annuleren',
 
 ## default_templates/tags.mtml
@@ -174,19 +155,25 @@ use vars qw( @ISA %Lexicon );
 	'[_1]: Monthly Archives' => '[_1]: Maandelijkse archieven',
 	'Subscribe to feed' => 'Inschrijven op feed',
 	'Subscribe to this blog\'s feed' => 'Inschrijven op de feed van deze weblog',
+	'Search results matching &ldquo;<$MTSearchString$>&rdquo;' => 'Zoekresultaten die overeen komen met &ldquo;<$MTSearchString$>&rdquo;', # Translate - New
+	'_MTCOM_URL' => 'http://www.movabletype.com/', # Translate - New
 	'Powered by Movable Type [_1]' => 'Aangedreven door Movable Type [_1]',
-	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&rdquo;.' => 'Als u een RSS lezer gebruikt, kunt u zich inschrijven op een feed van alle toekomstige berichten getagd &ldquo;<$MTSearchString$>&rdquo;.',
-	'If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&rdquo;.' => 'Als u een RSS lezer gebruikt, kunt u zich inschrijven op een feed van alle toekomstige berichten die overeenkomen met &ldquo;<$MTSearchString$>&rdquo;.',
-	'Feed Subscription' => 'Feed inschrijving',
+	'Search' => 'Zoek',
+	'Case sensitive' => 'Hoofdlettergevoelig', # Translate - Case
+	'Regex search' => 'Zoeken met reguliere expressies',
 	'Recent Entries' => 'Recente berichten',
 
 ## default_templates/rss.mtml
 	'Copyright [_1]' => 'Copyright [_1]',
 
 ## default_templates/javascript.mtml
+	'Thanks for signing in,' => 'Bedankt om u aan te melden,',
+	'. Now you can comment.' => '. U kunt hieronder reageren.',
+	'sign out' => 'afmelden',
 	'You do not have permission to comment on this blog.' => 'U heeft geen toestemming om reacties achter te laten op deze weblog',
-	' to comment on this entry,' => ' om te reageren op dit bericht,', # Translate - New
-	' to comment on this entry.' => ' om te reageren op dit bericht.', # Translate - New
+	'Sign in' => 'Aanmelden',
+	' to comment on this entry.' => ' om te reageren op dit bericht.',
+	' to comment on this entry,' => ' om te reageren op dit bericht,',
 	'or ' => 'of ',
 	'comment anonymously.' => 'reageer anoniem',
 
@@ -324,7 +311,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Blog \'[_1] (ID: [_2])\' voor gebruiker \'[_3] (ID: [_4])\' werd aangemaakt.',
 	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => 'Fout bij het toekennen van blog administratierechten aan gebruiker \'[_1] (ID: [_2])\' op blog \'[_3] (ID: [_4])\'.  Er werd geen geschikte blog administrator rol gevonden.',
 	'The login could not be confirmed because of a database error ([_1])' => 'Het aanmelden kon niet worden bevestigd wegens een databaseprobleem ([_1])',
-	'Permission denied.' => 'Toestemming geweigerd.',
+	'You do not have rights; please contact your Movable Type system administrator for gaining access to this installation.' => 'U heeft geen permissies; contacteer uw Movable Type systeembeheerder om toegang te krijgen tot deze installatie.', # Translate - New
 	'Invalid login.' => 'Ongeldige gebruikersnaam.',
 	'Failed login attempt by unknown user \'[_1]\'' => 'Mislukte poging tot aanmelden door onbekende gebruiker \'[_1]\'',
 	'This account has been disabled. Please see your system administrator for access.' => 'Deze account werd uitgeschakeld.  Contacteer uw systeembeheerder om weer toegang te krijgen.',
@@ -339,6 +326,7 @@ use vars qw( @ISA %Lexicon );
 	'Go Back' => 'Ga terug',
 	'The file you uploaded is too large.' => 'Het bestand dat u heeft geupload is te groot.',
 	'Unknown action [_1]' => 'Onbekende actie [_1]',
+	'Permission denied.' => 'Toestemming geweigerd.',
 	'Warnings and Log Messages' => 'Waarschuwingen en logberichten',
 	'Removed [_1].' => '[_1] verwijderd.',
 	'Loading template \'[_1]\' failed.' => 'Laden van sjabloon \'[_1]\' mislukt.',
@@ -468,7 +456,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1] is geen item dat door Movable Type teruggezet moet worden.',
 	'[_1] records restored.' => '[_1] records teruggezet.',
 	'Restoring [_1] records:' => '[_1] records aan het terugzetten:',
-	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => 'Gebruiker met dezelfde naam gevonden als die van de momenteel ingelogde ([_1]).  Record overgeslagen.', # Translate - New
+	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => 'Gebruiker met dezelfde naam gevonden als die van de momenteel ingelogde ([_1]).  Record overgeslagen.',
 	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => 'Een gebruiker met dezelfde naam \'[_1]\' werd gevonden (ID:[_2]).  Restore verving deze gebruiker door de data uit de backup.',
 	'Tag \'[_1]\' exists in the system.' => 'Tag \'[_1]\' bestaat in het systeem.',
 	'[_1] records restored...' => '[_1] records teruggezet...',
@@ -573,6 +561,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'U gebruikte een [_1] tag om te linken naar \'[_2]\' archieven, maar dat type archieven wordt niet gepubliceerd.',
 	'Could not create atom id for entry [_1]' => 'Kon geen atom id aanmaken voor bericht [_1]',
 	'To enable comment registration, you need to add a TypeKey token in your weblog config or user profile.' => 'Om registratie van reacties in te schakelen, moet u een TypeKey token toevoegen in de configuratie van uw weblog of in uw gebruikersprofiel.',
+	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'De MTCommentFields tag is niet meer beschikbaar; gelieve de [_1] sjabloonmodule te includeren ter vervanging.', # Translate - New
 	'You used an [_1] tag without a date context set up.' => 'U gebruikte een [_1] tag zonder dat er een datumcontext ingesteld was.',
 	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => 'U gebruikte een \'[_1]\' tag buiten de context van een reactie; misschien plaatste u die tag per ongeluik buiten een \'MTComments\' container?',
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1] kan enkel worden gebruikt met dagelijkse, wekelijkse of maandelijkse archieven.',
@@ -781,17 +770,19 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fout bij het toekennen van reactierechten aan gebruiker \'[_1] (ID: [_2])\' op weblog \'[_3] (ID: [_4])\'.  Er werd geen geschikte reageerder-rol gevonden.',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ongeldige aanmeldpoging van een reageerder [_1] op blog [_2](ID: [_3]) waar geenMovable Type native authenticatie is toegelaten.',
+	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'Authenticatie is geslaagd, maar nieuwe registraties zijn niet toegestaan.  Neem contact op met de systeembeheerder.', # Translate - New
+	'You need to sign up first.' => 'U moet zich eerst registreren', # Translate - New
 	'Login failed: permission denied for user \'[_1]\'' => 'Aanmelden mislukt: permissie geweigerd aan gebruiker \'[_1]\'',
 	'Login failed: password was wrong for user \'[_1]\'' => 'Aanmelden mislukt: fout in wachtwoord van gebruiker \'[_1]\'',
 	'Signing up is not allowed.' => 'Registreren is niet toegestaan.',
-	'User requires username.' => 'Gebruiker heeft gebruikersnaam nodig.',
-	'User requires display name.' => 'Gebruiker heeft getoonde naam nodig.',
-	'A user with the same name already exists.' => 'Er bestaat al een gebruiker met die naam.',
 	'User requires password.' => 'Gebruiker heeft wachtwoord nodig.',
 	'User requires password recovery word/phrase.' => 'Gebruiker heeft woord/zin om het wachtwoord terug te vinden nodig.',
+	'URL is invalid.' => 'URL is ongeldig.',
+	'User requires username.' => 'Gebruiker heeft gebruikersnaam nodig.',
+	'A user with the same name already exists.' => 'Er bestaat al een gebruiker met die naam.',
+	'User requires display name.' => 'Gebruiker heeft getoonde naam nodig.',
 	'Email Address is invalid.' => 'E-mail adres is ongeldig.',
 	'Email Address is required for password recovery.' => 'E-mail adres is vereist om het wachtwoord te kunnen terugvinden.',
-	'URL is invalid.' => 'URL is ongeldig.',
 	'Text entered was wrong.  Try again.' => 'De ingevoerde tekst was verkeerd.  Probeer opnieuw.',
 	'Something wrong happened when trying to process signup: [_1]' => 'Er ging iets mis bij het verwerken van de registratie: [_1]',
 	'Movable Type Account Confirmation' => 'Movable Type accountbevestiging',
@@ -863,6 +854,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
 	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
+	'CGI is required for all Movable Type application functionality.' => 'CGI is vereist voor alle functionaliteit van Movable Type.', # Translate - New
+	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec is vereist om paden te kunnen manipuleren op verschillende operating systemen.', # Translate - New
 
 ## lib/MT/App/Upgrader.pm
 	'Failed to authenticate using given credentials: [_1].' => 'Authenticatie met de opgegeven aanmeldgegevens mislukt: [_1].',
@@ -886,6 +879,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'The address [_1] has been unsubscribed.' => 'Het adres [_1] werd uitgeschreven.',
 
 ## lib/MT/App/CMS.pm
+	'No [_1] were found that match the given criteria.' => 'Er werden geen [_1] gevonden die overeenkomen met de opgegeven criteria.', # Translate - New
 	'_WARNING_PASSWORD_RESET_MULTI' => 'U staat op het punt het wachtwoord opnieuw in te stellen voor de geselecteerde gebruikers.  Nieuwe wachtwoorden zullen willekeurig worden gegenereerd en rechtstreeks naar hun e-mail adres worden verzonden.\n\nWenst u verder te gaan?',
 	'_WARNING_DELETE_USER_EUM' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker tot \'wees\' maakt.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies verwijderen.  Bent u zeker dat u deze gebruiker(s) wenst te verwijderen?\nGebruikers die nog bestaan in de externe directory zullen zichzelf weer kunnen aanmaken.',
 	'_WARNING_DELETE_USER' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker in \'wezen\' verandert.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies te verwijderen.  Bent u zeker dat u deze gebruiker wenst te verwijderen?',
@@ -918,16 +912,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Fout bij verzenden van e-mail ([_1]);  gelieve het probleem op te lossen en probeer dan opnieuw om uw wachtwoord terug te vinden.',
 	'(newly created user)' => '(nieuw aangemaakte gebruiker)',
 	'Files' => 'Bestanden',
-	'Invalid group id' => 'Ongeldig groeps-id',
-	'Users & Groups' => 'Gebruikers & Groepen',
-	'Group Roles' => 'Rollen groep',
-	'Invalid user id' => 'Ongeldig user-id',
-	'User Roles' => 'Rollen gebruiker',
-	'Group Associations' => 'Groepsassociaties',
+	'Untitled' => 'Zonder titel',
 	'User Associations' => 'Gebruikersassociaties',
 	'Role Users & Groups' => 'Gebruikers & Groepen met deze rol',
 	'(Custom)' => '(Gepersonaliseerd)',
 	'(user deleted)' => '(gebruiker verwijderd)',
+	'The user' => 'De gebruiker', # Translate - New
 	'Invalid type' => 'Ongeldig type',
 	'New name of the tag must be specified.' => 'Nieuwe naam van de tag moet opgegeven worden',
 	'No such tag' => 'Onbekende tag',
@@ -973,7 +963,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'New Template' => 'Nieuwe sjabloon',
 	'New Blog' => 'Nieuwe blog',
 	'pages' => 'pagina\'s',
-	'Create User' => 'Nieuwe account aanmaken',
+	'Create User' => 'Gebruiker aanmaken',
 	'User requires username' => 'Gebruiker vereist gebruikersnaam',
 	'User requires password' => 'Gebruiker vereist wachtwoord',
 	'User requires password recovery word/phrase' => 'Gebruiker heeft een woord/uitdrukking nodig om het wachtwoord te kunnen terugvinden',
@@ -988,8 +978,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Archive URL must be an absolute URL.' => 'Archief URL moet een absolute URL zijn.',
 	'You did not specify an Archive Root.' => 'U gaf geen archiefroot op.',
 	'The name \'[_1]\' is too long!' => 'De naam \'[_1]\' is te lang!',
-	'A user can\'t change his/her own username in this environment.' => 'Een gebruiker kan zijn/haar gebruikersnaam niet aanpassen in deze omgeving',
-	'An error occurred when enabling this user.' => 'Er deed zich een fout voor bij het activeren van deze gebruiker.',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Map \'[_1]\' aangemaakt door \'[_2]\'',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Categorie \'[_1]\' aangemaakt door \'[_2]\'',
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'De map \'[_1]\' conflicteert met een andere map. Mappen met dezelfde ouder moeten een unieke basisnaam hebben.',
@@ -1087,7 +1075,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'No permissions' => 'Geen permissies',
 	'Ping \'[_1]\' failed: [_2]' => 'Ping \'[_1]\' mislukt: [_2]',
-	'Create Role' => 'Nieuwe rol aanmaken',
+	'Create Role' => 'Rol aanmaken',
 	'Role name cannot be blank.' => 'Naam van de rol mag niet leeg zijn.',
 	'Another role already exists by that name.' => 'Er bestaat al een rol met die naam.',
 	'You cannot define a role without permissions.' => 'U kunt geen rol definiëren zonder permissies.',
@@ -1114,6 +1102,25 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Bestand met de naam \'[_1]\' bestaat al; Poging tot schrijven naar tijdelijk bestand ondernomen, openen mislukt: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Fout bij schrijven van upload naar \'[_1]\': [_2]',
 	'Search & Replace' => 'Zoeken & vervangen',
+	'Title' => 'Titel',
+	'Extended Entry' => 'Uitgebreid bericht',
+	'Keywords' => 'Trefwoorden',
+	'Excerpt' => 'Uittreksel',
+	'Basename' => 'Basisnaam',
+	'Comment Text' => 'Tekst reactie',
+	'IP Address' => 'IP adres',
+	'Source URL' => 'Bron URL',
+	'Page Body' => 'Romp van de pagina',
+	'Extended Page' => 'Uitgebreide pagina',
+	'Template Name' => 'Sjabloonnaam',
+	'Text' => 'Tekst',
+	'Linked Filename' => 'Naam gelinkt bestand',
+	'Output Filename' => 'Naam uitvoerbestand',
+	'Filename' => 'Bestandsnaam',
+	'Log Message' => 'Logbericht',
+	'Username' => 'Gebruikersnaam',
+	'Display Name' => 'Getoonde naam',
+	'Site URL' => 'URL van de site',
 	'Invalid date(s) specified for date range.' => 'Ongeldige datum(s) opgegeven in datumbereik.',
 	'Error in search expression: [_1]' => 'Fout in zoekexpressie: [_1]',
 	'Saving object failed: [_2]' => 'Object opslaan mislukt: [_2]',
@@ -1143,13 +1150,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Blogs Selected' => 'Geselecteerde blogs',
 	'Search Blogs' => 'Blogs zoeken',
 	'Select Users' => 'Gebruikers selecteren',
-	'Username' => 'Gebruikersnaam',
 	'Users Selected' => 'Gebruikers geselecteerd',
 	'Search Users' => 'Gebruikers zoeken',
-	'Select Groups' => 'Selecteer groepen',
-	'Group Name' => 'Groepsnaam',
-	'Groups Selected' => 'Geselecteerde groepen',
-	'Search Groups' => 'Groepen zoeken',
 	'Select Roles' => 'Selecteer rollen',
 	'Role Name' => 'Naam rol',
 	'Roles Selected' => 'Geselecteerde rollen',
@@ -1388,7 +1390,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Can comment and manage feedback.' => 'Kan reageren en feedback beheren',
 	'Can comment.' => 'Kan reageren.',
 	'Removing Dynamic Site Bootstrapper index template...' => 'Dynamisch site bootstrapper indexsjabloon wordt verwijderd...',
-	'Fixing binary data for Microsoft SQL Server storage...' => 'Binaire data aan het fixen voor opslag in Microsoft SQL Server...',
 	'Creating new template: \'[_1]\'.' => 'Nieuw sjabloon wordt aangemaakt: \'[_1]\'.',
 	'Mapping templates to blog archive types...' => 'Bezig met sjablonen aan archieftypes toe te wijzen...',
 	'Renaming PHP plugin file names...' => 'PHP plugin bestandsnamen aan het aanpassen...',
@@ -1593,6 +1594,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Blog Search Results' => 'Blog zoekresultaten',
 	'Blog search' => 'Blog doorzoeken',
 	'STRAIGHT SEARCHES GET THE SEARCH QUERY FORM' => 'GEWONE ZOEKOPDRACHTEN KRIJGEN HET ZOEKFORMULIER TE ZIEN',
+	'Search this site' => 'Deze website doorzoeken',
+	'Match case' => 'Kapitalisering moet overeen komen',
 	'SEARCH RESULTS DISPLAY' => 'ZOEKRESULTATEN TONEN',
 	'Matching entries from [_1]' => 'Gevonden berichten op [_1]',
 	'Entries from [_1] tagged with \'[_2]\'' => 'Berichten op [_1] getagd met \'[_2]\'',
@@ -1610,6 +1613,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged \'[_1]\'.' => 'Als u een RSS lezer gebruikt, kunt u inschrijven op een feed met alle toekomstige berichten met de tag \'[_1]\'.',
 	'If you use an RSS reader, you can subscribe to a feed of all future entries matching \'[_1]\'.' => 'Als u een RSS lezer gebruikt, kunt u inschrijven op een feed met alle toekomstige berichten met \'[_1]\' in.',
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => 'ZOEK/TAG FEED INSCHRIJVINGSINFORMATIE',
+	'Feed Subscription' => 'Feed inschrijving',
 	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.com/about/feeds',
 	'What is this?' => 'Wat is dit?',
 	'TAG LISTING FOR TAG SEARCH ONLY' => 'TAG OPSOMMING ENKEL VOOR TAG ZOEKEN',
@@ -1619,10 +1623,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/comment/signup.tmpl
 	'Create an account' => 'Maak een account aan',
-	'Your login name.' => 'Uw gebruikersnaam.',
-	'Display Name' => 'Getoonde naam',
 	'The name appears on your comment.' => 'Deze naam verschijnt onder uw reactie',
 	'Your email address.' => 'Uw e-mail adres.',
+	'Your login name.' => 'Uw gebruikersnaam.',
 	'Initial Password' => 'Initiëel wachtwoord',
 	'Select a password for yourself.' => 'Kies een wachtwoord voor uzelf.',
 	'Password Confirm' => 'Wachtwoord bevestigen',
@@ -1631,15 +1634,14 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'This word or phrase will be required to recover the password if you forget it.' => 'Dit woord of deze uitdrukking zal gevraagd worden om uw wachtwoord terug te vinden als u het bent verloren.',
 	'Website URL' => 'URL website',
 	'The URL of your website. (Optional)' => 'De URL van uw website. (Optioneel)',
-	'Enter your login name.' => 'Vul uw gebruikersnaam in',
-	'Password' => 'Wachtwoord',
-	'Enter your password.' => 'Vul uw wachtwoord in',
 	'Register' => 'Registreer',
 
 ## tmpl/comment/login.tmpl
 	'Sign in to comment' => 'Aanmelden om te reageren',
 	'Sign in using' => 'Aanmelden met',
+	'Password' => 'Wachtwoord',
 	'Forgot your password?' => 'Uw wachtwoord vergeten?',
+	'Remember me?' => 'Mij onthouden?',
 	'Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!' => 'Nog geen lid?&nbsp;&nbsp;<a href="[_1]">Registreer</a>!',
 
 ## tmpl/comment/profile.tmpl
@@ -1698,24 +1700,13 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'disabled' => 'uitgeschakeld',
 	'pending' => 'te bekijken',
 	'Filter' => 'Filter',
-	'user' => 'gebruiker',
-	'users' => 'gebruikers',
-	'Are you sure you want to remove the selected user from this blog?' => 'Bent u zeker dat u de geselecteerde gebruiker wenst te verwijderen van deze weblog?',
-	'Are you sure you want to remove the [_1] selected users from this blog?' => 'Bent u zeker dat u de [_1] geselecteerde gebruikers wenst te verwijderen van deze weblog?',
-	'Remove selected user(s) (r)' => 'Geselecteerde gebruiker(s) verwijderen (r)',
-	'Remove' => 'Verwijder',
 
 ## tmpl/cms/list_role.tmpl
-	'Roles for [_1] in' => 'Rollen voor [1_] in',
 	'Roles: System-wide' => 'Rollen: over heel het systeem',
 	'You have successfully deleted the role(s).' => 'De rol(len) zijn met succes verwijderd.',
 	'roles' => 'rollen',
 	'Delete selected [_1] (x)' => 'Geselecteerde [_1] verwijderen (x)',
-	'Grant another role to [_1]' => 'Een andere rol toekennen aan [_1]',
-	'Create Role' => 'Rol aanmaken',
 	'_USER_STATUS_CAPTION' => 'status',
-	'In Blog' => 'In blog',
-	'Via Group' => 'Via groep',
 	'Members' => 'Leden',
 	'Created By' => 'Aangemaakt door',
 	'Role Is Active' => 'Rol is actief',
@@ -1747,8 +1738,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Cancel (c)' => 'Annuleer (c)',
 
 ## tmpl/cms/edit_entry.tmpl
-	'Filename' => 'Bestandsnaam',
-	'Basename' => 'Basisnaam',
 	'folder' => 'map',
 	'folders' => 'mappen',
 	'categories' => 'categorieën',
@@ -1772,10 +1761,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and <a href="[_5]">[quant,_3,trackback,trackbacks]</a>.' => '[_1] heeft <a href="[_4]">[quant,_2,reactie,reacties]</a> en <a href="[_5]">[quant,_3,trackback,trackbacks]</a> ontvangen.',
 	'Display Options' => 'Opties voor schermindeling',
 	'Fields' => 'Velden',
-	'Title' => 'Titel',
 	'Body' => 'Romp',
-	'Excerpt' => 'Uittreksel',
-	'Keywords' => 'Trefwoorden',
 	'Publishing' => 'Publicatie',
 	'Top' => 'Bovenaan',
 	'Both' => 'Allebei',
@@ -1791,6 +1777,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'You have unsaved changes to your [_1] that will be lost.' => 'Er zijn niet opgeslagen wijzigingen aan uw [_1] die verloren zullen gaan',
 	'Publish On' => 'Publiceren op',
 	'Publish Date' => 'Datum publicatie',
+	'Remove' => 'Verwijder',
 	'Make primary' => 'Maak dit een hoofdcategorie',
 	'Add sub category' => 'Subcategorie toevoegen',
 	'Add [_1] name' => 'Voeg [_1] naam toe',
@@ -1924,7 +1911,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Error occurred while updating archive maps.' => 'Er deed zich teen fout voor bij het bijwerken van de archiefkoppelingen.',
 	'Archive map has been successfully updated.' => 'Archiefkoppelingen zijn met succes bijgewerkt.',
 	'Are you sure you want to remove this template map?' => 'Bent u zeker dat u deze sjabloonmapping wenst te verwijderen?',
-	'Template Name' => 'Sjabloonnaam',
 	'Module Body' => 'Moduletekst',
 	'Template Body' => 'Sjabloontekst',
 	'Syntax Highlight On' => 'Syntax highlighting aan',
@@ -1980,16 +1966,15 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'View all comments with this email address' => 'Alle reacties met dit e-mail adres bekijken',
 	'URL of commenter' => 'URL van de reageerder',
 	'View all comments with this URL' => 'Alle reacties met deze URL bekijken',
-	'[_1] this comment was made on' => '[_1] waarop deze reactie werd achtergelaten', # Translate - New
-	'[_1] no longer exists' => '[_1] bestaat niet meer', # Translate - New
-	'View all comments on this [_1]' => 'Alle reacties bekijken op [_1]', # Translate - New
+	'[_1] this comment was made on' => '[_1] waarop deze reactie werd achtergelaten',
+	'[_1] no longer exists' => '[_1] bestaat niet meer',
+	'View all comments on this [_1]' => 'Alle reacties bekijken op [_1]',
 	'Date' => 'Datum',
 	'Date this comment was made' => 'Datum van deze reactie',
 	'View all comments created on this day' => 'Alle reacties van die dag bekijken',
 	'IP' => 'IP',
 	'IP Address of the commenter' => 'IP adres van de reageerder',
 	'View all comments from this IP address' => 'Alle reacties van dit IP-adres bekijken',
-	'Comment Text' => 'Tekst reactie',
 	'Fulltext of the comment entry' => 'Volledige tekst van de reactie',
 	'Responses to this comment' => 'Antwoorden op dit bericht',
 
@@ -2123,6 +2108,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/dialog/asset_replace.tmpl
 	'A file named \'[_1]\' already exists. Do you want to overwrite this file?' => 'Er bestaat reeds een bestand net de naam \'[_1]\'. Wilt u dit bestand overschrijven?',
 	'Yes (s)' => 'Ja (s)',
+	'Yes' => 'Ja',
+	'No' => 'Nee',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Confirm Publishing Configuration' => 'Bevestig publicatieconfiguratie',
@@ -2143,7 +2130,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/install.tmpl
 	'Welcome to Movable Type' => 'Welkom bij Movable Type',
-	'Create Your First User' => 'Maak uw eerste gebruiker aan',
+	'Create Your Account' => 'Maak uw account aan', # Translate - New
 	'The initial account name is required.' => 'De oorspronkelijke accountnaam is vereist.',
 	'Password recovery word/phrase is required.' => 'Woord/uitdrukking om uw wachtwoord terug te vinden is vereist.',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]).' => 'De versie van Perl die op uw server is geïnstalleerd ([_1]) is lager dan de ondersteunde minimale versie ([_2]).',
@@ -2167,13 +2154,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Pinging sites...' => 'Bezig met pingen van sites...',
 
 ## tmpl/cms/edit_author.tmpl
-	'Create User' => 'Gebruiker aanmaken',
 	'Edit Profile' => 'Bewerk profiel',
-	'Your Web services password is currently' => 'Uw huidig webservices wachtwoord is',
-	'_WARNING_PASSWORD_RESET_SINGLE' => 'U staat op het punt het wachtwoord voor "[_1]" opnieuw in te stellen.  Een nieuw wachtwoord zal willekeurig worden aangemaakt en zal rechtstreeks naar het e-mail adres van deze gebruiker ([_2]) worden gestuurd.\n\nWenst u verder te gaan?',
 	'This profile has been updated.' => 'Dit profiel werd bijgewerkt.',
 	'A new password has been generated and sent to the email address [_1].' => 'Een nieuw wachtwoord werd gegenerereerd en is verzonden naar het e-mail adres [_1].',
-	'Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Enterprise probeerde net uw account uit te schakelen tijdens synchronisatie met de externe directory.  Er moet een fout zitten in de instellingen voor extern gebruikersbeheer.  Gelieve uw configuratie bij te stellen voor u verder gaat.',
+	'Your Web services password is currently' => 'Uw huidig webservices wachtwoord is',
+	'_WARNING_PASSWORD_RESET_SINGLE' => 'U staat op het punt het wachtwoord voor "[_1]" opnieuw in te stellen.  Een nieuw wachtwoord zal willekeurig worden aangemaakt en zal rechtstreeks naar het e-mail adres van deze gebruiker ([_2]) worden gestuurd.\n\nWenst u verder te gaan?',
 	'Profile' => 'Profiel',
 	'Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.' => 'Status van de gebruiker in het systeem.  Een gebruiker uitschakelen ontzegt hem/haar toegang tot het systeem maar bewaart content en geschiedenis.',
 	'_USER_ENABLED' => 'Ingeschakeld',
@@ -2220,15 +2205,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Set Web Services Password' => 'Webservices wachtwoord instellen',
 	'approved' => 'goedgekeurd',
 	'unapproved' => 'niet goedgekeurd',
-	'to publish' => 'om te publiceren',
-	'Publish selected [_1] (p)' => 'Geselecteerde [_1] publiceren (p)',
-	'Report selected [_1] as Spam (j)' => 'Geselecteerde [_1] rapporteren als spam (j)',
-	'Spam' => 'Spam',
-	'Report selected [_1] as Not Spam and Publish (j)' => 'Geselecteerde [_1] rapporteren als niet-spam en publiceren (j)',
-	'Not Spam' => 'Geen spam',
-	'Are you sure you want to remove all TrackBacks reported as spam?' => 'Bent u zeker dat u alle TrackBacks die als spam zijn gerapporteerd wenst te verwijderen?',
-	'Deletes all [_1] reported as Spam' => 'Verwijdert alle [_1] gerapporteerd als spam',
-	'Empty' => 'Leeg',
 
 ## tmpl/cms/login.tmpl
 	'Your Movable Type session has ended.' => 'Uw Movable Type sessie is beëindigd.',
@@ -2246,7 +2222,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'You must set a valid Site URL.' => 'U moet een geldige URL instellen voor uw site.',
 	'You must set a valid Local Site Path.' => 'U moet een geldig lokaal site-pad instellen.',
 	'Publishing Paths' => 'Publicatiepaden',
-	'Site URL' => 'URL van de site',
 	'The URL of your website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/blog/' => 'De URL van uw website.  Zet er geen bestandsnaam in (m.a.w. laat index.html weg).  Voorbeeld: http://www.voorbeeld.com/blog/',
 	'Unlock this blog&rsquo;s site URL for editing' => 'Maak de site URL van deze weblog bewerkbaar',
 	'Warning: Changing the site URL can result in breaking all the links in your blog.' => 'Waarschuwing: de site URL aanpassen kan tot gevolg hebben dat alle links naar uw weblog niet langer werken.',
@@ -2361,29 +2336,17 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/error.tmpl
 
 ## tmpl/cms/list_association.tmpl
-	'Permissions for [_1]' => 'Permissies voor [_1]',
-	'Group Associations for [_1]' => 'Groepsassociaties voor [_1]',
-	'Permissions: System-wide' => 'Permissies: over het hele systeem',
-	'Users &amp; Groups for [_1]' => 'Gebruikers &amp; groepen voor [_1]',
-	'Users for [_1]' => 'Gebruikers voor [_1]',
 	'permission' => 'permissie',
 	'permissions' => 'permissies',
 	'Remove selected assocations (x)' => 'Geselecteerde associaties verwijderen (x)',
 	'Revoke Permission' => 'Permissie intrekken',
-	'The user <em>[_1]</em> is currently disabled.' => 'De gebruiker <em>[_1]</em> is momenteel niet actief.',
-	'The group <em>[_1]</em> is currently disabled.' => 'De groep <em>[_1]</em> is momenteel niet actief.',
-	'You have successfully revoked the given permission(s).' => 'De gekozen permissie(s) zijn met succes ingetrokken.',
-	'You have successfully granted the given permission(s).' => 'De gekozen permissie(s) zijn met succes toegekend.',
 	'Grant Permission' => 'Permissie toekennen',
 	'You can not create associations for disabled users.' => 'U kunt geen associaties aanmaken voor uitgeschakelde gebruikers.',
-	'Add [_1] to a blog' => 'Voeg [_1] toe aan een blog',
-	'You can not create associations for disabled groups.' => 'U kunt geen associaties aanmaken voor uitgeschakelde groepen',
-	'Assign Role to Group' => 'Ken rol toe aan groep',
 	'Assign Role to User' => 'Ken rol toe aan gebruiker',
-	'Add a group to this blog' => 'Voeg een groep toe aan deze blog',
-	'Grant permission to a group' => 'Ken permissie to aan groep',
 	'Grant permission to a user' => 'Ken permissie toe aan gebruiker',
-	'User/Group' => 'Gebruiker/groep',
+	'[_1] <em>[_2]</em> is currently disabled.' => '[_1] <em>[_2]</em> is momenteel uitgeschakeld.', # Translate - New
+	'You have successfully revoked the given permission(s).' => 'De gekozen permissie(s) zijn met succes ingetrokken.',
+	'You have successfully granted the given permission(s).' => 'De gekozen permissie(s) zijn met succes toegekend.',
 	'Created On' => 'Aangemaakt',
 
 ## tmpl/cms/list_comment.tmpl
@@ -2398,8 +2361,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'[_1] on entries created within the last [_2] days' => '[_1] op berichten aangemaakt in de laatste [_2] dagen',
 	'[_1] on entries created more than [_2] days ago' => '[_1] op berichten aangemaakt langer dan [_2] dagen geleden',
 	'[_1] where [_2] [_3]' => '[_1] waar [_2] [_3]',
-	'Publish selected [_1] (a)' => 'Publiceer geselecteerde [_1] (a)',
-	'Are you sure you want to remove all comments reported as spam?' => 'Bent u zeker dat u alle reacties die als spam gemarkeerd zijn wenst te verwijderen?',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => 'Publiceren...',
@@ -2410,6 +2371,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Publishing [_1] templates...' => 'Bezig [_1] sjablonen te publiceren...',
 
 ## tmpl/cms/include/template_table.tmpl
+	'template' => 'sjabloon',
+	'templates' => 'sjablonen',
 	'Linked' => 'Gelinkt',
 	'Linked Template' => 'Gelinkt sjabloon',
 	'Dynamic' => 'Dynamisch',
@@ -2418,6 +2381,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Published Template w/Indexes' => 'Sjabloon gepubliceerd met indexen',
 	'View' => 'Bekijken',
 	'-' => '-',
+
+## tmpl/cms/include/list_associations/page_title.tmpl
+	'Permissions for [_1]' => 'Permissies voor [_1]',
+	'Permissions: System-wide' => 'Permissies: over het hele systeem',
+	'Users for [_1]' => 'Gebruikers voor [_1]',
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Path' => 'Pad',
@@ -2442,6 +2410,15 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Go' => 'Ga',
 
 ## tmpl/cms/include/ping_table.tmpl
+	'to publish' => 'om te publiceren',
+	'Publish selected [_1] (p)' => 'Geselecteerde [_1] publiceren (p)',
+	'Report selected [_1] as Spam (j)' => 'Geselecteerde [_1] rapporteren als spam (j)',
+	'Spam' => 'Spam',
+	'Report selected [_1] as Not Spam and Publish (j)' => 'Geselecteerde [_1] rapporteren als niet-spam en publiceren (j)',
+	'Not Spam' => 'Geen spam',
+	'Are you sure you want to remove all TrackBacks reported as spam?' => 'Bent u zeker dat u alle TrackBacks die als spam zijn gerapporteerd wenst te verwijderen?',
+	'Deletes all [_1] reported as Spam' => 'Verwijdert alle [_1] gerapporteerd als spam',
+	'Empty' => 'Leeg',
 	'From' => 'Van',
 	'Target' => 'Doel',
 	'Only show published TrackBacks' => 'Enkel gepubliceerde TrackBacks tonen',
@@ -2496,10 +2473,20 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Rebuild Site' => 'Site herbouwen',
 
 ## tmpl/cms/include/member_table.tmpl
+	'user' => 'gebruiker',
+	'users' => 'gebruikers',
+	'Are you sure you want to remove the selected user from this blog?' => 'Bent u zeker dat u de geselecteerde gebruiker wenst te verwijderen van deze weblog?',
+	'Are you sure you want to remove the [_1] selected users from this blog?' => 'Bent u zeker dat u de [_1] geselecteerde gebruikers wenst te verwijderen van deze weblog?',
+	'Remove selected user(s) (r)' => 'Geselecteerde gebruiker(s) verwijderen (r)',
 	'Trusted commenter' => 'Vertrouwde reageerder',
 	'Remove this role' => 'Verwijder deze rol',
 
 ## tmpl/cms/include/entry_table.tmpl
+	'Save these [_1] (s)' => 'Sla deze [_1] op (s)',
+	'to republish' => 'om opnieuw te publiceren',
+	'Republish selected [_1] (r)' => 'Herpubliceer geselecteerde [_1] (r)',
+	'Republish' => 'Herpubliceren',
+	'page' => 'pagina',
 	'Last Modified' => 'Laatst aangepast',
 	'Created' => 'Aangemaakt',
 	'Only show unpublished [_1]' => 'Enkel niet gepubliceerde [_1] tonen',
@@ -2527,6 +2514,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Web Services' => 'Webservices',
 
 ## tmpl/cms/include/blog_table.tmpl
+	'Delete selected blogs (x)' => 'Geselecteerde blogs verwijderen (x)',
 
 ## tmpl/cms/include/backup_end.tmpl
 	'All of the data has been backed up successfully!' => 'Alle gegevens zijn met succes opgeslagen!',
@@ -2542,11 +2530,43 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Creating new users for each user found in the blog' => 'Nieuwe gebruikers worden aangemaakt voor elke gebruiker gevonden in de weblog',
 
 ## tmpl/cms/include/users_content_nav.tmpl
-	'Groups' => 'Groepen',
-	'Group Profile' => 'Groepsprofiel',
 	'Details' => 'Details',
 
 ## tmpl/cms/include/calendar.tmpl
+	'_LOCALE_WEEK_START' => '1', # Translate - New
+	'Sunday' => 'Zondag',
+	'Monday' => 'Maandag',
+	'Tuesday' => 'Dinsdag',
+	'Wednesday' => 'Woensdag',
+	'Thursday' => 'Donderdag',
+	'Friday' => 'Vrijdag',
+	'Saturday' => 'Zaterdag',
+	'S|M|T|W|T|F|S' => 'M|D|W|D|V|Z|Z', # Translate - New
+	'January' => 'Januari', # Translate - New
+	'Febuary' => 'Februari', # Translate - New
+	'March' => 'Maart',
+	'April' => 'April',
+	'May' => 'Mei',
+	'June' => 'Juni',
+	'July' => 'Juli', # Translate - New
+	'August' => 'Augustus', # Translate - New
+	'September' => 'September', # Translate - New
+	'October' => 'Oktober', # Translate - New
+	'November' => 'November', # Translate - New
+	'December' => 'December', # Translate - New
+	'Jan' => 'Jan', # Translate - New
+	'Feb' => 'Feb', # Translate - New
+	'Mar' => 'Maa', # Translate - New
+	'Apr' => 'Apr', # Translate - New
+	'_SHORT_MAY' => 'Mei', # Translate - New
+	'Jun' => 'Jun', # Translate - New
+	'Jul' => 'Jul', # Translate - New
+	'Aug' => 'Aug', # Translate - New
+	'Sep' => 'Sep', # Translate - New
+	'Oct' => 'Okt', # Translate - New
+	'Nov' => 'Nov', # Translate - New
+	'Dec' => 'Dec', # Translate - New
+	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]', # Translate - New
 
 ## tmpl/cms/include/overview-left-nav.tmpl
 	'List Weblogs' => 'Lijst weblogs',
@@ -2560,6 +2580,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Show Activity Log' => 'Activiteitenlog bekijken',
 
 ## tmpl/cms/include/comment_table.tmpl
+	'Publish selected [_1] (a)' => 'Publiceer geselecteerde [_1] (a)',
+	'Are you sure you want to remove all comments reported as spam?' => 'Bent u zeker dat u alle reacties die als spam gemarkeerd zijn wenst te verwijderen?',
 	'Entry/Page' => 'Bericht/pagina',
 	'Only show published comments' => 'Enkel gepubliceerde reacties tonen',
 	'Only show pending comments' => 'Enkel hangende reacties tonen',
@@ -2603,7 +2625,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/include/log_table.tmpl
 	'No log records could be found.' => 'Er konden geen logberichten worden gevonden.',
-	'Log Message' => 'Logbericht',
 	'_LOG_TABLE_BY' => 'Door',
 	'IP: [_1]' => 'IP: [_1]',
 	'[_1]' => '[_1]',
@@ -2621,7 +2642,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'U heeft met succes de blogs verwijderd uit het Movable Type systeem.',
 	'Create Blog' => 'Blog aanmaken',
-	'Delete selected blogs (x)' => 'Geselecteerde blogs verwijderen (x)',
 	'Are you sure you want to delete this blog?' => 'Bent u zeker dat u deze weblog wenst te verwijderen?',
 
 ## tmpl/cms/upgrade.tmpl
@@ -2689,11 +2709,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Select A User:' => 'Selecteer een gebruiker:',
 	'User Search...' => 'Zoeken naar gebruiker...',
 	'Recent Users...' => 'Recente gebruikers...',
-	'Save these [_1] (s)' => 'Sla deze [_1] op (s)',
-	'to republish' => 'om opnieuw te publiceren',
-	'Republish selected [_1] (r)' => 'Herpubliceer geselecteerde [_1] (r)',
-	'Republish' => 'Herpubliceren',
-	'page' => 'pagina',
 
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'Wachtwoorden terugvinden',
@@ -2779,8 +2794,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/list_asset.tmpl
 	'You have successfully deleted the asset(s).' => 'U heeft met suuces de mediabestand(en) verwijderd.',
 	'type' => 'type',
-	'content' => 'inhoud',
-	'Delete selected assets (x)' => 'Geselecteerde mediabestanden verwijderen (x)',
 
 ## tmpl/cms/preview_strip.tmpl
 	'You are previewing the [_1] titled &ldquo;[_2]&rdquo;' => 'U bekijkt een voorbeeld van een [_1] met de titel &ldquo;[_2]&rdquo;',
@@ -2793,7 +2806,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'You have added [_1] to your list of banned IP addresses.' => 'U hebt [_1] toegevoegd aan uw lijst met uitgesloten IP adressen.',
 	'You have successfully deleted the selected IP addresses from the list.' => 'U hebt de geselecteerde IP adressen uit de lijst is verwijderd.',
 	'Ban IP Address' => 'Verban IP adres',
-	'IP Address' => 'IP adres',
 	'Date Banned' => 'Verbanningsdatum',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2865,7 +2877,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Are you sure you want to reset the settings for this plugin?' => 'Bent u zeker dat u de instellingen voor deze plugin wil terugzetten naar de standaardwaarden?',
 	'Are you sure you want to disable plugin functionality?' => 'Bent u zeker dat u plugin functionaliteit wenst uit te schakelen?',
 	'Disable this plugin?' => 'Deze plugin uitschakelen?',
-	'Are you sure you want to enable plugin functionality? (This will re-enable any plugins that were not individually disabled.)' => 'Bent u zeker dat u plugin-functies weer wenst in te schakelen? (Hierdoor zullen alle plugins opnieuw actief worden die niet individueel uitgeschakeld waren.)', # Translate - New
+	'Are you sure you want to enable plugin functionality? (This will re-enable any plugins that were not individually disabled.)' => 'Bent u zeker dat u plugin-functies weer wenst in te schakelen? (Hierdoor zullen alle plugins opnieuw actief worden die niet individueel uitgeschakeld waren.)',
 	'Enable this plugin?' => 'Deze plugin activeren?',
 	'Failed to Load' => 'Laden mislukt',
 	'(Disable)' => '(Desactiveren)',
@@ -2966,7 +2978,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/cfg_system_general.tmpl
 	'System: General Settings' => 'Systeem: Algemene instellingen',
 	'System Email' => 'Systeem e-mail',
-	'The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification, entry notification and a few other minor events.' => 'Het e-mail adres gebruikt in de From: hader van elke e-mail verstuurd door het systeem.  Dit adres wordt gebruikt bij het terugvinden van wachtwoorden, registratie van reageerders, trackback- en berichtnotificaties en een aantal andere, minder belangrijke gebeurtenissen.',
+	'The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification and a few other minor events.' => 'Het e-mail adres gebruikt in de From: hader van elke e-mail verstuurd door het systeem.  Dit adres wordt gebruikt bij het terugvinden van wachtwoorden, registratie van reageerders, trackback- en berichtnotificaties en een aantal andere, minder belangrijke gebeurtenissen.',
 
 ## tmpl/cms/dashboard.tmpl
 	'Select a Widget...' => 'Selecteer een widget...',
@@ -3123,28 +3135,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Date Range' => 'Bereik wissen',
 	'Reported as Spam?' => 'Rapporteren als spam?',
 	'Search Fields:' => 'Zoekvelden:',
-	'Extended Entry' => 'Uitgebreid bericht',
-	'E-mail Address' => 'E-mail adres',
-	'Source URL' => 'Bron URL',
-	'Page Body' => 'Romp van de pagina',
-	'Extended Page' => 'Uitgebreide pagina',
-	'Text' => 'Tekst',
-	'Output Filename' => 'Naam uitvoerbestand',
-	'Linked Filename' => 'Naam gelinkt bestand',
 	'_DATE_FROM' => 'Van',
 	'_DATE_TO' => 'Tot',
 	'Successfully replaced [quant,_1,record,records].' => 'Met succes [quant,_1,record,records] vervangen.',
 	'Showing first [_1] results.' => 'Eerste [_1] resultaten worden getoond.',
 	'Show all matches' => 'Alle overeenkomsten worden getoond',
 	'[quant,_1,result,results] found' => '[quant,_1,resultaat,resultaten] found',
-	'No entries were found that match the given criteria.' => 'Er werden geen berichten gevonden die overeenkwamen met de opgegeven criteria.',
-	'No comments were found that match the given criteria.' => 'Er werden geen reacties gevonden die overeenkwamen met de opgegeven criteria.',
-	'No TrackBacks were found that match the given criteria.' => 'Er werden geen TrackBacks gevonden die overeenkwamen met de opgegeven criteria.',
-	'No pages were found that match the given criteria.' => 'Er werden geen pagina\'s gevonden die overeen kwamen met de opgegeven criteria',
-	'No templates were found that match the given criteria.' => 'Er werden geen sjablonen gevonden die overeenkwamen met de opgegeven criteria.',
-	'No log messages were found that match the given criteria.' => 'Er werden geen logberichten gevonden die overeenkwamen met de opgegeven criteria.',
-	'No users were found that match the given criteria.' => 'Er werden geen gebruikers gevonden die overeenkwamen met de opgegeven criteria.',
-	'No blogs were found that match the given criteria.' => 'Er werden geen blogs gevonden die overeenkwamen met de opgegeven criteria.',
 
 ## tmpl/cms/widget/new_user.tmpl
 	'Welcome to Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => 'Welkom in Movable Type, het meest krachtige blog-, publicatie- en mediaplatform ter wereld.  Om u te helpen van start te gaan hebben we voor u enkele links voorzien naar de vaakst voorkomende handelingen die nieuwe gebruikers wensen uit te voeren:',
@@ -3160,10 +3156,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Loading recent entries...' => 'Recente berichten aan het laden...',
 	'Jan.' => 'Jan.',
 	'Feb.' => 'Feb.',
-	'March' => 'Maart',
-	'April' => 'April',
-	'May' => 'Mei',
-	'June' => 'Juni',
 	'July.' => 'Juli',
 	'Aug.' => 'Aug.',
 	'Sept.' => 'Sept.',
@@ -3246,8 +3238,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Blogsjablonen',
 	'Blog Publishing Settings' => 'Blogpublicatie-instellingen',
-	'template' => 'sjabloon',
-	'templates' => 'sjablonen',
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
 	'Create Archive Template:' => 'Archiefsjabloon aanmaken:',
 	'Create [_1] template' => 'Nieuw [_1] sjabloon aanmaken',
@@ -3398,7 +3388,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/email/new-comment.tmpl
 	'An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => 'Een niet gekeurde reactie is binnengekomen op uw weblog [_1], op bericht #[_2] ([_3]). U moet deze reactie eerst goedkeuren voor ze op uw site verschijnt.',
 	'A new comment has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'Een nieuwe reactie is gepubliceerd op uw blog [_1], op bericht #[_2] ([_3]).',
-	'Commenter name: [_1]' => 'Naam reageerder: [_1]', # Translate - New
+	'Commenter name: [_1]' => 'Naam reageerder: [_1]',
 	'Commenter email address: [_1]' => 'E-mail adres reageerder: [_1]',
 	'Commenter URL: [_1]' => 'URL reageerder: [_1]',
 	'Commenter IP address: [_1]' => 'IP adres reageerder: [_1]',
@@ -3409,8 +3399,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/email/notify-entry.tmpl
 	'A new [_3] entitled \'[_1]\' has been published to [_2].' => 'Een [_3] getiteld \'[_1]\' is gepubliceerd op [_2].',
-	'View [_1]:' => '[_1] bekijken:', # Translate - New
-	'[_1] Title: [_2]' => '[_1] titel: [_2]', # Translate - New
+	'View [_1]:' => '[_1] bekijken:',
+	'[_1] Title: [_2]' => '[_1] titel: [_2]',
 	'Publish Date: [_1]' => 'Publicatiedatum: [_1]',
 	'Message from Sender:' => 'Boodschap van afzender:',
 	'You are receiving this email either because you have elected to receive notifications about new content on [_1], or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:' => 'U ontvangt dit bericht omdat u ofwel gekozen hebt om notificaties over nieuw inhoud op [_1] te ontvangen, of de auteur van het bericht dacht dat u misschien wel geïnteresseerd zou zijn.  Als u deze berichten niet langer wenst te ontvangen, gelieve deze persoon te contacteren:',
@@ -3424,7 +3414,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'To view or edit this user, please click on or cut and paste the following URL into a web browser:' => 'Om deze gebruiker te bekijken of te bewerken, klik op deze link of plak de URL in een webbrowser:',
 
 ## tmpl/feeds/feed_page.tmpl
-	'Untitled' => 'Zonder titel',
 	'Unpublish' => 'Publicatie ongedaan maken',
 	'More like this' => 'Meer zoals dit',
 	'From this blog' => 'Van deze blog',
@@ -3451,6 +3440,303 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'By commenter name' => 'Volgens naam reageerders',
 	'By commenter email' => 'Volgens e-mail reageerders',
 	'By commenter URL' => 'Volgens URL reageerders',
+
+## addons/Enterprise.pack/config.yaml
+	'Enterprise Pack' => 'Enterprise pack', # Translate - New
+	'Oracle Database' => 'Oracle database', # Translate - New
+	'Microsoft SQL Server Database' => 'Microsoft SQL Server database', # Translate - New
+	'Microsoft SQL Server Database (UTF-8 support)' => 'Microsoft SQL Server database (UTF-8 ondersteuning)', # Translate - New
+	'External Directory Synchronization' => 'Externe directory-synchronisatie', # Translate - New
+	'Populating author\'s external ID to have lower case user name...' => 'Externe ID\'s van de auteurs worden ingevuld zodat gebruikersnamen in kleine letters staan...', # Translate - New
+
+## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
+	'You need to create some groups.' => 'U moet een paar groepen aanmaken.', # Translate - New
+	'Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Click here</a> to create a group.' => 'Voor u dit kunt doen, moet u eerst een paar groepen aanmaken. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Klik hier</a> om een groep aan te maken.', # Translate - New
+
+## addons/Enterprise.pack/tmpl/include/list_associations/page_title.group.tmpl
+	'Users &amp; Groups for [_1]' => 'Gebruikers &amp; groepen voor [_1]',
+	'Group Associations for [_1]' => 'Groepsassociaties voor [_1]',
+
+## addons/Enterprise.pack/tmpl/include/group_table.tmpl
+	'group' => 'groep', # Translate - New
+	'groups' => 'groepen', # Translate - Case
+	'Enable selected [_1] (e)' => 'Activeer geselecteerde [_1] (e)', # Translate - New
+	'Disable selected [_1] (d)' => 'Deactiveer geselecteerde [_1] (d)', # Translate - New
+	'Remove selected [_1] (d)' => 'Verwijder geselecteerde [_1] (d)', # Translate - New
+	'Only show enabled groups' => 'Enkel actieve groepen tonen', # Translate - New
+	'Only show disabled groups' => 'Enkel niet-actieve groepen tonen', # Translate - New
+
+## addons/Enterprise.pack/tmpl/include/users_content_nav.tmpl
+	'Groups' => 'Groepen',
+	'Group Profile' => 'Groepsprofiel',
+
+## addons/Enterprise.pack/tmpl/author_bulk.tmpl
+	'Manage Users in bulk' => 'Gebruikers beheren in bulk', # Translate - New
+	'_USAGE_AUTHORS_2' => 'U kunt gebruikers aanmaken, bewerken en verwijderen in bulk door een CSV-geformatteerd bestand te uploaden dat de juiste instructies en relevante gegevens bevat.',
+	'Upload source file' => 'Bronbestand uploaden', # Translate - New
+	'Specify the CSV-formatted source file for upload' => 'Geef het CSV-geformatteerde bronbestand op dat moet worden geupload', # Translate - New
+	'Source File Encoding' => 'Encodering bronbestand', # Translate - New
+	'Upload (u)' => 'Uploaden (u)', # Translate - New
+
+## addons/Enterprise.pack/tmpl/create_author_bulk_start.tmpl
+	'Bulk Author Import' => 'Auteurs importeren in bulk', # Translate - New
+	'Updating...' => 'Bijwerken...', # Translate - New
+
+## addons/Enterprise.pack/tmpl/create_author_bulk_end.tmpl
+	'All users updated successfully!' => 'Alle gebruikers met succes bijgewerkt', # Translate - New
+	'An error occurred during the updating process. Please check your CSV file.' => 'Er deed zich een probleem voor tijdens het updateproces.  Controleer uw CSV bestand.', # Translate - New
+
+## addons/Enterprise.pack/tmpl/list_group.tmpl
+	'[_1]: User&rsquo;s Groups' => '[_1] groepen van gebruiker', # Translate - New
+	'Groups: System Wide' => 'Groepen: over heel het systeem', # Translate - New
+	'The user <em>[_1]</em> is currently disabled.' => 'De gebruiker <em>[_1]</em> is momenteel niet actief.',
+	'_USAGE_GROUPS' => 'Hieronder vindt u een lijst van alle groepen in het Movable Type systeem.  U kunt een groep inschakelen of uitschakelen door het vakje naast de groep aan te kruisen en op de knoppen te klikken onderaan.  U kunt een groep bewerken door op de naam ervan te klikken.',
+	'_USAGE_GROUPS_USER' => 'Hieronder vindt u een lijst van alle groepen waar de gebruiker lid van is. U kunt de gebruiker uit een groep verwijderen door het vakje naast de groep aan te kruisen en op de VERWIJDEREN knop te klikken.',
+	'_USAGE_GROUPS_LDAP' => 'Hieronder vindt u een lijst van alle groepen in het Movable Type systeem.  U kunt een groep inschakelen of uitschakelen door het vakje naast de groep aan te kruisen en op de knoppen te klikken onderaan.',
+	'_USAGE_GROUPS_USER_LDAP' => 'Hieronder vindt u een lijst van alle groepen waar de gebruiker lid van is.',
+    
+	'Synchronize groups now' => 'Groepen nu synchroniseren', # Translate - New
+	'You have successfully disabled the selected group(s).' => 'De geselecteerde groep(en) werden met suuces uitgeschakeld.', # Translate - New
+	'You have successfully enabled the selected group(s).' => 'De geselecteerde groep(en) werden met suuces ingeschakeld.', # Translate - New
+	'You have successfully deleted the groups from the Movable Type system.' => 'De geselecteerde groep werd verwijderd uit het Movable Type systeem.', # Translate - New
+	'You have successfully synchronized groups\' information with the external directory.' => 'U heeft met succes groepsinformatie gesynchroniseerd met de externe directory.', # Translate - New
+	'You can not add disabled users to groups.' => 'U kunt geen uitgeschakelde gebruikers toevoegen aan een groep.', # Translate - New
+	'Add [_1] to another group' => 'Voeg [_1] toe aan een andere groep', # Translate - New
+	'Create Group' => 'Groep aanmaken', # Translate - New
+	'You did not select any [_1] to remove.' => 'U selecteerde geen [_] om te verwijderen.', # Translate - New
+	'Are you sure you want to remove this [_1]?' => 'Bent u zeker dat u deze [_1] wenst te verwijderen?', # Translate - New
+	'Are you sure you want to remove the [_1] selected [_2]?' => 'Bent u zeker dat u de [_1] geselecteerde [_2] wenst te verwijderen?', # Translate - New
+	'to remove' => 'te verwijderen', # Translate - New
+
+## addons/Enterprise.pack/tmpl/cfg_ldap.tmpl
+	'Authentication Configuration' => 'Authenticatieconfiguratie', # Translate - New
+	'You must set your Authentication URL.' => 'U moet uw AuthenticatieURL instellen.', # Translate - New
+	'You must set your Group search base.' => 'U moet uw Group search base instellen.', # Translate - New
+	'You must set your UserID attribute.' => 'U moet uw UserID attribuut instellen.', # Translate - New
+	'You must set your email attribute.' => 'U moet uw email attribuut instellen.', # Translate - New
+	'You must set your user fullname attribute.' => 'U moet uw user fullname attribuut instellen.', # Translate - New
+	'You must set your user member attribute.' => 'U moet uw user member attribuut instellen.', # Translate - New
+	'You must set your GroupID attribute.' => 'U moet uw GroupID attribuut instellen.', # Translate - New
+	'You must set your group name attribute.' => 'U moet uw group name attribuut instellen.', # Translate - New
+	'You must set your group fullname attribute.' => 'U moet uw fullname attribuut instellen.', # Translate - New
+	'You must set your group member attribute.' => 'U moet uw group member attribuut instellen.', # Translate - New
+	'You can configure your LDAP settings from here if you would like to use LDAP-based authentication.' => 'U kunt uw LDAP instellingen van hieruit configureren als uw LDAP-gebaseerde authenticatie wenst te gebruiken.', # Translate - New
+	'Your configuration was successful.' => 'Configuratie is geslaagd.', # Translate - New
+	'Click \'Continue\' below to configure the External User Management settings.' => 'Klik hieronder op \'Doorgaan\' om de instellingen voor extern gebruikersbeheer te configureren.', # Translate - New
+	'Click \'Continue\' below to configure your LDAP attribute mappings.' => 'Klik hieronder op \'Doorgaan\' om uw LDAP attribute mappings in te stellen.', # Translate - New
+	'Your LDAP configuration is complete.' => 'Uw LDAP configuratie is voltooid.', # Translate - New
+	'To finish with the configuration wizard, press \'Continue\' below.' => 'Om naar het einde van de configuratiewizard te gaan, klik hieronder op \'Doorgaan\'.', # Translate - New
+	'An error occurred while attempting to connect to the LDAP server: ' => 'Er deed zich een fout voor bij het verbinden met de LDAP server: ', # Translate - New
+	'Use LDAP' => 'LDAP gebruiken', # Translate - New
+	'Authentication URL' => 'Authenticatie URL', # Translate - New
+	'The URL to access for LDAP authentication.' => 'De URL te gebruiken om toegang te krijgen tot LDAP authenticatie', # Translate - New
+	'Authentication DN' => 'Authenticatie DN', # Translate - New
+	'An optional DN used to bind to the LDAP directory when searching for a user.' => 'Een optionele DN die wordt gebruikt om aan de LDAP directory te binden wanneer er naar een gebruiker wordt gezocht.', # Translate - New
+	'Authentication password' => 'Authenticatiewachtwoord', # Translate - New
+	'Used for setting the password of the LDAP DN.' => 'Gebruikt om het wachtwoord in te stellen van de LDAP DN', # Translate - New
+	'SASL Mechanism' => 'SASL mechanisme', # Translate - New
+	'The name of SASL Mechanism to use for both binding and authentication.' => 'De naam van het SASL mechanisme dat gebruikt moet worden bij het binden en de authenticatie.', # Translate - New
+	'Test Username' => 'Test gebruikersnaam', # Translate - New
+	'Test Password' => 'Test wachtwoord', # Translate - New
+	'Enable External User Management' => 'Extern gebruikersbeheer inschakelen', # Translate - New
+	'Synchronization Frequency' => 'Synchronisatiefrequentie', # Translate - New
+	'Frequency of synchronization in minutes. (Default is 60 minutes)' => 'Synchronisatiefrequentie in minuten. (Standaard is 60 minuten)', # Translate - New
+	'15 Minutes' => '15 minuten', # Translate - New
+	'30 Minutes' => '30 minuten', # Translate - New
+	'60 Minutes' => '60 minuten', # Translate - New
+	'90 Minutes' => '90 minuten', # Translate - New
+	'Group search base attribute' => 'Group search basisattribuut', # Translate - New
+	'Group filter attribute' => 'Group filter attribuut', # Translate - New
+	'Search Results (max 10 entries)' => 'Zoekresultaten (max. 10 items)', # Translate - New
+	'CN' => 'CN', # Translate - New
+	'No groups were found with these settings.' => 'Er werden geen groepen gevonden met deze instellingen', # Translate - New
+	'Attribute mapping' => 'Attribuutmapping', # Translate - New
+	'LDAP Server' => 'LDAP server', # Translate - New
+	'Other' => 'Andere', # Translate - New
+	'User ID attribute' => 'User ID attribuut', # Translate - New
+	'Email Attribute' => 'Email attribuut', # Translate - New
+	'User fullname attribute' => 'User fullname attribuut', # Translate - New
+	'User member attribute' => 'User member attribuut', # Translate - New
+	'GroupID attribute' => 'GroupID attribuut', # Translate - New
+	'Group name attribute' => 'Group name attribuut', # Translate - New
+	'Group fullname attribute' => 'Group fullname attribuut', # Translate - New
+	'Group member attribute' => 'Group member attribuut', # Translate - New
+	'Search result (max 10 entries)' => 'Zoekresultaat (max. 10 items)', # Translate - New
+	'Group Name' => 'Groepsnaam',
+	'Group Fullname' => 'Volledige naam groep', # Translate - New
+	'Group Member' => 'Groepslid', # Translate - New
+	'No groups could be found.' => 'Er werden geen groepen gevonden', # Translate - New
+	'User Fullname' => 'Volledige naam gebruiker', # Translate - New
+	'No users could be found.' => 'Er werden geen gebruikers gevonden', # Translate - New
+	'Test connection to LDAP' => 'Verbinding met LDAP testen', # Translate - New
+	'Test search' => 'Zoektest', # Translate - New
+
+## addons/Enterprise.pack/tmpl/edit_group.tmpl
+	'Edit Group' => 'Groep bewerken', # Translate - New
+	'Group profile has been updated.' => 'Groepsprofiel is bijgewerkt', # Translate - New
+	'Group Disabled' => 'Groep uitgeschakeld', # Translate - New
+	'_USAGE_GROUP_PROFILE' => 'In dit scherm kunt u het profiel van de groep bewerken.',
+	'_USAGE_NEW_GROUP' => 'In dit scherm kunt u een nieuwe groep toevoegen aan het systeem.',
+	'LDAP Group ID' => 'LDAP Group ID', # Translate - New
+	'The LDAP directory ID for this group.' => 'Het LDAP directory ID van deze groep', # Translate - New
+	'The name used for identifying this group.' => 'De naam gebruikt om deze groep mee aan te duiden.', # Translate - New
+	'The display name for this group.' => 'De getoonde naam van deze groep.', # Translate - New
+	'Status of group in the system. Disabling a group removes its members&rsquo; access to the system but preserves their content and history.' => 'Status van de groep in het systeem.  Een groep uitschakelen heft de toegang tot het systeem op van de groepsleden maar bewaart wel hun inhoud en geschiedenis.', # Translate - New
+	'Enter a description for your group.' => 'Vul een beschrijving in voor uw groep.', # Translate - New
+	'Created on' => 'Aangemaakt', # Translate - Case
+
+## addons/Enterprise.pack/tmpl/list_group_member.tmpl
+	'[_1]: Group Members' => '[_1]: Groepsleden', # Translate - New
+	'<em>[_1]</em>: Group Members' => '<em>[_1]</em>: Groepsleden', # Translate - New
+	'You have successfully deleted the users.' => 'De geselecteerde gebruikers werden verwijderd', # Translate - New
+	'You have successfully added new users to this group.' => 'U heeft met succes nieuwe gebruikers toegevoegd aan deze groep.', # Translate - New
+	'You have successfully synchronized users\' information with external directory.' => 'U heeft met succes de gebruikersinformatie gesynchroniseerd met een externe directory.', # Translate - New
+	'Some ([_1]) of the selected users could not be re-enabled because they were no longer found in LDAP.' => 'Enkele ([_1]) van de geselecteerde gebruikers konden niet opnieuw worden ingeschakeld omdat ze niet meer werden gevonden in de LDAP.', # Translate - New
+	'You have successfully removed the users from this group.' => 'U heeft met succes de gebruikers verwijderd uit deze groep.', # Translate - New
+	'member' => 'lid', # Translate - New
+	'Show Enabled Members' => 'Actieve gebruikers tonen', # Translate - New
+	'Show Disabled Members' => 'Niet-actieve gebruikers tonen', # Translate - New
+	'Show All Members' => 'Alle leden tonen', # Translate - New
+	'You can not add users to a disabled group.' => 'U kunt geen leden toevoegen aan een uitgeschakelde groep.', # Translate - New
+	'Add user to [_1]' => 'Gebruiker toevoegen aan [_1]', # Translate - New
+	'None.' => 'Geen.', # Translate - New
+	'(Showing all users.)' => '(Alle gebruikers worden getoond.)', # Translate - New
+	'Showing only users whose [_1] is [_2].' => 'Enkel gebruikers waarvan de [_1] [_2] is.', # Translate - New
+	'Show' => 'Toon', # Translate - New
+	'all' => 'alle', # Translate - Case
+	'only' => 'enkel', # Translate - New
+	'users where' => 'gebruikers waarvan de', # Translate - New
+	'No members in group' => 'Geen leden in de groep', # Translate - New
+	'Only show enabled users' => 'Enkel actieve gebruikers tonen', # Translate - New
+	'Only show disabled users' => 'Enkel niet-actieve gebruikers tonen', # Translate - New
+	'Are you sure you want to remove this [_1] from this group?' => 'Bent u zeker dat u deze [_1] wenst te verwijderen uit deze groep?', # Translate - New
+	'Are you sure you want to remove the [_1] selected [_2] from this group?' => 'Bent u zeker dat u de [_1] geselecteerde [_2] wenst te verwijderen uit deze groep?', # Translate - New
+
+## addons/Enterprise.pack/app-wizard.yaml
+	'This module is required in order to use the LDAP Authentication.' => 'Deze module is vereist als u LDAP authenticatie wenst te gebruiken.', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
+	'PublishCharset [_1] is not supported in this version of MS SQL Server Driver.' => 'PublishCharset [_1] wordt niet ondersteund in deze versie van de MS SQL Server driver.', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/UMSSQLServer.pm
+	'This version of UMSSQLServer driver requires DBD::ODBC version 1.14.' => 'Deze versie van de UMSSQLServer driver vereist DBD::ODBC versie 1.14.', # Translate - New
+	'This version of UMSSQLServer driver requires DBD::ODBC compiled with Unicode support.' => 'Deze verie van de UMSSQLServer driver vereist DBD::ODBC gecompileerd met Unicode ondersteuning.', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/LDAP.pm
+	'Invalid LDAPAuthURL scheme: [_1].' => 'Ongeldig LDAPAuthURL schema: [_1].', # Translate - New
+	'Error connecting to LDAP server [_1]: [_2]' => 'Probleem bij connecteren naar LDAP server [_1]: [_2]', # Translate - New
+	'User not found on LDAP: [_1]' => 'Gebruiker niet gevonden op LDAP: [_1]', # Translate - New
+	'Binding to LDAP server failed: [_1]' => 'Binden aan LDAP server mislukt: [_1]', # Translate - New
+	'More than one user with the same name found on LDAP: [_1]' => 'Meer dan één gebruiker gevonden met dezelfde naam op LDAP: [_1]', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Group.pm
+	'Group' => 'Groep', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
+	'User [_1]([_2]) not found.' => 'Gebruker [_1]([_2]) niet gevonden.', # Translate - New
+	'User \'[_1]\' cannot be updated.' => 'Gebruiker \'[_1]\' kan niet worden bijgewerkt.', # Translate - New
+	'User \'[_1]\' updated with LDAP login ID.' => 'Gebruiker \'[_1]\' bijgewerkt met LDAP login ID.', # Translate - New
+	'LDAP user [_1] not found.' => 'LDAP gebruiker [_1] niet gevonden.', # Translate - New
+	'User [_1] cannot be updated.' => 'Gebruiker [_1] kan niet worden bijgewerkt.', # Translate - New
+	'User cannot be updated: [_1].' => 'Gebruiker kan niet worden bijgewerkt: [_1].', # Translate - New
+	'Failed login attempt by user \'[_1]\' deleted from LDAP.' => 'Mislukte aanmeldpoging van gebruiker \'[_1]\' verwijderd uit de LDAP.', # Translate - New
+	'User \'[_1]\' updated with LDAP login name \'[_2]\'.' => 'Gebruiker \'[_1]\' bijgewerkt met LDAP loginnaam \'[_2]\'.', # Translate - New
+	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => 'Mislukte aanmeldpoging van gebruiker \'[_1]\'.  Een gebruiker met die gebruikersnaam bestaat al in het systeem met een andere UUID.', # Translate - New
+	'User \'[_1]\' account is disabled.' => 'Account van gebruiker \'[_1]\' is niet actief.', # Translate - New
+	'LDAP users synchronization interrupted.' => 'LDAP gebruikerssynchronisatie onderbroken', # Translate - New
+	'Loading MT::LDAP failed: [_1]' => 'Laden van MT::LDAP mislukt: [_1]', # Translate - New
+	'External user synchronization failed.' => 'Externe gebruikerssynchronisatie mislukt.', # Translate - New
+	'An attempt to disable all system administrators in the system was made.  Synchronization of users was interrupted.' => 'Een poging om alle systeembeheerders in het systeem uit te schakelen werd ondernomen.  Synchronisatie van gebruikers werd onderbroken.', # Translate - New
+	'The following users\' information were modified:' => 'Gebruikersinformaie van deze gebruikers werd aangepast:', # Translate - New
+	'The following users were disabled:' => 'Deze gebruikers werden gedesactiveerd:', # Translate - New
+	'LDAP users synchronized.' => 'LDAP gebruikers gesynchroniseerd', # Translate - New
+	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute is set.' => '', # Translate - New
+	'LDAP groups synchronized with existing groups.' => '', # Translate - New
+	'The following groups\' information were modified:' => '', # Translate - New
+	'No LDAP group was found using given filter.' => '', # Translate - New
+	"Filter used to search for groups: [_1]\nSearch base: [_2]" => '', # Translate - New
+	'(none)' => '(Geen)', # Translate - Case
+	'The following groups were deleted:' => '', # Translate - New
+	'Failed to create a new group: [_1]' => '', # Translate - New
+	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Enterprise.' => '', # Translate - New
+	'Members removed: ' => '', # Translate - New
+	'Members added: ' => '', # Translate - New
+	'Memberships of the group \'[_2]\' (#[_3]) has been changed in synchronizing with external directory.' => '', # Translate - New
+	'LDAPUserGroupMemberAttribute must be set to enable synchronize members of groups.' => '', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Enterprise/Wizard.pm
+	'PLAIN' => '', # Translate - New
+	'CRAM-MD5' => '', # Translate - New
+	'Digest-MD5' => '', # Translate - New
+	'Login' => '', # Translate - New
+	'Found' => '', # Translate - New
+	'Not Found' => '', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Enterprise/BulkCreation.pm
+	'Format error at line [_1]: [_2]' => '', # Translate - New
+	'Invalid command: [_1]' => '', # Translate - New
+	'Invalid number of columns for [_1]' => '', # Translate - New
+	'Invalid user name: [_1]' => '', # Translate - New
+	'Invalid display name: [_1]' => '', # Translate - New
+	'Invalid email address: [_1]' => '', # Translate - New
+	'Invalid language: [_1]' => '', # Translate - New
+	'Invalid password: [_1]' => '', # Translate - New
+	'Invalid password recovery phrase: [_1]' => '', # Translate - New
+	'Invalid weblog name: [_1]' => '', # Translate - New
+	'Invalid weblog description: [_1]' => '', # Translate - New
+	'Invalid site url: [_1]' => '', # Translate - New
+	'Invalid site root: [_1]' => '', # Translate - New
+	'Invalid timezone: [_1]' => '', # Translate - New
+	'Invalid new user name: [_1]' => '', # Translate - New
+	'A user with the same name was found.  Register was not processed: [_1]' => '', # Translate - New
+	'Blog for user \'[_1]\' can not be created.' => '', # Translate - New
+	'Blog \'[_1]\' for user \'[_2]\' has been created.' => '', # Translate - New
+	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => '', # Translate - New
+	'Permission granted to user \'[_1]\'' => '', # Translate - New
+	'User \'[_1]\' already exists. Update was not processed: [_2]' => '', # Translate - New
+	'User \'[_1]\' not found.  Update was not processed.' => '', # Translate - New
+	'User \'[_1]\' has been updated.' => '', # Translate - New
+	'User \'[_1]\' was found, but delete was not processed' => '', # Translate - New
+	'User \'[_1]\' not found.  Delete was not processed.' => '', # Translate - New
+	'User \'[_1]\' has been deleted.' => '', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
+	'Add [_1] to a blog' => 'Voeg [_1] toe aan een blog',
+	'You can not create associations for disabled groups.' => 'U kunt geen associaties aanmaken voor uitgeschakelde groepen',
+	'Assign Role to Group' => 'Ken rol toe aan groep',
+	'Add a group to this blog' => 'Voeg een groep toe aan deze blog',
+	'Grant permission to a group' => 'Ken permissie to aan groep',
+	'Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Enterprise probeerde net uw account uit te schakelen tijdens synchronisatie met de externe directory.  Er moet een fout zitten in de instellingen voor extern gebruikersbeheer.  Gelieve uw configuratie bij te stellen voor u verder gaat.',
+	'Group requires name' => '', # Translate - New
+	'Invalid group' => '', # Translate - New
+	'Add Users to Group [_1]' => '', # Translate - New
+	'Users & Groups' => 'Gebruikers & Groepen',
+	'Group Members' => '', # Translate - New
+	'User Groups' => '', # Translate - New
+	'Group load failed: [_1]' => '', # Translate - New
+	'User load failed: [_1]' => '', # Translate - New
+	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => '', # Translate - New
+	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => '', # Translate - New
+	'Author load failed: [_1]' => '', # Translate - New
+	'Invalid user' => '', # Translate - New
+	'Assign User [_1] to Groups' => '', # Translate - New
+	'Select Groups' => 'Selecteer groepen',
+	'Groups Selected' => 'Geselecteerde groepen',
+	'Type a group name to filter the choices below.' => '', # Translate - New
+	'Search Groups' => 'Groepen zoeken',
+	'Bulk import cannot be used under external user management.' => '', # Translate - New
+	'Bulk management' => '', # Translate - New
+	'The group' => '', # Translate - New
+	'User/Group' => 'Gebruiker/groep',
+	'A user can\'t change his/her own username in this environment.' => 'Een gebruiker kan zijn/haar gebruikersnaam niet aanpassen in deze omgeving',
+	'An error occurred when enabling this user.' => 'Er deed zich een fout voor bij het activeren van deze gebruiker.',
+
+## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
+	'Fixing binary data for Microsoft SQL Server storage...' => 'Binaire data aan het fixen voor opslag in Microsoft SQL Server...',
+
+## addons/Enterprise.pack/app-cms.yaml
+	'Bulk Author Export' => '', # Translate - New
+	'Synchronize Users' => '', # Translate - New
 
 ## plugins/feeds-app-lite/tmpl/config.tmpl
 	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widgetmaker',
@@ -3608,19 +3894,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## plugins/WidgetManager/default_widgets/calendar.tmpl
 	'Monthly calendar with links to each day\'s posts' => 'Maandkalender met links naar de berichten van elke dag',
-	'Sunday' => 'Zondag',
 	'Sun' => 'Zon',
-	'Monday' => 'Maandag',
 	'Mon' => 'Maa',
-	'Tuesday' => 'Dinsdag',
 	'Tue' => 'Din',
-	'Wednesday' => 'Woensdag',
 	'Wed' => 'Woe',
-	'Thursday' => 'Donderdag',
 	'Thu' => 'Don',
-	'Friday' => 'Vrijdag',
 	'Fri' => 'Vri',
-	'Saturday' => 'Zaterdag',
 	'Sat' => 'Zat',
 
 ## plugins/WidgetManager/default_widgets/signin.tmpl
@@ -3832,6 +4111,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 );
 
-## New words: 70
+## New words: 1414
 
 1;

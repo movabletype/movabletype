@@ -133,6 +133,8 @@ the address you provided is correct and belongs to you.',
     '_DATE_FROM' => 'From',
     '_DATE_TO' => 'To',
     '_LOCALE_WEEK_START' => '0',
+    '_SHORT_MAY' => 'May',
+    '_MTCOM_URL' => 'http://www.movabletype.com/',
 
     '_AUTO' => 1,
     'DAILY_ADV' => 'Daily',

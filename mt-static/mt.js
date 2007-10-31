@@ -939,7 +939,7 @@ function dirify (s) {
     s = s.toLowerCase();
     s = s.replace(/&[^;\s]+;/g, '');
     s = s.replace(/[^-a-z0-9_ ]/g, '');
-    s = s.replace(/\s+/g, '-');
+    s = s.replace(/\s+/g, '_');
     return s;
 }
 

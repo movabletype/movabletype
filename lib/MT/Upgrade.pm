@@ -543,11 +543,6 @@ sub core_upgrade_functions {
             version_limit => 3.3101,
             priority => 5.1,
         },
-        'core_fix_blob_for_mssqlserver' => {
-            code => \&fix_blob_for_mssqlserver,
-            version_limit => 4.0002,
-            priority => 3.1,
-        },
         'core_deprecate_bitmask_permissions' => {
             code => \&deprecate_bitmask_permissions,
             version_limit => 4.0002,
@@ -1407,32 +1402,6 @@ sub remove_mtviewphp {
     1;
 }
 
-sub fix_blob_for_mssqlserver {
-    my $self = shift;
-    my (%param) = @_;
-
-    my $driver = MT->config->ObjectDriver;
-    return unless $driver =~ /MSSQLServer/i;
-
-    $self->progress($self->translate_escape('Fixing binary data for Microsoft SQL Server storage...'));
-
-    require MT::Session;
-    my $sess_iter = MT::Session->load_iter();
-    while (my $sess_obj = $sess_iter->()) {
-        $sess_obj->data(pack('H*', $sess_obj->data)) if defined $sess_obj->data;
-        $sess_obj->save;
-    }
-
-    require MT::PluginData;
-    my $pd_iter = MT::PluginData->load_iter();
-    while (my $pd_obj = $pd_iter->()) {
-        $pd_obj->data(pack('H*', $pd_obj->data)) if defined $pd_obj->data;
-        $pd_obj->save;
-    }
-
-    1;
-}
-
 sub migrate_commenter_auth {
     my ($self) = shift;
     my (%param) = @_;
@@ -1637,12 +1606,17 @@ sub post_schema_upgrade {
 
             if ($func->{plugin} && (UNIVERSAL::isa($func->{plugin}, 'MT::Component'))) {
                 my $id = $func->{plugin}->id;
-                $from = $plugin_ver->{$id} || $from;
+                $from = $plugin_ver->{$id};
             }
             if ($func->{version_limit}
                 && (defined $from)
                 && ($from < $func->{version_limit})) {
                 $self->add_step($fn, from => $from);
+            }
+            elsif ($func
+                && !exists($func->{version_limit})
+                && !defined($from)) {
+                $self->add_step($fn);
             }
         }
         $from = $save_from;

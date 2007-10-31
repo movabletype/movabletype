@@ -11,15 +11,6 @@
     <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog" class="icon-left icon-create"><__trans phrase="Create Blog"></a></p>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="action_buttons">
-    <mt:if name="is_administrator">
-    <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="blog" escape="js">', '<__trans phrase="blogs" escape="js">'); return false;"
-        accesskey="x"
-        title="<__trans phrase="Delete selected blogs (x)">"
-        ><__trans phrase="Delete"></a>
-    </mt:if>
-</mt:setvarblock>
 <mt:setvarblock name="related_content">
     <$mt:include name="include/display_options.tmpl"$>
     <$mtapp:pageactions from="list_blog"$>

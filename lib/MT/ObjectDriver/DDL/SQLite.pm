@@ -49,7 +49,9 @@ sub column_defs {
             $defs->{$colname}{auto} = 1;
         }
         #if ($skip_null_checks) {
+        if ( exists $obj_defs->{$colname} ) {
             $defs->{$colname}{not_null} = $obj_defs->{$colname}{not_null};
+        }
         #} else {
         #    if ( (defined $null->[$col]) && ($null->[$col] == 0) ) {
         #        $defs->{$colname}{not_null} = 1;

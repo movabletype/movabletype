@@ -260,6 +260,11 @@ sub is_superuser {
     my $author = shift;
     if (@_) {
         $author->permissions(0)->can_administer(@_);
+        if ($_[0]) {
+            $author->permissions(0)->can_create_blog(@_);
+            $author->permissions(0)->can_view_log(@_);
+            $author->permissions(0)->can_manage_plugins(@_);
+        }
     } else {
         $author->permissions(0)->can_administer() ||
             $author->SUPER::is_superuser();

@@ -1459,7 +1459,7 @@ fieldset h3 {
 }
 .search-replace .actions-bar-top, 
 .search-replace .actions-bar-bottom { 
-    display: none; 
+    display: block; 
 }
 .edit-entry .actions-bar-bottom { 
     margin-bottom: .75em;

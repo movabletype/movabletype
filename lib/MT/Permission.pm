@@ -99,6 +99,20 @@ sub blog {
         $pkg->perms() unless @Perms;
     }
 
+    sub _all_perms {
+        my ($scope) = @_;
+        my @perms;
+        if ( my $perms = MT->registry("permissions") ) {
+            foreach my $p (%$perms) {
+                my ( $s, $name ) = split /\./, $p;
+                next unless $s && $name;
+                next unless $s eq $scope;
+                push @perms, "'$name'";
+            }
+        }
+        return join ',', @perms;
+    }
+
     sub add_permissions {
         my $perms = shift;
 
@@ -106,6 +120,9 @@ sub blog {
         # permission field. So it works with MT::Permission and MT::Role.
         my ($more_perm) = @_;
         if ( my $more = $more_perm->permissions ) {
+            if ( $more =~ /'administer_blog'/ ) {
+                $more = _all_perms('blog');
+            }
             my $cur_perm = $perms->permissions;
             my @newperms;
             for my $p ( split ',', $more ) {

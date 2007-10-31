@@ -963,12 +963,21 @@ sub core_list_filters {
                     require MT::Entry;
                     my $app = MT->instance;
                     $terms->{junk_status} = [ 0, 1 ];
-                    $args->{join} = MT::Entry->join_on(
+                    require MT::Trackback;
+                    $args->{join} = MT::Trackback->join_on(
                         undef,
                         {
-                            id        => \'= tbping_entry_id',
-                            author_id => $app->user->id
-                        }
+                            id => \'= tbping_tb_id',
+                        },
+                        {
+                            join => MT::Entry->join_on(
+                                undef,
+                                {
+                                    id => \'= trackback_entry_id',
+                                    author_id => $app->user->id
+                                }
+                            )
+                        },
                     );
                 },
             },
@@ -2076,57 +2085,13 @@ sub _merge_default_assignments {
     }
 }
 
-sub list_assets {
+sub build_asset_hasher {
     my $app = shift;
 
-    my $blog_id = $app->param('blog_id');
-    my $blog;
-    if ($blog_id) {
-        my $blog_class = $app->model('blog');
-        $blog = $blog_class->load($blog_id)
-          or return $app->errtrans("Invalid request.");
-        my $perms = $app->permissions;
-        return $app->errtrans("Permission denied.")
-          unless $app->user->is_superuser
-          || (
-            $perms
-            && (   $perms->can_edit_assets
-                || $perms->can_edit_all_posts
-                || $perms->can_create_post )
-          );
-    }
-
-    my $asset_class = $app->model('asset') or return;
-    my %terms;
-    my %args = ( sort => 'created_on', direction => 'descend' );
-
-    my $class_filter;
-    my $filter = ( $app->param('filter') || '' );
-    if ( $filter eq 'class' ) {
-        $class_filter = $app->param('filter_val');
-    }
-
-    $app->add_breadcrumb( $app->translate("Files") );
-    if ($blog_id) {
-        $terms{blog_id} = $blog_id;
-    }
-    else {
-        unless ( $app->user->is_superuser ) {
-            my @perms = MT::Permission->load( { author_id => $app->user->id } );
-            my @blog_ids;
-            push @blog_ids, $_->blog_id
-              foreach grep { $_->can_edit_assets } @perms;
-            $terms{blog_id} = \@blog_ids;
-        }
-    }
-
-    my %blogs;
     require File::Basename;
     require JSON;
-    my $auth_prefs = $app->user->entry_prefs;
-    my $tag_delim  = chr( $auth_prefs->{tag_delim} );
-
-    my $hasher = sub {
+    my %blogs;
+    return sub {
         my ( $obj, $row ) = @_;
         my $blog = $blogs{ $obj->blog_id } ||= $obj->blog;
         $row->{blog_name} = $blog ? $blog->name : '-';
@@ -2177,6 +2142,53 @@ sub list_assets {
         }
         $row->{metadata_json} = JSON::objToJson($meta);
     };
+}
+
+sub list_assets {
+    my $app = shift;
+
+    my $blog_id = $app->param('blog_id');
+    my $blog;
+    if ($blog_id) {
+        my $blog_class = $app->model('blog');
+        $blog = $blog_class->load($blog_id)
+          or return $app->errtrans("Invalid request.");
+        my $perms = $app->permissions;
+        return $app->errtrans("Permission denied.")
+          unless $app->user->is_superuser
+          || (
+            $perms
+            && (   $perms->can_edit_assets
+                || $perms->can_edit_all_posts
+                || $perms->can_create_post )
+          );
+    }
+
+    my $asset_class = $app->model('asset') or return;
+    my %terms;
+    my %args = ( sort => 'created_on', direction => 'descend' );
+
+    my $class_filter;
+    my $filter = ( $app->param('filter') || '' );
+    if ( $filter eq 'class' ) {
+        $class_filter = $app->param('filter_val');
+    }
+
+    $app->add_breadcrumb( $app->translate("Files") );
+    if ($blog_id) {
+        $terms{blog_id} = $blog_id;
+    }
+    else {
+        unless ( $app->user->is_superuser ) {
+            my @perms = MT::Permission->load( { author_id => $app->user->id } );
+            my @blog_ids;
+            push @blog_ids, $_->blog_id
+              foreach grep { $_->can_edit_assets } @perms;
+            $terms{blog_id} = \@blog_ids;
+        }
+    }
+
+    my $hasher = $app->build_asset_hasher;
 
     if ($class_filter) {
         my $asset_pkg = MT::Asset->class_handler($class_filter);
@@ -3704,7 +3716,7 @@ sub build_blog_table {
 
     if (@data) {
         $param->{blog_table}[0]{object_loop} = \@data;
-        $app->load_list_actions( 'blog', $param->{blog_table}[0] );
+        $app->load_list_actions( 'blog', \%$param );
         $param->{object_loop} = $param->{blog_table}[0]{object_loop};
     }
 
@@ -8830,16 +8842,21 @@ sub save_object {
                     unless $obj->auth_type;
                 if ( $values{'status'} == MT::Author::ACTIVE() ) {
                     my $sys_perms = MT::Permission->perms('system');
-                    foreach (@$sys_perms) {
-                        my $name = 'can_' . $_->[0];
-                        $name = 'is_superuser'
-                          if $name eq 'can_administer';    ##FIXME lame
-                        if ( defined $q->param($name) ) {
-                            $obj->$name( $q->param($name) );
-                            delete $values{$name};
-                        }
-                        else {
-                            $obj->$name(0);
+                    if ( defined($q->param('is_superuser'))
+                      && $q->param('is_superuser')) {
+                        $obj->is_superuser(1);
+                    }
+                    else {
+                        foreach (@$sys_perms) {
+                            my $name = 'can_' . $_->[0];
+                            $name = 'is_superuser' if $name eq 'can_administer';
+                            if ( defined $q->param($name) ) {
+                                $obj->$name( $q->param($name) );
+                                delete $values{$name};
+                            }
+                            else {
+                                $obj->$name(0);
+                            }
                         }
                     }
                 }
@@ -10513,6 +10530,50 @@ sub list_comments {
     );
 }
 
+sub build_asset_table {
+    my $app = shift;
+    my (%args) = @_;
+
+    my $asset_class = $app->model('asset') or return;
+    my $perms     = $app->permissions;
+    my $list_pref = $app->list_pref('asset');
+    my $limit     = $args{limit};
+    my $param     = $args{param} || {};
+    my $iter;
+    if ( $args{load_args} ) {
+        my $class = $app->model('asset');
+        $iter = $class->load_iter( @{ $args{load_args} } );
+    }
+    elsif ( $args{iter} ) {
+        $iter = $args{iter};
+    }
+    elsif ( $args{items} ) {
+        $iter = sub { pop @{ $args{items} } };
+        $limit = scalar @{ $args{items} };
+    }
+    return [] unless $iter;
+
+    my @data;
+    my $hasher = $app->build_asset_hasher;
+    while ( my $obj = $iter->() ) {
+        my $row = $obj->column_values;
+        $hasher->($obj, $row);
+        $row->{object} = $obj;
+        push @data, $row;
+        last if $limit and @data > $limit;
+    }
+    return [] unless @data;
+
+    $param->{template_table}[0]              = {%$list_pref};
+    $param->{template_table}[0]{object_loop} = \@data;
+    $param->{template_table}[0]{object_type} = 'asset';
+    $app->load_list_actions( 'asset', $param );
+    $param->{object_loop} = \@data;
+    $param->{can_delete_files} = 1
+        if (($perms && $perms->can_edit_assets) || $app->user->is_superuser);
+    \@data;
+}
+
 sub build_template_table {
     my $app = shift;
     my (%args) = @_;
@@ -10720,7 +10781,7 @@ sub build_comment_table {
     $param->{object_loop} = $param->{comment_table}[0]{object_loop}
       unless exists $param->{object_loop};
 
-    $app->load_list_actions( 'comment', $param->{comment_table}[0] );
+    $app->load_list_actions( 'comment', \%$param );
     \@data;
 }
 
@@ -11993,7 +12054,11 @@ sub save_entries {
 
             # FIXME: Should be assigning the publish_date field here
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
-            $entry->authored_on($ts);
+            if ($type eq 'page' ) {
+                $entry->modified_on($ts);
+            } else {
+                $entry->authored_on($ts);
+            }
         }
         $entry->save
           or return $app->error(
@@ -13546,6 +13611,10 @@ sub save_cfg_system_feedback {
 sub reset_plugin_config {
     my $app = shift;
 
+    $app->validate_magic or return;
+    return $app->errtrans("Permission denied.")
+        unless $app->user->can_manage_plugins;
+
     my $q          = $app->param;
     my $plugin_sig = $q->param('plugin_sig');
     my $profile    = $MT::Plugins{$plugin_sig};
@@ -13561,6 +13630,10 @@ sub reset_plugin_config {
 
 sub save_plugin_config {
     my $app = shift;
+
+    $app->validate_magic or return;
+    return $app->errtrans("Permission denied.")
+        unless $app->user->can_manage_plugins;
 
     my $q          = $app->param;
     my $plugin_sig = $q->param('plugin_sig');
@@ -13602,7 +13675,6 @@ sub preview_entry {
     my $q           = $app->param;
     my $type        = $q->param('_type') || 'entry';
     my $entry_class = $app->model($type);
-    my $pkg         = $app->model($type);
     my $blog_id     = $q->param('blog_id');
     my $blog        = $app->blog;
     my $id          = $q->param('id');
@@ -13610,7 +13682,8 @@ sub preview_entry {
     my $user_id = $app->user->id;
 
     if ($id) {
-        $entry = $entry_class->load( { id => $id, blog_id => $blog_id } );
+        $entry = $entry_class->load( { id => $id, blog_id => $blog_id } )
+            or return $app->errtrans( "Invalid request." );
         $user_id = $entry->author_id;
     }
     else {
@@ -13671,7 +13744,6 @@ sub preview_entry {
     $entry->authored_on($ts);
 
     my $preview_basename = $app->preview_object_basename;
-    $entry->basename($preview_basename);
 
     require MT::TemplateMap;
     require MT::Template;
@@ -13686,13 +13758,23 @@ sub preview_entry {
     my $tmpl;
     my $fullscreen;
     my $archive_file;
+    my $orig_file;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
+        my $file_ext = $blog->file_extension || '';
+        $blog->file_extension('');
         $archive_file = $entry->archive_file;
+        $blog->file_extension($file_ext);
+
         my $blog_path = $type eq 'page' ?
             $blog->site_path :
             ($blog->archive_path || $blog->site_path);
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
+        require File::Basename;
+        my $path;
+        ( $orig_file, $path ) = File::Basename::fileparse( $archive_file );
+        $file_ext = '.' . $file_ext if $file_ext ne '';
+        $archive_file = File::Spec->catfile( $path, $preview_basename . $file_ext );
     }
     else {
         $tmpl       = $app->load_tmpl('preview_entry_content.tmpl');
@@ -13714,6 +13796,7 @@ sub preview_entry {
     $ctx->var('entry_template',    1);
     $ctx->var('feedback_template', 1);
     $ctx->var('archive_class',     'entry-archive');
+    $ctx->var('preview_template',  1);
     my $html = $tmpl->output;
     my %param;
     unless ( defined($html) ) {
@@ -13746,7 +13829,9 @@ sub preview_entry {
         if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
             $fmgr->put_data( $html, $archive_file );
             $param{preview_file} = $preview_basename;
-            $param{preview_url}  = $entry->archive_url;
+            my $preview_url = $entry->archive_url;
+            $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$1!x;
+            $param{preview_url}  = $preview_url;
 
             # we have to make a record of this preview just in case it
             # isn't cleaned up by re-editing, saving or cancelling on
@@ -13843,11 +13928,11 @@ sub preview_entry {
             $app->uri( 'mode' => $list_mode, args => { blog_id => $blog_id } )
         );
         $app->add_breadcrumb(
-            $app->translate( 'New [_1]', $pkg->class_label ) );
+            $app->translate( 'New [_1]', $entry_class->class_label ) );
         $param{nav_new_entry} = 1;
     }
     $param{object_type}  = $type;
-    $param{object_label} = $pkg->class_label;
+    $param{object_label} = $entry_class->class_label;
     if ($fullscreen) {
         return $app->load_tmpl( 'preview_entry.tmpl', \%param );
     }
@@ -14112,7 +14197,7 @@ sub rebuild_pages {
         my $start = time;
         my $count = 0;
         my $cb    = sub {
-            return 0 if time - $start > 10;    # 10 seconds
+            return 0 if time - $start > 20;    # 10 seconds
             $count++;
             return 1;
         };
@@ -14152,7 +14237,7 @@ sub rebuild_pages {
                 my $start = time;
                 my $count = 0;
                 my $cb    = sub {
-                    return 0 if time - $start > 10;    # 10 seconds
+                    return 0 if time - $start > 20;    # 10 seconds
                     $count++;
                     return 1;
                 };
@@ -15561,7 +15646,7 @@ sub do_search_replace {
     if ( !$type || ( 'category' eq $type ) || ( 'folder' eq $type ) ) {
         $type = 'entry';
     }
-
+    
     foreach my $obj_type (qw( role association )) {
         if ( $type eq $obj_type ) {
             $type = 'author';
@@ -15990,6 +16075,15 @@ sub do_import {
         )
       );
 
+    if ( 'POST' ne $app->request_method ) {
+        return $app->redirect(
+            $app->uri(
+                'mode' => 'start_import',
+                args => { blog_id => $blog_id }
+            )
+        );
+    }
+    
     my $import_as_me = $q->param('import_as_me');
 
     ## Determine the user as whom we will import the entries.

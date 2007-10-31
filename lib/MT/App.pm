@@ -781,7 +781,7 @@ sub _cb_user_provisioning {
         if (-d $root) {
             my $path;
             $dir_name = MT::Util::dirify($new_blog->name);
-            $dir_name = 'blog-' if ($dir_name =~ /_*/);
+            $dir_name = 'blog-' if ($dir_name =~ /^_*$/);
             my $sfx = 0;
             while (1) {
                 $path = File::Spec->catdir($root, $dir_name . ($sfx ? $sfx : ''));
@@ -1402,7 +1402,7 @@ sub _send_comment_notification {
           );
         my $spam_link = $base
           . $app->uri_params(
-            'mode' => 'unapprove_item',
+            'mode' => 'handle_junk',
             args   => {
                 blog_id => $blog->id,
                 '_type' => 'comment',
@@ -2230,6 +2230,7 @@ sub load_list_actions {
     }
     my $filters = $app->list_filters( $type, @p );
     $param->{list_filters} = $filters if $filters;
+    return $param;
 }
 
 sub load_tmpl {

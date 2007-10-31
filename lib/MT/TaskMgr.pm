@@ -84,7 +84,6 @@ sub run_tasks {
                 kind => 'PT'
             });
             next if $sess && ($sess->start + $task->frequency > time);
-
             if (!$sess) {
                 $sess = MT::Session->new;
                 $sess->id('Task:' . $task->key);

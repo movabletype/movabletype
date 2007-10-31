@@ -139,7 +139,11 @@ sub install_properties {
     # check for any supplemental columns from other components
     my $more_props = MT->registry('object_types', $type_id);
     if ($more_props && (ref($more_props) eq 'ARRAY')) {
-        my ($cols) = grep { ref($_) eq 'HASH' } @$more_props;
+        my $cols = {};
+        for my $prop (@$more_props) {
+            next if ref($prop) ne 'HASH';
+            MT::__merge_hash($cols, $prop, 1);
+        }
         my @classes = grep { !ref($_) } @$more_props;
         foreach my $isa_class (@classes) {
             next if UNIVERSAL::isa($class, $isa_class);
@@ -147,7 +151,7 @@ sub install_properties {
             no strict 'refs'; ## no critic
             push @{$class . '::ISA'}, $isa_class;
         }
-        if ($cols) {
+        if (%$cols) {
             # special case for 'plugin' key...
             delete $cols->{plugin} if exists $cols->{plugin};
             for my $name (keys %$cols) {
@@ -534,11 +538,60 @@ sub load {
     }
 }
 
-sub load_iter   {
-    ## Data::ObjectDriver's search returns an iterator in scalar
-    ## context, or undef if there's an error (which we want).
+# More or less replacing Data::ObjectDriver::Driver::DBI::search here
+# to provide an 'early-finish' iterator as MT::ObjectDriver had provided.
 
-    return scalar shift->search(@_);
+sub load_iter   {
+    my $class = shift;
+    my($terms, $args) = @_;
+
+    my $driver = $class->driver;
+    my $dbi_driver = $driver;
+
+    while ( $dbi_driver->isa('Data::ObjectDriver::Driver::BaseCache') ) {
+        $dbi_driver = $dbi_driver->fallback;
+    }
+
+    if ($dbi_driver->dbd eq 'MT::ObjectDriver::Driver::SQLite') {
+        # for SQLite, use search method, since this technique
+        # will cause it to lock the table
+        return scalar $class->search(@_);
+    }
+
+    my $rec = {};
+    my $sth = $dbi_driver->fetch($rec, $class, $terms, $args);
+
+    my $iter = sub {
+        ## This is kind of a hack--we need $driver to stay in scope,
+        ## so that the DESTROY method isn't called. So we include it
+        ## in the scope of the closure.
+        my $d = $dbi_driver;
+        my $d2 = $driver;
+
+        if (@_ && ($_[0] eq 'finish')) {
+            if ($sth) {
+                $sth->finish;
+                $dbi_driver->end_query($sth);
+            }
+            undef $sth;
+            return;
+        }
+
+        unless ($sth->fetch) {
+            $sth->finish;
+            $dbi_driver->end_query($sth);
+            return;
+        }
+        my $obj;
+        $obj = $class->new;
+        $obj->set_values_internal($rec);
+        ## Don't need a duplicate as there's no previous version in memory
+        ## to preserve.
+        $obj->call_trigger('post_load') unless $args->{no_triggers};
+        $driver->cache_object($obj) if $obj && (!$args->{fetchonly});
+        $obj;
+    };
+    return $iter;
 }
 
 ## Callbacks

@@ -207,6 +207,15 @@ sub save_config {
     }
     require MT::Config;
     my ($config) = MT::Config->load() || new MT::Config;
+
+    if ($data !~ m/schemaversion/i) {
+        if ($config->id && (($config->data || '') =~ m/schemaversion/i)) {
+            require Carp;
+            MT->log(Carp::longmess("Caught attempt to clear SchemaVersion setting. New config settings were:\n$data"));
+            return;
+        }
+    }
+
     $config->data($data);
     $config->save or die $config->errstr;
 }

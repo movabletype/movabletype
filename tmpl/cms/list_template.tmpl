@@ -16,15 +16,6 @@
     </mtapp:widget>
     <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
-<mt:setvarblock name="action_buttons">
-<mt:unless name="template_type" eq="system">
-    <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
-        accesskey="x"
-        title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-        ><__trans phrase="Delete"></a>
-</mt:unless>
-</mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 <!--

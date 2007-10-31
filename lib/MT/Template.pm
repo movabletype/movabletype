@@ -305,8 +305,8 @@ sub text {
     my $tmpl = shift;
     my $text;
     if ($tmpl->{reflow_flag}) {
-        $text = $tmpl->reflow();
         $tmpl->{reflow_flag} = 0;
+        $text = $tmpl->reflow();
     }
     $text = $tmpl->SUPER::text(@_);
 

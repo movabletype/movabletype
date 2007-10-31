@@ -291,38 +291,27 @@ sub execute {
     ## the result list. If there is no result list, just load the first
     ## blog from the database.
     my($blog);
-    if (@results) {
-        $blog = $results[0]{blog};
-    }
-    my $include;
-    unless ($blog) {
-        $include = $app->{searchparam}{IncludeBlogs};
-        if ($include && keys(%$include) == 1) {
-            $blog = MT::Blog->load((keys %$include)[0]);
-        } else {
-            $blog = MT::Blog->load;
-        }
-    }
-
-    if (!$include || ($include && !%$include)) {
-        $include = { $blog->id => 1 };
+    my $include = $app->param('IncludeBlogs');
+    if ($include) {
+        my @blog_ids = split ',', $include;
+        $blog = MT::Blog->load($blog_ids[0]);
     } else {
-        my $self_blog_id = $app->param('blog_id');
-        if ($self_blog_id) {
-            $include = { $blog->id => $self_blog_id };
-        } else {
-            $include = { $blog->id => 1 };
+        if (@results) {
+            $blog = $results[0]{blog};
         }
+        if (!$blog) {
+            $blog = MT::Blog->load($app->param('blog_id'));
+        }
+        $include = $blog->id;
     }
 
     ## Initialize and set up the context object.
     my $ctx = MT::App::Search::Context->new;
-    my $include_blog = $app->{searchparam}{IncludeBlogs};
     $ctx->stash('blog', $blog);
     $ctx->stash('blog_id', $blog->id);
     $ctx->stash('results', \@results);
     $ctx->stash('user', $app->{user});
-    $ctx->stash('include_blogs', join ',', keys %$include_blog);
+    $ctx->stash('include_blogs', $include);
     if (my $str = $app->{search_string}) {
         $ctx->stash('search_string', encode_html($str));
     }
@@ -330,10 +319,10 @@ sub execute {
     $ctx->stash('maxresults', $app->{searchparam}{MaxResults});
 
     my $str;
-    if ($include_blog && keys(%$include_blog) == 1) {
+    if ($include) {
         if ($app->{searchparam}{Template} eq 'default') {
             # look for a 'search_results'
-            my ($blog_id) = keys %$include;
+            my ($blog_id) = split ',', $include;
             require MT::Template;
             my $tmpl = MT::Template->load({blog_id => $blog_id, type => 'search_results'});
             $str = $tmpl->text if $tmpl;
@@ -456,7 +445,7 @@ sub _tag_search {
     require MT::Entry;
 
     # Override SearchCutoff if If-Modified-Since header is present
-    if (my $mod_since = $app->get_header('If-Modified-Since')) {
+    if ((my $mod_since = $app->get_header('If-Modified-Since')) && $app->{searchparam}{Template} eq 'feed') {
         my $tz_offset = 15;  # Start with maximum possible offset to UTC
         my $blog_selected;
         my $iter;
@@ -527,8 +516,9 @@ sub _straight_search {
     my %terms = (status => MT::Entry::RELEASE());
     my %args = (direction => $app->{searchparam}{ResultDisplay},
                 'sort' => 'authored_on');
+
     # Override SearchCutoff if If-Modified-Since header is present
-    if (my $mod_since = $app->get_header('If-Modified-Since')) {
+    if ((my $mod_since = $app->get_header('If-Modified-Since')) && $app->{searchparam}{Template} eq 'feed') {
         my $tz_offset = 15;  # Start with maximum possible offset to UTC
         my $blog_selected;
         my $iter;
@@ -583,6 +573,7 @@ sub _straight_search {
     }
 
     $terms{class} = $app->{searchparam}{entry_type} || '*';
+
     my $iter = MT::Entry->load_iter(\%terms, \%args);
     my(%blogs, %hits);
     my $max = $app->{searchparam}{MaxResults}; 
