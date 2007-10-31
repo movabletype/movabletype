@@ -41,7 +41,9 @@ function go(mode) {
 function db_select(sel) {
     var db = sel.options[sel.selectedIndex].value;
     if ((db == "mysql") || (db == "postgres") || (db == "oracle") || (db == "mssqlserver") || (db == "umssqlserver")) {
-        showByID("login"); showByID("server"); hideByID("goback");
+        showByID("login");
+        hideByID("goback");
+        showByID("server");
         hideByID("path");
         showByID("submit");
         showByID("params");
@@ -50,6 +52,10 @@ function db_select(sel) {
             showByID("charset");
         } else {
             hideByID("charset");
+        }
+        if (db == "oracle") {
+            hideByID("dbserver-field");
+        } else {
         }
         document.forms[0].dbname.focus();
     } else if ((db == "sqlite") || (db == "sqlite2")) {
@@ -178,9 +184,10 @@ window.onload = function() {
 
     <mtapp:setting
         id="dbserver"
-        label="<__trans phrase="Database Server">">
+        label="<__trans phrase="Database Server">"
+        hint="<__trans phrase="This is usually 'localhost'.">"
+        show_hint="1">
 <input type="text" name="dbserver" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" />
-<div class="hint"><__trans phrase="This is usually 'localhost'."></div>
     </mtapp:setting>
 
     <mtapp:setting

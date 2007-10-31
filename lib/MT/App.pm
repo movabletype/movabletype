@@ -199,6 +199,11 @@ sub list_actions {
         $actions->{$a}{key} = $a;
         $actions->{$a}{core} = 1
             unless UNIVERSAL::isa($actions->{$a}{plugin}, 'MT::Plugin');
+        if ( exists $actions->{$a}{continue_prompt_handler} ) {
+            my $code = $app->handler_to_coderef($actions->{$a}{continue_prompt_handler});
+            $actions->{$a}{continue_prompt} = $code->()
+                if 'CODE' eq ref($code);
+        }
         push @actions, $actions->{$a};
     }
     $actions = $app->filter_conditional_list(\@actions, @param);

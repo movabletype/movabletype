@@ -18,7 +18,7 @@ use vars qw( @ISA %Lexicon );
 	'Author (#' => 'Autor (#',
 
 ## php/lib/function.mtproductname.php
-	'$short_name [_1]' => '$short_name [_1]',
+	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/block.mtentries.php
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" debe usarse en combinación con el espacio de nombres.',
@@ -76,12 +76,12 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/search_results.mtml
 	'Search Results' => 'Resultado de la búsqueda',
-	'Results matching &ldquo;[_1]&rdquo; from [_2]' => 'Resultados correspondientes a &ldquo;[_1]&rdquo; de [_2]', # Translate - New
-	'Results tagged &ldquo;[_1]&rdquo; from [_2]' => 'Resultado de etiquetas &ldquo;[_1]&rdquo; de [_2]', # Translate - New
+	'Results matching &ldquo;[_1]&rdquo; from [_2]' => 'Resultados correspondientes a &ldquo;[_1]&rdquo; de [_2]',
+	'Results tagged &ldquo;[_1]&rdquo; from [_2]' => 'Resultado de etiquetas &ldquo;[_1]&rdquo; de [_2]',
 	'Entry Summary' => 'Resumen de las entradas',
-	'Results matching &ldquo;[_1]&rdquo;' => 'Resultados correspondiente a &ldquo;[_1]&rdquo;', # Translate - New
-	'Results tagged &ldquo;[_1]&rdquo;' => 'Resultado de etiquetas &ldquo;[_1]&rdquo;', # Translate - New
-	'No results found for &ldquo;[_1]&rdquo;.' => 'Ningún resultado encontrado para &ldquo;[_1]&rdquo;.', # Translate - New
+	'Results matching &ldquo;[_1]&rdquo;' => 'Resultados correspondiente a &ldquo;[_1]&rdquo;',
+	'Results tagged &ldquo;[_1]&rdquo;' => 'Resultado de etiquetas &ldquo;[_1]&rdquo;',
+	'No results found for &ldquo;[_1]&rdquo;.' => 'Ningún resultado encontrado para &ldquo;[_1]&rdquo;.',
 	'Instructions' => 'Instrucciones',
 	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Por defecto, este motor de búsqueda comprueba todas las palabras sin tener en cuenta el orden. Para buscar una frase exacta, encierre la frase entre comillas:',
 	'movable type' => 'movable type',
@@ -155,11 +155,11 @@ use vars qw( @ISA %Lexicon );
 	'[_1]: Monthly Archives' => '[_1]: Archivos mensuales',
 	'Subscribe to feed' => 'Suscribirse a la fuente de sindicación',
 	'Subscribe to this blog\'s feed' => 'Suscribirse a este blog (XML)',
-	'Search results matching &ldquo;<$MTSearchString$>&rdquo;' => 'Resultados de la búsqueda correspondientes a &ldquo;<$MTSearchString$>&rdquo;', # Translate - New
-	'_MTCOM_URL' => '_MTCOM_URL', # Translate - New
+	'Search results matching &ldquo;<$MTSearchString$>&rdquo;' => 'Resultados de la búsqueda correspondientes a &ldquo;<$MTSearchString$>&rdquo;',
+	'_MTCOM_URL' => '_MTCOM_URL',
 	'Powered by Movable Type [_1]' => 'Powered by Movable Type [_1]',
 	'Search' => 'Buscar',
-	'Case sensitive' => 'Distinguir mayúsculas y minúsculas', # Translate - Case
+	'Case sensitive' => 'Distinguir mayúsculas y minúsculas',
 	'Regex search' => 'Expresión regular',
 	'Recent Entries' => 'Entradas recientes',
 
@@ -311,7 +311,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Blog \'[_1] (ID: [_2])\' para el usuario \'[_3] (ID: [_4])\' ha sido creado.',
 	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => 'Error de asignación de los derechos para el usuario \'[_1] (ID: [_2])\' para el blog \'[_3] (ID: [_4])\'. Ningún rol de administrador adecuado ha sido encontrado.',
 	'The login could not be confirmed because of a database error ([_1])' => 'No se pudo confirmar el acceso debido a un error de la base de datos ([_1])',
-	'You do not have rights; please contact your Movable Type system administrator for gaining access to this installation.' => 'No tiene el permiso para esta acción, por favor contacte su administrador Movable Type para tener acceso a esta instalación', # Translate - New
+	'You do not have rights; please contact your Movable Type system administrator for gaining access to this installation.' => 'No tiene el permiso para esta acción, por favor contacte su administrador Movable Type para tener acceso a esta instalación',
 	'Invalid login.' => 'Acceso no válido.',
 	'Failed login attempt by unknown user \'[_1]\'' => 'Intento fallido de inicio de sesión por un usuario desconocido \'[_1]\'',
 	'This account has been disabled. Please see your system administrator for access.' => 'Esta cuenta fue deshabilitada. Por favor, póngase en contacto con el administrador del sistema.',
@@ -549,7 +549,6 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load template' => 'No se pudo cargar la plantilla',
 	'Can\'t find template \'[_1]\'' => 'No se encontró la plantilla \'[_1]\'',
 	'Can\'t find entry \'[_1]\'' => 'No se encontró la entrada \'[_1]\'',
-	'[_1] [_2]' => '[_1] [_2]',
 	'You used a [_1] tag without any arguments.' => 'Usó una etiqueta [_1] sin ningún parámetro.',
 	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un autor; ¿quizás la situó por error fuera de un contenedor \'MTAuthors\'?',
 	'Author (#[_1])' => 'Autor (#[_1])',
@@ -561,7 +560,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Usó una etiqueta [_1] enlazando los archivos \'[_2]\', pero el tipo de archivo no está publicado.',
 	'Could not create atom id for entry [_1]' => 'No se pudo crear un identificador atom en la entrada [_1]',
 	'To enable comment registration, you need to add a TypeKey token in your weblog config or user profile.' => 'Para habilitar el registro de comentarios, debe añadir un token de TypeKey a la configuración de su weblog o al perfil de su usario.',
-	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'La etiqueta MTCommentFields no está más disponible; por favor incluya el módulo de platilla [_1] que lo remplaza', # Translate - New
+	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'La etiqueta MTCommentFields no está más disponible; por favor incluya el módulo de platilla [_1] que lo remplaza',
 	'You used an [_1] tag without a date context set up.' => 'Usó una etiqueta [_1] sin un contexto de fecha configurado.',
 	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un comentario; ¿quizás la puso por error fuera de un contenedor \'MTComments\'?',
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1] sólo se puede usar con los archivos diarios, semanales o mensuales.',
@@ -770,8 +769,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Error asignando permisos para comentar al usuario \'[_1] (ID: [_2])\' para el weblog \'[_3] (ID: [_4])\'. No se encontró un rol adecuado.',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Intento de identificación de comentarista no válido desde [_1] en el blog [_2](ID: [_3]) que no permite la autentificación nativa de Movable Type.',
-	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'La identificación se ha producido con suceso pero la conexión ha sido rechazada.  Por favor contacte el administrador del sistema.', # Translate - New
-	'You need to sign up first.' => 'Primero identifíquese', # Translate - New
+	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'La identificación se ha producido con suceso pero la conexión ha sido rechazada.  Por favor contacte el administrador del sistema.',
+	'You need to sign up first.' => 'Primero identifíquese',
 	'Login failed: permission denied for user \'[_1]\'' => 'Falló la identificación: permiso denegado al usuario \'[_1]\'',
 	'Login failed: password was wrong for user \'[_1]\'' => 'Falló la identificación: contraseña errónea del usuario \'[_1]\'',
 	'Signing up is not allowed.' => 'No está permitida la inscripción.',
@@ -854,8 +853,8 @@ Si se ha tratado de un error, puede desbloquear la IP y permitir que el visitant
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Este módulo es necesario para subir archivos (para determinar el tamaño de las imágenes en diferentes formatos).',
 	'This module is required for cookie authentication.' => 'Este módulo es necsario para la autentificación con cookies.',
 	'DBI is required to store data in database.' => 'DBI es necesario para guardar información en bases de datos.',
-	'CGI is required for all Movable Type application functionality.' => 'El CGI es requerido para todas las funciones del Sistema Movable Type.', # Translate - New
-	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec es requerido para la manipulación de la ubición de los archivos en el sistema operativo.', # Translate - New
+	'CGI is required for all Movable Type application functionality.' => 'El CGI es requerido para todas las funciones del Sistema Movable Type.',
+	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec es requerido para la manipulación de la ubición de los archivos en el sistema operativo.',
 
 ## lib/MT/App/Upgrader.pm
 	'Failed to authenticate using given credentials: [_1].' => 'Fallo al autentificar con las credenciales ofrecidas: [_1].',
@@ -879,7 +878,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The address [_1] has been unsubscribed.' => 'Se desuscribió la dirección [_1].',
 
 ## lib/MT/App/CMS.pm
-	'No [_1] were found that match the given criteria.' => 'Ningún [_1] ha sido encontrado que corresponda al criterio dado.', # Translate - New
+	'No [_1] were found that match the given criteria.' => 'Ningún [_1] ha sido encontrado que corresponda al criterio dado.',
 	'_WARNING_PASSWORD_RESET_MULTI' => 'Va a reiniciar la contraseña de los usuarios seleccionados. Se generarán nuevas contraseñas aleatorias y se enviarán directamente a sus respectivas direcciones de correo electrónico.\n\n¿Desea continuar?',
 	'_WARNING_DELETE_USER_EUM' => 'Borrar un usuario es una acción irreversible que crea huérfanos en las entradas del usuario. Si desea retirar un usuario o bloquear su acceso al sistema, se recomienda deshabilitar su cuenta. ¿Está seguro de que desea borrar a los usuarios seleccionados\nPodrán re-crearse a sí mismos si el usuario seleccionado existe en el directorio externo.',
 	'_WARNING_DELETE_USER' => 'El borrado de un usuario es una acción irreversible que crea huérfanos de las entradas del usuario. Si desea retirar a un usuario o bloquear su acceso al sistema, la forma recomendada es deshabilitar su cuenta. ¿Está seguro de que desea borrar el/los usuario/s seleccionado/s?',
@@ -911,13 +910,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Password was reset for user \'[_1]\' (user #[_2]). Password was sent to the following address: [_3]' => 'Se reinició la contraseña del usario \'[_1]\' (user #[_2]). Se envió la contraseña a las siguientes direcciones: [_3]',
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Error enviando correo ([_1]); por favor, solvente el problema e inténte de nuevo la recuperación de la contraseña.',
 	'(newly created user)' => '(nuevo usuario creado)',
-	'Files' => 'Ficheros',
 	'Untitled' => 'Sin título',
+	'Files' => 'Ficheros',
 	'User Associations' => 'Asociaciones de usuario',
 	'Role Users & Groups' => 'Roles de usuarios y grupos',
 	'(Custom)' => '(Personalizado)',
 	'(user deleted)' => '(usario borrado)',
-	'The user' => 'El usuario', # Translate - New
+	'The user' => 'El usuario',
 	'Invalid type' => 'Tipo no válido',
 	'New name of the tag must be specified.' => 'El nuevo nombre de la etiqueta debe ser especificado',
 	'No such tag' => 'No existe dicha etiqueta',
@@ -1132,7 +1131,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Add a [_1]' => 'Añador un [_1]',
 	'No label' => 'Sin título',
 	'Category name cannot be blank.' => 'El nombre de la categoría no puede estar en blanco.',
-	'Populating blog with default templates failed: [_1]' => 'Fallo guardando el blog con las plantillas por defecto: [_1]',
+	'Populating blog with default templates failed: [_1]' => 'Falló el guardando del blog con las plantillas por defecto: [_1]',
 	'Setting up mappings failed: [_1]' => 'Fallo la configuración de mapeos: [_1]',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'Error: Movable Type no puede escribir en el directorio de caché de las plantillas. Por favor, compruebe los permisos del directorio llamado <code>[_1]</code> dentro del directorio de su blog.',
 	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.' => 'Error: Movable Type no pudo crear un directorio para cachear las plantillas dinámicas. Debe crear un directorio llamado <code>[_1]</code> dentro del directorio de su blog.',
@@ -2129,7 +2128,7 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/install.tmpl
 	'Welcome to Movable Type' => 'Bienvenido a Movable Type',
-	'Create Your Account' => 'Crear Cuenta', # Translate - New
+	'Create Your Account' => 'Crear Cuenta',
 	'The initial account name is required.' => 'Se necesita el nombre de la cuenta inicial.',
 	'Password recovery word/phrase is required.' => 'Se necesita la palabra/frase de recuperación de contraseña.',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]).' => 'La versión de Perl instalada en su servidor ([_1]) es menor que la versión mínima soporta ([_2]).',
@@ -2343,9 +2342,9 @@ que la dirección provista es correcta y le pertenece.',
 	'You can not create associations for disabled users.' => 'No puede crear asociaciones con usuarios inhabilitados.',
 	'Assign Role to User' => 'Asignar rol al usuario',
 	'Grant permission to a user' => 'Otorgar permiso a un usuario',
-	'[_1] <em>[_2]</em> is currently disabled.' => '[_1] <em>[_2]</em> está momentáneamente indisponible', # Translate - New
-	'You have successfully revoked the given permission(s).' => 'Otorgó los permisos con éxito.',
-	'You have successfully granted the given permission(s).' => 'Revocó los permisos con éxito.',
+	'[_1] <em>[_2]</em> is currently disabled.' => '[_1] <em>[_2]</em> está momentáneamente indisponible',
+	'You have successfully revoked the given permission(s).' => 'Revocó los permisos con éxito.',
+	'You have successfully granted the given permission(s).' => 'Otorgó los permisos con éxito.',
 	'Created On' => 'Creado en',
 
 ## tmpl/cms/list_comment.tmpl
@@ -2399,6 +2398,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Help' => 'Ayuda',
 	'<a href="[_1]">Movable Type</a> version [_2]' => '<a href="[_1]">Movable Type</a> versión [_2]',
 	'with' => 'con',
+
+## tmpl/cms/include/asset_table.tmpl
+	'content' => 'contenido',
+	'Delete selected assets (x)' => 'Borrar los contenidos seleccionados (x)',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2532,7 +2535,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Details' => 'Detalles',
 
 ## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '_LOCALE_WEEK_START', # Translate - New
+	'_LOCALE_WEEK_START' => '_LOCALE_WEEK_START',
 	'Sunday' => 'Domingo',
 	'Monday' => 'Lunes',
 	'Tuesday' => 'Martes',
@@ -2540,32 +2543,32 @@ que la dirección provista es correcta y le pertenece.',
 	'Thursday' => 'Jueves',
 	'Friday' => 'Viernes',
 	'Saturday' => 'Sábado',
-	'S|M|T|W|T|F|S' => 'S|M|T|W|T|F|S', # Translate - New
-	'January' => 'Enero', # Translate - New
-	'Febuary' => 'Febrero', # Translate - New
+	'S|M|T|W|T|F|S' => 'S|M|T|W|T|F|S',
+	'January' => 'Enero',
+	'Febuary' => 'Febrero',
 	'March' => 'Marzo',
 	'April' => 'Abril',
 	'May' => 'Mayo',
 	'June' => 'Junio',
-	'July' => 'Julio', # Translate - New
-	'August' => 'Agosto', # Translate - New
-	'September' => 'Septiembre', # Translate - New
-	'October' => 'Octubre', # Translate - New
-	'November' => 'Noviembre', # Translate - New
-	'December' => 'Diciembre', # Translate - New
-	'Jan' => 'Ene.', # Translate - New
-	'Feb' => 'Feb.', # Translate - New
-	'Mar' => 'Mar.', # Translate - New
-	'Apr' => 'Abr.', # Translate - New
-	'_SHORT_MAY' => '_SHORT_MAY', # Translate - New
-	'Jun' => 'Jun.', # Translate - New
-	'Jul' => 'Jul.', # Translate - New
-	'Aug' => 'Ago.', # Translate - New
-	'Sep' => 'Sep.', # Translate - New
-	'Oct' => 'Oct.', # Translate - New
-	'Nov' => 'Nov.', # Translate - New
-	'Dec' => 'Dic.', # Translate - New
-	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]', # Translate - New
+	'July' => 'Julio',
+	'August' => 'Agosto',
+	'September' => 'Septiembre',
+	'October' => 'Octubre',
+	'November' => 'Noviembre',
+	'December' => 'Diciembre',
+	'Jan' => 'Ene.',
+	'Feb' => 'Feb.',
+	'Mar' => 'Mar.',
+	'Apr' => 'Abr.',
+	'_SHORT_MAY' => '_SHORT_MAY',
+	'Jun' => 'Jun.',
+	'Jul' => 'Jul.',
+	'Aug' => 'Ago.',
+	'Sep' => 'Sep.',
+	'Oct' => 'Oct.',
+	'Nov' => 'Nov.',
+	'Dec' => 'Dic.',
+	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]',
 
 ## tmpl/cms/include/overview-left-nav.tmpl
 	'List Weblogs' => 'Listar weblogs',
@@ -3255,7 +3258,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Setup Your First Blog' => 'Configure su primer blog',
 
 ## tmpl/wizard/start.tmpl
-	'Your Movable Type configuration file already exists. The Wizard cannot continue with this file present.' => 'El fichero de configuración de Movable Type configuration ya existe. El asistente no puede continuar si el fichero existe.',
+	'Configuration File Exists' => 'Configuración de archivos existentes', # Translate - New
+	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => 'Una configuración del archivo (mt-config,cgi) existe, <a href="[_1]>identificarse</a> a Movable Type.', # Translate - New
+	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Para crear una nueva configuración del archivo usando Wizard, borre la configuración actual del archivo y actualice la página', # Translate - New
 	'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type necesita que JavaScript esté disponible en el navegador. Por favor, active JavaScript y recargue esta página para continuar.',
 	'This wizard will help you configure the basic settings needed to run Movable Type.' => 'Este asistente le ayudará a configurar las opciones básicas necesarias para ejecutar Movable Type.',
 	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Error: \'[_1]\' no ha sido encontrado.</strong> Por favor,mueva sus archivos estáticos al primer directorio o corrija la configuración si no es correcta.',
@@ -3334,7 +3339,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'No se encontrarons algunos módulos opcionales de Perl. <a href="javascript:void(0)" onclick="[_1]">Mostrar lista de módulos opcionales</a>',
 	'One or more Perl modules required by Movable Type could not be found.' => 'No se encontraron uno o varios módulos de Perl necesarios.',
 	'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'Los siguientes módulos de Perl son necesarios para que Movable Type se ejecute correctamente. Una vez los haya instalado, haga clic en el botón \'Reintentar\' para realizar la comprobación nuevamente.',
-	'Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click \'Retry\' to test for the modules again.' => 'No se encontraron algunos módulos opcionales de Perl. Puede continuar sin instalarlos. Podrá instalarlos cuando le sean necesarios. Haga clic en \'Reintentar\' para comprobar los módulos otra vez.',
+	'Some optional Perfl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click \'Retry\' to test for the modules again.' => 'No se encontraron algunos módulos opcionales de Perl. Puede continuar sin instalarlos. Podrá instalarlos cuando le sean necesarios. Haga clic en \'Reintentar\' para comprobar los módulos otra vez.',
 	'Missing Database Modules' => 'Módulos de base de datos no encontrados',
 	'Missing Optional Modules' => 'Módulos opcionales no encontrados',
 	'Missing Required Modules' => 'Módulos necesarios no encontrados',
@@ -3440,262 +3445,262 @@ que la dirección provista es correcta y le pertenece.',
 	'By commenter URL' => 'Por URL del comentarista',
 
 ## addons/Enterprise.pack/config.yaml
-	'Enterprise Pack' => 'Enterprise Pack', # Translate - New
-	'Oracle Database' => 'Base de Datos Oracle', # Translate - New
-	'Microsoft SQL Server Database' => 'Base de Datos Microsoft SQL Server', # Translate - New
-	'Microsoft SQL Server Database (UTF-8 support)' => 'Base de Datos Microsoft SQL Server (UTF-8 support)', # Translate - New
-	'External Directory Synchronization' => 'Sincronización del Directorio Externo', # Translate - New
-	'Populating author\'s external ID to have lower case user name...' => 'Completando el ID externo de los autores para tener el nombre del usuario en minúscula...', # Translate - New
+	'Enterprise Pack' => 'Enterprise Pack',
+	'Oracle Database' => 'Base de Datos Oracle',
+	'Microsoft SQL Server Database' => 'Base de Datos Microsoft SQL Server',
+	'Microsoft SQL Server Database (UTF-8 support)' => 'Base de Datos Microsoft SQL Server (UTF-8 support)',
+	'External Directory Synchronization' => 'Sincronización del Directorio Externo',
+	'Populating author\'s external ID to have lower case user name...' => 'Propagar el ID externo de los autores para tener un nombre de usuario en minúscula...', # Translate - New
 
 ## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
-	'You need to create some groups.' => 'Necesita crear algunos grupos.', # Translate - New
-	'Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Click here</a> to create a group.' => 'Antes de poder hacer esto, usted debe crear algunos grupos. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Haga clic aquí</a> para crear un grupo.', # Translate - New
+	'You need to create some groups.' => 'Necesita crear algunos grupos.',
+	'Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Click here</a> to create a group.' => 'Antes de poder hacer esto, usted debe crear algunos grupos. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Haga clic aquí</a> para crear un grupo.',
 
 ## addons/Enterprise.pack/tmpl/include/list_associations/page_title.group.tmpl
 	'Users &amp; Groups for [_1]' => 'Usuarios &amp; Grupos de [_1]',
 	'Group Associations for [_1]' => 'Asociaciones de grupos de [_1]',
 
 ## addons/Enterprise.pack/tmpl/include/group_table.tmpl
-	'group' => 'grupo', # Translate - New
-	'groups' => 'grupos', # Translate - Case
-	'Enable selected [_1] (e)' => 'Active el [_1] seleccionado (e)', # Translate - New
-	'Disable selected [_1] (d)' => 'Desactive el [_1] seleccionado (d)', # Translate - New
-	'Remove selected [_1] (d)' => 'Borre el [_1] seleccionado (d)', # Translate - New
-	'Only show enabled groups' => 'Solo muestra los grupos activados', # Translate - New
-	'Only show disabled groups' => 'Solo muestra los grupos desactivados', # Translate - New
+	'group' => 'grupo',
+	'groups' => 'grupos',
+	'Enable selected [_1] (e)' => 'Active el [_1] seleccionado (e)',
+	'Disable selected [_1] (d)' => 'Desactive el [_1] seleccionado (d)',
+	'Remove selected [_1] (d)' => 'Borre el [_1] seleccionado (d)',
+	'Only show enabled groups' => 'Solo muestra los grupos activados',
+	'Only show disabled groups' => 'Solo muestra los grupos desactivados',
 
 ## addons/Enterprise.pack/tmpl/include/users_content_nav.tmpl
 	'Groups' => 'Grupos',
 	'Group Profile' => 'Perfil de grupo',
 
 ## addons/Enterprise.pack/tmpl/author_bulk.tmpl
-	'Manage Users in bulk' => 'Administrar los usuarios por lote', # Translate - New
-	'_USAGE_AUTHORS_2' => '_USAGE_AUTHORS_2', # Translate - New
-	'Upload source file' => 'Suba el fichero fuente', # Translate - New
-	'Specify the CSV-formatted source file for upload' => 'Defina el fichero fuente en formato CSV para subirlo', # Translate - New
-	'Source File Encoding' => 'Codificación del archivo fuente', # Translate - New
-	'Upload (u)' => 'Suba (u)', # Translate - New
+	'Manage Users in bulk' => 'Administrar los usuarios por lote',
+	'_USAGE_AUTHORS_2' => '_USAGE_AUTHORS_2',
+	'Upload source file' => 'Suba el fichero fuente',
+	'Specify the CSV-formatted source file for upload' => 'Defina el fichero fuente en formato CSV para subirlo',
+	'Source File Encoding' => 'Codificación del archivo fuente',
+	'Upload (u)' => 'Suba (u)',
 
 ## addons/Enterprise.pack/tmpl/create_author_bulk_start.tmpl
-	'Bulk Author Import' => 'Importación de autores por lote', # Translate - New
-	'Updating...' => 'Actualizando...', # Translate - New
+	'Bulk Author Import' => 'Importación de autores por lote',
+	'Updating...' => 'Actualizando...',
 
 ## addons/Enterprise.pack/tmpl/create_author_bulk_end.tmpl
-	'All users updated successfully!' => '¡Todos los usuarios han sido actualizados con suceso!', # Translate - New
-	'An error occurred during the updating process. Please check your CSV file.' => 'Un error se ha producido durante la actualización.  Por favor verifique su fichero CSV.', # Translate - New
+	'All users updated successfully!' => '¡Todos los usuarios han sido actualizados con suceso!',
+	'An error occurred during the updating process. Please check your CSV file.' => 'Un error se ha producido durante la actualización.  Por favor verifique su fichero CSV.',
 
 ## addons/Enterprise.pack/tmpl/list_group.tmpl
-	'[_1]: User&rsquo;s Groups' => 'Usuarios de los grupos [_1]', # Translate - New
-	'Groups: System Wide' => 'Grupos: Todo el Sistema', # Translate - New
+	'[_1]: User&rsquo;s Groups' => 'Usuarios de los grupos [_1]',
+	'Groups: System Wide' => 'Grupos: Todo el Sistema',
 	'The user <em>[_1]</em> is currently disabled.' => 'El usuario <em>[_1]</em> está actualmente desactivado.',
-	'_USAGE_GROUPS_USER_LDAP' => '_USAGE_GROUPS_USER_LDAP', # Translate - New
-	'_USAGE_GROUPS_LDAP' => '_USAGE_GROUPS_LDAP', # Translate - New
-	'_USAGE_GROUPS_USER' => '_USAGE_GROUPS_USER', # Translate - New
-	'_USAGE_GROUPS' => '_USAGE_GROUPS', # Translate - New
-	'Synchronize groups now' => 'Sincronizar los grupos ahora', # Translate - New
-	'You have successfully disabled the selected group(s).' => 'usted ha desactivado el(los) grupo(s) seleccionado(s) con suceso', # Translate - New
-	'You have successfully enabled the selected group(s).' => 'Usted ha activado el(los) grupo(s) seleccionad(s) con suceso', # Translate - New
-	'You have successfully deleted the groups from the Movable Type system.' => 'Usted ha borrado con suceso los grupos del sistema Movable Type.', # Translate - New
-	'You have successfully synchronized groups\' information with the external directory.' => 'Usted ha sincronizado con suceso la información de los grupos con el directorio externo.', # Translate - New
-	'You can not add disabled users to groups.' => 'Usted no puede añadir usuarios inactivos a los grupos.', # Translate - New
-	'Add [_1] to another group' => 'Añadir [_1] a otro grupo', # Translate - New
-	'Create Group' => 'Crear Grupo', # Translate - New
-	'You did not select any [_1] to remove.' => 'No ha seleccionado ningún [_1] a borrar.', # Translate - New
-	'Are you sure you want to remove this [_1]?' => '¿Está seguro de querer borrar esto [_1]?', # Translate - New
-	'Are you sure you want to remove the [_1] selected [_2]?' => '¿Está seguro de querer borrar el [_1] seleccionado [_2]?', # Translate - New
-	'to remove' => 'para borrar', # Translate - New
+	'_USAGE_GROUPS_USER_LDAP' => '_USAGE_GROUPS_USER_LDAP',
+	'_USAGE_GROUPS_LDAP' => '_USAGE_GROUPS_LDAP',
+	'_USAGE_GROUPS_USER' => '_USAGE_GROUPS_USER',
+	'_USAGE_GROUPS' => '_USAGE_GROUPS',
+	'Synchronize groups now' => 'Sincronizar los grupos ahora',
+	'You have successfully disabled the selected group(s).' => 'usted ha desactivado el(los) grupo(s) seleccionado(s) con suceso',
+	'You have successfully enabled the selected group(s).' => 'Usted ha activado el(los) grupo(s) seleccionad(s) con suceso',
+	'You have successfully deleted the groups from the Movable Type system.' => 'Usted ha borrado con suceso los grupos del sistema Movable Type.',
+	'You have successfully synchronized groups\' information with the external directory.' => 'Usted ha sincronizado con suceso la información de los grupos con el directorio externo.',
+	'You can not add disabled users to groups.' => 'Usted no puede añadir usuarios inactivos a los grupos.',
+	'Add [_1] to another group' => 'Añadir [_1] a otro grupo',
+	'Create Group' => 'Crear Grupo',
+	'You did not select any [_1] to remove.' => 'No ha seleccionado ningún [_1] a borrar.',
+	'Are you sure you want to remove this [_1]?' => '¿Está seguro de querer borrar esto [_1]?',
+	'Are you sure you want to remove the [_1] selected [_2]?' => '¿Está seguro de querer borrar el [_1] seleccionado [_2]?',
+	'to remove' => 'para borrar',
 
 ## addons/Enterprise.pack/tmpl/cfg_ldap.tmpl
-	'Authentication Configuration' => 'Configuración de la autentificación', # Translate - New
-	'You must set your Authentication URL.' => 'Configure la URL de identificación.', # Translate - New
-	'You must set your Group search base.' => 'Configure la base de búsqueda de Grupos.', # Translate - New
-	'You must set your UserID attribute.' => 'Configure su parámetro UserID.', # Translate - New
-	'You must set your email attribute.' => 'Configure su parámetro de correo electrónico.', # Translate - New
-	'You must set your user fullname attribute.' => 'Configure su parámetro de nombre completo', # Translate - New
-	'You must set your user member attribute.' => 'Configure su parámetro de nombre de usuario.', # Translate - New
-	'You must set your GroupID attribute.' => 'Configure su parámetro de GroupID.', # Translate - New
-	'You must set your group name attribute.' => 'Configure el parámetro de su nombre de grupo.', # Translate - New
-	'You must set your group fullname attribute.' => 'Configure el parámetro del nombre completo del grupo.', # Translate - New
-	'You must set your group member attribute.' => 'Configure el parámetro de su nombre de grupo.', # Translate - New
-	'You can configure your LDAP settings from here if you would like to use LDAP-based authentication.' => 'Ahora puede configurar sus parámetros LDAP desde aquí si desea utilizar una identificaión basada sobre LDAP. ', # Translate - New
-	'Your configuration was successful.' => 'Su configuración se ha producido con suceso.', # Translate - New
-	'Click \'Continue\' below to configure the External User Management settings.' => 'Haga clic en continuar debajo para configurar la administración de usuario externo.', # Translate - New
-	'Click \'Continue\' below to configure your LDAP attribute mappings.' => 'Haga clic en continuar debajo para configurar el mapeado de los atributos LDAP.', # Translate - New
-	'Your LDAP configuration is complete.' => 'Su configuración LDAP ha sido completada.', # Translate - New
-	'To finish with the configuration wizard, press \'Continue\' below.' => 'Para terminar con la configuración, haga clic en el botón continuar debajo.', # Translate - New
-	'An error occurred while attempting to connect to the LDAP server: ' => 'Un error se ha producido durante la conexión LDAP.', # Translate - New
-	'Use LDAP' => 'Utilizar LDAP', # Translate - New
-	'Authentication URL' => 'URL de Identificación', # Translate - New
-	'The URL to access for LDAP authentication.' => 'La URL para acceder a la identificación LDAP', # Translate - New
-	'Authentication DN' => 'DN de la Identificación', # Translate - New
-	'An optional DN used to bind to the LDAP directory when searching for a user.' => 'Un DN opcional utilizado para asociarse con el directorio LDAP cuando se busca un usuario.', # Translate - New
-	'Authentication password' => 'Contraseña de la Identificación', # Translate - New
-	'Used for setting the password of the LDAP DN.' => 'Utilizado para iniciar la contraseña del DN del LDAP.', # Translate - New
-	'SASL Mechanism' => 'Mecanismo SASL', # Translate - New
-	'The name of SASL Mechanism to use for both binding and authentication.' => 'El nombre del mecanismo SASL para la asociación y la identificación.', # Translate - New
-	'Test Username' => 'Verificar el nombre de usuario', # Translate - New
-	'Test Password' => 'Verificar la contraseña', # Translate - New
-	'Enable External User Management' => 'Activar la administración de los usuarios externos', # Translate - New
-	'Synchronization Frequency' => 'Frecuencia de sincronización', # Translate - New
-	'Frequency of synchronization in minutes. (Default is 60 minutes)' => 'Frecuencia de sincronización en minutos. (Por Defecto son 60 minutos)', # Translate - New
-	'15 Minutes' => '15 Minutos', # Translate - New
-	'30 Minutes' => '30 Minutos', # Translate - New
-	'60 Minutes' => '60 Minutos', # Translate - New
-	'90 Minutes' => '90 Minutos', # Translate - New
-	'Group search base attribute' => 'Parámetro de la base de búsqueda de los grupos', # Translate - New
-	'Group filter attribute' => 'Parámetro de filtro de grupos', # Translate - New
-	'Search Results (max 10 entries)' => 'Resultados de la búsqueda (máx. 10 entradas)', # Translate - New
-	'CN' => 'CN', # Translate - New
-	'No groups were found with these settings.' => 'Ningún grupo ha sido encontrado bajo estos parámetros.', # Translate - New
-	'Attribute mapping' => 'Mapeado de los atributos', # Translate - New
-	'LDAP Server' => 'LDAP Server', # Translate - New
-	'Other' => 'Otro', # Translate - New
-	'User ID attribute' => 'Parámetro del Usuario ID', # Translate - New
-	'Email Attribute' => 'Parámetro del correo electrónico', # Translate - New
-	'User fullname attribute' => 'Parámetro del nombre completo', # Translate - New
-	'User member attribute' => 'Parámetro del nombre de usuario', # Translate - New
-	'GroupID attribute' => 'Parámetro del Grupo ID', # Translate - New
-	'Group name attribute' => 'Parámetro del nombre del grupo', # Translate - New
-	'Group fullname attribute' => 'Parámetro del nombre completo del grupo', # Translate - New
-	'Group member attribute' => 'Parámetro del nombre de usuario del grupo', # Translate - New
-	'Search result (max 10 entries)' => 'Resultado de la búsqueda (máx. 10 entradas)', # Translate - New
+	'Authentication Configuration' => 'Configuración de la autentificación',
+	'You must set your Authentication URL.' => 'Configure la URL de identificación.',
+	'You must set your Group search base.' => 'Configure la base de búsqueda de Grupos.',
+	'You must set your UserID attribute.' => 'Configure su parámetro UserID.',
+	'You must set your email attribute.' => 'Configure su parámetro de correo electrónico.',
+	'You must set your user fullname attribute.' => 'Configure su parámetro de nombre completo',
+	'You must set your user member attribute.' => 'Configure su parámetro de nombre de usuario.',
+	'You must set your GroupID attribute.' => 'Configure su parámetro de GroupID.',
+	'You must set your group name attribute.' => 'Configure el parámetro de su nombre de grupo.',
+	'You must set your group fullname attribute.' => 'Configure el parámetro del nombre completo del grupo.',
+	'You must set your group member attribute.' => 'Configure el parámetro de su nombre de grupo.',
+	'You can configure your LDAP settings from here if you would like to use LDAP-based authentication.' => 'Ahora puede configurar sus parámetros LDAP desde aquí si desea utilizar una identificaión basada sobre LDAP. ',
+	'Your configuration was successful.' => 'Su configuración se ha producido con suceso.',
+	'Click \'Continue\' below to configure the External User Management settings.' => 'Haga clic en continuar debajo para configurar la administración de usuario externo.',
+	'Click \'Continue\' below to configure your LDAP attribute mappings.' => 'Haga clic en continuar debajo para configurar el mapeado de los atributos LDAP.',
+	'Your LDAP configuration is complete.' => 'Su configuración LDAP ha sido completada.',
+	'To finish with the configuration wizard, press \'Continue\' below.' => 'Para terminar con la configuración, haga clic en el botón continuar debajo.',
+	'An error occurred while attempting to connect to the LDAP server: ' => 'Un error se ha producido durante la conexión LDAP.',
+	'Use LDAP' => 'Utilizar LDAP',
+	'Authentication URL' => 'URL de Identificación',
+	'The URL to access for LDAP authentication.' => 'La URL para acceder a la identificación LDAP',
+	'Authentication DN' => 'DN de la Identificación',
+	'An optional DN used to bind to the LDAP directory when searching for a user.' => 'Un DN opcional utilizado para asociarse con el directorio LDAP cuando se busca un usuario.',
+	'Authentication password' => 'Contraseña de la Identificación',
+	'Used for setting the password of the LDAP DN.' => 'Utilizado para iniciar la contraseña del DN del LDAP.',
+	'SASL Mechanism' => 'Mecanismo SASL',
+	'The name of SASL Mechanism to use for both binding and authentication.' => 'El nombre del mecanismo SASL para la asociación y la identificación.',
+	'Test Username' => 'Verificar el nombre de usuario',
+	'Test Password' => 'Verificar la contraseña',
+	'Enable External User Management' => 'Activar la administración de los usuarios externos',
+	'Synchronization Frequency' => 'Frecuencia de sincronización',
+	'Frequency of synchronization in minutes. (Default is 60 minutes)' => 'Frecuencia de sincronización en minutos. (Por Defecto son 60 minutos)',
+	'15 Minutes' => '15 Minutos',
+	'30 Minutes' => '30 Minutos',
+	'60 Minutes' => '60 Minutos',
+	'90 Minutes' => '90 Minutos',
+	'Group search base attribute' => 'Parámetro de la base de búsqueda de los grupos',
+	'Group filter attribute' => 'Parámetro de filtro de grupos',
+	'Search Results (max 10 entries)' => 'Resultados de la búsqueda (máx. 10 entradas)',
+	'CN' => 'CN',
+	'No groups were found with these settings.' => 'Ningún grupo ha sido encontrado bajo estos parámetros.',
+	'Attribute mapping' => 'Mapeado de los atributos',
+	'LDAP Server' => 'LDAP Server',
+	'Other' => 'Otro',
+	'User ID attribute' => 'Parámetro del Usuario ID',
+	'Email Attribute' => 'Parámetro del correo electrónico',
+	'User fullname attribute' => 'Parámetro del nombre completo',
+	'User member attribute' => 'Parámetro del nombre de usuario',
+	'GroupID attribute' => 'Parámetro del Grupo ID',
+	'Group name attribute' => 'Parámetro del nombre del grupo',
+	'Group fullname attribute' => 'Parámetro del nombre completo del grupo',
+	'Group member attribute' => 'Parámetro del nombre de usuario del grupo',
+	'Search result (max 10 entries)' => 'Resultado de la búsqueda (máx. 10 entradas)',
 	'Group Name' => 'Nombre del grupo',
-	'Group Fullname' => 'Nombre completo del grupo', # Translate - New
-	'Group Member' => 'Nombre de usuario del grupo', # Translate - New
-	'No groups could be found.' => 'Ningún grupo ha sido encontrado', # Translate - New
-	'User Fullname' => 'Nombre completo el usuario', # Translate - New
-	'No users could be found.' => 'Ningún usuario ha sido encontrado', # Translate - New
-	'Test connection to LDAP' => 'Verificación de la conexión LDAP', # Translate - New
-	'Test search' => 'Verificación de la búsqueda', # Translate - New
+	'Group Fullname' => 'Nombre completo del grupo',
+	'Group Member' => 'Nombre de usuario del grupo',
+	'No groups could be found.' => 'Ningún grupo ha sido encontrado',
+	'User Fullname' => 'Nombre completo el usuario',
+	'No users could be found.' => 'Ningún usuario ha sido encontrado',
+	'Test connection to LDAP' => 'Verificación de la conexión LDAP',
+	'Test search' => 'Verificación de la búsqueda',
 
 ## addons/Enterprise.pack/tmpl/edit_group.tmpl
-	'Edit Group' => 'Modificar Grupo', # Translate - New
-	'Group profile has been updated.' => 'El perfil del grupo ha sido modificado', # Translate - New
-	'Group Disabled' => 'Grupo desactivado', # Translate - New
-	'_USAGE_GROUP_PROFILE' => '_USAGE_GROUP_PROFILE', # Translate - New
-	'_USAGE_NEW_GROUP' => '_USAGE_NEW_GROUP', # Translate - New
-	'LDAP Group ID' => 'LDAP del Grupo ID', # Translate - New
-	'The LDAP directory ID for this group.' => 'El ID del directorio LDAP para este grupo.', # Translate - New
-	'The name used for identifying this group.' => 'El nombre de usuario para identificar este grupo.', # Translate - New
-	'The display name for this group.' => 'El nombre que se muestra para este grupo.', # Translate - New
-	'Status of group in the system. Disabling a group removes its members&rsquo; access to the system but preserves their content and history.' => 'El estatus del grupo en el sistema.  El hecho de desactivar un grupo borra el acceso a sus miembros pero guarda su contenido y el histórico de estos.', # Translate - New
-	'Enter a description for your group.' => 'Instroduzca una descripción para su grupo.', # Translate - New
-	'Created on' => 'Creado en', # Translate - Case
+	'Edit Group' => 'Modificar Grupo',
+	'Group profile has been updated.' => 'El perfil del grupo ha sido modificado',
+	'Group Disabled' => 'Grupo desactivado',
+	'_USAGE_GROUP_PROFILE' => '_USAGE_GROUP_PROFILE',
+	'_USAGE_NEW_GROUP' => '_USAGE_NEW_GROUP',
+	'LDAP Group ID' => 'LDAP del Grupo ID',
+	'The LDAP directory ID for this group.' => 'El ID del directorio LDAP para este grupo.',
+	'The name used for identifying this group.' => 'El nombre de usuario para identificar este grupo.',
+	'The display name for this group.' => 'El nombre que se muestra para este grupo.',
+	'Status of group in the system. Disabling a group removes its members&rsquo; access to the system but preserves their content and history.' => 'El estatus del grupo en el sistema.  El hecho de desactivar un grupo borra el acceso a sus miembros pero guarda su contenido y el histórico de estos.',
+	'Enter a description for your group.' => 'Instroduzca una descripción para su grupo.',
+	'Created on' => 'Creado en',
 
 ## addons/Enterprise.pack/tmpl/list_group_member.tmpl
-	'[_1]: Group Members' => '[_1]: Miembros del grupo', # Translate - New
-	'<em>[_1]</em>: Group Members' => '<em>[_1]</em>: Miembros del grupo', # Translate - New
-	'You have successfully deleted the users.' => 'Usted ha borrado con suceso los usuarios.', # Translate - New
-	'You have successfully added new users to this group.' => 'Usted ha añadido con suceso nuevos usuarios a este grupo.', # Translate - New
-	'You have successfully synchronized users\' information with external directory.' => 'Usted ha sincronizado con suceso las informaciones de los usuarios con el directorio externo.', # Translate - New
-	'Some ([_1]) of the selected users could not be re-enabled because they were no longer found in LDAP.' => 'Algunos ([_1]) de los usuarios seleccionados no han podido ser reactivados porque no han sido encontrados en LDAP.', # Translate - New
-	'You have successfully removed the users from this group.' => 'Usted ha borrado con suceso los usuarios de este grupo.', # Translate - New
-	'member' => 'miembro', # Translate - New
-	'Show Enabled Members' => 'Mostrar los miembros activados', # Translate - New
-	'Show Disabled Members' => 'Mostrar los miembros desactivados', # Translate - New
-	'Show All Members' => 'Mostrar todos los miembros', # Translate - New
-	'You can not add users to a disabled group.' => 'Usted no puede añadir usuarios a un grupo desactivado.', # Translate - New
-	'Add user to [_1]' => 'Añadir usuarios a [_1]', # Translate - New
-	'None.' => 'Ninguno.', # Translate - New
-	'(Showing all users.)' => '(Mostrar todos los usuarios.)', # Translate - New
-	'Showing only users whose [_1] is [_2].' => 'Mostrar solo los usuarios que el [_1] es [_2].', # Translate - New
-	'Show' => 'Mostrar', # Translate - New
-	'all' => 'todos', # Translate - Case
-	'only' => 'solo', # Translate - New
-	'users where' => 'usuarios donde', # Translate - New
-	'No members in group' => 'Ningún miembro en el grupo', # Translate - New
-	'Only show enabled users' => 'Solo mostrar los usuarios activados', # Translate - New
-	'Only show disabled users' => 'Solo mostrar los usuarios desactivados', # Translate - New
-	'Are you sure you want to remove this [_1] from this group?' => '¿Está seguro de querer borrar este [_1] de este grupo?', # Translate - New
-	'Are you sure you want to remove the [_1] selected [_2] from this group?' => '¿Está seguro de querer borrar el [_1] seleccionado [_2] de este grupo?', # Translate - New
+	'[_1]: Group Members' => '[_1]: Miembros del grupo',
+	'<em>[_1]</em>: Group Members' => '<em>[_1]</em>: Miembros del grupo',
+	'You have successfully deleted the users.' => 'Usted ha borrado con suceso los usuarios.',
+	'You have successfully added new users to this group.' => 'Usted ha añadido con suceso nuevos usuarios a este grupo.',
+	'You have successfully synchronized users\' information with external directory.' => 'Usted ha sincronizado con suceso las informaciones de los usuarios con el directorio externo.',
+	'Some ([_1]) of the selected users could not be re-enabled because they were no longer found in LDAP.' => 'Algunos ([_1]) de los usuarios seleccionados no han podido ser reactivados porque no han sido encontrados en LDAP.',
+	'You have successfully removed the users from this group.' => 'Usted ha borrado con suceso los usuarios de este grupo.',
+	'member' => 'miembro',
+	'Show Enabled Members' => 'Mostrar los miembros activados',
+	'Show Disabled Members' => 'Mostrar los miembros desactivados',
+	'Show All Members' => 'Mostrar todos los miembros',
+	'You can not add users to a disabled group.' => 'Usted no puede añadir usuarios a un grupo desactivado.',
+	'Add user to [_1]' => 'Añadir usuarios a [_1]',
+	'None.' => 'Ninguno.',
+	'(Showing all users.)' => '(Mostrar todos los usuarios.)',
+	'Showing only users whose [_1] is [_2].' => 'Mostrar solo los usuarios que el [_1] es [_2].',
+	'Show' => 'Mostrar',
+	'all' => 'todos',
+	'only' => 'solo',
+	'users where' => 'usuarios donde',
+	'No members in group' => 'Ningún miembro en el grupo',
+	'Only show enabled users' => 'Solo mostrar los usuarios activados',
+	'Only show disabled users' => 'Solo mostrar los usuarios desactivados',
+	'Are you sure you want to remove this [_1] from this group?' => '¿Está seguro de querer borrar este [_1] de este grupo?',
+	'Are you sure you want to remove the [_1] selected [_2] from this group?' => '¿Está seguro de querer borrar el [_1] seleccionado [_2] de este grupo?',
 
 ## addons/Enterprise.pack/app-wizard.yaml
-	'This module is required in order to use the LDAP Authentication.' => 'Este módulo es requerido para usar la identificación LDAP.', # Translate - New
+	'This module is required in order to use the LDAP Authentication.' => 'Este módulo es requerido para usar la identificación LDAP.',
 
 ## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
-	'PublishCharset [_1] is not supported in this version of MS SQL Server Driver.' => 'PublishCharset [_1] no es soportada en esta versión del driver MS SQL Server.', # Translate - New
+	'PublishCharset [_1] is not supported in this version of MS SQL Server Driver.' => 'PublishCharset [_1] no es soportada en esta versión del driver MS SQL Server.',
 
 ## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/UMSSQLServer.pm
-	'This version of UMSSQLServer driver requires DBD::ODBC version 1.14.' => 'Esta versión del Driver UMSSQLServer requiere DBD::ODBC versión 1.14.', # Translate - New
-	'This version of UMSSQLServer driver requires DBD::ODBC compiled with Unicode support.' => 'Esta versión del Driver UMSSQLServer requiere DBD::ODBC compilado con el soporte Unicode.', # Translate - New
+	'This version of UMSSQLServer driver requires DBD::ODBC version 1.14.' => 'Esta versión del Driver UMSSQLServer requiere DBD::ODBC versión 1.14.',
+	'This version of UMSSQLServer driver requires DBD::ODBC compiled with Unicode support.' => 'Esta versión del Driver UMSSQLServer requiere DBD::ODBC compilado con el soporte Unicode.',
 
 ## addons/Enterprise.pack/lib/MT/LDAP.pm
-	'Invalid LDAPAuthURL scheme: [_1].' => 'Scheme LDAPAuthURL inválido: [_1].', # Translate - New
-	'Error connecting to LDAP server [_1]: [_2]' => 'Error a la conexión al server LDAP [_1]: [_2]', # Translate - New
-	'User not found on LDAP: [_1]' => 'Usuario no encontrado en LDAP: [_1]', # Translate - New
-	'Binding to LDAP server failed: [_1]' => 'La asociación con el server LDAP ha fallado: [_1]', # Translate - New
-	'More than one user with the same name found on LDAP: [_1]' => 'Más de un usuario con el mismo nombre ha sido encontrado en LDAP: [_1]', # Translate - New
+	'Invalid LDAPAuthURL scheme: [_1].' => 'Scheme LDAPAuthURL inválido: [_1].',
+	'Error connecting to LDAP server [_1]: [_2]' => 'Error a la conexión al server LDAP [_1]: [_2]',
+	'User not found on LDAP: [_1]' => 'Usuario no encontrado en LDAP: [_1]',
+	'Binding to LDAP server failed: [_1]' => 'La asociación con el server LDAP ha fallado: [_1]',
+	'More than one user with the same name found on LDAP: [_1]' => 'Más de un usuario con el mismo nombre ha sido encontrado en LDAP: [_1]',
 
 ## addons/Enterprise.pack/lib/MT/Group.pm
-	'Group' => 'Grupo', # Translate - New
+	'Group' => 'Grupo',
 
 ## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
-	'User [_1]([_2]) not found.' => 'Usuario [_1]([_2]) sin resultado.', # Translate - New
-	'User \'[_1]\' cannot be updated.' => 'Usuario [_1] no puede ser modificado.', # Translate - New
-	'User \'[_1]\' updated with LDAP login ID.' => 'Usuario [_1] modificado con el ID de login LDAP.', # Translate - New
-	'LDAP user [_1] not found.' => 'Usuario LDAP [_1] sin resultado.', # Translate - New
-	'User [_1] cannot be updated.' => 'Usuario [_1] no puede ser actualizado.', # Translate - New
-	'User cannot be updated: [_1].' => 'Usuario no puede ser actualizado [_1].', # Translate - New
-	'Failed login attempt by user \'[_1]\' deleted from LDAP.' => 'Intento de login sin suceso por el usuario [_1] borrado de LDAP.', # Translate - New
-	'User \'[_1]\' updated with LDAP login name \'[_2]\'.' => 'Usuario [_1] actualizado con el nombre de login LDAP [_2]', # Translate - New
-	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => 'Intento de login sin suceso por el usuario [_1].  Un usuario con este\nnombre de usuario que ya existe en el sistema on un UUID diferente.', # Translate - New
-	'User \'[_1]\' account is disabled.' => 'La cuenta del usuario [_1] ha sido desactivada.', # Translate - New
-	'LDAP users synchronization interrupted.' => 'La sincronización de los usuarios LDAP ha sido interrumpida.', # Translate - New
-	'Loading MT::LDAP failed: [_1]' => 'El cargamiento de MT::LDAP falló: [_1]', # Translate - New
-	'External user synchronization failed.' => 'La sincronización de los usuarios externos falló.', # Translate - New
-	'An attempt to disable all system administrators in the system was made.  Synchronization of users was interrupted.' => 'Un intento de desactivación de todos los administradores del sistema ha sido efectuada.  La sincronización de los usuarios ha sido interrumpida.', # Translate - New
-	'The following users\' information were modified:' => 'Las informaciones de los siguientes usuarios han sido actualizadas:', # Translate - New
-	'The following users were disabled:' => 'Los siguientes usuarios han sido desactivados:', # Translate - New
-	'LDAP users synchronized.' => 'Los usuarios LDAP han sido sincronizados:', # Translate - New
-	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute is set.' => 'La sincronización de los grupos no puede ser realizada sin que LDAPGroupIdAttribute y/o LDAPGroupNameAttribute sean iniciados.', # Translate - New
-	'LDAP groups synchronized with existing groups.' => 'Grupos LDAP sincronizados con los grupos existentes.', # Translate - New
-	'The following groups\' information were modified:' => 'Las informaciones de los siguientes grupos han sido actualizados.', # Translate - New
-	'No LDAP group was found using given filter.' => 'Ningún grupo LDAP ha sido encontrado con el filtro dado.', # Translate - New
-	"Filter used to search for groups: [_1]\nSearch base: [_2]" => 'Filtro utilizado para buscar grupos: [_1]\nBase de búsqueda: [_2]', # Translate - New
-	'(none)' => '(ninguno)', # Translate - Case
-	'The following groups were deleted:' => 'Los siguientes grupos han sido borrados:', # Translate - New
-	'Failed to create a new group: [_1]' => 'Falló la creación de un nuevo grupo: [_1]', # Translate - New
-	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Enterprise.' => 'La instrucción [_1] debe ser completada para sincronizar los miembros de los grupos LDAP en MT Enterprise.', # Translate - New
-	'Members removed: ' => 'Miembros borrados:', # Translate - New
-	'Members added: ' => 'Miembros añadidos:', # Translate - New
-	'Memberships of the group \'[_2]\' (#[_3]) has been changed in synchronizing with external directory.' => 'Memberships del grupo [_2] (#[_3]) ha sido cambiado durante la sincroización con el directorio externo.', # Translate - New
-	'LDAPUserGroupMemberAttribute must be set to enable synchronize members of groups.' => 'LDAPUserGroupMemberAttribute debe ser completado para permitir la sincronización de los miembros de los grupos.', # Translate - New
+	'User [_1]([_2]) not found.' => 'Usuario [_1]([_2]) sin resultado.',
+	'User \'[_1]\' cannot be updated.' => 'Usuario [_1] no puede ser modificado.',
+	'User \'[_1]\' updated with LDAP login ID.' => 'Usuario [_1] modificado con el ID de login LDAP.',
+	'LDAP user [_1] not found.' => 'Usuario LDAP [_1] sin resultado.',
+	'User [_1] cannot be updated.' => 'Usuario [_1] no puede ser actualizado.',
+	'User cannot be updated: [_1].' => 'Usuario no puede ser actualizado [_1].',
+	'Failed login attempt by user \'[_1]\' deleted from LDAP.' => 'Login entrado sin suceso por el usuario [_1] borrado de LDAP.',
+	'User \'[_1]\' updated with LDAP login name \'[_2]\'.' => 'Usuario [_1] actualizado con el nombre de login LDAP [_2]',
+	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => 'Error durante la identificación del usuario [_1].  Otro usuario utiliza el mismo nombre de usuario en el sistema con otro UUID.', # Translate - New
+	'User \'[_1]\' account is disabled.' => 'La cuenta del usuario [_1] ha sido desactivada.',
+	'LDAP users synchronization interrupted.' => 'La sincronización de los usuarios LDAP ha sido interrumpida.',
+	'Loading MT::LDAP failed: [_1]' => 'El cargamiento de MT::LDAP falló: [_1]',
+	'External user synchronization failed.' => 'La sincronización de los usuarios externos falló.',
+	'An attempt to disable all system administrators in the system was made.  Synchronization of users was interrupted.' => 'Un intento de desactivación de todos los administradores del sistema ha sido efectuada.  La sincronización de los usuarios ha sido interrumpida.',
+	'The following users\' information were modified:' => 'Las informaciones de los siguientes usuarios han sido actualizadas:',
+	'The following users were disabled:' => 'Los siguientes usuarios han sido desactivados:',
+	'LDAP users synchronized.' => 'Los usuarios LDAP han sido sincronizados:',
+	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute is set.' => 'La sincronización de los grupos no puede ser realizada sin que LDAPGroupIdAttribute y/o LDAPGroupNameAttribute sean iniciados.',
+	'LDAP groups synchronized with existing groups.' => 'Grupos LDAP sincronizados con los grupos existentes.',
+	'The following groups\' information were modified:' => 'Las informaciones de los siguientes grupos han sido actualizados.',
+	'No LDAP group was found using given filter.' => 'Ningún grupo LDAP ha sido encontrado con el filtro dado.',
+	"Filter used to search for groups: [_1]\nSearch base: [_2]" => 'Filtro usado para buscar en los grupos: [_1]\nBúsqueda: [_2]', # Translate - New
+	'(none)' => '(ninguno)',
+	'The following groups were deleted:' => 'Los siguientes grupos han sido borrados:',
+	'Failed to create a new group: [_1]' => 'Falló la creación de un nuevo grupo: [_1]',
+	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Enterprise.' => 'La instrucción [_1] debe ser completada para sincronizar los miembros de los grupos LDAP en MT Enterprise.',
+	'Members removed: ' => 'Miembros borrados:',
+	'Members added: ' => 'Miembros añadidos:',
+	'Memberships of the group \'[_2]\' (#[_3]) has been changed in synchronizing with external directory.' => 'Memberships del grupo [_2] (#[_3]) ha sido cambiado durante la sincroización con el directorio externo.',
+	'LDAPUserGroupMemberAttribute must be set to enable synchronize members of groups.' => 'LDAPUserGroupMemberAttribute debe ser completado para permitir la sincronización de los miembros de los grupos.',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/Wizard.pm
-	'PLAIN' => 'PLAIN', # Translate - New
-	'CRAM-MD5' => 'CRAM-MD5', # Translate - New
-	'Digest-MD5' => 'Digest-MD5', # Translate - New
-	'Login' => 'Login', # Translate - New
-	'Found' => 'Encontrado', # Translate - New
-	'Not Found' => 'No encontrado', # Translate - New
+	'PLAIN' => 'PLAIN',
+	'CRAM-MD5' => 'CRAM-MD5',
+	'Digest-MD5' => 'Digest-MD5',
+	'Login' => 'Login',
+	'Found' => 'Encontrado',
+	'Not Found' => 'No encontrado',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/BulkCreation.pm
-	'Format error at line [_1]: [_2]' => 'Error en el formato a la línea [_1]: [_2]', # Translate - New
-	'Invalid command: [_1]' => 'Orden inválida', # Translate - New
-	'Invalid number of columns for [_1]' => 'Número de columnas para [_1] inválido', # Translate - New
-	'Invalid user name: [_1]' => 'Nombre de usuario inválido: [_1]', # Translate - New
-	'Invalid display name: [_1]' => 'Nombre mostrado inválido: [_1]', # Translate - New
-	'Invalid email address: [_1]' => 'Dirección de correo electrónico inválida: [_1]', # Translate - New
-	'Invalid language: [_1]' => 'Idioma inválido: [_1]', # Translate - New
-	'Invalid password: [_1]' => 'Contraseña inválida: [_1]', # Translate - New
-	'Invalid password recovery phrase: [_1]' => 'Frase de recuperación de contraseña: [_1]', # Translate - New
-	'Invalid weblog name: [_1]' => 'Nombre de weblog inválido: [_1]', # Translate - New
-	'Invalid weblog description: [_1]' => 'Descripción de weblog inválida: [_1]', # Translate - New
-	'Invalid site url: [_1]' => 'URL del sitio inválida: [_1]', # Translate - New
-	'Invalid site root: [_1]' => 'Raíz del sitio inválida: [_1]', # Translate - New
-	'Invalid timezone: [_1]' => 'Zona horaria inválida: [_1]', # Translate - New
-	'Invalid new user name: [_1]' => 'Nuevo nombre de usuario inválido: [_1]', # Translate - New
-	'A user with the same name was found.  Register was not processed: [_1]' => 'Un usuario con el mismo nombre ha sido encontrado.  El registro no ha sido procesado: [_1]', # Translate - New
-	'Blog for user \'[_1]\' can not be created.' => 'El blog por el usuario [_1] no puede ser creado.', # Translate - New
-	'Blog \'[_1]\' for user \'[_2]\' has been created.' => 'El blog [_1] por el usuario [_2] ha sido creado.', # Translate - New
-	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Error en la asignación de los derechos de administración al usuario [_1] (ID: [_2]) para el weblog [_3] (ID: [_4]).  Ningún rol de administrador apropiado ha sido encontrado.', # Translate - New
-	'Permission granted to user \'[_1]\'' => 'Los derechos han sido atribuidos al usuario [_1]', # Translate - New
-	'User \'[_1]\' already exists. Update was not processed: [_2]' => 'El usuario [_1] ya existe.  La actualización no ha sido efectuada: [_2]', # Translate - New
-	'User \'[_1]\' not found.  Update was not processed.' => 'Usuario [_1] no encontrado.  La actualización no ha sido efectuada.', # Translate - New
-	'User \'[_1]\' has been updated.' => 'Usuario [_1] ha sido actualizado.', # Translate - New
-	'User \'[_1]\' was found, but delete was not processed' => 'Usuario [_1] ha sido encontrado pero la supresión no ha sido efectuada. ', # Translate - New
-	'User \'[_1]\' not found.  Delete was not processed.' => 'El usuario [_1] no ha sido encontrada.  La supresión no ha sido efectuada.', # Translate - New
-	'User \'[_1]\' has been deleted.' => 'El usuario [_1] ha sido borrado.', # Translate - New
+	'Format error at line [_1]: [_2]' => 'Error en el formato a la línea [_1]: [_2]',
+	'Invalid command: [_1]' => 'Orden inválida',
+	'Invalid number of columns for [_1]' => 'Número de columnas para [_1] inválido',
+	'Invalid user name: [_1]' => 'Nombre de usuario inválido: [_1]',
+	'Invalid display name: [_1]' => 'Nombre mostrado inválido: [_1]',
+	'Invalid email address: [_1]' => 'Dirección de correo electrónico inválida: [_1]',
+	'Invalid language: [_1]' => 'Idioma inválido: [_1]',
+	'Invalid password: [_1]' => 'Contraseña inválida: [_1]',
+	'Invalid password recovery phrase: [_1]' => 'Frase de recuperación de contraseña: [_1]',
+	'Invalid weblog name: [_1]' => 'Nombre de weblog inválido: [_1]',
+	'Invalid weblog description: [_1]' => 'Descripción de weblog inválida: [_1]',
+	'Invalid site url: [_1]' => 'URL del sitio inválida: [_1]',
+	'Invalid site root: [_1]' => 'Raíz del sitio inválida: [_1]',
+	'Invalid timezone: [_1]' => 'Zona horaria inválida: [_1]',
+	'Invalid new user name: [_1]' => 'Nuevo nombre de usuario inválido: [_1]',
+	'A user with the same name was found.  Register was not processed: [_1]' => 'Un usuario con el mismo nombre ha sido encontrado.  El registro no ha sido procesado: [_1]',
+	'Blog for user \'[_1]\' can not be created.' => 'El blog por el usuario [_1] no puede ser creado.',
+	'Blog \'[_1]\' for user \'[_2]\' has been created.' => 'El blog [_1] por el usuario [_2] ha sido creado.',
+	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Error en la asignación de los derechos de administración al usuario [_1] (ID: [_2]) para el weblog [_3] (ID: [_4]).  Ningún rol de administrador apropiado ha sido encontrado.',
+	'Permission granted to user \'[_1]\'' => 'Los derechos han sido atribuidos al usuario [_1]',
+	'User \'[_1]\' already exists. Update was not processed: [_2]' => 'El usuario [_1] ya existe.  La actualización no ha sido efectuada: [_2]',
+	'User \'[_1]\' not found.  Update was not processed.' => 'Usuario [_1] no encontrado.  La actualización no ha sido efectuada.',
+	'User \'[_1]\' has been updated.' => 'Usuario [_1] ha sido actualizado.',
+	'User \'[_1]\' was found, but delete was not processed' => 'Usuario [_1] ha sido encontrado pero la supresión no ha sido efectuada. ',
+	'User \'[_1]\' not found.  Delete was not processed.' => 'El usuario [_1] no ha sido encontrada.  La supresión no ha sido efectuada.',
+	'User \'[_1]\' has been deleted.' => 'El usuario [_1] ha sido borrado.',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
 	'Add [_1] to a blog' => 'Añadir [_1] al blog',
@@ -3704,26 +3709,26 @@ que la dirección provista es correcta y le pertenece.',
 	'Add a group to this blog' => 'Asignar un grupo a este blog',
 	'Grant permission to a group' => 'Otorgar permiso a un grupo',
 	'Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Enterprise acaba de intentar deshabilitar su cuenta durante una sincronización con el directorio externo. Algunas de las opciones de configuración de la administración externa de usuarios deben ser incorrectas. Por favor, corrija la configuración antes de continuar.',
-	'Group requires name' => 'El grupo requiere un nombre', # Translate - New
-	'Invalid group' => 'Grupo inválido', # Translate - New
-	'Add Users to Group [_1]' => 'Añadir usuarios al grupo [_1]', # Translate - New
+	'Group requires name' => 'El grupo requiere un nombre',
+	'Invalid group' => 'Grupo inválido',
+	'Add Users to Group [_1]' => 'Añadir usuarios al grupo [_1]',
 	'Users & Groups' => 'Usuarios y grupos',
-	'Group Members' => 'Miembros del grupo', # Translate - New
-	'User Groups' => 'Grupos de usuarios', # Translate - New
-	'Group load failed: [_1]' => 'La carga del grupo ha fallado: [_1]', # Translate - New
-	'User load failed: [_1]' => 'La carga del usuario ha fallado: [_1]', # Translate - New
-	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Usuario [_1] (ID: [_2]) ha sido borrado del grupo [_3] (ID:[_4]) por [_5]', # Translate - New
-	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Usuario[_1] (ID: [_2]) ha sido añadido del grupo [_3] (ID:[_4]) por [_5]', # Translate - New
-	'Author load failed: [_1]' => 'La carga del autor ha fallado: [_1]', # Translate - New
-	'Invalid user' => 'Usuario inválido', # Translate - New
-	'Assign User [_1] to Groups' => 'Usuario [_1] asignado a los grupos', # Translate - New
+	'Group Members' => 'Miembros del grupo',
+	'User Groups' => 'Grupos de usuarios',
+	'Group load failed: [_1]' => 'La carga del grupo ha fallado: [_1]',
+	'User load failed: [_1]' => 'La carga del usuario ha fallado: [_1]',
+	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Usuario [_1] (ID: [_2]) ha sido borrado del grupo [_3] (ID:[_4]) por [_5]',
+	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Usuario[_1] (ID: [_2]) ha sido añadido del grupo [_3] (ID:[_4]) por [_5]',
+	'Author load failed: [_1]' => 'La carga del autor ha fallado: [_1]',
+	'Invalid user' => 'Usuario inválido',
+	'Assign User [_1] to Groups' => 'Usuario [_1] asignado a los grupos',
 	'Select Groups' => 'Seleccionar grupos',
 	'Groups Selected' => 'Grupos seleccionados',
-	'Type a group name to filter the choices below.' => 'Tapea el nombre de un grupo para filtrar las opciones que se encuentran aquí debajo.', # Translate - New
+	'Type a group name to filter the choices below.' => 'Tapea el nombre de un grupo para filtrar las opciones que se encuentran aquí debajo.',
 	'Search Groups' => 'Buscar grupos',
-	'Bulk import cannot be used under external user management.' => 'La importación masiva no puede ser usuada en la administración de usuarios externos.', # Translate - New
-	'Bulk management' => 'Administración masiva', # Translate - New
-	'The group' => 'El grupo', # Translate - New
+	'Bulk import cannot be used under external user management.' => 'La importación masiva no puede ser usuada en la administración de usuarios externos.',
+	'Bulk management' => 'Administración masiva',
+	'The group' => 'El grupo',
 	'User/Group' => 'Usuario/Grupo',
 	'A user can\'t change his/her own username in this environment.' => 'Un usuario no puede cambiar su propio nombre en este contexto.',
 	'An error occurred when enabling this user.' => 'Ocurrió un error cuando se habilitaba este usuario.',
@@ -3732,8 +3737,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Fixing binary data for Microsoft SQL Server storage...' => 'Reparando datos binarios para Microsoft SQL Server...',
 
 ## addons/Enterprise.pack/app-cms.yaml
-	'Bulk Author Export' => 'Exportación masiva de autores', # Translate - New
-	'Synchronize Users' => 'Sincronización de Usuarios', # Translate - New
+	'Bulk Author Export' => 'Exportación masiva de autores',
+	'Synchronize Users' => 'Sincronización de Usuarios',
+	'Are you sure you want to delete the selected group(s)?' => '¿Está seguro de querer borrar el(los) grupo(s) seleccionados?', # Translate - New
 
 ## plugins/feeds-app-lite/tmpl/config.tmpl
 	'Feeds.App Lite Widget Creator' => 'Creador de widgets de Feeds.App Lite',
@@ -4104,9 +4110,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Error downloading image: [_1]' => 'Error descargando imagen: [_1]',
 	'Successfully applied new theme selection.' => 'Se aplicó con éxito la nueva selección de temas.',
 	'Invalid URL: [_1]' => 'URL no válida: [_1]',
+	'Edit Role' => 'Editar Rol',
 
 );
 
-## New words: 1414
+## New words: 60
 
 1;

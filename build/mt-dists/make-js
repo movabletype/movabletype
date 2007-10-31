@@ -4,6 +4,7 @@ use strict;
 
 use lib 'lib';
 use lib 'extlib';
+use File::Spec;
 use MT;
 use MT::Util qw(encode_js);
 
@@ -16,6 +17,35 @@ $js .= `cat tmpl/cms/edit_entry.tmpl`;
 $js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
 $js .= `cat tmpl/cms/list_tag.tmpl`;
 $js .= `cat tmpl/cms/include/calendar.tmpl`;
+
+my $addon_path = File::Spec->catdir( 'addons' );
+local *DH;
+my @files;
+if ( opendir DH, $addon_path ) {
+    my @p = readdir DH;
+    foreach my $p (@p) {
+        next if $p eq '.' || $p eq '..';
+        my $full_path = File::Spec->catdir( $addon_path, $p );
+        if ( -d $full_path ) {
+            if ( $p =~ m/^(.+)\.(\w+)$/ ) {
+                my $label = $1;
+                my $id    = lc $1;
+                my $type  = $2;
+                next if $type ne 'pack';
+                if ( open my $fh, '<', File::Spec->catfile($full_path, 'make_js_templates') ) {
+                    while (<$fh>) {
+                        chomp $_;
+                        push @files, $_;
+                    }
+                    close $fh;
+                }
+            }
+        }
+    }
+    closedir DH;
+}
+
+$js .= `cat $_` foreach @files;
 
 foreach my $lang (qw(ja de nl fr es)) {
     open(FOUT, ">./mt-static/mt_$lang.js")

@@ -3494,7 +3494,8 @@ body.dialog {
 
 .edit-comment #status-field,
 .edit-ping #status-field,
-.edit-author .user-status-disabled {
+.edit-author .user-status-disabled,
+.edit-group .group-status-disabled {
     padding-top: .75em;
 }
 
@@ -3511,8 +3512,9 @@ body.dialog {
 
 .edit-comment .comment-status-spam,
 .edit-ping .ping-status-spam,
-.edit-author .user-status-disabled {
-    background: #e7cdcd;
+.edit-author .user-status-disabled,
+.edit-group .group-status-disabled {
+    background-color: #e7cdcd;
 }
 
 .edit-comment .comment-spam-info,
@@ -3673,7 +3675,8 @@ body.dialog {
     margin: 0 0 10px;
 }
 
-#list-plugins .plugin-name a {
+#list-plugins .plugin-name a,
+#list-plugins .plugin-name .plugin-name-disabled {
     display: block !important;
     padding: 10px 10px 10px 30px;
     background: url('../images/plugin-error.gif') no-repeat 10px 10px;

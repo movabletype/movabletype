@@ -55,7 +55,7 @@ sub file_path {
 
     $path = $asset->cache_property(sub {
         my $path = $asset->SUPER::file_path();
-        if ($path =~ m!^\%([ra])!) {
+        if ($path && ($path =~ m!^\%([ra])!)) {
             my $blog = $asset->blog or return undef;
             my $root = $1 eq 'r' ? $blog->site_path : $blog->archive_path;
             $root =~ s!(/|\\)$!!;

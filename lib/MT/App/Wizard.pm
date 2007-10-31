@@ -710,7 +710,8 @@ sub seed {
             $param{database_name} = $param{dbname};
             $param{database_username} = $param{dbuser};
             $param{database_password} = $param{dbpass} if $param{dbpass};
-            $param{database_host} = $param{dbserver} if $param{dbserver};
+            $param{database_host} = $param{dbserver}
+                if ($dbtype ne 'oracle') && $param{dbserver};
             $param{database_port} = $param{dbport} if $param{dbport};
             $param{database_socket} = $param{dbsocket} if $param{dbsocket};
             $param{use_setnames} =  $param{setnames} if $param{setnames};

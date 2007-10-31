@@ -58,7 +58,7 @@ sub form_fields {
 <div class="field">
 <input type="hidden" name="token" value="$token" />
 <img src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><br />
-<input name="captcha_code" id="captcha-code" value="" />
+<input name="captcha_code" id="captcha_code" value="" />
 <p>$description</p>
 </div>
 FORM_FIELDS

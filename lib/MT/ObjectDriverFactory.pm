@@ -42,6 +42,7 @@ sub new {
         }
     }
     $class ||= $type;
+    die "Unsupported driver :" unless $class;
     $class = 'MT::ObjectDriver::Driver::DBD::' . $class
         unless $class =~ m/::/;
     eval "use $class;";

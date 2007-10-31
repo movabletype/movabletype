@@ -1,5 +1,7 @@
 <mt:unless name="cfg_exists">
-    <mt:setvarblock name="page_title"><__trans phrase="Welcome to Movable Type"></mt:setvarblock> 
+    <mt:setvarblock name="page_title"><__trans phrase="Welcome to Movable Type"></mt:setvarblock>
+<mt:else>
+    <mt:setvarblock name="page_title"><__trans phrase="Configuration File Exists"></mt:setvarblock>
 </mt:unless>
 <mt:unless name="valid_static_path">
     <mt:setvarblock name="html_head" append="1">
@@ -156,7 +158,8 @@ window.onload = js_check;
 <mt:include name="../cms/include/chromeless_header.tmpl">
 
 <mt:if name="cfg_exists">
-    <p><__trans phrase="Your Movable Type configuration file already exists. The Wizard cannot continue with this file present."><br /></p>
+    <p><__trans phrase="A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type." params="mt.cgi"></p>
+    <p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
 <mt:else>
 <form method="post">
     <input type="hidden" name="__mode" value="next_step" />

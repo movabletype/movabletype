@@ -256,16 +256,18 @@ sub _create_commenter_assign_role {
     require MT::Role;
     require MT::Association;
     my $role = MT::Role->load_same( undef, undef, 1, 'comment' );
-    if ( $role && ( my $blog = MT::Blog->load($blog_id) ) ) {
+    my $blog = MT::Blog->load($blog_id);
+    if ( $role && $blog ) {
         MT::Association->link( $commenter => $role => $blog );
     }
     else {
+        my $blog_name = $blog ? $blog->name : '(Blog not found)';
         $app->log(
             {
                 message => MT->translate(
 "Error assigning commenting rights to user '[_1] (ID: [_2])' for weblog '[_3] (ID: [_4])'. No suitable commenting role was found.",
                     $commenter->name, $commenter->id,
-                    $blog->name,      $blog->id,
+                    $blog_name,      $blog->id,
                 ),
                 level    => MT::Log::ERROR(),
                 class    => 'system',

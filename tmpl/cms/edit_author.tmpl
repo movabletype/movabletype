@@ -156,7 +156,7 @@ TC.attachLoadEvent(init);
         <input name="name" id="name" class="half-width" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
 </mtapp:setting>
 
-<mt:if name="external_id">
+<mt:if name="external_id"><mt:if name="show_external_id">
     <mtapp:setting
         id="external_id"
         label="<__trans phrase="External user ID">"
@@ -164,7 +164,7 @@ TC.attachLoadEvent(init);
         hint="">
             <mt:var name="external_id" escape="html">
     </mtapp:setting>
-</mt:if>
+</mt:if></mt:if>
 
 <mt:unless name="new_user_external_auth">
     <mtapp:setting

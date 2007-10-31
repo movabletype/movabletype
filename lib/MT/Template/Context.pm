@@ -217,7 +217,8 @@ sub post_process_handler {
 
 sub slurp {
     my ($ctx, $args, $cond) = @_;
-    $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
+    my $tokens  = $ctx->stash('tokens');
+    $tokens ? $ctx->stash('builder')->build($ctx, $tokens, $cond) : '';
 }
 
 sub else {

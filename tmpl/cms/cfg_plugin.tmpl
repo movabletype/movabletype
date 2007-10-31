@@ -218,7 +218,7 @@
     </mt:if>
                     <h3 class="plugin-name">
     <mt:if name="plugin_disabled">
-            <$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if>
+            <span class="plugin-name-disabled"><$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if></span>
     <mt:else>
             <a href="javascript:void(0)" onclick="togglePlugin(<$mt:var name="plugin_id"$>)" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">"<mt:unless name="plugin_error"> style="background-image: url('<mt:var name="plugin_icon">')"</mt:unless>><$mt:var name="plugin_name" escape="html"$> <mt:if name="plugin_version"><span class="plugin-version"><mt:var name="plugin_version"></span></mt:if></a>
     </mt:if>
@@ -278,8 +278,8 @@
             <mt:if name="plugin_plugin_link">
                                         <li><a href="<mt:var name="plugin_plugin_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="More about [_1]" params="<mt:var name="plugin_name" escape="html">">"><__trans phrase="Plugin Home"></a></li>
             </mt:if>
-            <mt:if name="plugin_author_link">
-                                        <li><a href="<mt:var name="plugin_author_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="Author of [_1]" params="<mt:var name="plugin_name" escape="html">">"><mt:var name="plugin_author_name"></a></li>
+            <mt:if name="plugin_author_name">
+                                        <li><mt:if name="plugin_author_link"><a href="<mt:var name="plugin_author_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="Author of [_1]" params="<mt:var name="plugin_name" escape="html">">"><mt:var name="plugin_author_name"></a><mt:else><mt:var name="plugin_author_name"></mt:if></li>
             </mt:if>
                                     </ul>
                                 </div>

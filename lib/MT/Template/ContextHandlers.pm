@@ -827,7 +827,7 @@ sub _hdlr_app_listing {
     unless ((ref($loop_obj) eq 'ARRAY') && (@$loop_obj)) {
         my @else = @{ $ctx->stash('tokens_else') || [] };
         return &_hdlr_pass_tokens_else if @else;
-        my $msg = $args->{empty_message} || MT->translate("No [_1] could be found.", $class->class_label_plural);
+        my $msg = $args->{empty_message} || MT->translate("No [_1] could be found.", lowercase($class->class_label_plural));
         return $ctx->build(qq{<mtapp:statusmsg
             id="zero-state"
             class="info zero-state">

@@ -2239,9 +2239,8 @@ sub list_assets {
                           && $app->param('filter_val') eq 'image' ? 1 : 0,
                       )
                     : (),
-                    $dialog_view ? (
-                        search_label     => MT::Asset->class_label_plural
-                    ) : ( search_type => 'entry' ),
+                    search_label     => MT::Asset->class_label_plural,
+                    search_type => 'asset',
                 ),
                 class_loop       => \@class_loop,
                 can_delete_files => (
@@ -3351,7 +3350,7 @@ sub build_menus {
                 my $sys_only = $sub->{id} =~ m/^system:/;
                 $sub->{allowed} = 1;
                 if ( $sub->{mode} ) {
-                    $sub->{link} ||= $app->uri(
+                    $sub->{link} = $app->uri(
                         mode => $sub->{mode},
                         args => {
                             %{ $sub->{args} || {} },
@@ -3361,22 +3360,6 @@ sub build_menus {
                             )
                         }
                     );
-                    if ( $sub->{link} =~ /blog_id=(\d+)/ ) {
-                        if ( defined($blog_id) && ( $blog_id != $1 ) ) {
-                            $sub->{link} = $app->uri(
-                                mode => $sub->{mode},
-                                args => {
-                                    %{ $sub->{args} || {} },
-                                    (
-                                        $blog_id
-                                          && !$sys_only
-                                        ? ( blog_id => $blog_id )
-                                        : ()
-                                    )
-                                }
-                            );
-                        }
-                    }
                 }
                 $sub->{allowed} = 0
                   if $sub->{view} && ( $sub->{view} ne $view );
@@ -3417,7 +3400,7 @@ sub build_menus {
             }
             if ( $menu->{mode} ) {
                 my $sys_only = 1 if $menu->{id} eq 'system';
-                $menu->{link} ||= $app->uri(
+                $menu->{link} = $app->uri(
                     mode => $menu->{mode},
                     args => {
                         %{ $menu->{args} || {} },
@@ -3427,27 +3410,11 @@ sub build_menus {
                         )
                     }
                 );
-                if ( $menu->{link} =~ /blog_id=(\d+)/ ) {
-                    if ( defined($blog_id) && ( $blog_id != $1 ) ) {
-                        $menu->{link} = $app->uri(
-                            mode => $menu->{mode},
-                            args => {
-                                %{ $menu->{args} || {} },
-                                (
-                                    $blog_id
-                                      && !$sys_only
-                                    ? ( blog_id => $blog_id )
-                                    : ()
-                                )
-                            }
-                        );
-                    }
-                }
             }
             @sub = sort { $a->{order} <=> $b->{order} } @sub;
 
             # @sub = grep { $_->{allowed} } @sub; ## EXPERIMENTAL
-            if ( !$menu->{link} ) {
+            if ( !$menu->{mode} ) {
                 $menu->{link} = $sub[0]->{link};
             }
             $menu->{sub_nav_loop} = \@sub;
@@ -4326,6 +4293,8 @@ sub list_authors {
     }
     $param{object_loop} = \@data;
     $param{object_type} = 'author';
+    $param{object_label} = $app->model('author')->class_label;
+    $param{object_label_plural} = $app->model('author')->class_label_plural;
     if ( $this_author->is_superuser() ) {
         $param{search_label} = $app->translate('Users');
         $param{is_superuser} = 1;
@@ -8888,11 +8857,6 @@ sub save_object {
               if ( $q->param('file_extension') || '' ) ne '';
         }
 
-        if ( $values{site_path} =~ m!(/|\\)$! ) {
-            my $path = $values{site_path};
-            $path =~ s!(/|\\)$!!;
-            $values{site_path} = $path;
-        }
         unless ( $values{site_url} =~ m!/$! ) {
             my $url = $values{site_url};
             $values{site_url} = $url;
@@ -11201,7 +11165,6 @@ sub list_pings {
 
     my $ping_class = $app->model('ping');
     my $total      = $ping_class->count( \%terms, \%arg ) || 0;
-    my @rows       = $ping_class->load( \%terms, \%arg );
     $arg{'sort'}    = 'created_on';
     $arg{direction} = $sort_direction;
     $arg{limit}     = $limit + 1;
@@ -13744,6 +13707,7 @@ sub preview_entry {
     $entry->authored_on($ts);
 
     my $preview_basename = $app->preview_object_basename;
+    $entry->basename($preview_basename);
 
     require MT::TemplateMap;
     require MT::Template;
@@ -13759,9 +13723,10 @@ sub preview_entry {
     my $fullscreen;
     my $archive_file;
     my $orig_file;
+    my $file_ext;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
-        my $file_ext = $blog->file_extension || '';
+        $file_ext = $blog->file_extension || '';
         $blog->file_extension('');
         $archive_file = $entry->archive_file;
         $blog->file_extension($file_ext);
@@ -13830,7 +13795,7 @@ sub preview_entry {
             $fmgr->put_data( $html, $archive_file );
             $param{preview_file} = $preview_basename;
             my $preview_url = $entry->archive_url;
-            $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$1!x;
+            $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
             $param{preview_url}  = $preview_url;
 
             # we have to make a record of this preview just in case it

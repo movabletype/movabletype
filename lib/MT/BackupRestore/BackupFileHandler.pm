@@ -233,6 +233,13 @@ sub end_element {
                     $self->{records} = $records + 1;
                 }
             }
+            elsif ('permission' eq $name) {
+                my $perm = $class->count( {
+                    author_id => $obj->author_id,
+                    blog_id   => $obj->blog_id
+                });
+                $exists = 1 if $perm;
+            }
             unless ($exists) {
                 if ($obj->save()) {
                     if ($class =~ /MT::Asset(::.+)*/) {
