@@ -2,7 +2,17 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:mt="http://www.sixapart.com/ns/mt">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type="text/javascript">
+            // <![CDATA[
+            var loc = location.href;
+            var params = loc.substring( loc.indexOf( "?" ) + 1 );
+            var m = params.match( /cs=([^&]+)/ );
+            var charset = '';
+            if ( m && m[ 1 ] && m[ 1 ] != "" )
+                charset = '; charset=' + m[ 1 ].replace( /'|"|<|>/g, '' );
+            document.write( '<meta http-equiv="Content-Type" content="text/html' + charset + '" />' );
+            // ]]>
+        </script>
         <title>Editor Content</title>
         <link rel="stylesheet" type="text/css" href="../css/editor/base.css" />
         <link rel="stylesheet" type="text/css" href="../css/editor/editor-content.css" />

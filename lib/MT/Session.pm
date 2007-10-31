@@ -27,6 +27,10 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("Session");
+}
+
 sub get_unexpired_value {
     my $timeout = shift;
     my $candidate = __PACKAGE__->load(@_);

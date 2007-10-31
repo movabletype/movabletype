@@ -29,4 +29,8 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("Asset Placement");
+}
+
 1;

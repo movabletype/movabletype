@@ -19,10 +19,10 @@ $SEP = ('-' x 8);
 $SUB_SEP = ('-' x 5);
 
 sub do_import {
-    shift->import(@_);
+    shift->import_contents(@_);
 }
 
-sub import {
+sub import_contents {
     my $class = shift;
     my %param = @_;
     my $iter = $param{Iter};
@@ -129,6 +129,7 @@ sub import {
                                 $author->name($val);
                                 $author->email('');
                                 $author->type(MT::Author::AUTHOR);
+                                $author->auth_type(MT->config->AuthenticationModule);
                                 if ($pass) {
                                     $author->set_password($pass);
                                 } else {
@@ -575,7 +576,7 @@ MT::ImportExport
 
 =head1 METHODS
 
-=head2 import(%param)
+=head2 import_contents(%param)
 
 This complex method imports a blog by... TODO
 

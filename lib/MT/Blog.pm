@@ -116,6 +116,14 @@ __PACKAGE__->install_meta({
 use constant ALIGN => 'left';
 use constant UNITS => 'pixels';
 
+sub class_label {
+    MT->translate("Blog");
+}
+
+sub class_label_plural {
+    MT->translate("Blogs");
+}
+
 sub set_defaults {
     my $blog = shift;
     $blog->set_values_internal({
@@ -633,7 +641,10 @@ sub clone_with_children {
             delete $tb->{changed_cols}->{id};
 
             if ($tb->category_id) {
-                if (my $cat_tb = $cat_map{$tb->category_id}->trackback) {
+                if (my $cid = $cat_map{$tb->category_id}) {
+                    my $cat_tb = MT::Trackback->load(
+                        { category_id => $cid }
+                    );
                     my $changed;
                     if ($tb->passphrase) {
                         $cat_tb->passphrase($tb->passphrase);
@@ -649,7 +660,8 @@ sub clone_with_children {
                 }
             }
             elsif ($tb->entry_id) {
-                if (my $entry_tb = $cat_map{$tb->entry_id}->trackback) {
+                if (my $eid = $entry_map{$tb->entry_id}) {
+                    my $entry_tb = MT::Entry->load($eid)->trackback;
                     my $changed;
                     if ($tb->passphrase) {
                         $entry_tb->passphrase($tb->passphrase);
@@ -748,6 +760,7 @@ sub clone_with_children {
     $new_blog;
 }
 
+#trans('blog')
 #trans('blogs')
 
 1;

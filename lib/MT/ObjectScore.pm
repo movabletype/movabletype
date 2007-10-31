@@ -32,6 +32,14 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("Object Score");
+}
+
+sub class_label_plural {
+    MT->translate("Object Scores");
+}
+
 sub scored_by {
     my $class = shift;
     my ($namespace, $user) = @_;

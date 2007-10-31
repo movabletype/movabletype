@@ -24,6 +24,14 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("Tag Placement");
+}
+
+sub class_label_plural {
+    MT->translate("Tag Placements");
+}
+
 1;
 __END__
 

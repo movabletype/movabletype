@@ -33,6 +33,7 @@ __PACKAGE__->install_properties({
         'can_create_blog' => 'boolean',
         'is_superuser' => 'boolean',
         'can_view_log' => 'boolean',
+        'auth_type' => 'string(255)',
     },
     defaults => {
         type => 1,
@@ -45,6 +46,7 @@ __PACKAGE__->install_properties({
         type => 1,
         status => 1,
         external_id => 1,
+        auth_type => 1,
         # is_superuser => 1,
     },
     meta => 1,
@@ -59,6 +61,14 @@ __PACKAGE__->install_meta({
         'widgets',
     ],
 });
+
+sub class_label {
+    MT->translate("User");
+}
+
+sub class_label_plural {
+    MT->translate("Users");
+}
 
 # Valid "type" codes:
 use constant AUTHOR => 1;
@@ -158,6 +168,7 @@ sub set_commenter_perm {
 
 sub commenter_status {
     my $this = shift;
+    return APPROVED if $this->is_superuser;
     my ($blog_id) = @_;
     require MT::Permission;
     my $perm = MT::Permission->load(
@@ -168,7 +179,7 @@ sub commenter_status {
     return PENDING;
 }
 
-sub is_active { shift->status(@_) == ACTIVE; }
+sub is_active { shift->status() == ACTIVE; }
 sub is_trusted { shift->commenter_status(@_) == APPROVED; }
 sub is_banned { shift->commenter_status(@_) == BANNED; }
 *is_blocked = \&is_banned;
@@ -575,6 +586,30 @@ sub load_iter {
 
 sub pack_external_id { return pack('H*', $_[1]); }
 sub unpack_external_id { return unpack('H*', $_[1]); }
+
+sub auth_icon_url {
+    my $author = shift;
+
+    my $app = MT->instance;
+    my $static_path = $app->static_path;
+
+    my $auth_type = $author->auth_type;
+    return q() unless $auth_type;
+
+    if ( $author->type == MT::Author::AUTHOR() ) {
+        return $static_path . 'images/comment/mt_logo.png' ;
+    }
+    
+    my $authenticator = MT->commenter_authenticator( $auth_type );
+    return q() unless $authenticator;
+    return q() unless exists $authenticator->{logo_small};
+
+    my $logo = $authenticator->{logo_small};
+    if ( ( $logo !~ m!^https?://! ) || ( $logo !~ m!^/! ) ) {
+        $logo = $static_path . $logo;
+    }
+    return $logo;
+}
 
 1;
 

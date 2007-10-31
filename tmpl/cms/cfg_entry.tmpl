@@ -25,7 +25,7 @@
 
 <div id="cfg-entry_display">
 
-<form name="cfg_form" method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<form name="cfg_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="id" value="<mt:var name="id">" />
     <input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="_type" value="blog" />
@@ -39,7 +39,7 @@
 
     <mtapp:setting
         id="list_on_index"
-        label="<__trans phrase="Entries to Display">"
+        label="<__trans phrase="Entry Listing Default">"
         hint="<__trans phrase="Select the number of days of entries or the exact number of entries you would like displayed on your blog.">"
         help_page="blog_settings_general"
         help_section="entries_to_display">
@@ -139,9 +139,11 @@
     <mtapp:setting
         id="allow_comments_default"
         label="<__trans phrase="Accept Comments">"
+        content_class="field-content-text"
         help_page="blog_settings_entry_defaults"
-        help_section="accept_comments">
-        <input type="checkbox" name="allow_comments_default" id="allow_comments_default" value="1"<mt:if name="ALLOW_COMMENTS_DEFAULT_1"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Specifies the default Accept Comments setting when creating a new entry.">
+        help_section="accept_comments"
+        hint="<__trans phrase="Specifies the default Accept Comments setting when creating a new entry.">">
+        <input type="checkbox" name="allow_comments_default" id="allow_comments_default" value="1"<mt:if name="ALLOW_COMMENTS_DEFAULT_1"> checked="checked"</mt:if> class="cb" />
         <mt:unless name="system_allow_comments">
         <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
         <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since comments are disabled either blog or system-wide."></span></p>
@@ -151,9 +153,11 @@
     <mtapp:setting
         id="allow_pings_default"
         label="<__trans phrase="Accept TrackBacks">"
+        content_class="field-content-text"
         help_page="blog_settings_entry_defaults"
-        help_section="allow_trackbacks">
-        <input type="checkbox" value="1" name="allow_pings_default" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Specifies the default Accept TrackBacks setting when creating a new entry.">
+        help_section="allow_trackbacks"
+        hint="<__trans phrase="Specifies the default Accept TrackBacks setting when creating a new entry.">">
+        <input type="checkbox" value="1" name="allow_pings_default" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> class="cb"/>
         <mt:unless name="system_allow_pings">
         <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" /> <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide."></span></p>
         </mt:unless>
@@ -162,9 +166,67 @@
 </fieldset>
 
 <fieldset>
+
+<h3><__trans phrase="Replace Word Chars"></h3>
+
+<mtapp:setting
+    id="nwc_smart_replace"
+    label="<__trans phrase="Smart Replace">"
+    content_class="field-content-text"
+    hint="<__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents.">"
+    show_hint="1">
+    <ul>
+        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>><label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
+        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>><label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
+        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>><label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
+    </ul>
+    <div id="replace-fields" class="<mt:if name="nwc_replace_none">hidden</mt:if>">
+        <h4><__trans phrase="Replace Fields"></h4>
+        <ul>
+            <li><input type="checkbox" value="1" name="nwc_title" id="nwc_title"<mt:if name="nwc_title"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Title"></li>
+            <li><input type="checkbox" value="1" name="nwc_text" id="nwc_text"<mt:if name="nwc_text"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Entry"></li>
+            <li><input type="checkbox" value="1" name="nwc_text_more" id="nwc_text_more"<mt:if name="nwc_text_more"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Extended entry"></li>
+            <li><input type="checkbox" value="1" name="nwc_keywords" id="nwc_keywords"<mt:if name="nwc_keywords"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Keywords"></li>
+            <li><input type="checkbox" value="1" name="nwc_excerpt" id="nwc_excerpt"<mt:if name="nwc_excerpt"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Excerpt"></li>
+            <li><input type="checkbox" value="1" name="nwc_tags" id="nwc_tags"<mt:if name="nwc_tags"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Tags"></li>
+        </ul>
+    </div>
+
+</mtapp:setting>
+
+</fieldset>
+
+<fieldset>
 <h3><__trans phrase="Default Editor Fields"></h3>
 
-<mt:include name="include/cfg_entries_edit_page.tmpl">
+<mtapp:setting
+    id="entry_prefs"
+    label="<__trans phrase="Editor Fields">"
+    hint="<__trans phrase="_USAGE_ENTRYPREFS">"
+    content_class="field-content-text">
+    <ul id="editor-fields">
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="custom-prefs-title"><__trans phrase="Title"></label></li>
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <label for="custom-prefs-body"><__trans phrase="Body"></label></li>
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" <mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-category"><__trans phrase="Category"></label></li>
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" <mt:if name="disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" <mt:if name="disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-keywords"><__trans phrase="Keywords"></label></li>
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-tags" value="tags" <mt:if name="disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-tags"><__trans phrase="Tags"></label></li>
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" <mt:if name="disp_prefs_show_publishing"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-publishing"><__trans phrase="Publishing"></label></li>
+        <li><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" <mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-feedback"><__trans phrase="Feedback"></label></li>
+    </ul>
+</mtapp:setting>
+
+<mtapp:setting
+    id="bar_position"
+    label="<__trans phrase="Action Bars">"
+    hint="<__trans phrase="Select the location of the entry editor&rsquo;s action bar.">"
+    content_class="field-content-text">
+    <ul>
+        <li><label><input type="radio" name="bar_position" value="Top"<mt:if NAME=POSITION_ACTIONS_TOP> checked="checked"</mt:if> class="rb" /> <__trans phrase="Top"></label></li>
+        <li><label><input type="radio" name="bar_position" value="Both"<mt:if NAME=POSITION_ACTIONS_BOTH> checked="checked"</mt:if> class="rb" /> <__trans phrase="Both"></label></li>
+        <li><label><input type="radio" name="bar_position" value="Bottom"<mt:if NAME=POSITION_ACTIONS_BOTTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Bottom"></label></li>
+    </ul>
+</mtapp:setting>
 </fieldset>
 
 <mt:setvarblock name="action_buttons">

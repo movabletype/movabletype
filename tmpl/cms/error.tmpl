@@ -1,5 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="An error occurred"></mt:setvarblock>
-<mt:setvar name="complete" value="1"><mt:setvar name="error_page" value="1">
+<$mt:setvar name="complete" value="1"$>
+<$mt:setvar name="error_page" value="1"$>
 <mt:include name="include/chromeless_header.tmpl">
 
 <mtapp:statusmsg
@@ -8,8 +9,21 @@
     <mt:var name="error">
 </mtapp:statusmsg>
 
-<div class="right">
-<input type="button" onclick="<mt:var name="goback">" value="<mt:var name="value">" />
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions right">
+        <button
+            onclick="<mt:var name="goback">"
+            type="submit"
+            accesskey="s"
+            class="primary-button"
+            ><mt:var name="value"></button>
+        <button
+            onclick="window.close()"
+            type="submit"
+            accesskey="x"
+            title="<__trans phrase="Close (x)">"
+            ><__trans phrase="Close"></button>
+    </div>
 </div>
 
 <mt:include name="include/chromeless_footer.tmpl">

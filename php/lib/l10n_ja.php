@@ -2,26 +2,23 @@
 global $Lexicon_ja;
 $Lexicon_ja = array(
 
-## php/plugins/init.AuthorArchives.php
+## php/lib/archive_lib.php
+	'Page' => 'ウェブページ',
+	'Individual' => 'ブログ記事',
+	'Yearly' => '年別',
+	'Monthly' => '月別',
+	'Daily' => '日別',
+	'Weekly' => '週別',
 	'Author' => 'ユーザー',
 	'Author (#' => 'ユーザー (#',
 	'Author Yearly' => 'ユーザー 年別',
 	'Author Monthly' => 'ユーザー 月別',
 	'Author Daily' => 'ユーザー 日別',
 	'Author Weekly' => 'ユーザー 週別',
-
-## php/plugins/init.Date-basedCategoryArchives.php
 	'Category Yearly' => 'カテゴリ 年別',
 	'Category Monthly' => 'カテゴリ 月別',
 	'Category Daily' => 'カテゴリ 日別',
 	'Category Weekly' => 'カテゴリ 週別',
-
-## php/lib/archive_lib.php
-	'Individual' => 'ブログ記事',
-	'Yearly' => '年別',
-	'Monthly' => '月別',
-	'Daily' => '日別',
-	'Weekly' => '週別',
 
 ## php/lib/function.mtremotesigninlink.php
 	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証が有効になっていないので、MTRemoteSignInLinkは利用できません。',
@@ -46,7 +43,7 @@ $Lexicon_ja = array(
 	'No' => 'いいえ',
 	'Comments' => 'コメント',
 	'Preview' => '確認',
-	'Post' => '送信',
+	'Submit' => '投稿',
 	'You are not signed in. You need to be registered to comment on this site.' => 'サインインしていません。コメントするには登録が必要です。',
 	'Sign in' => 'サインイン',
 	'. Now you can comment.' => 'さん、コメントをどうぞ。',

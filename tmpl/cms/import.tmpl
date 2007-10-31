@@ -25,6 +25,13 @@ function toggleDisplay(selection) {
     }
     return false;
 }
+function validate(f) {
+    if (!f['blog_id'].value) {
+        alert("<__trans phrase="You must select a blog to import." escape="js">");
+        return false;
+    }
+    return true;
+}
 function selectBlog() {
     return openDialog(this.form, 'dialog_select_weblog', 'multi=0&amp;return_args=__mode%3Dstart_import');
 }
@@ -35,7 +42,7 @@ function selectBlog() {
 
 <div id="import-panel">
 
-<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <input type="hidden" name="__mode" value="import" />
 <input type="hidden" id="import_blog_id" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />

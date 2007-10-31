@@ -113,7 +113,7 @@ sub score {
             my $line1 = shift @$log;
             my $name  = $filter->{name};
             if ( my $plugin = $filter->{plugin} ) {
-                $name ||= $plugin->{name};
+                $name ||= $plugin->name;
             }
             push @log,
               (     ( $name || MT->translate('Unnamed Junk Filter') ) . " ("

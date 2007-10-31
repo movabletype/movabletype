@@ -1,4 +1,5 @@
-<$mt:setvar name="page_title" value="<__trans phrase="Configure New Publishing Paths">"$>
+<$mt:setvar name="page_title" value="<__trans phrase="Confirm Publishing Configuration">"$>
+<$mt:setvar name="screen_type" value="restore-confirm-publishing-config"$>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 <!--
@@ -71,45 +72,54 @@ function is_valid_path(path_){
     <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
     <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
     <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
-    <dl>
+
+    <div class="restore-publishing-paths">
 <mt:loop name="blogs_loop">
-        <dt><mt:var name="name">(<mt:var name="id">)</dt>
-        <dd>
-            <p>
-    <mt:if name="old_site_path">
+        <fieldset>
+            <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id"$>)</h3>
+            <mtapp:setting
+                id="site_path"
+                label="Site Path">
+                <mt:if name="old_site_path">
                 <input type="hidden" name="old_site_path_<mt:var name="id">" id="old_site_path_<mt:var name="id">" value="<mt:var name="old_site_path" escape="html">" />
-                <__trans phrase="Old Path:"> <span><mt:var name="old_site_path" escape="html"></span>
-                <br />
-    </mt:if>
-                <__trans phrase="New Site Path:"> <input class="path_field" name="site_path_<mt:var name="id">" id="site_path_<mt:var name="id">" size="50" />
-            </p>
-            <p>
-    <mt:if name="old_site_url">
+                </mt:if>
+                <div class="textarea-wrapper">
+                    <input name="site_path_<mt:var name="id">" id="site_path_<mt:var name="id">" class="path_field full-width" value="<$mt:var name="old_site_path" escape="html"$>" />
+                </div>
+            </mtapp:setting>
+            <mtapp:setting
+                id="site_url"
+                label="Site URL">
+                <mt:if name="old_site_url">
                 <input type="hidden" name="old_site_url_<mt:var name="id">" id="old_site_url_<mt:var name="id">" value="<mt:var name="old_site_url" escape="html">" />
-                <__trans phrase="Old URL:"> <span><mt:var name="old_site_url" escape="html"></span>
-                <br />
-    </mt:if>
-                <__trans phrase="New Site URL:"> <input class="path_field" class ="site_url" name="site_url_<mt:var name="id">" id="site_url_<mt:var name="id">" size="50" />
-            </p>
-    <mt:if name="old_archive_path">
-            <p>
-                <input type="hidden" name="old_archive_path_<mt:var name="id">" id="old_archive_path_<mt:var name="id">" value="<mt:var name="old_archive_path" escape="html">" />
-                <__trans phrase="Old Archive Path:"> <span><mt:var name="old_archive_path" escape="html"></span>
-                <br />
-                <__trans phrase="New Archive Path:"> <input class="path_field" name="archive_path_<mt:var name="id">" id="archive_path_<mt:var name="id">" size="50" />
-            </p>
-    </mt:if>
-    <mt:if name="old_archive_url">
-            <p>
-                <input type="hidden" name="old_archive_url_<mt:var name="id">" id="old_archive_url_<mt:var name="id">" value="<mt:var name="old_archive_url" escape="html">" />
-                <__trans phrase="Old Archive URL:"> <span><mt:var name="old_archive_url" escape="html"></span>
-                <br />
-                <__trans phrase="New Archive URL:"> <input class="path_field" class ="archive_url" name="archive_url_<mt:var name="id">" id="archive_url_<mt:var name="id">" size="50" />
-            </p>
-    </mt:if>
-        </dd>
-    </mt:loop>
-    </dl>
+                </mt:if>
+                <div class="textarea-wrapper">
+                    <input name="site_url_<mt:var name="id">" id="site_url_<mt:var name="id">" class="site_url full-width" value="<mt:var name="old_site_url" escape="html">" />
+                </div>
+            </mtapp:setting>
+            <mt:if name="old_archive_path">
+                <mtapp:setting
+                    id="archive_path"
+                    label="Archive Path">
+                    <input type="hidden" name="old_archive_path_<mt:var name="id">" id="old_archive_path_<mt:var name="id">" value="<mt:var name="old_archive_path" escape="html">" />
+                    <div class="textarea-wrapper">
+                        <input name="archive_path_<mt:var name="id">" id="archive_path_<mt:var name="id">" class="path_field full-width" value="<mt:var name="old_archive_path" escape="html">" />
+                    </div>
+                </mtapp:setting>
+            </mt:if>
+            <mt:if name="old_archive_url">
+                <mtapp:setting
+                    id="archive_url"
+                    label="<__trans phrase="Archive URL">">
+                    <input type="hidden" name="old_archive_url_<mt:var name="id">" id="old_archive_url_<mt:var name="id">" value="<mt:var name="old_archive_url" escape="html">" />
+                    <div class="textarea-wrapper">
+                        <input name="archive_url_<mt:var name="id">" id="archive_url_<mt:var name="id">" class="archive_url full-width" value="<mt:var name="old_archive_url" escape="html">" />
+                    </div>
+                </mtapp:setting>
+            </mt:if>
+        </fieldset>
+</mt:loop>
+    </div>
     <div class="actions-bar">
         <div class="actions-bar-inner pkg actions">
             <button

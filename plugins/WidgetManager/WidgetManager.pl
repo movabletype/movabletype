@@ -15,7 +15,7 @@ our $VERSION = '1.0';
 my $plugin = MT::Plugin::WidgetManager->new({
     id          => 'WidgetManager',
     name        => 'Widget Manager',
-    description => "<MT_TRANS phrase=\"Maintain your weblog's widget content using a handy drag and drop interface.\">",
+    description => '<MT_TRANS phrase="Maintain your weblog\'s widget content using a handy drag and drop interface.">',
     version     => $VERSION,
     author_name => 'Six Apart',
     key         => 'widget-manager',

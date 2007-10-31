@@ -278,8 +278,6 @@ sub _getset_translate {
     else {
         $return = @_ > 1 ? $c->{$p} = $_[1] : $c->{$p};
     }
-    Carp::confess( "c isn't set" . Data::Dumper::Dumper( \@MT::Components ) )
-      if !ref($c) || ( ref($c) eq 'HASH' );
     return $c->l10n_filter( defined $return ? $return : '' );
 }
 
@@ -332,12 +330,9 @@ sub template_paths {
 
 sub load_tmpl {
     my $c = shift;
-    my ($file) = @_;
+    my ($file, $param) = @_;
 
     my $mt = MT->instance;
-
-    # my $cache_dir = File::Spec->catdir($path, 'cache');
-    # undef $cache_dir if (!-d $cache_dir) || (!-w $cache_dir);
     my $type = { 'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref' }->{ ref $file }
       || 'filename';
 
@@ -345,35 +340,57 @@ sub load_tmpl {
     my $tmpl = MT::Template->new(
         type   => $type,
         source => $file,
-        path   => [ $c->template_paths ]
+        path   => [ $c->template_paths ],
+        ($mt->isa('MT::App') ? ( filter => sub {
+            my ($str, $fname) = @_;
+            if ($fname) {
+                $fname = File::Basename::basename($fname);
+                $fname =~ s/\.tmpl$//;
+                $mt->run_callbacks("template_source.$fname", $mt, @_);
+            } else {
+                $mt->run_callbacks("template_source", $mt, @_);
+            }
+            return $str;
+        }) : ()),
     );
     my $err = $tmpl->errstr unless defined $tmpl;
     return $c->error(
         $mt->translate( "Loading template '[_1]' failed: [_2]", $file, $err ) )
       if $err;
+    $tmpl->{__file} = $file if $type eq 'filename';
 
     ## We do this in load_tmpl because show_error and login don't call
     ## build_page; so we need to set these variables here.
     if ( $mt->isa('MT::App') ) {
         $mt->set_default_tmpl_params($tmpl);
+        $tmpl->param($param) if $param;
     }
     else {
+        my $author = $mt->user;
         my %param = (
+            ($author ? (
+                author_id => $author->id,
+                author_name => $author->name,
+                can_logout => MT::Auth->can_logout,
+            ) : ()),
             static_uri        => $mt->static_path,
             script_path       => $mt->path,
             mt_version        => MT->version_id,
             language_tag      => $mt->current_language,
             language_encoding => $mt->charset,
+            %{ $param || {} },
         );
-    
-        if ( my $author = $mt->user ) {
-            $param{author_id}   = $author->id;
-            $param{author_name} = $author->name;
-            $param{can_logout} = MT::Auth->can_logout;
-        }
-
         $tmpl->param( \%param );
+        if ($type eq 'filename') {
+            if (!$tmpl->param('template_filename')) {
+                my $fname = $file;
+                $fname =~ s!\\!/!g;
+                $fname =~ s/\.tmpl$//;
+                $tmpl->param('template_filename', $fname);
+            }
+        }
     }
+
 
     return $tmpl;
 }
@@ -440,6 +457,8 @@ s!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)
         if (exists $args{escape}) {
             if (lc($args{escape}) eq 'html') {
                 $translation = encode_html($translation);
+            } elsif (lc($args{escape}) eq 'url') {
+                $translation = MT::Util::encode_url($translation);
             } else {
                 # fallback for js/javascript/singlequotes
                 $translation = encode_js($translation);

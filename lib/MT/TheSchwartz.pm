@@ -1,3 +1,9 @@
+# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# $Id$
+
 package MT::TheSchwartz;
 
 use strict;
@@ -7,13 +13,18 @@ use MT::ObjectDriver::Driver::DBI;
 my $instance;
 
 sub instance {
+    $instance ||= MT::TheSchwartz->new();
     return $instance;
 }
 
 sub debug {
     my $class = shift;
-    return unless $instance;
-    $instance->SUPER::debug(@_);
+    $class->instance->SUPER::debug(@_);
+}
+
+sub insert {
+    my $class = shift;
+    $class->instance->SUPER::insert(@_);
 }
 
 sub new {
@@ -75,34 +86,40 @@ sub mt_schwartz_init {
 
 sub driver_for {
     my MT::TheSchwartz $client = shift;
-    my ($hashdsn) = @_;
-    my $driver;
-    my $t              = time;
-    my $cache_duration = $client->{driver_cache_expiration};
-    if (   $cache_duration
-        && $client->{cached_drivers}{$hashdsn}{create_ts}
-        && $client->{cached_drivers}{$hashdsn}{create_ts} + $cache_duration >
-        $t )
-    {
-        $driver = $client->{cached_drivers}{$hashdsn}{driver};
-    }
-    else {
-        my $db = $client->{databases}{$hashdsn};
-        $driver = MT::ObjectDriver::Driver::DBI->new(
-            dsn      => $db->{dsn},
-            username => $db->{user},
-            password => $db->{pass},
-            dbd      => 'MT::ObjectDriver::Driver::DBD::mysql',
-        );
-        # TheSchwartz expects errors to be raised by the
-        # database, so lets make sure they are...
-        $driver->{connection_options}{RaiseError} = 1;
-        if ($cache_duration) {
-            $client->{cached_drivers}{$hashdsn}{driver}    = $driver;
-            $client->{cached_drivers}{$hashdsn}{create_ts} = $t;
+    return MT::Object->driver;
+}
+
+sub shuffled_databases {
+    my TheSchwartz $client = shift;
+    return '1';
+}
+
+sub hash_databases {
+    return 1;
+}
+
+sub mark_database_as_dead {
+    return 1;
+}
+
+sub is_database_dead {
+    return 0;
+}
+
+sub work_periodically {
+    my TheSchwartz $client = shift;
+    my($delay) = @_;
+    $delay ||= 5;
+    my $last_task_run = 0;
+    while (1) {
+        unless ($client->work_once) {
+            sleep $delay;
+            if ($last_task_run + 60 * 5 < time) {
+                MT->run_tasks();
+                $last_task_run = time;
+            }
         }
     }
-    return $driver;
 }
 
 1;

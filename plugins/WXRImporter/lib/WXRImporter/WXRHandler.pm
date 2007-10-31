@@ -81,7 +81,7 @@ sub characters {
     my $data = shift;
 
     return unless ($data->{Data} !~ /^\s+$/)
-        || (exists $self->{in_wp_comment_count}); # see if we need to process whitespaces
+        || (exists $self->{in_wp_comment_content}); # see if we need to process whitespaces
 
     my $element = pop @{$self->{'bucket'}};
     return unless $element;

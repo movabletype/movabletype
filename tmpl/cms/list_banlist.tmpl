@@ -1,35 +1,45 @@
 <mt:setvarblock name="page_title"><__trans phrase="IP Banning Settings"></mt:setvarblock>
 <mt:setvar name="ip_info" value="1">
-<MTSetVarBlock name="content_nav">
-    <mt:include name="include/cfg_content_nav.tmpl">
-</MTSetVarBlock>
-<mt:include name="include/header.tmpl">
-
-<div id="list-banlist">
-
+<MTSetVarBlock name="html_head" append="1">
 <script type="text/javascript">
 <!--
 function setCreateMode () {
-	getByID('ip').value = '';
-	getByID('create-inline-ipban').style.display = 'block';
-	getByID('ip').focus();
+    getByID('ip-address').value = '';
+    getByID('create-inline-ipban').style.display = 'block';
+    getByID('ip-address').focus();
+    getByID('actions-bar-top').style.display = 'none';
 }
 
 function cancelCreateMode () {
-	getByID('create-inline-ipban').style.display = 'none';
+    getByID('create-inline-ipban').style.display = 'none';
+    getByID('actions-bar-top').style.display = 'block';
 }
 
 var tableSelect;
 function init()
 {
-	// setup
-	tableSelect = new TC.TableSelect( "<$mt:var name="asset_type"$>-listing-table" );
-	tableSelect.rowSelect = true;
+    // setup
+    tableSelect = new TC.TableSelect( "banlist-listing-table" );
+    tableSelect.rowSelect = true;
 }
 
 TC.attachLoadEvent( init );
 // -->
 </script>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:setvarblock name="action_buttons">
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="IP address" escape="js">', '<__trans phrase="IP addresses" escape="js">')" type="button" value="<__trans phrase="Delete">"
+        accesskey="x"
+        title="<__trans phrase="Delete selected IP Address (x)">"
+        ><__trans phrase="Delete"></a>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<div id="list-banlist">
 
 <mt:if name="error">
 <mtapp:statusmsg
@@ -56,11 +66,10 @@ TC.attachLoadEvent( init );
 </mt:if>
 
 <mt:if name="show_ip_info">
-<p><img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Ban New IP Address">" width="9" height="9" />
-<a href="javascript:void(0)" onclick="setCreateMode()"><__trans phrase="Ban New IP Address"></a></p>
+<p><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Ban New IP Address"></a></p>
 </mt:if>
 
-<div class="create-inline" id="create-inline-ipban">
+<div id="create-inline-ipban" class="create-inline">
     <form id="create-inline-ipban-form" method="post" action="<mt:var name="script_url">">
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="__mode" value="save" />
@@ -82,8 +91,7 @@ TC.attachLoadEvent( init );
             hint=""
             show_hint="0">
             <span class="buttons">
-                <a href="javascript:void(0)"
-                    onclick="submitForm(getByID('create-inline-ipban-form'), '')"
+                <a href="javascript:void(0)" mt:command="submit"
                     ><__trans phrase="Save"></a>
                 <a href="javascript:void(0)"
                     onclick="cancelCreateMode(); return false"
@@ -92,9 +100,9 @@ TC.attachLoadEvent( init );
         </mtapp:setting>
     </form>
 </div>
-
 <mtapp:listing
-    show_actions="0">
+    id="banlist-listing"
+    hide_pager="1">
     <mt:if name="__first__">
     <thead>
         <tr>
@@ -114,12 +122,6 @@ TC.attachLoadEvent( init );
     </tbody>
     </mt:if>
 </mtapp:listing>
-
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
 </div>
 
 <mt:include name="include/footer.tmpl">

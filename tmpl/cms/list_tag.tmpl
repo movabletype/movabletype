@@ -39,7 +39,7 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<MT_TRANS phrase="tag">', '<MT_TRANS phrase="tags">')"
+        onclick="doRemoveItems(getByID('tag-listing-form'), '<__trans phrase="tag" escape="js">', '<__trans phrase="tags" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
         ><__trans phrase="Delete"></a>
@@ -66,9 +66,9 @@
         old_tag_name = tag_name.value;
         tag_link.style.display = 'none';
         tag_field.style.display = 'inline';
+        DOM.addClassName(getByID('tag-' + id), 'create-inline');
         tag_name.focus();
         tag_name.select();
-        unhighlight_tag(id);
         return false;
     }
 
@@ -82,6 +82,7 @@
         current_edit = 0;
         tag_link.style.display = 'inline';
         tag_field.style.display = 'none';
+        DOM.removeClassName(getByID('tag-' + id), 'create-inline');
     }
 
     function submit_edit(id) {
@@ -211,10 +212,36 @@
             <td class="cb" id="delete-<mt:var name="tag_id">"><input type="checkbox" name="id" value="<mt:var name="tag_id">" class="select" /></td>
             <td class="edit-col" id="tag-cell-<mt:var name="tag_id">">
                 <a href="javascript:void(0)" title="<__trans phrase="Click to edit tag name">" class="edit-link" id="tag-link-<mt:var name="tag_id">" onclick="return edit_tag(<mt:var name="tag_id">)"><mt:var name="tag_name" escape="html"></a>
-                <span id="tag-field-<mt:var name="tag_id">" style="display: none">
-                    <input type="text" name="tag-name-<mt:var name="tag_id">" id="tag-name-<mt:var name="tag_id">" value="<mt:var name="tag_name" escape="html">" />
-                    <input type="submit" value="<__trans phrase="Rename">" onclick="return submit_edit(<mt:var name="tag_id">)" />
-                    <input type="button" value="<__trans phrase="Cancel">" onclick="cancel_edit(<mt:var name="tag_id">)" />
+                <span id="tag-field-<mt:var name="tag_id">" class="" style="display: none">
+                    <mt:setvarblock name="new_label"><__trans phrase="Rename [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+                    <mtapp:setting
+                        id="rename_tag"
+                        label="$new_label"
+                        label_class="inline field-no-header"
+                        hint="">
+                        <input
+                            type="text"
+                            name="tag-name-<mt:var name="tag_id">"
+                            id="tag-name-<mt:var name="tag_id">"
+                            value="<mt:var name="tag_name" escape="html">"
+                        />
+                    </mtapp:setting>
+                    <mtapp:setting
+                        id="actions"
+                        label="<__trans phrase="Actions">"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <span class="buttons"> 
+                            <a href="javascript:void(0)" 
+                                onclick="submit_edit(<mt:var name="tag_id">); return false;"
+                                title="<__trans phrase="Rename [_1]" params="<mt:var name="object_label">">" 
+                                ><__trans phrase="Rename"></a> 
+                            <a href="javascript:void(0)" 
+                                onclick="cancel_edit(<mt:var name="tag_id">)"
+                                ><__trans phrase="Cancel"></a> 
+                        </span> 
+                    </mtapp:setting>
                 </span>
             </td>
             <td class="tag-count"><mt:if name="tag_count"><a href="<mt:var name="script_url">?__mode=<$mt:var name="link_to"$><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=exacttag&amp;filter_val=<mt:var name="tag_name" escape="url">" title="<__trans phrase="Show all [_1] with this tag", params="<$mt:var name="tag_object_label_plural"$>">"><__trans phrase="[_1] [_2]" params="<$mt:var name="tag_count"$>%%<$mt:var name="tag_object_label_plural"$>"></a><mt:else><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></mt:if></td>

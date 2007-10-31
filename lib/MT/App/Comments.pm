@@ -244,7 +244,7 @@ sub _create_commenter_assign_role {
         );
         return undef;
     }
-    my $commenter = MT::Author->new;
+    my $commenter = $app->model('author')->new;
     $commenter->name( $app->param('username') );
     $commenter->nickname( $app->param('nickname') );
     $commenter->set_password( $app->param('password') );
@@ -252,6 +252,7 @@ sub _create_commenter_assign_role {
     $commenter->external_id( $app->param('external_id') );
     $commenter->type( MT::Author::AUTHOR() );
     $commenter->status( MT::Author::ACTIVE() );
+    $commenter->auth_type( $app->config->AuthenticationModule );
     return undef unless ( $commenter->save );
 
     require MT::Role;
@@ -467,7 +468,7 @@ sub do_signup {
         }
     }
 
-    my $commenter = MT::Author->new;
+    my $commenter = $app->model('author')->new;
     $commenter->name($name);
     $commenter->nickname($nickname);
     $commenter->set_password( $q->param('password') );
@@ -476,6 +477,7 @@ sub do_signup {
     $commenter->hint($hint) if $hint;
     $commenter->type( MT::Author::AUTHOR() );
     $commenter->status( MT::Author::PENDING() );
+    $commenter->auth_type( $app->config->AuthenticationModule );
 
     unless ( $commenter->save ) {
         $param->{error} =
@@ -1165,7 +1167,7 @@ sub post {
             { type => 'comment_response', blog_id => $entry->blog_id } );
         unless ($tmpl) {
             require MT::DefaultTemplates;
-            ($tmpl) = MT::DefaultTemplates->load({ type => 'comment_response' });
+            $tmpl = MT::DefaultTemplates->load({ type => 'comment_response' });
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         my $ctx = $tmpl->context;
@@ -1441,19 +1443,22 @@ sub _make_commenter {
     my $cmntr = MT::Author->load(
         {
             name => $params{name},
-            type => MT::Author::COMMENTER
+            type => MT::Author::COMMENTER,
+            auth_type => $params{auth_type},
         }
     );
     if ( !$cmntr ) {
-        $cmntr = MT::Author->new();
+        $cmntr = $app->model('author')->new();
         $cmntr->set_values(
             {
-                email    => $params{email},
-                name     => $params{name},
-                nickname => $params{nickname},
-                password => "(none)",
-                type     => MT::Author::COMMENTER,
-                url      => $params{url},
+                email     => $params{email},
+                name      => $params{name},
+                nickname  => $params{nickname},
+                password  => "(none)",
+                type      => MT::Author::COMMENTER,
+                url       => $params{url},
+                auth_type => $params{auth_type},
+                ($params{remote_auth_username} ? (remote_auth_username => $params{remote_auth_username}) : ()),
             }
         );
         $cmntr->save();
@@ -1522,7 +1527,7 @@ sub handle_sign_in {
         if ( my $e = $@ ) {
             return $app->handle_error( $e, 403 );
         }
-        $result = $auth_class->handle_sign_in($app);
+        $result = $auth_class->handle_sign_in( $app, $q->param('key') );
     }
 
     return $app->handle_error(
@@ -1582,6 +1587,7 @@ sub commenter_name_js {
     if ($ids) {
         my @ids = split ':', $ids;
         $commenter_id    = $ids[0];
+        # FIXME: This assignment is lost...
         my $blog_ids     = $ids[1];
     }
 
@@ -1591,6 +1597,7 @@ sub commenter_name_js {
     $app->set_header( 'Cache-Control' => 'no-cache' );
     $app->set_header( 'Expires'       => '-1' );
 
+    my $blog_ids = q();
     if ($commenter_id) {
         my @blogs;
         my $user = $app->model('author')->load($commenter_id);
@@ -1610,11 +1617,14 @@ sub commenter_name_js {
               }
             );
         }
-        my $blog_ids = "'" . join("','", map { $_->id } @blogs) . "'";
-        $commenter_id .= ":$blog_ids";
+        $blog_ids = "'" . join("','", map { $_->id } @blogs) . "'";
     }
-    return
-"commenter_name = '$commenter_name';\ncommenter_id=\"$commenter_id\";\ncommenter_url='$commenter_url'\n";
+    return <<JS;
+commenter_name = '$commenter_name';\n
+commenter_id = '$commenter_id';\n
+commenter_url = '$commenter_url';\n
+commenter_blog_ids = "$blog_ids";\n
+JS
 }
 
 sub view {
@@ -1683,7 +1693,7 @@ sub view {
     unless ($tmpl) {
         # Load default template and translate it
         require MT::DefaultTemplates;
-        ($tmpl) = MT::DefaultTemplates->load( { type => 'individual' } );
+        $tmpl = MT::DefaultTemplates->load( { type => 'individual' } );
         $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
 
@@ -1762,7 +1772,7 @@ sub do_preview {
           );
         unless ($tmpl) {
             require MT::DefaultTemplates;
-            ($tmpl) = MT::DefaultTemplates->load({ type => 'comment_response' });
+            $tmpl = MT::DefaultTemplates->load({ type => 'comment_response' });
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         if ( $err eq 'pending' ) {
@@ -1784,7 +1794,7 @@ sub do_preview {
           );
         unless ($tmpl) {
             require MT::DefaultTemplates;
-            ($tmpl) = MT::DefaultTemplates->load({ type => 'comment_preview' });
+            $tmpl = MT::DefaultTemplates->load({ type => 'comment_preview' });
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         $tmpl->context($ctx);

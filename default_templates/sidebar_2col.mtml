@@ -3,10 +3,10 @@
 <MTIf name="search_results_template">
     <MTIfTagSearch>
         <MTSetVar name="search_feed_param" value="tag">
-        <MTSetVarBlock name="search_feed_description"><__trans phrase="If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&ldquo;."></MTSetVarBlock>
+        <MTSetVarBlock name="search_feed_description"><__trans phrase="If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&rdquo;."></MTSetVarBlock>
     <MTElse>
         <MTSetVar name="search_feed_param" value="search">
-        <MTSetVarBlock name="search_feed_description"><__trans phrase="If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&ldquo;."></MTSetVarBlock>
+        <MTSetVarBlock name="search_feed_description"><__trans phrase="If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&rdquo;."></MTSetVarBlock>
     </MTIfTagSearch>
         <div class="widget-search-feed widget">
             <h3 class="widget-header"><__trans phrase="Feed Subscription"></h3>

@@ -1,5 +1,5 @@
-<$mt:var name="page_title" value="<__trans phrase="Feeds.App Lite Widget Creator">"$>
-<mt:include name="dialog/header.tmpl">
+<mt:include name="dialog/header.tmpl" page_title="<__trans phrase="Feeds.App Lite Widget Creator">">
+
 <mt:if name="not_found">
     <mtapp:statusmsg
         class="error"
@@ -7,6 +7,7 @@
         <__trans phrase="No feeds could be discovered using [_1]" params="<strong><$mt:var name="uri" escape="html"$></strong>">
     </mtapp:statusmsg>
 </mt:if>
+
 <mt:if name="feederr">
     <mtapp:statusmsg
         class="error"
@@ -14,6 +15,7 @@
         <__trans phrase="An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again." params="<$mt:var name="uri" escape="html"$>%%<$mt:var name="uri" escape="url"$>">
     </mtapp:statusmsg>
 </mt:if>
+
 <mt:if name="saved">
     <mtapp:statusmsg
         id="created"
@@ -26,16 +28,33 @@
     <mt:else>
 <p><__trans phrase="You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:" params="<$mt:var name="module" escape="html"$>%%<$mt:var name="script_url"$>?__mode=view&amp;amp;_type=template&amp;amp;blog_id=<$mt:var name="blog_id"$>&amp;amp;id=<$mt:var name="module_id"$>"></p>
     </mt:if>
+
 <div style="margin-left: 1em"><strong>&lt;$MTInclude widget="<$mt:var name="module" escape="html"$>"$&gt;</strong></div>
 </mt:if>
+
 <div class="actions-bar">
-    <div class="actions-bar-innner pkg">
-        <input type="button" onclick="window.location='<$mt:var name="script_url" escape="html"$>?__mode=feedswidget_start&amp;blog_id=<$mt:var name="blog_id"$>'" value="<mt:unless name="saved"><__trans phrase="Go Back"><mt:else><__trans phrase="Create Another"></mt:unless>" />
+    <div class="actions-bar-inner pkg actions">
 <mt:if name="saved">
-        <input onclick="closeDialog('<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;filter_key=widget_templates&amp;blog_id=<$mt:var name="blog_id"$>')" type="button" value="<__trans phrase="Finish">" />
+        <button
+            onclick="closeDialog('<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;filter_key=widget_templates&amp;blog_id=<$mt:var name="blog_id"$>')"
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Finish (s)">"
+            class="primary-button"
+            ><__trans phrase="Finish"></button>
 <mt:else>
-        <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
+        <button
+            onclick="closeDialog(); return false"
+            type="submit"
+            accesskey="x"
+            title="<__trans phrase="Cancel (x)">"
+            ><__trans phrase="Cancel"></button>
 </mt:if>
+        <button
+            onclick="window.location='<$mt:var name="script_url" escape="html"$>?__mode=feedswidget_start&amp;blog_id=<$mt:var name="blog_id"$>'"
+            type="submit"
+            title="<__trans phrase="Create Another">"
+            ><__trans phrase="Create Another"></button>
     </div>
 </div>
 

@@ -664,7 +664,7 @@ body.edit-commenter td#edit-commenter-filter { width: 30% }
 
 
 
-
+/*
 #search-replace .search-bar {
     margin: -10px 0 10px 0;
     border-bottom: 1px solid #CEDCF0;
@@ -781,8 +781,8 @@ body.edit-commenter td#edit-commenter-filter { width: 30% }
 
 * html body #search-replace .search-bar input.cb,
 * html body #search-replace .search-bar input.rb,
-* html body #search-replace .advanced-options input.cb { margin: -2px -4px; } /* ie win fix */
-
+* html body #search-replace .advanced-options input.cb { margin: -2px -4px; }
+*/
 
 
 

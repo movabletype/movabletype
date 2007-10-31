@@ -10,8 +10,9 @@ use strict;
 use base qw( MT::ErrorHandler Exporter );
 
 use MT::Util qw( start_end_period start_end_day start_end_year
-                 start_end_week start_end_month week2ymd
-                 dirify );
+  start_end_week start_end_month week2ymd
+  dirify );
+use MT::I18N qw( lowercase );
 use File::Basename;
 
 our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
@@ -28,12 +29,12 @@ sub ArchiveType {
 
 sub new {
     my $class = shift;
-    my $this = { @_ };
-    my $cfg = MT->config;
-    if (!exists $this->{NoTempFiles}) {
+    my $this  = {@_};
+    my $cfg   = MT->config;
+    if ( !exists $this->{NoTempFiles} ) {
         $this->{NoTempFiles} = $cfg->NoTempFiles;
     }
-    if (!exists $this->{PublishCommenterIcon}) {
+    if ( !exists $this->{PublishCommenterIcon} ) {
         $this->{PublishCommenterIcon} = $cfg->PublishCommenterIcon;
     }
     bless $this, $class;
@@ -64,375 +65,752 @@ sub init {
 
 sub core_archive_types {
     return {
-        'Yearly' =>
-            ArchiveType( name => 'Yearly',
-                archive_label => \&yearly_archive_label,
-                archive_file => \&yearly_archive_file,
-                archive_title => \&yearly_archive_title,
-                date_range => \&yearly_date_range,
-                archive_group_iter => \&yearly_group_iter,
-                archive_group_entries => \&yearly_group_entries,
-                dynamic_template => 'archives/<$MTArchiveDate format="%Y"$>',
-                default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('yyyy/index.html'),
-                        template => '%y/%i', default => 1 ),
-                    ],
-                dynamic_support => 1,
-                date_based => 1,
-                template_params => {
-                    datebased_only_archive => 1,
-                    datebased_yearly_archive => 1,
-                    module_yearly_archives => 1,
-                    main_template => 1,
-                    archive_template => 1,
-                    archive_class => "datebased-yearly-archive",
-                },
-            ),
-        'Monthly' =>
-            ArchiveType( name => 'Monthly',
-                archive_label => \&monthly_archive_label,
-                archive_file => \&monthly_archive_file,
-                archive_title => \&monthly_archive_title,
-                date_range => \&monthly_date_range,
-                archive_group_iter => \&monthly_group_iter,
-                archive_group_entries => \&monthly_group_entries,
-                dynamic_template => 'archives/<$MTArchiveDate format="%Y%m"$>',
-                default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/index.html'),
-                        template => '%y/%m/%i', default => 1 ),
-                    ],
-                dynamic_support => 1,
-                date_based => 1,
-                template_params => {
-                    datebased_only_archive => 1,
-                    datebased_monthly_archive => 1,
-                    module_monthly_archives => 1,
-                    main_template => 1,
-                    archive_template => 1,
-                    archive_class => "datebased-monthly-archive",
-                },
-            ),
-        'Weekly' =>
-            ArchiveType( name => 'Weekly',
-                archive_label => \&weekly_archive_label,
-                archive_file => \&weekly_archive_file,
-                archive_title => \&weekly_archive_title,
-                date_range => \&weekly_date_range,
-                archive_group_iter => \&weekly_group_iter,
-                archive_group_entries => \&weekly_group_entries,
-                dynamic_template => 'archives/week/<$MTArchiveDate format="%Y%m%d"$>',
-                default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/day-week/index.html'),
-                        template => '%y/%m/%d-week/%i', default => 1 ),
-                    ],
-                dynamic_support => 1,
-                date_based => 1,
-                template_params => {
-                    datebased_only_archive => 1,
-                    datebased_weekly_archive => 1,
-                    main_template => 1,
-                    archive_template => 1,
-                    archive_class => "datebased-weekly-archive",
-                },
-            ),
-        'Individual' =>
-            ArchiveType( name => 'Individual',
-                archive_label => \&individual_archive_label,
-                archive_file => \&individual_archive_file,
-                archive_title => \&individual_archive_title,
-                archive_group_iter => \&individual_group_iter,
-                dynamic_template => 'entry/<$MTEntryID$>',
-                default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry-basename.html'),
-                        template => '%y/%m/%-f', default => 1 ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry_basename.html'),
-                        template => '%y/%m/%f' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry-basename/index.html'),
-                        template => '%y/%m/%-b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/entry_basename/index.html'),
-                        template => '%y/%m/%b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry-basename.html'),
-                        template => '%y/%m/%d/%-f' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry_basename.html'),
-                        template => '%y/%m/%d/%f' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry-basename/index.html'),
-                        template => '%y/%m/%d/%-b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/entry_basename/index.html'),
-                        template => '%y/%m/%d/%b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('category/sub-category/entry-basename.html'),
-                        template => '%-c/%-f' ),
-                    ArchiveFileTemplate( label => MT->translate('category/sub-category/entry-basename/index.html'),
-                        template => '%-c/%-b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('category/sub_category/entry_basename.html'),
-                        template => '%c/%f' ),
-                    ArchiveFileTemplate( label => MT->translate('category/sub_category/entry_basename/index.html'),
-                        template => '%c/%b/%i' ),
-                    ],
-                dynamic_support => 1,
-                entry_based => 1,
-                template_params => {
-                    main_template => 1,
-                    archive_template => 1,
-                    entry_template => 1,
-                    feedback_template => 1,
-                    archive_class => "entry-archive",
-                    # module_recent_posts => 0,
-                    # module_monthly_archives => 0,
-                },
-            ),
-        'Page' =>
-            ArchiveType( name => 'Page',
-                archive_label => \&page_archive_label,
-                archive_file => \&page_archive_file,
-                archive_title => \&individual_archive_title,
-                archive_group_iter => \&page_group_iter,
-                dynamic_template => 'page/<$MTEntryID$>',
-                default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('folder-path/page-basename.html'),
-                        template => '%-c/%-f', default => 1 ),
-                    ArchiveFileTemplate( label => MT->translate('folder-path/page-basename/index.html'),
-                        template => '%-c/%-b/%i' ),
-                    ArchiveFileTemplate( label => MT->translate('folder_path/page_basename.html'),
-                        template => '%c/%f' ),
-                    ArchiveFileTemplate( label => MT->translate('folder_path/page_basename/index.html'),
-                        template => '%c/%b/%i' ),
-                    ],
-                dynamic_support => 1,
-                entry_class => 'page',
-                entry_based => 1,
-                template_params => {
-                    archive_class => "page-archive",
-                    page_archive => 1,
-                    main_template => 1,
-                    archive_template => 1,
-                    page_template => 1,
-                    feedback_template => 1,
-                },
-            ),
-        # 'Folder' =>
-        #     ArchiveType( name => 'Folder',
-        #         archive_label => \&folder_archive_label,
-        #         archive_file => \&folder_archive_file,
-        #         archive_title => \&folder_archive_title,
-        #         archive_group_iter => \&folder_group_iter,
-        #         archive_group_entries => \&folder_group_entries,
-        #         dynamic_template => 'folder/<$MTCategoryID$>',
-        #         default_archive_templates => [
-        #             ArchiveFileTemplate( Label => MT->translate('folder/sub_folder/index.html'),
-        #                 template => '%c/%i', Default => 1 ),
-        #             ArchiveFileTemplate( Label => MT->translate('folder/sub-folder/index.html'),
-        #                 template => '%-c/%i' ),
-        #             ],
-        #         dynamic_support => 1,
-        #         category_based => 1,
-        #     ),
-        'Daily' =>
-            ArchiveType( name => 'Daily',
-                archive_label => \&daily_archive_label,
-                archive_file => \&daily_archive_file,
-                archive_title => \&daily_archive_title,
-                date_range => \&daily_date_range,
-                archive_group_iter => \&daily_group_iter,
-                archive_group_entries => \&daily_group_entries,
-                dynamic_template => 'archives/<$MTArchiveDate format="%Y%m%d"$>',
-                default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('yyyy/mm/dd/index.html'),
-                        template => '%y/%m/%d/%f', default => 1 ),
-                    ],
-                dynamic_support => 1,
-                date_based => 1,
-                template_params => {
-                    archive_class => "datebased-daily-archive",
-                    datebased_only_archive => 1,
-                    datebased_daily_archive => 1,
-                    main_template => 1,
-                    archive_template => 1,
-                },
-            ),
-        'Category' =>
-            ArchiveType( name => 'Category',
-                archive_label => \&category_archive_label,
-                archive_file => \&category_archive_file,
-                archive_title => \&category_archive_title,
-                archive_group_iter => \&category_group_iter,
-                archive_group_entries => \&category_group_entries,
-                dynamic_template => 'category/<$MTCategoryID$>',
-                default_archive_templates => [
-                    ArchiveFileTemplate( label => MT->translate('category/sub-category/index.html'),
-                        template => '%-c/%i', default => 1 ),
-                    ArchiveFileTemplate( label => MT->translate('category/sub_category/index.html'),
-                        template => '%c/%i' ),
-                    ],
-                dynamic_support => 1,
-                category_based => 1,
-                template_params => {
-                    archive_class => "category-archive",
-                    category_archive => 1,
-                    main_template => 1,
-                    archive_template => 1,
-                },
-            ),
+        'Yearly' => ArchiveType(
+            name                  => 'Yearly',
+            archive_label         => \&yearly_archive_label,
+            archive_file          => \&yearly_archive_file,
+            archive_title         => \&yearly_archive_title,
+            date_range            => \&yearly_date_range,
+            archive_group_iter    => \&yearly_group_iter,
+            archive_group_entries => \&yearly_group_entries,
+            dynamic_template      => 'archives/<$MTArchiveDate format="%Y"$>',
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/index.html'),
+                    template => '%y/%i',
+                    default  => 1
+                ),
+            ],
+            dynamic_support => 1,
+            date_based      => 1,
+            template_params => {
+                datebased_only_archive   => 1,
+                datebased_yearly_archive => 1,
+                module_yearly_archives   => 1,
+                main_template            => 1,
+                archive_template         => 1,
+                archive_class            => "datebased-yearly-archive",
+            },
+        ),
+        'Monthly' => ArchiveType(
+            name                  => 'Monthly',
+            archive_label         => \&monthly_archive_label,
+            archive_file          => \&monthly_archive_file,
+            archive_title         => \&monthly_archive_title,
+            date_range            => \&monthly_date_range,
+            archive_group_iter    => \&monthly_group_iter,
+            archive_group_entries => \&monthly_group_entries,
+            dynamic_template      => 'archives/<$MTArchiveDate format="%Y%m"$>',
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/mm/index.html'),
+                    template => '%y/%m/%i',
+                    default  => 1
+                ),
+            ],
+            dynamic_support => 1,
+            date_based      => 1,
+            template_params => {
+                datebased_only_archive    => 1,
+                datebased_monthly_archive => 1,
+                module_monthly_archives   => 1,
+                main_template             => 1,
+                archive_template          => 1,
+                archive_class             => "datebased-monthly-archive",
+            },
+        ),
+        'Weekly' => ArchiveType(
+            name                  => 'Weekly',
+            archive_label         => \&weekly_archive_label,
+            archive_file          => \&weekly_archive_file,
+            archive_title         => \&weekly_archive_title,
+            date_range            => \&weekly_date_range,
+            archive_group_iter    => \&weekly_group_iter,
+            archive_group_entries => \&weekly_group_entries,
+            dynamic_template =>
+              'archives/week/<$MTArchiveDate format="%Y%m%d"$>',
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/mm/day-week/index.html'),
+                    template => '%y/%m/%d-week/%i',
+                    default  => 1
+                ),
+            ],
+            dynamic_support => 1,
+            date_based      => 1,
+            template_params => {
+                datebased_only_archive   => 1,
+                datebased_weekly_archive => 1,
+                main_template            => 1,
+                archive_template         => 1,
+                archive_class            => "datebased-weekly-archive",
+            },
+        ),
+        'Individual' => ArchiveType(
+            name                      => 'Individual',
+            archive_label             => \&individual_archive_label,
+            archive_file              => \&individual_archive_file,
+            archive_title             => \&individual_archive_title,
+            archive_group_iter        => \&individual_group_iter,
+            dynamic_template          => 'entry/<$MTEntryID$>',
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/mm/entry-basename.html'),
+                    template => '%y/%m/%-f',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/mm/entry_basename.html'),
+                    template => '%y/%m/%f'
+                ),
+                ArchiveFileTemplate(
+                    label => MT->translate('yyyy/mm/entry-basename/index.html'),
+                    template => '%y/%m/%-b/%i'
+                ),
+                ArchiveFileTemplate(
+                    label => MT->translate('yyyy/mm/entry_basename/index.html'),
+                    template => '%y/%m/%b/%i'
+                ),
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/mm/dd/entry-basename.html'),
+                    template => '%y/%m/%d/%-f'
+                ),
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/mm/dd/entry_basename.html'),
+                    template => '%y/%m/%d/%f'
+                ),
+                ArchiveFileTemplate(
+                    label =>
+                      MT->translate('yyyy/mm/dd/entry-basename/index.html'),
+                    template => '%y/%m/%d/%-b/%i'
+                ),
+                ArchiveFileTemplate(
+                    label =>
+                      MT->translate('yyyy/mm/dd/entry_basename/index.html'),
+                    template => '%y/%m/%d/%b/%i'
+                ),
+                ArchiveFileTemplate(
+                    label => MT->translate(
+                        'category/sub-category/entry-basename.html'),
+                    template => '%-c/%-f'
+                ),
+                ArchiveFileTemplate(
+                    label => MT->translate(
+                        'category/sub-category/entry-basename/index.html'),
+                    template => '%-c/%-b/%i'
+                ),
+                ArchiveFileTemplate(
+                    label => MT->translate(
+                        'category/sub_category/entry_basename.html'),
+                    template => '%c/%f'
+                ),
+                ArchiveFileTemplate(
+                    label => MT->translate(
+                        'category/sub_category/entry_basename/index.html'),
+                    template => '%c/%b/%i'
+                ),
+            ],
+            dynamic_support => 1,
+            entry_based     => 1,
+            template_params => {
+                main_template     => 1,
+                archive_template  => 1,
+                entry_template    => 1,
+                feedback_template => 1,
+                archive_class     => "entry-archive",
+
+                # module_recent_posts => 0,
+                # module_monthly_archives => 0,
+            },
+        ),
+        'Page' => ArchiveType(
+            name                      => 'Page',
+            archive_label             => \&page_archive_label,
+            archive_file              => \&page_archive_file,
+            archive_title             => \&individual_archive_title,
+            archive_group_iter        => \&page_group_iter,
+            dynamic_template          => 'page/<$MTEntryID$>',
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => MT->translate('folder-path/page-basename.html'),
+                    template => '%-c/%-f',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label =>
+                      MT->translate('folder-path/page-basename/index.html'),
+                    template => '%-c/%-b/%i'
+                ),
+                ArchiveFileTemplate(
+                    label    => MT->translate('folder_path/page_basename.html'),
+                    template => '%c/%f'
+                ),
+                ArchiveFileTemplate(
+                    label =>
+                      MT->translate('folder_path/page_basename/index.html'),
+                    template => '%c/%b/%i'
+                ),
+            ],
+            dynamic_support => 1,
+            entry_class     => 'page',
+            entry_based     => 1,
+            template_params => {
+                archive_class     => "page-archive",
+                page_archive      => 1,
+                main_template     => 1,
+                archive_template  => 1,
+                page_template     => 1,
+                feedback_template => 1,
+            },
+        ),
+
+# 'Folder' =>
+#     ArchiveType( name => 'Folder',
+#         archive_label => \&folder_archive_label,
+#         archive_file => \&folder_archive_file,
+#         archive_title => \&folder_archive_title,
+#         archive_group_iter => \&folder_group_iter,
+#         archive_group_entries => \&folder_group_entries,
+#         dynamic_template => 'folder/<$MTCategoryID$>',
+#         default_archive_templates => [
+#             ArchiveFileTemplate( Label => MT->translate('folder/sub_folder/index.html'),
+#                 template => '%c/%i', Default => 1 ),
+#             ArchiveFileTemplate( Label => MT->translate('folder/sub-folder/index.html'),
+#                 template => '%-c/%i' ),
+#             ],
+#         dynamic_support => 1,
+#         category_based => 1,
+#     ),
+        'Daily' => ArchiveType(
+            name                  => 'Daily',
+            archive_label         => \&daily_archive_label,
+            archive_file          => \&daily_archive_file,
+            archive_title         => \&daily_archive_title,
+            date_range            => \&daily_date_range,
+            archive_group_iter    => \&daily_group_iter,
+            archive_group_entries => \&daily_group_entries,
+            dynamic_template => 'archives/<$MTArchiveDate format="%Y%m%d"$>',
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => MT->translate('yyyy/mm/dd/index.html'),
+                    template => '%y/%m/%d/%f',
+                    default  => 1
+                ),
+            ],
+            dynamic_support => 1,
+            date_based      => 1,
+            template_params => {
+                archive_class           => "datebased-daily-archive",
+                datebased_only_archive  => 1,
+                datebased_daily_archive => 1,
+                main_template           => 1,
+                archive_template        => 1,
+            },
+        ),
+        'Category' => ArchiveType(
+            name                      => 'Category',
+            archive_label             => \&category_archive_label,
+            archive_file              => \&category_archive_file,
+            archive_title             => \&category_archive_title,
+            archive_group_iter        => \&category_group_iter,
+            archive_group_entries     => \&category_group_entries,
+            dynamic_template          => 'category/<$MTCategoryID$>',
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label => MT->translate('category/sub-category/index.html'),
+                    template => '%-c/%i',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label => MT->translate('category/sub_category/index.html'),
+                    template => '%c/%i'
+                ),
+            ],
+            dynamic_support => 1,
+            category_based  => 1,
+            template_params => {
+                archive_class    => "category-archive",
+                category_archive => 1,
+                main_template    => 1,
+                archive_template => 1,
+                module_category_archives => 1,
+                'module_category-monthly_archives' => 1,
+            },
+        ),
+        'Author' => ArchiveType(
+            name                      => 'Author',
+            archive_label             => \&author_archive_label,
+            archive_file              => \&author_archive_file,
+            archive_title             => \&author_archive_title,
+            archive_group_iter        => \&author_group_iter,
+            archive_group_entries     => \&author_group_entries,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => 'author_display_name/index.html',
+                    template => '%a/%f',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => 'author-display-name/index.html',
+                    template => '%-a/%f'
+                ),
+            ],
+            dynamic_template => 'author/<$MTEntryAuthorID$>/<$MTEntryID$>',
+            dynamic_support  => 1,
+            author_based     => 1,
+            template_params  => {
+                archive_class                    => "author-archive",
+                'module_author-monthly_archives' => 1,
+                module_author_archives           => 1,
+                main_template                    => 1,
+                author_archive                   => 1,
+                archive_template                 => 1,
+            },
+          ),
+          'Author-Yearly' => ArchiveType(
+            name                      => 'Author-Yearly',
+            archive_label             => \&author_yearly_archive_label,
+            archive_file              => \&author_yearly_archive_file,
+            archive_title             => \&author_yearly_archive_title,
+            archive_group_iter        => \&author_yearly_group_iter,
+            archive_group_entries     => \&author_yearly_group_entries,
+            date_range                => \&author_yearly_date_range,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => 'author_display_name/yyyy/index.html',
+                    template => '%a/%y/%f',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => 'author-display-name/yyyy/index.html',
+                    template => '%-a/%y/%f'
+                ),
+            ],
+            dynamic_template =>
+              'author/<$MTEntryAuthorID$>/<$MTArchiveDate format="%Y"$>',
+            dynamic_support => 1,
+            author_based    => 1,
+            date_based      => 1,
+            template_params => {
+                archive_class         => "author-yearly-archive",
+                author_yearly_archive => 1,
+                main_template         => 1,
+                archive_template      => 1,
+            },
+          ),
+          'Author-Monthly' => ArchiveType(
+            name                      => 'Author-Monthly',
+            archive_label             => \&author_monthly_archive_label,
+            archive_file              => \&author_monthly_archive_file,
+            archive_title             => \&author_monthly_archive_title,
+            archive_group_iter        => \&author_monthly_group_iter,
+            archive_group_entries     => \&author_monthly_group_entries,
+            date_range                => \&author_monthly_date_range,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => 'author_display_name/yyyy/mm/index.html',
+                    template => '%a/%y/%m/%f',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => 'author-display-name/yyyy/mm/index.html',
+                    template => '%-a/%y/%m/%f'
+                ),
+            ],
+            dynamic_template =>
+              'author/<$MTEntryAuthorID$>/<$MTArchiveDate format="%Y%m"$>',
+            dynamic_support => 1,
+            author_based    => 1,
+            date_based      => 1,
+            template_params => {
+                archive_class                    => "author-monthly-archive",
+                author_monthly_archive           => 1,
+                'module_author-monthly_archives' => 1,
+                module_author_archives           => 1,
+                main_template                    => 1,
+                archive_template                 => 1,
+            },
+          ),
+          'Author-Weekly' => ArchiveType(
+            name                      => 'Author-Weekly',
+            archive_label             => \&author_weekly_archive_label,
+            archive_file              => \&author_weekly_archive_file,
+            archive_title             => \&author_weekly_archive_title,
+            archive_group_iter        => \&author_weekly_group_iter,
+            archive_group_entries     => \&author_weekly_group_entries,
+            date_range                => \&author_weekly_date_range,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label => 'author_display_name/yyyy/mm/day-week/index.html',
+                    template => '%a/%y/%m/%d-week/%f',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label => 'author-display-name/yyyy/mm/day-week/index.html',
+                    template => '%-a/%y/%m/%d-week/%f'
+                ),
+            ],
+            dynamic_template =>
+'author/<$MTEntryAuthorID$>/week/<$MTArchiveDate format="%Y%m%d"$>',
+            dynamic_support => 1,
+            author_based    => 1,
+            date_based      => 1,
+            template_params => {
+                archive_class         => "author-weekly-archive",
+                author_weekly_archive => 1,
+                main_template         => 1,
+                archive_template      => 1,
+            },
+          ),
+          'Author-Daily' => ArchiveType(
+            name                      => 'Author-Daily',
+            archive_label             => \&author_daily_archive_label,
+            archive_file              => \&author_daily_archive_file,
+            archive_title             => \&author_daily_archive_title,
+            archive_group_iter        => \&author_daily_group_iter,
+            archive_group_entries     => \&author_daily_group_entries,
+            date_range                => \&author_daily_date_range,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => 'author_display_name/yyyy/mm/dd/index.html',
+                    template => '%a/%y/%m/%d/%f',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => 'author-display-name/yyyy/mm/dd/index.html',
+                    template => '%-a/%y/%m/%d/%f'
+                ),
+            ],
+            dynamic_template =>
+              'author/<$MTEntryAuthorID$>/<$MTArchiveDate format="%Y%m%d"$>',
+            dynamic_support => 1,
+            author_based    => 1,
+            date_based      => 1,
+            template_params => {
+                archive_class        => "author-daily-archive",
+                author_daily_archive => 1,
+                main_template        => 1,
+                archive_template     => 1,
+            },
+          ),
+          'Category-Yearly' => ArchiveType(
+            name                      => 'Category-Yearly',
+            archive_label             => \&cat_yearly_archive_label,
+            archive_file              => \&cat_yearly_archive_file,
+            archive_title             => \&cat_yearly_archive_title,
+            date_range                => \&cat_yearly_date_range,
+            archive_group_iter        => \&cat_yearly_group_iter,
+            archive_group_entries     => \&cat_yearly_group_entries,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => 'category/sub_category/yyyy/index.html',
+                    template => '%c/%y/%i',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => 'category/sub-category/yyyy/index.html',
+                    template => '%-c/%y/%i'
+                ),
+            ],
+            dynamic_template =>
+              'category/<$MTCategoryID$>/<$MTArchiveDate format="%Y"$>',
+            dynamic_support => 1,
+            date_based      => 1,
+            category_based  => 1,
+            template_params => {
+                archive_class           => "category-yearly-archive",
+                category_yearly_archive => 1,
+                main_template           => 1,
+                archive_template        => 1,
+            },
+          ),
+          'Category-Monthly' => ArchiveType(
+            name                      => 'Category-Monthly',
+            archive_label             => \&cat_monthly_archive_label,
+            archive_file              => \&cat_monthly_archive_file,
+            archive_title             => \&cat_monthly_archive_title,
+            date_range                => \&cat_monthly_date_range,
+            archive_group_iter        => \&cat_monthly_group_iter,
+            archive_group_entries     => \&cat_monthly_group_entries,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => 'category/sub_category/yyyy/mm/index.html',
+                    template => '%c/%y/%m/%i',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => 'category/sub-category/yyyy/mm/index.html',
+                    template => '%-c/%y/%m/%i'
+                ),
+            ],
+            dynamic_template =>
+              'category/<$MTCategoryID$>/<$MTArchiveDate format="%Y%m"$>',
+            dynamic_support => 1,
+            date_based      => 1,
+            category_based  => 1,
+            template_params => {
+                archive_class            => "category-monthly-archive",
+                category_monthly_archive => 1,
+                'module_category-monthly_archives' => 1,
+                module_category_archives           => 1,
+                main_template                      => 1,
+                archive_template                   => 1,
+            },
+          ),
+          'Category-Daily' => ArchiveType(
+            name                      => 'Category-Daily',
+            archive_label             => \&cat_daily_archive_label,
+            archive_file              => \&cat_daily_archive_file,
+            archive_title             => \&cat_daily_archive_title,
+            date_range                => \&cat_daily_date_range,
+            archive_group_iter        => \&cat_daily_group_iter,
+            archive_group_entries     => \&cat_daily_group_entries,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label    => 'category/sub_category/yyyy/mm/dd/index.html',
+                    template => '%c/%y/%m/%d/%i',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label    => 'category/sub-category/yyyy/mm/dd/index.html',
+                    template => '%-c/%y/%m/%d/%i'
+                ),
+            ],
+            dynamic_template =>
+              'category/<$MTCategoryID$>/<$MTArchiveDate format="%Y%m%d"$>',
+            dynamic_support => 1,
+            date_based      => 1,
+            category_based  => 1,
+            template_params => {
+                archive_class          => "category-daily-archive",
+                category_daily_archive => 1,
+                main_template          => 1,
+                archive_template       => 1,
+            },
+          ),
+          'Category-Weekly' => ArchiveType(
+            name                      => 'Category-Weekly',
+            archive_label             => \&cat_weekly_archive_label,
+            archive_file              => \&cat_weekly_archive_file,
+            archive_title             => \&cat_weekly_archive_title,
+            date_range                => \&cat_weekly_date_range,
+            archive_group_iter        => \&cat_weekly_group_iter,
+            archive_group_entries     => \&cat_weekly_group_entries,
+            default_archive_templates => [
+                ArchiveFileTemplate(
+                    label =>
+                      'category/sub_category/yyyy/mm/day-week/index.html',
+                    template => '%c/%y/%m/%d-week/%i',
+                    default  => 1
+                ),
+                ArchiveFileTemplate(
+                    label =>
+                      'category/sub-category/yyyy/mm/day-week/index.html',
+                    template => '%-c/%y/%m/%d-week/%i'
+                ),
+            ],
+            dynamic_template =>
+              'section/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>',
+            dynamic_support => 1,
+            date_based      => 1,
+            category_based  => 1,
+            template_params => {
+                archive_class           => "category-weekly-archive",
+                category_weekly_archive => 1,
+                main_template           => 1,
+                archive_template        => 1,
+            },
+          )
     };
 
 }
 
 sub rebuild {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
     my $blog;
-    unless ($blog = $param{Blog}) {
+    unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id) or
-            return $mt->error(
-                MT->translate("Load of blog '[_1]' failed: [_2]",
-                    $blog_id, MT::Blog->errstr));
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+          );
     }
     return 1 if $blog->is_dynamic;
     my $at = $blog->archive_type || '';
     my @at = split /,/, $at;
     my $entry_class;
-    if (my $set_at = $param{ArchiveType}) {
+    if ( my $set_at = $param{ArchiveType} ) {
         my %at = map { $_ => 1 } @at;
         return $mt->error(
-            MT->translate("Archive type '[_1]' is not a chosen archive type",
-                $set_at)) unless $at{$set_at};
+            MT->translate(
+                "Archive type '[_1]' is not a chosen archive type", $set_at
+            )
+        ) unless $at{$set_at};
 
         @at = ($set_at);
         my $archiver = $mt->archiver($set_at);
         $entry_class = $archiver->{entry_class} || "entry";
-    } else {
+    }
+    else {
         $entry_class = '*';
     }
 
-    if ($param{ArchiveType} &&
-        (!$param{Entry}) && ($param{ArchiveType} eq 'Category')) {
+    if (   $param{ArchiveType}
+        && ( !$param{Entry} )
+        && ( $param{ArchiveType} eq 'Category' ) )
+    {
+
         # Pass to full category rebuild
         return $mt->rebuild_categories(%param);
     }
 
-    if ($param{ArchiveType} &&
-        (!$param{Author}) && ($param{ArchiveType} eq 'Author')) {
+    if (   $param{ArchiveType}
+        && ( !$param{Author} )
+        && ( $param{ArchiveType} eq 'Author' ) )
+    {
         return $mt->rebuild_authors(%param);
     }
 
+
     if (@at) {
         require MT::Entry;
-        my %arg = ('sort' => 'authored_on', direction => 'descend');
+        my %arg = ( 'sort' => 'authored_on', direction => 'descend' );
         $arg{offset} = $param{Offset} if $param{Offset};
-        $arg{limit} = $param{Limit} if $param{Limit};
-        my $pre_iter = MT::Entry->load_iter({ blog_id => $blog->id,
-                                              class => $entry_class,
-                                              status => MT::Entry::RELEASE() },
-                                              \%arg);
-        my ($next, $curr);
+        $arg{limit}  = $param{Limit}  if $param{Limit};
+        my $pre_iter = MT::Entry->load_iter(
+            {
+                blog_id => $blog->id,
+                class   => $entry_class,
+                status  => MT::Entry::RELEASE()
+            },
+            \%arg
+        );
+        my ( $next, $curr );
         my $prev = $pre_iter->();
         my $iter = sub {
-            ($next, $curr) = ($curr, $prev);
+            ( $next, $curr ) = ( $curr, $prev );
             if ($curr) {
                 $prev = $pre_iter->();
             }
             $curr;
         };
-        my $cb = $param{EntryCallback};
+        my $cb  = $param{EntryCallback};
         my $fcb = $param{FilterCallback};
-        while (my $entry = $iter->()) {
+        while ( my $entry = $iter->() ) {
             if ($cb) {
-                $cb->($entry) || $mt->log($cb->errstr());
+                $cb->($entry) || $mt->log( $cb->errstr() );
             }
             if ($fcb) {
                 $fcb->($entry) or last;
             }
             for my $at (@at) {
                 my $archiver = $mt->archiver($at);
+
                 # Skip this archive type if the archive type doesn't
                 # match the kind of entry we've loaded
                 next unless $archiver;
                 next if $entry->class ne $archiver->entry_class;
-                if ($archiver->category_based) {
+                if ( $archiver->category_based ) {
                     my $cats = $entry->categories;
                     for my $cat (@$cats) {
                         $mt->_rebuild_entry_archive_type(
-                            Entry => $entry, Blog => $blog,
-                            Category => $cat, ArchiveType => $at,
-                            NoStatic => $param{NoStatic},
+                            Entry       => $entry,
+                            Blog        => $blog,
+                            Category    => $cat,
+                            ArchiveType => $at,
+                            NoStatic    => $param{NoStatic},
                             $param{TemplateMap}
-                             ? (TemplateMap => $param{TemplateMap})
-                             : (),
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
                             $param{TemplateID}
-                             ? (TemplateID =>
-                                 $param{TemplateID})
-                             : (),
+                            ? ( TemplateID =>
+                                  $param{TemplateID} )
+                            : (),
                         ) or return;
                     }
-                } elsif ($archiver->author_based) {
-                    if ($entry->author) {
-                        $mt->_rebuild_entry_archive_type( Entry => $entry,
-                                                          Blog => $blog,
-                                                          ArchiveType => $at,
-                                                          $param{TemplateMap}
-                                                           ? (TemplateMap => $param{TemplateMap})
-                                                           : (),
-                                                          $param{TemplateID}
-                                                           ? (TemplateID =>
-                                                               $param{TemplateID})
-                                                           : (),
-                                                          NoStatic => $param{NoStatic},
-                                                          Author => $entry->author)
-                            or return;
+                }
+                elsif ( $archiver->author_based ) {
+                    if ( $entry->author ) {
+                        $mt->_rebuild_entry_archive_type(
+                            Entry       => $entry,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                            $param{TemplateID}
+                            ? ( TemplateID =>
+                                  $param{TemplateID} )
+                            : (),
+                            NoStatic => $param{NoStatic},
+                            Author   => $entry->author
+                        ) or return;
                     }
-                } else {
-                    $mt->_rebuild_entry_archive_type( Entry => $entry,
-                                                      Blog => $blog,
-                                                      ArchiveType => $at,
-                                                      $param{TemplateMap}
-                                                       ? (TemplateMap => $param{TemplateMap})
-                                                       : (),
-                                                      $param{TemplateID}
-                                                       ? (TemplateID =>
-                                                           $param{TemplateID})
-                                                       : (),
-                                                      NoStatic => $param{NoStatic})
-                        or return;
+                }
+                else {
+                    $mt->_rebuild_entry_archive_type(
+                        Entry       => $entry,
+                        Blog        => $blog,
+                        ArchiveType => $at,
+                        $param{TemplateMap}
+                        ? ( TemplateMap => $param{TemplateMap} )
+                        : (),
+                        $param{TemplateID}
+                        ? ( TemplateID =>
+                              $param{TemplateID} )
+                        : (),
+                        NoStatic => $param{NoStatic}
+                    ) or return;
                 }
             }
         }
     }
-    unless ($param{NoIndexes}) {
+    unless ( $param{NoIndexes} ) {
         $mt->rebuild_indexes( Blog => $blog ) or return;
     }
-    if ($mt->{PublishCommenterIcon}) {
+    if ( $mt->{PublishCommenterIcon} ) {
         $mt->make_commenter_icon($blog);
     }
     1;
 }
 
 sub rebuild_categories {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
     my $blog;
-    unless ($blog = $param{Blog}) {
+    unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id) or
-            return $mt->error(
-                MT->translate("Load of blog '[_1]' failed: [_2]",
-                    $blog_id, MT::Blog->errstr));
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+          );
     }
     my %arg;
     $arg{'sort'} = 'id';
     $arg{direction} = 'ascend';
     $arg{offset} = $param{Offset} if $param{Offset};
-    $arg{limit} = $param{Limit} if $param{Limit};
-    my $cat_iter = MT::Category->load_iter({ blog_id => $blog->id }, \%arg);
+    $arg{limit}  = $param{Limit}  if $param{Limit};
+    my $cat_iter = MT::Category->load_iter( { blog_id => $blog->id }, \%arg );
     my $fcb = $param{FilterCallback};
-    while (my $cat = $cat_iter->()) {
+
+    while ( my $cat = $cat_iter->() ) {
         if ($fcb) {
             $fcb->($cat) or last;
         }
         $mt->_rebuild_entry_archive_type(
-            Blog => $blog, Category => $cat, ArchiveType => 'Category',
+            Blog        => $blog,
+            Category    => $cat,
+            ArchiveType => 'Category',
             $param{TemplateMap}
-             ? (TemplateMap => $param{TemplateMap})
-             : (),
+            ? ( TemplateMap => $param{TemplateMap} )
+            : (),
             NoStatic => $param{NoStatic},
         ) or return;
     }
@@ -440,36 +818,43 @@ sub rebuild_categories {
 }
 
 sub rebuild_authors {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
     my $blog;
-    unless ($blog = $param{Blog}) {
+    unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id) or
-            return $mt->error(
-                MT->translate("Load of blog '[_1]' failed: [_2]",
-                    $blog_id, MT::Blog->errstr));
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+          );
     }
     my %arg;
     $arg{'sort'} = 'id';
     $arg{direction} = 'ascend';
     $arg{offset} = $param{Offset} if $param{Offset};
-    $arg{limit} = $param{Limit} if $param{Limit};
+    $arg{limit}  = $param{Limit}  if $param{Limit};
     require MT::Entry;
-    local $arg{join} = MT::Entry->join_on('author_id', { blog_id => $blog->id, class => '*' });
+    local $arg{join} =
+      MT::Entry->join_on( 'author_id', { blog_id => $blog->id, class => 'entry' }, { unique => 1 } );
     local $arg{unique} = 1;
     local $arg{status} = MT::Entry::RELEASE();
-    my $auth_iter = MT::Author->load_iter(undef, \%arg);
+    my $auth_iter = MT::Author->load_iter( undef, \%arg );
     my $fcb = $param{FilterCallback};
-    while (my $a = $auth_iter->()) {
+
+    while ( my $a = $auth_iter->() ) {
         if ($fcb) {
             $fcb->($a) or last;
         }
         $mt->_rebuild_entry_archive_type(
-            Blog => $blog, Author => $a, ArchiveType => 'Author',
+            Blog        => $blog,
+            Author      => $a,
+            ArchiveType => 'Author',
             $param{TemplateMap}
-             ? (TemplateMap => $param{TemplateMap})
-             : (),
+            ? ( TemplateMap => $param{TemplateMap} )
+            : (),
             NoStatic => $param{NoStatic},
         ) or return;
     }
@@ -477,31 +862,34 @@ sub rebuild_authors {
 }
 
 sub make_commenter_icon {
-    my $mt = shift;
+    my $mt   = shift;
     my $blog = shift;
-    if (!UNIVERSAL::isa($blog, 'MT::Blog')) { $blog = shift; }
+    if ( !UNIVERSAL::isa( $blog, 'MT::Blog' ) ) { $blog = shift; }
     my $identity_link_image = $blog->site_path . "/nav-commenters.gif";
-    unless (-f $identity_link_image) {
+    unless ( -f $identity_link_image ) {
         my $fmgr = $blog->file_mgr;
-        unless ($fmgr->exists($blog->site_path)) {
-            $fmgr->mkpath($blog->site_path)
-                or return MT->trans_error("Error making path '[_1]': [_2]",
-                                           $blog->site_path, $fmgr->errstr);
+        unless ( $fmgr->exists( $blog->site_path ) ) {
+            $fmgr->mkpath( $blog->site_path )
+              or return MT->trans_error( "Error making path '[_1]': [_2]",
+                $blog->site_path, $fmgr->errstr );
         }
-        my $nav_commenters_gif = (q{47494638396116000f00910200504d4b}.
-                                  q{ffffffffffff00000021f90401000002}.
-                                  q{002c0000000016000f0000022c948fa9}.
-                                  q{19e0bf2208b482a866a51723bd75dee1}.
-                                  q{70e2f83586837ed773a22fd4ba6cede2}.
-                                  q{241c8f7ceff9e95005003b});
-        $nav_commenters_gif = pack("H*", $nav_commenters_gif);
+        my $nav_commenters_gif =
+          (     q{47494638396116000f00910200504d4b}
+              . q{ffffffffffff00000021f90401000002}
+              . q{002c0000000016000f0000022c948fa9}
+              . q{19e0bf2208b482a866a51723bd75dee1}
+              . q{70e2f83586837ed773a22fd4ba6cede2}
+              . q{241c8f7ceff9e95005003b} );
+        $nav_commenters_gif = pack( "H*", $nav_commenters_gif );
         eval {
-            if (open(TARGET, ">$identity_link_image")) {
+            if ( open( TARGET, ">$identity_link_image" ) )
+            {
                 print TARGET $nav_commenters_gif;
                 close TARGET;
-            } else {
-                MT::log("Couldn't write authenticated commenter icon to " .
-                        $identity_link_image);
+            }
+            else {
+                MT::log( "Couldn't write authenticated commenter icon to "
+                      . $identity_link_image );
                 die;
             }
         };
@@ -518,50 +906,58 @@ sub make_commenter_icon {
 #                    [ NoStatic => (0 | 1), ]
 #                    );
 sub rebuild_entry {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
-    my $entry = $param{Entry} or
-        return $mt->error(MT->translate("Parameter '[_1]' is required",
-            'Entry'));
+    my $entry = $param{Entry}
+      or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
     require MT::Entry;
     $entry = MT::Entry->load($entry) unless ref $entry;
     my $blog;
-    unless ($blog = $param{Blog}) {
+    unless ( $blog = $param{Blog} ) {
         my $blog_id = $entry->blog_id;
-        $blog = MT::Blog->load($blog_id) or
-            return $mt->error(MT->translate("Load of blog '[_1]' failed: [_2]",
-                $blog_id, MT::Blog->errstr));
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+          );
     }
     return 1 if $blog->is_dynamic;
 
     my $at = $blog->archive_type;
-    if ($at && $at ne 'None') {
+    if ( $at && $at ne 'None' ) {
         my @at = split /,/, $at;
         for my $at (@at) {
             my $archiver = $mt->archiver($at);
-            next unless $archiver; # invalid archive type
+            next unless $archiver;    # invalid archive type
             next if $entry->class ne $archiver->entry_class;
-            if ($archiver->category_based) {
-                my $cats = $entry->categories;   # (ancestors => 1)
+            if ( $archiver->category_based ) {
+                my $cats = $entry->categories;    # (ancestors => 1)
                 for my $cat (@$cats) {
                     $mt->_rebuild_entry_archive_type(
-                        Entry => $entry, Blog => $blog,
-                        ArchiveType => $at, Category => $cat,
-                        NoStatic => $param{NoStatic},
+                        Entry       => $entry,
+                        Blog        => $blog,
+                        ArchiveType => $at,
+                        Category    => $cat,
+                        NoStatic    => $param{NoStatic},
                         $param{TemplateMap}
-                         ? (TemplateMap => $param{TemplateMap})
-                         : (),
+                        ? ( TemplateMap => $param{TemplateMap} )
+                        : (),
                     ) or return;
                 }
-            } else {
-                $mt->_rebuild_entry_archive_type( Entry => $entry,
-                                                  Blog => $blog,
-                                                  ArchiveType => $at,
-                                                  $param{TemplateMap}
-                                                   ? (TemplateMap => $param{TemplateMap})
-                                                   : (),
-                                                  NoStatic => $param{NoStatic},
-                                                  Author => $entry->author,
+            }
+            else {
+                $mt->_rebuild_entry_archive_type(
+                    Entry       => $entry,
+                    Blog        => $blog,
+                    ArchiveType => $at,
+                    $param{TemplateMap}
+                    ? ( TemplateMap => $param{TemplateMap} )
+                    : (),
+                    NoStatic => $param{NoStatic},
+                    Author   => $entry->author,
                 ) or return;
             }
         }
@@ -575,93 +971,107 @@ sub rebuild_entry {
     ## etc. There is not a good way to determine exact dependencies; it is
     ## easier to just rebuild, rebuild, rebuild.
 
-    return 1 unless $param{BuildDependencies} || $param{BuildIndexes} ||
-                    $param{BuildArchives};
+    return 1
+      unless $param{BuildDependencies}
+      || $param{BuildIndexes}
+      || $param{BuildArchives};
 
-    if ($param{BuildDependencies}) {
+    if ( $param{BuildDependencies} ) {
         ## Rebuild previous and next entry archive pages.
-        if (my $prev = $entry->previous(1)) {
+        if ( my $prev = $entry->previous(1) ) {
             $mt->rebuild_entry( Entry => $prev ) or return;
 
             ## Rebuild the old previous and next entries, if we have some.
-            if ($param{OldPrevious} && 
-                               (my $old_prev = MT::Entry->load($param{OldPrevious}))) {
+            if ( $param{OldPrevious}
+                && ( my $old_prev = MT::Entry->load( $param{OldPrevious} ) ) )
+            {
                 $mt->rebuild_entry( Entry => $old_prev ) or return;
             }
         }
-        if (my $next = $entry->next(1)) {
+        if ( my $next = $entry->next(1) ) {
             $mt->rebuild_entry( Entry => $next ) or return;
 
-            if ($param{OldNext} && (my $old_next = MT::Entry->load($param{OldNext}))) {
+            if ( $param{OldNext}
+                && ( my $old_next = MT::Entry->load( $param{OldNext} ) ) )
+            {
                 $mt->rebuild_entry( Entry => $old_next ) or return;
             }
         }
     }
 
-    if ($param{BuildDependencies} || $param{BuildIndexes}) {
+    if ( $param{BuildDependencies} || $param{BuildIndexes} ) {
         ## Rebuild all indexes, in case this entry is on an index.
-        if (!(exists $param{BuildIndexes}) || $param{BuildIndexes}) {
+        if ( !( exists $param{BuildIndexes} ) || $param{BuildIndexes} ) {
             $mt->rebuild_indexes( Blog => $blog ) or return;
         }
     }
 
-    if ($param{BuildDependencies} || $param{BuildArchives}) {
+    if ( $param{BuildDependencies} || $param{BuildArchives} ) {
         ## Rebuild previous and next daily, weekly, and monthly archives;
         ## adding a new entry could cause changes to the intra-archive
         ## navigation.
         my %at = map { $_ => 1 } split /,/, $blog->archive_type;
-        my @db_at = grep { $ArchiveTypes{$_}->date_based }
-            $mt->archive_types;
+        my @db_at = grep { $ArchiveTypes{$_}->date_based } $mt->archive_types;
         for my $at (@db_at) {
-            if ($at{$at}) {
-                my @arg = ($entry->authored_on, $entry->blog_id, $at);
+            if ( $at{$at} ) {
+                my @arg = ( $entry->authored_on, $entry->blog_id, $at );
                 my $archiver = $mt->archiver($at);
-                if (my $prev_arch = $mt->get_entry(@arg, 'previous')) {
-                    if ($archiver->category_based) {
+                if ( my $prev_arch = $mt->get_entry( @arg, 'previous' ) ) {
+                    if ( $archiver->category_based ) {
                         my $cats = $prev_arch->categories;
                         for my $cat (@$cats) {
-                            $mt->_rebuild_entry_archive_type(NoStatic => $param{NoStatic},
-                                      Entry => $prev_arch,
-                                      Blog => $blog,
-                                      Category => $cat,
-                                      $param{TemplateMap}
-                                       ? (TemplateMap => $param{TemplateMap})
-                                       : (),
-                                      ArchiveType => $at) or return;
+                            $mt->_rebuild_entry_archive_type(
+                                NoStatic => $param{NoStatic},
+                                Entry    => $prev_arch,
+                                Blog     => $blog,
+                                Category => $cat,
+                                $param{TemplateMap}
+                                ? ( TemplateMap => $param{TemplateMap} )
+                                : (),
+                                ArchiveType => $at
+                            ) or return;
                         }
-                    } else {
-                        $mt->_rebuild_entry_archive_type(NoStatic => $param{NoStatic},
-                                  Entry => $prev_arch,
-                                  Blog => $blog,
-                                  ArchiveType => $at,
-                                  $param{TemplateMap}
-                                   ? (TemplateMap => $param{TemplateMap})
-                                   : (),
-                                  Author => $prev_arch->author) or return;
+                    }
+                    else {
+                        $mt->_rebuild_entry_archive_type(
+                            NoStatic    => $param{NoStatic},
+                            Entry       => $prev_arch,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                            Author => $prev_arch->author
+                        ) or return;
                     }
                 }
-                if (my $next_arch = $mt->get_entry(@arg, 'next')) {
-                    if ($archiver->category_based) {
+                if ( my $next_arch = $mt->get_entry( @arg, 'next' ) ) {
+                    if ( $archiver->category_based ) {
                         my $cats = $next_arch->categories;
                         for my $cat (@$cats) {
-                            $mt->_rebuild_entry_archive_type(NoStatic => $param{NoStatic},
-                                      Entry => $next_arch,
-                                      Blog => $blog,
-                                      Category => $cat,
-                                      $param{TemplateMap}
-                                       ? (TemplateMap => $param{TemplateMap})
-                                       : (),
-                                      ArchiveType => $at) or return;
+                            $mt->_rebuild_entry_archive_type(
+                                NoStatic => $param{NoStatic},
+                                Entry    => $next_arch,
+                                Blog     => $blog,
+                                Category => $cat,
+                                $param{TemplateMap}
+                                ? ( TemplateMap => $param{TemplateMap} )
+                                : (),
+                                ArchiveType => $at
+                            ) or return;
                         }
-                    } else {
-                        $mt->_rebuild_entry_archive_type(NoStatic => $param{NoStatic},
-                                  Entry => $next_arch,
-                                  Blog => $blog,
-                                  ArchiveType => $at,
-                                  $param{TemplateMap}
-                                   ? (TemplateMap => $param{TemplateMap})
-                                   : (),
-                                  Author => $next_arch->author) or return;
+                    }
+                    else {
+                        $mt->_rebuild_entry_archive_type(
+                            NoStatic    => $param{NoStatic},
+                            Entry       => $next_arch,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                            Author => $next_arch->author
+                        ) or return;
                     }
                 }
             }
@@ -672,22 +1082,31 @@ sub rebuild_entry {
 }
 
 sub _rebuild_entry_archive_type {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
-    my $at = $param{ArchiveType} or
-        return $mt->error(MT->translate("Parameter '[_1]' is required",
-            'ArchiveType'));
+    my $at    = $param{ArchiveType}
+      or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
     return 1 if $at eq 'None';
-    my $entry = ($param{ArchiveType} ne 'Category') ? ($param{Entry} or
-        return $mt->error(MT->translate("Parameter '[_1]' is required",
-            'Entry'))) : undef;
+    my $entry = ( $param{ArchiveType} ne 'Category' && $param{ArchiveType} ne 'Author' )
+      ? (
+        $param{Entry}
+          or return $mt->error(
+            MT->translate( "Parameter '[_1]' is required", 'Entry' )
+          )
+      )
+      : undef;
 
     my $blog;
-    unless ($blog = $param{Blog}) {
+    unless ( $blog = $param{Blog} ) {
         my $blog_id = $entry->blog_id;
-        $blog = MT::Blog->load($blog_id) or
-            return $mt->error(MT->translate("Load of blog '[_1]' failed: [_2]",
-                $blog_id, MT::Blog->errstr));
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+          );
     }
 
     ## Load the template-archive-type map entries for this blog and
@@ -697,174 +1116,195 @@ sub _rebuild_entry_archive_type {
     ## we save some time by not loading the list of entries.
     require MT::TemplateMap;
     my @map;
-    if ($param{TemplateMap}) {
-        @map = ($param{TemplateMap});
-    } else {
-        my $cached_maps = MT->instance->request('__cached_maps') || MT->instance->request('__cached_maps', {});
-        if (my $maps = $cached_maps->{$at . $blog->id}) {
+    if ( $param{TemplateMap} ) {
+        @map = ( $param{TemplateMap} );
+    }
+    else {
+        my $cached_maps = MT->instance->request('__cached_maps')
+          || MT->instance->request( '__cached_maps', {} );
+        if ( my $maps = $cached_maps->{ $at . $blog->id } ) {
             @map = @$maps;
-        } else {
-            @map = MT::TemplateMap->load({ archive_type => $at,
-                                           blog_id => $blog->id,
-                                           $param{TemplateID}
-                                             ? (template_id => $param{TemplateID})
-                                             : ()
-                                         });
-            $cached_maps->{$at . $blog->id} = \@map;
+        }
+        else {
+            @map = MT::TemplateMap->load(
+                {
+                    archive_type => $at,
+                    blog_id      => $blog->id,
+                    $param{TemplateID}
+                    ? ( template_id => $param{TemplateID} )
+                    : ()
+                }
+            );
+            $cached_maps->{ $at . $blog->id } = \@map;
         }
     }
     return 1 unless @map;
     my @map_build;
 
-    my $done = MT->instance->request('__published') || MT->instance->request('__published', {});
+    my $done = MT->instance->request('__published')
+      || MT->instance->request( '__published', {} );
     for my $map (@map) {
-        my $file = $mt->archive_file_for($entry, $blog, $at, $param{Category}, $map, $param{Author});
-        if ($file eq '') {
+        my $file =
+          $mt->archive_file_for( $entry, $blog, $at, $param{Category}, $map,
+            undef, $param{Author} );
+        if ( $file eq '' ) {
+
             # np
-        } elsif (!defined($file)) {
-            return $mt->error(MT->translate($blog->errstr()));
-        } else {
+        }
+        elsif ( !defined($file) ) {
+            return $mt->error( MT->translate( $blog->errstr() ) );
+        }
+        else {
             push @map_build, $map unless $done->{$file};
             $map->{__saved_output_file} = $file;
         }
     }
     return 1 unless @map_build;
     @map = @map_build;
-    
-    my(%cond);
+
+    my (%cond);
     require MT::Template::Context;
     my $ctx = MT::Template::Context->new;
     $ctx->{current_archive_type} = $at;
-    $ctx->{archive_type} = $at;
+    $ctx->{archive_type}         = $at;
     $at ||= "";
 
     my $archiver = $mt->archiver($at);
     return unless $archiver;
-
-    $ctx->{__stash}{entry} = $param{Entry} if $param{Entry};
-    $ctx->{__stash}{blog} = $param{Blog} if $param{Blog};
-    $ctx->{__stash}{archive_category} = $param{Category} if $param{Category};
-    $ctx->{__stash}{author} = $param{Author} if $param{Author};
 
     my $fmgr = $blog->file_mgr;
 
     # Special handling for pages-- they are always published to the
     # 'site' path instead of the 'archive' path, which is reserved for blog
     # content.
-    my $arch_root = ($at eq 'Page') ? $blog->site_path : $blog->archive_path;
-    return $mt->error(MT->translate("You did not set your blog publishing path"))
-        unless $arch_root;
+    my $arch_root = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
+    return $mt->error(
+        MT->translate("You did not set your blog publishing path") )
+      unless $arch_root;
 
     my $range = $archiver->date_range;
-    my ($start, $end) = $range ? $range->($entry->authored_on) : ();
-    local $ctx->{current_timestamp} = $start if $start;
-    local $ctx->{current_timestamp_end} = $end if $end;
+    my ( $start, $end ) = $range ? $range->( $entry->authored_on ) : ();
 
     ## For each mapping, we need to rebuild the entries we loaded above in
     ## the particular template map, and write it to the specified archive
     ## file template.
     require MT::Template;
     for my $map (@map) {
-        $mt->rebuild_file($blog, $arch_root, $map, $at, $ctx, \%cond,
-                          !$param{NoStatic},
-                          Category => $param{Category},
-                          Entry => $entry,
-                          Author => $param{Author},
-                          StartDate => $start,
-                          EndDate => $end,
-                          ) or return;
-        $done->{$map->{__saved_output_file}}++;
+        $mt->rebuild_file(
+            $blog, $arch_root, $map, $at, $ctx, \%cond,
+            !$param{NoStatic},
+            Category  => $param{Category},
+            Entry     => $entry,
+            Author    => $param{Author},
+            StartDate => $start,
+            EndDate   => $end,
+        ) or return;
+        $done->{ $map->{__saved_output_file} }++;
     }
     1;
 }
 
 sub rebuild_file {
     my $mt = shift;
-    my ($blog, $root_path, $map, $at, $ctx, $cond, 
-        $build_static, %specifier) = @_;
+    my ( $blog, $root_path, $map, $at, $ctx, $cond, $build_static, %specifier )
+      = @_;
     my $finfo;
     my $archiver = $mt->archiver($at);
-    my ($entry, $start, $end, $category, $author);
+    my ( $entry, $start, $end, $category, $author );
 
-    if ($finfo = $specifier{FileInfo}) {
-        $specifier{Author} = $finfo->author_id if $finfo->author_id;
+    if ( $finfo = $specifier{FileInfo} ) {
+        $specifier{Author}   = $finfo->author_id   if $finfo->author_id;
         $specifier{Category} = $finfo->category_id if $finfo->category_id;
-        $specifier{Entry} = $finfo->entry_id if $finfo->entry_id;
-        $map ||= MT::TemplateMap->load($finfo->templatemap_id);
-        $at ||= $finfo->archive_type;
-        if ($finfo->startdate) {
-            if (my $range = $archiver->date_range) {
-                my ($start, $end) = $range ? $range->($finfo->startdate) : ();
+        $specifier{Entry}    = $finfo->entry_id    if $finfo->entry_id;
+        $map ||= MT::TemplateMap->load( $finfo->templatemap_id );
+        $at  ||= $finfo->archive_type;
+        if ( $finfo->startdate ) {
+            if ( my $range = $archiver->date_range ) {
+                my ( $start, $end ) =
+                  $range ? $range->( $finfo->startdate ) : ();
                 $specifier{StartDate} = $start;
-                $specifier{EndDate} = $end;
+                $specifier{EndDate}   = $end;
             }
         }
     }
 
-    if ($archiver->category_based) {
+    if ( $archiver->category_based ) {
         $category = $specifier{Category};
         die "Category archive type requires Category parameter"
-            unless $specifier{Category};
-        $category = MT::Category->load($category) 
-            unless ref $category;
-        $ctx->var('category_archive', 1);
+          unless $specifier{Category};
+        $category = MT::Category->load($category)
+          unless ref $category;
+        $ctx->var( 'category_archive', 1 );
+        $ctx->{__stash}{archive_category} = $category;
     }
-    if ($archiver->entry_based) {
+    if ( $archiver->entry_based ) {
         $entry = $specifier{Entry};
         die "$at archive type requires Entry parameter"
-            unless $entry;
+          unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
-        $ctx->var('entry_archive', 1);
+        $ctx->var( 'entry_archive', 1 );
+        $ctx->{__stash}{entry} = $entry;
     }
-    if ($archiver->date_based) {
+    if ( $archiver->date_based ) {
+
         # Date-based archive type
         $start = $specifier{StartDate};
-        $end = $specifier{EndDate};
-        die "Date-based archive types require StartDate parameter" 
-            unless $specifier{StartDate};
-        $ctx->var('datebased_archive', 1);
+        $end   = $specifier{EndDate};
+        die "Date-based archive types require StartDate parameter"
+          unless $specifier{StartDate};
+        $ctx->var( 'datebased_archive', 1 );
     }
-    if ($archiver->author_based) {
+    if ( $archiver->author_based ) {
+
         # author based archive type
         $author = $specifier{Author};
         die "Author-based archive type requires Author parameter"
-            unless $specifier{Author};
+          unless $specifier{Author};
         require MT::Author;
         $author = MT::Author->load($author)
-            unless ref $author;
-        $ctx->var('author_archive', 1);
+          unless ref $author;
+        $ctx->var( 'author_archive', 1 );
+        $ctx->{__stash}{author} = $author;
     }
+    local $ctx->{current_timestamp}     = $start if $start;
+    local $ctx->{current_timestamp_end} = $end   if $end;
+
     my $fmgr = $blog->file_mgr;
+    $ctx->{__stash}{blog} = $blog;
 
     # Calculate file path and URL for the new entry.
-    my $file = File::Spec->catfile($root_path, $map->{__saved_output_file});
-
+    my $file = File::Spec->catfile( $root_path, $map->{__saved_output_file} );
     require MT::FileInfo;
-    # This kind of testing should be done at the time we save a post,
-    # not during publishing!!!
-    # if ($archiver->entry_based) {
-    #     my $fcount = MT::FileInfo->count({
-    #         blog_id => $blog->id,
-    #         entry_id => $entry->id,
-    #         file_path => $file},
-    #         { not => { entry_id => 1 } });
-    #     die MT->translate('The same archive file exists. You should change the basename or the archive path. ([_1])', $file) if $fcount > 0;
-    # }
+
+# This kind of testing should be done at the time we save a post,
+# not during publishing!!!
+# if ($archiver->entry_based) {
+#     my $fcount = MT::FileInfo->count({
+#         blog_id => $blog->id,
+#         entry_id => $entry->id,
+#         file_path => $file},
+#         { not => { entry_id => 1 } });
+#     die MT->translate('The same archive file exists. You should change the basename or the archive path. ([_1])', $file) if $fcount > 0;
+# }
 
     my $url = $blog->archive_url;
-    $url = $blog->site_url if $archiver->entry_based && $archiver->entry_class eq 'page';
+    $url = $blog->site_url
+      if $archiver->entry_based && $archiver->entry_class eq 'page';
     $url .= '/' unless $url =~ m|/$|;
     $url .= $map->{__saved_output_file};
 
-    my $cached_tmpl = MT->instance->request('__cached_templates') || MT->instance->request('__cached_templates', {});
+    my $cached_tmpl = MT->instance->request('__cached_templates')
+      || MT->instance->request( '__cached_templates', {} );
     my $tmpl_id = $map->template_id;
+
     # template specific for this entry (or page, as the case may be)
-    if ($entry && $entry->template_id) {
+    if ( $entry && $entry->template_id ) {
+
         # allow entry to override *if* we're publishing an individual
         # page, and this is the 'preferred' one...
-        if ($archiver->entry_based) {
-            if ($map->is_preferred) {
+        if ( $archiver->entry_based ) {
+            if ( $map->is_preferred ) {
                 $tmpl_id = $entry->template_id;
             }
         }
@@ -881,139 +1321,197 @@ sub rebuild_file {
     $tmpl->context($ctx);
 
     # From Here
-    if (my $tmpl_param = $archiver->template_params) {
+    if ( my $tmpl_param = $archiver->template_params ) {
         $tmpl->param($tmpl_param);
     }
 
-    my ($rel_url) = ($url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)|);
+    my ($rel_url) = ( $url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
     $rel_url =~ s|//+|/|g;
 
     ## Untaint. We have to assume that we can trust the user's setting of
     ## the archive_path, and nothing else is based on user input.
     ($file) = $file =~ /(.+)/s;
 
-    # Clear out all the FileInfo records that might point at the page 
+    # Clear out all the FileInfo records that might point at the page
     # we're about to create
-    # FYI: if it's an individual entry, we don't use the date as a 
+    # FYI: if it's an individual entry, we don't use the date as a
     #      criterion, since this could actually have changed since
-    #      the FileInfo was last built. When the date does change, 
+    #      the FileInfo was last built. When the date does change,
     #      the old date-based archive doesn't necessarily get fixed,
     #      but if another comes along it will get corrected
     unless ($finfo) {
         my %terms;
-        $terms{blog_id} = $blog->id;
+        $terms{blog_id}     = $blog->id;
         $terms{category_id} = $category->id if $archiver->category_based;
-        $terms{author_id} = $author->id if $archiver->author_based;
-        $terms{entry_id} = $entry->id if $archiver->entry_based;
-        $terms{startdate} = $start if $archiver->date_based && (!$archiver->entry_based);
-        $terms{archive_type} = $at;
+        $terms{author_id}   = $author->id if $archiver->author_based;
+        $terms{entry_id}    = $entry->id if $archiver->entry_based;
+        $terms{startdate}   = $start
+          if $archiver->date_based && ( !$archiver->entry_based );
+        $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
-        my @finfos = MT::FileInfo->load(\%terms);
+        my @finfos = MT::FileInfo->load( \%terms );
 
-        if ((scalar @finfos == 1) && ($finfos[0]->file_path eq $file) && (($finfos[0]->url || '') eq $rel_url) && ($finfos[0]->template_id == $tmpl_id)) {
+        if (   ( scalar @finfos == 1 )
+            && ( $finfos[0]->file_path eq $file )
+            && ( ( $finfos[0]->url || '' ) eq $rel_url )
+            && ( $finfos[0]->template_id == $tmpl_id ) )
+        {
+
             # if the shoe fits, wear it
             $finfo = $finfos[0];
-        } else {
-            # if the shoe don't fit, remove all shoes and create the perfect shoe
+        }
+        else {
+
+           # if the shoe don't fit, remove all shoes and create the perfect shoe
             foreach (@finfos) { $_->remove(); }
 
-            $finfo = MT::FileInfo->set_info_for_url($rel_url, $file, $at,
-                         { Blog => $blog->id,
-                           TemplateMap => $map->id,
-                           Template => $tmpl_id,
-                           ($archiver->entry_based && $entry)
-                               ? (Entry => $entry->id): (),
-                           StartDate => $start,
-                           ($archiver->category_based && $category)
-                               ? (Category => $category->id) : (),
-                           ($archiver->author_based)
-                               ? (Author => $author->id) : (),
-                         })
-                || die "Couldn't create FileInfo because " . MT::FileInfo->errstr();
+            $finfo = MT::FileInfo->set_info_for_url(
+                $rel_url, $file, $at,
+                {
+                    Blog        => $blog->id,
+                    TemplateMap => $map->id,
+                    Template    => $tmpl_id,
+                    ( $archiver->entry_based && $entry )
+                    ? ( Entry => $entry->id )
+                    : (),
+                    StartDate => $start,
+                    ( $archiver->category_based && $category )
+                    ? ( Category => $category->id )
+                    : (),
+                    ( $archiver->author_based )
+                    ? ( Author => $author->id )
+                    : (),
+                }
+              )
+              || die "Couldn't create FileInfo because "
+              . MT::FileInfo->errstr();
         }
     }
 
     # If you rebuild when you've just switched to dynamic pages,
     # we move the file that might be there so that the custom
     # 404 will be triggered.
-    if ($tmpl->build_dynamic) {
-        rename($finfo->file_path, # is this just $file ?
-               $finfo->file_path . '.static');
+    if ( $tmpl->build_dynamic ) {
+        rename(
+            $finfo->file_path,    # is this just $file ?
+            $finfo->file_path . '.static'
+        );
 
         ## If the FileInfo is set to static, flip it to virtual.
-        if (!$finfo->virtual) {
+        if ( !$finfo->virtual ) {
             $finfo->virtual(1);
             $finfo->save();
         }
     }
 
-    return 1 if ($tmpl->build_dynamic);
-    return 1 if ($entry && $entry->status != MT::Entry::RELEASE());
+    return 1 if ( $tmpl->build_dynamic );
+    return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
 
-    if (!$tmpl->build_dynamic) {
-        if ($build_static &&
-                MT->run_callbacks('build_file_filter',
-                                  Context => $ctx, context => $ctx,
-                                  ArchiveType => $at, archive_type => $at,
-                                  TemplateMap => $map, template_map => $map,
-                                  Blog => $blog, blog => $blog,
-                                  Entry => $entry, entry => $entry,
-                                  FileInfo => $finfo, file_info => $finfo,
-                                  File => $file, file => $file,
-                                  Template => $tmpl, template => $tmpl,
-                                  PeriodStart => $start, period_start => $start,
-                                  Category => $category, category => $category,
-                                  ))
+    if ( !$tmpl->build_dynamic ) {
+        if (
+            $build_static
+            && MT->run_callbacks(
+                'build_file_filter',
+                Context      => $ctx,
+                context      => $ctx,
+                ArchiveType  => $at,
+                archive_type => $at,
+                TemplateMap  => $map,
+                template_map => $map,
+                Blog         => $blog,
+                blog         => $blog,
+                Entry        => $entry,
+                entry        => $entry,
+                FileInfo     => $finfo,
+                file_info    => $finfo,
+                File         => $file,
+                file         => $file,
+                Template     => $tmpl,
+                template     => $tmpl,
+                PeriodStart  => $start,
+                period_start => $start,
+                Category     => $category,
+                category     => $category,
+            )
+          )
         {
-            if ($archiver->archive_group_entries) {
+            if ( $archiver->archive_group_entries ) {
+
+                # TBD: Would it help to use MT::Promise here?
                 my $entries = $archiver->archive_group_entries->($ctx);
-                $ctx->stash('entries', $entries);
+                $ctx->stash( 'entries', $entries );
             }
 
             my $html = undef;
-            $ctx->stash('blog', $blog);
-            $ctx->stash('entry', $entry) if $entry;
-            $html = $tmpl->build($ctx, $cond);
-            defined($html) or
-                return $mt->error(($category ?
-                                   MT->translate("An error occurred publishing category '[_1]': [_2]",
-                                                 $category->id, $tmpl->errstr) :
-                                   $entry ?
-                                   MT->translate("An error occurred publishing entry '[_1]': [_2]",
-                                                 $entry->title, $tmpl->errstr):
-                                   MT->translate("An error occurred publishing date-based archive '[_1]': [_2]", $at . $start, $tmpl->errstr)));
+            $ctx->stash( 'blog', $blog );
+            $ctx->stash( 'entry', $entry ) if $entry;
+            $html = $tmpl->build( $ctx, $cond );
+            defined($html)
+              or return $mt->error(
+                (
+                    $category
+                    ? MT->translate(
+                        "An error occurred publishing [_1] '[_2]': [_3]",
+                        lowercase( $category->class_label ), $category->id, $tmpl->errstr )
+                    : $entry
+                    ? MT->translate(
+                        "An error occurred publishing [_1] '[_2]': [_3]",
+                        lowercase($entry->class_label), $entry->title, $tmpl->errstr )
+                    : MT->translate(
+"An error occurred publishing date-based archive '[_1]': [_2]",
+                        $at . $start,
+                        $tmpl->errstr
+                    )
+                )
+              );
             my $orig_html = $html;
-            MT->run_callbacks('build_page',
-                      Context => $ctx, context => $ctx,
-                      ArchiveType => $at, archive_type => $at,
-                      TemplateMap => $map, template_map => $map,
-                      Blog => $blog, blog => $blog,
-                      Entry => $entry, entry => $entry,
-                      FileInfo => $finfo, file_info => $finfo,
-                      PeriodStart => $start, period_start => $start,
-                      Category => $category, category => $category,
-                      RawContent => \$orig_html, raw_content => \$orig_html,
-                      Content => \$html, content => \$html,
-                      BuildResult => \$orig_html, build_result => \$orig_html,
-                      Template => $tmpl, template => $tmpl,
-                      File => $file, file => $file);
+            MT->run_callbacks(
+                'build_page',
+                Context      => $ctx,
+                context      => $ctx,
+                ArchiveType  => $at,
+                archive_type => $at,
+                TemplateMap  => $map,
+                template_map => $map,
+                Blog         => $blog,
+                blog         => $blog,
+                Entry        => $entry,
+                entry        => $entry,
+                FileInfo     => $finfo,
+                file_info    => $finfo,
+                PeriodStart  => $start,
+                period_start => $start,
+                Category     => $category,
+                category     => $category,
+                RawContent   => \$orig_html,
+                raw_content  => \$orig_html,
+                Content      => \$html,
+                content      => \$html,
+                BuildResult  => \$orig_html,
+                build_result => \$orig_html,
+                Template     => $tmpl,
+                template     => $tmpl,
+                File         => $file,
+                file         => $file
+            );
             ## First check whether the content is actually
             ## changed. If not, we won't update the published
-            ## file, so as not to modify the mtime.  
-            return 1 unless $fmgr->content_is_updated($file, \$html);
-            
+            ## file, so as not to modify the mtime.
+            return 1 unless $fmgr->content_is_updated( $file, \$html );
+
             ## Determine if we need to build directory structure,
             ## and build it if we do. DirUmask determines
             ## directory permissions.
             require File::Spec;
             my $path = dirname($file);
-            $path =~ s!/$!! unless $path eq '/';  ## OS X doesn't like / at the end in mkdir().
-            unless ($fmgr->exists($path)) {
+            $path =~ s!/$!!
+              unless $path eq '/'; ## OS X doesn't like / at the end in mkdir().
+            unless ( $fmgr->exists($path) ) {
                 $fmgr->mkpath($path)
-                    or return $mt->trans_error("Error making path '[_1]': [_2]",
-                                               $path, $fmgr->errstr);
+                  or return $mt->trans_error( "Error making path '[_1]': [_2]",
+                    $path, $fmgr->errstr );
             }
-            
+
             ## By default we write all data to temp files, then rename
             ## the temp files to the real files (an atomic
             ## operation). Some users don't like this (requires too
@@ -1021,28 +1519,44 @@ sub rebuild_file {
             ## option to turn it off (NoTempFiles).
             my $use_temp_files = !$mt->{NoTempFiles};
             my $temp_file = $use_temp_files ? "$file.new" : $file;
-            defined($fmgr->put_data($html, $temp_file))
-                or return $mt->trans_error("Writing to '[_1]' failed: [_2]",
-                                           $temp_file, $fmgr->errstr);
+            defined( $fmgr->put_data( $html, $temp_file ) )
+              or return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
+                $temp_file, $fmgr->errstr );
             if ($use_temp_files) {
-                $fmgr->rename($temp_file, $file)
-                    or return $mt->trans_error("Renaming tempfile '[_1]' failed: [_2]",
-                                               $temp_file, $fmgr->errstr);
+                $fmgr->rename( $temp_file, $file )
+                  or return $mt->trans_error(
+                    "Renaming tempfile '[_1]' failed: [_2]",
+                    $temp_file, $fmgr->errstr );
             }
-            MT->run_callbacks('build_file',
-                              Context => $ctx, context => $ctx,
-                              ArchiveType => $at, archive_type => $at,
-                              TemplateMap => $map, template_map => $map,
-                              FileInfo => $finfo, file_info => $finfo,
-                              Blog => $blog, blog => $blog,
-                              Entry => $entry, entry => $entry,
-                              PeriodStart => $start, period_start => $start,
-                              RawContent => \$orig_html, raw_content => \$orig_html,
-                              Content => \$html, content => \$html,
-                              BuildResult => \$orig_html, build_result => \$orig_html,
-                              Template => $tmpl, template => $tmpl,
-                              Category => $category, category => $category,
-                              File => $file, file => $file);
+            MT->run_callbacks(
+                'build_file',
+                Context      => $ctx,
+                context      => $ctx,
+                ArchiveType  => $at,
+                archive_type => $at,
+                TemplateMap  => $map,
+                template_map => $map,
+                FileInfo     => $finfo,
+                file_info    => $finfo,
+                Blog         => $blog,
+                blog         => $blog,
+                Entry        => $entry,
+                entry        => $entry,
+                PeriodStart  => $start,
+                period_start => $start,
+                RawContent   => \$orig_html,
+                raw_content  => \$orig_html,
+                Content      => \$html,
+                content      => \$html,
+                BuildResult  => \$orig_html,
+                build_result => \$orig_html,
+                Template     => $tmpl,
+                template     => $tmpl,
+                Category     => $category,
+                category     => $category,
+                File         => $file,
+                file         => $file
+            );
 
         }
     }
@@ -1050,37 +1564,47 @@ sub rebuild_file {
 }
 
 sub rebuild_indexes {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
     require MT::Template;
     require MT::Template::Context;
     require MT::Entry;
     my $blog;
-    unless ($blog = $param{Blog}) {
+    unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id) or
-            return $mt->error(MT->translate("Load of blog '[_1]' failed: [_2]",
-                $blog_id, MT::Blog->errstr));
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+          );
     }
     my $tmpl = $param{Template};
     unless ($blog) {
-        $blog = MT::Blog->load($tmpl->blog_id);
+        $blog = MT::Blog->load( $tmpl->blog_id );
     }
     return 1 if $blog->is_dynamic;
     my $iter;
     if ($tmpl) {
         my $i = 0;
         $iter = sub { $i++ < 1 ? $tmpl : undef };
-    } else {
-        $iter = MT::Template->load_iter({ type => 'index',
-            blog_id => $blog->id });
+    }
+    else {
+        $iter = MT::Template->load_iter(
+            {
+                type    => 'index',
+                blog_id => $blog->id
+            }
+        );
     }
     local *FH;
     my $site_root = $blog->site_path;
-    return $mt->error(MT->translate("You did not set your blog publishing path"))
-        unless $site_root;
+    return $mt->error(
+        MT->translate("You did not set your blog publishing path") )
+      unless $site_root;
     my $fmgr = $blog->file_mgr;
-    while (my $tmpl = $iter->()) {
+    while ( my $tmpl = $iter->() ) {
         ## Skip index templates that the user has designated not to be
         ## rebuilt automatically. We need to do the defined-ness check
         ## because we added the flag in 2.01, and for templates saved
@@ -1089,115 +1613,171 @@ sub rebuild_indexes {
         ## was the previous behavior.
         ## Note that dynamic templates do need to be "rebuilt"--the
         ## FileInfo table needs to be maintained.
-        if (!$tmpl->build_dynamic && !$param{Force}) {
-            next if (defined $tmpl->rebuild_me && !$tmpl->rebuild_me);
+        if ( !$tmpl->build_dynamic && !$param{Force} ) {
+            next if ( defined $tmpl->rebuild_me && !$tmpl->rebuild_me );
         }
         my $file = $tmpl->outfile;
         $file = '' unless defined $file;
-        if ($tmpl->build_dynamic && ($file eq '')) {
+        if ( $tmpl->build_dynamic && ( $file eq '' ) ) {
             next;
         }
-        return $mt->error(MT->translate(
-            "Template '[_1]' does not have an Output File.", $tmpl->name))
-            unless $file ne '';
-        my $url = join('/', $blog->site_url, $file);
-        unless (File::Spec->file_name_is_absolute($file)) {
-            $file = File::Spec->catfile($site_root, $file);
+        return $mt->error(
+            MT->translate(
+                "Template '[_1]' does not have an Output File.",
+                $tmpl->name
+            )
+        ) unless $file ne '';
+        my $url = join( '/', $blog->site_url, $file );
+        unless ( File::Spec->file_name_is_absolute($file) ) {
+            $file = File::Spec->catfile( $site_root, $file );
         }
+
         # Everything from here out is identical with rebuild_file
-        my ($rel_url) = ($url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)|);
+        my ($rel_url) = ( $url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
         $rel_url =~ s|//+|/|g;
         ## Untaint. We have to assume that we can trust the user's setting of
         ## the site_path and the template outfile.
         ($file) = $file =~ /(.+)/s;
         my $finfo;
         require MT::FileInfo;
-        my @finfos = MT::FileInfo->load({blog_id => $tmpl->blog_id,
-                                         template_id => $tmpl->id});
-        if ((scalar @finfos == 1) && ($finfos[0]->file_path eq $file) && (($finfos[0]->url || '') eq $rel_url)) {
+        my @finfos = MT::FileInfo->load(
+            {
+                blog_id     => $tmpl->blog_id,
+                template_id => $tmpl->id
+            }
+        );
+        if (   ( scalar @finfos == 1 )
+            && ( $finfos[0]->file_path eq $file )
+            && ( ( $finfos[0]->url || '' ) eq $rel_url ) )
+        {
             $finfo = $finfos[0];
-        } else {
-            foreach ( @finfos ) { $_->remove(); }
-            $finfo = MT::FileInfo->set_info_for_url($rel_url, $file, 'index',
-                                                    { Blog => $tmpl->blog_id,
-                                                      Template => $tmpl->id,
-                                                  })
-                || die "Couldn't create FileInfo because " . 
-                       MT::FileInfo->errstr;
         }
-        if ($tmpl->build_dynamic) {
-            rename($file, $file . ".static");
+        else {
+            foreach (@finfos) { $_->remove(); }
+            $finfo = MT::FileInfo->set_info_for_url(
+                $rel_url, $file, 'index',
+                {
+                    Blog     => $tmpl->blog_id,
+                    Template => $tmpl->id,
+                }
+              )
+              || die "Couldn't create FileInfo because " . MT::FileInfo->errstr;
+        }
+        if ( $tmpl->build_dynamic ) {
+            rename( $file, $file . ".static" );
 
             ## If the FileInfo is set to static, flip it to virtual.
-            if (!$finfo->virtual) {
+            if ( !$finfo->virtual ) {
                 $finfo->virtual(1);
                 $finfo->save();
             }
         }
 
-        next if ($tmpl->build_dynamic);
+        next if ( $tmpl->build_dynamic );
 
         ## We're not building dynamically, so if the FileInfo is currently
         ## set as dynamic (virtual), change it to static.
-        if ($finfo && $finfo->virtual) {
+        if ( $finfo && $finfo->virtual ) {
             $finfo->virtual(0);
             $finfo->save();
         }
 
         my $ctx = MT::Template::Context->new;
-        next unless (MT->run_callbacks('BuildFileFilter',
-                                           Context => $ctx,
-                                           ArchiveType => 'index',
-                                           Blog => $blog, FileInfo => $finfo,
-                                           Template => $tmpl,
-                                           File => $file));
-        $ctx->stash('blog', $blog);
+        next
+          unless (
+            MT->run_callbacks(
+                'build_file_filter',
+                Context      => $ctx,
+                context      => $ctx,
+                ArchiveType  => 'index',
+                archive_type => 'index',
+                Blog         => $blog,
+                blog         => $blog,
+                FileInfo     => $finfo,
+                file_info    => $finfo,
+                Template     => $tmpl,
+                template     => $tmpl,
+                File         => $file,
+                file         => $file
+            )
+          );
+        $ctx->stash( 'blog', $blog );
         my $html = $tmpl->build($ctx);
         return $mt->error( $tmpl->errstr ) unless defined $html;
-        
+
         my $orig_html = $html;
-        MT->run_callbacks('BuildPage', Context => $ctx,
-                Blog => $blog, FileInfo => $finfo,
-                ArchiveType => 'index',
-                RawContent => \$orig_html, Content => \$html,
-                BuildResult => \$orig_html,
-                Template => $tmpl,
-                File => $file);
+        MT->run_callbacks(
+            'build_page',
+            Context      => $ctx,
+            context      => $ctx,
+            Blog         => $blog,
+            blog         => $blog,
+            FileInfo     => $finfo,
+            file_info    => $finfo,
+            ArchiveType  => 'index',
+            archive_type => 'index',
+            RawContent   => \$orig_html,
+            raw_content  => \$orig_html,
+            Content      => \$html,
+            content      => \$html,
+            BuildResult  => \$orig_html,
+            build_result => \$orig_html,
+            Template     => $tmpl,
+            template     => $tmpl,
+            File         => $file,
+            file         => $file
+        );
 
         ## First check whether the content is actually changed. If not,
         ## we won't update the published file, so as not to modify the mtime.
-        next unless $fmgr->content_is_updated($file, \$html);
-        
+        next unless $fmgr->content_is_updated( $file, \$html );
+
         ## Determine if we need to build directory structure,
         ## and build it if we do. DirUmask determines
         ## directory permissions.
         require File::Spec;
         my $path = dirname($file);
-        $path =~ s!/$!! unless $path eq '/';  ## OS X doesn't like / at the end in mkdir().
-        unless ($fmgr->exists($path)) {
+        $path =~ s!/$!!
+          unless $path eq '/';    ## OS X doesn't like / at the end in mkdir().
+        unless ( $fmgr->exists($path) ) {
             $fmgr->mkpath($path)
-                or return $mt->trans_error("Error making path '[_1]': [_2]",
-                                           $path, $fmgr->errstr);
+              or return $mt->trans_error( "Error making path '[_1]': [_2]",
+                $path, $fmgr->errstr );
         }
 
         ## Update the published file.
         my $use_temp_files = !$mt->{NoTempFiles};
         my $temp_file = $use_temp_files ? "$file.new" : $file;
-        defined($fmgr->put_data($html, $temp_file))
-            or return $mt->trans_error("Writing to '[_1]' failed: [_2]",
-                                       $temp_file, $fmgr->errstr);
+        defined( $fmgr->put_data( $html, $temp_file ) )
+          or return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
+            $temp_file, $fmgr->errstr );
         if ($use_temp_files) {
-            $fmgr->rename($temp_file, $file)
-                or return $mt->trans_error("Renaming tempfile '[_1]' failed: [_2]",
-                                           $temp_file, $fmgr->errstr);
+            $fmgr->rename( $temp_file, $file )
+              or
+              return $mt->trans_error( "Renaming tempfile '[_1]' failed: [_2]",
+                $temp_file, $fmgr->errstr );
         }
-        MT->run_callbacks('BuildFile', Context => $ctx,
-                          ArchiveType => 'index',
-                          FileInfo => $finfo, Blog => $blog,
-                          RawContent => \$orig_html, Content => \$html,
-                          BuildResult => \$orig_html,
-                          Template => $tmpl,
-                          File => $file);
+        MT->run_callbacks(
+            'build_file',
+            Context      => $ctx,
+            context      => $ctx,
+            ArchiveType  => 'index',
+            archive_type => 'index',
+            FileInfo     => $finfo,
+            file_info    => $finfo,
+            Blog         => $blog,
+            blog         => $blog,
+            RawContent   => \$orig_html,
+            raw_content  => \$orig_html,
+            Content      => \$html,
+            content      => \$html,
+            BuildResult  => \$orig_html,
+            build_result => \$orig_html,
+            Template     => $tmpl,
+            template     => $tmpl,
+            File         => $file,
+            file         => $file
+        );
     }
     1;
 }
@@ -1213,68 +1793,75 @@ sub rebuild_from_fileinfo {
     require MT::TemplateMap;
     require MT::Template::Context;
 
-    my $at = $fi->archive_type or
-        return $pub->error(MT->translate("Parameter '[_1]' is required",
-            'ArchiveType'));
+    my $at = $fi->archive_type
+      or return $pub->error(
+        MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
 
     # callback for custom archive types
-    return unless MT->run_callbacks( 'build_archive_filter',
+    return
+      unless MT->run_callbacks(
+        'build_archive_filter',
         archive_type => $at,
-        file_info => $fi );
+        file_info    => $fi
+      );
 
-    if ($at ne 'index') {
+    if ( $at ne 'index' ) {
         return 1 if $at eq 'None';
-        my $blog = MT::Blog->load($fi->blog_id)
-            if $fi->blog_id;
-        my $entry = MT::Entry->load($fi->entry_id) or
-            return $pub->error(MT->translate("Parameter '[_1]' is required",
-                    'Entry')) if $fi->entry_id;
-        if ($fi->startdate) {
+        my $blog = MT::Blog->load( $fi->blog_id )
+          if $fi->blog_id;
+        my $entry = MT::Entry->load( $fi->entry_id )
+          or return $pub->error(
+            MT->translate( "Parameter '[_1]' is required", 'Entry' ) )
+          if $fi->entry_id;
+        if ( $fi->startdate ) {
             my $archiver = $pub->archiver($at);
-            my ($start, $end);
+            my ( $start, $end );
 
-            if (my $range = $archiver->date_range) {
-                ($start, $end) = $range ? $range->($fi->startdate) : ();
-                $entry = MT::Entry->load({authored_on => [$start, $end]},
-                    { range_incl => { authored_on => 1 }, limit => 1}) or
-                    return $pub->error(MT->translate("Parameter '[_1]' is required",
-                        'Entry'));
+            if ( my $range = $archiver->date_range ) {
+                ( $start, $end ) = $range ? $range->( $fi->startdate ) : ();
+                $entry = MT::Entry->load( { authored_on => [ $start, $end ] },
+                    { range_incl => { authored_on => 1 }, limit => 1 } )
+                  or return $pub->error(
+                    MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
             }
         }
-        my $cat = MT::Category->load($fi->category_id)
-            if $fi->category_id;
+        my $cat = MT::Category->load( $fi->category_id )
+          if $fi->category_id;
 
         ## Load the template-archive-type map entries for this blog and
         ## archive type. We do this before we load the list of entries, because
         ## we will run through the files and check if we even need to rebuild
         ## anything. If there is nothing to rebuild at all for this entry,
         ## we save some time by not loading the list of entries.
-        my $map = MT::TemplateMap->load($fi->templatemap_id);
-        my $file = $pub->archive_file_for($entry, $blog, $at, $cat, $map);
-        if (!defined($file)) {
-            return $pub->error($blog->errstr());
+        my $map = MT::TemplateMap->load( $fi->templatemap_id );
+        my $file = $pub->archive_file_for( $entry, $blog, $at, $cat, $map );
+        if ( !defined($file) ) {
+            return $pub->error( $blog->errstr() );
         }
         $map->{__saved_output_file} = $file;
 
         my $ctx = MT::Template::Context->new;
         $ctx->{current_archive_type} = $at;
+
         # $ctx->{current_timestamp} = $start if $start;
         # $ctx->{current_timestamp_end} = $start if $end;
 
-        my $arch_root = ($at eq 'Page') ? $blog->site_path : $blog->archive_path;
-        return $pub->error(MT->translate("You did not set your blog publishing path"))
-            unless $arch_root;
+        my $arch_root =
+          ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
+        return $pub->error(
+            MT->translate("You did not set your blog publishing path") )
+          unless $arch_root;
 
         my %cond;
-        $pub->rebuild_file($blog, $arch_root, $map, $at, $ctx, \%cond,
-                          1,
-                          FileInfo => $fi,
-                          ) or return;
-    } else {
+        $pub->rebuild_file( $blog, $arch_root, $map, $at, $ctx, \%cond, 1,
+            FileInfo => $fi, )
+          or return;
+    }
+    else {
         $pub->rebuild_indexes(
-            BlogID => $fi->blog_id,
-            Template => MT::Template->load($fi->template_id),
-            Force => 1,
+            BlogID   => $fi->blog_id,
+            Template => MT::Template->load( $fi->template_id ),
+            Force    => 1,
         ) or return;
     }
     1;
@@ -1282,7 +1869,7 @@ sub rebuild_from_fileinfo {
 
 sub trans_error {
     my $this = shift;
-    return $this->error(MT->translate(@_));
+    return $this->error( MT->translate(@_) );
 }
 
 sub publish_future_posts {
@@ -1291,18 +1878,24 @@ sub publish_future_posts {
     require MT::Blog;
     require MT::Entry;
     require MT::Util;
-    my $mt = MT->instance;
+    my $mt            = MT->instance;
     my $total_changed = 0;
-    for my $blog (MT::Blog->load) {
-        my @ts = MT::Util::offset_time_list(time, $blog);
-        my $now = sprintf "%04d%02d%02d%02d%02d%02d",
-                          $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
-        my $iter = MT::Entry->load_iter({blog_id => $blog->id,
-                                         status => MT::Entry::FUTURE()},
-                                        {'sort' => 'authored_on',
-                                         direction => 'descend'});
+    for my $blog ( MT::Blog->load ) {
+        my @ts = MT::Util::offset_time_list( time, $blog );
+        my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900, $ts[4] + 1,
+          @ts[ 3, 2, 1, 0 ];
+        my $iter = MT::Entry->load_iter(
+            {
+                blog_id => $blog->id,
+                status  => MT::Entry::FUTURE()
+            },
+            {
+                'sort'    => 'authored_on',
+                direction => 'descend'
+            }
+        );
         my @queue;
-        while (my $entry = $iter->()) {
+        while ( my $entry = $iter->() ) {
             push @queue, $entry->id if $entry->authored_on le $now;
         }
 
@@ -1312,16 +1905,16 @@ sub publish_future_posts {
         my %ping_queue;
         foreach my $entry_id (@queue) {
             my $entry = MT::Entry->load($entry_id);
-            $entry->status(MT::Entry::RELEASE());
+            $entry->status( MT::Entry::RELEASE() );
             $entry->save
-                or die $entry->errstr;
+              or die $entry->errstr;
 
-            $rebuild_queue{$entry->id} = $entry;
-            $ping_queue{$entry->id} = 1;
-            my $n = $entry->next(1); 
-            $rebuild_queue{$n->id} = $n if $n;
+            $rebuild_queue{ $entry->id } = $entry;
+            $ping_queue{ $entry->id }    = 1;
+            my $n = $entry->next(1);
+            $rebuild_queue{ $n->id } = $n if $n;
             my $p = $entry->previous(1);
-            $rebuild_queue{$p->id} = $p if $p;
+            $rebuild_queue{ $p->id } = $p if $p;
             $changed++;
             $total_changed++;
         }
@@ -1329,34 +1922,41 @@ sub publish_future_posts {
             my %rebuilt_okay;
             my $rebuilt;
             eval {
-                foreach my $id (keys %rebuild_queue) {
+                foreach my $id ( keys %rebuild_queue )
+                {
                     my $entry = $rebuild_queue{$id};
                     $mt->rebuild_entry( Entry => $entry, Blog => $blog )
-                        or die $mt->errstr;
+                      or die $mt->errstr;
                     $rebuilt_okay{$id} = 1;
-                    if ($ping_queue{$id}) {
+                    if ( $ping_queue{$id} ) {
                         $mt->ping_and_save( Entry => $entry, Blog => $blog );
                     }
                     $rebuilt++;
                 }
                 $mt->rebuild_indexes( Blog => $blog )
-                    or die $mt->errstr;
+                  or die $mt->errstr;
             };
-            if (my $err = $@) {
+            if ( my $err = $@ ) {
+
                 # a fatal error occured while processing the rebuild
                 # step. LOG the error and revert the entry/entries:
                 require MT::Log;
-                $mt->log({
-                    message => $mt->translate("An error occurred while publishing scheduled entries: [_1]", $err),
-                    class => "system",
-                    blog_id => $blog->id,
-                    level => MT::Log::ERROR()
-                });
+                $mt->log(
+                    {
+                        message => $mt->translate(
+"An error occurred while publishing scheduled entries: [_1]",
+                            $err
+                        ),
+                        class   => "system",
+                        blog_id => $blog->id,
+                        level   => MT::Log::ERROR()
+                    }
+                );
                 foreach my $id (@queue) {
                     next if exists $rebuilt_okay{$id};
                     my $e = $rebuild_queue{$id};
                     next unless $e;
-                    $e->status(MT::Entry::FUTURE());
+                    $e->status( MT::Entry::FUTURE() );
                     $e->save or die $e->errstr;
                 }
             }
@@ -1366,41 +1966,45 @@ sub publish_future_posts {
 }
 
 sub remove_entry_archive_file {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
 
     my $entry = $param{Entry};
-    my $at = $param{ArchiveType} || 'Individual';
-    my $cat = $param{Category};
-    my $auth = $param{Author};
+    my $at    = $param{ArchiveType} || 'Individual';
+    my $cat   = $param{Category};
+    my $auth  = $param{Author};
 
     require MT::TemplateMap;
     my $blog = $param{Blog};
     unless ($blog) {
         if ($entry) {
             $blog = $entry->blog;
-        } elsif ($cat) {
+        }
+        elsif ($cat) {
             require MT::Blog;
-            $blog = MT::Blog->load($cat->blog_id);
+            $blog = MT::Blog->load( $cat->blog_id );
         }
     }
-    my @map = MT::TemplateMap->load({
-        archive_type => $at,
-        blog_id => $blog->id,
-        $param{TemplateID} ? (template_id => $param{TemplateID}) : (),
-    });
+    my @map = MT::TemplateMap->load(
+        {
+            archive_type => $at,
+            blog_id      => $blog->id,
+            $param{TemplateID} ? ( template_id => $param{TemplateID} ) : (),
+        }
+    );
     return 1 unless @map;
 
     my $fmgr = $blog->file_mgr;
-    my $arch_root = ($at eq 'Page') ? $blog->site_path : $blog->archive_path;
+    my $arch_root = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
 
     require File::Spec;
     for my $map (@map) {
-        my $file = $mt->archive_file_for($entry, $blog, $at, $cat, $map, $auth);
-        $file = File::Spec->catfile($arch_root, $file);
-        if (!defined($file)) {
-            die MT->translate($blog->errstr());
-            return $mt->error(MT->translate($blog->errstr()));
+        my $file =
+          $mt->archive_file_for( $entry, $blog, $at, $cat, $map, undef, $auth );
+        $file = File::Spec->catfile( $arch_root, $file );
+        if ( !defined($file) ) {
+            die MT->translate( $blog->errstr() );
+            return $mt->error( MT->translate( $blog->errstr() ) );
         }
         $fmgr->delete($file);
     }
@@ -1417,98 +2021,197 @@ sub archive_file_for {
 
     init_archive_types() unless %ArchiveTypes;
 
-    my($entry, $blog, $at, $cat, $map, $timestamp, $author) = @_;
+    my ( $entry, $blog, $at, $cat, $map, $timestamp, $author ) = @_;
     return if $at eq 'None';
     my $archiver = $ArchiveTypes{$at};
     return '' unless $archiver;
 
     my $file;
-    if ($blog->is_dynamic) {
+    if ( $blog->is_dynamic ) {
         require MT::TemplateMap;
         $map = MT::TemplateMap->new;
-        $map->file_template($ArchiveTypes{$at}->dynamic_template);
+        $map->file_template( $ArchiveTypes{$at}->dynamic_template );
     }
     unless ($map) {
         my $cache = MT::Request->instance->cache('maps');
         unless ($cache) {
-            MT::Request->instance->cache('maps', $cache = {});
+            MT::Request->instance->cache( 'maps', $cache = {} );
         }
-        unless ($map = $cache->{$blog->id . $at}) {
+        unless ( $map = $cache->{ $blog->id . $at } ) {
             require MT::TemplateMap;
-            $map = MT::TemplateMap->load({ blog_id => $blog->id,
-                                           archive_type => $at,
-                                           is_preferred => 1 });
-            $cache->{$blog->id . $at} = $map if $map;
+            $map = MT::TemplateMap->load(
+                {
+                    blog_id      => $blog->id,
+                    archive_type => $at,
+                    is_preferred => 1
+                }
+            );
+            $cache->{ $blog->id . $at } = $map if $map;
         }
     }
     my $file_tmpl = $map->file_template if $map;
     unless ($file_tmpl) {
-        if (my $tmpls = $archiver->default_archive_templates) {
+        if ( my $tmpls = $archiver->default_archive_templates ) {
             my ($default) = grep { $_->{Default} } @$tmpls;
             $file_tmpl = $default->{Template} if $default;
         }
     }
     $file_tmpl ||= '';
-    my($ctx);
-    if ($file_tmpl =~ m/\%[_-]?[A-Za-z]/) {
-        if ($file_tmpl =~ m/<\$?MT/) {
-            $file_tmpl =~ s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '">'!gie;
-        } else {
+    my ($ctx);
+    if ( $file_tmpl =~ m/\%[_-]?[A-Za-z]/ ) {
+        if ( $file_tmpl =~ m/<\$?MT/ ) {
+            $file_tmpl =~
+s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '">'!gie;
+        }
+        else {
             $file_tmpl = qq{<MTFileTemplate format="$file_tmpl">};
         }
     }
     if ($file_tmpl) {
         require MT::Template::Context;
         $ctx = MT::Template::Context->new;
-        $ctx->stash('blog', $blog);
+        $ctx->stash( 'blog', $blog );
     }
-    local $ctx->{__stash}{category} = $cat if $cat;
+    local $ctx->{__stash}{category}         = $cat if $cat;
     local $ctx->{__stash}{archive_category} = $cat if $cat;
     $timestamp = $entry->authored_on() if $entry;
     local $ctx->{__stash}{entry} = $entry if $entry;
-    local $ctx->{__stash}{author} = $author ? $author : $entry ? $entry->author : undef;
+    local $ctx->{__stash}{author} =
+      $author ? $author : $entry ? $entry->author : undef;
 
     my %blog_at = map { $_ => 1 } split /,/, $blog->archive_type;
     return '' unless $blog_at{$at};
 
-    $file = $archiver->archive_file->($ctx, Timestamp => $timestamp, Template => $file_tmpl);
-    if ($file_tmpl && !$file) {
-        local $ctx->{archive_type} = $at; 
-        require MT::Builder; 
-        my $build = MT::Builder->new; 
-        my $tokens = $build->compile($ctx, $file_tmpl)  
-            or return $blog->error($build->errstr()); 
-        defined($file = $build->build($ctx, $tokens))  
-            or return $blog->error($build->errstr()); 
-    } else { 
-        my $ext = $blog->file_extension; 
-        $file .= '.' . $ext if $ext; 
-    } 
-    $file; 
+    $file = $archiver->archive_file->(
+        $ctx,
+        Timestamp => $timestamp,
+        Template  => $file_tmpl
+    );
+    if ( $file_tmpl && !$file ) {
+        local $ctx->{archive_type} = $at;
+        require MT::Builder;
+        my $build = MT::Builder->new;
+        my $tokens = $build->compile( $ctx, $file_tmpl )
+          or return $blog->error( $build->errstr() );
+        defined( $file = $build->build( $ctx, $tokens ) )
+          or return $blog->error( $build->errstr() );
+    }
+    else {
+        my $ext = $blog->file_extension;
+        $file .= '.' . $ext if $ext;
+    }
+    $file;
 }
 
 sub get_entry {
     my $mt = shift;
-    my($ts, $blog_id, $at, $order) = @_;
+    my ( $ts, $blog_id, $at, $order ) = @_;
     my $range = $mt->archiver($at)->date_range;
-    my($start, $end) = $range->($ts);
-    if ($order eq 'previous') {
+    my ( $start, $end ) = $range->($ts);
+    if ( $order eq 'previous' ) {
         $order = 'descend';
-        $ts = $start;
-    } else {
+        $ts    = $start;
+    }
+    else {
         $order = 'ascend';
-        $ts = $end;
+        $ts    = $end;
     }
     require MT::Entry;
     my $entry = MT::Entry->load(
-        { blog_id => $blog_id,
-          status => MT::Entry::RELEASE() },
-        { limit => 1,
-          'sort' => 'authored_on',
-          direction => $order,
-          start_val => $ts });
+        {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE()
+        },
+        {
+            limit     => 1,
+            'sort'    => 'authored_on',
+            direction => $order,
+            start_val => $ts
+        }
+    );
     $entry;
 }
+
+# Adds an element to the rebuild queue when the plugin is enabled.
+sub queue_build_file_filter {
+    my $mt = shift;
+    my ( $cb, %args ) = @_;
+
+    my $blog = $args{blog};
+    return 1 unless $blog && $blog->publish_queue;
+
+    my $fi = $args{file_info};
+    return 1 if $fi->{from_queue};
+
+    require MT::TheSchwartz;
+    require TheSchwartz::Job;
+    my $job = TheSchwartz::Job->new();
+    $job->funcname('MT::Worker::Publish');
+    $job->uniqkey( $fi->id );
+    $job->coalesce( $$ . ':' . ( time - ( time % 100 ) ) );
+    MT::TheSchwartz->insert($job);
+
+    # my $at = $fi->archive_type || '';
+    #
+    # Default priority assignment....
+    # if ($at eq 'Individual') {
+    #     require MT::TemplateMap;
+    #     my $map = MT::TemplateMap->load($fi->templatemap_id);
+    #     # Individual archive pages that are the 'permalink' pages should
+    #     # have highest build priority.
+    #     if ($map && $map->is_preferred) {
+    #         $rqf->priority(1);
+    #     } else {
+    #         $rqf->priority(9);
+    #     }
+    # } elsif ($at eq 'index') {
+    #     # Index pages are second in priority, if they are named 'index'
+    #     # or 'default'
+    #     if ($fi->file_path =~ m!/(index|default|atom|feed)!i) {
+    #         $rqf->priority(3);
+    #     } else {
+    #         $rqf->priority(9);
+    #     }
+    # } elsif (($at eq 'Monthly') || ($at eq 'Weekly') || ($at eq 'Daily')) {
+    #     $rqf->priority(5);
+    # } elsif ($at eq 'Category') {
+    #     $rqf->priority(7);
+    # }
+    #
+    # $rqf->save;
+
+    return 0;
+}
+
+# Something was built while the queue itself was disabled; make sure
+# the item is marked for syncing.
+# sub queue_build_file {
+#     my ($cb, %args) = @_;
+#
+#     # preconditions
+#     my $fi = $args{FileInfo} or return $cb->error("Blog is not configured for FileInfo support.");
+#     return unless $plugin->blog_enabled($fi->blog_id);
+#
+#     require RebuildQueue::File;
+#     my $rqf = RebuildQueue::File->load($fi->id);
+#     if (!$rqf) {
+#         $rqf = new RebuildQueue::File;
+#         $rqf->id($fi->id);
+#         $rqf->build_time(time);
+#         $rqf->worker($plugin->blog_worker($fi->blog_id));
+#         $rqf->sync_me(1);
+#         $rqf->save;
+#     } else {
+#         if (!$rqf->rebuild_me) {
+#             if (!$rqf->sync_me) {
+#                 $rqf->sync_me(1);
+#                 $rqf->build_time(time);
+#                 $rqf->worker($plugin->blog_worker($fi->blog_id));
+#                 $rqf->save;
+#             }
+#         }
+#     }
+# }
 
 # ----- ARCHIVING -----
 
@@ -1520,70 +2223,78 @@ sub yearly_archive_label {
 }
 
 sub yearly_archive_file {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
-    my $blog = $ctx->{__stash}{blog};
+    my $blog      = $ctx->{__stash}{blog};
 
     my $file;
     if ($file_tmpl) {
-        ($ctx->{current_timestamp}, $ctx->{current_timestamp_end}) =
-            start_end_month($timestamp, $blog);
-    } else {
-        my $start = start_end_month($timestamp, $blog);
-        my($year, $mon) = unpack 'A4', $start;
-        $file = sprintf("%04d/index", $year, $mon);
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_month( $timestamp, $blog );
+    }
+    else {
+        my $start = start_end_month( $timestamp, $blog );
+        my ( $year, $mon ) = unpack 'A4', $start;
+        $file = sprintf( "%04d/index", $year, $mon );
     }
 
     $file;
 }
 
 sub yearly_archive_title {
-    my ($ctx, $entry_or_ts) = @_;
+    my ( $ctx, $entry_or_ts ) = @_;
     my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
-    my $start = start_end_year($stamp, $ctx->stash('blog'));
+    my $start = start_end_year( $stamp, $ctx->stash('blog') );
     require MT::Template::Context;
-    my $year = MT::Template::Context::_hdlr_date($ctx, { ts => $start, 'format' => "%Y" });
+    my $year =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%Y" } );
     my $lang = lc MT->current_language || 'en_us';
     $lang = 'ja' if lc($lang) eq 'jp';
-    MT::Template::Context::_hdlr_date($ctx, { ts => $start, 'format' => "%Y" });
-    
-    sprintf("%s%s", $year, ($lang eq 'ja' ? '&#24180;' : ''));
+    MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%Y" } );
+
+    sprintf( "%s%s", $year, ( $lang eq 'ja' ? '&#24180;' : '' ) );
 }
 
 sub yearly_date_range { start_end_year(@_) }
 
 sub yearly_group_iter {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     my $iter;
-    my $sort_order = ($args->{sort_order} || '') eq 'ascend' ? 'ascend' : 'descend';
-    my $order = ($sort_order eq 'ascend') ? 'asc' : 'desc';
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
     require MT::Entry;
-    $iter = MT::Entry->count_group_by({blog_id => $blog->id,
-                     status => MT::Entry::RELEASE()},
-               {group=>["extract(year from authored_on)"],
-                $args->{lastn} ? (limit => $args->{lastn}) : (),
-                sort=>"extract(year from authored_on) $order"})
-        or return $ctx->error("Couldn't get yearly archive list");
+    $iter = MT::Entry->count_group_by(
+        {
+            blog_id => $blog->id,
+            status  => MT::Entry::RELEASE()
+        },
+        {
+            group => ["extract(year from authored_on)"],
+            $args->{lastn} ? ( limit => $args->{lastn} ) : (),
+            sort => "extract(year from authored_on) $order"
+        }
+    ) or return $ctx->error("Couldn't get yearly archive list");
 
     return sub {
-        while (my @row = $iter->()) {
-            my $date = sprintf("%04d%02d%02d000000",
-                $row[1], 1, 1);
-            my ($start, $end) = start_end_year($date);
-            return ($row[0], year => $row[1], start => $start, end => $end);
+        while ( my @row = $iter->() ) {
+            my $date = sprintf( "%04d%02d%02d000000", $row[1], 1, 1 );
+            my ( $start, $end ) = start_end_year($date);
+            return ( $row[0], year => $row[1], start => $start, end => $end );
         }
         undef;
     };
 }
 
 sub yearly_group_entries {
-    my ($ctx, %param) = @_;
-    date_based_group_entries($ctx, 'Yearly',
-        %param ? sprintf("%04d%02d%02d000000",
-            $param{year}, 1, 1) : undef);
+    my ( $ctx, %param ) = @_;
+    date_based_group_entries( $ctx, 'Yearly',
+        %param ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 ) : undef );
 }
 
 sub monthly_archive_label {
@@ -1591,66 +2302,82 @@ sub monthly_archive_label {
 }
 
 sub monthly_archive_file {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
-    my $blog = $ctx->{__stash}{blog};
+    my $blog      = $ctx->{__stash}{blog};
 
     my $file;
     if ($file_tmpl) {
-        ($ctx->{current_timestamp}, $ctx->{current_timestamp_end}) =
-            start_end_month($timestamp, $blog);
-    } else {
-        my $start = start_end_month($timestamp, $blog);
-        my($year, $mon) = unpack 'A4A2', $start;
-        $file = sprintf("%04d/%02d/index", $year, $mon);
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_month( $timestamp, $blog );
+    }
+    else {
+        my $start = start_end_month( $timestamp, $blog );
+        my ( $year, $mon ) = unpack 'A4A2', $start;
+        $file = sprintf( "%04d/%02d/index", $year, $mon );
     }
 
     $file;
 }
 
 sub monthly_archive_title {
-    my ($ctx, $entry_or_ts) = @_;
+    my ( $ctx, $entry_or_ts ) = @_;
     my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
-    my $start = start_end_month($stamp, $ctx->stash('blog'));
-    MT::Template::Context::_hdlr_date($ctx, { ts => $start, 'format' => "%B %Y" });
+    my $start = start_end_month( $stamp, $ctx->stash('blog') );
+    MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%B %Y" } );
 }
 
 sub monthly_date_range { start_end_month(@_) }
 
 sub monthly_group_iter {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     my $iter;
-    my $sort_order = ($args->{sort_order} || '') eq 'ascend' ? 'ascend' : 'descend';
-    my $order = ($sort_order eq 'ascend') ? 'asc' : 'desc';
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
     require MT::Entry;
-    $iter = MT::Entry->count_group_by({blog_id => $blog->id,
-                     status => MT::Entry::RELEASE()},
-               {group=>["extract(year from authored_on)",
-                        "extract(month from authored_on)"],
-                $args->{lastn} ? (limit => $args->{lastn}) : (),
-                sort=>"extract(year from authored_on) $order,
-                       extract(month from authored_on) $order"})
-        or return $ctx->error("Couldn't get monthly archive list");
+    $iter = MT::Entry->count_group_by(
+        {
+            blog_id => $blog->id,
+            status  => MT::Entry::RELEASE()
+        },
+        {
+            group => [
+                "extract(year from authored_on)",
+                "extract(month from authored_on)"
+            ],
+            $args->{lastn} ? ( limit => $args->{lastn} ) : (),
+            sort => "extract(year from authored_on) $order,
+                       extract(month from authored_on) $order"
+        }
+    ) or return $ctx->error("Couldn't get monthly archive list");
 
     return sub {
-        while (my @row = $iter->()) {
-            my $date = sprintf("%04d%02d%02d000000",
-                $row[1], $row[2], 1);
-            my ($start, $end) = start_end_month($date);
-            return ($row[0], year => $row[1], month => $row[2], start => $start, end => $end);
+        while ( my @row = $iter->() ) {
+            my $date = sprintf( "%04d%02d%02d000000", $row[1], $row[2], 1 );
+            my ( $start, $end ) = start_end_month($date);
+            return (
+                $row[0],
+                year  => $row[1],
+                month => $row[2],
+                start => $start,
+                end   => $end
+            );
         }
         undef;
     };
 }
 
 sub monthly_group_entries {
-    my ($ctx, %param) = @_;
-    date_based_group_entries($ctx, 'Monthly',
-        %param ? sprintf("%04d%02d%02d000000",
-            $param{year}, $param{month}, 1) : undef);
+    my ( $ctx, %param ) = @_;
+    date_based_group_entries( $ctx, 'Monthly',
+        %param
+        ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+        : undef );
 }
 
 sub category_archive_label {
@@ -1664,64 +2391,79 @@ sub category_archive_title {
 }
 
 sub category_archive_file {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
-    my $blog = $ctx->{__stash}{blog};
-    my $cat = $ctx->{__stash}{category};
-    my $entry = $ctx->{__stash}{entry};
+    my $blog      = $ctx->{__stash}{blog};
+    my $cat       = $ctx->{__stash}{category};
+    my $entry     = $ctx->{__stash}{entry};
     my $file;
 
-    my $this_cat = $cat ? $cat : ($entry ? $entry->category : undef);
+    my $this_cat = $cat ? $cat : ( $entry ? $entry->category : undef );
     if ($file_tmpl) {
-        $ctx->stash('archive_category', $this_cat);
+        $ctx->stash( 'archive_category', $this_cat );
         $ctx->{inside_mt_categories} = 1;
         $ctx->{__stash}{category} = $this_cat;
-    } else {
-        if (!$this_cat) {
+    }
+    else {
+        if ( !$this_cat ) {
             return "";
         }
         my $label = '';
-        $label = dirify($this_cat->label);
-        if ($label !~ /\w/) {
-            $label = $this_cat ? "cat" .  $this_cat->id : "";
+        $label = dirify( $this_cat->label );
+        if ( $label !~ /\w/ ) {
+            $label = $this_cat ? "cat" . $this_cat->id : "";
         }
-        $file = sprintf("%s/index", $this_cat->category_path);
+        $file = sprintf( "%s/index", $this_cat->category_path );
     }
     $file;
 }
 
 sub category_group_iter {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
     my $blog_id = $ctx->stash('blog')->id;
     require MT::Category;
-    my $iter = MT::Category->load_iter({ blog_id => $blog_id },
-        { 'sort' => 'label', direction => 'ascend' });
+    my $iter = MT::Category->load_iter( { blog_id => $blog_id },
+        { 'sort' => 'label', direction => 'ascend' } );
     require MT::Placement;
     require MT::Entry;
 
     return sub {
-        while (my $c = $iter->()) {
-            my $args = [{ blog_id => $blog_id,
-                      status => MT::Entry::RELEASE() },
-                    { 'join' => [ 'MT::Placement', 'entry_id',
-                                  { category_id => $c->id } ] }];
-            my $count = MT::Entry->count(undef, $args);
+        while ( my $c = $iter->() ) {
+            my $args = [
+                {
+                    blog_id => $blog_id,
+                    status  => MT::Entry::RELEASE()
+                },
+                {
+                    'join' => [
+                        'MT::Placement', 'entry_id', { category_id => $c->id }
+                    ]
+                }
+            ];
+            my $count = MT::Entry->count( undef, $args );
             next unless $count || $args->{show_empty};
-            return ($count, category => $c);
+            return ( $count, category => $c );
         }
         undef;
-    }
+      }
 }
 
 sub category_group_entries {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
 
     my $c = $ctx->stash('archive_category') || $ctx->stash('category');
     require MT::Entry;
-    my @entries = MT::Entry->load({ status => MT::Entry::RELEASE() },
-        { join => [ 'MT::Placement', 'entry_id', { category_id => $c->id }, { unqiue => 1 } ] } );
+    my @entries = MT::Entry->load(
+        { status => MT::Entry::RELEASE() },
+        {
+            join => [
+                'MT::Placement', 'entry_id',
+                { category_id => $c->id }, { unqiue => 1 }
+            ]
+        }
+    );
     \@entries;
 }
 
@@ -1730,23 +2472,25 @@ sub page_archive_label {
 }
 
 sub page_archive_file {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
-    my $blog = $ctx->{__stash}{blog};
-    my $page = $ctx->{__stash}{entry};
+    my $blog      = $ctx->{__stash}{blog};
+    my $page      = $ctx->{__stash}{entry};
 
     my $file;
-    Carp::croak "archive_file_for Page archive needs a page" 
-        unless $page && $page->isa('MT::Page');
+    Carp::croak "archive_file_for Page archive needs a page"
+      unless $page && $page->isa('MT::Page');
     unless ($file_tmpl) {
         my $basename = $page->basename();
-        my $folder = $page->folder;
+        my $folder   = $page->folder;
         my $folder_path;
         if ($folder) {
             $folder_path = $folder->publish_path || '';
-            $file = $folder_path ne '' ? $folder_path . '/' . $basename : $basename;
-        } else {
+            $file =
+              $folder_path ne '' ? $folder_path . '/' . $basename : $basename;
+        }
+        else {
             $file = $basename;
         }
     }
@@ -1754,18 +2498,23 @@ sub page_archive_file {
 }
 
 sub page_group_iter {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
     require MT::Page;
     my $blog_id = $ctx->stash('blog')->id;
-    my $iter = MT::Page->load_iter({ blog_id => $blog_id,
-        status => MT::Entry::RELEASE() }, { sort => 'title', direction => 'ascend' } );
+    my $iter    = MT::Page->load_iter(
+        {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE()
+        },
+        { sort => 'title', direction => 'ascend' }
+    );
     return sub {
-        while (my $entry = $iter->()) {
-            return (1, entries => [ $entry ], entry => $entry);
+        while ( my $entry = $iter->() ) {
+            return ( 1, entries => [$entry], entry => $entry );
         }
         undef;
-    }
+      }
 }
 
 sub individual_archive_label {
@@ -1773,23 +2522,23 @@ sub individual_archive_label {
 }
 
 sub individual_archive_file {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
-    my $blog = $ctx->{__stash}{blog};
-    my $entry = $ctx->{__stash}{entry};
+    my $blog      = $ctx->{__stash}{blog};
+    my $entry     = $ctx->{__stash}{entry};
 
     my $file;
-    Carp::confess "archive_file_for Individual archive needs an entry" 
-        unless $entry;
+    Carp::confess "archive_file_for Individual archive needs an entry"
+      unless $entry;
     if ($file_tmpl) {
         $ctx->{current_timestamp} = $entry->authored_on;
-    } else {
+    }
+    else {
         my $basename = $entry->basename();
-        $basename ||= dirify($entry->title());
-        $file = sprintf("%04d/%02d/%s", 
-                        unpack('A4A2', $entry->authored_on),
-                        $basename);
+        $basename ||= dirify( $entry->title() );
+        $file = sprintf( "%04d/%02d/%s",
+            unpack( 'A4A2', $entry->authored_on ), $basename );
     }
     $file;
 }
@@ -1797,24 +2546,30 @@ sub individual_archive_file {
 sub individual_archive_title { $_[1]->title }
 
 sub individual_group_iter {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
 
-    my $order = ($args->{sort_order} || '') eq 'ascend' ? 'ascend' : 'descend';
-    
+    my $order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+
     my $blog_id = $ctx->stash('blog')->id;
     require MT::Entry;
-    my $iter = MT::Entry->load_iter({ blog_id => $blog_id,
-        status => MT::Entry::RELEASE() },
-        { 'sort' => 'authored_on',
-          direction => $order,
-          $args->{lastn} ? (limit => $args->{lastn}) : () }
+    my $iter = MT::Entry->load_iter(
+        {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE()
+        },
+        {
+            'sort'    => 'authored_on',
+            direction => $order,
+            $args->{lastn} ? ( limit => $args->{lastn} ) : ()
+        }
     );
     return sub {
-        while (my $entry = $iter->()) {
-            return (1, entries => [ $entry ], entry => $entry);
+        while ( my $entry = $iter->() ) {
+            return ( 1, entries => [$entry], entry => $entry );
         }
         undef;
-    }
+      }
 }
 
 sub daily_archive_label {
@@ -1822,164 +2577,1665 @@ sub daily_archive_label {
 }
 
 sub daily_archive_file {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
-    my $blog = $ctx->{__stash}{blog};
+    my $blog      = $ctx->{__stash}{blog};
 
     my $file;
     if ($file_tmpl) {
-        ($ctx->{current_timestamp}, $ctx->{current_timestamp_end}) =
-            start_end_day($timestamp);
-    } else {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_day($timestamp);
+    }
+    else {
         my $start = start_end_day($timestamp);
-        my($year, $mon, $mday) = unpack 'A4A2A2', $start;
-        $file = sprintf("%04d/%02d/%02d/index", $year, $mon, $mday);
+        my ( $year, $mon, $mday ) = unpack 'A4A2A2', $start;
+        $file = sprintf( "%04d/%02d/%02d/index", $year, $mon, $mday );
     }
     $file;
 }
 
 sub daily_archive_title {
     my $stamp = ref $_[1] ? $_[1]->authored_on : $_[1];
-    my $start = start_end_day($stamp, $_[0]->stash('blog'));
-    MT::Template::Context::_hdlr_date($_[0], { ts => $start, 'format' => "%x" });
+    my $start = start_end_day( $stamp, $_[0]->stash('blog') );
+    MT::Template::Context::_hdlr_date( $_[0],
+        { ts => $start, 'format' => "%x" } );
 }
 
 sub daily_date_range { start_end_day(@_) }
 
 sub daily_group_iter {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     my $iter;
-    my $sort_order = ($args->{sort_order} || '') eq 'ascend' ? 'ascend' : 'descend';
-    my $order = ($sort_order eq 'ascend') ? 'asc' : 'desc';        
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
     require MT::Entry;
-    $iter = MT::Entry->count_group_by({blog_id => $blog->id,
-                     status => MT::Entry::RELEASE()},
-                {group=>["extract(year from authored_on)",
-                         "extract(month from authored_on)",
-                         "extract(day from authored_on)"],
-                 $args->{lastn} ? (limit => $args->{lastn}) : (),
-                 sort=>"extract(year from authored_on) $order,
+    $iter = MT::Entry->count_group_by(
+        {
+            blog_id => $blog->id,
+            status  => MT::Entry::RELEASE()
+        },
+        {
+            group => [
+                "extract(year from authored_on)",
+                "extract(month from authored_on)",
+                "extract(day from authored_on)"
+            ],
+            $args->{lastn} ? ( limit => $args->{lastn} ) : (),
+            sort => "extract(year from authored_on) $order,
                         extract(month from authored_on) $order,
-                        extract(day from authored_on) $order"})
-        or return $ctx->error("Couldn't get daily archive list");
+                        extract(day from authored_on) $order"
+        }
+    ) or return $ctx->error("Couldn't get daily archive list");
 
     return sub {
-        while (my @row = $iter->()) {
-            my $date = sprintf("%04d%02d%02d000000",
-                $row[1], $row[2], $row[3]);
-            my ($start, $end) = start_end_day($date);
-            return ($row[0], year => $row[1], month => $row[2], day => $row[3], start => $start, end => $end);
+        while ( my @row = $iter->() ) {
+            my $date =
+              sprintf( "%04d%02d%02d000000", $row[1], $row[2], $row[3] );
+            my ( $start, $end ) = start_end_day($date);
+            return (
+                $row[0],
+                year  => $row[1],
+                month => $row[2],
+                day   => $row[3],
+                start => $start,
+                end   => $end
+            );
         }
         undef;
     };
 }
 
 sub daily_group_entries {
-    my ($ctx, %param) = @_;
-    date_based_group_entries($ctx, 'Daily',
-        %param ? sprintf("%04d%02d%02d000000",
-            $param{year}, $param{month}, $param{day}) : undef);
+    my ( $ctx, %param ) = @_;
+    date_based_group_entries(
+        $ctx, 'Daily',
+        %param
+        ? sprintf( "%04d%02d%02d000000",
+            $param{year}, $param{month}, $param{day} )
+        : undef
+    );
 }
 
 sub weekly_archive_label {
-   MT->translate("WEEKLY_ADV");
+    MT->translate("WEEKLY_ADV");
 }
 
 sub weekly_archive_file {
-    my ($ctx, %param) = @_;
+    my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
 
     my $file;
     if ($file_tmpl) {
-        ($ctx->{current_timestamp}, $ctx->{current_timestamp_end}) =
-            start_end_week($timestamp);
-    } else {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_week($timestamp);
+    }
+    else {
         my $start = start_end_week($timestamp);
-        my($year, $mon, $mday) = unpack 'A4A2A2', $start;
-        $file = sprintf("%04d/%02d/%02d-week/index", $year, $mon, $mday);
+        my ( $year, $mon, $mday ) = unpack 'A4A2A2', $start;
+        $file = sprintf( "%04d/%02d/%02d-week/index", $year, $mon, $mday );
     }
     $file;
 }
 
 sub weekly_archive_title {
     my $stamp = ref $_[1] ? $_[1]->authored_on : $_[1];
-    my($start, $end) = start_end_week($stamp, $_[0]->stash('blog'));
-    MT::Template::Context::_hdlr_date($_[0], { ts => $start, 'format' => "%x" }) .
-        ' - ' .
-        MT::Template::Context::_hdlr_date($_[0], { ts => $end, 'format' => "%x" });
+    my ( $start, $end ) = start_end_week( $stamp, $_[0]->stash('blog') );
+    MT::Template::Context::_hdlr_date( $_[0],
+        { ts => $start, 'format' => "%x" } )
+      . ' - '
+      . MT::Template::Context::_hdlr_date( $_[0],
+        { ts => $end, 'format' => "%x" } );
 }
 
 sub weekly_date_range { start_end_week(@_) }
 
 sub weekly_group_iter {
-    my ($ctx, $args) = @_;
+    my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     my $iter;
-    my $sort_order = ($args->{sort_order} || '') eq 'ascend' ? 'ascend' : 'descend';
-    my $order = ($sort_order eq 'ascend') ? 'asc' : 'desc';
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
     require MT::Entry;
-    $iter = MT::Entry->count_group_by({blog_id => $blog->id,
-                     status => MT::Entry::RELEASE()},
-               {group=>["extract(year from authored_on)",
-                        "week_number"],
-                $args->{lastn} ? (limit => $args->{lastn}) : (),
-                sort=>"extract(year from authored_on) $order,
-                       week_number $order"})
-        or return $ctx->error("Couldn't get weekly archive list");
+    $iter = MT::Entry->count_group_by(
+        {
+            blog_id => $blog->id,
+            status  => MT::Entry::RELEASE()
+        },
+        {
+            group => [ "extract(year from authored_on)", "week_number" ],
+            $args->{lastn} ? ( limit => $args->{lastn} ) : (),
+            sort => "extract(year from authored_on) $order,
+                       week_number $order"
+        }
+    ) or return $ctx->error("Couldn't get weekly archive list");
 
     return sub {
-        while (my @row = $iter->()) {
-            my $date = sprintf("%04d%02d%02d000000",
-                week2ymd($row[1], $row[2]));
-            my ($start, $end) = start_end_week($date);
-            return ($row[0], year => $row[1], week => $row[2], start => $start, end => $end);
+        while ( my @row = $iter->() ) {
+            my $date =
+              sprintf( "%04d%02d%02d000000", week2ymd( $row[1], $row[2] ) );
+            my ( $start, $end ) = start_end_week($date);
+            return (
+                $row[0],
+                year  => $row[1],
+                week  => $row[2],
+                start => $start,
+                end   => $end
+            );
         }
         undef;
     };
 }
 
 sub weekly_group_entries {
-    my ($ctx, %param) = @_;
-    date_based_group_entries($ctx, 'Weekly',
-        %param ? sprintf("%04d%02d%02d000000",
-            week2ymd($param{year}, $param{week})) : undef);
+    my ( $ctx, %param ) = @_;
+    date_based_group_entries(
+        $ctx, 'Weekly',
+        %param
+        ? sprintf( "%04d%02d%02d000000",
+            week2ymd( $param{year}, $param{week} ) )
+        : undef
+    );
 }
 
 sub date_based_group_entries {
-    my ($ctx, $at, $ts) = @_;
+    my ( $ctx, $at, $ts ) = @_;
     my $blog = $ctx->stash('blog');
-    my ($start, $end);
+    my ( $start, $end );
     if ($ts) {
         init_archive_types() unless %ArchiveTypes;
 
-        ($start, $end) = $ArchiveTypes{$at}->date_range->($ts);
-        $ctx->{current_timestamp} = $start;
+        ( $start, $end ) = $ArchiveTypes{$at}->date_range->($ts);
+        $ctx->{current_timestamp}     = $start;
         $ctx->{current_timestamp_end} = $end;
-    } else {
+    }
+    else {
         $start = $ctx->{current_timestamp};
-        $end = $ctx->{current_timestamp_end};
+        $end   = $ctx->{current_timestamp_end};
     }
     require MT::Entry;
-    my @entries = MT::Entry->load({blog_id => $blog->id,
-                     status => MT::Entry::RELEASE(),
-                     authored_on => [ $start, $end ]},
-                     {range => {authored_on => 1}})
-        or return $ctx->error("Couldn't get $at archive list");
+    my @entries = MT::Entry->load(
+        {
+            blog_id     => $blog->id,
+            status      => MT::Entry::RELEASE(),
+            authored_on => [ $start, $end ]
+        },
+        { range => { authored_on => 1 } }
+    ) or return $ctx->error("Couldn't get $at archive list");
     \@entries;
 }
 
+sub author_archive_title {
+    my ($ctx) = @_;
+    my $a = $ctx->stash('author');
+    $a ? $a->nickname || MT->translate( 'Author (#[_1])', $a->id ) : '';
+}
+
+sub author_archive_label {
+    MT->translate('AUTHOR_ADV');
+}
+
+sub author_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $file_tmpl = $param{Template};
+    my $author    = $ctx->{__stash}{author};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+
+    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    return "" unless $this_author;
+
+    my $name = dirify( $this_author->nickname );
+    $name = "author" . $this_author->id if $name !~ /\w/;
+    $ctx->{__stash}{current_author_name} = $name;
+    if ( !$file_tmpl ) {
+        $file = sprintf( "%s/index", $name );
+    }
+    $file;
+}
+
+sub author_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
+    my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
+    require MT::Entry;
+    require MT::Author;
+    my $auth_iter = MT::Author->load_iter(
+        undef,
+        {
+            sort      => 'name',
+            direction => $auth_order,
+            join      => [
+                'MT::Entry', 'author_id',
+                { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                { unique => 1 }
+            ]
+        }
+    );
+    my $i = 0;
+    return sub {
+
+        while ( my $a = $auth_iter->() ) {
+            last if defined($limit) && $i == $limit;
+            my $count = MT::Entry->count(
+                {
+                    blog_id   => $blog->id,
+                    status    => MT::Entry::RELEASE(),
+                    author_id => $a->id
+                }
+            );
+            next if $count == 0 && !$args->{show_empty};
+            $i++;
+            return ( $count, author => $a );
+        }
+        undef;
+    };
+}
+
+sub author_group_entries {
+    my ( $ctx, %param ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $a = $param{author} || $ctx->stash('author');
+    return [] unless $a;
+    require MT::Entry;
+    my @entries = MT::Entry->load(
+        {
+            blog_id   => $blog->id,
+            author_id => $a->id,
+            status    => MT::Entry::RELEASE()
+        }
+    );
+    \@entries;
+}
+
+sub _display_name {
+    my ($ctx)    = shift;
+    my $tmpl     = $ctx->stash('template');
+    my $at       = $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $author   = '';
+    if (   ( $tmpl && $tmpl->type eq 'index' )
+        || !$archiver
+        || ( $archiver && !$archiver->author_based )
+        || !$ctx->{inside_archive_list} )
+    {
+        $author = $ctx->stash('author');
+        $author =
+            $author
+          ? $author->nickname
+          ? $author->nickname . ": "
+          : MT->translate( 'Author (#[_1])', $author->id )
+          : '';
+    }
+    return $author;
+}
+
+sub author_yearly_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my $start = start_end_year($stamp);
+    my $year =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%Y" } );
+    my $lang = lc MT->current_language || 'en_us';
+    $lang = 'ja' if lc($lang) eq 'jp';
+    my $author = _display_name($ctx);
+
+    sprintf( "%s%s%s", $author, $year, ( $lang eq 'ja' ? '&#24180;' : '' ) );
+}
+
+sub author_yearly_archive_label {
+    MT->translate('AUTHOR-YEARLY_ADV');
+}
+
+sub author_yearly_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $author    = $ctx->{__stash}{author};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    return "" unless $this_author;
+    my $name = dirify( $this_author->nickname );
+
+    if ( $name eq '' || !$file_tmpl ) {
+        return "" unless $this_author;
+        $name = "author" . $this_author->id if $name !~ /\w/;
+        my $start = start_end_year($timestamp);
+        my ($year) = unpack 'A4', $start;
+        $file = sprintf( "%s/%04d/index", $name, $year );
+    }
+    else {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_year($timestamp);
+    }
+    $file;
+}
+
+sub author_yearly_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
+    my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
+
+    my $tmpl  = $ctx->stash('template');
+    my @data  = ();
+    my $count = 0;
+
+    my $at       = $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $author;
+
+    # if (($tmpl && $tmpl->type ne 'index') &&
+    #     ($archiver && $archiver->author_based))
+    # {
+    $author = $ctx->stash('author');
+
+    # }
+
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $auth       = shift;
+        my $count_iter = MT::Entry->count_group_by(
+            {
+                blog_id   => $blog->id,
+                author_id => $auth->id,
+                status    => MT::Entry::RELEASE()
+            },
+            {
+                group  => ["extract(year from authored_on)"],
+                'sort' => "extract(year from authored_on) $order"
+            }
+        ) or return $ctx->error("Couldn't get monthly archive list");
+
+        while ( my @row = $count_iter->() ) {
+            my $hash = {
+                year   => $row[1],
+                author => $auth,
+                count  => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+        return $count;
+    };
+
+    # Count entry by author
+    if ($author) {
+        $loop_sub->($author);
+    }
+    else {
+
+        # load authors
+        require MT::Author;
+        my $iter;
+        $iter = MT::Author->load_iter(
+            undef,
+            {
+                sort      => 'name',
+                direction => $auth_order,
+                join      => [
+                    'MT::Entry', 'author_id',
+                    { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                    { unique => 1 }
+                ]
+            }
+        );
+
+        while ( my $a = $iter->() ) {
+            $loop_sub->($a);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date =
+              sprintf( "%04d%02d%02d000000", $data[$curr]->{year}, 1, 1 );
+            my ( $start, $end ) = start_end_year($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                author => $data[$curr]->{author},
+                year   => $data[$curr]->{year},
+                start  => $start,
+                end    => $end
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub author_yearly_group_entries {
+    my ( $ctx, %param ) = @_;
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
+      : $ctx->stash('current_timestamp');
+    my $author = %param ? $param{author} : $ctx->stash('author');
+    date_based_author_entries( $ctx, 'Author-Yearly', $author, $ts );
+}
+
+sub author_yearly_date_range { start_end_year(@_) }
+
+sub author_monthly_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my $start = start_end_month($stamp);
+    my $date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%B %Y" } );
+    my $author = _display_name($ctx);
+
+    sprintf( "%s%s", $author, $date );
+}
+
+sub author_monthly_archive_label {
+    MT->translate('AUTHOR-MONTHLY_ADV');
+}
+
+sub author_monthly_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $author    = $ctx->{__stash}{author};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    return "" unless $this_author;
+    my $name = dirify( $this_author->nickname );
+
+    if ( $name eq '' || !$file_tmpl ) {
+        return "" unless $this_author;
+        $name = "author" . $this_author->id if $name !~ /\w/;
+        my $start = start_end_month($timestamp);
+        my ( $year, $month ) = unpack 'A4A2', $start;
+        $file = sprintf( "%s/%04d/%02d/index", $name, $year, $month );
+    }
+    else {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_month($timestamp);
+    }
+    $file;
+}
+
+sub author_monthly_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
+    my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
+
+    my $tmpl  = $ctx->stash('template');
+    my @data  = ();
+    my $count = 0;
+
+    my $at       = $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $author;
+
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    # if (($tmpl && $tmpl->type ne 'index') &&
+    #     ($archiver && $archiver->author_based))
+    # {
+    $author = $ctx->stash('author');
+
+    # }
+
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $auth       = shift;
+        my $count_iter = MT::Entry->count_group_by(
+            {
+                blog_id   => $blog->id,
+                author_id => $auth->id,
+                status    => MT::Entry::RELEASE(),
+                ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
+            },
+            {
+                ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+                group => [
+                    "extract(year from authored_on)",
+                    "extract(month from authored_on)"
+                ],
+                'sort' => "extract(year from authored_on) $order,
+                         extract(month from authored_on) $order"
+            }
+        ) or return $ctx->error("Couldn't get monthly archive list");
+
+        while ( my @row = $count_iter->() ) {
+            my $hash = {
+                year   => $row[1],
+                month  => $row[2],
+                author => $auth,
+                count  => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+        return $count;
+    };
+
+    # Count entry by author
+    if ($author) {
+        $loop_sub->($author);
+    }
+    else {
+
+        # load authors
+        require MT::Author;
+        my $iter;
+        $iter = MT::Author->load_iter(
+            undef,
+            {
+                sort      => 'name',
+                direction => $auth_order,
+                join      => [
+                    'MT::Entry', 'author_id',
+                    { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                    { unique => 1 }
+                ]
+            }
+        );
+
+        while ( my $a = $iter->() ) {
+            $loop_sub->($a);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date = sprintf(
+                "%04d%02d%02d000000",
+                $data[$curr]->{year},
+                $data[$curr]->{month}, 1
+            );
+            my ( $start, $end ) = start_end_month($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                author => $data[$curr]->{author},
+                year   => $data[$curr]->{year},
+                month  => $data[$curr]->{month},
+                start  => $start,
+                end    => $end
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub author_monthly_group_entries {
+    my ( $ctx, %param ) = @_;
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+      : $ctx->stash('current_timestamp');
+    my $author = %param ? $param{author} : $ctx->stash('author');
+    date_based_author_entries( $ctx, 'Author-Monthly', $author, $ts );
+}
+
+sub author_monthly_date_range { start_end_month(@_) }
+
+sub author_weekly_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my ( $start, $end ) = start_end_week($stamp);
+    my $start_date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%x" } );
+    my $end_date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $end, 'format' => "%x" } );
+    my $author = _display_name($ctx);
+
+    sprintf( "%s%s - %s", $author, $start_date, $end_date );
+}
+
+sub author_weekly_archive_label {
+    MT->translate('AUTHOR-WEEKLY_ADV');
+}
+
+sub author_weekly_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $author    = $ctx->{__stash}{author};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    return "" unless $this_author;
+    my $name = dirify( $this_author->nickname );
+
+    if ( $name eq '' || !$file_tmpl ) {
+        return "" unless $this_author;
+        $name = "author" . $this_author->id if $name !~ /\w/;
+        my $start = start_end_week($timestamp);
+        my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
+        $file =
+          sprintf( "%s/%04d/%02d/%02d-week/index", $name, $year, $month, $day );
+    }
+    else {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_week($timestamp);
+    }
+    $file;
+}
+
+sub author_weekly_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
+    my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
+
+    my $tmpl  = $ctx->stash('template');
+    my @data  = ();
+    my $count = 0;
+
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    my $at       = $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $author;
+
+    # if (($tmpl && $tmpl->type ne 'index') &&
+    #     ($archiver && $archiver->author_based))
+    # {
+    $author = $ctx->stash('author');
+
+    # }
+
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $auth       = shift;
+        my $count_iter = MT::Entry->count_group_by(
+            {
+                blog_id   => $blog->id,
+                author_id => $auth->id,
+                status    => MT::Entry::RELEASE(),
+                ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
+            },
+            {
+                ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+                group  => ["week_number"],
+                'sort' => "week_number $order"
+            }
+        ) or return $ctx->error("Couldn't get weekly archive list");
+
+        while ( my @row = $count_iter->() ) {
+            my ( $year, $week ) = unpack 'A4A2', $row[1];
+            my $hash = {
+                year   => $year,
+                week   => $week,
+                author => $auth,
+                count  => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+        return $count;
+    };
+
+    # Count entry by author
+    if ($author) {
+        $loop_sub->($author);
+    }
+    else {
+
+        # load authors
+        require MT::Author;
+        my $iter;
+        $iter = MT::Author->load_iter(
+            undef,
+            {
+                sort      => 'name',
+                direction => $auth_order,
+                join      => [
+                    'MT::Entry', 'author_id',
+                    { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                    { unique => 1 }
+                ]
+            }
+        );
+
+        while ( my $a = $iter->() ) {
+            $loop_sub->($a);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date = sprintf( "%04d%02d%02d000000",
+                week2ymd( $data[$curr]->{year}, $data[$curr]->{week} ) );
+            my ( $start, $end ) = start_end_week($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                author => $data[$curr]->{author},
+                year   => $data[$curr]->{year},
+                week   => $data[$curr]->{week},
+                start  => $start,
+                end    => $end
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub author_weekly_group_entries {
+    my ( $ctx, %param ) = @_;
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
+      : $ctx->stash('current_timestamp');
+    my $author = %param ? $param{author} : $ctx->stash('author');
+    date_based_author_entries( $ctx, 'Author-Weekly', $author, $ts );
+}
+
+sub author_weekly_date_range { start_end_week(@_) }
+
+sub author_daily_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my $start = start_end_day($stamp);
+    my $date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%x" } );
+    my $author = _display_name($ctx);
+
+    sprintf( "%s%s", $author, $date );
+}
+
+sub author_daily_archive_label {
+    MT->translate('AUTHOR-DAILY_ADV');
+}
+
+sub author_daily_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $author    = $ctx->{__stash}{author};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    return "" unless $this_author;
+    my $name = dirify( $this_author->nickname );
+
+    if ( $name eq '' || !$file_tmpl ) {
+        return "" unless $this_author;
+        $name = "author" . $this_author->id if $name !~ /\w/;
+        my $start = start_end_day($timestamp);
+        my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
+        $file =
+          sprintf( "%s/%04d/%02d/%02d/index", $name, $year, $month, $day );
+    }
+    else {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_day($timestamp);
+    }
+    $file;
+}
+
+sub author_daily_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $auth_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
+    my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
+
+    my $tmpl  = $ctx->stash('template');
+    my @data  = ();
+    my $count = 0;
+
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    my $at       = $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $author;
+
+    # if (($tmpl && $tmpl->type ne 'index') &&
+    #     ($archiver && $archiver->author_based))
+    # {
+    $author = $ctx->stash('author');
+
+    # }
+
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $auth       = shift;
+        my $count_iter = MT::Entry->count_group_by(
+            {
+                blog_id   => $blog->id,
+                author_id => $auth->id,
+                status    => MT::Entry::RELEASE(),
+                ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
+            },
+            {
+                ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+                group => [
+                    "extract(year from authored_on)",
+                    "extract(month from authored_on)",
+                    "extract(day from authored_on)"
+                ],
+                'sort' => "extract(year from authored_on) $order,
+                         extract(month from authored_on) $order,
+                         extract(day from authored_on) $order"
+            }
+        ) or return $ctx->error("Couldn't get monthly archive list");
+
+        while ( my @row = $count_iter->() ) {
+            my $hash = {
+                year   => $row[1],
+                month  => $row[2],
+                day    => $row[3],
+                author => $auth,
+                count  => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+        return $count;
+    };
+
+    # Count entry by author
+    if ($author) {
+        $loop_sub->($author);
+    }
+    else {
+
+        # load authors
+        require MT::Author;
+        my $iter;
+        $iter = MT::Author->load_iter(
+            undef,
+            {
+                sort      => 'name',
+                direction => $auth_order,
+                join      => [
+                    'MT::Entry', 'author_id',
+                    { status => MT::Entry::RELEASE(), blog_id => $blog->id },
+                    { unique => 1 }
+                ]
+            }
+        );
+
+        while ( my $a = $iter->() ) {
+            $loop_sub->($a);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date = sprintf(
+                "%04d%02d%02d000000",
+                $data[$curr]->{year},
+                $data[$curr]->{month},
+                $data[$curr]->{day}
+            );
+            my ( $start, $end ) = start_end_day($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                author => $data[$curr]->{author},
+                year   => $data[$curr]->{year},
+                month  => $data[$curr]->{month},
+                day    => $data[$curr]->{day},
+                start  => $start,
+                end    => $end
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub author_daily_group_entries {
+    my ( $ctx, %param ) = @_;
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month},
+        $param{day} )
+      : $ctx->stash('current_timestamp');
+    my $author = %param ? $param{author} : $ctx->stash('author');
+    date_based_author_entries( $ctx, 'Author-Daily', $author, $ts );
+}
+
+sub author_daily_date_range { start_end_day(@_) }
+
+sub _display_category {
+    my $ctx      = shift;
+    my $tmpl     = $ctx->stash('template');
+    my $at       = $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $cat      = '';
+    if (   !$tmpl
+        || $tmpl->type eq 'index'
+        || !$archiver
+        || ( $archiver && !$archiver->category_based )
+        || !$ctx->{inside_archive_list} )
+    {
+        $cat = $ctx->stash('archive_category') || $ctx->stash('category');
+        $cat = $cat ? $cat->label . ': ' : '';
+    }
+    return $cat;
+}
+
+sub date_based_author_entries {
+    my ( $ctx, $at, $author, $ts ) = @_;
+
+    my $blog     = $ctx->stash('blog');
+    my $archiver = MT->publisher->archiver($at);
+    my ( $start, $end );
+    if ($ts) {
+        ( $start, $end ) = $archiver->date_range->($ts);
+    }
+    else {
+        $start = $ctx->{current_timestamp};
+        $end   = $ctx->{current_timestamp_end};
+    }
+    my @entries = MT::Entry->load(
+        {
+            blog_id     => $blog->id,
+            author_id   => $author->id,
+            status      => MT::Entry::RELEASE(),
+            authored_on => [ $start, $end ]
+        },
+        { range => { authored_on => 1 }, }
+    ) or return $ctx->error("Couldn't get $at archive list");
+    \@entries;
+}
+
+sub cat_yearly_archive_label {
+    MT->translate('CATEGORY-YEARLY_ADV');
+}
+
+sub cat_yearly_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $blog      = $ctx->{__stash}{blog};
+    my $cat       = $ctx->{__stash}{cat} || $ctx->{__stash}{category};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+
+    my $this_cat = $cat ? $cat : ( $entry ? $entry->category : undef );
+    if ($file_tmpl) {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_year( $timestamp, $blog );
+        $ctx->stash( 'archive_category', $this_cat );
+        $ctx->{inside_mt_categories} = 1;
+        $ctx->{__stash}{category} = $this_cat;
+    }
+    else {
+        if ( !$this_cat ) {
+            return "";
+        }
+        my $label = '';
+        $label = dirify( $this_cat->label );
+        if ( $label !~ /\w/ ) {
+            $label = $this_cat ? "cat" . $this_cat->id : "";
+        }
+        my $start = start_end_year( $timestamp, $blog );
+        my ($year) = unpack 'A4', $start;
+        $file = sprintf( "%s/%04d/index", $this_cat->category_path, $year );
+    }
+    $file;
+}
+
+sub cat_yearly_date_range { start_end_year(@_) }
+
+sub cat_yearly_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my $start = start_end_year( $stamp, $ctx->stash('blog') );
+    my $year =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%Y" } );
+    my $lang = lc MT->current_language || 'en_us';
+    $lang = 'ja' if lc($lang) eq 'jp';
+    my $cat = _display_category($ctx);
+
+    sprintf( "%s%s%s", $cat, $year, ( $lang eq 'ja' ? '&#24180;' : '' ) );
+}
+
+sub cat_yearly_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $cat_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc'                 : 'desc';
+    my $limit = exists $args->{lastn}       ? delete $args->{lastn} : undef;
+    my $tmpl  = $ctx->stash('template');
+    my $cat   = $ctx->stash('archive_category') || $ctx->stash('category');
+    my @data  = ();
+    my $count = 0;
+
+    require MT::Placement;
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $c          = shift;
+        my $entry_iter = MT::Entry->count_group_by(
+            {
+                blog_id => $blog->id,
+                status  => MT::Entry::RELEASE()
+            },
+            {
+                group => ["extract(year from authored_on)"],
+                sort  => "extract(year from authored_on) $order",
+                'join' =>
+                  [ 'MT::Placement', 'entry_id', { category_id => $c->id } ]
+            }
+        ) or return $ctx->error("Couldn't get yearly archive list");
+        while ( my @row = $entry_iter->() ) {
+            my $hash = {
+                year     => $row[1],
+                category => $c,
+                count    => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+    };
+
+    if ($cat) {
+        $loop_sub->($cat);
+    }
+    else {
+        require MT::Category;
+        my $iter = MT::Category->load_iter( { blog_id => $blog->id },
+            { 'sort' => 'label', direction => $cat_order } );
+        while ( my $category = $iter->() ) {
+            $loop_sub->($category);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date =
+              sprintf( "%04d%02d%02d000000", $data[$curr]->{year}, 1, 1 );
+            my ( $start, $end ) = start_end_year($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                category => $data[$curr]->{category},
+                year     => $data[$curr]->{year},
+                start    => $start,
+                end      => $end,
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub cat_yearly_group_entries {
+    my ( $ctx, %param ) = @_;
+
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
+      : $ctx->stash('current_timestamp');
+    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
+
+    date_based_category_entries( $ctx, 'Category-Yearly', $cat, $ts );
+}
+
+sub cat_monthly_archive_label {
+    MT->translate('CATEGORY-MONTHLY_ADV');
+}
+
+sub cat_monthly_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $blog      = $ctx->{__stash}{blog};
+    my $cat       = $ctx->{__stash}{cat} || $ctx->{__stash}{category};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+
+    my $this_cat = $cat ? $cat : ( $entry ? $entry->category : undef );
+    if ($file_tmpl) {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_month( $timestamp, $blog );
+        $ctx->stash( 'archive_category', $this_cat );
+        $ctx->{inside_mt_categories} = 1;
+        $ctx->{__stash}{category} = $this_cat;
+    }
+    else {
+        if ( !$this_cat ) {
+            return "";
+        }
+        my $label = '';
+        $label = dirify( $this_cat->label );
+        if ( $label !~ /\w/ ) {
+            $label = $this_cat ? "cat" . $this_cat->id : "";
+        }
+        my $start = start_end_month( $timestamp, $blog );
+        my ( $year, $month ) = unpack 'A4A2', $start;
+        $file = sprintf( "%s/%04d/%02d/index",
+            $this_cat->category_path, $year, $month );
+    }
+    $file;
+}
+
+sub cat_monthly_date_range { start_end_month(@_) }
+
+sub cat_monthly_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my $start = start_end_month( $stamp, $ctx->stash('blog') );
+    my $date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%B %Y" } );
+    my $cat = _display_category($ctx);
+
+    sprintf( "%s%s", $cat, $date );
+}
+
+sub cat_monthly_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $cat_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc'                 : 'desc';
+    my $limit = exists $args->{lastn}       ? delete $args->{lastn} : undef;
+    my $tmpl  = $ctx->stash('template');
+    my $cat   = $ctx->stash('archive_category') || $ctx->stash('category');
+    my @data  = ();
+    my $count = 0;
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    require MT::Placement;
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $c          = shift;
+        my $entry_iter = MT::Entry->count_group_by(
+            {
+                blog_id => $blog->id,
+                status  => MT::Entry::RELEASE(),
+                ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
+            },
+            {
+                ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+                group => [
+                    "extract(year from authored_on)",
+                    "extract(month from authored_on)"
+                ],
+                sort => "extract(year from authored_on) $order,
+                              extract(month from authored_on) $order",
+                'join' =>
+                  [ 'MT::Placement', 'entry_id', { category_id => $c->id } ]
+            }
+        ) or return $ctx->error("Couldn't get yearly archive list");
+        while ( my @row = $entry_iter->() ) {
+            my $hash = {
+                year     => $row[1],
+                month    => $row[2],
+                category => $c,
+                count    => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+    };
+
+    if ($cat) {
+        $loop_sub->($cat);
+    }
+    else {
+        require MT::Category;
+        my $iter = MT::Category->load_iter( { blog_id => $blog->id },
+            { 'sort' => 'label', direction => $cat_order } );
+        while ( my $category = $iter->() ) {
+            $loop_sub->($category);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date = sprintf(
+                "%04d%02d%02d000000",
+                $data[$curr]->{year},
+                $data[$curr]->{month}, 1
+            );
+            my ( $start, $end ) = start_end_month($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                category => $data[$curr]->{category},
+                year     => $data[$curr]->{year},
+                month    => $data[$curr]->{month},
+                start    => $start,
+                end      => $end,
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub cat_monthly_group_entries {
+    my ( $ctx, %param ) = @_;
+
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+      : $ctx->stash('current_timestamp');
+    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
+
+    date_based_category_entries( $ctx, 'Category-Monthly', $cat, $ts );
+}
+
+sub cat_daily_archive_label {
+    MT->translate('CATEGORY-DAILY_ADV');
+}
+
+sub cat_daily_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $blog      = $ctx->{__stash}{blog};
+    my $cat       = $ctx->{__stash}{cat} || $ctx->{__stash}{category};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+
+    my $this_cat = $cat ? $cat : ( $entry ? $entry->category : undef );
+    if ($file_tmpl) {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_day( $timestamp, $blog );
+        $ctx->stash( 'archive_category', $this_cat );
+        $ctx->{inside_mt_categories} = 1;
+        $ctx->{__stash}{category} = $this_cat;
+    }
+    else {
+        if ( !$this_cat ) {
+            return "";
+        }
+        my $label = '';
+        $label = dirify( $this_cat->label );
+        if ( $label !~ /\w/ ) {
+            $label = $this_cat ? "cat" . $this_cat->id : "";
+        }
+        my $start = start_end_day( $timestamp, $blog );
+        my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
+        $file = sprintf( "%s/%04d/%02d/%02d/index",
+            $this_cat->category_path, $year, $month, $day );
+    }
+    $file;
+}
+
+sub cat_daily_date_range { start_end_day(@_) }
+
+sub cat_daily_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my $start = start_end_day( $stamp, $ctx->stash('blog') );
+    my $date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%x" } );
+    my $cat = _display_category($ctx);
+
+    sprintf( "%s%s", $cat, $date );
+}
+
+sub cat_daily_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $cat_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc'                 : 'desc';
+    my $limit = exists $args->{lastn}       ? delete $args->{lastn} : undef;
+    my $tmpl  = $ctx->stash('template');
+    my $cat   = $ctx->stash('archive_category') || $ctx->stash('category');
+    my @data  = ();
+    my $count = 0;
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    require MT::Placement;
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $c          = shift;
+        my $entry_iter = MT::Entry->count_group_by(
+            {
+                blog_id => $blog->id,
+                status  => MT::Entry::RELEASE(),
+                ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
+            },
+            {
+                ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+                group => [
+                    "extract(year from authored_on)",
+                    "extract(month from authored_on)",
+                    "extract(day from authored_on)"
+                ],
+                sort => "extract(year from authored_on) $order,
+                              extract(month from authored_on) $order,
+                              extract(day from authored_on) $order",
+                'join' =>
+                  [ 'MT::Placement', 'entry_id', { category_id => $c->id } ]
+            }
+        ) or return $ctx->error("Couldn't get yearly archive list");
+        while ( my @row = $entry_iter->() ) {
+            my $hash = {
+                year     => $row[1],
+                month    => $row[2],
+                day      => $row[3],
+                category => $c,
+                count    => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+    };
+
+    if ($cat) {
+        $loop_sub->($cat);
+    }
+    else {
+        require MT::Category;
+        my $iter = MT::Category->load_iter( { blog_id => $blog->id },
+            { 'sort' => 'label', direction => $cat_order } );
+        while ( my $category = $iter->() ) {
+            $loop_sub->($category);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( $curr < $loop ) {
+            my $date = sprintf(
+                "%04d%02d%02d000000",
+                $data[$curr]->{year},
+                $data[$curr]->{month},
+                $data[$curr]->{day}
+            );
+            my ( $start, $end ) = start_end_day($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                category => $data[$curr]->{category},
+                year     => $data[$curr]->{year},
+                month    => $data[$curr]->{month},
+                day      => $data[$curr]->{day},
+                start    => $start,
+                end      => $end,
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub cat_daily_group_entries {
+    my ( $ctx, %param ) = @_;
+
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month},
+        $param{day} )
+      : $ctx->stash('current_timestamp');
+    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
+
+    date_based_category_entries( $ctx, 'Category-Daily', $cat, $ts );
+}
+
+sub cat_weekly_archive_label {
+    MT->translate('CATEGORY-WEEKLY_ADV');
+}
+
+sub cat_weekly_archive_file {
+    my ( $ctx, %param ) = @_;
+    my $timestamp = $param{Timestamp};
+    my $file_tmpl = $param{Template};
+    my $blog      = $ctx->{__stash}{blog};
+    my $cat       = $ctx->{__stash}{cat} || $ctx->{__stash}{category};
+    my $entry     = $ctx->{__stash}{entry};
+    my $file;
+
+    my $this_cat = $cat ? $cat : ( $entry ? $entry->category : undef );
+    if ($file_tmpl) {
+        ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =
+          start_end_week( $timestamp, $blog );
+        $ctx->stash( 'archive_category', $this_cat );
+        $ctx->{inside_mt_categories} = 1;
+        $ctx->{__stash}{category} = $this_cat;
+    }
+    else {
+        if ( !$this_cat ) {
+            return "";
+        }
+        my $label = '';
+        $label = dirify( $this_cat->label );
+        if ( $label !~ /\w/ ) {
+            $label = $this_cat ? "cat" . $this_cat->id : "";
+        }
+        my $start = start_end_week( $timestamp, $blog );
+        my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
+        $file = sprintf( "%s/%04d/%02d/%02d-week/index",
+            $this_cat->category_path, $year, $month, $day );
+    }
+    $file;
+}
+
+sub cat_weekly_date_range { start_end_week(@_) }
+
+sub cat_weekly_archive_title {
+    my ( $ctx, $entry_or_ts ) = @_;
+    my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
+    my ( $start, $end ) = start_end_week( $stamp, $ctx->stash('blog') );
+    my $start_date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $start, 'format' => "%x" } );
+    my $end_date =
+      MT::Template::Context::_hdlr_date( $ctx,
+        { ts => $end, 'format' => "%x" } );
+    my $cat = _display_category($ctx);
+
+    sprintf( "%s%s - %s", $cat, $start_date, $end_date );
+}
+
+sub cat_weekly_group_iter {
+    my ( $ctx, $args ) = @_;
+    my $blog = $ctx->stash('blog');
+    my $sort_order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $cat_order = $args->{sort_order} ? $args->{sort_order} : 'ascend';
+    my $order = ( $sort_order eq 'ascend' ) ? 'asc'                 : 'desc';
+    my $limit = exists $args->{lastn}       ? delete $args->{lastn} : undef;
+    my $tmpl  = $ctx->stash('template');
+    my $cat   = $ctx->stash('archive_category') || $ctx->stash('category');
+    my @data  = ();
+    my $count = 0;
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
+    require MT::Placement;
+    require MT::Entry;
+    my $loop_sub = sub {
+        my $c          = shift;
+        my $entry_iter = MT::Entry->count_group_by(
+            {
+                blog_id => $blog->id,
+                status  => MT::Entry::RELEASE(),
+                ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
+            },
+            {
+                ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
+                group => ["week_number"],
+                sort  => "week_number $order",
+                'join' =>
+                  [ 'MT::Placement', 'entry_id', { category_id => $c->id } ]
+            }
+        ) or return $ctx->error("Couldn't get weekly archive list");
+        while ( my @row = $entry_iter->() ) {
+            my ( $year, $week ) = unpack 'A4A2', $row[1];
+            my $hash = {
+                year     => $year,
+                week     => $week,
+                category => $c,
+                count    => $row[0],
+            };
+            push( @data, $hash );
+            return $count + 1
+              if ( defined($limit) && ( $count + 1 ) == $limit );
+            $count++;
+        }
+    };
+
+    if ($cat) {
+        $loop_sub->($cat);
+    }
+    else {
+        require MT::Category;
+        my $iter = MT::Category->load_iter( { blog_id => $blog->id },
+            { 'sort' => 'label', direction => $cat_order } );
+        while ( my $category = $iter->() ) {
+            $loop_sub->($category);
+            last if ( defined($limit) && $count == $limit );
+        }
+    }
+
+    my $loop = @data;
+    my $curr = 0;
+
+    return sub {
+        if ( ($curr) < $loop ) {
+            my $date = sprintf( "%04d%02d%02d000000",
+                week2ymd( $data[$curr]->{year}, $data[$curr]->{week} ) );
+            my ( $start, $end ) = start_end_week($date);
+            my $count = $data[$curr]->{count};
+            my %hash  = (
+                category => $data[$curr]->{category},
+                year     => $data[$curr]->{year},
+                week     => $data[$curr]->{week},
+                start    => $start,
+                end      => $end,
+            );
+            $curr++;
+            return ( $count, %hash );
+        }
+        undef;
+      }
+}
+
+sub cat_weekly_group_entries {
+    my ( $ctx, %param ) = @_;
+    my $ts =
+      %param
+      ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
+      : $ctx->stash('current_timestamp');
+    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
+
+    date_based_category_entries( $ctx, 'Category-Weekly', $cat, $ts );
+}
+
+sub date_based_category_entries {
+    my ( $ctx, $at, $cat, $ts ) = @_;
+
+    my $blog     = $ctx->stash('blog');
+    my $archiver = MT->publisher->archiver($at);
+    my ( $start, $end );
+    if ($ts) {
+        ( $start, $end ) = $archiver->date_range->($ts);
+    }
+    else {
+        $start = $ctx->{current_timestamp};
+        $end   = $ctx->{current_timestamp_end};
+    }
+    my @entries = MT::Entry->load(
+        {
+            blog_id     => $blog->id,
+            status      => MT::Entry::RELEASE(),
+            authored_on => [ $start, $end ]
+        },
+        {
+            range => { authored_on => 1 },
+            'join' =>
+              [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ]
+        }
+    ) or return $ctx->error("Couldn't get $at archive list");
+    \@entries;
+}
 
 # ----- ARCHIVE TYPE -----
 package MT::ArchiveType;
 
 sub new {
-    my $pkg = shift;
-    my $self = { @_ };
+    my $pkg  = shift;
+    my $self = {@_};
     bless $self, $pkg;
 }
 
@@ -1987,25 +4243,27 @@ sub _getset {
     my $self = shift;
     my $name = shift;
 
-    @_ ? $self->{$name} = $_[0] : $self->{$name}
+    @_ ? $self->{$name} = $_[0] : $self->{$name};
 }
 
-sub name { shift->_getset('name', @_) } 
-sub archive_group_iter { shift->_getset('archive_group_iter', @_) } 
-sub archive_group_entries { shift->_getset('archive_group_entries', @_) } 
-sub archive_file { shift->_getset('archive_file', @_) } 
-sub archive_title { shift->_getset('archive_title', @_) } 
-sub archive_label { shift->_getset('archive_label', @_) }
-sub author_based { shift->_getset('author_based', @_) }
-sub category_based { shift->_getset('category_based', @_) } 
-sub date_based { shift->_getset('date_based', @_) } 
-sub entry_based { shift->_getset('entry_based', @_) }
-sub date_range { shift->_getset('date_range', @_) } 
-sub default_archive_templates { shift->_getset('default_archive_templates', @_) } 
-sub dynamic_template { shift->_getset('dynamic_template', @_) } 
-sub dynamic_support { shift->_getset('dynamic_support', @_) } 
-sub entry_class { shift->_getset('entry_class', @_) || 'entry' } 
-sub template_params { shift->_getset('template_params') } 
+sub name                  { shift->_getset( 'name',                  @_ ) }
+sub archive_group_iter    { shift->_getset( 'archive_group_iter',    @_ ) }
+sub archive_group_entries { shift->_getset( 'archive_group_entries', @_ ) }
+sub archive_file          { shift->_getset( 'archive_file',          @_ ) }
+sub archive_title         { shift->_getset( 'archive_title',         @_ ) }
+sub archive_label         { shift->_getset( 'archive_label',         @_ ) }
+sub author_based          { shift->_getset( 'author_based',          @_ ) }
+sub category_based        { shift->_getset( 'category_based',        @_ ) }
+sub date_based            { shift->_getset( 'date_based',            @_ ) }
+sub entry_based           { shift->_getset( 'entry_based',           @_ ) }
+sub date_range            { shift->_getset( 'date_range',            @_ ) }
+sub default_archive_templates {
+    shift->_getset( 'default_archive_templates', @_ );
+}
+sub dynamic_template { shift->_getset( 'dynamic_template', @_ ) }
+sub dynamic_support  { shift->_getset( 'dynamic_support',  @_ ) }
+sub entry_class      { shift->_getset( 'entry_class',      @_ ) || 'entry' }
+sub template_params { shift->_getset('template_params') }
 
 1;
 

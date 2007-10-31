@@ -19,7 +19,7 @@
 <mt:setvarblock name="action_buttons">
 <mt:unless name="template_type" eq="system">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<MT_TRANS phrase="template">', '<__trans phrase="templates">')"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
         ><__trans phrase="Delete"></a>
@@ -64,13 +64,15 @@ function sectionToggle(selectedTab) {
 </script>
 </mt:setvarblock>
 <mt:setvarblock name="list_filter_form">
-    <div class="listing-filter">
-        <div class="listing-filter-inner inner pkg">
 <form id="filter-form" method="get" action="<mt:var name="mt_url">">
     <input type="hidden" name="__mode" value="<mt:var name="mode">" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input id="filter" type="hidden" name="filter" value="" />
     <input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+<form id="filter-select-form" method="get" onsubmit="return execFilter(this)">
     <div class="filter">
         <div id="filter-title">
         <mt:if name="filter_key">

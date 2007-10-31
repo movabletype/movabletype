@@ -142,28 +142,30 @@ TC.attachLoadEvent( init );
 </script>
 </mt:setvarblock>
 <mt:setvarblock name="list_filter_form">
+<form id="filter-form" method="get" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="list_<$mt:var name="object_type"$>" />
+        <mt:if name="blog_id">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        </mt:if>
+    <input id="filter" type="hidden" name="filter" value="" />
+    <input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
 <div class="listing-filter">
     <div class="listing-filter-inner inner pkg">
-    <form id="filter-form" method="get" action="<mt:var name="script_url">">
-        <input type="hidden" name="__mode" value="list_<$mt:var name="object_type"$>" />
-            <mt:if name="blog_id">
-        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-            </mt:if>
-        <input id="filter" type="hidden" name="filter" value="" />
-        <input id="filter_val" type="hidden" name="filter_val" value="" />
+    <form id="filter-select-form" method="get" action="<mt:var name="script_url">">
         <div class="filter">
             <div id="filter-title">
             <mt:unless name="filter">
                     <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
                     <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
             <mt:else>
-                    <strong><a href="javascript:void(0)" onclick="toggleFilter()">
                 <mt:if name="filter_special">
-                        <$mt:var name="filter_phrase"$>
+                        <strong><__trans phrase="Showing only: [_1]" params="<$mt:var name="filter_phrase"$>"></strong>
                 <mt:else>
+                    <strong><a href="javascript:void(0)" onclick="toggleFilter()">
                         <__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'>
-                </mt:if>
                     </a></strong>
+                </mt:if>
                     <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
             </mt:unless>
             </div>
@@ -181,9 +183,17 @@ TC.attachLoadEvent( init );
                         </select>
                     </span>
                 <!-- end filter form -->
-                &nbsp;
-                <input type="button" value="<__trans phrase="Filter">" id="filter-button" style="display: none" onclick="return execFilter(this.form)" />
-                <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />
+                <span class="buttons">
+                    <a href="javascript:void(0)"
+                        id="filter-button"
+                        onclick="return execFilter(getByID('filter-select-form'))"
+                        type="submit"
+                        ><__trans phrase="Filter"></a>
+                    <a href="javascript:void(0)"
+                        onclick="toggleFilter(); return false;"
+                        type="submit"
+                        ><__trans phrase="Cancel"></a>
+                </span>
             </div>
         </div>
     </form>
@@ -193,36 +203,37 @@ TC.attachLoadEvent( init );
 <mt:setvarblock name="action_buttons">
     <mt:unless name="tab_junk">
         <a href="javascript:void(0)"
-            onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack">', '<__trans phrase="TrackBacks">', 'id', 'approve_item', {}, '<__trans phrase="to publish">')"
+            onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">', 'id', 'approve_item', {}, '<__trans phrase="to publish" escape="js">'); return false;"
             accesskey="p"
             title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Publish"></a>
     </mt:unless>
         <a href="javascript:void(0)"
-            onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack">', '<__trans phrase="TrackBacks">')"
+            onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
             accesskey="x"
             title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Delete"></a>
     <mt:unless name="tab_junk">
         <a href="javascript:void(0)"
-            onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack">', '<__trans phrase="TrackBacks">')"
+            onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
             accesskey="j"
             title="<__trans phrase="Report selected [_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Spam"></a>
     <mt:else>
         <a href="javascript:void(0)"
-            onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack">', '<__trans phrase="TrackBacks">')"
+            onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
             accesskey="j"
             title="<__trans phrase="Report selected [_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Not Spam"></a>
-        <a href="javascript:void(0)"
-            onclick="submitFormConfirm(getByID('<$mt:var name="object_type"$>-listing-form'), 'empty_junk', '<__trans phrase="Are you sure you want to remove all TrackBacks reported as spam?">')"
-            accesskey="j"
+        <a href="javascript:void(0)" mt:command="submit" mt:mode="empty_junk"
+            mt:confirm-msg="<__trans phrase="Are you sure you want to remove all TrackBacks reported as spam?">"
             title="<__trans phrase="Deletes all [_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Empty"></a>
     </mt:unless>
     <mt:if name="is_ip_filter">
-            <input type="button" onclick="doBanIP('<mt:var name="filter_val">')" name="banip" value="<__trans phrase="Ban This IP">" />
+        <a href="javascript:void(0)"
+            onclick="doBanIP('<mt:var name="filter_val">'); return false;"
+            ><__trans phrase="Ban This IP"></a>
     </mt:if>
 </mt:setvarblock>
 

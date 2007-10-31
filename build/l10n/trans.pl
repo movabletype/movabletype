@@ -56,7 +56,7 @@ do {
                      $is_used{$args{phrase}} = 1;
                 }
                 $trans =~ s/([^\\]?)'/$1\\'/g;
-                $args{phrase} =~ s/([^\\]?)'/$1\\'/g;
+                $args{phrase} =~ s/([^\\])'/$1\\'/g;
 		
                 unless ($phrase{$args{phrase}}) {
                     $phrase{$args{phrase}} = 1;

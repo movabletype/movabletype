@@ -112,7 +112,7 @@
         // if old email matches new email, ignore submission (same as cancel)
         // if new email is already in our noteList array, warn user
         // if not in noteList and not in range of noteList notes, check with server.
-        var note_form = getByID('selector-form');
+        var note_form = getByID('create-inline-notification-form');
         var note_email = getByID('note-email-' + id);
         var note_url = getByID('note-url-' + id);
         if (!note_form || !note_email || !note_url) return false;
@@ -126,15 +126,15 @@
     }
 
     function submit_edit_form(id) {
-        var note_form = getByID('selector-form');
+        var note_form = getByID('create-inline-notification-form');
         var note_email = getByID('note-email-' + id);
         var note_url = getByID('note-url-' + id);
         if (!note_form || !note_email) return false;
-        note_form['id'][0].value = id;
+        note_form['id'].value = id;
         note_form['email'].value = note_email.value;
         note_form['url'].value = note_url.value;
         note_form.submit();
-        return true;
+        return false;
     }
 
     function setCreateMode () {
@@ -167,7 +167,7 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
 <a href="javascript:void(0)"
-    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="contact">', '<__trans phrase="contacts">')"
+    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="contact" escape="js">', '<__trans phrase="contacts" escape="js">'); return false;"
     accesskey="x"
     title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
     ><__trans phrase="Delete"></a>
@@ -184,6 +184,7 @@
 <input type="hidden" name="_type" value="notification" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<input type="hidden" name="id" value="" />  
 <mtapp:setting
     id="email"
     label="<__trans phrase="Email">"
@@ -207,8 +208,7 @@
     hint=""
     show_hint="0">
     <span class="buttons">
-        <a href="javascript:void(0)"
-            onclick="submitForm(getByID('create-inline-notification-form'), '')"
+        <a href="javascript:void(0)" mt:command="submit"
             ><__trans phrase="Add Contact"></a>
         <a href="javascript:void(0)"
             onclick="cancelCreateMode(); return false"

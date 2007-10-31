@@ -6,11 +6,9 @@ use warnings;
 
 use base qw( MT::Plugin );
 
-use MT;
-use MT::Template::Context;
-
 our $VERSION = '2.0';
 my $plugin  = MT::Plugin::MultiBlog->new({
+    id          =>  'multiblog',
     name        =>  'MultiBlog',
     description =>  '<MT_TRANS phrase="MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.">',
     version                => $VERSION,
@@ -29,21 +27,44 @@ my $plugin  = MT::Plugin::MultiBlog->new({
         [ 'default_mtmulitblog_blogs',  { Default => '', Scope => 'blog' } ],
     ]),
     l10n_class => 'MultiBlog::L10N',
+    registry => {
+        applications => {
+            'cms' => {
+                methods => {
+                    multiblog_add_trigger => '$multiblog::MT::Plugin::MultiBlog::add_trigger',
+                },
+            },
+        },
+        tags => {
+            block => {
+                Entries => 'MultiBlog::preprocess_native_tags',
+                Categories => 'MultiBlog::preprocess_native_tags',
+                Comments => 'MultiBlog::preprocess_native_tags',
+                Blogs => 'MultiBlog::preprocess_native_tags',
+                Assets => 'MultiBlog::preprocess_native_tags',
+                Comments => 'MultiBlog::preprocess_native_tags',
+                Pings => 'MultiBlog::preprocess_native_tags',
+                Authors => 'MultiBlog::preprocess_native_tags',
+                Tags => 'MultiBlog::preprocess_native_tags',
+                MultiBlog => 'MultiBlog::Tags::MultiBlog',
+                OtherBlog => 'MultiBlog::Tags::MultiBlog',
+                MultiBlogLocalBlog => 'MultiBlog::Tags::MultiBlogLocalBlog',
+                'MultiBlogIfLocalBlog?' => 'MultiBlog::Tags::MultiBlogIfLocalBlog',
+            },
+            function => {
+                'Include' => 'MultiBlog::preprocess_native_tags',
+                'BlogCategoryCount' => 'MultiBlog::preprocess_native_tags',
+                'BlogEntryCount' => 'MultiBlog::preprocess_native_tags',
+                'BlogPingCount' => 'MultiBlog::preprocess_native_tags',
+                'TagSearchLink' => 'MultiBlog::preprocess_native_tags',
+            },
+        },
+    },
 });
 MT->add_plugin($plugin);
 
-# The following tags are overrriden in &init_app to handle the
-# access controls for the blog-context-related attributes.
-my @overridden_tags =
-  qw( Entries       Comments            BlogPingCount
-      Categories    Pings               BlogCommentCount
-      Include       BlogCategoryCount   Tags
-      Blogs         BlogEntryCount      TagSearchLink
-      Assets        Authors
-    );
-
 # Register entry post-save callback for rebuild triggers
-MT->add_callback( 'cms_post_save.entry', 10, $plugin,
+MT->add_callback( 'MT::Entry::post_save', 10, $plugin,
     sub { $plugin->runner( 'post_entry_save', @_ ) } );
 
 # Register Comment/TB post-save callbacks for rebuild triggers
@@ -52,32 +73,6 @@ MT->add_callback( 'MT::Comment::post_save', 10, $plugin,
 MT->add_callback( 'MT::TBPing::post_save', 10, $plugin,
     sub { $plugin->runner( 'post_feedback_save', 'tb_pub', @_ ) } );
 
-sub init_app {
-    my $app = shift;
-    $app->SUPER::init_app(@_);
-    intercept_tags(); 
-}
-
-sub init_registry {
-    my $plugin = shift;
-    $plugin->{registry} = {
-        applications => {
-            'cms' => {
-                methods => {
-                    multiblog_add_trigger => \&add_trigger,
-                },
-            },
-        },
-        tags => {
-            block => {
-                OtherBlog => sub { $plugin->tagrunner( 'OtherBlog', @_ ) },
-                MultiBlog => sub { $plugin->tagrunner( 'MultiBlog', @_ ) },
-                MultiBlogLocalBlog => sub { $plugin->tagrunner( 'MultiBlogLocalBlog', @_ ) },
-                MultiBlogIfLocalBlog => sub { $plugin->tagrunner( 'MultiBlogIfLocalBlog', @_ ) },
-            },
-        },
-    };
-}
 sub instance { $plugin }
 
 sub add_trigger {
@@ -85,7 +80,7 @@ sub add_trigger {
 
     return $plugin->translate("Permission denied.")
         unless $app->user->is_superuser() ||
-               ($app->blog && $app->user->can_administer_blog());
+               ($app->blog && $app->user->permissions($app->blog->id)->can_administer_blog());
 
     my $blog_id = $app->blog->id;
 
@@ -132,7 +127,7 @@ sub add_trigger {
             };
         }
     }
-    return $tmpl;
+    return $app->build_page($tmpl);
 }
 
 sub trigger_loop {
@@ -333,34 +328,9 @@ sub runner {
     my $plugin = shift;
     my $method = shift;
     require MultiBlog;
+    no strict 'refs';
     return $_->( $plugin, @_ ) if $_ = \&{"MultiBlog::$method"};
     die "Failed to find MultiBlog::$method";
-}
-
-# Run-time loading for MultiBlog tag methods
-sub tagrunner {
-    my $plugin = shift;
-    my $method = shift;
-    require MultiBlog::Tags;
-    return $_->( $plugin, @_ ) if $_ = \&{"MultiBlog::Tags::$method"};
-    die "Failed to find MultiBlog::Tags::$method";
-}
-
-sub intercept_tags {
-    my %orig_handler_for;
-    my $ctx = MT::Template::Context->new;
-
-    foreach my $tag (@overridden_tags) {
-        $tag = lc $tag;
-        my $newcode = sub {
-            $plugin->runner( 
-                'preprocess_native_tags',
-                $orig_handler_for{$tag},
-                @_, 
-            ) 
-        };
-        $orig_handler_for{$tag} = $ctx->replace_handler($tag, $newcode);
-    }
 }
 
 1;

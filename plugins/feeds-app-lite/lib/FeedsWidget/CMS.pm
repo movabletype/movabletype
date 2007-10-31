@@ -3,6 +3,7 @@
 package FeedsWidget::CMS;
 
 use strict;
+use MT::I18N qw( encode_text );
 
 sub start {
     my $app     = shift;
@@ -34,17 +35,15 @@ sub select {
     my @feeds = MT::Feeds::Find->find($uri);
     unless (@feeds) {
         $p->{not_found}  = 1;
-        $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
+        $p->{wizard_uri} = $app->uri( mode => "feedswidget_select", args => { blog_id => $blog_id });
         $p->{uri}        = $uri;
-        if (wm_url($app)) {
-            $p->{wm_url} = wm_url($app) . '?blog_id=' . $blog_id;
+        if (my $url = wm_url($app, $blog_id)) {
+            $p->{wm_url} = $url;
             $p->{wm_is}  = 1;
         }
         return $app->build_page("msg.tmpl", $p);
     } elsif (@feeds == 1) {    # skip to the next step if only one choice
-        my $redirect = $app->app_uri;
-        $redirect .= "?__mode=feedswidget_config&blog_id=$blog_id";
-        $redirect .= '&uri=' . MT::Util::encode_url($feeds[0]->{uri});
+        my $redirect = $app->uri( mode => "feedswidget_config", args => { blog_id => $blog_id, uri => $feeds[0]->{uri} });
         return $app->redirect($redirect);
     }
     MT::Util::mark_odd_rows(\@feeds);
@@ -61,21 +60,23 @@ sub configuration {
       or return $app->error(MT::Blog->errstr);
     my $uri = $app->param('uri')
       or
-      return $app->redirect($app->app_uri . "?__mode=feedswidget_select&blog_id=$blog_id");
+      return $app->redirect($app->uri( mode => "feedswidget_select", args => { blog_id => $blog_id }));
     my $p = {blog_id => $blog_id, site_url => $blog->site_url};
     require MT::Feeds::Lite;
     my $feed = MT::Feeds::Lite->fetch($uri);
     unless ($feed) {
         $p->{feederr}    = 1;
-        $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
+        $p->{wizard_uri} = $app->uri( mode => "feedswidget_select", args => { blog_id => $blog_id });
         $p->{uri}        = $uri;
-        if (wm_url($app)) {
-            $p->{wm_url} = wm_url($app) . '?blog_id=' . $blog_id;
+        if (my $url = wm_url($app, $blog_id)) {
+            $p->{wm_url} = $url;
             $p->{wm_is}  = 1;
         }
         return $app->build_page("msg.tmpl", $p);
     }
     my $title = $feed->find_title($feed->feed);
+    my $enc = MT->config->PublishCharset;
+    $title = encode_text(MT::I18N::utf8_off($title), 'utf-8', $enc);
     require MT::Util;
     $title = MT::Util::remove_html($title);
     $p->{feed_title} = $title || $uri;
@@ -92,7 +93,7 @@ sub save {
       or return $app->error(MT::Blog->errstr);
     my $uri = $app->param('uri')
       or
-      return $app->redirect($app->app_uri . "?__mode=feedswidget_config&blog_id=$blog_id");
+      return $app->redirect($app->uri( mode => "feedswidget_config", args => { blog_id => $blog_id }));
     my $lastn = $app->param('lastn');
     my $title = $app->param('feed_title');
 
@@ -102,10 +103,9 @@ sub save {
     my $name = substr($title, 0, 255);
     require MT::Template;
     my $i = 0;
-    map { $_->remove } MT::Template->load({blog_id => ''});
     while (
            MT::Template->load(
-                          {blog_id => $blog_id, name => $name}
+                          {blog_id => $blog_id, name => $name, type => 'widget'}
            )
       ) {
         $i++;
@@ -120,15 +120,15 @@ sub save {
     $lastn = " lastn=\"$lastn\"" if $lastn;
     $title = MT::Util::encode_html($title);
     my $txt = <<TEXT;
-<div class="module-feed module">
-<div class="module-content">
+<div class="widget-feed widget">
 <MTFeed uri="$uri">
-<h2 class="module-header">$title</h2>
+<h3 class="widget-header">$title</h3>
+<div class="widget-content">
 <ul><MTFeedEntries$lastn>
 <li><a href="<\$MTFeedEntryLink encode_html="1"\$>"><\$MTFeedEntryTitle\$></a></li>
 </MTFeedEntries></ul>
-</MTFeed>
 </div>
+</MTFeed>
 </div>
 TEXT
     $tmpl->text($txt);
@@ -136,10 +136,10 @@ TEXT
     $p->{module}     = $name;
     $p->{module_id}  = $tmpl->id;
     $p->{saved}      = 1;
-    $p->{wizard_uri} = $app->uri . '?blog_id=' . $blog_id;
+    $p->{wizard_uri} = $app->uri( mode => "feedswidget_select", args => { blog_id => $blog_id });
     $p->{uri}        = $uri;
-    if (wm_url($app)) {
-        $p->{wm_url} = wm_url($app) . '&blog_id=' . $blog_id;
+    if (my $url = wm_url($app, $blog_id)) {
+        $p->{wm_url} = $url;
         $p->{wm_is}  = 1;
     }
     $p->{help_url} = $app->{help_url};
@@ -148,7 +148,9 @@ TEXT
 
 sub wm_url {
     my $app = shift;
-    return $app->uri(mode => 'list_widget');
+    my ($blog_id) = @_;
+    return undef unless $app->component('WidgetManager');
+    return $app->uri(mode => 'list_widget', args => { blog_id => $blog_id });
 }
 
 1;

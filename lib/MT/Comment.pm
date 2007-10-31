@@ -38,6 +38,7 @@ __PACKAGE__->install_properties({
         junk_status => 1,
         last_moved_on => 1,
         junk_score => 1,
+        parent_id => 1,
     },
     defaults => {
         junk_status => 0,

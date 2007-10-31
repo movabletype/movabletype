@@ -172,6 +172,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $open_mod_args = true;
                     }
                 }
+            } else {
+                if ($close == '/') $close = '';
             }
 
             if ($open_mod_args) {

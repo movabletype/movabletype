@@ -1,6 +1,6 @@
 <mt:unless name="json">
 <$mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog"$>
-<mt:setvarblock name="page_title"><__trans phrase="Insert File"></mt:setvarblock>
+<mt:setvarblock name="page_title"><mt:if name="is_image"><__trans phrase="Insert Image"><mt:else><__trans phrase="Insert Asset"></mt:if></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
@@ -29,21 +29,21 @@
     var tableSelect;
     var dlg;
     function init() {
-    	// setup
-    	// assign isModal variable which is declared in assetdetail.js:
-    	isModal = getByID("list-assets-dialog");
+        // setup
+        // assign isModal variable which is declared in assetdetail.js:
+        isModal = getByID("list-assets-dialog");
 
-    	dlg = new Dialog.Simple("list-assets");
-    	var panel = new ListingPanel("asset");
-    	dlg.panel = panel;
+        dlg = new Dialog.Simple("list-assets");
+        var panel = new ListingPanel("asset");
+        dlg.panel = panel;
 
-    	// hook into view updates so we can close any opened detail panel
-    	var old_update = panel.datasource.onUpdate;
-    	panel.datasource.onUpdate = function(ds) { viewChange(ds, old_update) };
+        // hook into view updates so we can close any opened detail panel
+        var old_update = panel.datasource.onUpdate;
+        panel.datasource.onUpdate = function(ds) { viewChange(ds, old_update) };
 
-    	panel.pager.setState(<mt:var name="pager_json">);
-    	panel.parent = dlg;
-    	dlg.open({}, dialogClose);
+        panel.pager.setState(<mt:var name="pager_json">);
+        panel.parent = dlg;
+        dlg.open({}, dialogClose);
     }
     TC.attachLoadEvent( init );
     // -->
@@ -66,12 +66,11 @@
         <div class="listing-filter-inner inner pkg">
     <mt:if name="panel_searchable">
             <form action="" method="get" id="modal-search">
-                <input type="text" value="<__trans phrase="Search">" class="search-input search-query"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
-                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> />
-                <input type="button" class="search-reset hidden" value="<__trans phrase="View All">" />
+                <input type="text" value="<__trans phrase="Search">" class="search-input search-query" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">" />
+                <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
             </form>
     </mt:if>
-            &nbsp;
         </div>
     </div>
 
@@ -101,7 +100,7 @@
                     <tr>
                         <th class="cb"><img src="<mt:var name="static_uri">images/spacer.gif" width="15" height="1"></th>
                         <th id="as-file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-                        <th class="panel-label"><__trans phrase="Filename"></th>
+                        <th class="panel-label"><__trans phrase="Asset Name"></th>
         <mt:unless name="edit_blog_id">
                         <th id="as-weblog"><__trans phrase="Weblog"></th>
         </mt:unless>
@@ -140,7 +139,7 @@
                                         <span class="float_desc"><mt:var name="file_size"></span>
         </mt:if>
                                         <span class="link">
-                                            <mt:if name="url"><a href="<mt:var name="url">" target="view_uploaded" title="<__trans phrase="View File">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View File">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if>
+                                            <mt:if name="url"><a href="<mt:var name="url">" target="view_uploaded" title="<__trans phrase="View Asset">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Asset">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if>
                                         </span>
                                     </span>
                                 </td>
@@ -187,11 +186,6 @@
         class="info">
         <__trans phrase="No assets could be found.">
     </mtapp:statusmsg>
-        <div class="actions-bar">
-        <form action="" method="get" onsubmit="return false">
-        <input class="cancel" type="button" value="<__trans phrase="Cancel">" />
-        </form>
-        </div>
 </mt:if>
 
 <mt:unless name="json">

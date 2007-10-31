@@ -722,11 +722,11 @@ $Languages = array(
               '&#22303;&#26332;&#26085;'),
             array('1','2','3','4','5','6','7','8','9','10','11','12'),
             array('AM','PM'),
-            "%Y&#24180;%m&#26376;%d&#26085; %H:%M",
-            "%Y&#24180;%m&#26376;%d&#26085;",
+            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
+            "%Y&#24180;%b&#26376;%e&#26085;",
             "%H:%M",
-            "%Y&#24180;%m&#26376;",
-            "%Y&#24180;",
+            "%Y&#24180;%b&#26376;",
+            "%b&#26376;%e&#26085;",
           ),
 
     'ja' => array(
@@ -736,11 +736,11 @@ $Languages = array(
               '&#22303;&#26332;&#26085;'),
             array('1','2','3','4','5','6','7','8','9','10','11','12'),
             array('AM','PM'),
-            "%Y&#24180;%m&#26376;%d&#26085; %H:%M",
-            "%Y&#24180;%m&#26376;%d&#26085;",
+            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
+            "%Y&#24180;%b&#26376;%e&#26085;",
             "%H:%M",
-            "%Y&#24180;%m&#26376;",
-            "%Y&#24180;",
+            "%Y&#24180;%b&#26376;",
+            "%b&#26376;%e&#26085;",
           ),
 
     'et' => array(
@@ -1227,6 +1227,12 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     $thumb_w = $src_w;
     $thumb_h = $src_h;
 
+    $name_w = 'auto'; $name_h = 'auto';
+    if ($width > 0)
+        $name_w = $width;
+    if ($height > 0)
+        $name_h = $height;
+
     if ($scale > 0) {
         $thumb_w = $src_w * $scale / 100;
         $thumb_h = $src_h * $scale / 100;
@@ -1247,8 +1253,8 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     $patterns[2] = '/%f/';
     $patterns[3] = '/%i/';
     $patterns[4] = '/%x/';
-    $replacement[0] = $thumb_w;
-    $replacement[1] = $thumb_h;
+    $replacement[0] = $name_w;
+    $replacement[1] = $name_h;
     $replacement[2] = $basename;
     $replacement[3] = $id;
     $replacement[4] = $ext;
@@ -1267,6 +1273,8 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
         if (!file_exists($cache_dir)) {
           mkdir($cache_dir, 0777, true);
         }
+        if (!is_writable($cache_dir))
+            return '';
         # Create thumbnail
         $dst_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
         $result = imagecopyresampled ( $dst_img, $src_img, 0, 0, 0, 0,
@@ -1293,5 +1301,17 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     $thumb_url = $blog['blog_site_url'] . $cache_path . '/' . $date_stamp . '/' . $basename;
 
     return array($thumb_url, $thumb_w, $thumb_h, $thumb_name);
+}
+
+function asset_cleanup($str) {
+    $str = preg_replace_callback('/<(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])([^>]*?)\smt:asset-id="\d+"([^>]+?>)(.*?)<\/(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])>/s', 'asset_cleanup_cb', $str);
+    return $str;
+}
+
+function asset_cleanup_cb($matches) {
+    $attr = $matches[1] . $matches[2];
+    $inner = $matches[3];
+    $attr = preg_replace('/\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=([\'"][^\'"]*?[\'"]|[Ff][Aa][Ll][Ss][Ee])/', '', $attr);
+    return '<span' . $attr . $inner . '</span>';
 }
 ?>

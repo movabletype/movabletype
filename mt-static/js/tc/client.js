@@ -78,8 +78,9 @@ TC.Client.call = function( param )
             contents = param['arguments'];
         } else {
             var args = new Array();
+            var e = encodeURIComponent || escapeURI || escape;
             for( var a in param['arguments'] )
-                args[ args.length ] = a + '=' + encodeURIComponent( param['arguments'][a] );
+                args.push( a + '=' + e( param['arguments'][a] ) );
             contents = args.join('&');
         }
         c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );

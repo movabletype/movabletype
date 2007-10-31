@@ -14,11 +14,10 @@ sub plugin {
 
 sub _permission_check {
     my $app = MT->instance;
-    return ($app->{perms} && $app->{perms}->can_edit_templates);
+    return ($app->user && $app->user->blog_perm($app->param('blog_id'))->can_edit_templates);
 }
 
 sub save {
-    warn 'Calling save...' if $MT::DebugMode;
     my $app = shift;
 
     return $app->error($app->translate('Permission denied.'))
@@ -29,7 +28,6 @@ sub save {
     my $blog_id = $q->param('blog_id');
 
     my $str = build_module_list($q->param('modules'));
-    warn 'Saving modules to blog #'.$blog_id.": $str" if $MT::DebugMode;
 
     # Load the current widgetmanager data
     my $current = $q->param('widgetmanager') || '';
@@ -55,7 +53,6 @@ sub save {
 }
 
 sub delete {
-    warn 'Calling delete...' if $MT::DebugMode;
     my $app = shift;
 
     return $app->error($app->translate('Permission denied.'))
@@ -76,7 +73,6 @@ sub delete {
 }
 
 sub edit {
-    warn 'Calling edit...' if $MT::DebugMode;
     my $app = shift;
     my (%opt) = @_;
 
@@ -103,7 +99,21 @@ sub edit {
       my @names = sort keys %$modulesets;
       my $widgetmanager = $q->param('widgetmanager') || $names[0] || '';
 
-      my @selected = split(',',$modulesets->{$widgetmanager});
+      # Find non-conflicting name for new Widget Manager
+      if ($widgetmanager eq $app->translate('New Widget Set')) { 
+          $widgetmanager = $app->translate('Widget Manager');
+          if (grep(/^\Q$widgetmanager\E$/, @names)) {
+              my $i = 1;
+              while (grep(/^\Q$widgetmanager $i\E$/, @names)) {
+                  $i++;
+              }
+              $widgetmanager = "$widgetmanager $i";
+          }
+      }
+
+      my @selected = exists($modulesets->{$widgetmanager})
+        ? split(',',$modulesets->{$widgetmanager})
+        : ();
 
       my %constraints;
       $constraints{blog_id} = $blog_id;
@@ -126,22 +136,9 @@ sub edit {
       foreach my $mid (@selected) {
           for (my $i = 0; $i <= $#avail_modules; $i++) {
               if ($avail_modules[$i]->{id} == $mid) {
-                  warn $app->translate("Moving [_1] to list of installed modules", $mid) if $MT::DebugMode;
                   push @inst_modules,$avail_modules[$i];
                   splice(@avail_modules,$i,1);
               }
-          }
-      }
-
-      # Find non-conflicting name for new Widget Manager
-      if ($widgetmanager eq 'New Widget Manager') { 
-          $widgetmanager = $app->translate('Widget Manager');
-          if (grep(/^\Q$widgetmanager\E$/, @names)) {
-              my $i = 1;
-              while (grep(/^\Q$widgetmanager $i\E$/, @names)) {
-                  $i++;
-              }
-              $widgetmanager = "$widgetmanager $i";
           }
       }
 
@@ -156,12 +153,11 @@ sub edit {
       $tmpl->param(breadcrumbs       => $app->{breadcrumbs});
       $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
       $tmpl->param(rebuild           => $opt{rebuild});
-      return $tmpl;
+      return $app->build_page($tmpl);
 }
 
 sub list {
     my $app = shift;
-    warn 'Calling list...' if $MT::DebugMode;
     my (%opt) = @_;
 
     return $app->return_to_dashboard(redirect => 1)
@@ -232,7 +228,7 @@ sub list {
     $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
     $tmpl->param(rebuild           => $opt{rebuild});
     $tmpl->param(deleted           => $opt{deleted});
-    return $tmpl;
+    return $app->build_page($tmpl);
 }
 
 sub build_module_list {
@@ -296,13 +292,13 @@ sub install_default_widgets {
     close FH;
 
     foreach (@$default_widget_templates) {
-        next if exists $modules->{$app->translate($_->{name})};
+        next if exists $modules->{$app->translate($_->{label})};
         open(TMPL, File::Spec->catfile($widgets_dir, $_->{template})) or die "Error: $!\n";
         while (my $line = <TMPL>) {
             $_->{text} .= $line;
         }
         close TMPL;
-        $tmpl = install_module($_->{name}, $_->{text});
+        $tmpl = install_module($_->{label}, $_->{text});
         push @preinstalled, $tmpl->id;
     }
 

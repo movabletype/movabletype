@@ -16,7 +16,7 @@ our $VERSION = '1.4';
 my $plugin = MT::Plugin::Cloner->new({
     name        => "Weblog Cloner",
     version     => $VERSION,
-    description => "<MT_TRANS phrase=\"Clones a weblog and all of its contents.\">",
+    description => '<MT_TRANS phrase="Clones a weblog and all of its contents.">',
     author_name => "Six Apart, Ltd.",
     author_link => 'http://www.sixapart.com/',
     app_itemset_actions => {

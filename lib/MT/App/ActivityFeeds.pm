@@ -496,8 +496,8 @@ sub _feed_system {
     }
 
     my $args = {};
-    $args->{filter} = $filter if $filter;
-    $args->{filter_val} = $filter_val if $filter_val;
+    $args->{filter} = $filter || 'class';
+    $args->{filter_val} = $filter_val || 'system,page,entry,comment,ping,search';
     $args->{blog_id} = $blog_id if $blog_id;
     my $link = $app->base . $app->mt_uri( mode => 'view_log', args => $args );
     my $param = {

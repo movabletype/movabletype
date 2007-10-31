@@ -18,16 +18,6 @@ my $COOKIE_NAME = 'mt_user';
 use constant COMMENTER_COOKIE_NAME => "mt_commenter";
 use vars qw( %Global_actions );
 
-# Default id method turns MT::App::CMS => cms; Foo::Bar => foo/bar
-sub id {
-    my $pkg = shift;
-    my $id = ref($pkg) || $pkg;
-    # ignore the MT::App prefix as part of the identifier
-    $id =~ s/^MT::App:://;
-    $id =~ s!::!/!g;
-    return lc $id;
-}
-
 sub core_menus {
     return {};
 }
@@ -100,8 +90,9 @@ sub __massage_page_action {
         $action->{page} = $app->uri(mode => 'page_action', args => { action_name => $action->{key}, '_type' => $type } );
         $action->{page_has_params} = 1;
     }
+    $action->{core} = $plugin->isa('MT::Plugin') ? 0 : 1;
+    $action->{order} = -10000 + ($action->{order} || 0) if $action->{core};
     $action->{label} = $action->{link_text} if exists $action->{link_text};
-
     if ($plugin && !ref($action->{label})) {
         my $label = $action->{label};
         if ($plugin) {
@@ -173,8 +164,6 @@ sub page_actions {
     my $actions = $app->registry("page_actions", $type) or return;
     foreach my $a (keys %$actions) {
         $actions->{$a}{key} = $a;
-        $actions->{$a}{core} = 1
-            unless UNIVERSAL::isa($actions->{$a}{plugin}, 'MT::Plugin');
         __massage_page_action($app, $actions->{$a}, $type);
     }
     my @actions = values %$actions;
@@ -336,7 +325,9 @@ sub listing {
                 );
             }
             elsif ( !exists( $terms->{$filter_col} ) ) {
-                $terms->{$filter_col} = $val;
+                if ($class->has_column($filter_col)) {
+                    $terms->{$filter_col} = $val;
+                }
             }
             $param->{filter}     = $filter_col;
             $param->{filter_val} = $val;
@@ -727,7 +718,7 @@ sub _cb_user_provisioning {
         my $blog = MT::Blog->load($blog_id);
         if (!$blog) {
             MT->log({
-                message => MT->translate("Error loading weblog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.", $blog_id),
+                message => MT->translate("Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.", $blog_id),
                 level => MT::Log::ERROR(),
             });
             return;
@@ -739,7 +730,7 @@ sub _cb_user_provisioning {
         });
         if (!$new_blog) {
             MT->log({
-                message => MT->translate("Error provisioning weblog for new user '[_1]' using template blog #[_2].", $user->id, $blog->id),
+                message => MT->translate("Error provisioning blog for new user '[_1]' using template blog #[_2].", $user->id, $blog->id),
                 level => MT::Log::ERROR(),
             });
             return;
@@ -788,7 +779,7 @@ sub _cb_user_provisioning {
     }
     $new_blog->save
         or MT->log({
-            message => MT->translate("Error provisioning weblog for new user '[_1] (ID: [_2])'.", $user->id, $user->name),
+            message => MT->translate("Error provisioning blog for new user '[_1] (ID: [_2])'.", $user->id, $user->name),
             level => MT::Log::ERROR(),
         }), return;
     MT->log({
@@ -808,7 +799,7 @@ sub _cb_user_provisioning {
     } else {
         MT->log({
             message => MT->translate(
-                "Error assigning weblog administration rights to user '[_1] (ID: [_2])' for weblog '[_3] (ID: [_4])'. No suitable weblog administrator role was found.",
+                "Error assigning blog administration rights to user '[_1] (ID: [_2])' for blog '[_3] (ID: [_4])'. No suitable blog administrator role was found.",
                 $user->name, $user->id, $new_blog->name, $new_blog->id,),
             level => MT::Log::ERROR(),
             class => 'system',
@@ -1148,6 +1139,7 @@ sub login {
         $author->name($ctx->{username}) if $ctx->{username};
         $author->type(MT::Author::AUTHOR());
         $author->status(MT::Author::ACTIVE());
+        $author->auth_type($app->config->AuthenticationModule);
         my $saved = MT::Auth->new_user($app, $author);
         $saved = $author->save unless $saved;
 
@@ -1419,7 +1411,7 @@ sub _send_comment_notification {
         );
         my $body = MT->build_email( 'new-comment.tmpl', \%param );
         MT::Mail->send( \%head, $body )
-          or return $app->handle_error( MT::Mail->errstr() );
+		  or return $app->error( MT::Mail->errstr() );
     }
 }
 
@@ -1643,8 +1635,8 @@ sub run {
             foreach my $code (@handlers) {
                 if (ref $code eq 'HASH') {
                     my $meth_info = $code;
-                    $requires_login = exists $meth_info->{requires_login}
-                        ? $meth_info->{requires_login} : $requires_login;
+                    $requires_login = $requires_login & $meth_info->{requires_login}
+                        if exists $meth_info->{requires_login};
                 }
             }
 
@@ -1988,20 +1980,21 @@ sub load_widgets {
     # Any numeric suffix is just a means to distinguish
     # the instance of the widget from other instances.
     # The actual widget id is this minus the instance number.
+    my $html_head = '';
+    my $js_include = '';
     foreach my $widget_inst (@ordered_list) {
         my $widget_id = $widget_inst;
         $widget_id =~ s/-\d+$//;
         my $widget = $all_widgets->{$widget_id};
         next unless $widget;
         my $widget_cfg = $widgets->{$widget_inst} || {};
-        my $widget_param = $widget_cfg->{param} || {};
+        my $widget_param = { %$param, %{ $widget_cfg->{param} || {} } };
         my $tmpl_name = $widget->{template};
 
         my $p = $widget->{plugin};
         my $tmpl;
         if ($p) {
             $tmpl = $p->load_tmpl($tmpl_name);
-            $app->set_default_tmpl_params($tmpl);
         } else {
             # This is probably never used since all
             # widgets in reality are provided through
@@ -2012,27 +2005,40 @@ sub load_widgets {
 
         $num++;
         my $set = $widget->{set} || $widget_cfg->{set} || 'main';
-        local $param->{blog_id} = $blog_id;
-        local $param->{widget_block} = $set;
-        local $param->{widget_id} = $widget_inst;
-        local $param->{widget_scope} = $widget_set;
-        local $param->{widget_singular} = $widget->{singular} || 0;
-        local $param->{magic_token} = $app->current_magic;
-        my @opt_names = keys %$widget_param;
-        local @{$param}{@opt_names};
-        $param->{$_} = $widget_param->{$_} for @opt_names;
+        local $widget_param->{blog_id} = $blog_id;
+        local $widget_param->{widget_block} = $set;
+        local $widget_param->{widget_id} = $widget_inst;
+        local $widget_param->{widget_scope} = $widget_set;
+        local $widget_param->{widget_singular} = $widget->{singular} || 0;
+        local $widget_param->{magic_token} = $app->current_magic;
         if (my $h = $widget->{code} || $widget->{handler}) {
             $h = $app->handler_to_coderef($h);
-            $h->($app, $tmpl, $param);
+            $h->($app, $tmpl, $widget_param);
         }
-        $tmpl->param($param);
-        my $content = $tmpl->output($param);
+        $tmpl->param($widget_param);
+        my $ctx = $tmpl->context;
+        if ($blog) {
+            $ctx->stash('blog_id', $blog_id);
+            $ctx->stash('blog', $blog);
+        }
+        my $content = $tmpl->output();
         if (!defined $content) {
             return $app->error("Error processing template for widget $widget_id: " . $tmpl->errstr);
         }
-        $param = $tmpl->param;
+        $html_head = $tmpl->param('html_head');
+        $js_include = $tmpl->param('js_include');
         $param->{$set} ||= '';
         $param->{$set} .= $content;
+        # Widgets often need to populate script/styles/etc into
+        # the header; these are special app-template variables
+        # that collect this content and display them in the
+        # header. No other widget-parameters are to leak into the
+        # parent template parameter namespace (ie, a widget cannot
+        # set/alter the page_title).
+        $param->{html_head} = ($param->{html_head} || '') . $html_head
+            if defined $html_head;
+        $param->{js_include} = ($param->{js_include} || '') . $js_include
+            if defined $js_include;
     }
 
     if ($resave_widgets) {
@@ -2041,7 +2047,6 @@ sub load_widgets {
         $user->widgets($widget_store);
         $user->save;
     }
-
     return $param;
 }
 
@@ -2199,39 +2204,27 @@ sub load_tmpl {
     my $cfg = $app->config;
     require MT::Template;
     my $tmpl;
-    my $err;
     my @paths = $app->template_paths;
-
-    my $cache_dir;
-    if (!$app->config->NoLocking) {
-        my $path = $cfg->TemplatePath;
-        $cache_dir = File::Spec->catdir($path, 'cache');
-        undef $cache_dir if (!-d $cache_dir) || (!-w $cache_dir);
-    }
 
     my $type = {'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref'}->{ref $file}
         || 'filename';
-    eval {
-        $tmpl = MT::Template->new(
-            type => $type, source => $file,
-            path => \@paths,
-            filter => sub {
-                my ($str, $fname) = @_;
-                if ($fname) {
-                    $fname = File::Basename::basename($fname);
-                    $fname =~ s/\.tmpl$//;
-                    $app->run_callbacks("template_source.$fname", $app, @_);
-                } else {
-                    $app->run_callbacks("template_source", $app, @_);
-                }
-                return $str;
-            },
-            @p);
-    };
-    $err = $@;
+    $tmpl = MT::Template->new(
+        type => $type, source => $file,
+        path => \@paths,
+        filter => sub {
+            my ($str, $fname) = @_;
+            if ($fname) {
+                $fname = File::Basename::basename($fname);
+                $fname =~ s/\.tmpl$//;
+                $app->run_callbacks("template_source.$fname", $app, @_);
+            } else {
+                $app->run_callbacks("template_source", $app, @_);
+            }
+            return $str;
+        },
+        @p);
     return $app->error(
-        $app->translate("Loading template '[_1]' failed: [_2]", $file, $err))
-        if $err;
+        $app->translate("Loading template '[_1]' failed.", $file)) unless $tmpl;
     $tmpl->{__file} = $file if $type eq 'filename';
     $app->set_default_tmpl_params($tmpl);
     $tmpl->param($param) if $param;
@@ -2261,6 +2254,13 @@ sub set_default_tmpl_params {
     $param->{mt_product_name} = $app->translate(MT->product_name);
     $param->{language_tag} = substr($app->current_language, 0, 2);
     $param->{language_encoding} = $app->charset;
+    if (!$tmpl->param('template_filename')) {
+        if (my $fname = $tmpl->{__file}) {
+            $fname =~ s!\\!/!g;
+            $fname =~ s/\.tmpl$//;
+            $param->{template_filename} = $fname;
+        }
+    }
     $tmpl->param($param);
 }
 
@@ -2326,7 +2326,6 @@ sub build_page {
     if ($tmpl_file) {
         $tmpl_file =~ s/\.tmpl$//;
     }
-    $app->run_callbacks('template_param' . $tmpl_file, $app, $param, $tmpl);
 
     if (($mode && ($mode !~ m/delete/)) && ($app->{login_again} ||
         ($app->{requires_login} && !$app->user))) {
@@ -2345,10 +2344,14 @@ sub build_page {
     my $blog = $app->blog;
     $tmpl->context()->stash('blog', $blog) if $blog;
 
-    my $output = $app->build_page_in_mem($tmpl, $param);
+    $tmpl->param($param) if $param;
+    $app->run_callbacks('template_param' . $tmpl_file, $app, $tmpl->param, $tmpl);
+
+    my $output = $app->build_page_in_mem($tmpl);
     return unless defined $output;
-    $app->run_callbacks('template_output'.$tmpl_file, $app, \$output, $param, $tmpl);
-    $output;
+
+    $app->run_callbacks('template_output' . $tmpl_file, $app, \$output, $tmpl->param, $tmpl);
+    return $output;
 }
 
 sub build_page_in_mem {
@@ -2528,17 +2531,6 @@ sub app_path {
 
 sub envelope { '' }
 
-sub static_path {
-    my $app = shift;
-    my $spath = $app->config->StaticWebPath;
-    if (!$spath) {
-        $spath = $app->path . 'mt-static/';
-    } else {
-        $spath .= '/' unless $spath =~ m!/$!;
-    }
-    $spath;
-}
-
 sub script {
     my $app = shift;
     return $app->{__script} if exists $app->{__script};
@@ -2645,6 +2637,11 @@ sub blog {
 
 sub log {
     my $app = shift;
+    unless ($MT::plugins_installed) {
+        # finish init_schema here since we have to log something
+        # to the database.
+        $app->init_schema();
+    }
     my($msg) = @_;
     require MT::Log;
     my $log = MT::Log->new;
@@ -2718,26 +2715,6 @@ sub document_root {
     $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
     $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
     return $cwd;
-}
-
-sub static_file_path {
-    my $app = shift;
-    return $app->{__static_file_path}
-        if exists $app->{__static_file_path};
-
-    my $path = $app->config('StaticFilePath');
-    return $app->{__static_file_path} = $path if $path && -d $path;
-
-    # Attempt to derive StaticFilePath based on environment
-    my $web_path = $app->config->StaticWebPath || 'mt-static';
-    $web_path =~ s!^https?://[^/]+/!!;
-    my $doc_static_path = File::Spec->catdir($app->document_root(), $web_path);
-    return $app->{__static_file_path} = $doc_static_path
-        if -d $doc_static_path;
-    my $mtdir_static_path = File::Spec->catdir($app->mt_dir, 'mt-static');
-    return $app->{__static_file_path} = $mtdir_static_path
-        if -d $mtdir_static_path;
-    return;
 }
 
 sub errtrans {
@@ -3184,8 +3161,8 @@ mt.cgi).
 
 =head2 $app->blog
 
-Returns the active weblog, if available. The I<blog_id> query
-parameter identifies this weblog.
+Returns the active blog, if available. The I<blog_id> query
+parameter identifies this blog.
 
 =head2 $app->touch_blogs
 

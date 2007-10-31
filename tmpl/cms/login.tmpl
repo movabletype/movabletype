@@ -64,17 +64,22 @@ TC.attachLoadEvent(init);
         </mt:if>
     </mt:if>
 </mt:if>
-    <fieldset>
 <mt:unless name="delegate_auth">
     <mt:var name="login_fields">
-        <div class="left">
-            <input type="submit" name="submit" value="<__trans phrase="Sign In">" />
-        </div>
     <mt:if name="can_recover_password">
-        <div class="right"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></div>
+        <div class="left"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></div>
     </mt:if>
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Sign In (s)">"
+                    class="primary-button"
+                    ><__trans phrase="Sign In"></button>
+            </div>
+        </div>
 </mt:unless>
-    </fieldset>
 </form>
 
 <mt:include name="include/chromeless_footer.tmpl">

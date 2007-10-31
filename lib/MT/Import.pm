@@ -45,12 +45,12 @@ sub core_import_formats {
         'import_mt' => {
             label => 'Movable Type',
             type => 'MT::ImportExport',
-            handler => 'MT::ImportExport::import',
+            handler => 'MT::ImportExport::import_contents',
         },
         'import_mt_format' => {
             label => 'Another system (Movable Type format)',
             type => 'MT::ImportExport',
-            handler => 'MT::ImportExport::import',
+            handler => 'MT::ImportExport::import_contents',
             options => [ 'title_start', 'title_end', 'default_status' ],
             options_template => 'import_others.tmpl',
         }
@@ -124,7 +124,7 @@ sub _get_stream_iterator {
 }
 
 
-sub import {
+sub import_contents {
     my $self = shift;
     my %param = @_;
     my $stream = delete $param{Stream};
@@ -225,7 +225,7 @@ MT::Import
 
 =head1 METHODS
 
-=head2 import(%param)
+=head2 import_contents(%param)
 
 This method is called from CMS when user decided to import files in a selected format.
 This method calls selected importer's method to do actual imports.

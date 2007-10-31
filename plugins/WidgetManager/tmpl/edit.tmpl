@@ -1,11 +1,12 @@
 <mt:setvarblock name="page_title"><__trans phrase="Edit Widget Set"></mt:setvarblock>
+<$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">plugins/WidgetManager/styles/app.css" type="text/css" />
 <script type="text/javascript" src="<mt:var name="static_uri">plugins/WidgetManager/js/app.js"></script>
 <script type="text/javascript">
 <!--
-var colWidth = 300;
-var modWidth = 225;
+var colWidth = 350;
+var modWidth = 275;
 var modHeight = 30;
 var gCols;
 
@@ -52,7 +53,7 @@ function init () {
     gCols[0].addModule('<mt:var name="id">');
 </mt:loop>
 
-    gCols[1] = new Column('available-column', 1, 272);
+    gCols[1] = new Column('available-column', 1, 322);
 
 <mt:loop name="available">
     gCols[1].addModule('<mt:var name="id">');
@@ -292,7 +293,7 @@ TC.attachLoadEvent( init );
 <div id="msg-block">
 <mt:if name="rebuild">
 <mtapp:statusmsg id="saved-msg" class="success" rebuild="all">
-    <__trans phrase="Your changes to the Widget Set have been saved."> <mt:include name="include/rebuild_stub.tmpl">
+    <__trans phrase="Your changes to the Widget Set have been saved.">
 </mtapp:statusmsg>
 </mt:if>
 </div>
@@ -303,47 +304,56 @@ TC.attachLoadEvent( init );
       <input type="hidden" name="__mode" value="save_widget" />
       <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
       <input type="hidden" name="old_name" id="old_name" value="<mt:var name="name">" />
+      <input type="hidden" name="modules" value="" />
 
       <fieldset>
       <mtapp:setting
           id="name"
           label="<__trans phrase="Set Name">">
-          <input name="name" id="name" value="<mt:var name="name">" />
+          <div class="textarea-wrapper">
+              <input name="name" id="name" class="full-width" value="<mt:var name="name">" />
+          </div>
       </mtapp:setting>
 
       <mtapp:setting
           id="name"
-          label="<__trans phrase="Drag and drop the widgets you want into the <strong>Installed</strong> column.">">
+          label="<__trans phrase="Drag and drop the widgets you want into the Installed column.">"
+      >
 
         <div id="stage" class="pkg">
-            <div id="installed-column" class="pkg"><p><__trans phrase="Installed Widgets"></p></div>
+            <div id="installed-column" class="pkg">
+                <p><__trans phrase="Installed Widgets"></p>
+            <mt:loop name="installed">
+                <div id="module-<mt:var name="id">" class="module pkg">
+                  <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
+                  <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
+                </div>
+            </mt:loop>
+            </div>
             <div id="center-column" class="pkg">&nbsp;</div>
-            <div id="available-column" class="pkg"><p><__trans phrase="Available Widgets"></p></div>
-        
-        <mt:loop name="installed">
-            <div id="module-<mt:var name="id">" class="module pkg">
-              <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
-              <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new">edit</a></div>
+            <div id="available-column" class="pkg">
+                <p><__trans phrase="Available Widgets"></p>
+            <mt:loop name="available">
+                <div id="module-<mt:var name="id">" class="module pkg">
+                  <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
+                  <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
+                </div>
+            </mt:loop>
             </div>
-        </mt:loop>
-        <mt:loop name="available">
-            <div id="module-<mt:var name="id">" class="module pkg">
-              <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
-              <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new">edit</a></div>
-            </div>
-        </mt:loop>
-        
             <div id="stage-drop">&nbsp;</div>
-            <br class="clr" />
         </div>
       </mtapp:setting>
-
-        <input type="hidden" name="__mode" value="save_widget" />
-        <input type="hidden" name="modules" value="" />
-        <div class="action-buttons">
-            <input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
-        </div>
       </fieldset>
+
+    <mt:setvarblock name="action_buttons">
+        <button
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+            class="primary-button"
+            ><__trans phrase="Save Changes"></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
     </form>
 </div>
 

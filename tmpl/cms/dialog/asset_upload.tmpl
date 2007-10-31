@@ -28,8 +28,13 @@ function setExtraPath(sel) {
 <p><__trans phrase="Your system or blog administrator needs to publish the blog before you can upload files. Please contact your system or blog administrator."></p>
     </mt:if>
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg">
-        <input onclick="closeDialog(); return false;" type="button" value="<__trans phrase="Close">" />
+    <div class="actions-bar-inner pkg actions">
+        <button
+            onclick="closeDialog(); return false"
+            type="submit"
+            accesskey="x"
+            title="<__trans phrase="Close (x)">"
+            ><__trans phrase="Close"></button>
     </div>
 </div> 
 

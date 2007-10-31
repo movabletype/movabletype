@@ -1,15 +1,9 @@
 [%# Layout alterations for wide themes like Fleur, Flowers, and Trees. %]
 
 #container-inner {
+    width: 100%;
     margin-right: 0;
     margin-left: 0;
-}
-
-.layout-wtt #container-inner,
-.layout-twt #container-inner,
-.layout-wt #container-inner,
-.layout-tw #container-inner {
-    width: 100%;
 }
 
 #header-inner,

@@ -45,7 +45,6 @@ class MTUtilCaptcha extends BaseCaptchaProvider {
 <img src=\"$cgipath$commentscript/captcha/$blog_id/$token\" width=\"150\" height=\"35\" /><br />
 <input name=\"captcha_code\" id=\"captcha-code\" value=\"\" />
 <p>$description</p>
-</div>
 </div>";
         return $form;
     }

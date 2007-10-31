@@ -48,6 +48,15 @@ __PACKAGE__->install_properties(
     }
 );
 
+sub class_label {
+    MT->translate("Permission");
+}
+
+sub class_label_plural {
+    MT->translate("Permissions");
+}
+
+
 sub user {
     my $perm = shift;
 

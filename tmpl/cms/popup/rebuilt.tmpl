@@ -15,7 +15,11 @@
     <mt:if name="is_entry">
     <__trans phrase="Your [_1] has been published." params="<mt:var name="type" escape="html">">
     <mt:else>
-    <__trans phrase="Your [_1] pages have been published." params="<mt:var name="type" escape="html">">
+    <mt:if name="archives">
+    <__trans phrase="Your [_1] archives have been published." params="<mt:var name="type" escape="html">">
+    <mt:else>
+    <__trans phrase="Your [_1] templates have been published." params="<mt:var name="type" escape="html">">
+    </mt:if>
     </mt:if>
     </mt:if>
     </mt:if>
@@ -26,9 +30,24 @@
     </mt:if>
 </mtapp:statusmsg>
 
-<div class="right">
-<input type="button" onclick="window.location='<mt:var name="script_url">?__mode=rebuild_confirm&amp;blog_id=<mt:var name="blog_id">'" value="<__trans phrase="Publish Again">" accesskey="r" />
-<input type="button" onclick="window.close()" value="<__trans phrase="Close">" accesskey="c" />
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions right">
+        <button
+            onclick="window.close()"
+            type="submit"
+            accesskey="x"
+            title="<__trans phrase="Close (x)">"
+            class="primary-button"
+            ><__trans phrase="Close"></button>
+        <button
+            onclick="window.location='<mt:var name="script_url">?__mode=rebuild_confirm&amp;blog_id=<mt:var name="blog_id">'"
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Publish Again (s)">"
+            ><__trans phrase="Publish Again"></button>
+            
+    </div>
 </div>
+
 
 <mt:include name="include/chromeless_footer.tmpl">

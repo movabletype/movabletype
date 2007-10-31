@@ -20,8 +20,6 @@
     display: block;
     position: absolute;
     overflow: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
     left: 0;
     top: 0;
     width: 0;

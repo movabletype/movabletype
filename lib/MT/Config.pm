@@ -17,6 +17,14 @@ __PACKAGE__->install_properties({
     datasource => 'config',
 });
 
+sub class_label {
+    MT->translate("Configuration");
+}
+
+sub class_label_plural {
+    MT->translate("Configuration");
+}
+
 1;
 __END__
 

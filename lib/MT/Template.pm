@@ -60,6 +60,14 @@ use MT::Builder;
 use MT::Blog;
 use File::Spec;
 
+sub class_label {
+    MT->translate("Template");
+}
+
+sub class_label_plural {
+    MT->translate("Templates");
+}
+
 sub new {
     my $pkg = shift;
     my (%param) = @_;
@@ -88,14 +96,15 @@ sub new_file {
             $tmpl->{include_filter}->(\$contents, $file);
         }
         $tmpl->text($contents);
+        return $tmpl;
     }
-    return $tmpl;
+    return;                     # load_file errror;
 }
 
 sub new_string {
     my $pkg = shift;
     my ($str, %param) = @_;
-        my $tmpl = $pkg->new;
+    my $tmpl = $pkg->new;
     $tmpl->{include_path} = $param{path};
     $tmpl->{include_filter} = $param{filter};
     if (ref($str) && defined($$str)) {

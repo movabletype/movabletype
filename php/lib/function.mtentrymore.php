@@ -24,7 +24,15 @@ function smarty_function_mtentrymore($args, &$ctx) {
             }
         }
     }
-
-    return $text;
+    if (isset($args['words'])) {
+        require_once("MTUtil.php");
+        return first_n_text($text, $args['words']);
+    } else {
+        if (preg_match('/\smt:asset-id="\d+"/', $text)) {
+            require_once("MTUtil.php");
+            $text = asset_cleanup($text);
+        }
+        return $text;
+    }
 }
 ?>

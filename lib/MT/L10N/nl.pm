@@ -14,21 +14,8 @@ use vars qw( @ISA %Lexicon );
 
 %Lexicon = (
 
-## php/plugins/init.Date-basedCategoryArchives.php
-	'Category Yearly' => 'Categorie per jaar',
-	'Category Monthly' => 'Categorie per maand',
-	'Category Daily' => 'Categorie per dag',
-	'Category Weekly' => 'Categorie per week',
-
-## php/plugins/init.AuthorArchives.php
-	'Author' => 'Auteur',
-	'Author (#' => 'Auteur (#',
-	'Author Yearly' => 'Auteur per jaar',
-	'Author Monthly' => 'Auteur per maand',
-	'Author Daily' => 'Auteur per dag',
-	'Author Weekly' => 'Auteur per week',
-
 ## php/lib/function.mtauthordisplayname.php
+	'Author (#' => 'Auteur (#',
 
 ## php/lib/function.mtproductname.php
 	'$short_name [_1]' => '$short_name [_1]',
@@ -43,7 +30,7 @@ use vars qw( @ISA %Lexicon );
 	'No' => 'Nee',
 	'Comments' => 'Reacties',
 	'Preview' => 'Voorbeeld',
-	'Submit' => 'Invoeren', # Translate - New
+	'Submit' => 'Invoeren',
 	'You are not signed in. You need to be registered to comment on this site.' => 'U bent niet aangemeld.  U moet geregistreerd zijn om te kunnen reageren op deze website.',
 	'Sign in' => 'Aanmelden',
 	'. Now you can comment.' => '. Nu kunt u reageren.',
@@ -74,9 +61,18 @@ use vars qw( @ISA %Lexicon );
 	'Monthly' => 'Maandelijks',
 	'Daily' => 'Dagelijks',
 	'Weekly' => 'Wekelijks',
+	'Author' => 'Auteur',
+	'Author Yearly' => 'Auteur per jaar',
+	'Author Monthly' => 'Auteur per maand',
+	'Author Daily' => 'Auteur per dag',
+	'Author Weekly' => 'Auteur per week',
+	'Category Yearly' => 'Categorie per jaar',
+	'Category Monthly' => 'Categorie per maand',
+	'Category Daily' => 'Categorie per dag',
+	'Category Weekly' => 'Categorie per week',
 
 ## default_templates/entry_metadata.mtml
-	'By [_1] on [_2]' => 'Door [_1] op [_2]', # Translate - New
+	'By [_1] on [_2]' => 'Door [_1] op [_2]',
 	'Permalink' => 'Permalink',
 	'Comments ([_1])' => 'Reacties ([_1])',
 	'TrackBacks ([_1])' => 'TrackBacks ([_1])',
@@ -127,7 +123,7 @@ use vars qw( @ISA %Lexicon );
 	'Author Monthly Archives' => 'Auteursarchieven per maand',
 
 ## default_templates/comment_form.mtml
-	'Leave a comment' => 'Laat een reactie achter', # Translate - New
+	'Leave a comment' => 'Laat een reactie achter',
 	'Remember personal info?' => 'Persoonijke gegevens onthouden?',
 	'Cancel' => 'Annuleren',
 
@@ -143,9 +139,9 @@ use vars qw( @ISA %Lexicon );
 	'Main Index' => 'Hoofdindex',
 
 ## default_templates/comment_response.mtml
-	'Comment Submitted' => 'Reactie achtergelaten', # Translate - New
+	'Comment Submitted' => 'Reactie achtergelaten',
 	'Confirmation...' => 'Bevestiging',
-	'Your comment has been submitted!' => 'Uw reactie is ingediend!', # Translate - New
+	'Your comment has been submitted!' => 'Uw reactie is ingediend!',
 	'Comment Pending' => 'Reactie in behandeling',
 	'Thank you for commenting.' => 'Bedankt voor uw reactie.',
 	'Your comment has been received and held for approval by the blog owner.' => 'Uw reactie is ontvangen en zal worden opgeslagen tot de eigenaar van deze weblog goedkeuring geeft voor publicatie.',
@@ -154,13 +150,13 @@ use vars qw( @ISA %Lexicon );
 	'Return to the <a href="[_1]">original entry</a>.' => 'Ga terug naar het <a href="[_1]">oorspronkelijke bericht</a>.',
 
 ## default_templates/sidebar_3col.mtml
-	'About this Entry' => 'Over dit bericht', # Translate - New
-	'About this Archive' => 'Over dit archief', # Translate - Case
+	'About this Entry' => 'Over dit bericht',
+	'About this Archive' => 'Over dit archief',
 	'About Archives' => 'Over archieven',
 	'This page contains links to all the archived content.' => 'Deze pagina bevat een link naar alle gearchiveerde inhoud',
-	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Deze pagina bevat één bericht door [_1] gepubliceerd op <em>[_2]</em>.', # Translate - New
-	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> was het vorige bericht op deze weblog.', # Translate - New
-	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> is het volgende bericht op deze weblog.', # Translate - New
+	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Deze pagina bevat één bericht door [_1] gepubliceerd op <em>[_2]</em>.',
+	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> was het vorige bericht op deze weblog.',
+	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> is het volgende bericht op deze weblog.',
 	'This page is a archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Deze pagina is een archief met berichten in de categorie <strong>[_1]</strong> op <strong>[_2]</strong>.',
 	'<a href="[_1]">[_2]</a> is the previous archive.' => '<a href="[_1]">[_2]</a> is het vorige archief.',
 	'<a href="[_1]">[_2]</a> is the next archive.' => '<a href="[_1]">[_2]</a> is het volgende archief.',
@@ -172,27 +168,25 @@ use vars qw( @ISA %Lexicon );
 	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'Deze pagina is een archief van berichten op <strong>[_2]</strong> gerangschikt van nieuw naar oud',
 	'Find recent content on the <a href="[_1]">main index</a>.' => 'Ontdek recentere inhoud op de <a href="[_1]">hoofdindexpagina</a>.',
 	'Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content.' => 'Ontdek recentere inhoud op de <a href="[_1]">hoofdindexpagina</a of kijk in de <a href="[_2]">archievens</a> om alle inhoud te vinden.',
-	'Recent Entries' => 'Recente berichten', # Translate - New
+	'Tag Cloud' => 'Tagwolk',
 	'[_1] ([_2])' => '[_1] ([_2])',
 	'[_1] <a href="[_2]">Archives</a>' => '[_1] <a href="[_2]">Archieven</a>',
-	'Tag Cloud' => 'Tagwolk', # Translate - Case
+	'[_1]: Monthly Archives' => '[_1]: Maandelijkse archieven',
+	'Subscribe to feed' => 'Inschrijven op feed',
+	'Subscribe to this blog\'s feed' => 'Inschrijven op de feed van deze weblog',
+	'Powered by Movable Type [_1]' => 'Aangedreven door Movable Type [_1]',
 	'If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&ldquo;.' => 'Als u een RSS lezer gebruikt, kunt u zich inschrijven op een feed met alle toekomstige berichten getagd als &ldquo;<$MTSearchString$>&ldquo;.',
 	'If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&ldquo;.' => 'Als u een RSS lezer gebruikt, kunt u zich inschrijven op een feed met alle toekomstige berichten die &ldquo;<$MTSearchString$>&ldquo; bevatten.',
 	'Feed Subscription' => 'Feed inschrijving',
-	'(<a href="[_1]">What is this?</a>)' => '(<a href="[_1]">Wat is dit?</a>)',
-	'Subscribe to feed' => 'Inschrijven op feed',
-	'[_1]: Monthly Archives' => '[_1]: Maandelijkse archieven',
-	'Subscribe to this blog\'s feed' => 'Inschrijven op de feed van deze weblog',
-	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Deze weblog valt onder een <a href="[_1]">Creative Commons Licentie</a>.',
-	'Powered by Movable Type [_1]' => 'Aangedreven door Movable Type [_1]',
+	'Recent Entries' => 'Recente berichten',
 
 ## default_templates/rss.mtml
 	'Copyright [_1]' => 'Copyright [_1]',
 
 ## default_templates/javascript.mtml
 	'You do not have permission to comment on this blog.' => 'U heeft geen permissie om reacties achter te laten op deze weblog',
-	'Sign in</a> to comment on this entry.' => 'Meld u aan</a> om op dit bericht te reageren.', # Translate - New
-	'Sign in</a> to comment on this entry,' => 'Meld u aan</a> om op dit bericht te reageren,', # Translate - New
+	'Sign in</a> to comment on this entry.' => 'Meld u aan</a> om op dit bericht te reageren.',
+	'Sign in</a> to comment on this entry,' => 'Meld u aan</a> om op dit bericht te reageren,',
 	'or ' => 'of',
 	'comment anonymously.' => 'reageer anoniem',
 
@@ -203,14 +197,16 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/trackbacks.mtml
 	'[_1] TrackBacks' => '[_1] TrackBacks',
-	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'Hieronder ziet u links naar blogs die verwijzen naar dit bericht: <a href="[_1]">[_2]</a>.', # Translate - New
+	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'Hieronder ziet u links naar blogs die verwijzen naar dit bericht: <a href="[_1]">[_2]</a>.',
 	'TrackBack URL for this entry: <span id="trackbacks-link">[_1]</span>' => 'TrackBack URL voor dit bericht: <span id="trackbacks-link">[_1]</span>',
 	'&raquo; <a rel="nofollow" href="[_1]">[_2]</a> from [_3]' => '&raquo; <a rel="nofollow" href="[_1]">[_2]</a> van [_3]',
 	'[_1] <a rel="nofollow" href="[_2]">Read More</a>' => '[_1] <a rel="nofollow" href="[_2]">Meer lezen</a>',
 	'Tracked on <a href="[_1]">[_2]</a>' => 'Getracked op <a href="[_1]">[_2]</a>',
 
 ## default_templates/footer.mtml
+	'Sidebar - 2 Column Layout' => 'Zijkolom - Tweekolomslay-out',
 	'Sidebar - 3 Column Layout' => 'Zijkolom - Driekolomslay-out',
+	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Deze weblog valt onder een <a href="[_1]">Creative Commons Licentie</a>.',
 
 ## default_templates/comment_detail.mtml
 	'[_1] [_2] said:' => '[_1] [_2] zei:',
@@ -322,8 +318,7 @@ use vars qw( @ISA %Lexicon );
 	'Error creating directory [_1] for blog #[_2].' => 'Fout bij het aanmaken van map [_1] voor blog #[_2].',
 	'Error provisioning weblog for new user \'[_1] (ID: [_2])\'.' => 'Fout bij aanmaken van weblog voor nieuwe gebruiker \'[_1] (ID: [_2])\'.',
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Blog \'[_1] (ID: [_2])\' voor gebruiker \'[_3] (ID: [_4])\' werd aangemaakt.',
-	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => '
-    Fout bij het toekennen van weblogadministrator rechten aan gebruiker \'[_1] (ID: [_2])\' op weblog \'[_3] (ID: [_4])\'. Er werd geen gepaste weblog administrator rol gevonden.',
+	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Fout bij het toekennen van weblogadministrator rechten aan gebruiker \'[_1] (ID: [_2])\' op weblog \'[_3] (ID: [_4])\'. Er werd geen gepaste weblog administrator rol gevonden.',
 	'The login could not be confirmed because of a database error ([_1])' => 'Het aanmelden kon niet worden bevestigd wegens een databaseprobleem ([_1])',
 	'Permission denied.' => 'Toestemming geweigerd.',
 	'Invalid login.' => 'Ongeldige gebruikersnaam.',
@@ -342,6 +337,7 @@ use vars qw( @ISA %Lexicon );
 	'Unknown action [_1]' => 'Onbekende actie [_1]',
 	'Warnings and Log Messages' => 'Waarschuwingen en logberichten',
 	'Removed [_1].' => '[_1] verwijderd.',
+	'Loading template \'[_1]\' failed.' => 'Laden van sjabloon \'[_1]\' mislukt.', # Translate - New
 	'http://www.movabletype.com/' => 'http://www.movabletype.com/',
 
 ## lib/MT/Page.pm
@@ -409,23 +405,23 @@ use vars qw( @ISA %Lexicon );
 	'Publish Future Posts' => 'Geplande berichten publiceren',
 	'Junk Folder Expiration' => 'Vervaldatum spam-map',
 	'Remove Temporary Files' => 'Tijdelijke bestanden verwijderen',
-	'Remove Expired User Sessions' => 'Verlopen gebruikerssessies verwijderen', # Translate - New
+	'Remove Expired User Sessions' => 'Verlopen gebruikerssessies verwijderen',
 
 ## lib/MT/Asset/Audio.pm
-	'Audio' => 'Audio', # Translate - New
+	'Audio' => 'Audio',
 
 ## lib/MT/Asset/Video.pm
-	'Video' => 'Video', # Translate - New
-	'Videos' => 'Foto\'s', # Translate - New
+	'Video' => 'Video',
+	'Videos' => 'Foto\'s',
 
 ## lib/MT/Asset/Image.pm
 	'Image' => 'Afbeelding',
 	'Images' => 'Afbeeldingen',
 	'Actual Dimensions' => 'Echte afmetingen',
-	'[_1] x [_2] pixels' => '[_1] x [_2] pixels', # Translate - New
+	'[_1] x [_2] pixels' => '[_1] x [_2] pixels',
 	'Error scaling image: [_1]' => 'Fout bij het schalen van de afbeelding: [_1]',
 	'Error creating thumbnail file: [_1]' => 'Fout bij het aanmaken van een thumbnail-bestand: [_1]',
-	'%f-thumb-%wx%h%x' => '%f-thumb-%wx%h%x', # Translate - New
+	'%f-thumb-%wx%h%x' => '%f-thumb-%wx%h%x',
 	'Can\'t load image #[_1]' => 'Kan afbeelding niet laden #[_1]',
 	'View image' => 'Afbeelding bekijken',
 	'Permission denied setting image defaults for blog #[_1]' => 'Permissie geweigerd om de standaardinstellingen voor afbeeldingen te wijzigen voor blog #[_1]',
@@ -461,8 +457,6 @@ use vars qw( @ISA %Lexicon );
 	'Restoring [_1] records:' => '[_1] records aan het terugzetten:',
 	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => 'Een gebruiker met dezelfde naam \'[_1]\' werd gevonden (ID:[_2]).  Restore verving deze gebruiker door de data uit de backup.',
 	'Tag \'[_1]\' exists in the system.' => 'Tag \'[_1]\' bestaat in het systeem.',
-	'Trackback for entry (ID: [_1]) already exists in the system.' => 'TrackBack voor bericht (ID: [_1]) bestaat al in het systeem.',
-	'Trackback for category (ID: [_1]) already exists in the system.' => 'Trackback voor categorie (ID: [_1]) bestaat al in het systeem.',
 	'[_1] records restored...' => '[_1] records teruggezet...',
 
 ## lib/MT/Folder.pm
@@ -488,7 +482,6 @@ use vars qw( @ISA %Lexicon );
 	'Shown when a visitor clicks a popup-linked image.' => 'Getoond wanneer een bezoeker op een afbeelding klikt waar een popup-versie aan verbonden is.',
 	'Shown when a visitor searches the weblog.' => 'Getoond wanneer een bezoeker de zoekfunctie gebruikt om de weblog te doorzoeken.',
 	'Footer' => 'Voettekst',
-	'Sidebar - 2 Column Layout' => 'Zijkolom - Tweekolomslay-out',
 
 ## lib/MT/Plugin/JunkFilter.pm
 	'[_1]: [_2][_3] from rule [_4][_5]' => '[_1]: [_2][_3] vanwege regel [_4][_5]',
@@ -525,7 +518,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/ContextHandlers.pm
 	'Remove this widget' => 'Verwijder dit widget',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publiceer[_2] uw site om deze wijzigingen zichtbaar te maken.',
-	'Plugin Actions' => 'Plugin-mogelijkheden',
+	'Actions' => 'Acties',
 	'Warning' => 'Waarschuwing',
 	'No [_1] could be found.' => 'Er werden geen [_1] gevonden',
 	'Recursion attempt on [_1]: [_2]' => 'Recursiepoging op [_1]: [_2]',
@@ -690,10 +683,37 @@ use vars qw( @ISA %Lexicon );
 	'INDIVIDUAL_ADV' => 'Individueel',
 	'DAILY_ADV' => 'Dagelijks',
 	'WEEKLY_ADV' => 'Wekelijks',
+	'AUTHOR_ADV' => 'Auteur',
+	'AUTHOR-YEARLY_ADV' => 'Auteur per jaar',
+	'AUTHOR-MONTHLY_ADV' => 'Auteur per maand',
+	'AUTHOR-WEEKLY_ADV' => 'Auteur per week',
+	'AUTHOR-DAILY_ADV' => 'Auteur per dag',
+	'CATEGORY-YEARLY_ADV' => 'Categorie per jaar',
+	'CATEGORY-MONTHLY_ADV' => 'Categorie per maand',
+	'CATEGORY-DAILY_ADV' => 'Categorie per dag',
+	'CATEGORY-WEEKLY_ADV' => 'Categorie per week',
+	'author_display_name/index.html' => 'naam_auteur/index.html',
+	'author-display-name/index.html' => 'naam-auteur/index.html',
+	'author_display_name/yyyy/index.html' => 'naam_auteur/jjjj/index.html',
+	'author-display-name/yyyy/index.html' => 'naam-auteur/jjjj/index.html',
+	'author_display_name/yyyy/mm/index.html' => 'naam_auteur/jjjj/mm/index.html',
+	'author-display-name/yyyy/mm/index.html' => 'naam-auteur/jjjj/mm/index.html',
+	'author_display_name/yyyy/mm/day-week/index.html' => 'naam_auteur/jjjj/mm/dag-week/index.html',
+	'author-display-name/yyyy/mm/day-week/index.html' => 'naam-auteur/jjjj/mm/dag-week/index.html',
+	'author_display_name/yyyy/mm/dd/index.html' => 'naam_auteur/jjjj/mm/dd/index.html',
+	'author-display-name/yyyy/mm/dd/index.html' => 'naam-auteur/jjjj/mm/dd/index.html',
+	'category/sub_category/yyyy/index.html' => 'categorie/sub_categorie/jjjj/index.html',
+	'category/sub-category/yyyy/index.html' => 'categorie/sub-categorie/jjjj/index.html',
+	'category/sub_category/yyyy/mm/index.html' => 'categorie/sub_categorie/jjjj/mm/index.html',
+	'category/sub-category/yyyy/mm/index.html' => 'categorie/sub-categorie/jjjj/mm/index.html',
+	'category/sub_category/yyyy/mm/dd/index.html' => 'categorie/sub_categorie/jjjj/dd/index.html',
+	'category/sub-category/yyyy/mm/dd/index.html' => 'categorie/sub-categorie/jjjj/dd/index.html',
+	'category/sub_category/yyyy/mm/day-week/index.html' => 'categorie/sub_categorie/jjjj/mm/dag-week/index.html',
+	'category/sub-category/yyyy/mm/day-week/index.html' => 'categorie/sub-categorie/jjjj/mm/dag-week/index.html',
 
 ## lib/MT/Asset.pm
-	'File' => 'Bestand',
-	'Files' => 'Bestanden',
+	'Asset' => 'Mediabestand', # Translate - Case
+	'Assets' => 'Mediabestanden',
 	'Description' => 'Beschrijving',
 	'Location' => 'Locatie',
 
@@ -737,7 +757,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Invalid request' => 'Ongeldig verzoek',
 	'No such entry \'[_1]\'.' => 'Geen bericht \'[_1]\'.',
 	'You are not allowed to add comments.' => 'U heeft geen toestemming om reacties toe te voegen.',
-	'_THROTTLED_COMMENT' => 'In een poging om de publicatie van kwaadaardige reacties door beledigende gebruikers tegen te gaan, heb ik een functie ingeschakeld die vereist dat degene die weblogreacties verstuurt even wacht alvorens weer een publicatie te kunnen sturen. Probeer uw reactie na korte tijd nogmaals te publiceren. Hartelijk dank voor uw geduld.',
+	'_THROTTLED_COMMENT' => 'U heeft in een korte periode te veel reacties achtergelaten.  Gelieve over enige tijd opnieuw te proberen.',
 	'Comments are not allowed on this entry.' => 'Reacties op dit bericht zijn niet toegelaten.',
 	'Comment text is required.' => 'Tekst van de reactie is verplicht.',
 	'An error occurred: [_1]' => 'Er deed zich een probleem voor: [_1]',
@@ -782,7 +802,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'This module is required in order to archive files in backup/restore operation.' => 'Deze module is vereist om bestanden te archiveren bij backup/restore operaties.',
 	'This module is required in order to compress files in backup/restore operation.' => 'Deze module is vereist om bestanden te comprimeren bij backup/restore operaties.',
 	'This module is required in order to decompress files in backup/restore operation.' => 'Deze module is vereist om bestanden te decomprimeren bij backup/restore operaties.',
-	'This module and its dependencies are required in order to restore from a backup.' => 'Deze m\'n vereisten zijn vereist om te kunen restoren uit een backup.',
+	'This module and its dependencies are required in order to restore from a backup.' => 'Deze \'n vereisten zijn vereist om te kunen restoren uit een backup.',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Deze module en de modules waar ze van afhangt zijn nodig om reageerders zichzelf te laten authenticeren via OpenID providers zoals o.a. Vox en LiveJournal.',
 	'This module is required for sending mail via SMTP Server.' => 'Deze module is vereist om mail te versturen via een SMTP server.',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
@@ -803,7 +823,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'Er werd een ongeldige redirect parameter opgegeven. De eigenaar van de weblog moet een pad opgeven dat overeenkomt met het domein van de weblog.',
 	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'Het e-mail adres \'[_1]\' zit reeds in de notificatielijst voor deze weblog.',
 	'Please verify your email to subscribe' => 'Gelieve uw e-mail adres te verifiëren voor inschrijving',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => 'Er is een e-mail verstuurd naar [_1].  Om uw inschrijving te vervolledigen, 
+	'_NOTIFY_REQUIRE_CONFIRMATION' => 'Er is een e-mail verstuurd naar [_1].  Om uw inschrijving te voltooien, 
     gelieve de link te volgen die in die e-mail staat.  Dit om te bevestigen dat
     het opgegeven e-mail adres correct is en aan u toebehoort.',
 	'The address [_1] was not subscribed.' => 'Het adres [_1] werd niet ingeschreven.',
@@ -818,8 +838,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'No entries available.' => 'Geen berichten beschikbaar',
 	'Invalid request.' => 'Ongeldig verzoek.',
 	'_WARNING_PASSWORD_RESET_MULTI' => 'U staat op het punt het wachtwoord opnieuw in te stellen voor de geselecteerde gebruikers.  Nieuwe wachtwoorden zullen willekeurig worden gegenereerd en rechtstreeks naar hun e-mail adres worden verzonden.\n\nWenst u verder te gaan?',
-	'_WARNING_DELETE_USER_EUM' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker in \'wezen\' verandert.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen om al zijn permissies te verwijderen als alternatief.  Bent u zeker dat u deze gebruiker(s) wenst te verwijderen?\nGebruikers die nog bestaan in de externe directory zullen zichzelf weer kunnen aanmaken.',
-	'_WARNING_DELETE_USER' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker in \'wezen\' verandert.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen om al zijn permissies te verwijderen als alternatief.  Bent u zeker dat u deze gebruiker wenst te verwijderen?',
+	'_WARNING_DELETE_USER_EUM' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker tot \'wees\' maakt.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies verwijderen.  Bent u zeker dat u deze gebruiker(s) wenst te verwijderen?\nGebruikers die nog bestaan in de externe directory zullen zichzelf weer kunnen aanmaken.',
+	'_WARNING_DELETE_USER' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker in \'wezen\' verandert.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies te verwijderen.  Bent u zeker dat u deze gebruiker wenst te verwijderen?',
 	'Published [_1]' => 'Gepubliceerde [_1]',
 	'Unpublished [_1]' => 'Ongepubliceerde [_1]',
 	'Scheduled [_1]' => 'Geplande [_1]',
@@ -847,6 +867,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Password was reset for user \'[_1]\' (user #[_2]). Password was sent to the following address: [_3]' => 'Wachtwoord werd opnieuw ingesteld voor gebruiker \'[_1]\' (gebruiker #[_2]). Wachtwoord werd naar dit e-mail adres verstuurd: [_3]',
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Fout bij verzenden van e-mail ([_1]);  gelieve het probleem op te lossen en probeer dan opnieuw om uw wachtwoord terug te vinden.',
 	'(newly created user)' => '(nieuw aangemaakte gebruiker)',
+	'Files' => 'Bestanden',
 	'Invalid group id' => 'Ongeldig groeps-id',
 	'Users & Groups' => 'Gebruikers & Groepen',
 	'Group Roles' => 'Rollen groep',
@@ -867,12 +888,15 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Blogs' => 'Blogs',
 	'Blog Activity Feed' => 'Blogactiviteitsfeed',
 	'*User deleted*' => '*Gebruiker verwijderd*',
+	'Showing only: [_1]' => 'Enkel: [_1]',
+	'Enabled Users' => 'Ingeschakelde gebruikers', # Translate - New
+	'Disabled Users' => 'Uitgeschakelde gebruikers', # Translate - New
 	'All Feedback' => 'Alle feedback',
 	'Activity Log' => 'Activiteitlog',
 	'System Activity Feed' => 'Systeemactiviteit-feed',
 	'Activity log for blog \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Activiteitlog van blog \'[_1]\' (ID:[_2]) leeggemaakt door \'[_3]\'',
 	'Activity log reset by \'[_1]\'' => 'Activiteitlog leeggemaakt door \'[_1]\'',
-	'No blog ID' => 'Geen blog-ID',
+	'Please select a blog.' => 'Gelieve een blog te selecteren.', # Translate - New
 	'Import/Export' => 'Importeren/exporteren',
 	'Invalid parameter' => 'Ongeldige parameter',
 	'Permission denied: [_1]' => 'Toestemming geweigerd: [_1]',
@@ -932,7 +956,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'You cannot delete your own user record.' => 'U kunt uw eigen gebruikersgegevens niet verwijderen.',
 	'You have no permission to delete the user [_1].' => 'U heeft geen rechten om gebruiker [_1] te verwijderen.',
 	'Blog \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Blog \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
-	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonnee \'[_1]\' (ID:[_2]) verwijderd uit adresboek door \'[_3]\'', # Translate - New
+	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonnee \'[_1]\' (ID:[_2]) verwijderd uit adresboek door \'[_3]\'',
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Map \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
@@ -1031,7 +1055,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Archive Root' => 'Archiefroot',
 	'Site Root' => 'Siteroot',
 	'Can\'t load blog #[_1].' => 'Kan blog niet laden #[_1].',
-	'Please select a file to upload.' => 'Gelieve een bestand te selecteren om op te laden.', # Translate - New
+	'Please select a file to upload.' => 'Gelieve een bestand te selecteren om op te laden.',
 	'Before you can upload a file, you need to publish your blog.' => 'Voor u een bestand kunt opladen, moet u eerst uw weblog publiceren.',
 	'Invalid extra path \'[_1]\'' => 'Ongeldig extra pad \'[_1]\'',
 	'Can\'t make path \'[_1]\': [_2]' => 'Kan pad \'[_1]\' niet aanmaken: [_2]',
@@ -1044,7 +1068,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Bestand met de naam \'[_1]\' bestaat al; Poging tot schrijven naar tijdelijk bestand ondernomen, openen mislukt: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Fout bij schrijven van upload naar \'[_1]\': [_2]',
 	'Search & Replace' => 'Zoeken & vervangen',
-	'Assets' => 'Mediabestanden',
 	'Logs' => 'Logs',
 	'Invalid date(s) specified for date range.' => 'Ongeldige datum(s) opgegeven in datumbereik.',
 	'Error in search expression: [_1]' => 'Fout in zoekexpressie: [_1]',
@@ -1144,11 +1167,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Remove Tags...' => 'Tags verwijderen',
 	'Tags to remove from selected entries' => 'Tags te verwijderen van geselecteerde berichten',
 	'Batch Edit Entries' => 'Berichten bewerken in bulk',
-	'Publish Pages' => 'Gepublicee\'s',
-	'Unpublish Pages' => 'Niet gepublicee\'s',
-	'Tags to add to selected pages' => 'Tags om toe te voegen aan geselectee\'s',
-	'Tags to remove from selected pages' => 'Tags om te verwijderen van geselectee\'s',
-	'Batch Edit Pages' => 'pag\'s bewerken in bulk',
+	'Publish Pages' => 'Gepublice\'s',
+	'Unpublish Pages' => 'Niet gepublice\'s',
+	'Tags to add to selected pages' => 'Tags om toe te voegen aan geselecte\'s',
+	'Tags to remove from selected pages' => 'Tags om te verwijderen van geselecte\'s',
+	'Batch Edit Pages' => 'pa\'s bewerken in bulk',
 	'Tags to add to selected assets' => 'Tags om toe te voegen aan de geselecteerde mediabestanden',
 	'Tags to remove from selected assets' => 'Tags om te verwijderen van de geselecteerde mediabestanden',
 	'Unpublish TrackBack(s)' => 'Publicatie ongedaan maken',
@@ -1172,8 +1195,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Template Modules' => 'Sjabloonmodules',
 	'System Templates' => 'Systeemsjablonen',
 	'Tags with entries' => 'Tags met berichten',
-	'Tags with pages' => 'Tags met pa\'s',
+	'Tags with pages' => 'Tags met p\'s',
 	'Tags with assets' => 'Tags met mediabestanden',
+	'Authors' => 'Auteurs', # Translate - Case
 	'Create' => 'Aanmaken',
 	'Manage' => 'Beheren',
 	'Design' => 'Design',
@@ -1186,7 +1210,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Address Book' => 'Adresboek',
 	'System Information' => 'Systeeminformatie',
 	'Import' => 'Import',
-	'Export' => 'Exporteer',
+	'Export' => 'Export',
 	'System Overview' => 'Systeemoverzicht',
 	'/' => '/',
 	'<' => '<',
@@ -1297,6 +1321,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Error loading class [_1].' => 'Fout bij het laden van klasse [_1].',
 	'Creating initial blog and user records...' => 'Initiële blog en gebruiker worden aangemaakt...',
 	'Error saving record: [_1].' => 'Fout bij opslaan gegevens: [_1].',
+	'I just finished installing Movable Type [_1]!' => 'Ik heb net Movable Type [_1] geïnstalleerd!', # Translate - New
+	'Welcome to my new blog powered by Movable Type. This is the first post on my blog and was created for me automatically when I finished the installation process. But that is ok, because I will soon be creating posts of my own!' => 'Welkom op mijn nieuwe weblog aangedreven door Movable Type.  Dit is het eerste bericht op mijn blog dat automatisch voor mij werd aangemaakt op het einde van het installatieproces.  Maar dat geeft niet, want binnenkort zal ik mijn eigen berichten beginnen schrijven!', # Translate - New
+	'Movable Type also created a comment for me as well so that I could see what a comment will look like on my blog once people start submitting comments on all the posts I will write.' => 'Movable Type maakte ook al een reactie aan voor me zodat ik kan zien hoe een reactie er zal uitzien op mijn weblog zodra mensen beginnen te reageren op de berichten die ik zal schrijven.', # Translate - New
 	'Can administer the blog.' => 'Kan deze weblog beheren',
 	'Editor' => 'Redacteur',
 	'Can upload files, edit all entries/categories/tags on a blog and publish.' => 'Mag bestande opladen, alle berichten/categorieën/tags op een blog bewerken en publiceren.',
@@ -1318,7 +1345,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Error renaming PHP files. Please check the Activity Log.' => 'Fout bij het aanpassen van de bestandsnamen van PHP bestanden.  Kijk in het activiteitenlog voor details.',
 	'Cannot rename in [_1]: [_2].' => 'Kan naam niet aanpassen in [_1]: [_2]',
 	'Updating widget template records...' => 'Bezig widgetsjablooninformatie bij te werken...',
-	'Removing unused template maps...' => 'Bezig ongebruikte sjabloon-mappings te verwijderen...', # Translate - New
+	'Removing unused template maps...' => 'Bezig ongebruikte sjabloon-mappings te verwijderen...',
 	'Upgrading table for [_1]' => 'Bezig tabel te upgraden voor [_1]',
 	'Upgrading database from version [_1].' => 'Database wordt bijgewerkt van versie [_1].',
 	'Database has been upgraded to version [_1].' => 'Database is bijgewerkt naar versie [_1].',
@@ -1362,8 +1389,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Assigning user status...' => 'Gebruikersstatus wordt toegekend...',
 	'Migrating permissions to roles...' => 'Permissies aan het migreren naar rollen...',
 	'Populating authored and published dates for entries...' => 'Bezig creatie- en publicatiedatums voor berichten in te stellen...',
+	'Classifying category records...' => 'Categorieën aan het klasseren...', # Translate - New
+	'Classifying entry records...' => 'Berichten aan het klasseren...', # Translate - New
 	'Merging comment system templates...' => 'Bezig reactiesysteemsjabonen samen te voegen...',
 	'Populating default file template for templatemaps...' => 'Bezig standaard sjabloonbestand voor sjabloonmappings in te stellen...',
+	'Assigning user authentication type...' => 'Gebruikersauthenticatietype aan het toekennen...', # Translate - New
 
 ## lib/MT/Plugin.pm
 	'Publish' => 'Publiceren',
@@ -1457,33 +1487,24 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## mt-static/js/assetdetail.js
 	'No Preview Available' => 'Geen voorbeeld beschikbaar',
-	'View uploaded file' => 'Opgeladen bestand bekijken', # Translate - New
+	'View uploaded file' => 'Opgeladen bestand bekijken',
 
 ## mt-static/mt.js
-	'to delete' => 'om te verwijderen',
-	'to remove' => 'om te verwijderen',
-	'to enable' => 'om in te schakelen',
-	'to disable' => 'om uit te schakelen',
 	'delete' => 'wissen',
 	'remove' => 'verwijderen',
-	'You did not select any [_1] to [_2].' => 'U selecteerde geen [_1] om te [_2].',
-	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'Bent u zeker dat u deze rol wenst te verwijderen?  Door dit te doen worden de permissies weggenomen van gebruikers en groepen die momenteel met deze rol geassocieerd zijn.',
-	'Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.' => 'Bent u zeker dat u deze [_1] rollen wenst te verwijderen?  Door dit te doen worden de permissies weggenomen van gebruikers en groepen die momenteel met deze rollen geassocieerd zijn.',
-	'Are you sure you want to [_2] this [_1]?' => 'Bent u zeker dat u deze [_1] wenst te [_2]?',
-	'Are you sure you want to [_3] the [_1] selected [_2]?' => 'Bent u zeker dat u deze [_1] geselecteerde [_2] wenst te [_3]?',
-	'You did not select any [_1] to remove.' => 'U selecteerde geen [_1] om te verwijderen.',
-	'Are you sure you want to remove this [_1] from this group?' => 'Bent u zeker dat u deze [_1] uit deze groep wenst te verwijderen?',
-	'Are you sure you want to remove the [_1] selected [_2] from this group?' => 'Bent u zeker dat u de [_1] geselecteerde [_2] uit deze groep wenst te verwijderen?',
-	'Are you sure you want to remove this [_1]?' => 'Bent u zeker dat u deze [_1] wenst te verwijderen?',
-	'Are you sure you want to remove the [_1] selected [_2]?' => 'Bent u zeker dat u de [_1] geselecteerde [_2] wenst te verwijderen?',
 	'enable' => 'inschakelen',
 	'disable' => 'uitschakelen',
+	'You did not select any [_1] to [_2].' => 'U selecteerde geen [_1] om te [_2].',
+	'Are you sure you want to [_2] this [_1]?' => 'Bent u zeker dat u deze [_1] wenst te [_2]?',
+	'Are you sure you want to [_3] the [_1] selected [_2]?' => 'Bent u zeker dat u deze [_1] geselecteerde [_2] wenst te [_3]?',
+	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'Bent u zeker dat u deze rol wenst te verwijderen?  Door dit te doen worden de permissies weggenomen van gebruikers en groepen die momenteel met deze rol geassocieerd zijn.',
+	'Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.' => 'Bent u zeker dat u deze [_1] rollen wenst te verwijderen?  Door dit te doen worden de permissies weggenomen van gebruikers en groepen die momenteel met deze rollen geassocieerd zijn.',
 	'You did not select any [_1] [_2].' => 'U selecteerde geen [_1] [_2]',
 	'You can only act upon a minimum of [_1] [_2].' => 'U kunt enkel een handeling uitvoeren om minimaal [_1] [_2].',
 	'You can only act upon a maximum of [_1] [_2].' => 'U kunt enkel een handeling uitvoeren op maximum [_1] [_2].',
 	'You must select an action.' => 'U moet een handeling selecteren',
-	'to mark as junk' => 'om als verworpen te markeren',
-	'to remove "junk" status' => 'om niet langer als "verworpen" te markeren',
+	'to mark as spam' => 'om dit als spam aan te merken', # Translate - New
+	'to remove spam status' => 'om spamstatus te verwijderen', # Translate - New
 	'Enter URL:' => 'Voer URL in:',
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?' => 'De tag \'[_2]\' bestaat al.  Bent u zeker dat u \'[_1]\' met \'[_2]\' wenst samen te voegen?',
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?' => 'De tag \'[_2]\' bestaat al.  Bent u zeker dat u \'[_1]\' met \'[_2]\' wenst samen te voegen over alle weblogs?',
@@ -1604,16 +1625,16 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Published' => 'Gepubliceerd',
 
 ## tmpl/cms/list_member.tmpl
+	'Manage Users' => 'Gebruikers beheren', # Translate - New
 	'Quickfilters' => 'Snelfilters',
-	'All [_1]' => 'Alle [_1]',
-	'change' => 'wijzig',
-	'Showing only users whose [_1] is [_2].' => 'Enkel gebruikers worden getoond waarbij [_1] gelijk is aan [_2].',
-	'Show only [_1] where' => 'Toon enkel [_1] waar',
-	'_USER_STATUS_CAPTION' => 'status',
-	'is' => 'gelijk is aan',
-	'enabled' => 'ingeschakeld',
-	'disabled' => 'uitgeschakeld',
-	'Filter' => 'Filter',
+	'Your changes have been saved.' => 'Uw wijzigingen zijn opgeslagen.',
+	'Add a user to this blog' => 'Voeg een gebruiker toe aan deze blog',
+	'user' => 'gebruiker',
+	'users' => 'gebruikers',
+	'Are you sure you want to remove the selected user from this blog?' => 'Bent u zeker dat u de geselecteerde gebruiker wenst te verwijderen van deze weblog?', # Translate - New
+	'Are you sure you want to remove the [_1] selected users from this blog?' => 'Bent u zeker dat u de [_1] geselecteerde gebruikers wenst te verwijderen van deze weblog?', # Translate - New
+	'Remove selected user(s) (r)' => 'Geselecteerde gebruiker(s) verwijderen (r)', # Translate - New
+	'Remove' => 'Verwijder',
 
 ## tmpl/cms/list_role.tmpl
 	'Roles for [_1] in' => 'Rollen voor [1_] in',
@@ -1624,6 +1645,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Delete selected [_1] (x)' => 'Geselecteerde [_1] verwijderen (x)',
 	'Grant another role to [_1]' => 'Een andere rol toekennen aan [_1]',
 	'Create Role' => 'Rol aanmaken',
+	'_USER_STATUS_CAPTION' => 'status',
 	'In Weblog' => 'Op weblog',
 	'Via Group' => 'Via groep',
 	'Members' => 'Leden',
@@ -1647,7 +1669,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Decrease' => 'Verlaag',
 	'Increase' => 'Verhoog',
 	'More Aggressive' => 'Aggressiever',
-	'Save changes to this [_1] (s)' => 'Wijzigingen aan deze [_1] opslaan (s)', # Translate - New
+	'Save changes to this [_1] (s)' => 'Wijzigingen aan deze [_1] opslaan (s)',
 	'Save Changes' => 'Wijzigingen opslaan',
 
 ## tmpl/cms/preview_entry.tmpl
@@ -1667,10 +1689,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Create [_1]' => 'Nieuwe [_1]',
 	'Edit [_1]' => 'Bewerk [_1]',
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>' => 'Een bewaarde versie van [_1] werd automatisch opgeslagen [_3]. <a href="[_2]">automatisch opgeslagen inhoud terughalen</a>',
-	'Your [_1] has been saved.' => 'Uw [_1] is opgeslagen.', # Translate - New
-	'Your changes have been saved.' => 'Uw wijzigingen zijn opgeslagen.',
+	'Your [_1] has been saved.' => 'Uw [_1] is opgeslagen.',
 	'One or more errors occurred when sending update pings or TrackBacks.' => 'Eén of meer problemen deden zich voor bij het versturen van update pings of TrackBacks.',
-	'_USAGE_VIEW_LOG' => 'Controleer voor deze fout het <a href="#" onclick="doViewLog()">Activiteitlog</a>.',
+	'_USAGE_VIEW_LOG' => 'Controleer het <a href="[_1]">Activiteitlog</a> op deze fout.',
 	'Your customization preferences have been saved, and are visible in the form below.' => 'Uw voorkeuren zijn opgeslagen en het formulier hieronder is aangepast.',
 	'Your changes to the comment have been saved.' => 'Uw wijzigingen aan de reactie zijn opgeslagen.',
 	'Your notification has been sent.' => 'Uw notificatie is verzonden.',
@@ -1678,13 +1699,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'An error occurred while trying to recover your saved [_1].' => 'Er deed zich een fout voor bij het terughalen van uw opgeslagen [_1]',
 	'You have successfully deleted the checked comment(s).' => 'Verwijdering van de geselecteerde reactie(s) is geslaagd.',
 	'You have successfully deleted the checked TrackBack(s).' => 'U heeft de geselecteerde TrackBack(s) met succes verwijderd.',
-	'[_1] Summary' => '[_1] samenvatting', # Translate - New
+	'[_1] Summary' => '[_1] samenvatting',
 	'Created [_1] by [_2].' => '[_1] aangemaakt dooor [_2]',
 	'Last edited [_1] by [_2].' => 'Laatst bewerkte [_1] door [_2]',
 	'Published [_1].' => '[_1] gepubliceerd',
 	'This [_1] has received <a href="[_4]">[quant,_2,comment,comments]</a> and <a href="[_5]">[quant,_3,trackback,trackbacks]</a>.' => '[_1] heeft <a href="[_4]">[quant,_2,reactie,reacties]</a> en <a href="[_5]">[quant,_3,trackback,trackbacks]</a> ontvangen.',
-	'Useful Links' => 'Nuttige links',
-	'QuickPost' => 'QuickPost',
 	'Display Options' => 'Opties voor schermindeling',
 	'Fields' => 'Velden',
 	'Title' => 'Titel',
@@ -1692,22 +1711,20 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Excerpt' => 'Uittreksel',
 	'Keywords' => 'Trefwoorden',
 	'Publishing' => 'Publicatie',
-	'Actions' => 'Acties',
 	'Top' => 'Bovenaan',
 	'Both' => 'Allebei',
 	'Bottom' => 'Onderaan',
-	'Reset display options' => 'Opties schermindeling terugzetten', # Translate - New
-	'Reset display options to blog defaults' => 'Opties schermindeling terugzetten naar blogstandaard', # Translate - New
-	'Reset defaults' => 'Standaardinstellingen terugzetten', # Translate - New
-	'Save display options' => 'Opties schermindeling opslaan', # Translate - New
+	'Reset display options' => 'Opties schermindeling terugzetten',
+	'Reset display options to blog defaults' => 'Opties schermindeling terugzetten naar blogstandaard',
+	'Reset defaults' => 'Standaardinstellingen terugzetten',
+	'Save display options' => 'Opties schermindeling opslaan',
 	'OK' => 'OK',
-	'Close display options' => 'Opties schermindeling sluiten', # Translate - New
+	'Close display options' => 'Opties schermindeling sluiten',
 	'Your entry screen preferences have been saved.' => 'Uw voorkeuren voor het berichtenscherm zijn opgeslagen.',
 	'Are you sure you want to use the Rich Text editor?' => 'Bent u zeker dat u de Rich Text Editor wenst te gebruiken?',
 	'You have unsaved changes to your [_1] that will be lost.' => 'Er zijn niet opgeslagen wijzigingen aan uw [_1] die verloren zullen gaan',
 	'Publish On' => 'Publiceren op',
 	'Publish Date' => 'Publicatiedatum',
-	'Remove' => 'Verwijder',
 	'Make primary' => 'Maak dit een hoofdcategorie',
 	'Add sub category' => 'Subcategorie toevoegen',
 	'Add [_1] name' => 'Voeg [_1]naam toe',
@@ -1716,7 +1733,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Preview this [_1] (v)' => 'Voorbeeld van [_1] (v)',
 	'Delete this [_1] (v)' => 'Verwijder [_1] (v)',
 	'Share this [_1]' => 'Deel [_1] ',
-	'_external_link_target' => '_extern_link_doel',
+	'_external_link_target' => '_new',
 	'View published [_1]' => 'Bekijk gepubliceerde [_1]',
 	'&laquo; Previous' => '&laquo; Vorige',
 	'Manage [_1]' => 'Beheer [_1]',
@@ -1762,17 +1779,22 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Accept' => 'Aanvaarden',
 	'Outbound TrackBack URLs' => 'Uitgaande TrackBack URLs',
 	'View Previously Sent TrackBacks' => 'Eerder verzonden TrackBacks bekijken',
+	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.' => '<a href="[_1]">QuickPost to [_2]</a> - Sleep deze link naar de toolbar van uw browser en klik er op wanneer u op een site bent waar u over wil bloggen.', # Translate - New
 	'Auto-saving...' => 'Auto-opslaan...',
 	'Last auto-save at [_1]:[_2]:[_3]' => 'Laatste auto-opslag om [_1]:[_2]:[_3]',
 	'None selected' => 'Niets geselecteerd',
 
 ## tmpl/cms/system_check.tmpl
+	'User Counts' => 'Aantal gebruikers', # Translate - New
+	'Number of users in this system.' => 'Aantal gebruikers in dit systeem', # Translate - New
+	'Users who have logged in within 90 days are considered active in Movable Type license agreement.' => 'Gebruikers die zich in de laatste 90 dagen hebben aangemeld worden als actief beschouwd in de Movable Type licentieovereenkomst.', # Translate - New
 
 ## tmpl/cms/import.tmpl
+	'You must select a blog to import.' => 'U moet een blog selecteren om te importeren.', # Translate - New
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Importeer weblogberichten in Moveble Type uit andere Movable Type installaties of zelfs andere blogsystemen, of exporteer uw berichten om een backup of kopie te maken.',
-	'Blog to Import' => 'Blog te importeren', # Translate - New
-	'Select a blog to import.' => 'Kies een blog om te importeren', # Translate - New
-	'Select blog' => 'Selecteer blog', # Translate - Case
+	'Blog to Import' => 'Blog te importeren',
+	'Select a blog to import.' => 'Kies een blog om te importeren',
+	'Select blog' => 'Selecteer blog',
 	'Importing from' => 'Aan het importeren uit',
 	'Ownership of imported entries' => 'Eigenaarschap van geïmporteerde berichten',
 	'Import as me' => 'Importeer als mezelf',
@@ -1790,35 +1812,22 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Default category for entries (optional)' => 'Standaardcategorie voor berichten (optioneel)',
 	'You can specify a default category for imported entries which have none assigned.' => 'U kunt een standaardcategorie instellen voor geïmporteerde berichten waar er nog geen aan is toegewezen.',
 	'Select a category' => 'Categorie selecteren',
-	'Import Entries (s)' => 'Berichten importeren (s)', # Translate - New
+	'Import Entries (s)' => 'Berichten importeren (s)',
 	'Import Entries' => 'Berichten importeren',
 
 ## tmpl/cms/cfg_system_feedback.tmpl
-	'Feedback Settings: System-wide' => 'Feedbackinstellingen: over het hele systeem',
-	'This screen allows you to configure feedback and outbound TrackBack settings for the entire installation.  These settings override any similar settings for individual weblogs.' => 'Via dit scherm kunt u de instellingen voor feedback en uitgaande TrackBacks beheren voor heel de installatie.  Deze instellingen gelden boven gelijkaardige instellingen voor individuele weblogs.',
+	'System: Feedback Settings' => 'Systeem: Feedbackinstellingen', # Translate - New
 	'Your feedback preferences have been saved.' => 'Uw voorkeuren voor feedback zijn opgeslagen.',
-	'None selected.' => 'Geen geselecteerd.',
-	'Feedback Master Switch' => 'Feedback hoofdschakelaar',
-	'Disable Comments' => 'Reacties uitschakelen',
-	'This will override all individual weblog comment settings.' => 'Dit geldt boven alle instellingen voor reacties van alle individuele weblogs.',
-	'Stop accepting comments on all weblogs' => 'Stop reacties te aanvaarden op alle weblogs',
-	'Allow Registration' => 'Registratie toestaan',
-	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'Selecteer een systeembeheerder die op de hoogte gebracht moet worden wanneer nieuwe reageerders zich met succes registreren.',
-	'Allow commenters to register to Movable Type' => 'Geef reageerders de optie zich te registreren via Movable Type',
-	'Notify administrators' => 'Administrators op de hoogte brengen',
-	'Select...' => 'Selecteer...',
-	'Clear' => 'Leegmaken',
-	'System Email Address Not Set' => 'Systeem e-mail adres niet ingesteld',
-	'Note: System Email Address is not set.  Emails will not be sent.' => 'Opmerking: systeem e-mail adres is niet ingesteld.  E-mails zullen niet worden verzonden.',
-	'Disable TrackBacks' => 'TrackBacks uitschakelen',
-	'This will override all individual weblog TrackBack settings.' => 'Dit geldt boven alle instellingen voor TrackBacks van alle individuele weblogs.',
-	'Stop accepting TrackBacks on all weblogs' => 'Stop TrackBacks te aanvaarden op alle weblogs',
-	'Privacy' => 'Privacy',
+	'Feedback: Master Switch' => 'Feedback: Hoofdschakelaar', # Translate - New
+	'This will override all individual weblog settings.' => 'Deze instelling overstijgt alle instellingen op individuele blogs.', # Translate - New
+	'Disable comments for all blogs' => 'Reacties uitschakelen op alle blogs', # Translate - New
+	'Disable TrackBacks for all blogs' => 'TrackBacks uitschakelen op alle blogs', # Translate - New
 	'Outbound Notifications' => 'Uitgaande notificaties',
+	'Notification pings' => 'Notificatiepings', # Translate - New
 	'This feature allows you to disable sending notification pings when a new entry is created.' => 'Met deze optie kunt u uitgaande notificatie-pings uitschakelen wanneer een nieuw bericht is aangemaakt.',
-	'Disable notification pings' => 'Notificatie-pings uitschakelen',
+	'Disable notification pings for all blogs' => 'Notificatiepings uitschakelen op alle blogs', # Translate - New
 	'Allow outbound Trackbacks to' => 'Uitgaande TrackBacks toestaan naar',
-	'This feature allows you to limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.' => 'Deze optie maakt het mogelijk om uitgaande TrackBacks en TrackBack auto-discovery te beperken met als doel om uw installatie privé te houden.',
+	'Limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.' => 'Beperk uitgaande TrackBacks en TrackBack autodiscovery om uw installatie privé te houden.', # Translate - New
 	'Any site' => 'Elke site',
 	'No site' => 'Geen enkele site',
 	'(Disable all outbound TrackBacks.)' => '(Alle uitgaande TrackBacks uitschakelen.)',
@@ -1831,6 +1840,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Your template changes have been saved.' => 'De wijzigingen aan uw sjabloon zijn opgeslagen.',
 	'<a href="[_1]" class="rebuild-link">Publish</a> this template.' => '<a href="[_1]" class="rebuild-link">Publiceer</a> dit sjabloon.',
 	'Your [_1] has been published.' => 'Uw [_1] is opnieuw gepubliceerd.',
+	'Useful Links' => 'Nuttige links',
 	'View Published Template' => 'Gepubliceerd sjabloon bekijken',
 	'List [_1] templates' => 'Toon [_1] sjablonen',
 	'Template tag reference' => 'Sjabloontags referentie',
@@ -1838,7 +1848,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'create' => 'aanmaken',
 	'Save (s)' => 'Opslaan (s)',
 	'Save and Publish this template (r)' => 'Dit sjabloon opslaan en publiceren (r)',
-	'Save &amp; Publish' => 'Opslaan &amp; publiceren', # Translate - New
+	'Save &amp; Publish' => 'Opslaan &amp; publiceren',
 	'You must set the Template Name.' => 'U moet de naam van het sjabloon instellen',
 	'You must set the template Output File.' => 'U moet het uitvoerbestand van het sjabloon instellen.',
 	'Please wait...' => 'Even wachten...',
@@ -1864,8 +1874,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'De reactie is goedgekeurd.',
-	'Pending Approval' => 'In afwachting van goedkeuring',
-	'Comment Reported as Spam' => 'Reactie gerapporteerd als spam',
 	'comment' => 'reactie',
 	'comments' => 'reacties',
 	'Delete this [_1] (x)' => 'Verwijder [_1] (x)',
@@ -1881,6 +1889,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Unapproved' => 'Niet gekeurd',
 	'Reported as Spam' => 'Gerapporteerd als spam',
 	'View all comments with this status' => 'Alle reacties met deze status bekijken',
+	'Spam Details' => 'Spamdetails', # Translate - New
+	'Total Feedback Rating: [_1]' => 'Totale feedbackscore: [_1]', # Translate - New
+	'Test' => 'Test',
+	'Score' => 'Score',
+	'Results' => 'Resultaten',
 	'The name of the person who posted the comment' => 'De naam van de persoon die deze reactie',
 	'Trusted' => 'Vertrouwd',
 	'(Trusted)' => '(Vertrouwd)',
@@ -1910,16 +1923,13 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Comment Text' => 'Tekst reactie',
 	'Fulltext of the comment entry' => 'Volledige tekst van de reactie',
 	'Responses to this comment' => 'Antwoorden op dit bericht',
-	'Final Feedback Rating' => 'Uiteindelijke feedback-beoordeling',
-	'Test' => 'Test',
-	'Score' => 'Score',
-	'Results' => 'Resultaten',
 
 ## tmpl/cms/edit_role.tmpl
 	'Role Details' => 'Rol details',
-	'You have changed the permissions for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'U heeft de permissies van deze rol gewijzigd.  Dit verandert wat gebuikers kunnen doen die met deze rol geassocieerd zijn.  Als u dat wenst, kunt u deze rol ook opslaan met een andere naam. In het andere geval moet u zich bewust zijn van de wijzigingen voor de gebruikers met deze rol.',
 	'_USAGE_ROLE_PROFILE' => 'Op dit scherm kunt u een rol en zijn permissies bepalen.',
-	'There are [_1] User(s) with this role.' => 'Er zijn [_1] gebruikers met deze rol',
+	'List Roles' => 'Toon rollen',
+	'[quant,_1, User, Users] with this role' => '[quant,_1, gebruiker,gebruikers] met deze rol', # Translate - New
+	'You have changed the permissions for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'U heeft de permissies van deze rol gewijzigd.  Dit verandert wat gebuikers kunnen doen die met deze rol geassocieerd zijn.  Als u dat wenst, kunt u deze rol ook opslaan met een andere naam. In het andere geval moet u zich bewust zijn van de wijzigingen voor de gebruikers met deze rol.',
 	'Created by' => 'Aangemaakt door',
 	'Check All' => 'Alles aanvinken',
 	'Uncheck All' => 'Alles uitvinken',
@@ -1928,15 +1938,31 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Designing' => 'Ontwerpen',
 	'File Upload' => 'Bestanden opladen',
 	'Commenting' => 'Reageren',
-	'Duplicate Roles' => 'Dubbele rollen', # Translate - New
-	'These roles have the same permissions as this role' => 'Deze rollen hebben dezelfde permissies als deze rol', # Translate - New
+	'Duplicate Roles' => 'Dubbele rollen',
+	'These roles have the same permissions as this role' => 'Deze rollen hebben dezelfde permissies als deze rol',
+
+## tmpl/cms/cfg_registration.tmpl
+	'Registration Settings' => 'Registratie-instellingen', # Translate - New
+	'Your blog preferences have been saved.' => 'Uw blogvoorkeuren zijn opgeslagen.',
+	'User Registration' => 'Gebruikersregistratie',
+	'Allow registration for Movable Type.' => 'Laat registratie toe in Movable Type',
+	'Registration Not Enabled' => 'Registratie niet ingeschakeld',
+	'Note: Registration is currently disabled at the system level.' => 'Opmerking: Registratie is momenteel uitgeschakeld op systeemniveau',
+	'Allow Registration' => 'Registratie toestaan',
+	'Authentication Methods' => 'Authenticatiemethodes', # Translate - New
+	'Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication.' => 'Opmerking: u heeft ervoor gekozen om enkel reacties te aanvaarden van geauthenticeerde reageerders, maar authenticatie is niet ingeschakeld.  Om geauthenticeerde reacties te kunnen ontvangen, moet u authenticatie inschakelen.',
+	'Native' => 'Ingebouwd',
+	'Require E-mail Address for Comments via TypeKey' => 'E-mail adres vereisen voor reacties via TypeKey',
+	'If enabled, visitors must allow their TypeKey account to share e-mail address when commenting.' => 'Indien ingeschakeld, moeten bezoekers hun TypeKey account toestaan om hun e-mail adres vrij te geven bij het reageren.',
+	'Setup TypeKey' => 'TypeKey instellen', # Translate - New
+	'OpenID providers disabled' => 'OpenID providers uitgeschakeld',
+	'Required module (Digest::SHA1) for OpenID commenter authentication is missing.' => 'Vereiste module (Digest::SHA1) voor OpenID reageerders-authenticatie ontbreekt.',
 
 ## tmpl/cms/dialog/restore_end.tmpl
 	'An error occurred during the restore process: [_1] Please check your restore file.' => 'Er deed zich een fout voor tijdens het terugzetten: [_1] Gelieve uw restore-bestand na te kijken.',
-	'View Activity Log (v)' => 'Activiteitenlog bekijken (v)', # Translate - New
-	'All of the data have been restored successfully!' => 'Alle gegevens zijn met succes teruggezet',
-	'Ok (s)' => 'OK (s)', # Translate - New
-	'Ok' => 'OK', # Translate - Case
+	'View Activity Log (v)' => 'Activiteitenlog bekijken (v)',
+	'Ok (s)' => 'OK (s)',
+	'Ok' => 'OK',
 	'Next Page' => 'Volgende pagina',
 	'The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]' => 'Deze pagina zal binnen drie seconden doorverwijzen naar een andere pagina. [_1]Stop de doorverwijzing[_2]',
 
@@ -1945,17 +1971,17 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'On [_1], [_2] commented on [_3]' => 'Op [_1] reageerde [_2] op [_3]',
 	'Preview of your comment' => 'Voorbeeld van uw reactie',
 	'Your reply:' => 'Uw antwoord:',
-	'Submit reply (s)' => 'Antwoord ingeven (s)', # Translate - New
+	'Submit reply (s)' => 'Antwoord ingeven (s)',
 	'Preview reply (v)' => 'Voorbeeld antwoord (v)',
-	'Re-edit reply (r)' => 'Antwoord opnieuw bewerken (r)', # Translate - New
+	'Re-edit reply (r)' => 'Antwoord opnieuw bewerken (r)',
 	'Re-edit' => 'Opnieuw bewerken',
-	'Cancel (x)' => 'Annuleren (x)', # Translate - New
+	'Cancel (x)' => 'Annuleren (x)',
 
 ## tmpl/cms/dialog/restore_upload.tmpl
 	'Restore: Multiple Files' => 'Terugzetten: meerdere bestanden',
 	'Canceling the process will create orphaned objects.  Are you sure you want to cancel the restore operation?' => 'De procedure nu stopzetten zal wees-objecten achterlaten.  Bent u zeker dat u de restore-operatie wenst te annuleren.',
 	'Please upload the file [_1]' => 'Gelieve bestand [_1] op te laden',
-	'Continue (s)' => 'Doorgaan (s)', # Translate - New
+	'Continue (s)' => 'Doorgaan (s)',
 	'Continue' => 'Doorgaan',
 
 ## tmpl/cms/dialog/asset_list.tmpl
@@ -1965,8 +1991,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Weblog' => 'Weblog',
 	'Size' => 'Grootte',
 	'View File' => 'Bestand bekijken',
-	'Next (s)' => 'Volgende (s)', # Translate - New
-	'Insert (s)' => 'Invoegen (s)', # Translate - New
+	'Next (s)' => 'Volgende (s)',
+	'Insert (s)' => 'Invoegen (s)',
 	'Next' => 'Volgende',
 	'Insert' => 'Invoegen',
 	'No assets could be found.' => 'Kon geen mediabestand vinden',
@@ -1988,7 +2014,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'The file named \'[_1]\' has been uploaded. Size: [quant,_2,byte,bytes].' => 'Het bestand met de naam \'[_1]\' is opgeladen.  Grootte: [quant,_2,byte,bytes].',
 	'Create entry using this uploaded file' => 'Bericht aanmaken met dit opgeladen bestand',
 	'Create a new entry using this uploaded file.' => 'Maak een nieuw bericht aan met dit opgeladen bestand',
-	'Finish (s)' => 'Klaar (s)', # Translate - New
+	'Finish (s)' => 'Klaar (s)',
 	'Finish' => 'Klaar',
 
 ## tmpl/cms/dialog/entry_notify.tmpl
@@ -2001,7 +2027,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Optional Message' => 'Optionele boodschap',
 	'Optional Content' => 'Optionele inhoud',
 	'(Entry Body will be sent without any text formatting applied)' => '(Romp van het bericht zal verstuurd worden zonder dat er tekstformattering op wordt toegepast)',
-	'Send notification (s)' => 'Notificaties versturen (s)', # Translate - New
+	'Send notification (s)' => 'Notificaties versturen (s)',
 	'Send' => 'Versturen',
 
 ## tmpl/cms/dialog/asset_upload.tmpl
@@ -2010,29 +2036,22 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Before you can upload a file, you need to publish your blog. [_1]Configure your blog\'s publishing paths[_2] and rebuild your blog.' => 'Voor u een bestand kunt opladen, moet u eerst uw blog publiceren. [_1]Stel het publicatiepad van uw blog in[_2] en publiceer uw blog opnieuw.',
 	'Your system or blog administrator needs to publish the blog before you can upload files. Please contact your system or blog administrator.' => 'Uw systeem- of blogbeheerder moet de blog publiceren voor u bestanden kunt opladen.  Gelieve uw systeem- of blogbeheerder te contacteren.',
 	'Select File to Upload' => 'Selecteer bestand om op te laden',
-	'_USAGE_UPLOAD' => 'U kunt het bestand hierboven opladen naar het lokale pad van uw site <a href="javascript:alert(\'[_1]\')">(?)</a> of het lokale archiefpad <a href="javascript:alert(\'[_2]\')">(?)</a>. U kunt ook het bestand opladen in elke directory onder deze directories, door het pad op te geven in de tekstvakken rechts (<i>afbeeldingen</i>, bijvoorbeeld). Als de directory niet bestaat, wordt deze aangemaakt.',
+	'_USAGE_UPLOAD' => 'U kunt het bestand opladen naar een submap van het geselecteerde pad.  De submap zal worden aangemaakt als die nog niet bestaat.',
 	'Upload Destination' => 'Oplaadbestemming',
-	'Upload (s)' => 'Opladen (s)', # Translate - New
+	'Upload (s)' => 'Opladen (s)',
 	'Upload' => 'Opladen',
 
 ## tmpl/cms/dialog/asset_replace.tmpl
 	'A file named \'[_1]\' already exists. Do you want to overwrite this file?' => 'Er bestaat reeds een bestand net de naam \'[_1]\'. Wilt u dit bestand overschrijven?',
-	'Yes (s)' => 'Ja (s)', # Translate - New
+	'Yes (s)' => 'Ja (s)',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
-	'Configure New Publishing Paths' => 'Nieuwe publicatiepaden instellen',
+	'Confirm Publishing Configuration' => 'Bevestig publicatieconfiguratie', # Translate - New
 	'URL is not valid.' => 'URL is niet geldig.',
 	'You can not have spaces in the URL.' => 'Er mogen geen spaties in de URL staan.',
 	'You can not have spaces in the path.' => 'Er mogen geen spaties in het pad staan.',
 	'Path is not valid.' => 'Pad is ongeldig',
-	'Old Path:' => 'Oud pad:', # Translate - New
-	'New Site Path:' => 'Nieuw sitepad:',
-	'Old URL:' => 'Oude URL:', # Translate - New
-	'New Site URL:' => 'Nieuwe site-URL:',
-	'Old Archive Path:' => 'Oud archiefpad:', # Translate - New
-	'New Archive Path:' => 'Nieuw archiefpad:',
-	'Old Archive URL:' => 'Oude archief-URL:', # Translate - New
-	'New Archive URL:' => 'Nieuwe archief-URL:',
+	'Archive URL' => 'Archief-URL',
 
 ## tmpl/cms/dialog/restore_start.tmpl
 	'Restoring...' => 'Terug aan het zetten...',
@@ -2058,13 +2077,14 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'You will need to select a username and password for the administrator account.' => 'U moet een gebruikersnaam en wachtwoord kiezen voor de administrator-account.',
 	'To proceed, you must authenticate properly with your LDAP server.' => 'Om verder te gaan moet u zich aanmelden bij uw LDAP server.',
 	'The name used by this user to login.' => 'De naam gebruikt door deze gebruiker om zich aan te melden.',
+	'The name used when published.' => 'De naam gebruikt bij het publiceren',
 	'The user\'s email address.' => 'Het e-mail adres van de gebruiker.',
 	'Language' => 'Taal',
 	'The user\'s preferred language.' => 'De voorkeurstaal van de gebruiker.',
 	'Select a password for your account.' => 'Kies een wachtwoord voor uw account.',
 	'This word or phrase will be required to recover your password if you forget it.' => 'Dit woord of deze uitdrukking zal gevraagd worden om uw wachtwoord terug te vinden als u het mocht vergeten.',
 	'Your LDAP username.' => 'Uw LDAP gebruikersnaam.',
-	'The user&rsquo;s preferred language.' => 'Voorkeurstaal van de gebruiker.', # Translate - New
+	'The user&rsquo;s preferred language.' => 'Voorkeurstaal van de gebruiker.',
 	'Enter your LDAP password.' => 'Geef uw LDAP wachtwoord op.',
 
 ## tmpl/cms/pinging.tmpl
@@ -2076,22 +2096,18 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Profile for [_1]' => 'Profiel van [_1]',
 	'Your Web services password is currently' => 'Uw huidig webservices wachtwoord is',
 	'_WARNING_PASSWORD_RESET_SINGLE' => 'U staat op het punt het wachtwoord voor "[_1]" opnieuw in te stellen.  Een nieuw wachtwoord zal willekeurig worden aangemaakt en zal rechtstreeks naar het e-mail adres van deze gebruiker ([_2]) worden gestuurd.\n\nWenst u verder te gaan?',
-	'User Pending' => 'Gebruiker hangende',
-	'User Disabled' => 'Gebruiker uitgeschakeld',
 	'This profile has been updated.' => 'Dit profiel werd bijgewerkt.',
 	'A new password has been generated and sent to the email address [_1].' => 'Een nieuw wachtwoord werd gegenerereerd en is verzonden naar het e-mail adres [_1].',
 	'Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Enterprise probeerde net uw account uit te schakelen tijdens synchronisatie met de externe directory.  Er moet een fout zitten in de instellingen voor extern gebruikersbeheer.  Gelieve uw configuratie bij te stellen voor u verder gaat.',
-	'Personal Weblog' => 'Persoonlijke weblog',
-	'Create personal weblog for user' => 'Persoonlijke weblog aanmaken voor gebruiker:',
-	'System Permissions' => 'Systeempermissies',
-	'Create Weblogs' => 'Weblogs aanmaken',
+	'Create User Options' => 'Opties aanmaken gebruiker', # Translate - New
+	'Create personal blog for user' => 'Persoonlijke blog aanmaken voor gebruiker', # Translate - New
+	'Profile' => 'Profiel',
 	'Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.' => 'Status van de gebruiker in het systeem.  Een gebruiker uitschakelen ontzegt hem/haar toegang tot het systeem maar bewaart content en geschiedenis.',
 	'_USER_ENABLED' => 'Ingeschakeld',
-	'_USER_PENDING' => '_USER_PENDING',
+	'_USER_PENDING' => 'Te keuren',
 	'_USER_DISABLED' => 'Uitgeschakeld',
 	'The username used to login.' => 'Gebruikersnaam om mee aan te melden',
 	'User\'s external user ID is <em>[_1]</em>.' => 'Het externe gebruikers-ID van de gebruiker is <em>[_1]</em>.',
-	'The name used when published.' => 'De naam gebruikt bij het publiceren',
 	'The email address associated with this user.' => 'Het e-mail adres gekoppeld aan deze gebruiker',
 	'The URL of the site associated with this user. eg. http://www.movabletype.com/' => 'De URL van de site gekoppeld aan deze gebruiker, bv. http://www.movabletype.com/',
 	'Preferred language of this user.' => 'Voorkeurstaal van deze gebruiker',
@@ -2105,6 +2121,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Web Services Password' => 'Webservices wachtwoord',
 	'For use by Activity feeds and with XML-RPC and Atom-enabled clients.' => 'Voor gebruik door activiteiten-feeds en met XML-RPC en Atom-gebaseerde cliënten.',
 	'Reveal' => 'Onthul',
+	'System Permissions' => 'Systeempermissies',
+	'Create Weblogs' => 'Weblogs aanmaken',
 	'Current Password' => 'Huidig wachtwoord',
 	'Existing password required to create a new password.' => 'Bestaand wachtwoord vereist om een nieuw wachtwoord aan te maken',
 	'Enter preferred password.' => 'Gekozen wachtwoord invoeren',
@@ -2126,20 +2144,25 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'[_1] Reported as Spam' => '[_1] gerapporteerd als spam',
 	'[_1] (Disabled)' => '[_1] (Uitgeschakeld)',
 	'Set Web Services Password' => 'Webservices wachtwoord instellen',
+	'All [_1]' => 'Alle [_1]',
+	'change' => 'wijzig',
 	'[_1] where [_2] is [_3]' => '[_1] waar [_2] gelijk is aan [_3]',
 	'Remove filter' => 'Filter verwijderen',
+	'Show only [_1] where' => 'Toon enkel [_1] waar',
 	'status' => 'status',
+	'is' => 'gelijk is aan',
 	'approved' => 'goedgekeurd',
 	'unapproved' => 'niet goedgekeurd',
+	'Filter' => 'Filter',
 	'to publish' => 'om te publiceren',
-	'Publish selected [_1] (p)' => 'Geselecteerde [_1] publiceren (p)', # Translate - New
-	'Report selected [_1] as Spam (j)' => 'Geselecteerde [_1] rapporteren als spam (j)', # Translate - New
+	'Publish selected [_1] (p)' => 'Geselecteerde [_1] publiceren (p)',
+	'Report selected [_1] as Spam (j)' => 'Geselecteerde [_1] rapporteren als spam (j)',
 	'Spam' => 'Spam',
-	'Report selected [_1] as Not Spam and Publish (j)' => 'Geselecteerde [_1] rapporteren als niet-spam en publiceren (j)', # Translate - New
-	'Not Spam' => 'Geen spam', # Translate - New
+	'Report selected [_1] as Not Spam and Publish (j)' => 'Geselecteerde [_1] rapporteren als niet-spam en publiceren (j)',
+	'Not Spam' => 'Geen spam',
 	'Are you sure you want to remove all TrackBacks reported as spam?' => 'Bent u zeker dat u alle TrackBacks die als spam zijn gerapporteerd wenst te verwijderen?',
-	'Deletes all [_1] reported as Spam' => 'Verwijdert alle [_1] gerapporteerd als spam', # Translate - New
-	'Empty' => 'Leeg', # Translate - New
+	'Deletes all [_1] reported as Spam' => 'Verwijdert alle [_1] gerapporteerd als spam',
+	'Empty' => 'Leeg',
 
 ## tmpl/cms/login.tmpl
 	'Your Movable Type session has ended.' => 'Uw Movable Type sessie is beëindigd.',
@@ -2166,7 +2189,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Advanced Archive Publishing' => 'Geavanceerde archiefpublicatie',
 	'Select this option only if you need to publish your archives outside of your Site Root.' => 'Selecteer deze optie alleen als u uw archieven buiten de root van uw site wenst te publiceren.',
 	'Publish archives outside of Site Root' => 'Archieven buiten de siteroot publiceren',
-	'Archive URL' => 'Archief-URL',
 	'Enter the URL of the archives section of your website. Example: http://archives.example.com/' => 'Geef de URL in van het archiefgedeelte van uw website.  Voorbeeld: http://archieven.voorbeeld.com/',
 	'Unlock this blog&rsquo;s archive url for editing' => 'Maak de archief-URL van deze weblog bewerkbaar',
 	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => 'Waarschuwing: het aanpassen van de archief-URL kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
@@ -2176,11 +2198,14 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Preferred Archive Type' => 'Voorkeursarchieftype',
 	'Used when linking to an archived entry&#8212;for a permalink.' => 'Gebruikt als link naar een gearchiveerd bericht &#8212; als permalink.',
 	'No archives are active' => 'Geen archieven actief',
-	'Method' => 'Methode',
+	'Publishing Method' => 'Publicatiemethode', # Translate - New
 	'Publish all templates statically' => 'Alle sjablonen statisch publiceren',
 	'Publish only Archive Templates dynamically' => 'Enkel archiefsjablonen dynamisch publiceren',
 	'Set each template\'s Publish Options separately' => 'Publicatieinstellingen voor elk sjabloon apart instellen',
 	'Publish all templates dynamically' => 'Alle sjablonen dynamisch publiceren',
+	'Use Publishing Queue' => 'Publicatiewachtrij gebruiken', # Translate - New
+	'Requires the use of a cron job to publish pages in the background.' => 'Hiervoor is een cron job vereist die pagina\'s kan publiceren in de achtergrond.', # Translate - New
+	'Use background publishing queue for publishing static pages for this blog' => 'Publicatiewachtrij in de achtergrond gebruiken om statische pagina\'s te publiceren op deze weblog.', # Translate - New
 	'Enable Dynamic Cache' => 'Dynamische cache inschakelen',
 	'Turn on caching.' => 'Caching inschakelen',
 	'Enable caching' => 'Caching mogelijk maken',
@@ -2190,13 +2215,33 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'File Extension for Archive Files' => 'Bestandsextensie voor archiefbestanden',
 	'Enter the archive file extension. This can take the form of \'html\', \'shtml\', \'php\', etc. Note: Do not enter the leading period (\'.\').' => 'Voer de bestandsextensie voor het archief in. Dit kan zijn in de vorm van \'html\', \'shtml\', \'php\', enz. Opmerking: voer het eerste punt niet in (\'.\').',
 
-## tmpl/cms/cfg_prefs.tmpl
-	'Your blog preferences have been saved.' => 'Uw blogvoorkeuren zijn opgeslagen.',
-	'You must set your Blog Name.' => 'U moet uw blognaam instellen.',
-	'You did not select a timezone.' => 'U hebt geen tijdzone geselecteerd.',
-	'Name your blog. The blog name can be changed at any time.' => 'Geef uw blog een naam.  De blognaam kan op elk moment aangepast worden.',
-	'Enter a description for your blog.' => 'Geef een beschrijving op voor uw weblog.',
-	'Timezone' => 'Tijdzone',
+## tmpl/cms/cfg_system_users.tmpl
+	'System: User Settings' => 'Systeem: Gebruikersinstellingen', # Translate - New
+	'Your settings have been saved.' => 'Uw instellingen zijn opgeslagen.',
+	'(No blog selected)' => '(Geen blog geselecteerd)', # Translate - New
+	'You must set a valid Default Site URL.' => 'U moet een geldige standaard hoofd-URL voor de site instellen.',
+	'You must set a valid Default Site Root.' => 'U moet een geldige standaard weblogmap voor de site instellen.',
+	'(None selected)' => '(geen geselecteerd)',
+	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'Selecteer een systeembeheerder die op de hoogte gebracht moet worden wanneer nieuwe reageerders zich met succes registreren.',
+	'Allow commenters to register to Movable Type' => 'Geef reageerders de optie zich te registreren via Movable Type',
+	'Notify the following administrators upon registration:' => 'Waarschuw volgende administrators bij registraties', # Translate - New
+	'Select Administrators' => 'Selecteer administrators', # Translate - New
+	'Clear' => 'Leegmaken',
+	'Note: System Email Address is not set. Emails will not be sent.' => 'Noot: Systeem e-mailadres is niet ingesteld.  Er zullen geen e-mails worden verstuurd.', # Translate - New
+	'New User Defaults' => 'Standaardinstellingen nieuwe gebruikers',
+	'Personal weblog' => 'Persoonlijke weblog',
+	'Check to have the system automatically create a new personal weblog when a user is created in the system. The user will be granted a blog administrator role on the weblog.' => 'Kruis dit aan om het systeem automatisch een nieuwe persoonlijke weblog te laten aanmaken wanneer er een gebruiker wordt aangemaakt in het systeem.  De gebruiker zal de rol van blogadministrator krijgen op de weblog.',
+	'Automatically create a new weblog for each new user' => 'Automatisch een nieuwe weblog aanmaken voor elke nieuwe gebruiker',
+	'Personal weblog clone source' => 'Kloonbron persoonlijke weblog',
+	'Select a weblog you wish to use as the source for new personal weblogs. The new weblog will be identical to the source except for the name, publishing paths and permissions.' => 'Selecteer een weblog die u wenst te gebruiken als voorbeeld voor nieuwe persoonlijke weblogs.  De nieuwe weblog zal identiek zijn aan het voorbeeld, met uitzondering van de naam, publicatiepaden en permissies.',
+	'Change blog' => 'Wijzig blog',
+	'Default Site URL' => 'Standaard URL van de site',
+	'Define the default site URL for new weblogs. This URL will be appended with a unique identifier for the weblog.' => 'Stel de standaard URL in voor nieuwe weblogs.  Aan deze URL zal een unieke identificatie worden toegevoegd voor de weblog.',
+	'Default Site Root' => 'Standaard hoofdmap van de site',
+	'Define the default site root for new weblogs. This path will be appended with a unique identifier for the weblog.' => 'Stel de standaard hoofdmap in voor nieuwe weblogs.  Aan dit pad zal een unieke identificatie worden toegevoegd voor de weblog.',
+	'Default User Language' => 'Standaard taal',
+	'Define the default language to apply to all new users.' => 'Stel de standaard taal in voor nieuwe gebruikers',
+	'Default Timezone' => 'Standaard tijdzone',
 	'Select your timezone from the pulldown menu.' => 'Selecteer uw tijdzone in de keuzelijst.',
 	'Time zone not selected' => 'Geen tijdzone geselecteerd',
 	'UTC+13 (New Zealand Daylight Savings Time)' => 'UTC+13 (Nieuw-Zeeland - zomertijd)',
@@ -2229,48 +2274,45 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'UTC-9 (Alaskan Time)' => 'UTC-9 (Alaska tijd)',
 	'UTC-10 (Aleutians-Hawaii Time)' => 'UTC-10 (Aleutianen-Hawaïaanse tijd)',
 	'UTC-11 (Nome Time)' => 'UTC-11 (Nome tijd)',
-	'User Registration' => 'Gebruikersregistratie',
-	'Allow registration for Movable Type.' => 'Laat registratie toe in Movable Type',
-	'Registration Not Enabled' => 'Registratie niet ingeschakeld',
-	'Note: Registration is currently disabled at the system level.' => 'Opmerking: Registratie is momenteel uitgeschakeld op systeemniveau',
-	'Creative Commons' => 'Creative Commons',
+	'Default Tag Delimiter' => 'Standaard tagscheidingsteken',
+	'Define the default delimiter for entering tags.' => 'Stel het standaard teken in om tags van elkaar te onderscheiden bij het invoeren.',
+
+## tmpl/cms/cfg_prefs.tmpl
+	'You must set your Blog Name.' => 'U moet uw blognaam instellen.',
+	'You did not select a timezone.' => 'U hebt geen tijdzone geselecteerd.',
+	'Name your blog. The blog name can be changed at any time.' => 'Geef uw blog een naam.  De blognaam kan op elk moment aangepast worden.',
+	'Enter a description for your blog.' => 'Geef een beschrijving op voor uw weblog.',
+	'Timezone' => 'Tijdzone',
+	'License' => 'Licentie', # Translate - New
 	'Your blog is currently licensed under:' => 'Uw weblog valt momenteel onder deze licentie:',
-	'Change your license' => 'Uw licentie wijzigen',
-	'Remove this license' => 'Deze licentie verwijderen',
+	'Change license' => 'Licentie aanpassen', # Translate - New
+	'Remove license' => 'Licentie verwijderen', # Translate - New
 	'Your blog does not have an explicit Creative Commons license.' => 'Uw weblog heeft geen expliciete Creative Commons licentie',
-	'Create a license now' => 'Maak nu een licentie aan',
-	'Replace Word Chars' => 'Karakters uit Word vervangen',
-	'Replace Fields' => 'Velden vervangen',
-	'Extended entry' => 'Uitgebreid bericht',
-	'Smart Replace' => 'Slim vervangen',
-	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'Karakter entiteiten (&amp#8221;, &amp#8220;, etc.)',
-	'ASCII equivalents (&quot;, \', ..., -, --)' => 'ASCII equivalenten (&quot;, \', ..., -, --)',
+	'Select a license' => 'Selecteer een licentie', # Translate - New
 
 ## tmpl/cms/error.tmpl
 
 ## tmpl/cms/list_association.tmpl
 	'Permissions for [_1]' => 'Permissies voor [_1]',
-	'Group Associations for [1]' => 'Groepsassociaties voor [_1]',
+	'Group Associations for [_1]' => 'Groepsassociaties voor [_1]',
 	'Permissions: System-wide' => 'Permissies: over het hele systeem',
 	'Users &amp; Groups for [_1]' => 'Gebruikers &amp; groepen voor [_1]',
 	'Users for [_1]' => 'Gebruikers voor [_1]',
-	'permission' => 'permissie', # Translate - New
-	'permissions' => 'permissies', # Translate - Case
+	'permission' => 'permissie',
+	'permissions' => 'permissies',
 	'Remove selected assocations (x)' => 'Geselecteerde associaties verwijderen (x)',
 	'Revoke Permission' => 'Permissie intrekken',
+	'User Disabled' => 'Gebruiker uitgeschakeld',
 	'Group Disabled' => 'Groep uitgeschakeld',
 	'You have successfully revoked the given permission(s).' => 'De gekozen permissie(s) zijn met succes ingetrokken.',
 	'You have successfully granted the given permission(s).' => 'De gekozen permissie(s) zijn met succes toegekend.',
-	'Add user to a blog' => 'Gebruiker toevoegen aan blog',
-	'You can not create associations for disabled users.' => 'U kunt geen associaties aanmaken voor uitgeschakelde gebruikers.',
 	'Grant Permission' => 'Permissie toekennen',
-	'Add group to a blog' => 'Groep toevoegen aan blog',
-	'You can not create associations for disabled groups.' => 'U kunt geen associaties aanmaken voor uitgeschakelde groepen',
+	'You can not create associations for disabled users.' => 'U kunt geen associaties aanmaken voor uitgeschakelde gebruikers.',
 	'Add [_1] to a blog' => 'Voeg [_1] toe aan een blog',
+	'You can not create associations for disabled groups.' => 'U kunt geen associaties aanmaken voor uitgeschakelde groepen',
 	'Assign Role to Group' => 'Ken rol toe aan groep',
 	'Assign Role to User' => 'Ken rol toe aan gebruiker',
 	'Add a group to this blog' => 'Voeg een groep toe aan deze blog',
-	'Add a user to this blog' => 'Voeg een gebruiker toe aan deze blog',
 	'Grant permission to a group' => 'Ken permissie to aan groep',
 	'Grant permission to a user' => 'Ken permissie toe aan gebruiker',
 	'User/Group' => 'Gebruiker/groep',
@@ -2285,7 +2327,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'The selected comment(s) has been deleted from the database.' => 'Geselecteerde reactie(en) zijn uit de database verwijderd.',
 	'One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be Banned or Trusted.' => 'Eén of meer reacties die u selecteerde werd ingegeven door een niet geauthenticeerde reageerder. Deze reageerders kunnen niet verbannen of vertrouwd worden.',
 	'No comments appeared to be spam.' => 'Er lijken geen berichten als spam gemarkeerd te zijn',
-	'Showing only: [_1]' => 'Enkel: [_1]',
 	'[_1] on entries created within the last [_2] days' => '[_1] op berichten aangemaakt in de laatste [_2] dagen',
 	'[_1] on entries created more than [_2] days ago' => '[_1] op berichten aangemaakt langer dan [_2] dagen geleden',
 	'[_1] where [_2] [_3]' => '[_1] waar [_2] [_3]',
@@ -2303,17 +2344,18 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	' is unauthenticated' => ' is niet geauthenticeerd',
 	' is authenticated' => ' is geauthenticeerd',
 	' is trusted' => ' is vertrouwd',
-	'Publish selected [_1] (a)' => 'Publiceer geselecteerde [_1] (a)', # Translate - New
+	'Publish selected [_1] (a)' => 'Publiceer geselecteerde [_1] (a)',
 	'Are you sure you want to remove all comments reported as spam?' => 'Bent u zeker dat u alle reacties die als spam gemarkeerd zijn wenst te verwijderen?',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => 'Publiceren...',
 	'Publishing [_1]...' => 'Bezig [_1] te publiceren...',
 	'Publishing [_1]' => 'Bezig [_1] te publiceren',
-	'Publishing [_1] pages [_2]' => 'Bezig [_2] pagina\'s te publiceren [_2]',
+	'Publishing [_1] [_2]' => 'Bezig [_1] [_2] te publiceren', # Translate - New
 	'Publishing [_1] dynamic links' => 'Bezig [_1] dynamische links te publiceren',
-	'Publishing [_1] pages' => 'Bezig [_1] pagina{s te publiceren',
-    '_REBUILD_PUBLISH' => 'Publiceren',
+	'Publishing [_1] archives' => 'Bezig [_1] archieven te publiceren', # Translate - New
+	'Publishing [_1] templates' => 'Bezig [_1] sjablonen te publiceren', # Translate - New
+	'_REBUILD_PUBLISH' => 'Publiceren',
 
 ## tmpl/cms/include/template_table.tmpl
 	'Type' => 'Type',
@@ -2325,32 +2367,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Published Template w/Indexes' => 'Sjabloon gepubliceerd met indexen',
 	'View' => 'Bekijken',
 	'-' => '-',
-
-## tmpl/cms/include/typekey.tmpl
-	'Your TypeKey API Key is used to access Six Apart services like its free Authentication service.' => 'Uw TypeKey API sleutel wordt gebruikt om toegang te krijgen tot Six Apart services zoals de gratis authenticatiedienst.',
-	'TypeKey Enabled' => 'TypeKey ingeschakeld',
-	'TypeKey is enabled.' => 'TypeKey is ingeschakeld',
-	'Clear TypeKey Token' => 'TypeKey token leegmaken',
-	'TypeKey Setup:' => 'TypeKey instellingen:',
-	'TypeKey API Key Removed' => 'TypeKey API sleutel verwijderd',
-	'Please click the Save Changes button below to disable authentication.' => 'Gelieve op de knop \'Wijzigingen opslaan\' te drukken om authenticatie uit te schakelen.',
-	'TypeKey Not Enabled' => 'TypeKey niet ingeschakeld',
-	'TypeKey is not enabled.' => 'TypeKey is niet ingeschakeld',
-	'Enter API Key:' => 'Voer API sleutel in:',
-	'Obtain TypeKey API Key' => 'Verkrijg TypeKey API sleutel',
-	'TypeKey API Key Acquired' => 'TypeKey API sleutel verkregen',
-	'Please click the Save Changes button below to enable TypeKey.' => 'Gelieve op de knop \'Wijzigingen opslaan\' te klikken om TypeKey in te schakelen.',
-
-## tmpl/cms/include/cfg_entries_edit_page.tmpl
-	'Editor Fields' => 'Velden van de tekstbewerker',
-	'_USAGE_ENTRYPREFS' => 'Deze instellingen bepalen welke opties verschijnen op de schermen waar men nieuwe en bestaande berichten kan bewerken. U kunt een voorgedefiniëerde configuratie selecteren (Eenvoudig of Alle) of uw persoonlijke voorkeuren instellen door op Aangepast te klikken en vervolgens de opties te selecteren die u wenst weer te geven.',
-	'Default' => 'Standaard',
-	'All' => 'Alle',
-	'Custom' => 'Aangepast',
-	'Action Bar' => 'Actiebalk',
-	'Select the location of the entry editor&rsquo;s action bar.' => 'Selecteer de locatie voor de actiebalk in de berichteneditor.', # Translate - New
-	'Below' => 'Onder',
-	'Above' => 'Boven',
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Path' => 'Pad',
@@ -2371,6 +2387,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/include/itemset_action_widget.tmpl
 	'More actions...' => 'Meer mogelijkheden...',
+	'Plugin Actions' => 'Plugin-mogelijkheden',
 	'to act upon' => 'om de handeling op uit te voeren',
 	'Go' => 'Ga',
 
@@ -2432,6 +2449,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/include/member_table.tmpl
 	'Trusted commenter' => 'Vertrouwde reageerder',
+	'Remove this role' => 'Verwijder deze rol', # Translate - New
 
 ## tmpl/cms/include/entry_table.tmpl
 	'Last Modified' => 'Laatst aangepast',
@@ -2444,18 +2462,20 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/include/notification_table.tmpl
 	'Date Added' => 'Toegevoegd op',
 	'Click to edit contact' => 'Klik om contact te bewerken',
-	'Save changes' => 'Wijzigingen opslaan', # Translate - Case
+	'Save changes' => 'Wijzigingen opslaan',
 
 ## tmpl/cms/include/display_options.tmpl
 	'_DISPLAY_OPTIONS_SHOW' => 'Toon',
 	'[quant,_1,row,rows]' => '[quant,_1,rij,rijen]',
 	'Compact' => 'Compact',
 	'Expanded' => 'Uitgebreid',
+	'Action Bar' => 'Actiebalk',
 	'Date Format' => 'Datumformaat',
 	'Relative' => 'Relatief',
 	'Full' => 'Volledig',
 
 ## tmpl/cms/include/cfg_content_nav.tmpl
+	'Registration' => 'Registratie', # Translate - New
 	'Web Services' => 'Webservices',
 
 ## tmpl/cms/include/blog_table.tmpl
@@ -2474,11 +2494,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Creating new users for each user found in the blog' => 'Nieuwe gebruikers worden aangemaakt voor elke gebruiker gevonden in de weblog',
 
 ## tmpl/cms/include/users_content_nav.tmpl
-	'Profile' => 'Profiel',
 	'Groups' => 'Groepen',
 	'Group Profile' => 'Groepsprofiel',
 	'Details' => 'Details',
-	'List Roles' => 'Toon rollen',
 
 ## tmpl/cms/include/calendar.tmpl
 
@@ -2494,19 +2512,18 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Show Activity Log' => 'Activiteitlog bekijken',
 
 ## tmpl/cms/include/comment_table.tmpl
-	'Reply' => 'Antwoord',
 	'Only show published comments' => 'Enkel gepubliceerde reacties tonen',
 	'Only show pending comments' => 'Enkel hangende reacties tonen',
 	'Edit this comment' => 'Deze reactie bewerken',
 	'(1 reply)' => '(1 antwoord)',
 	'([_1] replies)' => '([_1] antwoorden)',
+	'Reply' => 'Antwoord',
 	'Blocked' => 'Geblokkeerd',
 	'Authenticated' => 'Bevestigd',
 	'Edit this [_1] commenter' => 'Bewerk deze [_1] reageerder',
 	'Search for comments by this commenter' => 'Zoek naar reacties door deze reageerder',
 	'Anonymous' => 'Anoniem',
-	'View this entry' => 'Dit bericht bekijken',
-	'Show all comments on this entry' => 'Toon alle reacties op dit bericht',
+	'View this [_1]' => 'Bekijk deze [_1]', # Translate - New
 
 ## tmpl/cms/include/rebuild_stub.tmpl
 	'To see the changes reflected on your public site, you should rebuild your site now.' => 'Bouw uw website opnieuw op als u de wijzigingen op uw publieke site wilt kunnen zien.',
@@ -2528,8 +2545,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'View this commenter&rsquo;s profile' => 'Bekijk het profiel van deze reageerder',
 
 ## tmpl/cms/include/author_table.tmpl
-	'Only show enabled users' => 'Enkel ingeschakelde gebruikers worden getoond',
-	'Only show disabled users' => 'Enkel uitgeschakelde gebruikers worden getoond',
 
 ## tmpl/cms/include/feed_link.tmpl
 	'Activity Feed' => 'Activiteit-feed',
@@ -2546,7 +2561,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/include/log_table.tmpl
 	'No log records could be found.' => 'Er konden geen logberichten worden gevonden.',
 	'Log Message' => 'Logbericht',
-	'_LOG_TABLE_BY' => '_LOG_TABLE_BY',
+	'_LOG_TABLE_BY' => 'Door',
 	'IP: [_1]' => 'IP: [_1]',
 	'[_1]' => '[_1]',
 
@@ -2555,9 +2570,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Go to [_1]' => 'Ga naar [_1]',
 	'Sorry, there were no results for your search. Please try searching again.' => 'Sorry, er waren geen resultaten voor uw zoekopdracht. Probeer opnieuw te zoeken.',
 	'Sorry, there is no data for this object set.' => 'Sorry, er zijn geen gegevens ingesteld voor dit object.',
-	'Confirm (s)' => 'Bevestigen (s)', # Translate - New
+	'Confirm (s)' => 'Bevestigen (s)',
 	'Confirm' => 'Bevestigen',
-	'Back (b)' => 'Terug (b)', # Translate - New
+	'Back (b)' => 'Terug (b)',
 	'Back' => 'Terug',
 
 ## tmpl/cms/list_blog.tmpl
@@ -2592,18 +2607,19 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Show Enabled Users' => 'Toon ingeschakelde gebruikers',
 	'Show Disabled Users' => 'Toon uitgeschakelde gebruikers',
 	'Show All Users' => 'Toon alle gebruikers',
-	'user' => 'gebruiker',
-	'users' => 'gebruikers',
 	'Enable selected users (e)' => 'Geselecteerde gebruikers inschakelen (E)',
 	'_USER_ENABLE' => 'Inschakelen',
-	'_NO_SUPERUSER_DISABLE' => '_NO_SUPERUSER_DISABLE',
+	'_NO_SUPERUSER_DISABLE' => 'Omdat u een systeembeheerder bent in het Movable Type systeem, kunt u zichzelf niet uitschakelen.',
 	'Disable selected users (d)' => 'Geselecteerde gebruikers uitschakelen (D)',
 	'_USER_DISABLE' => 'Uitschakelen',
 	'None.' => 'Geen.',
 	'(Showing all users.)' => '(Alle gebruikers worden getoond.)',
+	'Showing only users whose [_1] is [_2].' => 'Enkel gebruikers worden getoond waarbij [_1] gelijk is aan [_2].',
 	'Reset' => 'Leegmaken',
 	'users.' => 'gebruikers.',
 	'users where' => 'gebruikers waarbij',
+	'enabled' => 'ingeschakeld',
+	'disabled' => 'uitgeschakeld',
 	'.' => '.',
 
 ## tmpl/cms/popup/recover.tmpl
@@ -2620,18 +2636,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/popup/rebuilt.tmpl
 	'Success' => 'Succes',
 	'All of your files have been published.' => 'Al uw bestanden zijn gepubliceerd.',
-	'Your [_1] pages have been published.' => 'Uw [_1] pagina\'s zijn gepubliceerd.',
+	'Your [_1] archives have been published.' => 'Uw [_1] archieven zijn gepubliceerd.', # Translate - New
+	'Your [_1] templates have been published.' => 'Uw [_1] sjablonen zijn gepubliceerd.', # Translate - New
 	'View your site.' => 'Uw site bekijken.',
 	'View this page.' => 'Deze pagina bekijken.',
 	'Publish Again' => 'Opnieuw publiceren',
-
-## tmpl/cms/popup/category_add.tmpl
-	'Add A [_1]' => 'Voeg een [_1] toe',
-	'To create a new [_1], enter a title in the field below, select a parent [_1], and click the Add button.' => 'Om een nieuwe [_1] aan te maken moet u een titel invullen in het veld hieroonder, een ouder [_1] selecteren en op de knop \'Toevoegen\' klikken.',
-	'[_1] Title:' => '[_1] titel:',
-	'Parent [_1]:' => 'Ouder [_1]:',
-	'Top Level' => 'Topniveau',
-	'Save [_1] (s)' => '[_1] opslaan (s)',
 
 ## tmpl/cms/popup/rebuild_confirm.tmpl
 	'Publish [_1]' => 'Publiceer [_1]',
@@ -2642,9 +2651,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Publish (r)' => 'Publiceer (r)',
 
 ## tmpl/cms/popup/pinged_urls.tmpl
-	'Successful Trackbacks' => 'Gelukte TrackBacks', # Translate - New
-	'Failed Trackbacks' => 'Mislukte TrackBacks', # Translate - New
-	'To retry, include these TrackBacks in the Outbound TrackBack URLs list for your entry.' => 'Om opnieuw te proberen: zet deze TrackBacks in het veld voor uitgaande TrackBack URL\'s van uw bericht.', # Translate - New
+	'Successful Trackbacks' => 'Gelukte TrackBacks',
+	'Failed Trackbacks' => 'Mislukte TrackBacks',
+	'To retry, include these TrackBacks in the Outbound TrackBack URLs list for your entry.' => 'Om opnieuw te proberen: zet deze TrackBacks in het veld voor uitgaande TrackBack URL\'s van uw bericht.',
 
 ## tmpl/cms/list_entry.tmpl
 	'Your [_1] has been deleted from the database.' => 'Uw [_1] is verwijderd uit de database',
@@ -2658,7 +2667,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'User Search...' => 'Zoeken naar gebruiker...',
 	'Recent Users...' => 'Recente gebruikers...',
 	'Save these [_1] (s)' => 'Sla deze [_1] op (s)',
-	'Publish selected [_1] (r)' => 'Publiceer geselecteerde [_1] (r)',
+	'to republish' => 'om opnieuw te publiceren', # Translate - New
+	'Republish selected [_1] (r)' => 'Herpubliceer geselecteerde [_1] (r)', # Translate - New
+	'Republish' => 'Herpubliceren', # Translate - New
 	'page' => 'pagina',
 
 ## tmpl/cms/recover_password_result.tmpl
@@ -2718,7 +2729,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Your [_1] changes and additions have been made.' => 'Uw [_1] wijzigingen en toevoegingen zijn gemaakt.',
 	'You have successfully deleted the selected [_1].' => 'U heeft met succes de geselecteerde [_1] verwijderd',
 	'Create new top level [_1]' => 'Maak een nieuwe [_1] van topniveau',
-	'New Parent [_1]' => 'Nieuwe ouder-[_1]', # Translate - New
+	'New Parent [_1]' => 'Nieuwe ouder-[_1]',
+	'Top Level' => 'Topniveau',
 	'Collapse' => 'Inklappen',
 	'Expand' => 'Uitklappen',
 	'Move [_1]' => 'Verplaats [_1]',
@@ -2738,10 +2750,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Finish install' => 'Installatie vervolledigen',
 
 ## tmpl/cms/list_asset.tmpl
-	'You have successfully deleted the file(s).' => 'U heeft met succes de bestand(en) verwijderd',
+	'Manage Assets' => 'Beheer mediabestanden', # Translate - New
+	'You have successfully deleted the asset(s).' => 'U heeft met suuces de mediabestand(en) verwijderd.', # Translate - New
 	'type' => 'type',
-	'asset' => 'mediabestand',
-	'assets' => 'mediabestanden',
+	'content' => 'inhoud', # Translate - New
 	'Delete selected assets (x)' => 'Geselecteerde mediabestanden verwijderen (x)',
 
 ## tmpl/cms/preview_strip.tmpl
@@ -2749,10 +2761,13 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/list_banlist.tmpl
 	'IP Banning Settings' => 'IP-verbanningsinstellingen',
-	'You have added [_1] to your list of banned IP addresses.' => 'U hebt [_1] toegevoegd aan uw lijst met uitgesloten IP-adressen.',
-	'You have successfully deleted the selected IP addresses from the list.' => 'U hebt de geselecteerde IP-adressen uit de lijst is verwijderd.',
-	'Ban New IP Address' => 'Nieuw IP-adres verbannen',
-	'IP Address' => 'IP-adres',
+	'IP address' => 'IP adres', # Translate - Case
+	'IP addresses' => 'IP adressen', # Translate - New
+	'Delete selected IP Address (x)' => 'Verwijder geselecteerd IP adres (s)', # Translate - New
+	'You have added [_1] to your list of banned IP addresses.' => 'U hebt [_1] toegevoegd aan uw lijst met uitgesloten IP adressen.',
+	'You have successfully deleted the selected IP addresses from the list.' => 'U hebt de geselecteerde IP adressen uit de lijst is verwijderd.',
+	'Ban New IP Address' => 'Nieuw IP adres verbannen',
+	'IP Address' => 'IP adres',
 	'Date Banned' => 'Verbanningsdatum',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2772,7 +2787,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'On' => 'Aan',
 	'Only when attention is required' => 'Alleen wanneer er aandacht is vereist',
 	'Off' => 'Uit',
-	'TrackBack Options' => 'TrackBack opties', # Translate - New
+	'TrackBack Options' => 'TrackBack opties',
 	'TrackBack Auto-Discovery' => 'Automatisch TrackBacks ontdekken',
 	'If you turn on auto-discovery, when you write a new entry, any external links will be extracted and the appropriate sites automatically sent TrackBacks.' => 'Indien u auto-discovery inschakelt dan zullen telkens u een nieuw bericht schrijft er automatisch TrackBacks worden gestuurd naar de betreffende site voor alle links in uw bericht.',
 	'Enable External TrackBack Auto-Discovery' => 'Externe automatische TrackBack-ontdekking inschakelen',
@@ -2784,7 +2799,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/edit_ping.tmpl
 	'The TrackBack has been approved.' => 'De TrackBack is goedgekeurd.',
-	'TrackBack Marked as Spam' => 'TrackBack gemarkeerd als spam',
 	'Previous' => 'Vorige',
 	'List &amp; Edit TrackBacks' => 'TrackBacks tonen &amp; bewerken',
 	'View Entry' => 'Bericht bekijken',
@@ -2815,9 +2829,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Your plugin settings have been reset.' => 'Uw plugin-instellingen zijn teruggezet op de standaardwaarden.',
 	'Your plugins have been reconfigured. Since you\'re running mod_perl, you will need to restart your web server for these changes to take effect.' => '    Uw plugins zijn opnieuw geconfigureerd.  Omdat u mod_perl draait, moet u uw webserver opnieuw starten om de wijzigingen van kracht te maken.',
 	'Your plugins have been reconfigured.' => 'Uw plugins zijn opnieuw geconfigureerd.',
-	'Disable all plugins system-wide' => 'Schakel alle plugins over heel het systeem uit', # Translate - New
+	'Disable all plugins system-wide' => 'Schakel alle plugins over heel het systeem uit',
 	'Disable Plugins' => 'Plugins uitschakelen',
-	'Enable all plugins system-wide' => 'Schakel alle plugins over heel het systeem in', # Translate - New
+	'Enable all plugins system-wide' => 'Schakel alle plugins over heel het systeem in',
 	'Enable Plugins' => 'Plugins inschakelen',
 	'Are you sure you want to reset the settings for this plugin?' => 'Bent u zeker dat u de instellingen voor deze plugin wil terugzetten naar de standaardwaarden?',
 	'Disable plugin system?' => 'Plugin-systeem uitschakelen?',
@@ -2839,10 +2853,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Settings for [_1]' => 'Instellingen voor [_1]',
 	'Version' => 'Versie',
 	'Resources Provided by [_1]' => 'Bronnen voorzien door [_1]',
-	'Tags:' => 'Tags:', # Translate - New
-	'Tag Attributes:' => 'Tag attributen:', # Translate - New
+	'Tags:' => 'Tags:',
+	'Tag Attributes:' => 'Tag attributen:',
 	'Text Filters' => 'Tekstfilters',
-	'Junk Filters:' => 'Spamfilters:', # Translate - New
+	'Junk Filters:' => 'Spamfilters:',
 	'[_1] Settings' => '[_1] instellingen',
 	'Reset to Defaults' => 'Terugzetten naar standaardwaarden',
 	'Plugin error:' => 'Pluginfout:',
@@ -2851,23 +2865,22 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/edit_folder.tmpl
 	'Edit Folder' => 'Map bewerken',
-	'Use this page to edit the attributes of the folder [_1]. You can set a description for your folder to be used in your public pages, as well as configuring the TrackBack options for this folder.' => 'Gebruik deze pagina om de eigenschappen van de map [_1] te bewerken.  U kunt een beschrijving van de map instellen die gebruikt wordt op publieke pagina\'s en u kunt eveneens de TrackBack opties voor deze map instellen.',
+	'Use this page to edit the attributes of the folder [_1]. You can set a description for your folder to be used in your public pages.' => 'Gebruik deze pagina om de eigenschappen te bewerken van map [_1]. U kunt een beschrijving van uw map instellen die gebruikt zal worden in uw publieke pagina\'s.', # Translate - New
 	'Your folder changes have been made.' => 'De wijzigingen aan de map zijn uitgevoerd.',
 	'You must specify a label for the folder.' => 'U moet een naam opgeven voor de map',
 	'Label' => 'Naam',
 
 ## tmpl/cms/backup.tmpl
-	'(None selected)' => '(geen geselecteerd)', # Translate - New
 	'What to backup' => 'Wat moet gebackupt worden?',
 	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'Deze optie zal een backup maken van gebruikers, rollen, associaties, blogs, berichten, categorieën, sjablonen en tags.',
 	'Everything' => 'Alles',
 	'Choose blogs to backup' => 'Kies de blogs die gebackupt moeten worden',
-	'Archive Format' => 'Archiefformaat', # Translate - New
+	'Archive Format' => 'Archiefformaat',
 	'The type of archive format to use.' => 'Soort archiefformaat om te gebruiken',
 	'tar.gz' => 'tar.gz',
 	'zip' => 'zuo',
 	'Don\'t compress' => 'Niet comprimeren',
-	'Target File Size' => 'Grootte doelbestand', # Translate - New
+	'Target File Size' => 'Grootte doelbestand',
 	'Approximate file size per backup file.' => 'Bestandsgrootte bij benadering per backupbestand',
 	'Don\'t Divide' => 'Niet opsplitsen',
 	'Make Backup (b)' => 'Backup maken (b)',
@@ -2875,16 +2888,24 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Instellingen webservices',
-	'Services' => 'Services',
-	'TypeKey Setup' => 'TypeKey instellingen',
-	'Recently Updated Key' => 'Recent bijgewerkt sleutel',
-	'If you have received a recently updated key (by virtue of your purchase), enter it here.' => 'Als u een \'Recent bijgewerkt\' sleutel heeft ontvangen (door uw aankoop), vul die dan hier in.',
+	'Six Apart Services' => 'Six Apart diensten', # Translate - New
+	'Your TypeKey token is used to access Six Apart services like its free Authentication service.' => 'Uw TypeKey token kan gebruikt worden om toegang te krijgen tot Six Apart diensten zoals de gratis authenticatieservice.', # Translate - New
+	'TypeKey is enabled.' => 'TypeKey is ingeschakeld',
+	'TypeKey token:' => 'TypeKey token:', # Translate - New
+	'Clear TypeKey Token' => 'TypeKey token leegmaken',
+	'Please click the Save Changes button below to disable authentication.' => 'Gelieve op de knop \'Wijzigingen opslaan\' te drukken om authenticatie uit te schakelen.',
+	'TypeKey is not enabled.' => 'TypeKey is niet ingeschakeld',
+	'or' => 'of', # Translate - New
+	'Obtain TypeKey token' => 'TypeKey token bekomen', # Translate - New
+	'Please click the Save Changes button below to enable TypeKey.' => 'Gelieve op de knop \'Wijzigingen opslaan\' te klikken om TypeKey in te schakelen.',
 	'External Notifications' => 'Externe notificaties',
-	'Notify the following sites upon blog updates' => 'Breng volgende sites op de hoogte bij updates aan een blog',
+	'Notify of blog updates' => 'Op de hoogte brengen van blogupdates', # Translate - New
 	'When this blog is updated, Movable Type will automatically notify the selected sites.' => 'Wanneer deze weblog wordt bijgewerkt, zal Movable Type automatisch de geselecteerde sites op de hoogte brengen.',
 	'Note: This option is currently ignored since outbound notification pings are disabled system-wide.' => 'Opmerking: deze instelling wordt momenteel genegeerd, omdat uitgaande notificatie-pings zijn uitgeschakeld op systeemniveau.',
 	'Others:' => 'Andere:',
 	'(Separate URLs with a carriage return.)' => '(URL\'s van elkaar scheiden met een carriage return.)',
+	'Recently Updated Key' => 'Recent bijgewerkt sleutel',
+	'If you have received a recently updated key (by virtue of your purchase), enter it here.' => 'Als u een \'Recent bijgewerkt\' sleutel heeft ontvangen (door uw aankoop), vul die dan hier in.',
 
 ## tmpl/cms/restore_start.tmpl
 	'Restoring Movable Type' => 'Movable Type terugzetten',
@@ -2910,7 +2931,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/list_notification.tmpl
 	'You have added [_1] to your address book.' => 'U heeft [_1] toegevoegd aan uw adresboek.',
-	'You have successfully deleted the selected contacts from your address book.' => 'U heeft met succes de geselecteerde contacten verwijderd uit uw adresboek.', # Translate - New
+	'You have successfully deleted the selected contacts from your address book.' => 'U heeft met succes de geselecteerde contacten verwijderd uit uw adresboek.',
 	'Download Address Book (CSV)' => 'Adresboek downloaden (CSV)',
 	'contact' => 'contact',
 	'contacts' => 'contacten',
@@ -2918,32 +2939,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Add Contact' => 'Contact toevoegen',
 
 ## tmpl/cms/cfg_system_general.tmpl
-	'General Settings: System-wide' => 'Algemene instellingen: over heel het systeem',
-	'Your settings have been saved.' => 'Uw instellingen zijn opgeslagen.',
-	'You must set a valid Default Site URL.' => 'U moet een geldige standaard hoofd-URL voor de site instellen.',
-	'You must set a valid Default Site Root.' => 'U moet een geldige standaard weblogmap voor de site instellen.',
-	'System Email Settings' => 'Systeem e-mail instellingen',
-	'System Email Address' => 'Systeem e-mailadres',
+	'System: General Settings' => 'Systeem: Algemene instellingen', # Translate - New
+	'System Email' => 'Systeem e-mail', # Translate - New
 	'The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification, entry notification and a few other minor events.' => 'Het e-mail adres gebruikt in de From: hader van elke e-mail verstuurd door het systeem.  Dit adres wordt gebruikt bij het terugvinden van wachtwoorden, registratie van reageerders, trackback- en berichtnotificaties en een aantal andere, minder belangrijke gebeurtenissen.',
-	'New User Defaults' => 'Standaardinstellingen nieuwe gebruikers',
-	'Personal weblog' => 'Persoonlijke weblog',
-	'Check to have the system automatically create a new personal weblog when a user is created in the system. The user will be granted a blog administrator role on the weblog.' => 'Kruis dit aan om het systeem automatisch een nieuwe persoonlijke weblog te laten aanmaken wanneer er een gebruiker wordt aangemaakt in het systeem.  De gebruiker zal de rol van blogadministrator krijgen op de weblog.',
-	'Automatically create a new weblog for each new user' => 'Automatisch een nieuwe weblog aanmaken voor elke nieuwe gebruiker',
-	'Personal weblog clone source' => 'Kloonbron persoonlijke weblog',
-	'Select a weblog you wish to use as the source for new personal weblogs. The new weblog will be identical to the source except for the name, publishing paths and permissions.' => 'Selecteer een weblog die u wenst te gebruiken als voorbeeld voor nieuwe persoonlijke weblogs.  De nieuwe weblog zal identiek zijn aan het voorbeeld, met uitzondering van de naam, publicatiepaden en permissies.',
-	'Default Site URL' => 'Standaard URL van de site',
-	'Define the default site URL for new weblogs. This URL will be appended with a unique identifier for the weblog.' => 'Stel de standaard URL in voor nieuwe weblogs.  Aan deze URL zal een unieke identificatie worden toegevoegd voor de weblog.',
-	'Default Site Root' => 'Standaard hoofdmap van de site',
-	'Define the default site root for new weblogs. This path will be appended with a unique identifier for the weblog.' => 'Stel de standaard hoofdmap in voor nieuwe weblogs.  Aan dit pad zal een unieke identificatie worden toegevoegd voor de weblog.',
-	'Default User Language' => 'Standaard taal',
-	'Define the default language to apply to all new users.' => 'Stel de standaard taal in voor nieuwe gebruikers',
-	'Default Timezone' => 'Standaard tijdzone',
-	'Default Tag Delimiter' => 'Standaard tagscheidingsteken',
-	'Define the default delimiter for entering tags.' => 'Stel het standaard teken in om tags van elkaar te onderscheiden bij het invoeren.',
 
 ## tmpl/cms/dashboard.tmpl
 	'Add a Widget...' => 'Voeg een widget toe...',
-	'You have attempted to access a page that does not exist. Please navigate to the page you are looking for starting from the dashboard.' => 'U heeft geprobeerd een pagina te bereiken die niet bestaat.  Gelieve te proberen de pagina die u zoekt via het dashboard te bereiken.',
 	'Your Dashboard has been updated.' => 'Uw dashboard is bijgewerkt.',
 	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'U heeft geprobeerd een optie te gebruiken waar u niet voldoende rechten voor heeft.  Als u gelooft dat u deze boodschap onterecht te zien krijgt, contacteer dan uw systeembeheerder.',
 	'Your dashboard is empty!' => 'Uw dashboard is leeg!',
@@ -2956,16 +2957,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Accept Comments' => 'Reacties aanvaarden',
 	'If enabled, comments will be accepted.' => 'Indien ingeschakeld zullen reacties worden aanvaard.',
 	'Commenting Policy' => 'Reactiebeleid',
-	'Allowed Authentication Methods' => 'Toegelaten authenticatiemethodes',
-	'Authentication Not Enabled' => 'Authenticatie is niet ingeschakeld',
-	'Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication.' => 'Opmerking: u heeft ervoor gekozen om enkel reacties te aanvaarden van geauthenticeerde reageerders, maar authenticatie is niet ingeschakeld.  Om geauthenticeerde reacties te kunnen ontvangen, moet u authenticatie inschakelen.',
-	'Native' => 'Ingebouwd',
-	'Require E-mail Address for Comments via TypeKey' => 'E-mail adres vereisen voor reacties via TypeKey',
-	'If enabled, visitors must allow their TypeKey account to share e-mail address when commenting.' => 'Indien ingeschakeld, moeten bezoekers hun TypeKey account toestaan om hun e-mail adres vrij te geven bij het reageren.',
-	'Setup other authentication services' => 'Alle authenticatiediensten instellen',
-	'OpenID providers disabled' => 'OpenID providers uitgeschakeld',
-	'Required module (Digest::SHA1) for OpenID commenter authentication is missing.' => 'Vereiste module (Digest::SHA1) voor OpenID reageerders-authenticatie ontbreekt.',
-	'Immediately approve comments from' => 'Onmiddellijk reacties goedkeuren van',
+	'Immediatly approve comments from' => 'Onmiddellijk reacties goedkeuren van', # Translate - New
 	'Specify what should happen to comments after submission. Unapproved comments are held for moderation.' => 'Instellen wat er moet gebeuren met reacties nadat ze zijn ingevoerd.  Niet gekeurde reacties worden bewaard voor latere moderatie.',
 	'No one' => 'Niemand',
 	'Trusted commenters only' => 'Enkel vertrouwde reageerders',
@@ -2981,6 +2973,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Disable \'nofollow\' for trusted commenters' => '\'nofollow\' uitschakelen voor vertrouwde reageerders',
 	'If enabled, the \'nofollow\' link relation will not be applied to any comments left by trusted commenters.' => 'Indien ingeschakeld, dan zal de \'nofollow\' linkrelatie niet worden toegepast op links in reacties achtergelaten door vertrouwde reageerders.',
 	'Specify when Movable Type should notify you of new comments if at all.' => 'Geef aan wanneer Movable Type u op de hoogte moet brengen van reacties, indien gewenst.',
+	'Comment Display Options' => 'Opties voor het tonen van reacties', # Translate - New
 	'Comment Order' => 'Volgorde reacties',
 	'Select whether you want visitor comments displayed in ascending (oldest at top) or descending (newest at top) order.' => 'Selecteer of u reacties van bezoekers wilt weergeven in oplopende (oudste bovenaan) of aflopende (nieuwste bovenaan) volgorde.',
 	'Ascending' => 'Oplopend',
@@ -2989,7 +2982,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'If enabled, all non-linked URLs will be transformed into links to that URL.' => 'Indien ingeschakeld zullen alle URLs die nog geen link zijn automatisch omgezet worden in links naar die URL.',
 	'Specifies the Text Formatting option to use for formatting visitor comments.' => 'Geeft weer welke tekstopmaakoptie moet worden gebruikt voor de opmaak van reacties van bezoekers.',
 	'CAPTCHA Provider' => 'CAPTCHA leverencier',
-	'Don\'t use CAPTCHA' => 'Geen CAPTCHA gebruiken',
+	'none' => 'geen',
 	'No CAPTCHA provider available' => 'Geen CAPTCHA provider beschikbaar',
 	'No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed, and CaptchaImageSourceBase directive points to captcha-source directory under mt-static/images.' => 'Er is geen CAPTCHA provider beschikbaar in dit systeem.  Gelieve te controleren of Image::Magick is geïnstalleerd en of de CaptchaImageSourceBase directief verwijst naar de captcha-source map onder mt-static/images.',
 	'Use Comment Confirmation Page' => 'Reactiebevestigingspagina gebruiken',
@@ -3004,19 +2997,17 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Your Local Site Path is not valid.' => 'Het lokale pad van uw site is niet geldig.',
 	'Enter the URL of your public website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/weblog/' => 'Vul de URL in van uw publieke website.  Laat de bestandsnaam weg (m.a.w. laat index.html weg).  Voorbeeld: http://www.voorbeeld.com/blog/',
 	'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog' => 'Vul het pad in waar uw hoofdindexbestand zich zal bevingen.  Een absoluut pad (dat begint met \'/\') verdient de voorkeur, maar u kunt ook een pad gebruiken relatief aan de Movable Type map.  Voorbeeld: /home/melody/public_html/weblog',
-	'Create [_1] (s)' => 'Maak [_1] aan (s)', # Translate - New
+	'Create [_1] (s)' => 'Maak [_1] aan (s)',
 
 ## tmpl/cms/upgrade_runner.tmpl
 	'Initializing database...' => 'Database wordt geïnitialiseerd...',
 	'Upgrading database...' => 'Database wordt bijgewerkt...',
-	'Installation complete.' => 'Installatie voltooid.',
-	'Upgrade complete.' => 'Upgrade voltooid.',
+	'Installation complete!' => 'Installatie voltooid!',
+	'Upgrade complete!' => 'Upgrade voltooid!',
 	'Starting installation...' => 'Instalatie gaat van start...',
 	'Starting upgrade...' => 'Upgrade gaat van start...',
 	'Error during installation:' => 'Fout tijdens installatie:',
 	'Error during upgrade:' => 'Fout tijdens upgrade:',
-	'Installation complete!' => 'Installatie voltooid!',
-	'Upgrade complete!' => 'Upgrade voltooid!',
 	'Login to Movable Type' => 'Aanmelden op Movable Type',
 	'Your database is already current.' => 'Uw database is reeds up-to-date.',
 
@@ -3025,13 +3016,13 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'The commenter has been banned.' => 'Deze reageerder is verbannen.',
 	'Comments from [_1]' => 'Reacties van [_1]',
 	'commenters' => 'reageerders',
-	'Trust [_1] (t)' => 'Vertrouw [_1] (t)', # Translate - New
+	'Trust [_1] (t)' => 'Vertrouw [_1] (t)',
 	'Trust' => 'Vertrouw',
-	'Untrust [_1] (t)' => 'Wantrouw [_1] (t)', # Translate - New
+	'Untrust [_1] (t)' => 'Wantrouw [_1] (t)',
 	'Untrust' => 'Wantrouw',
-	'Ban [_1] (b)' => 'Verban [_1] (b)', # Translate - New
+	'Ban [_1] (b)' => 'Verban [_1] (b)',
 	'Ban' => 'Verban',
-	'Unban [_1] (b)' => 'Ontban [_1] (b)', # Translate - New
+	'Unban [_1] (b)' => 'Ontban [_1] (b)',
 	'Unban' => 'Ontban',
 	'The Name of the commenter' => 'Naam van de reageerder',
 	'View all comments with this name' => 'Alle reacties met deze naam bekijken',
@@ -3046,8 +3037,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## tmpl/cms/cfg_entry.tmpl
 	'Entry Settings' => 'Berichtinstellingen',
 	'Display Settings' => 'Toon instellingen',
-	'Entries to Display' => 'Berichten om te tonen',
-	'Select the number of days of entries or the exact number of entries you would like displayed on your blog.' => 'Selecteer het aantal dagen waarvoor of het exacte aantal berichten dat u op de voorpagina van uw weblog wenst te tonen.', # Translate - New
+	'Entry Listing Default' => 'Standaardinstelling overzicht berichten', # Translate - New
+	'Select the number of days of entries or the exact number of entries you would like displayed on your blog.' => 'Selecteer het aantal dagen waarvoor of het exacte aantal berichten dat u op de voorpagina van uw weblog wenst te tonen.',
 	'Days' => 'Dagen',
 	'Entry Order' => 'Volgorde berichten',
 	'Select whether you want your entries displayed in ascending (oldest at top) or descending (newest at top) order.' => 'Selecteer of u uw berichten wenst te tonen in opklimmende (oudste bovenaan) of dalende (nieuwste bovenaan) volgorde.',
@@ -3082,7 +3073,19 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Note: This option is currently ignored since comments are disabled either blog or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat reacties zijn uitgeschakeld op blog- of systeemniveau.',
 	'Specifies the default Accept TrackBacks setting when creating a new entry.' => 'Bepaalt de standaardinstelling voor het aanvaarden van nieuwe TrackBacks bij nieuwe berichten.',
 	'Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat TrackBacks zijn uitgeschakeld op blog- of systeemniveau.',
+	'Replace Word Chars' => 'Karakters uit Word vervangen',
+	'Smart Replace' => 'Slim vervangen',
+	'No substitution' => 'Geen vervanging', # Translate - New
+	'Character entities (&amp#8221;, &amp#8220;, etc.)' => 'Karakter entiteiten (&amp#8221;, &amp#8220;, etc.)',
+	'ASCII equivalents (&quot;, \', ..., -, --)' => 'ASCII equivalenten (&quot;, \', ..., -, --)',
+	'Replace Fields' => 'Velden vervangen',
+	'Extended entry' => 'Uitgebreid bericht',
 	'Default Editor Fields' => 'Standaard velden voor de editor',
+	'Editor Fields' => 'Velden van de tekstbewerker',
+	'_USAGE_ENTRYPREFS' => 'Selecteer de velden die getoond moeten worden in het scherm om berichten te bewerken.',
+	'Select the location of the entry editor&rsquo;s action bar.' => 'Selecteer de locatie voor de actiebalk in de berichteneditor.',
+	'Below' => 'Onder',
+	'Above' => 'Boven',
 
 ## tmpl/cms/search_replace.tmpl
 	'You must select one or more item to replace.' => 'U moet één of meer items selecteren om te vervangen.',
@@ -3199,15 +3202,14 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/cms/export.tmpl
 	'You must select a blog to export.' => 'U moet een blog kiezen om te exporteren.',
-	'_USAGE_EXPORT_1' => 'Het exporteren van uw berichten vanuit Movable Type maakt het mogelijk om <b>persoonlijke back-ups</b> van uw blogberichten te bewaren. Het formaat van de geëxporteerde gegevens is geschikt om weer in het systeem geïmporteerd te worden m.b.v. de importfunctie (hierboven); dus kunt u, behalve het exporteren van uw berichten voor backup-doeleinden, deze functie ook gebruiken om <b>de inhoud te verplaatsen naar verschillende blogs</b>.',
-	'Blog to Export' => 'Blog te exporteren', # Translate - New
+	'_USAGE_EXPORT_1' => 'Exporteer de berichten, reacties en TrackBacks van een blog.  Een export kan niet beschouwd worden als een <em>volledige</em> backup van een blog.',
+	'Blog to Export' => 'Blog te exporteren',
 	'Select a blog for exporting.' => 'Selecteer een blog om te exporteren.',
-	'Change blog' => 'Wijzig blog', # Translate - New
-	'Export Blog (s)' => 'Exporteer blog (s)', # Translate - New
+	'Export Blog (s)' => 'Exporteer blog (s)',
 	'Export Blog' => 'Exporteer blog',
 
 ## tmpl/cms/list_commenter.tmpl
-	'_USAGE_COMMENTERS_LIST' => 'Hier is de lijst met bezoekers die reacties achterlieten op [_1].',
+	'_USAGE_COMMENTERS_LIST' => 'Hier vindt u een lijst met alle geauthenticeerde reageerders op [_1].  Hieronder kunt u een reageerder markeren als vertrouwd of verbannen of er meer info over krijgen.',
 	'The selected commenter(s) has been given trusted status.' => 'De geselecteerde reageerder(s) hebben de status \'vertrouwd\' gekregen.',
 	'Trusted status has been removed from the selected commenter(s).' => 'De status van \'vertrouwd\' is van de geselecteerde reageerder(s) afgenomen.',
 	'The selected commenter(s) have been blocked from commenting.' => 'De geselecteerde reageerder(s) is de mogelijkheid om te reageren afgenomen.',
@@ -3238,7 +3240,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'template' => 'sjabloon',
 	'templates' => 'sjablonen',
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
-	'Create Archive Template:' => 'Archiefsjabloon aanmaken:', # Translate - New
+	'Create Archive Template:' => 'Archiefsjabloon aanmaken:',
 	'Create new [_1] template' => 'Nieuw [_1] sjabloon aanmaken',
 	'Create Template...' => 'Sjabloon aanmaken...',
 	'Blank Template' => 'Leeg sjabloon',
@@ -3329,10 +3331,10 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog\'s data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'Volgende Perl modules zijn vereist om een databaseconnectie te kunnen maken.  Movable Type heeft een database nodig om de gegevens van uw weblog in op te slaan.  Gelieve één van de packages hieronder te installeren om verder te kunnen gaan.  Wanneer u klaar bent, klik dan op de knop \'Opnieuw\'.',
 	'All required Perl modules were found.' => 'Alle vereiste Perl modules werden gevonden',
 	'You are ready to proceed with the installation of Movable Type.' => 'U bent klaar om verder te gaan met de installatie van Movable Type',
-	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'Een aantal optionele Perl modules kon niet worden gevonden. <a href="javascript:void(0)" onclick="[_1]">Toon lijst optionele modules</a>', # Translate - New
+	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'Een aantal optionele Perl modules kon niet worden gevonden. <a href="javascript:void(0)" onclick="[_1]">Toon lijst optionele modules</a>',
 	'One or more Perl modules required by Movable Type could not be found.' => 'Eén of meer Perl modules vereist door Movable Type werden niet gevonden.',
 	'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'De onderstaande Perl modules zijn nodig voor de werking van Movable Type.  Eens uw systeem aan deze voorwaarden voldoet, klik op de \'Opnieuw\' knop om opnieuw te testen of deze modules geïnstalleerd zijn.',
-	'Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click \'Retry\' to test for the modules again.' => 'Een aantal optionele Perl modules konden niet worden gevonden.  U kunt verder gaan zonder deze optionele modules te installeren.  Ze kunnen op gelijk welk moment geïnstalleerd worden indien ze nodig zijn.  Klik op \'Opnieuw\' om opnieuw te testen of de modules aanwezig zijn.', # Translate - New
+	'Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click \'Retry\' to test for the modules again.' => 'Een aantal optionele Perl modules konden niet worden gevonden.  U kunt verder gaan zonder deze optionele modules te installeren.  Ze kunnen op gelijk welk moment geïnstalleerd worden indien ze nodig zijn.  Klik op \'Opnieuw\' om opnieuw te testen of de modules aanwezig zijn.',
 	'Missing Database Modules' => 'Ontbrekende databasemodules',
 	'Missing Optional Modules' => 'Ontbrekende optionele modules',
 	'Missing Required Modules' => 'Ontbrekende vereiste modules',
@@ -3344,9 +3346,9 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Missing Configuration File' => 'Ontbrekend configuratiebestand',
 	'_ERROR_CONFIG_FILE' => 'Uw Movable Type configuratiebestand ontbreekt of kan niet gelezen worden. Gelieve het deel <a href="#">Installation and Configuration</a> van de handleiding van Movable Type te raadplegen voor meer informatie.',
 	'Database Connection Error' => 'Databaseverbindingsfout',
-	'_ERROR_DATABASE_CONNECTION' => 'Uw database instellingen zijn ofwel ongeldig ofwel niet aanwezig in uw Movable Type configuratiebestand. Bekijk het deel <a href="#">Installation and Configuration</a> van de Movable Type handleiding voor meer informatie.',
+	'_ERROR_DATABASE_CONNECTION' => 'Uw database instellingen zijn ofwel ongeldig ofwel ontbreken ze in uw Movable Type configuratiebestand. Bekijk het deel <a href="#">Installation and Configuration</a> van de Movable Type handleiding voor meer informatie.',
 	'CGI Path Configuration Required' => 'CGI-pad configuratie vereist',
-	'_ERROR_CGI_PATH' => 'Uw CGIPath configuratieinstelling is ofwel ongeldig ofwel niet aanwezig in uw Movable Type configuratiebestand. Gelieve het deel <a href="#">Installation and Configuration</a> van de Movable Type handleiding te raadplegen voor meer informatie.',
+	'_ERROR_CGI_PATH' => 'Uw CGIPath configuratieinstelling is ofwel ongeldig ofwel ontbreekt ze in uw Movable Type configuratiebestand. Bekijk het deel <a href="#">Installation and Configuration</a> van de Movable Type handleiding voor meer informatie.',
 
 ## tmpl/email/footer-email.tmpl
 	'Powered by Movable Type' => 'Aangedreven door Movable Type',
@@ -3364,8 +3366,8 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'If the link is not clickable, just copy and paste it into your browser.' => 'Indien de link niet klikbaar is, kopiëer en plak hem dan gewoon in uw browser.',
 
 ## tmpl/email/recover-password.tmpl
-	'_USAGE_FORGOT_PASSWORD_1' => 'U hebt het herstel van uw Movable Type-wachtwoord aangevraagd. Uw wachtwoord is in het systeem gewijzigd; hier is het nieuwe wachtwoord:',
-	'_USAGE_FORGOT_PASSWORD_2' => 'Met dit nieuwe wachtwoord moet u zich op Movable Type kunnen aanmelden. Zodra u zich hebt aangemeld, kunt u uw wachtwoord veranderen in iets dat u goed kunt onthouden.',
+	'_USAGE_FORGOT_PASSWORD_1' => 'U hebt een nieuw Movable Type-wachtwoord aangevraagd. Uw wachtwoord is in het systeem gewijzigd; hier is het nieuwe wachtwoord:',
+	'_USAGE_FORGOT_PASSWORD_2' => 'Met dit nieuwe wachtwoord moet u zich op Movable Type kunnen aanmelden. Zodra u zich hebt aangemeld, kunt u uw wachtwoord veranderen in iets dat u makkelijker kunt onthouden.',
 
 ## tmpl/email/new-ping.tmpl
 	'An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Een niet gekeurde TrackBack is ontvangen op uw weblog [_1], op bericht #[_2] ([_3]). U moet deze TrackBack eerst goedkeuren voordat hij op uw site verschijnt.',
@@ -3378,8 +3380,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 
 ## tmpl/email/new-comment.tmpl
 	'An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => 'Een niet gekeurde reactie is binnengekomen op uw weblog [_1], op bericht #[_2] ([_3]). U moet deze reactie eerst goedkeuren voor ze op uw site verschijnt.',
-	'Approve this comment:' => 'Deze reactie goedkeuren:',
 	'A new comment has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'Een nieuwe reactie is gepubliceerd op uw blog [_1], op bericht #[_2] ([_3]).',
+	'Comment posted by' => 'Reactie achtergelaten door', # Translate - New
+	'Commenter email address' => 'E-mail adres reageerder', # Translate - New
+	'Commenter URL' => 'URL reageerder', # Translate - New
+	'Commenter IP address' => 'IP adres reageerder', # Translate - New
+	'Approve this comment:' => 'Deze reactie goedkeuren:',
 	'View this comment' => 'Deze reactie bekijken',
 	'Report this comment as spam' => 'Deze reactie melden als spam',
 
@@ -3432,6 +3438,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'3' => '3',
 	'5' => '5',
 	'10' => '10',
+	'All' => 'Alle',
 
 ## plugins/feeds-app-lite/tmpl/select.tmpl
 	'Multiple feeds were found' => 'Meerdere feeds gevonden',
@@ -3441,6 +3448,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## plugins/feeds-app-lite/tmpl/start.tmpl
 	'You must enter a feed or site URL to proceed' => 'U moet een feed of site-URL ingeven om verder te gaan',
 	'Create a widget from a feed' => 'Maak een widget van een feed',
+	'Feed or Site URL' => 'URL van feed of site', # Translate - New
 	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Vul de URL in van een feed, of de URL van een site met een feed..',
 
 ## plugins/feeds-app-lite/tmpl/msg.tmpl
@@ -3454,9 +3462,11 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## plugins/feeds-app-lite/mt-feeds.pl
 	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?' => 'Feeds.App Lite helpt u om feeds te herpubliceren op uw weblogs.  Wenst u meer te doen met feeds in Movable Type?',
 	'Upgrade to Feeds.App' => 'Upgraden naar Feeds.App',
+	'Create a Feed Widget' => 'Feedwidget aanmaken', # Translate - New
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
 	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' is een verplicht argument van [_2]',
 	'MT[_1] was not used in the proper context.' => 'MT[_1] werd niet gebruikt in de juiste context.',
-	'Feeds.App Lite' => 'Feeds.App Lite',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
@@ -3504,37 +3514,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Sjabloon \'[_1]\' wordt overgeslagen, omdat het blijkbaar een gepersonaliseerd sjabloon is.',
 	'Refresh Template(s)' => 'Sjablo(o)n(en) verversen',
 
-## plugins/ExtensibleArchives/DatebasedCategories.pl
-	'CATEGORY-YEARLY_ADV' => 'Categorie per jaar',
-	'CATEGORY-MONTHLY_ADV' => 'Categorie per maand',
-	'CATEGORY-DAILY_ADV' => 'Categorie per dag',
-	'CATEGORY-WEEKLY_ADV' => 'Categorie per week',
-	'category/sub_category/yyyy/index.html' => 'categorie/sub_categorie/jjjj/index.html',
-	'category/sub-category/yyyy/index.html' => 'categorie/sub-categorie/jjjj/index.html',
-	'category/sub_category/yyyy/mm/index.html' => 'categorie/sub_categorie/jjjj/mm/index.html',
-	'category/sub-category/yyyy/mm/index.html' => 'categorie/sub-categorie/jjjj/mm/index.html',
-	'category/sub_category/yyyy/mm/dd/index.html' => 'categorie/sub_categorie/jjjj/dd/index.html',
-	'category/sub-category/yyyy/mm/dd/index.html' => 'categorie/sub-categorie/jjjj/dd/index.html',
-	'category/sub_category/yyyy/mm/day-week/index.html' => 'categorie/sub_categorie/jjjj/mm/dag-week/index.html',
-	'category/sub-category/yyyy/mm/day-week/index.html' => 'categorie/sub-categorie/jjjj/mm/dag-week/index.html',
-
-## plugins/ExtensibleArchives/AuthorArchive.pl
-	'AUTHOR_ADV' => 'Auteur',
-	'AUTHOR-YEARLY_ADV' => 'Auteur per jaar',
-	'AUTHOR-MONTHLY_ADV' => 'Auteur per maand',
-	'AUTHOR-WEEKLY_ADV' => 'Auteur per week',
-	'AUTHOR-DAILY_ADV' => 'Auteur per dag',
-	'author_display_name/index.html' => 'naam_auteur/index.html',
-	'author-display-name/index.html' => 'naam-auteur/index.html',
-	'author_display_name/yyyy/index.html' => 'naam_auteur/jjjj/index.html',
-	'author-display-name/yyyy/index.html' => 'naam-auteur/jjjj/index.html',
-	'author_display_name/yyyy/mm/index.html' => 'naam_auteur/jjjj/mm/index.html',
-	'author-display-name/yyyy/mm/index.html' => 'naam-auteur/jjjj/mm/index.html',
-	'author_display_name/yyyy/mm/day-week/index.html' => 'naam_auteur/jjjj/mm/dag-week/index.html',
-	'author-display-name/yyyy/mm/day-week/index.html' => 'naam-auteur/jjjj/mm/dag-week/index.html',
-	'author_display_name/yyyy/mm/dd/index.html' => 'naam_auteur/jjjj/mm/dd/index.html',
-	'author-display-name/yyyy/mm/dd/index.html' => 'naam-auteur/jjjj/mm/dd/index.html',
-
 ## plugins/Cloner/cloner.pl
 	'Cloning Weblog' => 'Bezig met klonen van weblog',
 	'Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">return to the weblogs listing</a> or <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">configure the Site root and URL of the new weblog</a>.' => 'Klaar! U kunt nu <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">terugkeren naar het weblog overzicht</a> of <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">de hoofdmap en URL van de site instellen</a>',
@@ -3559,13 +3538,12 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Set Name' => 'Naam instellen',
 	'Drag and drop the widgets you want into the <strong>Installed</strong> column.' => 'Klik en sleep de widgets die u wenst in de kolom <strong>Geïnstalleerde widgets</strong>.',
 	'Installed Widgets' => 'Geïnstalleerde widgets',
+	'edit' => 'bewerken', # Translate - Case
 	'Available Widgets' => 'Beschikbare widgets',
-	'Save changes (s)' => 'Wijziging(en) opslaan',
 
 ## plugins/WidgetManager/tmpl/list.tmpl
-	'Widgets' => 'Widgets',
-	'Widget Set' => 'Widgetset',
 	'Widget Sets' => 'Widgetsets',
+	'Widget Set' => 'Widgetset',
 	'Delete selected Widget Sets (x)' => 'Geselecteerde widgetsets verwijderen (x)',
 	'Helpful Tips' => 'Nuttige tips',
 	'To add a widget set to your templates, use the following syntax:' => 'Om een widgetset aan uw sjablonen toe te voegen, gebruikt u volgende syntax:',
@@ -3576,6 +3554,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Create Widget Set' => 'Widgetset aanmaken',
 
 ## plugins/WidgetManager/WidgetManager.pl
+	'Widgets' => 'Widgets',
 
 ## plugins/WidgetManager/default_widgets/monthly_archive_list.tmpl
 
@@ -3619,7 +3598,7 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Tag cloud' => 'Tagcloud',
 
 ## plugins/WidgetManager/default_widgets/powered_by.tmpl
-	'_POWERED_BY' => 'Aangedreven door<br /><a href="http://www.movabletype.org/sitenl/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Aangedreven  door<br /><a href="http://www.sixapart.com/movabletype/"><$MTProductName$></a>',
 
 ## plugins/WidgetManager/default_widgets/creative_commons.tmpl
 	'This weblog is licensed under a' => 'Deze weblog valt onder een licentie van het type',
@@ -3636,7 +3615,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 ## plugins/WidgetManager/lib/WidgetManager/CMS.pm
 	'Can\'t duplicate the existing \'[_1]\' Widget Manager. Please go back and enter a unique name.' => 'Can de bestaande \'[_1]\' Widget Manager niet dupliceren.  Ga terug en vul een unieke naam in.',
 	'Widget Manager' => 'Widget Manager',
-	'Moving [_1] to list of installed modules' => '[_1] wordt verplaatst naar de lijst geïnstalleerde modules',
 	'First Widget Manager' => 'Eerste Widgetmanager',
 
 ## plugins/WidgetManager/lib/WidgetManager/Plugin.pm
@@ -3705,7 +3683,6 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'Less' => 'Minder',
 	'More' => 'Meer',
 	'block' => 'blokkeer',
-	'none' => 'geen',
 	'IP Blacklist Services' => 'IP zwarte lijst diensten',
 	'Domain Name Lookups:' => 'Domeinnamen opzoeken:',
 	'Moderate feedback containing blacklisted domains' => 'Modereer feedback die domeinen bevat die op de zwarte lijst staan',
@@ -3773,45 +3750,48 @@ Als dit een fout was, kunt u het IP-adres ontgrendelen en de bezoeker toestaan o
 	'SpamLookup Keyword Filter' => 'SpamLookup sleutelwoord-filter',
 
 ## plugins/StyleCatcher/stylecatcher.pl
-	'MT Style Library' => 'MT Stijlenbibliotheek', # Translate - New
+	'MT 4 Style Library' => 'MT 4 Stijlenbibliotheek', # Translate - New
+	'A collection of styles compatible with Movable Type 4 default templates.' => 'Een verzameling stijlen compatibel met de standaardsjablonen van Movable Type 4.', # Translate - New
+	'MT 3 Style Library' => 'MT 3 Stijlenbibliotheek', # Translate - New
+	'A collection of styles compatible with Movable Type 3.3+ default templates.' => 'Een verzameling stijlen compatibel met de standaardsjablonen van Movable Type 3.3+.', # Translate - New
 	'Styles' => 'Stijlen',
 
 ## plugins/StyleCatcher/tmpl/header.tmpl
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
 	'Select a Style' => 'Selecteer een stijl',
-	'3-Columns, Wide, Thin, Thin' => '3-kolommen, breed, smal, smal', # Translate - New
-	'3-Columns, Thin, Wide, Thin' => '3-kolommen, smal, breed, smal', # Translate - New
-	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed', # Translate - New
-	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal', # Translate - New
-	'None available' => 'Geen beschikbaar', # Translate - New
+	'3-Columns, Wide, Thin, Thin' => '3-kolommen, breed, smal, smal',
+	'3-Columns, Thin, Wide, Thin' => '3-kolommen, smal, breed, smal',
+	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed',
+	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal',
+	'None available' => 'Geen beschikbaar',
 	'Applying...' => 'Toepassen...',
 	'Error applying theme: ' => 'Fout bij toepassen thema:',
-	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Het geselecteerde thema is toegepast, maar omdat u een andere lay-out heeft gekozen, moet u eerst uw weblog opnieuw publiceren om de nieuwe lay-out zichtbaar te maken.', # Translate - New
+	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Het geselecteerde thema is toegepast, maar omdat u een andere lay-out heeft gekozen, moet u eerst uw weblog opnieuw publiceren om de nieuwe lay-out zichtbaar te maken.',
 	'The selected theme has been applied!' => 'Het geselecteerde thema is toegepast',
 	'Error loading themes! -- [_1]' => 'Fout bij het laden van thema\'s! -- [_1]',
-	'Stylesheet or Repository URL' => 'Stylesheet of bibliotheek URL', # Translate - New
-	'Stylesheet or Repository URL:' => 'Stylesheet of bibliotheek URL:', # Translate - New
+	'Stylesheet or Repository URL' => 'Stylesheet of bibliotheek URL',
+	'Stylesheet or Repository URL:' => 'Stylesheet of bibliotheek URL:',
 	'Download Styles' => 'Stijlen downloaden',
 	'Current theme for your weblog' => 'Huidig thema voor uw weblog',
-	'Current Style' => 'Huidige stijl', # Translate - New
+	'Current Style' => 'Huidige stijl',
 	'Locally saved themes' => 'Lokaal opgeslagen thema\'s',
-	'Saved Styles' => 'Opgeslagen stijlen', # Translate - New
-	'Default Styles' => 'Standaard stijlen', # Translate - New
+	'Saved Styles' => 'Opgeslagen stijlen',
+	'Default Styles' => 'Standaard stijlen',
 	'Single themes from the web' => 'Losse thema\'s van het web',
-	'More Styles' => 'Meer stijlen', # Translate - New
-	'Selected Design' => 'Geselecteerde designs', # Translate - New
-	'Layout' => 'Lay-out', # Translate - New
-	'Apply Design' => 'Design toepassen', # Translate - New
+	'More Styles' => 'Meer stijlen',
+	'Selected Design' => 'Geselecteerde designs',
+	'Layout' => 'Lay-out',
+	'Apply Design' => 'Design toepassen',
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon de map [_1] niet aanmaken - Controleer of uw \'thema\'s\' map schrijfbaar is voor de webserver.',
-	'Error downloading image: [_1]' => 'Fout bij downloaden afbeelding: [_1]', # Translate - New
+	'Error downloading image: [_1]' => 'Fout bij downloaden afbeelding: [_1]',
 	'Successfully applied new theme selection.' => 'De nieuwe thema-selectie is met succes toegepast.',
-	'Invalid URL: [_1]' => 'Ongeldige URL: [_1]', # Translate - New
+	'Invalid URL: [_1]' => 'Ongeldige URL: [_1]',
 
 );
 
-## New words: 504
+## New words: 524
 
 1;

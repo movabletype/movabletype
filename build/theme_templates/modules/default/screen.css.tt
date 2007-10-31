@@ -86,16 +86,23 @@ body {
     margin: 5px 0;
 }
 
-.module-header,
+.widget-header,
 .trackbacks-header,
 .comments-header,
 .comments-open-header,
-.archive-header {
+.archive-header,
+.search-form-header,
+.search-results-header {
     margin: 0;
     padding: 5px 0;
     font-size: 18px;
     font-weight: bold;
 }
+
+.search-results-header {
+    margin-bottom: .25em;
+}
+
 
 /* Footer */
 
@@ -107,11 +114,13 @@ body {
 
 /* Utility */
 
-.module-header,
+.widget-header,
 .trackbacks-header,
 .comments-header,
 .comments-open-header,
-.archive-header {
+.archive-header,
+.search-form-header,
+.search-results-header {
     /* ie win (5, 5.5, 6) bugfix */
     p\osition: relative;
     width: 100%;

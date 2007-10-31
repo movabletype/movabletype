@@ -36,7 +36,7 @@ function toggleFilter() {
 }
 
 function setFilterCol(choice) {
-    var sel = getByID('filter-form');
+    var sel = getByID('filter-select-form');
     if (!sel) return;
     sel.className = "filter-" + choice;
     var fld = getByID('filter-col');
@@ -67,19 +67,22 @@ TC.attachLoadEvent( init );
 </script>
 </mt:setvarblock>
 <mt:setvarblock name="list_filter_form">
+<form id="filter-form" method="get" action="<mt:var name="mt_url">">
+    <input type="hidden" name="__mode" value="list_assets" />
+    <mt:if name="edit_blog_id">
+    <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
+    </mt:if>
+    <input id="filter" type="hidden" name="filter" value="" />
+    <input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
 <div class="listing-filter">
     <div class="listing-filter-inner inner pkg">
-        <form id="filter-form" method="get" action="<mt:var name="mt_url">">
-            <input type="hidden" name="__mode" value="list_assets" />
-            <mt:if name="edit_blog_id">
-            <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
-            </mt:if>
-            <input id="filter" type="hidden" name="filter" value="" />
-            <input id="filter_val" type="hidden" name="filter_val" value="" />
+        <form id="filter-select-form" method="get" action="<mt:var name="mt_url">" onsubmit="return execFilter(this)">
             <div class="filter">
                 <div id="filter-title">
             <mt:if name="filter_key">
                 <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
+                <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
                 <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
             <mt:else>
                 <mt:unless name="filter">
@@ -114,9 +117,17 @@ TC.attachLoadEvent( init );
                             <input type="text" id="normalizedtag-val" name="filter_val" value="<mt:if name="filter_col_exacttag"><mt:var name="filter_val" escape="html"></mt:if><mt:if name="filter_col_normalizedtag"><mt:var name="filter_val" escape="html"></mt:if>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
                         </span>
                     <!-- filter form ends -->
-                    &nbsp;
-                    <input type="button" value="<__trans phrase="Filter">" id="filter-button" onclick="return execFilter(this.form)" />
-                    <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />
+                    <span class="buttons">
+                        <a href="javascript:void(0)"
+                            id="filter-button"
+                            onclick="return execFilter(getByID('filter-select-form'))"
+                            type="submit"
+                            ><__trans phrase="Filter"></a>
+                        <a href="javascript:void(0)"
+                            onclick="toggleFilter(); return false;"
+                            type="submit"
+                            ><__trans phrase="Cancel"></a>
+                    </span>
                 </div>
             </div>
         </form>
@@ -126,7 +137,7 @@ TC.attachLoadEvent( init );
 <mt:setvarblock name="action_buttons">
     <mt:if name="can_delete_files">
         <a href="javascript:void(0)"
-            onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="content">', '<__trans phrase="content">')" name="delete_assets"
+            onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="content" escape="js">', '<__trans phrase="content" escape="js">'); return false;" name="delete_assets"
             accesskey="x"
             title="<__trans phrase="Delete selected assets (x)">"
             ><__trans phrase="Delete"></a>

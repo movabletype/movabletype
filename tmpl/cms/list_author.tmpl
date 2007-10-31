@@ -69,18 +69,20 @@
         </ul>
     </mtapp:widget>
 
+    <$mtapp:pageactions from="list_authors"$>
+
     <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
     <a href="javascript:void(0)"
-        onclick="setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 1)"
+        onclick="setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 1); return false;"
         accesskey="e"
         title="<__trans phrase="Enable selected users (e)">"
         ><__trans phrase="_USER_ENABLE" escape="js"></a>
     <a href="javascript:void(0)"
-        onclick="var sysadmin = getByID('sysadmin'); if (sysadmin && sysadmin.checked) { alert('<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">'); sysadmin.click(); return false; } setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 0)"
+        onclick="var sysadmin = getByID('sysadmin'); if (sysadmin && sysadmin.checked) { alert('<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">'); sysadmin.click(); return false; } setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 0); return false;"
         accesskey="d"
         title="<__trans phrase="Disable selected users (d)">"
         ><__trans phrase="_USER_DISABLE" escape="js"></a>
@@ -140,7 +142,7 @@
 </mt:setvarblock>
 <mt:ignore>
                 <mt:setvarblock name="list_filter_form">
-                    <form id="filter-form" method="get" action="<mt:var name="mt_url">">
+                    <form id="filter-select-form" method="get" action="<mt:var name="mt_url">">
                     <input type="hidden" name="__mode" value="list_authors" />
                     <mt:if name="blog_id">
                     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -179,9 +181,17 @@
                         </span>
                         <__trans phrase=".">
                         </span>
-                        &nbsp;
-                        <input type="button" value="<__trans phrase="Filter">" id="filter-button" style="display: none" onclick="return execFilter(this.form)" />
-                        <input type="button" value="<__trans phrase="Cancel">" onclick="toggleFilter()" />
+                        <span class="buttons">
+                            <a href="javascript:void(0)"
+                                id="filter-button"
+                                onclick="return execFilter(getByID('filter-select-form'))"
+                                type="submit"
+                                ><__trans phrase="Filter"></a>
+                            <a href="javascript:void(0)"
+                                onclick="toggleFilter(); return false;"
+                                type="submit"
+                                ><__trans phrase="Cancel"></a>
+                        </span>
                         </div>
                         </div>
                     </form>
@@ -190,15 +200,15 @@
 <mt:setvarblock name="list_filter_form">
     <div class="listing-filter">
         <div class="listing-filter-inner inner pkg">
-    <div class="filter">
-        <div id="filter-title">
-        <mt:if name="filter_title">
-            <$mt:var name="filter_title"$>
-        <mt:else>
-            <__trans phrase="Show All Users">
-        </mt:if>
-        </div>
-    </div>
+            <div class="filter">
+                <div id="filter-title">
+                <mt:if name="filter_title">
+                    <$mt:var name="filter_title"$>
+                <mt:else>
+                    <__trans phrase="Show All Users">
+                </mt:if>
+                </div>
+            </div>
         </div>
     </div>
 </mt:setvarblock>

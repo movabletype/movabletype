@@ -8,10 +8,9 @@ use constant DENIED     => 1;
 use constant ALLOWED    => 2;
 
 sub preprocess_native_tags {
-
-    my $plugin = shift;
-    my $orig_handler = shift;
     my ( $ctx, $args, $cond ) = @_;
+    my $plugin = MT::Plugin::MultiBlog->instance;
+
     my $tag = lc $ctx->stash('tag');
 
     # If we're running under MT-Search, set the context based on the search
@@ -59,8 +58,9 @@ sub preprocess_native_tags {
     local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'tags';
 
     # Call original tag handler with new args
-    return $orig_handler->( $ctx, $args, $cond ) 
-        or $ctx->error($ctx->errstr);
+    defined(my $result = $ctx->super_handler( $args, $cond ))
+        or return $ctx->error($ctx->errstr);
+    return $result;
 }
 
 
@@ -80,19 +80,18 @@ sub post_feedback_save {
 
 sub post_entry_save {
     my $plugin = shift;
-    my ($eh, $app, $entry, $orig) = @_;
-
+    my ( $eh, $entry ) = @_;
     my $blog_id = $entry->blog_id;
     foreach my $scope ("blog:$blog_id", "system") {
         my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
         while ( my ( $id, $a ) = each( %{ $d->{'entry_save'} } ) ) {
-            map { perform_mb_action( $app, $id, $_ ) } keys %$a;
+            map { perform_mb_action( MT->instance, $id, $_ ) } keys %$a;
         }
 
         require MT::Entry;
         if ( $entry->status == MT::Entry::RELEASE() ) {
             while ( my ( $id, $a ) = each( %{ $d->{'entry_pub'} } ) ) {
-                map { perform_mb_action( $app, $id, $_ ) } keys %$a;
+                map { perform_mb_action( MT->instance, $id, $_ ) } keys %$a;
             }
         }
     }
@@ -198,7 +197,7 @@ sub filter_blogs {
     $is_include = $is_include eq 'include_blogs' ? 1 : 0;
 
     # Set local blog
-    my $this_blog = $ctx->stash('blog_id') or return;
+    my $this_blog = $ctx->stash('blog_id') || 0;
 
     # Get the MultiBlog system config for default access and overrides
     my $default_access_allowed = 

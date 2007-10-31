@@ -5,10 +5,10 @@
 # $Id$
 
 package MT::IPBanList;
-use strict;
 
-use MT::Object;
-@MT::IPBanList::ISA = qw( MT::Object );
+use strict;
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -24,12 +24,19 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("IP Ban");
+}
+
+sub class_label_plural {
+    MT->translate("IP Bans");
+}
+
 sub ban_ip {
     my $class = shift;
     my ($ip, $blog_id) = @_;
     $class->set_by_key({ip => $ip, blog_id => $blog_id});
 }
-
 
 1;
 __END__

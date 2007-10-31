@@ -8,7 +8,7 @@
       <mt:else>
         <mt:setvarblock name="page_title_name"><mt:var name="name" escape="html"></mt:setvarblock>
       </mt:if>    
-      <mt:setvarblock name="page_title"><__trans phrase="Profile for [_1]" params="<mt:var name="page_title_name">"></mt:setvarblock>
+      <mt:setvarblock name="page_title"><__trans phrase="Edit Profile"></mt:setvarblock>
     </mt:if>
 <mt:setvarblock name="content_nav">
     <mt:include name="include/users_content_nav.tmpl">
@@ -87,14 +87,6 @@ TC.attachLoadEvent(init);
 
 <div id="edit-author">
 
-<mt:if name="editing_other_profile">
-    <mt:if name="status_pending">
-    <h3 class="user_disabled"><__trans phrase="User Pending"></h3>
-    <mt:else><mt:unless name="status_enabled">
-    <h3 class="user_disabled"><__trans phrase="User Disabled"></h3>
-    </mt:unless></mt:if>
-</mt:if>
-
 <mt:if name="saved">
     <mtapp:statusmsg
         id="saved"
@@ -141,39 +133,24 @@ TC.attachLoadEvent(init);
             <input type="hidden" id="status" name="status" value="1" />
 </mt:if>
 
-            <fieldset class="pkg">
-                <div class="rightcol">
-<mt:if name="new_object">
-                    <div class="box permission-box">
-                        <h4><__trans phrase="Personal Weblog"></h4>
-                        <div class="inner">
-                            <ul class="last">
-                                <li><input type="checkbox" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"</mt:if> /> <__trans phrase="Create personal weblog for user"></li>
-                            </ul>
-                        </div>
-                    </div>
-</mt:if>
-                    <div class="box permission-box">
-                        <h3><__trans phrase="System Permissions"> <a href="javascript:void(0)" onclick="return openManual('author_permissions', 'introduction')" class="help-link">?</a></h3>
-                        <div class="inner">
-                            <ul class="last" id="permission-list">
-                                <li><input name="is_superuser" id="is_superuser" type="checkbox" value="1"<mt:if name="perm_is_superuser"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this)" /> <label for="is_superuser"><__trans phrase="System Administrator"></label></li>
-                                <li><input name="can_create_blog" id="can_create_blog" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_create_blog"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_create_blog"><__trans phrase="Create Weblogs"></label></li>
-                                <li><input name="can_view_log" id="can_view_log" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_view_log"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_view_log"><__trans phrase="View Activity Log"></label></li>
-                                <li><input name="can_manage_plugins" id="can_manage_plugins" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_manage_plugins"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_manage_plugins"><__trans phrase="Manage Plugins"></label></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="leftcol">
-
+            <fieldset>
+                <h3><__trans phrase="Profile"></h3>
 <mt:if name="editing_other_profile">
+    <mt:if name="editing_other_profile">
+        <mt:if name="status_pending">
+            <$mt:setvar name="user_status" value="user-status-pending"$>
+        <mt:else>
+            <mt:unless name="status_enabled">
+                <$mt:setvar name="user_status" value="user-status-disabled"$>
+            </mt:unless>
+        </mt:if>
+    </mt:if>
     <mtapp:setting
         id="status"
         label="<__trans phrase="Status">"
+        label_class="left-label <$mt:var name="user_status"$>"
         hint="<__trans phrase="Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.">">
-    <select name="status" id="status" class="full-width" onchange="toggleDisabled(this.value);">
+    <select name="status" id="status" class="half-width" onchange="toggleDisabled(this.value);">
         <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1"><__trans phrase="_USER_ENABLED"></option>
         <mt:if name="status_pending"><option selected="selected" value="3"><__trans phrase="_USER_PENDING"></option></mt:if>
         <option <mt:unless name="status_enabled"><mt:unless name="status_pending">selected="selected"</mt:unless></mt:unless> value="2"><__trans phrase="_USER_DISABLED"></option>
@@ -186,18 +163,25 @@ TC.attachLoadEvent(init);
     required="1"
     label="<__trans phrase="Username">"
     hint="<__trans phrase="The username used to login.">">
-        <input name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
-    <mt:if name="external_id">
-        <__trans phrase="User's external user ID is <em>[_1]</em>." params="<mt:var name="external_id" escape="html">">
-    </mt:if>
+        <input name="name" id="name" class="half-width" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
 </mtapp:setting>
+
+<mt:if name="external_id">
+    <mtapp:setting
+        id="external_id"
+        label="<__trans phrase="External user ID">"
+        content_class="field-content-text"
+        hint="">
+            <mt:var name="external_id" escape="html">
+    </mtapp:setting>
+</mt:if>
 
 <mt:unless name="new_user_external_auth">
     <mtapp:setting
         id="nickname"
         label="<__trans phrase="Display Name">"
         hint="<__trans phrase="The name used when published.">">
-        <input name="nickname" id="nickname" class="full-width" value="<mt:var name="nickname" escape="html">" />
+        <input name="nickname" id="nickname" class="half-width" value="<mt:var name="nickname" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -205,21 +189,74 @@ TC.attachLoadEvent(init);
         required="$auth_mode_mt"
         label="<__trans phrase="Email Address">"
         hint="<__trans phrase="The email address associated with this user.">">
-        <input name="email" id="email" class="full-width" value="<mt:var name="email" escape="html">" />
+        <input name="email" id="email" class="half-width" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="url"
         label="<__trans phrase="Website URL">"
         hint="<__trans phrase="The URL of the site associated with this user. eg. http://www.movabletype.com/">">
-        <input name="url" id="url" class="full-width" value="<mt:var name="url" escape="html">" />
+        <input name="url" id="url" class="half-width" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
+
+    <mt:if name="can_modify_password">
+        <mt:unless name="new_object">
+            <mtapp:setting
+                id="show_password"
+                label="<__trans phrase="Password">"
+                content_class="field-content-text">
+                <a href="javascript:void(0)" onclick="toggleHidden(getByID('password-fields')); DOM.addClassName(getByID('show_password-field'), 'hidden')"><__trans phrase="Change Password"></a>
+            </mtapp:setting>
+        </mt:unless>
+
+        <div id="password-fields"<mt:unless name="new_object"> class="hidden"</mt:unless>>
+        <mt:unless name="new_object">
+            <mtapp:setting
+                id="old_pass"
+                label="<__trans phrase="Current Password">"
+                hint="<__trans phrase="Existing password required to create a new password.">">
+                <input type="password" name="old_pass" value="" id="old_pass" class="half-width" />
+            </mtapp:setting>
+        </mt:unless>
+
+        <mt:if name="new_object">
+            <mt:setvar name="password_prompt" value="<__trans phrase="Initial Password">">
+            <mt:setvar name="password_hint" value="<__trans phrase="Enter preferred password.">">
+        <mt:else>
+            <mt:setvar name="password_prompt" value="<__trans phrase="New Password">">
+            <mt:setvar name="password_hint" value="<__trans phrase="Enter the new password.">">
+        </mt:if>
+        <mtapp:setting
+            id="pass"
+            label="$password_prompt"
+            hint="$password_hint">
+            <input type="password" name="pass" id="pass" class="half-width" value="" />
+        </mtapp:setting>
+        <mtapp:setting
+            id="pass_verify"
+            label="<__trans phrase="Confirm Password">"
+            hint="<__trans phrase="Repeat the password for confirmation.">">
+            <input type="password" name="pass_verify" id="pass_verify" class="half-width" value="" />
+        </mtapp:setting>
+        <mtapp:setting
+            id="hint"
+            required="1"
+            label="<__trans phrase="Password recovery word/phrase">"
+            hint="<__trans phrase="This word or phrase will be required to recover a forgotten password.">">
+            <input name="hint" id="hint" class="half-width" value="<mt:var name="hint" escape="html">" />
+        </mtapp:setting>
+        </div>
+    </mt:if>
+
+            </fieldset>
+            <fieldset>
+                <h3><__trans phrase="Preferences"></h3>
 
     <mtapp:setting
         id="preferred_language"
         label="<__trans phrase="Language">"
         hint="<__trans phrase="Preferred language of this user.">">
-        <select name="preferred_language" id="preferred_language" class="full-width"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="half-width"><mt:loop name="languages">
             <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
     </mtapp:setting>
@@ -228,7 +265,7 @@ TC.attachLoadEvent(init);
         id="text_format"
         label="<__trans phrase="Text Format">"
         hint="<__trans phrase="Preferred text format option.">">
-        <select name="text_format" id="text_format" class="full-width">
+        <select name="text_format" id="text_format" class="half-width">
         <mt:loop name="text_filters">
             <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Blog Default)"><mt:else><mt:var name="label"></mt:if></option>
         </mt:loop>
@@ -239,7 +276,7 @@ TC.attachLoadEvent(init);
         id="tag_delim"
         label="<__trans phrase="Tag Delimiter">"
         hint="<__trans phrase="Preferred method of separating tags.">">
-        <select name="tag_delim" id="tag_delim" class="full-width">
+        <select name="tag_delim" id="tag_delim" class="half-width">
             <option value="comma"<mt:if name="auth_pref_tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
             <option value="space"<mt:if name="auth_pref_tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
         </select>
@@ -251,63 +288,57 @@ TC.attachLoadEvent(init);
         id="api_password"
         label="<__trans phrase="Web Services Password">"
         hint="<__trans phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients.">">
-        <input type="password" name="api_password" id="api_password" class="full-width" value="<mt:var name="api_password" escape="html">" />
+        <input type="password" name="api_password" id="api_password" class="half-width" value="<mt:var name="api_password" escape="html">" />
         <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
     </mtapp:setting>
 </mt:if>
-                </div>
             </fieldset>
 
-<mt:if name="can_modify_password">
-            <fieldset class="pkg">
-                <h3><__trans phrase="Password"></h3>
-                <div class="leftcol">
-    <mt:unless name="new_object">
-        <mtapp:setting
-            id="old_pass"
-            label="<__trans phrase="Current Password">"
-            hint="<__trans phrase="Existing password required to create a new password.">">
-            <input type="password" name="old_pass" value="" id="old_pass" class="full-width" />
-        </mtapp:setting>
-    </mt:unless>
+            <fieldset>
+                <h3><__trans phrase="System Permissions"><a href="javascript:void(0)" onclick="return openManual('author_permissions', 'introduction')" class="help-link">?</a></h3>
+    <mtapp:setting
+        id="system_permissions"
+        label="<__trans phrase="Permissions">"
+        content_class="field-content-text"
+        show_label="0">
+        <ul class="inline-list">
+            <li><input name="is_superuser" id="is_superuser" type="checkbox" value="1"<mt:if name="perm_is_superuser"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this)" /> <label for="is_superuser"><__trans phrase="System Administrator"></label></li>
+            <li><input name="can_create_blog" id="can_create_blog" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_create_blog"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_create_blog"><__trans phrase="Create Weblogs"></label></li>
+            <li><input name="can_view_log" id="can_view_log" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_view_log"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_view_log"><__trans phrase="View Activity Log"></label></li>
+            <li><input name="can_manage_plugins" id="can_manage_plugins" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_manage_plugins"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_manage_plugins"><__trans phrase="Manage Plugins"></label></li>
+        </ul>
+    </mtapp:setting>
+            </fieldset>
 
-    <mt:if name="new_object">
-        <mt:setvar name="password_prompt" value="<__trans phrase="Initial Password">">
-        <mt:setvar name="password_hint" value="<__trans phrase="Enter preferred password.">">
-    <mt:else>
-        <mt:setvar name="password_prompt" value="<__trans phrase="New Password">">
-        <mt:setvar name="password_hint" value="<__trans phrase="Enter the new password.">">
-    </mt:if>
+<mt:if name="new_object">
+            <fieldset>
     <mtapp:setting
-        id="pass"
-        label="$password_prompt"
-        hint="$password_hint">
-        <input type="password" name="pass" id="pass" class="full-width" value="" />
+        id="create_user_blog"
+        label="Options"
+        content_label="field-content-text"
+        hint="<__trans phrase="Create personal blog for user">"
+        show_hint="0">
+        <input type="checkbox" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"</mt:if> />
+        <span class="hint"><__trans phrase="Create personal blog for user"></span>
     </mtapp:setting>
-    <mtapp:setting
-        id="pass_verify"
-        label="<__trans phrase="Password Confirm">"
-        hint="<__trans phrase="Repeat the password for confirmation.">">
-        <input type="password" name="pass_verify" id="pass_verify" class="full-width" value="" />
-    </mtapp:setting>
-    <mtapp:setting
-        id="hint"
-        required="1"
-        label="<__trans phrase="Password recovery word/phrase">"
-        hint="<__trans phrase="This word or phrase will be required to recover a forgotten password.">">
-        <input name="hint" id="hint" class="full-width" value="<mt:var name="hint" escape="html">" />
-    </mtapp:setting>
-        </div>
-    </fieldset>
+            </fieldset>
 </mt:if>
-
 <mt:setvarblock name="action_buttons">
+    <mt:if name="new_object">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Create [_1] (s)" params="<mt:var name="object_label">">"
+        class="primary-button"
+        ><__trans phrase="Create User"></button>
+    <mt:else>
     <button
         type="submit"
         accesskey="s"
         title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
+    </mt:if>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
         </form>

@@ -7,8 +7,7 @@
 package MT::Association;
 
 use strict;
-use MT::Object;
-@MT::Association::ISA = qw(MT::Object);
+use base qw( MT::Object );
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -43,6 +42,14 @@ use constant GROUP_BLOG_ROLE => 2;
 use constant USER_GROUP      => 3;
 use constant USER_ROLE       => 4;
 use constant GROUP_ROLE      => 5;
+
+sub class_label {
+    MT->translate("Association");
+}
+
+sub class_label_plural {
+    MT->translate("Associations");
+}
 
 sub save {
     my $assoc = shift;
@@ -148,6 +155,9 @@ sub objects_to_terms {
 }
 
 1;
+
+#trans('association')
+#trans('associations')
 
 __END__
 

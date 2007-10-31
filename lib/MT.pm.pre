@@ -11,16 +11,27 @@ use base qw( MT::ErrorHandler );
 use File::Spec;
 use File::Basename;
 
-our ($VERSION, $SCHEMA_VERSION);
-our ($PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID);
-our ($MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX);
-our ($plugin_sig, $plugin_envelope, $plugin_registry, %Plugins,  @Components, %Components, $DebugMode, $mt_inst, %mt_inst);
+our ( $VERSION,      $SCHEMA_VERSION );
+our ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID );
+our ( $MT_DIR,       $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
+our (
+    $plugin_sig, $plugin_envelope, $plugin_registry,
+    %Plugins,    @Components,      %Components,
+    $DebugMode,  $mt_inst,         %mt_inst
+);
 my %Text_filters;
 
+# For state determination in MT::Object
+our $plugins_installed;
+
 BEGIN {
-    ($VERSION, $SCHEMA_VERSION) = ('__API_VERSION__', '__SCHEMA_VERSION__');
-    ($PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID) =
-        ('__PRODUCT_NAME__', '__PRODUCT_CODE__', '__PRODUCT_VERSION__', '__PRODUCT_VERSION_ID__');
+    $plugins_installed = 0;
+
+    ( $VERSION, $SCHEMA_VERSION ) = ( '__API_VERSION__', '__SCHEMA_VERSION__' );
+    ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID ) = (
+        '__PRODUCT_NAME__',    '__PRODUCT_CODE__',
+        '__PRODUCT_VERSION__', '__PRODUCT_VERSION_ID__'
+    );
 
     $DebugMode = 0;
 
@@ -28,6 +39,7 @@ BEGIN {
     # as opposed to having @mt::ISA set to 'MT'. so @mt::Plugins would
     # resolve as well as @MT::Plugins.
     *{mt::} = *{MT::};
+
     # Alias these; Components is the preferred array for MT 4
     *Plugins = \@Components;
 }
@@ -38,11 +50,11 @@ BEGIN {
 #     use MT 3.3;
 sub VERSION {
     my $v = $_[1];
-    if (defined $v && ($v =~ m/^(\d+)/)) {
+    if ( defined $v && ( $v =~ m/^(\d+)/ ) ) {
         my $compat = "MT::Compat::v" . $1;
-        if (($1 > 2) && ($1 < int($VERSION))) {
+        if ( ( $1 > 2 ) && ( $1 < int($VERSION) ) ) {
             no strict 'refs';
-            unless (defined *{$compat . '::'}) {
+            unless ( defined *{ $compat . '::' } ) {
                 eval "require $compat;";
             }
         }
@@ -50,12 +62,22 @@ sub VERSION {
     return UNIVERSAL::VERSION(@_);
 }
 
-sub version_number { $VERSION }
-sub version_id { $VERSION_ID }
-sub product_code { $PRODUCT_CODE }
-sub product_name { $PRODUCT_NAME }
+sub version_number  { $VERSION }
+sub version_id      { $VERSION_ID }
+sub product_code    { $PRODUCT_CODE }
+sub product_name    { $PRODUCT_NAME }
 sub product_version { $PRODUCT_VERSION }
-sub schema_version { $SCHEMA_VERSION }
+sub schema_version  { $SCHEMA_VERSION }
+
+# Default id method turns MT::App::CMS => cms; Foo::Bar => foo/bar
+sub id {
+    my $pkg = shift;
+    my $id = ref($pkg) || $pkg;
+    # ignore the MT::App prefix as part of the identifier
+    $id =~ s/^MT::App:://;
+    $id =~ s!::!/!g;
+    return lc $id;
+}
 
 sub version_slug {
     return MT->translate_templatized(<<"SLUG");
@@ -71,46 +93,52 @@ sub import {
 
     my (%param) = @_;
     my $app_pkg;
-    if ($app_pkg = $param{app} || $param{App} || $ENV{MT_APP}) {
-        if ($app_pkg !~ m/::/) {
+    if ( $app_pkg = $param{app} || $param{App} || $ENV{MT_APP} ) {
+        if ( $app_pkg !~ m/::/ ) {
             my $apps = $pkg->registry('applications');
             $app_pkg = $apps->fetch($app_pkg);
-            if (ref $app_pkg) {
+            if ( ref $app_pkg ) {
+
                 # pick first one??
                 $app_pkg = $app_pkg->[0];
+
                 # pick last one??
                 # $app_pkg = pop @$app_pkg;
             }
         }
-    } elsif ($param{run} || $param{Run}) {
+    }
+    elsif ( $param{run} || $param{Run} ) {
+
         # my $script = File::Spec->rel2abs($0);
-        my ($filename, $path, $suffix) = fileparse($0, qr{\..+$});
+        my ( $filename, $path, $suffix ) = fileparse( $0, qr{\..+$} );
         $SCRIPT_SUFFIX = $suffix;
         my $script = lc $filename;
         $script =~ s/^mt-//;
         my $apps = $pkg->registry('applications');
-        $app_pkg = $apps->fetch(lc $script);
+        $app_pkg = $apps->fetch( lc $script );
         unless ($app_pkg) {
             die "cannot determine application for script $0, stopped at";
         }
     }
-    $pkg->run_app($app_pkg, \%param)
-        if $app_pkg;
+    $pkg->run_app( $app_pkg, \%param )
+      if $app_pkg;
 }
 
 sub run_app {
     my $pkg = shift;
-    my ($class, $param) = @_;
+    my ( $class, $param ) = @_;
 
     # When running under FastCGI, the initial invocation of the
     # script has a bare environment. We can use this to test
     # for FastCGI.
     my $not_fast_cgi = 0;
     $not_fast_cgi ||= exists $ENV{$_}
-        for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
-    my $fast_cgi = (!$not_fast_cgi) || $param->{fastcgi};
-    $fast_cgi = defined($param->{fastcgi} || $param->{FastCGI})
-        ? ($param->{fastcgi} || $param->{FastCGI}) : $fast_cgi;
+      for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
+    my $fast_cgi = ( !$not_fast_cgi ) || $param->{fastcgi};
+    $fast_cgi =
+      defined( $param->{fastcgi} || $param->{FastCGI} )
+      ? ( $param->{fastcgi} || $param->{FastCGI} )
+      : $fast_cgi;
     if ($fast_cgi) {
         eval { require CGI::Fast; };
         $fast_cgi = 0 if $@;
@@ -122,50 +150,56 @@ sub run_app {
     eval {
         eval "require $class; 1;" or die $@;
         if ($fast_cgi) {
-            while (my $cgi = new CGI::Fast) {
+            while ( my $cgi = new CGI::Fast ) {
                 $app = $class->new( %$param, CGIObject => $cgi )
-                    or die $class->errstr;
-                local $SIG{__WARN__} = sub { $app->trace($_[0]) };
+                  or die $class->errstr;
+                local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
                 $pkg->set_instance($app);
-                $app->init_request(CGIObject => $cgi);
+                $app->init_request( CGIObject => $cgi );
                 $app->run;
             }
-        } else {
-            $app = $class->new( %$param ) or die $class->errstr;
-            local $SIG{__WARN__} = sub { $app->trace($_[0]) };
+        }
+        else {
+            $app = $class->new(%$param) or die $class->errstr;
+            local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
             $app->run;
         }
     };
-    if (my $err = $@) {
+    if ( my $err = $@ ) {
         my $charset = 'utf-8';
         eval {
             $app ||= MT->instance;
             my $cfg = $app->config;
-            my $c = $app->find_config;
+            my $c   = $app->find_config;
             $cfg->read_config($c);
             $charset = $cfg->PublishCharset;
         };
-        if ($app && UNIVERSAL::isa($app, 'MT::App')) {
+        if ( $app && UNIVERSAL::isa( $app, 'MT::App' ) ) {
             eval {
                 my %param = ( error => $err );
-                if ($err =~ m/Bad ObjectDriver/) {
+                if ( $err =~ m/Bad ObjectDriver/ ) {
                     $param{error_database_connection} = 1;
-                } elsif ($err =~ m/Bad CGIPath/) {
+                }
+                elsif ( $err =~ m/Bad CGIPath/ ) {
                     $param{error_cgi_path} = 1;
-                } elsif ($err =~ m/Missing configuration file/) {
+                }
+                elsif ( $err =~ m/Missing configuration file/ ) {
                     $param{error_config_file} = 1;
                 }
-                my $page = $app->build_page('error.tmpl', \%param)
-                    or die $app->errstr;
+                my $page = $app->build_page( 'error.tmpl', \%param )
+                  or die $app->errstr;
                 print "Content-Type: text/html; charset=$charset\n\n";
                 print $page;
             };
-            if (my $err = $@) {
+            if ( my $err = $@ ) {
                 print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err";
+                print $app
+                  ? $app->translate( "Got an error: [_1]", $err )
+                  : "Got an error: $err";
             }
-        } else {
-            if ($err =~ m/Missing configuration file/) {
+        }
+        else {
+            if ( $err =~ m/Missing configuration file/ ) {
                 my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
                 $host =~ s/:\d+//;
                 my $port = $ENV{SERVER_PORT};
@@ -174,14 +208,17 @@ sub run_app {
                 my $cgipath = '';
                 $cgipath = $port == 443 ? 'https' : 'http';
                 $cgipath .= '://' . $host;
-                $cgipath .= ($port == 443 || $port == 80) ? '' : ':' . $port;
+                $cgipath .= ( $port == 443 || $port == 80 ) ? '' : ':' . $port;
                 $cgipath .= $uri;
 
                 print "Status: 302 Moved\n";
-                print "Location: ".$cgipath."mt-wizard.cgi\n\n";
-           } else {
+                print "Location: " . $cgipath . "mt-wizard.cgi\n\n";
+            }
+            else {
                 print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
+                print $app
+                  ? $app->translate( "Got an error: [_1]", $err )
+                  : "Got an error: $err\n";
             }
         }
     }
@@ -191,6 +228,7 @@ sub app {
     my $class = shift;
     $mt_inst ||= $mt_inst{$class} ||= $class->construct(@_);
 }
+
 sub instance {
     &app;
 }
@@ -213,71 +251,79 @@ sub instance_of {
 
 sub construct {
     my $class = shift;
-    my $mt = bless { }, $class;
+    my $mt = bless {}, $class;
     local $mt_inst = $mt;
-    $mt->init(@_) or
-        die $mt->errstr;
+    $mt->init(@_)
+      or die $mt->errstr;
     $mt;
 }
 
 {
-my %object_types;
-sub model {
-    my $pkg = shift;
-    my ($k) = @_;
-    $object_types{$k} = $_[1] if scalar @_ > 1;
-    return $object_types{$k} if exists $object_types{$k};
+    my %object_types;
 
-    my $model = $pkg->registry('object_types', $k);
-    if (ref($model) eq 'ARRAY') {
-        # First element of an array *should* be a scalar; in case it isn't,
-        # return undef.
-        $model = $model->[0];
-        return undef if ref $model;
-    } elsif (ref($model) eq 'HASH') {
-        # If all we have is a hash, this doesn't tell us the package for
-        # this object type, so it's undefined.
-        return undef;
-    }
-    return undef unless $model;
+    sub model {
+        my $pkg = shift;
+        my ($k) = @_;
+        $object_types{$k} = $_[1] if scalar @_ > 1;
+        return $object_types{$k} if exists $object_types{$k};
 
-    # Element in object type hash is scalar, so return it
-    no strict 'refs';
-    unless (defined *{$model . '::__properties'}) {
-        use strict 'refs';
-        eval "require $model;";
-        if ($@ && ($k =~ m/^(.+)\./)) {
-            # x.foo can't be found, so try loading x
-            if (my $ppkg = $pkg->model($1)) {
-                # well now see if $model is defined
-                no strict 'refs';
-                unless (defined *{$model . '::__properties'}) {
-                    # if not, use parent package instead
-                    $model = $ppkg;
+        my $model = $pkg->registry( 'object_types', $k );
+        if ( ref($model) eq 'ARRAY' ) {
+
+            # First element of an array *should* be a scalar; in case it isn't,
+            # return undef.
+            $model = $model->[0];
+            return undef if ref $model;
+        }
+        elsif ( ref($model) eq 'HASH' ) {
+
+            # If all we have is a hash, this doesn't tell us the package for
+            # this object type, so it's undefined.
+            return undef;
+        }
+        return undef unless $model;
+
+        # Element in object type hash is scalar, so return it
+        no strict 'refs';
+        unless ( defined *{ $model . '::__properties' } ) {
+            use strict 'refs';
+            eval "require $model;";
+            if ( $@ && ( $k =~ m/^(.+)\./ ) ) {
+
+                # x.foo can't be found, so try loading x
+                if ( my $ppkg = $pkg->model($1) ) {
+
+                    # well now see if $model is defined
+                    no strict 'refs';
+                    unless ( defined *{ $model . '::__properties' } ) {
+
+                        # if not, use parent package instead
+                        $model = $ppkg;
+                    }
                 }
             }
         }
+        return $object_types{$k} = $model;
     }
-    return $object_types{$k} = $model;
-}
 
-sub models {
-    my $pkg = shift;
-    my ($k) = @_;
+    sub models {
+        my $pkg = shift;
+        my ($k) = @_;
 
-    my @matches;
-    my $model = $pkg->registry('object_types');
-    foreach my $m (keys %$model) {
-        if ($m =~ m/^\Q$k\E\.?/) {
-            push @matches, $m;
+        my @matches;
+        my $model = $pkg->registry('object_types');
+        foreach my $m ( keys %$model ) {
+            if ( $m =~ m/^\Q$k\E\.?/ ) {
+                push @matches, $m;
+            }
         }
+        return @matches;
     }
-    return @matches;
-}
 }
 
 sub registry {
     my $pkg = shift;
+
     # if (!ref $pkg) {
     #     return $pkg->instance->registry(@_);
     # }
@@ -286,13 +332,15 @@ sub registry {
     my $r;
     if ($regs) {
         foreach my $cr (@$regs) {
+
             # in the event that our registry request returns something
             # other than an array of hashes, return it as is instead of
             # merging it together.
             return $regs unless ref($cr) eq 'HASH';
+
             # next unless ref($cr) eq 'HASH';
             delete $cr->{plugin} if exists $cr->{plugin};
-            __merge_hash($r ||= {}, $cr);
+            __merge_hash( $r ||= {}, $cr );
         }
     }
     return $r;
@@ -301,21 +349,25 @@ sub registry {
 # merges contents of two hashes, giving preference to the right side
 # if $replace is true; otherwise it will always append to the left side.
 sub __merge_hash {
-    my ($h1, $h2, $replace) = @_;
-    for my $k (keys (%$h2)) {
-        if (exists($h1->{$k}) && (!$replace)) {
-            if (ref $h1->{$k} eq 'HASH') {
-                __merge_hash($h1->{$k}, $h2->{$k}, ($replace || 0) + 1);
-            } elsif (ref $h1->{$k} eq 'ARRAY') {
-                if (ref $h2->{$k} eq 'ARRAY') {
-                    push @{$h1->{$k}}, @{$h2->{$k}};
-                } else {
-                    push @{$h1->{$k}}, $h2->{$k};
+    my ( $h1, $h2, $replace ) = @_;
+    for my $k ( keys(%$h2) ) {
+        if ( exists( $h1->{$k} ) && ( !$replace ) ) {
+            if ( ref $h1->{$k} eq 'HASH' ) {
+                __merge_hash( $h1->{$k}, $h2->{$k}, ( $replace || 0 ) + 1 );
+            }
+            elsif ( ref $h1->{$k} eq 'ARRAY' ) {
+                if ( ref $h2->{$k} eq 'ARRAY' ) {
+                    push @{ $h1->{$k} }, @{ $h2->{$k} };
                 }
-            } else {
+                else {
+                    push @{ $h1->{$k} }, $h2->{$k};
+                }
+            }
+            else {
                 $h1->{$k} = [ $h1->{$k}, $h2->{$k} ];
             }
-        } else {
+        }
+        else {
             $h1->{$k} = $h2->{$k};
         }
     }
@@ -323,14 +375,14 @@ sub __merge_hash {
 
 # The above functions can all be used to make MT objects (and subobjects).
 # The difference between them is characterized by these assertions:
-# 
+#
 #  $mt = MT::App::Search->new();
 #  assert($mt->isa('MT::App::Search'))
-# 
+#
 #  $mt1 = MT->instance
 #  $mt2 = MT->instance
 #  assert($mt1 == $mt2);
-# 
+#
 #  $mt1 = MT::App::CMS->construct()
 #  $mt2 = MT::App::CMS->construct()
 #  assert($mt1 != $mt2);
@@ -343,57 +395,67 @@ sub unplug {
 sub config {
     my $mt = shift;
     ref $mt or $mt = MT->instance;
-    unless ($mt->{cfg}) {
+    unless ( $mt->{cfg} ) {
         require MT::ConfigMgr;
         $mt->{cfg} = MT::ConfigMgr->instance;
     }
     if (@_) {
         my $setting = shift;
-        @_ ? $mt->{cfg}->set($setting, @_) : $mt->{cfg}->get($setting);
-    } else {
+        @_ ? $mt->{cfg}->set( $setting, @_ ) : $mt->{cfg}->get($setting);
+    }
+    else {
         $mt->{cfg};
     }
 }
 
 sub request {
-    my $pkg = shift;
+    my $pkg  = shift;
     my $inst = $pkg->instance;
-    unless ($inst->{request}) {
+    unless ( $inst->{request} ) {
         require MT::Request;
         $inst->{request} = MT::Request->instance;
     }
     if (@_) {
         $inst->{request}->stash(@_);
-    } else {
+    }
+    else {
         $inst->{request};
     }
 }
 
 sub log {
     my $mt = shift;
+    unless ($plugins_installed) {
+        # finish init_schema here since we have to log something
+        # to the database.
+        $mt->init_schema();
+    }
     my $msg;
-    my $log_class = $mt->model('log');
-    if (!@_) {  # single parameter to log, so $mt must be message
+    if ( !@_ ) {    # single parameter to log, so $mt must be message
         $msg = $mt;
-        $mt = MT->instance;
-    } else {    # multiple parameters to log; second one is message
+        $mt  = MT->instance;
+    }
+    else {          # multiple parameters to log; second one is message
         $msg = shift;
     }
+    my $log_class = $mt->model('log');
     my $log = $log_class->new();
-    if (ref $msg eq 'HASH') {
+    if ( ref $msg eq 'HASH' ) {
         $log->set_values($msg);
-    } elsif ((ref $msg) && (UNIVERSAL::isa($msg, 'MT::Log'))) {
+    }
+    elsif ( ( ref $msg ) && ( UNIVERSAL::isa( $msg, 'MT::Log' ) ) ) {
         $log = $msg;
-    } else {
+    }
+    else {
         $log->message($msg);
     }
-    $log->level(MT::Log::INFO())
-        unless defined $log->level;
+    $log->level( MT::Log::INFO() )
+      unless defined $log->level;
     $log->class('system')
-        unless defined $log->class;
+      unless defined $log->class;
     $log->save();
-    print STDERR MT->translate("Message: [_1]", $log->message) . "\n"
-        if $MT::DebugMode;
+    print STDERR MT->translate( "Message: [_1]", $log->message ) . "\n"
+      if $MT::DebugMode;
 }
 my $plugin_full_path;
 
@@ -406,7 +468,7 @@ sub run_tasks {
 sub add_plugin {
     my $class = shift;
     my ($plugin) = @_;
-    if (ref $plugin eq 'HASH') {
+    if ( ref $plugin eq 'HASH' ) {
         require MT::Plugin;
         $plugin = new MT::Plugin($plugin);
     }
@@ -416,22 +478,24 @@ sub add_plugin {
         return;
     }
     $plugin->envelope($plugin_envelope);
-    Carp::confess "You cannot register multiple plugin objects from a single script. $plugin_sig"
-        if exists($Plugins{$plugin_sig}) && (exists $Plugins{$plugin_sig}{object});
+    Carp::confess
+"You cannot register multiple plugin objects from a single script. $plugin_sig"
+      if exists( $Plugins{$plugin_sig} )
+      && ( exists $Plugins{$plugin_sig}{object} );
 
-    $Components{lc $id} = $plugin if $id;
+    $Components{ lc $id } = $plugin if $id;
     $Plugins{$plugin_sig}{object} = $plugin;
     $plugin->{name} ||= $plugin_sig;
     $plugin->{plugin_sig} = $plugin_sig;
-    $plugin->{full_path} = $plugin_full_path;
+    $plugin->{full_path}  = $plugin_full_path;
     $plugin->path($plugin_full_path);
-    unless ($plugin->{registry} && (%{ $plugin->{registry} })) {
+    unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
         $plugin->{registry} = $plugin_registry;
     }
-    if ($plugin->{registry}) {
-        if (my $settings = $plugin->{registry}{config_settings}) {
+    if ( $plugin->{registry} ) {
+        if ( my $settings = $plugin->{registry}{config_settings} ) {
             $settings = $plugin->{registry}{config_settings} = $settings->()
-                if ref($settings) eq 'CODE';
+              if ref($settings) eq 'CODE';
             $class->config->define($settings);
         }
     }
@@ -443,12 +507,14 @@ our %CallbackAlias;
 our $CallbacksEnabled = 1;
 my %CallbacksEnabled;
 my @Callbacks;
+
 sub add_callback {
     my $class = shift;
-    my($meth, $priority, $plugin, $code) = @_;
-    if ($meth =~ m/^(.+::)?([^\.]+)(\..+)?$/) {
+    my ( $meth, $priority, $plugin, $code ) = @_;
+    if ( $meth =~ m/^(.+::)?([^\.]+)(\..+)?$/ ) {
+
         # Remap (whatever)::(name).(something)
-        if (exists $CallbackAlias{$2}) {
+        if ( exists $CallbackAlias{$2} ) {
             $meth = $CallbackAlias{$2};
             $meth = $1 . $meth if $1;
             $meth = $meth . $3 if $3;
@@ -456,50 +522,58 @@ sub add_callback {
     }
     $meth = $CallbackAlias{$meth} if exists $CallbackAlias{$meth};
     my $internal = 0;
-    if (ref $plugin) {
-        if ((defined $mt_inst) && ($plugin == $mt_inst)) {
-            $plugin = undef; $internal = 1;
-        } elsif (!UNIVERSAL::isa($plugin, "MT::Component")) {
-            return $class->trans_error("If present, 3rd argument to add_callback must be an object of type MT::Component or MT::Plugin");
+    if ( ref $plugin ) {
+        if ( ( defined $mt_inst ) && ( $plugin == $mt_inst ) ) {
+            $plugin   = undef;
+            $internal = 1;
+        }
+        elsif ( !UNIVERSAL::isa( $plugin, "MT::Component" ) ) {
+            return $class->trans_error(
+"If present, 3rd argument to add_callback must be an object of type MT::Component or MT::Plugin"
+            );
         }
     }
-    if ((ref$code) ne 'CODE') {
-        if (ref $code) {
-            return $class->trans_error('4th argument to add_callback must be a CODE reference.');
-        } else {
+    if ( ( ref $code ) ne 'CODE' ) {
+        if ( ref $code ) {
+            return $class->trans_error(
+                '4th argument to add_callback must be a CODE reference.');
+        }
+        else {
             if ($plugin) {
                 $code = MT->handler_to_coderef($code);
             }
         }
     }
+
     # 0 and 11 are exclusive.
-    if ($priority == 0 || $priority == 11) {
-        if ($Callbacks[$priority]->{$meth}) {
+    if ( $priority == 0 || $priority == 11 ) {
+        if ( $Callbacks[$priority]->{$meth} ) {
             return $class->trans_error("Two plugins are in conflict");
         }
     }
-    return $class->trans_error("Invalid priority level [_1] at add_callback", $priority)
-        if (($priority < 0) || ($priority > 11));
+    return $class->trans_error( "Invalid priority level [_1] at add_callback",
+        $priority )
+      if ( ( $priority < 0 ) || ( $priority > 11 ) );
     require MT::Callback;
     $CallbacksEnabled{$meth} = 1;
     ## push @{$Plugins{$plugin_sig}{callbacks}}, "$meth Callback" if $plugin_sig;
     my $cb = new MT::Callback(
-        plugin => $plugin, 
-        code => $code,
+        plugin   => $plugin,
+        code     => $code,
         priority => $priority,
         internal => $internal,
-        method => $meth
+        method   => $meth
     );
-    push @{$Callbacks[$priority]->{$meth}}, $cb;
+    push @{ $Callbacks[$priority]->{$meth} }, $cb;
     $cb;
 }
 
 sub remove_callback {
-    my $class = shift;
-    my ($cb) = @_;
+    my $class    = shift;
+    my ($cb)     = @_;
     my $priority = $cb->{priority};
-    my $method = $cb->{method};
-    my $list = $Callbacks[$priority];
+    my $method   = $cb->{method};
+    my $list     = $Callbacks[$priority];
     return unless $list;
     my $cbarr = $list->{$method};
     return unless $cbarr;
@@ -510,9 +584,9 @@ sub remove_callback {
 sub _register_core_callbacks {
     my $class = shift;
     my ($callback_table) = @_;
-    foreach my $name (keys %$callback_table) {
-        $class->add_callback($name, 5, $mt_inst, $callback_table->{$name})
-            || return;
+    foreach my $name ( keys %$callback_table ) {
+        $class->add_callback( $name, 5, $mt_inst, $callback_table->{$name} )
+          || return;
     }
     1;
 }
@@ -521,11 +595,9 @@ sub register_callbacks {
     my $class = shift;
     my ($callback_list) = @_;
     foreach my $cb (@$callback_list) {
-        $class->add_callback($cb->{name},
-                             $cb->{priority},
-                             $cb->{plugin},
-                             $cb->{code})
-            || return;
+        $class->add_callback( $cb->{name}, $cb->{priority}, $cb->{plugin},
+            $cb->{code} )
+          || return;
     }
     1;
 }
@@ -536,31 +608,35 @@ sub callback_errstr { $CB_ERR }
 
 sub run_callback {
     my $class = shift;
-    my ($cb, @args) = @_;
+    my ( $cb, @args ) = @_;
 
-    $cb->error();                         # reset the error string
+    $cb->error();    # reset the error string
     my $result = eval { $cb->invoke(@args) };
-    if (my $err = $@) {
+    if ( my $err = $@ ) {
         $cb->error($err);
         my $plugin = $cb->{plugin};
         my $name;
-        if ($cb->{internal}) {
+        if ( $cb->{internal} ) {
             $name = "Internal callback";
-        } elsif (UNIVERSAL::isa($plugin, 'MT::Plugin')) {
+        }
+        elsif ( UNIVERSAL::isa( $plugin, 'MT::Plugin' ) ) {
             $name = $plugin->name() || MT->translate("Unnamed plugin");
-        } else {
+        }
+        else {
             $name = MT->translate("Unnamed plugin");
         }
         require MT::Log;
-        MT->log({
-            message => MT->translate("[_1] died with: [_2]", $name, $err),
-            class => 'system',
-            category => 'callback',
-            level => MT::Log::ERROR(),
-        });
+        MT->log(
+            {
+                message => MT->translate( "[_1] died with: [_2]", $name, $err ),
+                class   => 'system',
+                category => 'callback',
+                level    => MT::Log::ERROR(),
+            }
+        );
         return 0;
     }
-    if ($cb->errstr()) {
+    if ( $cb->errstr() ) {
         return 0;
     }
     return $result;
@@ -580,33 +656,38 @@ sub run_callback {
 # that is, where logical OR is the right way to compose multiple callbacks?
 sub run_callbacks {
     my $class = shift;
-    my($meth, @args) = @_;
+    my ( $meth, @args ) = @_;
     return 1 unless $CallbacksEnabled && %CallbacksEnabled;
     $meth = $CallbackAlias{$meth} if exists $CallbackAlias{$meth};
     my @methods;
+
     # execution:
     #   Full::Name.<variant>
     #   *::Name.<variant> OR Name.<variant>
     #   Full::Name
     #   *::Name OR Name
-    push @methods, $meth if $CallbacksEnabled{$meth}; # bleh::blah variant
-    if ($meth =~ /::/) { # presence of :: implies it's an obj. cb
+    push @methods, $meth if $CallbacksEnabled{$meth};    # bleh::blah variant
+    if ( $meth =~ /::/ ) {    # presence of :: implies it's an obj. cb
         my $name = $meth;
         $name =~ s/^.*::([^:]*)$/$1/;
-        $name = $CallbackAlias{'*::'.$name} if exists $CallbackAlias{'*::'.$name};
-        push @methods, '*::'.$name if $CallbacksEnabled{'*::'.$name}; # *::blah variant
-        push @methods, $name if $CallbacksEnabled{$name}; # blah variant
+        $name = $CallbackAlias{ '*::' . $name }
+          if exists $CallbackAlias{ '*::' . $name };
+        push @methods, '*::' . $name
+          if $CallbacksEnabled{ '*::' . $name };    # *::blah variant
+        push @methods, $name if $CallbacksEnabled{$name};    # blah variant
     }
-    if ($meth =~ /\./) { # presence of ' ' implies it is a variant callback
+    if ( $meth =~ /\./ ) {    # presence of ' ' implies it is a variant callback
         my ($name) = split /\./, $meth, 2;
         $name = $CallbackAlias{$name} if exists $CallbackAlias{$name};
-        push @methods, $name if $CallbacksEnabled{$name}; # bleh::blah
-        if ($name =~ m/::/) {
+        push @methods, $name if $CallbacksEnabled{$name};    # bleh::blah
+        if ( $name =~ m/::/ ) {
             my $name2 = $name;
             $name2 =~ s/^.*::([^:]*)$/$1/;
-            $name2 = $CallbackAlias{'*::'.$name2} if exists $CallbackAlias{'*::'.$name2};
-            push @methods, '*::'.$name2 if $CallbacksEnabled{'*::'.$name2}; # *::blah
-            push @methods, $name2 if $CallbacksEnabled{$name2}; # blah
+            $name2 = $CallbackAlias{ '*::' . $name2 }
+              if exists $CallbackAlias{ '*::' . $name2 };
+            push @methods, '*::' . $name2
+              if $CallbacksEnabled{ '*::' . $name2 };        # *::blah
+            push @methods, $name2 if $CallbacksEnabled{$name2};    # blah
         }
     }
     return 1 unless @methods;
@@ -618,15 +699,15 @@ sub run_callbacks {
 
     foreach my $callback_sheaf (@Callbacks) {
         for my $meth (@methods) {
-            if (my $set = $callback_sheaf->{$meth}) {
+            if ( my $set = $callback_sheaf->{$meth} ) {
                 for my $cb (@$set) {
-                    my $result = $class->run_callback($cb, @args);
+                    my $result = $class->run_callback( $cb, @args );
                     $filter_value &&= $result;
-                    if (!$result) {
-                        if ($cb->errstr()) {
+                    if ( !$result ) {
+                        if ( $cb->errstr() ) {
                             push @errors, $cb->errstr();
                         }
-                        if (!defined($first_error)) {
+                        if ( !defined($first_error) ) {
                             $first_error = $cb->errstr();
                         }
                     }
@@ -635,12 +716,13 @@ sub run_callbacks {
         }
     }
 
-    callback_error(join('', @errors));
+    callback_error( join( '', @errors ) );
 
     $CallbacksEnabled{$_} = 1 for @methods;
-    if (!$filter_value) {
+    if ( !$filter_value ) {
         return $class->error($first_error);
-    } else {
+    }
+    else {
         return $filter_value;
     }
 }
@@ -653,12 +735,13 @@ sub find_config {
     my $mt = shift;
     my ($param) = @_;
 
-    $param->{Config} ||= $ENV{MT_CONFIG};
+    $param->{Config}    ||= $ENV{MT_CONFIG};
     $param->{Directory} ||= $ENV{MT_HOME};
-    if (!$param->{Directory}) {
-        if ($param->{Config}) {
-            $param->{Directory} = dirname($param->{Config});
-        } else {
+    if ( !$param->{Directory} ) {
+        if ( $param->{Config} ) {
+            $param->{Directory} = dirname( $param->{Config} );
+        }
+        else {
             $param->{Directory} = dirname($0) || $ENV{PWD} || '.';
         }
     }
@@ -669,12 +752,18 @@ sub find_config {
     # either mt.cfg or mt-config.cgi for the config file name. the
     # latter being a more secure choice since it is unreadable from
     # a browser.
-    for my $cfg_file ($param->{Config},
-      File::Spec->catfile($param->{Directory}, 'mt-config.cgi'),
-      'mt-config.cgi') {
+    for my $cfg_file ( $param->{Config},
+        File::Spec->catfile( $param->{Directory}, 'mt-config.cgi' ),
+        'mt-config.cgi' )
+    {
         return $cfg_file if $cfg_file && -r $cfg_file && -f $cfg_file;
     }
     return undef;
+}
+
+sub init_schema {
+    require MT::Object;
+    MT::Object->install_pre_init_properties();
 }
 
 sub init_permissions {
@@ -687,7 +776,9 @@ sub init_config {
     my ($param) = @_;
 
     my $cfg_file = $mt->find_config($param);
-    return $mt->error("Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?") unless $cfg_file;
+    return $mt->error(
+"Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?"
+    ) unless $cfg_file;
     $cfg_file = File::Spec->rel2abs($cfg_file);
 
     # translate the config file's location to an absolute path, so we
@@ -697,9 +788,10 @@ sub init_config {
 
     # store the mt_dir (home) as an absolute path; fallback to the config
     # directory if it isn't set.
-    $mt->{mt_dir} = $param->{Directory}
-                    ? File::Spec->rel2abs($param->{Directory})
-                    : $mt->{config_dir};
+    $mt->{mt_dir} =
+      $param->{Directory}
+      ? File::Spec->rel2abs( $param->{Directory} )
+      : $mt->{config_dir};
     $mt->{mt_dir} ||= dirname($0);
 
     # also make note of the active application path; this is derived by
@@ -707,65 +799,70 @@ sub init_config {
     # the directory of SCRIPT_FILENAME and lastly, falls back to mt_dir
     $mt->{app_dir} = $ENV{PWD} || "";
     $mt->{app_dir} = dirname($0)
-        if !$mt->{app_dir} || !File::Spec->file_name_is_absolute($mt->{app_dir});
-    $mt->{app_dir} = dirname($ENV{SCRIPT_FILENAME})
-        if $ENV{SCRIPT_FILENAME} && (!$mt->{app_dir} || (!File::Spec->file_name_is_absolute($mt->{app_dir})));
+      if !$mt->{app_dir}
+      || !File::Spec->file_name_is_absolute( $mt->{app_dir} );
+    $mt->{app_dir} = dirname( $ENV{SCRIPT_FILENAME} )
+      if $ENV{SCRIPT_FILENAME}
+      && ( !$mt->{app_dir}
+        || ( !File::Spec->file_name_is_absolute( $mt->{app_dir} ) ) );
     $mt->{app_dir} ||= $mt->{mt_dir};
-    $mt->{app_dir} = File::Spec->rel2abs($mt->{app_dir});
+    $mt->{app_dir} = File::Spec->rel2abs( $mt->{app_dir} );
 
     my $cfg = $mt->config;
-    $cfg->define($mt->registry('config_settings'));
-    $cfg->read_config($cfg_file) or return $mt->error($cfg->errstr);
+    $cfg->define( $mt->registry('config_settings') );
+    $cfg->read_config($cfg_file) or return $mt->error( $cfg->errstr );
     $mt->{cfg_file} = $cfg_file;
 
     my @mt_paths = $cfg->paths;
     for my $meth (@mt_paths) {
-        my $path = $cfg->get($meth, undef);
+        my $path = $cfg->get( $meth, undef );
         my $type = $cfg->type($meth);
-        if (defined $path) {
-            if ($type eq 'ARRAY') {
+        if ( defined $path ) {
+            if ( $type eq 'ARRAY' ) {
                 my @paths = $cfg->get($meth);
                 local $_;
                 foreach (@paths) {
                     next if File::Spec->file_name_is_absolute($_);
-                    $_ = File::Spec->catfile($config_dir, $_);
+                    $_ = File::Spec->catfile( $config_dir, $_ );
                 }
-                $cfg->$meth(\@paths);
-            } else {
-                if (!File::Spec->file_name_is_absolute($path)) {
-                    $path = File::Spec->catfile($config_dir, $path);
+                $cfg->$meth( \@paths );
+            }
+            else {
+                if ( !File::Spec->file_name_is_absolute($path) ) {
+                    $path = File::Spec->catfile( $config_dir, $path );
                     $cfg->$meth($path);
                 }
             }
-        } else {
+        }
+        else {
             next if $type eq 'ARRAY';
             my $path = $cfg->default($meth);
-            if (defined $path) {
-                $cfg->$meth(File::Spec->catfile($config_dir, $path));
+            if ( defined $path ) {
+                $cfg->$meth( File::Spec->catfile( $config_dir, $path ) );
             }
         }
     }
 
     return $mt->trans_error("Bad ObjectDriver config")
-        unless $cfg->ObjectDriver;
+      unless $cfg->ObjectDriver;
 
     $cfg->read_config_db();
 
     # Tell any instantiated drivers to reconfigure themselves as necessary
     MT::ObjectDriverFactory->configure;
 
-    if ($MT::DebugMode = $cfg->DebugMode) {
+    if ( $MT::DebugMode = $cfg->DebugMode ) {
         require Data::Dumper;
-        $Data::Dumper::Terse = 1;
+        $Data::Dumper::Terse    = 1;
         $Data::Dumper::Maxdepth = 4;
         $Data::Dumper::Sortkeys = 1;
-        $Data::Dumper::Indent = 1;
+        $Data::Dumper::Indent   = 1;
     }
 
-    $mt->set_language($cfg->DefaultLanguage);
+    $mt->set_language( $cfg->DefaultLanguage );
 
     my $cgi_path = $cfg->CGIPath;
-    if (!$cgi_path || $cgi_path =~ m!http://www\.example\.com/!) {
+    if ( !$cgi_path || $cgi_path =~ m!http://www\.example\.com/! ) {
         return $mt->trans_error("Bad CGIPath config");
     }
 
@@ -777,7 +874,7 @@ sub init_config {
 sub bootstrap {
     my $pkg = shift;
     $pkg->init_paths() or return;
-    $pkg->init_core() or return;
+    $pkg->init_core()  or return;
 }
 
 sub init_paths {
@@ -787,16 +884,17 @@ sub init_paths {
     # determine MT directory
     my ($orig_dir);
     require File::Spec;
-    if (!($MT_DIR = $ENV{MT_HOME})) {
-        if ($0 =~ m!(.*([/\\]))!) {
+    if ( !( $MT_DIR = $ENV{MT_HOME} ) ) {
+        if ( $0 =~ m!(.*([/\\]))! ) {
             $orig_dir = $MT_DIR = $1;
             my $slash = $2;
             $MT_DIR =~ s!(?:[/\\]|^)(?:plugins[/\\].*|tools[/\\])$!$slash!;
-            $MT_DIR = '' if ($MT_DIR =~ m!^\.?[\\/]$!);
-        } else {
+            $MT_DIR = '' if ( $MT_DIR =~ m!^\.?[\\/]$! );
+        }
+        else {
+
             # MT_DIR/lib/MT.pm -> MT_DIR/lib -> MT_DIR
-            $MT_DIR = dirname(
-                dirname(File::Spec->rel2abs(__FILE__)));
+            $MT_DIR = dirname( dirname( File::Spec->rel2abs(__FILE__) ) );
         }
         unless ($MT_DIR) {
             $orig_dir = $MT_DIR = $ENV{PWD} || '.';
@@ -804,25 +902,28 @@ sub init_paths {
         }
         $ENV{MT_HOME} = $MT_DIR;
     }
-    unshift @INC, File::Spec->catdir($MT_DIR, 'extlib');
-    unshift @INC, File::Spec->catdir($orig_dir, 'lib')
-        if $orig_dir && ($orig_dir ne $MT_DIR);
+    unshift @INC, File::Spec->catdir( $MT_DIR,   'extlib' );
+    unshift @INC, File::Spec->catdir( $orig_dir, 'lib' )
+      if $orig_dir && ( $orig_dir ne $MT_DIR );
 
     $mt->set_language('__BUILD_LANGUAGE__');
 
-    if (my $cfg_file = $mt->find_config($param)) {
+    if ( my $cfg_file = $mt->find_config($param) ) {
         $cfg_file = File::Spec->rel2abs($cfg_file);
         $CFG_FILE = $cfg_file;
-    } else {
-        return $mt->trans_error("Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?")
-            if ref($mt);
+    }
+    else {
+        return $mt->trans_error(
+"Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?"
+        ) if ref($mt);
     }
 
     # store the mt_dir (home) as an absolute path; fallback to the config
     # directory if it isn't set.
-    $MT_DIR ||= $param->{directory}
-        ? File::Spec->rel2abs($param->{directory})
-        : $CFG_DIR;
+    $MT_DIR ||=
+      $param->{directory}
+      ? File::Spec->rel2abs( $param->{directory} )
+      : $CFG_DIR;
     $MT_DIR ||= dirname($0);
 
     # also make note of the active application path; this is derived by
@@ -830,9 +931,10 @@ sub init_paths {
     # the directory of SCRIPT_FILENAME and lastly, falls back to mt_dir
     $APP_DIR = $ENV{PWD} || "";
     $APP_DIR = dirname($0)
-        if !$APP_DIR || !File::Spec->file_name_is_absolute($APP_DIR);
-    $APP_DIR = dirname($ENV{SCRIPT_FILENAME})
-        if $ENV{SCRIPT_FILENAME} && (!$APP_DIR || (!File::Spec->file_name_is_absolute($APP_DIR)));
+      if !$APP_DIR || !File::Spec->file_name_is_absolute($APP_DIR);
+    $APP_DIR = dirname( $ENV{SCRIPT_FILENAME} )
+      if $ENV{SCRIPT_FILENAME}
+      && ( !$APP_DIR || ( !File::Spec->file_name_is_absolute($APP_DIR) ) );
     $APP_DIR ||= $MT_DIR;
     $APP_DIR = File::Spec->rel2abs($APP_DIR);
 
@@ -843,28 +945,30 @@ sub init_core {
     my $mt = shift;
     return if exists $Components{'core'};
     require MT::Core;
-    my $c = MT::Core->new({ id => 'core', path => $MT_DIR })
-        or die MT::Core->errstr;
+    my $c = MT::Core->new( { id => 'core', path => $MT_DIR } )
+      or die MT::Core->errstr;
     $Components{'core'} = $c;
     push @Components, $c;
     return 1;
 }
 
 sub init {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
 
     $mt->bootstrap() unless $MT_DIR;
-    $mt->{mt_dir} = $MT_DIR;
+    $mt->{mt_dir}     = $MT_DIR;
     $mt->{config_dir} = $CFG_DIR;
-    $mt->{app_dir} = $APP_DIR;
+    $mt->{app_dir}    = $APP_DIR;
 
     $mt->init_callbacks();
 
     ## Initialize the language to the default in case any errors occur in
     ## the rest of the initialization process.
-    $mt->init_config(\%param) or return;
-    $mt->init_plugins(@_) or return;
+    $mt->init_config( \%param ) or return;
+    $mt->init_plugins(@_)       or return;
+    $plugins_installed = 1;
+    $mt->init_schema();
     $mt->init_permissions();
 
     # Load MT::Log so constants are available
@@ -874,6 +978,9 @@ sub init {
 }
 
 sub init_callbacks {
+    my $mt = shift;
+    MT->add_callback( 'build_file_filter', 5, $mt,
+        sub { MT->publisher->queue_build_file_filter(@_) } );
 }
 
 sub init_plugins {
@@ -884,32 +991,40 @@ sub init_plugins {
     require MT::Compat::v3;
 
     require MT::Plugin;
-    my $use_plugins = $mt->{cfg}->UsePlugins;
-    my @PluginPaths = $mt->{cfg}->PluginPath;
-    my $PluginSwitch = $mt->{cfg}->PluginSwitch || {};
-    unshift @PluginPaths, File::Spec->catdir($MT_DIR, 'addons');
+    my $cfg          = $mt->config;
+    my $use_plugins  = $cfg->UsePlugins;
+    my @PluginPaths  = $cfg->PluginPath;
+    my $PluginSwitch = $cfg->PluginSwitch || {};
+
+    # Always process 'addons' directory
+    unshift @PluginPaths, File::Spec->catdir( $MT_DIR, 'addons' );
 
     foreach my $PluginPath (@PluginPaths) {
         my $plugin_lastdir = $PluginPath;
         $plugin_lastdir =~ s![\\/]$!!;
         $plugin_lastdir =~ s!.*[\\/]!!;
         local *DH;
-        if (opendir DH, $PluginPath) {
+        if ( opendir DH, $PluginPath ) {
             my @p = readdir DH;
-            PLUGIN:
+          PLUGIN:
             for my $plugin (@p) {
-                next if ($plugin =~ /^\.\.?$/ || $plugin =~ /~$/);
+                next if ( $plugin =~ /^\.\.?$/ || $plugin =~ /~$/ );
 
                 my $load_plugin = sub {
-                    my ($plugin, $sig) = @_;
+                    my ( $plugin, $sig ) = @_;
                     die "Bad plugin filename '$plugin'"
-                        if ($plugin !~ /^([-\\\/\@\:\w\.\s~]+)$/);
-                    local $plugin_sig = $sig;
+                      if ( $plugin !~ /^([-\\\/\@\:\w\.\s~]+)$/ );
+                    local $plugin_sig      = $sig;
                     local $plugin_registry = {};
                     $plugin = $1;
-                    if (!$use_plugins || (exists $PluginSwitch->{$plugin_sig} && !$PluginSwitch->{$plugin_sig})) {
+                    if (
+                        !$use_plugins
+                        || ( exists $PluginSwitch->{$plugin_sig}
+                            && !$PluginSwitch->{$plugin_sig} )
+                      )
+                    {
                         $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
-                        $Plugins{$plugin_sig}{enabled} = 0;
+                        $Plugins{$plugin_sig}{enabled}   = 0;
                         return 0;
                     }
                     return 0 if exists $Plugins{$plugin_sig};
@@ -918,49 +1033,82 @@ sub init_plugins {
                     if ($@) {
                         $Plugins{$plugin_sig}{error} = $@;
                         require MT::Log;
-                        $mt->log({
-                            message => $mt->translate("Plugin error: [_1] [_2]", $plugin, $Plugins{$plugin_sig}{error}),
-                            class => 'system',
-                            level => MT::Log::ERROR()
-                        });
+                        $mt->log(
+                            {
+                                message => $mt->translate(
+                                    "Plugin error: [_1] [_2]", $plugin,
+                                    $Plugins{$plugin_sig}{error}
+                                ),
+                                class => 'system',
+                                level => MT::Log::ERROR()
+                            }
+                        );
                         return 0;
-                    } else {
-                        if (my $obj = $Plugins{$plugin_sig}{object}) {
+                    }
+                    else {
+                        if ( my $obj = $Plugins{$plugin_sig}{object} ) {
                             $obj->init_callbacks();
-                        } else {
+                        }
+                        else {
+
                             # A plugin did not register itself, so
                             # create a dummy plugin object which will
                             # cause it to show up in the plugin listing
                             # by it's filename.
-                            MT->add_plugin({});
+                            MT->add_plugin( {} );
                         }
                     }
                     $Plugins{$plugin_sig}{enabled} = 1;
                     return 1;
                 };
-                $plugin_full_path = File::Spec->catfile($PluginPath, $plugin);
-                if (-f $plugin_full_path) {
+                $plugin_full_path = File::Spec->catfile( $PluginPath, $plugin );
+                if ( -f $plugin_full_path ) {
                     $plugin_envelope = $plugin_lastdir;
-                    $load_plugin->($plugin_full_path, $plugin)
-                        if $plugin_full_path =~ /\.pl$/;
-                } else {
+                    $load_plugin->( $plugin_full_path, $plugin )
+                      if $plugin_full_path =~ /\.pl$/;
+                }
+                else {
                     my $plugin_dir = $plugin;
                     $plugin_envelope = "$plugin_lastdir/" . $plugin;
 
                     # handle config.yaml
-                    my $yaml = File::Spec->catdir($plugin_full_path, 'config.yaml');
+                    my $yaml =
+                      File::Spec->catdir( $plugin_full_path, 'config.yaml' );
                     my $libdir;
-                    (unshift @INC, $libdir)
-                        if -d ($libdir = File::Spec->catdir($plugin_full_path, 'lib'));
-                    if (-f $yaml) {
-                        require MT::Component;
+                    ( unshift @INC, $libdir )
+                      if -d ( $libdir =
+                          File::Spec->catdir( $plugin_full_path, 'lib' ) );
+                    if ( -f $yaml ) {
+                        my $pclass =
+                          $plugin_dir =~ m/\.pack$/
+                          ? 'MT::Component'
+                          : 'MT::Plugin';
+
+                        # Don't process disabled plugin config.yaml files.
+                        if (
+                            $pclass eq 'MT::Plugin'
+                            && (
+                                !$use_plugins
+                                || ( exists $PluginSwitch->{$plugin_dir}
+                                    && !$PluginSwitch->{$plugin_dir} )
+                            )
+                          )
+                        {
+                            $Plugins{$plugin_dir}{full_path} =
+                              $plugin_full_path;
+                            $Plugins{$plugin_dir}{enabled} = 0;
+                            next;
+                        }
                         my $id = lc $plugin_dir;
                         $id =~ s/\.\w+$//;
-                        my $p = MT::Component->new({
-                            id => $id,
-                            path => $plugin_full_path,
-                            envelope => $plugin_envelope
-                        });
+                        my $p = $pclass->new(
+                            {
+                                id       => $id,
+                                path     => $plugin_full_path,
+                                envelope => $plugin_envelope
+                            }
+                        );
+
                         # rebless? based on config?
                         local $plugin_sig = $plugin_dir;
                         MT->add_plugin($p);
@@ -972,10 +1120,12 @@ sub init_plugins {
                     closedir SUBDIR;
                     for my $plugin (@plugins) {
                         next if $plugin !~ /\.pl$/;
-                        my $plugin_file = File::Spec->catfile($plugin_full_path,
-                                                              $plugin);
-                        if (-f $plugin_file) {
-                            $load_plugin->($plugin_file, $plugin_dir . '/' . $plugin);
+                        my $plugin_file =
+                          File::Spec->catfile( $plugin_full_path, $plugin );
+                        if ( -f $plugin_file ) {
+                            $load_plugin->(
+                                $plugin_file, $plugin_dir . '/' . $plugin
+                            );
                         }
                     }
                 }
@@ -994,36 +1144,40 @@ sub init_plugins {
 }
 
 my %addons;
+
 sub find_addons {
     my $mt = shift;
     my ($type) = @_;
 
     unless (%addons) {
-        my $addon_path = File::Spec->catdir($MT_DIR, 'addons');
+        my $addon_path = File::Spec->catdir( $MT_DIR, 'addons' );
         local *DH;
-        if (opendir DH, $addon_path) {
+        if ( opendir DH, $addon_path ) {
             my @p = readdir DH;
             foreach my $p (@p) {
                 next if $p eq '.' || $p eq '..';
-                my $full_path = File::Spec->catdir($addon_path, $p);
-                if (-d $full_path) {
-                    if ($p =~ m/^(.+)\.(\w+)$/) {
+                my $full_path = File::Spec->catdir( $addon_path, $p );
+                if ( -d $full_path ) {
+                    if ( $p =~ m/^(.+)\.(\w+)$/ ) {
                         my $label = $1;
-                        my $id = lc $1;
-                        my $type = $2;
-                        if ($type eq 'pack') {
+                        my $id    = lc $1;
+                        my $type  = $2;
+                        if ( $type eq 'pack' ) {
                             $label .= ' Pack';
-                        } elsif ($type eq 'theme') {
+                        }
+                        elsif ( $type eq 'theme' ) {
                             $label .= ' Theme';
-                        } elsif ($type eq 'plugin') {
+                        }
+                        elsif ( $type eq 'plugin' ) {
                             $label .= ' Plugin';
                         }
-                        push @{ $addons{$type} }, {
-                            label => $label,
-                            id => $id,
+                        push @{ $addons{$type} },
+                          {
+                            label    => $label,
+                            id       => $id,
                             envelope => 'addons/' . $p . '/',
-                            path => $full_path,
-                        };
+                            path     => $full_path,
+                          };
                     }
                 }
             }
@@ -1038,22 +1192,21 @@ sub find_addons {
 
 *mt_dir = \&server_path;
 sub server_path { $_[0]->{mt_dir} }
-sub app_dir { $_[0]->{app_dir} }
-sub config_dir { $_[0]->{config_dir} }
+sub app_dir     { $_[0]->{app_dir} }
+sub config_dir  { $_[0]->{config_dir} }
 
 sub component {
     my $mt = shift;
     my ($id) = @_;
-    return $Components{lc $id};
+    return $Components{ lc $id };
 }
 
 sub publisher {
     my $mt = shift;
     $mt = $mt->instance unless ref $mt;
-    unless ($mt->{WeblogPublisher}) {
+    unless ( $mt->{WeblogPublisher} ) {
         require MT::WeblogPublisher;
-        $mt->{WeblogPublisher} =
-            new MT::WeblogPublisher();
+        $mt->{WeblogPublisher} = new MT::WeblogPublisher();
     }
     $mt->{WeblogPublisher};
 }
@@ -1061,82 +1214,100 @@ sub publisher {
 sub rebuild {
     my $mt = shift;
     $mt->publisher->rebuild(@_)
-        or return $mt->error($mt->publisher->errstr);
+      or return $mt->error( $mt->publisher->errstr );
 }
 
 sub rebuild_entry {
     my $mt = shift;
     $mt->publisher->rebuild_entry(@_)
-        or return $mt->error($mt->publisher->errstr);
+      or return $mt->error( $mt->publisher->errstr );
 }
 
 sub rebuild_indexes {
     my $mt = shift;
     $mt->publisher->rebuild_indexes(@_)
-        or return $mt->error($mt->publisher->errstr);
+      or return $mt->error( $mt->publisher->errstr );
 }
 
 sub ping {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
     my $blog;
     require MT::Entry;
     require MT::Util;
-    unless ($blog = $param{Blog}) {
+    unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id) or
-            return $mt->trans_error(
-                "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr);
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->trans_error( "Load of blog '[_1]' failed: [_2]",
+            $blog_id, MT::Blog->errstr );
     }
 
-    my(@res);
+    my (@res);
 
     my $send_updates = 1;
-    if (exists $param{OldStatus}) {
+    if ( exists $param{OldStatus} ) {
         ## If this is a new entry (!$old_status) OR the status was previously
         ## set to draft, and is now set to publish, send the update pings.
         my $old_status = $param{OldStatus};
-        if ($old_status && $old_status eq MT::Entry::RELEASE()) {
+        if ( $old_status && $old_status eq MT::Entry::RELEASE() ) {
             $send_updates = 0;
         }
     }
 
-    if ( $send_updates && !(MT->config->DisableNotificationPings) ) {
+    if ( $send_updates && !( MT->config->DisableNotificationPings ) ) {
         ## Send update pings.
         my @updates = $mt->update_ping_list($blog);
         for my $url (@updates) {
             require MT::XMLRPC;
-            if (MT::XMLRPC->ping_update('weblogUpdates.ping', $blog, $url)) {
+            if ( MT::XMLRPC->ping_update( 'weblogUpdates.ping', $blog, $url ) )
+            {
                 push @res, { good => 1, url => $url, type => "update" };
-            } else {
-                push @res, { good => 0, url => $url, type => "update",
-                             error => MT::XMLRPC->errstr };
+            }
+            else {
+                push @res,
+                  {
+                    good  => 0,
+                    url   => $url,
+                    type  => "update",
+                    error => MT::XMLRPC->errstr
+                  };
             }
         }
-        if ($blog->mt_update_key) {
+        if ( $blog->mt_update_key ) {
             require MT::XMLRPC;
-            if (MT::XMLRPC->mt_ping($blog)) {
-                push @res, { good => 1, url => $mt->{cfg}->MTPingURL,
-                             type => "update" };
-            } else {
-                push @res, { good => 0, url => $mt->{cfg}->MTPingURL,
-                             type => "update", error => MT::XMLRPC->errstr };
+            if ( MT::XMLRPC->mt_ping($blog) ) {
+                push @res,
+                  {
+                    good => 1,
+                    url  => $mt->{cfg}->MTPingURL,
+                    type => "update"
+                  };
+            }
+            else {
+                push @res,
+                  {
+                    good  => 0,
+                    url   => $mt->{cfg}->MTPingURL,
+                    type  => "update",
+                    error => MT::XMLRPC->errstr
+                  };
             }
         }
     }
 
-    my $cfg = $mt->{cfg};
+    my $cfg     = $mt->{cfg};
     my $send_tb = $cfg->OutboundTrackbackLimit;
     return \@res if $send_tb eq 'off';
 
     my @tb_domains;
-    if ($send_tb eq 'selected') {
+    if ( $send_tb eq 'selected' ) {
         @tb_domains = $cfg->OutboundTrackbackDomains;
-    } elsif ($send_tb eq 'local') {
+    }
+    elsif ( $send_tb eq 'local' ) {
         my $iter = MT::Blog->load_iter();
-        while (my $b = $iter->()) {
+        while ( my $b = $iter->() ) {
             next if $b->id == $blog->id;
-            push @tb_domains, MT::Util::extract_domains($b->site_url);
+            push @tb_domains, MT::Util::extract_domains( $b->site_url );
         }
     }
     my $tb_domains;
@@ -1156,7 +1327,7 @@ sub ping {
     }
 
     ## Send TrackBack pings.
-    if (my $entry = $param{Entry}) {
+    if ( my $entry = $param{Entry} ) {
         my $pings = $entry->to_ping_url_list;
 
         my %pinged = map { $_ => 1 } @{ $entry->pinged_url_list };
@@ -1169,10 +1340,10 @@ sub ping {
 
         ## Build query string to be sent on each ping.
         my @qs;
-        push @qs, 'title=' . MT::Util::encode_url($entry->title);
-        push @qs, 'url=' . MT::Util::encode_url($entry->permalink);
-        push @qs, 'excerpt=' . MT::Util::encode_url($entry->get_excerpt);
-        push @qs, 'blog_name=' . MT::Util::encode_url($blog->name);
+        push @qs, 'title=' . MT::Util::encode_url( $entry->title );
+        push @qs, 'url=' . MT::Util::encode_url( $entry->permalink );
+        push @qs, 'excerpt=' . MT::Util::encode_url( $entry->get_excerpt );
+        push @qs, 'blog_name=' . MT::Util::encode_url( $blog->name );
         my $qs = join '&', @qs;
 
         ## Character encoding--best guess.
@@ -1185,23 +1356,36 @@ sub ping {
             ($url_domain) = MT::Util::extract_domains($url);
             next if $tb_domains && lc($url_domain) !~ m/$tb_domains$/;
 
-            my $req = HTTP::Request->new(POST => $url);
-            $req->content_type("application/x-www-form-urlencoded; charset=$enc");
+            my $req = HTTP::Request->new( POST => $url );
+            $req->content_type(
+                "application/x-www-form-urlencoded; charset=$enc");
             $req->content($qs);
             my $res = $ua->request($req);
-            if (substr($res->code, 0, 1) eq '2') {
+            if ( substr( $res->code, 0, 1 ) eq '2' ) {
                 my $c = $res->content;
-                my($error, $msg) = $c =~
-                    m!<error>(\d+).*<message>(.+?)</message>!s;
+                my ( $error, $msg ) =
+                  $c =~ m!<error>(\d+).*<message>(.+?)</message>!s;
                 if ($error) {
-                    push @res, { good => 0, url => $url, type => 'trackback',
-                                 error => $msg };
-                } else {
+                    push @res,
+                      {
+                        good  => 0,
+                        url   => $url,
+                        type  => 'trackback',
+                        error => $msg
+                      };
+                }
+                else {
                     push @res, { good => 1, url => $url, type => 'trackback' };
                 }
-            } else {
-                push @res, { good => 0, url => $url, type => 'trackback',
-                             error => "HTTP error: " . $res->status_line };
+            }
+            else {
+                push @res,
+                  {
+                    good  => 0,
+                    url   => $url,
+                    type  => 'trackback',
+                    error => "HTTP error: " . $res->status_line
+                  };
             }
         }
     }
@@ -1209,32 +1393,35 @@ sub ping {
 }
 
 sub ping_and_save {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
-    if (my $entry = $param{Entry}) {
-        my $results = MT::ping($mt, @_) or return;
+    if ( my $entry = $param{Entry} ) {
+        my $results = MT::ping( $mt, @_ ) or return;
         my %still_ping;
         my $pinged = $entry->pinged_url_list;
         for my $res (@$results) {
             next if $res->{type} ne 'trackback';
-            if (!$res->{good}) {
+            if ( !$res->{good} ) {
                 $still_ping{ $res->{url} } = 1;
             }
-            push @$pinged, $res->{url} .
-                ($res->{good} ? '' : ' ' . MT::I18N::encode_text($res->{error}));
+            push @$pinged,
+              $res->{url}
+              . ( $res->{good}
+                ? ''
+                : ' ' . MT::I18N::encode_text( $res->{error} ) );
         }
-        $entry->pinged_urls(join "\n", @$pinged);
-        $entry->to_ping_urls(join "\n", keys %still_ping);
-        $entry->save or return $mt->error($entry->errstr);
+        $entry->pinged_urls( join "\n", @$pinged );
+        $entry->to_ping_urls( join "\n", keys %still_ping );
+        $entry->save or return $mt->error( $entry->errstr );
         return $results;
     }
     1;
 }
 
 sub needs_ping {
-    my $mt = shift;
+    my $mt    = shift;
     my %param = @_;
-    my $blog = $param{Blog};
+    my $blog  = $param{Blog};
     my $entry = $param{Entry};
     require MT::Entry;
     return unless $entry->status == MT::Entry::RELEASE();
@@ -1242,11 +1429,12 @@ sub needs_ping {
     my %list;
     ## If this is a new entry (!$old_status) OR the status was previously
     ## set to draft, and is now set to publish, send the update pings.
-    if ( (!$old_status || $old_status ne MT::Entry::RELEASE())
-      && !(MT->config->DisableNotificationPings) ) {
+    if ( ( !$old_status || $old_status ne MT::Entry::RELEASE() )
+        && !( MT->config->DisableNotificationPings ) )
+    {
         my @updates = $mt->update_ping_list($blog);
-        @list{ @updates } = (1) x @updates;
-        $list{$mt->{cfg}->MTPingURL} = 1 if $blog && $blog->mt_update_key;
+        @list{@updates} = (1) x @updates;
+        $list{ $mt->{cfg}->MTPingURL } = 1 if $blog && $blog->mt_update_key;
     }
     if ($entry) {
         @list{ @{ $entry->to_ping_url_list } } = ();
@@ -1263,8 +1451,8 @@ sub needs_ping {
 
 sub update_ping_list {
     my $mt = shift;
-    my($blog) = @_;
-    
+    my ($blog) = @_;
+
     my @updates;
     if ( my $pings = MT->registry('ping_servers') ) {
         foreach ( split ',', $blog->update_pings ) {
@@ -1272,13 +1460,14 @@ sub update_ping_list {
             push @updates, $pings->{$_}->{url};
         }
     }
-    if (my $others = $blog->ping_others) {
+    if ( my $others = $blog->ping_others ) {
         push @updates, split /\r?\n/, $others;
     }
     my %updates;
     for my $url (@updates) {
         for ($url) {
-            s/^\s*//; s/\s*$//;
+            s/^\s*//;
+            s/\s*$//;
         }
         next unless $url =~ /\S/;
         $updates{$url}++;
@@ -1288,47 +1477,57 @@ sub update_ping_list {
 
 {
     my $LH;
+
     sub set_language {
         my $pkg = shift;
         require MT::L10N;
         $LH = MT::L10N->get_handle(@_);
+
         # Clear any l10n_handles in request
-        $pkg->request('l10n_handle', {});
+        $pkg->request( 'l10n_handle', {} );
         return $LH;
     }
 
     require MT::I18N;
+
     sub translate {
         my $this = shift;
         my $app = ref($this) ? $this : $this->app;
-        if ($app->{component}) {
-            if (my $c = $app->component($app->{component})) {
+        if ( $app->{component} ) {
+            if ( my $c = $app->component( $app->{component} ) ) {
                 local $app->{component} = undef;
                 return $c->translate(@_);
             }
         }
-        my ($format, @args) = @_;
+        my ( $format, @args ) = @_;
         foreach (@args) {
             $_ = $_->() if ref($_) eq 'CODE';
         }
         my $enc = MT->instance->config('PublishCharset') || 'utf-8';
-        return $LH->maketext($format, @args) if $enc =~ m/utf-?8/i;
-        $format = MT::I18N::encode_text($format, $enc, 'utf-8');
-        MT::I18N::encode_text($LH->maketext($format, map {MT::I18N::encode_text($_, $enc, 'utf-8')} @args),'utf-8', $enc);
+        return $LH->maketext( $format, @args ) if $enc =~ m/utf-?8/i;
+        $format = MT::I18N::encode_text( $format, $enc, 'utf-8' );
+        MT::I18N::encode_text(
+            $LH->maketext(
+                $format,
+                map { MT::I18N::encode_text( $_, $enc, 'utf-8' ) } @args
+            ),
+            'utf-8', $enc
+        );
     }
 
     sub translate_templatized {
         my $mt = shift;
         my $app = ref($mt) ? $mt : $mt->app;
-        if ($app->{component}) {
-            if (my $c = $app->component($app->{component})) {
+        if ( $app->{component} ) {
+            if ( my $c = $app->component( $app->{component} ) ) {
                 local $app->{component} = undef;
                 return $c->translate_templatized(@_);
             }
         }
         my ($text) = @_;
         while (1) {
-            $text =~ s!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!
+            $text =~
+s!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!
             my($msg, %args) = ($1);
             while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {  #"
                 $args{$1} = $3;
@@ -1341,6 +1540,8 @@ sub update_ping_list {
             if (exists $args{escape}) {
                 if (lc($args{escape}) eq 'html') {
                     $translation = MT::Util::encode_html($translation);
+                } elsif (lc($args{escape}) eq 'url') {
+                    $translation = MT::Util::encode_url($translation);
                 } else {
                     # fallback for js/javascript/singlequotes
                     $translation = MT::Util::encode_js($translation);
@@ -1353,14 +1554,14 @@ sub update_ping_list {
     }
 
     sub current_language { $LH->language_tag }
-    sub language_handle { $LH }
+    sub language_handle  { $LH }
 
     sub charset {
         my $mt = shift;
         $mt->{charset} = shift if @_;
         return $mt->{charset} if $mt->{charset};
         $mt->{charset} = $mt->config->PublishCharset
-            || $mt->language_handle->encoding;
+          || $mt->language_handle->encoding;
     }
 }
 
@@ -1369,38 +1570,39 @@ sub supported_languages {
     require MT::L10N;
     require File::Basename;
     ## Determine full path to lib/MT/L10N directory...
-    my $lib = 
-        File::Spec->catdir(File::Basename::dirname($INC{'MT/L10N.pm'}), 'L10N');
+    my $lib =
+      File::Spec->catdir( File::Basename::dirname( $INC{'MT/L10N.pm'} ),
+        'L10N' );
     ## ... From that, determine full path to extlib/MT/L10N.
     ## To do that, we look for the last instance of the string 'lib'
     ## in $lib and replace it with 'extlib'. reverse is a nice tricky
     ## way of doing that.
-    (my $extlib = reverse $lib) =~ s!bil!biltxe!;
+    ( my $extlib = reverse $lib ) =~ s!bil!biltxe!;
     $extlib = reverse $extlib;
     my @dirs = ( $lib, $extlib );
     my %langs;
     for my $dir (@dirs) {
         opendir DH, $dir or next;
-        for my $f (readdir DH) {
-            my($tag) = $f =~ /^(\w+)\.pm$/;
+        for my $f ( readdir DH ) {
+            my ($tag) = $f =~ /^(\w+)\.pm$/;
             next unless $tag;
             my $lh = MT::L10N->get_handle($tag);
-            $langs{$lh->language_tag} = $lh->language_name;
+            $langs{ $lh->language_tag } = $lh->language_name;
         }
         closedir DH;
-    } 
+    }
     \%langs;
 }
 
 # For your convenience
 sub trans_error {
     my $app = shift;
-    $app->error($app->translate(@_));
+    $app->error( $app->translate(@_) );
 }
 
 sub all_text_filters {
     unless (%Text_filters) {
-        if (my $filters = MT->registry('text_filters')) {
+        if ( my $filters = MT->registry('text_filters') ) {
             %Text_filters = %$filters if ref($filters) eq 'HASH';
         }
     }
@@ -1409,22 +1611,57 @@ sub all_text_filters {
 
 sub apply_text_filters {
     my $mt = shift;
-    my($str, $filters, @extra) = @_;
+    my ( $str, $filters, @extra ) = @_;
     my $all_filters = $mt->all_text_filters;
     for my $filter (@$filters) {
         my $f = $all_filters->{$filter} or next;
         my $code = $f->{code} || $f->{handler};
-        unless (ref($code) eq 'CODE') {
+        unless ( ref($code) eq 'CODE' ) {
             $code = $mt->handler_to_coderef($code);
             $f->{code} = $code;
         }
-        if (!$code) {
+        if ( !$code ) {
             warn "Bad text filter: $filter";
             next;
         }
-        $str = $code->($str, @extra);
+        $str = $code->( $str, @extra );
     }
     return $str;
+}
+
+sub static_path {
+    my $app = shift;
+    my $spath = $app->config->StaticWebPath;
+    if (!$spath) {
+        $spath = $app->config->CGIPath;
+        $spath .= '/' unless $spath =~ m!/$!;
+        $spath .= 'mt-static/';
+    } else {
+        $spath .= '/' unless $spath =~ m!/$!;
+    }
+    $spath;
+}
+
+sub static_file_path {
+    my $app = shift;
+    return $app->{__static_file_path}
+        if exists $app->{__static_file_path};
+
+    my $path = $app->config('StaticFilePath');
+    return $app->{__static_file_path} = $path if $path && -d $path;
+
+    # Attempt to derive StaticFilePath based on environment
+    my $web_path = $app->config->StaticWebPath || 'mt-static';
+    $web_path =~ s!^https?://[^/]+/!!;
+    if ($app->can('document_root')) {
+        my $doc_static_path = File::Spec->catdir($app->document_root(), $web_path);
+        return $app->{__static_file_path} = $doc_static_path
+            if -d $doc_static_path;
+    }
+    my $mtdir_static_path = File::Spec->catdir($app->mt_dir, 'mt-static');
+    return $app->{__static_file_path} = $mtdir_static_path
+        if -d $mtdir_static_path;
+    return;
 }
 
 sub new_ua {
@@ -1432,43 +1669,44 @@ sub new_ua {
     eval { require LWP::UserAgent; };
     return undef if $@;
     my $cfg = $class->config;
-    if (my $localaddr = $cfg->HTTPInterface || $cfg->PingInterface) {
+    if ( my $localaddr = $cfg->HTTPInterface || $cfg->PingInterface ) {
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = (
-              LocalAddr => $localaddr,
-              Reuse => 1 );
+            LocalAddr => $localaddr,
+            Reuse     => 1
+        );
     }
     my $ua = LWP::UserAgent->new;
     $ua->max_size(100_000) if $ua->can('max_size');
-    $ua->agent('MovableType/' . $MT::VERSION);
-    $ua->timeout($cfg->HTTPTimeout || $cfg->PingTimeout);
-    if (my $proxy = $cfg->HTTPProxy || $cfg->PingProxy) {
-        $ua->proxy(http => $proxy);
-        my @domains = split(/,\s*/, ($cfg->HTTPNoProxy || $cfg->PingNoProxy));
+    $ua->agent( 'MovableType/' . $MT::VERSION );
+    $ua->timeout( $cfg->HTTPTimeout || $cfg->PingTimeout );
+    if ( my $proxy = $cfg->HTTPProxy || $cfg->PingProxy ) {
+        $ua->proxy( http => $proxy );
+        my @domains =
+          split( /,\s*/, ( $cfg->HTTPNoProxy || $cfg->PingNoProxy ) );
         $ua->no_proxy(@domains);
     }
-    $ua;        
+    $ua;
 }
 
 sub build_email {
     my $class = shift;
-    my($file, $param) = @_;
+    my ( $file, $param ) = @_;
     my $cfg = $class->config;
-    my @paths = (File::Spec->catdir($cfg->TemplatePath, 'email'));
+    my @paths = ( File::Spec->catdir( $cfg->TemplatePath, 'email' ) );
     require MT::Template;
     my $tmpl;
     eval {
-        local $1; ## This seems to fix a utf8 bug (of course).
-        $tmpl = MT::Template->new_file(
-            $file,
-            path => \@paths,
-        );
+        local $1;    ## This seems to fix a utf8 bug (of course).
+        $tmpl = MT::Template->new_file( $file, path => \@paths, );
     };
-    return $class->trans_error("Loading template '[_1]' failed: [_2]", $file, $@) if $@;
-    $tmpl->param(mt_version => MT->version_id);
-    for my $key (keys %$param) {
-        $tmpl->param($key, $param->{$key});
+    return $class->trans_error( "Loading template '[_1]' failed: [_2]", $file,
+        $@ )
+      if $@;
+    $tmpl->param( mt_version => MT->version_id );
+    for my $key ( keys %$param ) {
+        $tmpl->param( $key, $param->{$key} );
     }
-    my $app = MT->instance;
+    my $app          = MT->instance;
     my $old_tmpl_dir = $app->{template_dir};
     MT->instance->{template_dir} = 'email';
     my $body = $tmpl->output;
@@ -1477,28 +1715,32 @@ sub build_email {
 }
 
 sub get_next_sched_post_for_user {
-    my ($author_id, @further_blog_ids) = @_;
+    my ( $author_id, @further_blog_ids ) = @_;
     require MT::Permission;
-    my @perms = MT::Permission->load({author_id => $author_id}, {});
+    my @perms = MT::Permission->load( { author_id => $author_id }, {} );
     my @blogs = @further_blog_ids;
     for my $perm (@perms) {
-        next unless ($perm->can_edit_config
-             || $perm->can_publish_post
-             || $perm->can_edit_all_posts);
+        next
+          unless ( $perm->can_edit_config
+            || $perm->can_publish_post
+            || $perm->can_edit_all_posts );
         push @blogs, $perm->blog_id;
     }
     my $next_sched_utc = undef;
     require MT::Entry;
     for my $blog_id (@blogs) {
-        my $blog = MT::Blog->load($blog_id);
-        my $earliest_entry = MT::Entry->load({
-            status => MT::Entry::FUTURE(),
-            blog_id => $blog_id},
-            {'sort' => 'created_on'}
+        my $blog           = MT::Blog->load($blog_id);
+        my $earliest_entry = MT::Entry->load(
+            {
+                status  => MT::Entry::FUTURE(),
+                blog_id => $blog_id
+            },
+            { 'sort' => 'created_on' }
         );
         if ($earliest_entry) {
-            my $entry_utc = MT::Util::ts2iso($blog,$earliest_entry->created_on);
-            if ($entry_utc < $next_sched_utc || !defined($next_sched_utc)) {
+            my $entry_utc =
+              MT::Util::ts2iso( $blog, $earliest_entry->created_on );
+            if ( $entry_utc < $next_sched_utc || !defined($next_sched_utc) ) {
                 $next_sched_utc = $entry_utc;
             }
         }
@@ -1514,7 +1756,7 @@ sub init_commenter_authenticators {
     foreach my $auth ( keys %$auths ) {
         delete $auths->{$auth}
           if exists( $auths->{$auth}->{condition} )
-            && !( $auths->{$auth}->{condition}->() );
+          && !( $auths->{$auth}->{condition}->() );
     }
     %Commenter_Auth = %$auths;
     $Commenter_Auth{$_}{key} ||= $_ for keys %Commenter_Auth;
@@ -1534,10 +1776,10 @@ sub commenter_authenticators {
 }
 
 sub _commenter_auth_params {
-    my ($key, $blog_id, $entry_id, $static) = @_;
+    my ( $key, $blog_id, $entry_id, $static ) = @_;
     my $params = {
         blog_id => $blog_id,
-        static => $static,
+        static  => $static,
     };
     $params->{entry_id} = $entry_id if defined $entry_id;
     return $params;
@@ -1551,8 +1793,8 @@ sub _openid_commenter_condition {
 sub core_commenter_authenticators {
     return {
         'OpenID' => {
-            class => 'MT::Auth::OpenID',
-            label => 'OpenID',
+            class      => 'MT::Auth::OpenID',
+            label      => 'OpenID',
             login_form => <<OpenID,
 <form method="post" action="<mt:var name="script_url">">
 <input type="hidden" name="__mode" value="login_external" />
@@ -1577,12 +1819,13 @@ sub core_commenter_authenticators {
 </form>
 OpenID
             login_form_params => \&_commenter_auth_params,
-            condition => \&_openid_commenter_condition,
-            logo => 'images/comment/signin_openid.png',
+            condition         => \&_openid_commenter_condition,
+            logo              => 'images/comment/signin_openid.png',
+            logo_small        => 'images/comment/openid_logo.png',
         },
         'LiveJournal' => {
-            class => 'MT::Auth::LiveJournal',
-            label => 'LiveJournal',
+            class      => 'MT::Auth::LiveJournal',
+            label      => 'LiveJournal',
             login_form => <<LiveJournal,
 <form method="post" action="<mt:var name="script_url">">
 <input type="hidden" name="__mode" value="login_external" />
@@ -1605,12 +1848,13 @@ OpenID
 </form>
 LiveJournal
             login_form_params => \&_commenter_auth_params,
-            condition => \&_openid_commenter_condition,
-            logo => 'images/comment/signin_livejournal.png',
+            condition         => \&_openid_commenter_condition,
+            logo              => 'images/comment/signin_livejournal.png',
+            logo_small        => 'images/comment/livejournal_logo.png',
         },
         'Vox' => {
-            class => 'MT::Auth::Vox',
-            label => 'Vox',
+            class      => 'MT::Auth::Vox',
+            label      => 'Vox',
             login_form => <<Vox,
 <form method="post" action="<mt:var name="script_url">">
 <input type="hidden" name="__mode" value="login_external" />
@@ -1634,32 +1878,36 @@ http://<input name="openid_userid" style="background: #fff url('<mt:var name="st
 </form>
 Vox
             login_form_params => \&_commenter_auth_params,
-            condition => \&_openid_commenter_condition,
-            logo => 'images/comment/signin_vox.png',
+            condition         => \&_openid_commenter_condition,
+            logo              => 'images/comment/signin_vox.png',
+            logo_small        => 'images/comment/vox_logo.png',
         },
         'TypeKey' => {
-            class => 'MT::Auth::TypeKey',
-            label => 'TypeKey',
+            class      => 'MT::Auth::TypeKey',
+            label      => 'TypeKey',
             login_form => <<TypeKey,
 <p class="hint"><__trans phrase="TypeKey is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free."></p>
 <p><img src="<mt:var name="static_uri">images/comment/blue_goto.png"> <a href="<mt:var name="tk_signin_url">"><__trans phrase="Sign in or register with TypeKey."></a></p>
 TypeKey
             login_form_params => sub {
-                my ($key, $blog_id, $entry_id, $static) = @_;
+                my ( $key, $blog_id, $entry_id, $static ) = @_;
                 my $entry = MT::Entry->load($entry_id) if $entry_id;
 
                 ## TypeKey URL
                 require MT::Template::Context;
                 my $ctx = MT::Template::Context->new;
-                $ctx->stash('blog_id', $blog_id);
+                $ctx->stash( 'blog_id', $blog_id );
                 my $blog = MT::Blog->load($blog_id);
-                $ctx->stash('blog', $blog);
-                $ctx->stash('entry', $entry);
+                $ctx->stash( 'blog',  $blog );
+                $ctx->stash( 'entry', $entry );
                 my $params = {};
-                $params->{tk_signin_url} = MT::Template::Context::_hdlr_remote_sign_in_link($ctx, { static => $static });
+                $params->{tk_signin_url} =
+                  MT::Template::Context::_hdlr_remote_sign_in_link( $ctx,
+                    { static => $static } );
                 return $params;
             },
             logo => 'images/comment/signin_typekey.png',
+            logo_small        => 'images/comment/typekey_logo.png',
         },
     };
 }
@@ -1676,7 +1924,7 @@ sub captcha_provider {
 sub captcha_providers {
     my $self = shift;
     $self->init_captcha_providers() unless %Captcha_Providers;
-    my $def = delete $Captcha_Providers{'mt_default'};
+    my $def  = delete $Captcha_Providers{'mt_default'};
     my @vals = values %Captcha_Providers;
     if ( defined($def) && $def->{condition}->() ) {
         unshift @vals, $def;
@@ -1691,7 +1939,7 @@ sub core_captcha_providers {
             class     => 'MT::Util::Captcha',
             condition => sub {
                 require MT::Util::Captcha;
-                if (my $error = MT::Util::Captcha->check_availability ) {
+                if ( my $error = MT::Util::Captcha->check_availability ) {
                     return 0;
                 }
                 1;
@@ -1706,7 +1954,7 @@ sub init_captcha_providers {
     foreach my $provider ( keys %$providers ) {
         delete $providers->{$provider}
           if exists( $providers->{$provider}->{condition} )
-            && !( $providers->{$provider}->{condition}->() );
+          && !( $providers->{$provider}->{condition}->() );
     }
     %Captcha_Providers = %$providers;
     $Captcha_Providers{$_}{key} ||= $_ for keys %Captcha_Providers;
@@ -1715,7 +1963,7 @@ sub init_captcha_providers {
 sub effective_captcha_provider {
     my $class = shift;
     my ($key) = @_;
-	return undef unless $key;
+    return undef unless $key;
     my $cp = $class->captcha_provider($key) or return;
     if ( exists $cp->{condition} ) {
         return undef unless $cp->{condition}->();
@@ -1728,13 +1976,14 @@ sub effective_captcha_provider {
 
 sub handler_to_coderef {
     my $pkg = shift;
-    my ($name, $delayed) = @_;
+    my ( $name, $delayed ) = @_;
 
     return $name if ref($name) eq 'CODE';
     return undef unless defined $name && $name ne '';
 
     my $code;
-    if ($name !~ m/->/) {
+    if ( $name !~ m/->/ ) {
+
         # check for Package::Routine first; if defined, return coderef
         no strict 'refs';
         $code = \&$name if defined &$name;
@@ -1742,12 +1991,12 @@ sub handler_to_coderef {
     }
 
     my $component;
-    if ($name =~ m!^\$!) {
-        if ($name =~ s/^\$(\w+):://) {
+    if ( $name =~ m!^\$! ) {
+        if ( $name =~ s/^\$(\w+)::// ) {
             $component = $1;
         }
     }
-    if ($name =~ m/^\s*sub\s*\{/s) {
+    if ( $name =~ m/^\s*sub\s*\{/s ) {
         $code = eval $name or die $@;
 
         if ($component) {
@@ -1756,71 +2005,89 @@ sub handler_to_coderef {
                 local $mt_inst->{component} = $component;
                 $code->(@_);
             };
-        } else {
+        }
+        else {
             return $code;
         }
     }
 
     my $hdlr_pkg = $name;
     my $method;
-    if ($hdlr_pkg =~ s/(->|::)([^:]+)$//) { # strip routine name
+    if ( $hdlr_pkg =~ s/(->|::)([^:]+)$// ) {    # strip routine name
         $method = $2 if $1 eq '->';
     }
-    if (!defined(&$name) && !UNIVERSAL::can($hdlr_pkg, 'AUTOLOAD')) {
+    if ( !defined(&$name) && !UNIVERSAL::can( $hdlr_pkg, 'AUTOLOAD' ) ) {
+
         # The delayed option will return a coderef that delays the loading
         # of the package holding the handler routine.
         if ($delayed) {
             if ($method) {
                 return sub {
                     eval "require $hdlr_pkg;"
-                        or Carp::confess("failed loading package $hdlr_pkg for routine $name");
+                      or Carp::confess(
+                        "failed loading package $hdlr_pkg for routine $name");
                     my $mt_inst = MT->instance;
                     local $mt_inst->{component} = $component
-                        if $component;
+                      if $component;
                     return $hdlr_pkg->$method(@_);
                 };
-            } else {
+            }
+            else {
                 return sub {
                     eval "require $hdlr_pkg;"
-                        or Carp::confess("failed loading package $hdlr_pkg for routine $name");
+                      or Carp::confess(
+                        "failed loading package $hdlr_pkg for routine $name");
                     my $mt_inst = MT->instance;
                     local $mt_inst->{component} = $component
-                        if $component;
+                      if $component;
                     no strict 'refs';
                     my $hdlr = \&$name;
                     use strict 'refs';
                     return $hdlr->(@_);
                 };
             }
-        } else {
+        }
+        else {
             eval "require $hdlr_pkg;"
-                or Carp::confess("failed loading package $hdlr_pkg for routine $name");
+              or Carp::confess(
+                "failed loading package $hdlr_pkg for routine $name");
         }
     }
     if ($method) {
         $code = sub {
             my $mt_inst = MT->instance;
             local $mt_inst->{component} = $component
-                if $component;
-            return $hdlr_pkg->$method(@_)
+              if $component;
+            return $hdlr_pkg->$method(@_);
         };
-    } else {
+    }
+    else {
         if ($component) {
             $code = sub {
                 no strict 'refs';
-                my $hdlr = (defined &$name ? \&$name : (UNIVERSAL::can($hdlr_pkg, 'AUTOLOAD') ? \&$name : undef));
+                my $hdlr = (
+                    defined &$name ? \&$name
+                    : ( UNIVERSAL::can( $hdlr_pkg, 'AUTOLOAD' ) ? \&$name
+                        : undef )
+                );
                 use strict 'refs';
                 if ($hdlr) {
                     my $mt_inst = MT->instance;
                     local $mt_inst->{component} = $component
-                        if $component;
+                      if $component;
                     return $hdlr->(@_);
                 }
                 return undef;
-            }
-        } else {
+              }
+        }
+        else {
             no strict 'refs';
-            $code = (defined &$name ? \&$name : (UNIVERSAL::can($hdlr_pkg, 'AUTOLOAD') ? \&$name : undef));
+            $code =
+              (
+                defined &$name
+                ? \&$name
+                : ( UNIVERSAL::can( $hdlr_pkg, 'AUTOLOAD' ) ? \&$name : undef )
+              );
         }
     }
     return $code;

@@ -255,9 +255,7 @@ sub add_conditional_tag {
     my($name, $condition) = @_;
     my $r = $MT::plugin_registry;
     $r->{tags} ||= {};
-    $r->{tags}{block}{$name} = sub {
-        $condition->(@_) ? $_[0]->slurp(@_) : $_[0]->else(@_)
-    };
+    $r->{tags}{block}{$name . '?'} = $condition;
 }
 
 sub add_global_filter {

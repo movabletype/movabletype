@@ -15,4 +15,8 @@ __PACKAGE__->install_properties({
     # unique(funcname)
 });
 
+sub class_label {
+    MT->translate("Job Function");
+}
+
 1;

@@ -1,16 +1,35 @@
+#selector-nav #create-entry a {
+  line-height: 26px;
+}
+
 #content-header #content-header-inner #page-title {
   line-height: 1.2;
+}
+
+.tabs span {
+  padding: 7px 10px 3px; 
+}
+
+.dashboard .you-widget li {
+  line-height: 1.5;
 }
 
 .shortcuts-widget ul li {
   margin-bottom: 0;
 }
 
+#list-plugins .shortcuts li {
+  line-height: 1.3;
+}
+
+.edit-author .field-left-label .field-header, 
 .settings-screen .field-left-label .field-header {
   width: 145px;
 }
 
+.edit-author .field-left-label .field-content, 
 .settings-screen .field-left-label .field-content, 
+.edit-author .settings-actions-bar .actions-bar-inner, 
 .settings-screen .settings-actions-bar .actions-bar-inner {
   margin-left: 155px;
 }
@@ -25,4 +44,27 @@
 
 .calendar-footer {
   clear: both;
+}
+
+.actions-bar .actions a:link,
+.actions-bar .actions a:visited,
+.listing .actions-bar .actions a { 
+  font-size: 12px;
+  font-weight: normal;
+}
+
+div#filter-select select,
+div#filter-select input, 
+div#filter-select textarea {
+  font-size: 12px;
+  padding: 0;
+}
+
+.category-listing-table .actions  {
+  width: 155px;
+}
+
+div.module {
+  font-size: 11px;
+  line-height: 1.2;
 }

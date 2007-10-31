@@ -12,9 +12,45 @@ use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 use MT;
 use MT::Util qw(offset_time_list);
 
+my (@PRE_INIT_PROPS, @PRE_INIT_META);
+
+sub install_pre_init_properties {
+    # Just in case; to prevent any weird recursion
+    local $MT::plugins_installed = 1;
+
+    foreach my $def (@PRE_INIT_PROPS) {
+        my ($class, $props) = @$def;
+        $class->install_properties($props);
+    }
+    @PRE_INIT_PROPS = ();
+
+    foreach my $def (@PRE_INIT_META) {
+        my ($class, $meta) = @$def;
+        $class->install_meta($meta);
+    }
+    @PRE_INIT_META = ();
+}
+
 sub install_properties {
     my $class = shift;
-    my $props = shift;
+    my ($props) = @_;
+
+    if ( ( $class ne 'MT::Config') && ( !$MT::plugins_installed ) ) {
+        # We're too early in the phase of MT's bootstrapping to
+        # be installing properties; we can't query the registry yet
+        # since plugins are not all accounted for. So save this
+        # set of properties to install it later (odds are, the
+        # package has been loaded to afford installing callbacks
+        # or accessing constants and isn't being used to load
+        # actual data.)
+        #
+        # The only exception to this rule is MT::Config; we must
+        # have access to the MT configuration table in order to
+        # bootstrap MT.
+
+        push @PRE_INIT_PROPS, [$class, $props];
+        return;
+    }
 
     if (my $super_props = $class->SUPER::properties()) {
         # subclass; merge hash
@@ -98,33 +134,29 @@ sub install_properties {
         $type_id = $props->{datasource};
     }
 
+    $class->SUPER::install_properties($props);
+
     # check for any supplemental columns from other components
     my $more_props = MT->registry('object_types', $type_id);
     if ($more_props && (ref($more_props) eq 'ARRAY')) {
         my ($cols) = grep { ref($_) eq 'HASH' } @$more_props;
         my @classes = grep { !ref($_) } @$more_props;
-        if (@classes > 1) {
-            die "class $class != " . $classes[0] if $classes[0] ne $class;
-            shift @classes; # first one should be == $class
-            eval "require $_;" for @classes;
-            @classes = grep { $_ ne $class } @classes;
-            if (@classes) {
-                no strict 'refs'; ## no critic
-                push @{$class . '::ISA'}, @classes;
-            }
+        foreach my $isa_class (@classes) {
+            next if UNIVERSAL::isa($class, $isa_class);
+            eval "require $isa_class;" or die;
+            no strict 'refs'; ## no critic
+            push @{$class . '::ISA'}, $isa_class;
         }
         if ($cols) {
             # special case for 'plugin' key...
             delete $cols->{plugin} if exists $cols->{plugin};
-
-            my @names = keys %$cols;
-            $props->{column_defs}{$_} = $cols->{$_} for @names;
-            push @{ $props->{columns}}, @names;
-            for (@names) {
-                $props->{indexes}{$_} = 1
-                    if $cols->{$_} =~ m/\bindexed\b/;
-                if ($cols->{$_} =~ m/\bdefault (?:'([^']+?)'|(\d+))\b/) {
-                    $props->{defaults}{$_} = defined $1 ? $1 : $2;
+            for my $name (keys %$cols) {
+                next if exists $props->{column_defs}{$name};
+                $class->install_column($name, $cols->{$name});
+                $props->{indexes}{$name} = 1
+                    if $cols->{$name} =~ m/\bindexed\b/;
+                if ($cols->{$name} =~ m/\bdefault (?:'([^']+?)'|(\d+))\b/) {
+                    $props->{defaults}{$name} = defined $1 ? $1 : $2;
                 }
             }
         }
@@ -167,8 +199,6 @@ sub install_properties {
     if ($class->isa('MT::Scorable')) {
         $class->add_trigger( post_remove => \&post_remove_score );
     }
-
-    $class->SUPER::install_properties($props);
 
     # install legacy date translation
     if (0 < scalar @{ $class->columns_of_type('datetime', 'timestamp') }) {
@@ -338,7 +368,11 @@ sub add_class {
 
 sub install_meta {
     my $class = shift;
-    my $props = shift;
+    my ($props) = @_;
+    if ( ( $class ne 'MT::Config' ) && (!$MT::plugins_installed) ) {
+        push @PRE_INIT_META, [$class, $props];
+        return;
+    }
     my $cprops = $class->properties;
     my $fields = $cprops->{meta_columns} ||= {};
     my $meta_col = $cprops->{meta_column};
@@ -471,6 +505,16 @@ sub count          { shift->_proxy('count',          @_) }
 sub count_group_by { shift->_proxy('count_group_by', @_) }
 sub sum_group_by   { shift->_proxy('sum_group_by',   @_) }
 sub remove_all     { shift->_proxy('remove_all',     @_) }
+
+sub remove {
+    my $obj = shift;
+    my(@args) = @_;
+    if (!ref $obj) {
+        return $obj->driver->direct_remove($obj, @args);
+    } else {
+        return $obj->driver->remove($obj, @args);
+    }
+}
 
 sub load {
     my $self = shift;

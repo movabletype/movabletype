@@ -98,16 +98,23 @@ body {
     margin: 5px 0;
 }
 
-.module-header,
+.widget-header,
 .trackbacks-header,
 .comments-header,
 .comments-open-header,
-.archive-header {
+.archive-header,
+.search-form-header,
+.search-results-header {
     margin: 0;
     padding: 5px 0;
     font-size: 18px;
     font-weight: bold;
 }
+
+.search-results-header {
+    margin-bottom: .25em;
+}
+
 
 /* Footer */
 
@@ -119,11 +126,13 @@ body {
 
 /* Utility */
 
-.module-header,
+.widget-header,
 .trackbacks-header,
 .comments-header,
 .comments-open-header,
-.archive-header {
+.archive-header,
+.search-form-header,
+.search-results-header {
     /* ie win (5, 5.5, 6) bugfix */
     p\osition: relative;
     width: 100%;
@@ -179,15 +188,9 @@ a:hover {
 }
 
 #container-inner {
+    width: 100%;
     margin-right: 0;
     margin-left: 0;
-}
-
-.layout-wtt #container-inner,
-.layout-twt #container-inner,
-.layout-wt #container-inner,
-.layout-tw #container-inner {
-    width: 100%;
 }
 
 #header-inner,
@@ -249,7 +252,9 @@ a:hover {
 .comments-header,
 .comments-open-header,
 .trackbacks-header,
-.archive-header {
+.archive-header,
+.search-form-header,
+.search-results-header {
     color: #80b17a;
 }
 
@@ -325,7 +330,7 @@ a:hover {
 }
 
 
-/* "Powered By" Module */
+/* "Powered By" Widget */
 
 .widget-powered .widget-content {
     padding: 10px;
@@ -333,22 +338,14 @@ a:hover {
 }
 
 
-/* Calendar Module */
+/* Calendar Widget */
 
 .widget-calendar .widget-content table {
     font-size: 10px;
 }
 
 
-/* Footer ----------------------------------------------------------------- */
-
-#footer { 
-    background-color: #65a85d; 
-}
-
-#footer-content {
-    margin: 20px 0;
-}
+/* Footer Widgets */
 
 #footer .widget {
     margin: 10px 0;
@@ -362,6 +359,17 @@ a:hover {
 #footer .widget-powered .widget-content {
     padding: 0;
     text-align: left;
+}
+
+
+/* Footer ----------------------------------------------------------------- */
+
+#footer { 
+    background-color: #65a85d; 
+}
+
+#footer-content {
+    margin: 20px 0;
 }
 
 

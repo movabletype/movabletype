@@ -59,8 +59,11 @@ function toggleConfig() {
 <__trans phrase="Congratulations! You've successfully configured [_1]." params="<mt:var name=MT_PRODUCT_NAME>">
 </p>
 
-<p><__trans phrase="Your configuration settings have been written to the file <tt>[_1]</tt>. To reconfigure them, click the 'Back' button below." params="<mt:var name=CONFIG_FILE>">
-</p>
+<p><__trans phrase="Your configuration settings have been written to the following file:"></p>
+<div class="mt-config-file-path">
+    <mt:var name="config_file">
+</div>
+<p><__trans phrase="To reconfigure the settings, click the 'Back' button below."></p>
 </mt:unless>
 </mt:if>
 

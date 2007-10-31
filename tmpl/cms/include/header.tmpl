@@ -60,7 +60,6 @@
 
 <body id="<$mt:var name="screen_id"$>" class="<mt:if name="blog_id">blog blog-<$mt:var name="blog_id"$><mt:else>system</mt:if> <$mt:var name="screen_type" default="main-screen"$> <mt:if name="screen_class"> <$mt:var name="screen_class"$></mt:if><mt:if name="new_object"> create-new</mt:if>">
 <div id="modal-mask" class="autolayout-height-parent modal-mask hidden">
-    <iframe frameborder="0" scrolling="no" src="about:blank"></iframe>
     <div></div>
 </div>
 <mt:var name="html_body">
@@ -85,10 +84,7 @@
             </li>
     </mt:loop>
     </mt:if>
-            <li id="mt-feedback"><a href="http://www.movabletype.org/feedback.html" title="<__trans phrase="Send us your feedback on Movable Type">"><__trans phrase="Feedback?"></a></li>
-    <mtignore>
-            <li id="help" class="help"><a href="<$mt:var name="help_url"$>"><__trans phrase="Help"></a></li>
-    </mtignore>
+            <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
             <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>"><__trans phrase="Hi [_1]," params="<$mt:var name="author_name"$>"></a></li>
         <mt:if name="can_logout">
             <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Logout"></a></li>
@@ -185,7 +181,7 @@
             </mt:if>
             <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
                 <input type="hidden" name="__mode" value="search_replace" />
-                <input type="hidden" name="_type" value="<mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if>" />
+                <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
             <mt:if name="blog_id">
                 <input type="hidden" name="blog_id" value="<$mt:var name="blog_id$>" />
             </mt:if>

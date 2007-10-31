@@ -87,33 +87,50 @@ TC.attachLoadEvent(init);
 </form>
 
 <mt:if name="missing_data">
-<mt:if name="missing_role">
-<h2><span class="weblog-title-highlight"><__trans phrase="You need to create some roles."></span></h2>
-<__trans phrase="Before you can do this, you need to create some roles. <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">Click here</a> to create a role." params="<mt:var name="script_url">?__mode=edit_role">
-</mt:if>
-<mt:if name="missing_group">
-<h2><span class="weblog-title-highlight"><__trans phrase="You need to create some groups."></span></h2>
-<__trans phrase="Before you can do this, you need to create some groups. <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">Click here</a> to create a group." params="<mt:var name="script_url">?__mode=view&amp;_type=group">
-</mt:if>
-<mt:if name="missing_author">
-<h2><span class="weblog-title-highlight"><__trans phrase="You need to create some users."></span></h2>
-<__trans phrase="Before you can do this, you need to create some users. <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">Click here</a> to create a user." params="<mt:var name="script_url">?__mode=view&amp;_type=author">
-</mt:if>
-<mt:if name="missing_blog">
-<h2><span class="weblog-title-highlight"><__trans phrase="You need to create some weblogs."></span></h2>
-<__trans phrase="Before you can do this, you need to create some weblogs. <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">Click here</a> to create a weblog." params="<mt:var name="script_url">?__mode=view&amp;_type=blog">
-</mt:if>
-<div class="action-bar">
-    <div class="action-bar-inner">
+    <mt:if name="missing_role">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=edit_role");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_group">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=group");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_author">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=author");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_blog">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=blog");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
         <form onsubmit="return false" onclick="window.focus();">
-            <input type="button" class="cancel" value="<__trans phrase="Close">" />
+            <button
+                type="submit"
+                accesskey="x"
+                class="cancel primary-button"
+                title="<__trans phrase="Close (x)">"
+                ><__trans phrase="Close"></button>
         </form>
     </div>
 </div>
 <mt:else>
-<mt:loop name="panel_loop">
-<mt:include name="include/listing_panel.tmpl">
-</mt:loop>
+    <mt:loop name="panel_loop">
+        <mt:include name="include/listing_panel.tmpl">
+    </mt:loop>
 </mt:if>
 
 <mt:include name="dialog/footer.tmpl">

@@ -14,7 +14,7 @@
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="weblog">', '<__trans phrase="weblogs">')"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="blog" escape="js">', '<__trans phrase="blogs" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected blogs (x)">"
         ><__trans phrase="Delete"></a>
@@ -28,7 +28,7 @@
     <script type="text/javascript">
     <!--
     function doRemoveBlog(id) {
-        if (confirm("<__trans phrase="Are you sure you want to delete this blog?">")) {
+        if (confirm("<__trans phrase="Are you sure you want to delete this blog?" escape="js">")) {
             var f = getByID('delete_blog');
             f['id'].value = id;
             f.submit();

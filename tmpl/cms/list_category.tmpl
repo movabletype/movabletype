@@ -11,6 +11,7 @@ function submitMoveMode() {
     f.submit();
 }
 function setCreateMode (id) {
+    DOM.addClassName(getByID('create-new-link'), 'hidden');
     var f = getByID('category-listing-form');
     f['__mode'].value = 'save_cat';
     if (getByID('msg-block')) {
@@ -29,15 +30,20 @@ function setCreateMode (id) {
             if (el.style.display != 'none') el.style.display = 'none';
         }
     }
-    document.forms['category-listing-form'].move_cat_id.value = '0';
+    if (document.forms['category-listing-form'].move_cat_id)
+        document.forms['category-listing-form'].move_cat_id.value = '0';
 
     getByID('category-new-parent-' + id).focus();
 
-    getByID('action-col-head').style.display = 'none'; // hide header of actions column
-    getByID('delete-col-head').style.display = 'none'; // hide header of delete column
+    if (getByID('action-col-head'))
+        getByID('action-col-head').style.display = 'none'; // hide header of actions column
+    if (getByID('delete-col-head'))
+        getByID('delete-col-head').style.display = 'none'; // hide header of delete column
     for (var i = 0; i < categoryRows.length; i++) {
-        getByID('action-' + categoryRows[i]).style.display = 'none'; // hide actions column for category rows
-        getByID('delete-' + categoryRows[i]).style.display = 'none'; // hide delete column for category rows
+        if (getByID('action-' + categoryRows[i]))
+            getByID('action-' + categoryRows[i]).style.display = 'none'; // hide actions column for category rows
+        if (getByID('delete-' + categoryRows[i]))
+            getByID('delete-' + categoryRows[i]).style.display = 'none'; // hide delete column for category rows
     }
     if (getByID('footer-list-actions')) {
         getByID('footer-list-actions').style.display = 'none';
@@ -46,21 +52,30 @@ function setCreateMode (id) {
 }
 
 function cancelCreateMode (id) {
+    DOM.removeClassName(getByID('create-new-link'), 'hidden');
     getByID('create-' + id).style.display = 'none'; // hide subcategory creation row
     if (document.all) {
-        getByID('action-col-head').style.display = 'block'; // show header of actions column
-        getByID('delete-col-head').style.display = 'block'; // show header of delete column
+        if (getByID('action-col-head'))
+            getByID('action-col-head').style.display = 'block'; // show header of actions column
+        if (getByID('delete-col-head'))
+            getByID('delete-col-head').style.display = 'block'; // show header of delete column
     } else {
-        getByID('action-col-head').style.display = 'table-cell';
-        getByID('delete-col-head').style.display = 'table-cell';
+        if (getByID('action-col-head'))
+            getByID('action-col-head').style.display = 'table-cell';
+        if (getByID('delete-col-head'))
+            getByID('delete-col-head').style.display = 'table-cell';
     }
     for (var i = 0; i < categoryRows.length; i++) {
         if (document.all) {
-            getByID('action-' + categoryRows[i]).style.display = 'block'; // show actions column for category rows
-            getByID('delete-' + categoryRows[i]).style.display = 'block'; // show delete column for category rows
+            if (getByID('action-' + categoryRows[i]))
+                getByID('action-' + categoryRows[i]).style.display = 'block'; // show actions column for category rows
+            if (getByID('delete-' + categoryRows[i]))
+                getByID('delete-' + categoryRows[i]).style.display = 'block'; // show delete column for category rows
         } else {
-            getByID('action-' + categoryRows[i]).style.display = 'table-cell';
-            getByID('delete-' + categoryRows[i]).style.display = 'table-cell';
+            if (getByID('action-' + categoryRows[i]))
+                getByID('action-' + categoryRows[i]).style.display = 'table-cell';
+            if (getByID('delete-' + categoryRows[i]))
+                getByID('delete-' + categoryRows[i]).style.display = 'table-cell';
         }
     }
     if (getByID('footer-list-actions')) {
@@ -136,7 +151,7 @@ TC.attachLoadEvent( init );
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="weblog">', '<__trans phrase="weblogs">')"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="category" escape="js">', '<__trans phrase="categories" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1" escape="js">">"
         ><__trans phrase="Delete"></a>
@@ -145,7 +160,7 @@ TC.attachLoadEvent( init );
 
 <mt:include name="include/header.tmpl">
 
-<p><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create new top level [_1]" params="<mt:var name="object_label" lower_case="1">"></a></p>
+<p id="create-new-link"><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create new top level [_1]" params="<mt:var name="object_label" lower_case="1">"></a></p>
 
 <mtapp:listing
     hide_pager="1">
@@ -166,9 +181,10 @@ TC.attachLoadEvent( init );
             <tr class="create-row create-inline" id="create-0">
                 <td class="move-col" colspan="2">&nbsp;</td>
                 <td colspan="4">
+                    <mt:setvarblock name="new_parent_label"><__trans phrase="New Parent [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
                     <mtapp:setting
                         id="new-parent-category"
-                        label="<__trans phrase="New Parent [_1]" params="<mt:var name="object_label">">"
+                        label="$new_parent_label"
                         label_class="inline field-no-header"
                         hint=""
                         show_hint="0">
@@ -181,8 +197,7 @@ TC.attachLoadEvent( init );
                         hint=""
                         show_hint="0">
                         <span class="buttons"> 
-                            <a href="javascript:void(0)" 
-                                onclick="submitForm(getByID('category-listing-form'), '')"
+                            <a href="javascript:void(0)" mt:command="submit"
                                 title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label">">" 
                                 ><__trans phrase="Save"></a> 
                             <a href="javascript:void(0)" 
@@ -226,9 +241,10 @@ TC.attachLoadEvent( init );
                 <td class="move-col" colspan="2">&nbsp;</td>
                 <td colspan="4" style="padding-left: 15px;">
                     <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+                        <mt:setvarblock name="new_label"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
                         <mtapp:setting
-                            id="new-category"
-                            label="<__trans phrase="New [_1]" params="<mt:var name="object_label">">"
+                            id="new_category"
+                            label="$new_label"
                             label_class="inline field-no-header"
                             hint=""
                             show_hint="0">
@@ -241,10 +257,10 @@ TC.attachLoadEvent( init );
                             hint=""
                             show_hint="0">
                             <span class="buttons"> 
-                                <a href="javascript:void(0)" 
-                                    onclick="submitForm(getByID('category-listing-form'), '')"
+                                <a href="javascript:void(0)"
+                                mt:command="submit"
                                     title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label">">" 
-                                    ><__trans phrase="Save"></a> 
+                                    ><__trans phrase="Create"></a> 
                                 <a href="javascript:void(0)" 
                                     onclick="cancelCreateMode(<mt:var name="category_id">); return false"
                                     ><__trans phrase="Cancel"></a> 
@@ -263,8 +279,33 @@ TC.attachLoadEvent( init );
         <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
         <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
         <table width="100%">
-            <tr class="create-row" id="create-0">
-                <td style="padding: 5px"><input type="text" name="category-new-parent-0" id="category-new-parent-0" value="" maxlength="100" /> <input type="submit" name="save" value="<__trans phrase="Create [_1]" params="<mt:var name="object_label" lower_case="1">">" /> <input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="cancelCreateMode(0); return false" /></td>
+            <tr id="create-0" class="create-row create-inline">
+                <td style="padding: 5px">
+                    <mt:setvarblock name="new_label"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+                    <mtapp:setting
+                        id="new_category"
+                        label="$new_label"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <input type="text" name="category-new-parent-0" id="category-new-parent-0" value="" maxlength="100" />
+                    </mtapp:setting>
+                    <mtapp:setting
+                        id="actions"
+                        label="<__trans phrase="Actions">"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <span class="buttons"> 
+                            <a href="javascript:void(0)" mt:command="submit"
+                                title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label">">" 
+                                ><__trans phrase="Create"></a> 
+                            <a href="javascript:void(0)" 
+                                onclick="cancelCreateMode(0); return false"
+                                ><__trans phrase="Cancel"></a> 
+                        </span> 
+                    </mtapp:setting>
+                </td>
             </tr>
         </table>
     </form>

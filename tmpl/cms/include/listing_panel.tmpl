@@ -33,9 +33,9 @@ parameters:
         <div class="listing-filter-inner inner pkg">
 <mt:if name="panel_searchable">
             <form id="modal-search" action="" method="get">
-                <input type="text" value="<$mt:var name="search_label"$>" class="search-input search-query"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
-                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> />
-                <input type="button" class="search-reset hidden" value="<__trans phrase="View All">"<mt:unless name="panel_searchable"> disabled="disabled"</mt:unless> />
+                <input type="text" value="<$mt:var name="search_label"$>" class="search-input search-query" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">" />
+                <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
             </form>
 </mt:if>
             &nbsp;

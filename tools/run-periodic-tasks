@@ -9,16 +9,45 @@ use strict;
 
 use lib 'lib', '../lib';
 use MT::Bootstrap;
-
-#use constant VERBOSE => 0;
-
 use MT;
-#use MT::Entry qw(:constants);
-#use MT::Util qw( offset_time_list );
 
-my $mt = MT->new()
-    or die MT->errstr;
+my $mt = MT->new() or die MT->errstr;
 
-MT->run_tasks;
+require Getopt::Long;
+my $daemonize = 0;
+my $sleep     = 5;
+my $help      = 0;
+# my $sync      = 0;
+# my $rsync_opt = '';
+my $load      = 10;
+my $verbose   = 0;
+
+Getopt::Long::GetOptions(
+    "daemon"      => \$daemonize,
+    "sleep=i"     => \$sleep,
+    # "help|?"      => \$help,
+    # "throttle=i"  => \%throttle,
+    # "worker=s"    => \$worker,
+    # "sync"        => \$sync,
+    # "to|target=s" => \@target,
+    # "rsync=s"     => \$rsync_opt,
+    "load=i"      => \$load,
+    "verbose"     => \$verbose,
+);
+
+my %cfg;
+$cfg{verbose} = $verbose;
+
+require MT::TheSchwartz;
+my $client = MT::TheSchwartz->new(%cfg);
+$TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
+
+if ($daemonize) {
+    $client->work_periodically($sleep);
+} else {
+    # First, run periodic tasks
+    $mt->run_tasks();
+    $client->work_until_done;
+}
 
 1;

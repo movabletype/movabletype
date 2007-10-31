@@ -14,7 +14,7 @@
             frm.submit();
         } else {
     <mt:if name="is_dirty">
-            var a = confirm('<__trans phrase="Canceling the process will create orphaned objects.  Are you sure you want to cancel the restore operation?">');
+            var a = confirm('<__trans phrase="Canceling the process will create orphaned objects.  Are you sure you want to cancel the restore operation?" escape="js">');
             if (!a) {
                 return false;
             }
@@ -82,10 +82,8 @@
     show_hint="0">
     <input name="file" id="restore_file" type="file" size="50" />
 </mtapp:setting>
-</form>
 <div class="actions-bar">
     <div class="actions-bar-inner pkg actions">
-        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
             <button
                 type="submit"
                 accesskey="s"
@@ -99,8 +97,8 @@
                 class="cancel"
                 title="<__trans phrase="Cancel (x)">"
                 ><__trans phrase="Cancel"></button>
-        </form>
     </div>
 </div>
+</form>
 </div>
 <mt:include name="dialog/footer.tmpl">

@@ -6,7 +6,7 @@ function smarty_block_mtifnonzero($args, $content, &$ctx, &$repeat) {
         $ctx->localize(array('conditional', 'else_content'));
         if (isset($args['tag'])) {
             $tag = $args['tag'];
-            $tag = preg_replace('/^mt/', '', $tag);
+            $tag = preg_replace('/^mt:?/i', '', $tag);
             $largs = $args; // local arguments without 'tag' element
             unset($largs['tag']);
             $output = $ctx->tag($tag, $largs);

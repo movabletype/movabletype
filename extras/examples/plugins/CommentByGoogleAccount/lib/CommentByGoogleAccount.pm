@@ -19,7 +19,7 @@ my $name = $nick;
 
 sub handle_sign_in {
     my $class = shift;
-    my ($app) = @_;
+    my ($app, $auth_type) = @_;
     my $q = $app->{query};
     
     my $sys_config = MT::Plugin::CommentByGoogleAccount->instance->get_config_hash;
@@ -45,6 +45,7 @@ sub handle_sign_in {
             nickname => $nick,
             name => $name,
             url => $url,
+            auth_type => $auth_type,
         );
     } else {
         # If there's no signature, then we trust the cookie.

@@ -7,6 +7,7 @@
 package MT::AtomServer;
 use strict;
 
+use MT::I18N qw( encode_text );
 use XML::Atom;
 use XML::Atom::Util qw( first textValue );
 use base qw( MT::App );
@@ -15,7 +16,6 @@ use Digest::SHA1 ();
 use MT::Atom;
 use MT::Util qw( encode_xml );
 use MT::Author;
-use MT::I18N qw( encode_text );
 
 use constant NS_SOAP => 'http://schemas.xmlsoap.org/soap/envelope/';
 use constant NS_WSSE => 'http://schemas.xmlsoap.org/ws/2002/07/secext';
@@ -293,6 +293,7 @@ sub iso2epoch {
 package MT::AtomServer::Weblog;
 use strict;
 
+use MT::I18N qw( encode_text );
 use XML::Atom;
 use XML::Atom::Feed;
 use base qw( MT::AtomServer );
@@ -302,11 +303,11 @@ use MT::Util qw( encode_xml );
 use MT::Permission;
 use File::Spec;
 use File::Basename;
-use MT::I18N qw( encode_text );
 
 use constant NS_CATEGORY => 'http://sixapart.com/atom/category#';
 use constant NS_DC => 'http://purl.org/dc/elements/1.1/';
 use constant NS_PHOTOS => 'http://sixapart.com/atom/photo#';
+use constant NS_TYPEPAD => 'http://sixapart.com/atom/typepad#';
 
 sub script { $_[0]->{cfg}->AtomScript . '/weblog' }
 
@@ -424,6 +425,30 @@ sub new_post {
         $cat = MT::Category->load({ blog_id => $blog->id, label => $label_enc })
             or return $app->error(400, "Invalid category '$label'");
     }
+
+    my $content = $atom->content;
+    my $type = $content->type; 
+    my $body = encode_text(MT::I18N::utf8_off($content->body),'utf-8',$enc); 
+    my $asset;
+    if ($type && $type !~ m!^application/.*xml$!) {
+        if ($type !~ m!^text/!) {
+            $asset = $app->_upload_to_asset or return;
+        }
+        elsif ($type && $type eq 'text/plain') {
+            ## Check for LifeBlog Note & SMS records.
+            my $format = $atom->get(NS_DC, 'format');
+            if ($format && ($format eq 'Note' || $format eq 'SMS')) {
+                $asset = $app->_upload_to_asset or return;
+            }
+        }
+    }
+    if ( $atom->get(NS_TYPEPAD, 'standalone') && $asset ) {
+        $app->response_code(201);
+        $app->response_content_type('application/atom_xml');
+        my $a = MT::Atom::Entry->new_with_asset($asset);
+        return $a->as_xml; 
+    } 
+
     my $entry = MT::Entry->new;
     my $orig_entry = $entry->clone;
     $entry->blog_id($blog->id);
@@ -448,6 +473,28 @@ sub new_post {
     }
 ## xxx mt/typepad-specific fields
     $entry->discover_tb_from_entry();
+
+    if (my @link = $atom->link) {
+        my $i = 0;
+        my $img_html = '';
+        my $num_links = scalar @link;
+        for my $link (@link) {
+            next unless $link->rel eq 'related';
+            my($asset_id) = $link->href =~ /asset\-(\d+)$/;
+            if ($asset_id) {
+                require MT::Asset;
+                my $a = MT::Asset->load($asset_id);
+                next unless $a;
+                my $pkg = MT::Asset->handler_for_file($a->file_name);
+                my $asset = bless $a, $pkg;
+                $img_html .= $asset->as_html({ include => 1 });
+            }
+        }
+        if ($img_html) {
+            $img_html .= qq{<br style="clear: left;" />\n\n};
+            $entry->text($img_html . $body);
+        }
+    }
 
     MT->run_callbacks('api_pre_save.entry', $app, $entry, $orig_entry)
         or return $app->error(500, MT->translate("PreSave failed [_1]", MT->errstr));
@@ -476,9 +523,14 @@ sub new_post {
 
     $app->publish($entry);
     $app->response_code(201);
-    $app->response_content_type('application/xml');
-    $app->set_header('Location', $app->base . $app->uri . '/blog_id=' . $entry->blog_id . '/entry_id=' . $entry->id);
+    $app->response_content_type('application/atom+xml');
+	my $edit_uri = $app->base . $app->uri . '/blog_id=' . $entry->blog_id . '/entry_id=' . $entry->id;
+    $app->set_header('Location', $edit_uri);
     $atom = MT::Atom::Entry->new_with_entry($entry);
+    $atom->add_link({ rel => 'service.edit',
+                      href => $edit_uri,
+                      type => 'application/atom+xml',
+                      title => $entry->title });
     $atom->as_xml;
 }
 
@@ -594,11 +646,24 @@ sub delete_post {
     '';
 }
 
-sub handle_upload {
+sub _upload_to_asset {
     my $app = shift;
     my $atom = $app->atom_body or return;
     my $blog = $app->{blog};
     my $user = $app->{user};
+    my %MIME2EXT = (
+        'text/plain'         => '.txt',
+	    'image/jpeg'         => '.jpg',
+        'video/3gpp'         => '.3gp',
+        'application/x-mpeg' => '.mpg',
+        'video/mp4'          => '.mp4',
+        'video/quicktime'    => '.mov',
+        'audio/mpeg'         => '.mp3',
+        'audio/x-wav'        => '.wav',
+        'audio/ogg'          => '.ogg',
+        'audio/ogg-vorbis'   => '.ogg',
+    );
+
     return $app->error(403, "Access denied") unless $app->{perms}->can_upload;
     my $content = $atom->content;
     my $type = $content->type
@@ -607,9 +672,11 @@ sub handle_upload {
     $fname = basename($fname);
     return $app->error(400, "Invalid or empty filename")
         if $fname =~ m!/|\.\.|\0|\|!;
+
     my $local = File::Spec->catfile($blog->site_path, $fname);
     my $fmgr = $blog->file_mgr;
     my($base, $path, $ext) = File::Basename::fileparse($local, '\.[^\.]*');
+    $ext = $MIME2EXT{$type} unless $ext;
     my $base_copy = $base;
     my $ext_copy = $ext;
     $ext_copy =~ s/\.//;
@@ -619,8 +686,6 @@ sub handle_upload {
     }
     $local = $path . $base . $ext;
     my $data = $content->body;
-    $atom = XML::Atom::Entry->new;
-    $atom->title($base . $ext);
     defined(my $bytes = $fmgr->put_data($data, $local, 'upload'))
         or return $app->error(500, "Error writing uploaded file");
 
@@ -679,10 +744,21 @@ sub handle_upload {
             Blog => $blog, blog => $blog);
     }
 
+    $asset;
+}
+
+sub handle_upload {
+    my $app = shift;
+    my $blog = $app->{blog};
+    
+    my $asset = $app->_upload_to_asset or return;
+
     my $link = XML::Atom::Link->new;
-    $link->type($type);
+    $link->type($asset->mime_type);
     $link->rel('alternate');
-    $link->href($blog->site_url . $base . $ext);
+    $link->href($asset->url);
+    my $atom = XML::Atom::Entry->new;
+    $atom->title($asset->file_name);
     $atom->add_link($link);
     $app->response_code(201);
     $app->response_content_type('application/x.atom+xml');

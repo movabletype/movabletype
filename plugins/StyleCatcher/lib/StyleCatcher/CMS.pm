@@ -30,9 +30,10 @@ sub listify {
         $entry{key} = $k;
         delete $entry{plugin};
         $entry{label} = $entry{label}->() if ref($entry{label});
+        $entry{description_label} = $entry{description_label}->() if ref($entry{description_label});
         push @list, \%entry;
     }
-    @list = sort { $a->{label} cmp $b->{label} } @list;
+    @list = sort { $a->{order} <=> $b->{order} } @list;
     \@list;
 }
 

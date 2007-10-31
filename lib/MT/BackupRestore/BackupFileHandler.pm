@@ -192,13 +192,21 @@ sub end_element {
                 }
                 if (my $tb = $class->load($term)) {
                     $exists = 1;
-                    my $message = exists($term->{entry_id})
-                        ?   MT->translate("Trackback for entry (ID: [_1]) already exists in the system.",
-                                $obj->entry_id)
-                        :   MT->translate("Trackback for category (ID: [_1]) already exists in the system.",
-                                $obj->category_id);
+                    my $changed = 0;
+                    if ($obj->passphrase) {
+                        $tb->passphrase($obj->passphrase);
+                        $changed = 1;
+                    }
+                    if ($obj->is_disabled) {
+                        $tb->is_disabled($obj->is_disabled);
+                        $changed = 1;
+                    }
+                    $tb->save if $changed;
                     $self->{objects}->{"$class#$old_id"} = $tb;
-                    $self->{callback}->("$message\n");
+                    my $records = $self->{records};
+                    $self->{callback}->($self->{state} . " " . MT->translate("[_1] records restored...", $records), $data->{LocalName})
+                        if $records && ($records % 10 == 0);
+                    $self->{records} = $records + 1;
                 }
             }
             unless ($exists) {

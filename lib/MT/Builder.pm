@@ -327,7 +327,7 @@ sub build {
                 }
                 $uncompiled = $t->[3];
             }
-            my($h) = $ctx->handler_for($t->[0]);
+            my($h, $type) = $ctx->handler_for($t->[0]);
             if ($h) {
                 my $start;
                 if ($MT::DebugMode & 8) {
@@ -376,6 +376,11 @@ sub build {
 
                 return $build->error(MT->translate("Error in <mt:[_1]> tag: [_2]", $t->[0], $ctx->errstr || ''))
                     unless defined $out;
+
+                if ((defined $type) && ($type == 2)) {
+                    # conditional; process result
+                    $out = $out ? $ctx->slurp : $ctx->else;
+                }
 
                 $out = $ph->($ctx, \%args, $out, \@args)
                     if %args && $ph;

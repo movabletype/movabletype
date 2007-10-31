@@ -93,6 +93,11 @@ function validate(f) {
 function is_valid_url(url_){
     return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
 }
+
+function submit_form(f, command) {
+    f[command].value = 1;
+    f.submit();
+}
 // -->
 </script>
 </mt:setvarblock>
@@ -114,6 +119,8 @@ function is_valid_url(url_){
 
 <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <input type="hidden" name="__mode" value="init_blog">
+<input type="hidden" name="finish" value="0">
+<input type="hidden" name="back" value="0">
 <input type="hidden" name="config" value="<mt:var name="config">">
 
 <fieldset>
@@ -181,13 +188,26 @@ function is_valid_url(url_){
 </div>
 </div>
 
-<div class="button-bar">
-<div class="left pkg">
-<input type="submit" name="back" value="<__trans phrase="Back">" />
-</div>
-<div class="right pkg">
-<input type="submit" name="finish" value="<__trans phrase="Finish install">" />
-</div>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions right">
+        <button
+            name="finish_button"
+            value="finish"
+            type="button"
+            accesskey="s"
+            title="<__trans phrase="Finish install (s)">"
+            class="primary-button"
+            onclick="submit_form(this.form, 'finish')"
+            ><__trans phrase="Finish install"></button>
+        <button
+            name="back_button"
+            value="back"
+            type="button"
+            accesskey="x"
+            title="<__trans phrase="Back (x)">"
+            onclick="submit_form(this.form, 'back')"
+            ><__trans phrase="Back"></button>
+    </div>
 </div>
 
 </form>

@@ -79,6 +79,7 @@
     <mtapp:setting
         id="allow_pings"
         label="<__trans phrase="Accept TrackBacks">"
+        content_class="field-content-text"
         help_page="blog_settings_feedback"
         help_section="accept_trackbacks">
 <input type="checkbox" name="allow_pings" value="1" id="allow_pings" onclick="toggleHidden('trackback-policy'); toggleHidden('trackback-display-options'); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <label for="allow_pings"><__trans phrase="If enabled, TrackBacks will be accepted from any source."></label>
@@ -92,6 +93,7 @@
     <mtapp:setting
         id="moderate_pings"
         label="<__trans phrase="Moderation">"
+        content_class="field-content-text"
         help_page="blog_settings_feedback"
         help_section="trackback_moderation">
 <input type="checkbox" name="moderate_pings" value="1" id="moderate_pings"<mt:if name="MODERATE_PINGS_1"> checked="checked"</mt:if> class="cb" /> <label for="moderate_pings"><__trans phrase="Hold all TrackBacks for approval before they're published."></label>
@@ -100,6 +102,7 @@
     <mtapp:setting
         id="nofollow_urls"
         label="<__trans phrase="Apply 'nofollow' to URLs">"
+        content_class="field-content-text"
         help_page="blog_settings_feedback"
         help_section="nofollow_urls"
         show_warning="1"
@@ -110,6 +113,7 @@
     <mtapp:setting
         id="email-new_pings"
         label="<__trans phrase="E-mail Notification">"
+        content_class="field-content-text"
         hint="<__trans phrase="Specify when Movable Type should notify you of new TrackBacks if at all.">"
         help_page="blog_settings_feedback"
         help_section="email_notification">
@@ -128,6 +132,7 @@
     <mtapp:setting
         id="autodiscover_links"
         label="<__trans phrase="TrackBack Auto-Discovery">"
+        content_class="field-content-text"
         hint="<__trans phrase="If you turn on auto-discovery, when you write a new entry, any external links will be extracted and the appropriate sites automatically sent TrackBacks.">"
         help_page="blog_settings_entry_defaults"
         help_section="trackback_autodiscovery">

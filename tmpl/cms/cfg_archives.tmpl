@@ -92,11 +92,8 @@
 <mt:setvarblock name="content_nav">
     <mt:include name="include/cfg_content_nav.tmpl">
 </mt:setvarblock>
-<mt:include name="include/header.tmpl">
-
-<div id="cfg-archives">
+<mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-
 <script type="text/javascript">
 <!--
 function validate (f) {
@@ -135,7 +132,7 @@ function is_valid_path(path_){
 function disableFields(path1,path2) {
     var url_is = "<mt:var name="site_url">"
     var path_is = "<mt:var name="site_path">"
-    if (url_is.match(/WEBLOG-NAME/)) {
+    if (url_is.match(/BLOG-NAME/)) {
         var daURL = getByID(path1);
         var lock = path1 +"-lock";
         var lock_img = getByID(lock);
@@ -143,7 +140,7 @@ function disableFields(path1,path2) {
         lock_img.style.display = 'none';
     } else {
     }
-    if (path_is.match(/WEBLOG-NAME/)) {
+    if (path_is.match(/BLOG-NAME/)) {
         var daPath = getByID(path2);
         var lock = path2 +"-lock";
         var lock_img = getByID(lock);
@@ -181,8 +178,20 @@ function toggleDynamicOptions(selection) {
     }
     return false;
 }
+
+function init() {
+    // conditionally disables
+    disableFields('site_url','site_path');
+}
+
+TC.attachLoadEvent( init );
 //-->
 </script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<div id="cfg-archives">
 
 <form name="cfg_form" id="cfg_form" method="post" action="<mt:var name="script_url">"<mt:if name="can_set_publish_paths">  onsubmit="return validate(this)"</mt:if>>
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -224,6 +233,7 @@ function toggleDynamicOptions(selection) {
     <mtapp:setting
         id="enable_archive_paths"
         label="<__trans phrase="Advanced Archive Publishing">"
+        content_class="field-content-text"
         show_label="0"
         hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Site Root.">"
         help_page="blog_settings_publishing"
@@ -263,50 +273,57 @@ function toggleDynamicOptions(selection) {
 
 </div>
 
-
 </fieldset>
 </mt:if>
 
-<script type="text/javascript">disableFields('site_url','site_path');</script>
-
 <h3><__trans phrase="Publishing Options"></h3>
 
-    <mtapp:setting
-        id="preferred_archive_type"
-        label="<__trans phrase="Preferred Archive Type">"
-        hint="<__trans phrase="Used when linking to an archived entry&#8212;for a permalink.">"
-        show_hint="1"
-        help_page="blog_settings_publishing"
-        help_section="preferred_archive_type">
+<mtapp:setting
+    id="preferred_archive_type"
+    label="<__trans phrase="Preferred Archive Type">"
+    hint="<__trans phrase="Used for creating links to an archived entry (permalink). Select from the archive types used in this blogs archive templates.">"
+    show_hint="1"
+    help_page="blog_settings_publishing"
+    help_section="preferred_archive_type">
 
-<mt:loop name="entry_archive_types">
-<mt:if name="__first__">
+    <mt:loop name="entry_archive_types">
+        <mt:if name="__first__">
 <select name="preferred_archive_type" id="preferred_archive_type">
-</mt:if>
-<option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred">selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option>
-<mt:if name="__last__">
+        </mt:if>
+    <option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred">selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option>
+        <mt:if name="__last__">
 </select>
-</mt:if>
-</mt:loop>
-<mt:unless name="entry_archive_types">
+        </mt:if>
+    </mt:loop>
+    <mt:unless name="entry_archive_types">
 <p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
-</mt:unless>
-    </mtapp:setting>
+    </mt:unless>
+</mtapp:setting>
 <mt:unless name="hide_build_option">
-    <mtapp:setting
-        id="dynamicity"
-        label="<__trans phrase="Method">"
-        help_page="blog_settings_publishing"
-        help_section="dynamic_publishing">
+<mtapp:setting
+    id="dynamicity"
+    label="<__trans phrase="Publishing Method">"
+    help_page="blog_settings_publishing"
+    help_section="dynamic_publishing">
 <select name="dynamicity" id="dynamicity" onchange="return toggleDynamicOptions(this)">
     <option value="none"<mt:if name="dynamic_none"> selected="selected"</mt:if>><__trans phrase="Publish all templates statically"></option>
     <option value="archives"<mt:if name="dynamic_archives"> selected="selected"</mt:if>><__trans phrase="Publish only Archive Templates dynamically"></option>
     <option value="custom"<mt:if name="dynamic_custom"> selected="selected"</mt:if>><__trans phrase="Set each template's Publish Options separately"></option>
     <option value="all"<mt:if name="dynamic_all"> selected="selected"</mt:if>><__trans phrase="Publish all templates dynamically"></option>
 </select>
-<a href="javascript:void(0)" onclick="return openManual('blog_settings_publishing', 'dynamic_publishing')" class="help-link">?</a>
 
-    </mtapp:setting>
+</mtapp:setting>
+
+<mtapp:setting
+    id="publish_queue"
+    label="<__trans phrase="Use Publishing Queue">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="publish_queue"
+    show_hint="1"
+    hint="<__trans phrase="Requires the use of a cron job to publish pages in the background.">">
+    <input id="publish_queue" type="checkbox" name="publish_queue" value="1"<mt:if name="publish_queue"> checked="checked"</mt:if>> <label for="publish_queue"><__trans phrase="Use background publishing queue for publishing static pages for this blog"></label>
+</mtapp:setting>
 
 <div id="dynamic_options_area"<mt:if name="dynamic_none"> style="display:none;"</mt:if>>
 

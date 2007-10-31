@@ -63,7 +63,7 @@ sub validate_credentials {
     my $result = MT::Auth::UNKNOWN();
 
     # load author from db
-    my $author = MT::Author->load({ name => $user, type => AUTHOR });
+    my $author = MT::Author->load({ name => $user, type => AUTHOR, auth_type => $app->config->AuthenticationModule });
     if ($author) {
         # author status validation
         if ($author->is_active) {

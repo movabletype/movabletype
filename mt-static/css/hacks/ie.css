@@ -32,15 +32,6 @@ ul.main-nav-list ul a {
     background: url('../images/spacer.gif') no-repeat left center;
 }
 
-#blog-nav li li a,
-#selector-nav li li a,
-#utility-nav li li a,
-#blog-nav li li span,
-#selector-nav li li span,
-#utility-nav li li span {
-    width: 100%;
-}
-
 #entryfield-options li input.cb,
 #entryfield-options li input.rb { margin: -2px -4px; }
 
@@ -60,13 +51,25 @@ ul.main-nav-list ul a {
     height: 1%;
 }
 
-#new_entry_prefs {
-    height: 1%;
-}
-
-.actions-bar button {
+.actions-bar button,
+button.big-button {
     border: none !important;
 }
+
+.search-replace .search-bar-replace-wrapper {
+    margin-left: -46px;
+}
+
+.search-replace #search-bar-search-field {
+    margin-left: 2px;
+}
+
+#system-check iframe {
+    width: 756px; /* 2px less to account for border width */
+}
+
+.log-listing-table tr.active { display: inline; }
+.list-tag .create-inline { display: inline; }
 
 /* 3.3x hacks that may still be needed */
 /*    body.edit-entry #entry-container select { margin: 0; }*/

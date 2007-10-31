@@ -8,6 +8,24 @@
     <mt:else>
         <mt:setvar name="page_title" value="<__trans phrase="Create New Role">">
     </mt:if>
+<mt:setvarblock name="content_header">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved-added"
+            class="success">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <p class="page-desc hidden"><__trans phrase="_USAGE_ROLE_PROFILE"><a href="javascript:void(0)" onclick="return openManual('author_permissions', 'permissions')" class="help-link">?</a></p>
+    
+    <p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a></p>
+
+<mt:if name="id">
+    <p><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="[quant,_1, User, Users] with this role" params="<mt:var name="user_count">"></a></p>
+</mt:if>
+
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
@@ -93,18 +111,26 @@ function checkPerms(obj) {
 }
 function permsUnChanged() { permsChanged = "no"; } 
 
+function doSubmitFormConfirm( f, mode, message ) {
+    if (confirm(message)) {
+        if (f.elements["__mode"] && mode)
+            f.elements["__mode"].value = mode;
+        f.submit();
+    }
+}
+
 function checkChanged() {
 
 var orig_roleName = "<mt:var name="name" escape="html">";
 var roleName = getByID('name').value;
 if(permsChanged == "yes") {
     if(roleName == orig_roleName) {
-        submitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the permissions for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
+        doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the permissions for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
     } else {
-        submitForm(document.role, 'save_role');
+        doSubmitForm(document.role, 'save_role');
     }
 } else {
-    submitForm(document.role, 'save_role');
+    doSubmitForm(document.role, 'save_role');
 }
 }
 
@@ -192,14 +218,6 @@ TC.attachLoadEvent( rectifyAll );
 </script>
 
 <div id="edit-role" onclick="handleClick(event)">
-
-<p class="page-desc"><__trans phrase="_USAGE_ROLE_PROFILE"><a href="javascript:void(0)" onclick="return openManual('author_permissions', 'permissions')" class="help-link">?</a></p>
-
-<p><mt:if name="id"><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="There are [_1] User(s) with this role." params="<mt:var name="user_count">"></a></mt:if></p>
-
-<mt:if name="saved">
-<p class="info"><__trans phrase="Your changes have been saved."></p>
-</mt:if>
 
 <mt:if name="id">
 <form name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
@@ -289,8 +307,8 @@ TC.attachLoadEvent( rectifyAll );
     </mtapp:setting>
 
     <mtapp:setting
-        id="file_upload"
-        label="<__trans phrase="File Upload">"
+        id="assets"
+        label="<__trans phrase="Assets">"
         hint="">
         <ul>
             <li><label for="permission-edit_assets"><input id="permission-edit_assets" type="checkbox" onchange="checkPerms(this);" class="edit_assets cb" name="permission" value="edit_assets"<mt:if name="have_access-edit_assets"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_assets" escape="html"></label></li>

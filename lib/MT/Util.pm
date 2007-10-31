@@ -5,14 +5,13 @@
 # $Id$
 
 package MT::Util;
-use strict;
 
-use MT::Request;
+use strict;
+use base 'Exporter';
+
 use Time::Local qw( timegm );
-use Exporter;
-@MT::Util::ISA = qw( Exporter );
-use vars qw( @EXPORT_OK );
-@EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
+
+our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  start_end_period week2ymd munge_comment
                  rich_text_transform html_text_transform encode_html decode_html
                  iso2ts ts2iso offset_time offset_time_list first_n_words
@@ -25,8 +24,7 @@ use vars qw( @EXPORT_OK );
                  start_background_task launch_background_tasks substr_wref
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
-                 sax_parser trim ltrim rtrim );
-
+                 sax_parser trim ltrim rtrim asset_cleanup caturl );
 
 sub leap_day {
     my ($y, $m, $d) = @_;
@@ -74,12 +72,7 @@ sub iso2ts {
         ($1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7);
     if ($offset && !MT->config->IgnoreISOTimezones) {
         $mo--;
-        my $time;
-        if ($] >= 5.006) { # _nocheck is only available with 5.6 and up
-            $time = Time::Local::timegm_nocheck($s, $m, $h, $d, $mo, $y);
-        } else {
-            $time = timegm($s, $m, $h, $d, $mo, $y - 1900);
-        }
+        my $time = Time::Local::timegm_nocheck($s, $m, $h, $d, $mo, $y);
         ## If it's not already in UTC, first convert to UTC.
         if ($offset ne 'Z') {
             my($sign, $h, $m) = $offset =~ /([+-])(\d{2}):(\d{2})/;
@@ -98,11 +91,7 @@ sub iso2ts {
 sub ts2iso {
     my ($blog, $ts) = @_;
     my ($yr, $mo, $dy, $hr, $mn, $sc) = unpack('A4A2A2A2A2A2', $ts);
-    if ($] >= 5.006) { # _nocheck is only available with 5.6 and up
-        $ts = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
-    } else {
-        $ts = timegm($sc, $mn, $hr, $dy, $mo-1, $yr - 1900);
-    }
+    $ts = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
     ($sc, $mn, $hr, $dy, $mo, $yr) = offset_time_list($ts, $blog, '-');
     $yr += 1900;
     $mo += 1;
@@ -112,12 +101,7 @@ sub ts2iso {
 sub ts2epoch {
     my ($blog, $ts) = @_;
     my ($yr, $mo, $dy, $hr, $mn, $sc) = unpack('A4A2A2A2A2A2', $ts);
-    my $epoch;
-    if ($] >= 5.006) { # _nocheck is only available with 5.6 and up
-        $epoch = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
-    } else {
-        $epoch = timegm($sc, $mn, $hr, $dy, $mo-1, $yr - 1900);
-    }
+    my $epoch = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
     return unless $epoch;
     $epoch = offset_time($epoch, $blog, '-') if ref $blog;
     $epoch;
@@ -235,7 +219,7 @@ sub format_ts {
     unless (defined $format) {
         $format = $Languages{$lang}[3] || "%B %e, %Y %l:%M %p";
     }
-    my $cache = MT::Request->instance->cache('formats');
+    my $cache = MT->request->cache('formats');
     unless ($cache) {
         MT::Request->instance->cache('formats', $cache = {});
     }
@@ -1712,6 +1696,37 @@ sub rtrim {
     $string;
 }
 
+sub asset_cleanup {
+    my ($str) = @_;
+    $str =~ s/
+        <(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])
+        ([^>]*?)
+        \s
+        mt:asset-id="\d+"
+        ([^>]+?>)(.*?)
+        <\/(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])>
+    /
+    my $attr = $1 . $2;
+    my $inner = $3;
+    $attr =~ s!\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=(['"][^'"]*?['"]|[Ff][Aa][Ll][Ss][Ee])!!;
+    '<span' . $attr . $inner . '<\/span>'
+    /gsex;
+    return $str;
+}
+
+sub caturl {
+    return '' unless @_;
+ 
+    my $url = shift;
+    foreach (@_) {
+        my $u = $_;
+        next unless $u;
+        $u =~ s!^/!!;
+        $url .= '/' unless $url =~ m!/$!;
+        $url .= $u;
+    }
+    return $url;
+}
 
 ## FIXME
 # This method is to supplement CGI.pm's lack of read method.

@@ -5,7 +5,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=<mt:var name="language_encoding">" />
 <title><mt:loop name="page_titles"><mt:var name="bc_name" escape="html"> | </mt:loop><mt:var name="mt_product_name"></title>
 <mt:setvarblock name="html_head" prepend="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">styles.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+<mt:if name="mt_debug">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+<mt:else>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+</mt:if>
 <!--[if IE]>
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
 <![endif]-->
@@ -34,9 +38,10 @@ StaticURI = '<mt:var name="static_uri">';
 HelpBaseURI = '<mt:var name="help_url">';
 window.onkeypress = dialogKeyPress;
 </script>
+<$mt:var name="js_include"$>
 </head>
 
-<body id="mode_<mt:var name="mode">" class="dialog <$mt:var name="screen_type" default="dialog-screen"$>">
+<body id="<$mt:var name="screen_id"$>" class="dialog <$mt:var name="screen_type" default="dialog-screen"$>">
 <div id="container">
     <div id="content-header">
         <h1><$mt:var name="page_title"$></h1>

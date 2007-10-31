@@ -114,6 +114,12 @@ sub uppercase {
 
 # Dumb default methods (charset ignorant)
 
+sub decode_perl {
+    my $class = shift;
+    my ($enc, $text) = @_;
+    $text;
+}
+
 sub encode_text_perl {
     my $class = shift;
     my ($str) = @_;

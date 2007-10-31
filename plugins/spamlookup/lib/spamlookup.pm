@@ -344,6 +344,8 @@ sub ipbl {
     }
 
     my ($a, $b, $c, $d) = split /\./, $remote_ip;
+    return (ABSTAIN) unless $a && $b && $c &&$d;
+
     my @ipbl_service = split /\s*,?\s+/, $config->{ipbl_service};
     return (ABSTAIN) unless @ipbl_service;
 

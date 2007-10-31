@@ -184,7 +184,7 @@ sub upgrade {
     return $app->build_page('upgrade_runner.tmpl', \%param);
 }
 
-my @keys = qw( admin_name admin_email hint preferred_language admin_username initial_user initial_password initial_name initial_email initial_hint initial_lang initial_external_id );
+my @keys = qw( admin_email hint preferred_language admin_nickname admin_username initial_user initial_password initial_nickname initial_email initial_hint initial_lang initial_external_id );
 
 sub init_user {
     my $app = shift;
@@ -206,16 +206,13 @@ sub init_user {
         $param{$key} = $app->param($key);
     }
 
-    my $initial_user = '';
+    my $initial_user = $app->param('admin_username');
     my $initial_password = '';
-    my $initial_name = $app->param('admin_name') || '';
+    my $initial_nickname = $app->param('admin_nickname') || '';
     my $initial_email = $app->param('admin_email') || '';
     my $initial_hint = $app->param('hint') || '';
     my $initial_lang = $app->param('preferred_language');
     my $initial_external_id = '';
-
-    my $user = $app->param('admin_username');
-    $initial_user = $user;
 
     require MT::Auth;
     my $mode = $app->config("AuthenticationModule");
@@ -227,17 +224,17 @@ sub init_user {
         # validate login
         my $err = '';
         my $author = new MT::BasicAuthor;
-        $author->name($user);
+        $author->name($initial_user);
         if (MT::Auth->is_valid_password($author, $pass, 0, \$err)) {
             $initial_password = $pass;
-            $app->param('name', $user);
+            $app->param('name', $initial_user);
             my $error = MT::Auth->sanity_check($app);
             if ($error) {
                 $param{error} = $error;
                 return $app->build_page('install.tmpl', \%param);
             } else {
                 $initial_email = $app->param('email') || '';
-                $initial_name = $app->param('nickname') || '';
+                $initial_nickname = $app->param('nickname') || '';
                 $initial_external_id = MT::Author->unpack_external_id($app->param('external_id')) if $app->param('external_id');
             }
         } else {
@@ -271,7 +268,7 @@ sub init_user {
 
     $param{initial_user} = $initial_user;
     $param{initial_password} = $initial_password;
-    $param{initial_name} = $initial_name;
+    $param{initial_nickname} = $initial_nickname;
     $param{initial_email} = $initial_email;
     $param{initial_hint} = $initial_hint;
     $param{initial_lang} = $initial_lang;
@@ -338,12 +335,13 @@ sub init_blog {
     foreach my $key (@keys) {
         $param{$key} = $config{$key};
     }
+
     my $new_user;
     my $new_blog;
     use URI::Escape;
     $new_user = {
         user_name => uri_escape($param{initial_user}),
-        user_nickname => uri_escape($param{initial_name}),
+        user_nickname => uri_escape($param{initial_nickname}),
         user_password => uri_escape($param{initial_password}),
         user_email => uri_escape($param{initial_email}),
         user_lang => $param{initial_lang},
@@ -613,6 +611,9 @@ sub build_page {
     $param->{"auth_mode_$pref"} = 1;
 
     my $auth = $app->user;
+    if ( !$auth && $param->{needs_upgrade} ) {
+        $auth = $app->login;
+    }   
     my $langs = $app->supported_languages;
     my @data;
     my $preferred = $app->config('DefaultLanguage');

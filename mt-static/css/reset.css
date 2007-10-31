@@ -1,13 +1,13 @@
 
-/*  
-    reset.css - resets default browser styling 
+/*
+    reset.css - resets default browser styling
     http://tantek.com/log/2004/09.html#d06t2354
     http://www.vox.com/.shared/css/base.css
     http://developer.yahoo.com/yui/reset/
 */
 
 :link,:visited {
-    text-decoration: none;
+    text-decoration:none;
 }
 html,body,div,
 ul,ol,li,dl,dt,dd,
@@ -41,22 +41,20 @@ q:before,q:after {
     content:'';
 }
 a {
-    text-decoration: underline;
-    outline: none;
+    text-decoration:underline;
+    outline:none;
 }
 hr {
-    border: 0;
-    height: 1px;
-    background-color: #000;
-    color: #000;
+    border:0;
+    height:1px;
+    background-color:#000;
+    color:#000;
 }
-a img,
-:link img,
-:visited img {
-    border: none;
+a img,:link img,:visited img {
+    border:none;
 }
 address {
-    font-style: normal;
+    font-style:normal;
 }
 
 /* FIXME - add other formatted tags: legend? abbr? */

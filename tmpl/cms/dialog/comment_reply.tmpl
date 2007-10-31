@@ -41,7 +41,8 @@ closeDialog('<mt:var name="return_url">');
     <div class="actions-bar">
         <div class="actions-bar-inner pkg actions">
             <button
-                onclick="return submitForm(this.form, 'reply'); return false"
+                mt:command="submit"
+                mt:mode="reply"
                 type="submit"
                 accesskey="s"
                 title="<__trans phrase="Submit reply (s)">"
@@ -49,7 +50,8 @@ closeDialog('<mt:var name="return_url">');
                 class="primary-button"
                 ><__trans phrase="Submit"></button>
             <button
-                onclick="return submitForm(this.form, 'reply_preview'); return false"
+                mt:command="submit"
+                mt:mode="reply_preview"
                 type="submit"
                 accesskey="v"
                 title="<__trans phrase="Preview reply (v)">"

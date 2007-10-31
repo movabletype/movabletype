@@ -27,6 +27,10 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("Category Placement");
+}
+
 1;
 __END__
 

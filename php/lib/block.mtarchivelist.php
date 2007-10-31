@@ -42,6 +42,7 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_archive_list_results', $archive_list_results);
         # allow <MTEntries> to load them
         $ctx->stash('entries', null);
+        $ctx->stash('inside_archive_list', true);
         $i = 0;
     } else {
         $at = $ctx->stash('current_archive_type');

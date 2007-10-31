@@ -159,6 +159,7 @@ sub sample_data {
         email => 'chuckd@example.com',
         url => 'http://chuckd.com/',
         api_password => 'seecret',
+        auth_type => 'MT',
     });
     $chuckd->set_password("bass");
     $chuckd->type(MT::Author::AUTHOR());
@@ -172,6 +173,7 @@ sub sample_data {
         name => 'Bob D',
         nickname => 'Dylan', 
         email => 'bobd@example.com',
+        auth_type => 'MT',
     });
     $bobd->set_password("flute");
     $bobd->type(MT::Author::AUTHOR());
@@ -182,6 +184,7 @@ sub sample_data {
     $johnd->set_values({
         name => 'John Doe',
         email => 'jdoe@doe.com',
+        auth_type => 'TypeKey',
     });
     $johnd->type(MT::Author::COMMENTER());
     $johnd->password('(none)');
@@ -780,7 +783,28 @@ It\'s a hard rain\'s a-gonna fall',
         BlogId => 1,
         EntryCallback => sub { print STDERR "# Rebuilding entry " . $_[0]->id . "\n" }
     );
-    
+
+    ### Make ObjectAsset mappings
+    require MT::ObjectAsset;
+    my $map;
+    $entry = MT::Entry->load(1);
+    if ($entry) {
+        $map = new MT::ObjectAsset;
+        $map->blog_id($entry->blog_id);
+        $map->asset_id(1);
+        $map->object_ds($entry->datasource);
+        $map->object_id($entry->id);
+        $map->save;
+    }
+    $page = MT::Page->load(20);
+    if ($entry) {
+        $map = new MT::ObjectAsset;
+        $map->blog_id($page->blog_id);
+        $map->asset_id(2);
+        $map->object_ds($page->datasource);
+        $map->object_id($page->id);
+        $map->save;
+    }
 
     1;
 }

@@ -16,6 +16,7 @@ function returnBlogSelection(ok) {
         return closeDialog(); 
     var el_id = getByID("<mt:var name="idfield">", win.document); 
     var el_name = getByID("<mt:var name="namefield">", win.document); 
+    var el_link = getByID("<mt:var name="namefield">_link", win.document); 
     var return_url = "<mt:var name="return_url">";
     if (el_id && el_name) { 
 <mt:if name="panel_multi"> 
@@ -46,6 +47,8 @@ function returnBlogSelection(ok) {
         if (blog_name) 
             el_name.innerHTML = blog_name + ' (' + inp.value + ')'; 
 </mt:if> 
+        if ( el_link )
+            DOM.removeClassName( el_link, "hidden" );
         closeDialog();
     } else if (return_url) {
         var inputs = dialog.panels[0].tableSelect.selected(); 

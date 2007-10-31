@@ -21,14 +21,15 @@
             progress.style.display = "none";
         }
         if (success) {
-            var complete = getByID("complete-message-div");
+            var complete = getByID("completed-action");
             if (complete) {
                 complete.style.display = "block";
             }
+            current_task.style.display = "none";
 <mt:if name="installing">
-            current_task.innerHTML = "<__trans phrase="Installation complete.">";
+            page_title.innerHTML = "<__trans phrase="Installation complete!">";
 <mt:else>
-            current_task.innerHTML = "<__trans phrase="Upgrade complete.">";
+            page_title.innerHTML = "<__trans phrase="Upgrade complete!">";
 </mt:if>
         } else {
             var error = getByID("error-message-div");
@@ -167,6 +168,7 @@
         upgrade_progress = getByID('upgrade-progress');
         upgrade_container = getByID('upgrade-container');
         current_task = getByID('current-task');
+        page_title = getByID('page-title');
         runActions();
     }
     TC.attachLoadEvent( init );
@@ -194,32 +196,35 @@
   <p id="error-message" class="error-message"><mt:if name="installing"><__trans phrase="Error during installation:"><mt:else><__trans phrase="Error during upgrade:"></mt:if> <span id="error-message-text"></span></p>
 </div>
 
-<div id="complete-message-div" style="display: none">
-  <h3><mt:if name="installing"><__trans phrase="Installation complete!"><mt:else><__trans phrase="Upgrade complete!"></mt:if></h3>
-
-  <div class="button-bar">
-    <div class="right">
-    <form method="post" action="<mt:var name="mt_url">">
-      <input type="submit" value="<mt:if name="installing"><__trans phrase="Login to Movable Type"><mt:else><__trans phrase="Return to Movable Type"></mt:if>" />
-    </form>
+<form method="post" action="<mt:var name="mt_url">" id="completed-action" style="display: none">
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<mt:if name="installing"><__trans phrase="Sign in to Movable Type (s)"><mt:else><__trans phrase="Return to Movable Type (s)"></mt:if>"
+                class="primary-button"
+                ><mt:if name="installing"><__trans phrase="Sign in to Movable Type"><mt:else><__trans phrase="Return to Movable Type"></mt:if></button>
+        </div>
     </div>
-  </div>
-</div>
-
-
+</form>
 
 <mt:else>
 
+<p><__trans phrase="Your database is already current."></p>
 
-  <h3><__trans phrase="Your database is already current."></h3>
-
-  <div class="button-bar">
-    <div class="right">
-    <form method="post" action="<mt:var name="mt_url">">
-      <input type="submit" value="<__trans phrase="Return to Movable Type">" />
-    </form>
+<form method="post" action="<mt:var name="mt_url">">
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Return to Movable Type (s)">"
+                class="primary-button"
+                ><__trans phrase="Return to Movable Type"></button>
+        </div>
     </div>
-  </div>
+</form>
 
 
 </mt:unless>

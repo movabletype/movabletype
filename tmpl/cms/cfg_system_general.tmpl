@@ -1,4 +1,4 @@
-<mt:setvar name="page_title" value="<__trans phrase="General Settings: System-wide">">
+<mt:setvar name="page_title" value="<__trans phrase="System: General Settings">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="system-general-settings" value="1">
 <MTSetVarBlock name="content_header">
@@ -29,7 +29,11 @@ function clearWeblogCloneSource() {
     var el_id = getByID("new_user_template_blog_id");
     if (el_name && el_id) {
         el_id.value = "";
-        el_name.innerHTML = "(<__trans phrase="None selected.">)";
+        el_name.innerHTML = "<__trans phrase="(No blog selected)">";
+    }
+    var el_id_link = getByID("select-blog-link");
+    if (el_id_link) {
+        el_id_link.innerHTML = "<__trans phrase="Select blog">";
     }
 }
 function validate (f) {
@@ -67,128 +71,15 @@ function is_valid_path(path_){
 
 <fieldset>
 
-<h3><__trans phrase="System Email Settings"></h3>
-
-<div class="inner">
-
     <mtapp:setting
         id="system_email_address"
-        label="<__trans phrase="System Email Address">"
-        hint="<__trans phrase="The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification, entry notification and a few other minor events.">">
-        <input id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address">"</mt:if> />
+        label="<__trans phrase="System Email">"
+        hint="<__trans phrase="The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification, entry notification and a few other minor events.">"
+        show_hint="1">
+        <div class="textarea-wrapper">
+            <input id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address">"</mt:if> />
+        </div>
     </mt:app:setting>
-
-</div>
-
-</fieldset>
-
-<fieldset>
-
-<h3><__trans phrase="New User Defaults"></h3>
-
-<div class="inner">
-
-    <mtapp:setting
-        id="personal_weblog"
-        label="<__trans phrase="Personal weblog">"
-        hint="<__trans phrase="Check to have the system automatically create a new personal weblog when a user is created in the system. The user will be granted a blog administrator role on the weblog.">">
-        <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if> class="cb" <mt:if name="personal_weblog_readonly">disabled="disabled"</mt:if> /> <__trans phrase="Automatically create a new weblog for each new user">
-    </mtapp:setting>
-
-
-    <mtapp:setting
-        id="new_user_template_blog_id"
-        label="<__trans phrase="Personal weblog clone source">"
-        hint="<__trans phrase="Select a weblog you wish to use as the source for new personal weblogs. The new weblog will be identical to the source except for the name, publishing paths and permissions.">">
-        <input type="hidden" id="new_user_template_blog_id" name="new_user_template_blog_id" size="5" value="<mt:var name="new_user_template_blog_id" escape="html">" />
-        <p><strong><span id="new_user_template_blog_name"><mt:if name="new_user_template_blog_id"><mt:var name="new_user_template_blog_name" escape="html"> (<mt:var name="new_user_template_blog_id">)<mt:else>(<__trans phrase="None selected.">)</mt:if></span>
-        <input type="button" onclick="return openDialog(this.form, 'dialog_select_weblog', 'multi=0&amp;idfield=new_user_template_blog_id&amp;namefield=new_user_template_blog_name')"<mt:if name="new_user_template_blog_id_readonly">disabled="disabled"</mt:if> value="<__trans phrase="Select...">" />
-        <input type="button" onclick="return clearWeblogCloneSource()" <mt:if name="new_user_template_blog_id_readonly">disabled="disabled"</mt:if> value="<__trans phrase="Clear">" /></strong></p>
-    </mtapp:setting>
-
-
-    <mtapp:setting
-        id="default_site_url"
-        label="<__trans phrase="Default Site URL">"
-        hint="<__trans phrase="Define the default site URL for new weblogs. This URL will be appended with a unique identifier for the weblog.">">
-        <input type="text" id="default_site_url" name="default_site_url" value="<mt:var name="default_site_url" escape="html">" size="50" <mt:if name="default_site_url_readonly">disabled="disabled"</mt:if> />
-    </mtapp:setting>
-
-
-    <mtapp:setting
-        id="default_site_root"
-        label="<__trans phrase="Default Site Root">"
-        hint="<__trans phrase="Define the default site root for new weblogs. This path will be appended with a unique identifier for the weblog.">">
-        <input type="text" id="default_site_root" name="default_site_root" value="<mt:var name="default_site_root" escape="html">" size="50" <mt:if name="default_site_root_readonly">disabled="disabled"</mt:if> />
-    </mtapp:setting>
-
-
-    <mtapp:setting
-        id="default_language"
-        label="<__trans phrase="Default User Language">"
-        hint="<__trans phrase="Define the default language to apply to all new users.">">
-        <select id="default_language" name="default_language" size="1" <mt:if name="default_language_readonly">disabled="disabled"</mt:if>>
-        <mt:loop name="languages">
-        <option value="<mt:var name="l_tag">" <mt:if name="l_selected">selected="selected"</mt:if>><mt:var name="l_name" escape="html"></option>
-        </mt:loop>
-        </select>
-    </mtapp:setting>
-
-
-    <mtapp:setting
-        id="default_time_zone"
-        label="<__trans phrase="Default Timezone">"
-        hint="<__trans phrase="Select your timezone from the pulldown menu.">"
-        help_page="blog_settings_general"
-        help_section="blog_timezone">
-        <select name="default_time_zone" id="default_time_zone" <mt:if name="default_time_zone_readonly">disabled="disabled"</mt:if>>
-<mt:if name="server_offset_"><option value=""><__trans phrase="Time zone not selected"></option></mt:if>
-        <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
-        <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
-        <option value="11"<mt:if name="SERVER_OFFSET_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
-        <option value="10"<mt:if name="SERVER_OFFSET_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
-        <option value="9.5"<mt:if name="SERVER_OFFSET_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
-        <option value="9"<mt:if name="SERVER_OFFSET_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
-        <option value="8"<mt:if name="SERVER_OFFSET_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
-        <option value="7"<mt:if name="SERVER_OFFSET_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
-        <option value="6.5"<mt:if name="SERVER_OFFSET_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
-        <option value="6"<mt:if name="SERVER_OFFSET_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
-        <option value="5.5"<mt:if name="SERVER_OFFSET_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
-        <option value="5"<mt:if name="SERVER_OFFSET_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
-        <option value="4"<mt:if name="SERVER_OFFSET_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
-        <option value="3.5"<mt:if name="SERVER_OFFSET_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
-        <option value="3"<mt:if name="SERVER_OFFSET_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
-        <option value="2"<mt:if name="SERVER_OFFSET_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
-        <option value="1"<mt:if name="SERVER_OFFSET_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
-        <option value="0"<mt:if name="SERVER_OFFSET_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
-        <option value="-1"<mt:if name="SERVER_OFFSET__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
-        <option value="-2"<mt:if name="SERVER_OFFSET__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
-        <option value="-3"<mt:if name="SERVER_OFFSET__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
-        <option value="-3.5"<mt:if name="SERVER_OFFSET__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
-        <option value="-4"<mt:if name="SERVER_OFFSET__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
-        <option value="-5"<mt:if name="SERVER_OFFSET__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
-        <option value="-6"<mt:if name="SERVER_OFFSET__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
-        <option value="-7"<mt:if name="SERVER_OFFSET__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
-        <option value="-8"<mt:if name="SERVER_OFFSET__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
-        <option value="-9"<mt:if name="SERVER_OFFSET__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
-        <option value="-10"<mt:if name="SERVER_OFFSET__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
-        <option value="-11"<mt:if name="SERVER_OFFSET__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
-        </select>
-    </mtapp:setting>
-
-
-    <mtapp:setting
-        id="tag_delim"
-        label="<__trans phrase="Default Tag Delimiter">"
-        hint="<__trans phrase="Define the default delimiter for entering tags.">">
-        <select name="default_user_tag_delimiter" id="tag_delim" <mt:if name="default_user_tag_delimiter_readonly">disabled="disabled"</mt:if>>
-        <option value="comma"<mt:if name="tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
-        <option value="space"<mt:if name="tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
-        </select>
-    </mtapp:setting>
-
-
-</div>
 
 </fieldset>
 

@@ -337,11 +337,11 @@
         try {
             data = eval('('+styles+')');
         } catch (e) {
-            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR">".replace(/ERROR/, styles), "error", "error");
+            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR" escape="js">".replace(/ERROR/, styles), "error", "error");
             return;
         }
         if (data.error) {
-            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR">".replace(/ERROR/, data.error), "error", "error");
+            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR" escape="js">".replace(/ERROR/, data.error), "error", "error");
             return;
         }
         log(data.result);
@@ -541,7 +541,7 @@
             <div class="category" id="category-more" title="<__trans phrase="Single themes from the web">" style="display: none"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="my-designs" /><span><__trans phrase="More Styles"></span>
             </div>
             <mt:loop name="style_library">
-            <div class="category" id="category-repo-<mt:var name="key">" title="Styles from <mt:var name="label">"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="more-designs" /><span><mt:var name="label"></span>
+            <div class="category" id="category-repo-<mt:var name="key">" title="<mt:var name="description_label" escape="html">"><img src="<mt:var name="plugin_static_uri">images/featured.gif" alt="more-designs" /><span><mt:var name="label"></span>
             </div>
             </mt:loop>
         </div>

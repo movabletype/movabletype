@@ -11,21 +11,21 @@ function validate (f) {
         var db = f.dbtype.options[f.dbtype.selectedIndex].value;
         if ((db == "sqlite") || (db == "sqlite2")) {
             if (!f.dbpath.value) {
-                alert('<__trans phrase="You must set your Database Path." escape="singlequotes">');
+                alert('<__trans phrase="You must set your Database Path." escape="js">');
                 f.dbpath.focus();
                 return false;
             }
         } else {    
             if (!f.dbname.value) {
-                alert('<__trans phrase="You must set your Database Name." escape="singlequotes">');
+                alert('<__trans phrase="You must set your Database Name." escape="js">');
                 f.dbname.focus();
                 return false;
             } else if ((!f.dbuser.value) && (db != "mssqlserver")) {
-                alert('<__trans phrase="You must set your Username." escape="singlequotes">');
+                alert('<__trans phrase="You must set your Username." escape="js">');
                 f.dbuser.focus();
                 return false;
             } else if ((!f.dbserver.value) && (db != "oracle")) {
-                alert('<__trans phrase="You must set your Database Server." escape="singlequotes">');
+                alert('<__trans phrase="You must set your Database Server." escape="js">');
                 f.dbserver.focus();
                 return false;
             }
@@ -82,12 +82,14 @@ function reTest() {
   document.forms[0].submit();
 }
 
+<mt:unless name="success">
 <mt:if one_db>
 window.onload = function() {
     document.forms[0].dbtype.selectedIndex = 0;
     db_select(document.forms[0].dbtype);
 }
 </mt:if>
+</mt:unless>
 // -->
 </script>
 

@@ -22,7 +22,9 @@
 .comments-open-header,
 .trackbacks-header,
 .archive-title
-.archive-header {
+.archive-header,
+.search-form-header,
+.search-results-header {
     font-family: [% FONT_FAMILIES.$font_family || font_family %];
 }
 [% END %]
@@ -48,7 +50,9 @@
 .comments-header,
 .comments-open-header,
 .trackbacks-header,
-.archive-header {
+.archive-header,
+.search-form-header,
+.search-results-header {
     color: [% theme.content.header2.color || theme.widget.header.color || theme.default.header.color %];
 }
 

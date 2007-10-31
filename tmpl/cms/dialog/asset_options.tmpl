@@ -106,6 +106,13 @@
     <input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
     <input type="hidden" name="url" value="<mt:var name="url" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <mt:unless name="direct_asset_insert">
+    <input type="hidden" name="middle_path" value="<mt:var name="middle_path">" />
+    <input type="hidden" name="extra_path" value="<mt:var name="extra_path">" />
+    </mt:unless>
+    <mt:if name="entry_insert">
+    <input type="hidden" name="new_entry" value="1" />
+    </mt:if>
 <mt:unless name="is_image">
     <input type="hidden" name="link" value="1" />
 </mt:unless>
@@ -114,8 +121,8 @@
 <!-- <__trans phrase="The file named '[_1]' has been uploaded. Size: [quant,_2,byte,bytes]." params="<mt:var name="fname" escape="html">%%<mt:var name="bytes">"> -->
 </mt:unless>
 
+<mt:unless name="direct_asset_insert">
     <div>
-<mt:unless name="entry_insert">
         <div id="asset_details">
     <mtapp:setting
         id="file_name"
@@ -140,19 +147,21 @@
             </div>
     </mtapp:setting>
         </div>
-    <mt:if name="can_create_post">
-        <mtapp:setting
-            id="new_entry"
-            label="<__trans phrase="Create entry using this uploaded file">"
-            label_class="no-header"
-            hint=""
-            show_hint="0"
-            help_page="file_upload"
-            help_section="creating_a_new_entry">
-            <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
-            <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
-        </mtapp:setting>
-    </mt:if>
+    <mt:unless name="entry_insert">
+        <mt:if name="can_create_post">
+            <mtapp:setting
+                id="new_entry"
+                label="<__trans phrase="Create entry using this uploaded file">"
+                label_class="no-header"
+                hint=""
+                show_hint="0"
+                help_page="file_upload"
+                help_section="creating_a_new_entry">
+                <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
+                <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
+            </mtapp:setting>
+        </mt:if>
+    </mt:unless>
 </mt:unless>
 
 <mt:var name="options_snippet">

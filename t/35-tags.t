@@ -19,6 +19,8 @@ use MT::Util qw(ts2epoch epoch2ts);
 use MT::Template::Context;
 use MT::Builder;
 
+require POSIX;
+
 my $mt = MT->new();
 
 local $/ = undef;
@@ -50,7 +52,6 @@ ok($entry, "Test entry loaded");
 # entry we want to capture is dated: 19780131074500
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
-
 my %const = (
     CFG_FILE => MT->instance->{cfg_file},
     VERSION_ID => MT->instance->version_id,
@@ -59,6 +60,8 @@ my %const = (
     DYNAMIC_CONSTANT => '',
     DAYS_CONSTANT1 => $daysdiff + 1,
     DAYS_CONSTANT2 => $daysdiff - 1,
+    CURRENT_YEAR => POSIX::strftime("%Y", localtime),
+    CURRENT_MONTH => POSIX::strftime("%m", localtime),
 );
 
 $test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
@@ -111,6 +114,8 @@ $const = array(
     'DYNAMIC_CONSTANT' => '1',
     'DAYS_CONSTANT1' => '<DAYS_CONSTANT1>',
     'DAYS_CONSTANT2' => '<DAYS_CONSTANT2>',
+    'CURRENT_YEAR' => strftime("%Y"),
+    'CURRENT_MONTH' => strftime("%m"),
 );
 
 $output_results = 0;

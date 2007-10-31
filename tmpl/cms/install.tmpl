@@ -1,4 +1,19 @@
-<mt:setvarblock name="page_title"><__trans phrase="Create Your First User"></mt:setvarblock>
+<mt:setvarblock name="html_title">
+    <mt:if name="version_warning">
+        <__trans phrase="Welcome to Movable Type">
+    </mt:if>
+    <__trans phrase="Create Your First User">
+</mt:setvarblock>
+<mt:setvarblock name="page_title">
+    <mt:if name="version_warning">
+    <span id="version-warning-header">
+        <__trans phrase="Welcome to Movable Type">
+    </span>
+    </mt:if>
+    <span id="welcome-header"<mt:if name="version_warning"> style="display: none;"</mt:if>>
+        <__trans phrase="Create Your First User">
+    </span>
+</mt:setvarblock>
 <mt:setvar name="complete" value="1">
 <mt:include name="include/chromeless_header.tmpl">
 
@@ -26,7 +41,11 @@ function init() {
 function dismiss(id) {
     var el = getByID(id);
     if (el) {
-        el.style.display = 'none';
+        el.style.display= 'none';
+    }
+    var elh = getByID(id + "-header");
+    if (elh) {
+        elh.style.display= 'none';
     }
 }
 
@@ -34,6 +53,10 @@ function show(id) {
     var el = getByID(id);
     if (el) {
         el.style.display= 'block';
+    }
+    var elh = getByID(id + "-header");
+    if (elh) {
+        elh.style.display= 'block';
     }
 }
 
@@ -70,16 +93,28 @@ function validate(f) {
     <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
-    <form method="get">
-    <p align="center"><input type="button" value="<__trans phrase="Yes">" onclick="dismiss('version-warning'); show('warning_gone');" />
-        &nbsp; &nbsp;
-    <input type="button" value="<__trans phrase="No">" onclick="javascript:location.href='mt-check.cgi'" />
-    </p>
-    </form>
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <input type="hidden" name="continue" value="1" />
+            <button
+                onclick="dismiss('version-warning'); show('welcome'); return false;"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Yes (s)">"
+                class="primary-button"
+                ><__trans phrase="Yes"></button>
+            <button
+                onclick="javascript:location.href='mt-check.cgi'"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="View MT-Check (x)">"
+                ><__trans phrase="No"></button>
+        </div>
+    </div>
 </div>
 </mt:if>
 
-<div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
+<div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
 <p class="intro"><__trans phrase="Before you can begin blogging, you must create an administrator account for your system. When you are done, Movable Type will then initialize your database."></p>  
 
 <mt:if name="error">
@@ -91,20 +126,14 @@ function validate(f) {
 </mt:if>
 
 <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
-<input type="hidden" name="__mode" value="init_user">
-
-<!--
-<mt:if name="auth_mode_mt">
-<p><__trans phrase="You will need to select a username and password for the administrator account."></p>
-</mt:if>
--->
+    <input type="hidden" name="__mode" value="init_user">
 
 <mt:if name="auth_mode_ldap">
-<p><__trans phrase="To proceed, you must authenticate properly with your LDAP server."></p>
+    <p><__trans phrase="To proceed, you must authenticate properly with your LDAP server."></p>
 </mt:if>
 
 
-<fieldset>
+    <fieldset>
 
 <mt:if name="auth_mode_mt">
 
@@ -113,6 +142,13 @@ function validate(f) {
         label="<__trans phrase="Username">"
         hint="<__trans phrase="The name used by this user to login.">">
         <input type="text" id="admin_username" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_nickname"
+        label="<__trans phrase="Display Name">"
+        hint="<__trans phrase="The name used when published.">">
+        <input name="admin_nickname" id="admin_nickname" class="half-width" value="<mt:var name="admin_nickname" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -181,25 +217,24 @@ function validate(f) {
 
 </mt:if>
 
-</fieldset>
+    </fieldset>
 
-</div>
-</div>
-
-<div class="actions-bar">
-    <div class="actions-bar-inner pkg actions right">
-        <input type="hidden" name="continue" value="1" />
-        <button
-            value="<__trans phrase="Continue">"
-            type="submit"
-            accesskey="s"
-            title="<__trans phrase="Continue (s)">"
-            class="primary-button"
-            ><__trans phrase="Continue"></button>
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <input type="hidden" name="continue" value="1" />
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Continue (s)">"
+                class="primary-button"
+                ><__trans phrase="Continue"></button>
+        </div>
     </div>
+</form>
+
+</div>
 </div>
 
-</form>
 
 
 

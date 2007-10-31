@@ -36,12 +36,22 @@
     width: 22px;
     margin: 0;
 }
-.msg-error a.close-me {
-    display: none;
-}
 .msg a.close-me span {
     display: none;
 }
+
+.msg-error a.close-me,
+.rebuilding-screen .msg a.close-me,
+.restore-publishing-config .msg a.close-me,
+.insert-asset-dialog .msg a.close-me,
+.edit-template .msg-info a.close-me,
+.rebuilding-screen .msg-info a.close-me,
+.pinging-screen .msg-info a.close-me,
+.list-notification .msg-info a.close-me,
+.zero-state a.close-me {
+    display: none;
+}
+
 
 /* Debug Panel Messages ---------------------------------------------------------------------------------- */
 
@@ -50,6 +60,7 @@
     border-top: 1px dotted #f55;
     margin-top: 5px;
     background-color: #daa;
+    text-align: left;
 }
 .debug-panel h3 {
     padding: 5px;

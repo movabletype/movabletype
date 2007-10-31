@@ -27,7 +27,7 @@ our ($_initialized, $Have_SmartyPants);
 
 MT->add_plugin(__PACKAGE__->new({
     name => "Textile",
-    description => "A humane web text generator.",
+    description => '<MT_TRANS phrase="A humane web text generator.">',
     author_name => "Brad Choate",
     author_link => "http://bradchoate.com/",
     version => $VERSION,

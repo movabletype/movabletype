@@ -217,18 +217,23 @@ sub stock_icon_url {
 
 sub thumbnail_url {
     my $asset = shift;
+    my (%param) = @_;
+
     if (my $blog = $asset->blog) {
         require File::Basename;
-        if (my $thumbnail_file = $asset->thumbnail_file(@_)) {
+        if (my ($thumbnail_file, $w, $h) = $asset->thumbnail_file(@_)) {
+            return $asset->stock_icon_url(@_) if !defined $thumbnail_file;
             my $file = File::Basename::basename($thumbnail_file);
             my $site_url = $blog->site_url;
-            my $date_stamp = sprintf("%04d/%02d", unpack('A4A2', $asset->created_on));
             if ($file && $site_url) {
+                require MT::Util;
+                my $path = $param{Path};
+                if (!defined $path) {
+                    $path = MT::Util::caturl(MT->config('AssetCacheDir'), unpack('A4A2', $asset->created_on));
+                }
                 $file =~ s/%([A-F0-9]{2})/chr(hex($1))/gei;
-                $site_url .= '/' unless $site_url =~ m#/$#;
-                $site_url .= MT->config('AssetCacheDir') . '/';
-                $site_url .= $date_stamp . '/' . $file;
-                return $site_url;
+                $site_url = MT::Util::caturl($site_url, $path, $file);
+                return ($site_url, $w, $h);
             }
         }
     }
@@ -272,14 +277,27 @@ sub on_upload {
 
 sub _make_cache_path {
     my $asset = shift;
+    my ($path) = @_;
     my $blog = $asset->blog or return undef;
 
-    my $year_stamp = unpack 'A4', $asset->created_on;
-    my $month_stamp = unpack 'x4 A2', $asset->created_on;
-
     require File::Spec;
+    my $year_stamp = '';
+    my $month_stamp = '';
+    if  (!defined $path) {
+        $year_stamp = unpack 'A4', $asset->created_on;
+        $month_stamp = unpack 'x4 A2', $asset->created_on;
+        $path = MT->config('AssetCacheDir');
+    } else {
+        my $merge_path = '';
+        my @split = split '/', $path;
+        for my $p (@split) {
+            $merge_path = File::Spec->catfile($merge_path, $p);
+        }
+        $path = $merge_path if $merge_path;
+    }
+
     my $asset_cache_path = File::Spec->catdir($blog->site_path,
-        MT->config('AssetCacheDir'), $year_stamp, $month_stamp);
+        $path, $year_stamp, $month_stamp);
 
     if (!-d $asset_cache_path) {
         my $fmgr = $blog->file_mgr;

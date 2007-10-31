@@ -25,4 +25,8 @@ __PACKAGE__->install_properties({
     # index (funcid, error_time)
 });
 
+sub class_label {
+    MT->translate("Job Error");
+}
+
 1;

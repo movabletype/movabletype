@@ -10,8 +10,8 @@ use strict;
 use MT::Serialize;
 
 use MT::Blog;
-use MT::Object;
-@MT::PluginData::ISA = qw( MT::Object );
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties ({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -27,6 +27,10 @@ __PACKAGE__->install_properties ({
     datasource => 'plugindata',
     primary_key => 'id',
 });
+
+sub class_label {
+    MT->translate("Plugin Data");
+}
 
 {
     my $ser;

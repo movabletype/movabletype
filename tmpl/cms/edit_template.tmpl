@@ -5,6 +5,7 @@
         <mt:if name="autosaved_object_exists">
             <mtapp:statusmsg
                 id="autosaved-object-exists"
+                can_close="1"
                 class="info">
                 <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;&amp;_recover=1&amp;blog_id=<mt:var name="blog_id"><mt:if name="id">&amp;id=<mt:var name="id"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>">">
             </mtapp:statusmsg>
@@ -82,16 +83,22 @@
             <li><a href="<mt:var name="published_url">" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
         </mt:if>
             <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=<$mt:var name="template_group"$>_templates" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
-            <li><a href="javascript:void(0)" onclick="return openManual('foo', 'bar')" class="icon-left icon-related help-link"><__trans phrase="Template tag reference"></a></li>
+            <li><a href="javascript:void(0)" onclick="return openManual('templates', 'tags')" class="icon-left icon-related help-link"><__trans phrase="Template tag reference"></a></li>
         </ul>
     </mtapp:widget>
 
-    <mt:if name="include_loop">
+    <mt:if name="have_includes">
         <mtapp:widget
             id="template-includes"
             label="<__trans phrase="Includes and Widgets">">
         <ul>
         <mt:loop name="include_loop">
+            <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
+        </mt:loop>
+        <mt:loop name="widget_loop">
+            <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
+        </mt:loop>
+        <mt:loop name="widget_set_loop">
             <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
         </mt:loop>
         </ul>
@@ -230,7 +237,7 @@ function savedArchiveMapChange(c) {
         map.innerHTML = res;
 }
 function deleteMap(mapid) {
-    if (!confirm('<__trans phrase="Are you sure you want to remove this template map?">'))
+    if (!confirm('<__trans phrase="Are you sure you want to remove this template map?" escape="js">'))
         return;
     var tr = getByID(mapid);
     if (tr) {
@@ -258,8 +265,9 @@ function cancelCreateMode () {
     getByID('create-inline-mapping').style.display = 'none';
     return false;
 }
-function addMap(f) {
+function addMap() {
     getByID('create-inline-mapping').style.display = 'none';
+    var f = document.forms['template-listing-form'];
     var frm = document.forms['archive_map_form'];
     if (!frm) return false;
     var param = '__mode=add_map'
@@ -271,7 +279,7 @@ function addMap(f) {
 }
 
 function togglePreferred(checkbox, mapid) {
-    var frm = document.forms['entry_form'];
+    var frm = document.forms['template-listing-form'];
     if (!frm) return false;
     var checkboxes = frm[checkbox.name];
     if (checkbox.length == undefined) {
@@ -327,7 +335,7 @@ TC.attachLoadEvent( init );
 
 <div id="edit-template">
 
-<form name="entry_form" id="entry_form" method="post" action="<mt:var name="script_url">" mt:once="1" mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+<form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">" mt:once="1" mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
 <input type="hidden" name="id" value="<mt:var name="id">" />
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="type" value="<mt:var name="type" escape="html">" />
@@ -423,6 +431,8 @@ TC.attachLoadEvent( init );
         label="<__trans phrase="Publish Options">"
         help_page="templates"
         help_section="enable_dynamic_publishing">
+        <mt:if name="custom_dynamic"><mt:if name="build_dynamic"><input type="hidden" name="current_build_dynamic" value="1" /></mt:if></mt:if>
+        <mt:unless name="build_dynamic"><mt:if name="has_rebuild"><mt:if name="rebuild_me"><input type="hidden" name="current_rebuild_me" value="1" /></mt:if></mt:if></mt:unless>
         <ul>
         <mt:if name="custom_dynamic">
             <li><input type="checkbox" id="build_dynamic" name="build_dynamic" tabindex="6" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic publishing for this template"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
@@ -450,22 +460,27 @@ TC.attachLoadEvent( init );
     <mtapp:setting
         id="archive_mapping"
         label="<__trans phrase="Archive Mapping">"
+        content_class="field-content-text"
         hint=""
         show_hint="0">
         <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create New Archive Mapping"></a></p>
         <div id="msg-block"></div>
         <div class="create-inline" id="create-inline-mapping">
-            <p>
-                <label for="new_archive_type"><__trans phrase="Archive Type:"></label>
+                <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
                 <select name="new_archive_type" id="new_archive_type" tabindex="9">
     <mt:loop name="archive_types">
                     <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
     </mt:loop>
                 </select>
                 &nbsp;
-                <input type="button" name="add" tabindex="10" value="<__trans phrase="Add">" onclick="addMap(this.form)" />
-                <input type="button" name="cancel" tabindex="11" value="<__trans phrase="Cancel">" onclick="return cancelCreateMode()" />
-            </p>
+                <span class="buttons">
+                    <a href="javascript:void(0)"
+                        onclick="addMap(); return false;"
+                        ><__trans phrase="Add"></a>
+                    <a href="javascript:void(0)"
+                        onclick="cancelCreateMode(); return false"
+                        ><__trans phrase="Cancel"></a>
+                </span>
         </div>
         <div id="template-maps">
             <mt:include name="include/archive_maps.tmpl">

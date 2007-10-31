@@ -8,8 +8,21 @@ package MT::Atom;
 use strict;
 
 package MT::Atom::Entry;
-use base qw( XML::Atom::Entry );
 use MT::I18N qw( encode_text );
+use base qw( XML::Atom::Entry );
+
+sub _create_issued {
+	my ($ts, $blog) = @_;
+    my @co_list = unpack 'A4A2A2A2A2A2', $ts;
+    my $co = sprintf "%04d-%02d-%02dT%02d:%02d:%02d", @co_list;
+    my $epoch = Time::Local::timegm($co_list[5], $co_list[4], $co_list[3],
+                                    $co_list[2], $co_list[1]-1, $co_list[0]);
+    my $so = $blog->server_offset;
+    $so += 1 if (localtime $epoch)[8];
+    $so = sprintf("%s%02d:%02d", $so < 0 ? '-' : '+', 
+                  abs(int $so), abs($so - int $so)*60);
+    $co .= $so;
+}
 
 sub new_with_entry {
     my $class = shift;
@@ -25,24 +38,31 @@ sub new_with_entry {
     $atom_author->url($mt_author->url);
     $atom_author->email($mt_author->email);
     $atom->author($atom_author);
-    my @co_list = unpack 'A4A2A2A2A2A2', $entry->authored_on;
-    my $co = sprintf "%04d-%02d-%02dT%02d:%02d:%02d", @co_list;
-    my $epoch = Time::Local::timegm($co_list[5], $co_list[4], $co_list[3],
-                                    $co_list[2], $co_list[1]-1, $co_list[0]);
-    my $blog = MT::Blog->load($entry->blog_id);
-    my $so = $blog->server_offset;
-    $so += 1 if (localtime $epoch)[8];
-    $so = sprintf("%s%02d:%02d", $so < 0 ? '-' : '+', 
-                  abs(int $so), abs($so - int $so)*60);
-    $co .= $so;
+	my $blog = MT::Blog->load($entry->blog_id);
+	my $co = _create_issued($entry->authored_on, $blog);
     $atom->issued($co);
     $atom->add_link({ rel => 'alternate', type => 'text/html',
                       href => $entry->permalink });
     my ($host) = $blog->site_url =~ m!^https?://([^/:]+)(:\d+)?/!;
-    $atom->id('tag:' . $host . ':post:' . $entry->id);
+    $atom->id($entry->atom_id);
     #$atom->draft('true') if $entry->status != MT::Entry::RELEASE();
     $atom;
 }
+
+sub new_with_asset { 
+    my $class = shift; 
+    my($asset) = @_; 
+    my $atom = $class->new; 
+    $atom->title($asset->label); 
+    $atom->summary($asset->description);
+	my $blog = MT::Blog->load($asset->blog_id);
+    $atom->issued(_create_issued($asset->created_on, $blog)); 
+    $atom->add_link({ rel => 'alternate', type => $asset->mime_type, 
+                      href => $asset->url, title => $asset->label }); 
+	my ($host) = $blog->site_url =~ m!^https?://([^/:]+)(:\d+)?/!;
+    $atom->id('tag:' . $host . ':asset-' . $asset->id);
+    return $atom; 
+} 
 
 1;
 __END__

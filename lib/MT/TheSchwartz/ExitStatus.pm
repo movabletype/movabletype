@@ -21,4 +21,8 @@ __PACKAGE__->install_properties({
     },
 });
 
+sub class_label {
+    MT->translate("Job Exit Status");
+}
+
 1;

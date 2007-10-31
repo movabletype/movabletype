@@ -9,7 +9,7 @@ use strict;
 
 use base qw(MT::ErrorHandler);
 
-sub import {
+sub import_contents {
     my $class = shift;
     my %param = @_;
     my $iter = $param{Iter};

@@ -31,4 +31,8 @@ __PACKAGE__->install_properties({
     # INDEX (funcid, coalesce)
 });
 
+sub class_label {
+    MT->translate("Job");
+}
+
 1;

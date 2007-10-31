@@ -165,7 +165,7 @@ sub load {
             @$tmpls = grep { $_->{$key} eq $terms->{$key} } @$tmpls;
         }
     }
-    return $tmpls;
+    return wantarray ? @$tmpls : (@$tmpls ? $tmpls->[0] : undef);
 }
 
 sub templates {

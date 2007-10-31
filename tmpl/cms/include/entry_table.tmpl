@@ -1,3 +1,4 @@
+<mt:if name="blog_id"><mt:var name="blog_view" value="1"></mt:if>
 <mtapp:listing>
     <mt:if __first__>
         <thead>
@@ -14,11 +15,10 @@
                 </th>
                 <th class="title"><__trans phrase="Title"></th>
                 <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></th>
-        <mt:if name="object_type" eq="page">
-                <th class="basename"><__trans phrase="Filename"></th>
-        </mt:if>
+        <mt:if name="object_type" eq="entry">
                 <th class="author"><__trans phrase="Author"></th>
-        <mt:unless name="blog_id">
+        </mt:if>
+        <mt:unless name="blog_view">
                 <th class="weblog"><__trans phrase="Blog"></th>
         </mt:unless>
                 <th class="date"><mt:if name="object_type" eq="page"><__trans phrase="Last Modified"><mt:else><__trans phrase="Created"></mt:if></th>
@@ -60,7 +60,7 @@
             </mt:if>
                 </td>
         </mt:if>
-                <td class="title"<mt:if name="view_expanded"> colspan="<mt:if name="object_type" eq="page"><mt:if name="blog_id">6<mt:else>7</mt:if><mt:else><mt:if name="blog_id">5<mt:else>6</mt:if></mt:if>"</mt:if>>
+                <td class="title"<mt:if name="view_expanded"> colspan="<mt:if name="object_type" eq="page"><mt:if name="blog_view">4<mt:else>5</mt:if><mt:else><mt:if name="blog_view">5<mt:else>6</mt:if></mt:if>"</mt:if>>
         <mt:if name="view_expanded">
                     <strong><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="title_long"$></a></strong>
             <mt:if name="excerpt">
@@ -106,24 +106,23 @@
             </mt:if>
         </mt:if>
                 </td>
-        <mt:if name="object_type" eq="page">
-                <td class="basename"><$mt:var name="basename" escape="html"$></td>
-        </mt:if>
+        <mt:if name="object_type" eq="entry">
                 <td class="author">
-        <mt:if name="is_editable">
+            <mt:if name="is_editable">
                     <select name="author_id_<$mt:var name="id"$>">
-            <mt:unless name="author_id">
+                <mt:unless name="author_id">
                         <option value=""><__trans phrase="None"></option>
-            </mt:unless>
-            <mt:loop name="row_author_loop">
+                </mt:unless>
+                <mt:loop name="row_author_loop">
                         <option value="<$mt:var name="author_id"$>"<mt:if name="author_is_selected"> selected="selected"</mt:if>><$mt:var name="author_name"$></option>
-            </mt:loop>
+                </mt:loop>
                     </select>
-        <mt:else>
+            <mt:else>
                     <$mt:var name="author_name"$>
-        </mt:if>
+            </mt:if>
                 </td>
-        <mt:unless name="blog_id">
+        </mt:if>
+        <mt:unless name="blog_view">
                 <td class="weblog"><a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
         </mt:unless>
                 <td class="date">

@@ -1,7 +1,7 @@
-<mt:if name="blog_id"><mtsetvar name="blog_scope" value="$blog_id"><mt:else><mtsetvar name="blog_scope" value="all"></mt:if>
-<mt:var name="tag_cloud" value="0"><MTTags blog_ids="$blog_scope" limit="1"><mt:var name="tag_cloud" value="1"></MTTags>
+<mt:if name="blog_id"><mt:setvar name="blog_scope" value="$blog_id"><mt:else><mt:setvar name="blog_scope" value="all"></mt:if>
+<mt:setvar name="tag_cloud" value="0"><MTTags blog_ids="$blog_scope" limit="1"><mt:setvar name="tag_cloud" value="1"></MTTags>
 <mt:unless name="tab"><mt:setvar name="tab" value="entry"></mt:unless>
-<mt:if name="tab" value="tag"><mt:unless name="tag_cloud"><mt:var name="tab" value="entry"></mt:unless></mt:if>
+<mt:if name="tab" eq="tag"><mt:unless name="tag_cloud"><mt:var name="tab" value="entry"></mt:unless></mt:if>
 <mt:setvarblock name="html_head" append="1">
     <mt:if name="comment_stat_url">
     <script type="text/javascript" src="<mt:var name="static_uri">js/flash/JavaScriptFlashGateway.js"></script>
@@ -168,7 +168,7 @@
                     <$MTCommentBody$>
                 </div>
                 <div class="comment-meta">
-                    <__trans phrase="[_1][_2], [_3] on [_4]" params="<$MTCommentAuthorLink default_name="Anonymous"$>%%<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>%%<$MTCommentDate relative="1"$>%%<MTCommentEntry><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;id=<$MTEntryID$>&amp;blog_id=<$MTEntryBlogID$>"><$MTEntryTitle$></a></MTCommentEntry>">
+                    <__trans phrase="[_1] [_2], [_3] on [_4]" params="<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>%%<$MTCommentAuthorLink default_name="Anonymous"$>%%<$MTCommentDate relative="1"$>%%<MTCommentEntry><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;id=<$MTEntryID$>&amp;blog_id=<$MTEntryBlogID$>"><$MTEntryTitle$></a></MTCommentEntry>">
                     (<a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<$MTCommentID$>&amp;blog_id=<$MTCommentBlogID$>"><__trans phrase="Edit Comment"></a>)
                 </div>
             </div>

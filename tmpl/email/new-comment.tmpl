@@ -1,20 +1,26 @@
-<TMPL_IF NAME="UNAPPROVED"><MT_TRANS phrase="An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>%%<TMPL_VAR NAME=ENTRY_ID>%%<TMPL_VAR NAME=ENTRY_TITLE>">
-
-<MT_TRANS phrase="Approve this comment:"> <<TMPL_VAR NAME=APPROVE_URL>><TMPL_ELSE><MT_TRANS phrase="A new comment has been posted on your blog [_1], on entry #[_2] ([_3])." params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>%%<TMPL_VAR NAME=ENTRY_ID>%%<TMPL_VAR NAME=ENTRY_TITLE>">
-
-<mt:if name="view_url"><MT_TRANS phrase="View this comment">:
-<<TMPL_VAR NAME=VIEW_URL>></mt:if>
-<MT_TRANS phrase="Report this comment as spam">:
-<<TMPL_VAR NAME=SPAM_URL>>
-<MT_TRANS phrase="Edit this comment">:
-<<TMPL_VAR NAME=EDIT_URL>></TMPL_IF NAME="UNAPPROVED">
-
-<MT_TRANS phrase="IP Address">: <TMPL_VAR NAME=COMMENT_IP>
-<MT_TRANS phrase="Name">: <TMPL_VAR NAME=COMMENT_NAME>
-<MT_TRANS phrase="Email Address">: <TMPL_VAR NAME=COMMENT_EMAIL>
-<MT_TRANS phrase="URL">: <TMPL_VAR NAME=COMMENT_URL>
-<MT_TRANS phrase="Comments">:
+<mt:if name="UNAPPROVED"><MT_TRANS phrase="An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>%%<TMPL_VAR NAME=ENTRY_ID>%%<TMPL_VAR NAME=ENTRY_TITLE>"><mt:else><MT_TRANS phrase="A new comment has been posted on your blog [_1], on entry #[_2] ([_3])." params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>%%<TMPL_VAR NAME=ENTRY_ID>%%<TMPL_VAR NAME=ENTRY_TITLE>"></mt:if>
 
 <TMPL_VAR NAME=COMMENT_TEXT>
+
+<MT_TRANS phrase="Comment posted by">: 
+  <TMPL_VAR NAME=COMMENT_NAME>
+
+<MT_TRANS phrase="Commenter email address">: 
+  <TMPL_VAR NAME=COMMENT_EMAIL>
+
+<MT_TRANS phrase="Commenter URL">: 
+  <TMPL_VAR NAME=COMMENT_URL>
+
+<MT_TRANS phrase="Commenter IP address">: 
+  <TMPL_VAR NAME=COMMENT_IP>
+
+<mt:if name="UNAPPROVED"><MT_TRANS phrase="Approve this comment:"> 
+  <<TMPL_VAR NAME=APPROVE_URL>></mt:if>
+<mt:if name="view_url"><MT_TRANS phrase="View this comment">:
+  <<TMPL_VAR NAME=VIEW_URL>></mt:if>
+<MT_TRANS phrase="Edit this comment">:
+  <<TMPL_VAR NAME=EDIT_URL>>
+<MT_TRANS phrase="Report this comment as spam">:
+  <<TMPL_VAR NAME=SPAM_URL>>
 
 <TMPL_INCLUDE NAME="footer-email.tmpl">

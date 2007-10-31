@@ -17,8 +17,9 @@ sub login {
     my $class = shift;
     my ($app) = @_;
     my $q = $app->{query};
-
-    my $blog = MT::Blog->load($q->param('blog_id'));
+    return $app->errtrans("Invalid request.")
+        unless $q->param('blog_id');
+    my $blog = MT::Blog->load(scalar $q->param('blog_id'));
     my $csr = _get_csr($q, $blog);
     my $identity = $q->param('openid_url');
     if (!$identity &&
@@ -45,8 +46,10 @@ sub login {
 
 sub handle_sign_in {
     my $class = shift;
-    my ($app) = @_;
+    my ($app, $auth_type) = @_;
     my $q = $app->{query};
+
+    $auth_type ||= 'OpenID';
 
     my $blog = MT::Blog->load($q->param('blog_id'));
 
@@ -73,10 +76,11 @@ sub handle_sign_in {
             return 0;
         }
         $cmntr = $app->_make_commenter(
-            email => q(),
-            nickname => $nick,
-            name => $name,
-            url => $vident->url,
+            email     => q(),
+            nickname  => $nick,
+            name      => $name,
+            url       => $vident->url,
+            auth_type => $auth_type,
         );
     } else {
         # If there's no signature, then we trust the cookie.
@@ -88,7 +92,8 @@ sub handle_sign_in {
             require MT::Author;
             my $sess = MT::Session->load({id => $session});
             $cmntr = MT::Author->load({name => $sess->name,
-                                       type => MT::Author::COMMENTER()});
+                                       type => MT::Author::COMMENTER(),
+                                       auth_type => $auth_type});
         }
     }
     unless ($cmntr) {

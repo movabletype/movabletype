@@ -1,3 +1,4 @@
+
 [
 { "r" : "1", "t" : "", "e" : ""}, #1
 { "r" : "1", "t" : "<MTCGIPath>", "e" : "http://localhost/cgi-bin/"}, #2
@@ -320,19 +321,19 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='label'$></MTAssets>", "e" : "Image photo"}, #268
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='description'$></MTAssets>", "e" : "This is a test photo."}, #269
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetFileExt$></MTAssets>", "e" : "jpg"}, #270
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='160'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/1.5115f590dd5d87e9621ec6b8334b940c5ffc39a3.jpg"}, #271
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='240'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/1.c03404b0da5f2c9c279be0a96d5c526a76f9c7e6.jpg"}, #272
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL scale='75'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/1.543b5ac9edb0bdb4ae0a0fce8d8332f8ba321693.jpg"}, #273
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='160'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto.jpg"}, #271
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='240'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox240.jpg"}, #272
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL scale='75'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autoxauto.jpg"}, #273
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetLink$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\">test.jpg</a>"}, #274
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #275
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink width='160'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.5115f590dd5d87e9621ec6b8334b940c5ffc39a3.jpg\" width=\"160\" height=\"120\"></a>"}, #276
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink height='240'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.c03404b0da5f2c9c279be0a96d5c526a76f9c7e6.jpg\" width=\"320\" height=\"240\"></a>"}, #277
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #278
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autoxauto.jpg\" width=\"640\" height=\"480\"></a>"}, #275
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink width='160'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto.jpg\" width=\"160\" height=\"120\"></a>"}, #276
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink height='240'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox240.jpg\" width=\"320\" height=\"240\"></a>"}, #277
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autoxauto.jpg\" width=\"640\" height=\"480\"></a>"}, #278
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetLink new_window='1'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\">test.jpg</a>"}, #279
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #280
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' width='160'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.5115f590dd5d87e9621ec6b8334b940c5ffc39a3.jpg\" width=\"160\" height=\"120\"></a>"}, #281
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #282
-{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #283
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autoxauto.jpg\" width=\"640\" height=\"480\"></a>"}, #280
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' width='160'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto.jpg\" width=\"160\" height=\"120\"></a>"}, #281
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autoxauto.jpg\" width=\"640\" height=\"480\"></a>"}, #282
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autoxauto.jpg\" width=\"640\" height=\"480\"></a>"}, #283
 { "r" : "1", "t" : "<$MTAssetCount$>", "e" : "2"}, #284
 { "r" : "1", "t" : "<MTAssets lastn='1'><MTAssetTags><$MTTagName$>; </MTAssetTags></MTAssets>", "e" : "alpha; beta; gamma; "}, #285
 { "r" : "1", "t" : "<MTAssets><MTAssetsHeader>(Head)</MTAssetsHeader><$MTAssetID$>;<MTAssetsFooter>(Last)</MTAssetsFooter></MTAssets>", "e" : "(Head)1;2;(Last)"}, #286
@@ -404,5 +405,10 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "4;3;2;1;"}, #352
 { "r" : "1", "t" : "<MTArchives><MTArchiveLabel></MTArchives>", "e" : "IndividualMonthlyWeeklyDailyCategoryPage"}, #353
 { "r" : "1", "t" : "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>", "e" : "1:0;0;0;8:0;7:6:2;1;0;5:0;4:"}, #354
-{ "r" : "1", "t" : "<MTPages id='20'><$MTPageMore$></MTPages>", "e" : "<p>I don't have much to say,</p>"} #355
+{ "r" : "1", "t" : "<MTPages id='20'><$MTPageMore$></MTPages>", "e" : "<p>I don't have much to say,</p>"}, #355
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetlabel$></MTAssets>", "e" : "Image photo"}, #356
+{ "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #357
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #358
+{ "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;"}, #359
+{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;:;TypeKey:;:;"} #360
 ]

@@ -40,29 +40,16 @@ function doRebuild (blogID, otherParams) {
 }
 
 function openManual (section, page) {
-    window.open(HelpBaseURI + 'help/' + section + '/' + page + '.html' , '_blank', 
-'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,toolbar=yes,location=yes,menubar=yes');
-    return false;
-}
-
-// no longer used
-function gatherMarked (f, nameRestrict) {
-    var url = '';
-    var e = f.id;
-    if (!e) return;
-    if (e.value && e.checked)
-        url += '&id=' + e.value;
+    var url;
+    if (page)
+        url = HelpBaseURI + 'help/' + section + '/' + page + '/';
+    else if (section)
+        url = HelpBaseURI + 'help/' + section + '/';
     else
-    if (nameRestrict) {
-        for (i=0; i<e.length; i++)
-            if (e[i].checked && (e[i].name == nameRestrict))
-                    url += '&id=' + e[i].value;
-    } else {
-        for (i=0; i<e.length; i++)
-            if (e[i].checked)
-                    url += '&id=' + e[i].value;
-    }
-   return url;
+        url = HelpBaseURI + 'help/';
+    window.open(url, 'mt_help', 
+'scrollbars=yes,status=yes,resizable=yes,toolbar=yes,location=yes,menubar=yes');
+    return false;
 }
 
 function countMarked (f, nameRestrict) {
@@ -76,49 +63,52 @@ function countMarked (f, nameRestrict) {
     if (nameRestrict) {
         for (i=0; i<e.length; i++)
             if (e[i].checked && (e[i].name == nameRestrict))
-                    count++;
+                count++;
     } else {
         for (i=0; i<e.length; i++)
             if (e[i].checked)
-                    count++;
+                count++;
     }
    return count;
 }
 
 //For make-js script
-//trans('to delete');
-//trans('to remove');
-//trans('to enable');
-//trans('to disable');
-function doRemoveItems (f, singular, plural, nameRestrict, args, actionMode) {
-    actionMode = actionMode || 'delete';
-    var toRemove = "";
-    for (var i = 0; i < f.childNodes.length; i++) {
-        if (f.childNodes[i].name == '_type') {
-            toRemove = f.childNodes[i].value;
-            break;
-        }
+//trans('delete');
+//trans('remove');
+//trans('enable');
+//trans('disable');
+function doRemoveItems (f, singular, plural, nameRestrict, args, params) {
+    if (params && (typeof(params) == 'string')) {
+        params = { 'mode': params };
+    } else if (!params) {
+        params = {}
     }
-    var mode = 'delete';
-    var trans_mode = trans('delete');
-    if (toRemove == 'association') {
-        mode = 'remove';
-        trans_mode = trans('remove');
+    var verb = params['verb'] || trans('delete');
+    var mode = params['mode'] || 'delete';
+    var object_type;
+    if (params['type']) {
+        object_type = params['type'];
+    } else {
+        for (var i = 0; i < f.childNodes.length; i++) {
+            if (f.childNodes[i].name == '_type') {
+                object_type = f.childNodes[i].value;
+                break;
+            }
+        }
     }
     var count = countMarked(f, nameRestrict);
     if (!count) {
-        alert(trans('You did not select any [_1] to [_2].', plural, trans_mode));
+        alert(params['none_prompt'] || trans('You did not select any [_1] to [_2].', plural, verb));
         return false;
     }
-    if (toRemove == 'role') {
+    var singularMessage = params['singular_prompt'] || trans('Are you sure you want to [_2] this [_1]?');
+    var pluralMessage = params['plural_prompt'] || trans('Are you sure you want to [_3] the [_1] selected [_2]?');
+    if (object_type == 'role') {
         singularMessage = trans('Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.');
         pluralMessage = trans('Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.');
-    } else {
-        singularMessage = trans('Are you sure you want to [_2] this [_1]?');
-        pluralMessage = trans('Are you sure you want to [_3] the [_1] selected [_2]?');
     }
-    if (confirm(count == 1 ? trans(singularMessage, singular, trans_mode) : trans(pluralMessage, count, plural, trans_mode))) {
-        return doForMarkedInThisWindow(f, singular, plural, nameRestrict, actionMode, args, trans('to ' + mode));
+    if (confirm(count == 1 ? trans(singularMessage, singular, verb) : trans(pluralMessage, count, plural, verb))) {
+        return doForMarkedInThisWindow(f, singular, plural, nameRestrict, mode, args);
     }
 }
 
@@ -226,48 +216,6 @@ function updatedWidget(id, c) {
     }
 }
 
-function doRemoveMembers (f, singular, plural, nameRestrict, args) {
-    var count = countMarked(f, nameRestrict);
-    if (!count) {
-        alert(trans('You did not select any [_1] to remove.', plural));
-        return false;
-    }
-    var toRemove = "";
-    for (var i = 0; i < f.childNodes.length; i++) {
-        if (f.childNodes[i].name == '_type') {
-            toRemove = f.childNodes[i].value;
-            break;
-        }
-    }
-    singularMessage = trans('Are you sure you want to remove this [_1] from this group?');
-    pluralMessage = trans('Are you sure you want to remove the [_1] selected [_2] from this group?');
-
-    if (confirm(count == 1 ? trans(singularMessage, singular) : trans(pluralMessage, count, plural))) {
-        return doForMarkedInThisWindow(f, singular, plural, nameRestrict, 'remove_member', args, trans('to remove'));
-    }
-}
-
-function doRemoveGroups (f, singular, plural, nameRestrict, args) {
-    var count = countMarked(f, nameRestrict);
-    if (!count) {
-        alert(trans('You did not select any [_1] to remove.', plural));
-        return false;
-    }
-    var toRemove = "";
-    for (var i = 0; i < f.childNodes.length; i++) {
-        if (f.childNodes[i].name == '_type') {
-            toRemove = f.childNodes[i].value;
-            break;
-        }
-    }
-    singularMessage = trans('Are you sure you want to remove this [_1]?');
-    pluralMessage = trans('Are you sure you want to remove the [_1] selected [_2]?');
-
-    if (confirm(count == 1 ? trans(singularMessage, singular) : trans(pluralMessage, count, plural))) {
-        return doForMarkedInThisWindow(f, singular, plural, nameRestrict, 'remove_group', args, trans('to remove'));
-    }
-}
-
 function setObjectStatus (f, singular, plural, new_status, nameRestrict, args) {
     var count = countMarked(f, nameRestrict);
     var status_mode = 'enable';
@@ -291,7 +239,7 @@ function setObjectStatus (f, singular, plural, new_status, nameRestrict, args) {
         singularMessage = trans('Are you sure you want to [_2] this [_1]?');
         pluralMessage = trans('Are you sure you want to [_3] the [_1] selected [_2]?');
         if (confirm(count == 1 ? trans(singularMessage, singular, named_status) : trans(pluralMessage, count, plural, named_status))) {
-            return doForMarkedInThisWindow(f, singular, plural, nameRestrict, status_mode + '_object', args, trans('to ' + status_mode));
+            return doForMarkedInThisWindow(f, singular, plural, nameRestrict, status_mode + '_object', args);
         }
     } 
 }
@@ -358,6 +306,18 @@ function submitForm(f, mode) {
 }
 
 function doPluginAction(f, plural, phrase) {
+    if (!f) {
+        var forms = document.getElementsByTagName( "form" );  
+        for ( var i = 0; i < forms.length; i++ ) {  
+            var pas = truth( forms[ i ][ 'plugin_action_selector' ] );
+            if (pas) {
+                f = forms[ i ];
+                break;
+            }
+        }
+    }
+    if (!f)
+        return;
     var sel = f['plugin_action_selector'];
     if (sel.length && sel[0].options) sel = sel[0];
     var action = sel.options[sel.selectedIndex].value;
@@ -385,19 +345,12 @@ function updatePluginAction(s) {
 
 function doItemsAreJunk (f, type, plural, nameRestrict) {
     doForMarkedInThisWindow(f, type, plural, nameRestrict,
-        'handle_junk', {}, trans('to mark as junk'));
+        'handle_junk', {}, trans('to mark as spam'));
 }
 
 function doItemsAreNotJunk (f, type, plural, nameRestrict) {
     doForMarkedInThisWindow(f, type, plural, nameRestrict,
-        'not_junk', {}, trans('to remove "junk" status'));
-}
-
-// no longer used
-function doRemoveItem (f, id, type) {
-    var url = ScriptURI;
-    url += '?__mode=delete_confirm&_type=' + type + '&id=' + id + '&return_args=' + (f ? escape(f['return_args'].value) : '');
-    window.open(url, 'confirm_delete', 'width=370,height=250,scrollbars=yes');
+        'not_junk', {}, trans('to remove spam status'));
 }
 
 function dialogKeyPress(e) {
@@ -572,27 +525,6 @@ function insertLink(e, isMail) {
     return false;
 }
 
-// no longer used
-function doCheckAll(f, v) {
-    var e = f.id;
-    if (e.value)
-        e.checked = v;
-    else
-        for (i=0; i<e.length; i++) 
-            e[i].checked = v;
-}
-
-// no longer used
-function doCheckboxCheckAll(t) {
-    var v = t.checked;
-    var e = t.form.id;
-    if (e.value)
-        e.checked = v;
-    else
-        for (i=0; i<e.length; i++) 
-            e[i].checked = v;
-}
-
 function execFilter(f) {
     var filter_col = f['filter-col'].options[f['filter-col'].selectedIndex].value;
     var opts = f[filter_col+'-val'].options;
@@ -609,7 +541,7 @@ function execFilter(f) {
 }
 
 function setFilterVal(value) {
-    var f = getByID('filter-form');
+    var f = getByID('filter-select-form');
     if (value == '') return;
     var filter_col = f['filter-col'].options[f['filter-col'].selectedIndex].value;
     var val_span = getByID("filter-text-val");
@@ -684,10 +616,10 @@ function tabToggle(selectedTab, tabs) {
     return false;
 }
 
-function show(id, d) {
+function show(id, d, style) {
     var el = getByID(id, d);
     if (!el) return;
-    el.style.display = 'block';
+    el.style.display = style ? style : 'block';
     /* hack */
     if ( DOM.hasClassName( el, "autolayout-height-parent" ) )
         DOM.setHeight( el, finiteInt( el.parentNode.clientHeight ) );
@@ -697,6 +629,18 @@ function hide(id, d) {
     var el = getByID(id, d);
     if (!el) return;
     el.style.display = 'none';
+}
+
+function showReply(id, d, style) {
+    var el = getByID(id, d);
+    if (!el) return;
+    el.style.visibility = style ? style : 'visible';
+}
+
+function hideReply(id, d) {
+    var el = getByID(id, d);
+    if (!el) return;
+    el.style.visibility = 'hidden';
 }
 
 function toggleSubPrefs(c) {
@@ -1385,31 +1329,38 @@ MT.App = new Class( App, {
         if ( this.constructor.TabContainer )
             this.setDelegate( "tabContainer", new this.constructor.TabContainer() );
         
-
-        if ( this.form = DOM.getElement( "entry_form" ) ) {
+        var forms = DOM.getElementsByTagAndAttribute( this.document, "form", "mt:auto-save" );
+        if ( forms.length )
             window.onbeforeunload = this.getIndirectEventListener( "eventBeforeUnload" );
 
+        for ( var i = 0; i < forms.length; i++ ) {
+            var autosave = truth( forms[ i ].getAttribute( "mt:auto-save" ) );
+            if ( !autosave )
+                continue;
+
+            this.form = forms[ i ];
+            log('found autosave form '+i);
+
             var autoSaveDelay;
-            if ( autoSaveDelay = parseInt( this.form.getAttribute( "mt:auto-save-delay" ) ) || 0 ) {
+            if ( autoSaveDelay = parseInt( forms[ i ].getAttribute( "mt:auto-save-delay" ) ) || 0 ) {
                 this.autoSaveDelay = autoSaveDelay;
                 log('using auto save delay: '+this.autoSaveDelay);
             }
-            
+
             var es = Array.fromPseudo(
-                this.form.getElementsByTagName( "input" ),
-                this.form.getElementsByTagName( "textarea" )
+                forms[ i ].getElementsByTagName( "input" ),
+                forms[ i ].getElementsByTagName( "textarea" )
             );
-            var autosave = this.form.getAttribute( "mt:auto-save" );
-            for ( var i = 0; i < es.length; i++ ) {
-                if ( es[ i ].getAttribute && es[ i ].getAttribute( "mt:watch-change" ) ) {
-                    log('adding watcher to '+es[ i ].name);
-                    DOM.addEventListener( es[ i ], "change", this.getIndirectEventListener( "setDirty" ) );
+            for ( var j = 0; j < es.length; j++ ) {
+                if ( es[ j ].getAttribute && es[ j ].getAttribute( "mt:watch-change" ) ) {
+                    log('adding watcher to '+es[ j ].name);
+                    DOM.addEventListener( es[ j ], "change", this.getIndirectEventListener( "setDirty" ) );
                 }
-                if ( autosave && es[ i ].nodeName == "TEXTAREA" ) {
+                if ( autosave && es[ j ].nodeName == "TEXTAREA" ) {
                     /* don't attach to the editor textarea in this form */
-                    if ( this.editor && es[ i ].id == this.editor.textarea.element.id )
+                    if ( this.editor && es[ j ].id == this.editor.textarea.element.id )
                         continue;
-                    DOM.addEventListener( es[ i ], "keydown", this.getIndirectEventListener( "setDirty" ) );
+                    DOM.addEventListener( es[ j ], "keydown", this.getIndirectEventListener( "setDirty" ) );
                 }
             }
         }
@@ -1522,11 +1473,11 @@ MT.App = new Class( App, {
                 break;
 
             case "setModeCodepressOn":
-                this.cpeList.forEach( function( cpe ) { cpe.toggleOn(); } );
+                this.cpeList.forEach( function( cpe ) { cpe.toggleOn( true ); } );
                 break;
 
             case "setModeCodepressOff":
-                this.cpeList.forEach( function( cpe ) { cpe.toggleOff(); } );
+                this.cpeList.forEach( function( cpe ) { cpe.toggleOff( true ); } );
                 break;
 
             default:
@@ -1535,6 +1486,9 @@ MT.App = new Class( App, {
                     return;
 
                 var mode = event.target.getAttribute( "mt:mode" );
+                if ( !mode && event.commandElement )
+                    mode = event.commandElement.getAttribute( "mt:mode" );
+
                 if ( mode ) {
                     log('setting __mode in this form: '+mode);
                     var elements = form.getElementsByTagName( "input" );
@@ -1549,6 +1503,10 @@ MT.App = new Class( App, {
 
                 if ( command == "submit" ) {
                     event.stop();
+                    var msg;
+                    if ( event.commandElement && ( msg = event.commandElement.getAttribute( "mt:confirm-msg" ) ) )
+                        if ( !confirm( msg ) )
+                            return;
                     form.submit();
                 }
 
@@ -1702,13 +1660,26 @@ MT.App = new Class( App, {
 
 
     setDirty: function( event ) {
+        var autoSaveDelay = this.autoSaveDelay;
+        if ( event && event.target ) {
+            var form = DOM.getFirstAncestorByTagName( event.target, "form", true );
+            if ( form ) {
+                log('found dirty form: '+form);
+                this.form = form;
+                if ( autoSaveDelay = parseInt( form.getAttribute( "mt:auto-save-delay" ) ) || 0 ) {
+                    this.autoSaveDelay = autoSaveDelay;
+                    log('using auto save delay: '+this.autoSaveDelay);
+                }
+            }
+        }
+            
         this.changed = true;
-        if ( this.autoSaveDelay < 1 )
+        if ( autoSaveDelay < 1 )
             return;
 
         if ( defined( this.autoSaveTimer ) )
             return this.autoSaveTimer.reset();
-        this.autoSaveTimer = new Timer( this.getIndirectMethod( "autoSave" ), this.autoSaveDelay, 1 );
+        this.autoSaveTimer = new Timer( this.getIndirectMethod( "autoSave" ), autoSaveDelay, 1 );
     },
 
 
@@ -2274,7 +2245,7 @@ MT.App.CodePress = new Class( Object, {
         /* match the textarea's tab index */
         if ( this.textarea[ "tabIndex" ] )
             this.iframe.setAttribute( "tabIndex", this.textarea[ "tabIndex" ] );
-        DOM.addClassName( document.body, "codepress-editor-enabled" );
+        DOM.addClassName( document.body, "codepress-editor-enabled codepress-editor-on" );
         var t = Cookie.fetch( "codepressoff" );
         if ( t && t.value && t.value != "" ) {
             log( 'codepress editor off: '+t.value);
@@ -2375,26 +2346,29 @@ MT.App.CodePress = new Class( Object, {
    
     toggleEditor: function() {
         if ( this.textarea.disabled )
-            this.toggleOff();
+            this.toggleOff( true );
         else
-            this.toggleOn();
+            this.toggleOn( true );
     },
 
 
-    toggleOff: function() {
+    toggleOff: function( cookie ) {
         if ( !this.textarea.disabled )
             return;
         this.textarea.value = this.getCode();
         this.textarea.disabled = false;
         this.iframe.style.display = 'none';
         this.textarea.style.display = 'inline';
-        var d = new Date();
-        d.setYear( d.getYear() + 1902 ); /* two years */
-        Cookie.bake( "codepressoff", 1, undefined, undefined, d );
+        DOM.removeClassName( document.body, "codepress-editor-on" );
+        if ( cookie ) {
+            var d = new Date();
+            d.setYear( d.getYear() + 1902 ); /* two years */
+            Cookie.bake( "codepressoff", 1, undefined, undefined, d );
+        }
     },
     
     
-    toggleOn: function() {
+    toggleOn: function( cookie ) {
         if ( this.textarea.disabled )
             return;
         this.textarea.disabled = true;
@@ -2402,7 +2376,9 @@ MT.App.CodePress = new Class( Object, {
         this.editor.syntaxHighlight('init');
         this.iframe.style.display = 'inline';
         this.textarea.style.display = 'none';
-        Cookie.remove( "codepressoff" );
+        DOM.addClassName( document.body, "codepress-editor-on" );
+        if ( cookie )
+            Cookie.remove( "codepressoff" );
     },
 
 

@@ -105,7 +105,7 @@ unless ($@) {
             author_link => "http://daringfireball.net/",
             plugin_link => "http://daringfireball.net/projects/markdown/",
             version => $VERSION,
-            description => "A plain-text-to-HTML formatting plugin.",
+            description => '<MT_TRANS phrase="A plain-text-to-HTML formatting plugin.">',
             doc_link => 'http://daringfireball.net/projects/markdown/',
             registry => {
                 tags => {

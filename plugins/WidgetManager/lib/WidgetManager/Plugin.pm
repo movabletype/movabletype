@@ -36,7 +36,6 @@ sub _hdlr_widget_manager {
 
 sub load_selected_modules {
     my ($plugin, $blog_id) = @_;
-    warn "Loading data for blog #".$blog_id if $MT::DebugMode;
     my $config = $plugin->get_config_hash('blog:'.$blog_id);
     return $config && $config->{modulesets} ? $config->{modulesets} : undef;
 }

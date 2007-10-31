@@ -12,7 +12,7 @@ use MT::I18N qw( encode_text );
 
 sub handle_sign_in {
     my $class = shift;
-    my ($app) = @_;
+    my ($app, $auth_type) = @_;
     my $q = $app->{query};
 
     my $sig_str = $q->param('sig');
@@ -70,6 +70,7 @@ sub handle_sign_in {
             nickname => $nick,
             name => $name,
             url => $url,
+            auth_type => $auth_type,
         );
     } else {
         # If there's no signature, then we trust the cookie.
@@ -81,11 +82,12 @@ sub handle_sign_in {
             require MT::Author;
             my $sess = MT::Session->load({id => $session});
             $cmntr = MT::Author->load({name => $sess->name,
-                                       type => MT::Author::COMMENTER()});
+                                       type => MT::Author::COMMENTER(),
+                                       auth_type => $auth_type});
             if ($blog->require_typekey_emails
                 && !is_valid_email($cmntr->email))
             {
-                $app->error($app->translate("This weblog requires commenters to pass an email address"));
+                $app->error($app->translate("This blog requires commenters to provide an email address"));
                 return 0;
             }
         }

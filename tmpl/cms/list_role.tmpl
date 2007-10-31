@@ -24,17 +24,11 @@
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="role">', '<__trans phrase="roles">')"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="role" escape="js">', '<__trans phrase="roles" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)">"
         ><__trans phrase="Delete"></a>
     </mt:if>
-</mt:setvarblock>
-<mt:setvarblock name="list_filter_form">
-<div class="listing-filter">
-    <div class="listing-filter-inner inner pkg listing-filter-inner-empty">
-    </div>
-</div>
 </mt:setvarblock>
 <mt:if name="object_loop">
     <mt:setvarblock name="related_content">
@@ -67,7 +61,6 @@
     </mt:unless>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
-<$mt:var name="list_filter_form"$>
 <mtapp:listing
     type="role">
     <mt:if name="__first__">

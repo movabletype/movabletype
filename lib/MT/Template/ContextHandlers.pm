@@ -5,6 +5,7 @@
 # $Id$
 
 package MT::Template::Context;
+
 use strict;
 
 use MT;
@@ -13,7 +14,7 @@ use MT::Util qw( start_end_day start_end_week
                  format_ts offset_time_list first_n_words dirify get_entry
                  encode_html encode_js remove_html wday_from_ts days_in
                  spam_protect encode_php encode_url decode_html encode_xml
-                 decode_xml relative_date );
+                 decode_xml relative_date asset_cleanup );
 use MT::Request;
 use Time::Local qw( timegm timelocal );
 use MT::Promise qw(lazy delay force);
@@ -36,39 +37,39 @@ sub core_tags {
             'App:Form' => \&_hdlr_app_form,
 
             # Core tags
-            If => sub { &_hdlr_if ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            Unless => sub { &_hdlr_if ? &_hdlr_pass_tokens_else : &_hdlr_pass_tokens },
+            'If?' => \&_hdlr_if,
+            'Unless?' => sub { defined(my $r = &_hdlr_if) or return; !$r },
 
-            EntryIfTagged => sub { &_hdlr_entry_if_tagged ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'EntryIfTagged?' => \&_hdlr_entry_if_tagged,
 
-            IfArchiveTypeEnabled => sub { &_hdlr_archive_type_enabled ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            IfArchiveType => sub { &_hdlr_if_archive_type ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'IfArchiveTypeEnabled?' => \&_hdlr_archive_type_enabled,
+            'IfArchiveType?' => \&_hdlr_if_archive_type,
 
-            IfCategory => sub { &_hdlr_if_category ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            EntryIfCategory => sub { &_hdlr_if_category ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'IfCategory?' => \&_hdlr_if_category,
+            'EntryIfCategory?' => \&_hdlr_if_category,
 
             # Subcategory handlers
-            SubCatIsFirst => sub { &_hdlr_sub_cat_is_first ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            SubCatIsLast => sub { &_hdlr_sub_cat_is_last ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            HasSubCategories => sub { &_hdlr_has_sub_categories ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            HasNoSubCategories => sub { &_hdlr_has_no_sub_categories ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            HasParentCategory => sub { &_hdlr_has_parent_category ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            HasNoParentCategory => sub { &_hdlr_has_no_parent_category ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            IfIsAncestor => sub { &_hdlr_is_ancestor ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            IfIsDescendant => sub { &_hdlr_is_descendant ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'SubCatIsFirst?' => \&_hdlr_sub_cat_is_first,
+            'SubCatIsLast?' => \&_hdlr_sub_cat_is_last,
+            'HasSubCategories?' => \&_hdlr_has_sub_categories,
+            'HasNoSubCategories?' => \&_hdlr_has_no_sub_categories,
+            'HasParentCategory?' => \&_hdlr_has_parent_category,
+            'HasNoParentCategory?' => \&_hdlr_has_no_parent_category,
+            'IfIsAncestor?' => \&_hdlr_is_ancestor,
+            'IfIsDescendant?' => \&_hdlr_is_descendant,
 
             IfStatic => \&_hdlr_pass_tokens,
             IfDynamic => \&_hdlr_pass_tokens_else,
 
-            AssetIfTagged => sub { &_hdlr_asset_if_tagged ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'AssetIfTagged?' => \&_hdlr_asset_if_tagged,
 
-            PageIfTagged => sub { &_hdlr_page_if_tagged ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'PageIfTagged?' => \&_hdlr_page_if_tagged,
 
-            IfFolder => sub { &_hdlr_if_folder ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            FolderHeader => sub { &_hdlr_folder_header ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            FolderFooter => sub { &_hdlr_folder_footer ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            HasSubFolders => sub { &_hdlr_has_sub_folders ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            HasParentFolder => sub { &_hdlr_has_parent_folder ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'IfFolder?' => \&_hdlr_if_folder,
+            'FolderHeader?' => \&_hdlr_folder_header,
+            'FolderFooter?' => \&_hdlr_folder_footer,
+            'HasSubFolders?' => \&_hdlr_has_sub_folders,
+            'HasParentFolder?' => \&_hdlr_has_parent_folder,
 
             Else => \&_hdlr_pass_tokens,
             Loop => \&_hdlr_loop,
@@ -123,8 +124,8 @@ sub core_tags {
             CommentParent => \&_hdlr_comment_parent,
             CommentReplies => \&_hdlr_comment_replies,
 
-            IfCommentParent => sub { &_hdlr_if_comment_parent ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
-            IfCommentReplies => sub { &_hdlr_if_comment_replies ? &_hdlr_pass_tokens : &_hdlr_pass_tokens_else },
+            'IfCommentParent?' => \&_hdlr_if_comment_parent,
+            'IfCommentReplies?' => \&_hdlr_if_comment_replies,
 
             IndexList => \&_hdlr_index_list,
 
@@ -246,6 +247,8 @@ sub core_tags {
             CommenterNameThunk => \&_hdlr_commenter_name_thunk,
             CommenterName => \&_hdlr_commenter_name,
             CommenterEmail => \&_hdlr_commenter_email,
+            CommenterAuthType => \&_hdlr_commenter_auth_type,
+            CommenterAuthIconURL => \&_hdlr_commenter_auth_icon_url,
             FeedbackScore => \&_hdlr_feedback_score,
 
             AuthorID => \&_hdlr_author_id,
@@ -253,6 +256,8 @@ sub core_tags {
             AuthorDisplayName =>\&_hdlr_author_display_name,
             AuthorEmail => \&_hdlr_author_email,
             AuthorURL => \&_hdlr_author_url,
+            AuthorAuthType => \&_hdlr_author_auth_type,
+            AuthorAuthIconURL => \&_hdlr_author_auth_icon_url,
             AuthorNext => \&_hdlr_author_prev_next,
             AuthorPrevious => \&_hdlr_author_prev_next,
 
@@ -688,7 +693,7 @@ sub _fltr_capitalize {
 
 sub _fltr_count_characters {
     my ($str, $val, $ctx) = @_;
-    return length($str);
+    return length_text($str);
 }
 
 sub _fltr_cat {
@@ -822,8 +827,8 @@ sub _hdlr_app_listing {
         return &_hdlr_pass_tokens_else if @else;
         my $msg = $args->{empty_message} || MT->translate("No [_1] could be found.", $class->class_label_plural);
         return $ctx->build(qq{<mtapp:statusmsg
-            id="warning"
-            class="info">
+            id="zero-state"
+            class="info zero-state">
             $msg
             </mtapp:statusmsg>});
     }
@@ -916,7 +921,7 @@ sub _hdlr_app_action_bar {
         : qq{\n        <mt:include name="include/pagination.tmpl">};
     my $buttons = $ctx->var('action_buttons') || '';
     return $ctx->build(<<EOT);
-<div class="actions-bar actions-bar-$pos">
+<div id="actions-bar-$pos" class="actions-bar actions-bar-$pos">
     <div class="actions-bar-inner pkg">$pager
         <span class="button-actions actions">$buttons</span>
         <span class="plugin-actions actions">
@@ -938,7 +943,7 @@ sub _hdlr_app_widget {
     my $label_onclick = $args->{label_onclick} || "";
     my $close_html = '';
     if ($closable) {
-        $close_html = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id')" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
+        $close_html = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id'); return false;" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
     }
     my $widget_header = "";
     if ($label_link && $label_onclick) {
@@ -1051,23 +1056,25 @@ EOT
 
 sub _hdlr_app_page_actions {
     my ($ctx, $args, $cond) = @_;
-    my $from = $args->{from} || MT->instance->mode;
+    my $app = MT->instance;
+    my $from = $args->{from} || $app->mode;
     my $loop = $ctx->var('page_actions');
     return '' if (ref($loop) ne 'ARRAY') || (! @$loop);
+    my $mt = '&amp;magic_token=' . $app->current_magic;
     return $ctx->build(<<EOT, $cond);
     <mtapp:widget
         id="page_actions"
-        label="<__trans phrase="Plugin Actions">">
+        label="<__trans phrase="Actions">">
         <mt:loop name="page_actions">
             <mt:if name="__first__">
                 <ul>
             </mt:if>
             <mt:if name="page">
-                    <li class="icon-left icon-plugin"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
+                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left icon-plugin"><a href="<mt:var name="link" escape="html">&amp;from=$from&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
+                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
             </mt:if><mt:if name="dialog">
-                    <li class="icon-left icon-plugin"><a href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', '<mt:if name="dialog_args"><mt:var name="dialog_args" escape="url">&amp;</mt:if>from=$from&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">')"><mt:var name="label"></a></li>
+                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', '<mt:if name="dialog_args"><mt:var name="dialog_args" escape="url">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">')"><mt:var name="label"></a></li>
             </mt:if></mt:if>
             <mt:if name="__last__">
                 </ul>
@@ -1088,6 +1095,8 @@ sub _hdlr_app_form {
     my $id = $args->{object_id} || $ctx->var('id');
     my $blog_id = $args->{blog_id} || $ctx->var('blog_id');
     my $type = $args->{object_type} || $ctx->var('type');
+    my $form_id = $args->{id} || $type . '-form';
+    my $enctype = $args->{enctype} ? " enctype=\"" . $args->{enctype} . "\"" : "";
     my $mode = $args->{mode};
     push @fields, qq{<input type="hidden" name="__mode" value="$mode" />}
         if defined $mode;
@@ -1106,7 +1115,7 @@ sub _hdlr_app_form {
     $fields = join("\n", @fields) if @fields;
     my $insides = $ctx->slurp($args, $cond);
     return <<"EOT";
-<form action="$action" method="$method">
+<form id="$form_id" action="$action" method="$method"$enctype>
 $fields
     $insides
 </form>
@@ -1160,7 +1169,7 @@ sub _hdlr_app_setting {
         $label = ''; # zero it out, because the user turned it off
     }
     if ($hint && $show_hint) {
-        $hint = "\n<p class=\"hint\">$hint$help</p>";
+        $hint = "\n<div class=\"hint\">$hint$help</div>";
     } else {
         $hint = ''; # hiding hint because it is either empty or should not be shown
     }
@@ -2044,7 +2053,7 @@ sub _hdlr_if_nonempty {
     my ($ctx, $args, $cond) = @_;
     my $value;
     if (exists $args->{tag}) {
-        $args->{tag} =~ s/^MT//;
+        $args->{tag} =~ s/^MT:?//i;
         my $handler = $ctx->handler_for($args->{tag});
         if (defined($handler)) {
             local $ctx->{__stash}{tag} = $args->{tag};
@@ -2069,7 +2078,7 @@ sub _hdlr_if_nonzero {
     my ($ctx, $args, $cond) = @_;
     my $value;
     if (exists $args->{tag}) {
-        $args->{tag} =~ s/^MT//;
+        $args->{tag} =~ s/^MT:?//i;
         my $handler = $ctx->handler_for($args->{tag});
         if (defined($handler)) {
             local $ctx->{__stash}{tag} = $args->{tag};
@@ -2328,6 +2337,19 @@ sub _hdlr_author_url {
         or return $_[0]->_no_author_error('MTAuthorURL');
     my $url = $author->url;
     defined $url ? $url : '';
+}
+
+sub _hdlr_author_auth_type {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorAuthType');
+    my $auth_type = $author->auth_type;
+    defined $auth_type ? $auth_type : '';
+}
+
+sub _hdlr_author_auth_icon_url {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorAuthType');
+    return $author->auth_icon_url;
 }
 
 sub _hdlr_blogs {
@@ -3062,19 +3084,7 @@ sub _hdlr_entry_body {
 
     # Strip the mt:asset-id attribute from any span tags...
     if ($text =~ m/\smt:asset-id="\d+"/) {
-        $text =~ s/
-            <[Ff][Oo][Rr][Mm]
-            ([^>]*?)
-            \s
-            mt:asset-id="\d+"
-            ([^>]+?>)(.*?)
-            <\/[Ff][Oo][Rr][Mm]>
-        /
-        my $attr = $1 . $2;
-        my $inner = $3;
-        $attr =~ s!\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=(['"][^'"]*?['"]|[Ff][Aa][Ll][Ss][Ee])!!;
-        '<span' . $attr . $inner . '<\/span>'
-        /gsex;
+        $text = asset_cleanup($text);
     }
 
     return $text;
@@ -3095,22 +3105,11 @@ sub _hdlr_entry_more {
         push @$filters, '__default__' unless @$filters;
         $text = MT->apply_text_filters($text, $filters, $_[0]);
     }
+    return first_n_text($text, $arg->{words}) if exists $arg->{words};
 
     # Strip the mt:asset-id attribute from any span tags...
     if ($text =~ m/\smt:asset-id="\d+"/) {
-        $text =~ s/
-            <[Ff][Oo][Rr][Mm]
-            ([^>]*?)
-            \s
-            mt:asset-id="\d+"
-            ([^>]+?>)(.*?)
-            <\/[Ff][Oo][Rr][Mm]>
-        /
-        my $attr = $1 . $2;
-        my $inner = $3;
-        $attr =~ s!\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=(['"][^'"]*?['"]|[Ff][Aa][Ll][Ss][Ee])!!;
-        '<span' . $attr . $inner . '<\/span>'
-        /gsex;
+        $text = asset_cleanup($text);
     }
     return $text;
 }
@@ -3150,7 +3149,7 @@ sub _hdlr_entry_mod_date {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $args = $_[1];
-    $args->{ts} = $e->modified_on;
+    $args->{ts} = $e->modified_on || $e->created_on;
     _hdlr_date($_[0], $args);
 }
 
@@ -3433,11 +3432,11 @@ sub _hdlr_entry_class {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
-    my $class = $e->properties->{class_type};
+    my $class = $e->class;
     if ( exists $args->{'upper_case'} || exists $args->{'lower_case'} ) {
         return $class; # to have global filters handle it.
     }
-    uc(substr($class, 0, 1)) . substr($class, 1);
+    $e->class_label;
 }
 
 sub _hdlr_entry_category {
@@ -3868,7 +3867,7 @@ sub _hdlr_date {
             }
             ## RFC-822 dates must be in English.
             $args->{'format'} = '%a, %d %b %Y %H:%M:%S ' . $tz;
-            $args->{language} = 'en';
+            $lang = 'en';
         }
     }
     if (my $r = $args->{relative}) {
@@ -4090,25 +4089,33 @@ sub _hdlr_comment_email {
     $_[1] && $_[1]->{'spam_protect'} ? spam_protect($email) : $email;
 }
 sub _hdlr_comment_author_identity {
-     my ($ctx, $args) = @_;
-     my $cmt = $ctx->stash('comment')
+    my ($ctx, $args) = @_;
+    my $cmt = $ctx->stash('comment')
          or return $ctx->_no_comment_error('MT' . $ctx->stash('tag'));
-    if ($cmt->commenter_id) {
-        my $auth = MT::Author->load($cmt->commenter_id) 
-            or return "?";
-        return q() unless $auth->url;
-        my $cfg = $ctx->{config};
-        my $link = $auth->url;
-        my $blog = MT::Blog->load($ctx->stash('blog_id'));
-        my $root_url = $cfg->PublishCommenterIcon
-            ? $blog->site_url()
-            : _hdlr_static_path($ctx) . "images";
-        $root_url =~ s|/$||;
-        qq{<a class="commenter-profile" href=\"$link\"><img alt=\"Author Profile Page\" src=\"$root_url/nav-commenters.gif\" width=\"22\" height=\"15\" /></a>};
-    } else {
-        "";
+    my $cmntr = $ctx->stash('commenter');
+    unless ($cmntr) {
+        if ($cmt->commenter_id) {
+            $cmntr = MT::Author->load($cmt->commenter_id) 
+                or return "?";
+        } else {
+            return q();
+        }
     }
+    return q() unless $cmntr->url;
+    my $link = $cmntr->url;
+    my $static_path = _hdlr_static_path($ctx);
+    my $logo = $cmntr->auth_icon_url;
+    unless ($logo) {
+        my $blog = MT::Blog->load($ctx->stash('blog_id'));
+        my $root_url = MT->config->PublishCommenterIcon
+            ? $blog->site_url()
+            : $static_path . "images";
+        $root_url =~ s|/$||;
+        $logo = "$root_url/nav-commenters.gif";
+    }
+    qq{<a class="commenter-profile" href=\"$link\"><img alt=\"Author Profile Page\" src=\"$logo\" width=\"16\" height=\"16\" /></a>};
 }
+
 sub _hdlr_comment_url {
     sanitize_on($_[1]);
     my $c = $_[0]->stash('comment')
@@ -4335,12 +4342,21 @@ sub _hdlr_commenter_name_thunk {
 }
 sub _hdlr_commenter_name {
     my $a = $_[0]->stash('commenter');
-    $a ? $a->name || '' : '';
+    $a ? $a->nickname || '' : '';
 }
 sub _hdlr_commenter_email {
     my $a = $_[0]->stash('commenter');
     return '' if $a && $a->email !~ m/@/;
     $a ? $a->email || '' : '';
+}
+sub _hdlr_commenter_auth_type {
+    my $a = $_[0]->stash('commenter');
+    $a ? $a->auth_type || '' : '';
+}
+sub _hdlr_commenter_auth_icon_url {
+    my $a = $_[0]->stash('commenter');
+    return q() unless $a;
+    return $a->auth_icon_url;
 }
 sub _hdlr_commenter_trusted {
     my ($ctx, $args, $cond) = @_;
@@ -4598,6 +4614,21 @@ sub _hdlr_archives {
     my $i = 0;
     my $n = $args->{lastn};
 
+    my $save_ts;
+    my $save_tse;
+    my $tmpl = $ctx->stash('template');
+    if ( ($tmpl && $tmpl->type eq 'archive')
+         && $archiver->date_based)
+    {
+        my $uncompiled = $ctx->stash('uncompiled') || '';
+        if ($uncompiled =~ /<mt:?archivelist>?/i) {
+            $save_ts = $ctx->{current_timestamp};
+            $save_tse = $ctx->{current_timestamp_end};
+            $ctx->{current_timestamp} = undef;
+            $ctx->{current_timestamp_end} = undef;
+        }
+    }
+
     my $order = $sort_order eq 'ascend' ? 'asc' : 'desc';
     my $group_iter = $archiver->archive_group_iter->($ctx, $args);
     return $ctx->error(MT->translate("Group iterator failed."))
@@ -4641,6 +4672,10 @@ sub _hdlr_archives {
         $res .= $out;
         ($cnt, %curr) = ($next_cnt, %next);
     }
+
+    $ctx->{__stash}{$_} = $save{$_} for keys %save;
+    $ctx->{current_timestamp} = $save_ts if $save_ts;
+    $ctx->{current_timestamp_end} = $save_tse if $save_tse;
     $res;
 }
 
@@ -6589,7 +6624,8 @@ sub _hdlr_asset_thumbnail_url {
     $arg{Width} = $args->{width} if $args->{width};
     $arg{Height} = $args->{height} if $args->{height};
     $arg{Scale} = $args->{scale} if $args->{scale};
-    $a->thumbnail_url(%arg) || '';
+    my ($url, $w, $h) = $a->thumbnail_url(%arg);
+    return $url || '';
 }
 
 sub _hdlr_asset_link {
@@ -6619,15 +6655,10 @@ sub _hdlr_asset_thumbnail_link {
 
     # Get dimensions
     my %arg;
-    if ($args->{scale}) {
-        $arg{Scale} = $args->{scale};
-    } else {
-        $arg{Width} = $args->{width};
-        $arg{Height} = $args->{height};
-    }
-    my ($w, $h) = $img->get_dimensions(%arg);
-    my $url = $a->thumbnail_url(Height => $h, Width => $w);
-
+    $arg{Width} = $args->{width} if $args->{width};
+    $arg{Height} = $args->{height} if $args->{height};
+    $arg{Scale} = $args->{scale} if $args->{scale};
+    my ($url, $w, $h) = $a->thumbnail_url(%arg);
     my $ret = sprintf qq(<a href="%s"), $a->url;
     if ($args->{new_window}) {
         $ret .= qq( target="_blank");

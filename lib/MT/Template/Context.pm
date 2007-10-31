@@ -32,20 +32,6 @@ sub init {
     $ctx;
 }
 
-sub replace_handler {
-    my $ctx = shift;
-    my ($tag, $h) = @_;
-    $tag = lc $tag;
-    my $old_hdlr = $ctx->{__handlers}{$tag};
-    if (ref($old_hdlr) eq 'ARRAY') {
-        $old_hdlr = $old_hdlr->[0];
-        $ctx->{__handlers}{$tag}[0] = $h;
-    } else {
-        $ctx->{__handlers}{$tag} = $h;
-    }
-    return $old_hdlr;
-}
-
 sub init_handlers {
     my $ctx = shift;
     my $mt = MT->instance;
@@ -53,6 +39,9 @@ sub init_handlers {
         my $h = $mt->{__tag_handlers} = {};
         my $f = $mt->{__tag_filters} = {};
         my $all_tags = MT::Component->registry('tags');
+        # Put application-specific handlers in front of 'core'
+        # tag set (allows MT::App::Search, etc to replace the
+        # stubbed core handlers)
         if ($mt->isa('MT::App')) {
             my $app_tags = MT->registry("applications", $mt->id, "tags");
             unshift @$all_tags, $app_tags if $app_tags;
@@ -60,24 +49,43 @@ sub init_handlers {
         for my $tag_set ( @$all_tags ) {
             if (my $block = $tag_set->{block}) {
                 for my $orig_tag (keys %$block) {
+                    next if $orig_tag eq 'plugin';
+
                     my $tag = lc $orig_tag;
+                    my $type = 1;
+                    # A '?' suffix identifies conditional tags
+                    if ($tag =~ m/\?$/) {
+                        $tag =~ s/\?$//;
+                        $type = 2;
+                    }
                     # Application level tags should not be overwritten
                     # by 'core' tags (which may be placeholders, as in the
                     # case of MT-Search). Non-core plugins can override
                     # other core routines and application level tags though.
-                    next if exists $h->{$tag} && ($block->{plugin}{id}||'') eq 'core';
-                    $h->{$tag} = [ $block->{$orig_tag}, 1 ];
+                    if (exists $h->{$tag}) {
+                        # a replaced handler
+                        next if ($block->{plugin}{id}||'') eq 'core';
+                        $h->{'_' . $tag} ||= $h->{$tag};
+                    }
+                    $h->{$tag} = [ $block->{$orig_tag}, $type ];
                 }
             }
             if (my $func = $tag_set->{function}) {
                 for my $orig_tag (keys %$func) {
+                    next if $orig_tag eq 'plugin';
+
                     my $tag = lc $orig_tag;
-                    next if exists $h->{$tag} && ($func->{plugin}{id} || '') eq 'core';
+                    if (exists $h->{$tag}) {
+                        # a replaced handler
+                        next if ($func->{plugin}{id}||'') eq 'core';
+                        $h->{'_' . $tag} ||= $h->{$tag};
+                    }
                     $h->{$tag} = $func->{$orig_tag};
                 }
             }
             if (my $mod = $tag_set->{modifier}) {
                 for my $orig_mod (keys %$mod) {
+                    next if $orig_mod eq 'plugin';
                     my $modifier = lc $orig_mod;
                     next if exists $f->{$modifier} && ($mod->{plugin}{id} || '') eq 'core';
                     $f->{$modifier} = $mod->{$orig_mod};
@@ -87,6 +95,16 @@ sub init_handlers {
     }
     $ctx->{__handlers} = $mt->{__tag_handlers};
     $ctx->{__filters} = $mt->{__tag_filters};
+}
+
+sub super_handler {
+    my ($ctx) = @_;
+    my $tag = lc $ctx->stash('tag');
+    my ($orig_handler) = $ctx->handler_for('_' . $tag);
+    if ($orig_handler) {
+        return $orig_handler->(@_);
+    }
+    return undef;
 }
 
 sub stash {
@@ -104,6 +122,8 @@ sub var {
     my $ctx = shift;
     my $key = lc shift;
     my $value = $ctx->{__stash}{vars}{$key};
+    # protects $_ value set during template attribute interpolation
+    local $_ = $_;
     if (ref $value eq 'CODE') {
         $value = $value->($ctx);
     }
@@ -114,7 +134,8 @@ sub var {
 sub tag {
     my $ctx = shift;
     my $tag = lc shift;
-    my ($h) = $ctx->handler_for($tag) or return undef;
+    my ($h) = $ctx->handler_for($tag) or return $ctx->error("No handler for tag $tag");
+    local $ctx->{__stash}{tag} = $tag;
     return $h->($ctx, @_);
 }
 

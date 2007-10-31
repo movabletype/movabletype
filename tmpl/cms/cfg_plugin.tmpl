@@ -123,7 +123,7 @@
     var last_shown_info;
     <mt:if name="can_config">
     function resetPlugin(f) {
-        if (confirm("<__trans phrase="Are you sure you want to reset the settings for this plugin?">")) {
+        if (confirm("<__trans phrase="Are you sure you want to reset the settings for this plugin?" escape="js">")) {
             f['__mode'].value = 'reset_plugin_config';
             f.submit();
         }
@@ -133,15 +133,15 @@
         var question;
         if (flag == 0) {
             if (plugin_sig == '*') {
-                question = '<__trans phrase="Disable plugin system?">';
+                question = '<__trans phrase="Disable plugin system?" escape="js">';
             } else {
-                question = '<__trans phrase="Disable this plugin?">';
+                question = '<__trans phrase="Disable this plugin?" escape="js">';
             }
         } else {
             if (plugin_sig == '*') {
-                question = '<__trans phrase="Enable plugin system?">';
+                question = '<__trans phrase="Enable plugin system?" escape="js">';
             } else {
-                question = '<__trans phrase="Enable this plugin?">';
+                question = '<__trans phrase="Enable this plugin?" escape="js">';
             }
         }
         if (confirm(question)) {
@@ -212,14 +212,14 @@
             <mt:unless name="blog_id">
 
                 <mt:if name="plugin_error">
-                    <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span> (<a href="javascript:void(0)" onclick="togglePlugin(0, '<mt:var name="plugin_sig">')"><__trans phrase="Disable"></a>)
+                    <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed to Load"></span> (<a href="javascript:void(0)" onclick="togglePlugin(0, '<mt:var name="plugin_sig">'); return false;"><__trans phrase="Disable"></a>)
                 <mt:else>
                     <mt:unless name="plugin_disabled">
                     <span class="icon-left icon-success"><__trans phrase="Enabled"></span> (<a href="javascript:void(0)" onclick="return togglePlugin(0, '<mt:var name="plugin_sig">')"><__trans phrase="Disable"></a>)
                     <mt:else>
                     <span class="icon-left icon-neutral"><__trans phrase="Disabled"></span>
                         <mt:if name="use_plugins">
-                    <a href="javascript:void(0)" onclick="return togglePlugin(1, '<mt:var name="plugin_sig">')">(<__trans phrase="Enable">)</a>
+                    <a href="javascript:void(0)" onclick="togglePlugin(1, '<mt:var name="plugin_sig">'); return false;">(<__trans phrase="Enable">)</a>
                         </mt:if>
                     </mt:unless>
                 </mt:if>

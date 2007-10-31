@@ -41,7 +41,7 @@
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
     <button
-        onclick="doRemoveItems(this.form, '<__trans phrase="TrackBack">', '<__trans phrase="TrackBack">', false, { 'return_args' : '__mode=list_pings&blog_id=<mt:var name="blog_id">'})"
+        onclick="doRemoveItems(this.form, '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBack" escape="js">', false, { 'return_args' : '__mode=list_pings&blog_id=<mt:var name="blog_id">'})"
         type="submit"
         accesskey="x"
         title="<__trans phrase="Delete this [_1] (x)" params="<mt:var name="object_label" lower_case="1">">"
@@ -201,7 +201,7 @@
     label="<__trans phrase="Date">"
     hint=""
     show_hint="0">
-    <mt:var name="created_on_time_formatted" escape="html">
+    <mt:var name="created_on_time_formatted">
     <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;from=<mt:var name="created_on_day_formatted" escape="html">&amp;to=<mt:var name="created_on_day_formatted" escape="html">&amp;show_all=1&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 </mtapp:setting>
 

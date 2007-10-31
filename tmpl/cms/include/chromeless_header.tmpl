@@ -3,7 +3,7 @@
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title><mt:var name="PAGE_TITLE"> | <$mt:var name="mt_product_name"$></title>
+    <title><mt:if name="html_title"><mt:var name="html_title"><mt:else><mt:var name="page_title"></mt:if> | <$mt:var name="mt_product_name"$></title>
 
 <mt:setvarblock name="html_head" prepend="1">
 <mt:if name="mt_debug">
@@ -16,17 +16,17 @@
 </mt:if>
 
     <!--[if IE]>
-    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="MT_VERSION" escape="URL">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
     <![endif]-->
 <mt:if name="local_lang_id">
-    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="MT_VERSION" escape="URL">" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version" escape="url">" />
 </mt:if>
 
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version" escape="url">"></script>
 </mt:setvarblock>
 <$mt:var name="html_head"$>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version" escape="url">"></script>
 
 <script language="javascript" type="text/javascript">
 <!--
@@ -43,7 +43,7 @@ function hideByID(id) {
 
 </head>
 
-<body id="mode_<$mt:var name="mode"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"><mt:if name="is_full_screen"> error-screen</mt:if> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if>">
+<body id="<$mt:var name="screen_id"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"><mt:if name="is_full_screen"> error-screen</mt:if> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if> <$mt:var name="body_class" default="dialog"$>">
 
 <div id="container">
 <div id="container-inner">

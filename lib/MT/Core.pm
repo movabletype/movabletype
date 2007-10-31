@@ -142,7 +142,7 @@ BEGIN {
                 order => 400,
             },
             'blog.edit_notifications' => {
-                label => trans('Manage Notification List'),
+                label => trans('Manage Address Book'),
                 group => 'blog_admin',
                 order => 500,
             },
@@ -158,7 +158,7 @@ BEGIN {
                 order => 100,
             },
             'blog.publish_post' => {
-                label => trans('Publish Post'),
+                label => trans('Publish Entries'),
                 group => 'auth_pub',
                 order => 200,
             },
@@ -168,7 +168,7 @@ BEGIN {
                 order => 300,
             },
             'blog.edit_all_posts' => {
-                label => trans('Edit All Entries'),
+                label => trans('Manage Entries'),
                 group => 'auth_pub',
                 order => 400,
             },
@@ -178,7 +178,7 @@ BEGIN {
                 order => 500,
             },
             'blog.rebuild' => {
-                label => trans('Publish Files'),
+                label => trans('Publish Blog'),
                 group => 'auth_pub',
                 order => 600,
             },
@@ -200,7 +200,7 @@ BEGIN {
                 order => 200,
             },
             'blog.edit_assets' => {
-                label => trans('Manage Files'),
+                label => trans('Manage Assets'),
                 group => 'blog_upload',
                 order => 300,
             },
@@ -280,11 +280,12 @@ BEGIN {
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'BlogsPingURL'   => { default => 'http://ping.blo.gs/', },
             'MTPingURL' => { default => 'http://www.movabletype.org/update/', },
+            'MTCheckScript' => { default => 'mt-check.cgi', },
             'TechnoratiPingURL' =>
               { default => 'http://rpc.technorati.com/rpc/ping', },
             'GooglePingURL' =>
               { default => 'http://blogsearch.google.com/ping/RPC2', },
-            'CGIMaxUpload'          => { default => 10_000_000 },
+            'CGIMaxUpload'          => { default => 20_480_000 },
             'DBUmask'               => { default => '0111', },
             'HTMLUmask'             => { default => '0111', },
             'UploadUmask'           => { default => '0111', },
@@ -518,7 +519,7 @@ BEGIN {
                 handler => 'MT::Util::rich_text_transform',
                 condition => sub {
                     my ($type) = @_;
-                    return 1 if $type ne 'comment';
+                    return 1 if $type && ($type ne 'comment');
                 },
             },
         },
@@ -649,7 +650,7 @@ sub load_core_tasks {
     my $cfg = MT->config;
     return {
         'FuturePost' => {
-            label     => 'Publish Future Posts',
+            label     => 'Publish Scheduled Entries',
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
             code      => sub {
                 MT->instance->publisher->publish_future_posts;

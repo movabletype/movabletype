@@ -221,15 +221,27 @@ sub core_upgrade_functions {
                 }
             }
         },
-        # TBD: Revise to use role.
         'core_set_blog_admins' => {
             version_limit => 3.2,
             priority => 9.3,
             updater => {
                 type => 'permission',
                 label => 'Assigning blog administration permissions...',
-                condition => sub { $_[0]->can_edit_config },
-                code => sub { $_[0]->can_administer_blog(1) },
+                condition => sub { $_[0]->author_id && $_[0]->blog_id && $_[0]->can_edit_config },
+                code => sub {
+                    require MT::Association;
+                    require MT::Role;
+                    my ($role) = MT::Role->load_by_permission("administer_blog");
+                    if ($role) {
+                        my $user = MT::Author->load($_[0]->author_id);
+                        my $blog = MT::Author->load($_[0]->blog_id);
+                        if ($user && $blog) {
+                            MT::Association->link($role => $user => $blog);
+                        }
+                    } else {
+                        $_[0]->can_administer_blog(1)
+                    }
+                },
             }
         },
         'core_set_blog_allow_pings' => {
@@ -659,6 +671,55 @@ sub core_upgrade_functions {
             priority => 3.0,
             code => \&remove_unused_templatemap,
         },
+        'core_set_author_auth_type' => {
+            version_limit => 4.0024,
+            priority => 3.2,
+            updater => {
+                type => 'author',
+                label => 'Assigning user authentication type...',
+                condition => sub {
+                    !$_[0]->auth_type;
+                },
+                code => \&core_populate_author_auth_type,
+            },
+        },
+    }
+}
+
+sub core_populate_author_auth_type {
+    my ($u) = @_;
+    if ($u->type == 1) {
+        $u->auth_type(MT->config->AuthenticationModule || 'MT');
+    } else {
+        # for legacy OpenID plugin commenters
+        if ($u->name =~ m(^openid\n(.*)$)) {
+            my $url = $1;
+            if (eval { require Digest::MD5; 1; }) {
+                $url = Digest::MD5::md5_hex($url);
+            } else {
+                $url = substr $url, 0, 255;
+            }
+            $u->name($url);
+            $u->auth_type('OpenID');
+        }
+        elsif ($u->name =~ m!^[a-f0-9]{32}$!) {
+            # Vox OpenID URL; set auth_type to 'Vox'
+            if ($u->url =~ m!\.vox\.com/!) {
+                $u->auth_type('Vox');
+            }
+            # LJ OpenID URL; set auth_type to 'LiveJournal'
+            elsif ($u->url =~ m!\.livejournal\.com/!) {
+                $u->auth_type('LiveJournal');
+            }
+            else {
+                # Other custom auth, which for now means OpenID
+                $u->auth_type('OpenID');
+            }
+        }
+        else {
+            # Default to TypeKey for remaining plain name fields
+            $u->auth_type('TypeKey');
+        }
     }
 }
 
@@ -818,7 +879,6 @@ sub _migrate_permission_to_role {
     if ($role) {
         if (($role->role_mask != $role_mask) && 
             ((4096 != $role->role_mask) && (30687 != $role_mask))) {
-            print STDERR "$role_mask:" . $role->role_mask;
             $role = undef;
         }
     }
@@ -1202,13 +1262,14 @@ sub seed_database {
     $author->can_manage_plugins(1);
     $author->preferred_language($lang);
     $author->external_id(MT::Author->pack_external_id($param{user_external_id})) if exists $param{user_external_id};
+    $author->auth_type(MT->config->AuthenticationModule);
     $author->save or return $self->error($self->translate_escape("Error saving record: [_1].", $author->errstr));
     $App->{author} = $author if ref $App;
 
     $self->create_default_roles(%param);
 
     require MT::Blog;
-    my $blog = MT::Blog->create_default_blog($LH->maketext('First Blog'))
+    my $blog = MT::Blog->create_default_blog(MT->translate('First Blog'))
         or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Blog->errstr));
     $blog->site_path(exists $param{blog_path} ? uri_unescape($param{blog_path}) : '');
     $blog->site_url(exists $param{blog_url} ? uri_unescape($param{blog_url}) : '');
@@ -1220,8 +1281,8 @@ sub seed_database {
     require MT::Entry;
     my $entry = MT::Entry->new;
     $entry->blog_id($blog->id);
-    $entry->title($LH->maketext("I just finished installing Movable Type 4!"));
-    $entry->text($LH->maketext("Welcome to my new blog powered by Movable Type 4. This is the first post on my blog and was created for me automatically when I finished the installation process. But that is ok, because I will soon be creating posts of my own!"));
+    $entry->title(MT->translate("I just finished installing Movable Type [_1]!", MT->product_version));
+    $entry->text(MT->translate("Welcome to my new blog powered by Movable Type. This is the first post on my blog and was created for me automatically when I finished the installation process. But that is ok, because I will soon be creating posts of my own!"));
     $entry->author_id($author->id);
     $entry->status(MT::Entry::RELEASE());
     $entry->save
@@ -1231,19 +1292,17 @@ sub seed_database {
     my $comment = MT::Comment->new;
     $comment->entry_id($entry->id);
     $comment->blog_id($blog->id);
-    $comment->text($LH->maketext("Movable Type also created a comment for me as well so that I could see what a comment will look like on my blog once people start submitting comments on all the posts I will write."));
+    $comment->text(MT->translate("Movable Type also created a comment for me as well so that I could see what a comment will look like on my blog once people start submitting comments on all the posts I will write."));
     $comment->visible(1);
     $comment->junk_status(1);
+    $comment->author(exists $param{user_nickname} ? uri_unescape($param{user_nickname}) : undef);
     $comment->save
         or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Comment->errstr));
 
-    # TBD: change to use association methods...
-    require MT::Permission;
-    my $perms = MT::Permission->new;
-    $perms->author_id($author->id);
-    $perms->blog_id($blog->id);
-    $perms->set_full_permissions();
-    $perms->save or return $self->error($self->translate_escape("Error saving record: [_1].", $perms->errstr));
+    require MT::Association;
+    require MT::Role;
+    my ($blog_admin_role) = MT::Role->load_by_permission("administer_blog");
+    MT::Association->link( $blog => $blog_admin_role => $author );
 
     1;
 }
@@ -1252,13 +1311,13 @@ sub seed_database {
 # translate('Blog Administrator')
 # translate('Can administer the blog.')
 # translate('Editor')
-# translate('Can upload files, edit all entries/categories/tags on a blog and publish.')
+# translate('Can upload files, edit all entries/categories/tags on a blog and rebuild.')
 # translate('Author')
 # translate('Can create entries, edit their own, upload files and publish.')
 # translate('Designer')
-# translate('Can edit, manage and publish blog templates.')
+# translate('Can edit, manage and rebuild blog templates.')
 # translate('Webmaster')
-# translate('Can manage pages and publish blog templates.')
+# translate('Can manage pages and rebuild blog templates.')
 # translate('Contributor')
 # translate('Can create entries, edit their own and comment.')
 # translate('Moderator')
@@ -1276,18 +1335,18 @@ sub create_default_roles {
           role_mask => 2**12,
           perms => ['administer_blog'] },
         { name => 'Editor',
-          description => 'Can upload files, edit all entries/categories/tags on a blog and rebuild.',
+          description => 'Can upload files, edit all entries/categories/tags on a blog and publish the blog.',
           perms => ['comment', 'create_post', 'publish_post', 'edit_all_posts', 'edit_categories', 'edit_tags', 'manage_pages',
                     'rebuild', 'upload', 'send_notifications', 'manage_feedback'], },
         { name => 'Author',
           description => 'Can create entries, edit their own, upload files and publish.',
           perms => ['comment', 'create_post', 'publish_post', 'upload', 'send_notifications'], },
         { name => 'Designer',
-          description => 'Can edit, manage and rebuild blog templates.',
+          description => 'Can edit, manage and publish blog templates.',
           role_mask => (2**4 + 2**7),
           perms => ['edit_templates', 'rebuild'] },
         { name => 'Webmaster',
-          description => 'Can manage pages and rebuild blog templates.',
+          description => 'Can manage pages and publish blog templates.',
           perms => ['manage_pages', 'rebuild'] },
         { name => 'Contributor',
           description => 'Can create entries, edit their own and comment.',
@@ -1763,7 +1822,7 @@ sub run_statements {
 
     my $updated = 0;
     if (@stmts) {
-        $self->progress($self->translate_escape("Upgrading table for [_1]", $class));
+        $self->progress($self->translate_escape("Upgrading table for [_1] records...", $class->can('class_label') ? $class->class_label : $class));
         eval {
             foreach my $stmt (@stmts) {
                 if (ref $stmt eq 'CODE') {
@@ -1925,10 +1984,12 @@ sub _merge_comment_response_templates_updater {
     my ($blog) = @_;
     require MT::Template;
     my $tmpl = MT::Template->load({ blog_id => $blog->id, type => 'comment_response' });
-    return if $tmpl;
+    unless ($tmpl) {
+        $tmpl = new MT::Template;
+        $tmpl->blog_id($blog->id);
+        $tmpl->type('comment_response');
+    }
 
-    my $pending_tmpl = MT::Template->load({ blog_id => $blog->id, type => 'comment_pending' });
-    my $error_tmpl = MT::Template->load({ blog_id => $blog->id, type => 'comment_error' });
     my $confirm_template = <<'EOT';
 <MTSetVarBlock name="page_title"><__trans phrase="Comment Posted"></MTSetVarBlock>
 
@@ -1937,46 +1998,19 @@ sub _merge_comment_response_templates_updater {
 <MTSetVarBlock name="message">
 <p><__trans phrase="Your comment has been posted!"></p>
 </MTSetVarBlock>
-
-<$MTInclude module="<__trans phrase="Header">"$>
-
-<h1><$MTGetVar name="heading"$></h1>
-
-<$MTGetVar name="message"$>
-
-<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
-
-<$MTInclude module="<__trans phrase="Footer">"$>
 EOT
-    my ($pending_template, $error_template);
-    if ($pending_tmpl) {
-        $pending_template = $pending_tmpl->text;
-    } else {
-        $pending_template = <<'EOT';
+
+    my $pending_template = <<'EOT';
 <MTSetVarBlock name="page_title"><__trans phrase="Comment Pending"></MTSetVarBlock>
 
 <MTSetVar name="heading" value="<__trans phrase="Thank you for commenting.">">
 
 <MTSetVarBlock name="message">
-<h1><__trans phrase="Thank you for commenting."></h1>
 <p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>
 </MTSetVarBlock>
-
-<$MTInclude module="<__trans phrase="Header">"$>
-
-<h1><$MTGetVar name="heading"$></h1>
-
-<$MTGetVar name="message"$>
-
-<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
-
-<$MTInclude module="<__trans phrase="Footer">"$>
 EOT
-    }
-    if ($error_tmpl) {
-        $error_template = $error_tmpl->text;
-    } else {
-        $error_template = <<'EOT';
+
+    my $error_template = <<'EOT';
 <MTSetVarBlock name="page_title"><__trans phrase="Comment Submission Error"></MTSetVarBlock>
 
 <MTSetVar name="heading" value="$page_title">
@@ -1987,24 +2021,58 @@ EOT
     <$MTErrorMessage$>
 </blockquote>
 </MTSetVarBlock>
+EOT
 
-<$MTInclude module="<__trans phrase="Header">"$>
+    my $header_template = <<'EOT';
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+    <meta name="generator" content="<$MTProductName version="1"$>" />
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    <title>
+    <__trans phrase="[_1]: [_2]" params="<$MTBlogName encode_html="1"$>%%<$MTGetVar name="page_title"$>">
+    </title>
+    <script type="text/javascript" src="<$MTBlogURL$>mt-site.js"></script>
+</head>
+<body class="layout-one-column comment-preview" onload="individualArchivesOnLoad(commenter_name)">
+    <div id="container">
+        <div id="container-inner" class="pkg">
+            <div id="banner">
+                <div id="banner-inner" class="pkg">
+                    <h1 id="banner-header"><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></h1>
+                    <h2 id="banner-description"><$MTBlogDescription$></h2>
+                </div>
+            </div>
+            <div id="pagebody">
+                <div id="pagebody-inner" class="pkg">
+                    <div id="alpha">
+                        <div id="alpha-inner" class="pkg">
+EOT
 
+    my $footer_template = <<'EOT';
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+EOT
+
+    my $message_template = <<'EOT';
 <h1><$MTGetVar name="heading"$></h1>
 
 <$MTGetVar name="message"$>
 
 <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
-
-<$MTInclude module="<__trans phrase="Footer">"$>
 EOT
-    }
 
-    $tmpl = new MT::Template;
-    $tmpl->blog_id($blog->id);
-    $tmpl->type('comment_response');
-    $tmpl->name(MT->translate("Comment Response"));
-    $tmpl->text(<<"EOT");
+    my $mt = MT->instance;
+    $tmpl->name($mt->translate("Comment Response"));
+    $tmpl->text($mt->translate_templatized(<<"EOT"));
 <MTSetVar name="page_layout" value="layout-one-column">
 <MTSetVar name="system_template" value="1">
 <MTSetVar name="feedback_template" value="1">
@@ -2020,6 +2088,12 @@ $error_template
 <MTIf name="body_class" eq="mt-comment-confirmation">
 $confirm_template
 </MTIf>
+
+$header_template
+
+$message_template
+
+$footer_template
 EOT
     $tmpl->save;
 }

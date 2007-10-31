@@ -293,8 +293,6 @@ my $is_good = 1;
 my @REQ = (
     [ 'CGI', 0, 1, translate('CGI is required for all Movable Type application functionality.') ],
 
-    [ 'HTML::Template', 2, 1, translate('HTML::Template is required for all Movable Type application functionality.') ],
-
     [ 'Image::Size', 0, 1, translate('Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).') ],
 
     [ 'File::Spec', 0.8, 1, translate('File::Spec is required for path manipulation across operating systems.') ],
@@ -313,15 +311,14 @@ my @DATA = (
 
     [ 'DBD::SQLite2', 0, 0, translate('DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.') ],
 
-    [ 'DBD::Oracle', 1.15, 0, translate('DBI and DBD::Oracle are required if you want to use the Oracle database backend.') ],
-
-    [ 'DBD::ODBC', 1.13, 0, translate('DBI and DBD::ODBC are required if you want to use the Microsoft SQL Server database backend.') ],
 );
 
 my @OPT = (
     [ 'HTML::Entities', 0, 0, translate('HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.') ],
 
     [ 'LWP::UserAgent', 0, 0, translate('LWP::UserAgent is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.') ],
+
+    [ 'HTML::Parser', 0, 0, translate('HTML::Parser is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.') ],
 
     [ 'SOAP::Lite', 0.50, 0, translate('SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.') ],
 
@@ -336,10 +333,6 @@ my @OPT = (
     [ 'MIME::Base64', 0, 0, translate('MIME::Base64 is required in order to enable comment registration.')],
 
     [ 'XML::Atom', 0, 0, translate('XML::Atom is required in order to use the Atom API.')],
-
-    [ 'Net::LDAP', 0, 0, translate('Net::LDAP is required in order to use the LDAP Authentication.')],
-
-    [ 'IO::Socket::SSL', 0, 0, translate('IO::Socket::SSL is required in order to use SSL/TLS connection with the LDAP Authentication.')],
 
     [ 'Cache::Memcached', 0, 0, translate('Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.')],
 

@@ -140,13 +140,6 @@
         </mtapp:widget>
     </mt:unless>
     <mtapp:widget
-        id="useful-links"
-        label="<__trans phrase="Useful Links">">
-        <ul>
-            <li><a href="<mt:var name="quickpost_js" escape="html">"><__trans phrase="QuickPost"></a></li>
-        </ul>
-    </mtapp:widget>
-    <mtapp:widget
         id="display-options-widget"
         label="<__trans phrase="Display Options">"
         label_link="javascript:void(0)"
@@ -176,9 +169,9 @@
                     label="<__trans phrase="Actions">"
                     label_class="display-options">
                     <ul class="action-button-options">
-                        <li><label><input type="radio" name="bar_position" value="Top"<mt:unless name="position_actions_both"><mt:if name="position_actions_top"> checked="checked"</mt:if></mt:unless> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Top"></label></li>
-                        <li><label><input type="radio" name="bar_position" value="Both"<mt:if name="position_actions_both"> checked="checked"</mt:if> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Both"></label></li>
-                        <li><label><input type="radio" name="bar_position" value="Bottom"<mt:unless name="position_actions_both"><mt:if name="position_actions_bottom"> checked="checked"</mt:if></mt:unless> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Bottom"></label></li>
+                        <li><label><input type="radio" name="bar_position" id="bar_position_top" value="Top"<mt:unless name="position_actions_both"><mt:if name="position_actions_top"> checked="checked"</mt:if></mt:unless> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Top"></label></li>
+                        <li><label><input type="radio" name="bar_position" id="bar_position_both" value="Both"<mt:if name="position_actions_both"> checked="checked"</mt:if> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Both"></label></li>
+                        <li><label><input type="radio" name="bar_position" id="bar_position_bottom" value="Bottom"<mt:unless name="position_actions_both"><mt:if name="position_actions_bottom"> checked="checked"</mt:if></mt:unless> onclick="setBarPosition(this)" class="rb" /> <__trans phrase="Bottom"></label></li>
                     </ul>
                 </mtapp:setting>
                 <mtapp:setting
@@ -202,6 +195,11 @@
             </div>
         </form>
     </mtapp:widget>
+    <mt:if name="object_type" eq="page">
+        <$MTApp:PageActions from="edit_page"$>
+    <mt:else>
+        <$MTApp:PageActions from="edit_entry"$>
+    </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="js_include" append="1">
     <!--// this MUST loaded after mt.js // -->
@@ -266,10 +264,10 @@ function saveEntryFieldOptions() {
         + '&_type=<mt:var name="object_type">'
         + '&blog_id=<mt:var name="blog_id">'
         + '&entry_prefs=' + mode
-        + '&magic_token=<mt:var name="magic_token">';
+        + '&magic_token=<mt:var name="magic_token">'
+        + '&bar_position=' + bar_position;
     if (mode == 'Custom') {
         param += custom_prefs;
-        param += '&bar_position=' + bar_position;
     }
     var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedEntryOptions };
     TC.Client.call(params);
@@ -300,7 +298,7 @@ function changedTextFormat(sel) {
     var option = sel.options[sel.selectedIndex].value;
     if ((cur_text_format != 'richtext') && (option == 'richtext')) {
         // warn user that changing to richtext is not reversible (easily)
-        if (!confirm("<__trans phrase="Are you sure you want to use the Rich Text editor?">")) {
+        if (!confirm("<__trans phrase="Are you sure you want to use the Rich Text editor?" escape="js">")) {
             // revert selection
             for (var i = 0; i < sel.options.length; i++) {
                 if (sel.options[i].value == cur_text_format)
@@ -345,6 +343,10 @@ function setFieldGroup(selection) {
     // set checkbox data based on which group was selected
     if (selection == 'Default') {
         selected_fields = default_fields;
+        var bar_position = document.getElementById('bar_position_bottom');
+        if (bar_position) {
+            bar_position.checked = true;
+        }
     } else if (selection == 'Custom') {
         selected_fields = custom_fields;
     }
@@ -379,6 +381,7 @@ function setFieldGroup(selection) {
                 }
             }
         }
+        setCustomFields();
     }
 
     return false;
@@ -458,7 +461,7 @@ function clearDirty () {
     app.clearDirty();
 }
 
-Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to your [_1] that will be lost." escape="singlequotes" params="<$mt:var name="object_label" lower_case="1"$>">'; 
+Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to your [_1] that will be lost." escape="js" params="<$mt:var name="object_label" lower_case="1"$>">'; 
 
 // array of tag names
 var tagList;
@@ -646,10 +649,10 @@ function highlightSwitch(selection) {
     if (highlightObject) {
         if (selection.value == 4) {
             highlightObject.className = 'highlight';
-            descriptionObject.innerHTML = '<__trans phrase="Publish On">';
+            descriptionObject.innerHTML = '<__trans phrase="Publish On" escape="js">';
         } else {
             highlightObject.className = 'default';
-            descriptionObject.innerHTML = '<__trans phrase="Publish Date">';
+            descriptionObject.innerHTML = '<__trans phrase="Publish Date" escape="js">';
         }
     }
     return false;
@@ -719,7 +722,8 @@ function listPreviousPings () {
         class="primary-button"
         ><__trans phrase="Save"></button>
     <button
-        mt:mode="preview_entry" name="preview_entry"
+        mt:mode="preview_entry"
+        name="preview_entry"
         type="submit"
         accesskey="v"
         title="<__trans phrase="Preview this [_1] (v)" params="<mt:var name="object_label" lower_case="1">">"
@@ -810,30 +814,30 @@ function listPreviousPings () {
                     <div class="field-content">
                         <div id="editor-content-toolbar" class="field-buttons editor-toolbar">
                             <div class="field-buttons-formatting pkg">
-                                <a href="javascript: void 0;" title="<__trans phrase="Decrease Text Size" escape="singlequotes">" class="command-font-size-smaller toolbar button"><b>a</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Increase Text Size" escape="singlequotes">" class="command-font-size-larger toolbar button"><b>A</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Bold" escape="singlequotes">" class="command-bold toolbar button"><b>B</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Italic" escape="singlequotes">" class="command-italic toolbar button"><b>I</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Underline" escape="singlequotes">" class="command-underline toolbar button"><b>U</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Strikethrough" escape="singlequotes">" class="command-strikethrough toolbar button"><b>S</b><s></s></a>
-                                <!-- a href="javascript: void 0;" title="<__trans phrase="Text Color" escape="singlequotes">" class="command-color toolbar button"><b>Text Color</b><s></s></a -->
-                                <a href="javascript: void 0;" title="<__trans phrase="Link" escape="singlequotes">" class="command-insert-link toolbar button"><b>Link</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Email Link" escape="singlequotes">" class="command-insert-email toolbar button"><b>Email Link</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Begin Blockquote" escape="singlequotes">" class="command-indent toolbar button"><b>Begin Blockquote</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="End Blockquote" escape="singlequotes">" class="command-outdent toolbar button"><b>End Blockquote</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Bulleted List" escape="singlequotes">" class="command-insert-unordered-list toolbar button"><b>Bulleted List</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Numbered List" escape="singlequotes">" class="command-insert-ordered-list toolbar button"><b>Numbered List</b><s></s></a>
-                                <!-- a href="javascript: void 0;" title="<__trans phrase="Left Align Item" escape="singlequotes">" class="command-enclosure-align-left toolbar button"><b>Left Align Item</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Center Item" escape="singlequotes">" class="command-enclosure-align-center toolbar button"><b>Center Item</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Right Align Item" escape="singlequotes">" class="command-enclosure-align-right toolbar button"><b>Right Align Item</b><s></s></a -->
-                                <a href="javascript: void 0;" title="<__trans phrase="Left Align Text" escape="singlequotes">" class="command-justify-left toolbar button"><b>Left Align Text</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Center Text" escape="singlequotes">" class="command-justify-center toolbar button"><b>Center Text</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Right Align Text" escape="singlequotes">" class="command-justify-right toolbar button"><b>Right Align Text</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Decrease Text Size" escape="html">" class="command-font-size-smaller toolbar button"><b>a</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Increase Text Size" escape="html">" class="command-font-size-larger toolbar button"><b>A</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Bold" escape="html">" class="command-bold toolbar button"><b>B</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Italic" escape="html">" class="command-italic toolbar button"><b>I</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Underline" escape="html">" class="command-underline toolbar button"><b>U</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Strikethrough" escape="html">" class="command-strikethrough toolbar button"><b>S</b><s></s></a>
+                                <!-- a href="javascript: void 0;" title="<__trans phrase="Text Color" escape="html">" class="command-color toolbar button"><b>Text Color</b><s></s></a -->
+                                <a href="javascript: void 0;" title="<__trans phrase="Link" escape="html">" class="command-insert-link toolbar button"><b>Link</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Email Link" escape="html">" class="command-insert-email toolbar button"><b>Email Link</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Begin Blockquote" escape="html">" class="command-indent toolbar button"><b>Begin Blockquote</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="End Blockquote" escape="html">" class="command-outdent toolbar button"><b>End Blockquote</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Bulleted List" escape="html">" class="command-insert-unordered-list toolbar button"><b>Bulleted List</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Numbered List" escape="html">" class="command-insert-ordered-list toolbar button"><b>Numbered List</b><s></s></a>
+                                <!-- a href="javascript: void 0;" title="<__trans phrase="Left Align Item" escape="html">" class="command-enclosure-align-left toolbar button"><b>Left Align Item</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Center Item" escape="html">" class="command-enclosure-align-center toolbar button"><b>Center Item</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Right Align Item" escape="html">" class="command-enclosure-align-right toolbar button"><b>Right Align Item</b><s></s></a -->
+                                <a href="javascript: void 0;" title="<__trans phrase="Left Align Text" escape="html">" class="command-justify-left toolbar button"><b>Left Align Text</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Center Text" escape="html">" class="command-justify-center toolbar button"><b>Center Text</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Right Align Text" escape="html">" class="command-justify-right toolbar button"><b>Right Align Text</b><s></s></a>
                                 <!-- a href="javascript: void 0;" title="Spell Check" class="command-spell-check toolbar button"><b>Check Spelling</b><s></s></a-->
-                                <a href="javascript: void 0;" title="<__trans phrase="Insert Image" escape="singlequotes">" mt:command="open-dialog" mt:dialog-params="__mode=list_assets&amp;_type=asset&amp;edit_field=<mt:var name="toolbar_edit_field">&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;filter=class&amp;filter_val=image" class="command-insert-image toolbar button"><b>Insert Image</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="Insert File" escape="singlequotes">" mt:command="open-dialog" mt:dialog-params="__mode=list_assets&amp;_type=asset&amp;edit_field=<mt:var name="toolbar_edit_field">&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1" class="command-insert-file toolbar button"><b>Insert File</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="WYSIWYG Mode" escape="singlequotes">" mt:command="set-mode-iframe" class="command-toggle-wysiwyg toolbar button"><b>WYSIWYG Mode</b><s></s></a>
-                                <a href="javascript: void 0;" title="<__trans phrase="HTML Mode" escape="singlequotes">" mt:command="set-mode-textarea" class="command-toggle-html toolbar button"><b>HTML Mode</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Insert Image" escape="html">" mt:command="open-dialog" mt:dialog-params="__mode=list_assets&amp;_type=asset&amp;edit_field=<mt:var name="toolbar_edit_field">&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;filter=class&amp;filter_val=image" class="command-insert-image toolbar button"><b>Insert Image</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="Insert File" escape="html">" mt:command="open-dialog" mt:dialog-params="__mode=list_assets&amp;_type=asset&amp;edit_field=<mt:var name="toolbar_edit_field">&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1" class="command-insert-file toolbar button"><b>Insert File</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="WYSIWYG Mode" escape="html">" mt:command="set-mode-iframe" class="command-toggle-wysiwyg toolbar button"><b>WYSIWYG Mode</b><s></s></a>
+                                <a href="javascript: void 0;" title="<__trans phrase="HTML Mode" escape="html">" mt:command="set-mode-textarea" class="command-toggle-html toolbar button"><b>HTML Mode</b><s></s></a>
                             </div>
                         </div>
                         <mt:setvarblock name="editor_content_height"><mt:if name="disp_prefs_height_body"><$mt:var name="disp_prefs_height_body"$><mt:else>194</mt:if></mt:setvarblock>
@@ -841,7 +845,7 @@ function listPreviousPings () {
                             <textarea id="editor-content-textarea" name="_text_" class="full-width" style="height: <$mt:var name="editor_content_height"$>px" mt:allow-tabs="1"></textarea>
                             <!-- the iframe bootstraps the js -->
                             <$mt:setvar name="delayed_bootstrap" value="1"$>
-                            <iframe tabindex="3" id="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html" style="height: <$mt:var name="editor_content_height"$>px"></iframe>
+                            <iframe tabindex="3" id="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html?cs=<$mt:var name="language_encoding"$>" style="height: <$mt:var name="editor_content_height"$>px"></iframe>
                             <input type="hidden" name="text_height" id="editor-content-height" value="<$mt:var name="editor_content_height"$>" />
                             <input type="hidden" id="editor-input-content" name="text" value="<$mt:var name="text" escape="html"$>" />
                             <input type="hidden" id="editor-input-extended" name="text_more" value="<$mt:var name="text_more" escape="html"$>" />
@@ -1046,11 +1050,11 @@ function listPreviousPings () {
             <input type="hidden" name="basename_old" id="basename_old" value="<$mt:var name="basename_old" escape="html"$>" />
             <input type="text" <mt:if name="object_type" eq="entry">disabled="disabled"</mt:if> name="basename" id="basename" value="<$mt:var name="basename"$>" onchange="setElementValue('basename', dirify(this.value))" tabindex="12" />
         <mt:if name="object_type" eq="page">
-        <$mt:var name="file_extension"$>
+        <span class="file-extension"><$mt:var name="file_extension"$></span>
         </mt:if>
         <mt:if name="object_type" eq="entry">
             <mt:if name="can_publish_post">
-            <a href="javascript:void(0);"id="basename-lock" title="<__trans phrase="Unlock this entry&rsquo;s output filename for editing">" onclick="return toggleFile()"><span>Unlock</span></a>
+            <a href="javascript:void(0);" id="basename-lock" title="<__trans phrase="Unlock this entry&rsquo;s output filename for editing">" onclick="return toggleFile()"><span>Unlock</span></a>
             </mt:if>
             <p class="alert-warning-inline" id="basename-warning" style="display: none">
                 <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
@@ -1095,10 +1099,8 @@ function listPreviousPings () {
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 </form>
 
-<mt:if name="object_type" eq="page">
-<$MTApp:PageActions from="edit_page"$>
-<mt:else>
-<$MTApp:PageActions from="edit_entry"$>
-</mt:if>
+<div id="quickpost">
+    <__trans phrase="<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser's toolbar then click it when you are on a site you want to blog about." params="<mt:var name="quickpost_js" escape="html">%%<$mt:var name="blog_name" escape="html"$>">
+</div>
 
 <mt:include name="include/footer.tmpl" id="footer_include">

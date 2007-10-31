@@ -1,7 +1,7 @@
 <script type="text/javascript" src="<$MTLink template="<__trans phrase="JavaScript">"$>"></script>
-<div class="module">
-    <h2 class="module-header"><__trans phrase="Sign In"></h2>
-    <div class="module-content">
+<div class="widget">
+    <h3 class="widget-header"><__trans phrase="Sign In"></h3>
+    <div class="widget-content">
 <script type="text/javascript">
 <!--
 var name, id, url, blog_ids;
@@ -43,19 +43,19 @@ function showMessage(commenter_name, commenter_id, commenter_url) {
         } else {
             url = null;
         }
-        var content = '<__trans phrase="You are signed in as ">';
+        var content = '<__trans phrase="You are signed in as " escape="js">';
         if (url) {
             content += '<a href="' + url + '">' + commenter_name + '</a>';
         } else {
             content += commenter_name;
         }
-        content += '.  (<a href="<$MTRemoteSignOutLink no_static="1"$>&static=' + static + '"><__trans phrase="sign out"></a>)';
+        content += '.  (<a href="<$MTRemoteSignOutLink no_static="1"$>&static=' + static + '"><__trans phrase="sign out" escape="js"></a>)';
         document.write(content);
     } else if (commenter_name) {
-        document.write('<__trans phrase="You do not have permission to sign in to this blog."> (<a href="<$MTRemoteSignOutLink no_static="1"$>&static=' + static + '"><__trans phrase="sign out"></a>)');
+        document.write('<__trans phrase="You do not have permission to sign in to this blog." escape="js"> (<a href="<$MTRemoteSignOutLink no_static="1"$>&static=' + static + '"><__trans phrase="sign out" escape="js"></a>)');
     } else {
     <MTIfRegistrationAllowed>
-        document.write('<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&blog_id=<$MTBlogID$>&static=' + static + '"><__trans phrase="Sign In"></a>');
+        document.write('<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&blog_id=<$MTBlogID$>&static=' + static + '"><__trans phrase="Sign In" escape="js"></a>');
     </MTIfRegistrationAllowed>
     }
 }

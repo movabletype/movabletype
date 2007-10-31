@@ -6,8 +6,7 @@
 package MT::Role;
 
 use strict;
-use MT::Object;
-@MT::Role::ISA = qw(MT::Object);
+use base qw( MT::Object );
 
 # NOTE: Keep the role_mask fields defined here in sync with those in
 # MT::Permission.

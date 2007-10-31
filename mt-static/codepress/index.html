@@ -15,10 +15,17 @@
         switch ( v[ 0 ] ) {
             case "engine":
             case "language":
-                eval( v[ 0 ] + "=unescape('" + v[ 1 ].replace( /\+/g, " " ) + "')" );
+                eval( v[ 0 ] + "=unescape('" + v[ 1 ].replace( /\+/g, " " ).replace( /'|"|<|>/g, '' ) + "')" );
                 break;
         }
     }
+    
+    if ( window.engine )
+        engine = engine.replace( /'|"|<|>/g, '' );
+
+    if ( window.language )
+        language = language.replace( /'|"|<|>/g, '' );
+
 
 	var ts = ( new Date ).getTime();
 

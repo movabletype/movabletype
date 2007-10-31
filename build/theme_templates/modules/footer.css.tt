@@ -10,17 +10,3 @@
 #footer-content {
     margin: 20px 0;
 }
-
-#footer .widget {
-    margin: 10px 0;
-}
-
-#footer .widget-content {
-    padding-right: 0;
-    padding-left: 0;
-}
-
-#footer .widget-powered .widget-content {
-    padding: 0;
-    text-align: left;
-}

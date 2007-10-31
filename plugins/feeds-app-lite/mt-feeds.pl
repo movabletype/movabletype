@@ -1,170 +1,17 @@
 # Copyright 2002-2006 Appnel Internet Solutions, LLC
 # This code is distributed with permission by Six Apart
-package MT::FeedsLite;
-use strict;
-
-use vars qw($VERSION);
-$VERSION = '1.02';
-
-my $plugin = MT::Plugin::FeedsLite->new;
-MT->add_plugin($plugin);
-
-use constant LITE  => 'MT::Plugin::FeedsLite';
-use constant ENTRY => 'MT::Plugin::FeedsLite::entry';
-
-# Returns link if okay, "#" if not.
-sub sanitize_link {
-    my $link = shift;
-    $link = '' unless defined $link;
-    $link =~ s/^\s+//;
-    # check for malicious protocols
-    require MT::Util;
-    my $dec_val = MT::Util::decode_html($link);
-    $dec_val =~ s/&#0*58(?:=;|[^0-9])/:/;
-    $dec_val =~ s/&#x0*3[Aa](?:=;|[^a-fA-F0-9])/:/;
-    if ((my $prot) = $dec_val =~ m/^(.+?):/) {
-        return "#" if $prot =~ m/[\r\n\t]/;
-        $prot =~ s/\s+//gs;
-        return "#" if $prot =~ m/[^a-zA-Z0-9\+]/;
-        return "#" if $prot =~ m/script$/i;
-    }
-    return "#" unless $link =~ m/^https?:/i;
-    $link;
-}
-
-sub feed {
-    my ($ctx, $args, $cond) = @_;
-    my $uri = $args->{uri}
-      or return
-      $ctx->error(
-         $plugin->translate(
-                       "'[_1]' is a required argument of [_2]", 'uri', 'MTFeeds'
-         )
-      );
-    require MT::Feeds::Lite;
-    my $lite = MT::Feeds::Lite->fetch($uri)
-      or return '';    # or should we insert an error message in the template?
-    my $entries = $lite->entries;
-    $ctx->stash(LITE, $lite);
-    my $builder = $ctx->stash('builder');
-    my $tokens  = $ctx->stash('tokens');
-    my $html    = '';
-    my $out     = $builder->build($ctx, $tokens, $cond)
-      or return $ctx->error($builder->errstr);
-    $ctx->stash(LITE, undef);
-    $out;
-}
-
-sub feed_title {
-    my ($ctx, $args) = @_;
-    my $lite = $ctx->stash(LITE)
-      or return _error($ctx);
-    require MT::Util;
-    my $title = $lite->find_title($lite->feed);
-    $title = '' unless defined $title;
-    $title = MT::Util::remove_html($title)
-        unless (exists $args->{remove_html}) && !$args->{remove_html};
-    $title = MT::Util::encode_html($title)
-        unless (exists $args->{encode_html}) && !$args->{encode_html};
-    delete $args->{encode_html} if exists $args->{encode_html};
-    delete $args->{remove_html} if exists $args->{remove_html};
-    $title;
-}
-
-sub feed_link {
-    my $ctx  = shift;
-    my $lite = $ctx->stash(LITE)
-      or return _error($ctx);
-    my $link = $lite->find_link($lite->feed);
-    sanitize_link($link);
-}
-
-sub entries {
-    my ($ctx, $args, $cond) = @_;
-    my $lite = $ctx->stash(LITE)
-      or return _error($ctx);
-    my $e      = $lite->entries;
-    my $offset = $args->{offset} || 0;
-    my $last   =
-      ($args->{lastn} && $args->{lastn} < @$e) ? $offset + $args->{lastn} : @$e;
-    my $builder = $ctx->stash('builder');
-    my $tokens  = $ctx->stash('tokens');
-    my $html    = '';
-    for (my $i = $offset ; $i < $last ; $i++) {
-        $ctx->stash(ENTRY, $e->[$i]);
-        my $out = $builder->build($ctx, $tokens, $cond)
-          or return $ctx->error($builder->errstr);
-        $html .= $out;
-    }
-    $ctx->stash(ENTRY, undef);
-    $html;
-}
-
-sub entry_title {
-    my ($ctx, $args, $cond) = @_;
-    my $lite = $ctx->stash(LITE)
-      or return _error($ctx);
-    my $entry = $ctx->stash(ENTRY)
-      or return _error($ctx);
-    my $title = $lite->find_title($entry);
-    $title = '' unless defined $title;
-    $title = MT::Util::remove_html($title)
-        unless (exists $args->{remove_html}) && !$args->{remove_html};
-    $title = MT::Util::encode_html($title)
-        unless (exists $args->{encode_html}) && !$args->{encode_html};
-    delete $args->{encode_html} if exists $args->{encode_html};
-    delete $args->{remove_html} if exists $args->{remove_html};
-    $title;
-}
-
-sub entry_link {
-    my $ctx  = shift;
-    my $lite = $ctx->stash(LITE)
-      or return _error($ctx);
-    my $entry = $ctx->stash(ENTRY)
-      or return _error($ctx);
-    my $link = $lite->find_link($entry);
-    sanitize_link($link);
-}
-
-sub include {
-    my ($ctx, $args) = @_;
-    my $uri = $args->{uri}
-      or return
-      $ctx->error(
-                  $plugin->translate(
-                                "'[_1]' is a required argument of [_2]", 'uri',
-                                'MTFeedInclude'
-                  )
-      );
-    my $lastn = $args->{lastn} ? ' lastn="' . $args->{lastn} . '"' : '';
-    my $body  = <<BODY;
-<MTFeed uri="$uri">
-<h2><\$MTFeedTitle\$></h2>
-<ul><MTFeedEntries$lastn>
-<li><a href="<\$MTFeedEntryLink encode_html="1"\$>"><\$MTFeedEntryTitle\$></a></li>
-</MTFeedEntries></ul>
-</MTFeed>
-BODY
-    require MT::Template;
-    my $t = MT::Template->new;
-    my $c = MT::Template::Context->new;
-    $t->blog_id($ctx->stash('blog_id'));
-    $t->text($body);
-    $t->build($c) or $ctx->error($t->errstr);
-}
-
-#--- utility
-
-sub _error {
-    $_[0]->error($plugin->translate('MT[_1] was not used in the proper context.',
-                 $_[0]->stash('tag')));
-}
 
 package MT::Plugin::FeedsLite;
+
 use strict;
 use base qw( MT::Plugin );
 
+our $VERSION = '1.02';
+
+my $plugin = __PACKAGE__->new;
+MT->add_plugin($plugin);
+
+sub instance    { $plugin }
 sub id          { 'FeedsAppLite' }
 sub key         { __PACKAGE__ }
 sub name        { 'Feeds.App Lite' }
@@ -193,16 +40,9 @@ sub init {
                     feedswidget_save     => '$FeedsAppLite::FeedsWidget::CMS::save',
                 },
                 page_actions => {
-                    blog => {
-                        feeds_app_lite => {
-                            label => 'Feeds.App Lite',
-                            mode  => 'feedswidget_start',
-                            permission => 'edit_templates',
-                        }
-                    },
                     list_templates => {
                         'feeds_app_lite' => {
-                            label => 'Feeds.App Lite',
+                            label => 'Create a Feed Widget',
                             dialog  => 'feedswidget_start',
                             permission => 'edit_templates',
                         }
@@ -212,15 +52,15 @@ sub init {
         },
         tags => {
             block => {
-                Feed => \&MT::FeedsLite::feed,
-                FeedEntries => \&MT::FeedsLite::entries,
+                Feed => 'MT::Feeds::Tags::feed',
+                FeedEntries => 'MT::Feeds::Tags::entries',
             },
             function => {
-                FeedTitle => \&MT::FeedsLite::feed_title,
-                FeedLink => \&MT::FeedsLite::feed_link,
-                FeedEntryTitle => \&MT::FeedsLite::entry_title,
-                FeedEntryLink => \&MT::FeedsLite::entry_link,
-                FeedInclude => \&MT::FeedsLite::include,
+                FeedTitle => 'MT::Feeds::Tags::feed_title',
+                FeedLink => 'MT::Feeds::Tags::feed_link',
+                FeedEntryTitle => 'MT::Feeds::Tags::entry_title',
+                FeedEntryLink => 'MT::Feeds::Tags::entry_link',
+                FeedInclude => 'MT::Feeds::Tags::include',
             },
         },
     };
@@ -230,9 +70,9 @@ sub load_config {
     my $plugin = shift;
     my ($param, $scope) = @_;
     $plugin->SUPER::load_config(@_);
-    my $blog_id = $scope;
-    $blog_id =~ s{\D}{}g;
-    $param->{blog_id}    = $blog_id;
+    if ($scope =~ m/^blog:(\d+)$/) {
+        $param->{blog_id} = $1;
+    }
 }
 
 1;

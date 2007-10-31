@@ -1,4 +1,5 @@
 <mt:if name="is_full_screen">
+    <$mt:setvar name="screen_class" value="rebuilding-screen"$>
     <mt:setvarblock name="page_title"><__trans phrase="Publishing..."></mt:setvarblock>
     <mt:include name="include/header.tmpl">
 <mt:else>
@@ -30,6 +31,7 @@ setTimeout('doRedirect()', 200);
 <mt:if name="is_one_index">
     <mtapp:statusmsg
         id="is_one_index"
+        can_close="0"
         class="publishing">
         <__trans phrase="Publishing [_1]" params="<mt:var name="build_type_name" escape="html"> ">...
     </mtapp:statusmsg>
@@ -37,20 +39,23 @@ setTimeout('doRedirect()', 200);
 <mt:if name="is_individual">
     <mtapp:statusmsg
         id="is_individual"
+        can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1] pages [_2]" params="<mt:var name="build_type_name">%%<mt:var name="indiv_range"> ">...
+        <__trans phrase="Publishing [_1] [_2]" params="<mt:var name="build_type_name">%%<mt:var name="indiv_range"> ">...
     </mtapp:statusmsg>
 <mt:else>
 <mt:if name="is_entry">
 <mt:if name="dynamic">
     <mtapp:statusmsg
         id="is_entry"
+        can_close="0"
         class="publishing">
         <__trans phrase="Publishing [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">...
     </mtapp:statusmsg>
 <mt:else>
     <mtapp:statusmsg
         id="publishing"
+        can_close="0"
         class="publishing">
         <__trans phrase="Publishing [_1]" params="<mt:var name="build_type_name" escape="html"> ">...
     </mtapp:statusmsg>
@@ -59,19 +64,31 @@ setTimeout('doRedirect()', 200);
 <mt:if name="dynamic">
     <mtapp:statusmsg
         id="dynamic"
+        can_close="0"
         class="publishing">
         <__trans phrase="Publishing [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">...
     </mtapp:statusmsg>
 <mt:else>
 <mt:if name="build_type_name">
+<mt:if name="archives">
     <mtapp:statusmsg
         id="build_type_name"
+        can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1] pages" params="<mt:var name="build_type_name" escape="html"> ">...
+        <__trans phrase="Publishing [_1] archives" params="<mt:var name="build_type_name" escape="html"> ">...
     </mtapp:statusmsg>
+<mt:else>
+    <mtapp:statusmsg
+        id="build_type_name"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1] templates" params="<mt:var name="build_type_name" escape="html"> ">...
+    </mtapp:statusmsg>
+</mt:if>
 <mt:else>
 <mtapp:statusmsg
     id="generic"
+    can_close="0"
     class="publishing">
     <__trans phrase="_REBUILD_PUBLISH">...
 </mtapp:statusmsg>

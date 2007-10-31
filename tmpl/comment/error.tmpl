@@ -8,8 +8,15 @@
     <mt:var name="error">
 </mtapp:statusmsg>
 
-<div class="right">
-<input type="button" onclick="<mt:var name="goback">" value="<__trans phrase="Go Back">" />
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions right">
+        <button
+            onclick="<mt:var name="goback">"
+            accesskey="s"
+            title="<__trans phrase="Go Back (s)">"
+            class="primary-button"
+            ><__trans phrase="Go Back"></button>
+    </div>
 </div>
 
 <mt:include name="../cms/include/chromeless_footer.tmpl">

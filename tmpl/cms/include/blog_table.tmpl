@@ -27,7 +27,7 @@
             <td align="right"><mt:var name="num_authors"></td>
             <td><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
             <mt:unless name="mode_search_replace"><mt:unless name="is_administrator"><mt:if name="can_administer_blog">
-            <td><a href="javascript:void(0)" onclick="return doRemoveBlog('<mt:var name="id">')"><img src="<mt:var name="static_uri">images/nav_icons/mini/delete.gif" width="9" height="11" alt="<__trans phrase="Delete">" /></a></td>
+            <td><a href="javascript:void(0)" onclick="doRemoveBlog('<mt:var name="id">'); return false;"><img src="<mt:var name="static_uri">images/nav_icons/mini/delete.gif" width="9" height="11" alt="<__trans phrase="Delete">" /></a></td>
             <mt:else><td>&nbsp;</td></mt:if></mt:unless></mt:unless>
         </tr>
     <mt:if name="__last__">

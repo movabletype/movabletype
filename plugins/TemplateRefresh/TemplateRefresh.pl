@@ -16,7 +16,7 @@ BEGIN {
         new MT::Plugin::TemplateRefresh({
             name => "Template Backup and Refresh",
             description =>
-"<MT_TRANS phrase=\"Backup and refresh existing templates to Movable Type's default templates.\">",
+'<MT_TRANS phrase="Backup and refresh existing templates to Movable Type\'s default templates.">',
             version => 1.2,
             registry => {
                 applications => {

@@ -39,6 +39,14 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("TrackBack");
+}
+
+sub class_label_plural {
+    MT->translate("TrackBacks");
+}
+
 sub remove {
     my $tb = shift;
     $tb->remove_children({ key => 'tb_id' }) or return;

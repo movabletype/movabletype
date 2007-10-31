@@ -503,7 +503,7 @@ sub _send_ping_notification {
           );
         my $spam_link = $base
           . $app->uri_params(
-            'mode' => 'unapprove_item',
+            'mode' => 'handle_junk',
             args   => {
                 blog_id => $blog->id,
                 '_type' => 'ping',

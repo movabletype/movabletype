@@ -2,8 +2,10 @@ package MT::Worker::Publish;
 
 use strict;
 use base qw( TheSchwartz::Worker );
+
 use TheSchwartz::Job;
 use MT::FileInfo;
+
 
 sub work {
     my $class = shift;
@@ -31,6 +33,9 @@ sub work {
         my $fi = MT::FileInfo->load($fi_id);
 
         if ($fi) {
+            # Important: prevents requeuing!
+            $fi->{from_queue} = 1;
+
             my $mtime = (stat($fi->file_path))[9];
 
             my $throttle = $throttles->{$fi->template_id}

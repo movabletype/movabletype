@@ -131,8 +131,6 @@
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
-<div id="search-replace">
-
 <div id="search-form">
     <form name="search_form" method="post" action="<mt:var name="script_url">" onsubmit="doSearch()">
     <input type="hidden" name="__mode" value="search_replace" />
@@ -152,235 +150,231 @@
 
 <div class="tabs">
     <ul>
-        <mt:if name="blog_id"><mt:if name="can_edit_entries">
+<mt:if name="blog_id">
+    <mt:if name="can_edit_entries">
         <li<mt:if name="search_entry"> class="yah"</mt:if> id="results-entry-tab"><a href="javascript:void(0)" onclick="reSearch('entry'); return false"><span><__trans phrase="Entries"></span></a></li>
         <li<mt:if name="search_comment"> class="yah"</mt:if> id="results-comment-tab"><a href="javascript:void(0)" onclick="reSearch('comment'); return false"><span><__trans phrase="Comments"></span></a></li>
         <li<mt:if name="search_ping"> class="yah"</mt:if> id="results-ping-tab"><a href="javascript:void(0)" onclick="reSearch('ping'); return false"><span><__trans phrase="TrackBacks"></span></a></li>
-        </mt:if>
-        <mt:if name="can_manage_pages">
+    </mt:if>
+    <mt:if name="can_manage_pages">
         <li<mt:if name="search_page"> class="yah"</mt:if> id="results-page-tab"><a href="javascript:void(0)" onclick="reSearch('page'); return false"><span><__trans phrase="Pages"></span></a></li>
-        </mt:if>
-        <mt:if name="can_edit_templates">
+    </mt:if>
+    <mt:if name="can_edit_templates">
         <li<mt:if name="search_template"> class="yah"</mt:if> id="results-template-tab"><a href="javascript:void(0)" onclick="reSearch('template'); return false"><span><__trans phrase="Templates"></span></a></li>
-        </mt:if>
-        <mt:if name="can_edit_config">
-        <li<mt:if name="search_commenter"> class="yah"</mt:if> id="results-commenter-tab"><a href="javascript:void(0)" onclick="reSearch('commenter'); return false"><span><__trans phrase="Commenters"></span></a></li>
-        </mt:if>
-        <mt:else>
-        <li<mt:if name="search_entry"> class="yah"</mt:if> id="results-entry-tab"><a href="javascript:void(0)" onclick="reSearch('entry'); return false"><span><__trans phrase="Entries"></span></a></li>
-        <li<mt:if name="search_comment"> class="yah"</mt:if> id="results-comment-tab"><a href="javascript:void(0)" onclick="reSearch('comment'); return false"><span><__trans phrase="Comments"></span></a></li>
-        <li<mt:if name="search_ping"> class="yah"</mt:if> id="results-ping-tab"><a href="javascript:void(0)" onclick="reSearch('ping'); return false"><span><__trans phrase="TrackBacks"></span></a></li>
-        <li<mt:if name="search_page"> class="yah"</mt:if> id="results-page-tab"><a href="javascript:void(0)" onclick="reSearch('page'); return false"><span><__trans phrase="Pages"></span></a></li>
-        <li<mt:if name="search_template"> class="yah"</mt:if> id="results-template-tab"><a href="javascript:void(0)" onclick="reSearch('template'); return false"><span><__trans phrase="Templates"></span></a></li>
-        </mt:if>
-        <mt:if name="can_view_log">
-        <li<mt:if name="search_log"> class="yah"</mt:if> id="results-log-tab"><a href="javascript:void(0)" onclick="reSearch('log'); return false"><span><__trans phrase="Activity Log"></span></a></li>
-        </mt:if>
-        <mt:if name="system_overview_nav"><mt:if name="is_administrator">
+    </mt:if>
+    <mt:if name="can_administer_blog">
         <li<mt:if name="search_author"> class="yah"</mt:if> id="results-author-tab"><a href="javascript:void(0)" onclick="reSearch('author'); return false"><span><__trans phrase="Users"></span></a></li>
-        </mt:if>
-        </mt:if>
-        <mt:if name="system_overview_nav">
+    </mt:if>
+<mt:else>
+        <li<mt:if name="search_entry"> class="yah"</mt:if> id="results-entry-tab"><a href="javascript:void(0)" onclick="reSearch('entry'); return false"><span><__trans phrase="Entries"></span></a></li>
+        <li<mt:if name="search_comment"> class="yah"</mt:if> id="results-comment-tab"><a href="javascript:void(0)" onclick="reSearch('comment'); return false"><span><__trans phrase="Comments"></span></a></li>
+        <li<mt:if name="search_ping"> class="yah"</mt:if> id="results-ping-tab"><a href="javascript:void(0)" onclick="reSearch('ping'); return false"><span><__trans phrase="TrackBacks"></span></a></li>
+        <li<mt:if name="search_page"> class="yah"</mt:if> id="results-page-tab"><a href="javascript:void(0)" onclick="reSearch('page'); return false"><span><__trans phrase="Pages"></span></a></li>
+        <li<mt:if name="search_template"> class="yah"</mt:if> id="results-template-tab"><a href="javascript:void(0)" onclick="reSearch('template'); return false"><span><__trans phrase="Templates"></span></a></li>
+</mt:if>
+<mt:if name="can_view_log">
+        <li<mt:if name="search_log"> class="yah"</mt:if> id="results-log-tab"><a href="javascript:void(0)" onclick="reSearch('log'); return false"><span><__trans phrase="Activity Log"></span></a></li>
+</mt:if>
+<mt:if name="system_overview_nav">
+    <mt:if name="is_administrator">
+        <li<mt:if name="search_author"> class="yah"</mt:if> id="results-author-tab"><a href="javascript:void(0)" onclick="reSearch('author'); return false"><span><__trans phrase="Users"></span></a></li>
+    </mt:if>
+</mt:if>
+<mt:if name="system_overview_nav">
         <li<mt:if name="search_blog"> class="yah"</mt:if> id="results-blog-tab"><a href="javascript:void(0)" onclick="reSearch('blog'); return false"><span><__trans phrase="Weblogs"></span></a></li>
-        </mt:if></mt:if>
+</mt:if>
     </ul>
 </div>
 
 <div class="search-bar">
-<div class="search-bar-inner">
+    <div class="search-bar-inner">
 
 <mt:if name="have_results">
-<mt:if name="can_replace">
-<div class="search-bar-toggle">
-<label for="search-replace-toggle-search"><input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search Again"></label>
-&nbsp;
-<label for="search-replace-toggle-replace"><input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search &amp; Replace"></label>
-</div>
-</mt:if>
+    <mt:if name="can_replace">
+        <div class="search-bar-toggle">
+            <label for="search-replace-toggle-search"><input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search Again"></label>
+            &nbsp;
+            <label for="search-replace-toggle-replace"><input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search &amp; Replace"></label>
+        </div>
+    </mt:if>
 </mt:if>
 
-<div id="search-bar-search-field">
-<input name="search" id="search" value="<mt:var name="search" escape="html">" />
-<input type="button" value="<__trans phrase="Search">" onclick="doSearch()" accesskey="s" title="<__trans phrase="Submit search (s)">" />
-</div>
+        <div id="search-bar-search-field" class="pkg">
+            <input name="search" id="search" value="<mt:var name="search" escape="html">" />
+            <div class="search-button-wrapper">
+                <button
+                    onclick="doSearch()"
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Submit search (s)">"
+                    id="search-button"
+                    class="big-button primary-button"
+                    ><__trans phrase="Search"></button>
+            </div>
+        </div>
 
 <mt:if name="have_results">
-<div id="search-bar-replace-fields" style="display: none;">
-<div class="search-bar-replace-wrapper">
-<div class="search-bar-replace-label"><label for="search-alt"><__trans phrase="Search">:</label></div>
-<div class="search-bar-replace-field"><input name="search-alt" id="search-alt" value="<mt:var name="search" escape="html">" disabled="disabled" /></div>
-</div>
-<div class="search-bar-replace-wrapper">
-<div class="search-bar-replace-label"><label for="replace"><__trans phrase="Replace">:</label></div>
-<div class="search-bar-replace-field">
-<input name="replace" id="replace" value="<mt:var name="replace" escape="html">" />
-<input type="button" value="<__trans phrase="Replace Checked">" onclick="doReplace()" />
-</div>
-</div>
-</div>
+        <div id="search-bar-replace-fields" style="display: none;">
+            <div class="search-bar-replace-wrapper pkg">
+                <div class="search-bar-replace-label"><label for="search-alt"><__trans phrase="Search"></label></div>
+                <div class="search-bar-replace-field"><input name="search-alt" id="search-alt" value="<mt:var name="search" escape="html">" disabled="disabled" /></div>
+            </div>
+            <div class="search-bar-replace-wrapper pkg">
+                <div class="search-bar-replace-label"><label for="replace"><__trans phrase="Replace"></label></div>
+                <div class="search-bar-replace-field">
+                    <input name="replace" id="replace" value="<mt:var name="replace" escape="html">" />
+                    <button
+                        onclick="doSearch(); return false"
+                        type="submit"
+                        id="replace-button"
+                        class="big-button primary-button"
+                        ><__trans phrase="Replace Checked"></button>
+                </div>
+            </div>
+        </div>
 </mt:if>
 
-<div id="search-bar-advanced-search">
-<label for="case"><input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Case Sensitive"></label>
-&nbsp;
-<label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Regex Match"></label>
-&nbsp;
-<label for="is_limited"><input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'limited-fields')" /> <__trans phrase="Limited Fields"></label>
+        <div id="search-bar-advanced-search">
+            <label for="case"><input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Case Sensitive"></label>
+            &nbsp;
+            <label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Regex Match"></label>
+            &nbsp;
+            <label for="is_limited"><input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'limited-fields')" /> <__trans phrase="Limited Fields"></label>
 <mt:if name="can_search_by_date">
-&nbsp;
-<label for="is_dateranged"><input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'date-range')" /> <__trans phrase="Date Range"></label>
+            &nbsp;
+            <label for="is_dateranged"><input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'date-range')" /> <__trans phrase="Date Range"></label>
 </mt:if>
 <mt:if name="can_search_junk">
-&nbsp;
-<label for="is_junk"><input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Reported as Spam?"></label>
+            &nbsp;
+            <label for="is_junk"><input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Reported as Spam?"></label>
 </mt:if>
-</div>
+        </div>
 
 <mt:if name="have_results">
-<div id="search-bar-advanced-replace">
-<label><input type="checkbox" name="replace-case" value="1"<mt:if name="case"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Case Sensitive"></label>
-&nbsp;
-<label><input type="checkbox" name="replace-is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Regex Match"></label>
-&nbsp;
-<label><input type="checkbox" name="replace-is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Limited Fields"></label>
-<mt:if name="can_search_by_date">
-&nbsp;
-<label><input type="checkbox" name="replace-is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Date Range"></label>
+        <div id="search-bar-advanced-replace">
+            <label><input type="checkbox" name="replace-case" value="1"<mt:if name="case"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Case Sensitive"></label>
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Regex Match"></label>
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Limited Fields"></label>
+    <mt:if name="can_search_by_date">
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Date Range"></label>
+    </mt:if>
+    <mt:if name="can_search_junk">
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Reported as Spam?"></label>
+    </mt:if>
+        </div>
 </mt:if>
-<mt:if name="can_search_junk">
-&nbsp;
-<label><input type="checkbox" name="replace-is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Reported as Spam?"></label>
-</mt:if>
-</div>
-</mt:if>
-
-</div>
+    </div>
 </div>
 
 <div class="advanced-options" id="limited-fields"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
 <mt:if name="search_entry">
-<div id="weblog-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<mt:if name="search_cols_title"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Title"></label></li>
-<li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Entry Body"></label></li>
-<li><label for="search_cols-text_more"><input type="checkbox" id="search_cols-text_more" name="search_cols" value="text_more"<mt:if name="search_cols_text_more"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Extended Entry"></label></li>
-<li><label for="search_cols-keywords"><input type="checkbox" id="search_cols-keywords" name="search_cols" value="keywords"<mt:if name="search_cols_keywords"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Keywords"></label></li>
-<li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<mt:if name="search_cols_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
-<li><label for="search_cols-basename"><input type="checkbox" id="search_cols-basename" name="search_cols" value="basename"<mt:if name="search_cols_basename"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Basename"></label></li>
-</ul>
-</div>
+    <div id="weblog-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<mt:if name="search_cols_title"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Title"></label></li>
+            <li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Entry Body"></label></li>
+            <li><label for="search_cols-text_more"><input type="checkbox" id="search_cols-text_more" name="search_cols" value="text_more"<mt:if name="search_cols_text_more"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Extended Entry"></label></li>
+            <li><label for="search_cols-keywords"><input type="checkbox" id="search_cols-keywords" name="search_cols" value="keywords"<mt:if name="search_cols_keywords"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Keywords"></label></li>
+            <li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<mt:if name="search_cols_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
+            <li><label for="search_cols-basename"><input type="checkbox" id="search_cols-basename" name="search_cols" value="basename"<mt:if name="search_cols_basename"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Basename"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
 <mt:if name="search_comment">
-<div id="comment-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comment Text"></label></li>
-<li><label for="search_cols-author"><input type="checkbox" id="search_cols-author" name="search_cols" value="author"<mt:if name="search_cols_author"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Name"></label></li>
-<li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<mt:if name="search_cols_email"> checked="checked"</mt:if> class="cb" /> <__trans phrase="E-mail Address"></label></li>
-<li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<mt:if name="search_cols_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="URL"></label></li>
-<li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<mt:if name="search_cols_ip"> checked="checked"</mt:if> class="cb" /> <__trans phrase="IP Address"></label></li>
-</ul>
-</div>
+    <div id="comment-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comment Text"></label></li>
+            <li><label for="search_cols-author"><input type="checkbox" id="search_cols-author" name="search_cols" value="author"<mt:if name="search_cols_author"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Name"></label></li>
+            <li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<mt:if name="search_cols_email"> checked="checked"</mt:if> class="cb" /> <__trans phrase="E-mail Address"></label></li>
+            <li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<mt:if name="search_cols_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="URL"></label></li>
+            <li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<mt:if name="search_cols_ip"> checked="checked"</mt:if> class="cb" /> <__trans phrase="IP Address"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
-<mt:if name="search_commenter">
-<div id="comment-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-nickname"><input type="checkbox" id="search_cols-nickname" name="search_cols" value="nickname"<mt:if name="search_cols_nickname"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Name"></label></li>
-<li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<mt:if name="search_cols_email"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Email Address"></label></li>
-<li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<mt:if name="search_cols_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="URL"></label></li>
-</ul>
-</div>
-</mt:if>
-
 <mt:if name="search_ping">
-<div id="ping-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<mt:if name="search_cols_title"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Title"></label></li>
-<li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<mt:if name="search_cols_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
-<li><label for="search_cols-source_url"><input type="checkbox" id="search_cols-source_url" name="search_cols" value="source_url"<mt:if name="search_cols_source_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Source URL"></label></li>
-<li><label for="search_cols-blog_name"><input type="checkbox" id="search_cols-blog_name" name="search_cols" value="blog_name"<mt:if name="search_cols_blog_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Blog Name"></label></li>
-<li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<mt:if name="search_cols_ip"> checked="checked"</mt:if> class="cb" /> <__trans phrase="IP Address"></label></li>
-</ul>
-</div>
+    <div id="ping-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<mt:if name="search_cols_title"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Title"></label></li>
+            <li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<mt:if name="search_cols_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
+            <li><label for="search_cols-source_url"><input type="checkbox" id="search_cols-source_url" name="search_cols" value="source_url"<mt:if name="search_cols_source_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Source URL"></label></li>
+            <li><label for="search_cols-blog_name"><input type="checkbox" id="search_cols-blog_name" name="search_cols" value="blog_name"<mt:if name="search_cols_blog_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Blog Name"></label></li>
+            <li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<mt:if name="search_cols_ip"> checked="checked"</mt:if> class="cb" /> <__trans phrase="IP Address"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
 <mt:if name="search_page">
-<div id="page-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<mt:if name="search_cols_title"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Title"></label></li>
-<li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Page Body"></label></li>
-<li><label for="search_cols-text_more"><input type="checkbox" id="search_cols-text_more" name="search_cols" value="text_more"<mt:if name="search_cols_text_more"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Extended Page"></label></li>
-<li><label for="search_cols-keywords"><input type="checkbox" id="search_cols-keywords" name="search_cols" value="keywords"<mt:if name="search_cols_keywords"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Keywords"></label></li>
-<li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<mt:if name="search_cols_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
-<li><label for="search_cols-basename"><input type="checkbox" id="search_cols-basename" name="search_cols" value="basename"<mt:if name="search_cols_basename"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Basename"></label></li>
-</ul>
-</div>
+    <div id="page-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<mt:if name="search_cols_title"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Title"></label></li>
+            <li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Page Body"></label></li>
+            <li><label for="search_cols-text_more"><input type="checkbox" id="search_cols-text_more" name="search_cols" value="text_more"<mt:if name="search_cols_text_more"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Extended Page"></label></li>
+            <li><label for="search_cols-keywords"><input type="checkbox" id="search_cols-keywords" name="search_cols" value="keywords"<mt:if name="search_cols_keywords"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Keywords"></label></li>
+            <li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<mt:if name="search_cols_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
+            <li><label for="search_cols-basename"><input type="checkbox" id="search_cols-basename" name="search_cols" value="basename"<mt:if name="search_cols_basename"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Basename"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
 <mt:if name="search_template">
-<div id="template-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<mt:if name="search_cols_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Template Name"></label></li>
-<li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Text"></label></li>
-<li><label for="search_cols-outfile"><input type="checkbox" id="search_cols-outfile" name="search_cols" value="outfile"<mt:if name="search_cols_outfile"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Output Filename"></label></li>
-<li><label for="search_cols-linked_file"><input type="checkbox" id="search_cols-linked_file" name="search_cols" value="linked_file"<mt:if name="search_cols_linked_file"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Linked Filename"></label></li>
-</ul>
-</div>
+    <div id="template-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<mt:if name="search_cols_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Template Name"></label></li>
+            <li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<mt:if name="search_cols_text"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Text"></label></li>
+            <li><label for="search_cols-outfile"><input type="checkbox" id="search_cols-outfile" name="search_cols" value="outfile"<mt:if name="search_cols_outfile"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Output Filename"></label></li>
+            <li><label for="search_cols-linked_file"><input type="checkbox" id="search_cols-linked_file" name="search_cols" value="linked_file"<mt:if name="search_cols_linked_file"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Linked Filename"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
 <mt:if name="search_log">
-<div id="log-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-message"><input type="checkbox" id="search_cols-message" name="search_cols" value="message"<mt:if name="search_cols_message"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Log Message"></label></li>
-<li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<mt:if name="search_cols_ip"> checked="checked"</mt:if> class="cb" /> <__trans phrase="IP Address"></label></li>
-</ul>
-</div>
+    <div id="log-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-message"><input type="checkbox" id="search_cols-message" name="search_cols" value="message"<mt:if name="search_cols_message"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Log Message"></label></li>
+            <li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<mt:if name="search_cols_ip"> checked="checked"</mt:if> class="cb" /> <__trans phrase="IP Address"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
 <mt:if name="search_author">
-<div id="author-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<mt:if name="search_cols_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Username"></label></li>
-<li><label for="search_cols-nickname"><input type="checkbox" id="search_cols-nickname" name="search_cols" value="nickname"<mt:if name="search_cols_nickname"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Display Name"></label></li>
-<li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<mt:if name="search_cols_email"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Email Address"></label></li>
-<li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<mt:if name="search_cols_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="URL"></label></li>
-</ul>
-</div>
+    <div id="author-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<mt:if name="search_cols_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Username"></label></li>
+            <li><label for="search_cols-nickname"><input type="checkbox" id="search_cols-nickname" name="search_cols" value="nickname"<mt:if name="search_cols_nickname"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Display Name"></label></li>
+            <li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<mt:if name="search_cols_email"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Email Address"></label></li>
+            <li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<mt:if name="search_cols_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="URL"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
 <mt:if name="search_blog">
-<div id="blog-fields">
-<ul>
-<li class="first"><__trans phrase="Search Fields:"></li>
-<li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<mt:if name="search_cols_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Name"></label></li>
-<li><label for="search_cols-site_url"><input type="checkbox" id="search_cols-site_url" name="search_cols" value="site_url"<mt:if name="search_cols_site_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Site URL"></label></li>
-<li><label for="search_cols-site_path"><input type="checkbox" id="search_cols-site_path" name="search_cols" value="site_path"<mt:if name="search_cols_site_path"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Site Root"></label></li>
-<li><label for="search_cols-description"><input type="checkbox" id="search_cols-description" name="search_cols" value="description"<mt:if name="search_cols_description"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Description"></label></li>
-</ul>
-</div>
+    <div id="blog-fields">
+        <ul>
+            <li class="first"><__trans phrase="Search Fields:"></li>
+            <li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<mt:if name="search_cols_name"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Name"></label></li>
+            <li><label for="search_cols-site_url"><input type="checkbox" id="search_cols-site_url" name="search_cols" value="site_url"<mt:if name="search_cols_site_url"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Site URL"></label></li>
+            <li><label for="search_cols-site_path"><input type="checkbox" id="search_cols-site_path" name="search_cols" value="site_path"<mt:if name="search_cols_site_path"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Site Root"></label></li>
+            <li><label for="search_cols-description"><input type="checkbox" id="search_cols-description" name="search_cols" value="description"<mt:if name="search_cols_description"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Description"></label></li>
+        </ul>
+    </div>
 </mt:if>
-
 </div>
 
 <div class="advanced-options" id="date-range"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
-<input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="datefrom_year">0<mt:else>1</mt:if>" />
-<ul>
-<li class="first"><__trans phrase="Date Range">:</li>
-<li><label for="datefrom_year"><__trans phrase="From">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_day"> class="prefilled"</mt:if> /></li>
-<li><label for="dateto_year"><__trans phrase="To">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_day"> class="prefilled"</mt:if> /></li>
-</ul>
+    <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="datefrom_year">0<mt:else>1</mt:if>" />
+    <ul>
+        <li class="first"><__trans phrase="Date Range">:</li>
+        <li><label for="datefrom_year"><__trans phrase="From">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_day"> class="prefilled"</mt:if> /></li>
+        <li><label for="dateto_year"><__trans phrase="To">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_day"> class="prefilled"</mt:if> /></li>
+    </ul>
 </div>
 
-</form>
+    </form>
 </div>
 
 <mt:if name="replace_count">
@@ -392,147 +386,107 @@
 </mt:if>
 
 <mt:if name="have_more">
-<__trans phrase="Showing first [_1] results." params="<mt:var name="limit">">
-<p><a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
+<p><__trans phrase="Showing first [_1] results." params="<mt:var name="limit">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
 <mt:else>
-<mt:if name="have_results">
+    <mt:if name="have_results">
 <p><__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">"></p>
-</mt:if>
+    </mt:if>
 </mt:if>
 
 <mt:if name="searched">
-
-<mt:setvar name="search_replace_template" value="1">
-<div id="selector">
-
-<mt:if name="search_entry">
-<mt:if name="entry_table">
-<mt:include name="include/entry_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-entries"
-        class="info">
-        <__trans phrase="No entries were found that match the given criteria.">
-    </mtapp:statusmsg>
+    <mt:if name="search_entry">
+        <mt:if name="entry_table">
+            <mt:include name="include/entry_table.tmpl">
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-entries"
+                class="info">
+                <__trans phrase="No entries were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="search_comment">
+        <mt:if name="comment_table">
+            <mt:include name="include/comment_table.tmpl">
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-comments"
+                class="info">
+                <__trans phrase="No comments were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="search_ping">
+        <mt:if name="ping_table">
+            <mt:include name="include/ping_table.tmpl">
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-trackback"
+                class="info">
+                <__trans phrase="No TrackBacks were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="search_page">
+        <mt:if name="entry_table">
+            <mt:include name="include/entry_table.tmpl">
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-pages"
+                class="info">
+                <__trans phrase="No pages were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="search_template">
+        <mt:if name="template_table">
+            <mt:include name="include/template_table.tmpl">
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-template"
+                class="info">
+                <__trans phrase="No templates were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="search_log">
+        <mt:if name="log_table">
+            <mt:include name="include/log_table.tmpl">
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-log"
+                class="info">
+                <__trans phrase="No log messages were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="search_author">
+        <mt:if name="author_table">
+            <mt:if name="blog_id">
+                <mt:include name="include/member_table.tmpl">
+            <mt:else>
+                <mt:include name="include/author_table.tmpl">
+            </mt:if>
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-user"
+                class="info">
+                <__trans phrase="No users were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="search_blog">
+        <mt:if name="blog_table">
+            <mt:include name="include/blog_table.tmpl">
+        <mt:else>
+            <mtapp:statusmsg
+                id="no-blog"
+                class="info">
+                <__trans phrase="No weblogs were found that match the given criteria.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
 </mt:if>
-</mt:if>
-
-<mt:if name="search_comment">
-<div class="list" id="list-comment">
-<mt:if name="comment_table">
-<mt:include name="include/comment_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-comments"
-        class="info">
-        <__trans phrase="No comments were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-<mt:if name="search_ping">
-<div class="list" id="list-ping">
-<mt:if name="ping_table">
-<mt:include name="include/ping_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-trackback"
-        class="info">
-        <__trans phrase="No TrackBacks were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-<mt:if name="search_commenter">
-<div class="list" id="results-commenter-content">
-<mt:if name="commenter_table">
-<mt:include name="include/commenter_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-commenter"
-        class="info">
-        <__trans phrase="No commenters were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-<mt:if name="search_page">
-<div class="list" id="results-page-content">
-<mt:if name="entry_table">
-<mt:include name="include/entry_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-pages"
-        class="info">
-        <__trans phrase="No pages were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-<mt:if name="search_template">
-<div class="list" id="results-template-content">
-<mt:if name="template_table">
-<mt:include name="include/template_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-template"
-        class="info">
-        <__trans phrase="No templates were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-<mt:if name="search_log">
-<div class="list" id="results-log-content">
-<mt:if name="log_table">
-<mt:include name="include/log_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-log"
-        class="info">
-        <__trans phrase="No log messages were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-<mt:if name="search_author">
-<div class="list" id="results-author-content">
-<mt:if name="author_table">
-<mt:include name="include/author_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-user"
-        class="info">
-        <__trans phrase="No users were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-<mt:if name="search_blog">
-<div class="list" id="results-blog-content">
-<mt:if name="blog_table">
-<mt:include name="include/blog_table.tmpl">
-<mt:else>
-    <mtapp:statusmsg
-        id="no-blog"
-        class="info">
-        <__trans phrase="No weblogs were found that match the given criteria.">
-    </mtapp:statusmsg>
-</mt:if>
-</div>
-</mt:if>
-
-</div>
-
-</mt:if>
-
 <mt:if name="error">
     <mtapp:statusmsg
         id="generic-error"
@@ -540,7 +494,5 @@
         <mt:var name="error">
     </mtapp:statusmsg>
 </mt:if>
-
-</div>
 
 <mt:include name="include/footer.tmpl">

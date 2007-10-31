@@ -2,12 +2,6 @@
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="general-settings" value="1">
 <MTSetVarBlock name="content_header">
-</MTSetVarBlock>
-<MTSetVarBlock name="content_nav">
-    <mt:include name="include/cfg_content_nav.tmpl">
-</MTSetVarBlock>
-<mt:include name="include/header.tmpl">
-
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -24,6 +18,11 @@
             <__trans phrase="Your blog preferences have been saved.">
         </mtapp:statusmsg>
     </mt:if>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
 <!--
@@ -58,10 +57,12 @@ function validate (f) {
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset>
+    
+    <h3><__trans phrase="Blog Settings"></h3>
 
     <mtapp:setting
         id="name"
-        label="<__trans phrase="Blog Name">"
+        label="<__trans phrase="Name">"
         hint="<__trans phrase="Name your blog. The blog name can be changed at any time.">"
         help_page="blog_settings_general"
         help_section="blog_name">
@@ -121,78 +122,36 @@ function validate (f) {
     </mtapp:setting>
 
     <mtapp:setting
-        id="allow_commenter_regist"
-        label="<__trans phrase="User Registration">"
-        hint="<__trans phrase="Allow registration for Movable Type.">">
-        <mt:if name="system_disallow_registration">
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Registration Not Enabled">" width="9" height="9" />
-        <span class="alert-warning-inline"><__trans phrase="Note: Registration is currently disabled at the system level."></span>
-        <mt:else>
-        </mt:else>
-        </mt:if>
-        <p><input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="cb" /> <label for="allow_commenter_regist"><__trans phrase="Allow Registration"></label></p>
-    </mtapp:setting>
-
-    <mtapp:setting
         id="has-license"
-        label="<__trans phrase="Creative Commons">"
+        label="<__trans phrase="License">"
+        content_class="field-content-text"
         help_page="blog_settings_general"
         help_section="creative_commons_license">
 
-<p style="display: none;" id="has-license">
+<div id="has-license" style="display: none;">
 <mt:if name="cc_license"><a href="<mt:var name="cc_license_url">"><img src="<mt:var name="cc_license_image_url">" /></a><br /></mt:if>
-<__trans phrase="Your blog is currently licensed under:"> <span id="cc-license-name"><mt:var name="cc_license_name"></span><br />
-<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="javascript:void(0)"><__trans phrase="Change your license"></a> | <a onclick="doRemoveLicense(); return false" href="javascript:void(0)"><__trans phrase="Remove this license"></a>
-</p>
-<p style="display: none;" id="no-license">
+<__trans phrase="Your blog is currently licensed under:"> <strong id="cc-license-name"><mt:var name="cc_license_name"></strong><br />
+<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="javascript:void(0)"><__trans phrase="Change license"></a> | <a onclick="doRemoveLicense(); return false" href="javascript:void(0)"><__trans phrase="Remove license"></a>
+</div>
+<div id="no-license" style="display: none;">
 <__trans phrase="Your blog does not have an explicit Creative Commons license."><br />
-<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="javascript:void(0)"><__trans phrase="Create a license now"></a>
-</p>
+<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="javascript:void(0)"><__trans phrase="Select a license"></a>
+</div>
 <mt:if name="cc_license">
 <script type="text/javascript">
-	var e = getByID('has-license');
-	if (e) e.style.display = 'block';
+    var e = getByID('has-license');
+    if (e) e.style.display = 'block';
 </script>
 <mt:else>
 <script type="text/javascript">
-	var e = getByID('no-license');
-	if (e) e.style.display = 'block';
+    var e = getByID('no-license');
+    if (e) e.style.display = 'block';
 </script>
 </mt:if>
 <input type="hidden" name="cc_license" value="<mt:var name="cc_license" escape="html">" />
     </mtapp:setting>
 
     </fieldset>
-    <fieldset>
-
-<h3><__trans phrase="Replace Word Chars"></h3>
-<mtapp:setting
-    id="nwc_fields"
-    label="<__trans phrase="Replace Fields">">
-    
-    <ul>
-        <li><input type="checkbox" value="1" name="nwc_title" id="nwc_title"<mt:if name="nwc_title"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Title"></li>
-        <li><input type="checkbox" value="1" name="nwc_text" id="nwc_text"<mt:if name="nwc_text"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Entry"></li>
-        <li><input type="checkbox" value="1" name="nwc_text_more" id="nwc_text_more"<mt:if name="nwc_text_more"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Extended entry"></li>
-        <li><input type="checkbox" value="1" name="nwc_keywords" id="nwc_keywords"<mt:if name="nwc_keywords"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Keywords"></li>
-        <li><input type="checkbox" value="1" name="nwc_excerpt" id="nwc_excerpt"<mt:if name="nwc_excerpt"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Excerpt"></li>
-        <li><input type="checkbox" value="1" name="nwc_tags" id="nwc_tags"<mt:if name="nwc_tags"> checked="checked"</mt:if> class="cb"/> <__trans phrase="Tags"></li>
-    </ul>
-
-</mtapp:setting>
-
-<mtapp:setting
-    id="nwc_smart_replace"
-    label="<__trans phrase="Smart Replace">">
-    
-<ul>
-    <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_smart_replace"<mt:if name="nwc_smart_replace"> checked="checked"</mt:if>><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></li>
-    <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_smart_replace"<mt:unless name="nwc_smart_replace"> checked="checked"</mt:unless>><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></li>
-</ul>
-
-</mtapp:setting>
-
-</fieldset>
 
 <mt:setvarblock name="action_buttons">
     <button

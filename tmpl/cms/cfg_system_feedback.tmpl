@@ -1,9 +1,7 @@
-<mt:setvar name="page_title" value="<__trans phrase="Feedback Settings: System-wide">">
+<mt:setvar name="page_title" value="<__trans phrase="System: Feedback Settings">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="system-feedback-settings" value="1">
 <MTSetVarBlock name="content_header">
-    <p class="page-desc"><__trans phrase="This screen allows you to configure feedback and outbound TrackBack settings for the entire installation.  These settings override any similar settings for individual weblogs."></p>
-
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
@@ -15,20 +13,6 @@
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/cfg_system_content_nav.tmpl">
 </MTSetVarBlock>
-<mt:setvarblock name="html_head" append="1">
-<script type="text/javascript">
-<!--
-function clearNotifyUsers() {
-    var el_name = getByID("notify_user_name");
-    var el_id = getByID("notify_user_id");
-    if (el_name && el_id) {
-        el_id.value = "";
-        el_name.innerHTML = "(<__trans phrase="None selected.">)";
-    }
-}
--->
-</script>
-</mt:setvarblock>
 
 <mt:include name="include/header.tmpl">
 
@@ -39,37 +23,24 @@ function clearNotifyUsers() {
 
 <fieldset>
 
-<h3><__trans phrase="Feedback Master Switch"></h3>
+<h3><__trans phrase="Feedback: Master Switch"></h3>
 
 <div class="inner">
 
     <mtapp:setting
         id="comment_disable"
-        label="<__trans phrase="Disable Comments">"
-        hint="<__trans phrase="This will override all individual weblog comment settings.">">
-        <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Stop accepting comments on all weblogs">
+        label="<__trans phrase="Comments">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This will override all individual weblog settings.">">
+            <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disable comments for all blogs">
     </mtapp:setting>
 
     <mtapp:setting
-        id="registration"
-        label="<__trans phrase="Allow Registration">"
-        hint="<__trans phrase="Select a system administrator you wish to notify when commenters successfully registered themselves.">">
-        <input type="checkbox" id="registration" name="registration"<mt:if name="registration"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Allow commenters to register to Movable Type">
-        <p><__trans phrase="Notify administrators">:<strong><span id="notify_user_name"><mt:if name="notify_user_id"><mt:var name="notify_user_name" escape="html"><mt:else>(<__trans phrase="None selected.">)</mt:if></span>
-        <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
-        <input type="button" onclick="return openDialog(this.form, 'dialog_select_sysadmin', 'multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name')" value="<__trans phrase="Select...">" />
-        <input type="button" onclick="return clearNotifyUsers()" value="<__trans phrase="Clear">" /></strong></p>
-        <mt:if name="system_no_email"><p>
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="System Email Address Not Set">" width="9" height="9" />
-        <span class="alert-warning-inline"><__trans phrase="Note: System Email Address is not set.  Emails will not be sent."></span>
-        </p></mt:if>
-    </mtapp:setting>
-
-    <mtapp:setting
-        id="ping_disable"
-        label="<__trans phrase="Disable TrackBacks">"
-        hint="<__trans phrase="This will override all individual weblog TrackBack settings.">">
-        <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Stop accepting TrackBacks on all weblogs">
+        id="comment_disable"
+        label="<__trans phrase="TrackBacks">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This will override all individual weblog settings.">">
+            <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disable TrackBacks for all blogs">
     </mtapp:setting>
 
 </div>
@@ -78,29 +49,31 @@ function clearNotifyUsers() {
 
 <fieldset>
 
-<h3><__trans phrase="Privacy"></h3>
+<h3><__trans phrase="Outbound Notifications"></h3>
 
 <div class="inner">
 
     <mtapp:setting
         id="disable_notify_ping"
-        label="<__trans phrase="Outbound Notifications">"
+        label="<__trans phrase="Notification pings">"
+        content_class="field-content-text"
         hint="<__trans phrase="This feature allows you to disable sending notification pings when a new entry is created.">">
-<input type="checkbox" id="disable_notify_ping" name="disable_notify_ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings"></label>
+            <input type="checkbox" id="disable_notify_ping" name="disable_notify_ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all blogs"></label>
     </mtapp:setting>
 
     <mtapp:setting
         id="trackback_send"
-        label="<__trans phrase="Allow outbound Trackbacks to">"
-        hint="<__trans phrase="This feature allows you to limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.">">
-
-<ul>
-<li><input type="radio" name="trackback_send" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Any site"></li>
-<li><input type="radio" name="trackback_send" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <__trans phrase="No site"> <span class="hint"><__trans phrase="(Disable all outbound TrackBacks.)"></span></li>
-<li><input type="radio" name="trackback_send" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only the weblogs on this installation"></li>
-<li><input type="radio" name="trackback_send" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only the sites on the following domains:"><br />
-<textarea rows="" cols="" name="trackback_send_domains" class="full-width medium"><mt:var name="trackback_send_domains" escape="html"></textarea></li>
-</ul>
+        label="<__trans phrase="Outbound TrackBacks">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.">"
+        show_hint="1">
+        <ul>
+            <li><input type="radio" name="trackback_send" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Allow to any site"></li>
+            <li><input type="radio" name="trackback_send" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disabled"> <span class="hint"><__trans phrase="(No outbound TrackBacks)"></span></li>
+            <li><input type="radio" name="trackback_send" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only allow to weblogs on this installation"></li>
+            <li><input type="radio" name="trackback_send" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only allow the sites on the following domains:"><br />
+            <textarea rows="" cols="" name="trackback_send_domains" class="full-width short"><mt:var name="trackback_send_domains" escape="html"></textarea></li>
+        </ul>
     </mtapp:setting>
 
 </div>

@@ -28,9 +28,10 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
             if (!isset($multiblog_blog_config[$id]))
                 $multiblog_blog_config[$id] = array();
             $is_include = $multiblog_blog_config[$id]['default_mtmultiblog_action'];
-            $blogs = $multiblog_blog_config[$id]['default_mtmulitblog_blogs'];
+            if ($multiblog_blog_config[$id]['default_mtmulitblog_blogs'])
+                $blogs = $multiblog_blog_config[$id]['default_mtmulitblog_blogs'];
 
-            if (count($blogs) && isset($is_include)) {
+            if ($blogs && isset($is_include)) {
                 $args[$is_include ? 'include_blogs' : 'exclude_blogs'] = $blogs;
             } 
             # No blog-level config set

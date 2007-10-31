@@ -45,7 +45,7 @@ sub thumbnail_file {
     my $fmgr;
 
     require MT::Util;
-    my $asset_cache_path = $asset->_make_cache_path;
+    my $asset_cache_path = $asset->_make_cache_path($param{Path});
     my ( $i_h, $i_w ) = ( $asset->image_height, $asset->image_width );
     return undef unless $i_h && $i_w;
 
@@ -53,6 +53,14 @@ sub thumbnail_file {
         $param{Width}  = int( ( $i_w * $scale ) / 100 );
         $param{Height} = int( ( $i_h * $scale ) / 100 );
     }
+    if ( !exists $param{Width} && !exists $param{Height} ) {
+        $param{Width}  = $i_w;
+        $param{Height} = $i_h;
+    }
+
+    # find the longest dimension of the image:
+    my ( $n_h, $n_w ) =
+      _get_dimension( $i_h, $i_w, $param{Height}, $param{Width} );
 
     my $file = $asset->thumbnail_filename(@_) or return;
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
@@ -60,26 +68,37 @@ sub thumbnail_file {
 
     # thumbnail file exists and is dated on or later than source image
     if ( @thumbinfo && ( $thumbinfo[9] >= $imginfo[9] ) ) {
-        return $thumbnail;
+        return ( $thumbnail, $n_w, $n_h );
     }
 
     # stale or non-existent thumbnail. let's create one!
     $fmgr ||= $blog->file_mgr;
     return undef unless $fmgr;
-
     return undef unless $fmgr->can_write($asset_cache_path);
 
-    # 100000px wide image, 10px tall => 164x230
-    #     scale the horizontal to fit
-    # 100000px tall image, 10px wide => 164x230
-    #     scale the vertical to fit
-    # 100000px wide/tall => 164x164
-    #     scale the horizontal to fit
+    my $data;
+    if ( ( $n_w == $i_w ) && ( $n_h == $i_h ) ) {
+        $data = $fmgr->get_data( $file_path, 'upload' );
+    }
+    else {
 
-    my $h = $param{Height};
-    my $w = $param{Width};
+        # create a thumbnail for this file
+        require MT::Image;
+        my $img = new MT::Image( Filename => $file_path )
+          or return $asset->error( MT::Image->errstr );
 
-    # find the longest dimension of the image:
+        ($data) = $img->scale( Height => $n_h, Width => $n_w )
+          or return $asset->error(
+            MT->translate( "Error scaling image: [_1]", $img->errstr ) );
+    }
+    $fmgr->put_data( $data, $thumbnail, 'upload' )
+      or return $asset->error(
+        MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr ) );
+    return ( $thumbnail, $n_w, $n_h );
+}
+
+sub _get_dimension {
+    my ( $i_h, $i_w, $h, $w ) = @_;
 
     my ( $n_h, $n_w ) = ( $i_h, $i_w );
     my $scale = '';
@@ -123,26 +142,7 @@ sub thumbnail_file {
         $n_w = $w;
         $n_h = int( $i_h * $w / $i_w );
     }
-
-    my $data;
-    if ( ( $n_w == $i_w ) && ( $n_h == $i_h ) ) {
-        $data = $fmgr->get_data( $file_path, 'upload' );
-    }
-    else {
-
-        # create a thumbnail for this file
-        require MT::Image;
-        my $img = new MT::Image( Filename => $file_path )
-          or return $asset->error( MT::Image->errstr );
-
-        ($data) = $img->scale( Height => $n_h, Width => $n_w )
-          or return $asset->error(
-            MT->translate( "Error scaling image: [_1]", $img->errstr ) );
-    }
-    $fmgr->put_data( $data, $thumbnail, 'upload' )
-      or return $asset->error(
-        MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr ) );
-    return $thumbnail;
+    return ( $n_h, $n_w );
 }
 
 sub thumbnail_filename {
@@ -152,8 +152,8 @@ sub thumbnail_filename {
 
     require MT::Util;
     my $format = $param{Format} || MT->translate('%f-thumb-%wx%h%x');
-    my $width  = $param{Width};
-    my $height = $param{Height};
+    my $width  = $param{Width}  || 'auto';
+    my $height = $param{Height} || 'auto';
     $file =~ s/\.\w+$//;
     my $base = File::Basename::basename($file);
     my $id   = $asset->id;
@@ -306,6 +306,8 @@ sub on_upload {
 
     $asset->SUPER::on_upload(@_);
 
+    return unless $param->{new_entry};
+
     my $app = MT->instance;
     require MT::Util;
 
@@ -364,17 +366,32 @@ sub on_upload {
         $blog->save or die $blog->errstr;
     }
 
+    require MT::Util;
+    my $extra_path = undef;
+    my $extra_url = '';
+    if (defined $param->{middle_path} || defined $param->{extra_path}) {
+        my $middle_path = $param->{middle_path} || '';
+        my @split_path = split( '/', $middle_path );
+        $extra_path = '';
+
+        for my $middle (@split_path) {
+            $extra_path = File::Spec->catfile( $extra_path, $middle );
+        }
+        $extra_path = File::Spec->catfile( $extra_path, $param->{extra_path} ) if ($param->{extra_path});
+        $extra_url = MT::Util::caturl($middle_path, ($param->{extra_path} || ''));
+    }
+
     # Thumbnail creation
     if ( $thumb = $param->{thumb} ) {
         require MT::Image;
         my $image_type = scalar $param->{image_type};
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
-        my $thumbnail = $asset->thumbnail_file( Height => $h, Width => $w )
-          or return $app->error(
-            $app->translate( "Thumbnail failed: [_1]", MT::Asset->errstr ) );
+        my ($thumbnail_url) =
+          $asset->thumbnail_url( Height => $h, Width => $w, Path => $extra_path );
+        my $thumbnail = $asset->thumbnail_filename( Height => $h, Width => $w );
+        $thumbnail = File::Spec->catfile($asset->_make_cache_path($extra_path), $thumbnail);
         my ( $base, $path, $ext ) =
           File::Basename::fileparse( $thumbnail, qr/[A-Za-z0-9]+$/ );
-        my $thumbnail_url = $asset->thumbnail_url( Height => $h, Width => $w );
         my $thumb_file_size = ( stat($thumbnail) )[7];
         my $img_pkg         = MT::Asset->handler_for_file($thumbnail);
         my $asset_thumb     = new $img_pkg;
@@ -462,6 +479,8 @@ sub on_upload {
             my $fmgr = $blog->file_mgr;
             my $root_path =
               $param->{site_path} ? $blog->site_path : $blog->archive_path;
+            $root_path =
+              File::Spec->catfile( $root_path, ($extra_path || '') );
             my $abs_file_path =
               File::Spec->catfile( $root_path, $rel_path . $ext );
 
@@ -491,9 +510,8 @@ sub on_upload {
                 )
               );
             $url = $param->{site_path} ? $blog->site_url : $blog->archive_url;
-            $url .= '/' unless $url =~ m!/$!;
             $rel_url_ext =~ s!^/!!;
-            $url .= $rel_url_ext;
+            $url = MT::Util::caturl($url, $extra_url, $rel_url_ext);
 
             my $html_pkg   = MT::Asset->handler_for_file($abs_file_path);
             my $asset_html = new $html_pkg;
