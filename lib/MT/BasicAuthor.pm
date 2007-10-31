@@ -3,8 +3,8 @@ package MT::BasicAuthor;
 # fake out the require for this package since we're
 # declaring it inline...
 
-use MT::Object;
-@MT::BasicAuthor::ISA = qw( MT::Object );
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',

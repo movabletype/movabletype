@@ -2384,6 +2384,9 @@ MT.App.CodePress = new Class( Object, {
 
     insertCode: function( code, putCursorBefore ) {
         if ( this.textarea.disabled ) {
+            var edit_node = this.editor.body.getElementsByTagName('pre')[0];
+            if (!edit_node) edit_node = this.editor.body;
+            DOM.focus(edit_node);
             this.editor.insertCode( code, putCursorBefore );
 		 	this.editor.syntaxHighlight( this.getLanguage() );
         } else {

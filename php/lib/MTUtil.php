@@ -1197,7 +1197,13 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     # Get parameter
     $filename = $asset['asset_file_path'];
     $site_path = $blog['blog_site_path'];
-    $site_url = $blog['blog_site_url'];
+    $site_path = preg_replace('/\/$/', '', $site_path);
+    $filename = preg_replace('/^%r/', $site_path, $filename);
+    $archive_path = $blog['blog_archive_path'];
+    if ($archive_path) {
+        $archive_path = preg_replace('/\/$/', '', $archive_path);
+        $filename = preg_replace('/^%a/', $archive_path, $filename);
+    }
 
     # Get source image information
     list($src_w, $src_h, $src_type, $src_attr) = getimagesize($filename);

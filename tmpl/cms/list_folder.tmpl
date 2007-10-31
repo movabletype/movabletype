@@ -227,7 +227,7 @@ TC.attachLoadEvent( init );
                     &nbsp;
                     <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [_1]" params="<mt:var name="object_label" lower_case="1">">"><__trans phrase="Move"></a>
                 </td>
-                <td><mt:if name="category_entrycount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=<mt:var name="entry_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"></mt:if></mt:if><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="category_entrycount">%%<mt:var name="entry_label" lower_case="1">%%<mt:var name="entry_label_plural" lower_case="1">"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"></a></mt:if></mt:if></td>
+                <td><mt:if name="category_entrycount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_<mt:var name="entry_label" lower_case="1">&amp;_type=<mt:var name="entry_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"></mt:if></mt:if><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="category_entrycount">%%<mt:var name="entry_label" lower_case="1">%%<mt:var name="entry_label_plural" lower_case="1">"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"></a></mt:if></mt:if></td>
             </tr>
             <tr class="create-row create-inline" id="create-<mt:var name="category_id">">
                 <td class="move-col" colspan="2">&nbsp;</td>

@@ -186,56 +186,13 @@ TC.attachLoadEvent( init );
                         <mt:else>
                         <__trans phrase="[_1] where [_2] [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'>
                         </mt:if>
-                </mt:if>
+                    </mt:if>
                 </strong>
-                <!-- <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a> -->
                 <a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
                 </mt:if>
             </mt:unless>
                 </div>
             </div>
-            <!-- <div id="filter-select" style="display: none">
-                <__trans phrase="Show only [_1] where" params="<$mt:var name="object_label_plural" lower_case="1"$>">
-                    <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton();">
-                        <option value="newentry"><__trans phrase="entry was created in last"></option>
-                        <option value="oldentry"><__trans phrase="entry was created more than"></option>
-                        <option value="status"><__trans phrase="status"></option>
-                        <option value="commenter"><__trans phrase="commenter"></option>
-                    </select>
-                    <span id="filter-newentry" style="display: none">
-                        <input type="text" id="newentry-val" name="filter_val" size="3" value="30" />
-                        <__trans phrase=" days.">
-                    </span>
-                    <span id="filter-oldentry" style="display: none">
-                        <input type="text" id="oldentry-val" name="filter_val" size="3" value="30" />
-                        <__trans phrase=" days ago.">
-                    </span>
-                    <span id="filter-status" style="display: none">
-                        <select id="status-val" name="filter_val" onchange="enableFilterButton()">
-                            <option value="approved"><__trans phrase=" is approved"></option>
-                            <option value="pending"><__trans phrase=" is unapproved"></option>
-                        </select>
-                    </span>
-                    <span id="filter-commenter" style="display: none">
-                        <select id="commenter-val" name="filter_val" onchange="enableFilterButton()">
-                            <option value="unauthenticated"><__trans phrase=" is unauthenticated"></option>
-                            <option value="authenticated"><__trans phrase=" is authenticated"></option>
-                            <option value="trusted"><__trans phrase=" is trusted"></option>
-                        </select>
-                    </span>
-                </span>
-                <span class="buttons">
-                    <a href="javascript:void(0)"
-                        id="filter-button"
-                        onclick="return execFilter(getByID('filter-select-form'))"
-                        type="submit"
-                        ><__trans phrase="Filter"></a>
-                    <a href="javascript:void(0)"
-                        onclick="toggleFilter(); return false;"
-                        type="submit"
-                        ><__trans phrase="Cancel"></a>
-                </span>
-            </div> -->
         </form>
     </div>
 </div>

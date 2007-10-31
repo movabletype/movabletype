@@ -24,10 +24,13 @@ __PACKAGE__->install_properties({
         coalesce => 1,
         uniqkey => 1,
         run_after => 1,
+        uniqfunc => {
+            columns => [ 'funcid', 'uniqkey' ],
+            unique => 1,
+        },
     },
-    # not captured
+    # not captured (but indexed separately)
     # INDEX (funcid, run_after),
-    # UNIQUE(funcid, uniqkey),
     # INDEX (funcid, coalesce)
 });
 

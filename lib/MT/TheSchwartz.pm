@@ -113,6 +113,7 @@ sub work_periodically {
     my $last_task_run = 0;
     while (1) {
         unless ($client->work_once) {
+            $client->driver_for()->clear_cache;
             sleep $delay;
             if ($last_task_run + 60 * 5 < time) {
                 MT->run_tasks();

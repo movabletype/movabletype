@@ -130,6 +130,10 @@ sub init_core_registry {
 		link => 'http://search.cpan.org/dist/File-Temp',
                 label => 'This module is needed if you would like to be able to overwrite existing files when you upload.',
             },
+            'List::Util' => {
+                link => 'http://search.cpan.org/dist/Scalar-List-Utils',
+                label => 'List::Util is optional; It is needed if you want to use the Publish Queue feature.',
+            },
             'Image::Magick' => {
 		link => 'http://www.imagemagick.org/script/perl-magick.php',
                 label => 'This module is needed if you would like to be able to create thumbnails of uploaded images.',
@@ -845,7 +849,7 @@ sub static_path {
 
 sub mt_static_exists {
     my $app = shift;
-    return (-f File::Spec->catfile($app->{mt_dir}, "mt-static", "styles.css")) ? 1 : 0;
+    return (-f File::Spec->catfile($app->{mt_dir}, "mt-static", "mt.js")) ? 1 : 0;
 }
 
 sub is_valid_static_path {
@@ -854,7 +858,7 @@ sub is_valid_static_path {
 
     my $path;
     if ($static_uri =~ m/^http/i) {
-        $path = $static_uri.'styles.css';
+        $path = $static_uri . 'mt.js';
     } elsif($static_uri =~ m#^/#) {
         my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
         $host =~ s/:\d+//; # eliminate any port that may be present
@@ -862,16 +866,17 @@ sub is_valid_static_path {
         $path = $port == 443 ? 'https' : 'http';
         $path .= '://' . $host;
         $path .= ($port == 443 || $port == 80) ? '' : ':' . $port;
-        $path .= $static_uri.'styles.css';
-    }else{
-        $path = $app->cgipath.$static_uri.'styles.css';
+        $path .= $static_uri . 'mt.js';
+    }
+    else {
+        $path = $app->cgipath . $static_uri . 'mt.js';
     }
 
     require LWP::UserAgent;
     my $ua = LWP::UserAgent->new;
-    my $request = HTTP::Request->new(HEAD => $path);
+    my $request = HTTP::Request->new(GET => $path);
     my $response = $ua->request($request);
-    $response->is_success and ($response->content_length() != 0);
+    $response->is_success and ($response->content_length() != 0) && ($response->content =~ m/function\s+openManual/s);
 }
 1;
 __END__

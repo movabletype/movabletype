@@ -90,6 +90,7 @@ window.onload = function() {
 }
 </mt:if>
 </mt:unless>
+
 // -->
 </script>
 
@@ -178,8 +179,8 @@ window.onload = function() {
     <mtapp:setting
         id="dbserver"
         label="<__trans phrase="Database Server">">
-<p><input type="text" name="dbserver" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" /><mt:unless name="dbserver"></p>
-<p class="hint"><__trans phrase="This is usually 'localhost'."></p></p></mt:unless>
+<input type="text" name="dbserver" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" />
+<div class="hint"><__trans phrase="This is usually 'localhost'."></div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -198,32 +199,32 @@ window.onload = function() {
         id="dbuser"
         label="<__trans phrase="Username">"
         hint="<__trans phrase="The username to login to your SQL database.">">
-<input type="text" name="dbuser" value="<mt:var name="dbuser" escape="html">" /><br />
+    <input type="text" name="dbuser" value="<mt:var name="dbuser" escape="html">" /><br />
     </mtapp:setting>
 
     <mtapp:setting
         id="dbpass"
         label="<__trans phrase="Password">"
         hint="<__trans phrase="The password to login to your SQL database.">">
-<input type="password" name="dbpass" value="<mt:var name="dbpass" escape="html">" /><br />
+    <input type="password" name="dbpass" value="<mt:var name="dbpass" escape="html">" /><br />
     </mtapp:setting>
 
 </div>
 
-    <p id="more"><a href="javascript:void(0)" onclick="show('db_port_socket'); hide('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
+    <p id="more"><a href="javascript:void(0)" onclick="showByID('db_port_socket'); hideByID('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
     <div id="db_port_socket" style="display: none;">
     <mtapp:setting
         id="dbport"
         label="<__trans phrase="Database Port">"
         hint="<__trans phrase="This can usually be left blank.">">
-<input type="text" name="dbport" value="<mt:var name="dbport" escape="html">" /><br />
+    <input type="text" name="dbport" value="<mt:var name="dbport" escape="html">" /><br />
     </mtapp:setting>
 
     <mtapp:setting
         id="dbsocket"
         label="<__trans phrase="Database Socket">"
         hint="<__trans phrase="This can usually be left blank.">">
-<input type="text" name="dbsocket" value="<mt:var name="dbsocket" escape="html">" /><br />
+    <input type="text" name="dbsocket" value="<mt:var name="dbsocket" escape="html">" /><br />
     </mtapp:setting>
     </div>
 
@@ -235,7 +236,7 @@ window.onload = function() {
         id="publish_charset"
         label="<__trans phrase="Publish Charset">"
         hint="<__trans phrase="MS SQL Server driver must use either Shift_JIS or ISO-8859-1.  MS SQL Server driver does not support UTF-8 or any other character set.">">
-<input type="text" name="publish_charset" value="<mt:var name="publish_charset" escape="html">" /><br />
+        <input type="text" name="publish_charset" value="<mt:var name="publish_charset" escape="html">" />
     </mtapp:setting>
 
 </div>

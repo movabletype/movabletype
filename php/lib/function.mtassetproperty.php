@@ -1,11 +1,14 @@
 <?php
+require_once("function.mtassetfilepath.php");
 function smarty_function_mtassetproperty($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
     if (!isset($args['property'])) return '';
 
     if ($args['property'] == 'file_size') {
-        $filesize = filesize($asset['asset_file_path']);
+        $asset_file = smarty_function_mtassetfilepath($args, $ctx);
+
+        $filesize = filesize($asset_file);
         $format = '1';
         if (isset($args['format']))
             $format = $args['format'];

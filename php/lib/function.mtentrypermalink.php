@@ -10,6 +10,7 @@ function smarty_function_mtentrypermalink($args, &$ctx) {
         # strip off any extra archive types...
         $at = preg_replace('/,.*/', '', $at);
     }
+    $args['blog_id'] = $blog['blog_id'];
     return $ctx->mt->db->entry_link($entry['entry_id'], $at, $args);
 } 
 ?>

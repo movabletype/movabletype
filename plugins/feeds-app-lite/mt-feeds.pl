@@ -23,7 +23,7 @@ sub doc_link    { 'docs/index.html' }
 
 sub description {
     return <<DESC;
-<p class="plugin-desc"><MT_TRANS phrase="Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?"> <a href="http://code.appnel.com/feeds-app" target="_blank"><MT_TRANS phrase="Upgrade to Feeds.App"></a>.</p>
+<MT_TRANS phrase="Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?"> <a href="http://code.appnel.com/feeds-app" target="_blank"><MT_TRANS phrase="Upgrade to Feeds.App"></a>.
 DESC
 }
 

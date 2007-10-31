@@ -48,20 +48,40 @@ sub extensions {
 }
 
 # This property is a meta-property.
+sub file_path {
+    my $asset = shift;
+    my $path = $asset->SUPER::file_path(@_);
+    return $path if defined($path) && ($path !~ m!^\$!) && (-f $path);
+
+    $path = $asset->cache_property(sub {
+        my $path = $asset->SUPER::file_path();
+        if ($path =~ m!^\%([ra])!) {
+            my $blog = $asset->blog or return undef;
+            my $root = $1 eq 'r' ? $blog->site_path : $blog->archive_path;
+            $root =~ s!(/|\\)$!!;
+            $path =~ s!^\%[ra]!$root!;
+        }
+        $path;
+    }, @_);
+    return $path;
+}
+
 sub url {
     my $asset = shift;
     my $url = $asset->SUPER::url(@_);
-    return $url if defined $url;
+    return $url if defined($url) && ($url !~ m!^\%!) && ($url =~ m!^https://!);
 
-    return $asset->cache_property(sub {
-        my $blog = $asset->blog or return undef;
-        my $url = $blog->site_url;
-        $url .= '/' unless $url =~ m!/$!;
-        my $path = $asset->file_path;
-        $path =~ s!\\!/!g;
-        $url .= $path;
-        $url;
+    $url = $asset->cache_property(sub {
+        my $url = $asset->SUPER::url();
+        if ($url =~ m!^\%([ra])!) {
+            my $blog = $asset->blog or return undef;
+            my $root = $1 eq 'r' ? $blog->site_url : $blog->archive_url;
+            $root =~ s!/$!!;
+            $url =~ s!^\%[ra]!$root!;
+        }
+        return $url;
     }, @_);
+    return $url;
 }
 
 # Returns a localized name for the asset type. For MT::Asset, this is simply
@@ -88,9 +108,16 @@ sub remove {
 
         # remove children.
         my $class = ref $asset;
-        my $iter = $class->load_iter({ parent => $asset->id, });
+        my $iter = __PACKAGE__->load_iter({ parent => $asset->id, class => '*' });
         while(my $a = $iter->()) {
             $a->remove;
+        }
+
+        # Remove MT::ObjectAsset records
+        $class = MT->model('objectasset');
+        $iter = $class->load_iter({ asset_id => $asset->id });
+        while (my $o = $iter->()) {
+            $o->remove;
         }
     }
 
@@ -119,8 +146,11 @@ sub remove_cached_files {
         if ($cache_dir) {
             my $fmgr = $blog->file_mgr;
             if ($fmgr) {
+                my $basename = $asset->file_name;
+                my $ext = '.'.$asset->file_ext;
+                $basename =~ s/$ext$//;
                 my $cache_glob = File::Spec->catfile($cache_dir,
-                    $asset->id . '.*');
+                    $basename . '-thumb-*' . $ext);
                 my @files = glob($cache_glob);
                 foreach my $file (@files) {
                     $fmgr->delete($file);
@@ -133,12 +163,11 @@ sub remove_cached_files {
 
 sub blog {
     my $asset = shift;
-    $asset->cache_property(sub {
-        my $blog_id = $asset->blog_id or return undef;
-        require MT::Blog;
-        MT::Blog->load($blog_id)
-            or return $asset->error("Failed to load blog for file");
-    });
+    my $blog_id = $asset->blog_id or return undef;
+    return $asset->{__blog} if $blog_id && $asset->{__blog} && ($asset->{__blog}->id == $blog_id);
+    require MT::Blog;
+    return $asset->{__blog} = MT::Blog->load($blog_id)
+        or return $asset->error("Failed to load blog for file");
 }
 
 # Returns a true/false response based on whether the active package
@@ -224,7 +253,7 @@ sub thumbnail_url {
         if (my ($thumbnail_file, $w, $h) = $asset->thumbnail_file(@_)) {
             return $asset->stock_icon_url(@_) if !defined $thumbnail_file;
             my $file = File::Basename::basename($thumbnail_file);
-            my $site_url = $blog->site_url;
+            my $site_url = $param{Pseudo} ? '%r' : $blog->site_url;
             if ($file && $site_url) {
                 require MT::Util;
                 my $path = $param{Path};
@@ -257,7 +286,7 @@ sub enclose {
     my ($html) = @_;
     my $id = $asset->id;
     my $type = $asset->class;
-    return qq{<form mt:asset-id="$id" contenteditable="false" class="mt-enclosure mt-enclosure-$type">$html</form>};
+    return qq{<form mt:asset-id="$id" class="mt-enclosure mt-enclosure-$type">$html</form>};
 }
 
 # Return a HTML snippet of form options for inserting this asset
@@ -275,9 +304,11 @@ sub on_upload {
     1;
 }
 
+# $pseudo parameter causes function to return '%r' as
+# root instead of blog site path
 sub _make_cache_path {
     my $asset = shift;
-    my ($path) = @_;
+    my ($path, $pseudo) = @_;
     my $blog = $asset->blog or return undef;
 
     require File::Spec;
@@ -296,12 +327,14 @@ sub _make_cache_path {
         $path = $merge_path if $merge_path;
     }
 
-    my $asset_cache_path = File::Spec->catdir($blog->site_path,
+    my $asset_cache_path = File::Spec->catdir(($pseudo ? '%r' : $blog->site_path),
+        $path, $year_stamp, $month_stamp);
+    my $real_cache_path = File::Spec->catdir($blog->site_path,
         $path, $year_stamp, $month_stamp);
 
-    if (!-d $asset_cache_path) {
+    if (!-d $real_cache_path) {
         my $fmgr = $blog->file_mgr;
-        $fmgr->mkpath($asset_cache_path) or return undef;
+        $fmgr->mkpath($real_cache_path) or return undef;
     }
     $asset_cache_path;
 }

@@ -201,7 +201,9 @@ sub relative_date {
             return $result;
         }
     }
-    return $fmt ? format_ts($fmt, $ts, $blog) : "";
+    my $mt = MT->instance;
+    my $user = $mt->user if $mt;
+    return $fmt ? format_ts($fmt, $ts, $blog, $user ? $user->preferred_language : undef ) : "";
 }
 
 use vars qw( %Languages );
@@ -851,8 +853,8 @@ sub make_unique_basename {
     }
     my $limit = $blog->basename_limit || 30; # FIXME
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
-    my $base = substr(dirify($title, '-'), 0, $limit);
-    $base =~ s/[_-]+$//;
+    my $base = substr(dirify($title), 0, $limit);
+    $base =~ s/_+$//;
     $base = 'post' if $base eq '';
     my $i = 1;
     my $base_copy = $base;
@@ -860,7 +862,7 @@ sub make_unique_basename {
    my $class = ref $entry; 
     while ($class->count({ blog_id => $blog->id,
                               basename => $base })) {
-        $base = $base_copy . '-' . $i++;
+        $base = $base_copy . '_' . $i++;
     }
     $base;
 }
@@ -873,12 +875,12 @@ sub make_unique_category_basename {
     $label = '' if !defined $label;
     $label =~ s/^\s+|\s+$//gs;
 
-    my $name = MT::Util::dirify($label, '-') || ($cat->basename_prefix(1) . $cat->id);
+    my $name = MT::Util::dirify($label) || ($cat->basename_prefix(1) . $cat->id);
 
     my $limit = $blog->basename_limit || 30;
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
     my $base = substr($name, 0, $limit);
-    $base =~ s/[-_]+$//;
+    $base =~ s/_+$//;
     $base = $cat->basename_prefix(0) if $base eq ''; #FIXME when does this happen?
     my $i = 1;
     my $base_copy = $base;
@@ -886,7 +888,7 @@ sub make_unique_category_basename {
     my $cat_class = ref $cat;
     while ($cat_class->count({ blog_id => $cat->blog_id,
                                  basename => $base })) {
-        $base = $base_copy . '-' . $i++;
+        $base = $base_copy . '_' . $i++;
     }
     $base;
 }

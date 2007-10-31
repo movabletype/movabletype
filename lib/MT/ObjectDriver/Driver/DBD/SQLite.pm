@@ -142,6 +142,7 @@ sub count {
     delete $args->{count_distinct};
     $result;
 }
+
 1;
 __END__
 

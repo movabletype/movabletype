@@ -73,7 +73,7 @@ sub core_tags {
 
             Else => \&_hdlr_pass_tokens,
             Loop => \&_hdlr_loop,
-            Section => \&_hdlr_pass_tokens,
+            Section => \&_hdlr_section,
             IfNonEmpty => \&_hdlr_if_nonempty,
             IfNonZero => \&_hdlr_if_nonzero,
 
@@ -918,7 +918,7 @@ sub _hdlr_app_action_bar {
     my ($ctx, $args, $cond) = @_;
     my $pos = $args->{bar_position} || 'top';
     my $pager = $args->{hide_pager} ? ''
-        : qq{\n        <mt:include name="include/pagination.tmpl">};
+        : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
     my $buttons = $ctx->var('action_buttons') || '';
     return $ctx->build(<<EOT);
 <div id="actions-bar-$pos" class="actions-bar actions-bar-$pos">
@@ -1023,7 +1023,7 @@ sub _hdlr_app_statusmsg {
     $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id', 'prompt=index');">%%</a>">} if $rebuild eq 'index';
     my $close = '';
     if ($args->{can_close} || (!exists $args->{can_close})) {
-        $close = qq{<a href="javascript:void(0)" onclick="javascript:hide('$id');" class="close-me"><span>close</span></a>};
+        $close = qq{<a href="javascript:void(0)" onclick="javascript:hide('$id');return false;" class="close-me"><span>close</span></a>};
     }
     $id = defined $id ? qq{ id="$id"} : "";
     $class = defined $class ? qq{msg msg-$class} : "msg";
@@ -1046,7 +1046,7 @@ sub _hdlr_app_list_filters {
         <mt:if name="__first__">
     <ul>
         </mt:if>
-        <li><mt:if name="key" eq="\$filter_key"><strong></mt:if><a href="<mt:var name="script_url">?__mode=$mode$type_param<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=<mt:var name="key" escape="url">"><mt:var name="label"></a><mt:if name="key" eq="\$filter_key"></strong></mt:if></li>
+        <mt:if name="key" eq="\$filter_key"><li class="current-filter"><strong><mt:else><li></mt:if><a href="<mt:var name="script_url">?__mode=$mode$type_param<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=<mt:var name="key" escape="url">"><mt:var name="label"></a><mt:if name="key" eq="\$filter_key"></strong></mt:if></li>
     <mt:if name="__last__">
     </ul>
     </mt:if>
@@ -1096,6 +1096,7 @@ sub _hdlr_app_form {
     my $blog_id = $args->{blog_id} || $ctx->var('blog_id');
     my $type = $args->{object_type} || $ctx->var('type');
     my $form_id = $args->{id} || $type . '-form';
+    my $form_name = $args->{name} || $args->{id};
     my $enctype = $args->{enctype} ? " enctype=\"" . $args->{enctype} . "\"" : "";
     my $mode = $args->{mode};
     push @fields, qq{<input type="hidden" name="__mode" value="$mode" />}
@@ -1115,7 +1116,7 @@ sub _hdlr_app_form {
     $fields = join("\n", @fields) if @fields;
     my $insides = $ctx->slurp($args, $cond);
     return <<"EOT";
-<form id="$form_id" action="$action" method="$method"$enctype>
+<form id="$form_id" name="$form_name" action="$action" method="$method"$enctype>
 $fields
     $insides
 </form>
@@ -2616,7 +2617,6 @@ sub _hdlr_entries {
     
     my $cfg = $ctx->{config};
     my $entries = $ctx->stash('entries');
-    local $ctx->{__stash}{entries};
     my $blog_id = $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
     my (@filters, %blog_terms, %blog_args, %terms, %args);
@@ -2634,7 +2634,15 @@ sub _hdlr_entries {
     if ($entries && @$entries) {
         my $entry = @$entries[0];
         $entries = undef if $entry->class ne $class_type;
+
+        foreach my $args_key ('category', 'categories', 'tag', 'tags', 'author', 'id', 'days', 'recently_commented_on', 'include_subcategories') {
+            if (exists($args->{$args_key})) {
+                $entries = undef;
+                last;
+            }
+        }
     }
+    local $ctx->{__stash}{entries};
 
     # handle automatic offset based on 'offset' query parameter
     # in case we're invoked through mt-view.cgi or some other
@@ -2850,20 +2858,38 @@ sub _hdlr_entries {
                 }
             }
         }
-        $args{'sort'} = 'authored_on';
-        $args{direction} = 'descend';
 
         # Adds class_type
         $terms{class} = $class_type;
-        
+        if ($args->{sort_by}) {
+            if ($class->has_column($args->{sort_by})) {
+                $args{sort} = $args->{sort_by};
+                $no_resort = 1;
+            }
+        }
+        $args{'sort'} ||= 'authored_on';
+
         if (!@filters) {
-            if (my $last = $args->{lastn}) {
-                $args{direction} = $args->{sort_order} || 'descend';
+            if ((my $last = $args->{lastn}) && (!exists $args->{limit})) {
+                $args{direction} = 'descend';
+                $args{sort} = 'authored_on';
                 $args{limit} = $last;
+                $no_resort = 0 if $args->{sort_by};
+            } else {
+                $args{direction} = $args->{sort_order} || 'descend';
+                $no_resort = 1 unless $args->{sort_by};
             }
             $args{offset} = $args->{offset} if $args->{offset};
             @entries = $class->load(\%terms, \%args);
         } else {
+            if (($args->{lastn}) && (!exists $args->{limit})) {
+                $args{direction} = 'descend';
+                $args{sort} = 'authored_on';
+                $no_resort = 0 if $args->{sort_by};
+            } else {
+                $args{direction} = $args->{sort_order} || 'descend';
+                $no_resort = 1 unless $args->{sort_by};
+            }
             my $iter = $class->load_iter(\%terms, \%args);
             my $i = 0; my $j = 0;
             my $off = $args->{offset} || 0;
@@ -2889,11 +2915,18 @@ sub _hdlr_entries {
         my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : undef) || '';
         my $col = $args->{sort_by} || 'authored_on';
         if ( $col ne 'score' ) {
-            # TBD: check column being sorted; if it is numeric, use numeric sort
-            @$entries = $so eq 'ascend' ?
-                sort { $a->$col() cmp $b->$col() } @$entries :
-                sort { $b->$col() cmp $a->$col() } @$entries;
-            $no_resort = 1;
+            if (my $def = $class->column_def($col)) {
+                if ($def->{type} =~ m/^integer|float$/) {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() <=> $b->$col() } @entries :
+                        sort { $b->$col() <=> $a->$col() } @entries;
+                } else {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() cmp $b->$col() } @entries :
+                        sort { $b->$col() cmp $a->$col() } @entries;
+                }
+                $no_resort = 1;
+            }
         }
 
         if (@filters) {
@@ -2954,10 +2987,17 @@ sub _hdlr_entries {
             @entries = @tmp;
         } else {
             my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : 'descend') || '';
-            # TBD: check column being sorted; if it is numeric, use numeric sort
-            @entries = $so eq 'ascend' ?
-                sort { $a->$col() cmp $b->$col() } @entries :
-                sort { $b->$col() cmp $a->$col() } @entries;
+            if (my $def = $class->column_def($col)) {
+                if ($def->{type} =~ m/^integer|float$/) {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() <=> $b->$col() } @entries :
+                        sort { $b->$col() <=> $a->$col() } @entries;
+                } else {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() cmp $b->$col() } @entries :
+                        sort { $b->$col() cmp $a->$col() } @entries;
+                }
+            }
         }
     }
     my($last_day, $next_day) = ('00000000') x 2;
@@ -3842,7 +3882,7 @@ sub _hdlr_date {
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
         my $server_offset = $blog->server_offset;
-        if ((localtime (timelocal ($s, $m, $h, $d, $mo, $y - 1900)))[8]) {
+        if ((localtime (timelocal ($s, $m, $h, $d, $mo, ($y - 1900 >= 0 ? $y - 1900 : 0 ))))[8]) {
             $server_offset += 1;
         }
         my $four_digit_offset = sprintf('%.02d%.02d', int($server_offset),
@@ -3888,6 +3928,29 @@ sub _hdlr_date {
         }
     }
     return format_ts($args->{'format'}, $ts, $blog, $lang);
+}
+
+sub _comment_follow {
+    my($ctx, $arg) = @_;
+    my $c = $ctx->stash('comment');
+    return unless $c;
+
+    my $blog = $ctx->stash('blog');
+    if ($blog->nofollow_urls) {
+        if ($blog->follow_auth_links) {
+            my $cmntr = $ctx->stash('commenter');
+            unless ($cmntr) {
+                if ($c->commenter_id) {
+                    $cmntr = MT::Author->load($c->commenter_id) || undef;
+                }
+            }
+            if (!defined $cmntr || ($cmntr && !$cmntr->is_trusted($blog->id))) {
+                nofollowfy_on($arg);
+            }
+        } else {
+            nofollowfy_on($arg);
+        }
+    }
 }
 
 sub _no_comment_error {
@@ -4045,6 +4108,8 @@ sub _hdlr_comment_ip {
 sub _hdlr_comment_author_link {
     #sanitize_on($_[1]);
     my($ctx, $args) = @_;
+    _comment_follow($ctx, $args);
+
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error('MT' . $ctx->stash('tag'));
     my $name = $c->author;
@@ -4126,10 +4191,11 @@ sub _hdlr_comment_url {
 sub _hdlr_comment_body {
     my($ctx, $arg) = @_;
     sanitize_on($arg);
-    nofollowfy_on($arg);
+    _comment_follow($ctx, $arg);
+
+    my $blog = $ctx->stash('blog');
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error('MT' . $ctx->stash('tag'));
-    my $blog = $ctx->stash('blog');
     my $t = defined $c->text ? $c->text : '';
     unless ($blog->allow_comment_html) {
         $t = remove_html($t);
@@ -5320,7 +5386,9 @@ sub _hdlr_pings {
     require MT::Trackback;
     require MT::TBPing;
     my($tb, $cat);
-    nofollowfy_on($args);
+    my $blog = $ctx->stash('blog');
+    nofollowfy_on($args) if ($blog->nofollow_urls);
+
     if (my $e = $ctx->stash('entry')) {
         $tb = $e->trackback;
         return '' unless $tb;
@@ -7261,14 +7329,14 @@ sub _hdlr_section {
     my $app = MT->instance;
     my $out;
     my $cache_require;
-    
+
     # make cache id
     my $cache_id = $args->{cache_prefix} || undef;
 
     # read timeout. if timeout == 0 then, content is never cached.
     my $timeout = $args->{period};
     $timeout = $app->config('DashboardCachePeriod') if !defined $timeout;
-    if ($timeout > 0) {
+    if (defined $timeout && ($timeout > 0)) {
         if (defined $cache_id) {
             if ($args->{by_blog}) {
                 my $blog = $app->blog
@@ -7290,7 +7358,15 @@ sub _hdlr_section {
                 { id => $cache_id, kind => 'CO' }); # CO == Cache Object
             if (defined $sess) {
                 $out = $sess->data();
-                return $out if $out;
+                if ($out) {
+                    if (my $wrap_tag = $args->{html_tag}) {
+                        my $id = $args->{id};
+                        $id = " id=\"$id\"" if $id;
+                        $id = '' unless defined $id;
+                        $out = "<$wrap_tag$id>" . $out . "</$wrap_tag>";
+                    }
+                    return $out;
+                }
             }
         }
 
@@ -7314,7 +7390,15 @@ sub _hdlr_section {
                             start => time,
                             data => $out});
         $sess->save();
-   } 
+    }
+
+    if (my $wrap_tag = $args->{html_tag}) {
+        my $id = $args->{id};
+        $id = " id=\"$id\"" if $id;
+        $id = '' unless defined $id;
+        $out = "<$wrap_tag$id>" . $out . "</$wrap_tag>";
+    }
     return $out;
 }
+
 1;

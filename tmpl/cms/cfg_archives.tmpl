@@ -313,6 +313,7 @@ TC.attachLoadEvent( init );
 </select>
 
 </mtapp:setting>
+</mt:unless>
 
 <mtapp:setting
     id="publish_queue"
@@ -325,6 +326,7 @@ TC.attachLoadEvent( init );
     <input id="publish_queue" type="checkbox" name="publish_queue" value="1"<mt:if name="publish_queue"> checked="checked"</mt:if>> <label for="publish_queue"><__trans phrase="Use background publishing queue for publishing static pages for this blog"></label>
 </mtapp:setting>
 
+<mt:unless name="hide_build_option">
 <div id="dynamic_options_area"<mt:if name="dynamic_none"> style="display:none;"</mt:if>>
 
     <mtapp:setting

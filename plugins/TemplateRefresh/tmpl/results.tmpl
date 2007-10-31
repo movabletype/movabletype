@@ -1,17 +1,19 @@
-<TMPL_INCLUDE NAME="include/header.tmpl">
-
-<h2><MT_TRANS phrase="Backup and Refresh Templates"></h2>
-
-<TMPL_UNLESS NAME=MESSAGE_LOOP>
-<p class="message"><MT_TRANS phrase="No templates were selected to process."></p>
-<TMPL_ELSE>
+<$mt:setvar name="page_title" value="<__trans phrase="Backup and Refresh Templates">"$>
+<mt:include name="include/header.tmpl">
+<mt:unless name="message_loop">
+<p class="message"><__trans phrase="No templates were selected to process."></p>
+<mt:else>
 <ul>
-<TMPL_LOOP NAME=MESSAGE_LOOP>
-<li><TMPL_VAR NAME=MESSAGE></li>
-</TMPL_LOOP>
+    <mt:loop name="message_loop">
+    <li><mt:var name="message"></li>
+    </mt:loop>
 </ul>
-</TMPL_UNLESS>
+</mt:unless>
 
-<p><a href="<TMPL_VAR NAME=RETURN_URL ESCAPE=HTML>"><MT_TRANS phrase="Return"></a></p>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+        <a href="<mt:var name="return_url" escape="html">" class="primary-button"><__trans phrase="Return to templates"></a>
+    </div>
+</div>
 
-<TMPL_INCLUDE NAME="include/footer.tmpl">
+<mt:include name="include/footer.tmpl">

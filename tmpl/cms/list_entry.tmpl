@@ -202,8 +202,8 @@ TC.attachLoadEvent( init );
     </mt:if>
                 <span id="filter-author_id" style="display: none">
                     <select id="author_id-val" name="filter_val" onchange="enableFilterButton(this)">
-                        <option label="<__trans phrase='Select A User:'>" value="">
-                        <option label="<__trans phrase='User Search...'>"  value="" id="filter-user-search">
+                        <option value=""><__trans phrase='Select A User:'></option>
+                        <option id="filter-user-search" value=""><__trans phrase='User Search...'></option>
                         <optgroup label="<__trans phrase='Recent Users...'>" value="">
     <mt:loop name="entry_author_loop">
                             <option value="<mt:var name="author_id">"><mt:var name="author_name" escape="html"></option>
@@ -264,7 +264,7 @@ TC.attachLoadEvent( init );
                     ><__trans phrase="Republish"></a>
             </mt:if>
                 <a href="javascript:void(0)"
-                    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="page" escape="js">', '<__trans phrase="pages" escape="js">')" name="delete_pages" value="<__trans phrase="Delete">; return false;"
+                    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="page" escape="js">', '<__trans phrase="pages" escape="js">'); return false;" name="delete_pages" value="<__trans phrase="Delete">"
                     accesskey="x"
                     title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural">">"
                     ><__trans phrase="Delete"></a>

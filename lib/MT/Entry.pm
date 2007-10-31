@@ -11,7 +11,6 @@ use strict;
 use MT::Tag; # Holds MT::Taggable
 use base qw( MT::Object MT::Taggable MT::Scorable );
 
-use List::Util qw( first );
 use MT::Blog;
 use MT::Author;
 use MT::Category;
@@ -273,9 +272,9 @@ sub category {
     my $entry = shift;
     $entry->cache_property('category', sub {
         my $rows = $entry->__load_category_data or return;
-        my $row = first { $_->[1] } @$rows or return;
+        my @rows = grep { $_->[1] } @$rows or return;
         require MT::Category;
-        return MT::Category->lookup( $row->[0] );
+        return MT::Category->lookup( $rows[0] );
     });
 }
 
@@ -645,6 +644,10 @@ sub sync_assets {
     while ($text =~ m!<form[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</form>!gis) {
         my $id = $1;
         my $innards = $2;
+
+        # is asset exists?
+        my $asset = MT->model('asset')->load({ id => $id }) or next;
+
         # reference to an existing asset...
         if (exists $assets{$id}) {
             $assets{$id} = 0;
@@ -738,7 +741,18 @@ sub save {
 
 sub remove {
     my $entry = shift;
-    $entry->remove_children({ key => 'entry_id' }) or return;
+    if (ref $entry) {
+        $entry->remove_children({ key => 'entry_id' }) or return;
+
+        # Remove MT::ObjectAsset records
+        my $class = MT->model('objectasset');
+        my $iter = $class->load_iter({ object_id => $entry->id, object_ds => $entry->class_type });
+        while (my $o = $iter->()) {
+            $o->remove;
+        }
+    }
+
+
     $entry->SUPER::remove(@_);
 }
 

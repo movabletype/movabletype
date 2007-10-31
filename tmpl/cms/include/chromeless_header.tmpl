@@ -40,7 +40,7 @@ function hideByID(id) {
 }
 // -->
 </script>
-
+<$mt:var name="js_include"$>
 </head>
 
 <body id="<$mt:var name="screen_id"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"><mt:if name="is_full_screen"> error-screen</mt:if> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if> <$mt:var name="body_class" default="dialog"$>">
@@ -67,5 +67,5 @@ function hideByID(id) {
     </div>
     <div id="content">
         <div id="content-inner" class="inner pkg">
-            <div id="main-content"><div class="inner pkg">
+            <div id="main-content"><div id="main-content-inner" class="inner pkg">
                 <h2 id="page-title"><$mt:var name="page_title"$></h2>

@@ -46,7 +46,7 @@ function togglePerms(c) {
     }
 }
 function passwordResetConfirm() {
-    if (confirm('<__trans phrase="_WARNING_PASSWORD_RESET_SINGLE" escape="singlequotes" params="<mt:var name="name" escape="js">%%<mt:var name="email" escape="js">">')) {
+    if (confirm('<__trans phrase="_WARNING_PASSWORD_RESET_SINGLE" params="<mt:var name="name" escape="js">%%<mt:var name="email" escape="js">">')) {
         document.forms['recover'].submit();
     }
 }
@@ -85,8 +85,6 @@ TC.attachLoadEvent(init);
 //-->
 </script>
 
-<div id="edit-author">
-
 <mt:if name="saved">
     <mtapp:statusmsg
         id="saved"
@@ -115,8 +113,6 @@ TC.attachLoadEvent(init);
         <mt:var name="error">
     </mtapp:statusmsg>
 </mt:if>
-
-    <div class="flt-wrppr">
 
         <form name="profile" id="profile" method="post" action="<mt:var name="script_url">">
             <input type="hidden" name="__mode" value="save" />
@@ -147,7 +143,7 @@ TC.attachLoadEvent(init);
     </mt:if>
     <mtapp:setting
         id="status"
-        label="<__trans phrase="Status">"
+        label="<__trans phrase="_USER_STATUS_CAPTION">"
         label_class="left-label <$mt:var name="user_status"$>"
         hint="<__trans phrase="Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.">">
     <select name="status" id="status" class="half-width" onchange="toggleDisabled(this.value);">
@@ -303,7 +299,7 @@ TC.attachLoadEvent(init);
         show_label="0">
         <ul class="inline-list">
             <li><input name="is_superuser" id="is_superuser" type="checkbox" value="1"<mt:if name="perm_is_superuser"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this)" /> <label for="is_superuser"><__trans phrase="System Administrator"></label></li>
-            <li><input name="can_create_blog" id="can_create_blog" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_create_blog"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_create_blog"><__trans phrase="Create Weblogs"></label></li>
+            <li><input name="can_create_blog" id="can_create_blog" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_create_blog"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_create_blog"><__trans phrase="Create Blogs"></label></li>
             <li><input name="can_view_log" id="can_view_log" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_view_log"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_view_log"><__trans phrase="View Activity Log"></label></li>
             <li><input name="can_manage_plugins" id="can_manage_plugins" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_manage_plugins"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_manage_plugins"><__trans phrase="Manage Plugins"></label></li>
         </ul>
@@ -314,7 +310,7 @@ TC.attachLoadEvent(init);
             <fieldset>
     <mtapp:setting
         id="create_user_blog"
-        label="Options"
+        label="<__trans phrase="Options">"
         content_label="field-content-text"
         hint="<__trans phrase="Create personal blog for user">"
         show_hint="0">
@@ -354,18 +350,14 @@ TC.attachLoadEvent(init);
 
             <fieldset class="pkg">
                 <h3><__trans phrase="Password Recovery"></h3>
-                <div class="leftcol">
-                    <p><__trans phrase="_USAGE_PASSWORD_RESET" params="<mt:var name="email" escape="html">"></p>
-                    <div style="text-align: center">
-                        <input class="state_change" onclick="passwordResetConfirm()" type="button" value="<__trans phrase="Initiate Password Recovery">" <mt:unless name="status_enabled">disabled</mt:unless> />
-                    </div>
+                <p><__trans phrase="_USAGE_PASSWORD_RESET" params="<mt:var name="email" escape="html">"></p>
+                <div style="text-align: center">
+                    <input class="state_change" onclick="passwordResetConfirm()" type="button" value="<__trans phrase="Initiate Password Recovery">" <mt:unless name="status_enabled">disabled</mt:unless> />
                 </div>
             </fieldset>
         </form>
         </mt:unless>
     </mt:unless>
 </mt:if>
-    </div>
-</div>
 
 <mt:include name="include/footer.tmpl">

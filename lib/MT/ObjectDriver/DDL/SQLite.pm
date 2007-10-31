@@ -73,11 +73,49 @@ sub db2type {
 sub type2db {
     my $ddl = shift;
     my ($def) = @_;
-    my $type = $def->{type};
+    my $type = (ref($def) eq 'HASH') ? $def->{type} : $def;
     if ($type eq 'string') {
         $type = 'varchar(' . $def->{size} . ')';
     }
     return $type;
+}
+
+sub can_add_constraint { 0 }
+
+sub unique_constraint_sql {
+    my $ddl = shift;
+    my ($class) = @_;
+
+    my $table_name = $class->table_name;
+    my $props = $class->properties;
+    my $field_prefix = $class->datasource;
+    my $indexes = $props->{indexes};
+
+    my @stmts;
+    if ($indexes) {
+        # FIXME: Handle possible future primary key tuple case
+        my $pk = $props->{primary_key};
+        foreach my $name (keys %$indexes) {
+            next if $pk && $name eq $pk;
+            if (ref $indexes->{$name} eq 'HASH') {
+                my $idx_info = $indexes->{$name};
+                next unless exists($idx_info->{unique}) && $idx_info->{unique};
+                my $column_list = $idx_info->{columns} || [ $name ];
+                my $columns = '';
+                foreach my $col (@$column_list) {
+                    $columns .= ',' unless $columns eq '';
+                    $columns .= $field_prefix . '_' . $col;
+                }
+                if ($columns) {
+                    push @stmts, "CONSTRAINT ${table_name}_$name UNIQUE ($columns)";
+                }
+            }
+        }
+    }
+    if (@stmts) {
+        return ',' . join("\n", @stmts);
+    }
+    return q();
 }
 
 1;

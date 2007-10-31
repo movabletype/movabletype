@@ -213,53 +213,42 @@ class MTDatabaseBase extends ezsql {
     }
 
     function entry_link($eid, $at = "Individual", $args = null) {
+        $blog_id = intval($args['blog_id']);
         if (isset($this->_entry_link_cache[$eid.';'.$at])) {
             $url = $this->_entry_link_cache[$eid.';'.$at];
         } else {
-            if ($at == 'Individual') {
-                $sql = "select fileinfo_url, fileinfo_blog_id
-                          from mt_fileinfo, mt_templatemap
-                         where fileinfo_entry_id=$eid
-                           and templatemap_id = fileinfo_templatemap_id
-                           and templatemap_archive_type='Individual'
-                           and templatemap_is_preferred = 1";
-            } elseif ($at == 'Page') {
-                $sql = "select fileinfo_url, fileinfo_blog_id
-                          from mt_fileinfo, mt_templatemap
-                         where fileinfo_entry_id=$eid
-                           and templatemap_id = fileinfo_templatemap_id
-                           and templatemap_archive_type='Page'
-                           and templatemap_is_preferred = 1";
-            } elseif ($at == 'Category') {
-                $sql = "select fileinfo_url, fileinfo_blog_id
-                          from mt_fileinfo, mt_templatemap, mt_placement
-                         where placement_entry_id = $eid
+            if (preg_match('/Category/', $at)) {
+                $table = ", mt_placement";
+                $filter = "and placement_entry_id = $eid
                            and fileinfo_category_id = placement_category_id
-                           and placement_is_primary = 1
-                           and fileinfo_templatemap_id = templatemap_id
-                           and templatemap_archive_type='Category'
-                           and templatemap_is_preferred = 1";
-            } else {
-                $entry = $this->fetch_entry($eid);
-                $ts = $entry['entry_authored_on'];
-                if ($at == 'Monthly') {
-                    $ts = substr($ts, 0, 6) . '01000000';
-                } elseif ($at == 'Daily') {
-                    $ts = substr($ts, 0, 8) . '000000';
-                } elseif ($at == 'Weekly') {
-                    require_once("MTUtil.php");
-                    list($ws, $we) = start_end_week($ts);
-                    $ts = $ws;
-                } elseif ($at == 'Yearly') {
-                    $ts = substr($ts, 0, 4) . '0101000000';
-                }
-                $sql = "select fileinfo_url, fileinfo_blog_id
-                          from mt_fileinfo, mt_templatemap
-                         where fileinfo_templatemap_id = templatemap_id
-                           and fileinfo_startdate = '$ts'
-                           and templatemap_archive_type='".$this->escape($at)."'
-                           and templatemap_is_preferred = 1";
+                           and placement_is_primary = 1";
             }
+            $entry = $this->fetch_entry($eid);
+            $ts = $entry['entry_authored_on'];
+            if (preg_match('/Monthly$/', $at)) {
+                $ts = substr($ts, 0, 6) . '01000000';
+            } elseif (preg_match('/Daily$/', $at)) {
+                $ts = substr($ts, 0, 8) . '000000';
+            } elseif (preg_match('/Weekly$/', $at)) {
+                require_once("MTUtil.php");
+                list($ws, $we) = start_end_week($ts);
+                $ts = $ws;
+            } elseif (preg_match('/Yearly$/', $at)) {
+                $ts = substr($ts, 0, 4) . '0101000000';
+            }
+            if ($ts != $entry['entry_authored_on']) {
+                $filter .= " and fileinfo_startdate = '$ts'";
+            }
+            if (preg_match('/Author/', $at)) {
+                $filter .= " and fileinfo_author_id = ". $entry['entry_author_id'];
+            }
+            $sql = "select fileinfo_url, fileinfo_blog_id
+                     from mt_fileinfo, mt_templatemap $table
+                    where templatemap_id = fileinfo_templatemap_id
+                      and fileinfo_blog_id = $blog_id
+                      $filter
+                      and templatemap_archive_type = '$at'
+                      and templatemap_is_preferred = 1";
             $rows = $this->get_results($sql, ARRAY_A);
             if (count($rows)) {
                 $link =& $rows[0];
@@ -630,34 +619,20 @@ class MTDatabaseBase extends ezsql {
             }
         }
 
-        $order = 'desc';
         if (isset($args['sort_order'])) {
             if ($args['sort_order'] == 'ascend') {
                 $order = 'asc';
-            }else if ($args['sort_order'] == 'descend') {
+            } else if ($args['sort_order'] == 'descend') {
                 $order = 'desc';
             }
-            
+        } 
+        if (!isset($order)) {
+            $order = 'desc';
             if (isset($blog) && isset($blog['blog_sort_order_posts'])) {
                 if ($blog['blog_sort_order_posts'] == 'ascend') {
                     $order = 'asc';
                 }
             }
-    
-            if (!isset($order)) {
-                $order = 'desc';
-                if (isset($blog) && isset($blog['blog_sort_order_posts'])) {
-                    if ($blog['blog_sort_order_posts'] == 'ascend') {
-                        $order = 'asc';
-                    }
-                }
-            }
-        }
-
-        $base_order = 'desc';
-        if (isset($args['base_sort_order'])) {
-            if ($args['base_sort_order'] == 'ascend')
-                $base_order = 'asc';
         }
 
         if (isset($args['class'])) {
@@ -669,6 +644,41 @@ class MTDatabaseBase extends ezsql {
 
         if (isset($args['offset']))
             $offset = $args['offset'];
+
+        if (isset($args['sort_by'])) {
+            if ($args['sort_by'] == 'title') {
+                $sort_field = 'entry_title';
+            } elseif ($args['sort_by'] == 'id') {
+                $sort_field = 'entry_id';
+            } elseif ($args['sort_by'] == 'status') {
+                $sort_field = 'entry_status';
+            } elseif ($args['sort_by'] == 'modified_on') {
+                $sort_field = 'entry_modified_on';
+            } elseif ($args['sort_by'] == 'author_id') {
+                $sort_field = 'entry_author_id';
+            } elseif ($args['sort_by'] == 'excerpt') {
+                $sort_field = 'entry_excerpt';
+            } elseif ($args['sort_by'] == 'comment_created_on') {
+                $sort_field = $args['sort_by'];
+            } elseif ($args['sort_by'] == 'score') {
+            } else {
+                $sort_field = 'entry_' . $args['sort_by'];
+            }
+            if ($sort_field) $no_resort = 1;
+        }
+        $sort_field or $sort_field ='entry_authored_on';
+
+        if (isset($args['limit'])) {
+            $base_order = ($args['sort_order'] == 'ascend' ? 'asc' : 'desc');
+            $base_order or $base_order = 'desc';
+        } else {
+            $base_order = 'desc';
+            if (isset($args['base_sort_order'])) {
+                if ($args['base_sort_order'] == 'ascend')
+                    $base_order = 'asc';
+            }
+            $no_resort = 0;
+        }
 
         if (count($filters)) {
             $post_select_limit = $limit;
@@ -692,7 +702,7 @@ class MTDatabaseBase extends ezsql {
                    $date_filter
                    $day_filter
                    $class_filter
-             order by entry_authored_on $base_order
+             order by $sort_field $base_order
         ";
         if (isset($args['recently_commented_on'])) {
             $rco = $args['recently_commented_on'];
@@ -705,6 +715,7 @@ class MTDatabaseBase extends ezsql {
         } else {
             $sql = $this->apply_limit_sql($sql . " <LIMIT>", $limit, $offset);
         }
+
         $result = $this->query_start($sql);
         if (!$result) return null;
 
@@ -730,6 +741,7 @@ class MTDatabaseBase extends ezsql {
         }
 
         if (!$no_resort) {
+            $sort_field = '';
             if (isset($args['sort_by'])) {
                 if ($args['sort_by'] == 'title') {
                     $sort_field = 'entry_title';

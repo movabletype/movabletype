@@ -1,3 +1,17 @@
+.welcome-widget .widget-label {
+  margin-bottom: 0.5em;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.welcome-widget .widget-content li a {
+  font-size: 16px;
+}
+
+.dialog #page-title {
+  font-size: 20px;
+}
+
 #selector-nav #create-entry a {
   line-height: 26px;
 }
@@ -18,24 +32,21 @@
   margin-bottom: 0;
 }
 
-#list-plugins .shortcuts li {
-  line-height: 1.3;
-}
-
-.edit-author .field-left-label .field-header, 
-.settings-screen .field-left-label .field-header {
+.main-screen .field-left-label .field-header {
   width: 145px;
 }
 
-.edit-author .field-left-label .field-content, 
-.settings-screen .field-left-label .field-content, 
-.edit-author .settings-actions-bar .actions-bar-inner, 
-.settings-screen .settings-actions-bar .actions-bar-inner {
+.main-screen .field-left-label .field-content, 
+.main-screen .settings-actions-bar .actions-bar-inner {
   margin-left: 155px;
 }
 
-#publishing-field #basename-field .field-header {
+.edit-entry .field-left-label .field-header {
   width: 85px;
+}
+
+.edit-entry .field-left-label .field-content {
+  margin-left: 95px;
 }
 
 #calendar #calendar-content {
@@ -67,4 +78,9 @@ div#filter-select textarea {
 div.module {
   font-size: 11px;
   line-height: 1.2;
+}
+
+#create-inline-notification-form #email-field input, 
+#create-inline-notification-form #website-field input {
+  width: 160px;
 }

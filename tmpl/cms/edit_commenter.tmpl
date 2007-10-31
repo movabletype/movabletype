@@ -37,8 +37,9 @@
     <$mtapp:PageActions$>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-    <mt:if name="can_edit_commenters">
+    <mt:if name="can_edit_commenters"><mt:unless name="is_me">
         <mt:if name="id">
+            <mt:unless name="type_author">
             <mt:unless name="commenter_approved">
         <button
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
@@ -53,6 +54,7 @@
             accesskey="t"
             title="<__trans phrase="Untrust [_1] (t)" params="<mt:var name="object_label" lower_case="1">">"
             ><__trans phrase="Untrust"></button>
+            </mt:unless>
             </mt:unless>
             <mt:unless name="commenter_banned">
         <button
@@ -84,7 +86,7 @@
             ><__trans phrase="Ban"></button>
             />
         </mt:if>
-    </mt:if>
+    </mt:unless></mt:if>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
@@ -118,7 +120,7 @@ TC.attachLoadEvent(init);
         </mt:if>
 
         <mtapp:setting
-            id="edit-commenter-label"
+            id="name"
             label="<__trans phrase="Name">"
             hint="<__trans phrase="The Name of the commenter">"
             show_hint="0">
@@ -127,7 +129,7 @@ TC.attachLoadEvent(init);
         </mtapp:setting>
     
         <mtapp:setting
-            id="edit-commenter-label"
+            id="identity"
             label="<__trans phrase="Identity">"
             hint="<__trans phrase="The Identity of the commenter">"
             show_hint="0">
@@ -135,7 +137,7 @@ TC.attachLoadEvent(init);
         </mtapp:setting>
     
         <mtapp:setting
-            id="edit-commenter-label"
+            id="email"
             label="<__trans phrase="Email">"
             hint="<__trans phrase="The Email of the commenter">"
             show_hint="0">
@@ -143,7 +145,7 @@ TC.attachLoadEvent(init);
             <mt:if name="is_email_hidden">&nbsp;<mt:else><a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=email&amp;search=<mt:var name="email" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a></mt:if>        </mtapp:setting>
     
         <mtapp:setting
-            id="edit-commenter-label"
+            id="url5122"
             label="<__trans phrase="URL">"
             hint="<__trans phrase="The URL of the commenter">"
             show_hint="0">
@@ -152,7 +154,7 @@ TC.attachLoadEvent(init);
         </mtapp:setting>
     
         <mtapp:setting
-            id="edit-commenter-label"
+            id="status"
             label="<__trans phrase="Status">"
             hint="<__trans phrase="The trusted status of the commenter">"
             show_hint="0">
@@ -165,7 +167,7 @@ TC.attachLoadEvent(init);
             <span class="icon-left icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
                 </mt:if>
             </mt:if>
-            <a title="<__trans phrase="View all commenters with this status">" href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="commenter_approved">approved<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+            <a title="<__trans phrase="View all commenters">" href="<mt:var name="script_url">?__mode=list_member&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=commenter"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
         </mtapp:setting>
     
         <mt:if name="position_actions_bottom">

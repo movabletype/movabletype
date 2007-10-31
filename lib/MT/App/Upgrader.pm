@@ -327,7 +327,7 @@ sub init_blog {
         $site_path = File::Spec->catdir(@dirs);
     }
     if (!-w $site_path) {
-            $param{error} = $app->translate("[_1] is not writable.", $param{blog_path});
+            $param{error} = $app->translate("The path provided below is not writable.", $param{blog_path});
         return $app->build_page('setup_initial_blog.tmpl', \%param);
     }
 
@@ -569,6 +569,7 @@ sub main {
     }
 
     my $schema = $app->{cfg}->SchemaVersion || 0;
+
     if ($schema >= 3.2) {
         my $author;
         eval {
@@ -585,6 +586,11 @@ sub main {
         # yes, MT itself is needing an upgrade...
         $param->{mt_upgrade} = 1;
     }
+
+    $param->{help_url} = $app->{cfg}->HelpURL;
+    $param->{to_schema} = $cur_schema;
+    $param->{from_schema} = $schema;
+    $param->{mt_version} = MT->version_number;
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;

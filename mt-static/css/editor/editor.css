@@ -282,14 +282,14 @@
     background-image: url(../../images/buttons/toolbar/toggle.gif);
 }
 
-.editor-toolbar a.button.command-toggle-wysiwyg:hover:active,
-.editor-toolbar a.button.command-toggle-html:hover:active {
-    background-image: url(../../images/buttons/toolbar/toggle-active.gif);
-}
-
 .editor-toolbar a.button.command-toggle-wysiwyg:hover,
 .editor-toolbar a.button.command-toggle-html:hover {
     background-image: url(../../images/buttons/toolbar/toggle-hover.gif);
+}
+
+.editor-mode-iframe .editor-toolbar a.button.command-toggle-wysiwyg,
+.editor-mode-textarea .editor-toolbar a.button.command-toggle-html {
+    background-image: url(../../images/buttons/toolbar/toggle-active.gif);
 }
 
 .editor-toolbar a.button.command-toggle-wysiwyg,
@@ -299,19 +299,9 @@
     background-position: 0 0;
 }
 
-.editor-state-toggle-wysiwyg a.button.command-toggle-wysiwyg,
-.editor-state-toggle-wysiwyg a.button.command-toggle-wysiwyg:hover {
-    background-image: url(../../images/buttons/toolbar/toggle-click.gif);
-}
-
 .editor-toolbar a.button.command-toggle-html,
 .editor-toolbar a.button.command-toggle-html:hover {
     background-position: -22px 0;
-}
-
-.editor-state-toggle-html a.button.command-toggle-html,
-.editor-state-toggle-html a.button.command-toggle-html:hover {
-    background-image: url(../../images/buttons/toolbar/toggle-click.gif);
 }
 
 

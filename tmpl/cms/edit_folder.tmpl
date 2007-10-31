@@ -1,8 +1,6 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Folder">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <MTSetVarBlock name="content_header">
-    <p class="page-desc"><__trans phrase="Use this page to edit the attributes of the folder [_1]. You can set a description for your folder to be used in your public pages." params="<mt:var name="label" escape="html">"></p>
-
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -75,7 +73,9 @@ TC.attachLoadEvent( init );
             label="<__trans phrase="Label">"
             help_page="folders"
             help_section="folder_label">
-            <input name="label" id="label" maxlength="100" value="<mt:var name="label" escape="html">" class="full-width" />
+            <div class="textarea-wrapper">
+                <input name="label" id="label" maxlength="100" value="<mt:var name="label" escape="html">" class="full-width" />
+            </div>
         </mtapp:setting>
 
         <mtapp:setting

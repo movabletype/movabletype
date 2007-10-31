@@ -304,7 +304,7 @@ sub add_methods {
     if (ref($app)) {
         my $vtbl;
         if (my $r = $MT::plugin_registry) {
-            $vtbl = $r->{applications}{$app->id} ||= {};
+            $vtbl = $r->{applications}{$app->id}{methods} ||= {};
         } else {
             $vtbl = $app->{vtbl} ||= {};
         }

@@ -225,7 +225,7 @@
 
         TC.addClassName(btn, "disabled-button");
         btn.disabled = true;
-        btn.value = "<__trans phrase="Applying...">";
+        btn.value = "<__trans phrase="Applying..." escape="js">";
 
         var args = {
             '__mode': 'stylecatcher_apply',
@@ -246,6 +246,7 @@
 
     function designApplied(client, result) {
         var btn = getByID("apply-button");
+        btn.value = "<__trans phrase="Apply Design" escape="js">";
 
         var res;
         try {
@@ -315,11 +316,12 @@
         chooseCategory('category-current');
         current_theme = selected;
         mixer.name = selected;
+        var layout_changed = (current_layout && new_layout) && (current_layout != new_layout);
+        current_layout = new_layout;
         selectDesign();
 
-        if ((current_layout && new_layout) && (current_layout != new_layout) && (!dynamic_blog)) {
+        if (layout_changed && (!dynamic_blog)) {
             showMsg("<__trans phrase="The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout." escape="js">", 'theme-applied', "info", "all", blog_id);
-            current_layout = new_layout;
         } else {
             showMsg("<__trans phrase="The selected theme has been applied!" escape="js">", 'theme-applied', "info");
         }

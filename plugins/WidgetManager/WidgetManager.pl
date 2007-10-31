@@ -15,7 +15,7 @@ our $VERSION = '1.0';
 my $plugin = MT::Plugin::WidgetManager->new({
     id          => 'WidgetManager',
     name        => 'Widget Manager',
-    description => '<MT_TRANS phrase="Maintain your weblog\'s widget content using a handy drag and drop interface.">',
+    description => q(<MT_TRANS phrase="Maintain your blog's widget content using a handy drag and drop interface.">),
     version     => $VERSION,
     author_name => 'Six Apart',
     key         => 'widget-manager',
@@ -34,6 +34,16 @@ sub init_registry {
                 WidgetSet => '$WidgetManager::WidgetManager::Plugin::_hdlr_widget_manager',
             },
         },
+        callbacks => {
+            'clone_blog_widgets' => {
+                callback => 'MT::Blog::post_clone',
+                handler => '$WidgetManager::WidgetManager::Plugin::clone_blog_widgemanagers',
+            },
+            'remove_blog_widgets' => {
+                callback => 'MT::Blog::post_remove',
+                handler => '$WidgetManager::WidgetManager::Plugin::remove_blog_widgetmanager',
+            },
+        },
         applications => {
             cms => {
                 methods => {
@@ -44,7 +54,7 @@ sub init_registry {
                 },
                 menus => {
                     'design:widgets' => {
-                        label => 'Widgets',
+                        label => 'Widget Sets',
                         mode => 'list_widget',
                         order => 201,
                         permission => 'edit_templates',

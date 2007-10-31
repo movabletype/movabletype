@@ -1,16 +1,16 @@
-<MT_TRANS phrase="Thank you registering for an account to comment on [_1]." params="<TMPL_VAR NAME=BLOG_NAME>"> 
+<__trans phrase="Thank you registering for an account to comment on [_1]." params="<mt:var name="blog_name">"> 
 
-<MT_TRANS phrase="For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to comment on [_1]." params="<TMPL_VAR NAME=BLOG_NAME>">
+<__trans phrase="For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to comment on [_1]." params="<mt:var name="blog_name">">
 
-<MT_TRANS phrase="To confirm your account, please click on or cut and paste the following URL into a web browser:">
+<__trans phrase="To confirm your account, please click on or cut and paste the following URL into a web browser:">
 
-<TMPL_VAR NAME=CONFIRM_URL>
+<mt:var name="confirm_url">
 
-<MT_TRANS phrase="If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required." params="<TMPL_VAR NAME=BLOG_NAME>">
+<__trans phrase="If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required." params="<mt:var name="blog_name">">
 
-<MT_TRANS phrase="Thank you very much for your understanding.">
+<__trans phrase="Thank you very much for your understanding.">
 
-<MT_TRANS phrase="Sincerely,">
-<TMPL_VAR NAME=AUTHOR_NAME>
+<__trans phrase="Sincerely,">
+<mt:var name="author_name">
 
-<TMPL_INCLUDE NAME="footer-email.tmpl">
+<mt:include name="footer-email.tmpl">

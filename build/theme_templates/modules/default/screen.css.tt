@@ -12,6 +12,10 @@ body {
     border-top-style: solid;
 }
 
+#header-inner {
+    position: relative;
+}
+
 #header-name {
     margin: 0 0 5px;
     line-height: 1;
@@ -105,6 +109,10 @@ body {
 
 
 /* Footer */
+
+#header-inner {
+    position: relative;
+}
 
 #footer-content,
 #footer-content a {

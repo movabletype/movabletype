@@ -37,12 +37,7 @@ a:active {
     text-align: left;
     width: 360px;
 }
-/*#footer {
-    padding: 5px 20px 20px;
-    bottom: 0px;
-    border-top: 0;
-}
-*/
+
 .ready {
     font-weight: bold;
     color: #93b06b;
@@ -103,7 +98,6 @@ p.intro {
 
 #content #content-inner {
     margin: 0 18px;
-    padding-bottom: 20px;
 }
 
 #nav {
@@ -146,7 +140,6 @@ fieldset {
 }
 
 .field {
-    padding-bottom: .75em;
     border: 0;
     margin-bottom: .75em;
 }
@@ -166,18 +159,9 @@ fieldset {
 .field-left-label .field-content select,
 .field-left-label .field-content input {
     margin: 0;
-    width: 100%
+    width: 318px;
 }
 
-/*#footer,
-#footer .inner {
-    background: transparent;
-    position: relative;
-    text-align: left;
-    width: 320px;
-    color: #999;
-}
-*/
 #header {
     background: transparent #fff;
 }
@@ -185,23 +169,19 @@ fieldset {
     margin-left: 20px;
 }
 
-#main-content .signin {
-    height: 170px;
-}
-
 #main-content {
     position: relative;
 }
 
-#footer .comment_signin_footer {
-    height: 23px;
-    background: url('../images/comment/signin_footer.png') no-repeat;
+#main-content-inner {
+    margin-bottom: 10px;
 }
 
 .comment_signin_options {
     position: absolute;
     left: 341px;
     width: 200px;
+    margin-top: -60px;
 }
 
 .comment_signin_options p {
@@ -516,6 +496,20 @@ fieldset {
 .system .actions-bar .plugin-actions button:hover {
     color: #7b8a35 !important;
 }
+
+/* Actions Bar Chromeless ---------------------------------------------------------------------------------- */
+
+.dialog .actions-bar {
+    margin-bottom: 10px;
+}
+
+.dialog .actions-bar-login .actions a,
+.dialog .actions-bar-login .actions button,
+.dialog .actions-bar-login .actions select {
+    float: left;
+    margin: 0 5px 0 0;
+}
+
 
 /* Upgrade ---------------------------------------------------------------------------------- */
 

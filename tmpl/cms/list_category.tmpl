@@ -233,8 +233,29 @@ TC.attachLoadEvent( init );
                     <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label" lower_case="1">">"><__trans phrase="Create"></a>
                     <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [_1]" params="<mt:var name="object_label" lower_case="1">">"><__trans phrase="Move"></a>
                 </td>
-                <td class="entry"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=<mt:var name="entry_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"></mt:if></mt:if><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="category_entrycount">%%<mt:var name="entry_label" lower_case="1">%%<mt:var name="entry_label_plural" lower_case="1">"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"></a></mt:if></mt:if></td>
-                <td class="trackback status-disabled"><mt:if name="has_tb"><mt:if name="category_tbcount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">&amp;tab=pings"></mt:if></mt:if><__trans phrase="[quant,_1,TrackBack,TrackBacks]" params="<mt:var name="category_tbcount">"><mt:if name="category_tbcount"><mt:if name="can_edit_entries"></a></mt:if></mt:if><mt:else></mt:if></td>
+                <td class="entry">
+<mt:if name="category_entrycount">
+    <mt:if name="can_edit_entries">
+                    <a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=<mt:var name="entry_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="category_entrycount">"></a>
+    <mt:else>
+                    <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="category_entrycount">">
+    </mt:if>
+</mt:if>
+                </td>
+                <td class="trackback">
+<mt:if name="has_tb">
+    <mt:if name="category_tbcount">
+        <mt:if name="can_edit_entries">
+                    <a href="<mt:var name="script_url">?__mode=list_pings&amp;filter=<$mt:var name="object_type"$>_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="category_id">">
+                        <__trans phrase="[quant,_1,TrackBack,TrackBacks]" params="<mt:var name="category_tbcount">">
+                    </a>
+        </mt:if>
+    <mt:else>
+                    <__trans phrase="[quant,_1,TrackBack,TrackBacks]" params="<mt:var name="category_tbcount">">
+    </mt:if>
+</mt:if>
+
+                </td>
             </tr>
 
             <tr class="create-row create-inline" id="create-<mt:var name="category_id">">

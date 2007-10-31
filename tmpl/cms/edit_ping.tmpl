@@ -170,6 +170,7 @@
     <mtapp:setting
         id="target_entry"
         label="<__trans phrase="Target Entry">"
+        content_class="field-content-text"
         hint=""
         show_hint="0">
         <mt:if name="no_entry">
@@ -177,14 +178,15 @@
         <mt:else>
             <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
         </mt:if>
-        <a title="<__trans phrase="View all TrackBacks on this entry">" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">&amp;tab=pings"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <a href="<$mt:var name="script_url"$>?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<__trans phrase="View all TrackBacks on this entry">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mtapp:setting>
 </mt:if>
 
 <mt:if name="category_ping">
     <mtapp:setting
         id="target_category"
-        label="<__trans phrase="Target Category:">"
+        label="<__trans phrase="Target Category">"
+        content_class="field-content-text"
         hint=""
         show_hint="0">
         <mt:if name="no_category">
@@ -199,15 +201,18 @@
 <mtapp:setting
     id="date"
     label="<__trans phrase="Date">"
+    content_class="field-content-text"
     hint=""
     show_hint="0">
     <mt:var name="created_on_time_formatted">
-    <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;from=<mt:var name="created_on_day_formatted" escape="html">&amp;to=<mt:var name="created_on_day_formatted" escape="html">&amp;show_all=1&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+    <a title="<__trans phrase="View all TrackBacks created on this day">" href="
+        <mt:var name="script_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;from=<mt:var name="created_on" escape="html">&amp;to=<mt:var name="created_on" escape="html">&amp;show_all=1&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 </mtapp:setting>
 
 <mtapp:setting
     id="source_ip"
     label="<__trans phrase="IP">"
+    content_class="field-content-text"
     hint=""
     show_hint="0">
     <mt:var name="ip" escape="html">

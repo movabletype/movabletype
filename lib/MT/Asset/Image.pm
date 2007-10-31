@@ -386,26 +386,33 @@ sub on_upload {
         require MT::Image;
         my $image_type = scalar $param->{image_type};
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
-        my ($thumbnail_url) =
-          $asset->thumbnail_url( Height => $h, Width => $w, Path => $extra_path );
+        my ($pseudo_thumbnail_url) =
+          $asset->thumbnail_url( Height => $h, Width => $w, Path => $extra_path, Pseudo => 1 );
         my $thumbnail = $asset->thumbnail_filename( Height => $h, Width => $w );
-        $thumbnail = File::Spec->catfile($asset->_make_cache_path($extra_path), $thumbnail);
+        my $pseudo_thumbnail_path = File::Spec->catfile($asset->_make_cache_path($extra_path, 1), $thumbnail);
         my ( $base, $path, $ext ) =
           File::Basename::fileparse( $thumbnail, qr/[A-Za-z0-9]+$/ );
-        my $thumb_file_size = ( stat($thumbnail) )[7];
         my $img_pkg         = MT::Asset->handler_for_file($thumbnail);
         my $asset_thumb     = new $img_pkg;
         my $original        = $asset_thumb->clone;
         $asset_thumb->blog_id($blog_id);
-        $asset_thumb->url($thumbnail_url);
-        $asset_thumb->file_path($thumbnail);
+        $asset_thumb->url($pseudo_thumbnail_url);
+        $asset_thumb->file_path($pseudo_thumbnail_path);
         $asset_thumb->file_name("$base$ext");
         $asset_thumb->file_ext($ext);
         $asset_thumb->image_width($w);
         $asset_thumb->image_height($h);
         $asset_thumb->created_by( $app->user->id );
+        $asset_thumb->label($app->translate("Thumbnail image for [_1]", $asset->label || $asset->file_name));
         $asset_thumb->parent( $asset->id );
         $asset_thumb->save;
+
+        # force these to calculate now, giving a full URL / file path
+        # for callbacks
+        $thumbnail = $asset_thumb->file_path;
+        my $thumbnail_url = $asset_thumb->url;
+        my $thumb_file_size = ( stat($thumbnail) )[7];
+
         $app->run_callbacks( 'cms_post_save.asset', $app, $asset_thumb,
             $original );
 
@@ -479,8 +486,10 @@ sub on_upload {
             my $fmgr = $blog->file_mgr;
             my $root_path =
               $param->{site_path} ? $blog->site_path : $blog->archive_path;
+            my $pseudo_path = $param->{site_path} ? '%r' : '%a';
             $root_path =
               File::Spec->catfile( $root_path, ($extra_path || '') );
+            $pseudo_path = File::Spec->catfile( $pseudo_path, ($extra_path || '') );
             my $abs_file_path =
               File::Spec->catfile( $root_path, $rel_path . $ext );
 
@@ -493,6 +502,7 @@ sub on_upload {
                 $abs_file_path =
                   File::Spec->catfile( $root_path, $rel_path_ext );
             }
+            $pseudo_path = File::Spec->catfile( $pseudo_path, $rel_path_ext );
             my ( $vol, $dirs, $basename ) =
               File::Spec->splitpath($rel_path_ext);
             my $rel_url_ext =
@@ -509,7 +519,7 @@ sub on_upload {
                     $fmgr->errstr
                 )
               );
-            $url = $param->{site_path} ? $blog->site_url : $blog->archive_url;
+            $url = $param->{site_path} ? '%r' : '%a';
             $rel_url_ext =~ s!^/!!;
             $url = MT::Util::caturl($url, $extra_url, $rel_url_ext);
 
@@ -518,12 +528,16 @@ sub on_upload {
             my $original   = $asset_html->clone;
             $asset_html->blog_id($blog_id);
             $asset_html->url($url);
-            $asset_html->file_path($abs_file_path);
+            $asset_html->label($app->translate("Popup Page for [_1]", $asset->label || $asset->file_name));
+            $asset_html->file_path($pseudo_path);
             $asset_html->file_name($basename);
             $asset_html->file_ext( $blog->file_extension );
             $asset_html->created_by( $app->user->id );
             $asset_html->parent( $asset->id );
             $asset_html->save;
+
+            # Select back the real URL for callbacks
+            $url = $asset_html->url;
 
             $param->{popup_asset_id} = $asset_html->id;
 

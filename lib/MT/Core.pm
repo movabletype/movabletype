@@ -261,6 +261,7 @@ BEGIN {
                 path    => 1,
             },
             'ObjectDriver'  => undef,
+            'AllowedTextFilters' => undef,
             'Serializer'    => { default => 'MT', },
             'SendMailPath'  => { default => '/usr/lib/sendmail', },
             'TimeOffset'    => { default => 0, },
@@ -272,7 +273,7 @@ BEGIN {
             'CookieDomain'  => undef,
             'CookiePath'    => undef,
             'MailEncoding'  => {
-                default => 'ISO-8859-1',    # FIXME: make a handler for this
+                default => 'ISO-8859-1',
             },
             'MailTransfer'      => { default => 'sendmail' },
             'SMTPServer'        => { default => 'localhost', },
@@ -280,7 +281,6 @@ BEGIN {
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'BlogsPingURL'   => { default => 'http://ping.blo.gs/', },
             'MTPingURL' => { default => 'http://www.movabletype.org/update/', },
-            'MTCheckScript' => { default => 'mt-check.cgi', },
             'TechnoratiPingURL' =>
               { default => 'http://rpc.technorati.com/rpc/ping', },
             'GooglePingURL' =>
@@ -322,8 +322,9 @@ BEGIN {
             'ViewScript'            => { default => 'mt-view.cgi', },
             'AtomScript'            => { default => 'mt-atom.cgi', },
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
+            'CheckScript'           => { default => 'mt-check.cgi', },
             'PublishCharset'        => {
-                default => 'utf-8',    # FIXME: make a handler for this
+                default => 'utf-8',
             },
             'SafeMode'           => { default => 1, },
             'GlobalSanitizeSpec' => {
@@ -368,16 +369,13 @@ BEGIN {
             'OneHourMaxPings'           => { default => 10, },
             'OneDayMaxPings'            => { default => 50, },
             'SupportURL'                => {
-                default => 'http://www.sixapart.com/movabletype/support/'
-                ,    # FIXME: make a handler for this
+                default => 'http://www.sixapart.com/movabletype/support/',
             },
             'NewsURL' => {
-                default => 'http://www.sixapart.com/movabletype/news/'
-                ,    # FIXME: make a handler for this
+                default => 'http://www.sixapart.com/movabletype/news/',
             },
             'NewsboxURL' => {
-                default => 'http://www.movabletype.org/mt4_news_widget.html'
-                ,    # FIXME: make a handler for this
+                default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
             # 'MTNewsURL' => {
             #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
@@ -402,8 +400,7 @@ BEGIN {
             'AllowComments'         => { default => 1, },
             'AllowPings'            => { default => 1, },
             'HelpURL'               => {
-                default => 'http://www.sixapart.com/movabletype/docs/4.0/'
-                ,    # FIXME: make a handler for this
+                default => 'http://www.sixapart.com/movabletype/docs/4.0/',
             },
             'UsePlugins'               => { default => 1, },
             'PluginSwitch'             => { type    => 'HASH', },
@@ -412,20 +409,20 @@ BEGIN {
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
             'LogExportEncoding'        => {
-                default => 'utf-8',    # FIXME: make a handler for this
+                default => 'utf-8',
             },
             'ActivityFeedsRunTasks' => { default => 1, },
             'ExportEncoding'        => {
-                default => 'utf-8',    # FIXME: make a handler for this
+                default => 'utf-8',
             },
             'SQLSetNames'     => undef,
             'UseSQLite2'      => { default => 0, },
             'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone' => {
-                default => '0',        # FIXME: make a handler for this
+                default => '0',
             },
             'CategoryNameNodash' => {
-                default => '0',        # FIXME: make a handler for this
+                default => '0',
             },
             'DefaultListPrefs' => {
                 type    => 'HASH',

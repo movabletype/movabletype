@@ -47,7 +47,7 @@ unless ($@) {
     require MT;
     MT->add_plugin({
         name => "SmartyPants",
-        description => "Easily translates plain punctuation characters into 'smart' typographic punctuation.",
+        description => q(<MT_TRANS phrase="Easily translates plain punctuation characters into 'smart' typographic punctuation.">),
         version => $VERSION,
         author_name => "John Gruber",
         author_link => "http://daringfireball.net/",

@@ -11,22 +11,28 @@
 <mt:setvartemplate name="select_widget_form">
 <mt:var name="widget_options" value="0">
 <mt:setvarblock name="add_widget_form">
-<form method="POST" action="<mt:var name="script_url">">
-<input type="hidden" name="__mode" value="update_widget_prefs" />
-<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-<input type="hidden" name="widget_action" value="add" />
-<input type="hidden" name="widget_scope" value="<mt:var name="widget_scope">" />
-<input type="hidden" name="widget_set" value="<mt:var name="set">" />
-<select name="widget_id">
-    <option value=""><__trans phrase="Add a Widget..."></option>
+<form method="POST" action="<mt:var name="script_url">" class="listing">
+    <input type="hidden" name="__mode" value="update_widget_prefs" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="widget_action" value="add" />
+    <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope">" />
+    <input type="hidden" name="widget_set" value="<mt:var name="set">" />
+    <div class="actions-bar buttons">
+        <div class="actions-bar-inner pkg actions">
+            <select name="widget_id">
+                <option value=""><__trans phrase="Select a Widget..."></option>
 <mt:loop name="all_widget_loop"><mt:if name="widget_set"><mt:if name="widget_set" eq="$set"><mt:var name="widget_options" value="1">
-    <option value="<mt:var name="widget_id">"><mt:var name="widget_label"></option>
+                <option value="<mt:var name="widget_id">"><mt:var name="widget_label"></option>
 </mt:if><mt:else><mt:var name="widget_options" value="1">
-    <option value="<mt:var name="widget_id">"><mt:var name="widget_label"></option>
+                <option value="<mt:var name="widget_id">"><mt:var name="widget_label"></option>
 </mt:if></mt:loop>
-</select>
-<input type="submit" value="<__trans phrase="Go">" />
+            </select>
+            <button
+                type="submit"
+                ><__trans phrase="Add"></button>
+        </div>
+    </div>
 </form>
 </mt:setvarblock>
 <mt:if name="widget_options"><mt:var name="add_widget_form"></mt:if>

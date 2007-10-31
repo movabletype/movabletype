@@ -12,6 +12,8 @@ use MT::Util qw( archive_file_for );
 
 __PACKAGE__->install_properties({
     class_type => 'page',
+    child_of => 'MT::Blog',
+    child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
 });
 
 sub class_label {

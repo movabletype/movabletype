@@ -17,6 +17,7 @@ sub column_defs;
 sub can_add_column { 0 }
 sub can_alter_column { 0 }
 sub can_drop_column { 0 }
+sub can_add_constraint { 1 }
 
 sub upgrade_begin {()}
 sub upgrade_end {()}
@@ -25,6 +26,7 @@ sub create_table {()}
 sub index_table {()}
 sub create_sequence {}
 sub drop_sequence {}
+sub unique_constraint_sql { '' }
 
 sub table_exists {
     my $ddl = shift;
@@ -197,6 +199,9 @@ sub create_table_sql {
         push @cols, $sql;
     }
     $table_ddl .= "\t" . (join ",\n\t", @cols) . "\n";
+
+    $table_ddl .= $ddl->unique_constraint_sql(@_) . "\n";
+
     $table_ddl .= ')';
 
     return $table_ddl;
@@ -221,7 +226,30 @@ sub index_table_sql {
         my $pk = $props->{primary_key};
         foreach my $name (keys %$indexes) {
             next if $pk && $name eq $pk;
-            push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name (${field_prefix}_$name)";
+            if (!ref($indexes->{$name})) {
+                # Simple, single column index
+                push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name (${field_prefix}_$name)";
+            }
+            elsif (ref $indexes->{$name} eq 'HASH') {
+                my $idx_info = $indexes->{$name};
+                my $column_list = $idx_info->{columns} || [ $name ];
+                my $columns = '';
+                foreach my $col (@$column_list) {
+                    $columns .= ',' unless $columns eq '';
+                    $columns .= $field_prefix . '_' . $col;
+                }
+                if ($columns) {
+                    if ($idx_info->{unique} && $ddl->can_add_constraint) {
+                        push @stmts, "ALTER TABLE $table_name ADD CONSTRAINT ${table_name}_$name UNIQUE ($columns)";
+                    }
+                    else {
+                        push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name ($columns)";
+                    }
+                }
+                else {
+                    die "Invalid definition of unique index for class $class: no columns were identified";
+                }
+            }
         }
     }
 
@@ -232,16 +260,37 @@ sub index_column_sql {
     my $ddl = shift;
     my ($class, $name) = @_;
 
+    my @stmts;
     my $props = $class->properties;
     my $indexes = $props->{indexes};
+    return @stmts unless $indexes;
+    return @stmts unless exists($indexes->{$name});
+
     my $table_name = $class->table_name;
     my $field_prefix = $class->datasource;
-    my @stmts;
-    if ($indexes) {
-        return () unless $indexes->{$name};
-        my $pk = $props->{primary_key};
+    my $pk = $props->{primary_key};
+    if (!ref $indexes->{$name}) {
         if (!($pk && $name eq $pk)) {
             push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name (${field_prefix}_$name)";
+        }
+    }
+    elsif (ref $indexes->{$name} eq 'HASH') {
+        # check to see if this lists our column in the list of
+        # indexed columns
+        my $idx_info = $indexes->{$name};
+        my $column_list = $idx_info->{columns} || [ $name ];
+        if (grep { $name } @$column_list) {
+            # create this index
+            my $columns = '';
+            foreach my $col (@$column_list) {
+                $columns .= ',' unless $columns eq '';
+                $columns .= $field_prefix . '_' . $col;
+            }
+            if ($idx_info->{unique} && $ddl->can_add_constraint) {
+                push @stmts, "ALTER TABLE $table_name ADD CONSTRAINT ${table_name}_$name UNIQUE ($columns)";
+            } else {
+                push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name ($columns)";
+            }
         }
     }
     return @stmts;
@@ -318,6 +367,8 @@ sub db2type {
         return 'timestamp';
     } elsif ($type == SQL_TYPE_TIMESTAMP) {
         return 'timestamp';
+    } elsif ($type == -5) { #SQL_BIGINT) {
+        return 'bigint';
     } elsif ($type == SQL_SMALLINT) {
         return 'smallint';
     } elsif ($type == SQL_TINYINT) {

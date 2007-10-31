@@ -24,7 +24,7 @@
                 <td class="template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
                 <td class="output-file"><mt:if name="outfile"><mt:var name="outfile" escape="html"><mt:else><span><__trans phrase="-"></span></mt:if></td>
         <mt:unless name="filter">
-                <td class="template-type"><$mt:var name="type_label"$></td>
+                <td class="template-type"><$mt:var name="type"$></td>
         </mt:unless>
         <mt:unless name="blog_id">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>

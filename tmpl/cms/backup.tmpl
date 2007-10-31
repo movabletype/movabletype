@@ -29,6 +29,7 @@
     <mtapp:setting
         id="backup_what"
         label="<__trans phrase="What to backup">"
+        content_class="field-content-text"
         hint="<__trans phrase="This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.">"
         help_page="backup_restore"
         help_section="backup_what">
@@ -36,7 +37,7 @@
 <div><strong id="selected_blogs"><__trans phrase="Everything"></strong></div>
 <span id="selected_blogs_link" class="hidden"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').className='hidden';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a>&nbsp;|&nbsp;</span>
 <a href="javascript:void(0)" onclick="openDialog(false,'dialog_select_weblog','multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs'); return false;">
-<__trans phrase="Choose blogs to backup"></a>
+<__trans phrase="Choose blogs..."></a>
     </mtapp:setting>
 </mt:if>
     <mtapp:setting

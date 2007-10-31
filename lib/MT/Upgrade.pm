@@ -872,7 +872,9 @@ sub _migrate_permission_to_role {
     # '0' permission, not used for permissions, just prefs
     return unless $role_mask;
 
-    my $name = MT->translate($perm_role_names->{$role_mask});
+    my $name;
+    $name = MT->translate($perm_role_names->{$role_mask})
+        if $perm_role_names->{$role_mask};
     $name ||= MT->translate("Custom ([_1])", $role_mask);
     require MT::Role;
     my $role = MT::Role->load({ name => $name });
@@ -898,7 +900,7 @@ sub _process_masks {
     my ($perm) = @_;
 
     my $mask = $perm->role_mask;
-    next unless $mask;
+    return unless $mask;
     my @perms;
     for my $key (keys %LegacyPerms) {
         if (int($mask) & int($key)) {
@@ -928,16 +930,18 @@ sub deprecate_bitmask_permissions {
     my $perm_iter = MT::Permission->load_iter;
     $self->progress($self->translate_escape('Migrating permission records to new structure...'));
     while (my $perm = $perm_iter->()) {
-        $self->_process_masks($perm);
-        $perm->save;
+        if ($self->_process_masks($perm)) {
+            $perm->save;
+        }
     }
 
     require MT::Role;
     my $role_iter = MT::Role->load_iter;
     $self->progress($self->translate_escape('Migrating role records to new structure...'));
     while (my $role = $role_iter->()) {
-        $self->_process_masks($role);
-        $role->save;
+        if ($self->_process_masks($role)) {
+            $role->save;
+        }
     }
 }
 }
@@ -1311,13 +1315,13 @@ sub seed_database {
 # translate('Blog Administrator')
 # translate('Can administer the blog.')
 # translate('Editor')
-# translate('Can upload files, edit all entries/categories/tags on a blog and rebuild.')
+# translate('Can upload files, edit all entries/categories/tags on a blog and publish the blog.')
 # translate('Author')
 # translate('Can create entries, edit their own, upload files and publish.')
 # translate('Designer')
-# translate('Can edit, manage and rebuild blog templates.')
+# translate('Can edit, manage and publish blog templates.')
 # translate('Webmaster')
-# translate('Can manage pages and rebuild blog templates.')
+# translate('Can manage pages and publish blog templates.')
 # translate('Contributor')
 # translate('Can create entries, edit their own and comment.')
 # translate('Moderator')

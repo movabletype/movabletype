@@ -102,7 +102,7 @@
                         <th id="as-file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
                         <th class="panel-label"><__trans phrase="Asset Name"></th>
         <mt:unless name="edit_blog_id">
-                        <th id="as-weblog"><__trans phrase="Weblog"></th>
+                        <th id="as-weblog"><__trans phrase="Blog"></th>
         </mt:unless>
                         <th class="panel-description"><span class="detail"><__trans phrase="Size"></span></th>
                     </tr>
@@ -186,6 +186,19 @@
         class="info">
         <__trans phrase="No assets could be found.">
     </mtapp:statusmsg>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+        <form action="" method="get" onsubmit="return false">
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                class="cancel"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+        </form>
+    </div>
+</div>
 </mt:if>
 
 <mt:unless name="json">

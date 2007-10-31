@@ -25,7 +25,7 @@ sub save {
 
     my $q = $app->param();
 
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = scalar $q->param('blog_id');
 
     my $str = build_module_list($q->param('modules'));
 
@@ -49,7 +49,7 @@ sub save {
 
     plugin()->set_config_value('modulesets',$modulesets,"blog:$blog_id");
 
-    return list($app, rebuild => 1);
+    return $app->redirect( $app->uri( mode => 'list_widget', args => { blog_id => $blog_id, rebuild => 1 } ) );
 }
 
 sub delete {
@@ -59,7 +59,7 @@ sub delete {
         unless _permission_check();
 
     my $q = $app->param();
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = scalar $q->param('blog_id');
 
     my $modulesets = plugin()->load_selected_modules($blog_id);
     $modulesets = {} unless $modulesets;
@@ -69,7 +69,7 @@ sub delete {
 
     plugin()->set_config_value('modulesets',$modulesets,"blog:$blog_id");
     
-    return list($app, deleted => 1);
+    return $app->redirect( $app->uri( mode => 'list_widget', args => { blog_id => $blog_id, deleted => 1 } ) );
 }
 
 sub edit {
@@ -82,7 +82,7 @@ sub edit {
       install_default_widgets(1);
 
       my $q = $app->param();
-      my $blog_id = $q->param('blog_id');
+      my $blog_id = scalar $q->param('blog_id');
 
       my $tmpl = $app->load_tmpl('edit.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
@@ -107,12 +107,13 @@ sub edit {
               while (grep(/^\Q$widgetmanager $i\E$/, @names)) {
                   $i++;
               }
-              $widgetmanager = "$widgetmanager $i";
+              # $widgetmanager = "$widgetmanager $i";
+              $widgetmanager = "";
           }
       }
 
       my @selected = exists($modulesets->{$widgetmanager})
-        ? split(',',$modulesets->{$widgetmanager})
+        ? split(/\s*,\s*/,$modulesets->{$widgetmanager})
         : ();
 
       my %constraints;
@@ -143,7 +144,7 @@ sub edit {
       }
 
       my @widgetmanagers = map { { widgetmanager => $_ } } keys %$modulesets;
-      $tmpl->param(widgetmanagers => \@widgetmanagers);
+      $tmpl->param(object_loop => \@widgetmanagers);
 
       $tmpl->param(available => \@avail_modules);
       $tmpl->param(installed => \@inst_modules);
@@ -167,7 +168,7 @@ sub list {
         unless _permission_check();
 
       my $q = $app->{query};
-      my $blog_id = $q->param('blog_id');
+      my $blog_id = scalar $q->param('blog_id');
 
       my $tmpl = $app->load_tmpl('list.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
@@ -208,12 +209,12 @@ sub list {
       foreach my $key (@keys) {
           # Collect the available widgets for this key.
           my @w = ();
-          for my $w ( split /\s*,\s*/o, $modulesets->{$key} ) {
+          for my $w ( split /\s*,\s*/, $modulesets->{$key} ) {
               push @w, $avail{$w} if $avail{$w};
           }
           push @widgetmanagers,{
             widgetmanager => $key,
-            names   => join(', ', @w),
+            names   => join(',', @w),
             widgets => $modulesets->{$key}
           };
     }
@@ -221,13 +222,14 @@ sub list {
         $widgetmanager = $q->param('name');
     }
 
-    $tmpl->param(widgetmanagers => \@widgetmanagers);
+    $tmpl->param(object_loop => \@widgetmanagers);
+    $tmpl->param(object_type => "widgetset");
 
     $app->{breadcrumbs}[-1]{is_last} = 1;
     $tmpl->param(breadcrumbs       => $app->{breadcrumbs});
     $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
-    $tmpl->param(rebuild           => $opt{rebuild});
-    $tmpl->param(deleted           => $opt{deleted});
+    $tmpl->param(rebuild           => $app->param('rebuild') || 0);
+    $tmpl->param(deleted           => $app->param('deleted') || 0);
     return $app->build_page($tmpl);
 }
 

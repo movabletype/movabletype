@@ -130,39 +130,40 @@
     <mtapp:setting
         id="author"
         label="<__trans phrase="Commenter">"
+        content_class="field-content-text"
         hint="<__trans phrase="The name of the person who posted the comment">"
         show_hint="0">
         <mt:if name="commenter_id">
             <mt:if name="commenter_approved">
-                <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">/"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
+                <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
                 <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" width="13" height="9" />
                 <span class="hint"><__trans phrase="(Trusted)"></span>
-                <mt:if name="can_edit_commenters">
+                <mt:if name="can_edit_commenters"><mt:unless name="is_mine">
                     <span class="commenter-actions">
-                        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-ban"><__trans phrase="Ban&nbsp;Commenter"></a>
-                        <mt:unless name="type_author"><a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=untrust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-neutral"><__trans phrase="Untrust&nbsp;Commenter"></a></mt:unless>
+                        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-ban"><__trans phrase="Ban Commenter"></a>
+                        <mt:unless name="type_author"><a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=untrust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-neutral"><__trans phrase="Untrust Commenter"></a></mt:unless>
                     </span>
-            </mt:if>
+            </mt:if></mt:unless>
             <mt:else>
                 <mt:if name="commenter_banned">
-                    <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">/"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
+                    <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
                     <img src="<mt:var name="static_uri">images/status_icons/banned.gif" alt="<__trans phrase="Banned">" width="13" height="9" />
                     <span class="hint"><__trans phrase="(Banned)"></span>
-                    <mt:if name="can_edit_commenters">
+                    <mt:if name="can_edit_commenters"><mt:unless name="is_mine">
                         <span class="commenter-actions">
-                            <mt:unless name="type_author"><a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-trust"><__trans phrase="Trust&nbsp;Commenter"></a></mt:unless>
-                            <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=unban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-neutral"><__trans phrase="Unban&nbsp;Commenter"></a>
+                            <mt:unless name="type_author"><a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-trust"><__trans phrase="Trust Commenter"></a></mt:unless>
+                            <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=unban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-neutral"><__trans phrase="Unban Commenter"></a>
                         </span>
-                    </mt:if>
+                    </mt:if></mt:unless>
                 <mt:else>
-                    <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">/"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
+                    <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">"><mt:var name="author" escape="html"></a><mt:else><mt:var name="nickname" escape="html"><mt:var name="author" escape="html"></mt:if>
                     <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" width="7" height="9" />
-                    <mt:if name="can_edit_commenters">
+                    <mt:if name="can_edit_commenters"><mt:unless name="is_mine">
                         <span class="commenter-actions">
-                            <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-trust"><__trans phrase="Trust&nbsp;Commenter"></a>
-                            <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-ban"><__trans phrase="Ban&nbsp;Commenter"></a>
+                            <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-trust"><__trans phrase="Trust Commenter"></a>
+                            <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="commenter-ban"><__trans phrase="Ban Commenter"></a>
                         </span>
-                    </mt:if>
+                    </mt:if></mt:unless>
                 </mt:if>
             </mt:if>
         <mt:else>
@@ -215,6 +216,7 @@
     <mtapp:setting
         id="entry"
         label="<__trans phrase="Entry">"
+        content_class="field-content-text"
         hint="<__trans phrase="Entry this comment was made on">"
         show_hint="0">
         <mt:if name="no_entry">[<__trans phrase="Entry no longer exists">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="entry_title" escape="html"></a></mt:if>
@@ -224,6 +226,7 @@
     <mtapp:setting
         id="date"
         label="<__trans phrase="Date">"
+        content_class="field-content-text"
         hint="<__trans phrase="Date this comment was made">"
         show_hint="0">
         <mt:var name="created_on_time_formatted">
@@ -233,6 +236,7 @@
     <mtapp:setting
         id="ip"
         label="<__trans phrase="IP">"
+        content_class="field-content-text"
         hint="<__trans phrase="IP Address of the commenter">"
         show_hint="0">
         <mt:var name="ip" escape="html">

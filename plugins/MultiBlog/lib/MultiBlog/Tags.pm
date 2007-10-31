@@ -6,7 +6,7 @@ use strict;
 use warnings;
 
 sub MultiBlog {
-    my $plugin = shift;
+    my $plugin = MT::Plugin::MultiBlog->instance;
     my ( $ctx, $args, $cond ) = @_;
 
     return $ctx->error($plugin->translate('MTMultiBlog tags cannot be nested.'))
@@ -67,7 +67,7 @@ sub MultiBlog {
 }
 
 sub MultiBlogLocalBlog {
-    my $plugin = shift;
+    my $plugin = MT::Plugin::MultiBlog->instance;
     my ( $ctx, $args, $cond ) = @_;
 
     require MT::Blog;
@@ -94,13 +94,13 @@ sub MultiBlogLocalBlog {
 }
 
 sub MultiBlogIfLocalBlog {
-    my $plugin = shift;
+    my $plugin = MT::Plugin::MultiBlog->instance;
     my $ctx = shift;
     my $local = $ctx->stash('local_blog_id');
     my $blog_id = $ctx->stash('blog_id');
     defined( $local ) 
         and defined( $blog_id ) 
-        and $blog_id == $local);
+        and $blog_id == $local;
 }
 
 ## Supporting functions for 'MultiBlog' tag:

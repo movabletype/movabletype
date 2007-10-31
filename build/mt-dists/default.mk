@@ -1,7 +1,7 @@
 PRODUCT_NAME = Movable Type Core
 
 PRODUCT_VERSION = 4.0
-SCHEMA_VERSION = 4.0024
+SCHEMA_VERSION = 4.0026
 API_VERSION = 4.0
 
 # BUILD_LANGUAGE = en_US
@@ -10,7 +10,7 @@ VERSION_SUFFIX =
 PORTAL_URL = http://www.sixapart.com/movabletype/
 SUPPORT_URL = http://www.sixapart.com/movabletype/support/
 NEWS_URL = http://www.sixapart.com/movabletype/news/
-NEWSBOX_URL = http://www.movabletype.org/news/newsbox.html
+NEWSBOX_URL = http://www.sixapart.com/movabletype/news/mt4_news_widget.html
 HELP_URL = http://www.sixapart.com/movabletype/docs/4.0/
 CATEGORY_NAME_NODASH = 0
 DEFAULT_TIMEZONE = 0

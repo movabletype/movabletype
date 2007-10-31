@@ -819,6 +819,7 @@ sub touch_blogs {
     foreach my $blog_id (keys %$blogs_touched) {
         next unless $blog_id;
         my $blog = MT::Blog->load($blog_id);
+        next unless ( $blog );
         if (($blog->custom_dynamic_templates || '') ne 'none') {
             $blog->touch();
             $blog->save() or die $blog->errstr;
@@ -2254,6 +2255,8 @@ sub set_default_tmpl_params {
     $param->{mt_product_name} = $app->translate(MT->product_name);
     $param->{language_tag} = substr($app->current_language, 0, 2);
     $param->{language_encoding} = $app->charset;
+    $param->{agent_mozilla} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /gecko/i;
+    $param->{agent_ie} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /\bMSIE\b/;
     if (!$tmpl->param('template_filename')) {
         if (my $fname = $tmpl->{__file}) {
             $fname =~ s!\\!/!g;
@@ -2588,6 +2591,7 @@ sub path_info {
             $path_info =~ s!^/$script_last!!;
         }
     } else {
+        return undef unless $app->{query};
         $path_info = $app->{query}->path_info;
     }
     $app->{__path_info} = $path_info;

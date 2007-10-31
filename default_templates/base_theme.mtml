@@ -5,7 +5,7 @@
 /*
     reset.css - resets default browser styling
     http://tantek.com/log/2004/09.html#d06t2354
-    http://www.vox.com/.shared/css/base.css
+    http://www.vox.com/.shared/css/base.css by beausmith.com
     http://developer.yahoo.com/yui/reset/
 */
 
@@ -30,10 +30,12 @@ table {
 fieldset,img,abbr,acronym {
     border:0;
 } 
+/* reset strict by uncommenting lines below */
 address,caption,cite,code,dfn,em,strong,b,u,s,i,th,var {
-    font-style:normal;
-    font-weight:normal;
+    /* font-style:normal; */
+    /* font-weight:normal; */
 }
+
 ol,ul {
     list-style:none;
 }
@@ -180,7 +182,7 @@ body {
 
 /* Content ---------------------------------------------------------------- */
 
-a {
+a:link, a:visited {
     text-decoration: underline;
 }
 
@@ -292,6 +294,22 @@ ul { list-style: disc outside; }
 .trackback-footer,
 .archive-content {
     clear: both;
+}
+
+.mt-image-left {
+    float: left;
+    margin: 0 20px 20px 0;
+}
+
+.mt-image-center {
+    display: block;
+    margin: 0 auto 20px;
+    text-align: center;
+}
+
+.mt-image-right {
+    float: right;
+    margin: 0 0 20px 20px;
 }
 
 

@@ -73,6 +73,7 @@ sub core_archive_types {
             date_range            => \&yearly_date_range,
             archive_group_iter    => \&yearly_group_iter,
             archive_group_entries => \&yearly_group_entries,
+            archive_entries_count => \&yearly_entries_count,
             dynamic_template      => 'archives/<$MTArchiveDate format="%Y"$>',
             default_archive_templates => [
                 ArchiveFileTemplate(
@@ -100,6 +101,7 @@ sub core_archive_types {
             date_range            => \&monthly_date_range,
             archive_group_iter    => \&monthly_group_iter,
             archive_group_entries => \&monthly_group_entries,
+            archive_entries_count => \&monthly_entries_count,
             dynamic_template      => 'archives/<$MTArchiveDate format="%Y%m"$>',
             default_archive_templates => [
                 ArchiveFileTemplate(
@@ -127,6 +129,7 @@ sub core_archive_types {
             date_range            => \&weekly_date_range,
             archive_group_iter    => \&weekly_group_iter,
             archive_group_entries => \&weekly_group_entries,
+            archive_entries_count => \&weekly_entries_count,
             dynamic_template =>
               'archives/week/<$MTArchiveDate format="%Y%m%d"$>',
             default_archive_templates => [
@@ -289,6 +292,7 @@ sub core_archive_types {
             date_range            => \&daily_date_range,
             archive_group_iter    => \&daily_group_iter,
             archive_group_entries => \&daily_group_entries,
+            archive_entries_count => \&daily_entries_count,
             dynamic_template => 'archives/<$MTArchiveDate format="%Y%m%d"$>',
             default_archive_templates => [
                 ArchiveFileTemplate(
@@ -314,6 +318,7 @@ sub core_archive_types {
             archive_title             => \&category_archive_title,
             archive_group_iter        => \&category_group_iter,
             archive_group_entries     => \&category_group_entries,
+            archive_entries_count     => \&category_entries_count,
             dynamic_template          => 'category/<$MTCategoryID$>',
             default_archive_templates => [
                 ArchiveFileTemplate(
@@ -329,11 +334,11 @@ sub core_archive_types {
             dynamic_support => 1,
             category_based  => 1,
             template_params => {
-                archive_class    => "category-archive",
-                category_archive => 1,
-                main_template    => 1,
-                archive_template => 1,
-                module_category_archives => 1,
+                archive_class                      => "category-archive",
+                category_archive                   => 1,
+                main_template                      => 1,
+                archive_template                   => 1,
+                module_category_archives           => 1,
                 'module_category-monthly_archives' => 1,
             },
         ),
@@ -344,15 +349,16 @@ sub core_archive_types {
             archive_title             => \&author_archive_title,
             archive_group_iter        => \&author_group_iter,
             archive_group_entries     => \&author_group_entries,
+            archive_entries_count     => \&author_entries_count,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label    => 'author_display_name/index.html',
-                    template => '%a/%f',
+                    label    => 'author-display-name/index.html',
+                    template => '%-a/%f',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label    => 'author-display-name/index.html',
-                    template => '%-a/%f'
+                    label    => 'author_display_name/index.html',
+                    template => '%a/%f'
                 ),
             ],
             dynamic_template => 'author/<$MTEntryAuthorID$>/<$MTEntryID$>',
@@ -366,24 +372,25 @@ sub core_archive_types {
                 author_archive                   => 1,
                 archive_template                 => 1,
             },
-          ),
-          'Author-Yearly' => ArchiveType(
+        ),
+        'Author-Yearly' => ArchiveType(
             name                      => 'Author-Yearly',
             archive_label             => \&author_yearly_archive_label,
             archive_file              => \&author_yearly_archive_file,
             archive_title             => \&author_yearly_archive_title,
             archive_group_iter        => \&author_yearly_group_iter,
             archive_group_entries     => \&author_yearly_group_entries,
+            archive_entries_count     => \&author_yearly_entries_count,
             date_range                => \&author_yearly_date_range,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label    => 'author_display_name/yyyy/index.html',
-                    template => '%a/%y/%f',
+                    label    => 'author-display-name/yyyy/index.html',
+                    template => '%-a/%y/%f',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label    => 'author-display-name/yyyy/index.html',
-                    template => '%-a/%y/%f'
+                    label    => 'author_display_name/yyyy/index.html',
+                    template => '%a/%y/%f'
                 ),
             ],
             dynamic_template =>
@@ -397,24 +404,25 @@ sub core_archive_types {
                 main_template         => 1,
                 archive_template      => 1,
             },
-          ),
-          'Author-Monthly' => ArchiveType(
+        ),
+        'Author-Monthly' => ArchiveType(
             name                      => 'Author-Monthly',
             archive_label             => \&author_monthly_archive_label,
             archive_file              => \&author_monthly_archive_file,
             archive_title             => \&author_monthly_archive_title,
             archive_group_iter        => \&author_monthly_group_iter,
             archive_group_entries     => \&author_monthly_group_entries,
+            archive_entries_count     => \&author_monthly_entries_count,
             date_range                => \&author_monthly_date_range,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label    => 'author_display_name/yyyy/mm/index.html',
-                    template => '%a/%y/%m/%f',
+                    label    => 'author-display-name/yyyy/mm/index.html',
+                    template => '%-a/%y/%m/%f',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label    => 'author-display-name/yyyy/mm/index.html',
-                    template => '%-a/%y/%m/%f'
+                    label    => 'author_display_name/yyyy/mm/index.html',
+                    template => '%a/%y/%m/%f'
                 ),
             ],
             dynamic_template =>
@@ -430,24 +438,25 @@ sub core_archive_types {
                 main_template                    => 1,
                 archive_template                 => 1,
             },
-          ),
-          'Author-Weekly' => ArchiveType(
+        ),
+        'Author-Weekly' => ArchiveType(
             name                      => 'Author-Weekly',
             archive_label             => \&author_weekly_archive_label,
             archive_file              => \&author_weekly_archive_file,
             archive_title             => \&author_weekly_archive_title,
             archive_group_iter        => \&author_weekly_group_iter,
             archive_group_entries     => \&author_weekly_group_entries,
+            archive_entries_count     => \&author_weekly_entries_count,
             date_range                => \&author_weekly_date_range,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label => 'author_display_name/yyyy/mm/day-week/index.html',
-                    template => '%a/%y/%m/%d-week/%f',
+                    label => 'author-display-name/yyyy/mm/day-week/index.html',
+                    template => '%-a/%y/%m/%d-week/%f',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label => 'author-display-name/yyyy/mm/day-week/index.html',
-                    template => '%-a/%y/%m/%d-week/%f'
+                    label => 'author_display_name/yyyy/mm/day-week/index.html',
+                    template => '%a/%y/%m/%d-week/%f'
                 ),
             ],
             dynamic_template =>
@@ -461,24 +470,25 @@ sub core_archive_types {
                 main_template         => 1,
                 archive_template      => 1,
             },
-          ),
-          'Author-Daily' => ArchiveType(
+        ),
+        'Author-Daily' => ArchiveType(
             name                      => 'Author-Daily',
             archive_label             => \&author_daily_archive_label,
             archive_file              => \&author_daily_archive_file,
             archive_title             => \&author_daily_archive_title,
             archive_group_iter        => \&author_daily_group_iter,
             archive_group_entries     => \&author_daily_group_entries,
+            archive_entries_count     => \&author_daily_entries_count,
             date_range                => \&author_daily_date_range,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label    => 'author_display_name/yyyy/mm/dd/index.html',
-                    template => '%a/%y/%m/%d/%f',
+                    label    => 'author-display-name/yyyy/mm/dd/index.html',
+                    template => '%-a/%y/%m/%d/%f',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label    => 'author-display-name/yyyy/mm/dd/index.html',
-                    template => '%-a/%y/%m/%d/%f'
+                    label    => 'author_display_name/yyyy/mm/dd/index.html',
+                    template => '%a/%y/%m/%d/%f'
                 ),
             ],
             dynamic_template =>
@@ -492,8 +502,8 @@ sub core_archive_types {
                 main_template        => 1,
                 archive_template     => 1,
             },
-          ),
-          'Category-Yearly' => ArchiveType(
+        ),
+        'Category-Yearly' => ArchiveType(
             name                      => 'Category-Yearly',
             archive_label             => \&cat_yearly_archive_label,
             archive_file              => \&cat_yearly_archive_file,
@@ -501,15 +511,16 @@ sub core_archive_types {
             date_range                => \&cat_yearly_date_range,
             archive_group_iter        => \&cat_yearly_group_iter,
             archive_group_entries     => \&cat_yearly_group_entries,
+            archive_entries_count     => \&cat_yearly_entries_count,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label    => 'category/sub_category/yyyy/index.html',
-                    template => '%c/%y/%i',
+                    label    => 'category/sub-category/yyyy/index.html',
+                    template => '%-c/%y/%i',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label    => 'category/sub-category/yyyy/index.html',
-                    template => '%-c/%y/%i'
+                    label    => 'category/sub_category/yyyy/index.html',
+                    template => '%c/%y/%i'
                 ),
             ],
             dynamic_template =>
@@ -523,8 +534,8 @@ sub core_archive_types {
                 main_template           => 1,
                 archive_template        => 1,
             },
-          ),
-          'Category-Monthly' => ArchiveType(
+        ),
+        'Category-Monthly' => ArchiveType(
             name                      => 'Category-Monthly',
             archive_label             => \&cat_monthly_archive_label,
             archive_file              => \&cat_monthly_archive_file,
@@ -532,15 +543,16 @@ sub core_archive_types {
             date_range                => \&cat_monthly_date_range,
             archive_group_iter        => \&cat_monthly_group_iter,
             archive_group_entries     => \&cat_monthly_group_entries,
+            archive_entries_count     => \&cat_monthly_entries_count,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label    => 'category/sub_category/yyyy/mm/index.html',
-                    template => '%c/%y/%m/%i',
+                    label    => 'category/sub-category/yyyy/mm/index.html',
+                    template => '%-c/%y/%m/%i',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label    => 'category/sub-category/yyyy/mm/index.html',
-                    template => '%-c/%y/%m/%i'
+                    label    => 'category/sub_category/yyyy/mm/index.html',
+                    template => '%c/%y/%m/%i'
                 ),
             ],
             dynamic_template =>
@@ -556,8 +568,8 @@ sub core_archive_types {
                 main_template                      => 1,
                 archive_template                   => 1,
             },
-          ),
-          'Category-Daily' => ArchiveType(
+        ),
+        'Category-Daily' => ArchiveType(
             name                      => 'Category-Daily',
             archive_label             => \&cat_daily_archive_label,
             archive_file              => \&cat_daily_archive_file,
@@ -565,15 +577,16 @@ sub core_archive_types {
             date_range                => \&cat_daily_date_range,
             archive_group_iter        => \&cat_daily_group_iter,
             archive_group_entries     => \&cat_daily_group_entries,
+            archive_entries_count     => \&cat_daily_entries_count,
             default_archive_templates => [
                 ArchiveFileTemplate(
-                    label    => 'category/sub_category/yyyy/mm/dd/index.html',
-                    template => '%c/%y/%m/%d/%i',
+                    label    => 'category/sub-category/yyyy/mm/dd/index.html',
+                    template => '%-c/%y/%m/%d/%i',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
-                    label    => 'category/sub-category/yyyy/mm/dd/index.html',
-                    template => '%-c/%y/%m/%d/%i'
+                    label    => 'category/sub_category/yyyy/mm/dd/index.html',
+                    template => '%c/%y/%m/%d/%i'
                 ),
             ],
             dynamic_template =>
@@ -587,8 +600,8 @@ sub core_archive_types {
                 main_template          => 1,
                 archive_template       => 1,
             },
-          ),
-          'Category-Weekly' => ArchiveType(
+        ),
+        'Category-Weekly' => ArchiveType(
             name                      => 'Category-Weekly',
             archive_label             => \&cat_weekly_archive_label,
             archive_file              => \&cat_weekly_archive_file,
@@ -596,17 +609,18 @@ sub core_archive_types {
             date_range                => \&cat_weekly_date_range,
             archive_group_iter        => \&cat_weekly_group_iter,
             archive_group_entries     => \&cat_weekly_group_entries,
+            archive_entries_count     => \&cat_weekly_entries_count,
             default_archive_templates => [
                 ArchiveFileTemplate(
                     label =>
-                      'category/sub_category/yyyy/mm/day-week/index.html',
-                    template => '%c/%y/%m/%d-week/%i',
+                      'category/sub-category/yyyy/mm/day-week/index.html',
+                    template => '%-c/%y/%m/%d-week/%i',
                     default  => 1
                 ),
                 ArchiveFileTemplate(
                     label =>
-                      'category/sub-category/yyyy/mm/day-week/index.html',
-                    template => '%-c/%y/%m/%d-week/%i'
+                      'category/sub_category/yyyy/mm/day-week/index.html',
+                    template => '%c/%y/%m/%d-week/%i'
                 ),
             ],
             dynamic_template =>
@@ -620,7 +634,7 @@ sub core_archive_types {
                 main_template           => 1,
                 archive_template        => 1,
             },
-          )
+        )
     };
 
 }
@@ -674,7 +688,6 @@ sub rebuild {
     {
         return $mt->rebuild_authors(%param);
     }
-
 
     if (@at) {
         require MT::Entry;
@@ -837,8 +850,11 @@ sub rebuild_authors {
     $arg{offset} = $param{Offset} if $param{Offset};
     $arg{limit}  = $param{Limit}  if $param{Limit};
     require MT::Entry;
-    local $arg{join} =
-      MT::Entry->join_on( 'author_id', { blog_id => $blog->id, class => 'entry' }, { unique => 1 } );
+    local $arg{join} = MT::Entry->join_on(
+        'author_id',
+        { blog_id => $blog->id, class => 'entry' },
+        { unique  => 1 }
+    );
     local $arg{unique} = 1;
     local $arg{status} = MT::Entry::RELEASE();
     my $auth_iter = MT::Author->load_iter( undef, \%arg );
@@ -1088,7 +1104,8 @@ sub _rebuild_entry_archive_type {
       or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
     return 1 if $at eq 'None';
-    my $entry = ( $param{ArchiveType} ne 'Category' && $param{ArchiveType} ne 'Author' )
+    my $entry =
+      ( $param{ArchiveType} ne 'Category' && $param{ArchiveType} ne 'Author' )
       ? (
         $param{Entry}
           or return $mt->error(
@@ -1449,14 +1466,18 @@ sub rebuild_file {
             defined($html)
               or return $mt->error(
                 (
-                    $category
-                    ? MT->translate(
+                    $category ? MT->translate(
                         "An error occurred publishing [_1] '[_2]': [_3]",
-                        lowercase( $category->class_label ), $category->id, $tmpl->errstr )
-                    : $entry
-                    ? MT->translate(
+                        lowercase( $category->class_label ),
+                        $category->id,
+                        $tmpl->errstr
+                      )
+                    : $entry ? MT->translate(
                         "An error occurred publishing [_1] '[_2]': [_3]",
-                        lowercase($entry->class_label), $entry->title, $tmpl->errstr )
+                        lowercase( $entry->class_label ),
+                        $entry->title,
+                        $tmpl->errstr
+                      )
                     : MT->translate(
 "An error occurred publishing date-based archive '[_1]': [_2]",
                         $at . $start,
@@ -2052,8 +2073,8 @@ sub archive_file_for {
     my $file_tmpl = $map->file_template if $map;
     unless ($file_tmpl) {
         if ( my $tmpls = $archiver->default_archive_templates ) {
-            my ($default) = grep { $_->{Default} } @$tmpls;
-            $file_tmpl = $default->{Template} if $default;
+            my ($default) = grep { $_->{default} } @$tmpls;
+            $file_tmpl = $default->{template} if $default;
         }
     }
     $file_tmpl ||= '';
@@ -2297,6 +2318,17 @@ sub yearly_group_entries {
         %param ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 ) : undef );
 }
 
+sub yearly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on
+        }
+    );
+}
+
 sub monthly_archive_label {
     MT->translate("MONTHLY_ADV");
 }
@@ -2380,6 +2412,17 @@ sub monthly_group_entries {
         : undef );
 }
 
+sub monthly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on
+        }
+    );
+}
+
 sub category_archive_label {
     MT->translate("CATEGORY_ADV");
 }
@@ -2461,10 +2504,25 @@ sub category_group_entries {
             join => [
                 'MT::Placement', 'entry_id',
                 { category_id => $c->id }, { unqiue => 1 }
-            ]
+            ],
+            'sort' => 'authored_on',
+            'direction' => 'descend',
         }
     );
     \@entries;
+}
+
+sub category_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $cat = $entry->category;
+    return 0 unless $cat;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Category    => $cat
+        }
+    );
 }
 
 sub page_archive_label {
@@ -2660,6 +2718,17 @@ sub daily_group_entries {
     );
 }
 
+sub daily_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on
+        }
+    );
+}
+
 sub weekly_archive_label {
     MT->translate("WEEKLY_ADV");
 }
@@ -2744,6 +2813,55 @@ sub weekly_group_entries {
     );
 }
 
+sub weekly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on
+        }
+    );
+}
+
+sub _archive_entries_count {
+    my ($params) = @_;
+    my $blog     = $params->{Blog};
+    my $at       = $params->{ArchiveType};
+    my $ts       = $params->{Timestamp};
+    my $cat      = $params->{Category};
+    my $auth     = $params->{Author};
+    my ( $start, $end );
+    if ($ts) {
+        init_archive_types() unless %ArchiveTypes;
+
+        ( $start, $end ) = $ArchiveTypes{$at}->date_range->($ts);
+    }
+
+    my $count = MT->model('entry')->count(
+        {
+            blog_id => $blog->id,
+            status  => MT::Entry::RELEASE(),
+            ( $ts ? ( authored_on => [ $start, $end ] ) : () ),
+            ( $auth ? ( author_id => $auth->id ) : () ),
+        },
+        {
+            ( $ts ? ( range => { authored_on => 1 } ) : () ),
+            (
+                $cat
+                ? (
+                    'join' => [
+                        'MT::Placement', 'entry_id',
+                        { category_id => $cat->id }
+                    ]
+                  )
+                : ()
+            ),
+        }
+    );
+    return $count;
+}
+
 sub date_based_group_entries {
     my ( $ctx, $at, $ts ) = @_;
     my $blog = $ctx->stash('blog');
@@ -2766,7 +2884,11 @@ sub date_based_group_entries {
             status      => MT::Entry::RELEASE(),
             authored_on => [ $start, $end ]
         },
-        { range => { authored_on => 1 } }
+        {
+            range  => { authored_on => 1 },
+            'sort' => 'authored_on',
+            'direction' => 'descend',
+        }
     ) or return $ctx->error("Couldn't get $at archive list");
     \@entries;
 }
@@ -2853,9 +2975,25 @@ sub author_group_entries {
             blog_id   => $blog->id,
             author_id => $a->id,
             status    => MT::Entry::RELEASE()
+        },
+        {
+            'sort'      => 'authored_on',
+            'direction' => 'descend',
         }
     );
     \@entries;
+}
+
+sub author_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $auth = $entry->author;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Author      => $auth
+        }
+    );
 }
 
 sub _display_name {
@@ -3036,6 +3174,19 @@ sub author_yearly_group_entries {
     date_based_author_entries( $ctx, 'Author-Yearly', $author, $ts );
 }
 
+sub author_yearly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $auth = $entry->author;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Author      => $auth
+        }
+    );
+}
+
 sub author_yearly_date_range { start_end_year(@_) }
 
 sub author_monthly_archive_title {
@@ -3206,6 +3357,19 @@ sub author_monthly_group_entries {
     date_based_author_entries( $ctx, 'Author-Monthly', $author, $ts );
 }
 
+sub author_monthly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $auth = $entry->author;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Author      => $auth
+        }
+    );
+}
+
 sub author_monthly_date_range { start_end_month(@_) }
 
 sub author_weekly_archive_title {
@@ -3372,6 +3536,19 @@ sub author_weekly_group_entries {
       : $ctx->stash('current_timestamp');
     my $author = %param ? $param{author} : $ctx->stash('author');
     date_based_author_entries( $ctx, 'Author-Weekly', $author, $ts );
+}
+
+sub author_weekly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $auth = $entry->author;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Author      => $auth
+        }
+    );
 }
 
 sub author_weekly_date_range { start_end_week(@_) }
@@ -3551,6 +3728,19 @@ sub author_daily_group_entries {
     date_based_author_entries( $ctx, 'Author-Daily', $author, $ts );
 }
 
+sub author_daily_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $auth = $entry->author;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Author      => $auth
+        }
+    );
+}
+
 sub author_daily_date_range { start_end_day(@_) }
 
 sub _display_category {
@@ -3591,7 +3781,11 @@ sub date_based_author_entries {
             status      => MT::Entry::RELEASE(),
             authored_on => [ $start, $end ]
         },
-        { range => { authored_on => 1 }, }
+        {
+            range => { authored_on => 1 },
+            'sort' => 'authored_on',
+            'direction' => 'descend',
+        }
     ) or return $ctx->error("Couldn't get $at archive list");
     \@entries;
 }
@@ -3736,6 +3930,20 @@ sub cat_yearly_group_entries {
     my $cat = %param ? $param{category} : $ctx->stash('archive_category');
 
     date_based_category_entries( $ctx, 'Category-Yearly', $cat, $ts );
+}
+
+sub cat_yearly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $cat = $entry->category;
+    return 0 unless $cat;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Category    => $cat
+        }
+    );
 }
 
 sub cat_monthly_archive_label {
@@ -3890,6 +4098,20 @@ sub cat_monthly_group_entries {
     my $cat = %param ? $param{category} : $ctx->stash('archive_category');
 
     date_based_category_entries( $ctx, 'Category-Monthly', $cat, $ts );
+}
+
+sub cat_monthly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $cat = $entry->category;
+    return 0 unless $cat;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Category    => $cat
+        }
+    );
 }
 
 sub cat_daily_archive_label {
@@ -4052,6 +4274,20 @@ sub cat_daily_group_entries {
     date_based_category_entries( $ctx, 'Category-Daily', $cat, $ts );
 }
 
+sub cat_daily_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $cat = $entry->category;
+    return 0 unless $cat;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Category    => $cat
+        }
+    );
+}
+
 sub cat_weekly_archive_label {
     MT->translate('CATEGORY-WEEKLY_ADV');
 }
@@ -4202,6 +4438,20 @@ sub cat_weekly_group_entries {
     date_based_category_entries( $ctx, 'Category-Weekly', $cat, $ts );
 }
 
+sub cat_weekly_entries_count {
+    my ( $blog, $at, $entry ) = @_;
+    my $cat = $entry->category;
+    return 0 unless $cat;
+    return _archive_entries_count(
+        {
+            Blog        => $blog,
+            ArchiveType => $at,
+            Timestamp   => $entry->authored_on,
+            Category    => $cat
+        }
+    );
+}
+
 sub date_based_category_entries {
     my ( $ctx, $at, $cat, $ts ) = @_;
 
@@ -4224,7 +4474,9 @@ sub date_based_category_entries {
         {
             range => { authored_on => 1 },
             'join' =>
-              [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ]
+              [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ],
+            'sort' => 'authored_on',
+            'direction' => 'descend',
         }
     ) or return $ctx->error("Couldn't get $at archive list");
     \@entries;
@@ -4249,6 +4501,7 @@ sub _getset {
 sub name                  { shift->_getset( 'name',                  @_ ) }
 sub archive_group_iter    { shift->_getset( 'archive_group_iter',    @_ ) }
 sub archive_group_entries { shift->_getset( 'archive_group_entries', @_ ) }
+sub archive_entries_count { shift->_getset( 'archive_entries_count', @_ ) }
 sub archive_file          { shift->_getset( 'archive_file',          @_ ) }
 sub archive_title         { shift->_getset( 'archive_title',         @_ ) }
 sub archive_label         { shift->_getset( 'archive_label',         @_ ) }
@@ -4257,6 +4510,7 @@ sub category_based        { shift->_getset( 'category_based',        @_ ) }
 sub date_based            { shift->_getset( 'date_based',            @_ ) }
 sub entry_based           { shift->_getset( 'entry_based',           @_ ) }
 sub date_range            { shift->_getset( 'date_range',            @_ ) }
+
 sub default_archive_templates {
     shift->_getset( 'default_archive_templates', @_ );
 }

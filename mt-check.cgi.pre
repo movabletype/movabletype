@@ -120,7 +120,8 @@ sub merge_params {
 }
 
 print "Content-Type: text/html; charset=utf-8\n\n";
-print trans_templ(<<HTML);
+if (!$view) {
+    print trans_templ(<<HTML);
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -144,18 +145,6 @@ print trans_templ(<<HTML);
             body.has-static {
                 background: url('$mt_static_path/images/chromeless/chromeless_top_bg.gif') repeat-x;
             }
-HTML
-if ($view) {
-print (<<HTML);
-            body.has-static {
-                background: none !important;
-            }
-            #system-info {
-                display: none;
-            }
-HTML
-}
-print (<<HTML);
             
             body.has-static #header {
                 background: url('$mt_static_path/images/chromeless/movable-type-logo.gif') no-repeat 25px 15px;
@@ -201,12 +190,6 @@ print (<<HTML);
             
             ul {
                 padding-left: 20px;
-HTML
-if (!$view) {
-print (<<HTML);
-HTML
-}
-print (<<HTML);
             }
             
             .msg {
@@ -274,13 +257,12 @@ print (<<HTML);
 </head>
 
 HTML
-if ($mt_static_path) {
-    print "<body class=\"has-static\">\n";
-} else {
-    print "<body>\n";
-}
-if (!$view) {
-print trans_templ(<<HTML);
+    if ($mt_static_path) {
+        print "<body class=\"has-static\">\n";
+    } else {
+        print "<body>\n";
+    }
+    print trans_templ(<<HTML);
 <div id="header"><h1><MT_TRANS phrase="Movable Type System Check"> [mt-check.cgi]</h1></div>
 
 <div id="content">
@@ -323,6 +305,8 @@ my @OPT = (
     [ 'SOAP::Lite', 0.50, 0, translate('SOAP::Lite is optional; It is needed if you wish to use the MT XML-RPC server implementation.') ],
 
     [ 'File::Temp', 0, 0, translate('File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.') ],
+
+    [ 'List::Util', 0, 1, translate('List::Util is optional; It is needed if you want to use the Publish Queue feature.')],
 
     [ 'Image::Magick', 0, 0, translate('Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.') ],
 
@@ -385,6 +369,8 @@ $perl_ver_check
 $config_check
 INFO
 if ($version) {
+    # sanitize down to letters numbers dashes and period
+    $version =~ s/[^a-zA-Z0-9\-\.]//g;
 print trans_templ(<<INFO);
 <ul class="version">
     <li><strong><MT_TRANS phrase="Movable Type version:"></strong> <code>$version</code></li>

@@ -280,7 +280,7 @@ sub blog {
         foreach (@list) {
             my $ref = $Perms{$_};
             die "invalid permission" unless $ref;
-            next if $perms->has($_);
+            next if $pkg->_check_if($perms, $column, $_);
             my $val = $perms->$column || '';
             $val .= ',' if $val ne '';
             $val .= "'" . $ref->[0] . "'";

@@ -25,7 +25,7 @@
 <mt:setvarblock name="action_buttons">
     <mt:if name="can_create_association">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<MT_TRANS phrase="permission">', '<MT_TRANS phrase="permissions">')"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<MT_TRANS phrase="permission">', '<MT_TRANS phrase="permissions">'); return false;"
         accesskey="x"
         title="<MT_TRANS phrase="Remove selected assocations (x)">"
         ><__trans phrase="Revoke Permission"></a>
@@ -38,13 +38,13 @@
     <mt:unless name="blog_id">
         <mt:if name="user_view">
             <mt:unless name="status_enabled">
-    <h3 class="user_disabled"><__trans phrase="User Disabled"></h3>
+    <p class="icon-left icon-warning"><__trans phrase="The user <em>[_1]</em> is currently disabled." params="<mt:var name="edit_author_name" escape="html">"></p>
             </mt:unless>
         </mt:if>
 
         <mt:if name="group_view">
             <mt:unless name="status_enabled">
-    <h3 class="group_disabled"><__trans phrase="Group Disabled"></h3>
+    <p class="icon-left icon-warning"><__trans phrase="The group <em>[_1]</em> is currently disabled." params="<mt:var name="group_name" escape="html">"></p>
             </mt:unless>
         </mt:if>
     </mt:unless>
@@ -113,7 +113,7 @@
     </mt:if>
     </ul>
 </mt:setvarblock>
-<mt:setvarblock name="html_head">
+<mt:setvarblock name="html_head" append="1">
     <script type="text/javascript">
     <!--
     var tableSelect;
@@ -190,7 +190,7 @@
     <mt:else>
         <td><mt:var name="created_by" escape="html"></td>
     </mt:unless>
-        <td><mt:if name="dates_relative"><mt:var name="created_on_relative" escape="html"><mt:else><mt:var name="created_on_formatted" escape="html"></mt:if></td>
+        <td><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if></td>
     </tr>
     <mt:if name="view_expanded">
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">

@@ -20,7 +20,8 @@ sub login {
     return $app->errtrans("Invalid request.")
         unless $q->param('blog_id');
     my $blog = MT::Blog->load(scalar $q->param('blog_id'));
-    my $csr = _get_csr($q, $blog);
+    my %param = $app->param_hash;
+    my $csr = _get_csr(\%param, $blog);
     my $identity = $q->param('openid_url');
     if (!$identity &&
         (my $u = $q->param('openid_userid')) && $class->can('url_for_userid')) {
@@ -56,7 +57,8 @@ sub handle_sign_in {
     my $cmntr;
     my $session;
 
-    my $csr = _get_csr($q, $blog);
+    my %param = $app->param_hash;
+    my $csr = _get_csr(\%param, $blog);
 
     if(my $setup_url = $csr->user_setup_url( post_grant => 'return' )) {
         return $app->redirect($setup_url);
@@ -103,13 +105,13 @@ sub handle_sign_in {
 }
 
 sub _get_csr {
-    my ($q, $blog) = @_;
+    my ($params, $blog) = @_;
     my $secret = MT->config->SecretToken;
     my $ua = eval { require LWPx::ParanoidAgent; LWPx::ParanoidAgent->new; };
     $ua ||= LWP::UserAgent->new;
     Net::OpenID::Consumer->new(
         ua => $ua,
-        args => $q,
+        args => $params,
         consumer_secret => $secret,
     );
 }

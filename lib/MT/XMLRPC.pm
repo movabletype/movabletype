@@ -42,7 +42,7 @@ sub ping_update {
         require MT::Blog;
         $blog = MT::Blog->load($blog);
     }
-    my $ua = MT->new_ua;
+    my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
     my $req = HTTP::Request->new('POST', $url);
     $req->header('Content-Type' => 'text/xml');
     my $blog_name = encode_xml(encode_text($blog->name, undef, 'utf-8'));

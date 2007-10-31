@@ -9,7 +9,6 @@
     </mtapp:statusmsg>
 </mt:if>
 
-
 <form method="post" action="<mt:var name="script_url">">
 <input type="hidden" name="__mode" value="do_register" />
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
@@ -53,14 +52,14 @@
 </mt:if>
     <mtapp:setting
         id="password"
-        label="<__trans phrase="Initial Password">"
+        label="<__trans phrase="Password">"
         required="1"
         hint="<__trans phrase="Select a password for yourself.">">
         <input type="password" name="password" id="password" value="" />
     </mtapp:setting>
     <mtapp:setting
         id="pass_verify"
-        label="<__trans phrase="Password Confirm">"
+        label="<__trans phrase="Confirm Password">"
         required="1"
         hint="<__trans phrase="Repeat the password for confirmation.">">
         <input type="password" name="pass_verify" id="pass_verify" value="" />
@@ -79,7 +78,14 @@
         <input name="url" id="url" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
 
-<p><input type="submit" name="submit" value="<MT_TRANS phrase="Register">" /></p>
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions">
+            <button
+                type="submit"
+                class="primary-button"
+                ><__trans phrase="Register"></button>
+        </div>
+    </div>
 </form>
 
 <mt:include name="../cms/include/chromeless_footer.tmpl">

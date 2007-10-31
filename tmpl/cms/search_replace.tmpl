@@ -6,8 +6,8 @@
     function init()
     {
     	// setup
-    	tableSelect = new TC.TableSelect( "entry-listing-table" );
-    	tableSelect.rowSelect = true;
+        tableSelect = new TC.TableSelect( "<$mt:var name="object_type"$>-listing-table" );
+        tableSelect.rowSelect = true;
     <mt:unless name="have_results">
     	getByID('search').focus();
     </mt:unless>
@@ -72,7 +72,7 @@
         // gather ids from checked items listed and put them in the
         // hidden 'id' field in the search form
         var ids = new Array();
-        var div = TC.elementOrId('selector');
+        var div = TC.elementOrId("<$mt:var name="object_type"$>-listing");
         var inputs = TC.getElementsByTagAndClassName('input', 'select', div);
         for (var i = 0; i < inputs.length; i++) {
             if (inputs[i].checked) {
@@ -181,7 +181,7 @@
     </mt:if>
 </mt:if>
 <mt:if name="system_overview_nav">
-        <li<mt:if name="search_blog"> class="yah"</mt:if> id="results-blog-tab"><a href="javascript:void(0)" onclick="reSearch('blog'); return false"><span><__trans phrase="Weblogs"></span></a></li>
+        <li<mt:if name="search_blog"> class="yah"</mt:if> id="results-blog-tab"><a href="javascript:void(0)" onclick="reSearch('blog'); return false"><span><__trans phrase="Blogs"></span></a></li>
 </mt:if>
     </ul>
 </div>
@@ -224,7 +224,7 @@
                 <div class="search-bar-replace-field">
                     <input name="replace" id="replace" value="<mt:var name="replace" escape="html">" />
                     <button
-                        onclick="doSearch(); return false"
+                        onclick="doReplace(); return false"
                         type="submit"
                         id="replace-button"
                         class="big-button primary-button"
@@ -369,8 +369,8 @@
     <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="datefrom_year">0<mt:else>1</mt:if>" />
     <ul>
         <li class="first"><__trans phrase="Date Range">:</li>
-        <li><label for="datefrom_year"><__trans phrase="From">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_day"> class="prefilled"</mt:if> /></li>
-        <li><label for="dateto_year"><__trans phrase="To">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_day"> class="prefilled"</mt:if> /></li>
+        <li><label for="datefrom_year"><__trans phrase="_DATE_FROM">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_day"> class="prefilled"</mt:if> /></li>
+        <li><label for="dateto_year"><__trans phrase="_DATE_TO">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_day"> class="prefilled"</mt:if> /></li>
     </ul>
 </div>
 
@@ -482,7 +482,7 @@
             <mtapp:statusmsg
                 id="no-blog"
                 class="info">
-                <__trans phrase="No weblogs were found that match the given criteria.">
+                <__trans phrase="No blogs were found that match the given criteria.">
             </mtapp:statusmsg>
         </mt:if>
     </mt:if>

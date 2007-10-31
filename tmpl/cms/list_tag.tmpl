@@ -50,11 +50,11 @@
     <script type="text/javascript">
     <!--
 //trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?");
-//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?");
+//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?");
     var current_edit = 0;
     var old_tag_name = '';
     <mt:if name="blog_id">var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?";
-    <mt:else>var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?";
+    <mt:else>var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?";
     </mt:if>
     function edit_tag(id) {
         if (current_edit) return;
@@ -95,6 +95,10 @@
         var tag_name = getByID('tag-name-' + id);
         if (!tag_form || !tag_name) return false;
         var new_tag_name = tag_name.value;
+        if (!new_tag_name) {
+            alert('<__trans phrase="Specify new name of the tag.">');
+            return false;
+        }
         if (old_tag_name == new_tag_name) {
             cancel_edit(id);
             return false;

@@ -351,6 +351,7 @@ sub do_login {
             category => 'login_commenter',
         }
     );
+    $ctx->{app} ||= $app;
     MT::Auth->invalidate_credentials($ctx);
     if ( $q->param('external_auth') ) {
         return $app->signup( error => $app->translate('Invalid login') );

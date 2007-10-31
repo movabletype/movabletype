@@ -124,8 +124,25 @@ sub class_label_plural {
     MT->translate("Blogs");
 }
 
+{
+my $default_text_format;
 sub set_defaults {
     my $blog = shift;
+    unless ($default_text_format) {
+        if (my $allowed = MT->config('AllowedTextFilters')) {
+            $allowed =~ s/\s*,.*//;
+            $default_text_format = $allowed; # choose first allowed format
+        } else {
+            $default_text_format = 'richtext'; # MT system default
+        }
+        my $filters = MT->registry("text_filters");
+        # If the 'richtext' filter exists,
+        # and is uncondition or it meets the condition, use
+        # it as the blog default text format.
+        if (!($filters->{$default_text_format} && (!$filters->{$default_text_format}{condition} || $filters->{$default_text_format}{condition}->('blog')))) {
+            $default_text_format = '__default__';
+        }
+    }
     $blog->set_values_internal({
         days_on_index => 0,
         entries_on_index => 10,
@@ -134,7 +151,7 @@ sub set_defaults {
         language => MT->config('DefaultLanguage'),
         sort_order_comments => 'ascend',
         file_extension => 'html',
-        convert_paras => 'richtext',
+        convert_paras => $default_text_format,
         allow_unreg_comments => 0,
         allow_reg_comments => 1,
         allow_pings => 1,
@@ -169,6 +186,7 @@ sub set_defaults {
         children_modified_on => '20101231120000',
     });
     return $blog;
+}
 }
 
 sub create_default_blog {
@@ -749,13 +767,15 @@ sub clone_with_children {
     }
 
     MT->run_callbacks(ref($blog). '::post_clone',
-        OldObject => $blog,
-        NewObject => $new_blog,
-        EntryMap => \%entry_map,
-        CategoryMap => \%cat_map,
-        TrackbackMap => \%tb_map,
-        TemplateMap => \%tmpl_map,
-        Callback => $callback
+        OldBlogId => $blog->id, old_blog_id => $blog->id,
+        NewBlogId => $new_blog->id, new_blog_id => $new_blog->id,
+        OldObject => $blog, old_object => $blog,
+        NewObject => $new_blog, new_object => $new_blog,
+        EntryMap => \%entry_map, entry_map => \%entry_map,
+        CategoryMap => \%cat_map, category_map => \%cat_map,
+        TrackbackMap => \%tb_map, trackback_map => \%tb_map,
+        TemplateMap => \%tmpl_map, template_map => \%tmpl_map,
+        Callback => $callback, callback => $callback,
     );
     $new_blog;
 }

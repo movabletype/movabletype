@@ -64,6 +64,8 @@ sub db2type {
         return 'integer';
     } elsif ($type eq 'smallint') {
         return 'smallint';
+    } elsif ($type eq 'bigint') {
+        return 'bigint';
     } elsif ($type eq 'mediumint') {
         return 'integer';
     } elsif ($type eq 'bigint') {
@@ -103,6 +105,8 @@ sub type2db {
         return 'varchar(' . $def->{size} . ')';
     } elsif ($type eq 'smallint' ) {
         return 'smallint';
+    } elsif ($type eq 'bigint' ) {
+        return 'bigint';
     } elsif ($type eq 'boolean') {
         return 'tinyint';
     } elsif ($type eq 'datetime') {
@@ -139,6 +143,7 @@ sub cast_column_sql {
     my %cast_type = (
         'string' => 'char',
         'smallint' => 'signed',
+        'bigint' => 'signed',
         'integer' => 'signed',
         'blob' => 'binary',
         'text' => 'char',

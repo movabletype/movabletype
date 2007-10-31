@@ -148,7 +148,7 @@ sub setup {
     # Strip the dialect portion of the language code (ab_CD into ab).
     ($self->{'short-lang=s'} = $self->{'lang=s'}) =~ s/([a-z]{2})_[A-Z]{2}$/$1/o;
 
-    $self->{'pack=s'} ||= -e 'build/mt-dists/MTE.mk' ? 'MTE' : 'MT';
+    $self->{'pack=s'} ||= 'MT'; # -e 'build/mt-dists/MTE.mk' ? 'MTE' : 'MT';
     $ENV{BUILD_PACKAGE}  = $self->{'pack=s'};
     $ENV{BUILD_LANGUAGE} = $self->{'lang=s'};
 

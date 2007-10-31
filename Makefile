@@ -32,7 +32,6 @@ core_js = mt-static/js/common/Core.js \
 main_css = mt-static/css/reset.css \
 	mt-static/css/structure.css \
 	mt-static/css/messaging.css \
-	mt-static/css/mt3_styles.css \
 	mt-static/css/utilities.css
 
 simple_css = mt-static/css/reset.css \
@@ -86,7 +85,17 @@ lib/MT.pm: %: %.pre build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk buil
 	    -e 's!__PRODUCT_VERSION__!$(PRODUCT_VERSION)!g' \
 	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
 	    -e 's!__SCHEMA_VERSION__!$(SCHEMA_VERSION)!g' \
-        -e 's!__API_VERSION__!$(API_VERSION)!g' \
+	    -e 's!__API_VERSION__!$(API_VERSION)!g' \
+	    -e 's!__NEWSBOX_URL__!$(NEWSBOX_URL)!g' \
+	    -e 's!__SUPPORT_URL__!$(SUPPORT_URL)!g' \
+	    -e 's!__NEWS_URL__!$(NEWS_URL)!g' \
+	    -e 's!__HELP_URL__!$(HELP_URL)!g' \
+	    -e 's!__DEFAULT_TIMEZONE__!$(DEFAULT_TIMEZONE)!g' \
+	    -e 's!__MAIL_ENCODING__!$(MAIL_ENCODING)!g' \
+	    -e 's!__EXPORT_ENCODING__!$(EXPORT_ENCODING)!g' \
+	    -e 's!__LOG_EXPORT_ENCODING__!$(LOG_EXPORT_ENCODING)!g' \
+	    -e 's!__CATEGORY_NAME_NODASH__!$(CATEGORY_NAME_NODASH)!g' \
+	    -e 's!__PUBLISH_CHARSET__!$(PUBLISH_CHARSET)!g' \
 	    $< > $@
 
 php/mt.php: %: %.pre build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk

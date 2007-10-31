@@ -58,11 +58,18 @@ sub drop_sequence {
 
     # do this, but ignore error since it usually means the
     # sequence didn't exist to begin with
-    my $def = $class->column_def('id');
-    if ($def->{type} eq 'integer') {
-        my $seq = $driver->dbd->sequence_name($class);
-        local $dbh->{RaiseError} = 0;
-        $dbh->do('DROP SEQUENCE ' . $seq);
+    if (my $col = $class->properties->{primary_key}) {
+        ## If it's a complex primary key, use the second half.
+        if(ref $col) {
+            $col = $col->[1];
+        }
+        my $def = $class->column_def($col);
+        if (exists($def->{auto}) && $def->{auto}) {
+        #if ($def->{type} eq 'integer') {
+            my $seq = $driver->dbd->sequence_name($class);
+            local $dbh->{RaiseError} = 0;
+            $dbh->do('DROP SEQUENCE ' . $seq);
+        }
     }
     1;
 }
@@ -74,16 +81,23 @@ sub create_sequence {
     my $driver = $class->driver;
     my $dbh = $driver->rw_handle;
 
-    my $def = $class->column_def('id');
-    if ($def->{type} eq 'integer') {
-        my $seq = $driver->dbd->sequence_name($class);
-        my $table_name = $class->table_name;
-        my $field_prefix = $class->datasource;
-        my $max_sql = 'SELECT MAX(' . $field_prefix . '_id) FROM ' . $table_name;
-        my ($start) = $dbh->selectrow_array($max_sql);
+    if ( my $col = $class->properties->{primary_key} ) {
+        ## If it's a complex primary key, use the second half.
+        if(ref $col) {
+            $col = $col->[1];
+        }
+        my $def = $class->column_def($col);
+        if (exists($def->{auto}) && $def->{auto}) {
+        #if ($def->{type} eq 'integer') {
+            my $seq = $driver->dbd->sequence_name($class);
+            my $table_name = $class->table_name;
+            my $field_prefix = $class->datasource;
+            my $max_sql = 'SELECT MAX(' . $field_prefix . '_' . $col . ') FROM ' . $table_name;
+            my ($start) = $dbh->selectrow_array($max_sql);
 
-        $dbh->do('CREATE SEQUENCE ' . $seq . 
-            ($start ? (' START ' . ($start + 1)) : ''));
+            $dbh->do('CREATE SEQUENCE ' . $seq . 
+                ($start ? (' START ' . ($start + 1)) : ''));
+        }
     }
     1;
 }
@@ -96,6 +110,8 @@ sub type2db {
         return 'varchar(' . $def->{size} . ')';
     } elsif ($type eq 'smallint' ) {
         return 'smallint';
+    } elsif ($type eq 'bigint' ) {
+        return 'bigint';
     } elsif ($type eq 'boolean') { 
         return 'smallint';
     } elsif ($type eq 'datetime') {

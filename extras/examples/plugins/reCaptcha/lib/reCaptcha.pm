@@ -54,9 +54,8 @@ sub validate_captcha {
  
     my $challenge = $app->param('recaptcha_challenge_field');
     my $response = $app->param('recaptcha_response_field');
-    my $ua = $app->new_ua;
+    my $ua = $app->new_ua({ timeout => 15, max_size => undef });
     return 0 unless $ua;
-    $ua->max_size(undef) if $ua->can('max_size');
 
 	require HTTP::Request;
     my $req = HTTP::Request->new(POST => 'http://api-verify.recaptcha.net/verify');

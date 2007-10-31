@@ -119,7 +119,7 @@ do {
                  $trans = $conv{$args{phrase}};
                  $is_used{$args{phrase}} = 1;
             }
-            $trans =~ s/([^\\])'/$2$3\\'/g;
+            $trans =~ s/([^\\]?)'/$1\\'/g;
             next if ($phrase{$args{phrase}});
             $phrase{$args{phrase}} = 1;
             my $q = "'";

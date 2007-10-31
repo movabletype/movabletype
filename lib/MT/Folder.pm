@@ -11,6 +11,8 @@ use base qw( MT::Category );
 
 __PACKAGE__->install_properties({
     class_type => 'folder',
+    child_of => 'MT::Blog',
+    child_classes => ['MT::Placement', 'MT::FileInfo'],
 });
 
 sub class_label {

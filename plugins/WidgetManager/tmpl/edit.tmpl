@@ -316,32 +316,30 @@ TC.attachLoadEvent( init );
       </mtapp:setting>
 
       <mtapp:setting
-          id="name"
-          label="<__trans phrase="Drag and drop the widgets you want into the Installed column.">"
-      >
-
-        <div id="stage" class="pkg">
-            <div id="installed-column" class="pkg">
-                <p><__trans phrase="Installed Widgets"></p>
-            <mt:loop name="installed">
-                <div id="module-<mt:var name="id">" class="module pkg">
-                  <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
-                  <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
-                </div>
-            </mt:loop>
-            </div>
-            <div id="center-column" class="pkg">&nbsp;</div>
-            <div id="available-column" class="pkg">
-                <p><__trans phrase="Available Widgets"></p>
-            <mt:loop name="available">
-                <div id="module-<mt:var name="id">" class="module pkg">
-                  <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
-                  <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
-                </div>
-            </mt:loop>
-            </div>
-            <div id="stage-drop">&nbsp;</div>
-        </div>
+          id="widgets"
+          label="<__trans phrase="Drag and drop the widgets you want into the Installed column.">">
+          <div id="stage" class="pkg">
+              <div id="installed-column" class="pkg">
+                  <p><__trans phrase="Installed Widgets"></p>
+              <mt:loop name="installed">
+                  <div id="module-<mt:var name="id">" class="module pkg">
+                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
+                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
+                  </div>
+              </mt:loop>
+              </div>
+              <div id="center-column" class="pkg">&nbsp;</div>
+              <div id="available-column" class="pkg">
+                  <p><__trans phrase="Available Widgets"></p>
+              <mt:loop name="available">
+                  <div id="module-<mt:var name="id">" class="module pkg">
+                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
+                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
+                  </div>
+              </mt:loop>
+              </div>
+              <div id="stage-drop">&nbsp;</div>
+          </div>
       </mtapp:setting>
       </fieldset>
 

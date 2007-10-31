@@ -29,7 +29,7 @@ ul.main-nav-list ul a {
 }
 
 .add-category-new-link {
-    background: url('../images/spacer.gif') no-repeat left center;
+    background: url('../../images/spacer.gif') no-repeat left center;
 }
 
 #entryfield-options li input.cb,
@@ -86,3 +86,15 @@ button.big-button {
 /* to be sure IE displays pointer */
 /*a:link, a:visited { cursor: pointer; }*/
 
+/* In IE, the header block is actually placed at the bottom of the document
+   but above the modal dialog iframe; this allows the pulldown menus to
+   display above all other elements on the screen */
+.main-screen #content {
+    margin-top: 120px;
+}
+.main-screen #header {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+}

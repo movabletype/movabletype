@@ -59,18 +59,29 @@ sub configure {
 
 sub pk_generator {
     my $obj = shift;  # not a method
-    my $driver = $obj->driver;
+    my $driver = UNIVERSAL::isa($obj, 'MT::Object')
+      ? $obj->driver
+      : MT::Object->driver;
     my $seq    = $driver->dbd->sequence_name(ref $obj);
     my $dbh    = $driver->rw_handle;
     my $sth    = $dbh->prepare("SELECT NEXTVAL('$seq')")
-        or die $obj->error($dbh->errstr);
+      or die UNIVERSAL::isa($obj, 'MT::ErrorHandler')
+        ? $obj->error($dbh->errstr)
+        : $dbh->errstr;
     $sth->execute
-        or die $obj->error($dbh->errstr);
+      or die UNIVERSAL::isa($obj, 'MT::ErrorHandler')
+        ? $obj->error($dbh->errstr)
+        : $dbh->errstr;
     $sth->bind_columns(undef, \my($id));
     $sth->fetch;
     $sth->finish;
 
-    $obj->id($id);
+    my $col = $obj->properties->{primary_key};
+    ## If it's a complex primary key, use the second half.
+    if(ref $col) {
+        $col = $col->[1];
+    }
+    $obj->$col($id);
     return $id;
 }
 
@@ -124,12 +135,15 @@ sub sequence_name {
 
     # mt_tablename_columnname
     return join '_', 'mt',
-        $dbd->db_column_name($class->table_name, $key);
+        $dbd->db_column_name(MT::Object->driver->table_for($class), $key);
 }
 
 sub bind_param_attributes {
     my ($dbd, $data_type) = @_;
-    if ($data_type && $data_type->{type} eq 'blob') {
+    my $t = ref($data_type) eq 'HASH'
+      ? $data_type->{type}
+      : $data_type;
+    if ($t eq 'blob') {
         return { pg_type => DBD::Pg::PG_BYTEA() };
     }
     return;

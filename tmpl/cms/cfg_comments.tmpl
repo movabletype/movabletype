@@ -128,10 +128,10 @@
         hint="<__trans phrase="Specifies the list of HTML tags allowed by default when cleaning an HTML string (a comment, for example).">"
         help_page="blog_settings_general"
         help_section="limit_html_tags">
-<ul>
-<li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_0" value="0"<mt:if name="sanitize_spec_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use defaults">:</label> <span class="hint"><__trans phrase="([_1])" params="<mt:var name="global_sanitize_spec" escape="html">"></span></li>
-<li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<mt:if name="sanitize_spec_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use my settings">:</label> <input name="sanitize_spec_manual" id="sanitize_spec_manual" value="<mt:if name="sanitize_spec_1"><mt:var name="sanitize_spec" escape="html"></mt:if>" /></li>
-</ul>
+        <ul>
+        <li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_0" value="0"<mt:if name="sanitize_spec_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use defaults">:</label> <span class="hint"><__trans phrase="([_1])" params="<mt:var name="global_sanitize_spec" escape="html">"></span></li>
+        <li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<mt:if name="sanitize_spec_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use my settings">:</label> <input name="sanitize_spec_manual" id="sanitize_spec_manual" value="<mt:if name="sanitize_spec_1"><mt:var name="sanitize_spec" escape="html"></mt:if>" /></li>
+        </ul>
     </mtapp:setting>
 
     <mtapp:setting

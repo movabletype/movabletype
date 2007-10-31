@@ -40,6 +40,7 @@ $cfg{verbose} = $verbose;
 
 require MT::TheSchwartz;
 my $client = MT::TheSchwartz->new(%cfg);
+no warnings 'once';
 $TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
 
 if ($daemonize) {

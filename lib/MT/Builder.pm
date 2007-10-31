@@ -379,7 +379,7 @@ sub build {
 
                 if ((defined $type) && ($type == 2)) {
                     # conditional; process result
-                    $out = $out ? $ctx->slurp : $ctx->else;
+                    $out = $out ? $ctx->slurp(\%args, $cond) : $ctx->else(\%args, $cond);
                 }
 
                 $out = $ph->($ctx, \%args, $out, \@args)
@@ -391,7 +391,7 @@ sub build {
                 }
             } else {
                 if ($t->[0] !~ m/^_/) { # placeholder tag. just ignore
-                    return $ctx->error(MT->translate("No handler exists for tag [_1]", $t->[0]));
+                    return $build->error(MT->translate("No handler exists for tag [_1]", $t->[0]));
                 }
             }
         }

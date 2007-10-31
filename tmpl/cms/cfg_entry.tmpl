@@ -1,10 +1,12 @@
-<mt:setvar name="page_title" value="<__trans phrase="Entry Settings">">
-<$mt:setvar name="position_actions_bottom" value="1"$>
-<mt:setvar name="entries" value="1">
-<MTSetVarBlock name="content_nav">
+<$mt:setvar name="page_title" value="<__trans phrase="Entry Settings">"$>
+<$mt:setvar name="entries" value="1"$>
+<mt:setvarblock name="content_nav">
     <mt:include name="include/cfg_content_nav.tmpl">
-</MTSetVarBlock>
-<mt:include name="include/header.tmpl">
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl" position_actions_bottom="1">
+
+<mt:section html_tag="div" id="msg-block">
 
     <mt:if name="error">
         <mtapp:statusmsg
@@ -23,18 +25,15 @@
         </mtapp:statusmsg>
     </mt:if>
 
-<div id="cfg-entry_display">
+</mt:section>
 
-<form name="cfg_form" method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="id" value="<mt:var name="id">" />
-    <input type="hidden" name="__mode" value="save" />
-    <input type="hidden" name="_type" value="blog" />
+<mt:section html_tag="div" id="cfg-entry_display">
+
+<mtapp:form id="cfg_entry" name="cfg_entry" mode="save" object_type="blog">
     <input type="hidden" name="cfg_screen" value="cfg_entry" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-<fieldset>
+<mtapp:settinggroup id="display-settings">
+
 <h3><__trans phrase="Display Settings"></h3>
 
     <mtapp:setting
@@ -108,9 +107,10 @@
         <input type="text" size="3" maxlength="3" value="<mt:var name="basename_limit">" name="basename_limit" id="basename_limit" />
     </mtapp:setting>
 
-</fieldset>
+</mtapp:settinggroup>
 
-<fieldset>
+<mtapp:settinggroup id="entry-settings">
+
 <h3><__trans phrase="New Entry Defaults"></h3>
 
     <mtapp:setting
@@ -163,9 +163,9 @@
         </mt:unless>
     </mtapp:setting>
 
-</fieldset>
+</mtapp:settinggroup>
 
-<fieldset>
+<mtapp:settinggroup id="replace-word-settings">
 
 <h3><__trans phrase="Replace Word Chars"></h3>
 
@@ -176,9 +176,9 @@
     hint="<__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents.">"
     show_hint="1">
     <ul>
-        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>><label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
-        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>><label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
-        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>><label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
+        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
+        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
+        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
     </ul>
     <div id="replace-fields" class="<mt:if name="nwc_replace_none">hidden</mt:if>">
         <h4><__trans phrase="Replace Fields"></h4>
@@ -194,9 +194,10 @@
 
 </mtapp:setting>
 
-</fieldset>
+</mtapp:settinggroup>
 
-<fieldset>
+<mtapp:settinggroup id="default-field-settings">
+
 <h3><__trans phrase="Default Editor Fields"></h3>
 
 <mtapp:setting
@@ -222,14 +223,15 @@
     hint="<__trans phrase="Select the location of the entry editor&rsquo;s action bar.">"
     content_class="field-content-text">
     <ul>
-        <li><label><input type="radio" name="bar_position" value="Top"<mt:if NAME=POSITION_ACTIONS_TOP> checked="checked"</mt:if> class="rb" /> <__trans phrase="Top"></label></li>
-        <li><label><input type="radio" name="bar_position" value="Both"<mt:if NAME=POSITION_ACTIONS_BOTH> checked="checked"</mt:if> class="rb" /> <__trans phrase="Both"></label></li>
-        <li><label><input type="radio" name="bar_position" value="Bottom"<mt:if NAME=POSITION_ACTIONS_BOTTOM> checked="checked"</mt:if> class="rb" /> <__trans phrase="Bottom"></label></li>
+        <li><label><input type="radio" name="bar_position" value="Top"<mt:unless name="position_actions_both"><mt:if name="position_actions_top"> checked="checked"</mt:if></mt:unless> class="rb" /> <__trans phrase="Top"></label></li>
+        <li><label><input type="radio" name="bar_position" value="Both"<mt:if name="position_actions_both"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Both"></label></li>
+        <li><label><input type="radio" name="bar_position" value="Bottom"<mt:unless name="position_actions_both"><mt:if name="position_actions_bottom"> checked="checked"</mt:if></mt:unless> class="rb" /> <__trans phrase="Bottom"></label></li>
     </ul>
 </mtapp:setting>
-</fieldset>
 
-<mt:setvarblock name="action_buttons">
+</mtapp:settinggroup>
+
+<mt:setvarblock name="action_buttons" id="action-buttons">
     <button
         type="submit"
         accesskey="s"
@@ -237,10 +239,11 @@
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>
+
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
-</form>
+</mtapp:form>
 
-</div>
+</mt:section>
 
 <mt:include name="include/footer.tmpl">

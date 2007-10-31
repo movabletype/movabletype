@@ -93,7 +93,6 @@
             <__trans phrase="You have successfully recovered your saved [_1]." params="<mt:var name="object_label">">
         </mtapp:statusmsg>
     </mt:if>
-    </mt:if>
 
     <mt:if name="recovered_failed">
         <mtapp:statusmsg    
@@ -101,7 +100,6 @@
             class="error">
             <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
         </mtapp:statusmsg>
-    </mt:if>
     </mt:if>
 
     <mt:if name="saved_deleted">
@@ -179,7 +177,7 @@
                     label="<__trans phrase="Reset display options">"
                     label_class="display-options"
                     show_label="0">
-                    <a href="javascript:void(0)" onclick="setFieldGroup('Default'); return true" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
+                    <a href="javascript:void(0)" onclick="return setFieldGroup('Default');" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
                 </mtapp:setting>
             <div class="actions-bar display-options-actions-bar buttons">
                 <div class="actions-bar-inner">
@@ -188,7 +186,7 @@
                         title="<__trans phrase="Save display options">"
                         ><__trans phrase="OK"></a>
                     <a href="javascript:void(0)"
-                        onclick="toggleEntryDisplayOptions()"
+                        onclick="return toggleEntryDisplayOptions();"
                         title="<__trans phrase="Close display options">"
                         ><__trans phrase="Cancel"></a>
                 </div>
@@ -308,6 +306,16 @@ function changedTextFormat(sel) {
             return;
         }
     }
+    var s = document.forms['entry_form'].convert_breaks;
+    var key = s.options[s.selectedIndex].value;
+    if (url = docs[key]) {
+        if (url.indexOf('http://') == -1)
+            url = HelpBaseURI + url;
+        TC.removeClassName(getByID('formatting-help-link'), 'disabled');
+    } else {
+        TC.addClassName(getByID('formatting-help-link'), 'disabled');
+    }
+
     if (cur_text_format == 'richtext') {
         // changing to plaintext editor
         TC.addClassName(TC.elementOrId("editor-content"), "editor-plaintext");
@@ -346,6 +354,7 @@ function setFieldGroup(selection) {
         var bar_position = document.getElementById('bar_position_bottom');
         if (bar_position) {
             bar_position.checked = true;
+            setBarPosition(bar_position);
         }
     } else if (selection == 'Custom') {
         selected_fields = custom_fields;
@@ -531,7 +540,7 @@ var docs = new Array();
 <mt:loop name="text_filters">
 docs['<$mt:var name="filter_key"$>'] = '<$mt:var name="filter_docs"$>';
 </mt:loop>
-function openTFDocs () {
+function openTFDocs() {
     var s = document.forms['entry_form'].convert_breaks;
     var key = s.options[s.selectedIndex].value;
     if (url = docs[key]) {
@@ -539,7 +548,8 @@ function openTFDocs () {
             url = HelpBaseURI + url;
         window.open(url, 'manual', 'width=450,height=550,scrollbars=yes,status=yes,resizable=yes');
     } else {
-        return openManual('entries', 'entry_text_formatting');
+        return false;
+        // return openManual('entries', 'entry_text_formatting');
     }
 }
 
@@ -692,7 +702,7 @@ function listPreviousPings () {
                 </div>
         </mt:section>';
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="[#|h trans( "Add sub category" ) #]" mt:default="[#|h trans( "Add sub category" ) #]" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;</a>
+        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="[#|h trans( "Add sub category" ) #]" mt:default="[#|h trans( "Add sub category" ) #]" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
         </mt:section>';
     <mt:ignore>
         <__trans phrase="Add sub category">
@@ -703,7 +713,7 @@ function listPreviousPings () {
 <mt:include name="include/calendar.tmpl">
     <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector <mt:if name="object_type" eq="page">autolayout-flyout-smart<mt:else>autolayout-flyout-left-from-right</mt:if> flyout"><div id="<$mt:var name="container_type" lower_case="1"$>-selector-inner" class="inner">
         <h3><$mt:var name="container_label_plural"$></h3>
-        <div id="add-category-form" class="add-category-form hidden"><input id="add-category-input" class="add-category-input input-hint" type="text" value="<__trans phrase="Add [_1] name" params="<$mt:var name="container_label" lower_case="1"$>">" mt:default="<__trans phrase="Add [_1] name" params="<$mt:var name="container_label" lower_case="1"$>">" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span>&nbsp;</a></div>
+        <div id="add-category-form" class="add-category-form hidden"><input id="add-category-input" class="add-category-input input-hint" type="text" value="<__trans phrase="Add [_1] name" params="<$mt:var name="container_label" lower_case="1"$>">" mt:default="<__trans phrase="Add [_1] name" params="<$mt:var name="container_label" lower_case="1"$>">" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span>&nbsp;&nbsp;&nbsp;</a></div>
         <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="category-selector-list">
         </div>
 <mt:if name="object_type" eq="entry">
@@ -797,18 +807,29 @@ function listPreviousPings () {
                 </div>
 
                 <!-- text filters -->
-                <div id="field-convert_breaks" align="right">
-                    <__trans phrase="Format">:
-                    <select name="convert_breaks" id="convert_breaks" tabindex="2" style="font-size: 10px" onchange="changedTextFormat(this)">
+                <div id="field-convert_breaks">
+                    <__trans phrase="Format:">
+                    <select name="convert_breaks" id="convert_breaks" tabindex="2" onchange="changedTextFormat(this)">
     <mt:loop name="text_filters">
                         <option value="<mt:var name="filter_key">"<mt:if name="filter_selected"> selected="selected"</mt:if>><mt:var name="filter_label"></option>
     </mt:loop>
                     </select>
+                    <$mt:setvar name="show_formatting_help" value="1"$>
+                    <mt:if name="convert_breaks" eq="richtext">
+                        <$mt:setvar name="show_formatting_help" value="0"$>
+                    </mt:if>
+                    <mt:if name="convert_breaks" eq="0">
+                        <$mt:setvar name="show_formatting_help" value="0"$>
+                    </mt:if>
+                    <mt:if name="convert_breaks" eq="__default__">
+                        <$mt:setvar name="show_formatting_help" value="0"$>
+                    </mt:if>
+                    <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
                 </div>
 
             </div>
         </div>
-        <div id="editor-content" class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
+        <div id="editor-content" class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if> pkg">
             <div id="formatted" class="editor-panel">
                 <div id="entry-body-field" class="field">
                     <div class="field-content">
@@ -842,7 +863,7 @@ function listPreviousPings () {
                         </div>
                         <mt:setvarblock name="editor_content_height"><mt:if name="disp_prefs_height_body"><$mt:var name="disp_prefs_height_body"$><mt:else>194</mt:if></mt:setvarblock>
                         <div class="editor" id="editor-content-enclosure" mt:min-height="66" mt:update-field-height="editor-content-height" style="height: <$mt:var name="editor_content_height"$>px">
-                            <textarea id="editor-content-textarea" name="_text_" class="full-width" style="height: <$mt:var name="editor_content_height"$>px" mt:allow-tabs="1"></textarea>
+                            <textarea id="editor-content-textarea" name="_text_" class="full-width" style="background: #fff; height: <$mt:var name="editor_content_height"$>px"></textarea>
                             <!-- the iframe bootstraps the js -->
                             <$mt:setvar name="delayed_bootstrap" value="1"$>
                             <iframe tabindex="3" id="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html?cs=<$mt:var name="language_encoding"$>" style="height: <$mt:var name="editor_content_height"$>px"></iframe>

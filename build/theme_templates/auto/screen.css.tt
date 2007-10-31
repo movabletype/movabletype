@@ -51,6 +51,11 @@ layouts: layout-wtt, layout-twt, layout-wt, layout-tw
 [%+ INCLUDE footer.css.tt %]
 
 
+/* Utilities -------------------------------------------------------------- */
+
+[%+ INCLUDE utilities.css.tt %]
+
+
 /* Custom Styles ---------------------------------------------------------- */
 
 [%+ theme.custom_styles %]

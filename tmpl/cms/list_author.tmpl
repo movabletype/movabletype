@@ -62,11 +62,7 @@
     <mtapp:widget
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
-        <ul>
-            <li><a href="<mt:var name="script_url">?__mode=<mt:var name="mode">&amp;filter=status&amp;filter_val=1"><__trans phrase="Show Enabled Users"></a></li>
-            <li><a href="<mt:var name="script_url">?__mode=<mt:var name="mode">&amp;filter=status&amp;filter_val=2"><__trans phrase="Show Disabled Users"></a></li>
-            <li><a href="<mt:var name="script_url">?__mode=<mt:var name="mode">"><__trans phrase="Show All Users"></a></li>
-        </ul>
+        <$mtapp:listfilters$>
     </mtapp:widget>
 
     <$mtapp:pageactions from="list_authors"$>
@@ -126,13 +122,12 @@
     }
 
     var tableSelect;
-    function init()
-    {
-    	// setup
-    	tableSelect = new TC.TableSelect( "author-listing-table" );
-    	tableSelect.rowSelect = true;
-    	setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
-    	setFilterVal('<mt:var name="filter_val">');
+    function init() {
+        // setup
+        tableSelect = new TC.TableSelect( "author-listing-table" );
+        tableSelect.rowSelect = true;
+        setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+        setFilterVal('<mt:var name="filter_val">');
     </mt:if>
     }
 
@@ -140,72 +135,16 @@
     // -->
     </script>
 </mt:setvarblock>
-<mt:ignore>
-                <mt:setvarblock name="list_filter_form">
-                    <form id="filter-select-form" method="get" action="<mt:var name="mt_url">">
-                    <input type="hidden" name="__mode" value="list_authors" />
-                    <mt:if name="blog_id">
-                    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-                    </mt:if>
-                    <input id="filter" type="hidden" name="filter" value="" />
-                    <input id="filter_val" type="hidden" name="filter_val" value="" />
-                        <div class="filter">
-                        <div id="filter-active">
-                        <strong><__trans phrase="Filter">:</strong>
-                        <mt:unless name="filter">
-                        <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="None."></a> <span class="hint"><__trans phrase="(Showing all users.)"></span>
-                        <mt:else>
-                        <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="Showing only users whose [_1] is [_2]." params='<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a> (<a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>"><__trans phrase="Reset"></a>)
-                        </mt:unless>
-                        </div>
-                        <div id="filter-select" style="display: none">
-                        <__trans phrase="Show">
-                        <select id="filter-mode" name="mode" onchange="if (this.options[this.selectedIndex].value == 'all') { setFilterCol('none') } else { setFilterCol('status') } enableFilterButton()">
-                        <option value="all"><__trans phrase="all"></option>
-                        <option value="only"><__trans phrase="only"></option>
-                        </select>
-                        <span id="filter-mode-all" style="display: none">
-                        <__trans phrase="users.">
-                        </span>
-                        <span id="filter-mode-only" style="display: none">
-                        <__trans phrase="users where">
-                        <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton();">
-                        <option value="status"><__trans phrase="_USER_STATUS_CAPTION"></option>
-                        </select>
-                        <__trans phrase="is">
-                        <span id="filter-status" style="display: none">
-                        <select id="status-val" name="filter_val" onchange="enableFilterButton()">
-                        <option value="1"><__trans phrase="enabled"></option>
-                        <option value="2"><__trans phrase="disabled"></option>
-                        </select>
-                        </span>
-                        <__trans phrase=".">
-                        </span>
-                        <span class="buttons">
-                            <a href="javascript:void(0)"
-                                id="filter-button"
-                                onclick="return execFilter(getByID('filter-select-form'))"
-                                type="submit"
-                                ><__trans phrase="Filter"></a>
-                            <a href="javascript:void(0)"
-                                onclick="toggleFilter(); return false;"
-                                type="submit"
-                                ><__trans phrase="Cancel"></a>
-                        </span>
-                        </div>
-                        </div>
-                    </form>
-                </mt:setvarblock>
-</mt:ignore>
 <mt:setvarblock name="list_filter_form">
     <div class="listing-filter">
         <div class="listing-filter-inner inner pkg">
             <div class="filter">
                 <div id="filter-title">
-                <mt:if name="filter_title">
-                    <$mt:var name="filter_title"$>
+                <mt:if name="filter_label">
+                    <__trans phrase="Showing only: [_1]" params="<$mt:var name="filter_label"$>">
+                    <a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
                 <mt:else>
-                    <__trans phrase="Show All Users">
+                    <__trans phrase="Showing All Users">
                 </mt:if>
                 </div>
             </div>

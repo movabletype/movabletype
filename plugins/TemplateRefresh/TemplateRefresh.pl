@@ -15,8 +15,7 @@ BEGIN {
     MT->add_plugin($plugin =
         new MT::Plugin::TemplateRefresh({
             name => "Template Backup and Refresh",
-            description =>
-'<MT_TRANS phrase="Backup and refresh existing templates to Movable Type\'s default templates.">',
+            description => q(<MT_TRANS phrase="Backup and refresh existing templates to Movable Type's default templates.">),
             version => 1.2,
             registry => {
                 applications => {
@@ -672,7 +671,7 @@ sub refresh_blog_templates {
                     $backup->save;
                     push @msg,
                       $app->translate(
-'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>)'." template '[_3]'.",
+'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
                         $blog_id, $backup->id, $tmpl->name );
                 }
                 else {
@@ -812,7 +811,7 @@ sub refresh_individual_templates {
             $backup->save;
             push @msg,
               $app->translate(
-'Refreshing (with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>)'." template '[_3]'.",
+'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
                   $blog_id, $backup->id, $tmpl->name );
         }
         else {

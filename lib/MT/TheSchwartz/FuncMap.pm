@@ -11,6 +11,11 @@ __PACKAGE__->install_properties({
     },
     datasource => 'ts_funcmap',
     primary_key => 'funcid',
+    indexes => {
+        funcname => {
+            unique => 1,
+        },
+    },
     # not captured:
     # unique(funcname)
 });

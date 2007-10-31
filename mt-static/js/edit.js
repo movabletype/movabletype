@@ -156,6 +156,9 @@ MT.App = new Class( MT.App, {
     saveHTML: function( resetChanged ) {
         if ( !this.editor )
             return;
+        
+        this.fixHTML();
+
         this.editorInput[ this.currentEditor ].value = this.editor.getHTML();
 
         if ( resetChanged )
@@ -163,24 +166,28 @@ MT.App = new Class( MT.App, {
     },
 
 
-    insertHTML: function( html, field ) {
-        /* field is ignored now, we have one editor */
-        var inserted = this.editor.insertHTML( html );
-
+    fixHTML: function( inserted ) {
         /* fix firefox's tendency to convert the src attribute to relative */
         /* anchor tag is also similar */
         if ( window.controllers && this.editor.mode == "iframe" ) {
-            log.debug('fixing relative path in image tags');
+            log.debug('fixing relative path in image tags, and setting contentEditable false');
             var imgs;
             var ancs;
+            var forms = [];
             if ( inserted && inserted.getElementsByTagName ) {
                 log.debug('using inserted method');
                 imgs = inserted.getElementsByTagName( "img" );
                 ancs = inserted.getElementsByTagName( "a" );
+                forms = inserted.getElementsByTagName( "form" );
+                if ( forms )
+                    forms = Array.fromPseudo( forms );
+                if ( inserted.tagName && inserted.tagName.toLowerCase() == "form" )
+                    forms.push( inserted );
             } else {
                 log.debug('using iframe method');
                 imgs = this.editor.iframe.document.getElementsByTagName( "img" );
                 ancs = this.editor.iframe.document.getElementsByTagName( "a" );
+                forms = this.editor.iframe.document.getElementsByTagName( "form" );
             }
                 
             if ( imgs )
@@ -190,7 +197,17 @@ MT.App = new Class( MT.App, {
             if ( ancs )
                 for ( var i = 0; i < ancs.length; i++ )
                     ancs[ i ].href = ancs[ i ].href;
+
+            if ( forms )
+                for ( var i = 0; i < forms.length; i++ )
+                    forms[ i ].setAttribute( "contentEditable", false );
         }
+    },
+
+
+    insertHTML: function( html, field ) {
+        /* field is ignored now, we have one editor */
+        this.fixHTML( this.editor.insertHTML( html ) );
     },
 
 
@@ -545,7 +562,71 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
                 element.style.fontSize = this.mutateFontSize( element, bigger );
             }
         }
+    },
+
+
+    getHTML: function() {
+        var html = this.document.body.innerHTML;
+
+        // cleanup innerHTML garbage browser regurgitates
+        // #1 - lowercase tag names (open and closing tags)
+        html = html.replace(/<\/?[A-Z]+\s/g, function (m) {
+            return m.toLowerCase();
+        });
+
+        // #2 - lowercase attribute names
+        html = html.replace(/(<[\w\d]+\s+)([^>]+)>/g, function (x, m1, m2) {
+            return m1 + m2.replace(/\b([\w\d:-]+)\s*=\s*(?:'([^']*?)'|"([^"]*?)"|(\S+))/g, function (x, m1, m2, m3, m4) {
+                return m1.toLowerCase() + '="' + m2 + m3 + m4 + '"';
+            }) + ">";
+        });
+
+        // #3 - close singlet tags for img, br, input, param, hr
+        html = html.replace(/<(br|img|input|param)([^>]+)?([^\/])?>/g, "<$1$2$3 />");
+        return html;
     }
+    // 
+    // 
+    // getNodeXHTML: function( node ) {
+    //     var xhtml = '';
+    //     for ( var i = 0; i < node.childNodes.length; i++ ) {
+    //         var element = node.childNodes[ i ];
+    // 
+    //         switch ( element.nodeType ) {
+    // 
+    //             case Node.ELEMENT_NODE:
+    //                 var tag = element.nodeName.toLowerCase();
+    //                 var regex = new RegExp( '<' + tag + ' +?([^>]*?)>', 'i' );
+    //                 var m = element.parentNode.innerHTML.match( regex );
+    //                 xhtml += ( "<" + tag );
+    //                 if ( m )
+    //                     xhtml += ' ' + m[1].replace( /^\s+/, '' );
+    //                 // tags intentionally unsupported:
+    //                 //   spacer (proprietary)
+    //                 //   frame (only used in standalone documents; not an inline tag)
+    //                 //   bgsound (proprietary)
+    //                 //   wbr (invalid for xhtml)
+    //                 //   embed (proprietary; see http://www.alistapart.com/stories/flashsatay/)
+    //                 if ( element.childNodes.length == 0 && tag.match( /^(br|hr|img|input|param)$/ ) )
+    //                     xhtml += " />";
+    //                 else
+    //                     xhtml += '>' + this.getNodeXHTML( element ) + '</' + tag + '>';
+    // 
+    //                 break;
+    // 
+    //             case Node.TEXT_NODE:
+    //                 if ( !element.nodeValue.match( /^[\r\n\t ]+$/ ) )
+    //                     xhtml += element.nodeValue;
+    //                 break;
+    // 
+    //             case 5: // ENTITY_REFERENCE_NODE
+    //                 xhtml += "&" + element.nodeName.toLowerCase() + ";"
+    //                 break;
+    //             
+    //         }
+    //     }
+    //     return xhtml;
+    // }
 
 } );
 

@@ -31,7 +31,7 @@
         id="comment_disable"
         label="<__trans phrase="Comments">"
         content_class="field-content-text"
-        hint="<__trans phrase="This will override all individual weblog settings.">">
+        hint="<__trans phrase="This will override all individual blog settings.">">
             <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disable comments for all blogs">
     </mtapp:setting>
 
@@ -39,7 +39,7 @@
         id="comment_disable"
         label="<__trans phrase="TrackBacks">"
         content_class="field-content-text"
-        hint="<__trans phrase="This will override all individual weblog settings.">">
+        hint="<__trans phrase="This will override all individual blog settings.">">
             <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disable TrackBacks for all blogs">
     </mtapp:setting>
 
@@ -70,7 +70,7 @@
         <ul>
             <li><input type="radio" name="trackback_send" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Allow to any site"></li>
             <li><input type="radio" name="trackback_send" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disabled"> <span class="hint"><__trans phrase="(No outbound TrackBacks)"></span></li>
-            <li><input type="radio" name="trackback_send" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only allow to weblogs on this installation"></li>
+            <li><input type="radio" name="trackback_send" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only allow to blogs on this installation"></li>
             <li><input type="radio" name="trackback_send" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only allow the sites on the following domains:"><br />
             <textarea rows="" cols="" name="trackback_send_domains" class="full-width short"><mt:var name="trackback_send_domains" escape="html"></textarea></li>
         </ul>

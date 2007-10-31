@@ -4,7 +4,7 @@
         <tr>
             <th id="log-message" colspan="2"><__trans phrase="Log Message"></th>
         <mt:if name="system_overview_nav">
-            <th id="weblog"><__trans phrase="Weblog"></th>
+            <th id="weblog"><__trans phrase="Blog"></th>
         </mt:if>
             <th id="action-by"><__trans phrase="_LOG_TABLE_BY"></th>
             <th id="date"><__trans phrase="Date"></th>
@@ -28,7 +28,7 @@
     <mt:if name="log_detail">
         <tr class="log-detail <mt:if name="__odd__">odd<mt:else>even</mt:if>" id="log-detail-<$mt:var name="id"$>">
             <td>&nbsp;</td>
-            <td colspan="4"><div class="detail-inner"><$mt:var name="log_detail"$></div></td>
+            <td colspan="4"><div class="detail-inner"><$mt:var name="log_detail" escape="html"$></div></td>
         </tr>
     </mt:if>
     <mt:if name="__last__">

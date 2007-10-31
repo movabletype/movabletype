@@ -86,21 +86,23 @@ sub blog {
 
 sub parent {
     my ($ping) = @_;
-    my $tb = MT->model('trackback')->load($ping->tb_id);
-    if ($tb->entry_id) {
-        return MT->model('entry')->load($tb->entry_id);
-    } else {
-        return MT->model('category')->load($tb->category_id);
+    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
+        if ($tb->entry_id) {
+            return MT->model('entry')->load($tb->entry_id);
+        } else {
+            return MT->model('category')->load($tb->category_id);
+        }
     }
 }
 
 sub parent_id {
     my ($ping) = @_;
-    my $tb = MT->model('trackback')->load($ping->tb_id);
-    if ($tb->entry_id) {
-        return ('MT::Entry', $tb->entry_id);
-    } else {
-        return ('MT::Category', $tb->category_id);
+    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
+        if ($tb->entry_id) {
+            return ('MT::Entry', $tb->entry_id);
+        } else {
+            return ('MT::Category', $tb->category_id);
+        }
     }
 }
 

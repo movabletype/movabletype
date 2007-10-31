@@ -114,17 +114,17 @@ function clearNotifyUsers() {
 
     <mtapp:setting
         id="personal_weblog"
-        label="<__trans phrase="Personal weblog">"
+        label="<__trans phrase="Personal blog">"
         content_class="field-content-text"
-        hint="<__trans phrase="Check to have the system automatically create a new personal weblog when a user is created in the system. The user will be granted a blog administrator role on the weblog.">">
-        <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if> class="cb" <mt:if name="personal_weblog_readonly">disabled="disabled"</mt:if> /> <__trans phrase="Automatically create a new weblog for each new user">
+        hint="<__trans phrase="Check to have the system automatically create a new personal blog when a user is created in the system. The user will be granted a blog administrator role on the blog.">">
+        <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if> class="cb" <mt:if name="personal_weblog_readonly">disabled="disabled"</mt:if> /> <__trans phrase="Automatically create a new blog for each new user">
     </mtapp:setting>
     
     <mtapp:setting
         id="new_user_template_blog_id"
-        label="<__trans phrase="Personal weblog clone source">"
+        label="<__trans phrase="Personal blog clone source">"
         content_class="field-content-text"
-        hint="<__trans phrase="Select a weblog you wish to use as the source for new personal weblogs. The new weblog will be identical to the source except for the name, publishing paths and permissions.">">
+        hint="<__trans phrase="Select a blog you wish to use as the source for new personal blogs. The new blog will be identical to the source except for the name, publishing paths and permissions.">">
         <input type="hidden" id="new_user_template_blog_id" name="new_user_template_blog_id" size="5" value="<mt:var name="new_user_template_blog_id" escape="html">" />
         <div id="new_user_template_blog_name">
         <mt:if name="new_user_template_blog_id">
@@ -144,7 +144,7 @@ function clearNotifyUsers() {
     <mtapp:setting
         id="default_site_url"
         label="<__trans phrase="Default Site URL">"
-        hint="<__trans phrase="Define the default site URL for new weblogs. This URL will be appended with a unique identifier for the weblog.">">
+        hint="<__trans phrase="Define the default site URL for new blogs. This URL will be appended with a unique identifier for the blog.">">
         <div class="textarea-wrapper">
             <input type="text" id="default_site_url" class="full-width" name="default_site_url" value="<mt:var name="default_site_url" escape="html">" size="50" <mt:if name="default_site_url_readonly">disabled="disabled"</mt:if> />
         </div>
@@ -154,7 +154,7 @@ function clearNotifyUsers() {
     <mtapp:setting
         id="default_site_root"
         label="<__trans phrase="Default Site Root">"
-        hint="<__trans phrase="Define the default site root for new weblogs. This path will be appended with a unique identifier for the weblog.">">
+        hint="<__trans phrase="Define the default site root for new blogs. This path will be appended with a unique identifier for the blog.">">
         <div class="textarea-wrapper">
             <input type="text" id="default_site_root" class="full-width" name="default_site_root" value="<mt:var name="default_site_root" escape="html">" size="50" <mt:if name="default_site_root_readonly">disabled="disabled"</mt:if> />
         </div>

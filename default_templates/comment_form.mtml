@@ -24,15 +24,15 @@
             <div id="comments-open-data">
                 <div id="comment-form-name">
                     <label for="comment-author"><__trans phrase="Name"></label>
-                    <input id="comment-author" name="author" size="30" value="<MTIf name="comment_preview_template"><$MTCommentAuthor$></MTIf>" />
+                    <input id="comment-author" name="author" size="30" value="<MTIf name="comment_preview_template"><$MTCommentAuthor encode_html="1"$></MTIf>" />
                 </div>
                 <div id="comment-form-email">
                     <label for="comment-email"><__trans phrase="Email Address"></label>
-                    <input id="comment-email" name="email" size="30" value="<MTIf name="comment_preview_template"><$MTCommentEmail$></MTIf>" />
+                    <input id="comment-email" name="email" size="30" value="<MTIf name="comment_preview_template"><$MTCommentEmail encode_html="1"$></MTIf>" />
                 </div>
                 <div id="comment-form-url">
                     <label for="comment-url"><__trans phrase="URL"></label>
-                    <input id="comment-url" name="url" size="30" value="<MTIf name="comment_preview_template"><$MTCommentURL$></MTIf>" />
+                    <input id="comment-url" name="url" size="30" value="<MTIf name="comment_preview_template"><$MTCommentURL encode_html="1"$></MTIf>" />
                 </div>
                 <div id="comment-form-remember-me">
                     <label for="comment-bake-cookie"><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />

@@ -1,7 +1,7 @@
 <mt:setvar name="edit_role" value="1">
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:if name="id">
-    <mt:setvar name="page_title" value="<__trans phrase="Role Details">">    
+    <mt:setvar name="page_title" value="<__trans phrase="Role Details">">
     <MTSetVarBlock name="content_nav">
         <mt:include name="include/users_content_nav.tmpl">
     </MTSetVarBlock>
@@ -18,11 +18,11 @@
     </mt:if>
 
     <p class="page-desc hidden"><__trans phrase="_USAGE_ROLE_PROFILE"><a href="javascript:void(0)" onclick="return openManual('author_permissions', 'permissions')" class="help-link">?</a></p>
-    
-    <p><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a></p>
+
+    <p><a href="<mt:var name="script_url">?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a></p>
 
 <mt:if name="id">
-    <p><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="[quant,_1, User, Users] with this role" params="<mt:var name="user_count">"></a></p>
+    <p><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="[quant,_1,User,Users] with this role" params="<mt:var name="user_count">"></a></p>
 </mt:if>
 
 </mt:setvarblock>
@@ -125,7 +125,7 @@ var orig_roleName = "<mt:var name="name" escape="html">";
 var roleName = getByID('name').value;
 if(permsChanged == "yes") {
     if(roleName == orig_roleName) {
-        doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the permissions for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
+        doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
     } else {
         doSubmitForm(document.role, 'save_role');
     }
@@ -259,7 +259,7 @@ TC.attachLoadEvent( rectifyAll );
         </mt:if>
     </fieldset>
     <fieldset>
-        <h3><__trans phrase="Permissions"></h3>
+        <h3><__trans phrase="Privileges"></h3>
 
 <div id="permission-list" class="permission-list">
 
@@ -334,7 +334,7 @@ TC.attachLoadEvent( rectifyAll );
     <mtapp:setting
         id="same_permissions"
         label="<__trans phrase="Duplicate Roles">"
-        hint="<__trans phrase="These roles have the same permissions as this role">">
+        hint="<__trans phrase="These roles have the same privileges as this role">">
         <div class="static">
         <mt:loop name="same_perm_loop">
         <a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id">"><mt:var name="name" escape="html"></a> 

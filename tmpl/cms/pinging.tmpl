@@ -11,15 +11,15 @@ setTimeout('doRedirect()', 1000);
 // -->
 </script>
 
-<div class="padded-box">
-    <mtapp:statusmsg
-        id="pinging"
-        class="info">
-        <__trans phrase="Pinging sites...">
-    </mtapp:statusmsg>
-<mt:loop name="url_list">
-<p><mt:var name="url" escape="html"></p>
-</mt:loop>
-</div>
+<mtapp:statusmsg
+    id="pinging"
+    class="info">
+    <__trans phrase="Pinging sites...">
+    <ul>
+    <mt:loop name="url_list">
+        <li><mt:var name="url" escape="html"></li>
+    </mt:loop>
+    </ul>
+</mtapp:statusmsg>
 
 <mt:include name="include/footer.tmpl">

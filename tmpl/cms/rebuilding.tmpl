@@ -21,19 +21,14 @@ setTimeout('doRedirect()', 200);
 // -->
 </script>
 
-<mt:if name="is_full_screen">
-<div class="padded-box">
-<mt:else>
-</mt:if>
 
-<h4 class="message">
 <!-- <img valign="bottom" src="<mt:var name="static_uri">images/ani-rebuild.gif" height="18" width="18" alt="" />&nbsp; -->
 <mt:if name="is_one_index">
     <mtapp:statusmsg
         id="is_one_index"
         can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1]" params="<mt:var name="build_type_name" escape="html"> ">...
+        <__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
     </mtapp:statusmsg>
 <mt:else>
 <mt:if name="is_individual">
@@ -41,7 +36,7 @@ setTimeout('doRedirect()', 200);
         id="is_individual"
         can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1] [_2]" params="<mt:var name="build_type_name">%%<mt:var name="indiv_range"> ">...
+        <__trans phrase="Publishing [_1] [_2]..." params="<mt:var name="build_type_name">%%<mt:var name="indiv_range"> ">
     </mtapp:statusmsg>
 <mt:else>
 <mt:if name="is_entry">
@@ -50,14 +45,14 @@ setTimeout('doRedirect()', 200);
         id="is_entry"
         can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">...
+        <__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
     </mtapp:statusmsg>
 <mt:else>
     <mtapp:statusmsg
         id="publishing"
         can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1]" params="<mt:var name="build_type_name" escape="html"> ">...
+        <__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
     </mtapp:statusmsg>
 </mt:if>
 <mt:else>
@@ -66,7 +61,7 @@ setTimeout('doRedirect()', 200);
         id="dynamic"
         can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1] dynamic links" params="<mt:var name="build_type_name" escape="html"> ">...
+        <__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
     </mtapp:statusmsg>
 <mt:else>
 <mt:if name="build_type_name">
@@ -75,14 +70,14 @@ setTimeout('doRedirect()', 200);
         id="build_type_name"
         can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1] archives" params="<mt:var name="build_type_name" escape="html"> ">...
+        <__trans phrase="Publishing [_1] archives..." params="<mt:var name="build_type_name" escape="html"> ">
     </mtapp:statusmsg>
 <mt:else>
     <mtapp:statusmsg
         id="build_type_name"
         can_close="0"
         class="publishing">
-        <__trans phrase="Publishing [_1] templates" params="<mt:var name="build_type_name" escape="html"> ">...
+        <__trans phrase="Publishing [_1] templates..." params="<mt:var name="build_type_name" escape="html"> ">
     </mtapp:statusmsg>
 </mt:if>
 <mt:else>
@@ -90,22 +85,17 @@ setTimeout('doRedirect()', 200);
     id="generic"
     can_close="0"
     class="publishing">
-    <__trans phrase="_REBUILD_PUBLISH">...
+    <__trans phrase="Publishing...">
 </mtapp:statusmsg>
 </mt:if>
 </mt:if>
 </mt:if>
 </mt:if>
 </mt:if>
-</h4>
 
 <mt:if name="total">
 <div class="progress-bar<mt:unless name="complete"> progress-bar-indeterminate<mt:else>" style="background-position: <mt:var name="incomplete">% 0</mt:unless>">
     <span><$mt:var name="complete"$>% Complete</span>&nbsp;
-</div>
-</mt:if>
-
-<mt:if name="is_full_screen">
 </div>
 </mt:if>
 

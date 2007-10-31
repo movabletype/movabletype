@@ -1,7 +1,8 @@
 <mt:setvarblock name="page_title"><__trans phrase="Widget Sets"></mt:setvarblock>
+<mt:var name="position_actions_top" value="1">
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">plugins/WidgetManager/styles/app.css" type="text/css" />
-<script type="text/javascript" src="<mt:var name="uri">plugins/WidgetManager/js/app.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/WidgetManager/js/app.js"></script>
 <script type="text/javascript">
 <!--
 var tableSelect;
@@ -23,11 +24,21 @@ TC.attachLoadEvent( init );
         ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
-<mtapp:widget id="tips" label="<__trans phrase="Helpful Tips">">
-<p><__trans phrase="To add a widget set to your templates, use the following syntax:"></p>
-<p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
-</mtapp:widget>
-
+    <mt:if name="object_loop">
+        <mtapp:widget id="tips" label="<__trans phrase="Helpful Tips">">
+            <p><__trans phrase="To add a widget set to your templates, use the following syntax:"></p>
+            <p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
+        </mtapp:widget>
+    </mt:if>
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <li>
+                <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">&amp;type=template&filter_key=widget_templates" class=""><__trans phrase="Edit Widget Templates"></a></li>
+            </li>
+        </ul>
+    </mtapp:widget>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
     <mt:if name="rebuild">
@@ -46,37 +57,28 @@ TC.attachLoadEvent( init );
     </ul>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
-
-<form id="widgetset-listing-form" method="get" action="<mt:var name="url">">
-    <input type="hidden" name="__mode" value="delete_widget" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <div id="widget-manager-listing" class="listing">
-        <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions">
-                <span class="button-actions">
-                    <mt:var name="action_buttons">
-                </span>
-            </div>
-        </div>
-        <table id="widgetset-listing-table" class="widgetset-listing-table compact" cellspacing="0">
-            <thead>
-                <tr>
-                    <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-                    <th class="widgetmanager-name"><__trans phrase="Name"></th>
-                    <th class="widgetmanager-widgets"><__trans phrase="Installed Widgets"></th>
-                </tr>
-            </thead>
-            <tbody>
-<mt:loop name="widgetmanagers">
-                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-                    <td class="cb"><input type="checkbox" name="id" value="<mt:var name="widgetmanager">" class="select" /></td>
-                    <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&widgetmanager=<mt:var name="widgetmanager" escape="url">"><mt:var name="widgetmanager"></a></td>
-                    <td class="widgetmanager-widgets"><mt:var name="names"></td>
-                </tr>
-</mt:loop>
-            </tbody>
-        </table>
-    </div>
-</form>
+    
+<mtapp:listing
+    hide_pager="1"
+    empty_message="<__trans phrase="No Widget Sets could be found.">">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+            <th class="widgetmanager-name"><__trans phrase="Name"></th>
+            <th class="widgetmanager-widgets"><__trans phrase="Installed Widgets"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="widgetmanager">" class="select" /></td>
+            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&widgetmanager=<mt:var name="widgetmanager" escape="url">"><mt:var name="widgetmanager"></a></td>
+            <td class="widgetmanager-widgets"><mt:var name="names"></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>
 
 <mt:include name="include/footer.tmpl">

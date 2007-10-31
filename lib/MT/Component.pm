@@ -122,7 +122,7 @@ sub init_callbacks {
                 }
                 elsif ( ref $callbacks->{$cbname} eq 'HASH' ) {
                     MT->add_callback(
-                        $cbname,
+                        $callbacks->{$cbname}{callback} || $cbname,
                         $callbacks->{$cbname}{priority} || 5,
                         $c,
                         $callbacks->{$cbname}{handler}

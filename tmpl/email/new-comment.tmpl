@@ -1,26 +1,19 @@
-<mt:if name="UNAPPROVED"><MT_TRANS phrase="An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>%%<TMPL_VAR NAME=ENTRY_ID>%%<TMPL_VAR NAME=ENTRY_TITLE>"><mt:else><MT_TRANS phrase="A new comment has been posted on your blog [_1], on entry #[_2] ([_3])." params="<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>%%<TMPL_VAR NAME=ENTRY_ID>%%<TMPL_VAR NAME=ENTRY_TITLE>"></mt:if>
+<mt:if name="unapproved"><__trans phrase="An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<mt:var name="blog_name" escape="html">%%<mt:var name="entry_id">%%<mt:var name="entry_title">"><mt:else><__trans phrase="A new comment has been posted on your blog [_1], on entry #[_2] ([_3])." params="<mt:var name="blog_name" escape="html">%%<mt:var name="entry_id">%%<mt:var name="entry_title">"></mt:if>
 
-<TMPL_VAR NAME=COMMENT_TEXT>
+<mt:var name="comment_text">
 
-<MT_TRANS phrase="Comment posted by">: 
-  <TMPL_VAR NAME=COMMENT_NAME>
+<__trans phrase="Comment name: [_1]" params="<mt:var name="comment_name">"> 
+<__trans phrase="Commenter email address: [_1]" params="<mt:var name="comment_email">">
+<__trans phrase="Commenter URL: [_1]" params="<mt:var name="comment_url">">
+<__trans phrase="Commenter IP address: [_1]" params="<mt:var name="comment_ip">">
 
-<MT_TRANS phrase="Commenter email address">: 
-  <TMPL_VAR NAME=COMMENT_EMAIL>
+<mt:if name="unapproved"><__trans phrase="Approve comment:">
+  <<mt:var name="approve_url">></mt:if>
+<mt:if name="view_url"><__trans phrase="View comment:">
+  <<mt:var name="view_url">></mt:if>
+<__trans phrase="Edit comment:">
+  <<mt:var name="edit_url">>
+<__trans phrase="Report comment as spam:">
+  <<mt:var name="spam_url">>
 
-<MT_TRANS phrase="Commenter URL">: 
-  <TMPL_VAR NAME=COMMENT_URL>
-
-<MT_TRANS phrase="Commenter IP address">: 
-  <TMPL_VAR NAME=COMMENT_IP>
-
-<mt:if name="UNAPPROVED"><MT_TRANS phrase="Approve this comment:"> 
-  <<TMPL_VAR NAME=APPROVE_URL>></mt:if>
-<mt:if name="view_url"><MT_TRANS phrase="View this comment">:
-  <<TMPL_VAR NAME=VIEW_URL>></mt:if>
-<MT_TRANS phrase="Edit this comment">:
-  <<TMPL_VAR NAME=EDIT_URL>>
-<MT_TRANS phrase="Report this comment as spam">:
-  <<TMPL_VAR NAME=SPAM_URL>>
-
-<TMPL_INCLUDE NAME="footer-email.tmpl">
+<mt:include name="footer-email.tmpl">

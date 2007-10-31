@@ -57,7 +57,7 @@ sub login {
         my $auth_token = perl_sha1_digest_hex('feed:' . 
             $author->api_password);
         if ($token eq $auth_token) {
-            $app->{author} = $app->{$app->user_cookie} = $author;
+            $app->user($author);
             return ($author);
         }
     }
@@ -67,7 +67,13 @@ sub login {
 # A place to store session data for activity feeds.
 sub session {
     my $app = shift;
-    return $app->{session} if exists $app->{session};
+    my $sess = $app->{session};
+    if (@_ && $sess) {
+        my $setting = shift;
+        return @_ ? $sess->set($setting, @_) : $sess->get($setting);
+    } elsif ($sess) {
+        return $sess;
+    }
 
     my $user = $app->user;
     return undef unless $user;
@@ -80,15 +86,22 @@ sub session {
     my $id = perl_sha1_digest_hex($part1) . perl_sha1_digest_hex($part2);
 
     require MT::Session;
-    my $sess = MT::Session->load({ id => $id, kind => 'AF' });
+    $sess = MT::Session->load({ id => $id, kind => 'AF' });
     if (!$sess) {
         $sess = new MT::Session;
         $sess->id($id);
         $sess->start(time);
         $sess->kind('AF');
     }
-
     $app->{session} = $sess;
+
+
+    if (@_) {
+        my $setting = shift;
+        return @_ ? $sess->set($setting, @_) : $sess->get($setting);
+    }
+
+    return $sess;
 }
 
 # Default mode of MT::App::ActivityFeeds; uses the 'view' parameter to

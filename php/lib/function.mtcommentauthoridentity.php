@@ -6,9 +6,10 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
         if ($cmt['comment_commenter_id']) {
             # load author related to this commenter.
             $cmntr = $ctx->mt->db->fetch_author($cmt['comment_commenter_id']);
+            if (!$cmntr) return "?";
         }
     }
-    if (!$cmntr) return "?";
+    if (!$cmntr) return "";
     if (isset($cmntr['author_url'])) {
         $link = $cmntr['author_url'];
     } else {

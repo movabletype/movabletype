@@ -63,8 +63,8 @@ parameters:
                                 <td class="cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" <mt:if name="disabled">disabled="disabled"</mt:if> /></td>
                                 <td class="panel-label"><label><mt:var name="label"></label></td>
                                 <td class="panel-description">
+                                    <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
                                     <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description"><mt:if name="link"></span></mt:if>
-                                    <mt:if name="link"><span class="link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
                                 </td>
                             </tr>
     </mt:loop>

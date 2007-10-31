@@ -82,7 +82,6 @@ TC.attachLoadEvent( init );
                 <div id="filter-title">
             <mt:if name="filter_key">
                 <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
-                <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
                 <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
             <mt:else>
                 <mt:unless name="filter">
@@ -158,7 +157,7 @@ TC.attachLoadEvent( init );
                 <th id="as-file-name"><__trans phrase="Title"></th>
                 <th id="as-asset-type"><__trans phrase="Type"></th>
     <mt:unless name="edit_blog_id">
-                <th id="as-weblog"><__trans phrase="Weblog"></th>
+                <th id="as-weblog"><__trans phrase="Blog"></th>
     </mt:unless>
                 <th id="as-file-size"><__trans phrase="Size"></th>
                 <th id="as-created-by"><__trans phrase="Created By"></th>

@@ -6,6 +6,8 @@ multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<TMPL_VAR NAME=ACTION_
 </TMPL_LOOP>
 
 function rebuildMultiBlogTriggerTable() {
+    DOM.addClassName(getByID('multiblog_blog_list_zero_state'), 'hidden');
+    DOM.removeClassName(getByID('multiblog_blog_list'), 'hidden');
     getByID('multiblog_blog_list').innerHTML = "";
     getByID('rebuild_triggers').value = "";
     if (multiBlogRebuilds.length > 0) {
@@ -76,23 +78,24 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
 
 <fieldset>
 
-<div class="setting">
-  <div class="label" style="padding-left: 0px; margin-left:0px; margin-bottom: 0px; width: auto;">
-<MT_TRANS phrase="Current Rebuild Triggers:">
-  </div>
+<mtapp:setting
+    id="rebuild_triggers"
+    label="<__trans phrase="Rebuild Triggers">"
+    label_class="top-label"
+    hint=""
+    show_hint="0">
+    <p><a href="javascript:void(0)" onclick="return openDialog(this.form, 'multiblog_add_trigger', 'blog_id=<mt:var name="blog_id">')" class="icon-left icon-create"><__trans phrase="Create Rebuild Trigger"></a></p>
 
-<p><a href="javascript:void(0)" onclick="return openDialog(this.form, 'multiblog_add_trigger', 'blog_id=<mt:var name="blog_id">')" class="icon-left icon-create"><__trans phrase="Create New Rebuild Trigger"></a></p>
+    <TMPL_UNLESS NAME=REBUILDS_LOOP>
+    <em id="multiblog_blog_list_zero_state"><MT_TRANS phrase="You have not defined any rebuild triggers."></em>
+    </TMPL_UNLESS>
+    <div id="multiblog_blog_list" class="listing hide_actions<mt:unless name="rebuilds_loop"> hidden</mt:unless>">
+    </div>
 
-<div id="multiblog_blog_list" class="listing hide_actions">
-<TMPL_UNLESS NAME=REBUILDS_LOOP>
-<div class="message"><MT_TRANS phrase="You have not defined any rebuild triggers."></div>
-</TMPL_UNLESS>
-</div>
+    <input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="<TMPL_VAR NAME=REBUILD_TRIGGERS>" />
+    <input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<TMPL_VAR NAME=REBUILD_TRIGGERS>" />
+</mtapp:setting>
 
-<input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="<TMPL_VAR NAME=REBUILD_TRIGGERS>" />
-<input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<TMPL_VAR NAME=REBUILD_TRIGGERS>" />
-
-</div>
 </fieldset>
 
 <TMPL_IF NAME=REBUILDS_LOOP>

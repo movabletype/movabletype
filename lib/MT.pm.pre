@@ -948,6 +948,21 @@ sub init_core {
     my $c = MT::Core->new( { id => 'core', path => $MT_DIR } )
       or die MT::Core->errstr;
     $Components{'core'} = $c;
+
+    # Additional locale-specific defaults
+    my $defaults = $c->{registry}{config_settings};
+    $defaults->{DefaultLanguage}{default} = '__BUILD_LANGUAGE__';
+    $defaults->{NewsboxURL}{default} = '__NEWSBOX_URL__';
+    $defaults->{SupportURL}{default} = '__SUPPORT_URL__';
+    $defaults->{NewsURL}{default} = '__NEWS_URL__';
+    $defaults->{HelpURL}{default} = '__HELP_URL__';
+    $defaults->{DefaultTimezone}{default} = '__DEFAULT_TIMEZONE__';
+    $defaults->{MailEncoding}{default} = '__MAIL_ENCODING__';
+    $defaults->{ExportEncoding}{default} = '__EXPORT_ENCODING__';
+    $defaults->{LogExportEncoding}{default} = '__LOG_EXPORT_ENCODING__';
+    $defaults->{CategoryNameNodash}{default} = '__CATEGORY_NAME_NODASH__';
+    $defaults->{PublishCharset}{default} = '__PUBLISH_CHARSET__';
+
     push @Components, $c;
     return 1;
 }
@@ -1455,9 +1470,12 @@ sub update_ping_list {
 
     my @updates;
     if ( my $pings = MT->registry('ping_servers') ) {
-        foreach ( split ',', $blog->update_pings ) {
-            next unless exists $pings->{$_};
-            push @updates, $pings->{$_}->{url};
+        my $up = $blog->update_pings;
+        if ($up) {
+            foreach ( split ',', $up ) {
+                next unless exists $pings->{$_};
+                push @updates, $pings->{$_}->{url};
+            }
         }
     }
     if ( my $others = $blog->ping_others ) {
@@ -1606,6 +1624,12 @@ sub all_text_filters {
             %Text_filters = %$filters if ref($filters) eq 'HASH';
         }
     }
+    if (my $enabled_filters = MT->config('AllowedTextFilters')) {
+        my %enabled = map { $_ => 1 } split /\s*,\s*/, $enabled_filters;
+        %Text_filters = map { $_ => $Text_filters{$_} }
+                        grep { exists $enabled{$_} }
+                        keys %Text_filters;
+    }
     return \%Text_filters;
 }
 
@@ -1668,24 +1692,33 @@ sub new_ua {
     my $class = shift;
     eval { require LWP::UserAgent; };
     return undef if $@;
+    my ($opt) = @_;
+    $opt ||= {};
     my $cfg = $class->config;
-    if ( my $localaddr = $cfg->HTTPInterface || $cfg->PingInterface ) {
+    my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
+    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout || $cfg->PingTimeout;
+    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy || $cfg->PingProxy;
+    my $no_proxy = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy || $cfg->PingNoProxy;
+    my $agent = $opt->{agent} || 'MovableType/' . $MT::VERSION;
+    my $interface = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface || $cfg->PingInterface;
+
+    if ( my $localaddr = $interface ) {
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = (
             LocalAddr => $localaddr,
             Reuse     => 1
         );
     }
+
     my $ua = LWP::UserAgent->new;
-    $ua->max_size(100_000) if $ua->can('max_size');
-    $ua->agent( 'MovableType/' . $MT::VERSION );
-    $ua->timeout( $cfg->HTTPTimeout || $cfg->PingTimeout );
-    if ( my $proxy = $cfg->HTTPProxy || $cfg->PingProxy ) {
+    $ua->max_size($max_size) if (defined $max_size) && $ua->can('max_size');
+    $ua->agent( $agent );
+    $ua->timeout( $timeout ) if defined $timeout;
+    if ( defined $proxy ) {
         $ua->proxy( http => $proxy );
-        my @domains =
-          split( /,\s*/, ( $cfg->HTTPNoProxy || $cfg->PingNoProxy ) );
-        $ua->no_proxy(@domains);
+        my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
+        $ua->no_proxy(@domains) if @domains;
     }
-    $ua;
+    return $ua;
 }
 
 sub build_email {
@@ -1804,7 +1837,8 @@ sub core_commenter_authenticators {
 <fieldset>
 <mtapp:setting
     id="openid_display"
-    label="<__trans phrase="OpenID URL">">
+    label="<__trans phrase="OpenID URL">"
+    hint="<__trans phrase="Sign in using your LiveJournal username.">">
 <input type="hidden" name="key" value="OpenID" />
 <input name="openid_url" style="background: #fff url('<mt:var name="static_uri">images/comment/openid_logo.png') no-repeat left; padding-left: 18px; padding-bottom: 1px; border: 1px solid #5694b6; width: 304px; font-size: 110%;" />
     <p class="hint"><__trans phrase="OpenID is an open and decentralized single sign-on identity system."></p>
@@ -1836,12 +1870,17 @@ OpenID
 <fieldset>
 <mtapp:setting
     id="livejournal_display"
-    label="<__trans phrase="Your LiveJournal Username">">
-<input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/livejournal_logo.png') no-repeat left; padding-left: 18px; padding-bottom: 1px; border: 1px solid #5694b6; width: 304px; font-size: 110%;" />
-<p class="hint"><__trans phrase="Sign in using your LiveJournal username."></p>
+    label="<__trans phrase="Your LiveJournal Username">"
+    hint="<__trans phrase="Sign in using your Vox blog URL">">
+<input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/livejournal_logo.png') no-repeat 2px center; padding: 2px 2px 2px 20px; border: 1px solid #5694b6; width: 300px; font-size: 110%;" />
 </mtapp:setting>
-<div class="pkg">
-<p class="left"><input type="submit" name="submit" value="<MT_TRANS phrase="Sign In">" /></p>
+<div class="actions-bar actions-bar-login">
+    <div class="actions-bar-inner pkg actions">
+        <button
+            type="submit"
+            class="primary-button"
+            ><__trans phrase="Sign in"></button>
+    </div>
 </div>
 <p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="http://www.livejournal.com/"><__trans phrase="Learn more about LiveJournal."></a></p>
 </fieldset>
@@ -1866,12 +1905,15 @@ LiveJournal
 <mtapp:setting
     id="vox_display"
     label="<__trans phrase="Your Vox Blog URL">">
-http://<input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/vox_logo.png') no-repeat left; padding-left: 18px; padding-bottom: 1px; border: 1px solid #5694b6; width: 200px; font-size: 110%;" />.vox.com
-<p class="hint"><__trans phrase="Sign in using your Vox blog URL"></p>
-
+http:// <input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/vox_logo.png') no-repeat 2px center; padding: 2px 2px 2px 20px; border: 1px solid #5694b6; width: 200px; font-size: 110%; vertical-align: middle" />.vox.com
 </mtapp:setting>
-<div class="pkg">
-<p class="left"><input type="submit" name="submit" value="<MT_TRANS phrase="Sign In">" /></p>
+<div class="actions-bar actions-bar-login">
+    <div class="actions-bar-inner pkg actions">
+        <button
+            type="submit"
+            class="primary-button"
+            ><__trans phrase="Sign in"></button>
+    </div>
 </div>
 <p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="http://www.vox.com/"><__trans phrase="Learn more about Vox."></a></p>
 </fieldset>
@@ -1970,7 +2012,7 @@ sub effective_captcha_provider {
     }
     my $pkg = $cp->{class};
     $pkg =~ s/;//g;
-    eval "require $pkg";
+    eval "require $pkg" or return;
     return $cp->{class};
 }
 
@@ -2025,7 +2067,7 @@ sub handler_to_coderef {
                 return sub {
                     eval "require $hdlr_pkg;"
                       or Carp::confess(
-                        "failed loading package $hdlr_pkg for routine $name");
+                        "failed loading package $hdlr_pkg for routine $name: $@");
                     my $mt_inst = MT->instance;
                     local $mt_inst->{component} = $component
                       if $component;
@@ -2036,7 +2078,7 @@ sub handler_to_coderef {
                 return sub {
                     eval "require $hdlr_pkg;"
                       or Carp::confess(
-                        "failed loading package $hdlr_pkg for routine $name");
+                        "failed loading package $hdlr_pkg for routine $name: $@");
                     my $mt_inst = MT->instance;
                     local $mt_inst->{component} = $component
                       if $component;
@@ -2050,7 +2092,7 @@ sub handler_to_coderef {
         else {
             eval "require $hdlr_pkg;"
               or Carp::confess(
-                "failed loading package $hdlr_pkg for routine $name");
+                "failed loading package $hdlr_pkg for routine $name: $@");
         }
     }
     if ($method) {

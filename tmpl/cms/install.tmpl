@@ -154,14 +154,14 @@ function validate(f) {
     <mtapp:setting
         id="admin_email"
         label="<__trans phrase="Email Address">"
-        hint="<__trans phrase="The user's email address.">">
+        hint="<__trans phrase="The user&rsquo;s email address.">">
         <input type="text" id="admin_email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="preferred_language"
         label="<__trans phrase="Language">"
-        hint="<__trans phrase="The user's preferred language.">">
+        hint="<__trans phrase="The user&rsquo;s preferred language.">">
         <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>

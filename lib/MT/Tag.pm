@@ -412,19 +412,21 @@ sub remove_tags {
         my %uniq;
         @uniq{@etags} = ();
         delete $uniq{$_} for @tags;
-        $obj->set_tags(keys %uniq);
-    } else {
-        require MT::ObjectTag;
-        my @et = MT::ObjectTag->load({ object_id => $obj->id,
-                                       object_datasource => $obj->datasource });
-        $_->remove for @et;
-        delete $obj->{__save_tags};
-        MT::Tag->clear_cache(datasource => $obj->datasource,
-            ($obj->blog_id ? (blog_id => $obj->blog_id) : ())) if @et;
-
-        require MT::Memcached;
-        MT::Memcached->instance->delete( $obj->tag_cache_key );
+        if (keys %uniq) {
+            $obj->set_tags(keys %uniq);
+            return;
+        }
     }
+    require MT::ObjectTag;
+    my @et = MT::ObjectTag->load({ object_id => $obj->id,
+                                   object_datasource => $obj->datasource });
+    $_->remove for @et;
+    delete $obj->{__save_tags};
+    MT::Tag->clear_cache(datasource => $obj->datasource,
+        ($obj->blog_id ? (blog_id => $obj->blog_id) : ())) if @et;
+
+    require MT::Memcached;
+    MT::Memcached->instance->delete( $obj->tag_cache_key );
 }
 
 sub has_tag {

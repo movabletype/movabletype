@@ -24,6 +24,10 @@ body {
     border-top-style: solid;
 }
 
+#header-inner {
+    position: relative;
+}
+
 #header-name {
     margin: 0 0 5px;
     line-height: 1;
@@ -117,6 +121,10 @@ body {
 
 
 /* Footer */
+
+#header-inner {
+    position: relative;
+}
 
 #footer-content,
 #footer-content a {
@@ -381,6 +389,33 @@ a:hover {
 
 #footer-content {
     margin: 20px 0;
+}
+
+
+/* Utilities -------------------------------------------------------------- */
+
+#header:after,
+#header-inner:after,
+#content:after,
+#alpha-inner:after,
+#beta-inner:after,
+#gamma-inner:after,
+#footer:after {
+    content: " ";
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0.1px;
+    font-size: 0.1em;
+    line-height: 0;
+}
+
+
+#header-inner,
+#content-inner,
+#footer-inner,
+.asset-body {
+    height: 1%;
 }
 
 

@@ -13,8 +13,5 @@
 /* branding */
 /*@import url("css/paint.css");*/
 
-/* old styles... being phased out */
-@import url("css/mt3_styles.css");
-
 /* utilities */
 @import url("css/utilities.css");
