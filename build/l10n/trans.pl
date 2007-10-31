@@ -118,8 +118,8 @@ do {
                  $trans = $conv{$args{phrase}};
                  $is_used{$args{phrase}} = 1;
             }
-            $trans =~ s/([^\\])'/$2$3\\'/g;
-            next if ($phrase{$args{phrase}});
+	    $trans =~ s/([^\\]?)'/$1\\'/g;
+	    next if ($phrase{$args{phrase}});
             $phrase{$args{phrase}} = 1;
             my $q = "'";
             if ($args{phrase} =~ /\\n/) {
@@ -129,6 +129,7 @@ do {
                 printf "\t$q%s$q => '%s',\n", $args{phrase}, $trans; # Print out the translation if there was an existing one
             } else {
                 $trans = $lconv{lc $args{phrase}} || '';
+		$trans =~ s/([^\\]?)'/$1\\'/g;
                 my $reason = $trans ? "Case" : "New"; # New translation, or just different case?
                 printf "\t$q%s$q => '%s', # Translate - $reason\n", $args{phrase}, $trans; # Print out the translation if there was an existing one based on the lowercase string, else empty
             }
