@@ -1,0 +1,159 @@
+<mt:setvar name="list_role" value="1">
+<mt:if name="edit_group_id">
+    <mt:setvarblock name="page_title"><__trans phrase="Roles for [_1] in" params="<mt:var name="group_name" escape="html">"></mt:setvarblock>
+<mt:else>
+    <mt:if name="edit_author_id">
+        <mt:setvarblock name="page_title"><__trans phrase="Roles for [_1] in" params="<mt:var name="edit_author_name" escape="html">"></mt:setvarblock>
+    <mt:else>
+        <mt:setvarblock name="page_title"><__trans phrase="Roles: System-wide"></mt:setvarblock>
+    </mt:if>
+</mt:if>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/users_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:setvarblock name="content_header">
+    <p class="page-desc"><__trans phrase="_USAGE_ROLES"> <a href="#" onclick="return openManual('author_permissions', 'roles')" class="help-link">?</a></p>
+
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You have successfully deleted the role(s).">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+    <mt:if name="is_administrator">
+    <input
+       type="button"
+       name="delete_roles"
+       accesskey="x"
+       title="<__trans phrase="Delete selected roles (x)">"
+       value="<__trans phrase="Delete">"
+       onclick="doRemoveItems(this.form, '<__trans phrase="role">', '<__trans phrase="roles">')"
+    />
+    </mt:if>
+</mt:setvarblock>
+<mt:if name="object_loop">
+    <mt:setvarblock name="related_content">
+        <$mt:include name="include/display_options.tmpl"$>
+    </mt:setvarblock>
+</mt:if>
+<mt:include name="include/header.tmpl">
+
+<div id="list-role">
+
+<script type="text/javascript">
+<!--
+var tableSelect;
+function init()
+{
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect.rowSelect = true;
+}
+TC.attachLoadEvent( init );
+// -->
+</script>
+
+
+
+<mt:unless name="edit_group_id">
+    <mt:if name="edit_author_id">
+<p><a href="javascript:void(0)" onclick="return openDialog(false, 'dialog_grant_role')" class="icon-left icon-create"><__trans phrase="Grant another role to [_1]" params="<mt:var name="edit_author_name" escape="html">"></a></p>
+    <mt:else>
+        <mt:if name="can_create_role">
+<p><a href="<mt:var name="script_url">?__mode=edit_role" class="icon-left icon-create"><__trans phrase="Create New Role"></a></p>
+        </mt:if>
+    </mt:if>
+</mt:unless>
+
+<mt:if name="object_loop">
+
+<form id="selector-form" class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
+    <input type="hidden" name="__mode" value="" />
+    <input type="hidden" name="_type" value="role" />
+    <input type="hidden" name="action_name" value="" />
+    <input type="hidden" name="itemset_action_input" value="" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mt:if name="position_actions_top">
+    <mt:include name="include/actions_bar.tmpl">
+</mt:if>
+
+<div class="tableselect" id="selector">
+<table cellspacing="0" class="<mt:if name="view_expanded">expanded<mt:else>compact</mt:if>">
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<th id="at-flag" class="si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="_USER_STATUS_CAPTION">" title="<__trans phrase="_USER_STATUS_CAPTION">" width="9"height="9" /></th>
+<th id="rt-name"><__trans phrase="Role"></th>
+<mt:if name="edit_group_id"><!-- group view -->
+<th id="rt-weblog"><__trans phrase="In Weblog"></th>
+<th id="rt-user"><__trans phrase="User"></th>
+<mt:else>
+<mt:if name="edit_author_id"><!-- author view -->
+<th id="rt-weblog"><__trans phrase="In Weblog"></th>
+<th id="rt-group"><__trans phrase="Via Group"></th>
+<mt:else><!-- role view -->
+<th id="rt-description"><__trans phrase="Description"></th>
+<th id="rt-members"><__trans phrase="Members"></th>
+<th id="rt-weblogs"><__trans phrase="Weblogs"></th>
+<th id="rt-created-by"><__trans phrase="Created By"></th>
+</mt:if>
+</mt:if>
+</tr>
+</thead>
+<tbody>
+
+<mt:loop name="object_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:unless name="edit_author_id"><mt:unless name="edit_group_id"><mt:unless name="members"> inactive</mt:unless></mt:unless></mt:unless>">
+<td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+<td class="si <mt:if name="members">role-status-active<mt:else>role-status-inactive</mt:if>">
+<img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="members"><__trans phrase="Role Is Active"><mt:else><__trans phrase="Role Not Being Used"></mt:if>" width="9" height="9" />
+</td>
+<td><a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id">"><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+<mt:if name="edit_group_id">
+<td><mt:var name="user_name" escape="html"></td>
+<td><mt:var name="blog_name" escape="html"></td>
+<mt:else>
+<mt:if name="edit_author_id">
+<td><mt:var name="group_name" escape="html"></td>
+<td><mt:var name="blog_name" escape="html"></td>
+<mt:else>
+<td><mt:var name="description" escape="html"></td>
+<td><mt:var name="members"></td>
+<td><mt:var name="weblogs"></td>
+<td><mt:if name="created_by"><mt:var name="created_by"><mt:else><em><__trans phrase="System"></em></mt:if></td>
+</mt:if>
+</mt:if>
+</tr>
+<mt:if name="view_expanded">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave<mt:unless name="edit_author_id"><mt:unless name="edit_group_id"><mt:unless name="members"> inactive</mt:unless></mt:unless></mt:unless>">
+<td>&nbsp;</td><td colspan="<mt:if name="edit_group_id">4<mt:else><mt:if name="edit_author_id">4<mt:else>6</mt:if></mt:if>"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
+</tr>
+</mt:if>
+</mt:loop>
+
+</tbody>
+</table>
+</div>
+
+<mt:if name="position_actions_bottom">
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom">
+</mt:if>
+
+</form>
+<mt:else>
+    <mtapp:statusmsg
+        id="no-roles"
+        class="info">
+        <__trans phrase="No roles could be found.">
+    </mtapp:statusmsg>
+</mt:if>
+
+</div>
+
+<mt:include name="include/footer.tmpl">

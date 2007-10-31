@@ -1,0 +1,81 @@
+<mtapp:listing>
+    <mt:if __first__>
+        <thead>
+            <tr>
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+        <mt:unless name="tab_junk">
+                <th id="pt-status" class="si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+        </mt:unless>
+                <th id="pt-excerpt"><__trans phrase="Excerpt"></th>
+                <th id="pt-from"><__trans phrase="From"></th>
+        <mt:if name="system_overview_nav">
+                <th id="pt-weblog"><__trans phrase="Weblog"></th>
+        </mt:if>
+                <th id="pt-target"><__trans phrase="Target"></th>
+                <th id="pt-date"><__trans phrase="Date"></th>
+        <mt:if name="show_ip_info">
+                <th id="pt-ip"><__trans phrase="IP"></th>
+        </mt:if>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                <td class="cb">
+        <mt:if name="has_edit_access">
+                    <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
+        <mt:else>
+                    &nbsp;
+        </mt:if>
+                </td>
+        <mt:unless name="tab_junk">
+                <td class="si status-<mt:if name="visible">publish<mt:else>pending</mt:if>">
+            <mt:if name="visible">
+                    <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show published TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
+            <mt:else>
+                    <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=pending" title="<__trans phrase="Only show pending TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Pending">" width="9" height="9" /></a>
+            </mt:if>
+                </td>
+        </mt:unless>
+                <td<mt:if name="view_expanded"> colspan="<mt:if name="system_overview_nav"><mt:if name="show_ip_info">6<mt:else>5</mt:if><mt:else><mt:if name="show_ip_info">5<mt:else>4</mt:if></mt:if>"</mt:if>>
+        <mt:if name="excerpt">
+            <mt:if name="has_edit_access">
+                    <a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Edit this TrackBack">"><mt:var name="excerpt" escape="html"></a>
+            <mt:else>
+            <mt:var name="excerpt" escape="html">
+            </mt:if>
+        <mt:else>
+                    &nbsp;
+        </mt:if>
+                </td>
+        <mt:if name="view_expanded">
+            </tr>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
+                <td>&nbsp;</td>
+            <mt:unless name="tab_junk">
+                <td>&nbsp;</td>
+            </mt:unless>
+                <td>
+            <mt:if name="has_edit_access">
+                    <a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Edit this TrackBack">"><__trans phrase="Edit TrackBack"></a>
+            <mt:else>
+                    &nbsp;
+            </mt:if>
+                </td></td>
+        </mt:if>
+                <td><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
+        <mt:if name="system_overview_nav">
+                <td><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
+        </mt:if>
+                <td><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
+                <td><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
+        <mt:if name="show_ip_info">
+                <td>
+                    <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;is_limited=1&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url"><mt:if name="tab_junk">&amp;is_junk=1</mt:if>&amp;do_search=1" title="<__trans phrase="Search for all comments from this IP address">"><mt:var name="ip" escape="html"></a>
+                </td>
+        </mt:if>
+            </tr>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+</mtapp:listing>

@@ -1,0 +1,20 @@
+label: UpdatePingsJP
+version: 1.0
+description: Definition of Ping servers popular in Japan
+
+ping_servers:
+    bulkfeeds:
+        label: Bulkfeeds
+        url: http://bulkfeeds.net/rpc
+    technorati:
+        label: Technorati Japan
+        url: http://rpc.technorati.jp/rpc/ping
+    bloggersjp:
+        label: ping.bloggers.jp
+        url: http://ping.bloggers.jp/rpc/
+    livedoorreader:
+        label: livedoor Reader
+        url: http://rpc.reader.livedoor.com/ping
+    blogpeople:
+        label: BlogPeople
+        url: http://www.blogpeople.net/servlet/weblogUpdates

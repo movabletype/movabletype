@@ -1,0 +1,60 @@
+<MTEntryIfCommentsOpen> 
+<div class="comments-open" id="comments-open">
+    <h2 class="comments-open-header"><MT_TRANS phrase="Post a comment"></h2>
+    <div class="comments-open-content">
+    <MTIfRegistrationAllowed>
+            <div id="comment-form-external-auth">
+                <script type="text/javascript">
+                <!--
+                <MTIf name="comment_preview_template">is_preview = true;</MTIf>
+                writeCommenterGreeting(commenter_name, <$MTEntryID$>, <$MTEntryBlogID$>, commenter_id, commenter_url);
+                //-->
+                </script>
+            </div>
+    </MTIfRegistrationAllowed>
+    <MTIfCommentsModerated>
+            <div class="comments-open-moderated">
+                <MT_TRANS phrase="(If you haven't left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won't appear on the entry. Thanks for waiting.)">
+            </div>
+    </MTIfCommentsModerated>
+        <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
+            <input type="hidden" name="static" value="1" />
+            <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
+            <div id="comments-open-data">
+                <div id="comment-form-name">
+                    <label for="comment-author"><MT_TRANS phrase="Name"></label>
+                    <input id="comment-author" name="author" size="30" value="<MTIf name="comment_preview_template"><$MTCommentAuthor$></MTIf>" />
+                </div>
+                <div id="comment-form-email">
+                    <label for="comment-email"><MT_TRANS phrase="Email Address"></label>
+                    <input id="comment-email" name="email" size="30" value="<MTIf name="comment_preview_template"><$MTCommentEmail$></MTIf>" />
+                </div>
+                <div id="comment-form-url">
+                    <label for="comment-url"><MT_TRANS phrase="URL"></label>
+                    <input id="comment-url" name="url" size="30" value="<MTIf name="comment_preview_template"><$MTCommentURL$></MTIf>" />
+                </div>
+                <div id="comment-form-remember-me">
+                    <label for="comment-bake-cookie"><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />
+                        <MT_TRANS phrase="Remember personal info?"></label>
+                </div>
+            </div>
+            <div id="comments-open-text">
+                <label for="comment-text"><MT_TRANS phrase="Comments"> <MTIfAllowCommentHTML><MT_TRANS phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
+                <textarea id="comment-text" name="text" rows="15" cols="50"><MTIf name="comment_preview_template"><$MTCommentBody autolink="0" sanitize="0" convert_breaks="0" encode_html="1"$></MTIf></textarea>
+            </div>
+            <MTIfNonEmpty tag="MTCaptchaFields">
+            <MTIfCommentsAccepted><MTIfRegistrationAllowed><MTElse><$MTCaptchaFields$></MTIfRegistrationAllowed></MTIfCommentsAccepted>
+            <div id="comments-open-captcha">
+            </div>
+            </MTIfNonEmpty>
+            <div id="comments-open-footer">
+                <input type="submit" accesskey="v" name="preview" id="comment-preview" value="<MT_TRANS phrase="Preview">" />
+                <input type="submit" accesskey="s" name="post" id="comment-post" value="<MT_TRANS phrase="Post">" />
+    <MTIf name="comment_preview_template">
+                <input type="button" name="cancel" id="comment-cancel" value="<MT_TRANS phrase="Cancel">" onclick="window.location='<$MTEntryPermalink$>'" />
+    </MTIf>
+            </div>
+        </div>
+    </div>
+</form>
+</MTEntryIfCommentsOpen>

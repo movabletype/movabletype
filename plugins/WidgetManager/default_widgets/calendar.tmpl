@@ -1,0 +1,31 @@
+<div class="module-calendar module">
+<h2 class="module-header"><$MTDate format="%B %Y"$></h2>
+<div class="module-content">
+<table summary="<MT_TRANS phrase="Monthly calendar with links to each day's posts">">
+
+    <tr>
+        <th abbr="<MT_TRANS phrase="Sunday">"><MT_TRANS phrase="Sun"></th>
+        <th abbr="<MT_TRANS phrase="Monday">"><MT_TRANS phrase="Mon"></th>
+        <th abbr="<MT_TRANS phrase="Tuesday">"><MT_TRANS phrase="Tue"></th>
+        <th abbr="<MT_TRANS phrase="Wednesday">"><MT_TRANS phrase="Wed"></th>
+        <th abbr="<MT_TRANS phrase="Thursday">"><MT_TRANS phrase="Thu"></th>
+        <th abbr="<MT_TRANS phrase="Friday">"><MT_TRANS phrase="Fri"></th>
+        <th abbr="<MT_TRANS phrase="Saturday">"><MT_TRANS phrase="Sat"></th>
+    </tr>
+    <MTCalendar>
+    <MTCalendarWeekHeader><tr></MTCalendarWeekHeader>
+    <td>
+    <MTCalendarIfEntries>
+    <MTEntries lastn="1">
+    <a href="<$MTEntryPermalink$>"><$MTCalendarDay$></a>
+    </MTEntries>
+    </MTCalendarIfEntries>
+    <MTCalendarIfNoEntries>
+    <$MTCalendarDay$>
+    </MTCalendarIfNoEntries>
+    <MTCalendarIfBlank>&nbsp;</MTCalendarIfBlank></td>
+    <MTCalendarWeekFooter></tr></MTCalendarWeekFooter>
+    </MTCalendar>
+</table>
+</div>
+</div>

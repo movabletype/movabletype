@@ -1,0 +1,33 @@
+<mt:setvarblock name="page_title"><__trans phrase="Export"></mt:setvarblock>
+<mt:setvar name="export" value="1">
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/tools_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<p class="page-desc"><__trans phrase="_USAGE_EXPORT_1"></p> 
+
+<div id="export-panel">
+
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="export" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<p style="text-align: center;"><input type="submit" value="<__trans phrase="Export Entries From [_1]" params="<mt:var name="blog_name" escape="html">">" title="<__trans phrase="Export Entries (e)">" accesskey="e" /></p>
+</form>
+<p><__trans phrase="<em><strong>Please Note:</strong> The Movable Type export format is not comprehensive and is not suitable for creating full-fidelity backups. Please see the Movable Type manual for full details.</em>"></p>
+
+<mt:if name="have_tangent">
+<hr />
+
+<h4><__trans phrase="Export Entries to Tangent"></h4>
+
+<p><__trans phrase="_USAGE_EXPORT_3" params="<mt:var name="blog_name" escape="html">"></p>
+
+<p><a href="<mt:var name="script_url">?__mode=tangent_export&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Export Entries From [_1]" params="<mt:var name="blog_name" escape="html">"></a></p>
+</mt:if>
+</div>
+<div id="bottom"></div>
+
+<mt:include name="include/footer.tmpl">

@@ -1,0 +1,11 @@
+<MT_TRANS phrase="This email is to notify you that a new user has successfully registered on the blog '[_1].' Listed below you will find some useful information about this new user." params="<TMPL_VAR NAME=BLOGNAME>"> 
+
+New User Information:
+<MT_TRANS phrase="Username">: <TMPL_VAR NAME=USERNAME>
+<MT_TRANS phrase="Full Name">: <TMPL_VAR NAME=FULLNAME>
+<MT_TRANS phrase="Email">: <TMPL_VAR NAME=EMAIL>
+
+<MT_TRANS phrase="To view or edit this user, please click on or cut and paste the following URL into a web browser:">
+<TMPL_VAR NAME=PROFILE_URL>
+
+<TMPL_INCLUDE NAME="footer-email.tmpl">

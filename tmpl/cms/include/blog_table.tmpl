@@ -1,0 +1,68 @@
+<mt:if name="blog_table">
+<form id="selector-form" class="selector-form" method="post" name="list_blog" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false;">
+    <input type="hidden" name="__mode" value="" />
+    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="action_name" value="" />
+    <input type="hidden" name="itemset_action_input" value="" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mt:if name="position_actions_top">
+    <mt:include name="include/actions_bar.tmpl">
+</mt:if>
+
+<mt:loop name="blog_table">
+
+<div class="tableselect" id="selector">
+<table cellspacing="0" <mt:if name="is_administrator">class="show-admin"</mt:if>>
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<th id="bt-name"><__trans phrase="Weblog Name"></th>
+<th id="bt-entries"><__trans phrase="Entries"></th>
+<th id="bt-comments"><__trans phrase="Comments"></th>
+<th id="bt-trackbacks"><__trans phrase="TrackBacks"></th>
+<th id="bt-authors"><__trans phrase="Users"></th>
+<th id="bt-settings"><__trans phrase="Settings"></th>
+<mt:unless name="mode_search_replace"><mt:unless name="is_administrator">
+<th id="bt-delete"><__trans phrase="Delete"></th>
+</mt:unless></mt:unless>
+</tr>
+</thead>
+<tbody>
+
+<mt:loop name="object_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+<td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+<td><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
+<td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entries&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
+<td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="id">"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
+<td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
+<td align="right"><mt:var name="num_authors"></td>
+<td><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
+<mt:unless name="mode_search_replace"><mt:unless name="is_administrator"><mt:if name="can_administer_blog">
+<td><a href="#" onclick="return doRemoveBlog('<mt:var name="id">')"><img src="<mt:var name="static_uri">images/nav_icons/mini/delete.gif" width="9" height="11" alt="<__trans phrase="Delete">" /></a></td>
+<mt:else><td>&nbsp;</td></mt:if></mt:unless></mt:unless>
+</tr>
+
+</mt:loop>
+
+</tbody>
+</table>
+</div>
+
+</mt:loop>
+
+<mt:if name="position_actions_bottom">
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom">
+</mt:if>
+
+</form>
+<mt:else>
+    <mtapp:statusmsg
+        id="no-weblog"
+        class="info">
+        <__trans phrase="No weblogs could be found.">
+    </mtapp:statusmsg>
+</mt:if>

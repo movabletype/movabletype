@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title><mt:var name="PAGE_TITLE"> | <$mt:var name="mt_product_name"$></title>
+
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="MT_VERSION" escape="URL">" type="text/css" />
+    <!--[if IE]>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="MT_VERSION" escape="URL">" type="text/css" />
+    <![endif]-->
+<mt:if name="local_lang_id">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="MT_VERSION" escape="URL">" />
+</mt:if>
+
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+
+<script language="javascript" type="text/javascript">
+<!--
+function showByID(id) {
+    var el = getByID(id);
+    if (el) el.style.display = "block";
+}
+function hideByID(id) {
+    var el = getByID(id);
+    if (el) el.style.display = "none";
+}
+// -->
+</script>
+
+<style>
+    .message {
+       color: #000;
+   }
+
+   .error-message {
+       font-family: Arial, sans-serif;
+       color: #666;
+       line-height: 13px;
+       font-weight: bold;
+       margin: 0 0 10px 0;
+       border: 1px #D44 solid;
+       background: #FEE;
+       padding: 10px;
+   }
+   fieldset {
+       margin-bottom: 30px;
+       border-width: 0;
+       padding: 0;
+   }
+
+   fieldset h3 {
+    margin-bottom: .5em;
+    color: #9e543d;
+    font-size: 122%;
+    line-height: 107%;
+   }
+
+   fieldset .setting {
+       overflow: hidden;
+       width: 100%;
+       margin-bottom: 10px;
+       padding-bottom: 10px;
+   }
+
+   fieldset .label {
+       margin: 4px 5px 0 5px;
+       color: #333;
+       font-size: 11px;
+       font-weight: bold;
+   }
+
+   fieldset .field {
+       margin: 0;
+   }
+
+   fieldset .field p {
+       margin: 3px 0;
+       padding: 1px 0 0 0;
+       font-size: 11px;
+       line-height: 1.1;
+       color: #666;
+   }
+
+   fieldset input {
+       width: 100%
+       font-size: 11px;
+   }
+   .field {
+       margin-bottom: 10px;
+   }
+   .field p {
+       margin: 3px 0;
+       font-size: 11px;
+       line-height: 1.1;
+   }
+
+
+</style>
+
+</head>
+
+<body id="mode_<$mt:var name="mode"$>" class="chromeless">
+
+<div id="container">
+
+<div id="top"></div>
+
+<div id="header" class="pkg">
+    <div id="brand"></div>
+
+    <div id="nav">
+    <mt:unless name="complete">
+    <div class="step<mt:if name="step_one">_active</mt:if>"></div>
+    <div class="step<mt:if name="step_two">_active</mt:if>"></div>
+    <div class="step<mt:if name="step_three">_active</mt:if>"></div>
+    <div class="step<mt:if name="step_four">_active</mt:if>"></div>
+    <div class="step<mt:if name="step_five">_active</mt:if>"></div>
+    <div class="pipe"></div>
+    </mt:unless>
+    <div class="help"></div>
+    </div>
+
+</div>
+
+
+<div id="content"><div id="content-inner" class="inner pkg">
+
+<div id="main-content"><div class="inner pkg">
+
+<h2 id="page-title"><$mt:var name="page_title"$></h2>

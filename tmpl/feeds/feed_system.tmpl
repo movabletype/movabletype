@@ -1,0 +1,29 @@
+  <entry>
+    <title type="text"><TMPL_VAR NAME=LOG.MESSAGE></title>
+    <published><TMPL_VAR NAME=LOG.CREATED_ON_ISO></published>
+    <updated><TMPL_VAR NAME=LOG.CREATED_ON_ISO></updated>
+    <id><TMPL_VAR NAME=LOG.ATOM_ID></id>
+    <link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.PERMALINK>"/>
+    <author>
+    <TMPL_IF NAME=LOG.AUTHOR.NAME>
+      <name><TMPL_VAR NAME=LOG.AUTHOR.NAME></name>
+      <TMPL_IF NAME=LOG.AUTHOR.EMAIL><email><TMPL_VAR NAME=LOG.AUTHOR.EMAIL></email></TMPL_IF>
+      <TMPL_IF NAME=LOG.AUTHOR.URL><uri><TMPL_VAR NAME=LOG.AUTHOR.URL></uri></TMPL_IF>
+    <TMPL_ELSE>
+      <name>(system)</name>
+    </TMPL_IF>
+    </author>
+    <content type="html">
+      &lt;div class="content"&gt;
+        <TMPL_VAR NAME=LOG.DESCRIPTION ESCAPE=HTML>
+      &lt;/div&gt;
+
+      <TMPL_IF NAME=LOOP_ACTIONS>
+      &lt;div class="actions"&gt;
+        <TMPL_LOOP NAME=LOOP_ACTIONS>
+          &lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL ESCAPE=HTML>&lt;/a&gt;
+        </TMPL_LOOP>
+      &lt;/div&gt;
+      </TMPL_IF>
+    </content>
+  </entry>

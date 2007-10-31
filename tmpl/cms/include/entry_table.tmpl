@@ -1,0 +1,153 @@
+<mtapp:listing>
+    <mt:if __first__>
+        <thead>
+            <tr>
+        <mt:unless name="is_power_edit">
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+        </mt:unless>
+                <th class="status<mt:unless name="is_power_edit"> si</mt:unless>">
+        <mt:unless name="is_power_edit">
+                    <img src="<$mt:var name="static_uri"$>images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" />
+        <mt:else>
+                    <__trans phrase="Status">
+        </mt:unless>
+                </th>
+                <th class="title"><__trans phrase="Title"></th>
+                <th class="author"><__trans phrase="Author"></th>
+        <mt:if name="system_overview_nav">
+                <th class="weblog"><__trans phrase="Blog"></th>
+        </mt:if>
+                <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Location"><mt:else><__trans phrase="Category"></mt:if></th>
+                <th class="date"><__trans phrase="Date"></th>
+        <mt:unless name="is_power_edit">
+                <th class="view"><span><__trans phrase="View"></span></th>
+        </mt:unless>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+        <mt:unless name="is_power_edit">
+                <td class="cb">
+            <mt:if name="has_edit_access">
+                    <input type="checkbox" name="id" value="<$mt:var name="id"$>" class="select" />
+            <mt:else>
+                    &#160;
+            </mt:if>
+                </td>
+        </mt:unless>
+        <mt:if name="has_publish_access">
+                <td class="status">
+                    <select name="status_<$mt:var name="id"$>">
+                        <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished"></option>
+                        <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
+                        <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
+                    </select>
+                </td>
+        <mt:else>
+                <td class="status si<mt:if name="status_draft"> status-draft</mt:if><mt:if name="status_publish"> status-publish</mt:if><mt:if name="status_future"> status-future</mt:if>">
+            <mt:if name="status_draft">
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=1" title="<__trans phrase="Only show unpublished [_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished">" width="9" height="9" /></a>
+            </mt:if>
+            <mt:if name="status_publish">
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=2" title="<__trans phrase="Only show published [_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
+            </mt:if>
+            <mt:if name="status_future">
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=4" title="<__trans phrase="Only show scheduled [_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Scheduled">" width="9" height="9" /></a>
+            </mt:if>
+                </td>
+        </mt:if>
+                <td class="title"<mt:if name="view_expanded"> colspan="<mt:if name="system_overview_nav">6<mt:else>5</mt:if>"</mt:if>>
+        <mt:if name="view_expanded">
+                    <strong><$mt:var name="title_long"$></strong>
+            <mt:if name="excerpt">
+                    &mdash; <$mt:var name="excerpt"$>
+            </mt:if>
+        <mt:else>
+            <mt:if name="has_edit_access">
+                <mt:if name="is_power_edit">
+                    <mt:if name="title">
+                    <input name="title_<$mt:var name="id"$>" value="<$mt:var name="title" escape="html"$>" />
+                    <mt:else>
+                    <input type="hidden" name="title_<$mt:var name="id"$>" value="" />
+                    <input name="no_title_<$mt:var name="id"$>" style="color:#999;" value="<$mt:var name="title_short" escape="html"$>" onfocus="if(this.value=='<$mt:var name="title_short" escape="js"$>'){this.value=''; this.style.color='#000';};" onblur="if((this.value=='<$mt:var name="title_short" escape="js"$>') || (this.value=='')){ this.value = '<$mt:var name="title_short" escape="js"$>'; this.style.color='#999'; }else{ title_<$mt:var name="id"$>.value=this.value; };" />
+                    </mt:if>
+                <mt:else>
+                    <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="title" escape="html" default="..."$></a>
+                </mt:if>
+            <mt:else>
+                <$mt:var name="title" escape="html"$>
+            </mt:if>
+        </mt:if>
+                </td>
+        <mt:if name="view_expanded">
+            </tr>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
+                <td>&#160;</td>
+                <td>&#160;</td>
+                <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Edit [_1]" params="<mt:var name="object_label">"></a><mt:else>&#160;</mt:if></td>
+        </mt:if>
+                <td class="author">
+        <mt:if name="is_editable">
+                    <select name="author_id_<$mt:var name="id"$>">
+            <mt:unless name="author_id">
+                        <option value=""><__trans phrase="None"></option>
+            </mt:unless>
+            <mt:loop name="row_author_loop">
+                        <option value="<$mt:var name="author_id"$>"<mt:if name="author_is_selected"> selected="selected"</mt:if>><$mt:var name="author_name"$></option>
+            </mt:loop>
+                    </select>
+        <mt:else>
+                    <$mt:var name="author_name"$>
+        </mt:if>
+                </td>
+        <mt:if name="system_overview_nav">
+                <td class="weblog"><a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
+        </mt:if>
+                <td class="category">
+        <mt:if name="is_editable">
+                    <select name="category_id_<$mt:var name="id"$>">
+                        <option value=""><__trans phrase="None"></option>
+            <mt:loop name="row_category_loop">
+                        <option value="<$mt:var name="category_id"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label"$></option>
+            </mt:loop>
+                    </select>
+        <mt:else>
+            <mt:if name="category_name">
+                    <$mt:var name="category_name" escape="html"$><mt:if name="object_type" eq="page">/<$mt:var name="basename" escape="html"$>.<$mt:var name="file_extension" escape="html"$></mt:if>
+            <mt:else>
+                    &#160;
+            </mt:if>
+        </mt:if>
+                </td>
+                <td class="date">
+        <mt:if name="has_publish_access">
+                    <input name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
+        <mt:else>
+                    <span title="<$mt:var name="created_on_time_formatted"$>">
+            <mt:if name="created_on_relative">
+                <mt:if name="dates_relative">
+                        <$mt:var name="created_on_relative"$>
+                <mt:else>
+                        <$mt:var name="created_on_formatted"$>
+                </mt:if>
+            <mt:else>
+                        <$mt:var name="created_on_formatted"$>
+            </mt:if>
+                    </span>
+        </mt:if>
+                </td>
+        <mt:unless name="is_power_edit">
+                <td class="view si status-view">
+            <mt:if name="entry_permalink">
+                    <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View [_1]" params="<mt:var name="object_label">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="View [_1]" params="<mt:var name="object_label">">" width="13" height="9" /></a>
+            <mt:else>
+                    &#160;
+            </mt:if>
+                </td>
+        </mt:unless>
+            </tr>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+</mtapp:listing>

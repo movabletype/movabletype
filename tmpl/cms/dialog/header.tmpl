@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="<mt:var name="language_tag">">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=<mt:var name="language_encoding">" />
+<title><mt:loop name="page_titles"><mt:var name="bc_name" escape="html"> | </mt:loop><mt:var name="mt_product_name"></title>
+<link rel="stylesheet" href="<mt:var name="static_uri">styles.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Devel.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Observable.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Autolayout.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Component.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/App.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cache.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tableselect.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">mt.js"></script>
+<mt:if name="local_lang_id"><link rel="stylesheet" href="<mt:var name="static_uri">styles_<mt:var name="local_lang_id">.css" />
+<script type="text/javascript" src="<mt:var name="static_uri">mt_<mt:var name="local_lang_id">.js" charset="utf-8"></script></mt:if>
+<script type="text/javascript">
+ScriptURI = '<mt:var name="script_url">';
+ScriptBaseURI = '<mt:var name="script_base_url">';
+StaticURI = '<mt:var name="static_uri">';
+HelpBaseURI = '<mt:var name="help_url">';
+window.onkeypress = dialogKeyPress;
+</script>
+</head>
+
+<body id="mode_<mt:var name="mode">" class="dialog <mt:if name="blog_id">blog blog-<mt:var name="blog_id"><mt:else>system</mt:if> <$mt:var name="screen_type" default="main-screen"$>">
+<div id="container">
+    <div id="content-header">
+        <h1><$mt:var name="page_title"$></h1>
+    </div>
+    <div id="content">

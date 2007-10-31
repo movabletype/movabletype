@@ -1,0 +1,32 @@
+<TMPL_INCLUDE NAME="include/header.tmpl">
+
+<h2><MT_TRANS phrase="Feeds.App Lite Widget Creator"></h2>
+
+<TMPL_IF NAME=NOT_FOUND>
+<div class="error-message"><MT_TRANS phrase="No feeds could be discovered using [_1]." params="<TMPL_VAR NAME=URI ESCAPE=HTML>"></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=FEEDERR>
+<div class="error-message"><MT_TRANS phrase="An error occurred processing [_1]. Check <a href="http://www.feedvalidator.org/check.cgi?url=[_2]">here</a> for more detail and please try again." params="<TMPL_VAR NAME=URI ESCAPE=HTML>%%<TMPL_VAR NAME=URI ESCAPE=HTML>"></div>
+</TMPL_IF>
+
+<TMPL_IF NAME=SAVED>
+<p style="width: 400px;"><MT_TRANS phrase="Congratulations! A template module Widget named <strong>[_1]</strong> has been created which you can further <a href="[_2]">edit</a> to customize its display." params="<TMPL_VAR NAME=MODULE ESCAPE=HTML>%%<TMPL_VAR NAME=MT_URL>?__mode=view&amp;amp;_type=template&amp;amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;amp;id=<TMPL_VAR NAME=MODULE_ID>"></p>
+
+<TMPL_IF NAME=WM_IS>
+<p><MT_TRANS phrase="It can be included onto your published blog using <a href="[_1]">WidgetManager</a> or this MTInclude tag" params="<TMPL_VAR NAME=WM_URL ESCAPE=HTML>">.</p>
+<TMPL_ELSE>
+<p><MT_TRANS phrase="It can be included onto your published blog using this MTInclude tag" params="<TMPL_VAR NAME=WM_URL ESCAPE=HTML>">.</p>
+</TMPL_IF>
+
+<blockquote><p><strong>&lt;$MTInclude module="<TMPL_VAR NAME=MODULE ESCAPE=HTML>"$&gt;</strong></p></blockquote>
+
+</TMPL_IF>
+
+<div style="width: 400px; text-align: center;">
+<input type="button" onclick="window.location='<TMPL_VAR NAME=WIZARD_URI ESCAPE=HTML>'" value="<TMPL_UNLESS NAME=SAVED><MT_TRANS phrase="Go Back"><TMPL_ELSE><MT_TRANS phrase="Create Another"></TMPL_UNLESS>" />
+</div>
+
+<TMPL_INCLUDE NAME="include/footer.tmpl">
+
+

@@ -1,0 +1,494 @@
+<$mt:setvar name="template_type" value="popup-screen"$>
+<mt:include name="include/header_popup.tmpl">
+
+<script type="text/javascript">
+<!--
+var active_blog;
+
+function onClickHandler(evt) {
+    // try to find our "window" element in dom hierarchy
+    evt = evt || event;
+    var element = evt.target || evt.srcElement;
+    el = document.getElementById('multiple_cats-'+active_blog);
+    while( element ) {
+        if( element == el )
+            return true;
+        element = element.parentNode;
+    }
+
+    if (el) {
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+    }
+    return true;
+}
+if( document.addEventListener )
+        document.addEventListener( "click", onClickHandler, true );
+else if( document.attachEvent )
+        document.attachEvent( "onclick", onClickHandler );
+
+var lastPrimaryCat;
+var lastPrimaryCatId;
+
+function editPlacements () {
+    el = document.getElementById('multiple_cats-'+active_blog);
+    if (el) {
+        el.style.display = 'block';
+        el.style.visibility = 'visible';
+    }
+}
+
+<mt:if name="show_category">
+
+var c = new Array;
+
+function addCategory(blog_id, cat) {
+    if (c[blog_id] == null) c[blog_id] = new Array();
+    c[blog_id][c[blog_id].length] = cat;
+}
+
+<mt:loop name="category_loop"><mt:if name="category_id">
+addCategory(<mt:var name="category_blog_id">, new MTChoice('<mt:var name="category_label_js">', <mt:var name="category_id">));
+</mt:if></mt:loop>
+
+function MTChoice(label, id) {
+    this.label = label;
+    this.id = id;
+}
+
+</mt:if>
+var orig_basename;
+var basename_limit = 30;
+
+function setElementValue(domID, newVal) {
+    getByID(domID).value = newVal;
+}
+
+function rebasename(title) {
+    if (!orig_basename) {
+        var dir_title = dirify(title.value);
+        dir_title = dir_title.substring(0, basename_limit);
+        var trimmed = dir_title.match(/^(.*[^_])/);
+        if (trimmed && trimmed.length) {
+            setElementValue('basename', trimmed[0]);
+        } else {
+            setElementValue('basename', '');
+        }
+    }
+    return true;
+}
+
+function toggleFile() {
+    var fld = getByID("basename");
+    if (fld) {
+        fld.disabled = false;
+        fld.focus();
+        var baseman = getByID("basename_manual");
+        if (baseman) baseman.value = "1";
+        var basewarn = getByID("basename-warning");
+        if (basewarn) basewarn.style.display = "block";
+    }
+    var img = getByID("basename-lock");
+    if (img)
+        img.style.display = 'none';
+    return false;
+}
+
+var d = new Array();
+var cb = new Array();
+var ap = new Array();
+var ps = new Array();
+var bl = new Array();
+<mt:loop name="blog_loop">
+d[<mt:var name="blog_id">] = '<mt:var name="blog_allow_comments">';
+cb[<mt:var name="blog_id">] = '<mt:var name="blog_convert_breaks">';
+ap[<mt:var name="blog_id">] = '<mt:var name="blog_allow_pings">';
+ps[<mt:var name="blog_id">] = '<mt:var name="blog_status">';
+bl[<mt:var name="blog_id">] = '<mt:var name="blog_basename_limit">';
+</mt:loop>
+
+function setMenu(f) {
+    var w = f.blog_id.options[f.blog_id.selectedIndex].value;
+    setBlog(f, w);
+}
+
+function unSetBlog(f, w) {
+    var cats = getByID("multiple_cats-" + w);
+    if (cats) {
+        cats.style.display = 'none';
+        cats.style.visibility = 'hidden';
+    }
+}
+
+function setBlog(f, w) {
+    if (active_blog)
+        unSetBlog(f, active_blog);
+    active_blog = w;
+    if (ps[w] == 1)
+        f.status.selectedIndex = 0;
+    else
+        f.status.selectedIndex = 1;
+<mt:if name="show_category">
+    var s = f.category_id;
+    s.options[0] = new Option('<__trans phrase="Select">', '');
+    s.length = 1;
+    s.selectedIndex = 0;
+    if (c[w] != null) {
+        var m = c[w];
+        for (i=0; i<m.length; i++)
+            s.options[i+1] = new Option(m[i].label, m[i].id);
+        s.length = m.length + 1;
+    }
+</mt:if>
+    var s = f.allow_comments;
+    if (d[w] != null) {
+        var m = d[w];
+<mt:if name="show_allow_comments">
+        s.checked = m == 1 ? true : false;
+<mt:else>
+        s.value = m;
+</mt:if>
+    }
+    var s = f.convert_breaks;
+    if (cb[w] != null) {
+        var m = cb[w];
+        if (m == 1)
+            m = '__default__';
+<mt:if name="show_convert_breaks">
+        for (i=0; i<s.length; i++)
+            if (s.options[i].value == m)
+                s.selectedIndex = i;
+<mt:else>
+        s.value = m;
+</mt:if>
+    }
+    var s = f.allow_pings;
+    if (ap[w] != null) {
+        var m = ap[w];
+<mt:if name="show_allow_pings">
+        s.checked = m == 1 ? true : false;
+<mt:else>
+        s.value = m == 1 ? 1 : 0;
+</mt:if>
+    }
+    basename_limit = bl[w];
+}
+
+function changedCategory(s) {
+    //if (s.options[s.selectedIndex].text != '<__trans phrase="Add new category...">') {
+        if (lastPrimaryCatId > 0) {
+            lastPrimaryCat = getByID('add_category_id_' + lastPrimaryCatId);
+            lastPrimaryCatId = 0;
+        }
+        if (lastPrimaryCat) {
+            lastPrimaryCat.checked = false;
+            lastPrimaryCat.disabled = false;
+            lastPrimaryCat = null;
+        }
+
+        cbEl = getByID('add_category_id_'+s.options[s.selectedIndex].value);
+        if (cbEl) {
+            cbEl.checked = true;
+            cbEl.disabled = true;
+            lastPrimaryCat = cbEl;
+        }
+    //    return;
+    //}
+}
+
+function validate (f) {
+    var w = f.blog_id.options[f.blog_id.selectedIndex].value;
+    if (w == '') {
+        alert("<__trans phrase="You must choose a weblog in which to create the new entry." escape="singlequotes">");
+        return false;
+    }
+    return true;
+}
+
+function init() {
+    var basename = getByID("basename");
+    var basename_old = getByID("basename_old");
+    var title = getByID("title");
+    if (basename) {
+        if (basename.value != '') {<mt:if name="reedit">
+            toggleFile();</mt:if>
+            orig_basename = basename.value;
+        }<mt:if name="reedit"> else {
+            <mt:if name="id">
+            basename.value = basename_old.value;
+            <mt:else>
+            basename.value = dirify(title.value);
+            </mt:if>
+        }
+</mt:if>
+    }
+}
+
+TC.attachLoadEvent( init );
+
+//-->
+</script>
+
+<div id="quickpost">
+
+<mt:if name="blog_loop">
+
+<form name="entry_form" method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<input type="hidden" name="is_bm" value="1" />
+<input type="hidden" name="author_id" value="<mt:var name="author_id">" />
+<input type="hidden" name="__mode" value="save_entry" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<input type="hidden" name="status_old" value="" />
+
+<div class="field">
+<label for="blog_id"><__trans phrase="Select a weblog for this entry:"></label>
+<select name="blog_id" id="blog_id" onchange="setMenu(this.form)">
+<option value=""><__trans phrase="Select a weblog"></option>
+<mt:loop name="blog_loop">
+<option value="<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></option>
+</mt:loop>
+</select>
+</div>
+
+<div class="title-box">
+<div class="title-box-inner">
+
+<div class="field" id="title-field">
+<div class="field-header"><label for="title"><__trans phrase="Title"></label></div>
+<div class="textarea-wrapper">
+<input name="title" id="title" value="<mt:var name="title" escape="html">" maxlength="255"<mt:if name="show_basename"> onkeypress="rebasename(this)" onchange="rebasename(this)"</mt:if> />
+</div>
+</div>
+
+<div class="field" id="status-field">
+<mt:if name="show_category">
+<div class="field-header"><label for="category_id"><__trans phrase="Category"></label></div>
+<div class="textarea-wrapper">
+<select name="category_id" id="category_id" onchange="changedCategory(this)">
+<option value=""><__trans phrase="Select"></option>
+</select>
+</div>
+<div id="assign-multiple-div">
+<a id="assign-multiple" href="javascript:editPlacements()"><__trans phrase="Assign Multiple Categories"></a>
+<mt:loop name="blog_loop">
+<div class="multiple_cats" id="multiple_cats-<mt:var name="blog_id">">
+<mt:if name="add_category_loop">
+<ul>
+<mt:loop name="add_category_loop"><mt:if name="begin_subcats"><ul>
+<mt:else><mt:unless name="end_subcats"><mt:unless name="top_cat"></li></mt:unless></mt:unless></mt:if><mt:if name="category_label">
+<li><input type="checkbox" name="add_category_id_<mt:var name="category_id">" id="add_category_id_<mt:var name="category_id">" <mt:if name="category_is_selected">checked="checked"</mt:if> <mt:if name="category_is_primary">disabled="disabled"</mt:if> /> <label for="add_category_id_<mt:var name="category_id">"><mt:var name="category_label"></label></mt:if><mt:if name="end_subcats"></li>
+</ul>
+</mt:if></mt:loop>
+</li>
+</ul>
+</mt:if>
+</div>
+</mt:loop>
+</div>
+<mt:else>
+<div class="field-header"><label for="status"><__trans phrase="Status">:</label></div>
+<div class="textarea-wrapper">
+<select name="status" id="status">
+<option value="1"><__trans phrase="Unpublished"></option>
+<option value="2" selected="selected"><__trans phrase="Published"></option>
+</select>
+</div>
+<input type="hidden" name="category_id" value="" />
+</mt:if>
+</div>
+
+</div>
+</div>
+
+<div class="field" id="field-text">
+<div class="field-header">
+<div class="field-label"><label for="text"><__trans phrase="Entry Body"></label></div>
+<div class="field-buttons">
+<script type="text/javascript">
+<!--
+if (canFormat) {
+    with (document) {
+        write('<a title="<__trans phrase="Bold">" href="#" onclick="return formatStr(document.entry_form.text, \'strong\')"><img src="<mt:var name="static_uri">images/formatting-icons/bold.gif" alt="<__trans phrase="Bold">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Italic">" href="#" onclick="return formatStr(document.entry_form.text, \'em\')"><img src="<mt:var name="static_uri">images/formatting-icons/italic.gif" alt="<__trans phrase="Italic">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Underline">" href="#" onclick="return formatStr(document.entry_form.text, \'u\')"><img src="<mt:var name="static_uri">images/formatting-icons/underline.gif" alt="<__trans phrase="Underline">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Insert Link">" href="#" onclick="return insertLink(document.entry_form.text)"><img src="<mt:var name="static_uri">images/formatting-icons/link.gif" alt="<__trans phrase="Insert Link">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Insert Email Link">" href="#" onclick="return insertLink(document.entry_form.text, 1)"><img src="<mt:var name="static_uri">images/formatting-icons/email.gif" alt="<__trans phrase="Insert Email Link">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Quote">" href="#" onclick="return formatStr(document.entry_form.text, \'blockquote\')"><img src="<mt:var name="static_uri">images/formatting-icons/quote.gif" alt="<__trans phrase="Quote">" width="26" height="19" /></a>');
+    }
+}
+// -->
+</script>
+</div>
+</div>
+<div class="textarea-wrapper">
+<textarea name="text" id="text" rows="<mt:if name="show_text_more">6<mt:else>10</mt:if>" onkeydown="mtShortCuts(event)"><mt:var name="text" escape="html"></textarea>
+</div>
+</div>
+
+<mt:if name="show_text_more">
+<div class="field" id="field-text_more">
+<div class="field-header">
+<div class="field-label"><label for="text_more"><__trans phrase="Extended Entry"></label></div>
+<div class="field-buttons">
+<script type="text/javascript">
+<!--
+if (canFormat) {
+    with (document) {
+        write('<a title="<__trans phrase="Bold">" href="#" onclick="return formatStr(document.entry_form.text_more, \'strong\')"><img src="<mt:var name="static_uri">images/formatting-icons/bold.gif" alt="<__trans phrase="Bold">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Italic">" href="#" onclick="return formatStr(document.entry_form.text_more, \'em\')"><img src="<mt:var name="static_uri">images/formatting-icons/italic.gif" alt="<__trans phrase="Italic">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Underline">" href="#" onclick="return formatStr(document.entry_form.text_more, \'u\')"><img src="<mt:var name="static_uri">images/formatting-icons/underline.gif" alt="<__trans phrase="Underline">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Insert Link">" href="#" onclick="return insertLink(document.entry_form.text_more)"><img src="<mt:var name="static_uri">images/formatting-icons/link.gif" alt="<__trans phrase="Insert Link">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Insert Email Link">" href="#" onclick="return insertLink(document.entry_form.text_more, 1)"><img src="<mt:var name="static_uri">images/formatting-icons/email.gif" alt="<__trans phrase="Insert Email Link">" width="26" height="19" /></a>');
+        write('<a title="<__trans phrase="Quote">" href="#" onclick="return formatStr(document.entry_form.text_more, \'blockquote\')"><img src="<mt:var name="static_uri">images/formatting-icons/quote.gif" alt="<__trans phrase="Quote">" width="26" height="19" /></a>');
+    }
+}
+// -->
+</script>
+</div>
+</div>
+<div class="textarea-wrapper">
+<textarea name="text_more" id="text_more" rows="8" onkeydown="mtShortCuts(event)"></textarea>
+</div>
+</div>
+</mt:if>
+
+<mt:if name="show_excerpt">
+<div class="field">
+<div class="field-header"><label for="excerpt"><__trans phrase="Excerpt"></label></div>
+<div class="textarea-wrapper">
+<textarea name="excerpt" id="excerpt" rows="4"></textarea>
+</div>
+</div>
+</mt:if>
+
+<mt:if name="show_keywords">
+<div class="field">
+<div class="field-header"><label for="keywords"><__trans phrase="Keywords"></label></div>
+<div class="textarea-wrapper">
+<textarea name="keywords" id="keywords" rows="2"></textarea>
+</div>
+</div>
+</mt:if>
+
+<mt:if name="show_tags">
+<div class="field">
+<div class="field-header"><label for="tags"><__trans phrase="Tags"></label></div>
+<div class="textarea-wrapper">
+<input type="text" name="tags" id="tags" />
+</div>
+</div>
+</mt:if>
+
+<mt:if name="show_trackback">
+
+<mt:if name="to_ping_urls">
+<div class="field">
+<label><input type="checkbox" name="to_ping_urls" value="<mt:var name="to_ping_urls" escape="html">" checked="checked" />
+<__trans phrase="Send an outbound TrackBack:">
+<strong><mt:var name="to_ping_urls" escape="html"></strong></label>
+</div>
+</mt:if>
+
+<mt:if name="to_ping_url_loop">
+<div class="field">
+<label for="to_ping_urls"><__trans phrase="Select an entry to send an outbound TrackBack:"></label>
+<select name="to_ping_urls" id="to_ping_urls">
+<option value=""><__trans phrase="None"></option>
+<mt:loop name="to_ping_url_loop">
+<option value="<mt:var name="ping_url" escape="html">"><mt:var name="title" escape="html"></option>
+</mt:loop>
+</select>
+</div>
+</mt:if>
+
+</mt:if>
+
+<div class="config-box">
+<div class="config-box-inner">
+
+<mt:if name="show_category">
+<div class="field">
+<div class="field-header"><label for="status"><__trans phrase="Status">:</label></div>
+<div class="textarea-wrapper">
+<select name="status" id="status">
+<option value="1"><__trans phrase="Unpublished"></option>
+<option value="2" selected="selected"><__trans phrase="Published"></option>
+</select>
+</div>
+</div>
+</mt:if>
+
+<mt:if name="show_convert_breaks">
+<div class="field">
+<div class="field-header"><label for="convert_breaks"><__trans phrase="Text Formatting">:</label></div>
+<div class="textarea-wrapper">
+<select name="convert_breaks" id="convert_breaks">
+<mt:loop name="text_filters">
+<option value="<mt:var name="filter_key">"<mt:if name="filter_selected"> selected="selected"</mt:if>><mt:var name="filter_label"></option>
+</mt:loop>
+</select>
+</div>
+</div>
+<mt:else>
+<input type="hidden" name="convert_breaks" value="0" />
+</mt:if>
+
+<mt:if name="show_feedback">
+<div class="field">
+<div class="field-header"><label><__trans phrase="Accept">:</label></div>
+<div class="textarea-wrapper">
+<mt:if name="show_allow_comments">
+<label><input type="checkbox" name="allow_comments" id="allow_comments" value="1" /> <__trans phrase="Comments"></label>
+<mt:else>
+<input type="hidden" name="allow_comments" value="0" />
+</mt:if>
+<mt:if name="show_allow_pings">
+<label><input type="checkbox" name="allow_pings" id="allow_pings" value="1" /> <__trans phrase="TrackBacks"></label>
+<mt:else>
+<input type="hidden" name="allow_pings" value="0" />
+</mt:if>
+</div>
+</div>
+<mt:else>
+<input type="hidden" name="allow_comments" value="0" />
+<input type="hidden" name="allow_pings" value="0" />
+</mt:if>
+
+<mt:if name="show_basename">
+<input type="hidden" name="basename_manual" id="basename_manual" value="0" />
+<input type="hidden" name="basename_old" id="basename_old" value="<mt:var name="basename_old" escape="html">" />
+<div class="field">
+<div class="field-header"><label for="basename"><__trans phrase="Basename">:</label></div>
+<div class="textarea-wrapper">
+<input name="basename" id="basename" value="<mt:var name="basename" escape="html">" disabled="disabled" onchange="setElementValue('basename', dirify(this.value))" /><a href="#" title="<__trans phrase="Unlock this entry's output filename for editing">" onclick="return toggleFile()"><img src="<mt:var name="static_uri">images/locked.gif" alt="Filename Lock" id="basename-lock" height="14" width="14" /></a>
+<p class="alert-warning-inline" id="basename-warning" style="display: none">
+<img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+<mt:if name="new_object">
+<__trans phrase="Warning: If you set the basename manually, it may conflict with another entry.">
+<mt:else>
+<__trans phrase="Warning: Changing this entry's basename may break inbound links.">
+</mt:if>
+</p>
+</div>
+</div>
+</mt:if>
+
+</div>
+</div>
+
+<div>
+<input accesskey="s" type="submit" value="<__trans phrase="Save">" title="<__trans phrase="Save this entry (s)">" />
+<input type="button" value="<__trans phrase="Cancel">" onclick="window.close()" />
+</div>
+
+</form>
+
+<mt:else>
+
+<p><__trans phrase="You do not have entry creation permission for any weblogs on this installation. Please contact your system administrator for access."></p>
+
+</mt:if>
+
+</div>
+
+<mt:include name="include/footer_popup.tmpl">

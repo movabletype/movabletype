@@ -1,0 +1,266 @@
+<div id="beta">
+    <div id="beta-inner" class="pkg">
+<MTIf name="search_results_template">
+    <MTIfTagSearch>
+        <MTSetVar name="search_feed_param" value="tag">
+        <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries tagged &ldquo;<$MTSearchString$>&ldquo;."></MTSetVarBlock>
+    <MTElse>
+            <MTSetVar name="search_feed_param" value="search">
+            <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries matching &ldquo;<$MTSearchString$>&ldquo;."></MTSetVarBlock>
+    </MTIfTagSearch>
+        <div class="module-search-feed module">
+            <h2 class="module-header"><MT_TRANS phrase="Feed Subscription"></h2>
+            <div class="module-content">
+                <p><$MTGetVar name="search_feed_description"$><MT_TRANS phrase="(<a href="[_1]">What is this?</a>)" params="http://www.sixapart.com/about/feeds"></p>
+                <p><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="Subscribe to feed" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="Subscribe to feed"><MT_TRANS phrase="Subscribe to feed"></a></p>
+            </div>
+        </div>
+
+    <MTIfTagSearch>
+        <div class="module-tags module">
+            <h2 class="module-header"><MT_TRANS phrase="Tags"></h2>
+            <div class="module-content">
+                <!-- <p class="first"><MT_TRANS phrase="Other tags used on this blog:"></p> -->
+                <ul class="module-list">
+        <MTTags>
+                    <li class="module-list-item"><a href="<$MTTagSearchLink$>"><MT_TRANS phrase="[_1] ([_2])" params="<$MTTagName$>%%<$MTTagCount$>"></a></li>
+        </MTTags>
+                </ul>
+            </div>
+        </div>
+    </MTIfTagSearch>
+</MTIf>
+
+        <div class="module-search module">
+            <h2 class="module-header"><MT_TRANS phrase="Search"></h2>
+            <div class="module-content">
+                <form method="get" action="<$MTCGIPath$><$MTSearchScript$>">
+                    <input type="hidden" name="IncludeBlogs" value="<$MTBlogID$>" />
+                    <label for="search" accesskey="4"><MT_TRANS phrase="Search this blog:"></label><br />
+                    <input id="search" name="search" size="20" value="<$MTSearchString encode_html="1"$>" />
+                    <input type="submit" value="Search" />
+                </form>
+            </div>
+        </div>
+
+<MTIf name="module_about_context">
+        <div class="module-welcome module">
+            <h2 class="module-header">
+    <MTIf name="entry_template">
+            <MT_TRANS phrase="About This Post">
+    <MTElse>
+            <MTIf name="archive_template">
+            <MT_TRANS phrase="About This Archive">
+            </MTIf>
+    </MTIf>
+    <MTIf name="archive_index">
+            <MT_TRANS phrase="About Archives">
+    </MTIf>
+            </h2>
+            <div class="module-content">
+    <MTIf name="archive_index">
+            <p><MT_TRANS phrase="This page contains links to all the archived content."></p> 
+    </MTIf>
+    <MTIf name="entry_template">
+                <p class="first"><MT_TRANS phrase="This page contains a single entry by [_1] posted on <em>[_2]</em>." params="<$MTEntryAuthorLink show_email="0"$>%%<$MTEntryDate format="%x %X"$>"></p>
+        <MTEntryPrevious>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> was the previous post in this blog." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p>
+        </MTEntryPrevious>
+        <MTEntryNext>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the next post in this blog." params="<$MTEntryPermalink$>%%<$MTEntryTitle remove_html="1"$>"></p>
+        </MTEntryNext>
+    </MTIf>
+
+    <MTIf name="category_archive">
+        <MTIf name="datebased_archive">
+                <p class="first"><MT_TRANS phrase="This page is a archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>." params="<$MTCategoryLabel$>%%<$MTArchiveDate format="%B %Y"$>"></p>
+            <MTArchivePrevious>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+            </MTArchivePrevious>
+            <MTArchiveNext>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+            </MTArchiveNext>
+        <MTElse>
+                <p class="first"><MT_TRANS phrase="This page is a archive of recent entries in the <strong>[_1]</strong> category." params="<$MTCategoryLabel$>"></p>
+                <MTCategoryPrevious>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the previous category." params="<$MTCategoryArchiveLink$>%%<$MTCategoryLabel$>"></p>
+                </MTCategoryPrevious>
+                <MTCategoryNext>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the next category." params="<$MTCategoryArchiveLink$>%%<$MTCategoryLabel$>"></p>
+                </MTCategoryNext>
+        </MTIf>
+    </MTIf>
+    <MTIf name="author_archive">
+        <MTIf name="datebased_archive">
+                <p class="first"><MT_TRANS phrase="This page is a archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>." params="<$MTAuthorDisplayName$>%%<$MTArchiveDate format="%B %Y"$>"></p>
+            <MTArchivePrevious>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+            </MTArchivePrevious>
+            <MTArchiveNext>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+            </MTArchiveNext>
+        <MTElse>
+                <p class="first"><MT_TRANS phrase="This page is a archive of recent entries written by <strong>[_1]</strong>." params="<$MTAuthorDisplayName$>"></p>
+        </MTIf>
+    </MTIf>
+    <MTIf name="datebased_only_archive">
+                <p class="first"><MT_TRANS phrase="This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest." params="<$MTBlogName$>%%<$MTArchiveDate format="%B %Y"$>"></p>
+        <MTArchivePrevious>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+        </MTArchivePrevious>
+        <MTArchiveNext>
+                <p><MT_TRANS phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$MTArchiveLink$>%%<$MTArchiveTitle$>"></p>
+        </MTArchiveNext>
+    </MTIf>
+    <MTIf name="archive_index">
+                <p><MT_TRANS phrase="Find recent content on the <a href="[_1]">main index</a>." params="<$MTBlogURL$>"></p>
+    <MTElse>
+                <p><MT_TRANS phrase="Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content." params="<$MTBlogURL$>%%<$MTBlogURL$>archives.html"></p>
+    </MTIf>
+            </div>
+        </div>
+</MTIf>
+
+<MTIf name="module_category-monthly_archives">
+    <MTIfArchiveTypeEnabled archive_type="Category-Monthly">
+    <div class="module-categories module">
+        <h2 class="module-header"><MT_TRANS phrase="[_1]: Monthly Archives" params="<$MTArchiveTitle$>"></h2>
+        <div class="module-content">
+        <MTArchiveList archive_type="Category-Monthly">
+            <MTArchiveListHeader>
+            <ul class="module-list">
+            </MTArchiveListHeader>
+                <li class="module-list-item"><a href="<$MTArchiveLink$>"><MT_TRANS phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
+            <MTArchiveListFooter>
+            </ul>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+        </div>
+    </div>
+    </MTIfArchiveTypeEnabled>
+</MTIf>
+
+<MTIf name="module_author-monthly_archives">
+    <MTIfArchiveTypeEnabled archive_type="Author-Monthly">
+        <MTArchiveList archive_type="Author-Monthly">
+            <MTArchiveListHeader>
+    <div class="module-categories module">
+        <h2 class="module-header"><MT_TRANS phrase="[_1]: Monthly Archives" params="<$MTAuthorDisplayName$>"></h2>
+        <div class="module-content">
+            <ul class="module-list">
+            </MTArchiveListHeader>
+                <li class="module-list-item"><a href="<$MTArchiveLink$>"><MT_TRANS phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
+            <MTArchiveListFooter>
+            </ul>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+        </div>
+    </div>
+    </MTIfArchiveTypeEnabled>
+</MTIf>
+
+<MTIf name="module_recent_posts">
+        <div class="module-archives module">
+            <h2 class="module-header"><MT_TRANS phrase="Recent Posts"></h2>
+            <div class="module-content">
+                <ul class="module-list">
+    <MTEntries lastn="10">
+                    <li class="module-list-item"><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></li>
+    </MTEntries>
+                </ul>
+            </div>
+        </div>
+</MTIf>
+
+<MTIf name="module_category_archives">
+    <MTIfArchiveTypeEnabled archive_type="Category">
+        <div class="module-categories module">
+            <h2 class="module-header">Categories</h2>
+            <div class="module-content">
+        <MTTopLevelCategories>
+            <MTSubCatIsFirst>
+                <ul class="module-list">
+            </MTSubCatIsFirst>
+            <MTIfNonZero tag="MTCategoryCount">
+                    <li class="module-list-item"><a href="<$MTCategoryArchiveLink$>" title="<$MTCategoryDescription$>"><MT_TRANS phrase="[_1] ([_2])" params="<$MTCategoryLabel$>%%<$MTCategoryCount$>"></a>
+            <MTElse>
+                    <li class="module-list-item"><$MTCategoryLabel$>
+            </MTIfNonZero>
+            <MTSubCatsRecurse>
+                    </li>
+            <MTSubCatIsLast>
+                </ul>
+            </MTSubCatIsLast>
+        </MTTopLevelCategories>
+            </div>
+        </div>
+    </MTIfArchiveTypeEnabled>
+</MTIf>
+
+<MTIf name="module_author_archives">
+    <MTIfArchiveTypeEnabled archive_type="Author">
+        <MTArchiveList archive_type="Author">
+            <MTArchiveListHeader>
+        <div class="module-authors module">
+            <h2 class="module-header"><MT_TRANS phrase="Author Archives"></h2>
+            <div class="module-content">
+                <ul class="module-list">
+            </MTArchiveListHeader>
+                    <li class="module-list-item"><a href="<$MTArchiveLink$>"><MT_TRANS phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
+            <MTArchiveListFooter>
+                </ul>
+            </div>
+        </div>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+    </MTIfArchiveTypeEnabled>
+</MTIf>
+
+<MTIf name="module_monthly_archives">
+    <MTIfArchiveTypeEnabled archive_type="Monthly">
+        <MTArchiveList archive_type="Monthly">
+            <MTArchiveListHeader>
+        <div class="module-archives module">
+            <h2 class="module-header"><MT_TRANS phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveType$>%%<$MTBlogURL$>archives.html"></h2>
+            <div class="module-content">
+                <ul class="module-list">
+            </MTArchiveListHeader>
+                    <li class="module-list-item"><a href="<$MTArchiveLink$>"><MT_TRANS phrase="[_1] ([_2])" params="<$MTArchiveTitle$>%%<$MTArchiveCount$>"></a></li>
+            <MTArchiveListFooter>
+                </ul>
+            </div>
+        </div>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+    </MTIfArchiveTypeEnabled>
+</MTIf>
+
+        <div class="module-syndicate module">
+            <div class="module-content">
+                <a href="<$MTLink template="atom"$>"><MT_TRANS phrase="Subscribe to this blog's feed"></a><br />
+                <MT_TRANS phrase="(<a href="[_1]">What is this?</a>)" params="http://www.sixapart.com/about/feeds">
+            </div>
+        </div>
+
+    <MTBlogIfCCLicense>
+        <div class="module-creative-commons module">
+            <div class="module-content">
+                <a href="<$MTBlogCCLicenseURL$>"><img alt="Creative Commons License" src="<$MTBlogCCLicenseImage$>" /></a><br />
+                <MT_TRANS phrase="This blog is licensed under a <a href="[_1]">Creative Commons License</a>." params="<$MTBlogCCLicenseURL$>">
+            </div>
+        </div>
+    </MTBlogIfCCLicense>
+
+        <div class="module-powered module">
+            <div class="module-content">
+                <a href="http://www.movabletype.org/"><img src="<$MTStaticWebPath$>images/mt4-bug-pbmt-white.png" alt="<MT_TRANS phrase="Powered by Movable Type [_1]" params="<$MTVersion$>">" width="120" height="75" /></a>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- <div id="gamma">
+   <div id="gamma-inner" class="pkg">
+       Gamma Content
+   </div>
+</div> -->

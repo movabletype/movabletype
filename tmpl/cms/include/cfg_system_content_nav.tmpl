@@ -1,0 +1,7 @@
+<mt:if name="IS_ADMINISTRATOR">
+<ul>
+    <li<mt:if name="system-general-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_system"><__trans phrase="General"></a></li>
+    <li<mt:if name="system-feedback-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_system_feedback"><__trans phrase="Feedback"></a></li>
+    <li<mt:if name="system-plugin-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_plugins"><__trans phrase="Plugins"></a></li>
+</ul>
+</mt:if>

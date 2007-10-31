@@ -1,0 +1,181 @@
+<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
+<mt:setvarblock name="page_title"><mt:var name="blog_name" escape="html">:</span> <mt:if name="entry_insert"><mt:if name="is_image"><__trans phrase="Insert Image"><mt:else><__trans phrase="Insert File"></mt:if><mt:else><mt:if name="is_image"><__trans phrase="Upload Image"><mt:else><__trans phrase="Upload File"></mt:if></mt:if></mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/focus.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript">
+<!--
+var tag_delim = '<mt:var name="auth_pref_tag_delim">';
+
+// array of tag names
+var tagList;
+// raw structure of tags (hash of tag -> count)
+var tags;
+
+function tagSplit(str) {
+    var delim = RegExp.escape(tag_delim);
+    var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+    str = str.replace(/(^\s+|\s+$)/g, '');
+    var tags = [];
+    while (str.length && str.match(delim_scan)) {
+        str = str.substr(RegExp.$1.length);
+        var tag = RegExp.$4 ? RegExp.$4 : RegExp.$2;
+        tag = tag.replace(/(^\s+|\s+$)/g, '');
+        tag = tag.replace(/\s+/g, ' ');
+        if (tag != '') tags.push(tag);
+    }
+    return tags;
+}
+
+var autoTag;
+<mt:if name="tags_js">
+tags = <mt:var name="tags_js">;
+</mt:if>
+
+function init()
+{
+    <mt:if name="tags_js">initTags();</mt:if>
+}
+
+<mt:if name="defer_tag_load">
+function deferredTagLoad() {
+    // http://del.icio.us/feeds/json/tags/username
+    TC.Client.call({
+        'load': tagsLoaded,
+        'method': 'POST',
+        'uri': '<mt:var name="mt_url">',
+        'arguments': { '__mode': 'js_tag_list',
+            'blog_id': '<mt:var name="blog_id">',
+            'magic_token': '<mt:var name="magic_token">'}
+    });
+}
+
+function tagsLoaded(c, result) {
+    try {
+        tags = eval('(' + result + ')');
+        if (tags)
+            initTags();
+    } catch (e) {
+    }
+}
+</mt:if>
+
+var tagPos = 0;
+function initTags() {
+    if (!tags || tags.length == 0) return;
+
+    tagList = [];
+    for (var tag in tags)
+        tagList[tagList.length] = tag;
+    autoTag = new TC.TagComplete("tags", tagList);
+    autoTag.delimiter = tag_delim;
+}
+
+TC.attachLoadEvent( init );
+
+
+
+
+function presubmit(f) {
+    var mode = 'complete_upload';
+<mt:if name="entry_insert">
+    mode = 'asset_insert';
+<mt:else>
+<mt:if name="can_create_post">
+    if (f.new_entry && f.new_entry.checked) mode = 'start_upload_entry';
+</mt:if>
+</mt:if>
+    if (mode != 'asset_insert') {
+        f.target = "_top";
+    }
+    f['__mode'].value = mode;
+    return true;
+}
+
+//-->
+</script>
+
+<form action="<mt:var name="script_url">" method="post" onsubmit="return presubmit(this)">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="id" value="<mt:var name="asset_id">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
+<input type="hidden" name="edit_field" value="<mt:var name="edit_field">" />
+<input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
+<input type="hidden" name="url" value="<mt:var name="url" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:unless name="is_image">
+<input type="hidden" name="link" value="1" />
+</mt:unless>
+
+<div class="items-wrapper">
+<span class="modal_added">
+<mt:unless name="direct_asset_insert">
+<__trans phrase="The file named '[_1]' has been uploaded. Size: [quant,_2,byte]." params="<mt:var name="fname" escape="html">%%<mt:var name="bytes">">
+</mt:unless>
+&nbsp;</span>
+</div>
+
+<p class="page-desc"><img border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="5"></p>
+
+<div class="selector list">
+    <div class="upload-data-wrapper">
+<mt:unless name="direct_asset_insert">
+<div style="float: left; width: ; margin: 0; margin-right: ; padding: 10px;">
+</mt:unless>
+    <mt:unless name="entry_insert">
+    <strong><__trans phrase="File Options"></strong>
+    </mt:unless>
+    <div class="upload_indent_choices">
+        <mt:unless name="entry_insert">
+        <mt:if name="can_create_post">
+        <p><label><input type="checkbox" name="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" /> <__trans phrase="Create a new entry using this uploaded file."></label> <a href="#" onclick="return openManual('file_upload', 'creating_a_new_entry')" class="help-link">?</a><br /></p>
+        </mt:if>
+        </mt:unless>
+    </div>
+
+<mt:unless name="direct_asset_insert">
+    <div id="asset_details">
+
+<mtapp:setting
+    id="file_name"
+    label="<__trans phrase="Name">">
+    <input type="text" name="label" value="<mt:var name="fname" escape="html">" class="full-width">
+</mtapp:setting>
+
+<mtapp:setting
+    id="file_desc"
+    label="<__trans phrase="Description">">
+    <textarea name="description" cols="45" rows="3"></textarea><br/></p>
+</mtapp:setting>
+
+<mtapp:setting
+    id="file_tags"
+    label="<__trans phrase="Tags">">
+    <input type="text" name="tags" id="tags" class="full-width" value="" mt:watch-change="1" autocomplete="0" /></p>
+        <!--[if lte IE 6.5]><div style="position:relative;"><![endif]--> <!-- FIXME - move this styling to the ie hacks css file -->
+        <div id="tags_completion"></div>
+        <!--[if lte IE 6.5]></div><![endif]-->
+</mtapp:setting>
+
+    </div>
+</div>
+</mt:unless>
+
+<mt:var name="options_snippet">
+
+</div>
+
+<div class="upload_button_spacing">&nbsp;</div>
+
+<div class="actions-bar">
+    <input onclick="closeDialog()" type="button" value="<__trans phrase="Cancel">" />
+    <input type="submit" value="<__trans phrase="Finish">" />
+</div>
+
+</form>
+
+<mt:include name="dialog/footer.tmpl">

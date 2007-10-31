@@ -1,0 +1,126 @@
+<mt:setvar name="page_title" value="<__trans phrase="Feedback Settings: System-wide">">
+<mt:setvar name="system-feedback-settings" value="1">
+<MTSetVarBlock name="content_header">
+    <p class="page-desc"><__trans phrase="This screen allows you to configure feedback and outbound TrackBack settings for the entire installation.  These settings override any similar settings for individual weblogs."></p>
+
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your feedback preferences have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_system_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+<!--
+function clearNotifyUsers() {
+    var el_name = getByID("notify_user_name");
+    var el_id = getByID("notify_user_id");
+    if (el_name && el_id) {
+        el_id.value = "";
+        el_name.innerHTML = "(<__trans phrase="None selected.">)";
+    }
+}
+-->
+</script>
+
+<form action="<mt:var name="script_url">" method="post">
+<input type="hidden" name="__mode" value="save_cfg_system_feedback" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<fieldset>
+
+<h3><__trans phrase="Feedback Master Switch"></h3>
+
+<div class="inner">
+
+    <mtapp:setting
+        id="comment_disable"
+        label="<__trans phrase="Disable Comments">"
+        hint="<__trans phrase="This will override all individual weblog comment settings.">">
+        <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Stop accepting comments on all weblogs">
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="registration"
+        label="<__trans phrase="Allow Registration">"
+        hint="<__trans phrase="Select a system administrator you wish to notify when commenters successfully registered themselves.">">
+        <input type="checkbox" id="registration" name="registration"<mt:if name="registration"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Allow commenters to register to Movable Type">
+        <p><__trans phrase="Notify administrators">:<strong><span id="notify_user_name"><mt:if name="notify_user_id"><mt:var name="notify_user_name" escape="html"><mt:else>(<__trans phrase="None selected.">)</mt:if></span>
+        <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
+        <input type="button" onclick="return openDialog(this.form, 'dialog_select_sysadmin', 'multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name')" value="<__trans phrase="Select...">" />
+        <input type="button" onclick="return clearNotifyUsers()" value="<__trans phrase="Clear">" /></strong></p>
+        <mt:if name="system_no_email"><p>
+        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="System Email Address Not Set">" width="9" height="9" />
+        <span class="alert-warning-inline"><__trans phrase="Note: System Email Address is not set.  Emails will not be sent."></span>
+        </p></mt:if>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="use_confirmation"
+        label="<__trans phrase="Use Comment Confirmation">">
+        <input type="checkbox" id="use_confirmation" name="use_confirmation"<mt:if name="use_confirmation"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Use comment confirmation page">
+    </mtapp:setting>
+
+<mt:if name="captcha_loop">
+    <mtapp:setting
+        id="capthca_provider"
+        label="<__trans phrase="CAPTCHA Provider">">
+        <select name="captcha_provider">
+        <option value="none">Don't use CAPTCHA provider</option>
+        <mt:loop name="captcha_loop">
+        <option value="<mt:var name="key">"<mt:if name="enabled_selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+        </mt:loop>
+        </select>
+    </mtapp:setting>
+</mt:if>
+
+    <mtapp:setting
+        id="ping_disable"
+        label="<__trans phrase="Disable TrackBacks">"
+        hint="<__trans phrase="This will override all individual weblog TrackBack settings.">">
+        <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Stop accepting TrackBacks on all weblogs">
+    </mtapp:setting>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><__trans phrase="Outbound TrackBack Control"></h3>
+
+<div class="inner">
+
+    <mtapp:setting
+        id="trackback_send"
+        label="<__trans phrase="Allow outbound Trackbacks to">"
+        hint="<__trans phrase="This feature allows you to limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.">">
+
+<ul>
+<li><input type="radio" name="trackback_send" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Any site"></li>
+<li><input type="radio" name="trackback_send" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <__trans phrase="No site"> <span class="hint"><__trans phrase="(Disable all outbound TrackBacks.)"></span></li>
+<li><input type="radio" name="trackback_send" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only the weblogs on this installation"></li>
+<li><input type="radio" name="trackback_send" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only the sites on the following domains:"><br />
+<textarea rows="5" cols="60" name="trackback_send_domains"><mt:var name="trackback_send_domains" escape="html"></textarea></li>
+</ul>
+    </mtapp:setting>
+
+</div>
+
+</fieldset>
+
+<div style="text-align: center;">
+<input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
+</div>
+
+</form>
+
+<mt:include name="include/footer.tmpl">

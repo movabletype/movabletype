@@ -1,0 +1,19 @@
+<div class="entry" id="entry-<$MTEntryID$>">
+    <h3 class="entry-header"><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h3>
+    <$MTInclude module="<MT_TRANS phrase="Entry Metadata">"$>
+    <div class="entry-content">
+<MTIfNonEmpty tag="EntryBody">
+        <div class="entry-body">
+            <$MTEntryBody$>
+        </div>
+</MTIfNonEmpty>
+<MTIfTagSearch>
+<$MTInclude module="<MT_TRANS phrase="Tags">"$>
+</MTIfTagSearch>
+<MTIfNonEmpty tag="EntryMore" convert_breaks="0">
+        <div class="entry-more-link">
+            <MT_TRANS phrase="Continue reading <a href="[_1]">[_2]</a>." params="<$MTEntryPermalink$>#more%%<$MTEntryTitle$>">
+        </div>
+</MTIfNonEmpty>
+    </div>
+</div>

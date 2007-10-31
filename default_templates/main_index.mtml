@@ -1,0 +1,20 @@
+<MTSetVar name="page_id" value="main-index">
+<MTSetVar name="main_template" value="1">
+<MTSetVar name="main_index" value="1">
+<MTSetVar name="sidebar" value="1">
+<MTSetVar name="module_recent_posts" value="1">
+<MTSetVar name="module_category_archives" value="1">
+<MTSetVar name="module_author_archives" value="1">
+<MTSetVar name="module_monthly_archives" value="1">
+
+<$MTInclude module="<MT_TRANS phrase="Header">"$>
+
+<MTEntries>
+    <$MTEntryTrackbackData$>
+    <MTDateHeader>
+<h2 class="date-header"><$MTEntryDate format="%x"$></h2>
+    </MTDateHeader>
+    <$MTInclude module="<MT_TRANS phrase="Entry Summary">"$>
+</MTEntries>
+
+<$MTInclude module="<MT_TRANS phrase="Footer">"$>

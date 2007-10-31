@@ -1,0 +1,278 @@
+<mt:setvar name="list_associations" value="1">
+<mt:if name="blog_id">
+    <mt:setvarblock name="page_title"><__trans phrase="Members"></mt:setvarblock>
+<mt:else>
+    <mt:if name="user_view">
+        <mt:setvarblock name="page_title"><__trans phrase="User Associations for [_1]" params="<mt:var name="edit_author_name" escape="html">"></mt:setvarblock>
+    </mt:if>
+    <mt:if name="group_view">
+        <mt:setvarblock name="page_title"><__trans phrase="Group Associations for [1]" params="<mt:var name="group_name" escape="html">"></mt:setvarblock>
+    </mt:if>
+    <mt:if name="usergroup_view">
+        <mt:setvarblock name="page_title"><__trans phrase="Associations"></mt:setvarblock>
+    </mt:if>
+    <mt:if name="role_view">
+        <mt:if name="group_support">
+            <mt:setvarblock name="page_title"><__trans phrase="Users &amp; Groups for [_1]" params="<mt:var name="role_name" escape="html">"></mt:setvarblock>
+        <mt:else>
+            <mt:setvarblock name="page_title"><__trans phrase="Users for [_1]" params="<mt:var name="role_name" escape="html">"></mt:setvarblock>
+        </mt:if>
+    </mt:if>
+</mt:if>
+<mt:setvarblock name="action_buttons">
+    <mt:if name="can_create_association">
+    <input
+       type="button"
+       name="remove_associations"
+       accesskey="x"
+       title="<MT_TRANS phrase="Remove selected assocations (x)">"
+       value="<MT_TRANS phrase="Remove">"
+       onclick="doRemoveItems(this.form, '<MT_TRANS phrase="association">', '<MT_TRANS phrase="associations">')"
+    />
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <$mt:include name="include/display_options.tmpl"$>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<div id="list-association">
+
+<script type="text/javascript">
+<!--
+var tableSelect;
+function init() {
+	// setup
+	tableSelect = new TC.TableSelect( "selector" );
+	tableSelect.rowSelect = true;
+}
+TC.attachLoadEvent( init );
+// -->
+</script>
+
+<mt:unless name="blog_id">
+    <mt:if name="user_view">
+        <mt:unless name="status_enabled">
+<h3 class="user_disabled"><__trans phrase="User Disabled"></h3>
+        </mt:unless>
+    </mt:if>
+
+    <mt:if name="group_view">
+        <mt:unless name="status_enabled">
+<h3 class="group_disabled"><__trans phrase="Group Disabled"></h3>
+        </mt:unless>
+    </mt:if>
+</mt:unless>
+
+<p class="page-desc"><__trans phrase="_USAGE_ASSOCIATIONS"> <a href="#" onclick="return openManual('author_permissions', 'associations')" class="help-link">?</a></p>
+
+<mt:if name="saved_deleted">
+    <mtapp:statusmsg
+        id="saved-deleted"
+        class="success">
+        <__trans phrase="You have successfully removed the association(s).">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+    <mtapp:statusmsg
+        id="saved"
+        class="success">
+        <__trans phrase="You have successfully created the association(s).">
+    </mtapp:statusmsg>
+</mt:if>
+
+<ul class="actions-foo">
+<mt:if name="user_view">
+    <mt:if name="can_create_association">
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="status_enabled">create<mt:else>create-disabled</mt:if>.gif" alt="<__trans phrase="Add user to a weblog">" width="9" height="9" />
+        <mt:if name="status_enabled">
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')">
+        <mt:else>
+        <span class="disabled" title="<__trans phrase="You can not create associations for disabled users.">">
+        </mt:if>
+        <__trans phrase="Add [_1] to a weblog" params="<mt:var name="edit_author_name">">
+        <mt:if name="status_enabled">
+        </a>
+        <mt:else>
+        </span>
+        </mt:if>
+    </li>
+    </mt:if>
+</mt:if>
+<mt:if name="group_view">
+    <mt:if name="can_create_association">
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/<mt:if name="status_enabled">create<mt:else>create-disabled</mt:if>.gif" alt="<__trans phrase="Add group to a weblog">" width="9" height="9" />
+        <mt:if name="status_enabled">
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'group_id=<mt:var name="group_id">&amp;return_args=<mt:var name="return_args" escape="url">%26group_id=<mt:var name="group_id">')">
+        <mt:else>
+        <span class="disabled" title="<__trans phrase="You can not create associations for disabled groups.">">
+        </mt:if>
+        <__trans phrase="Add [_1] to a weblog" params="<mt:var name="group_name">">
+        <mt:if name="status_enabled">
+        </a>
+        <mt:else>
+        </span>
+        </mt:if>
+    </li>
+    </mt:if>
+</mt:if>
+<mt:if name="role_view">
+    <mt:if name="can_create_association">
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Assign role to a new group">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group&amp;role_id=<mt:var name="role_id">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id">')"><__trans phrase="Assign Role to Group"></a>
+    </li>
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Assign role to a new user">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user&amp;role_id=<mt:var name="role_id">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id">')"><__trans phrase="Assign Role to User"></a>
+    </li>
+    </mt:if>
+</mt:if>
+<mt:if name="usergroup_view">
+    <mt:if name="can_create_association">
+        <mt:if name="blog_view">
+            <mt:if name="can_add_groups">
+            <mt:if name="group_support">
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a group to this weblog">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a group to this weblog"></a>
+    </li>
+            </mt:if>
+            </mt:if>
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Add a user to this weblog">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Add a user to this weblog"></a>
+    </li>
+        <mt:else>
+            <mt:if name="group_support">
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Create a Group Association">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=group<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Create a Group Association"></a>
+    </li>
+            </mt:if>
+    <li>
+        <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Create a User Association">" width="9" height="9" />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Create a User Association"></a>
+    </li>
+        </mt:if>
+    </mt:if>
+</mt:if>
+</ul>
+
+<mt:if name="object_loop">
+<form id="selector-form" class="selector-form" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="_type" value="association" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html"><mt:if name="group_view">&amp;group_id=<mt:var name="group_id"></mt:if><mt:if name="user_view">&amp;author_id=<mt:var name="edit_author_id"></mt:if><mt:if name="role_view">&amp;role_id=<mt:var name="role_id"></mt:if>" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:if name="user_view">
+<input type="hidden" name="author_id" value="<mt:var name="edit_author_id">" />
+</mt:if><mt:if name="group_view">
+<input type="hidden" name="group_id" value="<mt:var name="group_id">" />
+</mt:if><mt:if name="blog_view">
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+</mt:if><mt:if name="role_view">
+<input type="hidden" name="role_id" value="<mt:var name="role_id">" />
+</mt:if>
+
+<mt:if name="position_actions_top">
+    <mt:include name="include/actions_bar.tmpl" hide_pager="1">
+</mt:if>
+
+<div class="tableselect" id="selector">
+<table cellspacing="0" class="<mt:if name="view_expanded">expanded<mt:else>compact</mt:if>">
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<mt:if name="usergroup_view">
+<mt:if name="group_support">
+<th id="pt-name"><__trans phrase="User/Group"></th>
+<mt:else>
+<th id="pt-name"><__trans phrase="User"></th>
+</mt:if>
+</mt:if>
+<mt:unless name="role_view">
+<th id="pt-role"><__trans phrase="Role"></th>
+<mt:else>
+<mt:if name="group_support">
+<th id="pt-name"><__trans phrase="User/Group"></th>
+<mt:else>
+<th id="pt-name"><__trans phrase="User"></th>
+</mt:if>
+</mt:unless>
+<mt:unless name="blog_view">
+<th id="pt-weblog"><__trans phrase="In Weblog"></th>
+<mt:else>
+<th id="pt-created-by"><__trans phrase="Created By"></th>
+</mt:unless>
+<th id="pt-created"><__trans phrase="Created On"></th>
+</tr>
+</thead>
+<tbody>
+
+<mt:loop name="object_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+<td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+<mt:if name="usergroup_view">
+<td>
+    <mt:if name="user_id">
+    <span class="user_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span>
+        <mt:if name="is_administrator">
+        <a href="<mt:var name="script_url">?__mode=list_associations&amp;author_id=<mt:var name="user_id">">
+        </mt:if>
+        <mt:var name="user_name" escape="html">
+    <mt:else>
+    <span class="group_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span>
+        <mt:if name="is_administrator">
+        <a href="<mt:var name="script_url">?__mode=list_associations&amp;group_id=<mt:var name="group_id">">
+        </mt:if>
+        <mt:var name="group_name" escape="html">
+    </mt:if>
+<mt:if name="is_administrator"></a></mt:if>
+</td>
+</mt:if>
+<mt:unless name="role_view">
+<td><mt:if name="is_administrator"><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="role_id">"></mt:if><mt:var name="role_name" escape="html"><mt:if name="is_administrator"></a></mt:if></td>
+<mt:else>
+<td><mt:if name="user_id"><span class="user_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span> <mt:if name="is_administrator"><a href="<mt:var name="script_url">?__mode=list_associations&amp;author_id=<mt:var name="user_id">"></mt:if><mt:var name="user_name" escape="html"><mt:else><span class="group_id"><img align="top" border="0" src="<mt:var name="static_uri">images/spacer.gif" width="17" height="15"></span> <mt:if name="is_administrator"><a href="<mt:var name="script_url">?__mode=list_associations&amp;group_id=<mt:var name="group_id">"></mt:if><mt:var name="group_name" escape="html"></mt:if><mt:if name="is_administrator"></a></mt:if></td>
+</mt:unless>
+<mt:unless name="blog_view">
+<td><a href="<mt:var name="script_url">?__mode=list_associations&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+<mt:else>
+<td><mt:var name="created_by" escape="html"></td>
+</mt:unless>
+<td><mt:if name="dates_relative"><mt:var name="created_on_relative" escape="html"><mt:else><mt:var name="created_on_formatted" escape="html"></mt:if></td>
+</tr>
+<mt:if name="view_expanded">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
+<td class="cb"<mt:if name="usergroup_view"> colspan="2"</mt:if>>&nbsp;</td><td colspan="3"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
+</tr>
+</mt:if>
+</mt:loop>
+
+</tbody>
+</table>
+
+</div>
+
+<mt:if name="position_actions_bottom">
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+</mt:if>
+
+</form>
+<mt:else>
+    <mtapp:statusmsg
+        id="no-associations"
+        class="info">
+        <__trans phrase="No associations could be found.">
+    </mtapp:statusmsg>
+</mt:if>
+
+</div>
+
+<mt:include name="include/footer.tmpl">

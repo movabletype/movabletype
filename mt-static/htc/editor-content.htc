@@ -1,0 +1,63 @@
+<public:attach event="onresizestart" onevent="stopImmutable()" />
+<public:attach event="onselectstart" onevent="stopImmutable()" />
+<public:attach event="onfocus" onevent="selectImmutable()" /> <!-- use focusin? -->
+<public:attach event="onmousedown" onevent="selectImmutable()" />
+<public:attach event="onmousemove" onevent="dragImmutable()" />
+<script type="text/javascript">
+    function getImmutable( node ) {
+        var immutable = null;
+        while( node ) {
+            try {
+                if( node.getAttribute( "contenteditable" ) == "false" )
+                    immutable = node;
+            } catch( e ) {}
+            node = node.parentNode;
+        }
+        return immutable;
+    }
+    
+    
+    function selectElement( element ) {
+        var range = element.ownerDocument.body.createControlRange();  
+        range.addElement( element );  
+        range.select();
+    }
+    
+    
+    function stopEvent() {
+        try {
+            event.cancelBubble = true;
+            event.returnValue = false;
+        } catch( e ) {}
+        return false;
+    }
+    
+    
+    function stopImmutable() {
+        var element = getImmutable( event.srcElement );
+        if( !element )
+            return;
+        return stopEvent();
+    }
+    
+    
+    function selectImmutable() {
+        var element = getImmutable( event.srcElement );
+        if( !element )
+            return;
+        selectElement( element );
+    }
+    
+    
+    function dragImmutable() {
+        var element = getImmutable( event.srcElement );
+        if( !element )
+            return;
+        var document = element.ownerDocument;
+        if( event.button != 1 || document.selection.type != "Control" )
+            return;
+        var range = document.selection.createRange();
+        if( range.item && range.item( 0 ) == element )
+            element.dragDrop();
+    }
+</script>

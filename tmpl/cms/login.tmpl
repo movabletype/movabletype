@@ -1,0 +1,76 @@
+<mt:if name="logged_out">
+<mt:setvarblock name="page_title"><__trans phrase="Signed out"></mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Sign in"></mt:setvarblock>
+</mt:if>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<script type="text/javascript">
+<!--
+// if this loads within our modal dialog iframe, force the user to
+// login from the 'top' of the browser.
+if (window.top && (window.top.location != window.location)) {
+    // strip any parameters to return them to the main menu,
+    // since leaving them will display the modal dialog in the
+    // full window.
+    var loc = window.location.href;
+    loc = loc.replace(/\?.+/, '');
+    window.top.location.href = loc;
+}
+
+function init() {
+    var u = getByID("username");
+    if (u.value != '') {
+        var p = getByID("password");
+        p.focus();
+    } else {
+        u.focus();
+    }
+}
+TC.attachLoadEvent(init);
+//-->
+</script>
+
+<form method="post" action="<mt:var name="script_url">">
+<mt:loop name="query_params">
+<input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
+</mt:loop>
+<mt:if name="is_bookmarklet">
+<input type="hidden" name="is_bm" value="1" />
+</mt:if>
+
+<mt:if name="logged_out">
+<mt:if name="delegate_auth">
+<p><__trans phrase="Your Movable Type session has ended."></p>
+<mt:else>
+<p><__trans phrase="Your Movable Type session has ended. If you wish to sign in again, you can do so below."></p>
+</mt:if>
+<mt:else>
+<mt:if name="login_again">
+<p><__trans phrase="Your Movable Type session has ended. Please sign in again to continue this action."></p>
+<mt:else>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+</mt:if>
+</mt:if>
+<fieldset>
+<mt:unless name="delegate_auth">
+
+<mt:var name="login_fields">
+
+<p class="left"><input type="submit" name="submit" value="<__trans phrase="Sign In">" /></p>
+
+<mt:if name="can_recover_password"><p class="right"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></p></mt:if>
+
+</mt:unless>
+
+</fieldset>
+</form>
+
+<mt:include name="include/chromeless_footer.tmpl">

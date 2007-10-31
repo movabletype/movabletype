@@ -1,0 +1,14 @@
+<$mt:setvar name="screen_type" value="popup-screen"$>
+<mt:include name="include/header_popup.tmpl">
+
+<p><__trans phrase="Your new entry has been saved to [_1]" params="<mt:var name="blog_name" escape="html">"><mt:if name="status_released"><__trans phrase=", and it has been published to your site"></mt:if><__trans phrase=". "><a target="_blank" href="<mt:var name="blog_url">"><__trans phrase="View your site"></a></p>
+
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">" target="_blank"><__trans phrase="Edit this entry"></a></p>
+
+<div align="right">
+<form action="<mt:var name="script_url">" onsubmit="return false;">
+<input type="button" onclick="window.close()" value="<__trans phrase="Close">" />
+</form>
+</div>
+
+<mt:include name="include/footer_popup.tmpl">

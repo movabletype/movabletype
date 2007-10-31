@@ -1,0 +1,38 @@
+<mt:setvar name="page_title" value="<__trans phrase="QuickPost">">
+<mt:setvar name="quickpost" value="1">
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/tools_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+<mt:unless name="have_link">
+<h3><__trans phrase="Configure QuickPost"></h3>
+<p class="page-desc"><__trans phrase="_USAGE_BOOKMARKLET_1"></p>
+<p class="page-desc"><__trans phrase="_USAGE_BOOKMARKLET_2"></p>
+
+<h4><__trans phrase="Include:"></h4>
+<form method="get" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="make_bm_link" />
+    <ul>
+        <li><input type="checkbox" id="show_trackback" name="show" value="t" checked="checked" /> <label for="show_trackback"><__trans phrase="TrackBack Items"></label></li>
+        <li><input type="checkbox" id="show_category" name="show" value="c" checked="checked" /> <label for="show_category"><__trans phrase="Category"></label></li>
+        <li><input type="checkbox" id="show_allow_comments" name="show" value="ac" checked="checked" /> <label for="show_allow_comments"><__trans phrase="Allow Comments"></label></li>
+        <li><input type="checkbox" id="show_allow_trackbacks" name="show" value="ap" checked="checked" /> <label for="show_allow_trackbacks"><__trans phrase="Allow TrackBacks"></label></li>
+        <li><input type="checkbox" id="show_text_formatting" name="show" value="cb" checked="checked" /> <label for="show_text_formatting"><__trans phrase="Text Formatting"></label></li>
+        <li><input type="checkbox" id="show_excerpt" name="show" value="e" checked="checked" /> <label for="show_excerpt"><__trans phrase="Excerpt"></label></li>
+        <li><input type="checkbox" id="show_extended_entry" name="show" value="m" checked="checked" /> <label for="show_extended_entry"><__trans phrase="Extended Entry"></label></li>
+        <li><input type="checkbox" id="show_keywords" name="show" value="k" checked="checked" /> <label for="show_keywords"><__trans phrase="Keywords"></label></li>
+        <li><input type="checkbox" id="show_tags" name="show" value="tg" checked="checked" /> <label for="show_tags"><__trans phrase="Tags"></label></li>
+        <li><input type="checkbox" id="show_basename" name="show" value="b" checked="checked" /> <label for="show_basename"><__trans phrase="Basename"></label></li>
+    </ul>
+    <div>
+        <input type="submit" value="<__trans phrase="Create QuickPost">" />
+    </div>
+</form>
+<mt:else>
+<p><__trans phrase="_USAGE_BOOKMARKLET_3"></p>
+<p><a href="<mt:var name="bm_js" escape="html">"><em><__trans phrase="QuickPost"></em></a></p>
+<p><__trans phrase="_USAGE_BOOKMARKLET_5"></p>
+<p><a href="<mt:var name="script_url">?__mode=reg_file&amp;bm_show=<mt:var name="bm_show">&amp;bm_height=<mt:var name="bm_height">"><em><__trans phrase="Add QuickPost to Windows right-click menu"></a></em></p>
+<p><__trans phrase="_USAGE_BOOKMARKLET_4"></p>
+</mt:unless>
+<mt:include name="include/footer.tmpl">

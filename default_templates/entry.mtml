@@ -1,0 +1,23 @@
+<MTSetVar name="page_id" value="entry-archive">
+<MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)">
+<MTSetVar name="main_template" value="1">
+<MTSetVar name="archive_template" value="1">
+<MTSetVar name="entry_template" value="1">
+<MTSetVar name="feedback_template" value="1">
+<MTSetVar name="sidebar" value="1">
+<MTSetVar name="module_about_context" value="1">
+<MTSetVar name="module_recent_posts" value="0">
+<MTSetVar name="module_monthly_archives" value="0">
+<MTSetVarBlock name="page_title"><$MTEntryTitle remove_html="1"$></MTSetVarBlock>
+
+<$MTInclude module="<MT_TRANS phrase="Header">"$>
+
+<h3 class="entry-header"><$MTEntryTitle$></h3>
+
+<$MTInclude module="<MT_TRANS phrase="Entry Detail">"$>
+
+<$MTInclude module="<MT_TRANS phrase="TrackBacks">"$>
+
+<$MTInclude module="<MT_TRANS phrase="Comments">"$>
+
+<$MTInclude module="<MT_TRANS phrase="Footer">"$>

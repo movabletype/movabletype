@@ -1,0 +1,124 @@
+<mt:setvar name="page_title" value="<__trans phrase="Backup">">
+<mt:setvar name="backup" value="1">
+<MTSetVarBlock name="content_header">
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/tools_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+
+function highlightSwitch(selection) {
+    if (selection.value == 'custom') {
+        var el_name = getByID('selected_blogs');
+        if (el_name) {
+            el_name.style.display = 'block';
+            el_name.innerHTML = '(<__trans phrase="None selected.">)';
+        }
+        openDialog(false, 'dialog_select_weblog', 'multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs');
+    } else {
+        var el_id = getByID('selected_blog_ids');
+        if (el_id) el_id.value = '';
+        var el_name = getByID('selected_blogs');
+        if (el_name) el_name.style.display = 'none';
+    }
+    return false;
+}
+</script>
+
+    <a href="#" onclick="return openManual('backup_restore', 'backup_restore_main')" class="help-link">?</a></p>
+
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+<div id="backup-panel">
+    <form method="post" action="<mt:var name="script_url">">
+        <input type="hidden" name="__mode" value="backup" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <fieldset style="margin-top: 0px;">
+<mt:if name="blog_id">
+            <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
+            <input type="hidden" id="backup_what" name="backup_what" value="custom" />
+            <input type="hidden" id="selected_blog_ids" name="selected_blog_ids" value="<mt:var name="blog_id">" />
+<mt:else>
+    <mtapp:setting
+        id="backup_what"
+        label="<__trans phrase="What to backup">"
+        hint="<__trans phrase="This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.">"
+        help_page="backup_restore"
+        help_section="backup_what">
+                    <select name="backup_what" id="backup_what" onchange="highlightSwitch(this)">
+                        <option value="everything" selected="selected"><__trans phrase="Everything"></option>
+                        <option value="custom"><__trans phrase="Choose blogs to backup"></option>
+                    </select>
+                    <input type="hidden" id="selected_blog_ids" name="selected_blog_ids" value="" />
+                    <p><strong><span id="selected_blogs" style="display:none;">(<__trans phrase="None selected.">)</span></strong></p>
+    </mtapp:setting>
+</mt:if>
+    <mtapp:setting
+        id="backup_archive_format"
+        label="<__trans phrase="Type of archive format">"
+        hint="<__trans phrase="The type of archive format to use.">"
+        help_page="backup_restore"
+        help_section="backup_format">
+                    <p>
+<mt:if name="targz">
+                        <input type="radio" id="tar.gz" name="backup_archive_format" value="1" checked="checked" />
+                        <label for="tar.gz"><__trans phrase="tar.gz"></label>
+</mt:if>
+<mt:if name="zip">
+                        <input type="radio" id="zip" name="backup_archive_format" value="2"<mt:unless name="targz">checked="checked"</mt:unless> />
+                        <label for="zip"><__trans phrase="zip"></label>
+</mt:if>
+                        <input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="targz"><mt:unless name="zip">checked="checked"</mt:unless></mt:unless> />
+                        <label for="no_archive"><__trans phrase="Don't compress"></label>
+                    </p>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="size_limit"
+        label="<__trans phrase="Number of megabytes per file">"
+        hint="<__trans phrase="Approximate file size per backup file.">"
+        help_page="backup_restore"
+        help_section="backup_num_size">
+                    <select name="size_limit" id="size_limit">
+                        <option value="0" selected="selected"><__trans phrase="Don't Divide"></option>
+<mt:if name="OVER_300">
+                        <option value="300">300KB</option>
+    <mt:if name="OVER_500">
+                        <option value="500">500KB</option>
+        <mt:if name="OVER_1024">
+                        <option value="1024">1MB</option>
+            <mt:if name="OVER_2048">
+                        <option value="2048">2MB</option>
+            </mt:if>
+        </mt:if>
+    </mt:if>
+</mt:if>
+                    </select>
+    </mtapp:setting>
+            <p style="text-align: center;"><input type="submit" value="<__trans phrase="Make Backup">" title="<__trans phrase="Make Backup (b)">" accesskey="b" /></p>
+        </fieldset>
+    </form>
+</div>
+
+<MTIgnore>
+    
+    <!-- THE FOLLOWING CODE NEEDS TO BE ADDED TO THE onload EVENT FOR THIS PAGE. -->
+    <!-- This edit was made to allow use of the common footer. -->
+    
+    <mt:if name="open_dialog">
+    <script type="text/javascript">
+    <!--
+    openDialog(false, 'dialog_restore_upload', 'magic_token=<mt:var name="magic_token">&amp;files=<mt:var name="files">&amp;assets=<mt:var name="assets">&amp;current_file=<mt:var name="filename">&amp;last=<mt:var name="last">&amp;schema_version=<mt:var name="schema_version">&amp;redirect=1;');
+    //-->
+    </script>
+    </mt:if>
+</MTIgnore>
+
+<mt:include name="include/footer.tmpl">

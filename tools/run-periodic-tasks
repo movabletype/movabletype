@@ -1,0 +1,24 @@
+#!/usr/bin/perl -w
+
+# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
+# permission from www.movabletype.org.
+#
+# $Id$
+
+use strict;
+
+use lib 'lib', '../lib';
+use MT::Bootstrap;
+
+#use constant VERBOSE => 0;
+
+use MT;
+#use MT::Entry qw(:constants);
+#use MT::Util qw( offset_time_list );
+
+my $mt = MT->new()
+    or die MT->errstr;
+
+MT->run_tasks;
+
+1;

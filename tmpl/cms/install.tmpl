@@ -1,0 +1,199 @@
+<mt:setvarblock name="page_title"><__trans phrase="Create Your First User"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<style type="text/css">
+div.warning#version-warning {
+    position: relative;
+    padding: 1em;
+}
+</style>
+
+<script type="text/javascript">
+window.onload = init;
+
+function init() {
+    if (!getByID) {
+        // javascript files failed to load... alert user
+        return;
+    }
+    var user = getByID("admin_username");
+    if (user) {
+        user.focus();
+    }
+}
+
+function dismiss(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display = 'none';
+    }
+}
+
+function show(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display= 'block';
+    }
+}
+
+function validate(f) {
+
+    if (!f.admin_username.value) {
+        alert('<__trans phrase="The initial account name is required." escape="singlequotes">');
+        f.admin_username.focus();
+        return false;
+    }
+
+<mt:if name="auth_mode_mt">
+    if (!f.admin_email.value) {
+        alert('<__trans phrase="The e-mail address is required." escape="singlequotes">');
+        f.admin_email.focus();
+        return false;
+    }
+    if (!f.hint.value) {
+        alert('<__trans phrase="Password recovery word/phrase is required." escape="singlequotes">');
+        f.hint.focus();
+        return false;
+    }
+</mt:if>
+
+    return true;
+}
+
+</script>
+
+<div class="upgrade">
+
+<mt:if name="version_warning">
+<div class="warning" id="version-warning">
+    <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
+    <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
+    <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
+    <form method="get">
+    <p align="center"><input type="button" value="<__trans phrase="Yes">" onclick="dismiss('version-warning'); show('warning_gone');" />
+        &nbsp; &nbsp;
+    <input type="button" value="<__trans phrase="No">" onclick="javascript:location.href='mt-check.cgi'" />
+    </p>
+    </form>
+</div>
+</mt:if>
+
+<div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
+<p class="intro"><__trans phrase="Before you can begin blogging, you must create an administrator account for your system. When you are done, Movable Type will then initialize your database."></p>  
+
+<mt:if name="error">
+<mtapp:statusmsg
+    id="generic-error"
+    class="error">
+    <mt:var name="error">
+</mtapp:statusmsg>
+</mt:if>
+
+<form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<input type="hidden" name="__mode" value="init_user">
+
+<!--
+<mt:if name="auth_mode_mt">
+<p><__trans phrase="You will need to select a username and password for the administrator account."></p>
+</mt:if>
+-->
+
+<mt:if name="auth_mode_ldap">
+<p><__trans phrase="To proceed, you must authenticate properly with your LDAP server."></p>
+</mt:if>
+
+
+<fieldset>
+
+<mt:if name="auth_mode_mt">
+
+    <mtapp:setting
+        id="admin_username"
+        label="<__trans phrase="Username">"
+        hint="<__trans phrase="The name used by this user to login.">">
+        <input type="text" id="admin_username" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_email"
+        label="<__trans phrase="Email Address">"
+        hint="<__trans phrase="The user's email address.">">
+        <input type="text" id="admin_email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="preferred_language"
+        label="<__trans phrase="Language">"
+        hint="<__trans phrase="The user's preferred language.">">
+        <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+        </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_password"
+        label="<__trans phrase="Password">"
+        hint="<__trans phrase="Select a password for your account.">">
+        <input type="password" id="admin_password" name="admin_password" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_password_confirm"
+        label="<__trans phrase="Password Confirm">"
+        hint="<__trans phrase="Repeat the password for confirmation.">">
+        <input type="password" name="admin_password_confirm" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="hint"
+        label="<__trans phrase="Password recovery word/phrase">"
+        hint="<__trans phrase="This word or phrase will be required to recover your password if you forget it.">">
+        <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
+    </mtapp:setting>
+
+</mt:if>
+
+<mt:if name="auth_mode_ldap">
+
+    <mtapp:setting
+        id="admin_username"
+        label="<__trans phrase="Username">"
+        hint="<__trans phrase="Your LDAP username.">">
+        <input type="text" id="admin_username" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="preferred_language"
+        label="<__trans phrase="Language">"
+        hint="<__trans phrase="The user's preferred language.">">
+        <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+        </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_password"
+        label="<__trans phrase="Password">"
+        hint="<__trans phrase="Enter your LDAP password.">">
+        <input type="password" id="admin_password" name="admin_password" />
+    </mtapp:setting>
+
+</mt:if>
+
+</fieldset>
+
+</div>
+</div>
+
+<div class="button-bar">
+<div class="right pkg">
+<input type="submit" name="continue" value="<__trans phrase="Continue">" />
+</div>
+</div>
+
+</form>
+
+
+
+<mt:include name="include/chromeless_footer.tmpl">

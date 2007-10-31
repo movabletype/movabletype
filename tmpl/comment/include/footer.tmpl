@@ -1,0 +1,75 @@
+</div></div>
+</div></div>
+
+
+
+<br />
+
+</div>
+
+</div>
+
+<div class="split_container_right">
+
+<div class="comment_signin_options">
+
+<mt:if name="auth_loop">
+<p><__trans phrase="Sign in using">...</p>
+<script type="text/javascript">
+<!--
+function signinToggle(choice) {
+    var auths = new Array(<mt:if name="enabled_MovableType">'mt',</mt:if><mt:loop name="auth_loop">'<mt:var name="name">'<mt:unless name="__last__">,</mt:unless></mt:loop>);
+
+    for (var i = 0; i < auths.length; i++) {
+        var signinObject = getByID('signin_with_' + auths[i]);
+        var optionsObject = getByID('signin_option_' + auths[i]);
+
+        if (signinObject && optionsObject) {
+            if (auths[i] == choice) {
+                signinObject.style.display = 'block';
+                optionsObject.className = 'choice_on';
+            } else {
+                signinObject.style.display = 'none';
+                optionsObject.className = 'choice_off';
+            }
+        }
+    }
+}
+//-->
+</script>
+
+<ul>
+<mt:if name="enabled_MovableType">
+<li id="signin_option_mt"<mt:if name="enabled_MovableType"> class="choice_on"</mt:if>><div class="signin_logo"><img src="<$mt:var name="static_uri"$>images/comment/signin_mt.png" width="36" height="26"></div><div class="auth_name"><a href="#" onclick="signinToggle('mt');">Movable Type</a></div></li>
+</mt:if>
+
+<mt:loop name="auth_loop">
+<li id="signin_option_<mt:var name="name">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><img src="<$mt:var name="static_uri"$>images/comment/signin_<mt:var name="name">.png" width="36" height="26"></div><div class="auth_name"><a href="#" onclick="signinToggle('<mt:var name="name">');"><mt:var name="name"></a></div></li>
+</mt:loop>
+
+</ul>
+</mt:if>
+</div>
+
+</div>
+
+</div>
+
+<div class="split_container">
+<div class="split_container_left">
+
+<div id="footer">
+<div class="comment_signin_footer">
+<!-- <__trans phrase="<a href="[_1]">Movable Type</a>" params="<mt:var name="portal_url">"> -->
+</div>
+</div>
+
+</div>
+
+<div class="split_container_right">
+</div>
+
+</div>
+
+</body>
+</html>

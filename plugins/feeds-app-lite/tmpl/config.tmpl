@@ -1,0 +1,50 @@
+<TMPL_INCLUDE NAME="include/header.tmpl">
+
+<h2><MT_TRANS phrase="Feeds.App Lite Widget Creator"></h2>
+
+<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
+
+    <fieldset>
+        <h3><MT_TRANS phrase="Feed Configuration">: <TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML></h3>
+
+    <div class="inner">
+
+
+<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="uri" value="<TMPL_VAR NAME=FEED_URI ESCAPE=HTML>" />
+
+    <mtapp:setting
+        id="feed_url"
+        label="<__trans phrase="Feed URL">">
+        <p><TMPL_VAR NAME=FEED_URI ESCAPE=HTML></p>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="feed_title"
+        label="<__trans phrase="Title">"
+        hint="<__trans phrase="Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.">">
+        <input name="feed_title" id="feed_title" value="<TMPL_VAR NAME=FEED_TITLE ESCAPE=HTML>" maxlength="42" type="text" />
+    </mtapp:setting>
+
+        
+    <mtapp:setting
+        id="lastn"
+        label="<__trans phrase="Display">"
+        hint="<__trans phrase="Select the maximum number of entries to display.">">
+<select name="lastn" id="lastn">
+<option value="3"><MT_TRANS phrase="3"></option>
+<option value="5" selected="selected"><MT_TRANS phrase="5"></option>
+<option value="10"><MT_TRANS phrase="10"></option>
+<option value=""><MT_TRANS phrase="All"></option>
+</select>
+    </mtapp:setting>
+
+
+<div style="margin-left:70px;">
+<input type="submit" value="<MT_TRANS phrase="Save">" />&nbsp;
+</div>
+</div>
+</fieldset>
+</form>
+<TMPL_INCLUDE NAME="include/footer.tmpl">

@@ -1,0 +1,62 @@
+* {
+  font-family: 'Lucida Grande', Verdana, Arial, Helvetica, sans-serif ! important;
+  font-weight: normal ! important;
+}
+ 
+body {
+  font-size: 13px;
+  *font-size: small;
+  *font: x-small;
+}
+
+p {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+#list-blog .blog-info {
+  width: 225px;
+}
+
+#list-blog .shortcuts {
+  width: 210px;
+}
+
+#list-blog .shortcuts ul {
+  width: 100px;
+}
+
+#list-blog .shortcuts ul.shortcut-col2 {
+   width: 90px;
+}
+
+.box li {
+  font-size: 11px;
+}
+
+.box#news-box li {
+  display: list-item;
+}
+
+.box ul.nav li a {
+  font-size: 12px;
+}
+
+#nav .top li {
+  line-height: 1.6;
+  padding-top: 0;
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.sub li a {
+  font-size: 10px;
+}
+
+input, select, option, textarea {
+  font-family: sans-selif;
+}
+
+b {
+  font-weight: bold ! important;
+}

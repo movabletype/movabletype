@@ -1,0 +1,118 @@
+<ul>
+<mt:if name="USER_VIEW">
+    <mt:unless name="EDIT_AUTHOR_ID" eq="PSEUDO">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="User Profile"></a></li>
+<mt:if name="group_support">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="Groups"><mt:if name="GROUP_COUNT"> (<mt:var name="GROUP_COUNT">)<mt:else> (0)</mt:if></a></li>
+</mt:if>
+    </mt:unless>
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="Associations"></a></li>
+</mt:if>
+
+<mt:if name="edit_author">
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author<mt:if name="id">&amp;id=<mt:var name="id"></mt:if>"><__trans phrase="User Profile"></a></li>
+    <mt:unless name="new_object">
+<mt:if name="group_support">
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;author_id=<mt:var name="id">"><__trans phrase="Groups"> <mt:if name="GROUP_COUNT">(<mt:var name="GROUP_COUNT">)<mt:else>(0)</mt:if></a></li>
+</mt:if>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="id">"><__trans phrase="Associations"></a></li>
+    </mt:unless>
+</mt:if>
+
+<mt:if name="group_support">
+<mt:if name="GROUP_VIEW">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=group&amp;id=<mt:var name="GROUP_ID">"><__trans phrase="Group Profile"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors&amp;group_id=<mt:var name="GROUP_ID">"><__trans phrase="Members"> (<mt:var name="USER_COUNT">)</a></li>
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;group_id=<mt:var name="GROUP_ID">"><__trans phrase="Associations"></a></li>
+</mt:if>
+
+<mt:if name="edit_group">
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=group<mt:if name="ID">&amp;id=<mt:var name="ID"></mt:if>"><__trans phrase="Group Profile"></a></li>
+    <mt:unless name="new_object">
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors&amp;group_id=<mt:var name="ID">"><__trans phrase="Members"> (<mt:var name="USER_COUNT">)</a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;group_id=<mt:var name="ID">"><__trans phrase="Associations"></a></li>
+    </mt:unless>
+</mt:if>
+
+<mt:if name="list_group_member">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=group&amp;id=<mt:var name="GROUP_ID">"><__trans phrase="Group Profile"></a></li>
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors&amp;group_id=<mt:var name="GROUP_ID">"><__trans phrase="Members"> (<mt:var name="USER_COUNT">)</a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;group_id=<mt:var name="GROUP_ID">"><__trans phrase="Associations"></a></li>
+</mt:if>
+</mt:if>
+
+<mt:if name="ROLE_VIEW">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=edit_role&amp;id=<mt:var name="ROLE_ID">"><__trans phrase="Details"></a></li>
+<mt:if name="group_support">
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;role_id=<mt:var name="ROLE_ID">"><__trans phrase="Users &amp; Groups"></a></li>
+<mt:else>
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;role_id=<mt:var name="ROLE_ID">"><__trans phrase="Users"></a></li>
+</mt:if>
+    <li>&laquo;<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_roles"><__trans phrase="List Roles"></a></li>
+</mt:if>
+
+<mt:if name="edit_role">
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=edit_role&amp;id=<mt:var name="ID">"><__trans phrase="Details"></a></li>
+<mt:if name="group_support">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;role_id=<mt:var name="ID">"><__trans phrase="Users &amp; Groups"></a></li>
+<mt:else>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;role_id=<mt:var name="ID">"><__trans phrase="Users"></a></li>
+</mt:if>
+    <li>&laquo;<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_roles"><__trans phrase="List Roles"></a></li>
+</mt:if>
+
+<mt:if name="group_support">
+<mt:if name="USERGROUP_VIEW">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><__trans phrase="Users"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Groups"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><__trans phrase="Roles"></a></li>
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Associations"></a></li>
+</mt:if>
+
+<mt:if name="list_group">
+    <mt:if name="EDIT_AUTHOR_ID">
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="User Profile"></a></li>
+        <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="Groups"><mt:if name="GROUP_COUNT"> (<mt:var name="GROUP_COUNT">)<mt:else> (0)</mt:if></a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="Associations"></a></li>
+    <mt:else>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><__trans phrase="Users"></a></li>
+        <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Groups"></a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><__trans phrase="Roles"></a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Associations"></a></li>
+    </mt:if>
+</mt:if>
+</mt:if>
+
+<mt:if name="list_users">
+    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><__trans phrase="Users"></a></li>
+<mt:if name="group_support">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Groups"></a></li>
+</mt:if>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><__trans phrase="Roles"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Associations"></a></li>
+</mt:if>
+
+<mt:if name="list_role">
+    <mt:if name="EDIT_GROUP_ID">
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=group&amp;id=<mt:var name="ID">"><__trans phrase="Group Profile"></a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors&amp;group_id=<mt:var name="EDIT_GROUP_ID">"><__trans phrase="Members"> (<mt:var name="USER_COUNT">)</a></li>
+        <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles&amp;group_id=<mt:var name="EDIT_GROUP_ID">"><__trans phrase="Roles"></a></li>
+    <mt:else>
+        <mt:if name="EDIT_AUTHOR_ID">
+            <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="User Profile"></a></li>
+<mt:if name="group_support">
+            <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="Groups"> (<mt:var name="GROUP_COUNT">)</a></li>
+</mt:if>
+            <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><__trans phrase="Roles"></a></li>
+        <mt:else>
+            <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><__trans phrase="Users"></a></li>
+<mt:if name="group_support">
+            <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_groups&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Groups"></a></li>
+</mt:if>
+            <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><__trans phrase="Roles"></a></li>
+            <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Associations"></a></li>
+        </mt:if>
+    </mt:if>
+</mt:if>
+
+</ul>

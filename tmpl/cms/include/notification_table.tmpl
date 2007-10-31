@@ -1,0 +1,65 @@
+<mt:if name="object_loop">
+<form id="selector-form" class="selector-form" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="notification" />
+    <input type="hidden" name="action_name" value="" />
+    <input type="hidden" name="itemset_action_input" value="" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="id" value="" />
+    <input type="hidden" name="email" value="" />
+    <input type="hidden" name="url" value="" />
+
+<mt:if name="position_actions_top">
+    <mt:include name="include/actions_bar.tmpl">
+</mt:if>
+
+<div class="tableselect" id="selector">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th class="cb" id="delete-col-head"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<th id="nt-email"><__trans phrase="Email Address"></th>
+<th id="nt-url"><__trans phrase="URL"></th>
+<th id="nt-date"><__trans phrase="Date Added"></th>
+</tr>
+</thead>
+
+<tbody>
+<mt:loop name="object_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+<td class="cb" id="delete-<mt:var name="id">"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+<td><a href="#" title="<__trans phrase="Click to edit notification list item">" class="edit-link" id="note-email-link-<mt:var name="id">" onmouseover="highlight_note(<mt:var name="id">)" onmouseout="unhighlight_note(<mt:var name="id">)" onclick="return edit_note(<mt:var name="id">)"><mt:var name="email" escape="html"></a>
+<span id="note-email-field-<mt:var name="id">" style="display: none">
+<input type="text" name="note-email-<mt:var name="id">" id="note-email-<mt:var name="id">" value="<mt:var name="email" escape="html">" />
+</span>
+</td>
+<td><span id="note-url-link-<mt:var name="id">" onmouseover="highlight_note(<mt:var name="id">)" onmouseout="unhighlight_note(<mt:var name="id">)" onclick="return edit_note(<mt:var name="id">)"><a href="#" title="<__trans phrase="Click to edit notification list item">"><mt:var name="url" escape="html"></a><mt:if name="url">&nbsp;<a href="<mt:var name="url">">&raquo;</a></mt:if></span>
+<span id="note-url-field-<mt:var name="id">" style="display: none">
+<input type="text" name="note-url-<mt:var name="id">" id="note-url-<mt:var name="id">" value="<mt:var name="url" escape="html">" />
+<input type="submit" value="<__trans phrase="Save">" onclick="return submit_edit(<mt:var name="id">)" />
+<input type="button" value="<__trans phrase="Cancel">" onclick="return cancel_edit(<mt:var name="id">)" />
+</span>
+</td>
+<td><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
+</tr>
+</mt:loop>
+</tbody>
+
+</table>
+</div>
+
+<mt:if name="position_actions_bottom">
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom">
+</mt:if>
+
+</form>
+<mt:else>
+    <mtapp:statusmsg
+        id="no-notifications"
+        class="info">
+        <__trans phrase="No notifications could be found.">
+    </mtapp:statusmsg>
+</mt:if>

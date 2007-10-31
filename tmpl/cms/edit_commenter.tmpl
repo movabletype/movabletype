@@ -1,0 +1,145 @@
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="page_title" value="<__trans phrase="Commenter Details">">
+<MTSetVarBlock name="content_header">
+
+    <mt:if name="saved_commenter">
+        <mtapp:statusmsg
+            id="saved-commenter"
+            class="success">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <mt:if name="trusted">
+        <mtapp:statusmsg
+            id="trusted"
+            class="success">
+            <__trans phrase="The commenter has been trusted.">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <mt:if name="banned">
+        <mtapp:statusmsg
+            id="banned"
+            class="success">
+            <__trans phrase="The commenter has been banned.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=1&amp;filter_key=_comments_by_user&amp;filter_val=<mt:var name="id">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html">"></a></li>
+        </ul>
+    </mtapp:widget>
+    <$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+        <mt:if name="can_edit_commenters">
+        <mt:if name="id">
+        <mt:unless name="commenter_approved">
+        <input type="button" value="<__trans phrase="Trust">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon">')" accesskey="t" title="<__trans phrase="Trust commenter"> (t)" />
+        <mt:else>
+        <input type="button" value="<__trans phrase="Untrust">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'itemset_action', {action_name:'untrust'}, '<__trans phrase="to act upon">')" accesskey="u" title="<__trans phrase="Untrust commenter"> (u)" />
+        </mt:unless>
+        <mt:unless name="commenter_banned">
+        <input type="button" value="<__trans phrase="Ban">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon">')" accesskey="b" title="<__trans phrase="Ban commenter"> (b)" />
+        <mt:else>
+        <input type="button" value="<__trans phrase="Unban">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'itemset_action', {action_name:'unban'}, '<__trans phrase="to act upon">')" accesskey="n" title="<__trans phrase="Unban commenter"> (n)" />
+        </mt:unless>
+        <mt:else>
+        <input type="button" value="<__trans phrase="Trust">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon">')" accesskey="t" title="<__trans phrase="Trust selected commenters"> (t)" />
+        <input type="button" value="<__trans phrase="Ban">" onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter">', '<__trans phrase="commenters">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon">')" accesskey="b" title="<__trans phrase="Ban selected commenters"> (b)" />
+        </mt:if>
+        </mt:if>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<mt:unless name="tab_commenter">
+<script type="text/javascript">
+<!--
+var tableSelect;
+function init()
+{
+        // setup
+        tableSelect = new TC.TableSelect( "selector" );
+        tableSelect.rowSelect = true;
+}
+TC.attachLoadEvent(init);
+// -->
+</script>
+</mt:unless>
+
+<form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="id" value="<mt:var name="id">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="commenter" />
+    <input type="hidden" name="action_name" value="" />
+    <input type="hidden" name="itemset_action_input" value="" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+        <mt:if name="position_actions_top">
+            <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1">
+        </mt:if>
+
+        <mtapp:setting
+            id="edit-commenter-label"
+            label="<__trans phrase="Name">"
+            hint="<__trans phrase="The Name of the commenter">"
+            show_hint="0">
+            <mt:var name="nickname" escape="html">
+            <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=name&amp;search=<mt:var name="nickname" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+        </mtapp:setting>
+    
+        <mtapp:setting
+            id="edit-commenter-label"
+            label="<__trans phrase="Identity">"
+            hint="<__trans phrase="The Identity of the commenter">"
+            show_hint="0">
+            <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">"><mt:var name="name" escape="html"> &raquo;</a><mt:else><mt:var name="name" escape="html"></mt:if>
+        </mtapp:setting>
+    
+        <mtapp:setting
+            id="edit-commenter-label"
+            label="<__trans phrase="Email">"
+            hint="<__trans phrase="The Email of the commenter">"
+            show_hint="0">
+            <mt:if name="is_email_hidden"><__trans phrase="Withheld"><mt:else><mt:var name="email" escape="html"></mt:if>
+            <mt:if name="is_email_hidden">&nbsp;<mt:else><a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=email&amp;search=<mt:var name="email" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a></mt:if>        </mtapp:setting>
+    
+        <mtapp:setting
+            id="edit-commenter-label"
+            label="<__trans phrase="URL">"
+            hint="<__trans phrase="The URL of the commenter">"
+            show_hint="0">
+            <mt:if name="url"><a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html"> &raquo;</a><mt:else>&nbsp;</mt:if>
+            <mt:if name="url"><a title="<__trans phrase="View all comments with this URL address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=url&amp;search=<mt:var name="url" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a><mt:else>&nbsp;</mt:if>
+        </mtapp:setting>
+    
+        <mtapp:setting
+            id="edit-commenter-label"
+            label="<__trans phrase="Status">"
+            hint="<__trans phrase="The trusted status of the commenter">"
+            show_hint="0">
+            <mt:if name="commenter_approved">
+            <span class="icon-left icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
+            <mt:else>
+                <mt:if name="commenter_banned">
+              <span class="icon-left icon-left-wide icon-banned"><__trans phrase="Banned"></span>
+                <mt:else>
+            <span class="icon-left icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
+                </mt:if>
+            </mt:if>
+            <a title="<__trans phrase="View all commenters with this status">" href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="commenter_approved">approved<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+        </mtapp:setting>
+    
+        <mt:if name="position_actions_bottom">
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+        </mt:if>
+</form>
+
+<mt:include name="include/footer.tmpl">

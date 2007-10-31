@@ -1,0 +1,44 @@
+<mt:setvar name="page_title" value="<__trans phrase="Trackback">">
+<mt:if name="is_bm">
+    <$mt:setvar name="screen_type" value="popup-screen"$>
+    <mt:include name="include/header_popup.tmpl">
+<mt:else>
+    <mt:include name="include/header.tmpl">
+</mt:if>
+
+<script type="text/javascript">
+<!--
+function doRedirect () {
+    window.location.replace('<mt:var name="script_url">?__mode=ping&blog_id=<mt:var name="blog_id">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&magic_token=<mt:var name="magic_token">&is_bm=<mt:var name="is_bm">');
+}
+setTimeout('doRedirect()', 1000);
+// -->
+</script>
+
+<mt:unless name="is_bm">
+<div class="padded-box">
+    <mtapp:statusmsg
+        id="pinging"
+        class="info">
+        <__trans phrase="Pinging sites...">
+    </mtapp:statusmsg>
+<mt:loop name="url_list">
+<p><mt:var name="url" escape="html"></p>
+</mt:loop>
+</div>
+<mt:else>
+<mtapp:statusmsg
+    id="pinging"
+    class="info">
+    <__trans phrase="Pinging sites...">
+</mtapp:statusmsg>
+<mt:loop name="url_list">
+&nbsp;&nbsp;&nbsp;<mt:var name="url"><br />
+</mt:loop>
+</mt:unless>
+
+<mt:if name="is_bm">
+<mt:include name="include/footer_popup.tmpl">
+<mt:else>
+<mt:include name="include/footer.tmpl">
+</mt:if>

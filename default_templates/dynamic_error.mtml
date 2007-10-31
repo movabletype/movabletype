@@ -1,0 +1,14 @@
+<MTSetVar name="page_layout" value="layout-one-column">
+<MTSetVar name="page_id" value="dynamic-error">
+<MTSetVar name="system_template" value="1">
+<MTSetVar name="dynamic_error_template" value="1">
+<MTSetVarBlock name="page_title"><MT_TRANS phrase="Page Not Found"></MTSetVarBlock>
+
+<$MTInclude module="<MT_TRANS phrase="Header">"$>
+
+<h3><$MTGetVar name="page_title"$></h3>
+<blockquote>
+    <strong><$MTErrorMessage$></strong>
+</blockquote>
+
+<$MTInclude module="<MT_TRANS phrase="Footer">"$>

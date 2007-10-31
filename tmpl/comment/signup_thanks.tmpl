@@ -1,0 +1,15 @@
+<mt:setvarblock name="page_title"><__trans phrase="Thanks for signing up"></mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<p><__trans phrase="Confirmation email has been sent to"> <mt:var name="email" escape="html">.</p>
+
+<p><__trans phrase="Please check your email and click on the link in the confirmation email to activate your account."></p>
+
+<mt:if name-"entry_url">
+<p><a href="<mt:var name="entry_url">"><__trans phrase="Return to the original entry"></a>.</p>
+<mt:else>
+<p><a href="<mt:var name="return_url">"><__trans phrase="Return to the original page"></a>.</p>
+</mt:else></mt:if>
+
+<mt:include name="include/footer.tmpl">
+

@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+   <meta name="generator" content="<$MTProductName version="1"$>" />
+   <link rel="stylesheet" href="<$MTLink template="base_stylesheet"$>" type="text/css" />
+   <link rel="stylesheet" href="<$MTLink template="theme_stylesheet"$>" type="text/css" />
+<MTIf name="main_template">
+    <link rel="alternate" type="application/atom+xml" title="Atom" href="<$MTLink template="atom"$>" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="<$MTLink template="rss"$>" />
+</MTIf>
+<MTIf name="search_results_template">
+    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="[_1]: Search Results" params="<$MTBlogName encode_html="1"$>">" href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_type"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+</MTIf>
+    <title>
+<MTIf name="entry_template">
+    <MT_TRANS phrase="[_1] - [_2]" params="<$MTGetVar name="page_title"$>%%<$MTBlogName encode_html="1"$>">
+<MTElse>
+        <MTIf name="main_index">
+    <$MTBlogName encode_html="1"$>
+        <MTElse>
+    <MT_TRANS phrase="[_1]: [_2]" params="<$MTBlogName encode_html="1"$>%%<$MTGetVar name="page_title"$>">
+        </MTIf>
+</MTIf>
+    </title>
+<MTIf name="main_index">
+    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="<$MTLink template="rsd"$>" />
+</MTIf>
+<MTIf name="main_template">
+    <MTUnless name="main_index">
+    <link rel="start" href="<$MTBlogURL$>" title="Home" />
+    </MTUnless>
+</MTIf>
+<MTIf name="datebased_archive">
+    <MTArchivePrevious><link rel="prev" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchivePrevious>
+    <MTArchiveNext><link rel="next" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchiveNext>
+</MTIf>
+<MTIf name="entry_template">
+    <MTEntryPrevious><link rel="prev" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryPrevious>
+    <MTEntryNext><link rel="next" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryNext>
+</MTIf>
+<MTIf name="feedback_template">
+    <$MTEntryTrackbackData$>
+    <script type="text/javascript" src="<$MTLink template="javascript"$>"></script>
+</MTIf>
+<MTIf name="main_template">
+    <$MTCCLicenseRDF$>
+</MTIf>
+</head>
+<body class="<$MTGetVar name="page_id"$> <$MTGetVar name="page_layout" default="layout-two-column-right"$>"<MTIf name="body_onload"> onload="<$MTGetVar name="body_onload"$>"</MTIf>>
+   <div id="container">
+      <div id="container-inner" class="pkg">
+         <div id="banner">
+            <div id="banner-inner" class="pkg">
+               <h1 id="banner-header"><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></h1>
+               <h2 id="banner-description"><$MTBlogDescription$></h2>
+            </div>
+         </div>
+         <div id="pagebody">
+            <div id="pagebody-inner" class="pkg">
+               <div id="alpha">
+                  <div id="alpha-inner" class="pkg">

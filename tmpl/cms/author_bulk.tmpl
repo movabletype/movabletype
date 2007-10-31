@@ -1,0 +1,42 @@
+<mt:setvar name="page_title" value="<__trans phrase="Manage Users in bulk">">
+<MTSetVarBlock name="content_header">
+<p class="page_desc"><__trans phrase="_USAGE_AUTHORS_2"></p>
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="upload_author_bulk" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <div id="import-panel">
+        <fieldset style="margin-top: 0px;">
+
+    <mtapp:setting
+        id="file"
+        label="<__trans phrase="Upload source file">"
+        hint="<__trans phrase="Specify the CSV-formatted source file for upload">"
+        help_page="author_bulk"
+        help_section="source_file">
+        <input name="file" id="file" type="file" size="30" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="encoding"
+        label="<__trans phrase="Source File Encoding">"
+        hint="<__trans phrase="By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.">"
+        help_page="author_bulk"
+        help_section="source_file_encoding">
+        <select name="encoding" id="encoding">
+        <mt:loop name="encoding_names">
+            <option value="<mt:var name="name">"><mt:var name="display_name"></option>
+        </mt:loop>
+        </select>
+    </mtapp:setting>
+
+        </fieldset>
+    </div>
+    <div style="text-align: center;"><input type="submit" value="<__trans phrase="Upload">" title="<__trans phrase="Upload (u)">" accesskey="u" /></div>
+
+</form>
+
+<mt:include name="include/footer.tmpl">

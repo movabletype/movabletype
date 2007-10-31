@@ -1,0 +1,199 @@
+<mt:setvarblock name="page_title"><__trans phrase="Overview of"></mt:setvarblock>
+<MTSetVarBlock name="content_header">
+    <p class="page-desc"><__trans phrase="Recent updates to [_1]." params="<mt:var name="blog_name" escape="html">"></p>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+     -- T E M P O R A R Y
+    <ul>
+    <mt:if name="has_posting_label">
+    <li><__trans phrase="Creating">
+    <ul>
+    <mt:if name="can_create_post"><li><a<mt:if name="nav_new_entry"> class="here"</mt:if> id="nav-new-entry" title="<__trans phrase="Create New Entry">" href="<mt:var name="mt_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="New Entry"></a></li></mt:if>
+    <mt:if name="can_edit_entries"><li><a<mt:if name="nav_entries"> class="here"</mt:if> id="nav-entries" title="<__trans phrase="List Entries">" href="<mt:var name="mt_url">?__mode=list_entries&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Entries"></a></li></mt:if>
+    <mt:if name="can_access_assets"><li><a<mt:if name="nav_assets"> class="here"</mt:if> id="nav-assets" title="<__trans phrase="List uploaded files">" href="<mt:var name="mt_url">?__mode=list_assets&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Assets"></a></li></mt:if>
+    </ul></li>
+    </mt:if>
+    <mt:if name="has_community_label">
+    <li><__trans phrase="Community">
+    <ul>
+    <mt:if name="can_edit_entries"><li><a<mt:if name="nav_comments"> class="here"</mt:if> id="nav-comments" title="<__trans phrase="List Comments">" href="<mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Comments"></a></li></mt:if>
+    <mt:if name="can_manage_feedback"><li><a<mt:if name="nav_commenters"> class="here"</mt:if> id="nav-commenters" title="<__trans phrase="List Commenters">" href="<mt:var name="mt_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Commenters"></a></li></mt:if>
+    <mt:if name="can_edit_entries"><li><a<mt:if name="nav_trackbacks"> class="here"</mt:if> id="nav-trackbacks" title="<__trans phrase="List TrackBacks">" href="<mt:var name="mt_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="TrackBacks"></a></li></mt:if>
+    <mt:if name="can_edit_notifications"><li><a<mt:if name="nav_notifications"> class="here"</mt:if> id="nav-notifications" title="<__trans phrase="Edit Notification List">" href="<mt:var name="mt_url">?__mode=list&amp;_type=notification&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Notifications"></a></li></mt:if>
+    </ul></li>
+    <mt:else>
+    <mt:if name="can_manage_feedback">
+    <li><__trans phrase="Community">
+    <ul>
+    <li><a<mt:if name="nav_comments"> class="here"</mt:if> id="nav-comments" title="<__trans phrase="List Comments">" href="<mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Comments"></a></li>
+    <li><a<mt:if name="nav_commenters"> class="here"</mt:if> id="nav-commenters" title="<__trans phrase="List Commenters">" href="<mt:var name="mt_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Commenters"></a></li>
+    <li><a<mt:if name="nav_trackbacks"> class="here"</mt:if> id="nav-trackbacks" title="<__trans phrase="List TrackBacks">" href="<mt:var name="mt_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="TrackBacks"></a></li>
+    </ul></li>
+    </mt:if>
+    </mt:if>
+    <mt:if name="has_manage_label">
+    <li><__trans phrase="Configure">
+    <ul>
+    <mt:if name="can_edit_authors"><li><a<mt:if name="nav_authors"> class="here"</mt:if> id="nav-usersgroups" title="<__trans phrase="List Users &amp; Groups">" href="<mt:var name="mt_url">?__mode=list_associations&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Users &amp; Groups"></a></li></mt:if>
+    <mt:if name="can_edit_templates"><li><a<mt:if name="nav_templates"> class="here"</mt:if> id="nav-templates" title="<__trans phrase="List &amp; Edit Templates">" href="<mt:var name="mt_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Templates"></a></li></mt:if>
+    <mt:if name="can_edit_categories"><li><a<mt:if name="nav_categories"> class="here"</mt:if> id="nav-categories" title="<__trans phrase="Edit Categories">" href="<mt:var name="mt_url">?__mode=list_cat&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Categories"></a></li></mt:if>
+    <mt:if name="can_manage_pages"><li><a<mt:if name="nav_folders"> class="here"</mt:if> id="nav-folders" title="<__trans phrase="Edit Categories">" href="<mt:var name="mt_url">?__mode=list_cat&amp;_type=folder&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Folders"></a></li></mt:if>
+    <mt:if name="can_edit_tags"><li><a<mt:if name="nav_tags"> class="here"</mt:if> id="nav-tags" title="<__trans phrase="Edit Tags">" href="<mt:var name="mt_url">?__mode=list_tag&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Tags"></a></li></mt:if>
+    <mt:if name="can_edit_config"><li><a<mt:if name="nav_config"> class="here"</mt:if> id="nav-settings" title="<__trans phrase="Edit Weblog Configuration">" href="<mt:var name="mt_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Settings"></a></li><mt:else>
+    <mt:if name="can_manage_feedback"><mt:if name="show_ip_info"><li><a<mt:if name="nav_config"> class="here"</mt:if> id="nav-settings" title="Edit IP Banning List" href="<mt:var name="mt_url">?__mode=list&amp;_type=banlist&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="IP Banning"></a></li></mt:if><mt:else>
+    <mt:if name="can_set_publish_paths"><li><a<mt:if name="nav_config"> class="here"</mt:if> id="nav-settings" title="<__trans phrase="Edit Weblog Configuration">" href="<mt:var name="mt_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Settings"></a></li></mt:if></mt:if></mt:if>
+    </ul></li>
+    </mt:if>
+    <li><__trans phrase="Utilities">
+    <ul>
+    <mt:if name="can_edit_entries"><li><a<mt:if name="nav_search"> class="here"</mt:if> id="nav-search" title="<__trans phrase="Search &amp; Replace">" href="<mt:var name="mt_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="_SEARCH_SIDEBAR"></a></li>
+    <mt:else><mt:if name="can_edit_templates">
+    <li><a<mt:if name="nav_search"> class="here"</mt:if> id="nav-search" title="<__trans phrase="Search &amp; Replace">" href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=template&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="_SEARCH_SIDEBAR"></a></li>
+    </mt:if></mt:if>
+    <mt:if name="can_administer_blog"><li><a<mt:if name="nav_backup"> class="here"</mt:if> id="nav-backup" title="<__trans phrase="Backup this blog">" href="<mt:var name="mt_url">?__mode=backup_restore&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Backup"></a></li></mt:if>
+    <mt:if name="can_view_log"><li><a<mt:if name="nav_log"> class="here"</mt:if> id="nav-log" title="<__trans phrase="View Activity Log">" href="<mt:var name="mt_url">?__mode=view_log&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Activity Log"></a></li></mt:if>
+    <mt:if name="can_edit_config"><li><a<mt:if name="nav_import"> class="here"</mt:if> id="nav-import" title="<__trans phrase="Import &amp; Export Entries">" href="<mt:var name="mt_url">?__mode=start_import&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Import / Export"></a></li></mt:if>
+    <mt:if name="can_rebuild"><li><a id="nav-rebuild" title="<__trans phrase="Rebuild Site">" href="#" onclick="window.open('<mt:var name="mt_url">?__mode=rebuild_confirm&amp;blog_id=<mt:var name="blog_id">', 'rebuild', 'width=400,height=300,resizable=yes'); return false"><__trans phrase="Rebuild Site"></a></li></mt:if>
+    <li><a id="nav-view-site" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Site">" href="<mt:var name="blog_url" escape="html">"><__trans phrase="View Site"> &#187;</a></li>
+    </ul></li>
+    </ul>
+</MTSetVarBlock>
+<MTSetVarBlock name="related_content">
+    <div id="welcome-message-edit" style="display: none;">
+    <form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="update_welcome_message" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <textarea id="welcome-message-text" name="welcome-message-text" rows="38" cols="20"><mt:if name="welcome"><mt:var name="welcome"><mt:else>&lt;h4&gt;<__trans phrase="Welcome to [_1]." params="<mt:var name="blog_name" escape="html">">&lt;/h4&gt;
+
+    &lt;p&gt;<__trans phrase="You can manage your blog by selecting an option from the menu located to the left of this message.">&lt;/p&gt;
+
+    &lt;p&gt;<__trans phrase="If you need assistance, try:">&lt;/p&gt;
+
+    &lt;p&gt;&lt;a href="<mt:var name="help_url">"><__trans phrase="Movable Type User Manual">&lt;/a&gt;&lt;br /&gt;
+    &lt;a href="<__trans phrase="http://www.sixapart.com/movabletype/support">"&gt;<__trans phrase="Movable Type Technical Support">&lt;/a&gt;&lt;br /&gt;
+    &lt;a href="http://forums.sixapart.com/"&gt;<__trans phrase="Movable Type Community Forums">&lt;/a&gt;&lt;/p&gt;</mt:if></textarea>
+    <input type="submit" name="save" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save Changes"> (s)" accesskey="s" />
+    <input type="button" name="cancel" value="<__trans phrase="Cancel">" onclick="welcomeMessageToggle(); return false;" />
+    </form>
+    </div>
+
+    <div id="welcome-message">
+    <mt:if name="can_edit_config">
+    <div class="welcome-message-toggle"><a href="#" onclick="welcomeMessageToggle(); return false;" title="<__trans phrase="Change this message.">"><img src="<mt:var name="static_uri">images/status_icons/draft.gif" alt="<__trans phrase="Edit this message.">" width="9" height="9" /></a></div>
+    </mt:if>
+
+    <div class="welcome-message-inner">
+    <mt:if name="welcome">
+    <mt:var name="welcome">
+    <mt:else>
+    <h4><__trans phrase="Welcome to [_1]." params="<mt:var name="blog_name" escape="html">"></h4>
+    <p><__trans phrase="You can manage your blog by selecting an option from the menu located to the left of this message."></p>
+    <p><__trans phrase="If you need assistance, try:"></p>
+    <p><a href="<mt:var name="help_url">"><__trans phrase="Movable Type User Manual"></a><br />
+    <a href="<__trans phrase="http://www.sixapart.com/movabletype/support">"><__trans phrase="Movable Type Technical Support"></a><br />
+    <a href="http://forums.sixapart.com/"><__trans phrase="Movable Type Community Forums"></a></p>
+    </mt:if>
+
+    </div>
+    </div>
+
+    <$MTApp:PageActions from="blog_home"$>
+</MTSetVarBlock>
+
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+<!--
+function welcomeMessageToggle() {
+	var text_message = getByID('welcome-message');
+	var text_edit = getByID('welcome-message-edit');
+	if (text_message && text_edit) {
+		if (text_edit.style.display == "none") {
+			text_message.style.display = "none";
+			text_edit.style.display = "block";
+		} else {
+			text_message.style.display = "block";
+			text_edit.style.display = "none";
+		}
+	}
+}
+//-->
+</script>
+
+
+<mt:if name="has_edit_access">
+<div class="box">
+<h4><a href="<mt:var name="script_url">?__mode=list_entries&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="List Entries">"><__trans phrase="Recent Entries"> &raquo;</a></h4>
+<div class="list">
+<table cellspacing="0">
+<mt:loop name="entry_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+<td class="icon">
+<mt:if name="status_draft">
+<img src="<mt:var name="static_uri">images/status_icons/draft.gif" alt="<__trans phrase="Unpublished">" width="9" height="9" />
+</mt:if>
+<mt:if name="status_publish">
+<img src="<mt:var name="static_uri">images/status_icons/success.gif" alt="<__trans phrase="Published">" width="9" height="9" />
+</mt:if>
+<mt:if name="status_future">
+<img src="<mt:var name="static_uri">images/status_icons/future.gif" alt="<__trans phrase="Scheduled">" width="9" height="9" />
+</mt:if>
+</td>
+<td class="label"><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="entry_blog_id">"><mt:var name="entry_title"></a><mt:else><mt:var name="entry_title"></mt:if></td>
+<td class="date"><mt:var name="entry_created_on"></td>
+</tr>
+</mt:loop>
+</table>
+</div>
+</div>
+
+<mt:if name="comment_loop">
+<div class="box">
+<h4><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="List Comments">"><__trans phrase="Recent Comments"> &raquo;</a></h4>
+<div class="list">
+<table cellspacing="0">
+<mt:loop name="comment_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+<td class="icon">
+<mt:if name="visible">
+<img src="<mt:var name="static_uri">images/status_icons/success.gif" alt="<__trans phrase="Published">" width="9" height="9" />
+<mt:else>
+<img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Pending">" width="9" height="9" />
+</mt:if>
+</td>
+<td class="label"><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="comment_id">&amp;blog_id=<mt:var name="comment_blog_id">"><mt:if name="comment_author"><mt:var name="comment_author" escape="html"><mt:else>[<__trans phrase="Anonymous">]</mt:if></a><mt:else><mt:if name="comment_author"><mt:var name="comment_author" escape="html"><mt:else>[<__trans phrase="Anonymous">]</mt:if></mt:if></td>
+<td class="date"><mt:var name="comment_created_on"></td>
+</tr>
+</mt:loop>
+</table>
+</div>
+</div>
+</mt:if>
+
+<mt:if name="ping_loop">
+<div class="box">
+<h4><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="List TrackBacks">"><__trans phrase="Recent TrackBacks"> &raquo;</a></h4>
+<div class="list">
+<table cellspacing="0">
+<mt:loop name="ping_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+<td class="icon">
+<mt:if name="visible">
+<img src="<mt:var name="static_uri">images/status_icons/success.gif" alt="<__trans phrase="Published">" width="9" height="9" />
+<mt:else>
+<img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Pending">" width="9" height="9" />
+</mt:if>
+</td>
+<td class="label"><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="ping_id">&amp;blog_id=<mt:var name="blog_id">"></mt:if><mt:var name="ping_title" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+<td class="date"><mt:var name="ping_created_on"></td>
+</tr>
+</mt:loop>
+</table>
+</div>
+</div>
+</mt:if>
+</mt:if>
+
+<mt:include name="include/footer.tmpl">

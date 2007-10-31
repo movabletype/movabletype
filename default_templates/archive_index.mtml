@@ -1,0 +1,119 @@
+<MTSetVar name="page_id" value="archive-index">
+<MTSetVar name="main_template" value="1">
+<MTSetVar name="archive_index" value="1">
+<MTSetVar name="sidebar" value="1">
+<MTSetVar name="module_about_context" value="1">
+<MTSetVarBlock name="page_title"><MT_TRANS phrase="Archives"></MTSetVarBlock>
+
+<$MTInclude module="<MT_TRANS phrase="Header">"$>
+
+<h2 id="archive-title"><$MTGetVar name="page_title"$></h2>
+
+<MTIfArchiveTypeEnabled archive_type="Individual">
+<div class="archive-individual archive-date-based archive">
+    <MTArchiveList archive_type="Individual">
+        <MTArchiveListHeader>
+    <div class="archive-content">
+        <ul class="archive-list">
+        </MTArchiveListHeader>
+            <li class="archive-list-item"><$MTArchiveDate format="%Y.%m.%d"$>: <a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+        <MTArchiveListFooter>
+        </ul>
+    </div>
+        </MTArchiveListFooter>
+    </MTArchiveList>
+</div>
+</MTIfArchiveTypeEnabled>
+
+<MTIfArchiveTypeEnabled archive_type="Monthly">
+<div class="archive-monthly archive-date-based archive">
+    <MTArchiveList archive_type="Monthly">
+        <MTArchiveListHeader>
+    <h2 class="archive-header"><MT_TRANS phrase="Monthly Archives"></h2>
+    <div class="archive-content">
+        <ul class="archive-list">
+        </MTArchiveListHeader>
+            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+        <MTArchiveListFooter>
+        </ul>
+    </div>
+        </MTArchiveListFooter>
+    </MTArchiveList>
+</div>
+</MTIfArchiveTypeEnabled>
+
+<MTIfArchiveTypeEnabled archive_type="Category">
+<div class="archive-category archive">
+    <h2 class="archive-header"><MT_TRANS phrase="Categories"></h2>
+    <div class="archive-content">
+    <MTTopLevelCategories>
+        <MTSubCatIsFirst>
+        <ul class="archive-list">
+        </MTSubCatIsFirst>
+        <MTIfNonZero tag="MTCategoryCount">
+            <li class="archive-list-item"><a href="<$MTCategoryArchiveLink$>" title="<$MTCategoryDescription$>"><$MTCategoryLabel$></a>
+        <MTElse>
+            <li class="archive-list-item"><$MTCategoryLabel$>
+        </MTIfNonZero>
+        <MTSubCatsRecurse>
+            </li>
+        <MTSubCatIsLast>
+        </ul>
+        </MTSubCatIsLast>
+    </MTTopLevelCategories>
+    </div>
+</div>
+</MTIfArchiveTypeEnabled>
+
+<MTIfArchiveTypeEnabled archive_type="Author">
+<div class="archive-author archive">
+    <MTArchiveList archive_type="Author">
+        <MTArchiveListHeader>
+    <h2 class="archive-header"><MT_TRANS phrase="Author Archives"></h2>
+    <div class="archive-content">
+        <ul class="archive-list">
+        </MTArchiveListHeader>
+            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+        <MTArchiveListFooter>
+        </ul>
+    </div>
+        </MTArchiveListFooter>
+    </MTArchiveList>
+</div>
+</MTIfArchiveTypeEnabled>
+
+<MTIfArchiveTypeEnabled archive_type="Category-Monthly">
+<div class="archive-category-monthly archive">
+    <MTArchiveList archive_type="Category-Monthly">
+        <MTArchiveListHeader>
+    <h2 class="archive-header"><!-- [<$MTArchiveType$>] [<$MTArchiveTitle$>] --> <MT_TRANS phrase="Category Monthly Archives"></h2> <!-- Todo: Archive title not printing. bugzid:48098 --> <!-- Todo: <$MTArchiveType$> should print "$Category Monthly" -->
+    <div class="archive-content">
+        <ul class="archive-list">
+        </MTArchiveListHeader>
+            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+        <MTArchiveListFooter>
+        </ul>
+    </div>
+        </MTArchiveListFooter>
+    </MTArchiveList>
+</div>
+</MTIfArchiveTypeEnabled>
+
+<MTIfArchiveTypeEnabled archive_type="Author-Monthly">
+<div class="archive-author-monthly archive">
+    <MTArchiveList archive_type="Author-Monthly"> <!-- Todo: prints all rather than single author. bugzid:48202 -->
+        <MTArchiveListHeader>
+    <h2 class="archive-header"><!-- [<$MTArchiveType$>]  [<$MTArchiveTitle$>] --> <MT_TRANS phrase="Author Monthly Archives"></h2> <!-- Todo: <$MTArchiveType$> should print "$Author Monthly" -->
+    <div class="archive-content">
+        <ul class="archive-list">
+        </MTArchiveListHeader>
+            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+        <MTArchiveListFooter>
+        </ul>
+    </div>
+        </MTArchiveListFooter>
+    </MTArchiveList>
+</div>
+</MTIfArchiveTypeEnabled>
+
+<$MTInclude module="<MT_TRANS phrase="Footer">"$>

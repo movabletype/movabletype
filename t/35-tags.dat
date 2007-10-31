@@ -1,0 +1,396 @@
+[
+{ "r" : "1", "t" : "", "e" : ""}, #1
+{ "r" : "1", "t" : "<MTCGIPath>", "e" : "http://localhost/cgi-bin/"}, #2
+{ "r" : "1", "t" : "<MTCGIRelativeURL>", "e" : "/cgi-bin/"}, #3
+{ "r" : "1", "t" : "<MTStaticWebPath>", "e" : "http://localhost/mt-static/"}, #4
+{ "r" : "1", "t" : "<MTCommentScript>", "e" : "mt-comments.cgi"}, #5
+{ "r" : "1", "t" : "<MTTrackbackScript>", "e" : "mt-tb.cgi"}, #6
+{ "r" : "1", "t" : "<MTSearchScript>", "e" : "mt-search.cgi"}, #7
+{ "r" : "1", "t" : "<MTXMLRPCScript>", "e" : "mt-xmlrpc.cgi"}, #8
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate></MTEntries>", "e" : "January 31, 1978  7:45 AM"}, #9
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate utc=\"1\"></MTEntries>", "e" : "January 31, 1978 11:15 AM"}, #10
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate format_name=\"\"></MTEntries>", "e" : "January 31, 1978  7:45 AM"}, #11
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate format=\"%Y-%m-%dT%H:%M:%S\"></MTEntries>", "e" : "1978-01-31T07:45:00"}, #12
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate language=\"pl\"></MTEntries>", "e" : "31 stycznia 1978  7:45"}, #13
+{ "r" : "1", "t" : "<MTPublishCharset>", "e" : "utf-8"}, #14
+{ "r" : "1", "t" : "<MTIfNonEmpty tag=\"MTDate\">nonempty</MTIfNonEmpty>", "e" : "nonempty"}, #15
+{ "r" : "1", "t" : "", "e" : ""}, #16
+{ "r" : "1", "t" : "<MTIfNonZero tag=\"MTBlogEntryCount\">nonzero</MTIfNonZero>", "e" : "nonzero"}, #17
+{ "r" : "1", "t" : "<MTCommenterNameThunk>", "e" : "<script type='text/javascript' src='http://localhost/cgi-bin/mt-comments.cgi?__mode=cmtr_name_js'></script>"}, #18
+{ "r" : "0", "t" : "<MTCommenterName>", "e" : ""}, #19 TBD
+{ "r" : "0", "t" : "<MTCommenterEmail>", "e" : ""}, #20 TBD
+{ "r" : "1", "t" : "<MTBlogs><MTBlogID></MTBlogs>", "e" : "1"}, #21
+{ "r" : "1", "t" : "<MTBlogs><MTBlogName></MTBlogs>", "e" : "none"}, #22
+{ "r" : "1", "t" : "<MTBlogs><MTBlogDescription></MTBlogs>", "e" : "Narnia None Test Blog"}, #23
+{ "r" : "1", "t" : "<MTBlogs><MTBlogURL></MTBlogs>", "e" : "http://narnia.na/nana/"}, #24
+{ "r" : "1", "t" : "<MTBlogs><MTBlogArchiveURL></MTBlogs>", "e" : "http://narnia.na/nana/archives/"}, #25
+{ "r" : "1", "t" : "<MTBlogs><MTBlogRelativeURL></MTBlogs>", "e" : "/nana/"}, #26
+{ "r" : "1", "t" : "<MTBlogs><MTBlogSitePath></MTBlogs>", "e" : "t/site/"}, #27
+{ "r" : "1", "t" : "<MTBlogs><MTBlogHost></MTBlogs>", "e" : "narnia.na"}, #28
+{ "r" : "1", "t" : "<MTBlogs><MTBlogHost exclude_port=\"1\"></MTBlogs>", "e" : "narnia.na"}, #29
+{ "r" : "1", "t" : "<MTBlogs><MTBlogTimezone></MTBlogs>", "e" : "-03:30"}, #30
+{ "r" : "1", "t" : "<MTBlogs><MTBlogTimezone no_colon=\"1\"></MTBlogs>", "e" : "-0330"}, #31
+{ "r" : "1", "t" : "<MTBlogs><MTBlogEntryCount></MTBlogs>", "e" : "6"}, #32
+{ "r" : "1", "t" : "<MTBlogs><MTBlogCommentCount></MTBlogs>", "e" : "7"}, #33
+{ "r" : "0", "t" : "<MTBlogs><MTBlogIfCCLicense><MTBlogCCLicenseURL>
+<MTBlogCCLicenseImage>
+<MTCCLicenseRDF></MTBlogIfCCLicense></MTBlogs>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/
+http://creativecommons.org/images/public/somerights20.gif
+<!--
+<rdf:RDF xmlns=\"http://web.resource.org/cc/\"
+         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"
+         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><
+Work rdf:about=\"http://narnia.na/nana/\">
+<dc:title>none</dc:title>
+<dc:description>Narnia None Test Blog</dc:description>
+<license rdf:resource=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\" />
+</Work>
+<License rdf:about=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\">
+</License>
+</rdf:RDF>
+-->
+"}, #34 TBD
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Monthly\"><MTArchiveListHeader>(Header)</MTArchiveListHeader><MTArchiveListFooter>(Footer)</MTArchiveListFooter><MTArchiveTitle>|</MTArchiveList>", "e" : "(Header)January 1978|January 1965|January 1964|January 1963|January 1962|(Footer)January 1961|"}, #35
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"> * <MTEntryTitle></MTEntries>", "e" : " * A Rainy Day * Verse 5 * Verse 4 * Verse 3 * Verse 2 * Verse 1"}, #36
+{ "r" : "1", "t" : "<MTInclude module=\"blog-name\">", "e" : "none"}, #37
+{ "r" : "0", "t" : "<MTInclude module=\"blog-name\">", "e" : "none"}, #38 TBD
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTLink entry_id=\"1\"></MTEntries>", "e" : "http://narnia.na/nana/archives/1978/01/a_rainy_day.html"}, #39
+{ "r" : "1", "t" : "<MTLink template=\"Main Index\">", "e" : "http://narnia.na/nana/"}, #40
+{ "r" : "1", "t" : "<MTVersion>", "e" : "VERSION_ID"}, #41
+{ "r" : "1", "t" : "<MTDefaultLanguage>", "e" : "en_US"}, #42
+{ "r" : "1", "t" : "<MTSignOnURL>", "e" : "https://www.typekey.com/t/typekey/login?"}, #43
+{ "r" : "0", "t" : "<MTErrorMessage>", "e" : ""}, #44 TBD
+{ "r" : "1", "t" : "<MTSetVar name=\"x\" value=\"x-var\"><MTGetVar name=\"x\">", "e" : "x-var"}, #45
+{ "r" : "1", "t" : "<MTBlogLanguage>", "e" : "en_us"}, #46
+{ "r" : "1", "t" : "<MTBlogCCLicenseURL>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/"}, #47
+{ "r" : "1", "t" : "<MTBlogCCLicenseImage>", "e" : "http://creativecommons.org/images/public/somerights20.gif"}, #48
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"1\"><MTCCLicenseRDF></MTEntries>", "e" : "<!--
+<rdf:RDF xmlns=\"http://web.resource.org/cc/\"
+         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"
+         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">
+<Work rdf:about=\"http://narnia.na/nana/archives/1965/01/verse_5.html\">
+<dc:title>Verse 5</dc:title>
+<dc:description></dc:description>
+<dc:creator>Chuck D</dc:creator>
+<dc:date>1965-01-31T07:45:01-03:30</dc:date>
+<license rdf:resource=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\" />
+</Work>
+<License rdf:about=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\">
+</License>
+</rdf:RDF>
+-->
+"}, #49
+{ "r" : "1", "t" : "<MTBlogIfCCLicense>1</MTBlogIfCCLicense>", "e" : "1"}, #50
+{ "r" : "1", "t" : "<MTEntries category=\"foo\"><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #51
+{ "r" : "1", "t" : "<MTEntries author=\"Bob D\"><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #52
+{ "r" : "1", "t" : "<MTEntries days=\"DAYS_CONSTANT1\"><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #53
+{ "r" : "1", "t" : "<MTEntries days=\"DAYS_CONSTANT2\"><MTEntryTitle></MTEntries>", "e" : ""}, #54
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBody></MTEntries>", "e" : "<p>On a drizzly day last weekend,</p>"}, #55
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryMore></MTEntries>", "e" : "<p>I took my grandpa for a walk.</p>"}, #56
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryStatus></MTEntries>", "e" : "Publish"}, #57
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryDate></MTEntries>", "e" : "January 31, 1978  7:45 AM"}, #58
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryFlag flag=\"allow_pings\"></MTEntries>", "e" : "1"}, #59
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryExcerpt></MTEntries>", "e" : "A story of a stroll."}, #60
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryKeywords></MTEntries>", "e" : "keywords"}, #61
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthor></MTEntries>", "e" : "Chuck D"}, #62
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorNickname></MTEntries>", "e" : "Chucky Dee"}, #63
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorEmail></MTEntries>", "e" : "chuckd@example.com"}, #64
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorURL></MTEntries>", "e" : "http://chuckd.com/"}, #65
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink></MTEntries>", "e" : "<a href=\"http://chuckd.com/\">Chucky Dee</a>"}, #66
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryID></MTEntries>", "e" : "1"}, #67
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackLink></MTEntries>", "e" : "http://localhost/cgi-bin/mt-tb.cgi/1"}, #68
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackData></MTEntries>", "e" : "<!--
+<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
+         xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"
+         xmlns:dc=\"http://purl.org/dc/elements/1.1/\">
+<rdf:Description
+    rdf:about=\"http://narnia.na/nana/archives/1978/01/a_rainy_day.html\"
+    trackback:ping=\"http://localhost/cgi-bin/mt-tb.cgi/1\"
+    dc:title=\"A Rainy Day\"
+    dc:identifier=\"http://narnia.na/nana/archives/1978/01/a_rainy_day.html\"
+    dc:subject=\"\"
+    dc:description=\"A story of a stroll.\"
+    dc:creator=\"Chucky Dee\"
+    dc:date=\"1978-01-31T07:45:00-03:30\" />
+</rdf:RDF>
+-->
+"}, #69
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryLink archive_type=\"Individual\"></MTEntries>", "e" : "http://narnia.na/nana/archives/1978/01/a_rainy_day.html"}, #70
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryPermalink archive_type=\"Individual\"></MTEntries>", "e" : "http://narnia.na/nana/archives/1978/01/a_rainy_day.html"}, #71
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCategory></MTEntries>", "e" : ""}, #72
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCategories><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : ""}, #73
+{ "r" : "0", "t" : "<MTTypeKeyToken>", "e" : "token"}, #74 TBD
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignInLink></MTEntries>", "e" : "https://www.typekey.com/t/typekey/login?&amp;lang=en_US&amp;t=token&amp;v=1.1&amp;_return=http://localhost/cgi-bin/mt-comments.cgi%3f__mode=handle_sign_in%26key=TypeKey%26static=0%26entry_id=1"}, #75
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignOutLink></MTEntries>", "e" : "http://localhost/cgi-bin/mt-comments.cgi?__mode=handle_sign_in&amp;static=0&amp;logout=1&amp;entry_id=1"}, #76
+{ "r" : "0", "t" : "<MTEntries lastn=\"1\"></MTEntries>", "e" : ""}, #77 TBD -- CommentFields
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthor></MTComments>", "e" : "v14GrUH 4 cheep"}, #78
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackCount></MTEntries>", "e" : "1"}, #79
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"1\"><MTEntryNext><MTEntryTitle></MTEntryNext></MTEntries>", "e" : "A Rainy Day"}, #80
+{ "r" : "1", "t" : "<MTEntries offset=\"1\" lastn=\"1\"><MTEntryPrevious><MTEntryTitle></MTEntryPrevious></MTEntries>", "e" : "Verse 4"}, #81
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryDate format_name=\"rfc822\"></MTEntries>", "e" : "Tue, 31 Jan 1978 07:45:00 -0330"}, #82
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryDate utc=\"1\"></MTEntries>", "e" : "January 31, 1978 11:15 AM"}, #83
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle dirify=\"1\"></MTEntries>", "e" : "a_rainy_day"}, #84
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle trim_to=\"6\"></MTEntries>", "e" : "A Rain"}, #85
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle decode_html=\"1\"></MTEntries>", "e" : "A Rainy Day"}, #86
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle decode_xml=\"1\"></MTEntries>", "e" : "A Rainy Day"}, #87
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle remove_html=\"1\"></MTEntries>", "e" : "A Rainy Day"}, #88
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" sanitize=\"1\"><h1><strong><MTEntryTitle></strong></h1></MTEntries>", "e" : "<strong>A Rainy Day</strong>"}, #89
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" encode_html=\"1\"><strong><MTEntryTitle></strong></MTEntries>", "e" : "&lt;strong&gt;A Rainy Day&lt;/strong&gt;"}, #90
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" encode_xml=\"1\"><strong><MTEntryTitle></strong></MTEntries>", "e" : "<![CDATA[<strong>A Rainy Day</strong>]]>"}, #91
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" encode_js=\"1\">\"<MTEntryTitle>\"</MTEntries>", "e" : "\\\"A Rainy Day\\\""}, #92
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" encode_php=\"1\">'<MTEntryTitle>'</MTEntries>", "e" : "\\'A Rainy Day\\'"}, #93
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle encode_url=\"1\"></MTEntries>", "e" : "A%20Rainy%20Day"}, #94
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle upper_case=\"1\"></MTEntries>", "e" : "A RAINY DAY"}, #95
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle lower_case=\"1\"></MTEntries>", "e" : "a rainy day"}, #96
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" strip_linefeeds=\"1\">
+<MTEntryTitle>
+</MTEntries>", "e" : "A Rainy Day"}, #97
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle space_pad=\"30\"></MTEntries>", "e" : "                   A Rainy Day"}, #98
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle space_pad=\"-30\"></MTEntries>", "e" : "A Rainy Day                   "}, #99
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle zero_pad=\"30\"></MTEntries>", "e" : "0000000000000000000A Rainy Day"}, #100
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle sprintf=\"%030s\"></MTEntries>", "e" : "0000000000000000000A Rainy Day"}, #101
+{ "r" : "1", "t" : "<MTCategories><MTCategoryLabel></MTCategories>", "e" : "foosubfoo"}, #102
+{ "r" : "1", "t" : "<MTCategories><MTCategoryID></MTCategories>", "e" : "13"}, #103
+{ "r" : "1", "t" : "<MTCategories><MTCategoryDescription></MTCategories>", "e" : "barsubcat"}, #104
+# { "r" : "1", "t" : "<MTCalendar><MTCalendarWeekHeader month="197801""><tr></MTCalendarWeekHeader><td><MTCalendarCellNumber>,<MTCalendarIfEntries><MTEntries lastn="1"><a href="<$MTEntryPermalink$>"><$MTCalendarDay$></a></MTEntries></MTCalendarIfEntries><MTCalendarIfNoEntries><$MTCalendarDay$></MTCalendarIfNoEntries><MTCalendarIfBlank>&nbsp;</MTCalendarIfBlank></td><MTCalendarWeekFooter></tr></MTCalendarWeekFooter></MTCalendar>", "e" : "<tr><td>1,&nbsp;</td><td>2,&nbsp;</td><td>3,&nbsp;</td><td>4,&nbsp;</td><td>5,&nbsp;</td><td>6,1</td><td>7,2</td></tr><tr><td>8,3</td><td>9,4</td><td>10,5</td><td>11,6</td><td>12,7</td><td>13,8</td><td>14,9</td></tr><tr><td>15,10</td><td>16,11</td><td>17,12</td><td>18,13</td><td>19,14</td><td>20,15</td><td>21,16</td></tr><tr><td>22,17</td><td>23,18</td><td>24,19</td><td>25,20</td><td>26,21</td><td>27,22</td><td>28,23</td></tr><tr><td>29,24</td><td>30,25</td><td>31,26</td><td>32,27</td><td>33,28</td><td>34,29</td><td>35,30</td></tr>"}, #105
+{ "r" : "0", "t" : "", "e" : ""}, #105 TBD
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackID></MTEntries>", "e" : "1"}, #106
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBasename></MTEntries>", "e" : "a_rainy_day"}, #107
+{ "r" : "0", "t" : "<MTCGIServerPath>", "e" : "CURRENT_WORKING_DIRECTORY"}, #108 TBD
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentBody></MTComments>", "e" : "<p>Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants.</p>"}, #109
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentDate></MTComments>", "e" : "September 14, 2004  6:28 PM"}, #110
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentID></MTComments>", "e" : "1"}, #111
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntryID></MTComments>", "e" : "1"}, #112
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorLink></Mtcomments>", "e" : "<a title=\"http://fatman.com/\" href=\"http://localhost/cgi-bin/mt-comments.cgi?__mode=red;id=1\">v14GrUH 4 cheep</a>"}, #114
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "jake@fatman.com"}, #115
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : ""}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://fatman.com/"}, #117
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "A Rainy Day"}, #119
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingDate></MTPings>", "e" : "April  5, 2005 12:00 AM"}, #120
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingID></MTPings>", "e" : "1"}, #121
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingTitle></MTPings>", "e" : "Foo"}, #122
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingURL></MTPings>", "e" : "http://example.com/"}, #123
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingExcerpt></MTPings>", "e" : "Bar"}, #124
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingIP></MTPings>", "e" : "127.0.0.1"}, #125
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingBlogName></MTPings>", "e" : "Example Blog"}, #126
+{ "r" : "1", "t" : "<MTCategories><MTCategoryLabel>: <MTCategoryCount>; </MTCategories>", "e" : "foo: 1; subfoo: 1; "}, #127
+{ "r" : "1", "t" : "<MTCategories><MTCategoryArchiveLink>; </MTCategories>", "e" : "http://narnia.na/nana/archives/foo/; http://narnia.na/nana/archives/foo/subfoo/; "}, #128
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTCategoryLabel>: <MTCategoryTrackbackLink> </MTCategories>", "e" : "bar: http://localhost/cgi-bin/mt-tb.cgi/2 foo:  subfoo:  "}, #129
+{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"}, #130
+{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\"><MTSubCatIsFirst>First: <MTCategoryLabel></MTSubCatIsFirst></MTSubCategories>", "e" : "First: bar"}, #131
+{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\">[[<MTCategoryLabel><MTSubCatsRecurse>]]</MTSubCategories>", "e" : "[[bar]][[foo[[subfoo]]]]"}, #132
+{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\"><MTSubCatIsLast>Last: <MTCategoryLabel></MTSubCatIsLast></MTSubCategories>", "e" : "Last: foo"}, #133
+{ "r" : "1", "t" : "<MTTopLevelCategories><MTCategoryLabel></MTTopLevelCategories>", "e" : "barfoo"}, #134
+{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\"><MTHasParentCategory>Parent of <MTCategoryLabel> is <MTParentCategory><MTCategoryLabel></MTParentCategory></MTHasParentCategory><MTHasNoParentCategory><MTCategoryLabel> has no parent</MTHasNoParentCategory>; <MTSubCatsRecurse></MTSubCategories>", "e" : "bar has no parent; foo has no parent; Parent of subfoo is foo; "}, #135
+{ "r" : "1", "t" : "<MTTopLevelCategories show_empty=\"1\"><MTCategoryLabel><MTHasSubCategories> (has subcategories)</MTHasSubCategories><MTHasNoSubCategories> (has no subcategories)</MTHasNoSubCategories></MTTopLevelCategories>", "e" : "bar (has no subcategories)foo (has subcategories)"}, #136
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTSubCategoryPath>;</MTCategories>", "e" : "bar;foo;foo/subfoo;"}, #137
+{ "r" : "1", "t" : "<MTEntriesWithSubCategories category=\"foo\"><MTEntryTitle>;</MTEntriesWithSubCategories>", "e" : "Verse 4;Verse 3;"}, #138
+{ "r" : "1", "t" : "<MTEntriesWithSubCategories category=\"foo/subfoo\"><MTEntryTitle>;</MTEntriesWithSubCategories>", "e" : "Verse 4;"}, #139
+{ "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingDate></MTPings>", "e" : "April  5, 2005 12:00 AM"}, #140
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTPingsSent><MTPingsSentURL>; </MTPingsSent></MTEntries>", "e" : "http://technorati.com/; "}, #141
+#{ "r" : "1", "t" : "<MTGoogleSearch query="six apart" results="1"><MTGoogleSearchResult property="URL"></MTGoogleSearch>", "e" : "http://www.sixapart.com/"}, #142
+{ "r" : "1", "t" : "disabled", "e" : "disabled"}, #142
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTIfIsAncestor child=\"subfoo\"><MTCategoryLabel> is an ancestor to subfoo</MTIfIsAncestor></MTCategories>", "e" : "foo is an ancestor to subfoosubfoo is an ancestor to subfoo"}, #143
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTIfIsDescendant parent=\"foo\"><MTCategoryLabel> is a descendant of foo</MTIfIsDescendant></MTCategories>", "e" : "foo is a descendant of foosubfoo is a descendant of foo"}, #144
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTCategoryLabel>'s top parent is: <MTTopLevelParent><MTCategoryLabel></MTTopLevelParent>; </MTCategories>", "e" : "bar's top parent is: bar; foo's top parent is: foo; subfoo's top parent is: foo; "}, #145
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle lower_case=\"1\"></MTEntries>", "e" : "a rainy day"}, #146
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Monthly\"><MTArchiveTitle>-<MTArchiveLink>; </MTArchiveList>", "e" : "January 1978-http://narnia.na/nana/archives/1978/01/; January 1965-http://narnia.na/nana/archives/1965/01/; January 1964-http://narnia.na/nana/archives/1964/01/; January 1963-http://narnia.na/nana/archives/1963/01/; January 1962-http://narnia.na/nana/archives/1962/01/; January 1961-http://narnia.na/nana/archives/1961/01/; "}, #147
+{ "r" : "1", "t" : "Previous: <MTArchiveList archive_type=\"Monthly\"><MTArchivePrevious><MTArchiveTitle>-<MTArchiveLink>;</MTArchivePrevious> </MTArchiveList>", "e" : "Previous: January 1965-http://narnia.na/nana/archives/1965/01/; January 1964-http://narnia.na/nana/archives/1964/01/; January 1963-http://narnia.na/nana/archives/1963/01/; January 1962-http://narnia.na/nana/archives/1962/01/; January 1961-http://narnia.na/nana/archives/1961/01/;  "}, #148
+{ "r" : "1", "t" : "Next: <MTArchiveList archive_type=\"Monthly\"><MTArchiveNext><MTArchiveTitle>-<MTArchiveLink>;</MTArchiveNext> </MTArchiveList>", "e" : "Next:  January 1978-http://narnia.na/nana/archives/1978/01/; January 1965-http://narnia.na/nana/archives/1965/01/; January 1964-http://narnia.na/nana/archives/1964/01/; January 1963-http://narnia.na/nana/archives/1963/01/; January 1962-http://narnia.na/nana/archives/1962/01/; "}, #149
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Monthly\"><MTArchiveTitle>-<MTArchiveCount>; </MTArchiveList>", "e" : "January 1978-1; January 1965-1; January 1964-1; January 1963-1; January 1962-1; January 1961-1; "}, #150
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCommentCount></MTEntries>", "e" : "3"}, #151
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentBody sanitize=\" \"></MTComments>", "e" : "Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants."}, #152
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentID></MTComments>", "e" : "1"}, #153
+{ "r" : "1", "t" : "<MTBlogLanguage locale=\"1\">", "e" : "en_US"}, #154
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : "active"}, #155
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : "accepted"}, #156
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"1\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : "active"}, #157
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"1\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : "accepted"}, #158
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"2\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : "active"}, #159
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"2\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : "accepted"}, #160
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"3\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : "active"}, #161
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"3\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : "accepted"}, #162
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"4\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : "active"}, #163
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"4\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : ""}, #164
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"5\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : ""}, #165
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"5\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : ""}, #166
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTEntryID> <MTEntryCommentCount>; </MTEntries>", "e" : "1 3; 8 1; 7 0; 6 1; 5 1; 4 0; "}, #167
+{ "r" : "1", "t" : "<MTIfRegistrationNotRequired>yes<MTElse>no</MTElse></MTIfRegistrationNotRequired>", "e" : "no"}, #168
+{ "r" : "1", "t" : "<MTIfRegistrationRequired>yes<MTElse>no</MTElse></MTIfRegistrationRequired>", "e" : "yes"}, #169
+{ "r" : "1", "t" : "<MTBlogIfCommentsOpen>yes<MTElse>no</MTElse></MTBlogIfCommentsOpen>", "e" : "yes"}, #170
+{ "r" : "1", "t" : "<MTSetVar name=\"x\" value=\"   abc   \"><MTGetVar name=\"x\" trim=\"1\">", "e" : "abc"}, #171
+{ "r" : "1", "t" : "<MTSetVar name=\"x\" value=\"   abc   \"><MTGetVar name=\"x\" ltrim=\"1\">", "e" : "abc   "}, #172
+{ "r" : "1", "t" : "<MTSetVar name=\"x\" value=\"   abc\"><MTGetVar name=\"x\" rtrim=\"1\">", "e" : "   abc"}, #173
+{ "r" : "1", "t" : "<MTSetVar name=\"x\" value=\"abc\"><MTGetVar name=\"x\" filters=\"__default__\">", "e" : "<p>abc</p>"}, #174
+{ "r" : "1", "t" : "<MTIfStatic>1</MTIfStatic>", "e" : "STATIC_CONSTANT"}, #175
+{ "r" : "1", "t" : "<MTIfDynamic>1</MTIfDynamic>", "e" : "DYNAMIC_CONSTANT"}, #176
+{ "r" : "1", "t" : "<MTTags glue=\",\"><MTTagName></MTTags>", "e" : "grandpa,rain,strolling,verse"}, #177
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagName></MTEntryTags></MTEntries>", "e" : "grandpa,rain,strolling"}, #178
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagID></MTEntryTags></MTEntries>", "e" : "1,2,3"}, #179
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged>has tags</MTEntryIfTagged></MTEntries>", "e" : "has tags"}, #180
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged tag=\"grandpa\">tagged</MTEntryIfTagged></MTEntries>", "e" : "tagged"}, #181
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\" \"><MTTagSearchLink></MTEntryTags></MTEntries>", "e" : "http://localhost/cgi-bin/mt-search.cgi?tag=grandpa&amp;blog_id=1 http://localhost/cgi-bin/mt-search.cgi?tag=rain&amp;blog_id=1 http://localhost/cgi-bin/mt-search.cgi?tag=strolling&amp;blog_id=1"}, #182
+{ "r" : "1", "t" : "<MTTags><MTTagCount></MTTags>", "e" : "1115"}, #183
+{ "r" : "1", "t" : "<MTIfTypeKeyToken>tokened</MTIfTypeKeyToken>", "e" : "tokened"}, #184
+{ "r" : "1", "t" : "<MTIfCommentsModerated>moderated</MTIfCommentsModerated>", "e" : "moderated"}, #185
+{ "r" : "1", "t" : "<MTIfRegistrationAllowed>allowed</MTIfRegistrationAllowed>", "e" : "allowed"}, #186
+{ "r" : "1", "t" : "<MTIfArchiveTypeEnabled type=\"Category\">enabled</MTIfArchiveTypeEnabled>", "e" : "enabled"}, #187
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTFileTemplate format=\"%y/%m/%d/%b\"></MTEntries>", "e" : "1978/01/31/a_rainy_day"}, #188
+{ "r" : "1", "t" : "<MTAdminCGIPath>", "e" : "http://localhost/cgi-bin/"}, #189
+{ "r" : "1", "t" : "<MTConfigFile>", "e" : "CFG_FILE"}, #190
+{ "r" : "1", "t" : "<MTAdminScript>", "e" : "mt.cgi"}, #191
+{ "r" : "1", "t" : "<MTAtomScript>", "e" : "mt-atom.cgi"}, #192
+{ "r" : "1", "t" : "<MTCGIHost>", "e" : "localhost"}, #193
+{ "r" : "1", "t" : "<MTBlogFileExtension>", "e" : ".html"}, #194
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUsername></MTEntries>", "e" : "Chuck D"}, #195
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorDisplayName></MTEntries>", "e" : "Chucky Dee"}, #196
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAtomID></MTEntries>", "e" : "tag:narnia.na,1978:/nana//1.1"}, #197
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle trim_to=\"20\"></MTEntries>", "e" : "A Rainy Day"}, #198
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\" glue=\",\"><MTCategoryLabel>-<MTCategoryNext show_empty=\"1\"><MTCategoryLabel></MTCategoryNext></MTCategories>", "e" : "bar-foo,foo-,subfoo-"}, #199
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\" glue=\",\"><MTCategoryLabel>-<MTCategoryPrevious show_empty=\"1\"><MTCategoryLabel></MTCategoryPrevious></MTCategories>", "e" : "bar-,foo-bar,subfoo-"}, #200
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"3\"><MTIfCategory name=\"foo\">in category</MTIfCategory></MTEntries>", "e" : "in category"}, #201
+{ "r" : "1", "t" : "", "e" : ""}, #202
+{ "r" : "1", "t" : "<MTIndexList><MTIndexName>-<MTIndexLink>-<MTIndexBasename>;</MTIndexList>", "e" : "Archive Index-http://narnia.na/nana/archives.html-index;Atom-http://narnia.na/nana/atom.xml-index;Base Stylesheet-http://narnia.na/nana/base_styles.css-index;JavaScript-http://narnia.na/nana/mt.js-index;Main Index-http://narnia.na/nana/-index;RSD-http://narnia.na/nana/rsd.xml-index;RSS-http://narnia.na/nana/rss.xml-index;Theme Stylesheet-http://narnia.na/nana/theme_styles.css-index;"}, #203
+{ "r" : "1", "t" : "<MTIfNeedEmail>email needed</MTIfNeedEmail>", "e" : ""}, #204
+{ "r" : "1", "t" : "<MTIfAllowCommentHTML>comment html allowed</MTIfAllowCommentHTML>", "e" : "comment html allowed"}, #205
+{ "r" : "1", "t" : "<MTIfCommentsAllowed>comments allowed</MTIfCommentsAllowed>", "e" : "comments allowed"}, #206
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTIfPingsActive>pings active</MTIfPingsActive></MTEntries>", "e" : "pings active"}, #207
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTIfPingsAccepted>pings accepted</MTIfPingsAccepted></MTEntries>", "e" : "pings accepted"}, #208
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTIfPingsAllowed>pings allowed</MTIfPingsAllowed></MTEntries>", "e" : "pings allowed"}, #209
+{ "r" : "0", "t" : "<MTIfDynamicComments>dynamic comments<MTElse>static comments</MTElse></MTIfDynamicComments>", "e" : "static comments"}, #210 TBD
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryIfAllowComments>entry allows comments</MTEntryIfAllowComments></MTEntries>", "e" : "entry allows comments"}, #211
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryIfCommentsOpen>entry comments open</MTEntryIfCommentsOpen></MTEntries>", "e" : "entry comments open"}, #212
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryIfAllowPings>entry allows pings</MTEntryIfAllowPings></MTEntries>", "e" : "entry allows pings"}, #213
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryIfExtended>entry is extended</MTEntryIfExtended></MTEntries>", "e" : "entry is extended"}, #214
+{ "r" : "1", "t" : "<MTEntries offset=\"2\" lastn=\"2\"> * <MTEntryTitle></MTEntries>", "e" : " * Verse 4 * Verse 3"}, #215
+{ "r" : "1", "t" : "<MTEntries offset=\"2\"> * <MTEntryTitle></MTEntries>", "e" : " * Verse 4 * Verse 3 * Verse 2 * Verse 1"}, #216
+{ "r" : "1", "t" : "<MTArchiveList archive_type='Category'><MTArchiveCategory></MTArchiveList>", "e" : "foosubfoo"}, #217
+{ "r" : "1", "t" : "<MTArchiveList><MTArchiveFile></MTArchiveList>", "e" : "a_rainy_day.htmlverse_5.htmlverse_4.htmlverse_3.htmlverse_2.htmlverse_1.html"}, #218
+{ "r" : "1", "t" : "<MTArchives><MTArchiveType></MTArchives>", "e" : "IndividualMonthlyWeeklyDailyCategoryPage"}, #219
+{ "r" : "1", "t" : "<MTArchiveList archive_type='Monthly'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #220
+{ "r" : "1", "t" : "<MTArchiveList archive_type='Daily'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #221
+{ "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
+{ "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "0,1.5,0,"}, #223
+{ "r" : "1", "t" : "<MTComments lastn='3'><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted></MTIfNonEmpty></MTComments>", "e" : "John Doe: trusted"}, #224
+{ "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "grandpa 6,rain 6,strolling 6,verse 1"}, #225
+{ "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,6,6"}, #226
+{ "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "1"}, #227
+{ "r" : "1", "t" : "<MTEntries tags='grandpa' lastn='1'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #228
+{ "r" : "1", "t" : "<MTEntries category='subfoo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 4"}, #229
+{ "r" : "1", "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #230
+{ "r" : "1", "t" : "<MTEntries author='Bob D' category='foo'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #231
+{ "r" : "1", "t" : "<MTEntries author='Chuck D' tags='strolling'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #232
+{ "r" : "1", "t" : "<MTSetVar name='x' value='0'><MTIfNonZero tag='GetVar' name='x'><MTElse>0</MTElse></MTIfNonZero>", "e" : "0"}, #233
+{ "r" : "1", "t" : "<MTAsset id='1'><$MTAssetID$></MTAsset>", "e" : "1"}, #234
+{ "r" : "1", "t" : "<MTAssets type='image'><$MTAssetID$></MTAssets>", "e" : "1"}, #235
+{ "r" : "1", "t" : "<MTAssets type='file'><$MTAssetID$></MTAssets>", "e" : "2"}, #236
+{ "r" : "1", "t" : "<MTAssets type='all'><$MTAssetID$></MTAssets>", "e" : ""}, #237
+{ "r" : "1", "t" : "<MTAssets file_ext='jpg'><$MTAssetID$></MTAssets>", "e" : "1"}, #238
+{ "r" : "1", "t" : "<MTAssets file_ext='tmpl'><$MTAssetID$></MTAssets>", "e" : "2"}, #239
+{ "r" : "1", "t" : "<MTAssets file_ext='dat'><$MTAssetID$></MTAssets>", "e" : ""}, #240
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetID$></MTAssets>", "e" : "1"}, #241
+{ "r" : "1", "t" : "<MTAssets days='1'><$MTAssetID$>;</MTAssets>", "e" : "1;"}, #242
+{ "r" : "1", "t" : "<MTAssets author='Chuck D'><$MTAssetID$></MTAssets>", "e" : ""}, #243
+{ "r" : "1", "t" : "<MTAssets author='Melody'><$MTAssetID$>;</MTAssets>", "e" : "1;2;"}, #244
+{ "r" : "1", "t" : "<MTAssets offset='1'><$MTAssetID$></MTAssets>", "e" : "2"}, #245
+{ "r" : "1", "t" : "<MTAssets offset='2'><$MTAssetID$></MTAssets>", "e" : ""}, #246
+{ "r" : "1", "t" : "<MTAssets tag='alpha'><$MTAssetID$></MTAssets>", "e" : "1"}, #247
+{ "r" : "1", "t" : "<MTAssets sort_by='file_name'><$MTAssetID$>;</MTAssets>", "e" : "2;1;"}, #248
+{ "r" : "1", "t" : "<MTAssets sort_order='ascend'><$MTAssetID$>;</MTAssets>", "e" : "2;1;"}, #249
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetFileName$></MTAssets>", "e" : "test.jpg"}, #250
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetURL$></MTAssets>", "e" : "http://narnia.na/nana/images/test.jpg"}, #251
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetType$></MTAssets>", "e" : "Image"}, #252
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetMimeType$></MTAssets>", "e" : "image/jpeg"}, #253
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetFilePath$></MTAssets>", "e" : "CURRENT_WORKING_DIRECTORY/t/images/test.jpg"}, #254
+{ "r" : "1", "t" : "<MTAssets lastn='1' sort_order='ascend'><$MTAssetDateAdded$></MTAssets>", "e" : "January 31, 1978  7:45 AM"}, #255
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetAddedBy$></MTAssets>", "e" : "Melody"}, #256
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='file_size'$></MTAssets>", "e" : "84.1 KB"}, #257
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='file_size' format='0'$></MTAssets>", "e" : "86094"}, #258
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='file_size' format='1'$></MTAssets>", "e" : "84.1 KB"}, #259
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='file_size' format='k'$></MTAssets>", "e" : "84.1"}, #260
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='file_size' format='m'$></MTAssets>", "e" : "0.1"}, #261
+{ "r" : "1", "t" : "<MTAssets lastn='1' type='image'><$MTAssetProperty property='image_width'$></MTAssets>", "e" : "640"}, #262
+{ "r" : "1", "t" : "<MTAssets lastn='1' type='image'><$MTAssetProperty property='image_height'$></MTAssets>", "e" : "480"}, #263
+{ "r" : "1", "t" : "<MTAssets lastn='1' type='file'><$MTAssetProperty property='image_width'$></MTAssets>", "e" : "0"}, #264
+{ "r" : "1", "t" : "<MTAssets lastn='1' type='file'><$MTAssetProperty property='image_height'$></MTAssets>", "e" : "0"}, #265
+{ "r" : "1", "t" : "<MTAssets lastn='1' sort_order='ascend'><$MTAssetProperty property='image_width'$></MTAssets>", "e" : "0"}, #266
+{ "r" : "1", "t" : "<MTAssets lastn='1' sort_order='ascend'><$MTAssetProperty property='image_height'$></MTAssets>", "e" : "0"}, #267
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='label'$></MTAssets>", "e" : "Image photo"}, #268
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetProperty property='description'$></MTAssets>", "e" : "This is a test photo."}, #269
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetFileExt$></MTAssets>", "e" : "jpg"}, #270
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL width='160'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/1.5115f590dd5d87e9621ec6b8334b940c5ffc39a3.jpg"}, #271
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL height='240'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/1.c03404b0da5f2c9c279be0a96d5c526a76f9c7e6.jpg"}, #272
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailURL scale='75'$></MTAssets>", "e" : "http://narnia.na/nana/assets_c/1.543b5ac9edb0bdb4ae0a0fce8d8332f8ba321693.jpg"}, #273
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetLink$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\">test.jpg</a>"}, #274
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #275
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink width='160'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.5115f590dd5d87e9621ec6b8334b940c5ffc39a3.jpg\" width=\"160\" height=\"120\"></a>"}, #276
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink height='240'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.c03404b0da5f2c9c279be0a96d5c526a76f9c7e6.jpg\" width=\"320\" height=\"240\"></a>"}, #277
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #278
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetLink new_window='1'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\">test.jpg</a>"}, #279
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #280
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' width='160'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.5115f590dd5d87e9621ec6b8334b940c5ffc39a3.jpg\" width=\"160\" height=\"120\"></a>"}, #281
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #282
+{ "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>", "e" : "<a href=\"http://narnia.na/nana/images/test.jpg\" target=\"_blank\"><img src=\"http://narnia.na/nana/assets_c/1.2015588abcdd4b4db0551dd6403b497cf7931cb8.jpg\" width=\"640\" height=\"480\"></a>"}, #283
+{ "r" : "1", "t" : "<$MTAssetCount$>", "e" : "2"}, #284
+{ "r" : "1", "t" : "<MTAssets lastn='1'><MTAssetTags><$MTTagName$>; </MTAssetTags></MTAssets>", "e" : "alpha; beta; gamma; "}, #285
+{ "r" : "1", "t" : "<MTAssets><MTAssetsHeader>(Head)</MTAssetsHeader><$MTAssetID$>;<MTAssetsFooter>(Last)</MTAssetsFooter></MTAssets>", "e" : "(Head)1;2;(Last)"}, #286
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryScore namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 2; 5 12; 4 5; "}, #287
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryScoreHigh namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 1; 5 5; 4 3; "}, #288
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryScoreLow namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 1; 5 3; 4 2; "}, #289
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryScoreAvg namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 1.00; 5 4.00; 4 2.50; "}, #290
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryScoreCount namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 2; 5 3; 4 2; "}, #291
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryRank namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 6; 5 1; 4 4; "}, #292
+{ "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryRank max=\"10\" namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 10; 5 1; 4 5; "}, #293
+{ "r" : "1", "t" : "<MTEntries sort_by=\"score\" namespace=\"unit test\"><MTEntryID>; </MTEntries>", "e" : "5; 4; 6; 8; 1; 7; "}, #294
+{ "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScore namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 12; 2 5; "}, #295
+{ "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScoreHigh namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 5; 2 3; "}, #296
+{ "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScoreLow namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 3; 2 2; "}, #297
+{ "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScoreAvg namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 4.00; 2 2.50; "}, #298
+{ "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScoreCount namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 3; 2 2; "}, #299
+{ "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetRank namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 1; 2 6; "}, #300
+{ "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetRank max=\"10\" namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 1; 2 10; "}, #301
+{ "r" : "1", "t" : "<MTAssets sort_by=\"score\" namespace=\"unit test\"><MTAssetID>; </MTAssets>", "e" : "1; 2; "}, #302
+{ "r" : "1", "t" : "<MTTags glue=\",\"><MTTagLabel></MTTags>", "e" : "grandpa,rain,strolling,verse"}, #303
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagLabel></MTEntryTags></MTEntries>", "e" : "grandpa,rain,strolling"}, #304
+{ "r" : "1", "t" : "<MTTags glue=','><MTTagLabel> <MTTagRank></MTTags>", "e" : "grandpa 6,rain 6,strolling 6,verse 1"}, #305
+{ "r" : "1", "t" : "<MTAssets lastn='1'><MTAssetTags><$MTTagLabel$>; </MTAssetTags></MTAssets>", "e" : "alpha; beta; gamma; "}, #306
+{ "r" : "1", "t" : "<MTComments><MTIfCommentParent><p><MTCommentParent><MTCommentAuthor></MTCommentParent></p></MTIfCommentParent></MTComments>", "e" : "<p>Comment 11</p><p>v14GrUH 4 cheep</p>"}, #307
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTIfCommentReplies><MTCommentReplies><MTCommentsHeader><ul></MTCommentsHeader><li><MTCommentID></li><MTCommentsFooter></ul></MTCommentsFooter></MTCommentReplies></MTIfCommentReplies></MTComments>", "e" : "<ul><li>11</li></ul>"}, #308
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTIfCommentReplies><MTCommentReplies><MTCommentsHeader><ul></MTCommentsHeader><li><MTCommentID><MTCommentRepliesRecurse></li><MTCommentsFooter></ul></MTCommentsFooter></MTCommentReplies></MTIfCommentReplies></MTComments>", "e" : "<ul><li>11<ul><li>12</li></ul></li></ul>"}, #309
+{ "r" : "1", "t" : "<MTPages><MTPageID>;</MTPages>", "e" : "23;22;21;20;"}, #310
+{ "r" : "1", "t" : "<MTPages lastn='1'><MTPageID>;</MTPages>", "e" : "23;"}, #311
+{ "r" : "1", "t" : "<MTPages lastn='1' offset='1'><MTPageID>;</MTPages>", "e" : "22;"}, #312
+{ "r" : "1", "t" : "<MTPages folder='info'><MTPageID>;</MTPages>", "e" : "21;"}, #313
+{ "r" : "1", "t" : "<MTPages folder='download' include_subfolders='1'><MTPageID>;</MTPages>", "e" : "23;22;"}, #314
+{ "r" : "1", "t" : "<MTPages tag='river'><MTPageID>;</MTPages>", "e" : "20;"}, #315
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageID>;</MTPages>", "e" : "20;"}, #316
+{ "r" : "1", "t" : "<MTPages sort_by='created_on' sort_order='scend'><MTPageID>;</MTPages>", "e" : "23;22;21;20;"}, #317
+{ "r" : "1", "t" : "<MTPages id='21'><MTPageFolder><MTFolderID></MTPageFolder></MTPages>", "e" : "20"}, #318
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageTags><MTTagName>;</MTPageTags></MTPages>", "e" : "flow;river;watch;"}, #319
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageTitle></MTPages>", "e" : "Watching the River Flow"}, #320
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageBody></MTPages>", "e" : "<p>What the matter with me,</p>"}, #321
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageDate format_name='rfc822'></MTPages>", "e" : "Tue, 31 Jan 1978 07:45:00 -0330"}, #322
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageModifiedDate format_name='rfc822'></MTPages>", "e" : "Tue, 31 Jan 1978 07:46:00 -0330"}, #323
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageAuthorDisplayName></MTPages>", "e" : "Chucky Dee"}, #324
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageKeywords></MTPages>", "e" : "no folder"}, #325
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageBasename></MTPages>", "e" : "watching_the_river_flow"}, #326
+{ "r" : "1", "t" : "<MTPages id='20'><MTPagePermalink></MTPages>", "e" : "http://narnia.na/nana/watching_the_river_flow.html"}, #327
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageAuthorEmail></MTPages>", "e" : "chuckd@example.com"}, #328
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageAuthorLink></MTPages>", "e" : "<a href=\"http://chuckd.com/\">Chucky Dee</a>"}, #329
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageAuthorURL></MTPages>", "e" : "http://chuckd.com/"}, #330
+{ "r" : "1", "t" : "<MTPages id='20'><MTPageExcerpt></MTPages>", "e" : "excerpt"}, #331
+{ "r" : "1", "t" : "<MTBlogPageCount>", "e" : "4"}, #332
+{ "r" : "1", "t" : "<MTFolders><MTFolderID>;</MTFolders>", "e" : "21;20;22;"}, #333
+{ "r" : "1", "t" : "<MTFolders><MTSubFolders><MTFolderID></MTSubFolders></MTFolders>", "e" : "22"}, #334
+{ "r" : "1", "t" : "<MTFolders><MTSubFolders><MTParentFolders><MTFolderID>;</MTParentFolders></MTSubFolders></MTFolders>", "e" : "21;22;"}, #335
+{ "r" : "1", "t" : "<MTTopLevelFolders><MTFolderID>;</MTTopLevelFolders>", "e" : "21;20;"}, #336
+{ "r" : "1", "t" : "<MTFolders><MTFolderBasename>;</MTFolders>", "e" : "download;info;nightly;"}, #337
+{ "r" : "1", "t" : "<MTFolders><MTFolderCount>;</MTFolders>", "e" : "1;1;1;"}, #338
+{ "r" : "1", "t" : "<MTFolders><MTFolderDescription>;</MTFolders>", "e" : "download top;information;nightly build;"}, #339
+{ "r" : "1", "t" : "<MTFolders><MTFolderLabel>;</MTFolders>", "e" : "download;info;nightly;"}, #340
+{ "r" : "1", "t" : "<MTFolders><MTFolderPath>;</MTFolders>", "e" : "download;info;download/nightly;"}, #341
+{ "r" : "1", "t" : "<MTComments><MTCommentEntry><MTEntryClass>;</MTCommentEntry></MTComments>", "e" : "Page;Entry;Entry;Entry;Entry;Entry;Entry;"}, #342
+{ "r" : "1", "t" : "<MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>", "e" : "Page;Entry;"} #343
+]

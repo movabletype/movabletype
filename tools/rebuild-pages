@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+
+#use strict;
+
+use LWP::UserAgent::Local;
+use HTTP::Request;
+
+use MT;
+my $mt = new MT;
+
+my $ua = new LWP::UserAgent::Local( {ScriptAlias => '/mt/'} );
+
+my ($username, $password) = @ARGV;
+
+my $blog_id = 1;
+
+my $build_type = 'Individual,Monthly,Daily,Weekly,index';
+my $next = '0';
+use MT::Entry;
+my $total_entries = MT::Entry->count({blog_id => $blog_id});
+my $offset = '0';
+my $limit = '20';
+
+my $url = "http://localhost/mt/mt.cgi?__mode=rebuild&blog_id=$blog_id&type=$build_type&next=$next&offset=$offset&limit=$limit&total_entries=$total_entries&entry_id=$entry_id";
+do {
+    $url .= "&username=$username&password=$password";
+    my $req = new HTTP::Request(GET => $url);
+    my $resp = $ua->request($req);
+    ($url) = $resp->content() =~ /window.location='(.*)'/;
+    print (($url || "done") . "\n");
+#    print $resp->content();
+} while ($url);

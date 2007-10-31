@@ -1,0 +1,17 @@
+<mt:if name="BLOG_ID">
+<ul>
+    <li<mt:if name="general-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_prefs&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="General"></a></li>
+    <li<mt:if name="publishing"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_archives&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Publishing"></a></li>
+    <li<mt:if name="entries"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_entry&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Entries"></a></li>
+    <li<mt:if name="comments"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_comments&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Comments"></a></li>
+    <li<mt:if name="trackbacks"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_trackbacks&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="TrackBacks"></a></li>
+    <li<mt:if name="spam"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_spam&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Spam"></a></li>
+    <li<mt:if name="web_services"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_web_services&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Web Services"></a></li>
+    <mt:if name="show_ip_info">
+    <li<mt:if name="ip_info"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=list&amp;_type=banlist&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="IP Banning"></a></li>
+    </mt:if>
+    <mt:if name="use_plugins">
+    <li<mt:if name="plugins"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_plugins&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Plugins"></a></li>
+    </mt:if>
+</ul>
+</mt:if>

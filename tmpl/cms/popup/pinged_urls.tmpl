@@ -1,0 +1,30 @@
+<$mt:setvar name="screen_type" value="popup-screen"$>
+<mt:include name="include/header_popup.tmpl">
+
+<mt:if name="url_loop">
+<p><__trans phrase="Here is a list of the previous TrackBacks that were successfully sent:"></p>
+
+<p>
+<mt:loop name="url_loop">
+<strong>&raquo;</strong> <mt:var name="url"><br />
+</mt:loop>
+</p>
+</mt:if>
+
+<mt:if name="failed_url_loop">
+<p><__trans phrase="Here is a list of the previous TrackBacks that failed. To retry these, include them in the Outbound TrackBack URLs list for your entry.:"></p>
+
+<p>
+<mt:loop name="failed_url_loop">
+<strong>&raquo;</strong> <mt:var name="url"><br />
+</mt:loop>
+</p>
+</mt:if>
+
+<div align="center">
+<form action="<mt:var name="script_url">" onsubmit="return false;">
+<input type="button" onclick="window.close()" value="<__trans phrase="Close">" />
+</form>
+</div>
+
+<mt:include name="include/footer_popup.tmpl">

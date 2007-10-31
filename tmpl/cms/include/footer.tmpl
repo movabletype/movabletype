@@ -1,0 +1,69 @@
+        </div></div><!-- /main-content -->
+<mt:if name="related_content">
+        <div id="related-content"><div id="related-content-inner">
+            <$mt:var name="related_content"$>
+            <!-- <div class="box widget">
+                <h4><a href="#"><__trans phrase="Widget Title"></a></h4>
+                <div class="widget-content">
+                    <p>Content of widget will be here. This content may be </p>
+                </div>
+            </div> -->
+        </div></div> <!-- /related-content -->
+</mt:if>
+    </div></div><!-- /content -->
+    <div id="footer"><div id="footer-inner" class="inner">
+<mt:if name="author_name">
+        <ul id="footer-nav" class="inline-nav">
+            <li class="first"><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Dashboard"></a></li>
+    <mt:if name="can_create_post">
+            <li><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Compose Entry"></a></li>
+    </mt:if>
+    <mt:if name="can_edit_entries">
+            <li><a href="<$mt:var name="mt_url"$>?__mode=list_entries&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Entries"></a></li>
+    </mt:if>
+            <li><a href="<$mt:var name="mt_url"$>?__mode=list_blogs&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Blogs"></a></li>
+    <mt:if name="is_administrator">
+            <li><a href="<$mt:var name="mt_url"$>?__mode=cfg_system"><__trans phrase="System Settings"></a></li>
+    </mt:if>
+    <mt:if name="can_administer_blog">
+            <li><a href="<$mt:var name="mt_url"$>?__mode=tools&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Tools"></a></li>
+    </mt:if>
+            <li><a href="<$mt:var name="mt_url"$>?__mode=search_replace&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Search"></a></li>
+            <!-- <li class="help"><a href="<$mt:var name="help_url"$>"><__trans phrase="Help"></a></li> -->
+        </ul>
+</mt:if>
+        <mt:include name="include/copyright.tmpl">
+        <div id="version">
+            <strong><__trans phrase="<a href="[_1]">Movable Type</a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version">"></strong>
+            <mt:if name="packs_installed">
+            <__trans phrase="with">:
+            <mt:loop name="packs_installed" glue=", "><a href="<mt:var name="portal_url">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>
+            </mt:if>
+        </div>
+    </div></div> 
+    <div id="resize-mask" class="hidden" mt:delegate="resizer">
+        <div class="modal-mask resize-mask"></div>
+        <iframe frameborder="0" scrolling="no" src="about:blank"></iframe>
+    </div>
+    <div id="dialog-container">
+        <div class="modal-mask opaque-mask"></div>
+        <div id="dialog"><iframe frameborder="0" scrolling="auto" src="about:blank" id="dialog-iframe" name="dialog_iframe"></iframe></div>
+    </div>
+    <div id="bootstrapper" class="hidden"></div>
+    <mt:unless name="delayed_bootstrap">
+    <script type="text/javascript">
+        // <![CDATA[
+            App.bootstrapInline( false );
+        // ]]>
+    </script>
+    </mt:unless>
+</div><!-- /container -->
+<mt:if name=open_dialog> 
+<script type="text/javascript"> 
+<!-- 
+openDialog(false, '<mt:var name="dialog_mode">', '<mt:var name="dialog_params">'); 
+//--> 
+</script> 
+</mt:if> 
+</body>
+</html>

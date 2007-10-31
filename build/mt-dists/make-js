@@ -1,0 +1,34 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use lib 'lib';
+use lib 'extlib';
+use MT;
+use MT::Util qw(encode_js);
+
+my $js = `cat mt-static/mt.js`;
+$js .= `cat mt-static/js/dialog.js`;
+
+foreach my $lang (qw(ja de nl fr es)) {
+    open(FOUT, ">./mt-static/mt_$lang.js")
+        or die "failed to open mt-static/mt_$lang.js for writing";
+
+    print FOUT "/* Movable Type language lexicon for $lang localization. */\n\n";
+
+    eval 'require MT::L10N::' . $lang
+        or die "failed to find package MT::L10N::$lang";
+
+    my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }';
+    $js =~ s/\\'/\t\t/g;
+    while ($js =~ m/trans\('([^'|\\\']+?)'/g) {
+	my $str = $1;
+        $str =~ s/\t\t/'/g;
+        my $local = $lex->{$str} || $str;
+        $str = encode_js($str);
+        $local = encode_js($local);
+        next if $str eq $local;
+        print FOUT "Lexicon['$str'] = '$local';\n";
+    }
+    close(FOUT);
+}

@@ -1,0 +1,71 @@
+<MTSetVar name="page_id" value="search-results">
+<MTSetVar name="system_template" value="1">
+<MTSetVar name="search_results_template" value="1">
+<MTSetVar name="sidebar" value="1">
+<MTSetVarBlock name="page_title"><$MTBlogName encode_html="1"$>: <MT_TRANS phrase="Search Results"></MTSetVarBlock>
+<MTIfStraightSearch>
+    <MTSetVar name="search_type" value="search">
+<MTElse>
+    <MTSetVar name="search_type" value="tag">
+</MTIfStraightSearch>
+<$MTInclude module="<MT_TRANS phrase="Header">"$>
+
+<MTIfStraightSearch>
+<h3 class="search-results-header"><MT_TRANS phrase="Search this site"></h3>
+<form method="post" action="<$MTCGIPath$><$MTSearchScript$>" id="search-form">
+<input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
+    <div>
+        <input type="text" size="30" name="search" id="search" value="<$MTSearchString$>" />
+        <input type="submit" value="<MT_TRANS phrase="Search">" />
+    </div>
+    <div id="search-options">
+        <input type="checkbox" name="CaseSearch" /> <MT_TRANS phrase="Match case">
+        <input type="checkbox" name="RegexSearch" /> <MT_TRANS phrase="Regex search">
+    </div>
+</form>
+</MTIfStraightSearch>
+
+<MTSearchResults>
+    <MTBlogResultHeader>
+<h2 class="search-results-header">
+        <MTIfStraightSearch>
+    <MT_TRANS phrase="Matching entries matching &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName$>">
+        </MTIfStraightSearch>
+        <MTIfTagSearch>
+    <MT_TRANS phrase="Entries tagged with &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName$>">
+        </MTIfTagSearch>
+</h2>
+<div class="search-results-container">
+    </MTBlogResultHeader>
+    <$MTInclude module="<MT_TRANS phrase="Entry Summary">"$>    
+    <MTBlogResultFooter>
+</div>
+    </MTBlogResultFooter>
+</MTSearchResults>
+
+<MTNoSearchResults>
+<h2 class="search-results-header">
+    <MTIfStraightSearch>
+    <MT_TRANS phrase="Entries matching &ldquo;[_1]&rdquo;" params="<$MTSearchString$>">
+    </MTIfStraightSearch>
+    <MTIfTagSearch>
+    <MT_TRANS phrase="Entries tagged with &ldquo;[_1]&rdquo;" params="<$MTSearchString$>">
+    </MTIfTagSearch>
+</h2>
+<p><MT_TRANS phrase="No pages were found containing &ldquo;[_1]&rdquo;." params="<$MTSearchString$>"></p>
+</MTNoSearchResults>
+
+<MTNoSearch>
+<h2 class="search-results-header"><MT_TRANS phrase="Instructions"></h2>
+<p><MT_TRANS phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
+<blockquote>
+    <p><code>"<MT_TRANS phrase="movable type">"</code></p>
+</blockquote>
+<p><MT_TRANS phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
+<blockquote>
+    <p><code><MT_TRANS phrase="personal OR publishing"></code></p>
+    <p><code><MT_TRANS phrase="publishing NOT personal"></code></p>
+</blockquote>
+</MTNoSearch>
+
+<$MTInclude module="<MT_TRANS phrase="Footer">"$>

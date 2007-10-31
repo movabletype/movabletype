@@ -1,0 +1,169 @@
+<mt:setvarblock name="page_title"><__trans phrase="Create Your First Blog"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<style type="text/css">
+div.warning#version-warning {
+    position: relative;
+    padding: 1em;
+}
+</style>
+
+<script type="text/javascript">
+window.onload = init;
+
+function init() {
+    if (!getByID) {
+        // javascript files failed to load... alert user
+        return;
+    }
+    var blog = getByID("blog_name");
+    if (blog) {
+        blog.focus();
+    }
+}
+
+function dismiss(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display = 'none';
+    }
+}
+
+function show(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display= 'block';
+    }
+}
+
+function validate(f) {
+
+    if (!f.blog_name.value) {
+        alert('<__trans phrase="The blog name is required." escape="singlequotes">');
+        f.blog_name.focus();
+        return false;
+    }
+
+    if (!f.blog_url.value) {
+        alert('<__trans phrase="The blog url is required." escape="singlequotes">');
+        f.blog_url.focus();
+        return false;
+    }
+
+    if (!is_valid_url(f.blog_url.value)){
+        alert('Your blog URL is not valid.');
+        f.blog_url.focus();
+        return false;
+    }
+
+    if (!f.blog_path.value) {
+        alert('<__trans phrase="The publishing path is required." escape="singlequotes">');
+        f.blog_path.focus();
+        return false;
+    }
+
+    if (!f.blog_timezone.value) {
+        alert('<__trans phrase="The timezone is required." escape="singlequotes">');
+        f.blog_timezone.focus();
+        return false;
+    }    
+
+    return true;
+}
+
+function is_valid_url(url_){
+    return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+}
+</script>
+
+<div class="upgrade">
+
+<div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
+<p class="intro"><__trans phrase="In order to properly publish your blog, you must provide Movable Type with your blog's URL and the path on the filesystem where its files should be published."></p>
+
+<mt:if name="error">
+<div class="error-message"><mt:var name="error"></div>
+</mt:if>
+
+<form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<input type="hidden" name="__mode" value="init_blog">
+<input type="hidden" name="config" value="<mt:var name="config">">
+
+<fieldset>
+
+    <mtapp:setting
+        id="blog_name"
+        label="<__trans phrase="Blog Name">">
+        <input type="text" id="blog_name" name="blog_name" value="<mt:if name="blog_name"><mt:var name="blog_name" escape="html"><mt:else><__trans phrase="My First Blog"></mt:if>" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="blog_url"
+        label="<__trans phrase="Blog URL">">
+        <input type="text" id="blog_url" name="blog_url" value="<mt:if name="blog_url"><mt:var name="blog_url" escape="html"></mt:if>" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="blog_path"
+        label="<__trans phrase="Publishing Path">">
+        <input type="text" id="blog_path" name="blog_path" value="<mt:if name="blog_path"><mt:var name="blog_path" escape="html"></mt:if>" />
+        <p class="hint"><__trans phrase="Your 'Publishing Path' is the path on your web server's file system where Movable Type will publish all the files for your blog. Your web server must have write access to this directory."></p>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="blog_timezone"
+        label="<__trans phrase="Timezone">"
+        hint="<__trans phrase="Select your timezone from the pulldown menu.">">
+        <select name="blog_timezone" id="blog_timezone">
+        <option value=""><__trans phrase="Time zone not selected"></option>
+        <option value="13"<mt:if name="BLOG_TIMEZONE_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+        <option value="12"<mt:if name="BLOG_TIMEZONE_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+        <option value="11"<mt:if name="BLOG_TIMEZONE_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+        <option value="10"<mt:if name="BLOG_TIMEZONE_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+        <option value="9.5"<mt:if name="BLOG_TIMEZONE_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+        <option value="9"<mt:if name="BLOG_TIMEZONE_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+        <option value="8"<mt:if name="BLOG_TIMEZONE_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+        <option value="7"<mt:if name="BLOG_TIMEZONE_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+        <option value="6.5"<mt:if name="BLOG_TIMEZONE_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+        <option value="6"<mt:if name="BLOG_TIMEZONE_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+        <option value="5.5"<mt:if name="BLOG_TIMEZONE_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+        <option value="5"<mt:if name="BLOG_TIMEZONE_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+        <option value="4"<mt:if name="BLOG_TIMEZONE_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+        <option value="3.5"<mt:if name="BLOG_TIMEZONE_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+        <option value="3"<mt:if name="BLOG_TIMEZONE_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+        <option value="2"<mt:if name="BLOG_TIMEZONE_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+        <option value="1"<mt:if name="BLOG_TIMEZONE_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+        <option value="0"<mt:if name="BLOG_TIMEZONE_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+        <option value="-1"<mt:if name="BLOG_TIMEZONE__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+        <option value="-2"<mt:if name="BLOG_TIMEZONE__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+        <option value="-3"<mt:if name="BLOG_TIMEZONE__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+        <option value="-3.5"<mt:if name="BLOG_TIMEZONE__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+        <option value="-4"<mt:if name="BLOG_TIMEZONE__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+        <option value="-5"<mt:if name="BLOG_TIMEZONE__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+        <option value="-6"<mt:if name="BLOG_TIMEZONE__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+        <option value="-7"<mt:if name="BLOG_TIMEZONE__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+        <option value="-8"<mt:if name="BLOG_TIMEZONE__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+        <option value="-9"<mt:if name="BLOG_TIMEZONE__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+        <option value="-10"<mt:if name="BLOG_TIMEZONE__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+        <option value="-11"<mt:if name="BLOG_TIMEZONE__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+        </select>
+    </mtapp:setting>
+
+</fieldset>
+
+</div>
+</div>
+
+<div class="button-bar">
+<div class="left pkg">
+<input type="submit" name="back" value="<__trans phrase="Back">" />
+</div>
+<div class="right pkg">
+<input type="submit" name="finish" value="<__trans phrase="Finish install">" />
+</div>
+</div>
+
+</form>
+
+<mt:include name="include/chromeless_footer.tmpl">

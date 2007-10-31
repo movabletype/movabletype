@@ -1,0 +1,243 @@
+<mt:setvarblock name="page_title"><__trans phrase="Tags"></mt:setvarblock>
+<mt:setvar name="organize-tags" value="1">
+<mt:setvarblock name="content_header">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your tag changes and additions have been made.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You have successfully deleted the selected tags.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <$mt:include name="include/display_options.tmpl"$>    
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+    <input type="button" name="delete" value="<MT_TRANS phrase="Delete">" onclick="doRemoveItems(this.form, '<MT_TRANS phrase="tag">', '<MT_TRANS phrase="tags">')" accesskey="x" title="<MT_TRANS phrase="Delete selected tags (x)">" />
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+
+    <script type="text/javascript">
+    <!--
+    var current_edit = 0;
+    var old_tag_name = '';
+    <mt:if name="blog_id">var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?";
+    <mt:else>var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?";
+    </mt:if>
+    function edit_tag(id) {
+        if (current_edit) return;
+        var tag_link = getByID('tag-link-' + id);
+        var tag_field = getByID('tag-field-' + id);
+        var tag_name = getByID('tag-name-' + id);
+        if (!tag_link || !tag_field || !tag_name) return;
+        current_edit = id;
+        old_tag_name = tag_name.value;
+        tag_link.style.display = 'none';
+        tag_field.style.display = 'inline';
+        tag_name.focus();
+        tag_name.select();
+        unhighlight_tag(id);
+        return false;
+    }
+
+    function cancel_edit(id) {
+        var tag_link = getByID('tag-link-' + id);
+        var tag_field = getByID('tag-field-' + id);
+        var tag_name = getByID('tag-name-' + id);
+        if (!tag_link || !tag_field || !tag_name) return;
+        tag_name.value = old_tag_name;
+        old_tag_name = '';
+        current_edit = 0;
+        tag_link.style.display = 'inline';
+        tag_field.style.display = 'none';
+    }
+
+    function submit_edit(id) {
+        if ((0 != current_edit) && (id != current_edit))
+            id = current_edit;
+        // if old name matches new name, ignore submission (same as cancel)
+        // if new name is already in our tagList array, warn user
+        // if not in tagList and not in range of tagList tags, check with server.
+        var tag_form = getByID('selector-form');
+        var tag_name = getByID('tag-name-' + id);
+        if (!tag_form || !tag_name) return false;
+        var new_tag_name = tag_name.value;
+        if (old_tag_name == new_tag_name) {
+            cancel_edit(id);
+            return false;
+        }
+        if ((new_tag_name >= tagList[0]) &&
+            (new_tag_name <= tagList[tagList.length-1])) {
+            // in range of our view, so check for this tag
+            for (var i = 0; i < tagList.length; i++) {
+                if (tagList[i] == new_tag_name) {
+                    // overwrite warning
+                    if (!confirm(trans(tag_rename_warning, old_tag_name,
+                                       new_tag_name))) {
+                        cancel_edit(id);
+                        return false;
+                    }
+                }
+            }
+        } else {
+            // check with server for existing tag that is out of our view
+            var server_check = false;
+            if (new_tag_name <= tagList[0]) {
+                <mt:if name="prev_offset">server_check = true;</mt:if>
+            } else if (new_tag_name >= tagList[tagList.length-1]) {
+                <mt:if name="next_offset">server_check = true;</mt:if>
+            }
+            if (server_check) {
+                TC.Client.call({
+                    'load': function(r) { server_confirm_edit(id, r) },
+                    'error': function(r) { server_confirm_edit(id, r) },
+        	        'method': 'POST',
+                    'uri': '<mt:var name="script_url">',
+                    'arguments': {
+                        '__mode' : 'js_tag_check',<mt:if name="blog_id">
+                        'blog_id' : <mt:var name="blog_id">,</mt:if>
+                        'tag_name' : new_tag_name
+                    }
+                });
+                return false;
+            }
+        }
+        return submit_edit_form(id);
+    }
+
+    function server_confirm_edit(id, response) {
+        var result = '';
+        try {
+            result = response.responseText;
+        } catch ( e ) {
+        }
+        if (result == 'true' || result == 'false') {
+            if (result == 'true') {
+                var tag_name = getByID('tag-name-' + id);
+                var new_tag_name = tag_name.value;
+                if (!confirm(trans(tag_rename_warning, old_tag_name,
+                                   new_tag_name))) {
+                    cancel_edit(id);
+                    return false;
+                } else {
+                    submit_edit_form(id);
+                }
+            } else {
+                submit_edit_form(id);
+            }
+        } else {
+            alert(trans("An error occurred while testing for the new tag name."));
+            return cancel_edit(id);
+        }
+    }
+
+    function submit_edit_form(id) {
+        var tag_form = getByID('selector-form');
+        var tag_name = getByID('tag-name-' + id);
+        if (!tag_form || !tag_name) return false;
+        tag_form['__mode'].value = 'rename_tag';
+        tag_form['id'][0].value = id;
+        tag_form['tag_name'].value = tag_name.value;
+        tag_form.submit();
+        return true;
+    }
+
+    var tagList = [];
+    <mt:loop name="tag_table"><mt:loop name="object_loop">
+    tagList[tagList.length] = '<mt:var name="tag_name" escape="js">';</mt:loop></mt:loop>
+
+    var tableSelect;
+    function init()
+    {
+    	// setup
+    	tableSelect = new TC.TableSelect( "selector" );
+    }
+
+    TC.attachLoadEvent( init );
+    //-->
+    </script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<div id="list-tags">
+
+<form id="selector-form" class="selector-form" method="post" action="<mt:var name="script_url">">
+
+<mt:if name="position_actions_top">
+    <mt:include name="include/actions_bar.tmpl">
+</mt:if>
+
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="_type" value="tag" />
+<input type="hidden" name="id" value="" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<input type="hidden" name="tag_name" value="" />
+
+<mt:if name="tag_table">
+<mt:loop name="tag_table">
+<div class="tableselect" id="selector">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<th id="tag-name"><__trans phrase="Tag Name"></th>
+<th id="tag-count"><mt:var name="tag_object_label_plural"></th>
+</tr>
+</thead>
+
+<tbody>
+<mt:loop name="object_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>" id="tag-<mt:var name="tag_id">">
+<td class="cb" id="delete-<mt:var name="tag_id">"><input type="checkbox" name="id" value="<mt:var name="tag_id">" class="select" /></td>
+<td class="edit-col" id="tag-cell-<mt:var name="tag_id">">
+<a href="#" title="<__trans phrase="Click to edit tag name">" class="edit-link" id="tag-link-<mt:var name="tag_id">" onclick="return edit_tag(<mt:var name="tag_id">)"><mt:var name="tag_name" escape="html"></a>
+<span id="tag-field-<mt:var name="tag_id">" style="display: none">
+<input type="text" name="tag-name-<mt:var name="tag_id">" id="tag-name-<mt:var name="tag_id">" value="<mt:var name="tag_name" escape="html">" />
+<input type="submit" value="<__trans phrase="Rename">" onclick="return submit_edit(<mt:var name="tag_id">)" />
+<input type="button" value="<__trans phrase="Cancel">" onclick="cancel_edit(<mt:var name="tag_id">)" />
+</span>
+</td>
+<td class="tag-count"><mt:if name="tag_count"><a href="<mt:var name="script_url">?__mode=list_entries<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=exacttag&amp;filter_val=<mt:var name="tag_name" escape="url">" title="<__trans phrase="Show all entries with this tag">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></a><mt:else><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></mt:if></td>
+</tr>
+</mt:loop>
+</tbody>
+
+</table>
+</div>
+<mt:if name="position_actions_bottom">
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom">
+</mt:if>
+</mt:loop>
+
+<mt:else>
+
+<mtapp:statusmsg
+    id="no-tags"
+    class="info">
+    <__trans phrase="No tags could be found.">
+</mtapp:statusmsg>
+
+</mt:if>
+
+</mt:if>
+
+</form>
+
+</div>
+
+<mt:include name="include/footer.tmpl">

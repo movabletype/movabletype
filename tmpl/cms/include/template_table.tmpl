@@ -1,0 +1,73 @@
+<mt:loop name="template_table">
+<form action="<mt:var name="script_url">" method="post" onsubmit="return this['__mode'] ? true : false">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="_type" value="template" />
+<input type="hidden" name="action_name" value="" />
+<input type="hidden" name="itemset_action_input" value="" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<mt:if name="blog_id">
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+</mt:if>
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mt:if name="position_actions_top">
+<mt:include name="include/template_actions.tmpl">
+</mt:if>
+
+<div id="list-template">
+<div class="list<mt:unless name="blog_id">show-weblog</mt:unless>" id="index-selector">
+<table cellspacing="0">
+
+<thead>
+<tr>
+<th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+<mt:if name="blog_id">
+<th class="tt-name"><__trans phrase="Template Name"></th>
+<th class="tt-output-file"><__trans phrase="Output File"></th>
+<th class="tt-dynamic"><__trans phrase="Dynamic"></th>
+<th class="tt-linked"><__trans phrase="Linked"></th>
+<th class="tt-rebuild"><__trans phrase="Built w/Indexes"></th>
+<th class="tt-view">&nbsp;</th>
+<mt:else>
+<th class="tt-name"><__trans phrase="Template Name"></th>
+<th class="tt-output-file"><__trans phrase="Output File"></th>
+<th class="tt-weblog"><__trans phrase="Weblog"></th>
+<th class="tt-dynamic si"><span><__trans phrase="Dynamic"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Dymanic Template">" title="<__trans phrase="Dymanic Template">" width="9" height="9" /></th>
+<th class="tt-linked si"><span><__trans phrase="Linked"></span><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="9" height="9" /></th>
+<th class="tt-rebuild si"><span><__trans phrase="Built w/Indexes"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Built Template w/Indexes">" title="<__trans phrase="Built Template w/Indexes">" width="9" height="9" /></span></th>
+<th class="tt-view si">&nbsp;</th>
+</mt:if>
+</tr>
+</thead>
+<tbody>
+
+<mt:loop name="object_loop">
+<tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+<td class="cb">
+<input type="checkbox" name="id" class="select" value="<mt:var name="id">" />
+</td>
+<td><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
+<td><mt:var name="outfile" escape="html"></td>
+<mt:if name="system_overview_nav">
+<td><mt:var name="blog_name" escape="html"></td>
+</mt:if>
+<td class="si status-<mt:if name="build_dynamic">dynamic<mt:else>static</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="build_dynamic"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
+<td class="si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
+<td class="si status-<mt:if name="rebuild_me">rebuild<mt:else>norebuild</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="rebuild_me"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
+<td class="si status-view"><mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+</tr>
+</mt:loop>
+
+</tbody>
+</table>
+</div>
+</div>
+
+<mt:if name="position_actions_bottom">
+<div class="list-actions-footer">
+<mt:include name="include/template_actions.tmpl">
+</div>
+</mt:if>
+
+</form>
+</mt:loop>

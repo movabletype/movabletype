@@ -1,0 +1,125 @@
+<script type="text/javascript">
+<!--
+var customizable_fields = new Array('category','extended','excerpt','keywords','tags','feedback', 'publishing');
+var custom_fields = new Array();
+<TMPL_IF NAME=DISP_PREFS_SHOW_CATEGORY>custom_fields.push('category');</TMPL_IF>
+<TMPL_IF NAME=DISP_PREFS_SHOW_EXCERPT>custom_fields.push('excerpt');</TMPL_IF>
+<TMPL_IF NAME=DISP_PREFS_SHOW_KEYWORDS>custom_fields.push('keywords');</TMPL_IF>
+<TMPL_IF NAME=DISP_PREFS_SHOW_TAGS>custom_fields.push('tags');</TMPL_IF>
+<TMPL_IF NAME=DISP_PREFS_SHOW_PUBLISHING>custom_fields.push('publishing');</TMPL_IF>
+<TMPL_IF NAME=DISP_PREFS_SHOW_FEEDBACK>custom_fields.push('feedback');</TMPL_IF>
+
+function setFieldGroup(selection) {
+    var i, j, selected_fields, disable_fields, field_object;
+    var selection_value = selection.value;
+
+    // set checkbox data based on which group was selected
+    if (selection_value == 'Default') {
+        selected_fields = new Array('category', 'tags', 'keywords', 'publishing');
+        disable_fields = true;
+    } else if (selection_value == 'Advanced') {
+        selected_fields = customizable_fields;
+        disable_fields = true;
+    } else if (selection_value == 'Custom') {
+        selected_fields = custom_fields;
+        disable_fields = false;
+    }
+
+    // uncheck all the checkboxes
+    for (i = 0; i < customizable_fields.length; i++) {
+        field_object = TC.elementOrId("custom-prefs-"+customizable_fields[i]);
+        if (field_object) field_object.checked = false;
+    }
+
+    // check only the checkboxes in the current set
+    for (i = 0; i < selected_fields.length; i++) {
+        for (j = 0; j < customizable_fields.length; j++) {
+            if (selected_fields[i] == customizable_fields[j]) {
+                field_object = TC.elementOrId("custom-prefs-"+customizable_fields[j]);
+                if (field_object) field_object.checked = true;
+            }
+        }
+    }
+
+    // disable or enable all the checkboxes
+    for (i = 0; i < customizable_fields.length; i++) {
+        field_object = TC.elementOrId("custom-prefs-"+customizable_fields[i]);
+        if (field_object) field_object.disabled = disable_fields;
+    }
+
+	return false;
+}
+
+function setCustomFields() {
+    var i = 0;
+
+    // empty the custom fields array
+    custom_fields = new Array();
+
+    // add only the fields which are currently checked and enabled
+    for (i = 0; i < customizable_fields.length; i++) {
+        var field_object = TC.elementOrId("custom-prefs-"+customizable_fields[i]);
+        if (field_object && field_object.checked && !field_object.disabled) {
+            custom_fields.push(customizable_fields[i]);
+        }
+    }
+
+	return false;
+}
+//-->
+</script>
+
+    <mtapp:setting
+        id="entry_prefs"
+        label="<__trans phrase="Editor Fields">"
+        hint="<__trans phrase="_USAGE_ENTRYPREFS">">
+
+<div class="editor-fields">
+<div class="entry-prefs">
+<div class="display_options">
+<ul>
+<li><label><input type="radio" name="entry_prefs" value="Default" onclick="setFieldGroup(this); return true"<TMPL_IF NAME=DISP_PREFS_DEFAULT> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Default"></label></li>
+<li><label><input type="radio" name="entry_prefs" value="Advanced" onclick="setFieldGroup(this); return true"<TMPL_IF NAME=DISP_PREFS_ADVANCED> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="All"></label></li>
+<li><label><input type="radio" name="entry_prefs" value="Custom" onclick="setFieldGroup(this); return true"<TMPL_IF NAME=DISP_PREFS_CUSTOM> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Custom"></label></li>
+</ul>
+</div>
+</div>
+<p>&nbsp;</p>
+<div class="custom-prefs-wrapper">
+<div class="custom-prefs">
+<div class="custom-prefs-inner">
+<ul class="custom-prefs-fields">
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Title"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-post-status" value="post_status" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Status"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <MT_TRANS phrase="Body"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_CATEGORY> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Category"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_EXCERPT> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Excerpt"></label></li>
+</ul>
+<ul class="custom-prefs-fields-more">
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_KEYWORDS> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Keywords"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-tags" value="tags" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_TAGS> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Tags"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_PUBLISHING> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Publishing"></label></li>
+<li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<TMPL_IF NAME=DISP_PREFS_SHOW_FEEDBACK> checked="checked"</TMPL_IF><TMPL_UNLESS NAME=DISP_PREFS_CUSTOM> disabled="disabled"</TMPL_UNLESS> class="cb" /> <MT_TRANS phrase="Feedback"></label></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="bar_position"
+        label="<__trans phrase="Action Bar">"
+        hint="<__trans phrase="Select the location of the entry editor's action bar.">">
+<div class="entry-prefs">
+<div class="display_options">
+<ul>
+<li><label><input type="radio" name="bar_position" value="Bottom"<TMPL_IF NAME=POSITION_BUTTONS_BOTTOM> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Below"></label></li>
+<li><label><input type="radio" name="bar_position" value="Top"<TMPL_IF NAME=POSITION_BUTTONS_TOP> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Above"></label></li>
+<li><label><input type="radio" name="bar_position" value="Both"<TMPL_IF NAME=POSITION_BUTTONS_BOTH> checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Both"></label></li>
+</ul>
+</div>
+</div>
+<br clear="all" />
+    </mtapp:setting>
+

@@ -1,0 +1,35 @@
+<div id="options_TypeKey">
+<p><__trans phrase="Your TypeKey API Key is used to access Six Apart services like its free Authentication service."> <a href="#" onclick="return openManual('blog_settings_feedback', 'authentication_status')" class="help-link">?</a></p>
+<mt:if name="REMOTE_AUTH_TOKEN">
+<div id="token_curr_status">
+<p>
+<img src="<mt:var name="STATIC_URI">images/status_icons/success.gif" alt="<__trans phrase="TypeKey Enabled">" width="9" height="9" />
+<span class="alert-success-inline"><__trans phrase="TypeKey is enabled."></span>
+<input type="button" name="auth_setup" id="auth_setup" value="<__trans phrase="Clear TypeKey Token">" onclick="getByID('remote_auth_token').value='';getByID('save_token_msg').style.display='block';getByID('token_curr_status').style.display='none';return false" />
+</p>
+<p>
+<__trans phrase="TypeKey Setup:">
+<input type="text" id="remote_auth_token" name="remote_auth_token" value="<mt:var name="REMOTE_AUTH_TOKEN" escape="HTML">" />
+</p>
+</div>
+<p id="save_token_msg" style="display:none">
+<img src="<mt:var name="STATIC_URI">images/status_icons/warning.gif" alt="<__trans phrase="TypeKey API Key Removed">" width="9" height="9" />
+<span class="alert-warning-inline"><__trans phrase="Please click the Save Changes button below to disable authentication."></span>
+</p>
+<mt:else>
+<p>
+<img src="<mt:var name="STATIC_URI">images/status_icons/neutral.gif" alt="<__trans phrase="TypeKey Not Enabled">" width="9" height="9" />
+<span class="auth-status-neutral"><__trans phrase="TypeKey is not enabled."></span>
+</p>
+<p>
+<__trans phrase="Enter API Key:">
+<input type="text" name="remote_auth_token" value="<mt:var name="REMOTE_AUTH_TOKEN" escape="HTML">" />
+&nbsp;or&nbsp;
+<input type="button" name="auth_setup" value="<__trans phrase="Obtain TypeKey API Key">" onclick="window.open('<mt:var name="IDENTITY_SYSTEM">/handshake?<mt:if name="LANG">lang=<mt:var name="LANG">&</mt:if>url=<mt:var name="HANDSHAKE_RETURN" escape="URL">&blog_id=<mt:var name="BLOG_ID">');return false"/>
+</p>
+<p id="save_token_msg" style="display:none">
+<img src="<mt:var name="STATIC_URI">images/status_icons/warning.gif" alt="<__trans phrase="TypeKey API Key Acquired">" width="9" height="9" />
+<span class="alert-warning-inline"><__trans phrase="Please click the Save Changes button below to enable TypeKey."></span>
+</p>
+</mt:if>
+</div>

@@ -1,0 +1,13 @@
+<div class="comment"<MTIfArchiveTypeEnabled archive_type="Individual"> id="comment-<$MTCommentID$>"</MTIfArchiveTypeEnabled>>
+    <div class="inner">
+        <div class="comment-header">
+            <MT_TRANS phrase="[_1] [_2] said:" params="<$MTCommentAuthorLink default_name="Anonymous" show_email="0"$>%%<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>">
+        </div>
+        <div class="comment-content">
+            <$MTCommentBody$>
+        </div>
+        <div class="comment-footer">
+            <MT_TRANS phrase="<a href="[_1]" title="Permalink to this comment">[_2]</a>" params="#comment-<$MTCommentID$>%%<$MTCommentDate format="%x %X"$>">
+        </div>
+    </div>
+</div>

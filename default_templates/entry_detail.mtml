@@ -1,0 +1,19 @@
+<div class="entry" id="entry-<$MTEntryID$>">
+    <div class="entry-content">
+<MTIfNonEmpty tag="EntryBody">
+        <div class="entry-body">
+            <$MTEntryBody$>
+        </div>
+</MTIfNonEmpty>
+<MTIfNonEmpty tag="EntryMore" convert_breaks="0">
+        <div id="more" class="entry-more">
+            <$MTEntryMore$>
+        </div>
+</MTIfNonEmpty>
+<MTIf name="entry_template">
+    <$MTInclude module="<MT_TRANS phrase="Categories">"$>
+</MTIf>
+<$MTInclude module="<MT_TRANS phrase="Tags">"$>
+    </div>
+    <$MTInclude module="<MT_TRANS phrase="Entry Metadata">"$>
+</div>

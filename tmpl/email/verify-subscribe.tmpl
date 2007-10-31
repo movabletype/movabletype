@@ -1,0 +1,7 @@
+<MT_TRANS phrase="Thanks for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:" params="<TMPL_VAR NAME="BLOG_NAME">">
+
+<TMPL_VAR NAME="SCRIPT_PATH">?__mode=confirm;email=<TMPL_VAR NAME="EMAIL" ESCAPE=URL>;magic=<TMPL_VAR NAME="MAGIC" ESCAPE=URL>;blog_id=<TMPL_VAR NAME="BLOG_ID"><TMPL_IF NAME=REDIRECT_URL>;redirect=<TMPL_VAR NAME=REDIRECT_URL ESCAPE=URL><TMPL_ELSE><TMPL_IF NAME=ENTRY_ID>;entry_id=<TMPL_VAR NAME=ENTRY_ID></TMPL_IF></TMPL_IF>
+
+<MT_TRANS phrase="If the link is not clickable, just copy and paste it into your browser.">
+
+<TMPL_INCLUDE NAME="footer-email.tmpl">

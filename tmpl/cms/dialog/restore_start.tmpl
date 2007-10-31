@@ -1,0 +1,17 @@
+<$mt:setvar name="screen_type" value="dialog-screen dialog-4"$>
+<mt:include name="dialog/header.tmpl">
+<script type="text/javascript">
+function progress(str, id) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = str;
+}
+</script>
+
+<h2><__trans phrase="Restoring [_1]..." params="<mt:var name="name">"></h2>
+
+<div class="modal_width dialog import-process">
+
+<div id="progress-bar"><img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+
+<pre><mt:var name="name">
+

@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="<$mt:var name="language_tag"$>" xmlns="http://www.w3.org/1999/xhtml" xmlns:mt="http://www.sixapart.com/ns/mt">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
+<title><TMPL_LOOP NAME=PAGE_TITLES><TMPL_VAR NAME=BC_NAME ESCAPE=HTML> | </TMPL_LOOP><TMPL_VAR NAME=MT_PRODUCT_NAME></title>
+<link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles.css" type="text/css" />
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Observable.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Autolayout.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Component.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/App.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cache.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="MT_VERSION" escape="URL">"></script>
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc.js"></script>
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt.js"></script>
+<TMPL_IF NAME=LOCAL_LANG_ID><link rel="stylesheet" href="<TMPL_VAR NAME=STATIC_URI>styles_<TMPL_VAR NAME=LOCAL_LANG_ID>.css" />
+<script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>mt_<TMPL_VAR NAME=LOCAL_LANG_ID>.js" charset="utf-8"></script></TMPL_IF>
+<script type="text/javascript">
+/* <![CDATA[ */
+CMSScriptURI = '<TMPL_VAR NAME=MT_URL>';
+ScriptURI = '<TMPL_VAR NAME=SCRIPT_URL>';
+ScriptBaseURI = '<TMPL_VAR NAME=SCRIPT_BASE_URL>';
+StaticURI = '<TMPL_VAR NAME=STATIC_URI>';
+HelpBaseURI = '<TMPL_VAR NAME=HELP_URL>';
+
+function closeDialog(url) {
+    if (url)
+        if (window.opener)
+            window.opener.location = url;
+    window.close();
+}
+/* ]]> */
+</script>
+</head>
+
+<body id="mode_<TMPL_VAR NAME=MODE>" class="<TMPL_IF NAME=BLOG_ID>blog blog-<TMPL_VAR NAME=BLOG_ID><TMPL_ELSE>system</TMPL_IF> <$mt:var name="screen_type" default="main-screen"$>"<TMPL_IF NAME=REFOCUS> onload="window.focus()"</TMPL_IF>>
+<div id="container">
+<div class="header">
+    <div id="brand"><h1><TMPL_VAR NAME="mt_product_name"></h1></div>
+</div>
+<div id="content" class="pkg">
+    <!-- <div id="alpha"><div id="alpha-inner"> -->
+    <div class="body-pop">

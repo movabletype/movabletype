@@ -1,0 +1,194 @@
+<mt:setvar name="page_title" value="<__trans phrase="Create Blog">">
+<mt:setvarblock name="content_header">
+    <p class="page-desc"><__trans phrase="From this screen you can specify the basic information needed to create a blog.  Once you click the save button, your blog will be created and you can continue to customize its settings and templates, or just simply start creating entries."></p>
+
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your blog configuration has been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+<!--
+function validate (f) {
+<mt:if name="can_edit_config">
+    if (!f.name.value) {
+        alert('<__trans phrase="You must set your Weblog Name." escape="singlequotes">');
+        return false;
+    } else if (f.server_offset.value == '') {
+        alert('<__trans phrase="You did not select a timezone." escape="singlequotes">');
+        return false;
+</mt:if>
+<mt:if name="can_set_publish_paths">
+<mt:if name="can_edit_config">
+    } else if (!f.site_path.value) {
+<mt:else>
+    if (!f.site_path.value) {
+</mt:if>
+        alert('<__trans phrase="You must set your Local Site Path." escape="singlequotes">');
+        return false;
+    } else if (!f.site_url.value) {
+        alert('<__trans phrase="You must set your Site URL." escape="singlequotes">');
+        return false;
+    } else if (f.server_offset.value == '') {
+        alert('<__trans phrase="You did not select a timezone." escape="singlequotes">');
+        return false;
+    } else if (!is_valid_url(f.site_url.value)){
+        alert('<__trans phrase="Your Site URL is not valid." escape="singlequotes">');
+        return false;
+    } else if (checkUrlSpaces(f.site_url.value)){
+        alert('<__trans phrase="You can not have spaces in your Site URL." escape="singlequotes">');
+        return false;
+    } else if (checkPathSpaces(f.site_path.value)){
+        alert('<__trans phrase="You can not have spaces in your Local Site Path." escape="singlequotes">');
+        return false;
+    } else if (!is_valid_path(f.site_path.value)){
+        alert('<__trans phrase="Your Local Site Path is not valid." escape="singlequotes">');
+        return false;
+</mt:if>
+    }
+    return true;
+}
+function init() {
+<mt:if name="new_object">
+    getByID("name").focus();
+</mt:if>
+}
+function checkUrlSpaces(url_){
+    if (url_.match(/\s+/)){
+        return true;
+    }
+}
+function is_valid_url(url_){
+    return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+}
+function checkPathSpaces(path_){
+    if (path_.match(/\s+/)){
+        return true;
+    }
+}
+function is_valid_path(path_){
+    for(i = 0; i < path_.length; i++){
+        var buf = escape(path_.substr(i, 1));
+        if (buf.match(/^%u.*/)){
+            return false;
+        }
+        if (buf.match(/(%.{2}){2}?/)){
+            return false;
+        }
+    }
+    return true;
+}
+
+TC.attachLoadEvent(init);
+
+//-->
+</script>
+
+
+<form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<mt:unless name="new_object">
+    <input type="hidden" name="id" value="<mt:var name="id">" />
+</mt:unless>
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <fieldset>
+<mt:if name="can_edit_config">
+
+    <mtapp:setting
+        id="name"
+        label="<__trans phrase="Blog Name">"
+        hint="<__trans phrase="Name your blog. The blog name can be changed at any time.">"
+        help_page="blog_settings_general"
+        help_section="blog_name">
+                <input name="name" id="name" value="<mt:var name="name" escape="html">" size="30" />
+    </mtapp:setting>
+</mt:if>
+<mt:if name="can_set_publish_paths">
+    <mtapp:setting
+        id="site_url"
+        label="<__trans phrase="Site URL">"
+        hint="<__trans phrase="Enter the URL of your public website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/weblog/">"
+        help_page="blog_settings_publishing"
+        help_section="site_url">
+            <input name="site_url" id="site_url" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" size="50" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="site_path"
+        label="<__trans phrase="Site Root">"
+        hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog">"
+        help_page="blog_settings_publishing"
+        help_section="site_root">
+            <input name="site_path" id="site_path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" size="50" />
+    </mtapp:setting>
+</mt:if>
+<mt:if name="can_edit_config">
+    <mtapp:setting
+        id="server_offset"
+        label="<__trans phrase="Timezone">"
+        hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+        help_page="blog_settings_general"
+        help_section="blog_timezone">
+            <select name="server_offset" id="server_offset">
+                <option value=""><__trans phrase="Time zone not selected"></option>
+                <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+                <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+                <option value="11"<mt:if name="SERVER_OFFSET_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+                <option value="10"<mt:if name="SERVER_OFFSET_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+                <option value="9.5"<mt:if name="SERVER_OFFSET_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+                <option value="9"<mt:if name="SERVER_OFFSET_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+                <option value="8"<mt:if name="SERVER_OFFSET_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+                <option value="7"<mt:if name="SERVER_OFFSET_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+                <option value="6.5"<mt:if name="SERVER_OFFSET_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+                <option value="6"<mt:if name="SERVER_OFFSET_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+                <option value="5.5"<mt:if name="SERVER_OFFSET_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+                <option value="5"<mt:if name="SERVER_OFFSET_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+                <option value="4"<mt:if name="SERVER_OFFSET_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+                <option value="3.5"<mt:if name="SERVER_OFFSET_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+                <option value="3"<mt:if name="SERVER_OFFSET_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+                <option value="2"<mt:if name="SERVER_OFFSET_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+                <option value="1"<mt:if name="SERVER_OFFSET_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+                <option value="0"<mt:if name="SERVER_OFFSET_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+                <option value="-1"<mt:if name="SERVER_OFFSET__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+                <option value="-2"<mt:if name="SERVER_OFFSET__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+                <option value="-3"<mt:if name="SERVER_OFFSET__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+                <option value="-3.5"<mt:if name="SERVER_OFFSET__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+                <option value="-4"<mt:if name="SERVER_OFFSET__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+                <option value="-5"<mt:if name="SERVER_OFFSET__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+                <option value="-6"<mt:if name="SERVER_OFFSET__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+                <option value="-7"<mt:if name="SERVER_OFFSET__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+                <option value="-8"<mt:if name="SERVER_OFFSET__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+                <option value="-9"<mt:if name="SERVER_OFFSET__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+                <option value="-10"<mt:if name="SERVER_OFFSET__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+                <option value="-11"<mt:if name="SERVER_OFFSET__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+            </select>
+    </mtapp:setting>
+</mt:if>
+</fieldset>
+
+<div style="text-align: center;">
+    <input type="submit" value="<__trans phrase="Save Changes">" title="<__trans phrase="Save changes (s)">" accesskey="s" />
+</div>
+
+</form>
+
+<mt:include name="include/footer.tmpl">

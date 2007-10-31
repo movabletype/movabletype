@@ -1,0 +1,99 @@
+<TMPL_UNLESS NAME=JSON>
+<TMPL_IF NAME=6A>
+<!--
+parameters:
+    panel_type (blog, author, role, group)
+    panel_title
+    panel_label
+    items_prompt
+    panel_description
+
+    panel_multi (multiple selection or not)
+    panel_searchable
+    panel_last
+    panel_first
+
+    object_loop
+        id
+        label
+        description
+        disabled (row is shown, but unselectable)
+-->
+</TMPL_IF>
+            <!-- ListingPanel -->
+            <div id="<TMPL_VAR NAME=PANEL_TYPE>-panel" class="hidden panel">
+                <h2><span class="weblog-title-highlight"><TMPL_VAR NAME=DIALOG_TITLE></span>: <TMPL_VAR NAME=PANEL_TITLE> <TMPL_IF NAME=PANEL_HAS_STEPS>(<MT_TRANS phrase="Step [_1] of [_2]" params="<TMPL_VAR NAME=PANEL_NUMBER>%%<TMPL_VAR NAME=PANEL_TOTAL>">)</TMPL_IF></h2>
+
+                <TMPL_IF NAME=PANEL_MULTI><div class="items-wrapper">
+                    <span class="modal_added"><TMPL_VAR NAME=ITEMS_PROMPT>:</span> <span class="items"></span>
+                </div>
+
+                </TMPL_IF><div class="search-box">
+                    <TMPL_IF PANEL_SEARCHABLE>
+                    <form action="" method="get">
+                        <p class="page-desc"><TMPL_VAR NAME=SEARCH_PROMPT>
+                        <input type="text" class="search-input"<TMPL_UNLESS PANEL_SEARCHABLE> disabled="disabled"</TMPL_UNLESS> />
+                        <input type="image" class="search-command" src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/color/search.gif" title="<MT_TRANS phrase="Search">"<TMPL_UNLESS PANEL_SEARCHABLE> disabled="disabled"</TMPL_UNLESS> />
+                        <input type="button" class="search-reset hidden" value="<MT_TRANS phrase="View All">"<TMPL_UNLESS PANEL_SEARCHABLE> disabled="disabled"</TMPL_UNLESS> />
+                    </p></form>
+                    <TMPL_ELSE>
+                    <p class="page-desc">&nbsp;<img border="0" src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" width="17" height="20" alt="" /></p>
+                    </TMPL_IF>
+                </div>
+
+                <div class="selector list<TMPL_IF NAME=PANEL_MULTI> list-multi</TMPL_IF>">
+                    <form action="" method="get" onsubmit="return false">
+                        <table cellspacing="0" class="list-heading">
+                            <tr>
+                                <th class="cb"><TMPL_IF NAME=PANEL_MULTI><input type="checkbox" value="all" class="select" /><TMPL_ELSE>&nbsp;</TMPL_IF></th>
+                                <th class="panel-label"><TMPL_VAR NAME=PANEL_LABEL></th>
+                                <th class="panel-description"><TMPL_VAR NAME=PANEL_DESCRIPTION></th>
+                            </tr>
+                        </table>
+                        <div class="list-data-wrapper list-data">
+</TMPL_UNLESS>
+<TMPL_IF NAME=OBJECT_LOOP>
+                            <div class="list-data-layout">
+                            <table cellspacing="0">
+    <TMPL_LOOP NAME=OBJECT_LOOP>
+                                <tr id="<TMPL_VAR NAME=PANEL_TYPE>-<TMPL_VAR NAME=ID>" class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
+                                    <td class="cb"><input type="<TMPL_IF NAME=PANEL_MULTI>checkbox<TMPL_ELSE>radio</TMPL_IF>" class="select" name="<TMPL_VAR NAME=PANEL_TYPE>-cb" value="<TMPL_VAR NAME=ID>" <TMPL_IF NAME=DISABLED>disabled="disabled"</TMPL_IF> /></td>
+                                    <td class="panel-label"><label><TMPL_VAR NAME=LABEL></label></td>
+                                    <td class="panel-description"><TMPL_IF NAME=LINK><span class="float_desc"></TMPL_IF><TMPL_VAR NAME=DESCRIPTION><TMPL_IF NAME=LINK></span></TMPL_IF><TMPL_IF NAME=LINK><span class="link"><a href="<TMPL_VAR NAME=LINK ESCAPE=HTML>" target="_blank"><img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" title="<MT_TRANS phrase="Go to [_1]" params="<TMPL_VAR NAME=LABEL ESCAPE=HTML>">" width="13" height="9" alt="" /></a></span></TMPL_IF></td>
+                                </tr>
+    </TMPL_LOOP>
+                            </table>
+                            </div>
+<TMPL_ELSE>
+<TMPL_IF NAME=SEARCH>
+    <mtapp:statusmsg
+        id="search"
+        class="info">
+        <__trans phrase="Sorry, there were no results for your search. Please try searching again.">
+    </mtapp:statusmsg>
+<TMPL_ELSE>
+    <mtapp:statusmsg
+        id="no-data"
+        class="info">
+        <__trans phrase="Sorry, there is no data for this object set.">
+    </mtapp:statusmsg>
+</TMPL_IF>
+</TMPL_IF>
+<TMPL_UNLESS NAME=JSON>
+                        </div>
+                        </form>
+                </div>
+
+                <div class="pager"></div>
+
+                <div class="panel-commands">
+                    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+                        <input type="button" class="cancel" value="<MT_TRANS phrase="Cancel">" />
+                        <TMPL_UNLESS NAME=PANEL_FIRST><input type="button" class="previous" value="<MT_TRANS phrase="Back">" />
+                        </TMPL_UNLESS><TMPL_IF NAME=PANEL_LAST><input type="button" class="close" value="<MT_TRANS phrase="Confirm">" disabled="true" />
+                        <TMPL_ELSE><input type="button" class="next" value="<MT_TRANS phrase="Continue">" disabled="true" />
+                        </TMPL_IF>
+                    </form>
+                </div>
+            </div>
+</TMPL_UNLESS>

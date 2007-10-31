@@ -1,0 +1,332 @@
+<mt:setvarblock name="page_title">
+    <mt:if name="blog_id">
+        <$mt:var name="blog_name" escape="html"$>
+    <mt:else>
+        <__trans phrase="Dashboard">
+    </mt:if>
+</mt:setvarblock>
+<mt:if name="blog_id"><mtsetvar name="blog_scope" value="$blog_id"><mt:else><mtsetvar name="blog_scope" value="all"></mt:if>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+    <mt:if name="comment_stat_url">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/flash/JavaScriptFlashGateway.js"></script>
+    </mt:if>
+    <script type="text/javascript">
+    function showRecentEntriesByTag(el_div, res) {
+        var result = eval('(' + res.responseText + ')');
+        if (result && result.result.html) {
+            getByID(el_div).innerHTML = result.result.html;
+        }
+    }
+    function clearRecentEntriesByTag(el_div, res) {
+        getByID(el_div).innerHTML = "<div class='error-message'>Error retrieving recent entries.</div>";
+    }
+    function recentEntriesForTag(tag, el_div) {
+        var el = getByID(el_div);
+        getByID(el_div).innerHTML = "<div style='text-align:center'><__trans phrase="Loading recent entries..." escape="html"> <img src='<mt:var name="static_uri">images/indicator.white.gif' height='16' width='16' alt='' /></div>";
+        TC.Client.call({
+            'load': function(r) { showRecentEntriesByTag(el_div, r) },
+            'error': function(r) { clearRecentEntriesByTag(el_div, r) },
+	        'method': 'POST',
+            'uri': '<mt:var name="script_url">',
+            'arguments': {
+                '__mode' : 'js_recent_entries_for_tag',<mt:if name="blog_id">
+                'blog_id' : <mt:var name="blog_id">,</mt:if>
+                'tag' : tag
+            }
+        });
+        /*
+        <mt:ignore>
+        <mt:var name="script_url">?__mode=list_entry<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=exacttag&amp;filter_val=<MTTagName escape="html">
+        </mt:ignore>
+        */
+    }
+    <mt:if name="comment_stat_url">
+        var lcId = new Date().getTime();
+        var flashProxy = new FlashProxy(lcId, "<mt:var name="static_uri">flash/JavaScriptFlashGateway.swf");
+
+        /*
+        SET THESE VARIABLES TO CUSTOMIZE THE DATE SLIDER
+        */
+        var date_range = 'today';
+        var line_color = '999999';
+        var box_color = '006699';
+        var bar_color = '0066CC';
+        var slider_variable = '<__trans phrase="Entries" escape="js">';
+        var file_name = '<mt:var name="entry_stat_url">';
+
+        var entriesSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable, 540, 122);
+        entriesSlider.setFlashvars("lcId=" + lcId);
+        entriesSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+        var activeStatsPanel = 'comment';
+
+        slider_variable = '<__trans phrase="Comments" escape="js">';
+        file_name = '<mt:var name="comment_stat_url">';
+
+        var commentsSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable, 540, 122);
+        commentsSlider.setFlashvars("lcId=" + lcId);
+        commentsSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+
+        function updatePage(raw_range, clean_range, total_count) {
+            var str;
+            var from = raw_range.match(/^(\d\d\d\d\d\d\d\d)/)[1];
+            var to = raw_range.match(/-(\d\d\d\d\d\d\d\d)/)[1];
+            var search_url = '<mt:var name="script_url">?__mode=list_' + activeStatsPanel + '&filter_key=_by_date<mt:if name="blog_id">&blog_id=<mt:var name="blog_id"></mt:if>&filter_val=' + from + '-' + to;
+            if (activeStatsPanel == 'comment') {
+                str = trans("You have <a href='[_3]'>[quant,_1,comment] from [_2]</a>", total_count, clean_range, search_url);
+            } else if (activeStatsPanel == 'entry') {
+                str = trans("You have <a href='[_3]'>[quant,_1,entry,entries] from [_2]</a>", total_count, clean_range, search_url);
+            }
+            getByID("stats-summary-"+activeStatsPanel).innerHTML = str;
+        }
+        </mt:if>
+
+        blogStatsTabs = new Array('comment','entry','tag');
+        newsTabs = new Array('mt-news','learning-mt'/* ,'hacking-mt','pronet'*/);
+
+    //-->
+    </script>
+</mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <div id="you-widget" class="widget you-widget">
+        <div class="widget-inner inner pkg">
+            <div class="widget-header">
+                <div class="widget-header-inner">
+                    <h3 class="widget-label"><__trans phrase="This is you"></h3>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="widget-content-inner pkg">
+                    <div class="user-pic">
+                        <img src="<$mt:var name="static_uri"$>images/user-pic.gif" alt="" width="50px" height="50px" />
+                    </div>
+                    <div class="user-stats">
+                        <h4><mt:var name="author_display_name" escape="html"></h4>
+                        <ul class="user-stats-list">
+                        <mt:if name="last_post_id">
+                            <li><__trans phrase="Your <a href="[_1]">last post</a> was [_2]." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" format="%x %X">"></li>
+                        </mt:if>
+                        <mt:if name="draft_count">
+                            <li><__trans phrase="You have <a href="[_1]">[quant,_2,draft,drafts]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter=status&amp;filter_val=1%%<mt:var name="draft_count">"></li>
+                        </mt:if>
+                        <mt:if name="publish_count">
+                            <mt:if name="comment_count">
+                            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,post,posts]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>" params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=list_comment&amp;filter_key=my_posts%%<mt:var name="comment_count">">.
+                            <mt:else>
+                            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,post,posts]</a>." params="<mt:var name="script_url">?__mode=list_entry%%<mt:var name="publish_count">">.
+                            </mt:if>
+                        </mt:if>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-footer"></div>
+        </div>
+    </div>
+
+    <div id="shortcuts-widget" class="widget shortcuts-widget">
+        <div class="widget-inner inner pkg">
+            <div class="widget-header">
+                <div class="widget-header-inner">
+                    <h3 class="widget-label"><__trans phrase="Handy Shortcuts"></h3>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="widget-content-inner">
+                    <ul class="shortcuts-list pkg">
+                        <mt:if name="can_manage_plugins">
+                        <li><a href="<mt:var name="script_url">?__mode=cfg_plugins<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left icon-left-xwide icon-plugins"><__trans phrase="Plugins"></a></li>
+                        </mt:if>
+                        <mt:if name="can_search_replace">
+                        <li><a href="<mt:var name="script_url">?__mode=search_replace<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left icon-left-xwide icon-search"><__trans phrase="Search &amp; Replace"></a></li>
+                        </mt:if>
+                        <mt:if name="can_publish_feedbacks">
+                        <li><a href="<mt:var name="script_url">?__mode=list_ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left icon-left-xwide icon-trackbacks"><__trans phrase="Trackbacks"></a></li>
+                        </mt:if>
+                        <mt:if name="can_view_log">
+                        <li><a href="<mt:var name="script_url">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left icon-left-xwide icon-log"><__trans phrase="Activity Log"></a></li>
+                        </mt:if>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="news-widget" class="widget news-widget">
+        <div class="widget-inner inner pkg">
+            <div class="widget-header widget-header-tabs">
+                <div class="widget-header-inner pkg">
+                    <h3 class="widget-label"><span><__trans phrase="News"></span></h3>
+                    <ul class="tabs">
+                        <li id="mt-news-tab" class="tab selected-tab"><a href="javascript:void(0)" onclick="tabToggle('mt-news',newsTabs); return false;"><span><__trans phrase="MT News"></span></a></li>
+                        <li id="learning-mt-tab" class="tab"><a href="javascript:void(0)" onclick="tabToggle('learning-mt',newsTabs); return false;"><span><__trans phrase="Learning MT"></span></a></li>
+                        <!-- <li id="hacking-mt-tab" class="tab"><a href="javascript:void(0)" onclick="tabToggle('hacking-mt',newsTabs); return false;"><span><__trans phrase="Hacking MT"></span></a></li>
+                        <li id="pronet-tab" class="tab"><a href="javascript:void(0)" onclick="tabToggle('pronet',newsTabs); return false;"><span><__trans phrase="Pronet"></span></a></li> -->
+                    </ul>
+                </div>
+            </div>
+            <div class="widget-content">
+                <div class="widget-content-inner pkg">
+                    <div id="mt-news-panel" class="tab-panel selected-tab-panel">
+                        <mt:if name="news_html">
+                            <$mt:var name="news_html"$>
+                        <mt:else>
+                            <p><__trans phrase="No Movable Type news available."></p>
+                        </mt:if>
+                    </div>
+                    <div id="learning-mt-panel" class="tab-panel">
+                        <mt:if name="learning_mt_news_html">
+                            <$mt:var name="learning_mt_news_html"$>
+                        <mt:else>
+                            <p><__trans phrase="No Learning Movable Type news available."></p>
+                        </mt:if>
+                    </div>
+                    <!-- <div id="hacking-mt-panel" class="tab-panel">
+                        HACKING-MT
+                    </div>
+                    <div id="pronet-panel" class="tab-panel">
+                        PRONET
+                    </div> -->
+                </div>
+            </div>
+            <div class="widget-footer"></div>
+        </div>
+    </div>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<mt:if name="redirect">
+    <mtapp:statusmsg
+        id="redirect"
+        class="alert">
+        <__trans phrase="You have attempted to access a page that does not exist. Please navigate to the page you are looking for starting from the dashboard.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="permission">
+    <mtapp:statusmsg
+        id="permissions"
+        class="error">
+        <__trans phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:unless name="comment_stat_url">
+    <mt:if name="is_administrator">
+        <mt:unless name="static_file_path">
+            <mt:setvarblock name="error"><__trans phrase="Movable Type was unable to locate your 'mt-static' directory. Please configure the 'StaticFilePath' configuration setting in your mt-config.cgi file, and create a writable 'support' directory underneath your 'mt-static' directory."></mt:setvarblock>
+        <mt:else>
+            <mt:setvarblock name="error"><__trans phrase="Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it." params="<mt:var name="support_path">"></mt:setvarblock>
+        </mt:unless>
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:unless>
+
+<div id="blogstats-widget" class="widget blogstats-widget">
+    <div class="widget-inner inner pkg">
+        <div class="widget-header widget-header-tabs">
+            <div class="widget-header-inner pkg">
+                <h3 class="widget-label"><__trans phrase="Blog Stats"></h3>
+                <ul class="tabs">
+                    <li id="comment-tab" class="tab selected-tab"><a href="javascript:void(0)" onclick="activeStatsPanel = 'comment'; tabToggle('comment',blogStatsTabs); return false;"><span><__trans phrase="Comments"></span></a></li>
+                    <li id="entry-tab" class="tab"><a href="javascript:void(0)" onclick="activeStatsPanel = 'entry'; tabToggle('entry',blogStatsTabs); return false;"><span><__trans phrase="Entries"></span></a></li>
+                    <li id="tag-tab" class="tab"><a href="javascript:void(0);" onclick="activeStatsPanel = 'tag'; tabToggle('tag',blogStatsTabs); return false;"><span><__trans phrase="Tags"></span></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="widget-content">
+            <div class="widget-content-inner pkg">
+                <div id="comment-panel" class="tab-panel selected-tab-panel">
+                    <mt:if name="comment_stat_url">
+                    <script type="text/javascript">
+                    <!--
+                    commentsSlider.write(document);
+                    // -->
+                    </script>
+
+                    <div class="stats-summary" id="stats-summary-comment">&nbsp;</div>
+                    </mt:if>
+
+                    <h4 class="tab-panel-header"><__trans phrase="Most Recent Comments"></h4>
+
+                    <MTComments>
+                    <div id="comment-<$MTCommentID$>" class="comment comment-<mt:if name="__odd__">odd<mt:else>even</mt:if> comment-<MTCommentIfModerated>status-publish<MTElse>status-pending</MTCommentIfModerated>">
+                        <div class="comment-inner">
+                            <div class="comment-content">
+                                <$MTCommentBody$>
+                            </div>
+                            <div class="comment-meta">
+                                <__trans phrase="[_1][_2], [_3] on [_4]" params="<$MTCommentAuthorLink default_name="Anonymous"$>%%<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>%%<$MTCommentDate relative="1" format="%x %X"$>%%<MTCommentEntry><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;id=<$MTEntryID$>&amp;blog_id=<$MTEntryBlogID$>"><$MTEntryTitle$></a></MTCommentEntry>">
+                                (<a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<$MTCommentID$>&amp;blog_id=<$MTCommentBlogID$>"><__trans phrase="Edit Comment"></a>)
+                            </div>
+                        </div>
+                    </div>
+                    <mt:if name="__last__">
+                    <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all comments"></a></div>
+                    </mt:if>
+                    <MTElse>
+                        <__trans phrase="No comments available.">
+                    </MTComments>
+                </div>
+                <div id="entry-panel" class="tab-panel">
+                    <mt:if name="entry_stat_url">
+                    <script type="text/javascript">
+                    <!--
+                    entriesSlider.write(document);
+                    // -->
+                    </script>
+
+                    <div class="stats-summary" id="stats-summary-entry">&nbsp;</div>
+                    </mt:if>
+
+                    <h4 class="tab-panel-header"><__trans phrase="Most Recent Entries"></h4>
+
+                    <MTEntries>
+                        <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                            <div class="entry-title">
+                                <h4><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></a></h4>
+                            </div>
+                            <div class="entry-content">
+                                <p><$MTEntryExcerpt$></p>
+                            </div>
+                            <div class="entry-meta">
+                            <MTIfNonEmpty tag="MTEntryAuthorDisplayName">
+                                <mt:setvarblock name="entry_author"><$MTEntryAuthorLink show_email="0"$></mt:setvarblock>
+                            <MTElse>
+                                <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername$></mt:setvarblock>
+                            </MTIfNonEmpty>
+                            <MTIfNonEmpty tag="EntryCategory">
+                                <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1" format="%x %X"$>%%<MTEntryCategories glue=", "><a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel$></a></MTEntryCategories>">
+                            <MTElse>
+                                <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1" format="%x %X"$>">
+                            </MTIfNonEmpty>
+                            <MTEntryIfTagged>
+                                <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a></li></MTEntryTags>">
+                            </MTEntryIfTagged>
+                            </div>
+                        </div>
+                        <mt:if name="__last__">
+                        <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all entries"></a></div>
+                        </mt:if>
+                    <MTElse>
+                        <__trans phrase="No entries available.">
+                    </MTEntries>
+                </div>
+                <div id="tag-panel" class="tab-panel">
+                    <div id="tag-cloud">
+                        <ul id="tag-cloud-list">
+                        <MTTags blog_ids="$blog_scope" limit="100" sort_by="rank">
+                            <li class="tag-<$MTTagRank$>"><a href="#" onclick="recentEntriesForTag('<MTTagName escape="js">', 'tag-cloud-recent-entries'); return false"><$MTTagName$></a></li>
+                        </MTTags>
+                        </ul>
+                    </div>
+                    <div id="tag-cloud-recent-entries"></div>
+                </div>
+            </div>
+        </div>
+        <div class="widget-footer"></div>
+    </div>
+</div>
+<mt:include name="include/footer.tmpl">

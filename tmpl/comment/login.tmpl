@@ -1,0 +1,78 @@
+<mt:setvarblock name="page_title"><__trans phrase="Sign in to comment"></mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<mt:if name="message">
+    <mtapp:statusmsg
+        id="message"
+        class="alert">
+        <mt:var name="message">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="enabled_MovableType">
+<mt:setvar name="default_signin" value="MovableType">
+<mt:else>
+<mt:loop name="auth_loop">
+<mt:if name="__first__"><mt:setvar name="default_signin" value="$name"></mt:if>
+</mt:loop>
+</mt:if>
+
+<div class="signin">
+
+<mt:if name="enabled_MovableType">
+<div id="signin_with_mt"<mt:unless name="enabled_MovableType"> style="display: none"</mt:unless>>
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="do_login" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+
+<mtapp:setting
+    id="username"
+    label="<__trans phrase="Username">">
+    <input name="username" id="username" />
+</mtapp:setting>
+
+<mtapp:setting
+    id="password"
+    label="<__trans phrase="Password">">
+    <input type="password" name="password" id="password" />
+</mtapp:setting>
+
+<p><label><__trans phrase="Remember me?"> <input type="checkbox" name="remember" value="1" accesskey="r" /></label></p>
+
+<div class="pkg">
+<p class="left"><input type="submit" name="submit" value="<__trans phrase="Sign In">" /></p>
+
+<mt:if name="can_recover_password"><p class="right"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></p></mt:if>
+</div>
+
+</form>
+
+<mt:if name="registration_allowed"><p>Not a member?&nbsp;&nbsp;<a href="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id">&amp;static=<mt:var name="static" escape="url">">Sign Up</a>!</p></mt:if>
+</div>
+</mt:if>
+<mt:if name="auth_loop">
+
+<dl>
+<mt:loop name="auth_loop">
+<dd>
+<div id="signin_with_<mt:var name="name">"<mt:if name="name" ne="$default_signin"> style="display: none"</mt:if>>
+<mt:var name="login_form">
+</div>
+</dd>
+</mt:loop>
+</dl>
+
+</mt:if>
+
+</div>
+
+<mt:include name="include/footer.tmpl">

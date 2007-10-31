@@ -1,0 +1,45 @@
+<$mt:setvar name="screen_type" value="popup-screen"$>
+<mt:setvarblock name="page_title"><__trans phrase="Rebuild"> <mt:var name="blog_name" escape="html"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="start_rebuild" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="next" value="<mt:var name="build_next">" />
+<input type="hidden" name="total_entries" value="<mt:var name="total_entries">" />
+<input type="hidden" name="total_cats" value="<mt:var name="total_cats">" />
+
+    <fieldset>
+
+    <mtapp:setting
+        id="dbtype"
+        label="<__trans phrase="Rebuild">">
+    <select name="type">
+        <option value="<mt:var name="build_order">" selected="selected"><__trans phrase="All Files"></option>
+        <mt:if name="index_tmpl_id">
+        <option value="index-<mt:var name="index_tmpl_id">" selected="selected"><__trans phrase="Index Template: [_1]" params="<mt:var name="index_tmpl_name" escape="html">"></option>
+        </mt:if>
+        <option value="index"<mt:if name="index_selected"> selected="selected"</mt:if>>
+        <__trans phrase="Indexes Only"></option>
+        <mt:loop name="archive_type_loop">
+        <option value="<mt:var name="archive_type">"><__trans phrase="[_1] Archives Only" params="<mt:var name="archive_type_label" escape="html">"></option>
+        </mt:loop>
+        <mt:loop name="rebuild_option_loop">
+        <option value="<mt:var name="key">"><mt:var name="label" escape="html"></option>
+        </mt:loop>
+    </select>
+    </mtapp:setting>
+
+    <p class="right">
+    <input type="submit" value="<__trans phrase="Rebuild">" accesskey="r" title="<__trans phrase="Rebuild (r)">" />
+    <input type="button" onclick="window.close()" value="<__trans phrase="Cancel">" />
+    </p>
+
+    </fieldset>
+
+    <p><__trans phrase="Select the type of rebuild you would like to perform. Note: This will not rebuild any templates you have chosen to not automatically rebuild with index templates."> <a href="#" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></p>
+
+</form>
+
+<mt:include name="include/chromeless_footer.tmpl">

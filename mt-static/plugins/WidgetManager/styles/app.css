@@ -1,0 +1,109 @@
+td.widgetmanager-name {
+  width: 150px;
+}
+
+#widgetmanager-promo {
+  padding: 3px;
+  background: #DDDDDD;
+  text-align: center;
+  margin-top: 10px;
+  color: #333333;
+}
+
+#widgetmanager-promo a {
+  color: #3333FF;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#form-actions {
+    text-align: center;
+}
+
+#stage {
+	position: relative;
+	width: 400px;
+        background-color: #eee;
+}
+
+#installed-column {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 200px;
+	background-color: #e6ecf2;
+}
+
+#center-column {
+	position: absolute;
+	top: 0;
+	left: 200px;
+	width: 20px;
+	text-align: center;
+	background-color: #fff;
+}
+
+#available-column {
+	position: absolute;
+	top: 0;
+	left: 220px;
+	width: 200px;
+	background-color: #e6ecf2;
+}
+
+#installed-column p,
+#available-column p {
+	padding: 5px 0 5px 0;
+	color: #fff;
+	text-align: center;
+	background-color: #8faebe;
+        margin: 0 0 5px 0;
+}
+
+#stage-drop {
+	position: absolute;
+	display: none;
+	width: 200px;
+	height: 7px;
+	background: #e6ecf2 url('../images/drop.gif') no-repeat;
+}
+
+.module {
+	display: none;
+	position: absolute;
+	border: 1px solid #a3b8cc;
+	padding: 5px;
+	font-size: x-small;
+	line-height: 1;
+	text-align: left;
+	text-transform: uppercase;
+	background-color: #fff;
+}
+
+.module a:link,
+.module a:hover,
+.module a:active, 
+.module a:visited {
+	color: #333;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.action-buttons {
+	margin-top: 10px;
+	border-top: 1px solid #ccc;
+	padding-top: 10px;
+	text-align: center;
+}
+
+.clr {
+	clear: both;
+	overflow: hidden;
+	width: 1px;
+	height: 1px;
+	margin: 0 -1px -1px 0;
+	border: 0;
+	padding: 0;
+	font-size: 0;
+	line-height: 0;
+}
