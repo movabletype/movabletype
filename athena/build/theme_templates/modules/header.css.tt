@@ -1,6 +1,0 @@
-[% IF theme.header.template %]
-    [% templatename = "header/" _ theme.header.template _ ".css.tt" %]
-[%+ INCLUDE $templatename %]
-[% ELSE %]
-[%+ INCLUDE header/basic.css.tt %]
-[% END %]
