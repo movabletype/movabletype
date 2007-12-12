@@ -285,13 +285,13 @@ h2
     position: absolute;
     left: 0;
     top: 0;
-    width: 160px;
+    width: 150px;
 }
 
 #templates-wrapper
 {
     position: absolute;
-    left: 170px;
+    left: 161px;
     top: 0;
     width: 440px;
     height: 450px;
@@ -300,7 +300,7 @@ h2
 #details-wrapper
 {
     position: absolute;
-    left: 618px;
+    left: 600px;
     top: 0;
     width: 300px;
 }

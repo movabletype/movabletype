@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_block_mtpingssent($args, $content, &$ctx, &$repeat) {
     $localvars = array('_pinged_urls', '_ping_urls_counter', 'ping_sent_url');
     if (!isset($content)) {

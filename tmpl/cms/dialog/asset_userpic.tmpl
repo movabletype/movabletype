@@ -7,8 +7,10 @@ var author_userpic = '<mt:var name="author_userpic" escape="JS">';
 if (author_userpic != '') {
     var preview = window.parent.getByID( 'userpic-preview-userpic' );
     preview.innerHTML = author_userpic;
-    window.parent.show( 'remove-userpic', window.parent.document, 'inline' );
-    window.parent.show( 'userpic-preview', window.parent.document );
+    if (window.parent.DOM.hasClassName( 'remove-userpic', 'hidden' ))
+        window.parent.toggleHidden( 'remove-userpic' );
+    if (window.parent.DOM.hasClassName( 'userpic-preview', 'hidden' ))
+        window.parent.toggleHidden( 'userpic-preview' );
 }
 closeDialog();
 //-->

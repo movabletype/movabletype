@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -305,6 +305,7 @@ sub init_blog {
     no warnings;
     @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
     $param{'template_set_loop'} = $sets;
+    $param{'template_set_index'} = $#$sets;
 
     if ($app->param('back')) {
         return $app->init_user;
@@ -364,7 +365,7 @@ sub init_blog {
         blog_url => uri_escape($param{blog_url}),
         blog_path => uri_escape($param{blog_path}),
         blog_timezone => $param{blog_timezone},
-        blog_template_set => $param{blog_template_set},
+        blog_template_set => $param{blog_template_set} || 'mt_blog',
     };
 
     my $steps;

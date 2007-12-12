@@ -13,7 +13,7 @@
     <!--[if lte IE 6]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
     <![endif]-->
-<mt:if name="local_lang_id">
+<mt:if name="local_lang_id" ne="en-us">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version" escape="url">" />
 </mt:if>
 <mt:if name="mt_debug">
@@ -46,8 +46,8 @@
 </mt:setvarblock>
 <$mt:var name="html_head"$>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version" escape="url">"></script>
-<mt:if name="local_lang_id">
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version" escape="URL">" charset="utf-8"></script>
+<mt:if name="local_lang_id" ne="en-us">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version" escape="URL">" charset="utf-8"></script>
 </mt:if>
 <$mt:var name="js_include"$>
 </head>
@@ -56,7 +56,7 @@
 <table id="preview-layout">
     <tr>
         <td id="entry-preview-control-strip">
-            <div id="preview-label"><__trans phrase="You are previewing the [_1] titled &ldquo;[_2]&rdquo;" params="<$mt:var name="object_label" lower_case="1"$>%%<$mt:var name="title" escape="html"$>"></div>
+            <div id="preview-label"><__trans phrase="You are previewing the [lc,_1] titled &ldquo;[_2]&rdquo;" params="<$mt:var name="object_label"$>%%<$mt:var name="title" escape="html"$>"></div>
             <form method="post" action="<$mt:var name="script_url"$>">
                 <div class="actions-bar">
                     <div class="actions-bar-inner pkg actions">

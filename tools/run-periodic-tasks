@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.movabletype.org.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -28,6 +29,7 @@ my $help      = 0;
 # my $rsync_opt = '';
 my $load      = 10;
 my $verbose   = 0;
+my $scoreboard;
 
 Getopt::Long::GetOptions(
     "daemon"      => \$daemonize,
@@ -39,11 +41,13 @@ Getopt::Long::GetOptions(
     # "to|target=s" => \@target,
     # "rsync=s"     => \$rsync_opt,
     "load=i"      => \$load,
+    "scoreboard=s"=> \$scoreboard,
     "verbose"     => \$verbose,
 );
 
 my %cfg;
 $cfg{verbose} = $verbose;
+$cfg{scoreboard} = $scoreboard;
 
 require MT::TheSchwartz;
 my $client = MT::TheSchwartz->new(%cfg);

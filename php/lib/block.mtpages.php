@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 require_once('block.mtentries.php');
 function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'page';
@@ -28,10 +34,13 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
         }
     }
 
-    $ctx->stash('current_timestamp', null);
-    $ctx->stash('current_timestamp_end', null);
-    $ctx->stash('current_archive_type', '');
+    $localvars = array('current_timestamp', 'current_timestamp_end', 'current_archive_type');
+    $ctx->localize($localvars);
 
-    return smarty_block_mtentries($args, $content, $ctx, $repeat);
+    $out = smarty_block_mtentries($args, $content, $ctx, $repeat);
+
+    $ctx->restore($localvars);
+
+    return $out;
 }
 ?>

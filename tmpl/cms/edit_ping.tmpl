@@ -37,14 +37,14 @@
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
     <button
         onclick="doRemoveItems(this.form, '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBack" escape="js">', false, { 'return_args' : '__mode=list_pings&blog_id=<mt:var name="blog_id">'})"
         type="submit"
         accesskey="x"
-        title="<__trans phrase="Delete this [_1] (x)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Delete this [lc,_1] (x)" params="<mt:var name="object_label">">"
         ><__trans phrase="Delete"></button>
     <mt:if name="is_ip_filter">
         <mt:if name="blog_id">

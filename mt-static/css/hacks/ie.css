@@ -7,10 +7,6 @@ ul.main-nav-list ul a {
     float: left !important;
 }
 
-.object-nav {
-    margin-top: 1em;
-}
-
 .system_check {
     width: 736px; /* scrollbars are wider in IE */
 }
@@ -89,7 +85,8 @@ button.big-button {
 /* In IE, the header block is actually placed at the bottom of the document
    but above the modal dialog iframe; this allows the pulldown menus to
    display above all other elements on the screen */
-.main-screen #content {
+
+.main-screen #content-header {
     margin-top: 120px;
 }
 .main-screen #header {
@@ -97,4 +94,10 @@ button.big-button {
     top: 0px;
     left: 0px;
     width: 100%;
+}
+
+#editor .editor-header .tab {
+    position: relative;
+    top: 1px;
+    margin-bottom: 0;
 }

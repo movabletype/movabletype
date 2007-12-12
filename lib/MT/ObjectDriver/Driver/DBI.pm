@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -194,7 +194,12 @@ sub _select_aggregate {
     }
 
     ## Convert $terms and $args like we would for a search.
-    my $terms = $orig_terms ? { %$orig_terms } : undef;
+    my $terms;
+    if (ref($orig_terms) eq 'HASH') {
+        $terms = { %$orig_terms };
+    } elsif (ref($orig_terms) eq 'ARRAY') {
+        $terms = [ @$orig_terms ];
+    }
     my $args  = $orig_args  ? { %$orig_args  } : undef;
     $class->call_trigger('pre_search', $terms, $args);
 
@@ -324,10 +329,19 @@ sub prepare_statement {
         $stmt->from([ $tbl ]);
 
         if (defined($terms)) {
-            for my $col (keys %$terms) {
-                my $db_col = $dbd->db_column_name($tbl, $col);
-                $stmt->add_where($db_col, $terms->{$col});
+            $stmt->column_mutator(sub {
+                my ($col) = @_;
+                return $dbd->db_column_name($tbl, $col);
+            });
+            if (ref $terms eq 'ARRAY') {
+                $stmt->add_complex_where($terms);
             }
+            else {
+                for my $col (keys %$terms) {
+                    $stmt->add_where(join('.', $tbl, $col), $terms->{$col});
+                }
+            }
+            $stmt->column_mutator(undef);
         }
 
         ## Set statement's ORDER clause if any.

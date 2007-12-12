@@ -1,3 +1,11 @@
+/*
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+*/
+
 /* for showing, hiding, and displaying asset details */
 
 /* assign to an element when using a modal dialog, ie:
@@ -117,7 +125,7 @@ function waitForLoad(id) {
 function showPage(id) {
 
     /* display popup panel showing details of selected asset */
-    detailRowClass.className = 'selected';
+    DOM.addClassName( detailRowClass, 'selected' );
     var detail = getByID("asset-" + id + "-preview");
     var detail_inner = getByID("asset-" + id + "-preview-inner");
     var asset = assets[id];
@@ -132,8 +140,8 @@ function showPage(id) {
     var close = trans('Close');
     var close_link = "<a href=\"javascript:void(0)\" onclick=\"toggleAssetDetails('" + id + "'); notOpened('" + id + "');\" class=\"close-preview-link\"><span>" + close + "</span>&nbsp;</a>";
     var preview;
-    if (asset.thumbnail_url) {
-        preview = "<img src=\"" + asset.thumbnail_url + "\" class=\"preview\" />";
+    if (asset.preview_url) {
+        preview = "<img src=\"" + asset.preview_url + "\" class=\"preview\" />";
     } else {
         ext = asset.ext;
         var icons = ("doc,eps,fla,gif,jpg,mp3,mpg,pdf,png,ppt,psd,txt,xls,zip");

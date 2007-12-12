@@ -1,4 +1,9 @@
 <?php
+# Movable Type (r) (C) 2001-2007 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
 
 	// ==================================================================
 	//  Author: Justin Vincent (justin@visunet.ie)

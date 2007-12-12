@@ -132,10 +132,10 @@
 <mt:include name="include/header.tmpl">
 
 <div id="search-form">
-    <form name="search_form" method="post" action="<mt:var name="script_url">" onsubmit="doSearch()">
+    <form name="search_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="search_replace" />
     <input type="hidden" name="_type" value="<mt:var name="object_type">" />
-    <input type="hidden" name="limit" value="<mt:unless name="limit_all"><mt:var name="limit"></mt:unless>" />
+    <input type="hidden" name="limit" value="<mt:unless name="limit_all"><mt:var name="limit" escape="html"></mt:unless>" />
 <mt:if name="blog_id">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 </mt:if>
@@ -272,7 +272,7 @@
 </mt:if>
 
 <mt:if name="have_more">
-<p><__trans phrase="Showing first [_1] results." params="<mt:var name="limit">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
+<p><__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
 <mt:else>
     <mt:if name="have_results">
 <p><__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">"></p>

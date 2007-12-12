@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -145,10 +145,11 @@ sub compile {
             }
         }
         if ($is_container) {
-            if ($whole_tag !~ m|/>|) {
+            if ($whole_tag !~ m|/>$|) {
                 my ($sec_end, $tag_end) = _consume_up_to(\$text,$sec_start,$tag);
                 if ($sec_end) {
-                    my $sec = substr $text, $sec_start, $sec_end - $sec_start;
+                    my $sec = $tag =~ m/ignore/i ? '' # ignore MTIgnore blocks
+                            : substr $text, $sec_start, $sec_end - $sec_start;
                     if ($sec !~ m/<\$?MT/i) {
                         $rec->[2] = [ ($sec ne '' ? ['TEXT', $sec ] : ()) ];
                     }

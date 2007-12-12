@@ -10,23 +10,30 @@
 <mt:setvarblock name="action_buttons">
     <mt:if name="can_create_association">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<MT_TRANS phrase="permission">', '<MT_TRANS phrase="permissions">'); return false;"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="permission">', '<__trans phrase="permissions">'); return false;"
         accesskey="x"
-        title="<MT_TRANS phrase="Remove selected assocations (x)">"
+        title="<__trans phrase="Remove selected permissions (x)">"
         ><__trans phrase="Revoke Permission"></a>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="related_content">
+<mt:setvarblock name="html_body_footer">
     <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 <mt:setvarblock name="actions_link" id="actions_link">
+    <mt:unless name="blog_id">
+        <mt:if name="edit_name">
+            <mt:unless name="status_enabled">
+    <li class="icon-left icon-warning"><__trans phrase="[_1] <em>[_2]</em> is currently disabled." params="<mt:var name="edit_object" escape="html">%%<mt:var name="edit_name" escape="html">"></li>
+            </mt:unless>
+        </mt:if>
+    </mt:unless>
     <mt:if name="user_view">
         <mt:if name="can_create_association">
         <li>
             <mt:if name="status_enabled">
             <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
             <mt:else>
-            <span class="disabled icon-left icon-create-disabled" title="<__trans phrase="You can not create associations for disabled users.">"><__trans phrase="Grant Permission"></span>
+            <span class="disabled icon-left icon-create-disabled" title="<__trans phrase="You can not create permissions for disabled users.">"><__trans phrase="Grant Permission"></span>
             </mt:if>
         </li>
         </mt:if>
@@ -47,14 +54,6 @@
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
-    <mt:unless name="blog_id">
-        <mt:if name="edit_name">
-            <mt:unless name="status_enabled">
-    <p class="icon-left icon-warning"><__trans phrase="[_1] <em>[_2]</em> is currently disabled." params="<mt:var name="edit_object" escape="html">%%<mt:var name="edit_name" escape="html">"></p>
-            </mt:unless>
-        </mt:if>
-    </mt:unless>
-
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
             id="saved-deleted"
@@ -70,7 +69,7 @@
         </mtapp:statusmsg>
     </mt:if>
 
-    <ul class="actions-foo">
+    <ul class="action-link-list">
         <$mt:var name="actions_link"$>
     </ul>
 </mt:setvarblock>
@@ -92,7 +91,7 @@
 
 <div id="list-association">
 
-<mtapp:listing>
+<mtapp:listing empty_message="<__trans phrase="No permissions could be found.">">
     <mt:if name="__first__">
     <thead>
         <tr>

@@ -1,3 +1,9 @@
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::Worker::Sync;
 
 use strict;
@@ -15,6 +21,7 @@ sub work {
     # Build this
     my $mt = MT->instance;
 
+    my $rsync_cmd = MT->config("RsyncPath") || "rsync";
     my $rsync_opt = $mt->config('RsyncOptions') || '';
     my @targets = $mt->config('SyncTarget');
 
@@ -46,8 +53,8 @@ sub work {
             }
         } else {
             if (!$fi) {
-                MT::TheSchwartz->debug("Warning: couldn't locate fileinfo record id " . $fi_id);
-                $job->permanent_failure("FileInfo record " . $fi_id . " not found.");
+                # Don't know where the FileInfo record went. Oh well.
+                $job->completed();
             } else {
                 unless (-f $fi->file_path) {
                     MT::TheSchwartz->debug("Warning: couldn't locate file: " . $fi->file_path);
@@ -66,7 +73,7 @@ sub work {
         print FOUT join("\n", @files) . "\n";
         close FOUT;
         foreach my $target (@targets) {
-            my $cmd = "rsync $rsync_opt --files-from=\"$file\" / \"$target\"";
+            my $cmd = "$rsync_cmd $rsync_opt --files-from=\"$file\" / \"$target\"";
             MT::TheSchwartz->debug("Syncing files to $target...");
             my $start = [gettimeofday];
             my $res = system $cmd;
@@ -74,9 +81,17 @@ sub work {
             if ($exit != 0) {
                 # TBD: notification to administrator
                 # At the very least, log to MT activity log.
-                MT::TheSchwartz->debug("Error during rsync of files in $file...");
-                MT::TheSchwartz->debug("Command: $cmd");
-                MT::TheSchwartz->debug($res);
+                my $errmsg = "Error during rsync of files in $file:\n"
+                    . "Command (exit code $res): $cmd";
+                MT::TheSchwartz->debug($errmsg);
+                require MT::Log;
+                $mt->log({
+                    message => $errmsg,
+                    metadata => $errmsg . "\nFiles affected:\n\t" . join("\n\t", @files),
+                    category => "sync",
+                    level => MT::Log::ERROR(),
+                });
+
                 $_->failed("Error during rsync") foreach @jobs;
                 return;
             } else {
@@ -94,7 +109,7 @@ sub work {
 }
 
 sub grab_for { 60 }
-sub max_retries { 10000 }
+sub max_retries { 10 }
 sub retry_delay { 60 }
 
 1;

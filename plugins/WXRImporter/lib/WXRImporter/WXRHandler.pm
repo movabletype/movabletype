@@ -28,10 +28,7 @@ sub start_document {
     my $data = shift;
 
     $self->{start} = 1;
-
-    my $limit = $self->{blog}->basename_limit || 30;
-    $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
-    $self->{basename_limit} = $limit;
+    $self->{basename_limit} = 255; # max length of the column
 
     1;
 }
@@ -386,11 +383,27 @@ sub _create_asset {
 
     my $mt_url = $self->{'mt_url'};
     my $url = $asset_values->{'url'};
+    my $old_url = $url;
     if ($mt_url) {
         $url =~ s/^.*$wp_path(.+)$/$mt_url$1/i;
     }
     $asset_values->{'url'} = $url;
 
+    require MT::Asset;
+
+    # Check dupe
+    if ( MT::Asset->count(
+      {
+        blog_id => $asset_values->{blog_id},
+        label => $asset_values->{label},
+        file_path => $asset_values->{file_path},
+      }
+    ))
+    {
+        $cb->(MT->translate("Duplicate asset ('[_1]') found.  Skipping.", $asset_values->{label}));
+        $cb->("\n");
+        return 1;
+    }
     require File::Basename;
     my $local_basename = File::Basename::basename($path);
     my $ext = (File::Basename::fileparse($path, qr/[A-Za-z]+$/))[2];
@@ -398,9 +411,8 @@ sub _create_asset {
     $asset_values->{'file_name'} = $local_basename;
     $asset_values->{'file_ext'} = $ext;
 
-    require MT::Asset;
-    my $asset_pkg = MT::Asset->handler_for_file($local_basename);
     # Now save the asset.
+    my $asset_pkg = MT::Asset->handler_for_file($local_basename);
     my $asset = $asset_pkg->new();
     my $w = delete $asset_values->{'image_width'};
     my $h = delete $asset_values->{'image_height'};
@@ -414,6 +426,9 @@ sub _create_asset {
     $cb->(MT->translate(" and asset will be tagged ('[_1]')...", join(',', @tags)));
     if ($asset->save) {
         $cb->(MT->translate("ok (ID [_1])", $asset->id) . "\n");
+        if ( exists($self->{'wp_download'}) && $self->{'wp_download'} ) {
+            _get_item_via_http($asset->id, $old_url);
+        }
     } else {
         $cb->(MT->translate("failed") . "\n");
         die MT->translate(
@@ -436,8 +451,7 @@ sub _create_post {
     };
     my %meta_hash;
 
-    require MT::App::CMS;
-    my $class = MT::App::CMS->_load_driver_for($class_type);
+    my $class = MT->model($class_type);
     require MT::Comment;
     require MT::TBPing;
     require MT::Trackback;
@@ -458,7 +472,7 @@ sub _create_post {
         } elsif ('dc_creator' eq $key) {
             $post->author_id($self->_get_author_id($cb, $value));
         } elsif ('_category' eq $key) {
-            my $cat_class = MT::App::CMS->_load_driver_for(
+            my $cat_class = MT->model(
                 $class_type eq 'entry' ? 'category' : 'folder');
             my $cat = $cat_class->load(
                 { label => $value,
@@ -556,6 +570,21 @@ sub _create_post {
             }
             push @{$feedbacks->{trackbacks}}, $ping;
         }
+    }
+
+    # Check dupe
+    if ( $class->count(
+      {
+        class => $class_type,
+        blog_id => $post->blog_id,
+        title => $post->title,
+        authored_on => $post->authored_on
+      }
+    ))
+    {
+        $cb->(MT->translate("Duplicate entry ('[_1]') found.  Skipping.", $post->title));
+        $cb->("\n");
+        return 1;
     }
 
     # Now save the entry/page.
@@ -704,6 +733,19 @@ sub _gmt2blogtime {
         return sprintf "%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s;
     }
     return undef;
+}
+
+sub _get_item_via_http {
+    my ($asset_id, $url) = @_;
+
+    require MT::TheSchwartz;
+    require TheSchwartz::Job;
+    my $job = TheSchwartz::Job->new();
+    $job->funcname('WXRImporter::Worker::Downloader');
+    $job->uniqkey( $asset_id );
+    $job->arg( { old_url => $url } );
+    $job->coalesce( $$ . ':' . ( time - ( time % 100 ) ) );
+    MT::TheSchwartz->insert($job);
 }
 
 1;

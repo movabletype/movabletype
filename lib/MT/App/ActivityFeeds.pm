@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -19,9 +19,14 @@ sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->{template_dir} = 'feeds';
-    $app->{requires_login} = 1;
     $app->{is_admin} = 1;
     $app->init_core_callbacks();
+}
+
+sub init_request {
+    my $app = shift;
+    $app->SUPER::init_request(@_);
+    $app->{requires_login} = 1;
 }
 
 # Defines the basic MT activity feeds.
@@ -276,7 +281,12 @@ sub apply_log_filter {
                     $arg{'level'} = \@types;
                 }
             } elsif ($filter_col eq 'class') {
-                $arg{class} = [ split /,/, $val ];
+                if ($val eq 'publish') {
+                    $arg{category} = 'publish';
+                }
+                else {
+                    $arg{class} = [ split /,/, $val ];
+                }
             }
         }
         $arg{blog_id} = [ split /,/, $param->{blog_id} ]
@@ -509,8 +519,12 @@ sub _feed_system {
     }
 
     my $args = {};
-    $args->{filter} = $filter || 'class';
-    $args->{filter_val} = $filter_val || 'system,page,entry,comment,ping,search';
+    unless ($filter && $filter_val) {
+        $filter = 'class';
+        $filter_val = '*';
+    }
+    $args->{filter} = $filter;
+    $args->{filter_val} = $filter_val;
     $args->{blog_id} = $blog_id if $blog_id;
     my $link = $app->base . $app->mt_uri( mode => 'view_log', args => $args );
     my $param = {

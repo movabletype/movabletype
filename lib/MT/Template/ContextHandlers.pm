@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -88,6 +88,8 @@ sub core_tags {
 
             'IfBlog?' => \&_hdlr_blog_id,
             'IfAuthor?' => \&_hdlr_if_author,
+            'AuthorHasEntry?' => \&_hdlr_author_has_entry,
+            'AuthorHasPage?' => \&_hdlr_author_has_page,
             Authors => \&_hdlr_authors,
 
             Blogs => \&_hdlr_blogs,
@@ -692,12 +694,12 @@ sub _fltr_regex_replace {
     return $str unless ref($val) eq 'ARRAY';
     my $patt = $val->[0];
     my $replace = $val->[1];
-    if ($patt =~ m!^(/)(.+?)\1([A-Za-z\s]+)?$!) {
+    if ($patt =~ m!^(/)(.+)\1([A-Za-z]+)?$!) {
         $patt = $2;
         my $global;
         if (my $opt = $3) {
             $global = 1 if $opt =~ m/g/;
-            $opt =~ s/[ge\s]+//g;
+            $opt =~ s/[ge]+//g;
             $patt = "(?$opt)" . $patt;
         }
         my $re = eval { qr/$patt/ };
@@ -1104,10 +1106,8 @@ sub _hdlr_app_page_actions {
     <mtapp:widget
         id="page_actions"
         label="<__trans phrase="Actions">">
-        <mt:loop name="page_actions">
-            <mt:if name="__first__">
                 <ul>
-            </mt:if>
+        <mt:loop name="page_actions">
             <mt:if name="page">
                     <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
             <mt:else><mt:if name="link">
@@ -1115,10 +1115,8 @@ sub _hdlr_app_page_actions {
             </mt:if><mt:if name="dialog">
                     <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="javascript:void(0)" onclick="<mt:if name="continue_prompt">if(!confirm('<mt:var name="continue_prompt" escape="js">'))return false;</mt:if>return openDialog(false, '<mt:var name="dialog">', '<mt:if name="dialog_args"><mt:var name="dialog_args" escape="url">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">')"><mt:var name="label"></a></li>
             </mt:if></mt:if>
-            <mt:if name="__last__">
-                </ul>
-            </mt:if>
         </mt:loop>
+                </ul>
     </mtapp:widget>
 EOT
 }
@@ -1241,11 +1239,13 @@ sub _hdlr_app_setting {
 
     return $ctx->build(<<"EOT");
 <div id="$id-field" class="field$req_class $label_class pkg $class"$indent_css>
-    <div class="field-header">
-        <label id="$id-label" for="$id">$label$req</label>
-    </div>
-    <div class="field-content $content_class">
-        $insides$hint$warning
+    <div class="field-inner">
+        <div class="field-header">
+            <label id="$id-label" for="$id">$label$req</label>
+        </div>
+        <div class="field-content $content_class">
+            $insides$hint$warning
+        </div>
     </div>
 </div>
 EOT
@@ -1299,13 +1299,33 @@ sub _hdlr_if {
     my $var = $args->{name} || $args->{var};
     my $value;
     if (defined $var) {
+        # pick off any {...} or [...] from the name.
+        my ($index, $key);
+        if ($var =~ m/^(.+)([\[\{])(.+)[\]\}]$/) {
+            $var = $1;
+            my $br = $2;
+            my $ref = $3;
+            if ($ref =~ m/^\$(.+)/) {
+                $ref = $ctx->var($1);
+            }
+            $br eq '[' ? $index = $ref : $key = $ref;
+        } else {
+            $index = $args->{index} if exists $args->{index};
+            $key = $args->{key} if exists $args->{key};
+        }
+
         $value = $ctx->var($var);
         if (ref($value)) {
             if (UNIVERSAL::isa($value, 'MT::Template')) {
+                local $value->{context} = $ctx;
                 $value = $value->output();
             } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
                 local $ctx->{__stash}{tokens} = $value;
                 $value = _hdlr_pass_tokens(@_) or return;
+            } elsif (ref($value) eq 'ARRAY') {
+                $value = $value->[$index] if defined $index;
+            } elsif (ref($value) eq 'HASH') {
+                $value = $value->{$key} if defined $key;
             }
         }
     }
@@ -1321,6 +1341,13 @@ sub _hdlr_if {
         }
         else {
             return $ctx->error(MT->translate("Invalid tag [_1] specified.", $tag));
+        }
+    }
+
+    if ( my $op = $args->{op} ) {
+        my $rvalue = $args->{'value'};
+        if ( $op && (defined $value) && !ref($value) ) {
+            $value = _math_operation($ctx, $op, $value, $rvalue);
         }
     }
 
@@ -1432,7 +1459,41 @@ sub _hdlr_loop {
     my ($ctx, $args, $cond) = @_;
     my $name = $args->{name} || $args->{var};
     my $var = $ctx->var($name);
-    return '' unless $var && (ref($var) eq 'ARRAY') && (scalar @$var);
+    return '' unless $var
+      && ( (ref($var) eq 'ARRAY') && (scalar @$var) )
+        || ( (ref($var) eq 'HASH') && (scalar(keys %$var)) );
+
+    my $hash_var;
+    if ( 'HASH' eq ref($var) ) {
+        $hash_var = $var;
+        my @keys = keys %$var;
+        $var = \@keys;
+    }
+    if (my $sort = $args->{sort_by}) {
+        $sort = lc $sort;
+        if ($sort =~ m/\bkey\b/) {
+            @$var = sort {$a cmp $b} @$var;
+        } elsif ($sort =~ m/\bvalue\b/) {
+            no warnings;
+            if ($sort =~ m/\bnumeric\b/) {
+                no warnings;
+                if (defined $hash_var) {
+                    @$var = sort {$hash_var->{$a} <=> $hash_var->{$b}} @$var;
+                } else {
+                    @$var = sort {$a <=> $b} @$var;
+                }
+            } else {
+                if (defined $hash_var) {
+                    @$var = sort {$hash_var->{$a} cmp $hash_var->{$b}} @$var;
+                } else {
+                    @$var = sort {$a cmp $b} @$var;
+                }
+            }
+        }
+        if ($sort =~ m/\breverse\b/) {
+            @$var = reverse @$var;
+        }
+    }
 
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
@@ -1453,6 +1514,8 @@ sub _hdlr_loop {
         } else {
             if (ref($item) eq 'HASH') {
                 @names = keys %$item;
+            } elsif ( $hash_var ) {
+                @names = ( '__key__', '__value__' );
             } else {
                 @names = '__value__';
             }
@@ -1464,6 +1527,9 @@ sub _hdlr_loop {
             $vars->{lc($_)} = $item->column($_) for @names;
         } elsif (ref($item) eq 'HASH') {
             $vars->{lc($_)} = $item->{$_} for @names;
+        } elsif ( $hash_var ) {
+            $vars->{'__key__'} = $item;
+            $vars->{'__value__'} = $hash_var->{$item};
         } else {
             $vars->{'__value__'} = $item;
         }
@@ -1478,24 +1544,125 @@ sub _hdlr_loop {
 
 sub _hdlr_get_var {
     my ($ctx, $args, $cond) = @_;
-    if (exists $args->{value}) {
+    if ( exists( $args->{value} )
+      && !exists( $args->{op} ) ) {
         return &_hdlr_set_var(@_);
     }
-    my $value = $ctx->var($args->{name} || $args->{var});
-    if (ref($value) eq 'CODE') { # handle coderefs
-        $value = $value->(@_);
+    my $name = $args->{name} || $args->{var};
+    return $ctx->error(MT->translate(
+        "You used a [_1] tag without a valid name attribute.", "<MT" . $ctx->stash('tag') . ">" ))
+        unless defined $name;
+
+    my ($func, $key, $index, $value);
+    if ($name =~ m/^(\w+)\((.+)\)$/) {
+        $func = $1;
+        $name = $2;
+    } else {
+        $func = $args->{function} if exists $args->{function};
     }
-    if (ref($value)) {
-        if (UNIVERSAL::isa($value, 'MT::Template')) {
-            local $args->{name} = undef;
-            local $args->{var} = undef;
-            $value = $value->output($args);
-        } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
-            local $ctx->{__stash}{tokens} = $value;
-            local $args->{name} = undef;
-            local $args->{var} = undef;
-            $ctx->var($_, $args->{$_}) for keys %{$args || {}};
-            $value = _hdlr_pass_tokens(@_) or return;
+
+    # pick off any {...} or [...] from the name.
+    if ($name =~ m/^(.+)([\[\{])(.+)[\]\}]$/) {
+        $name = $1;
+        my $br = $2;
+        my $ref = $3;
+        if ($ref =~ m/^\$(.+)/) {
+            $ref = $ctx->var($1);
+            $ref = chr(0) unless defined $ref;
+        }
+        $br eq '[' ? $index = $ref : $key = $ref;
+    } else {
+        $index = $args->{index} if exists $args->{index};
+        $key = $args->{key} if exists $args->{key};
+    }
+
+    if ($name =~ m/^$/) {
+        $name = $ctx->var($name);
+    }
+
+    if (defined $name) {
+        $value = $ctx->var($name);
+        if (ref($value) eq 'CODE') { # handle coderefs
+            $value = $value->(@_);
+        }
+        if (ref($value)) {
+            if (UNIVERSAL::isa($value, 'MT::Template')) {
+                local $args->{name} = undef;
+                local $args->{var} = undef;
+                local $value->{context} = $ctx;
+                $value = $value->output($args);
+            } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
+                local $ctx->{__stash}{tokens} = $value;
+                local $args->{name} = undef;
+                local $args->{var} = undef;
+                $ctx->var($_, $args->{$_}) for keys %{$args || {}};
+                $value = _hdlr_pass_tokens(@_) or return;
+            } elsif (ref($value) eq 'ARRAY') {
+                if ( defined $index ) {
+                    if ($index =~ /^\d+$/) {
+                        $value = $value->[ $index ];
+                    } else {
+                        $value = undef; # fall through to any 'default'
+                    }
+                }
+                elsif ( defined $func ) {
+                    $func = lc $func;
+                    if ( 'pop' eq $func ) {
+                        $value = @$value ? pop @$value : undef;
+                    }
+                    elsif ( 'shift' eq $func ) {
+                        $value = @$value ? shift @$value : undef;
+                    }
+                    elsif ( 'count' eq $func ) {
+                        $value = scalar @$value;
+                    }
+                    else {
+                        return $ctx->error(
+                            MT->translate("'[_1]' is not a valid function for an array.", $func)
+                        );
+                    }
+                }
+                else {
+                    unless ($args->{to_json}) {
+                        my $glue = exists $args->{glue} ? $args->{glue} : "";
+                        $value = join $glue, @$value;
+                    }
+                }
+            } elsif ( ref($value) eq 'HASH' ) {
+                if ( defined $key ) {
+                    if ( defined $func ) {
+                        if ( 'delete' eq lc($func) ) {
+                            $value = delete $value->{$key};
+                        } else {
+                            return $ctx->error(
+                                MT->translate("'[_1]' is not a valid function for a hash.", $func)
+                            );
+                        }
+                    } else {
+                        if ($key ne chr(0)) {
+                            $value = $value->{$key};
+                        } else {
+                            $value = undef;
+                        }
+                    }
+                }
+                elsif ( defined $func ) {
+                    if ( 'count' eq lc($func) ) {
+                        $value = scalar( keys %$value );
+                    }
+                    else {
+                        return $ctx->error(
+                            MT->translate("'[_1]' is not a valid function for a hash.", $func)
+                        );
+                    }
+                }
+            }
+        }
+        if ( my $op = $args->{op} ) {
+            my $rvalue = $args->{'value'};
+            if ( $op && (defined $value) && !ref($value) ) {
+                $value = _math_operation($ctx, $op, $value, $rvalue);
+            }
         }
     }
     if ((!defined $value) || ($value eq '')) {
@@ -1503,12 +1670,10 @@ sub _hdlr_get_var {
             $value = $args->{default};
         }
     }
+
     if (ref($value) && $args->{to_json}) {
         require JSON;
         return JSON::objToJson($value);
-    } elsif (ref($value) eq 'ARRAY') {
-        my $glue = exists $args->{glue} ? $args->{glue} : "";
-        $value = join $glue, @$value;
     }
     return defined $value ? $value : "";
 }
@@ -1526,9 +1691,8 @@ sub _hdlr_entry_if_tagged {
     my ($ctx, $args, $cond) = @_;
     my $entry = $ctx->stash('entry');
     return 0 unless $entry;
-    if (exists $args->{tag}) {
-        my $tag = defined $args->{tag} ? $args->{tag} : '';
-        return 0 unless $tag ne '';
+    my $tag = defined $args->{name} ? $args->{name} : (defined $args->{tag} ? $args->{tag} : '');
+    if ($tag ne '') {
         $entry->has_tag($tag);
     } else {
         my @tags = $entry->tags;
@@ -1818,6 +1982,10 @@ sub _hdlr_tag_rank {
         $ctx->stash('tag_entry_count', $count);
     }
 
+    if ($count - $min + 1 == 0) {
+        return 0;
+    }
+
     my $level = int(log($count - $min + 1) * $factor);
     $max_level - $level;
 }
@@ -2104,10 +2272,22 @@ sub _hdlr_include {
         my $tmpl = MT->instance->load_tmpl($app_file);
         if ($tmpl) {
             $tmpl->name($app_file);
+
+            my $tmpl_file = $app_file;
+            if ($tmpl_file) {
+                $tmpl_file = File::Basename::basename($tmpl_file);
+                $tmpl_file =~ s/\.tmpl$//;
+                $tmpl_file = '.' . $tmpl_file;
+            }
+            my $mt = MT->instance;
+            $mt->run_callbacks('template_param' . $tmpl_file, $mt, $tmpl->param, $tmpl);
+
             # propagate our context
             local $tmpl->{context} = $ctx;
             my $out = $tmpl->output();
             return $ctx->error($tmpl->errstr) unless defined $out;
+
+            $mt->run_callbacks('template_output' . $tmpl_file, $mt, \$out, $tmpl->param, $tmpl);
             return $out;
         } else {
             return defined $arg->{default} ? $arg->{default} : '';
@@ -2119,7 +2299,7 @@ sub _hdlr_include {
 sub _hdlr_file_template {
     my ($ctx, $args, $cond) = @_;
 
-    my $at = $ctx->{archive_type} || $ctx->{current_archive_type};
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
     my $format = $args->{format};
     unless ($format) {
@@ -2328,30 +2508,139 @@ sub _hdlr_set_var {
     my($ctx, $args) = @_;
     my $tag = lc $ctx->stash('tag');
     my $name = $args->{name} || $args->{var};
+
     return $ctx->error(MT->translate(
-        "You used a [_1] tag without any arguments.", "<MT$tag>" ))
+        "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ))
         unless defined $name;
+
+    my ($func, $key, $index, $value);
+    if ($name =~ m/^(\w+)\((.+)\)$/) {
+        $func = $1;
+        $name = $2;
+    } else {
+        $func = $args->{function} if exists $args->{function};
+    }
+
+    # pick off any {...} or [...] from the name.
+    if ($name =~ m/^(.+)([\[\{])(.+)[\]\}]$/) {
+        $name = $1;
+        my $br = $2;
+        my $ref = $3;
+        if ($ref =~ m/^\$(.+)/) {
+            $ref = $ctx->var($1);
+            $ref = chr(0) unless defined $ref;
+        }
+        $br eq '[' ? $index = $ref : $key = $ref;
+    } else {
+        $index = $args->{index} if exists $args->{index};
+        $key = $args->{key} if exists $args->{key};
+    }
+
+    if ($name =~ m/^$/) {
+        $name = $ctx->var($name);
+        return $ctx->error(MT->translate(
+            "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ))
+            unless defined $name;
+    }
+
     my $val;
+    my $data = $ctx->var($name);
     if (($tag eq 'setvar') || ($tag eq 'var')) {
         $val = defined $args->{value} ? $args->{value} : '';
     } elsif ($tag eq 'setvarblock') {
-        $val = _hdlr_pass_tokens(@_);
-        return unless defined($val);
+        my $vars = $ctx->{__stash}{vars};
+        {
+            # local $ctx->{__stash}{vars};
+            # my %local_vars = map { $_ => $vars->{$_} } keys %$vars;
+            # $ctx->{__stash}{vars} = \%local_vars;
+            $val = _hdlr_pass_tokens(@_);
+            return unless defined($val);
+            # $data = {} unless defined($data);
+            # if ( 'HASH' eq ref($data) ) {
+            #     while ( my ($inner_key, $inner_value) = each %local_vars ) {
+            #         if ( !exists($vars->{$inner_key})
+            #           || ( $vars->{$inner_key} ne $inner_value ) )
+            #         {
+            #             $data->{$inner_key} = $inner_value;
+            #         }
+            #     }
+            # }
+        }
     } elsif ($tag eq 'setvartemplate') {
         $val = $ctx->stash('tokens');
         return unless defined($val);
         $val = bless $val, 'MT::Template::Tokens';
     }
+
+    my $existing = $ctx->var($name);
+    $existing = '' unless defined $existing;
+    if ( 'HASH' eq ref($existing) ) {
+        $existing = $existing->{ $key };
+    }
+    elsif ( 'ARRAY' eq ref($existing) ) {
+        $existing = ( defined $index && ( $index =~ /^\d+$/ ) )
+          ? $existing->[ $index ] 
+          : undef;
+    }
+
     if ($args->{prepend}) {
-        my $existing = $ctx->var($name);
-        $existing = '' unless defined $existing;
         $val = $val . $existing;
-    } elsif ($args->{append}) {
-        my $existing = $ctx->var($name);
-        $existing = '' unless defined $existing;
+    }
+    elsif ($args->{append}) {
         $val = $existing . $val;
     }
-    $ctx->var($name, $val);
+    elsif ( $existing && ( my $op = $args->{op} ) ) {
+        $val = _math_operation($ctx, $op, $existing, $val);
+    }
+
+    if ( defined $key ) {
+        $data ||= {};
+        return $ctx->error( MT->translate("'[_1]' is not a hash.", $name) )
+            unless 'HASH' eq ref($data);
+
+        if ( ( defined $func )
+          && ( 'delete' eq lc( $func ) ) ) {
+            delete $data->{ $key };
+        }
+        else {
+            $data->{ $key } = $val;
+        }
+    }
+    elsif ( defined $index ) {
+        $data ||= [];
+        return $ctx->error( MT->translate("'[_1]' is not an array.", $name) )
+            unless 'ARRAY' eq ref($data);
+        return $ctx->error( MT->translate("Invalid index.") )
+            unless $index =~ /^\d+$/;
+        $data->[ $index ] = $val;
+    }
+    elsif ( defined $func ) {
+        if ( 'undef' eq lc( $func ) ) {
+            $data = undef;
+        }
+        else {
+            $data ||= [];
+            return $ctx->error( MT->translate("'[_1]' is not an array.", $name) )
+                unless 'ARRAY' eq ref($data);
+            if ( 'push' eq lc( $func ) ) {
+                push @$data, $val;
+            }
+            elsif ( 'unshift' eq lc( $func ) ) {
+                $data ||= [];
+                unshift @$data, $val;
+            }
+            else {
+                return $ctx->error(
+                    MT->translate("'[_1]' is not a valid function.", $func)
+                );
+            }
+        }
+    }
+    else {
+        $data = $val;
+    }
+
+    $ctx->var($name, $data);
     return '';
 }
 
@@ -2481,6 +2770,36 @@ sub _no_author_error {
 
 sub _hdlr_if_author {
     return $_[0]->stash('author') ? 1 : 0;
+}
+
+sub _hdlr_author_has_entry {
+    my ($ctx)   = @_;
+    my $author  = $ctx->stash('author')
+      or return $ctx->_no_author_error( $ctx->stash('tag') );
+
+    my %terms;
+    $terms{blog_id}   = $ctx->stash('blog_id');
+    $terms{author_id} = $author->id;
+    $terms{class}     = 'entry';
+    $terms{status}    = MT::Entry::RELEASE();
+
+    my $class = MT->model('entry');
+    $class->count( \%terms );
+}
+
+sub _hdlr_author_has_page {
+    my ($ctx)   = @_;
+    my $author  = $ctx->stash('author')
+      or return $ctx->_no_author_error( $ctx->stash('tag') );
+
+    my %terms;
+    $terms{blog_id}   = $ctx->stash('blog_id');
+    $terms{author_id} = $author->id;
+    $terms{class}     = 'page';
+    $terms{status}    = MT::Entry::RELEASE();
+
+    my $class = MT->model('page');
+    $class->count( \%terms );
 }
 
 sub _hdlr_authors {
@@ -3091,7 +3410,7 @@ sub _hdlr_entries {
         my $entry = @$entries[0];
         $entries = undef if $entry->class ne $class_type;
 
-        foreach my $args_key ('category', 'categories', 'tag', 'tags', 'author', 'id', 'days', 'recently_commented_on', 'include_subcategories') {
+        foreach my $args_key ('category', 'categories', 'tag', 'tags', 'author', 'id', 'days', 'recently_commented_on', 'include_subcategories', 'include_blogs', 'exclude_blogs', 'blog_ids') {
             if (exists($args->{$args_key})) {
                 $entries = undef;
                 last;
@@ -3207,7 +3526,7 @@ sub _hdlr_entries {
         }
     }
     # Adds a tag filter to the filters list.
-    if (my $tag_arg = $args->{tag} || $args->{tags}) {
+    if (my $tag_arg = $args->{tags} || $args->{tag}) {
         require MT::Tag;
         require MT::ObjectTag;
 
@@ -3240,7 +3559,7 @@ sub _hdlr_entries {
             }
             push @filters, sub { $cexpr->($_[0]->id, \%map) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tag} || $args->{tags}));
+            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tags} || $args->{tag}));
         }
     }
 
@@ -3992,7 +4311,7 @@ sub _hdlr_entry_tb_data {
     my $path = _hdlr_cgi_path($ctx);
     $path .= $cfg->TrackbackScript . '/' . $tb->id;
     my $url;
-    if (my $at = $_[0]->{archive_type} || $_[0]->{current_archive_type}) {
+    if (my $at = $_[0]->{current_archive_type} || $_[0]->{archive_type}) {
         $url = $e->archive_url($at);
         $url .= '#' . sprintf("%06d", $e->id)
             unless $at eq 'Individual';
@@ -4286,7 +4605,8 @@ sub _hdlr_date {
         $blog = MT->model('blog')->load($blog_id)
           if $blog_id;
     }
-    my $lang = $args->{language} || ($blog && $blog->language);
+    my $lang = $args->{language} || $_[0]->var('local_lang_id')
+        || ($blog && $blog->language);
     if ($args->{utc}) {
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
@@ -4713,10 +5033,7 @@ sub _hdlr_comment_author_identity {
     my $static_path = _hdlr_static_path($ctx);
     my $logo = $cmntr->auth_icon_url;
     unless ($logo) {
-        my $blog = MT::Blog->load($ctx->stash('blog_id'));
-        my $root_url = MT->config->PublishCommenterIcon
-            ? $blog->site_url()
-            : $static_path . "images";
+        my $root_url = $static_path . "images";
         $root_url =~ s|/$||;
         $logo = "$root_url/nav-commenters.gif";
     }
@@ -5251,7 +5568,7 @@ sub _hdlr_archive_set {
     my $old_at = $blog->archive_type_preferred();
     foreach my $type (@at) {
         $blog->archive_type_preferred($type);
-        local $ctx->{archive_type} = $type;
+        local $ctx->{current_archive_type} = $type;
         defined(my $out = $builder->build($ctx, $tokens, $cond)) or
             return $ctx->error( $builder->errstr );
         $res .= $out;
@@ -5359,10 +5676,6 @@ sub _hdlr_archives {
 sub _hdlr_archive_title {
     my($ctx, $args) = @_;
 
-    ## Since this tag can be called from inside <MTCategories>,
-    ## we need a way to map this tag to <$MTCategoryLabel$>.
-    return _hdlr_category_label(@_) if $ctx->{inside_mt_categories};
-
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     return _hdlr_category_label(@_) if $at eq 'Category';
 
@@ -5421,15 +5734,15 @@ sub _hdlr_archive_date_end {
 sub _hdlr_archive_type {
     my ($ctx, $args, $cond) = @_;
 
-    my $at = $ctx->{archive_type} || $ctx->{current_archive_type};
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
     defined $at ? $at : '';
 }
 
 sub _hdlr_archive_label {
     my ($ctx, $args, $cond) = @_;
-
-    my $at = $ctx->{archive_type} || $ctx->{current_archive_type};
+    
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
     return q() unless defined $at;
     my $archiver = MT->publisher->archiver($at);
@@ -5443,7 +5756,7 @@ sub _hdlr_archive_label {
 sub _hdlr_archive_file {
     my ($ctx, $args, $cond) = @_;
 
-    my $at = $ctx->{archive_type} || $ctx->{current_archive_type};
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
     my $archiver = MT->publisher->archiver($at);
     my $f;
@@ -5471,9 +5784,7 @@ sub _hdlr_archive_file {
 
 sub _hdlr_archive_link {
     my($ctx, $args) = @_;
-    ## Since this tag can be called from inside <MTCategories>,
-    ## we need a way to map this tag to <$MTCategoryArchiveLink$>.
-    return _hdlr_category_archive(@_) if $ctx->{inside_mt_categories};
+
     my $at = $args->{type} || $args->{archive_type};
     return _hdlr_category_archive(@_)
         if ($at && ('Category' eq $at)) ||
@@ -5828,23 +6139,15 @@ sub _hdlr_category_archive {
         or return $_[0]->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
             '<$MTCategoryArchiveLink$>' ));
-    my $curr_at = $_[0]->{archive_type} || $_[0]->{current_archive_type} || 'Category';
-    my $blog = $_[0]->stash('blog');
-    my $at = $blog->archive_type;
-    my @at = split /,/, $at;
-    my $cat_based = 0;
-    foreach my $type (@at) {
-        my $archiver = MT->publisher->archiver($type);
-        next unless defined $archiver;
-        if ($archiver->category_based) {
-            $cat_based = 1;
-            last;
-        }
-    }
-    return '' unless $cat_based;
+    my $curr_at = $_[0]->{current_archive_type} || $_[0]->{archive_type} || 'Category';
+    my $archiver = MT->publisher->archiver($curr_at);
+    return '' unless defined $archiver;
+    return '' unless $archiver->category_based;
+
     my @entries = MT::Entry->load({ status => MT::Entry::RELEASE() },
         { join => [ 'MT::Placement', 'entry_id', { category_id => $cat->id }, { unqiue => 1 } ] } );
     my $entry = $entries[0] if @entries;
+    my $blog = $_[0]->stash('blog');
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
     $arch = $arch . archive_file_for($entry, $blog, 'Category', $cat);
@@ -6745,8 +7048,10 @@ sub _hdlr_is_ancestor {
     my $iter = MT::Category->load_iter({ blog_id => $blog_id,
                                          label => $args->{'child'} }) || undef;
     while (my $child = $iter->()) {
-        my $ret = $cat->is_ancestor($child);
-        return 1 if $ret;
+        if ($cat->is_ancestor($child)) {
+            $iter->('finish');
+            return 1;
+        }
     }
 
     0;
@@ -6765,8 +7070,10 @@ sub _hdlr_is_descendant {
     my $iter = MT::Category->load_iter({ blog_id => $blog_id,
                                          label => $args->{'parent'} });
     while (my $parent = $iter->()) {
-        my $ret = $cat->is_descendant($parent);
-        return 1 if $ret;
+        if ($cat->is_descendant($parent)) {
+            $iter->('finish');
+            return 1;
+        }
     }
 
     0;
@@ -6972,7 +7279,7 @@ sub _hdlr_assets {
     }
 
     # Adds a tag filter to the filters list.
-    if (my $tag_arg = $args->{tag} || $args->{tags}) {
+    if (my $tag_arg = $args->{tags} || $args->{tag}) {
         require MT::Tag;
         require MT::ObjectTag;
 
@@ -6998,7 +7305,7 @@ sub _hdlr_assets {
                                                                                                                                                                                     }
             push @filters, sub { $cexpr->($_[0]->id, \%map) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tag} || $args->{tags}));
+            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tags} || $args->{tag}));
         }
     }
 
@@ -7096,6 +7403,7 @@ sub _hdlr_assets {
                 $args{direction} = $args->{sort_order} || 'descend'
                   if exists($args{sort});
                 $no_resort = 1 unless $args->{sort_by};
+                $args{limit} = $args->{limit} if $args->{limit};
             }
             $args{offset} = $args->{offset} if $args->{offset};
             @assets = MT::Asset->load(\%terms, \%args);
@@ -7107,6 +7415,7 @@ sub _hdlr_assets {
             } else {
                 $args{direction} = $args->{sort_order} || 'descend';
                 $no_resort = 1 unless $args->{sort_by};
+                $args->{lastn} = $args->{limit} if $args->{limit};
             }
             my $iter = MT::Asset->load_iter(\%terms, \%args);
             my $i = 0; my $j = 0;
@@ -7134,7 +7443,7 @@ sub _hdlr_assets {
         if (@filters) {
             my $i = 0; my $j = 0;
             my $off = $args->{offset} || 0;
-            my $n = $args->{lastn};
+            my $n = $args->{lastn} || $args->{limit};
             ASSET2: foreach my $e (@$assets) {
                 for (@filters) {
                     next ASSET2 unless $_->($e);
@@ -7155,7 +7464,7 @@ sub _hdlr_assets {
             } else {
                 @assets = @$assets;
             }
-            if (my $last = $args->{lastn}) {
+            if (my $last = $args->{lastn} || $args->{limit}) {
                 if (scalar @assets > $last) {
                     @assets = @assets[0..$last-1];
                 }
@@ -7491,9 +7800,8 @@ sub _hdlr_asset_if_tagged {
     my $a = $_[0]->stash('asset')
         or return $_[0]->_no_asset_error('MTAssetIfTagged');
 
-    if (exists $args->{tag}) {
-        my $tag = defined $args->{tag} ? $args->{tag} : '';
-        return 0 unless $tag ne '';
+    my $tag = defined $args->{name} ? $args->{name} : ( defined $args->{tag} ? $args->{tag} : '' );
+    if ($tag ne '') {
         $a->has_tag($tag);
     } else {
         my @tags = $a->tags;
@@ -7554,8 +7862,8 @@ sub _hdlr_pages {
     }
 
     # remove current_timestamp;
-    $ctx->{current_timestamp} = undef;
-    $ctx->{current_timestamp_end} =undef;
+    local $ctx->{current_timestamp};
+    local $ctx->{current_timestamp_end};
 
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
@@ -8146,6 +8454,44 @@ sub _hdlr_section {
         $out = "<$wrap_tag$id>" . $out . "</$wrap_tag>";
     }
     return $out;
+}
+
+sub _math_operation {
+    my ($ctx, $op, $lvalue, $rvalue) = @_;
+    return $lvalue
+        unless ( $lvalue =~ m/^\-?[\d\.]+$/ )
+            && ( ( defined($rvalue) && ( $rvalue =~ m/^\-?[\d\.]+$/ ) )
+              || ( ( $op eq 'inc' ) || ( $op eq 'dec' ) || ( $op eq '++' ) || ( $op eq '--' ) )
+            );
+    if ( ( '+' eq $op ) || ( 'add' eq $op ) ) {
+        return $lvalue + $rvalue;
+    }
+    elsif ( ( '++' eq $op ) || ( 'inc' eq $op ) ) {
+        return $lvalue + 1;
+    }
+    elsif ( ( '-' eq $op ) || ( 'sub' eq $op ) ) {
+        return $lvalue - $rvalue;
+    }
+    elsif ( ( '--' eq $op ) || ( 'dec' eq $op ) ) {
+        return $lvalue - 1;
+    }
+    elsif ( ( '*' eq $op ) || ( 'mul' eq $op ) ) {
+        return $lvalue * $rvalue;
+    }
+    elsif ( ( '/' eq $op ) || ( 'div' eq $op ) ) {
+        return $ctx->error( MT->translate('Division by zero.') )
+            if $rvalue == 0;
+        return $lvalue / $rvalue;
+    }
+    elsif ( ( '%' eq $op ) || ( 'mod' eq $op ) ) {
+        # Perl % is integer only
+        $lvalue = int($lvalue);
+        $rvalue = int($rvalue);
+        return $ctx->error( MT->translate('Division by zero.') )
+            if $rvalue == 0;
+        return $lvalue % $rvalue;
+    }
+    return $lvalue;
 }
 
 1;

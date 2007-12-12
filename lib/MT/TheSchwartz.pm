@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -81,6 +81,25 @@ sub mt_schwartz_init {
     TheSchwartz::Job->properties->{datasource}        = 'ts_job';
     TheSchwartz::Error->properties->{datasource}      = 'ts_error';
     TheSchwartz::ExitStatus->properties->{datasource} = 'ts_exitstatus';
+
+    my $job_set_exit_status = \&TheSchwartz::Job::set_exit_status;
+    my $job_add_failure = \&TheSchwartz::Job::add_failure;
+
+    my $driver = MT::Object->driver;
+    no warnings 'redefine';
+    *TheSchwartz::Job::set_exit_status = sub {
+        $driver->Disabled(1);
+        my $res = $job_set_exit_status->(@_);
+        $driver->Disabled(0);
+        return $res;
+    };
+    *TheSchwartz::Job::add_failure = sub {
+        $driver->Disabled(1);
+        my $res = $job_add_failure->(@_);
+        $driver->Disabled(0);
+        return $res;
+    };
+
     return $initialized = 1;
 }
 

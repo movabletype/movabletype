@@ -137,7 +137,7 @@ TC.attachLoadEvent( init );
             id="saved"
             class="success"
             rebuild="all">
-            <__trans phrase="Your [_1] changes and additions have been made." params="<mt:var name="object_label" lower_case="1">">
+            <__trans phrase="Your [lc,_1] changes and additions have been made." params="<mt:var name="object_label">">
         </mtapp:statusmsg>
     </mt:if>
 
@@ -146,7 +146,7 @@ TC.attachLoadEvent( init );
             id="saved-deleted"
             class="success"
             rebuild="all">
-            <__trans phrase="You have successfully deleted the selected [_1]." params="<mt:var name="object_label_plural" lower_case="1">">
+            <__trans phrase="You have successfully deleted the selected [lc,_1]." params="<mt:var name="object_label_plural">">
         </mtapp:statusmsg>
     </mt:if>
     </div>
@@ -155,14 +155,14 @@ TC.attachLoadEvent( init );
     <a href="javascript:void(0)"
         onclick="doRemoveItems(getByID('folder-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">'); return false;"
         accesskey="x"
-        title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1" escape="js">">"
+        title="<__trans phrase="Delete selected [lc,_1] (x)" params="<mt:var name="object_label_plural" escape="js">">"
         ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 <mt:var name="position_actions_top" value="1">
 
 <mt:include name="include/header.tmpl">
 
-<p id="create-new-link"><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create top level [_1]" params="<mt:var name="object_label" lower_case="1">"></a></p>
+<p id="create-new-link"><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create top level [lc,_1]" params="<mt:var name="object_label">"></a></p>
 
 <mtapp:listing
     hide_pager="1">
@@ -200,7 +200,7 @@ TC.attachLoadEvent( init );
                         show_hint="0">
                         <span class="buttons"> 
                             <a href="javascript:void(0)" mt:command="submit"
-                                title="<__trans phrase="Create [_1]" params="<mt:var name="object_label" lower_case="1">">" 
+                                title="<__trans phrase="Create [lc,_1]" params="<mt:var name="object_label">">" 
                                 ><__trans phrase="Save"></a> 
                             <a href="javascript:void(0)" 
                                 onclick="cancelCreateMode(0); return false"
@@ -223,9 +223,9 @@ TC.attachLoadEvent( init );
                 <td><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">"><$mt:var name="category_label" escape="html"$></a></td>
                 <td><mt:var name="blog_site_url"><mt:var name="category_selector_label"></td>
                 <td id="action-<mt:var name="category_id">">
-                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label" lower_case="1">">"><__trans phrase="Create"></a>
+                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create [lc,_1]" params="<mt:var name="sub_object_label">">"><__trans phrase="Create"></a>
                     &nbsp;
-                    <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [_1]" params="<mt:var name="object_label" lower_case="1">">"><__trans phrase="Move"></a>
+                    <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [lc,_1]" params="<mt:var name="object_label">">"><__trans phrase="Move"></a>
                 </td>
                 <td><mt:if name="category_entrycount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_<mt:var name="entry_label" lower_case="1">&amp;_type=<mt:var name="entry_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"></mt:if></mt:if><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="category_entrycount">%%<mt:var name="entry_label" lower_case="1">%%<mt:var name="entry_label_plural" lower_case="1">"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"></a></mt:if></mt:if></td>
             </tr>

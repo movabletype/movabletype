@@ -24,7 +24,7 @@ em {
 
 a:link,
 a:visited {
-    color: #61889b;
+    color: #33789c;
 }
 
 a:hover,
@@ -219,7 +219,7 @@ fieldset {
 }
 
 .input-hint {
-    color:#999999;
+    color:#999;
 }
 
 .msg a.close-me {
@@ -323,7 +323,7 @@ table.show-admin td {
     margin: 0;
 }
 .chromeless-wide #footer .inner {
-    border-top: 1px solid #CCC;
+    border-top: 1px solid #ccc;
     padding-top: 10px;
     margin: 0 18px;
 }
@@ -450,10 +450,10 @@ table.show-admin td {
 .actions-bar .plugin-actions a:link,
 .actions-bar .plugin-actions a:visited,
 .actions-bar .plugin-actions button {
-    color: #306a86 !important;
-    border: 1px solid #93b2bf;
-    border-top-color: #c2cacd;
-    border-left-color: #c2cacd;
+    color: #33789c !important;
+    border: 1px solid #85afc4;
+    border-top-color: #cddee7;
+    border-left-color: #cddee7;
     padding: 1px 2px;
     background: #999 url('../images/buttons/button-list.gif') repeat-x 50% 50%;
     margin: 0 5px 0 0;
@@ -464,7 +464,7 @@ table.show-admin td {
 .system .listing .actions-bar .actions button,
 .system .actions-bar .plugin-actions a,
 .system .actions-bar .plugin-actions button {
-    color: #7b8a35 !important;
+    color: #7f8833 !important;
     border-color: #a2a48d;
     border-top-color: #c9ccb0;
     border-left-color: #c9ccb0;
@@ -496,7 +496,7 @@ table.show-admin td {
 .actions-bar .plugin-actions a:hover,
 .actions-bar .plugin-actions a:active,
 .actions-bar .plugin-actions button:hover {
-    color: #306a86 !important;
+    color: #33789c !important;
     background-position: 50% 30%;
 }
 .system .buttons a:hover,
@@ -508,7 +508,7 @@ table.show-admin td {
 .system .actions-bar .plugin-actions a:hover,
 .system .actions-bar .plugin-actions a:active,
 .system .actions-bar .plugin-actions button:hover {
-    color: #7b8a35 !important;
+    color: #7f8833 !important;
 }
 
 /* Actions Bar Chromeless ---------------------------------------------------------------------------------- */
@@ -530,9 +530,9 @@ table.show-admin td {
 .upgrade .upgrade-process {
     overflow: auto;
     margin: 10px 0;
-    border: 1px solid #CCC;
+    border: 1px solid #ccc;
     padding: 10px;
-    background-color: #F7F7F7;
+    background-color: #fafafa;
     height: 200px;
 }
 

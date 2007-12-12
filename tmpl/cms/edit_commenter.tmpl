@@ -45,14 +45,14 @@
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="t"
-            title="<__trans phrase="Trust [_1] (t)" params="<mt:var name="object_label" lower_case="1">">"
+            title="<__trans phrase="Trust [lc,_1] (t)" params="<mt:var name="object_label">">"
             ><__trans phrase="Trust"></button>
             <mt:else>
         <button
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'untrust'}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="t"
-            title="<__trans phrase="Untrust [_1] (t)" params="<mt:var name="object_label" lower_case="1">">"
+            title="<__trans phrase="Untrust [lc,_1] (t)" params="<mt:var name="object_label">">"
             ><__trans phrase="Untrust"></button>
             </mt:unless>
             </mt:unless>
@@ -61,14 +61,14 @@
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="b"
-            title="<__trans phrase="Ban [_1] (b)" params="<mt:var name="object_label" lower_case="1">">"
+            title="<__trans phrase="Ban [lc,_1] (b)" params="<mt:var name="object_label">">"
             ><__trans phrase="Ban"></button>
             <mt:else>
         <button
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'unban'}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="b"
-            title="<__trans phrase="Unban [_1] (b)" params="<mt:var name="object_label" lower_case="1">">"
+            title="<__trans phrase="Unban [lc,_1] (b)" params="<mt:var name="object_label">">"
             ><__trans phrase="Unban"></button>
             </mt:unless>
         <mt:else>
@@ -76,13 +76,13 @@
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="t"
-            title="<__trans phrase="Trust [_1] (t)" params="<mt:var name="object_label" lower_case="1">">"
+            title="<__trans phrase="Trust [lc,_1] (t)" params="<mt:var name="object_label">">"
             ><__trans phrase="Trust"></button>
         <button
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="b"
-            title="<__trans phrase="Ban [_1] (b)" params="<mt:var name="object_label" lower_case="1">">"
+            title="<__trans phrase="Ban [lc,_1] (b)" params="<mt:var name="object_label">">"
             ><__trans phrase="Ban"></button>
             />
         </mt:if>
@@ -159,12 +159,12 @@ TC.attachLoadEvent(init);
             hint="<__trans phrase="The trusted status of the commenter">"
             show_hint="0">
             <mt:if name="commenter_approved">
-            <span class="icon-left icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
+            <span class="icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
             <mt:else>
                 <mt:if name="commenter_banned">
-              <span class="icon-left icon-left-wide icon-banned"><__trans phrase="Banned"></span>
+              <span class="icon-left-wide icon-banned"><__trans phrase="Banned"></span>
                 <mt:else>
-            <span class="icon-left icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
+            <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
                 </mt:if>
             </mt:if>
             <a title="<__trans phrase="View all commenters">" href="<mt:var name="script_url">?__mode=list_member&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=commenter"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>

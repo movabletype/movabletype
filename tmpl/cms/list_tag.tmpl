@@ -23,8 +23,10 @@
         label="<__trans phrase="Quickfilters">">
         <$mtapp:ListFilters$>
     </mtapp:widget>
-    <$mt:include name="include/display_options.tmpl"$>
     <$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 <mt:setvarblock name="list_filter_form">
 <div class="listing-filter">
@@ -248,7 +250,7 @@
                     </mtapp:setting>
                 </span>
             </td>
-            <td class="tag-count"><mt:if name="tag_count"><a href="<mt:var name="script_url">?__mode=<$mt:var name="link_to"$><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=exacttag&amp;filter_val=<mt:var name="tag_name" escape="url">" title="<__trans phrase="Show all [_1] with this tag", params="<$mt:var name="tag_object_label_plural"$>">"><__trans phrase="[_1] [_2]" params="<$mt:var name="tag_count"$>%%<$mt:var name="tag_object_label_plural"$>"></a><mt:else><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></mt:if></td>
+            <td class="tag-count"><mt:if name="tag_count"><a href="<mt:var name="script_url">?__mode=<$mt:var name="link_to"$><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=exacttag&amp;filter_val=<mt:var name="tag_name" escape="url">" title="<__trans phrase="Show all [_1] with this tag", params="<$mt:var name="tag_object_label_plural"$>">"><__trans phrase="[quant,_1,_2,_3]" params="<$mt:var name="tag_count"$>%%<$mt:var name="tag_object_label"$>%%<$mt:var name="tag_object_label_plural"$>"></a><mt:else><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="tag_count">"></mt:if></td>
         </tr>
     <mt:if name="__last__">
     </tbody>

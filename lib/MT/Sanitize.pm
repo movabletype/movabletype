@@ -1,15 +1,10 @@
-# ---------------------------------------------------------------------------
-# This software is provided as-is.
-# You may use it for commercial or personal use.
-# If you distribute it, please keep this notice intact.
-#
-# Original Copyright (c) 2002 Brad Choate
-# ---------------------------------------------------------------------------
-# Modifications and integration Copyright 2002-2007 Six Apart.
-# This code cannot be redistributed without permission from www.sixapart.com.
-# For more information, consult your Movable Type license.
+# Movable Type (r) Open Source (C) 2002-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original Copyright (c) 2002 Brad Choate
 
 package MT::Sanitize;
 use strict;

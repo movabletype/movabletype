@@ -1,3 +1,9 @@
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::L10N::lang_tag;  ## <--- Replace "lang_tag" with proper tag.
 use strict;
 use MT::L10N;

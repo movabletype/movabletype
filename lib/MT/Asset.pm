@@ -1,8 +1,8 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
-# $Id: Asset.pm 969 2006-12-21 01:47:02Z bchoate $
+# $Id$
 
 package MT::Asset;
 
@@ -331,6 +331,29 @@ sub insert_options {
 sub on_upload {
     my $asset = shift;
     my ($param) = @_;
+    1;
+}
+
+sub edit_template_param {
+    my $asset = shift;
+    my ($cb, $app, $param, $tmpl) = @_;
+    return;
+}
+
+sub set_values_from_query {
+    my $asset = shift;
+    my ($q) = @_;
+
+    # Set the known columns from the form, if they're set. Subclasses can
+    # opt out or decorate this behavior by overriding the method.
+    my $names = $asset->column_names;
+    my %values;
+    for my $field (@$names) {
+        $values{$field} = $q->param($field)
+            if defined $q->param($field);
+    }
+    $asset->set_values(\%values);
+
     1;
 }
 

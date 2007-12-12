@@ -19,7 +19,7 @@
 
             a:link,
             a:visited {
-                color: #61889b;
+                color: #33789c;
             }
 
             a:hover,

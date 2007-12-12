@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 require_once("MTUtil.php");
 
 // Create default archivers
@@ -369,7 +375,6 @@ class MonthlyArchiver extends DateBasedArchiver {
         $vars['datebased_only_archive'] = 1;
         $vars['datebased_monthly_archive'] = 1;
         $vars['archive_class'] = 'datebased-monthly-archive';
-        $vars['module_monthly_archives'] = 1;
     }
 }
 
@@ -626,7 +631,6 @@ class AuthorBasedArchiver extends BaseArchiver {
         $vars['main_template'] = 1;
         $vars['author_archive'] = 1;
         $vars['archive_class'] = 'author-archive';
-        $vars['module_author_archives'] = 1;
         $vars['module_author-monthly_archives'] = 1;
     }
 }
@@ -989,7 +993,6 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         $vars['author_monthly_archive'] = 1;
         $vars['archive_class'] = 'author-monthly-archive';
         $vars['module_author-monthly_archives'] = 1;
-        $vars['module_author_archives'] = 1;
     }
 }
 
@@ -1580,7 +1583,6 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         $vars['archive_class'] = 'category-monthlyl-archive';
         $vars['category-monthly_archive'] = 1;
         $vars['module_category-monthly_archives'] = 1;
-        $vars['module_category_archives'] = 1;
     }
 }
 

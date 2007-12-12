@@ -1,10 +1,11 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::L10N::en_us;   # American English
+
 use strict;
 use MT::L10N;
 use vars qw( @ISA %Lexicon );
@@ -32,7 +33,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '_USAGE_VIEW_LOG' => 'Check the <a href="[_1]">Activity Log</a> for the error.',
 
     '_USAGE_FORGOT_PASSWORD_1' => 'You requested recovery of your Movable Type password. Your password has been changed in the system; here is the new password:',
-    '_USAGE_FORGOT_PASSWORD_2' => 'You should be able to log in to Movable Type using this new password. Once you have logged in, you should change your password to something more memorable.',
+    '_USAGE_FORGOT_PASSWORD_2' => 'You should be able to log in to Movable Type using this new password from the URL below. Once you have logged in, you should change your password to something more memorable.',
 
     '_BACKUP_TEMPDIR_WARNING' => 'Requested data has been backed up successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] <strong>immediately</strong> because backup files contain sensitive information.',
     '_BACKUP_DOWNLOAD_MESSAGE' => 'Downloading of the backup file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the backup file only once for a session.',

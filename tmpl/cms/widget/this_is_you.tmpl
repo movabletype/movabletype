@@ -1,14 +1,12 @@
 <mtapp:widget class="widget you-widget" label="<__trans phrase="This is you">" can_close="1">
-    <mt:if var="author_userpic_url">
-        <div class="user-pic">
-            <img src="<mt:var name="author_userpic_url" escape="html">" width="<mt:var name="author_userpic_width">" height="<mt:var name="author_userpic_height">" alt="" />
-        </div>
-    </mt:if>
+    <div class="user-pic">
+        <img src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/user-pic.gif</mt:if>" width="<mt:var name="author_userpic_width">" height="<mt:var name="author_userpic_height">" alt="" />
+    </div>
     <div class="user-stats">
         <h4><mt:var name="author_display_name" escape="html"></h4>
         <ul class="user-stats-list">
         <mt:if name="last_post_id">
-            <li><__trans phrase="Your <a href="[_1]">last entry</a> was [_2]." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">"></li>
+            <li><__trans phrase="Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name"$>"></li>
         </mt:if>
         <mt:if name="draft_count">
             <li><__trans phrase="You have <a href="[_1]">[quant,_2,draft,drafts]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter=status&amp;filter_val=1%%<mt:var name="draft_count">"></li>

@@ -87,6 +87,7 @@ lib/MT.pm: %: %.pre build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk buil
 	    -e 's!__SCHEMA_VERSION__!$(SCHEMA_VERSION)!g' \
 	    -e 's!__API_VERSION__!$(API_VERSION)!g' \
 	    -e 's!__NEWSBOX_URL__!$(NEWSBOX_URL)!g' \
+	    -e 's!__LEARNINGNEWS_URL__!$(LEARNINGNEWS_URL)!g' \
 	    -e 's!__SUPPORT_URL__!$(SUPPORT_URL)!g' \
 	    -e 's!__NEWS_URL__!$(NEWS_URL)!g' \
 	    -e 's!__HELP_URL__!$(HELP_URL)!g' \

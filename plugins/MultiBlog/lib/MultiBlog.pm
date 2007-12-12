@@ -1,10 +1,10 @@
-# Copyright 2006-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
-#
-# Original Copyright (c) 2004-2006 David Raynes
+# Movable Type (r) Open Source (C) 2006-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original Copyright (c) 2004-2006 David Raynes
 
 package MultiBlog;
 
@@ -101,7 +101,7 @@ sub post_entry_save {
         }
 
         require MT::Entry;
-        if ( $entry->status == MT::Entry::RELEASE() ) {
+        if ( ( $entry->status || 0 ) == MT::Entry::RELEASE() ) {
             while ( my ( $id, $a ) = each( %{ $d->{'entry_pub'} } ) ) {
                 next if $id == $blog_id;
                 perform_mb_action( $app, $id, $_ ) foreach keys %$a;
@@ -168,7 +168,7 @@ sub filter_blogs_from_args {
     }
     # Make sure include_blogs/exclude_blogs is valid
     elsif (($incl || $excl) ne 'all' 
-        and ($incl || $excl) !~ /^\d+(,\d+)*$/) {
+        and ($incl || $excl) !~ /^\d+([,-]\d+)*$/) {
         $err =  $plugin->translate('The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.');
     }
     return $ctx->error($err) if $err;
@@ -180,7 +180,20 @@ sub filter_blogs_from_args {
     } else {
         ($attr, $val) = ('exclude_blogs', $excl);
     }
-    @blogs = split(',', $val);
+
+    if ($val =~ m/-/) {
+        my @list = split /\s*,\s*/, $val;
+        foreach my $id (@list) {
+            if ($id =~ m/^(\d+)-(\d+)$/) {
+                push @blogs, $_ for $1..$2;
+            } else {
+                push @blogs, $id;
+            }
+        }
+    }
+    else {
+        @blogs = split(/\s*,\s*/, $val);
+    }
 
     # Filter the blogs using the MultiBlog access controls
     ($attr, @blogs) = filter_blogs($plugin, $ctx, $attr, @blogs);

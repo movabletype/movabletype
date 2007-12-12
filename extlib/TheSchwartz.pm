@@ -2,7 +2,9 @@
 
 package TheSchwartz;
 use strict;
-use fields qw( databases retry_seconds dead_dsns retry_at funcmap_cache verbose all_abilities current_abilities current_job cached_drivers driver_cache_expiration );
+use fields qw( databases retry_seconds dead_dsns retry_at funcmap_cache verbose all_abilities current_abilities current_job cached_drivers driver_cache_expiration scoreboard );
+
+our $VERSION = "1.06";
 
 use Carp qw( croak );
 use Data::ObjectDriver::Errors;
@@ -34,6 +36,7 @@ sub new {
 
     $client->{retry_seconds} = delete $args{retry_seconds} || RETRY_DEFAULT;
     $client->set_verbose(delete $args{verbose});
+    $client->set_scoreboard(delete $args{scoreboard});
     $client->{driver_cache_expiration} = delete $args{driver_cache_expiration} || 0;
     croak "unknown options ", join(', ', keys %args) if keys %args;
 
@@ -78,8 +81,8 @@ sub driver_for {
                 ($db->{prefix} ? (prefix   => $db->{prefix}) : ()),
         );
         if ($cache_duration) {
-            $client->{cached_drivers}{$hashdsn}{driver} = $driver;            
-            $client->{cached_drivers}{$hashdsn}{create_ts} = $t;                        
+            $client->{cached_drivers}{$hashdsn}{driver} = $driver;
+            $client->{cached_drivers}{$hashdsn}{create_ts} = $t;
         }
     }
     return $driver;
@@ -266,6 +269,13 @@ sub find_job_for_workers {
     }
 }
 
+sub get_server_time {
+    my TheSchwartz $client = shift;
+    my($driver) = @_;
+    my $unixtime_sql = $driver->dbd->sql_for_unixtime;
+    return $driver->rw_handle->selectrow_array("SELECT $unixtime_sql");
+}
+
 sub _grab_a_job {
     my TheSchwartz $client = shift;
     my $hashdsn = shift;
@@ -284,8 +294,7 @@ sub _grab_a_job {
         my $worker_class = $job->funcname;
         my $old_grabbed_until = $job->grabbed_until;
 
-        my $unixtime_sql = $driver->dbd->sql_for_unixtime;
-        my $server_time = $driver->rw_handle->selectrow_array("SELECT $unixtime_sql")
+        my $server_time = $client->get_server_time($driver)
             or die "expected a server time";
 
         $job->grabbed_until($server_time + ($worker_class->grab_for || 1));
@@ -321,15 +330,21 @@ sub shuffled_databases {
 sub insert_job_to_driver {
     my $client = shift;
     my($job, $driver, $hashdsn) = @_;
-    #eval {
+    eval {
         ## Set the funcid of the job, based on the funcname. Since each
         ## database has a separate cache, this needs to be calculated based
         ## on the hashed DSN. Also: this might fail, if the database is dead.
         $job->funcid( $client->funcname_to_id($driver, $hashdsn, $job->funcname) );
 
+        ## This is sub-optimal because of clock skew, but something is
+        ## better than a NULL value. And currently, nothing in TheSchwartz
+        ## code itself uses insert_time. TODO: use server time, but without
+        ## having to do a roundtrip just to get the server time.
+        $job->insert_time(time);
+
         ## Now, insert the job. This also might fail.
         $driver->insert($job);
-    #};
+    };
     if ($@) {
         unless (OK_ERRORS->{ $driver->last_error || 0 }) {
             $client->mark_database_as_dead($hashdsn);
@@ -564,6 +579,108 @@ sub set_verbose {
     $client->{verbose} = $logger;
 }
 
+sub scoreboard {
+    my TheSchwartz $client = shift;
+
+    return $client->{scoreboard};
+}
+
+sub set_scoreboard {
+    my TheSchwartz $client = shift;
+    my ($dir) = @_;
+
+    return unless $dir;
+
+    # They want the scoreboard but don't care where it goes
+    if (($dir eq '1') or ($dir eq 'on')) {
+        # Find someplace in tmpfs to save this
+        foreach my $d (qw(/var/run /dev/shm)) {
+            $dir = $d;
+            last if -e $dir;
+        }
+    }
+
+    $dir .= '/theschwartz';
+    unless (-e $dir) {
+        mkdir($dir, 0755) or die "Can't create scoreboard directory '$dir': $!";
+    }
+
+    $client->{scoreboard} = $dir."/scoreboard.$$";
+}
+
+sub start_scoreboard {
+    my TheSchwartz $client = shift;
+
+    # Don't do anything if we're not configured to write to the scoreboard
+    my $scoreboard = $client->scoreboard;
+    return unless $scoreboard;
+
+    # Don't do anything of (for some reason) we don't have a current job
+    my $job = $client->current_job;
+    return unless $job;
+
+    my $class = $job->funcname;
+
+    open(SB, '>', $scoreboard)
+      or $job->debug("Could not write scoreboard '$scoreboard': $!");
+    print SB join("\n", ("pid=$$",
+                         'funcname='.($class||''),
+                         'started='.($job->grabbed_until-($class->grab_for||1)),
+                         'arg='._serialize_args($job->arg),
+                        )
+                 ), "\n";
+    close(SB);
+
+    return;
+}
+
+# Quick and dirty serializer.  Don't use Data::Dumper because we don't need to
+# recurse indefinitely and we want to truncate the output produced
+sub _serialize_args {
+    my ($args) = @_;
+
+    if (ref $args) {
+        if (ref $args eq 'HASH') {
+            return join ',',
+                   map { ($_||'').'='.substr($args->{$_}||'', 0, 200) }
+                   keys %$args;
+        } elsif (ref $args eq 'ARRAY') {
+            return join ',',
+                   map { substr($_||'', 0, 200) }
+                   @$args;
+        }
+    } else {
+        return $args;
+    }
+}
+
+sub end_scoreboard {
+    my TheSchwartz $client = shift;
+
+    # Don't do anything if we're not configured to write to the scoreboard
+    my $scoreboard = $client->scoreboard;
+    return unless $scoreboard;
+
+    my $job = $client->current_job;
+
+    open(SB, '>>', $scoreboard)
+      or $job->debug("Could not append scoreboard '$scoreboard': $!");
+    print SB "done=".time."\n";
+    close(SB);
+
+    return;
+}
+
+sub clean_scoreboard {
+    my TheSchwartz $client = shift;
+
+    # Don't do anything if we're not configured to write to the scoreboard
+    my $scoreboard = $client->scoreboard;
+    return unless $scoreboard;
+
+    unlink($scoreboard);
+}
+
 # current job being worked.  so if something dies, work_safely knows which to mark as dead.
 sub current_job {
     my TheSchwartz $client = shift;
@@ -573,6 +690,15 @@ sub current_job {
 sub set_current_job {
     my TheSchwartz $client = shift;
     $client->{current_job} = shift;
+}
+
+DESTROY {
+    foreach my $arg (@_) {
+        # Call 'clean_scoreboard' on TheSchwartz objects
+        if (ref($arg) and $arg->isa('TheSchwartz')) {
+            $arg->clean_scoreboard;
+        }
+    }
 }
 
 1;
@@ -603,14 +729,14 @@ TheSchwartz - reliable job queue
     sub work {
         my $class = shift;
         my TheSchwartz::Job $job = shift;
-        
+
         print "Workin' hard or hardly workin'? Hyuk!!\n";
 
         $job->completed();
     }
 
     package main;
-    
+
     my $client = TheSchwartz->new( databases => $DATABASE_INFO );
     $client->can_do('MyWorker');
     $client->work();
@@ -788,6 +914,10 @@ Find and perform any jobs C<$client> can do, forever. When no job is available,
 the working process will sleep for C<$delay> seconds (or 5, if not specified)
 before looking again.
 
+=head2 C<$client-E<gt>work_on($handle)>
+
+Given a job handle (a scalar string) I<$handle>, runs the job, then returns.
+
 =head2 C<$client-E<gt>find_job_for_workers( [$abilities] )>
 
 Returns a C<TheSchwartz::Job> for a random job that the client can do. If
@@ -807,6 +937,20 @@ C<$ability> and with a coalescing value beginning with C<$coval>.
 Note the C<TheSchwartz> implementation of this function uses a C<LIKE> query to
 find matching jobs, with all the attendant performance implications for your
 job databases.
+
+=head2 C<$client-E<gt>get_server_time( $driver )>
+
+Given an open driver I<$driver> to a database, gets the current server time from the database.
+
+=head1 COPYRIGHT, LICENSE & WARRANTY
+
+This software is Copyright 2007, Six Apart Ltd, cpan@sixapart.com. All
+rights reserved.
+
+TheSchwartz is free software; you may redistribute it and/or modify it
+under the same terms as Perl itself.
+
+TheScwhartz comes with no warranty of any kind.
 
 =cut
 

@@ -15,7 +15,7 @@ function FlashTag(src, width, height)
     this.src       = src;
     this.width     = width;
     this.height    = height;
-    this.version   = '7,0,14,0';
+    this.version   = '8,0,0,0';
     this.id        = null;
     this.bgcolor   = 'ffffff';
     this.flashVars = null;

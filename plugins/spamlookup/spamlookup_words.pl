@@ -1,9 +1,10 @@
-# SpamLookup plugin for Movable Type
-# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
-# Author: Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2004-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
 
 package MT::Plugin::SpamLookup::KeywordFilter;
 

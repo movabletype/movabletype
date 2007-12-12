@@ -14,8 +14,10 @@
         label="<__trans phrase="Quickfilters">">
         <$MTApp:ListFilters$>
     </mtapp:widget>
-    <$mt:include name="include/display_options.tmpl"$>
     <$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
@@ -94,7 +96,7 @@ TC.attachLoadEvent( init );
             </mt:if>
                 </div>
                 <div id="filter-select" style="display: none">
-                    <__trans phrase="Show only [_1] where" params="<$mt:var name="object_label_plural" lower_case="1"$>">
+                    <__trans phrase="Show only [lc,_1] where" params="<$mt:var name="object_label_plural"$>">
                     <!-- filter form starts -->
                         <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
                             <option value="class"><__trans phrase="type"></option>

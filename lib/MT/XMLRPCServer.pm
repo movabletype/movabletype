@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -19,6 +19,7 @@ sub mt_new {
     #$main::server->serializer->encoding($mt->config('PublishCharset'));
     # we need to be UTF-8 here no matter which PublishCharset
     $main::server->serializer->encoding('UTF-8');
+    $mt->run_callbacks('init_app', $mt, {App => 'xmlrpc'});
     $mt;
 }
 
@@ -160,20 +161,141 @@ sub _publish {
     1;
 }
 
-sub newPost {
+sub _apply_basename {
     my $class = shift;
-    my($appkey, $blog_id, $user, $pass, $item, $publish);
-    if ($class eq 'blogger') {
-        ($appkey, $blog_id, $user, $pass, my($content), $publish) = @_;
-        $item->{description} = $content;
-    } else {
-        ($blog_id, $user, $pass, $item, $publish) = @_;
+    my ($entry, $item, $param) = @_;
+
+    my $basename = $item->{mt_basename} || $item->{wp_slug};
+    if ($param->{page} && $item->{permaLink}) {
+        local $entry->{column_values}->{basename} = '##s##';
+        my $real_url = $entry->archive_url();
+        my ($pre, $post) = split /##s##/, $real_url, 2;
+        
+        my $req_url = $item->{permaLink};
+        if ($req_url =~ m{ \A \Q$pre\E (.*) \Q$post\E \z }xms) {
+            my $req_base = $1;
+            my @folders = split /\//, $req_base;
+            $basename = pop @folders;
+            $param->{__permaLink_folders} = \@folders;
+        }
+        else {
+            die _fault(MT->translate("Requested permalink '[_1]' is not available for this page",
+                $req_url));
+        }
     }
+
+    if (defined $basename) {
+        # Ensure this basename is unique.
+        my $entry_class = ref $entry;
+        my $basename_uses = $entry_class->count({
+            blog_id  => $entry->blog_id,
+            basename => $basename,
+            ($entry->id ? ( id => { op => '!=', value => $entry->id } ) : ()),
+        });
+        if ($basename_uses) {
+            $basename = MT::Util::make_unique_basename($entry);
+        }
+
+        $entry->basename($basename);
+    }
+
+    1;
+}
+
+sub _save_placements {
+    my $class = shift;
+    my ($entry, $item, $param) = @_;
+
+    my @categories;
+
+    if ($param->{page}) {
+        if (my $folders = $param->{__permaLink_folders}) {
+            my $parent_id = 0;
+            my $folder;
+            require MT::Folder;
+            for my $basename (@$folders) {
+                $folder = MT::Folder->load({
+                    blog_id  => $entry->blog_id,
+                    parent   => $parent_id,
+                    basename => $basename,
+                });
+
+                if (!$folder) {
+                    # Autovivify the folder tree.
+                    $folder = MT::Folder->new;
+                    $folder->blog_id($entry->blog_id);
+                    $folder->parent($parent_id);
+                    $folder->basename($basename);
+                    $folder->label($basename);
+                    $folder->save
+                      or die _fault(MT->translate("Saving folder failed: [_1]",
+                        $folder->errstr));
+                }
+
+                $parent_id = $folder->id;
+            }
+            @categories = ($folder) if $folder;
+        }
+    }
+    elsif (my $cats = $item->{categories}) {
+        my $cat_class = MT->model('category');
+        # The spec says to ignore invalid category names.
+        @categories = grep { defined } $cat_class->search({
+            blog_id => $entry->blog_id,
+            label   => $cats,
+        });
+    }
+
+    require MT::Placement;
+    my $is_primary_placement = 1;
+    CATEGORY: for my $category (@categories) {
+        my $place;
+        if ($is_primary_placement) {
+            $place = MT::Placement->load({
+                entry_id   => $entry->id,
+                is_primary => 1,
+            });
+        }
+        if (!$place) {
+            $place = MT::Placement->new;
+            $place->blog_id($entry->blog_id);
+            $place->entry_id($entry->id);
+            $place->is_primary($is_primary_placement ? 1 : 0);
+        }
+        $place->category_id($category->id);
+        $place->save
+          or die _fault(MT->translate("Saving placement failed: [_1]",
+            $place->errstr));
+
+        if ($is_primary_placement) {
+            # Delete all the secondary placements, so each of the remaining
+            # iterations of the loop make a brand new placement.
+            my @old_places = MT::Placement->load({
+                entry_id => $entry->id,
+                is_primary => 0,
+            });
+            for my $place (@old_places) {
+                $place->remove;
+            }
+        }
+
+        $is_primary_placement = 0;
+    }
+
+    1;
+}
+
+sub _new_entry {
+    my $class = shift;
+    my %param = @_;
+    my($blog_id, $user, $pass, $item, $publish) =
+        @param{qw( blog_id user pass item publish )};
+    my $obj_type = $param{page} ? 'page' : 'entry';
     die _fault(MT->translate("No blog_id")) unless $blog_id;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     no_utf8($blog_id, values %$item);
     for my $f (qw( title description mt_text_more
-                   mt_excerpt mt_keywords mt_tags mt_basename )) {
+                   mt_excerpt mt_keywords mt_tags mt_basename wp_slug )) {
         next unless defined $item->{$f}; 
         my $enc = $mt->{cfg}->PublishCharset;
         $item->{$f} = encode_text($item->{$f}, 'utf-8', $enc);
@@ -188,8 +310,7 @@ sub newPost {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("No publishing privileges")) unless $perms && $perms->can_post;
-    require MT::Entry;
-    my $entry = MT::Entry->new;
+    my $entry = MT->model($obj_type)->new;
     my $orig_entry = $entry->clone;
     $entry->blog_id($blog_id);
     $entry->author_id($author->id);
@@ -210,7 +331,9 @@ sub newPost {
     $entry->allow_comments($item->{mt_allow_comments})
         if exists $item->{mt_allow_comments};
     $entry->title($item->{title} || first_n_text($item->{description}, const('LENGTH_ENTRY_TITLE_FROM_TEXT')));
-    $entry->basename($item->{mt_basename}) if $item->{mt_basename};
+
+    $class->_apply_basename($entry, $item, \%param);
+
     $entry->text($item->{description});
     for my $field (qw( allow_pings )) {
         my $val = $item->{"mt_$field"};
@@ -244,12 +367,14 @@ sub newPost {
     }
     $entry->discover_tb_from_entry();
 
-    MT->run_callbacks('api_pre_save.entry', $mt, $entry, $orig_entry)
+    MT->run_callbacks("api_pre_save.$obj_type", $mt, $entry, $orig_entry)
         || die MT::XMLRPCServer::_fault(MT->translate("PreSave failed [_1]", MT->errstr));
 
     $entry->save;
 
-    MT->run_callbacks('api_post_save.entry', $mt, $entry, $orig_entry);
+    $class->_save_placements($entry, $item, \%param);
+
+    MT->run_callbacks("api_post_save.$obj_type", $mt, $entry, $orig_entry);
 
     require MT::Log;
     $mt->log({
@@ -267,20 +392,37 @@ sub newPost {
     SOAP::Data->type(string => $entry->id);
 }
 
-sub editPost {
+sub newPost {
     my $class = shift;
-    my($appkey, $entry_id, $user, $pass, $item, $publish);
+    my($appkey, $blog_id, $user, $pass, $item, $publish);
     if ($class eq 'blogger') {
-        ($appkey, $entry_id, $user, $pass, my($content), $publish) = @_;
+        ($appkey, $blog_id, $user, $pass, my($content), $publish) = @_;
         $item->{description} = $content;
     } else {
-        ($entry_id, $user, $pass, $item, $publish) = @_;
+        ($blog_id, $user, $pass, $item, $publish) = @_;
     }
+    $class->_new_entry( blog_id => $blog_id, user => $user, pass => $pass,
+        item => $item, publish => $publish );
+}
+
+sub newPage {
+    my $class = shift;
+    my ($blog_id, $user, $pass, $item, $publish) = @_;
+    $class->_new_entry( blog_id => $blog_id, user => $user, pass => $pass,
+        item => $item, publish => $publish, page => 1 );
+}
+
+sub _edit_entry {
+    my $class = shift;
+    my %param = @_;
+    my ($blog_id, $entry_id, $user, $pass, $item, $publish) =
+        @param{qw( blog_id entry_id user pass item publish )};
+    my $obj_type = $param{page} ? 'page' : 'entry';
     die _fault(MT->translate("No entry_id")) unless $entry_id;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     no_utf8(values %$item);
     for my $f (qw( title description mt_text_more
-                   mt_excerpt mt_keywords mt_tags mt_basename )) {
+                   mt_excerpt mt_keywords mt_tags mt_basename wp_slug )) {
         next unless defined $item->{$f}; 
         my $enc = $mt->config('PublishCharset');
         $item->{$f} = encode_text($item->{$f}, 'utf-8', $enc);
@@ -289,9 +431,11 @@ sub editPost {
             $item->{$f} =~ s!&apos;!'!g;  #'
         }
     }
-    require MT::Entry;
-    my $entry = MT::Entry->load($entry_id)
+    my $entry = MT->model($obj_type)->load($entry_id)
         or die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
+    if ($blog_id && $blog_id != $entry->blog_id) {
+        die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
+    }
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to edit entry"))
@@ -299,7 +443,9 @@ sub editPost {
     my $orig_entry = $entry->clone;
     $entry->status(MT::Entry::RELEASE()) if $publish;
     $entry->title($item->{title}) if $item->{title};
-    $entry->basename($item->{mt_basename}) if defined $item->{mt_basename};
+
+    $class->_apply_basename($entry, $item, \%param);
+
     $entry->text($item->{description});
     $entry->convert_breaks($item->{mt_convert_breaks})
         if exists $item->{mt_convert_breaks};
@@ -336,6 +482,8 @@ sub editPost {
 
     $entry->save;
 
+    $class->_save_placements($entry, $item, \%param);
+
     MT->run_callbacks('api_post_save.entry', $mt, $entry, $orig_entry);
 
     require MT::Log;
@@ -351,6 +499,28 @@ sub editPost {
         $class->_publish($mt, $entry) or die _fault($class->errstr);
     }
     SOAP::Data->type(boolean => 1);
+}
+
+sub editPost {
+    my $class = shift;
+    my($entry_id, $user, $pass, $item, $publish);
+    if ($class eq 'blogger') {
+        (my($appkey), $entry_id, $user, $pass, my($content), $publish) = @_;
+        $item->{description} = $content;
+    }
+    else {
+        ($entry_id, $user, $pass, $item, $publish) = @_;
+    }
+    $class->_edit_entry( entry_id => $entry_id, user => $user, pass => $pass,
+        item => $item, publish => $publish );
+}
+
+sub editPage {
+    my $class = shift;
+    my($blog_id, $entry_id, $user, $pass, $item, $publish) = @_;
+    $class->_edit_entry( blog_id => $blog_id, entry_id => $entry_id,
+        user => $user, pass => $pass, item => $item, publish => $publish,
+        page => 1 );
 }
 
 sub getUsersBlogs {
@@ -400,22 +570,19 @@ sub getUserInfo {
       url => SOAP::Data->type(string => $author->url) };
 }
 
-sub getRecentPosts {
+sub _get_entries {
     my $class = shift;
-    my($blog_id, $user, $pass, $num, $titles_only);
-    if ($class eq 'blogger') {
-        (my($appkey), $blog_id, $user, $pass, $num, $titles_only) = @_;
-    } else {
-        ($blog_id, $user, $pass, $num, $titles_only) = @_;
-    }
+    my %param = @_;
+    my($blog_id, $user, $pass, $num, $titles_only) =
+        @param{qw( blog_id user pass num titles_only )};
+    my $obj_type = $param{page} ? 'page' : 'entry';
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("No publishing privileges")) unless $perms && $perms->can_post;
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id);
-    require MT::Entry;
-    my $iter = MT::Entry->load_iter({ blog_id => $blog_id },
+    my $iter = MT->model($obj_type)->load_iter({ blog_id => $blog_id },
         { 'sort' => 'authored_on',
           direction => 'descend',
           limit => $num });
@@ -424,8 +591,9 @@ sub getRecentPosts {
         my $co = sprintf "%04d%02d%02dT%02d:%02d:%02d",
             unpack 'A4A2A2A2A2A2', $entry->authored_on;
         my $row = { dateCreated => SOAP::Data->type(dateTime => $co),
-                    userid => SOAP::Data->type(string => $entry->author_id),
-                    postid => SOAP::Data->type(string => $entry->id), };
+                    userid => SOAP::Data->type(string => $entry->author_id) };
+        $row->{ $param{page} ? 'page_id' : 'postid' } =
+            SOAP::Data->type(string => $entry->id);
         if ($class eq 'blogger') {
             $row->{content} = SOAP::Data->type(string => encode_text($entry->text, undef, 'utf-8'));
         } else {
@@ -453,21 +621,41 @@ sub getRecentPosts {
     \@res;
 }
 
-sub getRecentPostTitles {
-    getRecentPosts(@_, 1);
+sub getRecentPosts {
+    my $class = shift;
+    my ($blog_id, $user, $pass, $num);
+    if ($class eq 'blogger') {
+        (my($appkey), $blog_id, $user, $pass, $num) = @_;
+    }
+    else {
+        ($blog_id, $user, $pass, $num) = @_;
+    }
+    $class->_get_entries( blog_id => $blog_id, user => $user,
+        pass => $pass, num => $num );
 }
 
-sub deletePost {
-    my $class;
-    if (UNIVERSAL::isa($_[0] => __PACKAGE__)) {
-        $class = shift;
-    } else {
-        $class = __PACKAGE__;
-    }
-    my($appkey, $entry_id, $user, $pass, $publish) = @_;
+sub getRecentPostTitles {
+    my $class = shift;
+    my ($blog_id, $user, $pass, $num) = @_;
+    $class->_get_entries( blog_id => $blog_id, user => $user,
+        pass => $pass, num => $num, titles_only => 1 );
+}
+
+sub getPages {
+    my $class = shift;
+    my ($blog_id, $user, $pass) = @_;
+    $class->_get_entries( blog_id => $blog_id, user => $user,
+        pass => $pass, page => 1 );
+}
+
+sub _delete_entry {
+    my $class = shift;
+    my %param = @_;
+    my ($blog_id, $entry_id, $user, $pass, $publish) =
+        @param{qw( blog_id entry_id user pass publish )};
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
-    require MT::Entry;
-    my $entry = MT::Entry->load($entry_id)
+    my $obj_type = $param{page} ? 'page' : 'entry';
+    my $entry = MT->model($obj_type)->load($entry_id)
         or die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
@@ -480,8 +668,7 @@ sub deletePost {
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete' 
-   });
-
+    });
 
     if ($publish) {
         $class->_publish($mt, $entry, 1) or die _fault($class->errstr);
@@ -489,13 +676,37 @@ sub deletePost {
     SOAP::Data->type(boolean => 1);
 }
 
-sub getPost {
+sub deletePost {
+    my $class;
+    if (UNIVERSAL::isa($_[0] => __PACKAGE__)) {
+        $class = shift;
+    } else {
+        $class = __PACKAGE__;
+    }
+    my($appkey, $entry_id, $user, $pass, $publish) = @_;
+    $class->_delete_entry( entry_id => $entry_id, user => $user,
+        pass => $pass, publish => $publish );
+}
+
+sub deletePage {
     my $class = shift;
-    my($entry_id, $user, $pass) = @_;
+    my ($blog_id, $user, $pass, $entry_id) = @_;
+    $class->_delete_entry( blog_id => $blog_id, entry_id => $entry_id,
+        user => $user, pass => $pass, publish => 1, page => 1 );
+}
+
+sub _get_entry {
+    my $class = shift;
+    my %param = @_;
+    my($blog_id, $entry_id, $user, $pass) =
+        @param{qw( blog_id entry_id user pass )};
+    my $obj_type = $param{page} ? 'page' : 'entry';
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
-    require MT::Entry;
-    my $entry = MT::Entry->load($entry_id)
+    my $entry = MT->model($obj_type)->load($entry_id)
         or die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
+    if ($blog_id && $blog_id != $entry->blog_id) {
+        die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
+    }
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to get entry"))
@@ -508,15 +719,29 @@ sub getPost {
     require MT::Tag;
     my $delim = chr($author->entry_prefs->{tag_delim});
     my $tags = MT::Tag->join($delim, $entry->tags);
+
+    my $cats = [];
+    my $cat_data = $entry->__load_category_data();
+    if (scalar @$cat_data) {
+        my ($first_cat) = grep {  $_->[1] } @$cat_data;
+        my @cat_ids     = grep { !$_->[1] } @$cat_data;
+        unshift @cat_ids, $first_cat if $first_cat;
+        $cats = MT->model('category')->lookup_multi(
+            [ map { $_->[0] } @cat_ids ]);
+    }
+
+    my $basename = SOAP::Data->type(string => encode_text($entry->basename, undef, 'utf-8'));
     {
         dateCreated => SOAP::Data->type(dateTime => $co),
         userid => SOAP::Data->type(string => $entry->author_id),
-        postid => SOAP::Data->type(string => $entry->id),
+        ($param{page} ? 'page_id' : 'postid') => SOAP::Data->type(string => $entry->id),
         description => SOAP::Data->type(string => encode_text($entry->text, undef, 'utf-8')),
         title => SOAP::Data->type(string => encode_text($entry->title, undef, 'utf-8')),
-        mt_basename => SOAP::Data->type(string => encode_text($entry->basename, undef, 'utf-8')),
+        mt_basename => $basename,
+        wp_slug => $basename,
         link => SOAP::Data->type(string => $link),
         permaLink => SOAP::Data->type(string => $link),
+        categories => [ map { SOAP::Data->type(string => $_->label) } @$cats ],
         mt_allow_comments => SOAP::Data->type(int => $entry->allow_comments),
         mt_allow_pings => SOAP::Data->type(int => $entry->allow_pings),
         mt_convert_breaks => SOAP::Data->type(string => $entry->convert_breaks),
@@ -527,6 +752,19 @@ sub getPost {
     }
 }
 
+sub getPost {
+    my $class = shift;
+    my($entry_id, $user, $pass) = @_;
+    $class->_get_entry( entry_id => $entry_id, user => $user, pass => $pass );
+}
+
+sub getPage {
+    my $class = shift;
+    my ($blog_id, $entry_id, $user, $pass) = @_;
+    $class->_get_entry( blog_id => $blog_id, entry_id => $entry_id,
+        user => $user, pass => $pass, page => 1 );
+}
+
 sub supportedMethods {
     [ 'blogger.newPost', 'blogger.editPost', 'blogger.getRecentPosts',
       'blogger.getUsersBlogs', 'blogger.getUserInfo', 'blogger.deletePost',
@@ -534,6 +772,8 @@ sub supportedMethods {
       'metaWeblog.getRecentPosts', 'metaWeblog.newMediaObject',
       'metaWeblog.getCategories', 'metaWeblog.deletePost',
       'metaWeblog.getUsersBlogs',
+      'wp.newPage', 'wp.getPages', 'wp.getPage', 'wp.editPage',
+      'wp.deletePage',
        # not yet supported: metaWeblog.getTemplate, metaWeblog.setTemplate
       'mt.getCategoryList', 'mt.setPostCategories', 'mt.getPostCategories',
       'mt.getTrackbackPings', 'mt.supportedTextFilters',
@@ -930,6 +1170,9 @@ BEGIN { @metaWeblog::ISA = qw( MT::XMLRPCServer ); }
 
 package mt;
 BEGIN { @mt::ISA = qw( MT::XMLRPCServer ); }
+
+package wp;
+BEGIN { @wp::ISA = qw( MT::XMLRPCServer ); }
 
 1;
 __END__

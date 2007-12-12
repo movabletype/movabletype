@@ -33,7 +33,7 @@
     </MTIfTagSearch>
 </MTIf>
 <MTIf name="module_about_context">
-        <div class="widget-welcome widget">
+        <div class="widget-about-this-page widget">
             <h3 class="widget-header">
     <MTIf name="entry_template">
                 <__trans phrase="About this Entry">
@@ -109,7 +109,7 @@
         </div>
 </MTIf>
 <MTIf name="module_recent_entries">
-        <div class="widget-archives widget">
+        <div class="widget-archive widget">
             <h3 class="widget-header"><__trans phrase="Recent Entries"></h3>
             <div class="widget-content">
                 <ul class="widget-list">
@@ -124,8 +124,8 @@
     <MTIfNonZero tag="AssetCount">
         <MTAssets type="image" lastn="10">
             <MTAssetsHeader>
-        <div class="widget-assets widget">
-            <h3 class="widget-header">Photos</h3>
+        <div class="widget-recent-assets widget">
+            <h3 class="widget-header"><__trans phrase="Photos"></h3>
             <div class="widget-content">
                 <ul class="widget-list"></MTAssetsHeader>
                 <li class="item"><a class="asset-image" href="<$MTAssetURL$>"><img src="<$MTAssetThumbnailURL height="70"$>" class="asset-img-thumb" alt="<$MTAssetLabel$>" title="<$MTAssetLabel$>" /></a></li>
@@ -136,7 +136,7 @@
         </MTAssets>
     </MTIfNonZero>
 </MTIf> 
-<MTIf name="module_category_archives">
+<MTIf name="main_index">
     <MTIfArchiveTypeEnabled archive_type="Category">
         <div class="widget-categories widget">
             <h3 class="widget-header"><__trans phrase="Categories"></h3>
@@ -161,7 +161,7 @@
     </MTIfArchiveTypeEnabled>
 </MTIf>
 <MTIf name="main_index">
-        <div class="widget-cloud widget">
+        <div class="widget-tag-cloud widget">
             <h3 class="widget-header"><__trans phrase="Tag Cloud"></h3>
             <div class="widget-content">
                 <ul class="widget-list">
@@ -172,7 +172,7 @@
             </div>
         </div>
 </MTIf>
-<MTIf name="module_author_archives">
+<MTIf name="main_index">
     <MTIfArchiveTypeEnabled archive_type="Author">
         <MTArchiveList archive_type="Author">
             <MTArchiveListHeader>
@@ -190,11 +190,11 @@
         </MTArchiveList>
     </MTIfArchiveTypeEnabled>
 </MTIf>
-<MTIf name="module_monthly_archives">
+<MTIf name="main_index">
     <MTIfArchiveTypeEnabled archive_type="Monthly">
         <MTArchiveList archive_type="Monthly">
             <MTArchiveListHeader>
-        <div class="widget-archives widget">
+        <div class="widget-archive widget">
             <h3 class="widget-header"><__trans phrase="[_1] <a href="[_2]">Archives</a>" params="<$MTArchiveTypeLabel$>%%<$MTLink template="archive_index"$>"></h3>
             <div class="widget-content">
                 <ul class="widget-list">

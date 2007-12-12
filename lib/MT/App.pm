@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -11,7 +11,7 @@ use base qw( MT );
 
 use File::Spec;
 use MT::Request;
-use MT::Util qw( encode_html offset_time_list decode_html encode_url is_valid_email is_valid_url );
+use MT::Util qw( encode_html offset_time_list decode_html encode_url is_valid_email is_url );
 use MT::I18N qw( encode_text wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
@@ -176,6 +176,7 @@ sub filter_conditional_list {
         }
         return \%list;
     }
+    return undef;
 }
 
 sub page_actions {
@@ -262,6 +263,7 @@ sub listing {
       || 'list_' . $type . '.tmpl';
     my $iter_method = $opt->{iterator} || $opt->{Iterator} || 'load_iter';
     my $param       = $opt->{params}   || $opt->{Params}   || {};
+    $param->{listing_screen} = 1;
     my $add_pseudo_new_user = delete $param->{pseudo_new_user}
       if exists $param->{pseudo_new_user};
     my $hasher  = $opt->{code}    || $opt->{Code};
@@ -702,6 +704,8 @@ sub init_request {
             $app->{query} = CGI->new( $app->{no_read_body} ? {} : () );
         }
     }
+    $app->init_query();
+
     $app->{return_args} = $app->{query}->param('return_args');
     $app->cookies;
 
@@ -712,6 +716,25 @@ sub init_request {
     $app->run_callbacks(ref($app) . '::init_request', $app, @_);
 
     $app->{init_request} = 1;
+}
+
+sub init_query {
+    my $app = shift;
+    my $q = $app->{query};
+    # CGI.pm has this terrible flaw in that if a POST is in effect,
+    # it totally ignores any query parameters.
+    if ($app->request_method eq 'POST') {
+        my $query_string;
+        if ($ENV{MOD_PERL}) {
+            $query_string = $q->r->args;
+        } else {
+            $query_string = $ENV{'QUERY_STRING'} if defined $ENV{'QUERY_STRING'};
+            $query_string ||= $ENV{'REDIRECT_QUERY_STRING'} if defined $ENV{'REDIRECT_QUERY_STRING'};
+        }
+        if (defined($query_string) and $query_string ne '') {
+            $q->parse_params($query_string);
+        }
+    }
 }
 
 sub registry {
@@ -1230,7 +1253,7 @@ sub _is_commenter {
                 last;
             }
         }
-        return $app->error($app->translate('You do not have rights; please contact your Movable Type system administrator for gaining access to this installation.'))
+        return $app->error($app->translate('Our apologies, but you do not have permission to access any blogs within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'))
             unless $has_system_permission;
         return -1;
     } 
@@ -1525,7 +1548,7 @@ sub create_user_pending {
         }
 
         $url = $q->param('url');
-        if ( $url && !is_valid_url($url) ) {
+        if ( $url && !is_url($url) ) {
             return $app->error($app->translate("URL is invalid."));
         }
     }
@@ -1832,7 +1855,7 @@ sub request_method {
         if ($ENV{MOD_PERL}) {
             $app->{request_method} = Apache->request->method;
         } else {
-            $app->{request_method} = $ENV{REQUEST_METHOD};
+            $app->{request_method} = $ENV{REQUEST_METHOD} || '';
         }
     }
     $app->{request_method};

@@ -19,3 +19,11 @@
 </select>
 / <input name="mt_extra_path" id="mt_extra_path" />
     </mtapp:setting>
+
+    <mtapp:setting
+        id="wp_download"
+        label="<__trans phrase="Download attachments">"
+        show_hint="1"
+        hint="<__trans phrase="Requires the use of a cron job to download attachments from WordPress powered blog in the background.">">
+<input type="checkbox" name="wp_download" id="wp_download" value="1" /> <__trans phrase="Download attachments (images and files) from the imported WordPress powered blog.">
+    </mtapp:setting>

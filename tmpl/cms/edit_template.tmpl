@@ -39,7 +39,7 @@
             </mtapp:statusmsg>
         <mt:else>
             <mtapp:statusmsg
-                id="saed"
+                id="saved"
                 class="success">
                 <__trans phrase="Your template changes have been saved.">
                 <mt:unless name="build_dynamic">
@@ -166,7 +166,7 @@ tag_inserts['<mt:var name="id" escape="js">'] = content;
 
 if ( !window.Editor )
     Editor = { strings: {} };
-Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to your [_1] that will be lost." escape="js" params="<$mt:var name="object_label" lower_case="1"$>">'; 
+Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to your [lc,_1] that will be lost." escape="js" params="<$mt:var name="object_label"$>">'; 
 
 var fieldStorage = {};
 var dirty = false;
@@ -449,7 +449,7 @@ TC.attachLoadEvent( init );
 
 <form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">" mt:once="1" mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
 <input type="hidden" name="id" value="<mt:var name="id">" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" default="0">" />
 <input type="hidden" name="type" value="<mt:var name="type" escape="html">" />
 <input type="hidden" name="__mode" value="save" />
 <input type="hidden" name="_type" value="template" />

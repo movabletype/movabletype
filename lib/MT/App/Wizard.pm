@@ -1,7 +1,8 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.movabletype.org.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
-# $Id: Wizard.pm 32597 2006-06-28 02:51:44Z ytakayama $
+# $Id$
 
 package MT::App::Wizard;
 
@@ -87,7 +88,7 @@ sub init_core_registry {
             start => {
                 order => 0,
                 handler => \&start,
-                params => ['set_static_uri_to'],
+                params => [qw(set_static_uri_to set_static_file_to)],
             },
             configure => {
                 order => 100,
@@ -222,7 +223,6 @@ sub run_step {
     my $h = $steps->{$curr_step}{handler};
 
     my %param = $app->unserialize_config;
-
     my $keys = $app->config_keys;
     if ($curr_step) {
         foreach (@{ $keys->{$curr_step} }) {
@@ -268,15 +268,18 @@ sub pre_start {
     my %param;
 
     eval { use File::Spec; };
-    my ($cfg, $cfg_exists);
+    my ($cfg, $cfg_exists, $static_file_path);
     if (!$@) {
         $cfg = File::Spec->catfile($app->{mt_dir}, 'mt-config.cgi');
         $cfg_exists |= 1 if -f $cfg;
+
+        $static_file_path = File::Spec->catfile($app->static_file_path);
     }
 
     $param{cfg_exists} = $cfg_exists;
     $param{valid_static_path} = 1 if $app->is_valid_static_path($app->static_path);
-    $param{mt_static_exists} = $app->mt_static_exists; 
+    $param{mt_static_exists} = $app->mt_static_exists;
+    $param{static_file_path} = $static_file_path;
 
     return $app->build_page("start.tmpl", \%param);
 }
@@ -319,11 +322,17 @@ sub build_page {
 
 sub start {
     my $app = shift;
+    my %param = @_;
+
+    my $static_path = $app->param('set_static_uri_to');
+    my $static_file_path = defined $param{set_static_file_to} ?
+        $param{set_static_file_to} :
+        $app->param('set_static_file_to');
+    $param{set_static_file_to} = $static_file_path;
 
     # test for static_path
-    my $static_path = $app->param('set_static_uri_to');
     unless ($app->param('set_static_uri_to')) {
-        my %param = ('uri_invalid' => 1 );
+        $param{uri_invalid} = 1;
         return $app->build_page("start.tmpl", \%param);
     }
 
@@ -333,11 +342,26 @@ sub start {
     $static_path .= '/' unless $static_path =~ m!/$!;
 
     unless ($app->is_valid_static_path($static_path)) {
-        my %param = ('uri_invalid' => 1, set_static_uri_to => $app->param('set_static_uri_to') );
+        $param{uri_invalid} = 1;
+        $param{set_static_uri_to} = $app->param('set_static_uri_to');
         return $app->build_page("start.tmpl", \%param);
     }
 
     $app->config->set('StaticWebPath', $static_path);
+
+    # test for static_file_path
+    unless ($static_file_path) {
+        $param{file_invalid} = 1;
+        return $app->build_page("start.tmpl", \%param);
+    }
+    
+    if (!(-d $static_file_path) || !(-f File::Spec->catfile($static_file_path, "mt.js"))) {
+        $param{file_invalid} = 1;
+        $param{set_static_uri_to} = $app->param('set_static_uri_to');
+        return $app->build_page("start.tmpl", \%param);
+    }
+    $param{config} = $app->serialize_config(%param);
+    $param{static_file} = $static_file_path;
 
     # test for required packages...
     my $req = $app->registry("required_packages");
@@ -348,7 +372,7 @@ sub start {
     }
     my ($needed) = $app->module_check(\@REQ);
     if (@$needed) {
-        my %param = ( 'package_loop' => $needed );
+        $param{package_loop} = $needed;
         $param{required} = 1;
         return $app->build_page("packages.tmpl", \%param);
     }
@@ -366,7 +390,7 @@ sub start {
     }
     my ($db_missing) = $app->module_check(\@DATA);
     if ((scalar @$db_missing) == (scalar @DATA)) {
-        my %param = ( 'package_loop' => $db_missing );
+        $param{package_loop} = $db_missing;
         $param{missing_db_or_optional} = 1;
         $param{missing_db} = 1;
         return $app->build_page("packages.tmpl", \%param);
@@ -381,13 +405,13 @@ sub start {
     my ($opt_missing) = $app->module_check(\@OPT);
     push @$opt_missing, @$db_missing;
     if (@$opt_missing) {
-        my %param = ( 'package_loop' => $opt_missing );
+        $param{package_loop} = $opt_missing;
         $param{missing_db_or_optional} = 1;
         $param{optional} = 1;
         return $app->build_page("packages.tmpl", \%param);
     }
 
-    my %param = ( 'success' => 1 );
+    $param{success} = 1;
     return $app->build_page("packages.tmpl", \%param);
 }
 
@@ -661,6 +685,8 @@ sub seed {
     }else{
         $param{config} = $app->serialize_config(%param);
     }
+
+    $param{static_file_path} = $param{set_static_file_to};
 
     require URI;
     my $uri = URI->new($app->cgipath);

@@ -130,15 +130,14 @@ function is_valid_path(path_){
 }
 
 function disableFields(path1,path2) {
-    var url_is = "<mt:var name="site_url">"
-    var path_is = "<mt:var name="site_path">"
+    var url_is = "<mt:var name="site_url" encode_js="1">";
+    var path_is = "<mt:var name="site_path" encode_js="1">";
     if (url_is.match(/BLOG-NAME/)) {
         var daURL = getByID(path1);
         var lock = path1 +"-lock";
         var lock_img = getByID(lock);
         daURL.disabled = false;
         lock_img.style.display = 'none';
-    } else {
     }
     if (path_is.match(/BLOG-NAME/)) {
         var daPath = getByID(path2);
@@ -146,7 +145,6 @@ function disableFields(path1,path2) {
         var lock_img = getByID(lock);
         daPath.disabled = false;
         lock_img.style.display = 'none';
-    } else {
     }
     return;
 }
@@ -362,7 +360,7 @@ TC.attachLoadEvent( init );
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>

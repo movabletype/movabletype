@@ -1,11 +1,62 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $result = 0;
-        if (isset($args['var'])) {
-            $val = $ctx->__stash['vars'][$args['var']];
-        } elseif (isset($args['name'])) {
-            $val = $ctx->__stash['vars'][$args['name']];
+        $name = isset($args['name'])
+          ? $args['name'] : $args['var'];
+        if (isset($name)) {
+            # pick off any {...} or [...] from the name.
+            if (preg_match('/^(.+)([\[\{])(.+)[\]\}]$/', $name, $matches)) {
+                $name = $matches[1];
+                $br = $matches[2];
+                $ref = $matches[3];
+                if (preg_match('/^\\\\\$(.+)/', $ref, $ref_matches)) {
+                    $ref = $vars[$ref_matches[1]];
+                    if (!isset($ref))
+                        $ref = chr(0);
+                }
+                $br == '[' ? $index = $ref : $key = $ref;
+            } else {
+                if (array_key_exists('index', $args))
+                    $index = $args['index'];
+                else if (array_key_exists('key', $args))
+                    $key = $args['key'];
+            }
+            if (preg_match('/^$/', $name)) {
+                $name = $vars[$name];
+                if (!isset($name))
+                    return $ctx->error($ctx->mt->translate(
+                        "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ));
+            }
+            if (isset($name)) {
+                $value = $ctx->__stash['vars'][$name];
+                if (is_hash($value)) {
+                    if ( isset($key) ) {
+                        if ($key != chr(0)) {
+                            $val = $value[$key];
+                        } else {
+                            unset($value);
+                        }
+                    }
+                }
+                elseif (is_array($value)) {
+                    if ( isset($index) ) {
+                        if (is_numeric($index)) {
+                            $val = $value[ $index ];
+                        } else {
+                            unset($value); # fall through to any 'default'
+                        }
+                    }
+                }
+                if (!isset($val))
+                    $val = $value;
+            }
         } elseif (isset($args['tag'])) {
             $tag = $args['tag'];
             $tag = preg_replace('/^mt:?/i', '', $tag);
@@ -13,7 +64,8 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             unset($largs['tag']);
             $val = $ctx->tag($tag, $largs);
         }
-        if (preg_match('/^smarty_fun_[a-f0-9]+$/', $val)) {
+        if ( !is_array($value)
+          && preg_match('/^smarty_fun_[a-f0-9]+$/', $value) ) {
             if (function_exists($val)) {
                 ob_start();
                 $val($ctx, array());
@@ -22,6 +74,15 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             } else {
                 $val = '';
             }
+        }
+        if ( array_key_exists('op', $args) ) {
+            $op = $args['op'];
+            $rvalue = $args['value'];
+            if ( $op && isset($value) && !is_array($value) ) {
+                $val = _math_operation($op, $val, $rvalue);
+                if (!isset($val)) {
+                    return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", $val, $op, $rvalue));
+            }}
         }
         if (array_key_exists('eq', $args)) {
             $val2 = $args['eq'];

@@ -51,7 +51,9 @@
     </mt:if>
     <mt:unless name="external_user_management">
         <mt:if name="can_create_user">
-    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></p>
+        <ul class="action-link-list">
+            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></li>
+        </ul>
         </mt:if>
     </mt:unless>
 </mt:setvarblock>
@@ -64,9 +66,9 @@
         label="<__trans phrase="Quickfilters">">
         <$mtapp:listfilters$>
     </mtapp:widget>
-
     <$mtapp:pageactions from="list_authors"$>
-
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
     <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 

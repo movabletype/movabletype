@@ -34,8 +34,10 @@
             </ul>
         </mtapp:widget>
     </mt:if>
-    <$mt:include name="include/display_options.tmpl"$>
     <$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>

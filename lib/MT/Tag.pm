@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -293,6 +293,28 @@ package MT::Taggable;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;  ## 1 week
 
+sub install_properties {
+    my $pkg = shift;
+    my ($class) = @_;
+
+    # synchronize tags if necessary
+    $class->add_trigger( post_save => \&post_save_tags );
+    $class->add_trigger( pre_remove => \&pre_remove_tags );
+}
+
+# post_save trigger for MT::Taggable objects to synchronize tags upon save.
+sub post_save_tags {
+    my $class = shift;
+    my ($obj) = @_;
+    $obj->save_tags;
+}
+
+sub pre_remove_tags {
+    my $class = shift;
+    my ($obj) = @_;
+    $obj->remove_tags if ref $obj;
+}
+
 sub tag_cache_key {
     my $obj = shift;
     return undef unless $obj->id;
@@ -439,6 +461,7 @@ sub remove_tags {
     my @et = MT::ObjectTag->load({ object_id => $obj->id,
                                    object_datasource => $obj->datasource });
     $_->remove for @et;
+    $obj->{__tags} = [];
     delete $obj->{__save_tags};
     MT::Tag->clear_cache(datasource => $obj->datasource,
         ($obj->blog_id ? (blog_id => $obj->blog_id) : ())) if @et;

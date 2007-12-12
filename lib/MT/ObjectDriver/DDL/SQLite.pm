@@ -1,8 +1,84 @@
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::ObjectDriver::DDL::SQLite;
 
 use strict;
 use warnings;
 use base qw( MT::ObjectDriver::DDL );
+
+sub index_defs {
+    my $ddl = shift;
+    my ($class) = @_;
+    my $driver = $class->driver;
+    my $dbh = $driver->r_handle;
+    my $field_prefix = $class->datasource;
+    my $table_name = $class->table_name;
+    my $sth = $dbh->prepare(<<SQL)
+SELECT name, sql
+FROM sqlite_master
+WHERE type = "index"
+AND tbl_name="$table_name"
+SQL
+        or return undef;
+    $sth->execute or return undef;
+
+    my $defs = {};
+    while (my $row = $sth->fetchrow_hashref) {
+        my $key = $row->{'name'};
+        next unless $key =~ m/^(mt_)?\Q$field_prefix\E_/;
+        next if $key =~ m/(.+autoindex)/;
+        my $sql = $row->{'sql'}
+            or next;
+
+        $key =~ s/^mt_\Q$field_prefix\E_//;
+        my $cols = [];
+        my $is_unique = 0;
+        my $idx_columns;
+        if ( $sql =~ m/CREATE( UNIQUE)? INDEX (?:.+?) ON $table_name \((.+?)\)/i ) {
+            $is_unique = $1 ? 'unique' eq lc($1) : 0;
+            $idx_columns = $2;
+            for my $col ( split ',', $idx_columns ) {
+                $col =~ s/^\Q$field_prefix\E_//;
+                push @$cols, $col;
+            }
+        }
+        unless ( $is_unique ) {
+            # Check constraints to identify unique index
+            my $sth_tbl = $dbh->prepare(<<TBLSQL);
+SELECT name, sql FROM sqlite_master
+WHERE type = "table" AND name = "$table_name"
+TBLSQL
+            $sth_tbl->execute or next;
+            my $rows_tbl = $sth_tbl->fetchall_hashref('name');
+            $sth_tbl->finish;
+            my $sql_tbl = $rows_tbl->{$table_name}->{'sql'}
+                or next;
+            my $idx_name = $row->{'name'};
+            if ( $sql_tbl =~ m/CONSTRAINT\s+$idx_name\s+UNIQUE\s+\(\s*$idx_columns\s*\)/im ) {
+                $is_unique = 1;
+            }
+        }
+
+        if ( $is_unique ) {
+            $defs->{$key} = { 'unique' => 1, 'columns' => $cols };
+        }
+        else {
+            if ((@$cols == 1) && ($key eq $cols->[0])) {
+                $defs->{$key} = 1;
+            } else {
+                $defs->{$key} = { 'columns' => $cols };
+            }
+        }
+
+    }
+    $sth->finish;
+
+    return $defs;
+}
 
 sub column_defs {
     my $ddl = shift; 
@@ -118,6 +194,18 @@ sub unique_constraint_sql {
         return ',' . join("\n", @stmts);
     }
     return q();
+}
+
+sub drop_index_sql {
+    my $ddl = shift;
+    my ($class, $key) = @_;
+    my $table_name = $class->table_name;
+
+    my $props = $class->properties;
+    my $indexes = $props->{indexes};
+    return q() unless exists($indexes->{$key});
+
+    return "DROP INDEX ${table_name}_$key";
 }
 
 1;

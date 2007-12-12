@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 global $Lexicon_nl;
 $Lexicon_nl = array(
 ## php/lib/archive_lib.php
@@ -36,6 +42,8 @@ $Lexicon_nl = array(
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',
+
+## php/lib/function.mtauthordisplayname.php
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_nl;

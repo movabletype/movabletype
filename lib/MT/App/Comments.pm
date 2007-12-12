@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -13,7 +13,7 @@ use MT::App;
 use MT::Comment;
 use MT::I18N qw( wrap_text encode_text );
 use MT::Util
-  qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url escape_unicode format_ts encode_js );
+  qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url is_url escape_unicode format_ts encode_js );
 use MT::Entry qw(:constants);
 use MT::Author;
 use MT::JunkFilter qw(:constants);
@@ -868,7 +868,7 @@ sub post {
         }
     }
     if ( $comment->url ) {
-        if ( my $fixed = is_valid_url( $comment->url, 'stringent' ) ) {
+        if ( my $fixed = is_valid_url( $comment->url ) ) {
             $comment->url($fixed);
         }
         else {
@@ -1021,30 +1021,24 @@ sub eval_comment {
 
     my $commenter_status;
     if ($commenter) {
-        if ( MT::Author::COMMENTER() eq $commenter->type ) {
-            $commenter_status = $commenter->commenter_status( $entry->blog_id );
-            if ( $commenter_status == MT::Author::APPROVED() ) {
-                if ( $blog->publish_trusted_commenters ) {
-                    $comment->approve;
-                    return $comment;
-                }
-                else {
-                    $comment->moderate;
-                    return $comment;
-                }
+        $commenter_status = $commenter->commenter_status( $entry->blog_id );
+        if ( $commenter_status == MT::Author::APPROVED() ) {
+            if ( $blog->publish_trusted_commenters ) {
+                $comment->approve;
+                return $comment;
             }
-            if ( $commenter_status == MT::Author::PENDING() ) {
-
-                # just in case record doesn't exist...
-                $commenter->pending( $entry->blog_id );
-            }
-            if ( $commenter_status == MT::Author::BANNED() ) {
-                return undef;
+            else {
+                $comment->moderate;
+                return $comment;
             }
         }
-        elsif ( MT::Author::AUTHOR() eq $commenter->type ) {
-            $comment->approve;
-            return $comment;
+        if ( $commenter_status == MT::Author::PENDING() ) {
+
+            # just in case record doesn't exist...
+            $commenter->pending( $entry->blog_id );
+        }
+        if ( $commenter_status == MT::Author::BANNED() ) {
+            return undef;
         }
     }
 
@@ -1237,7 +1231,7 @@ sub _make_comment {
     $comment->entry_id( $entry->id );
     $comment->author( remove_html($nick) );
     $comment->email( remove_html($email) );
-    $url = is_valid_url( $url, 'stringent' );
+    $url = is_valid_url( $url );
     $comment->url( $url eq 'http://' ? '' : $url );
     $comment->text($text);
 
@@ -1732,7 +1726,7 @@ sub save_commenter_profile {
         $param{error} = $app->translate('Email Address is invalid.');
         return $app->build_page( 'profile.tmpl', \%param );
     }
-    if ( $param{url} && !is_valid_url( $param{url} ) ) {
+    if ( $param{url} && !is_url( $param{url} ) ) {
         $param{error} = $app->translate('URL is invalid.');
         return $app->build_page( 'profile.tmpl', \%param );
     }

@@ -1,5 +1,11 @@
 #! /usr/bin/perl -w
 
+# Movable Type (r) Open Source (C) 2005-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 my $wc =0; # New: count the number of words left to translate!
 
 BEGIN {

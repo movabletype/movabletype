@@ -1,9 +1,9 @@
 /*
-Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-permission from www.sixapart.com.  For more information, consult your
-Movable Type license.
-
-$Id$
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 */
 
 var pager;
@@ -189,7 +189,7 @@ function updateWidget(id) {
     var args = DOM.getFormData( f );
     args['json'] = '1';
     TC.Client.call({
-        'load': function(c) { updatedWidget(id, c); },
+        'load': function(c, responseText) { updatedWidget(id, responseText); },
         'error': function() { showMsg("Error updating widget.", "widget-updated", "alert"); },
         'method': 'POST',
         'uri': ScriptURI,
@@ -198,11 +198,11 @@ function updateWidget(id) {
     return false;
 }
 
-function updatedWidget(id, c) {
+function updatedWidget(id, responseText) {
     var el = TC.elementOrId(id);
     var result;
     try {
-        result = eval('(' + c.responseText + ')');
+        result = eval('(' + responseText + ')');
     } catch(e) {
         showMsg("Error updating widget.", "widget-updated", "alert");
         return;
@@ -1315,7 +1315,8 @@ MT.App = new Class( App, {
 
     initComponents: function() {
         arguments.callee.applySuper( this, arguments );
-                    
+        this.openFlyouts = [];
+
         this.setDelegate( "navMenu", new this.constructor.NavMenu() );
 
         this.initFormElements();
@@ -1461,8 +1462,23 @@ MT.App = new Class( App, {
     },
 
 
+    closeFlyouts: function( target ) {
+        var flyout;
+        var es = Array.fromPseudo( this.openFlyouts );
+        for ( var i = 0, len = es.length; i < len; i++ ) {
+            if ( ( flyout = DOM.getElement( es[ i ] ) ) ) {
+                if ( DOM.hasAncestor( target, flyout ) )
+                    continue;
+                DOM.addClassName( flyout, "hidden" );
+                this.openFlyouts.remove( es[ i ] );
+            }
+        }
+    },
+
+
     eventClick: function( event ) {
         var command = this.getMouseEventCommand( event );
+
         switch( command ) {
             
             case "openSelectBlog":
@@ -1486,7 +1502,31 @@ MT.App = new Class( App, {
                 this.cpeList.forEach( function( cpe ) { cpe.toggleOff( true ); } );
                 break;
 
+            case "openFlyout":
+                var name = event.commandElement.getAttribute( "mt:flyout" );
+                var el = DOM.getElement( name );
+                if ( !defined( el ) )
+                    return;
+
+                this.closeFlyouts( event.target );
+
+                DOM.removeClassName( el, "hidden" );
+                this.targetElement = event.target;
+                this.applyAutolayouts( el );
+                this.targetElement = null;
+
+                this.openFlyouts.add( name );
+
+                break;
+                
+            case "closeFlyout":
+                this.closeFlyouts();
+                
+                break;
+
             default:
+                this.closeFlyouts( event.target );
+
                 var form = DOM.getFirstAncestorByTagName( event.target, "form", true );
                 if ( !form )
                     return;
@@ -2332,12 +2372,13 @@ MT.App.CodePress = new Class( Object, {
         if ( !this.editor )
             return;
         log('setting autosave data on: '+this.textarea.name);
-        data[ this.textarea.name ] = this.editor.getCode();
+        data[ this.textarea.name ] = this.getCode();
     },
 
     
     getCode: function() {
-        return this.textarea.disabled ? this.editor.getCode() : this.textarea.value;
+        var code = this.textarea.disabled ? this.editor.getCode() : this.textarea.value;
+        return document.all ? code.replace( /\r$/, '' ) : code;
     },
 
 
@@ -2490,7 +2531,7 @@ function showDropDown() {
 
 function setBarPosition(radio) {
     var mode = radio.value ? radio.value.toLowerCase() : radio;
-    var c = TC.elementOrId('container');
+    var c = TC.elementOrId('container-inner');
     var s = "show-actions-bar-";
     if (mode == 'bottom') {
         TC.removeClassName(c, s + "top");
@@ -2502,4 +2543,9 @@ function setBarPosition(radio) {
         TC.addClassName(c, s + "top");
         TC.removeClassName(c, s + "bottom");
     }
+}
+
+function selectAll(id) {
+    DOM.getElement( id ).focus();
+    DOM.getElement( id ).select();
 }

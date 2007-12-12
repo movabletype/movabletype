@@ -1,7 +1,7 @@
 <?php
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -26,6 +26,8 @@ class MTViewer extends Smarty {
         'mthassubfolders' => 1,
         'mthasparentfolders' => 1,
         'mthasparentfolder' => 1,
+        'mtauthorhasentry' => 1,
+        'mtauthorhaspage' => 1,
     );
     var $sanitized = array(
         'mtcommentauthor' => 1,

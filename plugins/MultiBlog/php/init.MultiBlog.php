@@ -1,4 +1,8 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 # $Id$
 
 global $mt;
@@ -174,7 +178,7 @@ function multiblog_filter_blogs_from_args(&$ctx, &$args) {
 
     # Make sure include_blogs/exclude_blogs is valid
     if (($incl or $excl) != 'all' 
-        and !preg_match('/^\d+(,\d+)*$/', $incl or $excl)) {
+        and !preg_match('/^\d+([,-]\d+)*$/', $incl or $excl)) {
             return false;
     }
 
@@ -182,7 +186,20 @@ function multiblog_filter_blogs_from_args(&$ctx, &$args) {
     $blogs = array();
     $attr = $incl ? 'include_blogs' : 'exclude_blogs';
     $val = $incl ? $incl : $excl;
-    $blogs = preg_split('/,/', $val);
+    if (preg_match('/-/', $val)) {
+        # parse range blog ids out
+        $list = preg_split('/\s*,\s*/', $val);
+        foreach ($list as $item) {
+            if (preg_match('/(\d+)-(\d+)/', $item, $matches)) {
+                for ($i = $matches[1]; $i <= $matches[2]; $i++)
+                    $blogs[] = $i;
+            } else {
+                $blogs[] = $item;
+            }
+        }
+    } else {
+        $blogs = preg_split('/\s*,\s*/', $val);
+    }
 
     # Filter the blogs using the MultiBlog access controls
     list($attr, $blogs) = multiblog_filter_blogs($ctx, $attr, $blogs);

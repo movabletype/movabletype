@@ -1,9 +1,11 @@
-# Copyright 2003-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::L10N::nl;
+
 use strict;
 use MT::L10N;
 use MT::L10N::en_us;
@@ -53,8 +55,8 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtauthordisplayname.php
 
 ## default_templates/notify-entry.mtml
-	'A new [_3] entitled \'[_1]\' has been published to [_2].' => 'Een [_3] getiteld \'[_1]\' is gepubliceerd op [_2].',
-	'View [_1]:' => '[_1] bekijken:',
+	'A new [lc,_3] entitled \'[_1]\' has been published to [_2].' => 'Een [lc,_3] getiteld \'[_1]\' is gepubliceerd op [_2].',
+	'View [lc,_1]:' => '[lc,_1] bekijken:',
 	'[_1] Title: [_2]' => '[_1] titel: [_2]',
 	'Publish Date: [_1]' => 'Publicatiedatum: [_1]',
 	'Message from Sender:' => 'Boodschap van afzender:',
@@ -1838,14 +1840,14 @@ use vars qw( @ISA %Lexicon );
 	'comment' => 'reactie',
 	'comments' => 'reacties',
 	'to publish' => 'om te publiceren',
-	'Publish selected [_1] (a)' => 'Publiceer geselecteerde [_1] (a)',
-	'Delete selected [_1] (x)' => 'Geselecteerde [_1] verwijderen (x)',
-	'Report selected [_1] as Spam (j)' => 'Geselecteerde [_1] rapporteren als spam (j)',
+	'Publish selected [lc,_1] (a)' => 'Publiceer geselecteerde [lc,_1] (a)',
+	'Delete selected [lc,_1] (x)' => 'Geselecteerde [lc,_1] verwijderen (x)',
+	'Report selected [lc,_1] as Spam (j)' => 'Geselecteerde [lc,_1] rapporteren als spam (j)',
 	'Spam' => 'Spam',
-	'Report selected [_1] as Not Spam and Publish (j)' => 'Geselecteerde [_1] rapporteren als niet-spam en publiceren (j)',
+	'Report selected [lc,_1] as Not Spam and Publish (j)' => 'Geselecteerde [lc,_1] rapporteren als niet-spam en publiceren (j)',
 	'Not Spam' => 'Geen spam',
 	'Are you sure you want to remove all comments reported as spam?' => 'Bent u zeker dat u alle reacties die als spam gemarkeerd zijn wenst te verwijderen?',
-	'Deletes all [_1] reported as Spam' => 'Verwijdert alle [_1] gerapporteerd als spam',
+	'Deletes all [lc,_1] reported as Spam' => 'Verwijdert alle [lc,_1] gerapporteerd als spam',
 	'Empty' => 'Leeg',
 	'Ban This IP' => 'Dit IP-adres verbannen',
 	'Status' => 'Status',
@@ -1857,8 +1859,7 @@ use vars qw( @ISA %Lexicon );
 	'Only show pending comments' => 'Enkel hangende reacties tonen',
 	'Pending' => 'In afwachting',
 	'Edit this comment' => 'Deze reactie bewerken',
-	'(1 reply)' => '(1 antwoord)',
-	'([_1] replies)' => '([_1] antwoorden)',
+	'([quant,_1,reply,replies])' => '([quant,_1,antwoord,antwoorden])',
 	'Reply' => 'Antwoorden',
 	'Trusted' => 'Vertrouwde',
 	'Blocked' => 'Geblokkeerd',
@@ -1866,7 +1867,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit this [_1] commenter' => '[_1] reageerder bewerken',
 	'Search for comments by this commenter' => 'Zoek naar reacties door deze reageerder',
 	'Anonymous' => 'Anonieme',
-	'View this [_1]' => '[_1] bekijken',
+	'View this [lc,_1]' => '[lc,_1] bekijken',
 	'Search for all comments from this IP address' => 'Zoek naar alle reacties van dit IP adres',
 
 ## tmpl/cms/include/member_table.tmpl
@@ -1983,9 +1984,9 @@ use vars qw( @ISA %Lexicon );
 	'View the [_1] for this TrackBack' => 'De [_1] bekijken voor deze TrackBack',
 
 ## tmpl/cms/include/entry_table.tmpl
-	'Save these [_1] (s)' => 'Sla deze [_1] op (s)',
+	'Save these [lc,_1] (s)' => 'Sla deze [lc,_1] op (s)',
 	'to republish' => 'om opnieuw te publiceren',
-	'Republish selected [_1] (r)' => 'Herpubliceer geselecteerde [_1] (r)',
+	'Republish selected [lc,_1] (r)' => 'Herpubliceer geselecteerde [lc,_1] (r)',
 	'Republish' => 'Herpubliceren',
 	'page' => 'pagina',
 	'Last Modified' => 'Laatst aangepast',
@@ -1993,12 +1994,12 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Draft)' => 'Niet gepubliceerd (klad)',
 	'Unpublished (Review)' => 'Niet gepubliceerd (na te kijken)',
 	'Scheduled' => 'Gepland',
-	'Only show unpublished [_1]' => 'Enkel niet gepubliceerde [_1] tonen',
-	'Only show published [_1]' => 'Enkel gepubliceerde [_1] tonen',
-	'Only show [_1] for review' => 'Enkel [_1] tonen om te beoordelen',
-	'Only show scheduled [_1]' => 'Enkel geplande [_1] tonen',
-	'Edit [_1]' => '[_1] bewerken',
-	'View [_1]' => 'Toon [_1]',
+	'Only show unpublished [lc,_1]' => 'Enkel niet gepubliceerde [lc,_1] tonen',
+	'Only show published [lc,_1]' => 'Enkel gepubliceerde [_1] tonen',
+	'Only show [lc,_1] for review' => 'Enkel [lc,_1] tonen om te beoordelen',
+	'Only show scheduled [lc,_1]' => 'Enkel geplande [lc,_1] tonen',
+	'Edit [lc,_1]' => '[lc,_1] bewerken',
+	'View [lc,_1]' => 'Toon [lc,_1]',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2414,7 +2415,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenting' => 'Reageren',
 	'Duplicate Roles' => 'Dubbele rollen',
 	'These roles have the same privileges as this role' => 'Deze rollen hebben dezelfde rechten als deze rol',
-	'Save changes to this [_1] (s)' => 'Wijzigingen aan deze [_1] opslaan (s)',
+	'Save changes to this [lc,_1] (s)' => 'Wijzigingen aan deze [lc,_1] opslaan (s)',
 
 ## tmpl/cms/cfg_plugin.tmpl
 	'System Plugin Settings' => 'Systeeminstellingen plugins',
@@ -2483,7 +2484,7 @@ use vars qw( @ISA %Lexicon );
 	'Save (s)' => 'Opslaan (s)',
 	'Save and Publish this template (r)' => 'Dit sjabloon opslaan en publiceren (r)',
 	'Save &amp; Publish' => 'Opslaan &amp; publiceren',
-	'You have unsaved changes to your [_1] that will be lost.' => 'Er zijn niet opgeslagen wijzigingen aan uw [_1] die verloren zullen gaan',
+	'You have unsaved changes to your [lc,_1] that will be lost.' => 'Er zijn niet opgeslagen wijzigingen aan uw [lc,_1] die verloren zullen gaan',
 	'You must set the Template Name.' => 'U moet de naam van het sjabloon instellen',
 	'You must set the template Output File.' => 'U moet het uitvoerbestand van het sjabloon instellen.',
 	'Please wait...' => 'Even wachten...',
@@ -2551,7 +2552,7 @@ use vars qw( @ISA %Lexicon );
 	'All [_1]' => 'Alle [_1]',
 	'change' => 'wijzig',
 	'[_1] where [_2] is [_3]' => '[_1] waar [_2] gelijk is aan [_3]',
-	'Show only [_1] where' => 'Toon enkel [_1] waar',
+	'Show only [lc,_1] where' => 'Toon enkel [lc,_1] waar',
 	'status' => 'status',
 	'tag (exact match)' => 'tag (exacte overeenkomst)',
 	'tag (fuzzy match)' => 'tag (fuzzy overeenkomst)',
@@ -2570,13 +2571,13 @@ use vars qw( @ISA %Lexicon );
 	'Comments from [_1]' => 'Reacties van [_1]',
 	'commenter' => 'reageerder',
 	'commenters' => 'reageerders',
-	'Trust [_1] (t)' => 'Vertrouw [_1] (t)',
+	'Trust [lc,_1] (t)' => 'Vertrouw [lc,_1] (t)',
 	'Trust' => 'Vertrouw',
-	'Untrust [_1] (t)' => 'Wantrouw [_1] (t)',
+	'Untrust [lc,_1] (t)' => 'Wantrouw [lc,_1] (t)',
 	'Untrust' => 'Wantrouw',
-	'Ban [_1] (b)' => 'Verban [_1] (b)',
+	'Ban [lc,_1] (b)' => 'Verban [lc,_1] (b)',
 	'Ban' => 'Verban',
-	'Unban [_1] (b)' => 'Ontban [_1] (b)',
+	'Unban [lc,_1] (b)' => 'Ontban [lc,_1] (b)',
 	'Unban' => 'Ontban',
 	'The Name of the commenter' => 'Naam van de reageerder',
 	'View all comments with this name' => 'Alle reacties met deze naam bekijken',
@@ -2666,7 +2667,7 @@ use vars qw( @ISA %Lexicon );
 	'folder' => 'map',
 	'folders' => 'mappen',
 	'categories' => 'categorieën',
-	'Create [_1]' => '[_1] aanmaken',
+	'Create [lc,_1]' => '[lc,_1] aanmaken',
 	'Your [_1] has been saved.' => 'Uw [_1] is opgeslagen.',
 	'One or more errors occurred when sending update pings or TrackBacks.' => 'Eén of meer problemen deden zich voor bij het versturen van update pings of TrackBacks.',
 	'_USAGE_VIEW_LOG' => 'Controleer het <a href=\"[_1]\">Activiteitenlog</a> op deze fout.',
@@ -2694,13 +2695,12 @@ use vars qw( @ISA %Lexicon );
 	'Publish Date' => 'Datum publicatie',
 	'Make primary' => 'Maak dit een hoofdcategorie',
 	'Add sub category' => 'Subcategorie toevoegen',
-	'Add [_1] name' => 'Voeg [_1] naam toe',
-	'Add new parent [_1]' => 'Voeg nieuwe hoofd[_1] toe',
+	'Add [lc,_1] name' => 'Voeg [lc,_1] naam toe',
+	'Add new parent [lc,_1]' => 'Voeg nieuwe hoofd[lc,_1] toe',
 	'Add new' => 'Nieuw toevogen',
-	'Save this [_1] (s)' => '[_1] bewaren (s)',
-	'Preview this [_1] (v)' => '[_1] voorbeeld (v)',
-	'Delete this [_1] (v)' => '[_1] verwijderen (v)',
-	'Share this [_1]' => '[_1] delen',
+	'Save this [lc,_1] (s)' => '[lc,_1] bewaren (s)',
+	'Preview this [lc,_1] (v)' => '[lc,_1] voorbeeld (v)',
+	'Share this [lc,_1]' => '[lc,_1] delen',
 	'View published [_1]' => '[_1] bekijken',
 	'&laquo; Previous' => '&laquo; Vorige',
 	'Next &raquo;' => 'Volgende &raquo;',
@@ -2710,10 +2710,10 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(lijst gescheiden met komma\'s)',
 	'(space-delimited list)' => '(lijst gescheiden met spaties)',
 	'(delimited by \'[_1]\')' => '(gescheiden door \'[_1]\')',
-	'Change [_1]' => 'Wijzig [_1]',
-	'Add [_1]' => '[_1] toevoegen',
+	'Change [lc,_1]' => 'Wijzig [_1]',
+	'Add [lc,_1]' => '[_1] toevoegen',
 	'Unpublished' => 'Ongepubliceerd',
-	'You must configure blog before you can publish this [_1].' => 'U moet uw blog configureren voor u deze [_1] kunt publiceren.',
+	'You must configure this blog before you can publish this [lc,_1].' => 'U moet uw blog configureren voor u deze [lc,_1] kunt publiceren.',
 	'Select entry date' => 'Selecteer berichtdatum',
 	'Unlock this entry&rsquo;s output filename for editing' => 'Maak het mogelijk om de uitvoerbestandsnaam te wijzigen',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => 'Waarschuwing: de basisnaam van het bericht met de hand aanpassen kan een conflict met een ander bericht veroorzaken.',
@@ -3023,13 +3023,13 @@ use vars qw( @ISA %Lexicon );
 	'System Permissions' => 'Systeempermissies',
 	'Options' => 'Opties',
 	'Create personal blog for user' => 'Persoonlijke blog aanmaken voor gebruiker',
-	'Create [_1] (s)' => '[_1] aanmaken (s)',
+	'Create [lc,_1] (s)' => '[lc,_1] aanmaken (s)',
 	'_USAGE_PASSWORD_RESET' => 'Hieronder kunt u een nieuw wachtwoord laten instellen voor deze gebruiker.  Als u ervoor kiest om dit te doen, zal een willekeurig gegenereerd wachtwoord worden aangemaakt en rechtstreeks naar volgend e-mail adres worden verstuurd: [_1].',
 	'Initiate Password Recovery' => 'Procedure starten om wachtwoord terug te halen',
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'De reactie is goedgekeurd.',
-	'Delete this [_1] (x)' => 'Verwijder [_1] (x)',
+	'Delete this [lc,_1] (x)' => 'Verwijder [lc,_1] (x)',
 	'Previous Comment' => 'Vorige reactie',
 	'Next Comment' => 'Volgende reactie',
 	'Manage Comments' => 'Reacties beheren',
@@ -3232,12 +3232,12 @@ use vars qw( @ISA %Lexicon );
 	'Cancel (c)' => 'Annuleer (c)',
 
 ## tmpl/cms/list_folder.tmpl
-	'Your [_1] changes and additions have been made.' => 'De wijzigingen en toevoegingen aan uw [_1] zijn uitgevoerd.',
-	'You have successfully deleted the selected [_1].' => 'U heeft met succes de geselecteerde [_1] verwijderd.',
-	'Create top level [_1]' => 'Maak een nieuwe [_1] aan op topniveau',
+	'Your [lc,_1] changes and additions have been made.' => 'De wijzigingen en toevoegingen aan uw [lc,_1] zijn uitgevoerd.',
+	'You have successfully deleted the selected [lc,_1].' => 'U heeft met succes de geselecteerde [_1] verwijderd.',
+	'Create top level [lc,_1]' => 'Maak een nieuwe [lc,_1] aan op topniveau',
 	'New Parent [_1]' => 'Nieuwe ouder-[_1]',
 	'Top Level' => 'Topniveau',
-	'Move [_1]' => '[_1] verplaatsen',
+	'Move [lc,_1]' => '[lc,_1] verplaatsen',
 	'Move' => 'Verplaatsen',
 	'[quant,_1,page,pages]' => '[quant,_1,pagina,pagina\'s]',
 
@@ -3410,7 +3410,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,result,results] found' => '[quant,_1,resultaat,resultaten] found',
 
 ## tmpl/cms/preview_strip.tmpl
-	'You are previewing the [_1] titled &ldquo;[_2]&rdquo;' => 'U bekijkt een voorbeeld van een [_1] met de titel &ldquo;[_2]&rdquo;',
+	'You are previewing the [lc,_1] titled &ldquo;[_2]&rdquo;' => 'U bekijkt een voorbeeld van een [lc,_1] met de titel &ldquo;[_2]&rdquo;',
 
 ## tmpl/cms/edit_ping.tmpl
 	'The TrackBack has been approved.' => 'De TrackBack is goedgekeurd.',
@@ -4050,9 +4050,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/tmpl/include/group_table.tmpl
 	'group' => 'groep',
 	'groups' => 'groepen',
-	'Enable selected [_1] (e)' => 'Activeer geselecteerde [_1] (e)',
-	'Disable selected [_1] (d)' => 'Deactiveer geselecteerde [_1] (d)',
-	'Remove selected [_1] (d)' => 'Verwijder geselecteerde [_1] (d)',
+	'Enable selected [lc,_1] (e)' => 'Activeer geselecteerde [lc,_1] (e)',
+	'Disable selected [lc,_1] (d)' => 'Deactiveer geselecteerde [lc,_1] (d)',
+	'Remove selected [lc,_1] (d)' => 'Verwijder geselecteerde [lc,_1] (d)',
 	'Only show enabled groups' => 'Enkel actieve groepen tonen',
 	'Only show disabled groups' => 'Enkel niet-actieve groepen tonen',
 
@@ -4581,922 +4581,9 @@ use vars qw( @ISA %Lexicon );
 	'Maintain your blog\'s widget content using a handy drag and drop interface.' => 'Beheer de widget-inhoud van uw weblog via een handige klik-en-sleep interface.',
 	'Widgets' => 'Widgets',
 
-## php/lib/archive_lib.php
-
-## php/lib/function.mtremotesigninlink.php
-
-## php/lib/function.mtproductname.php
-
-## php/lib/captcha_lib.php
-
-## php/lib/block.mtassets.php
-
-## php/lib/block.mtentries.php
-
-## php/lib/MTUtil.php
-
-## php/lib/function.mtauthordisplayname.php
-
-## default_templates/notify-entry.mtml
-
-## lib/MT/Asset/Video.pm
-
-## lib/MT/Asset/Audio.pm
-
-## lib/MT/Asset/Image.pm
-
-## lib/MT/Util/Archive/Tgz.pm
-
-## lib/MT/Util/Archive/Zip.pm
-
-## search_templates/default.tmpl
-
-## tmpl/wizard/optional.tmpl
-
-## addons/Community.pack/lib/MT/App/Community.pm
-
-## php/lib/archive_lib.php
-
-## php/lib/function.mtremotesigninlink.php
-
-## php/lib/function.mtproductname.php
-
-## php/lib/captcha_lib.php
-
-## php/lib/block.mtassets.php
-
-## php/lib/block.mtentries.php
-
-## php/lib/MTUtil.php
-
-## php/lib/function.mtauthordisplayname.php
-
-## default_templates/notify-entry.mtml
-
-## default_templates/main_index.mtml
-
-## default_templates/page.mtml
-
-## default_templates/entry_summary.mtml
-
-## default_templates/comment_response.mtml
-
-## default_templates/commenter_notify.mtml
-
-## default_templates/footer-email.mtml
-
-## default_templates/entry_detail.mtml
-
-## default_templates/verify-subscribe.mtml
-
-## default_templates/new-ping.mtml
-
-## default_templates/comment_detail.mtml
-
-## default_templates/comment_form.mtml
-
-## default_templates/comment_throttle.mtml
-
-## default_templates/new-comment.mtml
-
-## default_templates/entry_listing.mtml
-
-## default_templates/footer.mtml
-
-## default_templates/tags.mtml
-
-## default_templates/entry_metadata.mtml
-
-## default_templates/entry.mtml
-
-## default_templates/recover-password.mtml
-
-## default_templates/javascript.mtml
-
-## default_templates/rss.mtml
-
-## default_templates/archive_index.mtml
-
-## default_templates/trackbacks.mtml
-
-## default_templates/categories.mtml
-
-## default_templates/comments.mtml
-
-## default_templates/search_results.mtml
-
-## default_templates/sidebar_2col.mtml
-
-## default_templates/sidebar_3col.mtml
-
-## default_templates/dynamic_error.mtml
-
-## default_templates/comment_preview.mtml
-
-## default_templates/commenter_confirm.mtml
-
-## lib/MT/Asset/Video.pm
-
-## lib/MT/Asset/Audio.pm
-
-## lib/MT/Asset/Image.pm
-
-## lib/MT/Util/Archive/Tgz.pm
-
-## lib/MT/Util/Archive/Zip.pm
-
-## lib/MT/Util/Archive.pm
-
-## lib/MT/Util/Captcha.pm
-
-## lib/MT/Plugin/JunkFilter.pm
-
-## lib/MT/Auth/TypeKey.pm
-
-## lib/MT/Auth/OpenID.pm
-
-## lib/MT/Auth/MT.pm
-
-## lib/MT/TheSchwartz/Error.pm
-
-## lib/MT/TheSchwartz/FuncMap.pm
-
-## lib/MT/TheSchwartz/Job.pm
-
-## lib/MT/TheSchwartz/ExitStatus.pm
-
-## lib/MT/ObjectDriver/Driver/DBD/SQLite.pm
-
-## lib/MT/Compat/v3.pm
-
-## lib/MT/FileMgr/FTP.pm
-
-## lib/MT/FileMgr/DAV.pm
-
-## lib/MT/FileMgr/Local.pm
-
-## lib/MT/FileMgr/SFTP.pm
-
-## lib/MT/BackupRestore/ManifestFileHandler.pm
-
-## lib/MT/BackupRestore/BackupFileHandler.pm
-
-## lib/MT/Template/Context.pm
-
-## lib/MT/Template/ContextHandlers.pm
-
-## lib/MT/App/NotifyList.pm
-
-## lib/MT/App/Comments.pm
-
-## lib/MT/App/Search.pm
-
-## lib/MT/App/Trackback.pm
-
-## lib/MT/App/Upgrader.pm
-
-## lib/MT/App/Wizard.pm
-
-## lib/MT/App/Viewer.pm
-
-## lib/MT/App/CMS.pm
-	'' => '', # Translate - New
-
-## lib/MT/App/ActivityFeeds.pm
-
-## lib/MT/BasicAuthor.pm
-
-## lib/MT/Placement.pm
-
-## lib/MT/TaskMgr.pm
-
-## lib/MT/Page.pm
-
-## lib/MT/Bootstrap.pm
-
-## lib/MT/Category.pm
-
-## lib/MT/Asset.pm
-
-## lib/MT/Image.pm
-
-## lib/MT/Session.pm
-
-## lib/MT/Trackback.pm
-
-## lib/MT/Notification.pm
-
-## lib/MT/Upgrade.pm
-
-## lib/MT/Core.pm
-
-## lib/MT/ObjectTag.pm
-
-## lib/MT/Author.pm
-
-## lib/MT/XMLRPC.pm
-
-## lib/MT/ObjectAsset.pm
-
-## lib/MT/BackupRestore.pm
-
-## lib/MT/TemplateMap.pm
-
-## lib/MT/ConfigMgr.pm
-
-## lib/MT/Association.pm
-
-## lib/MT/Blog.pm
-
-## lib/MT/TBPing.pm
-
-## lib/MT/Builder.pm
-
-## lib/MT/ObjectScore.pm
-
-## lib/MT/Import.pm
-
-## lib/MT/Folder.pm
-
-## lib/MT/Tag.pm
-
-## lib/MT/App.pm
-
-## lib/MT/Log.pm
-
-## lib/MT/IPBanList.pm
-
-## lib/MT/AtomServer.pm
-
-## lib/MT/PluginData.pm
-
-## lib/MT/Plugin.pm
-
-## lib/MT/Role.pm
-
-## lib/MT/Entry.pm
-
-## lib/MT/Config.pm
-
-## lib/MT/Template.pm
-
-## lib/MT/ImportExport.pm
-
-## lib/MT/JunkFilter.pm
-
-## lib/MT/Util.pm
-
-## lib/MT/Mail.pm
-
-## lib/MT/Permission.pm
-
-## lib/MT/Scorable.pm
-
-## lib/MT/XMLRPCServer.pm
-
-## lib/MT/WeblogPublisher.pm
-
-## lib/MT/Auth.pm
-
-## lib/MT/Comment.pm
-
-## lib/MT/Component.pm
-
-## lib/MT/DefaultTemplates.pm
-
-## lib/MT.pm.pre
-
-## mt-static/js/dialog.js
-
-## mt-static/js/assetdetail.js
-
-## mt-static/mt.js
-
-## search_templates/default.tmpl
-
-## search_templates/results_feed.tmpl
-
-## search_templates/comments.tmpl
-
-## search_templates/results_feed_rss2.tmpl
-
-## tmpl/wizard/optional.tmpl
-
-## tmpl/wizard/complete.tmpl
-
-## tmpl/wizard/cfg_dir.tmpl
-
-## tmpl/wizard/start.tmpl
-
-## tmpl/wizard/packages.tmpl
-
-## tmpl/wizard/configure.tmpl
-
-## tmpl/wizard/blog.tmpl
-
-## tmpl/cms/include/list_associations/page_title.tmpl
-
-## tmpl/cms/include/copyright.tmpl
-
-## tmpl/cms/include/comment_table.tmpl
-
-## tmpl/cms/include/member_table.tmpl
-
-## tmpl/cms/include/feed_link.tmpl
-
-## tmpl/cms/include/overview-left-nav.tmpl
-
-## tmpl/cms/include/asset_table.tmpl
-
-## tmpl/cms/include/import_start.tmpl
-
-## tmpl/cms/include/log_table.tmpl
-
-## tmpl/cms/include/pagination.tmpl
-
-## tmpl/cms/include/backup_end.tmpl
-
-## tmpl/cms/include/cfg_content_nav.tmpl
-
-## tmpl/cms/include/notification_table.tmpl
-
-## tmpl/cms/include/footer.tmpl
-
-## tmpl/cms/include/tools_content_nav.tmpl
-
-## tmpl/cms/include/commenter_table.tmpl
-
-## tmpl/cms/include/ping_table.tmpl
-
-## tmpl/cms/include/entry_table.tmpl
-
-## tmpl/cms/include/login_mt.tmpl
-
-## tmpl/cms/include/author_table.tmpl
-
-## tmpl/cms/include/calendar.tmpl
-
-## tmpl/cms/include/itemset_action_widget.tmpl
-
-## tmpl/cms/include/anonymous_comment.tmpl
-
-## tmpl/cms/include/display_options.tmpl
-
-## tmpl/cms/include/backup_start.tmpl
-
-## tmpl/cms/include/chromeless_footer.tmpl
-
-## tmpl/cms/include/template_table.tmpl
-
-## tmpl/cms/include/listing_panel.tmpl
-
-## tmpl/cms/include/header.tmpl
-
-## tmpl/cms/include/archetype_editor.tmpl
-
-## tmpl/cms/include/blog_table.tmpl
-
-## tmpl/cms/include/blog-left-nav.tmpl
-
-## tmpl/cms/include/users_content_nav.tmpl
-
-## tmpl/cms/include/import_end.tmpl
-
-## tmpl/cms/include/archive_maps.tmpl
-
-## tmpl/cms/include/cfg_system_content_nav.tmpl
-
-## tmpl/cms/dialog/recover.tmpl
-
-## tmpl/cms/dialog/restore_end.tmpl
-
-## tmpl/cms/dialog/asset_replace.tmpl
-
-## tmpl/cms/dialog/asset_list.tmpl
-
-## tmpl/cms/dialog/comment_reply.tmpl
-
-## tmpl/cms/dialog/asset_upload.tmpl
-
-## tmpl/cms/dialog/restore_upload.tmpl
-
-## tmpl/cms/dialog/entry_notify.tmpl
-
-## tmpl/cms/dialog/asset_options.tmpl
-
-## tmpl/cms/dialog/adjust_sitepath.tmpl
-
-## tmpl/cms/dialog/asset_options_image.tmpl
-
-## tmpl/cms/dialog/create_association.tmpl
-
-## tmpl/cms/dialog/restore_start.tmpl
-
-## tmpl/cms/widget/new_user.tmpl
-
-## tmpl/cms/widget/blog_stats_recent_entries.tmpl
-
-## tmpl/cms/widget/mt_news.tmpl
-
-## tmpl/cms/widget/custom_message.tmpl
-
-## tmpl/cms/widget/mt_shortcuts.tmpl
-
-## tmpl/cms/widget/new_version.tmpl
-
-## tmpl/cms/widget/this_is_you.tmpl
-
-## tmpl/cms/widget/new_install.tmpl
-
-## tmpl/cms/widget/blog_stats.tmpl
-
-## tmpl/cms/widget/blog_stats_entry.tmpl
-
-## tmpl/cms/widget/blog_stats_tag_cloud.tmpl
-
-## tmpl/cms/widget/blog_stats_comment.tmpl
-
-## tmpl/cms/popup/rebuilt.tmpl
-
-## tmpl/cms/popup/pinged_urls.tmpl
-
-## tmpl/cms/popup/rebuild_confirm.tmpl
-
-## tmpl/cms/edit_role.tmpl
-
-## tmpl/cms/cfg_plugin.tmpl
-
-## tmpl/cms/list_blog.tmpl
-
-## tmpl/cms/edit_template.tmpl
-
-## tmpl/cms/dashboard.tmpl
-
-## tmpl/cms/cfg_trackbacks.tmpl
-
-## tmpl/cms/list_entry.tmpl
-
-## tmpl/cms/edit_commenter.tmpl
-
-## tmpl/cms/cfg_system_general.tmpl
-
-## tmpl/cms/list_member.tmpl
-
-## tmpl/cms/cfg_comments.tmpl
-
-## tmpl/cms/backup.tmpl
-
-## tmpl/cms/edit_entry.tmpl
-
-## tmpl/cms/view_log.tmpl
-
-## tmpl/cms/setup_initial_blog.tmpl
-
-## tmpl/cms/cfg_spam.tmpl
-
-## tmpl/cms/edit_folder.tmpl
-
-## tmpl/cms/list_notification.tmpl
-
-## tmpl/cms/export.tmpl
-
-## tmpl/cms/edit_category.tmpl
-
-## tmpl/cms/list_banlist.tmpl
-
-## tmpl/cms/list_ping.tmpl
-
-## tmpl/cms/error.tmpl
-
-## tmpl/cms/list_role.tmpl
-
-## tmpl/cms/list_comment.tmpl
-
-## tmpl/cms/cfg_web_services.tmpl
-
-## tmpl/cms/list_template.tmpl
-
-## tmpl/cms/list_tag.tmpl
-
-## tmpl/cms/install.tmpl
-
-## tmpl/cms/cfg_system_feedback.tmpl
-
-## tmpl/cms/edit_author.tmpl
-
-## tmpl/cms/edit_comment.tmpl
-
-## tmpl/cms/restore_end.tmpl
-
-## tmpl/cms/list_asset.tmpl
-
-## tmpl/cms/import.tmpl
-
-## tmpl/cms/upgrade_runner.tmpl
-
-## tmpl/cms/system_check.tmpl
-
-## tmpl/cms/restore.tmpl
-
-## tmpl/cms/cfg_archives.tmpl
-
-## tmpl/cms/rebuilding.tmpl
-
-## tmpl/cms/upgrade.tmpl
-
-## tmpl/cms/edit_blog.tmpl
-
-## tmpl/cms/pinging.tmpl
-
-## tmpl/cms/cfg_prefs.tmpl
-
-## tmpl/cms/restore_start.tmpl
-
-## tmpl/cms/preview_entry.tmpl
-
-## tmpl/cms/list_folder.tmpl
-
-## tmpl/cms/list_association.tmpl
-
-## tmpl/cms/login.tmpl
-
-## tmpl/cms/list_category.tmpl
-
-## tmpl/cms/cfg_entry.tmpl
-
-## tmpl/cms/cfg_system_users.tmpl
-
-## tmpl/cms/recover_password_result.tmpl
-
-## tmpl/cms/cfg_registration.tmpl
-
-## tmpl/cms/list_author.tmpl
-
-## tmpl/cms/import_others.tmpl
-
-## tmpl/cms/search_replace.tmpl
-
-## tmpl/cms/preview_strip.tmpl
-
-## tmpl/cms/edit_ping.tmpl
-
-## tmpl/comment/register.tmpl
-
-## tmpl/comment/signup.tmpl
-
-## tmpl/comment/login.tmpl
-
-## tmpl/comment/error.tmpl
-
-## tmpl/comment/signup_thanks.tmpl
-
-## tmpl/comment/profile.tmpl
-
-## tmpl/feeds/feed_entry.tmpl
-
-## tmpl/feeds/feed_comment.tmpl
-
-## tmpl/feeds/login.tmpl
-
-## tmpl/feeds/error.tmpl
-
-## tmpl/feeds/feed_page.tmpl
-
-## tmpl/feeds/feed_ping.tmpl
-
-## tmpl/error.tmpl
-
-## addons/Community.pack/lib/MT/App/Community.pm
-
-## addons/Community.pack/lib/MT/Community/Tags.pm
-
-## addons/Community.pack/lib/MT/Community/CMS.pm
-
-## addons/Community.pack/php/function.mtentryrecommendvotelink.php
-
-## addons/Community.pack/tmpl/widget/blog_stats_registration.mtml
-
-## addons/Community.pack/tmpl/widget/most_popular_entries.mtml
-
-## addons/Community.pack/tmpl/widget/recent_submissions.mtml
-
-## addons/Community.pack/tmpl/widget/recent_favorites.mtml
-
-## addons/Community.pack/tmpl/cfg_community_prefs.tmpl
-
-## addons/Community.pack/templates/global/register_form.mtml
-
-## addons/Community.pack/templates/global/simple_footer.mtml
-
-## addons/Community.pack/templates/global/profile_error.mtml
-
-## addons/Community.pack/templates/global/profile_feed_rss.mtml
-
-## addons/Community.pack/templates/global/userpic.mtml
-
-## addons/Community.pack/templates/global/new_entry_email.mtml
-
-## addons/Community.pack/templates/global/password_reset_form.mtml
-
-## addons/Community.pack/templates/global/profile_edit_form.mtml
-
-## addons/Community.pack/templates/global/header.mtml
-
-## addons/Community.pack/templates/global/profile_view.mtml
-
-## addons/Community.pack/templates/global/login_form.mtml
-
-## addons/Community.pack/templates/global/register_confirmation.mtml
-
-## addons/Community.pack/templates/global/user_navigation.mtml
-
-## addons/Community.pack/templates/global/footer.mtml
-
-## addons/Community.pack/templates/global/navigation.mtml
-
-## addons/Community.pack/templates/global/login_form_module.mtml
-
-## addons/Community.pack/templates/global/email_verification_email.mtml
-
-## addons/Community.pack/templates/global/register_notification_email.mtml
-
-## addons/Community.pack/templates/global/search.mtml
-
-## addons/Community.pack/templates/blog/rss.mtml
-
-## addons/Community.pack/templates/blog/archive_index.mtml
-
-## addons/Community.pack/templates/blog/trackbacks.mtml
-
-## addons/Community.pack/templates/blog/main_index.mtml
-
-## addons/Community.pack/templates/blog/page.mtml
-
-## addons/Community.pack/templates/blog/content_nav.mtml
-
-## addons/Community.pack/templates/blog/entry_summary.mtml
-
-## addons/Community.pack/templates/blog/entry_response.mtml
-
-## addons/Community.pack/templates/blog/comment_response.mtml
-
-## addons/Community.pack/templates/blog/entry_detail.mtml
-
-## addons/Community.pack/templates/blog/entry_form.mtml
-
-## addons/Community.pack/templates/blog/entry_create.mtml
-
-## addons/Community.pack/templates/blog/comment_detail.mtml
-
-## addons/Community.pack/templates/blog/comments.mtml
-
-## addons/Community.pack/templates/blog/comment_form.mtml
-
-## addons/Community.pack/templates/blog/categories.mtml
-
-## addons/Community.pack/templates/blog/search_results.mtml
-
-## addons/Community.pack/templates/blog/sidebar_2col.mtml
-
-## addons/Community.pack/templates/blog/sidebar_3col.mtml
-
-## addons/Community.pack/templates/blog/entry_listing.mtml
-
-## addons/Community.pack/templates/blog/dynamic_error.mtml
-
-## addons/Community.pack/templates/blog/tags.mtml
-
-## addons/Community.pack/templates/blog/entry_metadata.mtml
-
-## addons/Community.pack/templates/blog/entry.mtml
-
-## addons/Community.pack/templates/blog/comment_preview.mtml
-
-## addons/Community.pack/templates/blog/javascript.mtml
-
-## addons/Community.pack/templates/forum/main_index.mtml
-
-## addons/Community.pack/templates/forum/page.mtml
-
-## addons/Community.pack/templates/forum/entry_summary.mtml
-
-## addons/Community.pack/templates/forum/content_nav.mtml
-
-## addons/Community.pack/templates/forum/entry_response.mtml
-
-## addons/Community.pack/templates/forum/comment_response.mtml
-
-## addons/Community.pack/templates/forum/content_header.mtml
-
-## addons/Community.pack/templates/forum/entry_detail.mtml
-
-## addons/Community.pack/templates/forum/entry_form.mtml
-
-## addons/Community.pack/templates/forum/comment_detail.mtml
-
-## addons/Community.pack/templates/forum/entry_create.mtml
-
-## addons/Community.pack/templates/forum/comment_form.mtml
-
-## addons/Community.pack/templates/forum/entry_listing.mtml
-
-## addons/Community.pack/templates/forum/entry_metadata.mtml
-
-## addons/Community.pack/templates/forum/entry.mtml
-
-## addons/Community.pack/templates/forum/javascript.mtml
-
-## addons/Community.pack/templates/forum/rss.mtml
-
-## addons/Community.pack/templates/forum/entry_table.mtml
-
-## addons/Community.pack/templates/forum/archive_index.mtml
-
-## addons/Community.pack/templates/forum/category_groups.mtml
-
-## addons/Community.pack/templates/forum/comments.mtml
-
-## addons/Community.pack/templates/forum/search_results.mtml
-
-## addons/Community.pack/templates/forum/dynamic_error.mtml
-
-## addons/Community.pack/templates/forum/entry_popular.mtml
-
-## addons/Community.pack/templates/forum/comment_preview.mtml
-
-## addons/Community.pack/config.yaml
-
-## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
-
-## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
-
-## addons/Commercial.pack/lib/CustomFields/Util.pm
-
-## addons/Commercial.pack/lib/CustomFields/Field.pm
-
-## addons/Commercial.pack/tmpl/date-picker.tmpl
-
-## addons/Commercial.pack/tmpl/edit_field.tmpl
-
-## addons/Commercial.pack/tmpl/reorder_fields.tmpl
-
-## addons/Commercial.pack/tmpl/list_field.tmpl
-
-## addons/Commercial.pack/tmpl/asset-chooser.tmpl
-
-## addons/Commercial.pack/config.yaml
-
-## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
-
-## addons/Enterprise.pack/lib/MT/Enterprise/Wizard.pm
-
-## addons/Enterprise.pack/lib/MT/Enterprise/BulkCreation.pm
-
-## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
-
 ## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
 	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => "Mislukte aanmeldpoging door gebruiker \'[_1]\'. Er bestaat al een gebruiker met die gebruikersnaam in het systeem met een andere UUID",
 	"Filter used to search for groups: [_1]\nSearch base: [_2]" => "Filter gebruikt om naar groepen te zoeken: [_1]\nZoekbasis: [_2]",
-
-## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
-
-## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/UMSSQLServer.pm
-
-## addons/Enterprise.pack/lib/MT/Group.pm
-
-## addons/Enterprise.pack/lib/MT/LDAP.pm
-
-## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
-
-## addons/Enterprise.pack/tmpl/include/list_associations/page_title.group.tmpl
-
-## addons/Enterprise.pack/tmpl/include/users_content_nav.tmpl
-
-## addons/Enterprise.pack/tmpl/include/group_table.tmpl
-
-## addons/Enterprise.pack/tmpl/list_group.tmpl
-
-## addons/Enterprise.pack/tmpl/create_author_bulk_end.tmpl
-
-## addons/Enterprise.pack/tmpl/list_group_member.tmpl
-
-## addons/Enterprise.pack/tmpl/author_bulk.tmpl
-
-## addons/Enterprise.pack/tmpl/cfg_ldap.tmpl
-
-## addons/Enterprise.pack/tmpl/create_author_bulk_start.tmpl
-
-## addons/Enterprise.pack/tmpl/edit_group.tmpl
-
-## addons/Enterprise.pack/app-wizard.yaml
-
-## addons/Enterprise.pack/app-cms.yaml
-
-## addons/Enterprise.pack/config.yaml
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-
-## plugins/feeds-app-lite/mt-feeds.pl
-
-## plugins/Cloner/cloner.pl
-
-## plugins/Markdown/SmartyPants.pl
-
-## plugins/Markdown/Markdown.pl
-
-## plugins/WXRImporter/lib/WXRImporter/Import.pm
-
-## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
-
-## plugins/WXRImporter/tmpl/options.tmpl
-
-## plugins/WXRImporter/WXRImporter.pl
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-
-## plugins/StyleCatcher/tmpl/view.tmpl
-
-## plugins/StyleCatcher/stylecatcher.pl
-
-## plugins/TemplateRefresh/tmpl/results.tmpl
-
-## plugins/TemplateRefresh/TemplateRefresh.pl
-
-## plugins/spamlookup/lib/spamlookup.pm
-
-## plugins/spamlookup/tmpl/url_config.tmpl
-
-## plugins/spamlookup/tmpl/lookup_config.tmpl
-
-## plugins/spamlookup/tmpl/word_config.tmpl
-
-## plugins/spamlookup/spamlookup_words.pl
-
-## plugins/spamlookup/spamlookup.pl
-
-## plugins/spamlookup/spamlookup_urls.pl
-
-## plugins/MultiBlog/lib/MultiBlog/Tags.pm
-
-## plugins/MultiBlog/lib/MultiBlog.pm
-
-## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
-
-## plugins/MultiBlog/tmpl/blog_config.tmpl
-
-## plugins/MultiBlog/tmpl/system_config.tmpl
-
-## plugins/MultiBlog/multiblog.pl
-
-## plugins/Textile/textile2.pl
-
-## plugins/WidgetManager/lib/WidgetManager/Plugin.pm
-
-## plugins/WidgetManager/lib/WidgetManager/CMS.pm
-
-## plugins/WidgetManager/default_widgets/search.tmpl
-
-## plugins/WidgetManager/default_widgets/subscribe_to_feed.tmpl
-
-## plugins/WidgetManager/default_widgets/tag_cloud_module.tmpl
-
-## plugins/WidgetManager/default_widgets/monthly_archive_dropdown.tmpl
-
-## plugins/WidgetManager/default_widgets/recent_posts.tmpl
-
-## plugins/WidgetManager/default_widgets/category_archive_list.tmpl
-
-## plugins/WidgetManager/default_widgets/calendar.tmpl
-
-## plugins/WidgetManager/default_widgets/recent_comments.tmpl
-
-## plugins/WidgetManager/default_widgets/technorati_search.tmpl
-
-## plugins/WidgetManager/default_widgets/monthly_archive_list.tmpl
-
-## plugins/WidgetManager/default_widgets/signin.tmpl
-
-## plugins/WidgetManager/default_widgets/widgets.cfg
-
-## plugins/WidgetManager/default_widgets/creative_commons.tmpl
-
-## plugins/WidgetManager/default_widgets/powered_by.tmpl
-
-## plugins/WidgetManager/tmpl/edit.tmpl
-
-## plugins/WidgetManager/tmpl/list.tmpl
-
-## plugins/WidgetManager/WidgetManager.pl
 
 );
 

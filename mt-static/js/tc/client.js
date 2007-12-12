@@ -1,8 +1,9 @@
 /*
-Copyright 2003-2007 Six Apart. This code cannot be redistributed without
-permission from www.sixapart.com.
-
-$Id$
+# Movable Type (r) Open Source (C) 2003-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 */
 
 
@@ -67,8 +68,12 @@ TC.Client.call = function( param )
                     param['error']( c, c.responseText, param );
                 else
                     alert( 'Error: [' + c.status + '] ' + c.responseText );
-            } else if( param['load'] )
-                param['load']( c, c.responseText, param );
+            } else if( param['load'] ) {
+                if ( c.responseText.charAt(0) == '/' )
+                    param['load']( c, c.responseText.substr( 2, ( c.responseText.length - 4 ) ), param );
+                else 
+                    param['load']( c, c.responseText, param );
+            }
         }
     };
     var contents = null;

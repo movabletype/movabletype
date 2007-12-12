@@ -1,8 +1,12 @@
-# Blog Cloner plugin for Movable Type
-# Author: Brad Choate, Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Blog Cloner plugin for Movable Type
+# Author: Brad Choate, Six Apart (http://www.sixapart.com)
+# Released under the Artistic and GPLv2 License
 
 package MT::Plugin::Cloner;
 
@@ -12,9 +16,9 @@ use base 'MT::Plugin';
 our $VERSION = '2.0';
 
 my $plugin = MT::Plugin::Cloner->new({
-    name        => "Weblog Cloner",
+    name        => "Blog Cloner",
     version     => $VERSION,
-    description => '<MT_TRANS phrase="Clones a weblog and all of its contents.">',
+    description => '<MT_TRANS phrase="Clones a blog and all of its contents.">',
     author_name => "Six Apart, Ltd.",
     author_link => 'http://www.sixapart.com/',
     registry => {

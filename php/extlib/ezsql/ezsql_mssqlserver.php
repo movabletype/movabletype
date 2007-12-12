@@ -1,4 +1,9 @@
 <?php
+# Movable Type (r) (C) 2001-2007 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
 
 	// ==================================================================
 	//  Author: Justin Vincent (justin@visunet.ie)
@@ -54,7 +59,7 @@
 			}
 
 
-			$this->select($dbname);
+			$this->select("[$dbname]");
 			
 		}
 
@@ -63,7 +68,10 @@
 
 		function select($db)
 		{
-			mssql_select_db ($db);
+			if ( FALSE == mssql_select_db ($db) ) {
+                $this->print_error("<ol><b>Error establishing a database connection!</b><li>Are you sure you have the correct user/password?<li>Are you sure that you have typed the correct hostname?<li>Are you sure that the database server is running?</ol>");
+                die;
+            }
 		}
 
 		// ====================================================================

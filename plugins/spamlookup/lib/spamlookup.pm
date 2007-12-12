@@ -1,9 +1,10 @@
-# SpamLookup plugin for Movable Type
-# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
-# Author: Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2006-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
 
 package spamlookup;
 
@@ -492,8 +493,15 @@ sub wordlist_match {
             my ($opt) = $re =~ m!/([^/]*)$!;
             $re =~ s!^/!!;
             $re =~ s!/[^/]*$!!;
-            $re = '(?'.$opt.':'.$re.')' if $opt;
-            $re = eval { qr/$re/ };
+            if ($opt) {
+                # increment any internal backreferences (\1),
+                # since we're wrapping the whole expression in
+                # a capturing group
+                $re =~ s/ \\(\d+) / '\\' . ($1 + 1) /gex;
+
+                $re = '(?' . $opt . ':' . $re . ')';
+            }
+            $re = eval { qr/($re)/ };
             $re = $re_opt . quotemeta($patt) . $re_opt if $@;
             if ($has_encode) {
                 push @matches, [ Encode::encode($enc, $patt),

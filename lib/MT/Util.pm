@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -18,7 +18,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  archive_file_for format_ts dirify remove_html
                  days_in wday_from_ts encode_js get_entry spam_protect
                  is_valid_email encode_php encode_url decode_url encode_xml
-                 decode_xml is_valid_url discover_tb convert_high_ascii 
+                 decode_xml is_valid_url is_url discover_tb convert_high_ascii 
                  mark_odd_rows dsa_verify perl_sha1_digest relative_date
                  perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8 
                  start_background_task launch_background_tasks substr_wref
@@ -440,6 +440,9 @@ sub encode_js {
     my($str) = @_;
     return '' unless defined $str;
     $str =~ s!\\!\\\\!g;
+    $str =~ s!>!\\>!g;
+    $str =~ s!<!\\<!g;
+    $str =~ s!(s)(cript)!$1\\$2!gi;
     $str =~ s!</!<\\/!g; # </ is supposed to be the end of Javascript (</script in most UA)
     $str =~ s!(['"])!\\$1!g;
     $str =~ s!\n!\\n!g;
@@ -872,9 +875,9 @@ sub make_unique_basename {
     my $i = 1;
     my $base_copy = $base;
 
-   my $class = ref $entry; 
+    my $class = ref $entry; 
     while ($class->count({ blog_id => $blog->id,
-                              basename => $base })) {
+                           basename => $base })) {
         $base = $base_copy . '_' . $i++;
     }
     $base;
@@ -900,7 +903,7 @@ sub make_unique_category_basename {
 
     my $cat_class = ref $cat;
     while ($cat_class->count({ blog_id => $cat->blog_id,
-                                 basename => $base })) {
+                               basename => $base })) {
         $base = $base_copy . '_' . $i++;
     }
     $base;
@@ -977,6 +980,12 @@ sub is_valid_url {
     } else {
         return '';
     }
+}
+
+sub is_url {
+    my($url) = @_;
+
+    return $url =~ /s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/;
 }
 
 sub discover_tb {
@@ -1764,6 +1773,80 @@ sub caturl {
     return $url;
 }
 
+sub get_newsbox_html {
+    my ($newsbox_url, $kind, $cached_only) = @_;
+
+    return unless $newsbox_url;
+    return unless is_url($newsbox_url);
+    return unless $kind && (length($kind) == 2);
+    $cached_only ||= 0;
+
+    my $NEWSCACHE_TIMEOUT = 60 * 60 * 24;
+    my $sess_class        = MT->model('session');
+    my ($news_object)     = ("");
+    my $retries           = 0;
+    $news_object = $sess_class->load( { id => $kind } );
+    my $refresh_news;
+    if ( $news_object
+        && ( $news_object->start() < ( time - $NEWSCACHE_TIMEOUT ) ) )
+    {
+        $refresh_news = 1;
+    }
+    my $last_available_news = MT::I18N::encode_text( $news_object->data(), 'utf-8', undef )
+      if $news_object;
+    return $last_available_news unless $refresh_news || !$news_object;
+    return q() if $cached_only;
+
+    # don't block the dashboard for more than 10 seconds to fetch
+    # the news feed...
+    my $ua = MT->new_ua( { timeout => 10 } );
+    return $last_available_news unless $ua;
+
+    my $req = new HTTP::Request( GET => $newsbox_url );
+    my $resp = $ua->request($req);
+    my $result = $resp->content();
+    if ( !$resp->is_success() || !$result ) {
+        # failure; either timeout or worse
+        # if news_object is available, bump up it's expiration
+        # so we don't attempt to hit the server again
+        # for an hour
+        if (! $news_object ) {
+            $news_object = MT::Session->new;
+            $news_object->set_values(
+                {
+                    id    => $kind,
+                    kind  => $kind,
+                    data  => ''
+                }
+            );
+            $last_available_news = '';
+            $refresh_news = 1;
+        }
+        if (defined($last_available_news) && $refresh_news) {
+            $news_object->start( ( time - $NEWSCACHE_TIMEOUT ) + 60 * 60 );
+            $news_object->save;
+        }
+        return $last_available_news;
+    }
+    require MT::Sanitize;
+
+    # allowed html
+    my $spec = 'a href,* style class id,ul,li,div,span,br';
+    $result = MT::Sanitize->sanitize( $result, $spec );
+    $news_object = MT::Session->new();
+    $news_object->set_values(
+        {
+            id    => $kind,
+            kind  => $kind,
+            start => time(),
+            data  => $result
+        }
+    );
+    $news_object->save();
+    $result = MT::I18N::encode_text( $result, 'utf-8', undef );
+    return $result;
+}
+
 ## FIXME
 # This method is to supplement CGI.pm's lack of read method.
 # Some XML parsers (XML::SAX::ExpatXS and XML::LibXML to name a few) 
@@ -1945,6 +2028,12 @@ digits. Use perl_sha1_digest to get a binary representation.
 Verifies that sig is a DSA signature of $msg (or $dgst) produced using
 the private half of the public key given in $key. Requires
 Math::BigInt but doesn't call for any non-perl libraries.
+
+=head2 get_newsbox_html($newsbox_url, $kind)
+
+Retrieves newsbox content from the specified URL.  Content retrieved is
+cached in MT::Session for 24 hours under the key specified in I<$kind>.
+Content will be sanitized based on pre-defined rules.
 
 =head1 AUTHOR & COPYRIGHTS
 

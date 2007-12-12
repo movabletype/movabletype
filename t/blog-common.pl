@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 use strict;
 use vars qw( $T_CFG );
 
@@ -28,12 +34,12 @@ $T_CFG = $ARGV[0] || $T_CFG;
 my $mt = MT->instance(Config => $T_CFG) or die "No MT object " . MT->errstr();
 
 my $driver = MT::Object->driver();
-my @tables = qw(author blog category comment entry fileinfo ipbanlist log notification permission placement plugindata session tbping template templatemap trackback objecttag group association);
-if ($driver->{dbh}) {
-    $driver->{dbh}->do("drop table mt_$_") foreach @tables;
-    if ($driver->{dbh}->isa('MT::ObjectDriver::DBI::postgres')) {
-        $driver->{dbh}->do("drop sequence mt_$_\_id") foreach @tables;
-    }
+my @tables = keys %{ $mt->registry("object_types") };
+@tables = grep { ! m/^plugin$/ } @tables;
+my $dbh = $driver->rw_handle;
+$dbh->do("drop table mt_$_") foreach @tables;
+if (MT->config('ObjectDriver') =~ m/(postgres|pg)/i) {
+    $dbh->do("drop sequence mt_$_\_id") foreach @tables;
 }
 require MT::Upgrade;
 MT::Upgrade->do_upgrade(Install => 1, App => __PACKAGE__);
@@ -216,6 +222,7 @@ $cat->description('bar');
 $cat->author_id($chuckd->id);
 $cat->parent(0);
 $cat->save or die "Couldn't save category record 1: ". $cat->errstr;
+my $parent_cat = $cat->id;
 
 $cat = new MT::Category;
 $cat->blog_id(1);
@@ -242,7 +249,7 @@ $cat->blog_id(1);
 $cat->label('subfoo');
 $cat->description('subcat');
 $cat->author_id($bobd->id);
-$cat->parent(1);
+$cat->parent($parent_cat);
 $cat->save or die "Couldn't save category record 3: ". $cat->errstr;
 
 require MT::Placement;

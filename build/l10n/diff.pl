@@ -1,3 +1,11 @@
+#!/usr/bin/perl
+
+# Movable Type (r) Open Source (C) 2005-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 use strict;
 use Getopt::Long;
 

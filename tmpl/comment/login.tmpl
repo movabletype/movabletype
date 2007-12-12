@@ -32,11 +32,11 @@
 
         <ul>
         <mt:if name="enabled_MovableType">
-        <li id="signin_option_mt"<mt:if name="enabled_MovableType"> class="choice_on"</mt:if>><div class="signin_logo"><img src="<$mt:var name="static_uri"$>images/comment/signin_mt.png" width="36" height="26"></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('mt');">Movable Type</a></div></li>
+        <li id="signin_option_mt"<mt:if name="enabled_MovableType"> class="choice_on"</mt:if>><div class="signin_logo"><a href="javascript:void(0)" onclick="signinToggle('mt');"><img src="<$mt:var name="static_uri"$>images/comment/signin_mt.png" width="36" height="26" border="0" alt="" /></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('mt');">Movable Type</a></div></li>
         </mt:if>
 
         <mt:loop name="auth_loop">
-        <li id="signin_option_<mt:var name="name">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><mt:if name="logo"><img src="<$mt:var name="static_uri"$><$mt:var name="logo"$>" width="36" height="26"></mt:if></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name">');"><mt:var name="name"></a></div></li>
+        <li id="signin_option_<mt:var name="name">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><mt:if name="logo"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name">');"><img src="<$mt:var name="static_uri"$><$mt:var name="logo"$>" width="36" height="26" border="0" alt="" /></a></mt:if></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name">');"><mt:var name="name"></a></div></li>
         </mt:loop>
 
         </ul>

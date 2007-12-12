@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 global $Lexicon_es;
 $Lexicon_es = array(
 ## php/lib/archive_lib.php
@@ -42,7 +48,7 @@ $Lexicon_es = array(
 ## php/lib/function.mtentryclasslabel.php
 	'page' => 'página',
 	'entry' => 'entrada',
-	'Entry' => 'Entrada'
+	'Entry' => 'Entrada',
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_es;

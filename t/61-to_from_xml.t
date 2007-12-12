@@ -57,7 +57,7 @@ MT::BackupRestore->backup(undef, $printer, sub {}, sub {}, sub { print $_[0], "\
 use IO::String;
 my $h = IO::String->new(\$backup_data);
 my (%objects, %deferred, @errors);
-MT::BackupRestore->restore_process_single_file($h, \%objects, \%deferred, \@errors, "4.0", sub { print $_[0], "\n"; });
+MT::BackupRestore->restore_process_single_file($h, \%objects, \%deferred, \@errors, "4.0", 0, sub { print $_[0], "\n"; });
 
 is(scalar(keys %deferred), 0);
 print join "\n", @errors;

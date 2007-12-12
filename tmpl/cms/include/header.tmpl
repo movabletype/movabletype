@@ -19,7 +19,7 @@
     <!--[if lte IE 6]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
     <![endif]-->
-<mt:if name="local_lang_id">
+<mt:if name="local_lang_id" ne="en-us">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version" escape="url">" />
 </mt:if>
 <mt:if name="mt_debug">
@@ -52,8 +52,8 @@
 </mt:setvarblock>
 <$mt:var name="html_head"$>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version" escape="url">"></script>
-<mt:if name="local_lang_id">
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version" escape="URL">" charset="utf-8"></script>
+<mt:if name="local_lang_id" ne="en-us">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version" escape="URL">" charset="utf-8"></script>
 </mt:if>
 <$mt:var name="js_include"$>
 </head>
@@ -62,8 +62,9 @@
 <div id="modal-mask" class="autolayout-height-parent modal-mask hidden">
     <div></div>
 </div>
-<mt:var name="html_body">
-<div id="container" class="<mt:if name="content_nav"> content-nav</mt:if><mt:if name="related_content"> related-content<mt:unless name="content_nav"> related-content-without-content-nav</mt:unless></mt:if><mt:if name="position_actions_bottom"> show-actions-bar-bottom</mt:if><mt:if name="position_actions_top"> show-actions-bar-top</mt:if>">
+<$mt:var name="html_body"$>
+<div id="container" class="<$mt:var name="screen_type" default="main-screen"$><mt:if name="listing_screen"> listing-screen</mt:if>">
+<div id="container-inner" class="<mt:if name="content_nav"> content-nav</mt:if><mt:if name="related_content"> related-content<mt:unless name="content_nav"> related-content-without-content-nav</mt:unless></mt:if><mt:if name="position_actions_bottom"> show-actions-bar-bottom</mt:if><mt:if name="position_actions_top"> show-actions-bar-top</mt:if>">
 
 <mt:setvarblock name="header_block">
 <div id="header"><div id="header-inner" class="pkg">
@@ -187,6 +188,7 @@
                 <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
             </mt:if>
                 <input type="hidden" name="do_search" value="1" />
+                <input type="hidden" name="quicksearch" value="1" />
                 <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
                 <span class="search-cap-left">&nbsp;</span>
                 <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
@@ -198,16 +200,21 @@
 </div></div><!-- /header -->
 </mt:setvarblock><mt:unless name="agent_ie"><$mt:var name="header_block"$><mt:else><mt:if name="force_header"><$mt:var name="header_block"$></mt:if></mt:unless>
 
-<div id="content"><div id="content-inner" class="inner pkg">
-    <div id="content-header"><div id="content-header-inner" class="inner">
-        <h2 id="page-title"><$mt:var name="page_title"$></h2>
-<mt:if name="content_header">
-        <$mt:var name="content_header"$>
+<div id="content-header"><div id="content-header-inner" class="inner pkg">
+<mt:if name="show_display_options_link">
+    <a href="javascript:void(0)" class="display-options-link" mt:command="open-flyout" mt:flyout="display-options-widget"><__trans phrase="Display Options"></a>
 </mt:if>
-    </div></div><!-- /content-header -->
+<mt:if name="object_nav"><$mt:var name="object_nav"$></mt:if>
+    <h2 id="page-title"><$mt:var name="page_title"$></h2>
+<mt:if name="content_header">
+    <$mt:var name="content_header"$>
+</mt:if>
+</div></div><!-- /content-header -->
+<div id="content"><div id="content-inner" class="inner pkg">
 <mt:if name="content_nav">
     <div id="content-nav">
         <$mt:var name="content_nav"$>
     </div>
 </mt:if>
+    <$mt:var name="form_header"$>
     <div id="main-content"><div id="main-content-inner" class="inner pkg">

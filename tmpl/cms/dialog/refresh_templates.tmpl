@@ -1,0 +1,92 @@
+<mt:var
+    name="page_title"
+    value="<__trans phrase="Refresh Blog Templates">">
+
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+<!--
+function enable(id) {
+    var el = getByID(id);
+    if (el)
+        el.disabled = false;
+}
+function disable(id) {
+    var el = getByID(id);
+    if (el)
+        el.disabled = true;
+}
+// -->
+</script>
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<form name="refresh_form" id="refresh_form" method="post" action="<mt:var name="script_url">" target="_top">
+    <input type="hidden" name="__mode" value="refresh_all_templates" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+
+    <mtapp:setting
+        id="refresh_templates"
+        label="<__trans phrase="Refresh templates">"
+        label_class="top-label"
+        show_label="0"
+        show_hint="1"
+        hint="<__trans phrase="Updates current templates while retaining any user-created or user-modified templates.">">
+        <div class="field-header">
+            <label for="refresh_type_refresh"><input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set')" /> <__trans phrase="Refresh templates"></label>
+        </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="clean_start"
+        label="<__trans phrase="Clean start">"
+        show_label="0"
+        show_hint="1"
+        hint="<__trans phrase="Deletes all existing templates and installs factory default template set.">"
+        label_class="top-label">
+
+        <div class="field-header">
+            <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set')" /> <__trans phrase="Clean start"></label>
+        </div>
+
+        <ul>
+            <mt:if name="template_set_index" gt="1">
+            <li><select id="template_set" name="template_set" size="1" disabled="disabled">
+                <mt:loop name="template_set_loop">
+                <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+                </mt:loop>
+            </select></li>
+            <mt:else>
+            <mt:loop name="template_set_loop">
+            <input type="hidden" name="template_set" value="<mt:var name="key" escape="html">" />
+            </mt:loop>
+            </mt:if>
+        </ul>
+
+    </mtapp:setting>
+
+    <div>
+    <input type="checkbox" id="backup" name="backup" value="1" checked="checked" />
+    <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
+    </div>
+
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions">
+            <button
+                type="submit"
+                accesskey="s"
+                class="primary-button"
+                ><__trans phrase="Continue"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+        </div>
+    </div>
+</form>
+
+<mt:include name="dialog/footer.tmpl">

@@ -65,6 +65,9 @@
         #set_static_uri_to {
             width: 100%;
         }
+        #set_static_file_to {
+            width: 100%;
+        }
         .no-static-path,
         fieldset {
 /*            border: 1px solid #C60;*/
@@ -96,7 +99,7 @@
         }
         .msg {
             margin: 0 0 10px 0;
-            padding: 16px 10px 16px 10px;
+            padding: 16px 10px 16px 46px;
         }
         .msg-error {
             background-color: #FF9;
@@ -164,6 +167,7 @@ window.onload = js_check;
 <form method="post">
     <input type="hidden" name="__mode" value="next_step" />
     <input type="hidden" name="step" value="pre_start" />
+    <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 
     <noscript>
         <p><__trans phrase="Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed."></p>
@@ -177,6 +181,14 @@ window.onload = js_check;
             can_close="0"
             class="error">
             <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to"$>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="file_invalid">
+        <mtapp:statusmsg
+            id="file_invalid"
+            can_close="0"
+            class="error">
+            <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to"$>">
         </mtapp:statusmsg>
     </mt:if>
 
@@ -200,6 +212,9 @@ window.onload = js_check;
             <mt:setvarblock name="hintfoo">
                 <__trans phrase="This URL path can be in the form of [_1] or simply [_2]" params="<strong>http://example.com/mt-static/</strong>%%<strong>/mt-static</strong>">
             </mt:setvarblock>
+            <mt:setvarblock name="hintfp">
+                <__trans phrase="This path can be in the form of [_1] or simply [_2]" params="<strong>http://example.com/mt-static/</strong>%%<strong>/mt-static</strong>">
+            </mt:setvarblock>
 
             <mtapp:setting
                 id="set_static_uri_to"
@@ -208,6 +223,15 @@ window.onload = js_check;
                 show_hint="1"
                 hint="$hintfoo">
                 <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="ti" value="<$mt:var name="set_static_uri_to" default="$static_uri"$>" size="">
+            </mtapp:setting>
+            <br/>
+            <mtapp:setting
+                id="set_static_file_to"
+                label="<__trans phrase="Static file path">"
+                label_class="top-label"
+                show_hint="1"
+                hint="$hintfp">
+                <input type="text" name="set_static_file_to" id="set_static_file_to" class="ti" value="<$mt:var name="set_static_file_to" default="$static_file_path"$>" size="">
             </mtapp:setting>
         </fieldset>
     </div>

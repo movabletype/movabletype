@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -127,7 +127,6 @@ sub as_sql {
     }
 
     $stmt->select($old_sel) if $old_sel;
-
     return $sql;
 }
 
@@ -135,75 +134,156 @@ sub _mk_term {
     my $stmt = shift;
     my ($col, $val) = @_;
 
-    ## Rearrange the value into an inclusive range.
-    my $range_incl = $stmt->range_incl;
-    my $range      = $stmt->range;
     $col =~ s/ \A [\w\.]+? \. //x;
-    ## We may recurse, so let us empty range inclusions in our scope.
-    local $range_incl->{$col} = $range_incl->{$col};
-    local $range->{$col}      = $range->{$col};
-    if($range_incl->{$col} || $range->{$col}) {
-        my ($lt, $gt) = $range_incl->{$col} ? ('<=', '>=') : ('<', '>');
-        my @vals;
 
-        my ($first_val, $last_val) = @$val;
-        ## Ignore first value if it's zero (right-bounded range, eg [0, 20050101000000] )
-        if($first_val) {
-            push @vals, { op => $gt, value => $first_val };
-        }
-        ## Ignore last value if it's not defined (left-bounded range, eg [20050101000000] )
-        if(defined $last_val) {
-            push @vals, { op => $lt, value => $last_val  };
-        }
-        if(2 == scalar @vals) {
-            $val = [ '-and', @vals ];
-        } else {
-            ($val) = @vals;
-        }
-
-        ## Because the new value is an arrayref, we're about to get
-        ## called recursively with each of those hashrefs inside it.
-        ## So ignore that we're using an inclusive range within this
-        ## call's scope.
-        undef ($range_incl->{$col} ? $range_incl->{$col} : $range->{$col});
+    ## Any last-minute property -> field name manipulation
+    if (my $m = $stmt->column_mutator) {
+        $col = $m->($col);
     }
 
-    ## Translate dates from app to database format.
-    if($stmt->date_columns->{$col}) {
-        my $realval = $val;
-        if(ref($val) eq 'HASH') {
-            $val->{value} = ts2db($val->{value});
-        } elsif(!ref($val)) {
-            $val = ts2db($val);
+    if (ref $val eq 'HASH') {
+        if (!exists $val->{op}) {
+            # hash-style value, containing hints on operation
+            if (exists $val->{like}) {
+                $val = { op => 'LIKE', value => $val->{like} };
+            }
+            elsif (exists $val->{not_null}) {
+                $val = \'is not null';
+            }
+            elsif (exists $val->{not}) {
+                my $v = $val->{not};
+                if ('ARRAY' eq ref($v)) {
+                    my $v = 'NOT IN (' . join(',', @$v) . ')';
+                    $val = \$v;
+                } elsif (ref $v) {
+                    die "Unsupported value in 'not' column";
+                } else {
+                    $val = { value => $v,
+                             op    => '!=' };
+                }
+            }
+            elsif (exists $val->{between}) {
+                my $low = @{$val->{between}}[0];
+                my $high = @{$val->{between}}[1];
+                if($stmt->date_columns->{$col}) {
+                    $low = ts2db($low);
+                    $high = ts2db($high);
+                }
+                $val = [ '-and', { op => '>=', value => $low },
+                    { op => '<=', value => $high } ];
+            }
+            elsif (exists $val->{'>='}) {
+                $val = { op => '>=', value => $val->{'>='} };
+            }
+            elsif (exists $val->{'>'}) {
+                $val = { op => '>', value => $val->{'>'} };
+            }
+            elsif (exists $val->{'<='}) {
+                $val = { op => '<=', value => $val->{'<='} };
+            }
+            elsif (exists $val->{'<'}) {
+                $val = { op => '<', value => $val->{'<'} };
+            }
+            elsif (exists $val->{'!='}) {
+                $val = { op => '!=', value => $val->{'!='} };
+            }
+        }
+
+        ## Translate dates from app to database format.
+        if(($stmt->date_columns->{$col}) && (ref($val) eq 'HASH')) {
+            my $v = $val->{value};
+            if (ref($v) eq 'ARRAY') {
+                $v->[$_] = ts2db($v->[$_]) for @$v;
+            }
+            else {
+                $val->{value} = ts2db($v);
+            }
         }
     }
+    else {
+        ## Rearrange the value into an inclusive range.
+        my $range_incl = $stmt->range_incl;
+        my $range      = $stmt->range;
 
-    if($stmt->not->{$col}) {
-        if ('ARRAY' eq ref($val)) {
-            my $v = 'NOT IN (' . join(',', @$val) . ')';
-            $val = \$v;
-        } elsif (ref $val) {
-            die "Unsupported value in 'not' column";
-        } else {
-            $val = { value => $val,
-                     op    => '!=', };
+        ## We may recurse, so let us empty range inclusions in our scope.
+        local $range_incl->{$col} = $range_incl->{$col};
+        local $range->{$col}      = $range->{$col};
+        if ($range_incl->{$col} || $range->{$col}) {
+            my ($lt, $gt) = $range_incl->{$col} ? ('<=', '>=') : ('<', '>');
+            my @vals;
+
+            my ($first_val, $last_val) = @$val;
+            if ($stmt->date_columns->{$col}) {
+                $first_val = ts2db($first_val) if defined $first_val;
+                $last_val = ts2db($last_val) if defined $last_val;
+            }
+
+            ## Ignore first value if it's undef (right-bounded range, eg [undef, 20050101000000] )
+            if (defined $first_val) {
+                push @vals, { op => $gt, value => $first_val };
+            }
+            ## Ignore last value if it's defined (left-bounded range, eg [20050101000000] )
+            if (defined $last_val) {
+                push @vals, { op => $lt, value => $last_val  };
+            }
+            if (2 == scalar @vals) {
+                $val = [ '-and', @vals ];
+            }
+            else {
+                ($val) = @vals;
+            }
+
+            ## Because the new value is an arrayref, we're about to get
+            ## called recursively with each of those hashrefs inside it.
+            ## So ignore that we're using an inclusive range within this
+            ## call's scope.
+            undef ($range_incl->{$col} ? $range_incl->{$col} : $range->{$col});
         }
-    }
 
-    if($stmt->null->{$col}) {
-        $val = \'is null';
-    }
+        ## Translate dates from app to database format.
+        if ($stmt->date_columns->{$col}) {
+            if (ref($val) eq 'HASH') {
+                my $v = $val->{value};
+                if (ref($v) eq 'ARRAY') {
+                    $v->[$_] = ts2db($v->[$_]) for @$v;
+                }
+                else {
+                    $val->{value} = ts2db($v);
+                }
+            } elsif (!ref($val)) {
+                $val = ts2db($val);
+            }
+        }
 
-    if($stmt->not_null->{$col}) {
-        $val = \'is not null';
-    }
+        if ($stmt->not->{$col}) {
+            if ('ARRAY' eq ref($val)) {
+                my $v = 'NOT IN (' . join(',', @$val) . ')';
+                $val = \$v;
+            }
+            elsif (ref $val) {
+                die "Unsupported value in 'not' column";
+            }
+            else {
+                $val = { value => $val,
+                         op    => '!=', };
+            }
+        }
 
-    if($stmt->like->{$col}) {
-        if(ref($val) eq 'HASH') {
-            $val->{op} = 'LIKE';
-        } elsif(!ref($val)) {
-            $val = { op    => 'LIKE',
-                     value => $val,   };
+        if ($stmt->null->{$col}) {
+            $val = \'is null';
+        }
+
+        if ($stmt->not_null->{$col}) {
+            $val = \'is not null';
+        }
+
+        if ($stmt->like->{$col}) {
+            if (ref($val) eq 'HASH') {
+                $val->{op} = 'LIKE';
+            } elsif (!ref($val)) {
+                $val = { op    => 'LIKE',
+                         value => $val,   };
+            }
         }
     }
 
@@ -211,8 +291,11 @@ sub _mk_term {
     if(my $transformed_column = $stmt->transform->{$col}) {
         $col = $transformed_column;
     }
-    
-    return $stmt->SUPER::_mk_term($col, $val);
+
+    ## Prevent D::OD from re-mutating, since we've done it here
+    local $stmt->{column_mutator} = undef;
+
+    $stmt->SUPER::_mk_term($col, $val);
 }
 
 sub make_subselect {

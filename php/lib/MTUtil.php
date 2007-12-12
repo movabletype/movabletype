@@ -1,7 +1,7 @@
 <?php
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -797,6 +797,10 @@ function decode_xml($str) {
 function encode_js($str) {
     if (!isset($str)) return '';
     $str = preg_replace('!\\\\!', '\\\\', $str);
+    $str = preg_replace('!>!', '\\>', $str);
+    $str = preg_replace('!<!', '\\<', $str);
+    $str = preg_replace('!(s)(cript)!i', '$1\\\\$2', $str);
+    $str = preg_replace('!</!', '<\\/', $str); # </ is supposed to be the end of Javascript (</script in most UA)
     $str = preg_replace('!\'!', '\\\'', $str);
     $str = preg_replace('!"!', '\\"', $str);
     $str = preg_replace('!\n!', '\\n', $str);
@@ -815,6 +819,17 @@ function gmtime($ts = null) {
     $tsa = localtime($ts);
     $tsa[8] = 0;
     return $tsa;
+}
+
+function is_hash($array) {
+    if ( is_array($array) ) {
+        if ( array_keys($array) === range(0, count($array) - 1) ) {
+            // 0,1,2,3... must be an array
+            return false;
+        }
+        return true;
+    }
+    return false;
 }
 
 function offset_time_list($ts, $blog = null, $dir = null) {
@@ -1498,4 +1513,44 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
     }
     return $fn;
 }
+
+function _math_operation($op, $lvalue, $rvalue) {
+    if (!preg_match('/^\-?[\d\.]+$/', $lvalue))
+        return;
+    if ( isset($rvalue) && !preg_match('/^\-?[\d\.]+$/', $rvalue))
+        return;
+    if ( !isset($rvalue)
+      && $op != 'inc' && $op != 'dec' && $op != '++' && $op != '--' )
+        return;
+    if ( ( '+' == $op ) || ( 'add' == $op ) ) {
+        return $lvalue + $rvalue;
+    }
+    elseif ( ( '++' == $op ) || ( 'inc' == $op ) ) {
+        return $lvalue + 1;
+    }
+    elseif ( ( '-' == $op ) || ( 'sub' == $op ) ) {
+        return $lvalue - $rvalue;
+    }
+    elseif ( ( '--' == $op ) || ( 'dec' == $op ) ) {
+        return $lvalue - 1;
+    }
+    elseif ( ( '*' == $op ) || ( 'mul' == $op ) ) {
+        return $lvalue * $rvalue;
+    }
+    elseif ( ( '/' == $op ) || ( 'div' == $op ) ) {
+        if ( $rvalue == 0 )
+            return;
+        return $lvalue / $rvalue;
+    }
+    elseif ( ( '%' == $op ) || ( 'mod' == $op ) ) {
+        // to be in line with perl equivalent
+        $lvalue = floor($lvalue);
+        $rvalue = floor($rvalue);
+        if ( $rvalue == 0 )
+            return;
+        return $lvalue % $rvalue;
+    }
+    return;
+}
+
 ?>

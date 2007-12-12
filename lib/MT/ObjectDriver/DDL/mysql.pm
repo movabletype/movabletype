@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -13,6 +13,62 @@ use base qw( MT::ObjectDriver::DDL );
 sub can_add_column { 1 }
 sub can_drop_column { 1 }
 sub can_alter_column { 1 }
+
+sub index_defs {
+    my $ddl = shift;
+    my ($class) = @_;
+    my $driver = $class->driver;
+    my $dbh = $driver->r_handle;
+    my $field_prefix = $class->datasource;
+    my $table_name = $class->table_name;
+    my $sth = $dbh->prepare('SHOW INDEX FROM ' . $table_name)
+        or return undef;
+    $sth->execute or return undef;
+
+    my $bags = {};
+    my $unique = {};
+    while (my $row = $sth->fetchrow_hashref) {
+        my $key = $row->{'Key_name'};
+        next unless $key =~ m/^(mt_)?\Q$field_prefix\E_/;
+        $key = 'mt_' . $key unless $key =~ m/^mt_/;
+
+        my $type = $row->{'Index_type'};
+
+        # ignore fulltext or other unrecognized indexes for now
+        next unless $type eq 'BTREE';
+
+        my $seq = $row->{'Seq_in_index'};
+        my $col = $row->{'Column_name'};
+        my $non_unique = $row->{'Non_unique'};
+        my $null = $row->{'Null'};
+        $key =~ s/^mt_\Q$field_prefix\E_//;
+        $col =~ s/^\Q$field_prefix\E_//;
+        $unique->{$key} = 1 unless $non_unique;
+        my $idx_bag = $bags->{$key} ||= [];
+        $idx_bag->[$seq - 1] = $col;
+    }
+    $sth->finish;
+    if (!%$bags) {
+        return undef;
+    }
+
+    my $defs = {};
+    foreach my $key (keys %$bags) {
+        my $cols = $bags->{$key};
+        if ($unique->{$key}) {
+            $defs->{$key} = { columns => $cols, unique => 1 };
+        }
+        else {
+            if ((@$cols == 1) && ($key eq $cols->[0])) {
+                $defs->{$key} = 1;
+            } else {
+                $defs->{$key} = { columns => $cols };
+            }
+        }
+    }
+
+    return $defs;
+}
 
 sub column_defs {
     my $ddl = shift; 

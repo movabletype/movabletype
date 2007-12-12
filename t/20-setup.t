@@ -8,7 +8,7 @@ use lib 'extlib';
 
 # $Id$
 
-use Test::More tests => 45;
+use Test::More tests => 53;
 
 use MT;
 use MT::Author;

@@ -1,5 +1,6 @@
-# Copyright 2005-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2005-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -40,10 +41,15 @@ sub listify {
 sub view {
     my $app     = shift;
     my $blog_id = $app->param('blog_id');
-    return $app->errtrans("Invalid request") unless $blog_id;
+    $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
     my $blog = MT::Blog->load($blog_id);
     return $app->errtrans("Invalid request") unless $blog;
+
+    my $static_path = $app->static_file_path;
+    if (! -d $static_path ) {
+        return $app->errtrans("Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue.");
+    }
 
     my $themeroot =
       File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
@@ -150,8 +156,13 @@ sub apply {
     return $app->json_error($app->translate("Invalid request"))
       unless $blog_id && $url && $tmpl;
 
+    my $static_path = $app->static_file_path;
+    if (! -d $static_path ) {
+        return $app->json_error($app->translate("Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue."));
+    }
+
     my $themeroot =
-      File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
+      File::Spec->catdir( $static_path, 'support', 'themes' );
     my $webthemeroot = $app->static_path . 'support/themes/';
     my $mtthemeroot  = $app->static_path . 'themes/';
     my $mtthemebase  = $app->static_path . 'themes-base/';

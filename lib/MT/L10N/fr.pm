@@ -1,5 +1,6 @@
-# Copyright 2003-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -58,8 +59,8 @@ use vars qw( @ISA %Lexicon );
 	'Entry' => 'Note',
 
 ## default_templates/notify-entry.mtml
-	'A new [_3] entitled \'[_1]\' has been published to [_2].' => 'Une nouvelle [_3] intitulée \'[_1]\' a été publiée sur [_2].',
-	'View [_1]:' => 'Voir  [_1]',
+	'A new [lc,_3] entitled \'[_1]\' has been published to [_2].' => 'Une nouvelle [lc,_3] intitulée \'[_1]\' a été publiée sur [_2].',
+	'View [lc,_1]:' => 'Voir  [lc,_1]',
 	'[_1] Title: [_2]' => 'Titre du [_1] : [_2]',
 	'Publish Date: [_1]' => 'Date de publication : [_1]',
 	'Message from Sender:' => 'Message de l\'expéditeur :',
@@ -1841,14 +1842,14 @@ use vars qw( @ISA %Lexicon );
 	'comment' => 'commentaire',
 	'comments' => 'commentaires',
 	'to publish' => 'pour publier',
-	'Publish selected [_1] (a)' => 'Publier le [_1] sélectionné (a)',
-	'Delete selected [_1] (x)' => 'Effacer [_1] sélectionné (x)',
-	'Report selected [_1] as Spam (j)' => 'Notifier le [_1] sélectionné comme spam (j)',
+	'Publish selected [lc,_1] (a)' => 'Publier le [lc,_1] sélectionné (a)',
+	'Delete selected [lc,_1] (x)' => 'Effacer [lc,_1] sélectionné (x)',
+	'Report selected [lc,_1] as Spam (j)' => 'Notifier le [lc,_1] sélectionné comme spam (j)',
 	'Spam' => 'Spam',
-	'Report selected [_1] as Not Spam and Publish (j)' => 'Notifier le [_1] sélectionné comme n\'étant pas du spam et le publier (j)',
+	'Report selected [lc,_1] as Not Spam and Publish (j)' => 'Notifier le [lc,_1] sélectionné comme n\'étant pas du spam et le publier (j)',
 	'Not Spam' => 'Non-spam',
 	'Are you sure you want to remove all comments reported as spam?' => 'Êtes-vous sûr(e) de vouloir supprimer tous les commentaires notifiés comme spam ?',
-	'Deletes all [_1] reported as Spam' => 'Efface tous les [_1] notifiés comme spam',
+	'Deletes all [lc,_1] reported as Spam' => 'Efface tous les [lc,_1] notifiés comme spam',
 	'Empty' => 'Vide',
 	'Ban This IP' => 'Bannir cette adresse IP',
 	'Status' => 'Statut',
@@ -1860,8 +1861,7 @@ use vars qw( @ISA %Lexicon );
 	'Only show pending comments' => 'N\'afficher que les commentaires en attente',
 	'Pending' => 'En attente',
 	'Edit this comment' => 'Editer ce commentaire',
-	'(1 reply)' => '(1 réponse)',
-	'([_1] replies)' => '([_1] réponses)',
+	'([quant,_1,reply,replies])' => '([quant,_1,réponse,réponses])',
 	'Reply' => 'Répondre',
 	'Trusted' => 'Fiable',
 	'Blocked' => 'Bloqués',
@@ -1869,7 +1869,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit this [_1] commenter' => 'Modifier l\'auteur de commentaires de cette [_1]',
 	'Search for comments by this commenter' => 'Chercher les commentaires de cet auteur de commentaires',
 	'Anonymous' => 'Anonyme',
-	'View this [_1]' => 'Voir ce(tte) [_1]',
+	'View this [lc,_1]' => 'Voir ce(tte) [lc,_1]',
 	'Search for all comments from this IP address' => 'Rechercher tous les commentaires associés à cette adresse IP',
 
 ## tmpl/cms/include/member_table.tmpl
@@ -1986,21 +1986,21 @@ use vars qw( @ISA %Lexicon );
 	'View the [_1] for this TrackBack' => 'Voir [_1] pour ce trackback',
 
 ## tmpl/cms/include/entry_table.tmpl
-	'Save these [_1] (s)' => 'Enregistrer ces [_1] (s)',
+	'Save these [lc,_1] (s)' => 'Enregistrer ces [lc,_1] (s)',
 	'to republish' => 'pour republier',
-	'Republish selected [_1] (r)' => 'Republier les [_1] sélectionnées',
+	'Republish selected [lc,_1] (r)' => 'Republier les [lc,_1] sélectionnées',
 	'Republish' => 'Republier',
 	'Last Modified' => 'Dernière modification',
 	'Created' => 'Créé',
 	'Unpublished (Draft)' => 'Non publié (Brouillon)',
 	'Unpublished (Review)' => 'Non publié (Vérification)',
 	'Scheduled' => 'Planifié',
-	'Only show unpublished [_1]' => 'Afficher uniquement les [_1] non publiées.',
-	'Only show published [_1]' => 'Afficher uniquement les [_1] publiés',
-	'Only show [_1] for review' => 'Afficher uniquement les [_1] à vérifier',
-	'Only show scheduled [_1]' => 'Afficher uniquement les [_1] programmées',
-	'Edit [_1]' => 'Modifier une [_1]',
-	'View [_1]' => 'Voir [_1]',
+	'Only show unpublished [lc,_1]' => 'Afficher uniquement les [lc,_1] non publiées.',
+	'Only show published [lc,_1]' => 'Afficher uniquement les [lc,_1] publiés',
+	'Only show [lc,_1] for review' => 'Afficher uniquement les [lc,_1] à vérifier',
+	'Only show scheduled [lc,_1]' => 'Afficher uniquement les [lc,_1] programmées',
+	'Edit [lc,_1]' => 'Modifier une [lc,_1]',
+	'View [lc,_1]' => 'Voir [lc,_1]',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2416,7 +2416,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenting' => 'Commenter',
 	'Duplicate Roles' => 'Dupliquer les rôles',
 	'These roles have the same privileges as this role' => 'Ces rôles ont les même privilèges que ce rôle',
-	'Save changes to this [_1] (s)' => 'Enregistrer les modifications de ce [_1] (s)',
+	'Save changes to this [lc,_1] (s)' => 'Enregistrer les modifications de ce [lc,_1] (s)',
 
 ## tmpl/cms/cfg_plugin.tmpl
 	'System Plugin Settings' => 'Paramètres du système de plugins',
@@ -2485,7 +2485,7 @@ use vars qw( @ISA %Lexicon );
 	'Save (s)' => 'Enregistrer (s)',
 	'Save and Publish this template (r)' => 'Enregistrer et publier ce gabarit (r)',
 	'Save &amp; Publish' => 'Enregistrer &amp; publier',
-	'You have unsaved changes to your [_1] that will be lost.' => 'Vous avez des modifications non sauvegardées dans votre [_1] qui seront perdues.',
+	'You have unsaved changes to your [lc,_1] that will be lost.' => 'Vous avez des modifications non sauvegardées dans votre [lc,_1] qui seront perdues.',
 	'You must set the Template Name.' => 'Vous devez mettre un nom de gabarit.',
 	'You must set the template Output File.' => 'Vous devez configurer le fichier de sortie du gabarit.',
 	'Please wait...' => 'Merci de patienter...',
@@ -2553,7 +2553,7 @@ use vars qw( @ISA %Lexicon );
 	'All [_1]' => 'Tous(tes) les [_1]',
 	'change' => 'modifier',
 	'[_1] where [_2] is [_3]' => '[_1] où [_2] est [_3]',
-	'Show only [_1] where' => 'Afficher uniquement les [_1] où',
+	'Show only [lc,_1] where' => 'Afficher uniquement les [lc,_1] où',
 	'status' => 'le statut',
 	'tag (exact match)' => 'le tag (exact)',
 	'tag (fuzzy match)' => 'le tag (fuzzy match)',
@@ -2572,13 +2572,13 @@ use vars qw( @ISA %Lexicon );
 	'Comments from [_1]' => 'Commentaires de [_1]',
 	'commenter' => 'l\'auteur de commentaires',
 	'commenters' => 'Auteurs de commentaire',
-	'Trust [_1] (t)' => 'Marquer comme fiable [_1] (t)',
+	'Trust [lc,_1] (t)' => 'Marquer comme fiable [lc,_1] (t)',
 	'Trust' => 'Fiable',
-	'Untrust [_1] (t)' => 'Marquer comme non-fiable [_1] (t)',
+	'Untrust [lc,_1] (t)' => 'Marquer comme non-fiable [lc,_1] (t)',
 	'Untrust' => 'Non Fiable',
-	'Ban [_1] (b)' => 'Bannir [_1] (b)',
+	'Ban [lc,_1] (b)' => 'Bannir [lc,_1] (b)',
 	'Ban' => 'Bannir',
-	'Unban [_1] (b)' => 'Ne pas bannir [_1] (b)',
+	'Unban [lc,_1] (b)' => 'Ne pas bannir [lc,_1] (b)',
 	'Unban' => 'Non banni',
 	'The Name of the commenter' => 'Le nom de l\'auteur de commentaires',
 	'View all comments with this name' => 'Afficher tous les commentaires associés à ce nom',
@@ -2668,7 +2668,7 @@ use vars qw( @ISA %Lexicon );
 	'folder' => 'Répertoire',
 	'folders' => 'Répertoires',
 	'categories' => 'Catégories',
-	'Create [_1]' => 'Créer une [_1]',
+	'Create [lc,_1]' => 'Créer une [lc,_1]',
 	'Your [_1] has been saved.' => 'Votre [_1] a été enregistrée.',
 	'One or more errors occurred when sending update pings or TrackBacks.' => 'Erreur lors de l\'envoi des pings ou des trackbacks.',
 	'_USAGE_VIEW_LOG' => 'L\'erreur est enregistrée dans le <a href="[_1]">journal (logs)</a>.',
@@ -2696,13 +2696,12 @@ use vars qw( @ISA %Lexicon );
 	'Publish Date' => 'Date de publication',
 	'Make primary' => 'Rendre principal',
 	'Add sub category' => 'Ajouter une sous-catégorie',
-	'Add [_1] name' => 'Ajouter le nom [_1]',
-	'Add new parent [_1]' => 'Ajouter un nouveau [_1] parent',
+	'Add [lc,_1] name' => 'Ajouter le nom [lc,_1]',
+	'Add new parent [lc,_1]' => 'Ajouter un nouveau [lc,_1] parent',
 	'Add new' => 'Créer',
-	'Save this [_1] (s)' => 'Enregistrer cette [_1] (s)',
-	'Preview this [_1] (v)' => 'Pré visualiser ce [_1] (v)',
-	'Delete this [_1] (v)' => 'Effacer ce [_1] (v)',
-	'Share this [_1]' => 'Partager cette [_1]',
+	'Save this [lc,_1] (s)' => 'Enregistrer cette [lc,_1] (s)',
+	'Preview this [lc,_1] (v)' => 'Pré visualiser ce [lc,_1] (v)',
+	'Share this [lc,_1]' => 'Partager cette [lc,_1]',
 	'View published [_1]' => 'Voir la [_1] publié',
 	'&laquo; Previous' => '&laquo; Précédent',
 	'Next &raquo;' => 'Suivant &raquo;',
@@ -2712,10 +2711,10 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(liste délimitée par virgule)',
 	'(space-delimited list)' => '(liste délimitée par espace)',
 	'(delimited by \'[_1]\')' => '(délimitée par \'[_1]\')',
-	'Change [_1]' => 'Modifier le [_1]',
-	'Add [_1]' => 'Ajouter une [_1]',
+	'Change [lc,_1]' => 'Modifier le [lc,_1]',
+	'Add [lc,_1]' => 'Ajouter une [lc,_1]',
 	'Unpublished' => 'Non publié',
-	'You must configure blog before you can publish this [_1].' => 'Vous devez configurer votre blog avant de pouvoir publier ce [_1].',
+	'You must configure this blog before you can publish this [lc,_1].' => 'Vous devez configurer votre blog avant de pouvoir publier ce [lc,_1].',
 	'Select entry date' => 'Choisir la date de la note',
 	'Unlock this entry&rsquo;s output filename for editing' => 'Déverrouiller le nom de fichier de la note pour le modifier',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => 'ATTENTION : Editer le nom de base manuellement peut créer des conflits avec d\'autres notes.',
@@ -3025,13 +3024,13 @@ use vars qw( @ISA %Lexicon );
 	'System Permissions' => 'Autorisations système',
 	'Options' => 'Options',
 	'Create personal blog for user' => 'Créer le blog personnel de l\'utilisateur',
-	'Create [_1] (s)' => 'Créer [_1] (s)',
+	'Create [lc,_1] (s)' => 'Créer [lc,_1] (s)',
 	'_USAGE_PASSWORD_RESET' => 'Ci-dessous, vous pouvez ré-initialiser le mot de passe pour cet utilisateur. Si vous faites cela un mot de passe généré aléatoirement sera créé et envoyé par e-mail à : [_1].',
 	'Initiate Password Recovery' => 'Récupérer le mot de passe',
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'Ce commentaire a été approuvé.',
-	'Delete this [_1] (x)' => 'Effacer cet [_1] (x)',
+	'Delete this [lc,_1] (x)' => 'Effacer cet [lc,_1] (x)',
 	'Previous Comment' => 'Commentaire précédent',
 	'Next Comment' => 'Commentaire suivant',
 	'Manage Comments' => 'Gérer les commentaires',
@@ -3234,12 +3233,12 @@ use vars qw( @ISA %Lexicon );
 	'Cancel (c)' => 'Annuler (c)',
 
 ## tmpl/cms/list_folder.tmpl
-	'Your [_1] changes and additions have been made.' => 'Les modifications ont été enregistrées.',
-	'You have successfully deleted the selected [_1].' => 'Vous avez supprimé avec succès les [_1] sélectionné(e)s.',
-	'Create top level [_1]' => 'Créer un(e) [_1] à la racine',
+	'Your [lc,_1] changes and additions have been made.' => 'Les modifications ont été enregistrées.',
+	'You have successfully deleted the selected [lc,_1].' => 'Vous avez supprimé avec succès les [lc,_1] sélectionné(e)s.',
+	'Create top level [lc,_1]' => 'Créer un(e) [lc,_1] à la racine',
 	'New Parent [_1]' => 'Nouveau [_1] parent',
 	'Top Level' => 'Niveau racine',
-	'Move [_1]' => 'Déplacer [_1]',
+	'Move [lc,_1]' => 'Déplacer [lc,_1]',
 	'Move' => 'Déplacer',
 	'[quant,_1,page,pages]' => '[quant,_1,page,pages]',
 
@@ -3412,7 +3411,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,result,results] found' => '[quant,_1,résultat trouvé,résultats trouvés]',
 
 ## tmpl/cms/preview_strip.tmpl
-	'You are previewing the [_1] titled &ldquo;[_2]&rdquo;' => 'Vous pré-visualisez la [_1] titrée &ldquo;[_2]&rdquo;',
+	'You are previewing the [lc,_1] titled &ldquo;[_2]&rdquo;' => 'Vous pré-visualisez la [lc,_1] titrée &ldquo;[_2]&rdquo;',
 
 ## tmpl/cms/edit_ping.tmpl
 	'The TrackBack has been approved.' => 'Le trackback a été approuvé.',
@@ -4052,9 +4051,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/tmpl/include/group_table.tmpl
 	'group' => 'groupe',
 	'groups' => 'Groupes',
-	'Enable selected [_1] (e)' => 'Activer [_1] sélectionné (e)',
-	'Disable selected [_1] (d)' => 'Désactiver [_1] sélectionné (d)',
-	'Remove selected [_1] (d)' => 'Supprimer [_1] sélectionné (d)',
+	'Enable selected [lc,_1] (e)' => 'Activer [lc,_1] sélectionné (e)',
+	'Disable selected [lc,_1] (d)' => 'Désactiver [lc,_1] sélectionné (d)',
+	'Remove selected [lc,_1] (d)' => 'Supprimer [lc,_1] sélectionné (d)',
 	'Only show enabled groups' => 'Afficher uniquement les groupes activés',
 	'Only show disabled groups' => 'Afficher uniquement les groupes désactivés',
 

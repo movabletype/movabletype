@@ -24,6 +24,8 @@ sub work_safely {
 
     $job->debug("Working on $class ...");
     $job->set_as_current;
+    $client->start_scoreboard;
+
     eval {
         $res = $class->work($job);
     };
@@ -36,6 +38,8 @@ sub work_safely {
     unless ($cjob->did_something) {
         $cjob->failed('Job did not explicitly complete, fail, or get replaced');
     }
+
+    $client->end_scoreboard;
 
     # FIXME: this return value is kinda useless/undefined.  should we even return anything?  any callers? -brad
     return $res;

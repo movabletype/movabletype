@@ -1,7 +1,7 @@
 <?php
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -1878,6 +1878,31 @@ class MTDatabaseBase extends ezsql {
         return $count;
     }
 
+    function author_entry_count($args) {
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and entry_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'and entry_blog_id = ' . $blog_id;
+        }
+        if (isset($args['author_id'])) {
+            $author_id = intval($args['author_id']);
+            $author_filter = " and entry_author_id = $author_id";
+        }
+        if (isset($args['class'])) {
+            $class = $args['class'];
+        }
+        $count = $this->get_var("
+          select count(*)
+            from mt_entry
+            where entry_status = 2
+            and entry_class='$class'
+            $blog_filter
+            $author_filter
+            ");
+        return $count;
+    }
+
     function &fetch_placements($args) {
         $category_id_list = $args['category_id'];
         $id_list = '';
@@ -1996,6 +2021,7 @@ class MTDatabaseBase extends ezsql {
 
         if ($entry_id) {
             $entry_filter = " and comment_entry_id = $entry_id";
+            $entry_join = "join mt_entry on entry_id = comment_entry_id";
         } else {
             $entry_join = "join mt_entry on entry_id = comment_entry_id and entry_status = 2";
         }
@@ -2012,6 +2038,8 @@ class MTDatabaseBase extends ezsql {
         $offset = 0;
         if (isset($args['lastn']))
             $limit = $args['lastn'];
+        if (isset($args['limit']))
+            $limit = $args['limit'];
         if (isset($args['offset']))
             $limit = $args['offset'];
         if (count($filters)) {
@@ -2022,7 +2050,8 @@ class MTDatabaseBase extends ezsql {
 
         $sql = "
             select $distinct
-                   mt_comment.*
+                   mt_comment.*,
+                   mt_entry.*
               from mt_comment
                    $entry_join
                    $join_score
@@ -2032,7 +2061,6 @@ class MTDatabaseBase extends ezsql {
              order by comment_created_on $order
                    <LIMIT>";
         $sql = $this->apply_limit_sql($sql, $limit, $offset);
-
         # Fetch resultset
         $result = $this->query_start($sql);
         if (!$result) return null;
@@ -2100,7 +2128,7 @@ class MTDatabaseBase extends ezsql {
             $asc_created_on = create_function('$a,$b', 'return strcmp($a["comment_created_on"], $b["comment_created_on"]);');
             usort($comments, $asc_created_on);
         }
-  
+
         return $comments;
     }
 
@@ -2552,6 +2580,8 @@ class MTDatabaseBase extends ezsql {
         $offset = 0;
         if (isset($args['lastn']))
             $limit = $args['lastn'];
+        if (isset($args['limit']))
+            $limit = $args['limit'];
         if (isset($args['offset']))
             $offset = $args['offset'];
 
@@ -2819,19 +2849,36 @@ class MTDatabaseBase extends ezsql {
 
     function include_exclude_blogs(&$args) {
 
-        if (isset($args[blog_ids]) || isset($args[include_blogs])) {
+        if (isset($args['blog_ids']) || isset($args['include_blogs'])) {
             // The following are aliased
-            $args[blog_ids] and $args[include_blogs] = $args[blog_ids];
-            $attr = $args[include_blogs];
-            unset($args[blog_ids]);
+            $args['blog_ids'] and $args['include_blogs'] = $args['blog_ids'];
+            $attr = $args['include_blogs'];
+            unset($args['blog_ids']);
             $is_excluded = 0;
-        } elseif (isset($args[exclude_blogs])) {            
+        } elseif (isset($args['exclude_blogs'])) {            
             $attr = $args[exclude_blogs];
             $is_excluded = 1;
         } else {
             return;
         }
-        $blog_ids = strtolower($blog_ids);
+
+        if (preg_match('/-/', $attr)) {
+            # parse range blog ids out
+            $list = preg_split('/\s*,\s*/', $attr);
+            $attr = '';
+            foreach ($list as $item) {
+                if (preg_match('/(\d+)-(\d+)/', $item, $matches)) {
+                    for ($i = $matches[1]; $i <= $matches[2]; $i++) {
+                        if ($attr != '') $attr .= ',';
+                        $attr .= $i;
+                    }
+                } else {
+                    if ($attr != '') $attr .= ',';
+                    $attr .= $item;
+                }
+            }
+        }
+
         $blog_ids = preg_split('/\s*,\s*/', 
                                 $attr, 
                                 -1, PREG_SPLIT_NO_EMPTY);

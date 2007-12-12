@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_resource_mt_source($tpl_name, &$tpl_source, &$ctx) {
     $blog_id = $ctx->stash('blog_id');
     if (intval($tpl_name) > 0) {

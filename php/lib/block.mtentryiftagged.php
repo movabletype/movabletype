@@ -1,11 +1,18 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $entry = $ctx->stash('entry');
         if ($entry) {
             $entry_id = $entry['entry_id'];
             $blog_id = $entry['entry_blog_id'];
-            $tag = $args['tag'];
+            $tag = $args['name'];
+            $tag or $tag = $args['tag'];
             $targs = array('entry_id' => $entry_id, 'blog_id' => $blog_id);
             if ($tag && (substr($tag,0,1) == '@')) {
                 $targs['include_private'] = 1;

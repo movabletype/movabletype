@@ -1,9 +1,11 @@
-# Copyright 2003-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::L10N::ja;
+
 use strict;
 use MT::L10N;
 use MT::L10N::en_us;
@@ -126,8 +128,8 @@ use vars qw( @ISA %Lexicon );
 	'Return to the <a href="[_1]">original entry</a>.' => '<a href="[_1]">元のブログ記事</a>に戻る',
 
 ## default_templates/notify-entry.mtml
-	'A new [_3] entitled \'[_1]\' has been published to [_2].' => '新しい[_3]「[_1]」を[_2]で公開しました。',
-	'View [_1]:' => '[_1]を見る',
+	'A new [lc,_3] entitled \'[_1]\' has been published to [_2].' => '新しい[_3]「[_1]」を[_2]で公開しました。',
+	'View [lc,_1]:' => '[_1]を見る',
 	'[_1] Title: [_2]' => 'タイトル: [_2]',
 	'Publish Date: [_1]' => '日付: [_1]',
 	'Message from Sender:' => 'メッセージ: ',
@@ -239,7 +241,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/recover-password.mtml
 	'_USAGE_FORGOT_PASSWORD_1' => 'パスワードを再設定しました。新しいパスワードを通知します。',
-	'_USAGE_FORGOT_PASSWORD_2' => '新しいパスワードを使ってMovable Typeにログインし、すぐにパスワードを変更してください。',
+	'_USAGE_FORGOT_PASSWORD_2' => '以下のURLから、新しいパスワードを使ってMovable Typeにログインし、すぐにパスワードを変更してください。',
 	'Mail Footer' => 'メールフッター',
 
 ## default_templates/javascript.mtml
@@ -739,7 +741,7 @@ use vars qw( @ISA %Lexicon );
 	'Settings' => '設定',
 	'Edit Comment' => 'コメントの編集',
 	'Authenticated Commenters' => '認証されているコメント投稿者',
-	'Commenter Details' => 'コメントの詳細',
+	'Commenter Details' => 'コメント投稿者の詳細',
 	'New Entry' => '新しいブログ記事',
 	'New Page' => '新しいウェブページ',
 	'Create template requires type' => 'テンプレートを作成するためのtypeパラメータが指定されていません。',
@@ -1895,14 +1897,14 @@ use vars qw( @ISA %Lexicon );
 	'comment' => 'コメント',
 	'comments' => 'コメント',
 	'to publish' => '公開',
-	'Publish selected [_1] (a)' => '選択された[_1]を公開する (a)',
-	'Delete selected [_1] (x)' => '[_1]を削除する(x)',
-	'Report selected [_1] as Spam (j)' => '選択された[_1]をスパムとして報告する (j)',
+	'Publish selected [lc,_1] (a)' => '選択された[_1]を公開する (a)',
+	'Delete selected [lc,_1] (x)' => '[_1]を削除する(x)',
+	'Report selected [lc,_1] as Spam (j)' => '選択された[_1]をスパムとして報告する (j)',
 	'Spam' => 'スパム',
-	'Report selected [_1] as Not Spam and Publish (j)' => '選択された[_1]をスパムから戻して公開する (j)',
+	'Report selected [lc,_1] as Not Spam and Publish (j)' => '選択された[_1]をスパムから戻して公開する (j)',
 	'Not Spam' => 'スパム解除',
 	'Are you sure you want to remove all comments reported as spam?' => 'スパムコメントをすべて削除しますか?',
-	'Deletes all [_1] reported as Spam' => 'スパムとして報告された[_1]をすべて削除',
+	'Deletes all [lc,_1] reported as Spam' => 'スパムとして報告された[_1]をすべて削除',
 	'Empty' => 'すべて削除',
 	'Ban This IP' => 'このIPを禁止',
 	'Status' => '公開状態',
@@ -1914,8 +1916,7 @@ use vars qw( @ISA %Lexicon );
 	'Only show pending comments' => '保留中のコメントだけを表示',
 	'Pending' => '保留中',
 	'Edit this comment' => 'このコメントを編集',
-	'(1 reply)' => '(返信数 1)',
-	'([_1] replies)' => '(返信数 [_1])',
+	'([quant,_1,reply,replies])' => '(返信数 [_1])',
 	'Reply' => '返信',
 	'Trusted' => '承認済み',
 	'Blocked' => '禁止中',
@@ -1923,7 +1924,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit this [_1] commenter' => 'このコメント投稿者([_1])を編集',
 	'Search for comments by this commenter' => 'このコメント投稿者のコメントを検索',
 	'Anonymous' => '匿名',
-	'View this [_1]' => '[_1]を表示する',
+	'View this [lc,_1]' => '[_1]を表示する',
 	'Search for all comments from this IP address' => 'このIPアドレスからのすべてのコメントを検索',
 
 ## tmpl/cms/include/copyright.tmpl
@@ -2049,9 +2050,9 @@ use vars qw( @ISA %Lexicon );
 	'View the [_1] for this TrackBack' => 'トラックバックされた[_1]を見る',
 
 ## tmpl/cms/include/entry_table.tmpl
-	'Save these [_1] (s)' => 'これらの[_1]を保存する(s)',
+	'Save these [lc,_1] (s)' => 'これらの[_1]を保存する(s)',
 	'to republish' => '再構築',
-	'Republish selected [_1] (r)' => '選択された[_1]を再構築する (r)',
+	'Republish selected [lc,_1] (r)' => '選択された[_1]を再構築する (r)',
 	'Republish' => '再構築',
 	'page' => 'ウェブページ',
 	'Last Modified' => '最終更新',
@@ -2059,12 +2060,12 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Draft)' => '未公開(原稿)',
 	'Unpublished (Review)' => '未公開(承認待ち)',
 	'Scheduled' => '日時指定',
-	'Only show unpublished [_1]' => '下書きの[_1]だけを表示',
-	'Only show published [_1]' => '公開された[_1]だけを表示',
-	'Only show [_1] for review' => 'レビュー中の[_1]だけを表示',
-	'Only show scheduled [_1]' => '日時指定された[_1]だけを表示',
-	'Edit [_1]' => '[_1]の編集',
-	'View [_1]' => '[_1]を見る',
+	'Only show unpublished [lc,_1]' => '下書きの[_1]だけを表示',
+	'Only show published [lc,_1]' => '公開された[_1]だけを表示',
+	'Only show [lc,_1] for review' => 'レビュー中の[_1]だけを表示',
+	'Only show scheduled [lc,_1]' => '日時指定された[_1]だけを表示',
+	'Edit [lc,_1]' => '[_1]の編集',
+	'View [lc,_1]' => '[_1]を見る',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2476,7 +2477,7 @@ use vars qw( @ISA %Lexicon );
 	'Save (s)' => '保存',
 	'Save and Publish this template (r)' => 'このテンプレートを保存して再構築 (r)',
 	'Save &amp; Publish' => '保存と再構築',
-	'You have unsaved changes to your [_1] that will be lost.' => '保存されていない[_1]への変更は失われます。',
+	'You have unsaved changes to your [lc,_1] that will be lost.' => '保存されていない[_1]への変更は失われます。',
 	'You must set the Template Name.' => 'テンプレート名を設定してください。',
 	'You must set the template Output File.' => 'テンプレートの出力ファイル名を設定してください。',
 	'Please wait...' => 'お待ちください...',
@@ -2516,7 +2517,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenting' => 'コメント投稿',
 	'Duplicate Roles' => '同じ権限のロール',
 	'These roles have the same privileges as this role' => 'このロールと同じ権限を設定されたロール',
-	'Save changes to this [_1] (s)' => '[_1]への変更を保存 (s)',
+	'Save changes to this [lc,_1] (s)' => '[_1]への変更を保存 (s)',
 
 ## tmpl/cms/cfg_plugin.tmpl
 	'System Plugin Settings' => 'システムプラグイン設定',
@@ -2606,13 +2607,13 @@ use vars qw( @ISA %Lexicon );
 	'Comments from [_1]' => '[_1]からのコメント',
 	'commenter' => 'コメント投稿者',
 	'commenters' => 'コメント投稿者',
-	'Trust [_1] (t)' => '[_1]を承認 (t)',
+	'Trust [lc,_1] (t)' => '[_1]を承認 (t)',
 	'Trust' => '承認',
-	'Untrust [_1] (t)' => '[_1]の承認を解除',
+	'Untrust [lc,_1] (t)' => '[_1]の承認を解除',
 	'Untrust' => '承認を解除',
-	'Ban [_1] (b)' => '[_1]を禁止 (b)',
+	'Ban [lc,_1] (b)' => '[_1]を禁止 (b)',
 	'Ban' => '禁止',
-	'Unban [_1] (b)' => '[_1]の禁止を解除 (b)',
+	'Unban [lc,_1] (b)' => '[_1]の禁止を解除 (b)',
 	'Unban' => '禁止を解除',
 	'The Name of the commenter' => 'コメント投稿者の名前',
 	'View all comments with this name' => 'この名前のすべてのコメントを見る',
@@ -2636,7 +2637,7 @@ use vars qw( @ISA %Lexicon );
 	'All [_1]' => 'すべての[_1]',
 	'change' => '絞り込み',
 	'[_1] where [_2] is [_3]' => '[_2]が[_3]の[_1]',
-	'Show only [_1] where' => '表示:[_1]',
+	'Show only [lc,_1] where' => '表示:[_1]',
 	'status' => 'ステータス',
 	'tag (exact match)' => 'タグ（完全一致）',
 	'tag (fuzzy match)' => 'タグ（あいまい検索）',
@@ -2726,7 +2727,7 @@ use vars qw( @ISA %Lexicon );
 	'folder' => 'フォルダ',
 	'folders' => 'フォルダ',
 	'categories' => 'カテゴリ',
-	'Create [_1]' => '[_1]を作成',
+	'Create [lc,_1]' => '[_1]を作成',
 	'Your [_1] has been saved.' => '[_1]を保存しました。',
 	'One or more errors occurred when sending update pings or TrackBacks.' => '更新通知かトラックバック送信でひとつ以上のエラーが発生しました。',
 	'_USAGE_VIEW_LOG' => 'エラーの場合は、<a href="[_1]">ログ</a>をチェックしてください。',
@@ -2754,13 +2755,12 @@ use vars qw( @ISA %Lexicon );
 	'Publish Date' => '公開日',
 	'Make primary' => 'メインカテゴリにする',
 	'Add sub category' => 'サブカテゴリを追加',
-	'Add [_1] name' => '[_1]の名前を追加',
-	'Add new parent [_1]' => '新しいトップレベルカテゴリ[_1]を追加',
+	'Add [lc,_1] name' => '[_1]の名前を追加',
+	'Add new parent [lc,_1]' => '新しいトップレベルカテゴリ[_1]を追加',
 	'Add new' => '新規追加',
-	'Save this [_1] (s)' => 'この[_1]を保存(s)',
-	'Preview this [_1] (v)' => 'この[_1]をプレビュー(v)',
-	'Delete this [_1] (v)' => 'この[_1]を削除(v)',
-	'Share this [_1]' => 'この[_1]を共有',
+	'Save this [lc,_1] (s)' => 'この[_1]を保存(s)',
+	'Preview this [lc,_1] (v)' => 'この[_1]をプレビュー(v)',
+	'Share this [lc,_1]' => 'この[_1]を共有',
 	'View published [_1]' => '公開された[_1]を表示',
 	'&laquo; Previous' => '&laquo; 前',
 	'Next &raquo;' => '次 &raquo;',
@@ -2770,10 +2770,10 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '（カンマ区切りリスト）',
 	'(space-delimited list)' => '（スペース区切りリスト）',
 	'(delimited by \'[_1]\')' => '（[_1]で区切る）',
-	'Change [_1]' => '[_1]を変更',
-	'Add [_1]' => '[_1]を追加',
+	'Change [lc,_1]' => '[_1]を変更',
+	'Add [lc,_1]' => '[_1]を追加',
 	'Unpublished' => '下書き',
-	'You must configure blog before you can publish this [_1].' => '[_1]を公開する前にブログの設定を行ってください。',
+	'You must configure this blog before you can publish this [lc,_1].' => '[_1]を公開する前にブログの設定を行ってください。',
 	'Select entry date' => '作成日を選択',
 	'Unlock this entry&rsquo;s output filename for editing' => '出力ファイル名を編集するにはロックを解除してください。',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他のブログ記事と衝突を起こす可能性があります。',
@@ -3087,13 +3087,13 @@ use vars qw( @ISA %Lexicon );
 	'System Permissions' => 'システム権限',
 	'Options' => 'オプション',
 	'Create personal blog for user' => '個人用のブログを作成する',
-	'Create [_1] (s)' => '[_1]の作成 (s)',
+	'Create [lc,_1] (s)' => '[_1]の作成 (s)',
 	'_USAGE_PASSWORD_RESET' => 'ユーザーのパスワードを再設定できます。パスワードがランダムに生成され、[_1]にメールで送信されます。',
 	'Initiate Password Recovery' => 'パスワードの再設定',
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'コメントを公開しました。',
-	'Delete this [_1] (x)' => 'この[_1]を削除(x)',
+	'Delete this [lc,_1] (x)' => 'この[_1]を削除(x)',
 	'Previous Comment' => '前のコメント',
 	'Next Comment' => '次のコメント',
 	'Manage Comments' => 'コメントの管理',
@@ -3191,7 +3191,7 @@ use vars qw( @ISA %Lexicon );
 	'Check this and files backed up from newer versions can be restored to this system.  NOTE: Ignoring Schema Version can damage Movable Type permanently.' => 'チェックすると現在のシステムより新しいシステムからバックアップされたデータをこのシステムに復元できます。注意: バージョンの衝突を無視すると、Movable Typeのシステムに回復不可能なダメージを与える可能性があります。',
 	'Ignore schema version conflicts' => 'バージョンの衝突を無視する',
 	'Check this and existing global templates will be overwritten from the backup file.' => 'チェックすると既存のグローバルテンプレートはバックアップに含まれているもので上書きされます。',
-	'Overwrite global templates.' => 'グローバルテンプレートを上書き',
+	'Overwrite global templates.' => 'グローバルテンプレートを上書きする',
 	'Restore (r)' => '復元',
 
 ## tmpl/cms/cfg_archives.tmpl
@@ -3296,12 +3296,12 @@ use vars qw( @ISA %Lexicon );
 	'Cancel (c)' => '取り消し',
 
 ## tmpl/cms/list_folder.tmpl
-	'Your [_1] changes and additions have been made.' => '[_1]の変更と追加を行いました。',
-	'You have successfully deleted the selected [_1].' => '[_1]を削除しました。',
-	'Create top level [_1]' => 'トップレベル[_1]を作成',
+	'Your [lc,_1] changes and additions have been made.' => '[_1]の変更と追加を行いました。',
+	'You have successfully deleted the selected [lc,_1].' => '[_1]を削除しました。',
+	'Create top level [lc,_1]' => 'トップレベル[_1]を作成',
 	'New Parent [_1]' => '新しいトップレベルの[_1]',
 	'Top Level' => 'ルート',
-	'Move [_1]' => '[_1]を移動',
+	'Move [lc,_1]' => '[_1]を移動',
 	'Move' => '移動',
 	'[quant,_1,page,pages]' => '[quant,_1,件,件]',
 
@@ -3469,7 +3469,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,result,results] found' => '[quant,_1,件,件]見つかりました。',
 
 ## tmpl/cms/preview_strip.tmpl
-	'You are previewing the [_1] titled &ldquo;[_2]&rdquo;' => '[_1] &ldquo;[_2]&rdquo;のプレビュー',
+	'You are previewing the [lc,_1] titled &ldquo;[_2]&rdquo;' => '[_1] &ldquo;[_2]&rdquo;のプレビュー',
 
 ## tmpl/cms/edit_ping.tmpl
 	'The TrackBack has been approved.' => 'トラックバックを公開しました。',

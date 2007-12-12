@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
     $localvars = array('comments', 'comment_order_num','comment','current_timestamp', 'commenter', 'blog', 'blog_id', 'conditional', 'else_content');
     if (!isset($content)) {
@@ -20,6 +26,7 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
     if (!$comments)
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
 
+    $ctx->stash('conditional', $comments ? 1 : 0);
     if ($counter < count($comments)) {
         $blog_id = $ctx->stash('blog_id');
         $comment = $comments[$counter];

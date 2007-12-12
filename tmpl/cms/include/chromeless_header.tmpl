@@ -18,7 +18,7 @@
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version" escape="url">" type="text/css" />
     <![endif]-->
-<mt:if name="local_lang_id">
+<mt:if name="local_lang_id" ne="en-us">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version" escape="url">" />
 </mt:if>
 
@@ -27,6 +27,9 @@
 </mt:setvarblock>
 <$mt:var name="html_head"$>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version" escape="url">"></script>
+<mt:if name="local_lang_id" ne="en-us">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version" escape="URL">" charset="utf-8"></script>
+</mt:if>
 
 <script language="javascript" type="text/javascript">
 <!--

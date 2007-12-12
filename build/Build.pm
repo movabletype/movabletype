@@ -1,3 +1,7 @@
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 # $Id$
 
 package Build;
@@ -27,9 +31,6 @@ Build - Movable Type build functionality
 A C<Build> object contains the internal routines needed to build
 Movable Type distributions in multiple languages.
 
-Please see the full documentation at:
-https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
-
 =cut
 
 use strict;
@@ -40,6 +41,7 @@ use File::Basename;
 use File::Copy;
 use File::Path;
 use File::Spec;
+use File::Find;
 use Getopt::Long;
 use IO::File;
 use LWP::UserAgent;
@@ -63,20 +65,21 @@ sub get_options {
       'cleanup!'        => 1,  # Remove the exported directory after deployment.
       'date!'           => 1,  # Toggle date stamping.
       'debug'           => 0,  # Turn on/off the actual system calls.
-      'deploy:s'        => '', #($ENV{USER}||$ENV{USERNAME}).'@rongo:/usr/local/cifs/intranet/mt-interest/',
-      'deploy-uri=s'    => 'https://intranet.sixapart.com/mt-interest',
+      'deploy:s'        => '',
+      'deploy-uri=s'    => '',
       'build!'          => 1,  # Build distribution files?
       'email-bcc:s'     => undef,
       'email-body=s'    => '',  # Constructed at run-time.
       'email-cc:s'      => undef,
-      'email-from=s'    => ( $ENV{USER} || $ENV{USERNAME} ) .'@sixapart.com',
-      'email-host=s'    => 'mail.sixapart.com',
+      'email-from=s'    => ( $ENV{USER} || $ENV{USERNAME} ),
+      'email-host=s'    => 'localhost',
       'email-subject=s' => '',  # Constructed at run-time.
       'export!'         => 1,  # To export or not to export. That is the question.
       'export-dir=s'    => '',  # Constructed at run-time.
       'footer=s'        => "<br/><b>SOFTWARE IS PROVIDED FOR TESTING ONLY - NOT FOR PRODUCTION USE.</b>\n",
       'footer-tmpl=s'   => 'tmpl/cms/include/copyright.tmpl',
       'help|h'          => 0,  # Show the program usage.
+      'license=s'       => undef,
       'http-user=s'     => undef,
       'http-pass=s'     => undef,
       'ldap'            => 0,  # Use LDAP (and don't initialize the database).
@@ -92,12 +95,12 @@ sub get_options {
       'prod-dir=s'      => 'Production_Builds',
       'qa'              => 0,  # Command-line --option alias
       'repo=s'          => 'trunk',  # Reset at runtime depending on branch,tag.
-      'repo-uri=s'      => '',  #'https://intranet.sixapart.com/repos/eng',
+      'repo-uri=s'      => '',
       'rev!'            => 1,  # Toggle revision stamping.
       'revision=s'      => undef,  # Constructed at run-time.
       'stage'           => 0,  # Command-line --option alias
-      'stage-dir=s'     => '/var/www/html/mt-stage',
-      'stage-uri=s'     => 'http://mt.sixapart.com',
+      'stage-dir=s'     => '',
+      'stage-uri=s'     => '',
       'short-lang=s'    => '',  # Constructed at run-time.
       'stamp=s'         => $ENV{BUILD_VERSION_ID},
       'symlink!'        => 1,  # Make build symlinks when staging.
@@ -173,9 +176,10 @@ sub setup {
     $self->set_repo();
 
     # Create the build-stamp if one is not already defined.
-    if( !$self->{'stamp=s'} ) {
+    if( !$self->{'stamp=s'} || $args{language} ) {
         # Read-in the configuration variables for substitution.
         my $config = $self->read_conf( "build/mt-dists/default.mk", "build/mt-dists/$self->{'pack=s'}.mk" );
+        $self->{'license=s'} ||= $config->{LICENSE};
         my @stamp = ();
         push @stamp, $config->{PRODUCT_VERSION} . (
             $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
@@ -221,12 +225,13 @@ sub make {
 
     if( $self->{'build!'} ) {
         $self->verbose_command( sprintf(
-            '%s build/mt-dists/make-dists --package=%s --language=%s --stamp=%s %s',
+            '%s build/mt-dists/make-dists --package=%s --language=%s --stamp=%s %s --license=%s',
             $^X,
             $self->{'pack=s'},
             $self->{'lang=s'},
             $self->{'export-dir=s'},
-            ($self->{'verbose!'} ? '--silent' : '')
+            ($self->{'verbose!'} ? '--silent' : ''),
+            $self->{'license=s'} || '',
         ));
     }
     else {
@@ -456,8 +461,8 @@ sub stage_distro {
         my $fh = IO::File->new( ">$config" );
         print $fh <<CONFIG;
 CGIPath $url
-DefaultSiteURL http://mt.sixapart.com/blogs/
-DefaultSiteRoot /var/www/html/mt-stage/blogs/
+# DefaultSiteURL http://example.com/blogs/
+# DefaultSiteRoot /var/www/html/blogs/
 Database $db
 ObjectDriver DBI::mysql
 DBUser root
@@ -466,7 +471,7 @@ CONFIG
         if( $self->{'ldap'} ) {
             print $fh <<CONFIG;
 AuthenticationModule LDAP
-AuthLDAPURL ldap://ldap.sixapart.com/dc=sixapart,dc=com
+# AuthLDAPURL ldap://ldap.example.com/dc=example,dc=com
 CONFIG
         }
 
@@ -772,8 +777,8 @@ sub notify {
         $self->{'stage'}   ? ' - Staging'                :
         $self->{'qa'}      ? ' - QA'                     : '';
     # If an email-cc exists, add a comma in front of the QA address.
-    $self->{'email-cc:s'} .= ($self->{'email-cc:s'} ? ',' : '') . 'sixapart@qasource.com'
-        if $self->{'qa'};
+    # $self->{'email-cc:s'} .= ($self->{'email-cc:s'} ? ',' : '')
+    #     if $self->{'qa'};
     # Show the deployed URL's.
     $self->{'email-body=s'} = sprintf "File URL(s):\n%s\n\n",
         join( "\n", @{ $distros->{url} } )
@@ -895,9 +900,6 @@ sub usage {
     # --prod
     # --qa
     # --stage
-
- Please see the full documentation at:
- https://intranet.sixapart.com/wiki/index.php/Movable_Type:MT_Export-Deploy
 
 USAGE
     exit;

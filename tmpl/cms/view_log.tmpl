@@ -43,8 +43,10 @@
         </mt:if>
         </ul>
     </mtapp:widget>
-    <$mt:include name="include/display_options.tmpl"$>
     <$mtapp:PageActions from="$mode"$>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:unless name="search_replace_template">
@@ -92,13 +94,13 @@
     }
 
     function init() {
-    	setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
-    	setFilterVal('<mt:var name="filter_val">');
+    	setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+    	setFilterVal('<mt:var name="filter_val" escape="js">');
     </mt:if>
     }
 
     TC.attachLoadEvent( init );
-    // -->
+    //-->
     </script>
 </mt:setvarblock>
 <mt:setvarblock name="list_filter_form">

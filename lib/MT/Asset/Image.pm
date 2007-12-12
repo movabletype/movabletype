@@ -1,8 +1,8 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
-# $Id: Image.pm 987 2006-12-27 07:25:12Z fumiakiy $
+# $Id$
 
 package MT::Asset::Image;
 
@@ -26,10 +26,15 @@ sub class_label_plural {
 sub metadata {
     my $obj  = shift;
     my $meta = $obj->SUPER::metadata(@_);
+
+    my $width  = $obj->image_width;
+    my $height = $obj->image_height;
+    $meta->{image_width}  = $width  if defined $width;
+    $meta->{image_height} = $height if defined $height;
     $meta->{ MT->translate("Actual Dimensions") } =
-      MT->translate( "[_1] x [_2] pixels",
-        $obj->image_width, $obj->image_height )
-      if defined $obj->image_width && defined $obj->image_height;
+      MT->translate( "[_1] x [_2] pixels", $width, $height )
+      if defined $width && defined $height;
+
     $meta;
 }
 
@@ -304,7 +309,7 @@ q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=
         else {
             if ( $param->{thumb} ) {
                 $text = sprintf(
-                    '<a href="%s"><img alt="%s" src="%s" %s %s/></a>',
+                    '<a href="%s"><img alt="%s" src="%s" %s %s /></a>',
                     MT::Util::encode_html( $asset->url ),
                     MT::Util::encode_html( $asset->label ),
                     MT::Util::encode_html( $thumb->url ),
@@ -314,7 +319,7 @@ q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=
             }
             else {
                 $text = sprintf(
-                    '<img alt="%s" src="%s" %s %s/>',
+                    '<img alt="%s" src="%s" %s %s />',
                     MT::Util::encode_html( $asset->label ),
                     MT::Util::encode_html( $asset->url ),
                     $dimensions, $wrap_style,
@@ -643,6 +648,14 @@ sub on_upload {
         }
     }
     1;
+}
+
+sub edit_template_param {
+    my $asset = shift;
+    my ($cb, $app, $param, $tmpl) = @_;
+
+    $param->{image_height} = $asset->image_height;
+    $param->{image_width}  = $asset->image_width;
 }
 
 1;

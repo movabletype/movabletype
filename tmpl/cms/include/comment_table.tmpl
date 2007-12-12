@@ -3,29 +3,29 @@
         <mt:if name="state_editable"><a href="javascript:void(0)"
             onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">', 'id', 'approve_item', {}, '<__trans phrase="to publish" escape="js">'); return false;"
             accesskey="a"
-            title="<__trans phrase="Publish selected [_1] (a)" params="<$mt:var name="object_label_plural"$>">"
+            title="<__trans phrase="Publish selected [lc,_1] (a)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Publish"></a></mt:if>
     </mt:unless>
         <a href="javascript:void(0)"
             onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">'); return false;"
             accesskey="x"
-            title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+            title="<__trans phrase="Delete selected [lc,_1] (x)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Delete"></a>
     <mt:unless name="filter_spam">
         <mt:if name="state_editable"><a href="javascript:void(0)"
             onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">'); return false;"
             accesskey="j"
-            title="<__trans phrase="Report selected [_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
+            title="<__trans phrase="Report selected [lc,_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Spam"></a></mt:if>
     <mt:else>
         <mt:if name="state_editable"><a href="javascript:void(0)"
             onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">'); return false;"
             accesskey="j"
-            title="<__trans phrase="Report selected [_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
+            title="<__trans phrase="Report selected [lc,_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Not Spam"></a></mt:if>
         <mt:if name="can_empty_junk"><a href="javascript:void(0)" mt:command="submit" mt:mode="empty_junk"
             mt:confirm-msg="<__trans phrase="Are you sure you want to remove all comments reported as spam?">"
-            title="<__trans phrase="Deletes all [_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
+            title="<__trans phrase="Deletes all [lc,_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Empty"></a></mt:if>
     </mt:unless>
     <mt:if name="is_ip_filter">
@@ -89,7 +89,7 @@
                     <mt:var name="comment_short" escape="html">
                 </mt:if>
             </mt:if>
-            <mt:if name="reply_count"><mt:if name="reply_count" eq="1"><__trans phrase="(1 reply)"><mt:else><__trans phrase="([_1] replies)" params="<mt:var name="reply_count">"></mt:if></mt:if>
+            <mt:if name="reply_count"><__trans phrase="([quant,_1,reply,replies])" params="<mt:var name="reply_count">"></mt:if>
             <mt:unless name="view_expanded">
             <mt:if name="has_edit_access"><mt:if name="visible"><span id="replyto_<mt:var name="id">" style="visibility: hidden; margin-left: 10px"><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token" encode="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>')"><__trans phrase="Reply"></a></span></mt:if></mt:if>
             </mt:unless>
@@ -123,7 +123,7 @@
                         </mt:if>
                     </mt:if>
                         <mt:if name="auth_icon_url"><img style="background-image: none" src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" /></mt:if>
-                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">"><mt:var name="author" escape="html"></a>
+                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">"><mt:var name="author" escape="html"></a>
                 <mt:else>
                     <mt:if name="author">
                         <mt:if name="auth_icon_url"><img src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" /></mt:if><a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">"><mt:var name="author_display" escape="html"></a>
@@ -138,7 +138,7 @@
             </mt:if>
                     <td class="entry">
                 <mt:if name="entry_title">
-                    <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id">" title="<__trans phrase="View this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">"><mt:var name="entry_title" escape="html"></a>
+                    <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id">" title="<__trans phrase="View this [lc,_1]" params="<mt:var name="entry_class_label">">"><mt:var name="entry_title" escape="html"></a>
                 <mt:else>
                         &nbsp;
                 </mt:if>

@@ -135,7 +135,7 @@ TC.attachLoadEvent( init );
                 id="saved"
                 class="success"
                 rebuild="all">
-                <__trans phrase="Your [_1] changes and additions have been made." params="<mt:var name="object_label" lower_case="1">">
+                <__trans phrase="Your [lc,_1] changes and additions have been made." params="<mt:var name="object_label">">
             </mtapp:statusmsg>
         </mt:if>
 
@@ -144,7 +144,7 @@ TC.attachLoadEvent( init );
                 id="saved-deleted"
                 class="success"
                 rebuild="all">
-                <__trans phrase="You have successfully deleted the selected [_1]." params="<mt:var name="object_label_plural" lower_case="1">">
+                <__trans phrase="You have successfully deleted the selected [lc,_1]." params="<mt:var name="object_label_plural">">
             </mtapp:statusmsg>
         </mt:if>
     </div>
@@ -153,7 +153,7 @@ TC.attachLoadEvent( init );
     <a href="javascript:void(0)"
         onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="category" escape="js">', '<__trans phrase="categories" escape="js">'); return false;"
         accesskey="x"
-        title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1" escape="js">">"
+        title="<__trans phrase="Delete selected [lc,_1] (x)" params="<mt:var name="object_label_plural" escape="js">">"
         ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
@@ -163,7 +163,7 @@ TC.attachLoadEvent( init );
 
 <mt:include name="include/header.tmpl">
 
-<p id="create-new-link"><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create top level [_1]" params="<mt:var name="object_label" lower_case="1">"></a></p>
+<p id="create-new-link"><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create top level [lc,_1]" params="<mt:var name="object_label">"></a></p>
 
 <mtapp:listing
     hide_pager="1">
@@ -233,8 +233,8 @@ TC.attachLoadEvent( init );
                     <div style="margin-left: <mt:var name="category_pixel_depth">px;"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">"><mt:var name="category_label_full"></a></div>
                 </td>
                 <td id="action-<mt:var name="category_id">" class="actions">
-                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create [_1]" params="<mt:var name="sub_object_label" lower_case="1">">"><__trans phrase="Create"></a>
-                    <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [_1]" params="<mt:var name="object_label" lower_case="1">">"><__trans phrase="Move"></a>
+                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create [lc,_1]" params="<mt:var name="sub_object_label">">"><__trans phrase="Create"></a>
+                    <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move [lc,_1]" params="<mt:var name="object_label">">"><__trans phrase="Move"></a>
                 </td>
                 <td class="entry">
 <mt:if name="category_entrycount">

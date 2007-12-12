@@ -199,7 +199,7 @@
 <mtapp:settinggroup id="default-field-settings">
 
 <h3><__trans phrase="Default Editor Fields"></h3>
-
+<mt:setvarblock name="more_fields" id="more_fields"></mt:setvarblock>
 <mtapp:setting
     id="entry_prefs"
     label="<__trans phrase="Editor Fields">"
@@ -214,6 +214,7 @@
         <li><input type="checkbox" name="custom_prefs" id="custom-prefs-tags" value="tags" <mt:if name="disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-tags"><__trans phrase="Tags"></label></li>
         <li><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" <mt:if name="disp_prefs_show_publishing"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-publishing"><__trans phrase="Publishing"></label></li>
         <li><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" <mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="custom-prefs-feedback"><__trans phrase="Feedback"></label></li>
+        <mt:var name="more_fields">
     </ul>
 </mtapp:setting>
 
@@ -235,7 +236,7 @@
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>

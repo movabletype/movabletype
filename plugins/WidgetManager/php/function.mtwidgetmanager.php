@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_function_mtwidgetmanager($args, &$ctx) {
     $blog_id = $ctx->stash('blog_id');
     $widgetmanager = $args['name']; // Should we try to load is there's only one?

@@ -192,6 +192,7 @@ TC.attachLoadEvent(init);
     <mtapp:setting
         id="userpic_asset_id"
         label="<__trans phrase="Userpic">"
+        content_class="field-content-text"
         hint="<__trans phrase="The image associated with this user.">">
         <span id="userpic-preview"<mt:unless name="userpic"> class="hidden"</mt:unless>>
             <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
@@ -201,7 +202,7 @@ TC.attachLoadEvent(init);
         <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
         <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
             <br />
-            <a href="javascript:void(0)" onclick="getByID('userpic_asset_id').value = '0'; hide('userpic-preview'); hide('remove-userpic'); return false"><__trans phrase="Remove Userpic"></a>
+            <a href="javascript:void(0)" onclick="getByID('userpic_asset_id').value = '0'; if (!DOM.hasClassName('userpic-preview', 'hidden')) toggleHidden('userpic-preview'); if (!DOM.hasClassName('remove-userpic', 'hidden')) toggleHidden('remove-userpic'); return false"><__trans phrase="Remove Userpic"></a>
         </span>
     </mtapp:setting>
 
@@ -341,12 +342,12 @@ TC.attachLoadEvent(init);
         accesskey="s"
         title="<__trans phrase="Create [_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
-        ><__trans phrase="Create User"></button>
+        ><__trans phrase="Create [_1]" params="<mt:var name="object_label">"></button>
     <mt:else>
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
     </mt:if>

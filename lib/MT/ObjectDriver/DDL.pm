@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -13,6 +13,7 @@ use DBI qw(:sql_types);
 
 # Must be implemented!
 sub column_defs;
+sub index_defs {}
 
 sub can_add_column { 0 }
 sub can_alter_column { 0 }
@@ -40,7 +41,7 @@ sub add_column {
     push @stmts, $ddl->index_column_sql(@_);
     return @stmts; 
 }
-    
+
 sub alter_column {
     my $ddl = shift;
     return $ddl->alter_column_sql(@_);
@@ -49,6 +50,11 @@ sub alter_column {
 sub drop_column {
     my $ddl = shift;
     return $ddl->drop_column_sql(@_);
+}
+
+sub index_column {
+    my $ddl = shift;
+    return $ddl->drop_index_sql(@_), $ddl->index_column_sql(@_);
 }
 
 sub fix_class {
@@ -184,6 +190,25 @@ sub drop_table_sql {
     return "DROP TABLE $table_name";
 }
 
+sub drop_index_sql {
+    my $ddl = shift;
+    my ($class, $key) = @_;
+    my $table_name = $class->table_name;
+
+    my $props = $class->properties;
+    my $indexes = $props->{indexes};
+    return q() unless exists($indexes->{$key});
+
+    if (ref $indexes->{$key} eq 'HASH') {
+        my $idx_info = $indexes->{$key};
+        if ($idx_info->{unique} && $ddl->can_add_constraint) {
+            return "ALTER TABLE $table_name DROP CONSTRAINT ${table_name}_$key";
+        }
+    }
+
+    return "DROP INDEX ${table_name}_$key ON $table_name";
+}
+
 sub create_table_as_sql {
     my $ddl = shift;
     my ($class) = @_;
@@ -236,30 +261,7 @@ sub index_table_sql {
         my $pk = $props->{primary_key};
         foreach my $name (keys %$indexes) {
             next if $pk && $name eq $pk;
-            if (!ref($indexes->{$name})) {
-                # Simple, single column index
-                push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name (${field_prefix}_$name)";
-            }
-            elsif (ref $indexes->{$name} eq 'HASH') {
-                my $idx_info = $indexes->{$name};
-                my $column_list = $idx_info->{columns} || [ $name ];
-                my $columns = '';
-                foreach my $col (@$column_list) {
-                    $columns .= ',' unless $columns eq '';
-                    $columns .= $field_prefix . '_' . $col;
-                }
-                if ($columns) {
-                    if ($idx_info->{unique} && $ddl->can_add_constraint) {
-                        push @stmts, "ALTER TABLE $table_name ADD CONSTRAINT ${table_name}_$name UNIQUE ($columns)";
-                    }
-                    else {
-                        push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name ($columns)";
-                    }
-                }
-                else {
-                    die "Invalid definition of unique index for class $class: no columns were identified";
-                }
-            }
+            push @stmts, $ddl->index_column_sql($class, $name);
         }
     }
 

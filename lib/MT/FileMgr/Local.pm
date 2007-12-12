@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -59,7 +59,7 @@ sub _write_file {
     my($from, $to, $type) = @_;
     local *FH;
     my($umask, $perms);
-    my $cfg = $fmgr->{cfg};
+    my $cfg = MT->config;
     if ($type && $type eq 'upload') {
         $umask = $cfg->UploadUmask;
         $perms = $cfg->UploadPerms;
@@ -76,7 +76,7 @@ sub _write_file {
         binmode($from) if $fmgr->is_handle($from);
     }
     ## Lock file unless NoLocking specified.
-    flock FH, LOCK_EX unless $fmgr->{cfg}->NoLocking;
+    flock FH, LOCK_EX unless $cfg->NoLocking;
     seek FH, 0, 0;
     truncate FH, 0;
     my $bytes = 0;
@@ -102,7 +102,7 @@ sub mkpath {
     my $fmgr = shift;
     my($path) = @_;
     require File::Path;
-    my $umask = oct $fmgr->{cfg}->DirUmask;
+    my $umask = oct MT->config->DirUmask;
     my $old = umask($umask);
     eval { File::Path::mkpath([$path], 0, 0777) };
     return $fmgr->error($@) if $@;

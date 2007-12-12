@@ -14,7 +14,8 @@
 #======== REQUIRED SETTINGS ==========
 
 CGIPath        <mt:var name="cgi_path">
-StaticWebPath  <mt:var name="static_web_path"><mt:if name="publish_charset">
+StaticWebPath  <mt:var name="static_web_path">
+StaticFilePath <mt:var name="static_file_path"><mt:if name="publish_charset">
 PublishCharset <mt:var name="publish_charset"></mt:if><mt:if name="non_cgi_suffix">
 
 #======== SCRIPT NAMES ===============<mt:if name="mod_perl">

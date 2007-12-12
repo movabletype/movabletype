@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -353,7 +353,7 @@ my $ver = $^V ? join('.', unpack 'C*', $^V) : $];
 my $perl_ver_check = '';
 if ($] < 5.006001) {  # our minimal requirement for support
     $perl_ver_check = <<EOT;
-<p class="warning"><MT_TRANS phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). While Movable Type may run, it is an <strong>untested and unsupported</strong> environment.  We <strong>strongly recommend</strong> upgrading to at least Perl [_2]." params="$ver%%5.6.1"></p>
+<p class="warning"><MT_TRANS phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.6.1"></p>
 EOT
 }
 my $config_check = '';
@@ -494,19 +494,15 @@ MSG
         } else {
             if ($data) {
                 $dbi_is_okay = 1 if $mod eq 'DBI';
-                if ($mod eq 'DB_File') {
+                if ($mod eq 'DBD::mysql') {
+                    if ($DBD::mysql::VERSION == 3.0000) {
+                        print trans_templ(qq{<p class="warning"><MT_TRANS phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p>});
+                    }
+                }
+                if (!$dbi_is_okay) {
+                    print trans_templ(qq{<p class="warning"><MT_TRANS phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>});
+                } else {
                     $got_one_data = 1;
-                } elsif ($mod ne 'DBI') {
-                    if ($mod eq 'DBD::mysql') {
-                        if ($DBD::mysql::VERSION == 3.0000) {
-                            print trans_templ(qq{<p class="warning"><MT_TRANS phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p>});
-                        }
-                    }
-                    if (!$dbi_is_okay) {
-                        print trans_templ(qq{<p class="warning"><MT_TRANS phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>});
-                    } else {
-                        $got_one_data = 1;
-                    }
                 }
             }
             print trans_templ(qq{<p class="installed"><MT_TRANS phrase="Your server has [_1] installed (version [_2])." params="$mod%%} . $mod->VERSION . qq{"></p>\n\n});

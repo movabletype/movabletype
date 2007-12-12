@@ -126,6 +126,8 @@ TC.attachLoadEvent(init);
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
+<fieldset>
+    <h3><__trans phrase="Blog Details"></h3>
 <mt:if name="can_edit_config">
 
     <mtapp:setting
@@ -136,7 +138,7 @@ TC.attachLoadEvent(init);
         help_section="blog_name">
                 <input name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onkeyup="dirify_blog_name(this)" />
     </mtapp:setting>
-
+<mt:if name="template_set_index">
     <mtapp:setting
         id="template_set"
         label="<__trans phrase="Template Set">"
@@ -149,6 +151,7 @@ TC.attachLoadEvent(init);
         </mt:loop>
         </select>
     </mtapp:setting>
+</mt:if>
 </mt:if>
 <mt:if name="can_set_publish_paths">
     <mtapp:setting
@@ -216,11 +219,12 @@ TC.attachLoadEvent(init);
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Create [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Create [lc,_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
         ><__trans phrase="Create [_1]" params="<mt:var name="object_label">"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+    </fieldset>
 </form>
 
 <mt:include name="include/footer.tmpl">

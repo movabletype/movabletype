@@ -58,7 +58,8 @@ sub init_test_db {
     # with stubs since we're not creating a full schema.
     MT::Upgrade->register_upgrade_function({
         core_seed_database     => { code => sub { 1 } },
-        core_install_templates => { code => sub { 1 } },
+        core_upgrade_templates => { code => sub { 1 } },
+        core_upgrade_templates => { code => sub { 1 } },
         core_finish            => { code => sub { 1 } },
     });
     $pkg->init_db();

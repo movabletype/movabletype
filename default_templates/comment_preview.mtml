@@ -6,6 +6,9 @@
 <MTSetVar name="feedback_template" value="1">
 <MTSetVarBlock name="page_title"><__trans phrase="Comment on [_1]" params="<$MTEntryTitle$>"></MTSetVarBlock>
 <MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
+<MTSetVarBlock name="html_head">
+<script type="text/javascript" src="<$MTLink template="javascript"$>"></script>
+</MTSetVarBlock>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 

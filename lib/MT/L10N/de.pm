@@ -1,5 +1,6 @@
-	# Copyright 2003-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -58,8 +59,8 @@ use vars qw( @ISA %Lexicon );
 	'Entry' => 'Eintrag',
 
 ## default_templates/notify-entry.mtml
-	'A new [_3] entitled \'[_1]\' has been published to [_2].' => 'Ein neuer Eintrag namens \'[_1]\' wurde in [_2] veröffentlicht.',
-	'View [_1]:' => '[_1] ansehen:',
+	'A new [lc,_3] entitled \'[_1]\' has been published to [_2].' => 'Ein neuer Eintrag namens \'[_1]\' wurde in [_2] veröffentlicht.',
+	'View [lc,_1]:' => '[_1] ansehen:',
 	'[_1] Title: [_2]' => 'Titel: [_2]',
 	'Publish Date: [_1]' => 'Veröffentlichungsdatum:',
 	'Message from Sender:' => 'Nachricht des Absenders:',
@@ -186,7 +187,7 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/javascript.mtml
 	'Thanks for signing in,' => 'Danke für Ihre Anmeldung, ',
 	'. Now you can comment.' => '. Sie können jetzt Ihren Kommentar verfassen.',
-	'sign out' => 'Abmelden',
+	'sign out' => 'abmelden',
 	'You do not have permission to comment on this blog.' => 'Sie haben nicht die notwendige Berechtigung, um in diesem Blog Kommentare zu schreiben.',
 	'Sign in' => 'Anmelden',
 	' to comment on this entry.' => ' um diesen Eintrag zu kommentieren.',
@@ -239,7 +240,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 	'About this Entry' => 'Über diese Seite',
 	'About this Archive' => 'Über dieses Archiv',
-	'About Archives' => 'Über das Archiv',
+	'About Archives' => 'Über die Archive',
 	'This page contains links to all the archived content.' => 'Diese Seite enthält Links zu allen archivierten Einträgen.',
 	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Diese Seite enthält einen einen einzelnen Eintrag von [_1] vom <em>[_2]</em>.',
 	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> ist der vorherige Eintrag in diesem Blog.',
@@ -430,35 +431,35 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load template' => 'Kann Vorlage nicht laden',
 	'Can\'t find template \'[_1]\'' => 'Kann Vorlage \'[_1]\' nicht finden',
 	'Can\'t find entry \'[_1]\'' => 'Kann Eintrag \'[_1]\' nicht finden',
-	'You used a [_1] tag without any arguments.' => 'Sie haben einen [_1]-Befehl ohne Argument verwendet.',
-	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'Sie haben ein \'[_1]\'-Befehl außerhalb eines Autoren-Kontexts verwendet - \'MTAuthors\'-Container erforderlich',
+	'You used a [_1] tag without any arguments.' => 'Sie haben einen [_1]-Tag ohne Argument verwendet.',
+	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'Sie haben ein \'[_1]\'-Tag außerhalb eines Autoren-Kontexts verwendet - \'MTAuthors\'-Container erforderlich',
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Fehler im \'[_2]\'-Attribut: [_1]',
 	'You have an error in your \'tag\' attribute: [_1]' => 'Fehler im \'tag\'-Attribut: [_1]',
 	'No such user \'[_1]\'' => 'Kein Benutzer \'[_1]\'',
-	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => '\'[_1]\'-Befehl außerhalb eines Eintrags-Kontexts verwendet - \'MTEntries\'-Container erforderlich.',
+	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => '\'[_1]\'-Tag außerhalb eines Eintrags-Kontexts verwendet - \'MTEntries\'-Container erforderlich.',
 	'You used <$MTEntryFlag$> without a flag.' => 'Sie haben <$MTEntryFlag$> ohne Flag verwendet.',
-	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Sie haben mit einem [_1]-Befehl \'[_2]\'-Archive verlinkt, ohne diese vorher zu veröffentlichen.',
+	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Sie haben mit einem [_1]-Tag \'[_2]\'-Archive verlinkt, ohne diese vorher zu veröffentlichen.',
 	'Could not create atom id for entry [_1]' => 'Konnte keine ATOM-ID für Eintrag [_1] erzeugen',
 	'To enable comment registration, you need to add a TypeKey token in your weblog config or user profile.' => 'Um die Registrierung von Kommentarautoren zu ermöglichen, geben Sie ein TypeKey-Token in den Weblogeinstellungen oder dem Benutzerenprofil an.',
 	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'Der MTCommentFields-Befehl ist nicht mehr verfügbar. Bitte verwenden Sie stattdessen das [_1]-Vorlagenmodul.',
-	'You used an [_1] tag without a date context set up.' => 'Sie haben einen [_1]-Befehl ohne Datumskontext verwendet.',
-	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => '\'[_1]\'-Befehl außerhalb eines Kommentar-Kontexts verwendet - \'MTComments\'-Container erforderlich.',
+	'You used an [_1] tag without a date context set up.' => 'Sie haben einen [_1]-Tag ohne Datumskontext verwendet.',
+	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => '\'[_1]\'-Tag außerhalb eines Kommentar-Kontexts verwendet - \'MTComments\'-Container erforderlich.',
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1] kann nur mit Tages-, Wochen- oder Monatsarchiven verwendet werden.',
 	'Group iterator failed.' => 'Gruppeniterator fehlgeschlagen.',
-	'You used an [_1] tag outside of the proper context.' => 'Sie haben ein [_1]-Befehl außerhalb seines Kontexts verwendet.',
+	'You used an [_1] tag outside of the proper context.' => 'Sie haben ein [_1]-Tag außerhalb seines Kontexts verwendet.',
 	'Could not determine entry' => 'Konnte Eintrag nicht bestimmen',
 	'Invalid month format: must be YYYYMM' => 'Ungültiges Datumsformat: richtig ist JJJJMM',
 	'No such category \'[_1]\'' => 'Keine Kategorie \'[_1]\'',
-	'<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the \'category\' attribute to the tag.' => '<\$MTCategoryTrackbackLink\$> muss im Kategoriekontext stehen oder mit dem \'category\'-Attribut des Befehls.',
-	'You failed to specify the label attribute for the [_1] tag.' => 'Kein Label-Attribut für den [_1]-Befehl angegeben.',
-	'You used an \'[_1]\' tag outside of the context of a ping; perhaps you mistakenly placed it outside of an \'MTPings\' container?' => '\'[_1]\'-Befehl außerhalb eines Ping-Kontextes verwendet - \'MTPings\'-Container erforderlich.',
+	'<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the \'category\' attribute to the tag.' => '<\$MTCategoryTrackbackLink\$> muss im Kategoriekontext stehen oder mit dem \'category\'-Attribut des Tags.',
+	'You failed to specify the label attribute for the [_1] tag.' => 'Kein Label-Attribut des [_1]-Tags angegeben.',
+	'You used an \'[_1]\' tag outside of the context of a ping; perhaps you mistakenly placed it outside of an \'MTPings\' container?' => '\'[_1]\'-Tag außerhalb eines Ping-Kontextes verwendet - \'MTPings\'-Container erforderlich.',
 	'[_1] used outside of [_2]' => '[_1] außerhalb [_2] verwendet',
 	'MT[_1] must be used in a [_2] context' => 'MT[_1] muss in einem [_2]-Kontext stehen',
 	'Cannot find package [_1]: [_2]' => 'Kann Paket [_1] nicht finden: [_2]',
 	'Error sorting [_2]: [_1]' => 'Fehler beim Sortieren von [_2]: [_1]',
 	'Edit' => 'Bearbeiten',
-	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => '\'[_1]\'-Befehl außerhalb eines Asset-Kontexts verwendet - möglicherweise außerhalb eines \'MTAssets\'-Containers?',
-	'You used an \'[_1]\' tag outside of the context of an page; perhaps you mistakenly placed it outside of an \'MTPages\' container?' => '\'[_1]\'-Befehl außerhalb eines Seiten-Kontexts verwendet - möglicherweise außerhalb eines \'MTPages\'-Containers?',
+	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => '\'[_1]\'-Tag außerhalb eines Asset-Kontexts verwendet - möglicherweise außerhalb eines \'MTAssets\'-Containers?',
+	'You used an \'[_1]\' tag outside of the context of an page; perhaps you mistakenly placed it outside of an \'MTPages\' container?' => '\'[_1]\'-Tag außerhalb eines Seiten-Kontexts verwendet - möglicherweise außerhalb eines \'MTPages\'-Containers?',
 	'You used an [_1] without a author context set up.' => '[_1] ohne vorhandenen Autorenkontext verwendet.',
 	'Can\'t load user.' => 'Kann Benutzerkonto nicht laden.',
 
@@ -507,7 +508,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid URL \'[_1]\'' => 'Ungültige Web-Adresse (URL) \'[_1]\'',
 	'Text entered was wrong.  Try again.' => 'Der eingegebene Text ist falsch. Bitte versuchen Sie es erneut.',
 	'Comment save failed with [_1]' => 'Der Kommentar konnte nicht gespeichert werden: [_1]',
-	'Comment on "[_1]" by [_2].' => 'Kommentar zu "[_1]" von [_2]',
+	'Comment on "[_1]" by [_2].' => 'Kommentar zu "[_1]" von [_2].',
 	'Commenter save failed with [_1]' => 'Beim Speichern des Kommentarautors ist ein Fehler aufgetreten: [_1]',
 	'Publish failed: [_1]' => 'Veröffentlichung fehlgeschlagen: [_1]',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Fehlgeschlagener Kommentierungsversuch durch schwebenden Kommentarautoren \'[_1]\'',
@@ -625,7 +626,7 @@ use vars qw( @ISA %Lexicon );
 	'Comments posted since [_1]' => 'Seit [_1] veröffentlichte Kommentare',
 	'Comments posted on or before [_1]' => 'Bis [_1] veröffentlichte Kommentare',
 	'Invalid blog' => 'Ungültiges Blog',
-	'Password Recovery' => 'Erinnerungssatz zur Passwortanforderung',
+	'Password Recovery' => 'Neues Passwort anfordern',
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Ungültiger Versuch der Passwortanforderung. Passwörter können in dieser Konfiguration nicht angefordert werden.',
 	'Invalid author_id' => 'Ungültige Autoren-ID',
 	'Can\'t recover password in this configuration' => 'Passwörter können in dieser Konfiguration nicht angefordert werden',
@@ -658,7 +659,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog Activity Feed' => 'Aktivitätsfeed',
 	'*User deleted*' => 'Benutzer gelöscht',
 	'All Feedback' => 'Feedback',
-	'Activity Log' => 'Aktivitätsprotokoll',
+	'Activity Log' => 'Aktivitäten',
 	'System Activity Feed' => 'Systemfeed',
 	'Activity log for blog \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Aktivitätsprotokoll von \'[_1]\' (ID:[_2]) on \'[_3]\' zurückgesetzt',
 	'Activity log reset by \'[_1]\'' => 'Aktivitätsprotokoll zurückgesetzt von \'[_1]\'',
@@ -902,7 +903,7 @@ use vars qw( @ISA %Lexicon );
 	'Role Name' => 'Rollenname',
 	'Roles Selected' => 'Gewählte Rollen',
 	'' => ' ',
-	'Grant Permissions' => 'Berechtigungen zuweisen',
+	'Grant Permissions' => 'Rechte zuweisen',
 	'Backup' => 'Sichern',
 	'Backup & Restore' => 'Sichern & Wiederherstellen',
 	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Durchführung der Sicherung beschreibbar sein. Bitte überprüfen Sie Ihre TempDir-Einstellung.',
@@ -944,7 +945,7 @@ use vars qw( @ISA %Lexicon );
 	'You can\'t reply to unpublished comment.' => 'Sie können nicht auf Kommentare antworten, die noch nicht veröffentlicht wurden.',
 	'entries' => 'Einträge',
 	'This is You' => 'Das sind Sie',
-	'Handy Shortcuts' => 'Schnellzugriff',
+	'Handy Shortcuts' => 'Nützliche Abkürzungen',
 	'Movable Type News' => 'News von Movable Type',
 	'Blog Stats' => 'Statistik',
 	'Publish Entries' => 'Einträge veröffentlichen',
@@ -1841,27 +1842,26 @@ use vars qw( @ISA %Lexicon );
 	'comment' => 'Kommentar',
 	'comments' => 'Kommentare',
 	'to publish' => 'zu Veröffentlichen',
-	'Publish selected [_1] (a)' => 'Gewählte [_1] veröffentlichen',
-	'Delete selected [_1] (x)' => 'Gewählte [_1] löschen (x)',
-	'Report selected [_1] as Spam (j)' => 'Ausgewählte [_1] als Spam melden (j)',
+	'Publish selected [lc,_1] (a)' => 'Gewählte [_1] veröffentlichen',
+	'Delete selected [lc,_1] (x)' => 'Gewählte [_1] löschen (x)',
+	'Report selected [lc,_1] as Spam (j)' => 'Ausgewählte [_1] als Spam melden (j)',
 	'Spam' => 'Spam',
-	'Report selected [_1] as Not Spam and Publish (j)' => 'Ausgewählte [_1] als spamfrei melden und veröffentlichen',
+	'Report selected [lc,_1] as Not Spam and Publish (j)' => 'Ausgewählte [_1] als spamfrei melden und veröffentlichen',
 	'Not Spam' => 'Nicht Spam',
 	'Are you sure you want to remove all comments reported as spam?' => 'Wirklich alle als Spam gemeldeten Kommentare löschen?',
-	'Deletes all [_1] reported as Spam' => 'Alle als Spam gemeldeten [_1] löschen',
+	'Deletes all [lc,_1] reported as Spam' => 'Alle als Spam gemeldeten [_1] löschen',
 	'Empty' => 'Leer',
 	'Ban This IP' => 'Diese IP-Adresse sperren',
 	'Status' => 'Status',
 	'Entry/Page' => 'Eintrag/Seite',
-	'Date' => 'Zeitpunkt',
+	'Date' => 'Datum',
 	'IP' => 'IP',
 	'Only show published comments' => 'Nur veröffentlichte Kommentare anzeigen',
 	'Published' => 'Veröffentlichen',
 	'Only show pending comments' => 'Nur nicht veröffentlichte Kommentare anzeigen',
 	'Pending' => 'Auf Moderation wartend',
 	'Edit this comment' => 'Kommentar bearbeiten',
-	'(1 reply)' => '(1 Antwort)',
-	'([_1] replies)' => '([_1] Antworten)',
+	'([quant,_1,reply,replies])' => '([quant,_1,Antwort,Antworten])',
 	'Reply' => 'Antworten',
 	'Trusted' => 'vertraut',
 	'Blocked' => 'Gesperrt',
@@ -1869,7 +1869,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit this [_1] commenter' => '[_1] Kommentarautor bearbeiten',
 	'Search for comments by this commenter' => 'Nach Kommentaren von diesem Kommentarautor suchen',
 	'Anonymous' => 'Anonym',
-	'View this [_1]' => '[_1] ansehen',
+	'View this [lc,_1]' => '[_1] ansehen',
 	'Search for all comments from this IP address' => 'Nach Kommentaren von dieser IP-Adresse suchen',
 
 ## tmpl/cms/include/member_table.tmpl
@@ -1986,21 +1986,21 @@ use vars qw( @ISA %Lexicon );
 	'View the [_1] for this TrackBack' => '[_1] zu dem TrackBack ansehen',
 
 ## tmpl/cms/include/entry_table.tmpl
-	'Save these [_1] (s)' => '[_1] speichern (s)',
+	'Save these [lc,_1] (s)' => '[_1] speichern (s)',
 	'to republish' => 'zur erneuten Veröffentlichung',
-	'Republish selected [_1] (r)' => 'Gewählte [_1] erneut veröffentlichen (r)',
+	'Republish selected [lc,_1] (r)' => 'Gewählte [_1] erneut veröffentlichen (r)',
 	'Republish' => 'Seite',
 	'Last Modified' => 'Zuletzt geändert',
 	'Created' => 'Angelegt',
 	'Unpublished (Draft)' => 'Unveröffentlicht (Entwurf)',
 	'Unpublished (Review)' => 'Unveröffentlicht (Prüfung)',
 	'Scheduled' => 'Zu bestimmtem Zeitpunkt',
-	'Only show unpublished [_1]' => 'Nur nicht veröffentlichte [_1] zeigen',
-	'Only show published [_1]' => 'Nur veröffentlichte [_1] zeigen',
-	'Only show [_1] for review' => 'Nur zu prüfende [_1] zeigen',
-	'Only show scheduled [_1]' => 'Nur zeitgeplante [_1] zeigen',
-	'Edit [_1]' => '[_1] bearbeiten',
-	'View [_1]' => 'Zeige [_1]',
+	'Only show unpublished [lc,_1]' => 'Nur nicht veröffentlichte [_1] zeigen',
+	'Only show published [lc,_1]' => 'Nur veröffentlichte [_1] zeigen',
+	'Only show [lc,_1] for review' => 'Nur zu prüfende [_1] zeigen',
+	'Only show scheduled [lc,_1]' => 'Nur zeitgeplante [_1] zeigen',
+	'Edit [lc,_1]' => '[_1] bearbeiten',
+	'View [lc,_1]' => 'Zeige [_1]',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2143,7 +2143,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/blog-left-nav.tmpl
 	'Creating' => 'Anlegen',
 	'Create Entry' => 'Neuen Eintrag schreiben',
-	'Community' => 'Community',
+	'Community' => 'Feedback',
 	'List Commenters' => 'Kommentarautoren auflisten',
 	'Edit Address Book' => 'Adressbuch bearbeiten',
 	'List Users &amp; Groups' => 'Benutzer und Gruppen auflisten',
@@ -2198,9 +2198,9 @@ use vars qw( @ISA %Lexicon );
 	'Upload New Image' => 'Neues Bild hochladen',
 	'Asset Name' => 'Assetname',
 	'View Asset' => 'Asset ansehen',
-	'Next (s)' => 'Weiter (s)',
+	'Next (s)' => 'Nächstes (s)',
 	'Insert (s)' => 'Einfügen (s)',
-	'Next' => 'Weiter',
+	'Next' => 'Nächstes',
 	'Insert' => 'Einfügen',
 	'No assets could be found.' => 'Keine Assets gefunden.',
 
@@ -2416,7 +2416,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenting' => 'Kommentieren',
 	'Duplicate Roles' => 'Rollen duplizieren',
 	'These roles have the same privileges as this role' => 'Folgende Rollen haben die gleichen Berechtigungen wie diese Rolle',
-	'Save changes to this [_1] (s)' => 'Änderungen an [_1] speichern (s)',
+	'Save changes to this [lc,_1] (s)' => 'Änderungen an [_1] speichern (s)',
 
 ## tmpl/cms/cfg_plugin.tmpl
 	'System Plugin Settings' => 'System: Plugin-Einstellungen',
@@ -2485,7 +2485,7 @@ use vars qw( @ISA %Lexicon );
 	'Save (s)' => 'Sichern (s)',
 	'Save and Publish this template (r)' => 'Vorlage speichern und veröffentlichen (r)',
 	'Save &amp; Publish' => 'Speichern und veröffentlichen',
-	'You have unsaved changes to your [_1] that will be lost.' => 'Es liegen nicht gespeicherte Änderungen vor, die verloren gehen werden.',
+	'You have unsaved changes to your [lc,_1] that will be lost.' => 'Es liegen nicht gespeicherte Änderungen vor, die verloren gehen werden.',
 	'You must set the Template Name.' => 'Sie müssen einen Vorlagennamen angeben.',
 	'You must set the template Output File.' => 'Sie müssen einen Dateinamen angeben.',
 	'Please wait...' => 'Bitte warten...',
@@ -2553,7 +2553,7 @@ use vars qw( @ISA %Lexicon );
 	'All [_1]' => 'Alle [_1]',
 	'change' => 'ändern',
 	'[_1] where [_2] is [_3]' => '[_1] mit [_2] [_3]',
-	'Show only [_1] where' => 'Zeige nur [_1] mit ',
+	'Show only [lc,_1] where' => 'Zeige nur [_1] mit ',
 	'status' => 'Status',
 	'tag (exact match)' => 'Tag (genau)',
 	'tag (fuzzy match)' => 'Tag (unscharf)',
@@ -2572,13 +2572,13 @@ use vars qw( @ISA %Lexicon );
 	'Comments from [_1]' => 'Kommentare von [_1]',
 	'commenter' => 'Kommentarautor',
 	'commenters' => 'Kommentarautoren',
-	'Trust [_1] (t)' => '[_1] vertrauen (t)',
+	'Trust [lc,_1] (t)' => '[_1] vertrauen (t)',
 	'Trust' => 'Vertrauen',
-	'Untrust [_1] (t)' => '[_1] nicht mehr vertrauen (t)',
+	'Untrust [lc,_1] (t)' => '[_1] nicht mehr vertrauen (t)',
 	'Untrust' => 'Nicht vertrauen',
-	'Ban [_1] (b)' => '[_1] sperren (b)',
+	'Ban [lc,_1] (b)' => '[_1] sperren (b)',
 	'Ban' => 'Sperren',
-	'Unban [_1] (b)' => '[_1] entsperren (b)',
+	'Unban [lc,_1] (b)' => '[_1] entsperren (b)',
 	'Unban' => 'Entsperren',
 	'The Name of the commenter' => 'Name des Kommentarautors',
 	'View all comments with this name' => 'Alle Kommentare mit diesem Autorennamen anzeigen',
@@ -2668,7 +2668,7 @@ use vars qw( @ISA %Lexicon );
 	'folder' => 'Ordner',
 	'folders' => 'Ordner',
 	'categories' => 'Kategorien',
-	'Create [_1]' => '[_1] anlegen',
+	'Create [lc,_1]' => '[_1] anlegen',
 	'Your [_1] has been saved.' => '[_1] gespeichert.',
 	'One or more errors occurred when sending update pings or TrackBacks.' => 'Es sind ein oder mehrere Fehler beim Senden von TrackBacks aufgetreten.',
 	'_USAGE_VIEW_LOG' => 'Nähere Informationen zum aufgetretenen Fehler finden Sie im <a href="[_1]">Aktivitätsprotokoll</a>.',
@@ -2697,13 +2697,12 @@ use vars qw( @ISA %Lexicon );
 	'Publish Date' => 'Veröffent- lichungs- zeitpunkt',
 	'Make primary' => 'Als Hauptkategorie',
 	'Add sub category' => 'Unterkategorie hinzufügen',
-	'Add [_1] name' => '[_1]-Name hinzufügen',
-	'Add new parent [_1]' => 'Neue Eltern-[_1] hinzufügen',
+	'Add [lc,_1] name' => '[_1]-Name hinzufügen',
+	'Add new parent [lc,_1]' => 'Neue Eltern-[_1] hinzufügen',
 	'Add new' => 'Neue',
-	'Save this [_1] (s)' => '[_1] speichern (s)',
-	'Preview this [_1] (v)' => 'Vorschau auf [_1]',
-	'Delete this [_1] (v)' => '[_1] löschen (v)',
-	'Share this [_1]' => 'Benachrichtigung versenden',
+	'Save this [lc,_1] (s)' => '[_1] speichern (s)',
+	'Preview this [lc,_1] (v)' => 'Vorschau auf [_1]',
+	'Share this [lc,_1]' => 'Benachrichtigung versenden',
 	'View published [_1]' => '[_1] ansehen',
 	'&laquo; Previous' => '&laquo; Vorheriger',
 	'Next &raquo;' => 'Nächster &raquo;',
@@ -2713,10 +2712,10 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(Liste mit Kommatrennung)',
 	'(space-delimited list)' => '(Liste mit Leerzeichentrennung)',
 	'(delimited by \'[_1]\')' => '(Trennung durch \'[_1]\')',
-	'Change [_1]' => '[_1] ändern',
-	'Add [_1]' => '[_1] wählen',
+	'Change [lc,_1]' => '[_1] ändern',
+	'Add [lc,_1]' => '[_1] wählen',
 	'Unpublished' => 'Nicht veröffentlichen',
-	'You must configure blog before you can publish this [_1].' => 'Vor dem Veröffentlichen müssen Sie das Blog konfigurieren.',
+	'You must configure this blog before you can publish this [lc,_1].' => 'Vor dem Veröffentlichen müssen Sie das Blog konfigurieren.',
 	'Select entry date' => 'Eintragsdatum wählen',
 	'Unlock this entry&rsquo;s output filename for editing' => 'Dateinamen manuell bearbeiten',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => 'Warnung: Wenn Sie den Basisnamen manuell einstellen, ist es nicht auszuschließen, daß der gewählte Name bereits existiert.',
@@ -2831,7 +2830,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/export.tmpl
 	'You must select a blog to export.' => 'Sie müssen wählen, welches Blog exportiert werden soll.',
-	'_USAGE_EXPORT_1' => 'Einträge, Kommentare und TrackBacks eines Blogs in einem Austauschformat speichern. Ein Export stellt <em>keine</em> komplette Sicherungskopie eines Blogs dar.',
+	'_USAGE_EXPORT_1' => 'Hier können Sie die Einträge, Kommentare und TrackBacks des ausgewählten Blogs exportieren. Ein Export stellt <em>keine</em> komplette Sicherungskopie eines Blogs dar.',
 	'Blog to Export' => 'Zu exportierendes Blog',
 	'Select a blog for exporting.' => 'Zu exportierendes Blog',
 	'Change blog' => 'Anderes Blog wählen',
@@ -3026,13 +3025,13 @@ use vars qw( @ISA %Lexicon );
 	'System Permissions' => 'Berechtigungen',
 	'Options' => 'Optionen',
 	'Create personal blog for user' => 'Persönliches Blog für den Benutzer anlegen',
-	'Create [_1] (s)' => '[_1] anlegen (s)',
+	'Create [lc,_1] (s)' => '[_1] anlegen (s)',
 	'_USAGE_PASSWORD_RESET' => 'Hier können Sie das Passwort dieses Benutzers zurücksetzen. Dazu wird ein zufälliges neues Passwort erzeugt und an <strong>[_1]</strong> verschickt werden.',
 	'Initiate Password Recovery' => 'Passwort wiederherstellen',
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'Kommentar freigeschaltet.',
-	'Delete this [_1] (x)' => '[_1] löschen (x)',
+	'Delete this [lc,_1] (x)' => '[_1] löschen (x)',
 	'Previous Comment' => 'Vorheriger Kommentar',
 	'Next Comment' => 'Nächster Kommentar',
 	'Manage Comments' => 'Kommentare verwalten',
@@ -3079,7 +3078,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/import.tmpl
 	'You must select a blog to import.' => 'Wählen Sie, in welches Blog importiert werden soll',
-	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Einträge aus anderen Movable Type-Installationen oder aus anderen Weblog-Systemen übernehmen',
+	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Mit der Import/Export-Funktionen können Einträge aus anderen Movable Type-Installationen oder aus anderen Weblog-Systemen übernommen werden. Bestehende Einträge können in einem Austauschformat gesichert werden.',
 	'Blog to Import' => 'Importziel',
 	'Select a blog to import.' => 'Wählen Sie, in welches Blog importiert werden soll',
 	'Importing from' => 'Importieren aus',
@@ -3119,7 +3118,7 @@ use vars qw( @ISA %Lexicon );
 	'Number of users in this system.' => 'Anzahl der Benutzer dieses Systems',
 	'Total Users' => 'Benutzer insgesamt',
 	'Active Users' => 'Aktive Benutzer',
-	'Users who have logged in within 90 days are considered <strong>active</strong> in Movable Type license agreement.' => 'Als <strong>aktiv</strong> gelten nach den Movable Type-Lizenzbedingungen Benutzer, die sich innerhalb der letzten 90 Tage eingeloggt haben.',
+	'Users who have logged in within 90 days are considered <strong>active</strong> in Movable Type license agreement.' => 'Benutzer, die sich innerhalb der letzten 90 Tage eingeloggt haben, gelten nach den Movable Type-Lizenzbedingungen als <strong>aktiv</strong>.',
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, please ensure that the mt-check.cgi script exists and/or the CheckScript configuration parameter references it properly.' => 'Movable Type konnte die Datei \'mt-check.cgi\' nicht finden. Stellen Sie sicher, daß die Datei vorhanden ist und MTCheckScript die richtigen Pfadangaben enthält.',
 
 ## tmpl/cms/restore.tmpl
@@ -3235,12 +3234,12 @@ use vars qw( @ISA %Lexicon );
 	'Cancel (c)' => 'Abbrechen (c)',
 
 ## tmpl/cms/list_folder.tmpl
-	'Your [_1] changes and additions have been made.' => 'Änderungen übernommen.',
-	'You have successfully deleted the selected [_1].' => 'Änderungen übernommen.',
-	'Create top level [_1]' => 'Neue Haupt[_1] anlegen',
+	'Your [lc,_1] changes and additions have been made.' => 'Änderungen übernommen.',
+	'You have successfully deleted the selected [lc,_1].' => 'Änderungen übernommen.',
+	'Create top level [lc,_1]' => 'Neue Haupt[_1] anlegen',
 	'New Parent [_1]' => 'Neue Mutter[_1]',
 	'Top Level' => 'Hauptebene',
-	'Move [_1]' => '[_1] verschieben',
+	'Move [lc,_1]' => '[_1] verschieben',
 	'Move' => 'Verschieben',
 	'[quant,_1,page,pages]' => '[quant,_1,Seite,Seiten]',
 
@@ -3249,13 +3248,13 @@ use vars qw( @ISA %Lexicon );
 	'permissions' => 'Berechtigungen',
 	'Remove selected assocations (x)' => 'Gewählte Zuweisungen löschen',
 	'Revoke Permission' => 'Berechtigung entziehen',
-	'Grant Permission' => 'Berechtigung zuweisen',
+	'Grant Permission' => 'Berechtigungen vergeben',
 	'You can not create associations for disabled users.' => 'Deaktivierte Benutzerkonten können nicht zugewiesen werden.',
 	'Assign Role to User' => 'Rolle an Benutzer zuweisen',
 	'Grant permission to a user' => 'Berechtigung an Benutzer vergeben',
 	'[_1] <em>[_2]</em> is currently disabled.' => '[_1] <em>[_2]</em> ist derzeit deaktiviert.',
 	'You have successfully revoked the given permission(s).' => 'Berechtigungen erfolgreich entzogen',
-	'You have successfully granted the given permission(s).' => 'Berechtigungen erfolgreich zugewiesen',
+	'You have successfully granted the given permission(s).' => 'Berechtigungen erfolgreich vergeben',
 
 ## tmpl/cms/login.tmpl
 	'Your Movable Type session has ended.' => 'Ihre Movable Type-Sitzung ist abgelaufen oder Sie haben sich abgemeldet.',
@@ -3413,7 +3412,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,result,results] found' => '[quant,_1,Treffer,Treffer] gefunden',
 
 ## tmpl/cms/preview_strip.tmpl
-	'You are previewing the [_1] titled &ldquo;[_2]&rdquo;' => 'Sie sehen eine Vorschau auf den [_1] namens &ldquo;[_2]&rdquo;',
+	'You are previewing the [lc,_1] titled &ldquo;[_2]&rdquo;' => 'Sie sehen eine Vorschau auf den [_1] namens &ldquo;[_2]&rdquo;',
 
 ## tmpl/cms/edit_ping.tmpl
 	'The TrackBack has been approved.' => 'TrackBack wurde freigeschaltet.',
@@ -3600,7 +3599,7 @@ use vars qw( @ISA %Lexicon );
 	'Simple Footer' => 'Einfache Fußzeile',
 
 ## addons/Community.pack/templates/global/profile_edit_form.mtml
-	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => '<a href="[_1]">Zurück zur Ausgangsseite</a> oder <a href="[_2]">Profil ansehen</a>.',
+	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => '<a href="[_1]>Zurück zur Ausgangsseite</a> oder <a href="[_2]>Profil ansehen</a>.',
 	'Form Field' => 'Formularfeld',
 	'User Name' => 'Benutzername',
 	'Upload New Userpic' => 'Neues Benutzerbild hochladen',
@@ -3671,17 +3670,17 @@ use vars qw( @ISA %Lexicon );
 	'Blog Home' => 'Startseite',
 
 ## addons/Community.pack/templates/blog/entry_summary.mtml
-	'A favorite' => 'Mein Favorit',
+	'A favorite' => 'Ein Favorit',
 	'Favorite' => 'Favorit',
 
 ## addons/Community.pack/templates/blog/entry_response.mtml
-	'Thank you for posting an entry.' => 'Danke für Ihren Beitrag!',
+	'Thank you for posting an entry.' => 'Danke, daß Sie einen Eintrag geschrieben haben.',
 	'Entry Pending' => 'Eintrag noch nicht freigegeben',
 	'Your entry has been received and held for approval by the blog owner.' => 'Ihr Eintrag ist eingegangen und muss nun vom Blogbetreiber freigeschaltet werden.',
 	'Entry Posted' => 'Eintrag veröffentlicht',
 	'Your entry has been posted.' => 'Ihr Eintrag wurde veröffentlicht.',
 	'Your entry has been received.' => 'Ihr Eintrag ist eingegangen.',
-	'Return to the <a href="[_1]">blog\'s main index</a>.' => 'Zurück zur <a href="[_1]">Indexseite</a>.',
+	'Return to the <a href="[_1]">blog\'s main index</a>.' => 'Zurück zur <a href="[_1]">Startseite</a>.',
 
 ## addons/Community.pack/templates/blog/comment_response.mtml
 
@@ -3739,7 +3738,7 @@ use vars qw( @ISA %Lexicon );
 	'Start Topic' => 'Thema eröffnen',
 
 ## addons/Community.pack/templates/forum/entry_response.mtml
-	'Thank you for posting a new topic to the forums.' => 'Danke für Ihren Beitrag!',
+	'Thank you for posting a new topic to the forums.' => 'Danke, daß Sie ein neues Thema eröffnet haben!',
 	'Topic Pending' => 'Thema noch nicht freigegeben',
 	'The topic you posted has been received and held for approval by the forum administrators.' => 'Ihr Thema  ist eingegangen und muss nun vom Forenadministrator freigeschaltet werden.',
 	'Topic Posted' => 'Thema veröffentlicht',
@@ -3749,7 +3748,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/forum/comment_response.mtml
 	'Reply Submitted' => 'Antwort eingegangen',
 	'Your reply has been accepted' => 'Ihre Antwort ist eingegangen.',
-	'Thank you for your reply. It has been accepted and should appear momentarily.' => 'Vielen Dank für Ihre Antwort. Sie wird sofort veröffentlicht.',
+	'Thank you for your reply. It has been accepted and should appear momentarily.' => 'Vielen Dank für Ihre Antwort. Sie erscheint sofort ohne weitere Moderation.',
 	'Reply Pending' => 'Moderation',
 	'Your reply has been received' => 'Ihre Antwort ist eingegangen.',
 	'Thank you for your reply. However, your reply is currently being held for approval by the forum\'s administrator.' => 'Vielen Dank für Ihre Antwort. Sie muss noch vom Forenadministrator freigeschaltet werden.',
@@ -3783,8 +3782,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/forum/javascript.mtml
 	'. Now you can reply to this topic.' => '. Sie können nun Ihre Antwort schreiben.',
-	' to comment on this topic.' => ' um dieses Thema zu kommentieren.',
-	' to comment on this topic,' => ' um dieses Thema zu kommentieren,',
+	' to comment on this topic.' => 'um dieses Thema zu kommentieren.',
+	' to comment on this topic,' => 'um dieses Thema zu kommentieren,',
 
 ## addons/Community.pack/templates/forum/rss.mtml
 
@@ -3806,7 +3805,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/forum/comments.mtml
 	'[_1] Replies' => '[_1] Antworten',
-	'_NUM_FAVORITES' => 'Favoriten', # Translate - New # OK
+	'_NUM_FAVORITES' => 'Favorit', # Translate - New # OK
 	'Favorite This' => 'Zum Favoriten machen',
 
 ## addons/Community.pack/templates/forum/search_results.mtml
@@ -3895,7 +3894,7 @@ use vars qw( @ISA %Lexicon );
 	'Unlock this for editing' => 'Zur Bearbeitung freischalten',
 	'Warning: Changing this field\'s basename may cause serious data loss.' => 'Achtung: Änderungen des Basisnamens eines Feldes kann zu erheblichen Datenverlusten führen!',
 	'Template Tag' => 'Vorlagenbefehl',
-	'Create a custom template tag for this field.' => 'Einen eigenen Vorlagenbefehl für dieses Feld anlegen',
+	'Create a custom template tag for this field.' => 'Einen eigenen Vorlagenbefehl für dieses Feld anlegen.',
 	'Example Template Code' => 'Beispiel-Vorlagencode',
 	'field' => 'Feld',
 	'fields' => 'Felder',
@@ -4053,9 +4052,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/tmpl/include/group_table.tmpl
 	'group' => 'Gruppe',
 	'groups' => 'Gruppen',
-	'Enable selected [_1] (e)' => 'Gewählte [_1] aktivieren (e)',
-	'Disable selected [_1] (d)' => 'Gewählte [_1] deaktivieren (d)',
-	'Remove selected [_1] (d)' => 'Gewählte [_1] entfernen (d)',
+	'Enable selected [lc,_1] (e)' => 'Gewählte [_1] aktivieren (e)',
+	'Disable selected [lc,_1] (d)' => 'Gewählte [_1] deaktivieren (d)',
+	'Remove selected [lc,_1] (d)' => 'Gewählte [_1] entfernen (d)',
 	'Only show enabled groups' => 'Nur aktivierte Gruppen zeigen',
 	'Only show disabled groups' => 'Nur deaktivierte Gruppen zeigen',
 
@@ -4293,7 +4292,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid URL: [_1]' => 'Ungültige URL: [_1]',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a Style' => 'Stilvorlage wählen',
+	'Select a Style' => 'Design wählen',
 	'3-Columns, Wide, Thin, Thin' => 'Dreispaltig: breit - schmal - schmal',
 	'3-Columns, Thin, Wide, Thin' => 'Dreispaltig: schmal - breit - schmal',
 	'2-Columns, Thin, Wide' => 'Zweispaltig: schmal - breit',
@@ -4308,9 +4307,9 @@ use vars qw( @ISA %Lexicon );
 	'Stylesheet or Repository URL' => 'URL des Stylesheets oder der Sammlung',
 	'Stylesheet or Repository URL:' => 'URL des Stylesheets oder der Sammlung:',
 	'Download Styles' => 'Designs herunterladen',
-	'Current theme for your weblog' => 'Aktuelles Thema Ihres Weblogs',
-	'Current Style' => 'Derzeitiges Design',
-	'Locally saved themes' => 'Lokal gespeicherte Themen',
+	'Current theme for your weblog' => 'Aktuelles Theme Ihres Weblogs',
+	'Current Style' => 'Derzeitige Design',
+	'Locally saved themes' => 'Lokal gespeicherte Themes',
 	'Saved Styles' => 'Gespeicherte Designs',
 	'Default Styles' => 'Standarddesigns',
 	'Single themes from the web' => 'Einzelne Themes aus dem Web',
@@ -4545,7 +4544,7 @@ use vars qw( @ISA %Lexicon );
 	'Recent posts' => 'Aktuelle Einträge',
 	'Search form' => 'Suche',
 	'Recent comments' => 'Aktuelle Kommentare',
-	'Tag cloud (sidebar)' => 'Tag-Wolke (Seitenleiste)',
+	'Tag cloud (sidebar)' => 'Tag Cloud (Seitenleiste)',
 	'Monthly archive dropdown' => 'Monatsarchive (Dropdown)',
 	'Pages list (nested)' => 'Seitenliste (geschachtelt)',
 	'Photos' => 'Fotos',

@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -194,14 +194,17 @@ sub install_properties {
 
     # Special handling for 'Taggable' objects; automatic saving
     # and removal of tags.
-    if ($class->isa('MT::Taggable')) {
-        # synchronize tags if necessary
-        $class->add_trigger( post_save => \&post_save_tags );
-        $class->add_trigger( pre_remove => \&pre_remove_tags );
+    my @isa;
+    {
+        no strict 'refs';
+        @isa = @{ $class . '::ISA' };
     }
-
-    if ($class->isa('MT::Scorable')) {
-        $class->add_trigger( post_remove => \&post_remove_score );
+    foreach my $isa_pkg ( @isa ) {
+        next unless $isa_pkg =~ /able$/;
+        next if $isa_pkg eq $class;
+        if ($isa_pkg->can('install_properties')) {
+            $isa_pkg->install_properties($class);
+        }
     }
 
     # install legacy date translation
@@ -216,29 +219,6 @@ sub install_properties {
     }
 
     return $props;
-}
-
-# post_save trigger for MT::Taggable objects to synchronize tags upon save.
-sub post_save_tags {
-    my $class = shift;
-    my ($obj) = @_;
-    $obj->save_tags;
-}
-
-sub pre_remove_tags {
-    my $class = shift;
-    my ($obj) = @_;
-    $obj->remove_tags if ref $obj;
-}
-
-sub post_remove_score {
-    my $class = shift;
-    my ($obj) = @_;
-    require MT::ObjectScore;
-    MT::ObjectScore->remove({
-        object_ds => $obj->datasource,
-        object_id => $obj->id,
-    });
 }
 
 # A post-load trigger for classed objects
@@ -504,6 +484,83 @@ sub translate_audited_fields {
         if((defined $new_val) && ($new_val ne $value)) {
             $orig_obj->column($field, $new_val);
         }
+    }
+    return;
+}
+
+sub nextprev {
+    my $obj = shift;
+    my $class = ref($obj);
+    my %param = @_;
+    my ($direction, $terms, $args, $by_field)
+        = @param{qw( direction terms args by )};
+    return undef unless ($direction eq 'next' || $direction eq 'previous');
+    my $next = $direction eq 'next';
+
+    if (!$by_field) {
+        return if !$class->properties->{audit};
+        $by_field = 'created_on';
+    }
+
+    # Selecting the adjacent object can be tricky since timestamps
+    # are not necessarily unique for entries. If we find that the
+    # next/previous object has a matching timestamp, keep selecting entries
+    # to select all entries with the same timestamp, then compare them using
+    # id as a secondary sort column.
+
+    my ($id, $ts) = ($obj->id, $obj->$by_field());
+    local @$args{qw( sort direction range_incl )}
+        = ($by_field, $next ? 'ascend' : 'descend', { $by_field => 1 });
+    my $iter = $class->load_iter({
+        $by_field => ($next ? [ $ts, undef ] : [ undef, $ts ]),
+        %{$terms}
+    }, $args);
+
+    # This selection should always succeed, but handle situation if
+    # it fails by returning undef.
+    return unless $iter;
+
+    # The 'same' array will hold any entries that have matching
+    # timestamps; we will then sort those by id to find the correct
+    # adjacent object.
+    my @same; 
+    while (my $e = $iter->()) {
+        # Don't consider the object that is 'current'
+        next if $e->id == $id;
+        my $e_ts = $e->$by_field();
+        if ($e_ts eq $ts) {
+            # An object with the same timestamp should only be
+            # considered if the id is in the scope we're looking for
+            # (greater than for the 'next' object; less than for
+            # the 'previous' object).
+            push @same, $e
+                if $next && $e->id > $id or !$next && $e->id < $id;
+        } else {
+            # We found an object with a timestamp different than
+            # the 'current' object.
+            if (!@same) {
+                push @same, $e;
+                # We should check to see if this new timestamped object also
+                # has entries adjacent to _it_ that have the same timestamp.
+                while (my $e = $iter->()) {
+                    push(@same, $e), next if $e->$by_field() eq $e_ts;
+                    $iter->('finish'), last;
+                }
+            } else {
+                $iter->('finish');
+            }
+            return $e unless @same;
+            last;
+        }
+    }
+    if (@same) {
+        # If we only have 1 element in @same, return that.
+        return $same[0] if @same == 1;
+        # Sort remaining elements in @same by id.
+        @same = sort { $a->id <=> $b->id } @same;
+        # Return front of list (smallest id) if selecting 'next'
+        # object. Return tail of list (largest id) if selection 'previous'.
+        return $same[$next ? 0 : $#same];
     }
     return;
 }
@@ -817,7 +874,9 @@ sub set_by_key {
 # the content to cache if caching is enabled. Thus, we must ensure any
 # metadata is serialized prior to caching.
 sub column_values {
-    if ($_[0]->properties->{meta_column}) {
+    my $props = $_[0]->properties;
+    if ($props->{meta_column}
+        && $_[0]->{changed_cols}{$props->{meta_column}}) {
         $_[0]->pre_save_serialize_metadata;
     }
     return $_[0]->SUPER::column_values(@_);
@@ -847,6 +906,12 @@ sub column_def {
         $defs->{$name} = $def = $obj->__parse_def($name, $def);
     }
     return $def;
+}
+
+sub index_defs {
+    my $obj = shift;
+    my $props = $obj->properties;
+    $props->{indexes};
 }
 
 sub column_defs {

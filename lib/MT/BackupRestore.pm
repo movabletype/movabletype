@@ -1,12 +1,13 @@
-# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::BackupRestore;
 use strict;
 
+use MT::Util qw( encode_url );
 use Symbol;
 use base qw( MT::ErrorHandler );
 
@@ -14,6 +15,16 @@ use constant NS_MOVABLETYPE => 'http://www.sixapart.com/ns/movabletype';
 
 use File::Spec;
 use File::Copy;
+
+MT->add_callback('restore', 3, MT->instance, sub {
+    my ($cb, $objects, $deferred, $errors, $callback) = @_;
+    MT::BackupRestore->cb_restore_objects( $objects, $callback );
+});
+
+MT->add_callback('restore_asset', 3, MT->instance, sub {
+    my ($cb, $asset, $callback) = @_;
+    MT::BackupRestore->cb_restore_asset( $asset, $callback );
+});
 
 sub _populate_obj_to_backup {
     my $pkg = shift;
@@ -229,13 +240,9 @@ sub restore_file {
     my ($blog_ids, $asset_ids) = eval { $class->restore_process_single_file(
         $fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback
     ); };
+
+    MT->run_callbacks('restore', $objects, $deferred, $errors, $callback);
     $$errormsg = join('; ', @$errors);
-    #my @blog_ids;
-    #while (my ($key, $value) = each %$objects) {
-    #    if ($key =~ /MT::Blog#/) {
-    #        push @blog_ids, $value->id;
-    #    }
-    #}
     ($deferred, $blog_ids);
 }
  
@@ -285,7 +292,7 @@ sub restore_process_single_file {
 
 sub restore_directory {
     my $class = shift;
-    my ($dir, $errors, $error_assets, $schema_version, $callback) = @_;
+    my ($dir, $errors, $error_assets, $schema_version, $overwrite, $callback) = @_;
 
     my $manifest;
     my @files;
@@ -324,7 +331,7 @@ sub restore_directory {
         open $fh, "<$filepath" or push @$errors, MT->translate("Can't open [_1]."), next;
 
         my ($tmp_blog_ids, $tmp_asset_ids) = eval { __PACKAGE__->restore_process_single_file(
-            $fh, \%objects, $deferred, $errors, $schema_version, $callback); };
+            $fh, \%objects, $deferred, $errors, $schema_version, $overwrite, $callback); };
 
         close $fh;
         last if $@;
@@ -332,6 +339,8 @@ sub restore_directory {
         push @blog_ids, @$tmp_blog_ids if defined $tmp_blog_ids;
         push @asset_ids, @$tmp_asset_ids if defined $tmp_asset_ids;
     }
+
+    MT->run_callbacks('restore', \%objects, $deferred, $errors, $callback);
     my $blog_ids = scalar(@blog_ids) ? \@blog_ids : undef;
     my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;
     ($deferred, $blog_ids, $asset_ids);
@@ -395,11 +404,170 @@ sub restore_asset {
             or $errors->{$id} = $!;
     }
 
-    $callback->(exists($errors->{$id}) ?
-        MT->translate('Failed: ') . $errors->{$id} :
-        MT->translate("Done.")
+    if ( exists $errors->{$id} ) {
+        return $callback->( MT->translate('Failed: ') . $errors->{$id} . "\n" );
+    }
+
+    $callback->( MT->translate("Done.") . "\n" );
+
+    MT->run_callbacks('restore_asset', $asset, $callback);
+    
+    1;
+}
+
+sub _sync_asset_id {
+    my ($text, $related) = @_;
+
+    $text =~ s!<form([^>]*?\s)mt:asset-id=(["'])(\d+)(["'])([^>]*?)>(.+?)</form>!
+        my $old_id = $3;
+        my $asset = $related->{$old_id};
+        my $result = '<form' . $1 . 'mt:asset-id=' . $2 . $asset->id . $4 . $5 . '>';
+        my $html = $6;
+        my $filename = quotemeta(encode_url($asset->file_name));
+        my $url = $asset->url;
+        my @children = MT->model('asset')->load(
+            { parent => $asset->id, blog_id => $asset->blog_id, class => '*' }
+        );
+        my %children = map {
+            $_->id => {
+                'filename' => quotemeta(encode_url($_->file_name)),
+                'url' => $_->url
+            }
+        } @children;
+        $result .= $html . '</form>';
+        $result;
+    !igem;
+    $text;
+}
+
+sub cb_restore_objects {
+    my $pkg = shift;
+    my ($all_objects, $callback) = @_;
+
+    my %entries;
+    my %assets;
+    my %old_ids;
+    for my $key ( keys %$all_objects ) {
+        if ( $key =~ /^MT::Entry#(\d+)$/ ) {
+            my $new_id = $all_objects->{$key}->id;
+            $entries{$new_id} = $all_objects->{$key};
+        } elsif ( $key =~ /^MT::Asset#(\d+)$/ ) {
+            my $old_id = $1;
+            my $new_id = $all_objects->{$key}->id;
+            $assets{$new_id} = {
+                object => $all_objects->{$key},
+                old_id => $old_id,
+            };
+        }
+    }
+
+    my $i = 0;
+    $callback->(
+        MT->translate("Restoring asset associations ... ( [_1] )", $i++),
+        'cb-restore-entry-asset'
     );
-    $callback->("\n");
+    for my $obj_id ( keys %entries ) {
+        my $entry = $entries{$obj_id};
+
+        my @placements = MT->model('objectasset')->load( {
+            object_id => $obj_id, 
+            object_ds => 'entry', 
+            blog_id => $entry->blog_id
+        });
+        next unless @placements;
+
+        my %related;
+        for my $placement ( @placements ) {
+            my $asset_hash = $assets{$placement->asset_id};
+            next unless $asset_hash;
+            $related{ $asset_hash->{old_id} } = $asset_hash->{object};
+        }
+
+        $callback->(
+            MT->translate("Restoring asset associations in [lc,_1] ... ( [_2] )", $entry->class_label, $i++),
+            'cb-restore-entry-asset'
+        );
+        for my $col ( qw( text text_more ) ) {
+            my $text = $entry->$col;
+            next unless $text;
+            $text = _sync_asset_id( $text, \%related ); 
+            $entry->$col($text);
+        }
+        $entry->update();  # directly call update to bypass processing in save()
+    }
+    $callback->( MT->translate("Done.") . "\n" );
+    1;
+}
+
+sub _sync_asset_url {
+    my ($text, $asset) = @_;
+
+    my $filename = quotemeta(encode_url($asset->file_name));
+    my $url = $asset->url;
+    my $id = $asset->id;
+    my @children = MT->model('asset')->load(
+        { parent => $asset->id, blog_id => $asset->blog_id, class => '*' }
+    );
+    my %children = map {
+        $_->id => {
+            'filename' => quotemeta(encode_url($_->file_name)),
+            'url' => $_->url
+        }
+    } @children;
+
+    $text =~ s!<form([^>]*?\s)mt:asset-id=(["'])$id(["'])([^>]*?)>(.+?)</form>!
+        my $result = '<form' . $1 . 'mt:asset-id=' . $2 . $id . $3 . $4 . '>';
+        my $html = $5;
+        $html =~ s#<a([^>]*? )href=(["'])[^>]+?/$filename(["'])([^>]*?)>#<a$1href=$2$url$3$4>#gim;
+        $html =~ s#<img([^>]*? )src=(["'])[^>]+?/$filename(["'])([^>]*?)(/? *)>#<img$1src=$2$url$3$4$5>#gim;
+        if ( %children ) {
+            for my $child (values %children) {
+                my $child_filename = $child->{filename};
+                my $child_url = $child->{url};
+                $html =~ s#<img([^>]*? )src=(["'])[^>]+?/$child_filename(["'])([^>]*?)>#<img$1src=$2$child_url$3$4>#gim;
+                $html =~ s#<a([^>]*? )href=(["'])[^>]+?/$child_filename(["'])([^>]*?)>#<a$1href=$2$child_url$3$4>#gim;
+                $html =~ s#<a([^>]*? )onclick=(["'])[^>]+?/$child_filename(["'])([^>]*?)>#<a$1onclick=$2$child_url$3$4>#gim;
+            }
+        }
+        $result .= $html . '</form>';
+        $result;
+    !igem;
+    $text;
+}
+
+sub cb_restore_asset {
+    my $pkg = shift;
+    my ($asset, $callback) = @_;
+    
+    my @placements = MT->model('objectasset')->load( {
+        asset_id => $asset->id, 
+        blog_id => $asset->blog_id
+    });
+
+    my $i = 0;
+    $callback->(
+        MT->translate('Restoring url of the assets ( [_1] )...', $i++),
+        'cb-restore-asset-url'
+    );
+    for my $placement (@placements) {  
+        next unless 'entry' eq $placement->object_ds;  
+        my $entry = MT->model('entry')->load( $placement->object_id );  
+        next unless $entry;  
+        
+        $callback->(
+            MT->translate('Restoring url of the assets in [lc,_1] ( [_2] )...', $entry->class_label, $i++),
+            'cb-restore-asset-url'
+        );
+        for my $col ( qw( text text_more ) ) {
+            my $text = $entry->$col;
+            next unless $text;
+            $text = _sync_asset_url( $text, $asset );
+            $entry->$col($text);
+        }
+        $entry->update();  # directly call update to bypass processing in save()
+    }
+    $callback->( MT->translate("Done.") . "\n" );
+    1;
 }
 
 sub _restore_asset_multi {
@@ -966,6 +1134,12 @@ which are restored in the very session, and hash of asset_ids.
 TODO A method which reads specified directory, find a manifest file,
 and do the multi-file restore operation directed by the manifest file.
 
+=head2 restore_object_asset
+
+Accepts an asset object just restored, populate associated entries,
+and scan text and text_more for each entry.  If association marker
+(<form> tag) is found, replace asset id and URL to the new ones.
+
 =head2 restore_asset
 
 TODO A method which restores the assets' actual files to the
@@ -1005,7 +1179,7 @@ a callback to Backup callback, and Backup process will call the callbacks
 to give plugins a chance to add their own data to the backup file.
 Otherwise, plugin's object classes is likely be ignored in backup operation.
 
-=item Restore
+=item Restore.<element_name>:<xmlnamespace>
 
 Restore callbacks are called in convention like below:
 
@@ -1036,6 +1210,53 @@ so later the restore operation will call the callback function with
 parameters described above.  XML Namespace is required to be registered, 
 so an xml node can be resolved into what plugins to be called back, 
 and can be distinguished the same element name with each other.
+
+=item restore
+    
+Calling convention is:
+
+    callback($cb, $objects, $deferred, $errors, $callback);
+
+This callback is called when all of the XML files in the particular
+restore session are restored, thus, when $objects and $deferred
+would not have any more objects in them.  This callback is useful
+for object classes which have relationships with other classes,
+for the kind of classes may not be able to handle relationship
+correctly until the associated objects would be successfully
+restored.
+
+NOTE that this callback is called BEFORE blogs' site_path and
+site_url are updated.  Therefore, blog objects and other objects
+which contains path information such as assets still have old
+url and path in I<$objects>.
+
+$objects is an hash reference which contains all the restored objects
+in the restore session.  The hash keys are stored in the format
+MT::ObjectClassName#old_id, and hash values are object reference
+of the actually restored objects (with new id).  Old ids are ids
+which are stored in the XML files, while new ids are ids which
+are restored.
+
+$deferred is an hash reference which contains information about
+restore-deferred objects.  Deferred objects are those objects
+which appeared in the XMl file but could not be restored because
+any parent objects are missing.  The hash keys are stored in
+the format MT::ObjectClassName#old_id and hash values are 1.
+
+$callback is a code reference which will print out the passed paramter.
+Callback method can use this to communicate with users.
+
+=item restore_asset
+    
+Calling convention is:
+
+    callback($cb, $asset, $callback);
+
+This callback is called when asset's actual file is restored.
+$asset has new url and path.
+
+$callback is a code reference which will print out the passed paramter.
+Callback method can use this to communicate with users.
 
 =head1 AUTHOR & COPYRIGHT
 

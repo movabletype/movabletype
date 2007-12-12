@@ -1,8 +1,8 @@
-# Copyright 2001-2006 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
-# $Id: ManifestFileHandler.pm 962 2006-12-20 11:49:08Z fumiakiy $
+# $Id$
 
 package MT::BackupRestore::ManifestFileHandler;
 

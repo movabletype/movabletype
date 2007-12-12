@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -275,6 +275,19 @@ sub set_blog_load_context {
     my $blog_ids = $attr->{blog_ids}
                 || $attr->{include_blogs}
                 || $attr->{exclude_blogs};
+
+    if (defined($blog_ids) && ($blog_ids =~ m/-/)) {
+        my @list = split /\s*,\s*/, $blog_ids;
+        my @ids;
+        foreach my $id (@list) {
+            if ($id =~ m/^(\d+)-(\d+)$/) {
+                push @ids, $_ for $1..$2;
+            } else {
+                push @ids, $id;
+            }
+        }
+        $blog_ids = join ",", @ids;
+    }
 
     # If no blog IDs specified, use the current blog
     if ( ! $blog_ids ) {

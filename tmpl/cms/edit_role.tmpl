@@ -16,14 +16,15 @@
             <__trans phrase="Your changes have been saved.">
         </mtapp:statusmsg>
     </mt:if>
-
-    <p class="page-desc hidden"><__trans phrase="_USAGE_ROLE_PROFILE"><a href="javascript:void(0)" onclick="return openManual('author_permissions', 'permissions')" class="help-link">?</a></p>
-
-    <p><a href="<mt:var name="script_url">?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a></p>
-
-<mt:if name="id">
-    <p><a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="[quant,_1,User,Users] with this role" params="<mt:var name="user_count">"></a></p>
-</mt:if>
+    
+    <ul class="action-link-list">
+        <li>
+            <a href="<mt:var name="script_url">?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a>
+    <mt:if name="id">
+            - <a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="[quant,_1,User,Users] with this role" params="<mt:var name="user_count">"></a>
+    </mt:if>
+        </li>
+    </ul>
 
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
@@ -355,7 +356,7 @@ TC.attachLoadEvent( rectifyAll );
     </mt:if>
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>

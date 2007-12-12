@@ -67,6 +67,7 @@
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
+<mt:if name="allow_comments">
 <mt:unless name="system_allow_comments">
     <mtapp:statusmsg
         id="system-allow-comments"
@@ -74,6 +75,7 @@
         <__trans phrase="Note: Commenting is currently disabled at the system level.">
     </mtapp:statusmsg>
 </mt:unless>
+</mt:if>
 
 <mt:unless name="tk_available">
 <p><__trans phrase="Comment authentication is not available because one of the needed modules, MIME::Base64 or LWP::UserAgent is not installed. Talk to your host about getting this module installed."></p>
@@ -245,7 +247,7 @@
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [_1] (s)" params="<mt:var name="object_label" lower_case="1">">"
+        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>

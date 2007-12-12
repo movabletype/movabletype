@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -481,8 +481,7 @@ sub add_plugin {
         return;
     }
     $plugin->envelope($plugin_envelope);
-    Carp::confess
-"You cannot register multiple plugin objects from a single script. $plugin_sig"
+    Carp::confess("You cannot register multiple plugin objects from a single script. $plugin_sig")
       if exists( $Plugins{$plugin_sig} )
       && ( exists $Plugins{$plugin_sig}{object} );
 
@@ -961,6 +960,7 @@ sub init_core {
     my $defaults = $c->{registry}{config_settings};
     $defaults->{DefaultLanguage}{default} = '__BUILD_LANGUAGE__';
     $defaults->{NewsboxURL}{default} = '__NEWSBOX_URL__';
+    $defaults->{LearningNewsURL}{default} = '__LEARNINGNEWS_URL__';
     $defaults->{SupportURL}{default} = '__SUPPORT_URL__';
     $defaults->{NewsURL}{default} = '__NEWS_URL__';
     $defaults->{HelpURL}{default} = '__HELP_URL__';
@@ -1758,7 +1758,7 @@ sub static_file_path {
         if exists $app->{__static_file_path};
 
     my $path = $app->config('StaticFilePath');
-    return $app->{__static_file_path} = $path if $path && -d $path;
+    return $app->{__static_file_path} = $path if defined $path;
 
     # Attempt to derive StaticFilePath based on environment
     my $web_path = $app->config->StaticWebPath || 'mt-static';
@@ -1934,7 +1934,7 @@ sub build_page {
     }
     pop @{ $param->{page_titles} };
     if (my $lang_id = $mt->current_language) {
-        $param->{local_lang_id} ||= lc $lang_id if $lang_id !~ m/^en/i;
+        $param->{local_lang_id} ||= lc $lang_id;
     }
     $param->{magic_token} = $mt->current_magic if $mt->user;
 
@@ -1959,16 +1959,12 @@ sub build_page {
     $param->{packs_installed} = \@packs_installed;
     $param->{portal_url} = $mt->translate("http://www.movabletype.com/");
 
-    my $tmpl_file;
+    my $tmpl_file = '';
     if (UNIVERSAL::isa($file, 'MT::Template')) {
         $tmpl = $file;
-        $tmpl_file = (exists $file->{__file}) ? '.'.$file->{__file} : '';
+        $tmpl_file = (exists $file->{__file}) ? $file->{__file} : '';
     } else {
         $tmpl = $mt->load_tmpl($file) or return;
-        $tmpl_file = '.' . $file;
-    }
-    if ($tmpl_file) {
-        $tmpl_file =~ s/\.tmpl$//;
     }
 
     if (($mode && ($mode !~ m/delete/)) && ($mt->{login_again} ||
@@ -1989,6 +1985,12 @@ sub build_page {
     $tmpl->context()->stash('blog', $blog) if $blog;
 
     $tmpl->param($param) if $param;
+
+    if ($tmpl_file) {
+        $tmpl_file = File::Basename::basename($tmpl_file);
+        $tmpl_file =~ s/\.tmpl$//;
+        $tmpl_file = '.' . $tmpl_file;
+    }
     $mt->run_callbacks('template_param' . $tmpl_file, $mt, $tmpl->param, $tmpl);
 
     my $output = $mt->build_page_in_mem($tmpl);
@@ -2409,7 +2411,7 @@ sub handler_to_coderef {
     if ( $hdlr_pkg =~ s/(->|::)([^:]+)$// ) {    # strip routine name
         $method = $2 if $1 eq '->';
     }
-    if ( !defined(&$name) && !UNIVERSAL::can( $hdlr_pkg, 'AUTOLOAD' ) ) {
+    if ( !defined(&$name) && !$pkg->can( 'AUTOLOAD' ) ) {
 
         # The delayed option will return a coderef that delays the loading
         # of the package holding the handler routine.
@@ -2460,7 +2462,7 @@ sub handler_to_coderef {
                 no strict 'refs';
                 my $hdlr = (
                     defined &$name ? \&$name
-                    : ( UNIVERSAL::can( $hdlr_pkg, 'AUTOLOAD' ) ? \&$name
+                    : ( $pkg->can( 'AUTOLOAD' ) ? \&$name
                         : undef )
                 );
                 use strict 'refs';
@@ -2479,7 +2481,7 @@ sub handler_to_coderef {
               (
                 defined &$name
                 ? \&$name
-                : ( UNIVERSAL::can( $hdlr_pkg, 'AUTOLOAD' ) ? \&$name : undef )
+                : ( $hdlr_pkg->can( 'AUTOLOAD' ) ? \&$name : undef )
               );
         }
     }
@@ -2658,11 +2660,6 @@ configuration settings.
 
 Registers the standard set of periodic tasks that Movable Type provides
 and then invokes the C<init_tasks> method for each available plugin.
-
-=head2 MT->add_task
-
-An alias for L<MT::TaskMgr-E<gt>add_task>. Refer to the L<MT::TaskMgr>
-documentation for more information.
 
 =head2 MT->run_tasks
 
@@ -2874,86 +2871,6 @@ Adds the plugin described by $plugin to the list of plugins displayed
 on the welcome page. The argument should be an object of the
 I<MT::Plugin> class.
 
-=head2 MT->add_plugin_action($where, $action_link, $link_text)
-
-An alias to the active L<MT::App> instance C<add_plugin_action> method.
-Please refer to the L<MT::App> module for further documentation.
-
-=head2 MT->add_itemset_action(\%options)
-
-An alias to the active L<MT::App::CMS> instance C<add_itemset_action> method.
-Please refer to the L<MT::App::CMS> module for further documentation.
-
-=head2 MT->add_text_filter($key, \%options)
-
-Adds a text filter with the short name I<$key> and the options in
-I<\%options>.
-
-The text filter will be added to MT's list of text filtering options in
-the new/edit entry screen, and will be used for filtering all of the entry
-fields, if the user has enabled filtering for those fields in the template
-(for example, by default the entry body and extended text are both run
-through the filter, but the excerpt is not).
-
-I<$key> should be a lower-case identifier containing only
-alphanumerics and C<_> (that is, matching C</\w+/>). Since I<$key> is
-stored as the filter name on a per-entry basis, it B<should not change>.
-(In other words, don't call if I<foo> in one version and I<foo_bar> in
-the next, if the filter does the same thing in each version.)
-
-The flip side of this, though, is that if your filter acts differently
-from one version to the next, you B<should> change I<$key>, and you
-should also change the filename of your plugin, so that the old
-implementation--which may be associated with all of the entries in the user's
-system--still works as usual. For example, if your C<foo> plugin changes
-semantics drastically so that paragraph breaks are represented as two
-C<E<lt>br /E<gt>> tags, rather than C<E<lt>pE<gt>> tags, you should change
-the key of the new version to C<foo_2> (for example), and the filename to
-F<foo_2.pl>.
-
-I<%options> can contain:
-
-=over 4
-
-=item * label
-
-The short-but-descriptive label for the filter. This will be displayed in
-the Movable Type UI as the name of the text filter.
-
-=item * on_format
-
-A reference to a subroutine that will be executed to filter a string of
-text. The subroutine will always receive one argument, the string of text to
-filter, and should return the filtered string. In some cases--for example,
-when called while building a template--the subroutine will receive a
-second argument, the I<MT::Template::Context> object handling the build.
-
-See the example below.
-
-=item * docs
-
-The URL (or filename) of a document containing documentation on your filter.
-This will be displayed in a popup window when the user selects your filter
-on the New/Edit Entry screen, then clicks the Help link (C<(?)>).
-
-If the value is a full URL (starting with C<http://>), the popup window
-will open with that URL; otherwise, it is treated as a filename, assumed to
-be in the user's F<docs> folder.
-
-=back
-
-Here's an example of adding a text filter for Wiki formatting, using the
-I<Text::WikiFormat> CPAN module:
-
-    MT->add_text_filter(wiki => {
-        label => 'Wiki',
-        on_format => sub {
-            require Text::WikiFormat;
-            Text::WikiFormat::format($_[0]);
-        },
-        docs => 'http://www.foo.com/mt/wiki.html',
-    });
-
 =head2 MT->all_text_filters
 
 Returns a reference to a hash containing the registry of text filters.
@@ -2978,12 +2895,6 @@ use this method to apply filters to the main entry text for an entry
 I<$entry>, you would use
 
     my $out = MT->apply_text_filters($entry->text, $entry->text_filters);
-
-=head2 MT->add_log_class($class)
-
-Registers a new L<MT::Log> subclass with MT, which is used for presenting
-specific types of log records in the activity log and activity feeds. See
-L<MT::Log> for further documentation on custom log classes.
 
 =head2 MT->add_callback($meth, $priority, $plugin, $code)
 
@@ -3052,21 +2963,6 @@ Example:
 Which would execute any handlers that registered in this fashion:
 
     MT->add_callback('MyClass::frobnitzes', 4, $plugin, \&frobnitz_hdlr);
-
-=head2 MT->register_junk_filter( $filter )
-
-Registers a new L<MT::JunkFilter> with Movable Type. Junk filters are
-used to identify spam for incoming feedback. Please see documentation
-for L<MT::JunkFilter> for more information.
-
-Example:
-
-    require MT::JunkFilter;
-    MT->register_junk_filter(new MT::JunkFilter({
-        name => "My Junk Filter",
-        code => sub { $plugin->my_junk_filter(@_) },
-        plugin => $plugin,
-    }));
 
 =head2 MT->run_callback($cb[, $arg1, $arg2, ...])
 

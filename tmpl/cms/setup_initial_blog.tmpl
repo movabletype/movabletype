@@ -149,6 +149,7 @@ function submit_form(f, command) {
         <p class="hint"><__trans phrase="Your 'Publishing Path' is the path on your web server's file system where Movable Type will publish all the files for your blog. Your web server must have write access to this directory."></p>
     </mtapp:setting>
 
+<mt:if name="template_set_index">
     <mtapp:setting
         id="blog_template_set"
         label="<__trans phrase="Template Set">"
@@ -159,6 +160,7 @@ function submit_form(f, command) {
         </mt:loop>
         </select>
     </mtapp:setting>
+</mt:if>
 
     <mtapp:setting
         id="blog_timezone"

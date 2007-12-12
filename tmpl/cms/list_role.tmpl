@@ -23,7 +23,7 @@
     </mt:if>
 </mt:setvarblock>
 <mt:if name="object_loop">
-    <mt:setvarblock name="related_content">
+    <mt:setvarblock name="html_body_footer">
         <$mt:include name="include/display_options.tmpl"$>
     </mt:setvarblock>
 </mt:if>
@@ -43,7 +43,9 @@
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
     <mt:if name="can_create_role">
-    <p><a href="<mt:var name="script_url">?__mode=edit_role" class="icon-left icon-create"><__trans phrase="Create Role"></a></p>
+    <ul class="action-link-list">
+        <li><a href="<mt:var name="script_url">?__mode=edit_role" class="icon-left icon-create"><__trans phrase="Create Role"></a></li>
+    </ul>
     </mt:if>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">

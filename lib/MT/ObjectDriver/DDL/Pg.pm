@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -13,6 +13,85 @@ use base qw( MT::ObjectDriver::DDL );
 sub can_add_column { 1 }
 sub can_drop_column { 1 }
 sub can_alter_column { 0 }
+
+sub index_defs {
+    my $ddl = shift;
+    my ($class) = @_;
+    my $driver = $class->driver;
+    my $dbh = $driver->r_handle;
+    my $field_prefix = $class->datasource;
+    my $table_name = $class->table_name;
+    my $sth = $dbh->prepare(<<SQL)
+SELECT cidx.relname as index_name, idx.indisunique, idx.indisprimary, idx.indnatts, idx.indkey, am.amname
+FROM pg_index idx
+INNER JOIN pg_class cidx ON idx.indexrelid = cidx.oid
+INNER JOIN pg_class ctbl ON idx.indrelid = ctbl.oid
+INNER JOIN pg_am am ON cidx.relam = am.oid
+WHERE ctbl.relname = '$table_name'
+SQL
+        or return undef;
+    $sth->execute or return undef;
+
+    my $defs = {};
+    while (my $row = $sth->fetchrow_hashref) {
+        next if 1 == $row->{'indisprimary'};
+
+        my $key = $row->{'index_name'};
+        next unless $key =~ m/^(mt_)?\Q$field_prefix\E_/;
+        $key = 'mt_' . $key unless $key =~ m/^mt_/;
+
+        my $type = $row->{'amname'};
+        # ignore fulltext or other unrecognized indexes for now
+        next unless $type eq 'btree';
+
+        my $is_unique = $row->{'indisunique'};
+        $key =~ s/^mt_\Q$field_prefix\E_//;
+
+        my $indkeys = $row->{'indkey'};
+        $indkeys =~ s/\s+/,/g;
+
+        my $sth_att = $dbh->prepare(<<ATTSQL)
+SELECT attnum, attname
+FROM pg_attribute att
+INNER JOIN pg_class ctbl ON att.attrelid = ctbl.oid
+WHERE att.attnum IN ($indkeys)
+AND ctbl.relname = '$table_name'
+ATTSQL
+            or next;
+        $sth_att->execute or next;
+        my $row_att = $sth_att->fetchall_hashref('attnum');
+        $sth_att->finish;
+
+        my $cols;
+        if ( 1 == $row->{'indnatts'} ) {
+            # $indkeys have column's attnum
+            my $col = $row_att->{$indkeys}->{'attname'};
+            $col =~ s/^\Q$field_prefix\E_//;
+            $cols = [ $col ];
+        }
+        else {
+            my @cols;
+            for my $indkey ( split ',', $indkeys ) {
+                my $col = $row_att->{$indkey}->{'attname'};
+                $col =~ s/^\Q$field_prefix\E_//;
+                push @cols, $col;
+            }
+            $cols = \@cols;
+        }
+        if ( $is_unique ) {
+            $defs->{$key} = { 'unique' => 1, 'columns' => $cols };
+        }
+        else {
+            if ((@$cols == 1) && ($key eq $cols->[0])) {
+                $defs->{$key} = 1;
+            } else {
+                $defs->{$key} = { 'columns' => $cols };
+            }
+        }
+    }
+    $sth->finish;
+    return $defs;
+}
 
 sub column_defs {
     my $ddl = shift;

@@ -1,7 +1,10 @@
 <mt:include name="dialog/header.tmpl">
+<mt:setvarblock name="insert_script" id="insert_script">
+window.parent.app.insertHTML( '<mt:var name="UPLOAD_HTML" escape="JS">', '<mt:var name="EDIT_FIELD">' );
+</mt:setvarblock>
 <script type="text/javascript">
 <!--
-window.parent.app.insertHTML( '<mt:var name="UPLOAD_HTML" escape="JS">', '<mt:var name="EDIT_FIELD">' );
+<mt:var name="insert_script">
 closeDialog();
 //-->
 </script>

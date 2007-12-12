@@ -428,12 +428,12 @@ ul { list-style: disc outside; }
     margin-bottom: 5px;
 }
 
-.widget-cloud .widget-list {
+.widget-tag-cloud .widget-list {
     margin-right: 0;
     margin-left: 0;
 }
 
-.widget-cloud .widget-list-item {
+.widget-tag-cloud .widget-list-item {
     display: inline;
     margin: 0 5px 0 0;
     padding: 0;
@@ -441,23 +441,23 @@ ul { list-style: disc outside; }
     background: none;
 }
 
-.widget-cloud .rank-1  { font-size: 1.75em; }
-.widget-cloud .rank-2  { font-size: 1.75em; }
-.widget-cloud .rank-3  { font-size: 1.625em; }
-.widget-cloud .rank-4  { font-size: 1.5em; }
-.widget-cloud .rank-5  { font-size: 1.375em; }
-.widget-cloud .rank-6  { font-size: 1.25em; }
-.widget-cloud .rank-7  { font-size: 1.125em; }
-.widget-cloud .rank-8  { font-size: 1em; }
-.widget-cloud .rank-9  { font-size: 0.95em; }
-.widget-cloud .rank-10 { font-size: 0.9em; }
+.widget-tag-cloud .rank-1  { font-size: 1.75em; }
+.widget-tag-cloud .rank-2  { font-size: 1.75em; }
+.widget-tag-cloud .rank-3  { font-size: 1.625em; }
+.widget-tag-cloud .rank-4  { font-size: 1.5em; }
+.widget-tag-cloud .rank-5  { font-size: 1.375em; }
+.widget-tag-cloud .rank-6  { font-size: 1.25em; }
+.widget-tag-cloud .rank-7  { font-size: 1.125em; }
+.widget-tag-cloud .rank-8  { font-size: 1em; }
+.widget-tag-cloud .rank-9  { font-size: 0.95em; }
+.widget-tag-cloud .rank-10 { font-size: 0.9em; }
 
 #footer .widget-content {
     margin-top: 0;
     margin-bottom: 0;
 }
 
-.widget-assets .widget-content .widget-list {
+.widget-recent-assets .widget-content .widget-list {
     overflow: auto;
     margin-right: 0;
 }
@@ -480,4 +480,11 @@ ul { list-style: disc outside; }
 
 .input-default {
     background-color: #9AAEC2;
+}
+
+@media print {
+    * {
+        position: static ! important;
+        overflow: visible ! important;
+    }
 }

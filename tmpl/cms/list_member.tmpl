@@ -6,6 +6,8 @@
         <$mtapp:listfilters$>
     </mtapp:widget>
     <$mtapp:pageactions$>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
     <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
@@ -126,7 +128,7 @@
         </mt:if>
         </div>
         <div id="filter-select" class="page-title" style="display: none">
-            <__trans phrase="Show only [_1] where" params="<mt:var name="object_label_plural" lower_case="1">">
+            <__trans phrase="Show only [lc,_1] where" params="<mt:var name="object_label_plural">">
             <!-- start filter form -->
                 <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton(this)">
                     <option value="role"><__trans phrase="role"></option>

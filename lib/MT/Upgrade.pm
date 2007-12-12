@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -43,6 +43,10 @@ sub BEGIN {
         'core_alter_column' => {
             code => sub { shift->core_column_action('alter', @_) },
             priority => 3,
+        },
+        'core_index_column' => {
+            code => sub { shift->core_column_action('index', @_) },
+            priority => 3.5,
         },
         'core_seed_database' => {
             code => \&seed_database,
@@ -1222,6 +1226,8 @@ sub check_type {
                 if $result->{alter};
             $self->add_step('core_drop_column', type => $type)
                 if $result->{drop};
+            $self->add_step('core_index_column', type => $type)
+                if $result->{index};
         }
     }
     1;
@@ -1238,6 +1244,9 @@ sub type_diff {
 
     my $ddl = $class->driver->dbd->ddl_class;
     my $db_defs = $ddl->column_defs($class);
+
+    my $class_idx_defs = $class->index_defs;
+    my $db_idx_defs = $ddl->index_defs($class);
 
     # now, compare $defs and $db_defs;
     # here are the scenarios
@@ -1259,7 +1268,7 @@ sub type_diff {
 
     # we're only scanning defined columns; we don't care about
     # columns that are unique to the table.
-    my (@cols_to_add, @cols_to_alter, @cols_to_drop);
+    my (@cols_to_add, @cols_to_alter, @cols_to_drop, @cols_to_index);
 
     if (!$fix_class) {
         my @def_cols = keys %$defs;
@@ -1296,14 +1305,59 @@ sub type_diff {
                 }
             }
         }
+
+        foreach my $key (keys %$class_idx_defs) {
+            my $db_idx_def = $db_idx_defs->{$key};
+            if (!$db_idx_def) {
+                push @cols_to_index, $key;
+                next;
+            }
+            # if there is a mismatch in definition, add it to index
+            my $class_idx_def = $class_idx_defs->{$key};
+            if (ref($class_idx_def)) {
+                if (!ref $db_idx_def) {
+                    push @cols_to_index, $key;
+                }
+                else {
+                    my $db_cols;
+                    if (exists $db_idx_def->{columns}) {
+                        $db_cols = join ',', @{ $db_idx_def->{columns} };
+                    }
+                    else {
+                        $db_cols = $key;
+                    }
+                    my $class_cols;
+                    if (exists $class_idx_def->{columns}) {
+                        $class_cols = join ',', @{ $class_idx_def->{columns} };
+                    }
+                    else {
+                        $class_cols = $key;
+                    }
+                    if ($db_cols ne $class_cols) {
+                        push @cols_to_index, $key;
+                    }
+                    else {
+                        if (($db_idx_def->{unique} || 0) != ($class_idx_def->{unique} || 0)) {
+                            push @cols_to_index, $key;
+                        }
+                    }
+                }
+            }
+            else {
+                if (ref $db_idx_def) {
+                    push @cols_to_index, $key;
+                }
+            }
+        }
     }
 
-    if ($fix_class || @cols_to_add || @cols_to_alter || @cols_to_drop) {
+    if ($fix_class || @cols_to_add || @cols_to_alter || @cols_to_drop || @cols_to_index) {
         my %param;
         $param{drop} = \@cols_to_drop if @cols_to_drop;
         $param{add} = \@cols_to_add if @cols_to_add;
         $param{alter} = \@cols_to_alter if @cols_to_alter;
         $param{fix} = $fix_class;
+        $param{index} = \@cols_to_index if @cols_to_index;
         if ((@cols_to_add && !$ddl->can_add_column) ||
             (@cols_to_alter && !$ddl->can_alter_column) || 
             (@cols_to_drop && !$ddl->can_drop_column)) {
@@ -1671,6 +1725,8 @@ sub post_alter_column { 1 }
 sub pre_drop_column { 1 }
 sub post_drop_column { 1 }
 sub pre_add_column { 1 }
+sub pre_index_column { 1 }
+sub post_index_column { 1 }
 sub pre_schema_upgrade { 1 }
 
 # issued last, after all table creation...
@@ -1838,6 +1894,7 @@ sub core_fix_type {
     my $alter = $result->{alter};
     my $add = $result->{add};
     my $drop = $result->{drop};
+    my $index = $result->{index};
 
     my $driver = $class->driver;
     my $ddl = $driver->dbd->ddl_class;
@@ -1848,11 +1905,13 @@ sub core_fix_type {
     push @stmts, sub { $self->pre_add_column($class, $add) } if $add;
     push @stmts, sub { $self->pre_alter_column($class, $alter) } if $alter;
     push @stmts, sub { $self->pre_drop_column($class, $drop) } if $drop;
+    push @stmts, sub { $self->pre_index_column($class, $index) } if $index;
     push @stmts, $ddl->fix_class($class);
     push @stmts, sub { $self->post_create_table($class) };
     push @stmts, sub { $self->post_add_column($class, $add) } if $add;
     push @stmts, sub { $self->post_alter_column($class, $alter) } if $alter;
     push @stmts, sub { $self->post_drop_column($class, $drop) } if $drop;
+    push @stmts, sub { $self->post_index_column($class, $index) } if $index;
     push @stmts, $ddl->upgrade_end($class);
     push @stmts, sub { $self->post_upgrade_class($class) };
     $self->run_statements($class, @stmts);
@@ -1881,7 +1940,7 @@ sub core_column_action {
     push @stmts, sub { $self->pre_upgrade_class($class) };
     push @stmts, $ddl->upgrade_begin($class);
     push @stmts, sub { $self->$pre_method($class, $columns) };
-    push @stmts, $ddl->$method($class, $_->{name}) foreach @$columns;
+    push @stmts, $ddl->$method($class, $_) foreach @$columns;
     push @stmts, sub { $self->$post_method($class, $columns) };
     push @stmts, $ddl->upgrade_end($class);
     push @stmts, sub { $self->post_upgrade_class($class) };
@@ -1909,7 +1968,8 @@ sub run_statements {
                         my $err;
                         $dbh->do($stmt) or $err = $dbh->errstr;
                         if ($err) {
-                            # ignore drop errors; the table/sequence didn't exist
+                            # ignore drop errors; the table/sequence
+                            # didn't exist
                             if ($stmt !~ m/^drop /i) {
                                 die "failed to execute statement $stmt: $err";
                             }

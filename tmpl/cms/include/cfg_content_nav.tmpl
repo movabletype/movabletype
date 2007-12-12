@@ -1,4 +1,4 @@
-<mt:if name="BLOG_ID">
+<mt:if name="BLOG_ID"><mt:setvarblock id="more_items" name="more_items"></mt:setvarblock>
 <ul>
     <li<mt:if name="general-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_prefs&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="General"></a></li>
     <li<mt:if name="publishing"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_archives&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="Publishing"></a></li>
@@ -11,5 +11,6 @@
     <mt:if name="show_ip_info">
     <li<mt:if name="ip_info"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=list&amp;_type=banlist&amp;blog_id=<mt:var name="BLOG_ID">"><__trans phrase="IP Banning"></a></li>
     </mt:if>
+    <mt:var name="more_items">
 </ul>
 </mt:if>

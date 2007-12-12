@@ -1,3 +1,9 @@
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::Core;
 
 use strict;
@@ -173,7 +179,7 @@ BEGIN {
                 order => 300,
             },
             'blog.edit_all_posts' => {
-                label => trans('Manage Entries'),
+                label => trans('Edit All Entries'),
                 group => 'auth_pub',
                 order => 400,
             },
@@ -272,6 +278,7 @@ BEGIN {
             'AllowedTextFilters' => undef,
             'Serializer'    => { default => 'MT', },
             'SendMailPath'  => { default => '/usr/lib/sendmail', },
+            'RsyncPath'     => undef,
             'TimeOffset'    => { default => 0, },
             'WSSETimeout'   => { default => 120, },
             'StaticWebPath' => { default => '', },
@@ -302,6 +309,7 @@ BEGIN {
             'UploadPerms'           => { default => '0666', },
             'NoTempFiles'           => { default => 0, },
             'TempDir'               => { default => '/tmp', },
+            'RichTextEditor'        => { default => 'archetype', },
             'EntriesPerRebuild'     => { default => 40, },
             'UseNFSSafeLocking'     => { default => 0, },
             'NoLocking'             => { default => 0, },
@@ -389,9 +397,9 @@ BEGIN {
             # 'MTNewsURL' => {
             #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             # },
-            # 'LearningNewsURL' => {
-            #     default => 'http://learning.movabletype.org/newsbox.html',
-            # },
+            'LearningNewsURL' => {
+                default => 'http://learning.movabletype.org/newsbox.html',
+            },
             # 'HackingNewsURL' => {
             #     default => 'http://hacking.movabletype.org/newsbox.html',
             # },
@@ -404,7 +412,6 @@ BEGIN {
             'TypeKeyVersion'        => { default => '1.1' },
             'TransparentProxyIPs'   => { default => 0, },
             'DebugMode'             => { default => 0, },
-            'PublishCommenterIcon'  => { default => 1, },
             'ShowIPInformation'     => { default => 0, },
             'AllowComments'         => { default => 1, },
             'AllowPings'            => { default => 1, },
@@ -462,6 +469,7 @@ BEGIN {
             'FuturePostFrequency'       => { default => 1 },
             'AssetCacheDir'             => { default => 'assets_c', },
             'MemcachedServers'          => { type    => 'ARRAY', },
+            'MemcachedNamespace'        => undef,
             'CommenterRegistration'     => {
                 type    => 'HASH',
                 default => {
@@ -528,6 +536,12 @@ BEGIN {
                     my ($type) = @_;
                     return 1 if $type && ($type ne 'comment');
                 },
+            },
+        },
+        richtext_editors => {
+            'archetype' => {
+                label => 'Movable Type Default',
+                template => 'archetype_editor.tmpl',
             },
         },
         ping_servers  => {
@@ -675,7 +689,7 @@ sub load_junk_filters {
 
 sub load_core_tasks {
     my $cfg = MT->config;
-    return {
+    my $tasks = {
         'FuturePost' => {
             label     => 'Publish Scheduled Entries',
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
@@ -706,6 +720,18 @@ sub load_core_tasks {
             },
         },
     };
+    if ( my $newsbox_url = $cfg->LearningNewsURL ) {
+        if ( $newsbox_url ne 'disable' ) {
+            $tasks->{LearningNewsRetrieval} = {
+                label => 'Retrieve Learning MT Updates',
+                frequency => 60 * 60 * 24,   # once a day
+                code => sub {
+                    MT::Util::get_newsbox_html($newsbox_url, 'LW');
+                },
+            };
+        }
+    }
+    $tasks;
 }
 
 sub remove_temporary_files {

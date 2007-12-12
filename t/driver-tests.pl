@@ -1,5 +1,11 @@
 #!/usr/bin/perl
+
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 # $Id$
+
 use strict;
 use warnings;
 use Data::Dumper;
@@ -17,7 +23,7 @@ BEGIN {
     $ENV{MT_CONFIG} = "$driver-test.cfg";
 }
 
-use Test::More tests => 227;
+use Test::More tests => 230;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:testdb);
 
@@ -263,11 +269,11 @@ isa_ok($tmp, 'Foo');
 is($tmp->id, 2, 'id');
 
 ## Get count of objects
-is(Foo->count, 2, 'count');
-is(Foo->count({ status => 0 }), 1, 'count');
+is(Foo->count, 2, 'count1');
+is(Foo->count({ status => 0 }), 1, 'count2');
 is(Foo->count(
     { created_on => [ $foo[1]->column('created_on')-1 ] },
-    { range => { created_on => 1 } }), 1, 'count');
+    { range => { created_on => 1 } }), 1, 'count3');
 
 ## Update status for later tests.
 $foo[0]->status(2);
@@ -416,11 +422,11 @@ my ($count, $bfid, $month);
 isa_ok($cgb_iter, 'CODE');
 ok(($count, $bfid) = $cgb_iter->(), 'set');
 is($bfid, $bar[1]->id, 'id');
-is($count, 1, 'count');
+is($count, 1, 'count4');
 ok(($count, $bfid) = $cgb_iter->(), 'set');
 is($bfid, $bar[0]->id, 'id');
-is($count, 1, 'count');
-ok(!$iter->(), 'no $iter');
+is($count, 1, 'count5');
+ok(!$cgb_iter->(), 'no $iter');
 
 $cgb_iter = Bar->count_group_by(undef, {
         group => [ 'extract(month from created_on)' ],
@@ -430,8 +436,8 @@ isa_ok($cgb_iter, 'CODE');
 ok(($count, $month) = $cgb_iter->(), 'set');
 use POSIX qw(strftime);
 is(int($month), int(strftime("%m", localtime)), 'month');
-is($count, 3, 'count');
-ok(!$iter->(), 'no $iter');
+is($count, 3, 'count6');
+ok(!$cgb_iter->(), 'no $iter');
 
 ## Get a count of all Foo objects in order of most recently
 ## created Bar object. No uniqueness requirement. This tests
@@ -442,7 +448,7 @@ is(Foo->count(undef,
                 undef,
                 { unique => 1,
                   sort => 'created_on',
-                  direction => 'descend', } ] }), 2, 'count');
+                  direction => 'descend', } ] }), 2, 'count7');
 
 ## Now load all Foo objects in order of most recently
 ## created Bar object. Make sure they are unique.
@@ -681,13 +687,16 @@ isa_ok($offs[2], 'Foo');
 is($offs[2]->id, $foo1->id, 'id');
 
 #sum_group_by
-my $iterx = Foo->load_iter;
+my $cnt = 0;
+my @data = Foo->load(undef, {direction => 'ascend'});
 my @foos;
-while (my $f = $iterx->()) {
-    $f->status(scalar(@foos) + 1);
+foreach my $f (@data) {
+    $f->status($cnt + 1);
     $f->save;
     unshift @foos, $f;
+    $cnt++;
 }
+
 my $sgb = Foo->sum_group_by(undef, { sum => 'status', group => ['id'], direction => 'ascend' });
 while (my ($status, $id2) = $sgb->()) {
     my $f = pop @foos;
@@ -705,5 +714,49 @@ SKIP: {
 }
 
 }
+
+# -or
+my $newdata = Foo->new;
+$newdata->status(11);
+$newdata->name('Apple');
+$newdata->text('MacBook');
+$newdata->save;
+$newdata = Foo->new;
+$newdata->status(12);
+$newdata->name('Linux');
+$newdata->text('Ubuntu');
+$newdata->save;
+$newdata = Foo->new;
+$newdata->status(13);
+$newdata->name('Microsoft');
+$newdata->text('Vista');
+$newdata->save;
+$newdata = Foo->new;
+$newdata->status(10);
+$newdata->name('Microsoft');
+$newdata->text('XP');
+$newdata->save;
+$newdata = Foo->new;
+$newdata->status(10);
+$newdata->name('Apple');
+$newdata->text('iBook');
+$newdata->save;
+
+my $count = Foo->count( [{status => 10}, -or => {name => 'Apple'}] );
+# ==> select count(*) from mt_foo where foo_status = 10 or foo_name = 'Apple'
+is($count, 3, '-or count');
+
+$count = Foo->count( [ { status => { '<=' => 20 }, name => 'Apple' }, -and_not => { status => 11 } ] );
+# ==> select count(*) from mt_foo where (foo_status <= 20 and foo_name = 'Apple') and not (foo_status = 11)
+is($count, 1, '-and_not count');
+
+$count = Foo->count( [
+    { status => 10 },
+    -or => { name => 'Apple' },
+    -or => { name => { like => '%nux' } },
+] );
+# ==> select count(*) from mt_foo where (foo_status = 10) or (foo_name = 'Apple') or (foo_name like '%nux')
+# (selects Apple+MacBook, Apple+iBook, Microsoft+XP, Linux+Ubuntu)
+is($count, 4, '-or count, 3 clauses');
 
 1;

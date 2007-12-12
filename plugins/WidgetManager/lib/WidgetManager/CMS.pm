@@ -230,6 +230,8 @@ sub list {
     $tmpl->param(plugin_version    => $MT::Plugin::WidgetManager::VERSION);
     $tmpl->param(rebuild           => $app->param('rebuild') || 0);
     $tmpl->param(deleted           => $app->param('deleted') || 0);
+    $tmpl->param(listing_screen => 1);
+    $tmpl->param(screen_id => "list-widget-set");
     return $app->build_page($tmpl);
 }
 

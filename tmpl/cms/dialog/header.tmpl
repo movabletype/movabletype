@@ -34,7 +34,7 @@
 </mt:if>
 <$mt:var name="html_head"$>
 <script type="text/javascript" src="<mt:var name="static_uri">mt.js"></script>
-<mt:if name="local_lang_id"><link rel="stylesheet" href="<mt:var name="static_uri">styles_<mt:var name="local_lang_id">.css" />
+<mt:if name="local_lang_id" ne="en"><link rel="stylesheet" href="<mt:var name="static_uri">styles_<mt:var name="local_lang_id">.css" />
 <script type="text/javascript" src="<mt:var name="static_uri">mt_<mt:var name="local_lang_id">.js" charset="utf-8"></script></mt:if>
 <$mt:var name="js_include"$>
 <script type="text/javascript">

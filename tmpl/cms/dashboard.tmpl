@@ -44,48 +44,47 @@
 </div>
 <$mt:var name="select_widget_form" set="sidebar"$>
 </mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <div id="msg-block">
 
-<mt:include name="include/header.tmpl">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="info"
+            can_close="1">
+            <__trans phrase="Your Dashboard has been updated.">
+        </mtapp:statusmsg>
+    </mt:if>
 
-<div id="msg-block">
-
-<mt:if name="saved">
-    <mtapp:statusmsg
-        id="saved"
-        class="info"
-        can_close="1">
-        <__trans phrase="Your Dashboard has been updated.">
-    </mtapp:statusmsg>
-</mt:if>
-
-<mt:if name="permission">
-    <mtapp:statusmsg
-        id="permissions"
-        class="error">
-        <__trans phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
-    </mtapp:statusmsg>
-</mt:if>
-
-<mt:unless name="has_uploads_path">
-    <mt:if name="is_administrator">
+    <mt:if name="permission">
         <mtapp:statusmsg
             id="permissions"
             class="error">
-            <__trans phrase="The directory you have configured for uploading avatars is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]" params="<mt:var name="support_path">">
+            <__trans phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
         </mtapp:statusmsg>
     </mt:if>
-</mt:unless>
 
-<mt:unless name="main">
-<mtapp:statusmsg
-    id="empty_dashboard"
-    class="info">
-    <__trans phrase="Your dashboard is empty!">
-</mtapp:statusmsg>
-</mt:unless>
+    <mt:unless name="has_uploads_path">
+        <mt:if name="is_administrator">
+            <mtapp:statusmsg
+                id="permissions"
+                class="error">
+                <__trans phrase="The directory you have configured for uploading avatars is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]" params="<mt:var name="support_path">">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:unless>
 
-</div>
+    <mt:unless name="main">
+    <mtapp:statusmsg
+        id="empty_dashboard"
+        class="info">
+        <__trans phrase="Your dashboard is empty!">
+    </mtapp:statusmsg>
+    </mt:unless>
 
+    </div>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
 
 <div id="widget-container-main">
 <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>

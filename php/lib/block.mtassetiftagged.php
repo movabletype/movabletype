@@ -1,10 +1,17 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_block_mtassetiftagged($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $asset = $ctx->stash('asset');
         if ($asset) {
             $asset_id = $asset['asset_id'];
-            $tag = $args['tag'];
+            $tag = $args['name'];
+            $tag or $tag = $args['tag'];
             $targs = array('asset_id' => $asset_id);
             if ($tag && (substr($tag,0,1) == '@')) {
                 $targs['include_private'] = 1;

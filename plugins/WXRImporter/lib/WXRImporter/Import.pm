@@ -47,10 +47,10 @@ sub import_contents {
     if (exists $param{ImportAs}) {
     } elsif (exists $param{ParentAuthor}) {
         require MT::Auth;
-            return $class->error(MT->translate(
-                "You need to provide a password if you are going to " .
-                "create new users for each user listed in your blog."))
-                    if MT::Auth->password_exists && !(exists $param{NewAuthorPassword});
+        return $class->error(MT->translate(
+            "You need to provide a password if you are going to " .
+            "create new users for each user listed in your blog."))
+                if MT::Auth->password_exists && !(exists $param{NewAuthorPassword});
     } else {
         return $class->error(MT->translate(
             "Need either ImportAs or ParentAuthor"));
@@ -72,11 +72,16 @@ sub start_import {
     my $self = shift;
     my ($stream, %param) = @_;
 
-    if (ref($stream) eq 'Fh') {
-        $stream = WXRImporter::Stream->new($stream);
-    }
-    
-    require XML::SAX;
+    #if (ref($stream) eq 'Fh') {
+    #    $stream = WXRImporter::Stream->new($stream);
+    #}
+
+    my $xml = do { local $/ = undef; <$stream>} || ''; 
+    $xml =~ s{<wp:comment_content>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</wp:comment_content>} 
+             {<wp:comment_content><![CDATA[$1]]></wp:comment_content>}sg; 
+    use HTML::Entities::Numbered;
+    $xml = HTML::Entities::Numbered::name2hex_xml($xml); 
+
     require WXRImporter::WXRHandler;
     my $handler = WXRImporter::WXRHandler->new(
         callback => $param{Callback},
@@ -90,6 +95,7 @@ sub start_import {
         wp_path => $param{wp_path},
         mt_path => $param{mt_path},
         mt_url => $param{mt_url},
+        wp_download => $param{wp_download},
     );
 
     require MT::Util;
@@ -97,7 +103,8 @@ sub start_import {
     $param{Callback}->(ref($parser) . "\n") if MT::ConfigMgr->instance->DebugMode;
     $parser->{Handler} = $handler;
     my $e;
-    eval { $parser->parse_file($stream); };
+    eval { $parser->parse_string($xml); };
+    #eval { $parser->parse_file($stream); };
     $e = $@ if $@;
     if ($e) {
         $param{Callback}->($e);
@@ -126,68 +133,68 @@ sub get_param {
     $param;
 }
 
-# This package will be removed once WordPress fixes issues
-# which it generates non-well formed XML (therefore it's
-# not even XML at all).  See:
-# http://trac.wordpress.org/ticket/4242
-# http://trac.wordpress.org/ticket/4452
-package WXRImporter::Stream;
-
-use Symbol;
-
-use vars qw( $fh );
-sub new {
-    my $class = shift;
-    my $this = bless Symbol::gensym(), $class;
-    tie *$this, $this;
-    $fh = $_[0];
-    return $this;
-}
-
-sub read {
-    my $this = shift;
-    my $res = read($fh, $_[0], $_[1], $_[2] || 0);
-    my $string = $_[0];
-    $string = _encode_wp_comment($string);
-    $_[0] = $string;
-    $res;
-}
-
-sub binmode {
-    my $this = shift;
-    binmode $fh;
-}
-    
-sub eof {
-    my $this = shift;
-    eof $fh;
-}
-
-sub close {
-    my $this = shift;
-    close $fh;
-}
-
-*READ   = \&read;
-*BINMODE = \&binmode;
-*EOF    = \&eof;
-*CLOSE  = \&close;
-
-sub TIEHANDLE {
-    return $_[0] if ref($_[0]);
-    my $class = shift;
-    my $this = bless Symbol::gensym(), $class;
-    $fh = $_[0];
-    return $this;
-}
-
-sub _encode_wp_comment {
-    my ($str) = @_;
-
-    use HTML::Entities::Numbered;
-    $str = name2hex_xml($str);
-    return $str;
-}
+## This package will be removed once WordPress fixes issues
+## which it generates non-well formed XML (therefore it's
+## not even XML at all).  See:
+## http://trac.wordpress.org/ticket/4242
+## http://trac.wordpress.org/ticket/4452
+#package WXRImporter::Stream;
+#
+#use Symbol;
+#
+#use vars qw( $fh );
+#sub new {
+#    my $class = shift;
+#    my $this = bless Symbol::gensym(), $class;
+#    tie *$this, $this;
+#    $fh = $_[0];
+#    return $this;
+#}
+#
+#sub read {
+#    my $this = shift;
+#    my $res = read($fh, $_[0], $_[1], $_[2] || 0);
+#    my $string = $_[0];
+#    $string = _encode_wp_comment($string);
+#    $_[0] = $string;
+#    $res;
+#}
+#
+#sub binmode {
+#    my $this = shift;
+#    binmode $fh;
+#}
+#    
+#sub eof {
+#    my $this = shift;
+#    eof $fh;
+#}
+#
+#sub close {
+#    my $this = shift;
+#    close $fh;
+#}
+#
+#*READ   = \&read;
+#*BINMODE = \&binmode;
+#*EOF    = \&eof;
+#*CLOSE  = \&close;
+#
+#sub TIEHANDLE {
+#    return $_[0] if ref($_[0]);
+#    my $class = shift;
+#    my $this = bless Symbol::gensym(), $class;
+#    $fh = $_[0];
+#    return $this;
+#}
+#
+#sub _encode_wp_comment {
+#    my ($str) = @_;
+#
+#    use HTML::Entities::Numbered;
+#    $str = name2hex_xml($str);
+#    return $str;
+#}
 
 1;
 

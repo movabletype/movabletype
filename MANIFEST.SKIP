@@ -39,14 +39,21 @@ mt-static/themes/unity-purple
 #mt-static/themes/unity-tricolor
 
 # Conditional SKIP rule; format: #?(var=value) RULE
+#?package=MT ^COPYING
+^addons
 #?package=MT ^addons
+^mt-cp.cgi
 #?package=MT ^mt-cp.cgi
+^mt-static/addons
 #?package=MT ^mt-static/addons
+^mt-static/themes/tristan-blue
 #?package=MT ^mt-static/themes/tristan-blue
+#?package=MTE ^COPYING
 #?package=MTE ^addons/Community.pack
 #?package=MTE ^mt-static/addons/Community.pack
 #?package=MTE ^mt-cp.cgi
 #?package=MTE ^mt-static/themes/tristan-blue
+#?package=MTCS ^COPYING
 #?package=MTCS ^addons/Enterprise.pack
 #?package=MTCS ^mt-static/addons/Enterprise.pack
 
@@ -148,3 +155,4 @@ Makefile
 ^MT.*\.gz
 index\.html\..*
 build-language-stamp
+.gitignore

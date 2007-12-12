@@ -20,11 +20,8 @@ function selectBlog() {
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/tools_content_nav.tmpl">
 </MTSetVarBlock>
-<mt:setvarblock name="content_header">
-    <p><__trans phrase="_USAGE_EXPORT_1"></p> 
-</mt:setvarblock>
 <mt:include name="include/header.tmpl">
-
+<p><__trans phrase="_USAGE_EXPORT_1"></p> 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <input type="hidden" name="__mode" value="export" />
 <mt:if name="blog_id">

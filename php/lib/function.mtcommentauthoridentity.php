@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 function smarty_function_mtcommentauthoridentity($args, &$ctx) {
     $cmt = $ctx->stash('comment');
     $cmntr = $ctx->stash('commenter');
@@ -20,12 +26,7 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
     require_once "commenter_auth_lib.php";
     $logo = _auth_icon_url($static_path, $cmntr);
     if (!$logo) {
-        $blog = $ctx->stash('blog');
-        if ($ctx->mt->config('PublishCommenterIcon')) {
-            $root_url = $blog['blog_site_url'];
-        } else {
-            $root_url = $static_path . 'images/';
-        }
+        $root_url = $static_path . 'images/';
         if (!preg_match('/\/$/', $root_url)) {
             $root_url .= '/';
         }

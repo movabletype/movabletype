@@ -1,8 +1,12 @@
-# WidgetManager plugin for Movable Type
-# Author: Byrne Reese, Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2005-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# WidgetManager plugin for Movable Type
+# Author: Byrne Reese, Six Apart (http://www.sixapart.com)
+# Released under the Artistic and GPLv2 License
 
 package MT::Plugin::WidgetManager;
 
@@ -44,6 +48,7 @@ sub init_registry {
                 callback => 'MT::Blog::post_remove',
                 handler => '$WidgetManager::WidgetManager::Plugin::remove_blog_widgetmanager',
             },
+            'DefaultTemplateFilter' => '$WidgetManager::MT::Plugin::WidgetManager::default_templates',
         },
         applications => {
             cms => {
@@ -89,6 +94,15 @@ sub init_registry {
 sub load_selected_modules { 
     require WidgetManager::Plugin; 
     WidgetManager::Plugin::load_selected_modules(@_); 
+}
+
+sub default_templates {
+    my $cb = shift;
+    my ($tmpl_list) = @_;
+
+    my $widgetmgr = MT::Plugin::WidgetManager->instance;
+    my $widget_tmpls = $widgetmgr->templates(MT->instance);
+    push @$tmpl_list, @$widget_tmpls;
 }
 
 sub templates {

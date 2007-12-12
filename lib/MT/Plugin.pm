@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -38,7 +38,15 @@ sub plugin_link { &MT::Component::_getset(shift, 'plugin_link', @_) }
 sub config_link { &MT::Component::_getset(shift, 'config_link', @_) }
 sub doc_link { &MT::Component::_getset(shift, 'doc_link', @_) }
 sub description { &MT::Component::_getset_translate(shift, 'description', @_) }
-sub settings { &MT::Component::_getset(shift, 'settings', @_) }
+sub settings {
+    my $plugin = shift;
+    my $s = &MT::Component::_getset($plugin, 'settings', @_);
+    unless (ref($s) eq 'MT::PluginSettings') {
+        $s = MT::PluginSettings->new($s);
+        &MT::Component::_getset($plugin, 'settings', $s);
+    }
+    return $s;
+}
 sub icon { &MT::Component::_getset(shift, 'icon', @_) }
 
 # Plugin-specific: configuration settings and data
@@ -87,7 +95,11 @@ sub config_template {
     } else {
         $scope = 'system';
     }
-    if (my $tmpl = $plugin->{"${scope}_config_template"} || $plugin->{'config_template'}) {
+    my $r = $plugin->registry;
+    if (my $tmpl = $r->{"${scope}_config_template"} ||
+        $r->{"config_template"} ||
+        $plugin->{"${scope}_config_template"} ||
+        $plugin->{'config_template'}) {
         return $tmpl->($plugin, @_) if ref $tmpl eq 'CODE';
         if ($tmpl =~ /\s/) {
             return $tmpl;
@@ -106,7 +118,7 @@ sub config_vars {
     if (my $s = $plugin->settings) {
         foreach my $setting (@$s) {
             my ($name, $param) = @$setting;
-            next if $scope && $param->{Scope} && $param->{Scope} ne $scope;
+            next if $scope && $param->{scope} && $param->{scope} ne $scope;
             push @settings, $name;
         }
     }
@@ -202,6 +214,22 @@ sub new {
     my $pkg = shift;
     my ($self) = @_;
     $self ||= [];
+    if (ref $self eq 'HASH') {
+        # convert a hash-style setting structure into what PluginSettings
+        # expects
+        my $settings = [];
+        foreach my $key (keys %$self) {
+            if (defined $self->{$key}) {
+                push @$settings, [ $key, $self->{$key} ];
+            }
+            else {
+                push @$settings, [ $key ];
+            }
+        }
+        @$settings = sort { ( $a->[1] ? $a->[1]->{order} || 0 : 0 )
+            <=> ( $b->[1] ? $b->[1]->{order} || 0 : 0 ) } @$settings;
+        $self = $settings;
+    }
     # Lowercase all settings keys
     foreach my $setting (@$self) {
         my ($name, $param) = @$setting;
@@ -405,63 +433,6 @@ modes and their handlers. For example:
             'mode2' => \&handler2
         }
     }
-
-=item * app_action_links
-
-Used to register plugin action links that are displayed on various pages
-within the MT::App::CMS application. The format for this key is:
-
-    app_action_links => {
-        'MT::App::CMS' => {   # application the action applies to
-            'type' => {
-                link => 'myplugin.cgi',
-                link_text => 'Configure MyPlugin'
-            }
-        }
-    }
-
-This is an alternative to using C<MT-E<gt>add_plugin_action>.
-
-=item * app_itemset_actions
-
-Used to register plugin itemset action links that are displayed on various
-listings within the MT::App::CMS application. The format for this key is:
-
-    app_itemset_actions => {
-        'MT::App::CMS' => {   # application the action applies to
-            $type => {
-                key => 'unique_action_name',
-                label => 'Uppercase text',
-                code => \&itemset_handler
-            }
-        }
-    }
-
-Where C<$type> should be an MT item such as 'entry', 'asset', 'ping',
-etc.
-
-Please see the full documentation of these C<type> options in the
-L<MT::App::CMS> add_itemset_action section.
-
-In the event that you need to register multiple actions for a single type,
-you can use the alternate format:
-
-    app_itemset_actions => {
-        'MT::App::CMS' => [   # application the action applies to
-            {   type => 'type',
-                key => 'unique_action_name',
-                label => 'Uppercase text',
-                code => \&itemset_handler_upper
-            },
-            {   type => 'type',
-                key => 'unique_action_name2',
-                label => 'Lowercase text',
-                code => \&itemset_handler_lower
-            }
-        ]
-    }
-
-This is an alternative to using C<MT::App::CMS-E<gt>add_itemset_action>.
 
 =item * callbacks
 

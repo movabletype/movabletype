@@ -57,7 +57,8 @@
     <div class="panel-header">
 <mt:setvarblock name="upload_new_file_link">
     <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Upload New File">" width="9" height="9" />
-    <a href="<mt:var name="script_url">?__mode=start_upload&amp;_type=asset&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;<mt:if name="asset_select">asset_select=1&amp;<mt:else>entry_insert=1&amp;</mt:if>edit_field=<mt:var name="edit_field">&amp;upload_mode=<mt:var name="upload_mode" escape="url">&amp;<mt:if name="require_type">require_type=<mt:var name="require_type">&amp;</mt:if>return_args=<mt:var name="return_args" escape="url">"><mt:if name="is_image"><__trans phrase="Upload New Image"><mt:else><__trans phrase="Upload New File"></mt:if></a>
+    <mt:unless name="asset_select"><mt:setvar name="entry_insert" value="1"></mt:unless>
+    <a href="<mt:var name="script_url">?__mode=start_upload&amp;_type=asset&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;<mt:if name="asset_select">asset_select=1&amp;<mt:else>entry_insert=1&amp;</mt:if>edit_field=<mt:var name="edit_field">&amp;upload_mode=<mt:var name="upload_mode" escape="url">&amp;<mt:if name="require_type">require_type=<mt:var name="require_type">&amp;</mt:if>return_args=<mt:var name="return_args" escape="url">" onclick="toggleHidden('list-assets-dialog'); toggleHidden('upload-asset-dialog'); return false"><mt:if name="is_image"><__trans phrase="Upload New Image"><mt:else><__trans phrase="Upload New File"></mt:if></a>
 </mt:setvarblock>
 <mt:if name="edit_blog_id">
     <mt:if name="can_upload">
@@ -218,6 +219,13 @@
 
 
     </div>
+
+<div id="upload-asset-dialog" class="hidden">
+<mt:setvar name="included_upload_asset" value="1">
+
+<mt:include name="include/asset_upload.tmpl">
+
+</div>
 
 <mt:include name="dialog/footer.tmpl">
 </mt:unless>

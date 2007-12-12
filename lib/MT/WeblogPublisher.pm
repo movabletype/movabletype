@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -90,6 +90,7 @@ sub core_archive_types {
                 module_yearly_archives   => 1,
                 main_template            => 1,
                 archive_template         => 1,
+                archive_listing          => 1,
                 archive_class            => "datebased-yearly-archive",
             },
         ),
@@ -115,9 +116,9 @@ sub core_archive_types {
             template_params => {
                 datebased_only_archive    => 1,
                 datebased_monthly_archive => 1,
-                module_monthly_archives   => 1,
                 main_template             => 1,
                 archive_template          => 1,
+                archive_listing           => 1,
                 archive_class             => "datebased-monthly-archive",
             },
         ),
@@ -146,6 +147,7 @@ sub core_archive_types {
                 datebased_weekly_archive => 1,
                 main_template            => 1,
                 archive_template         => 1,
+                archive_listing          => 1,
                 archive_class            => "datebased-weekly-archive",
             },
         ),
@@ -221,9 +223,6 @@ sub core_archive_types {
                 entry_template    => 1,
                 feedback_template => 1,
                 archive_class     => "entry-archive",
-
-                # module_recent_posts => 0,
-                # module_monthly_archives => 0,
             },
         ),
         'Page' => ArchiveType(
@@ -309,6 +308,7 @@ sub core_archive_types {
                 datebased_daily_archive => 1,
                 main_template           => 1,
                 archive_template        => 1,
+                archive_listing         => 1,
             },
         ),
         'Category' => ArchiveType(
@@ -338,7 +338,7 @@ sub core_archive_types {
                 category_archive                   => 1,
                 main_template                      => 1,
                 archive_template                   => 1,
-                module_category_archives           => 1,
+                archive_listing                    => 1,
                 'module_category-monthly_archives' => 1,
             },
         ),
@@ -367,10 +367,10 @@ sub core_archive_types {
             template_params  => {
                 archive_class                    => "author-archive",
                 'module_author-monthly_archives' => 1,
-                module_author_archives           => 1,
                 main_template                    => 1,
                 author_archive                   => 1,
                 archive_template                 => 1,
+                archive_listing                  => 1,
             },
         ),
         'Author-Yearly' => ArchiveType(
@@ -403,6 +403,7 @@ sub core_archive_types {
                 author_yearly_archive => 1,
                 main_template         => 1,
                 archive_template      => 1,
+                archive_listing       => 1,
             },
         ),
         'Author-Monthly' => ArchiveType(
@@ -434,9 +435,9 @@ sub core_archive_types {
                 archive_class                    => "author-monthly-archive",
                 author_monthly_archive           => 1,
                 'module_author-monthly_archives' => 1,
-                module_author_archives           => 1,
                 main_template                    => 1,
                 archive_template                 => 1,
+                archive_listing                  => 1,
             },
         ),
         'Author-Weekly' => ArchiveType(
@@ -469,6 +470,7 @@ sub core_archive_types {
                 author_weekly_archive => 1,
                 main_template         => 1,
                 archive_template      => 1,
+                archive_listing       => 1,
             },
         ),
         'Author-Daily' => ArchiveType(
@@ -501,6 +503,7 @@ sub core_archive_types {
                 author_daily_archive => 1,
                 main_template        => 1,
                 archive_template     => 1,
+                archive_listing      => 1,
             },
         ),
         'Category-Yearly' => ArchiveType(
@@ -533,6 +536,7 @@ sub core_archive_types {
                 category_yearly_archive => 1,
                 main_template           => 1,
                 archive_template        => 1,
+                archive_listing         => 1,
             },
         ),
         'Category-Monthly' => ArchiveType(
@@ -564,9 +568,9 @@ sub core_archive_types {
                 archive_class            => "category-monthly-archive",
                 category_monthly_archive => 1,
                 'module_category-monthly_archives' => 1,
-                module_category_archives           => 1,
                 main_template                      => 1,
                 archive_template                   => 1,
+                archive_listing                    => 1,
             },
         ),
         'Category-Daily' => ArchiveType(
@@ -599,6 +603,7 @@ sub core_archive_types {
                 category_daily_archive => 1,
                 main_template          => 1,
                 archive_template       => 1,
+                archive_listing        => 1,
             },
         ),
         'Category-Weekly' => ArchiveType(
@@ -633,6 +638,7 @@ sub core_archive_types {
                 category_weekly_archive => 1,
                 main_template           => 1,
                 archive_template        => 1,
+                archive_listing         => 1,
             },
         )
     };
@@ -785,9 +791,6 @@ sub rebuild {
     unless ( $param{NoIndexes} ) {
         $mt->rebuild_indexes( Blog => $blog ) or return;
     }
-    if ( $mt->{PublishCommenterIcon} ) {
-        $mt->make_commenter_icon($blog);
-    }
     1;
 }
 
@@ -875,41 +878,6 @@ sub rebuild_authors {
         ) or return;
     }
     1;
-}
-
-sub make_commenter_icon {
-    my $mt   = shift;
-    my $blog = shift;
-    if ( !UNIVERSAL::isa( $blog, 'MT::Blog' ) ) { $blog = shift; }
-    my $identity_link_image = $blog->site_path . "/nav-commenters.gif";
-    unless ( -f $identity_link_image ) {
-        my $fmgr = $blog->file_mgr;
-        unless ( $fmgr->exists( $blog->site_path ) ) {
-            $fmgr->mkpath( $blog->site_path )
-              or return MT->trans_error( "Error making path '[_1]': [_2]",
-                $blog->site_path, $fmgr->errstr );
-        }
-        my $nav_commenters_gif =
-          (     q{47494638396116000f00910200504d4b}
-              . q{ffffffffffff00000021f90401000002}
-              . q{002c0000000016000f0000022c948fa9}
-              . q{19e0bf2208b482a866a51723bd75dee1}
-              . q{70e2f83586837ed773a22fd4ba6cede2}
-              . q{241c8f7ceff9e95005003b} );
-        $nav_commenters_gif = pack( "H*", $nav_commenters_gif );
-        eval {
-            if ( open( TARGET, ">$identity_link_image" ) )
-            {
-                print TARGET $nav_commenters_gif;
-                close TARGET;
-            }
-            else {
-                MT::log( "Couldn't write authenticated commenter icon to "
-                      . $identity_link_image );
-                die;
-            }
-        };
-    }
 }
 
 #   rebuild_entry
@@ -1902,7 +1870,12 @@ sub publish_future_posts {
     require MT::Util;
     my $mt            = MT->instance;
     my $total_changed = 0;
-    for my $blog ( MT::Blog->load ) {
+    my @blogs = MT::Blog->load(undef, {
+        join => MT::Entry->join_on('blog_id', {
+            status => MT::Entry::FUTURE(),
+        }, { unique => 1 })
+    });
+    foreach my $blog (@blogs) {
         my @ts = MT::Util::offset_time_list( time, $blog );
         my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900, $ts[4] + 1,
           @ts[ 3, 2, 1, 0 ];
@@ -2028,7 +2001,14 @@ sub remove_entry_archive_file {
             die MT->translate( $blog->errstr() );
             return $mt->error( MT->translate( $blog->errstr() ) );
         }
+
+        # Run callbacks
+        MT->run_callbacks( 'pre_delete_archive_file', $file, $at, $entry);
+
         $fmgr->delete($file);
+
+        # Run callbacks
+        MT->run_callbacks( 'post_delete_archive_file', $file, $at, $entry);
     }
     1;
 }
@@ -2453,7 +2433,7 @@ sub category_group_iter {
 
     return sub {
         while ( my $c = $iter->() ) {
-            my $args = [
+            my @arguments = (
                 {
                     blog_id => $blog_id,
                     status  => MT::Entry::RELEASE()
@@ -2463,8 +2443,8 @@ sub category_group_iter {
                         'MT::Placement', 'entry_id', { category_id => $c->id }
                     ]
                 }
-            ];
-            my $count = MT::Entry->count( undef, $args );
+            );
+            my $count = MT::Entry->count( @arguments );
             next unless $count || $args->{show_empty};
             return ( $count, category => $c );
         }
@@ -4755,10 +4735,6 @@ The default is C<0> (do not rebuild such templates).
 =head2 $mt->trans_error
 
 Call L<MT/translate>.
-
-=head2 $mt->make_commenter_icon
-
-Make sure there is a C<nav-commenters.gif> file under the blog I<site_path>.
 
 =head2 $mt->remove_entry_archive_file(%param)
 

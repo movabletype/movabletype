@@ -1,4 +1,10 @@
-
+/*
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+*/
 
 App.singletonConstructor =
 MT.App = new Class( MT.App, {
@@ -295,6 +301,12 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
         }
     },
 
+    eventKeyUp: function( event ) {
+        /* safari always makes this event. ignore for language input method */
+        if ( this.isWebKit ) {
+            return false;
+        }
+    },
 
     extendedExecCommand: function( command, userInterface, argument ) {
         switch( command ) {

@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -13,6 +13,22 @@ use MT::ObjectScore;
 use MT::Memcached;
 
 use constant SCORE_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
+
+sub install_properties {
+    my $pkg = shift;
+    my ($class) = @_;
+    $class->add_trigger( post_remove => \&post_remove_score );
+}
+
+sub post_remove_score {
+    my $class = shift;
+    my ($obj) = @_;
+    require MT::ObjectScore;
+    MT::ObjectScore->remove({
+        object_ds => $obj->datasource,
+        object_id => $obj->id,
+    });
+}
 
 sub get_score {
     my $obj = shift;
