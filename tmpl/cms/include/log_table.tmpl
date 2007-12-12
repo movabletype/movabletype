@@ -14,7 +14,7 @@
     </mt:if>
         <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>>
     <mt:if name="log_detail">
-            <td class="details-toggle si"><a href="javascript:void(0)" onclick="toggleActive('log-detail-<$mt:var name="id"$>'); toggleActive('log-detail-parent-<$mt:var name="id"$>'); return false;"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="" width="9" height="9" /></a></td>
+            <td class="details-toggle si"><a href="javascript:void(0)" onclick="toggleActive('log-detail-<$mt:var name="id"$>'); toggleActive('log-detail-parent-<$mt:var name="id"$>'); return false;"><span>Toggle Details</span></a></td>
     <mt:else>
             <td class="details-toggle si">&nbsp;</td>
     </mt:if>

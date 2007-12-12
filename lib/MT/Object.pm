@@ -392,7 +392,8 @@ sub install_meta {
 }
 
 sub has_meta {
-    return exists $_[0]->properties->{meta_columns}{$_[1]};
+    my $props = $_[0]->properties;
+    return $props->{meta} && (@_ > 1 ? exists $props->{meta_columns}{$_[1]} : 1);
 }
 
 sub pre_save_serialize_metadata {

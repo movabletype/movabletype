@@ -19,9 +19,6 @@
     <mt:if name="is_administrator">
             <li><a href="<$mt:var name="mt_url"$>?__mode=cfg_system"><__trans phrase="System Settings"></a></li>
     </mt:if>
-    <mt:if name="can_administer_blog">
-            <li><a href="<$mt:var name="mt_url"$>?__mode=tools<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Tools"></a></li>
-    </mt:if>
             <li><a href="<$mt:var name="mt_url"$>?__mode=search_replace<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Search"></a></li>
             <!-- <li class="help"><a href="<$mt:var name="help_url"$>"><__trans phrase="Help"></a></li> -->
         </ul>
@@ -36,6 +33,7 @@
         </div>
     </div></div> 
 </div><!-- /container -->
+<$mt:var name="page_form_footer"$>
 <div id="resize-mask" class="hidden modal-mask resize-mask autolayout-height-parent" mt:delegate="resizer">
     <div class="modal-mask"></div>
 </div>

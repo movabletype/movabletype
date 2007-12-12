@@ -215,7 +215,7 @@ function validate (f, rebuild) {
         app.clearDirty();
         if (rebuild) setRebuild(f);
     }
-    f.submit();
+    return true;
 }
 function saveArchiveMapChange(param) {
     showMsg('<__trans phrase="Please wait..." escape="js">', 'map-message', 'success')
@@ -390,7 +390,7 @@ TC.attachLoadEvent( init );
         </mt:if>
     </div>
     <div id="textarea-enclosure" style="position: relative; padding-bottom: 10px; height: <mt:var name="disp_prefs_height_text" default="290">px" mt:min-height="66" mt:update-field-height="text_height">
-        <textarea tabindex="3" class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
+        <textarea tabindex="3" class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off"><mt:var name="text" escape="html"></textarea>
         <input type="hidden" name="text_height" id="text_height" value="<mt:var name="disp_prefs_height_text" default="290">" />
         <div class="resizer" mt:delegate="resizer" mt:target="textarea-enclosure" mt:lock="x">
             <img src="<$mt:var name="static_uri"$>images/spacer.gif" width="100%" height="10"/>

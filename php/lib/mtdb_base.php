@@ -223,7 +223,11 @@ class MTDatabaseBase extends ezsql {
                            and fileinfo_category_id = placement_category_id
                            and placement_is_primary = 1";
             }
-            $entry = $this->fetch_entry($eid);
+            if (preg_match('/Page/', $at)) {
+                $entry = $this->fetch_page($eid);
+            } else {
+                $entry = $this->fetch_entry($eid);
+            }
             $ts = $entry['entry_authored_on'];
             if (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
@@ -235,7 +239,7 @@ class MTDatabaseBase extends ezsql {
                 $ts = $ws;
             } elseif (preg_match('/Yearly$/', $at)) {
                 $ts = substr($ts, 0, 4) . '0101000000';
-            } elseif ($at == 'Individual') {
+            } elseif ($at == 'Individual' || $at == 'Page') {
                 $filter .= "and fileinfo_entry_id = $eid";
             }
             if ($ts != $entry['entry_authored_on']) {
@@ -647,29 +651,6 @@ class MTDatabaseBase extends ezsql {
         if (isset($args['offset']))
             $offset = $args['offset'];
 
-        if (isset($args['sort_by'])) {
-            if ($args['sort_by'] == 'title') {
-                $sort_field = 'entry_title';
-            } elseif ($args['sort_by'] == 'id') {
-                $sort_field = 'entry_id';
-            } elseif ($args['sort_by'] == 'status') {
-                $sort_field = 'entry_status';
-            } elseif ($args['sort_by'] == 'modified_on') {
-                $sort_field = 'entry_modified_on';
-            } elseif ($args['sort_by'] == 'author_id') {
-                $sort_field = 'entry_author_id';
-            } elseif ($args['sort_by'] == 'excerpt') {
-                $sort_field = 'entry_excerpt';
-            } elseif ($args['sort_by'] == 'comment_created_on') {
-                $sort_field = $args['sort_by'];
-            } elseif ($args['sort_by'] == 'score') {
-            } else {
-                $sort_field = 'entry_' . $args['sort_by'];
-            }
-            if ($sort_field) $no_resort = 1;
-        }
-        $sort_field or $sort_field ='entry_authored_on';
-
         if (isset($args['limit'])) {
             $base_order = ($args['sort_order'] == 'ascend' ? 'asc' : 'desc');
             $base_order or $base_order = 'desc';
@@ -704,7 +685,7 @@ class MTDatabaseBase extends ezsql {
                    $date_filter
                    $day_filter
                    $class_filter
-             order by $sort_field $base_order
+             order by entry_authored_on $base_order
         ";
         if (isset($args['recently_commented_on'])) {
             $rco = $args['recently_commented_on'];
@@ -743,7 +724,6 @@ class MTDatabaseBase extends ezsql {
         }
 
         if (!$no_resort) {
-            $sort_field = '';
             if (isset($args['sort_by'])) {
                 if ($args['sort_by'] == 'title') {
                     $sort_field = 'entry_title';
@@ -1573,13 +1553,23 @@ class MTDatabaseBase extends ezsql {
         if ($blog_filter != '') 
             $blog_filter = 'and objecttag_blog_id = ' . $blog_filter;
 
+        if (isset($args['datasource']) && strtolower($args['datasource']) == 'asset') {
+            $datasource = $args['datasource'];
+            $from_object = 'mt_asset';
+            $object_filter = 'and asset_id = objecttag_object_id';
+        } else {
+            $datasource = 'entry';
+            $from_object = 'mt_entry';
+            $object_filter = 'and entry_id = objecttag_object_id and entry_status = 2';
+        }
         $sql = "
             select mt_objecttag.*
-              from mt_objecttag, mt_entry
-              where objecttag_tag_id in ($id_list)
+              from mt_objecttag, $from_object
+              where
+                objecttag_object_datasource ='$datasource'
+                and objecttag_tag_id in ($id_list)
                 $blog_filter
-                and entry_id = objecttag_object_id
-                and entry_status = 2
+                $object_filter
         ";
         $results = $this->get_results($sql, ARRAY_A);
         return $results;
@@ -1964,7 +1954,6 @@ class MTDatabaseBase extends ezsql {
                 $not_clause = preg_match('/\bNOT\b/i', $tag_arg);
             }
 
-            require_once("MTUtil.php");
             $include_private = 0;
             $tag_array = tag_split($tag_arg);
             foreach ($tag_array as $tag) {
@@ -2001,8 +1990,6 @@ class MTDatabaseBase extends ezsql {
         # Adds an author filter
         if (isset($args['author'])) {
             $author_filter = 'and author_name = \''.$this->escape($args['author']) . "'";
-            $author_join = ', mt_author.*';
-            $author_join_tbl = ', mt_author';
         }
 
         # Adds an entry filter
@@ -2049,10 +2036,10 @@ class MTDatabaseBase extends ezsql {
 
         # Build SQL
         $sql = "
-            select mt_asset.* $author_join $entry_join
-            from mt_asset $author_join_tbl $entry_join_tbl
+            select mt_asset.*, mt_author.* $entry_join
+            from mt_asset, mt_author $entry_join_tbl
             where
-                1 = 1
+                author_id = asset_created_by
                 $id_filter
                 $blog_filter
                 $author_filter

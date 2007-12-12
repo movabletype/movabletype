@@ -6,7 +6,7 @@ function translate_phrase($str, $params = null) {
 	'Author (#' => 'Auteur (#',
 
 ## php/lib/function.mtproductname.php
-	'$short_name [_1]' => '$short_name [_1]',
+	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtcommentfields.php
 	'Thanks for signing in,' => 'Bedankt om uzelf aan te melden,',

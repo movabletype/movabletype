@@ -2,9 +2,13 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use lib 'lib';
+use lib 'extlib';
+
 # $Id$
 
-use Test::More tests => 44;
+use Test::More tests => 45;
 
 use MT;
 use MT::Author;

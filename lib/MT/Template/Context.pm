@@ -53,21 +53,24 @@ sub init_handlers {
 
                     my $tag = lc $orig_tag;
                     my $type = 1;
+
                     # A '?' suffix identifies conditional tags
                     if ($tag =~ m/\?$/) {
                         $tag =~ s/\?$//;
                         $type = 2;
                     }
+
                     # Application level tags should not be overwritten
                     # by 'core' tags (which may be placeholders, as in the
                     # case of MT-Search). Non-core plugins can override
                     # other core routines and application level tags though.
+                    my $prev_hdlr;
                     if (exists $h->{$tag}) {
                         # a replaced handler
                         next if ($block->{plugin}{id}||'') eq 'core';
-                        $h->{'_' . $tag} ||= $h->{$tag};
+                        $prev_hdlr = $h->{$tag};
                     }
-                    $h->{$tag} = [ $block->{$orig_tag}, $type ];
+                    $h->{$tag} = [ $block->{$orig_tag}, $type, $prev_hdlr ];
                 }
             }
             if (my $func = $tag_set->{function}) {
@@ -75,12 +78,13 @@ sub init_handlers {
                     next if $orig_tag eq 'plugin';
 
                     my $tag = lc $orig_tag;
+                    my $prev_hdlr;
                     if (exists $h->{$tag}) {
                         # a replaced handler
                         next if ($func->{plugin}{id}||'') eq 'core';
-                        $h->{'_' . $tag} ||= $h->{$tag};
+                        $prev_hdlr = $h->{$tag};
                     }
-                    $h->{$tag} = $func->{$orig_tag};
+                    $h->{$tag} = [ $func->{$orig_tag}, 0, $prev_hdlr ];
                 }
             }
             if (my $mod = $tag_set->{modifier}) {
@@ -100,9 +104,14 @@ sub init_handlers {
 sub super_handler {
     my ($ctx) = @_;
     my $tag = lc $ctx->stash('tag');
-    my ($orig_handler) = $ctx->handler_for('_' . $tag);
-    if ($orig_handler) {
-        return $orig_handler->(@_);
+    my ($hdlr, $type, $orig_tag) = $ctx->handler_for($tag);
+    if ($orig_tag && $orig_tag->[0]) {
+        my $orig_hdlr = $orig_tag->[0];
+        unless (ref $orig_hdlr) {
+            $orig_tag->[0] = $orig_hdlr = MT->handler_to_coderef( $orig_hdlr );
+        }
+        local $ctx->{__handlers}{$tag} = $orig_tag;
+        return $orig_hdlr->(@_);
     }
     return undef;
 }
@@ -129,6 +138,11 @@ sub var {
     }
     $ctx->{__stash}{vars}{$key} = shift if @_;
     return $value;
+}
+
+sub this_tag {
+    my $ctx = shift;
+    return 'mt' . lc( $ctx->stash('tag') );
 }
 
 sub tag {
@@ -217,7 +231,8 @@ sub post_process_handler {
 
 sub slurp {
     my ($ctx, $args, $cond) = @_;
-    $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
+    my $tokens  = $ctx->stash('tokens');
+    $tokens ? $ctx->stash('builder')->build($ctx, $tokens, $cond) : '';
 }
 
 sub else {
@@ -232,8 +247,10 @@ sub build {
     my $tokens = $builder->compile($ctx, $tmpl)
         or return $ctx->error($builder->errstr);
     local $ctx->{stash}{tokens} = $tokens;
-    return $builder->build($ctx, $tokens, $cond)
-        or $ctx->error($builder->errstr);
+    my $result = $builder->build($ctx, $tokens, $cond);
+    return $ctx->error($builder->errstr)
+        unless defined $result;
+    return $result;
 }
 
 sub set_blog_load_context {

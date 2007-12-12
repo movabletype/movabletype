@@ -117,11 +117,6 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
 
     '_USAGE_UPLOAD' => 'You can upload the file to a subdirectory in the selected path. The subdirectory will be created if it does not exist.',
 
-    '_THROTTLED_COMMENT_EMAIL' => 'A visitor to your weblog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds. This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is
-
-    [_3]
-
-If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Weblog Config - IP Banning, and deleting the IP address [_4] from the list of banned addresses.',
      '_THROTTLED_COMMENT' => 'Too many comments have been submitted from you in a short period of time.  Please try again in a short while.',
      '_NOTIFY_REQUIRE_CONFIRMATION' => 'An email has been sent to [_1]. To complete your subscription, 
 please follow the link contained in that email. This will verify that

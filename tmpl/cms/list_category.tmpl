@@ -295,7 +295,10 @@ TC.attachLoadEvent( init );
     <mt:if __last__>
         </tbody>
     </mt:if>
-</mtapp:listing>
+<mt:else>
+    <mtapp:statusmsg id="zero-state" class="info zero-state">
+        <__trans phrase="No [_1] could be found." params="<$mt:var name="object_label_plural"$>">
+    </mtapp:statusmsg>
     <form id="category-listing-form" method="post" action="<$mt:var name="script_url"$>">
         <input type="hidden" name="__mode" value="save_cat" />
         <input type="hidden" name="_type" value="category" />
@@ -333,4 +336,5 @@ TC.attachLoadEvent( init );
             </tr>
         </table>
     </form>
+</mtapp:listing>
 <mt:include name="include/footer.tmpl">

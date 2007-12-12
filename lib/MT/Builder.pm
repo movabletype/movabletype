@@ -372,6 +372,9 @@ sub build {
                     }
                 }
 
+                # Stores a reference to the ordered list of arguments,
+                # just in case the handler wants them
+                local $args{'@'} = \@args;
                 my $out = $h->($ctx, \%args, $cond);
 
                 return $build->error(MT->translate("Error in <mt:[_1]> tag: [_2]", $t->[0], $ctx->errstr || ''))
@@ -384,7 +387,8 @@ sub build {
 
                 $out = $ph->($ctx, \%args, $out, \@args)
                     if %args && $ph;
-                $res .= $out;
+                $res .= $out
+                    if defined $out;
                 if ($MT::DebugMode & 8) {
                     my $elapsed = Time::HiRes::tv_interval($start);
                     print STDERR "Builder: Tag [" . $t->[0] . "] - $elapsed seconds\n" if $elapsed > 0.25;

@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use lib 'lib';
+use lib 'extlib';
+
 use Test::More;
 use File::Spec;
 
@@ -11,8 +15,8 @@ use MT::ConfigMgr;
 use MT;
 
 use vars qw( $BASE @Img @drivers );
-use lib 't';
-require 'test-common.pl';
+
+require 't/test-common.pl';
 
 BEGIN {
     @Img = (

@@ -678,6 +678,30 @@ sub core_upgrade_functions {
                 code => \&core_populate_author_auth_type,
             },
         },
+        'core_add_newfeature_widget' => {
+            version_limit => 4.0027,
+            priority => 3.2,
+            updater => {
+                type => 'author',
+                label => 'Adding new feature widget to dashboard...',
+                code => sub {
+                    my ($user) = @_;
+                    my $widget_store = $user->widgets();
+                    if ($widget_store && %$widget_store) {
+                        for my $set (keys %$widget_store) {
+                            $widget_store->{$set}->{new_version} = {
+                                template => 'widget/new_version.tmpl',
+                                set      => 'main',
+                                singular => 1,
+                                order    => -1,
+                            };
+                        }
+                    }
+                    $user->widgets($widget_store);
+                    $user->save;
+                },
+            },
+        },
     }
 }
 
@@ -1905,6 +1929,11 @@ sub core_finish {
     }
     if (keys %$plugin_schema) {
         $cfg->PluginSchemaVersion($plugin_schema, 1);
+    }
+
+    my $cur_version = MT->version_number;
+    if ( !defined($cfg->MTVersion) || ( $cur_version > $cfg->MTVersion ) ) {
+        $cfg->MTVersion( $cur_version, 1 );
     }
     $cfg->save_config unless $DryRun;
 

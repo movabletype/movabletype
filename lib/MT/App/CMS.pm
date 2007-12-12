@@ -250,6 +250,11 @@ sub core_widgets {
             set      => 'main',    # forces this widget to the main group
             singular => 1,
         },
+        new_version => {
+            template => 'widget/new_version.tmpl',
+            set      => 'main',
+            singular => 1,
+        },
         this_is_you => {
             label    => 'This is You',
             template => 'widget/this_is_you.tmpl',
@@ -467,7 +472,7 @@ sub system_check {
         { kind => 'UA', start => [ undef, $from ] },  
         { range => { start => 1 } }
     );  
-    $param{licensed_user_count} = $sess_class->count( { kind => 'UA' } );  
+    $param{licensed_user_count} = $sess_class->count( { kind => 'UA' } );
 
     my $author_class = $app->model('author');
     $param{user_count} = $author_class->count(
@@ -559,7 +564,7 @@ sub init_plugins {
 sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
-
+    $app->set_no_cache;
     $app->{requires_login} = 1
       unless exists $app->{requires_login};    # by default, we require login
 
@@ -570,8 +575,11 @@ sub init_request {
         && ( $mode ne 'recover' )
         && ( $mode ne 'upgrade' ) )
     {
-        my $schema = $app->config('SchemaVersion');
-        if ( !$schema || ( $schema < $app->schema_version ) ) {
+        my $schema  = $app->config('SchemaVersion');
+        my $version = $app->config('MTVersion');
+        if ( !$schema  || ( $schema  < $app->schema_version )
+          || ( ( !$version || ( $version < $app->version_number ) ) 
+            && $app->config->NotifyUpgrade ) ) {
             $app->{requires_login} = 0;
             $app->mode('upgrade');
         }
@@ -1256,6 +1264,14 @@ sub core_list_filters {
                     $terms->{status} = 2;
                 },
             },
+            pending => {
+                label => "Pending Users",
+                order => 300,
+                handler => sub {
+                    my ($terms) = @_;
+                    $terms->{status} = 3;
+                },
+            },
         },
         user => {
             author => {
@@ -1922,16 +1938,16 @@ sub reset_password {
             category => 'recover_password',
         }
       ),
-      return ( 0, $app->translate("User name or birthplace is incorrect.") )
+      return ( 0, $app->translate("User name or password hint is incorrect.") )
       unless $author;
     return ( 0,
-        $app->translate("User has not set birthplace; cannot recover password")
+        $app->translate("User has not set pasword hint; cannot recover password")
     ) if ( $hint && !$author->hint );
 
     $app->log(
         {
             message => $app->translate(
-                "Invalid attempt to recover password (used birthplace '[_1]')",
+                "Invalid attempt to recover password (used hint '[_1]')",
                 $hint
             ),
             level    => MT::Log::SECURITY(),
@@ -1939,7 +1955,7 @@ sub reset_password {
             category => 'recover_password'
         }
       ),
-      return ( 0, $app->translate("User name or birthplace is incorrect.") )
+      return ( 0, $app->translate("User name or password hint is incorrect.") )
       unless $author->hint eq $hint;
 
     return ( 0, $app->translate("User does not have email address") )
@@ -1968,6 +1984,7 @@ sub reset_password {
       ? $author->nickname . ' <' . $author->email . '>'
       : $author->email;
     my %head = (
+        id      => 'recover_password',
         To      => $address,
         From    => $app->config('EmailAddressMain') || $address,
         Subject => $app->translate("Password Recovery")
@@ -2003,7 +2020,8 @@ sub js_tag_list {
     if (
         my $tag_list = MT::Tag->cache(
             blog_id => $blog_id,
-            class   => $class
+            class   => $class,
+            private => 1,
         )
       )
     {
@@ -3727,6 +3745,7 @@ sub dashboard {
     $param->{no_breadcrumbs}      = 1;
     $param->{screen_class}        = "dashboard";
     $param->{screen_id}           = "dashboard";
+    $param->{mt_version}          = $app->version_number;
 
     my $default_widgets = {
         'blog_stats' =>
@@ -4293,6 +4312,8 @@ sub list_authors {
     }
     $param{object_loop} = \@data;
     $param{object_type} = 'author';
+    $param{object_label} = $app->model('author')->class_label;
+    $param{object_label_plural} = $app->model('author')->class_label_plural;
     if ( $this_author->is_superuser() ) {
         $param{search_label} = $app->translate('Users');
         $param{is_superuser} = 1;
@@ -5043,6 +5064,8 @@ sub edit_object {
         return $app->error( $app->translate("Invalid parameter") )
           unless ( $blog_id =~ m/\d+/ );
     }
+
+    $app->remove_preview_file;
 
     my $enc = $app->config->PublishCharset;
     if ( $q->param('_recover') ) {
@@ -6419,7 +6442,7 @@ sub edit_object {
                 require JSON;
                 $param{tags_js} =
                   JSON::objToJson(
-                    MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry' )
+                    MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry', private => 1 )
                   );
             }
         }
@@ -7704,7 +7727,9 @@ sub _convert_word_chars {
     return $s if 'utf-8' ne lc( $app->charset );
 
     my $blog = $app->blog;
-    if ( $blog->smart_replace ) {
+    return $s if $blog->smart_replace == 2;
+
+    if ( $blog->smart_replace  ) {
 
         # html character entity replacements
         $s =~ s/\342\200\231/&#8217;/g;
@@ -7731,7 +7756,7 @@ sub _translate_naughty_words {
     my $app = shift;
     my ($entry) = @_;
     my $blog = $app->blog;
-    return unless $blog->smart_replace;
+    return if $blog->smart_replace == 2;
 
     my $fields = $blog->smart_replace_fields;
     return unless $fields;
@@ -9675,6 +9700,16 @@ sub complete_upload {
     $asset->save();
     $asset->on_upload( \%param );
 
+    my $perms = $app->permissions;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->user->is_superuser
+        || (
+            $perms
+            && (   $perms->can_edit_assets
+                || $perms->can_edit_all_posts
+                || $perms->can_create_post )
+        );
+
     return $app->redirect(
         $app->uri(
             'mode' => 'list_assets',
@@ -11163,7 +11198,6 @@ sub list_pings {
 
     my $ping_class = $app->model('ping');
     my $total      = $ping_class->count( \%terms, \%arg ) || 0;
-    my @rows       = $ping_class->load( \%terms, \%arg );
     $arg{'sort'}    = 'created_on';
     $arg{direction} = $sort_direction;
     $arg{limit}     = $limit + 1;
@@ -11966,7 +12000,7 @@ sub save_entries {
     my $this_author    = $app->user;
     my $this_author_id = $this_author->id;
     for my $p (@p) {
-        next unless $p =~ /^category_id_(\d+)/ || $p =~ /^status_(\d+)/;
+        next unless $p =~ /^category_id_(\d+)/;
         my $id    = $1;
         my $entry = MT::Entry->load($id);
         return $app->error( $app->translate("Permission denied.") )
@@ -12022,6 +12056,13 @@ sub save_entries {
                 $entry->authored_on($ts);
             }
         }
+        $app->run_callbacks( 'cms_pre_save.' . $type, $app, $entry, $orig_obj )
+          || return $app->error(
+            $app->translate(
+                "Saving [_1] failed: [_2]",
+                $entry->class_label, $app->errstr
+            )
+          );
         $entry->save
           or return $app->error(
             $app->translate(
@@ -12088,22 +12129,19 @@ sub save_entries {
                 metadata => $entry->id
             }
         );
-        $app->run_callbacks( 'cms_post_save.entry', $app, $entry, $orig_obj );
+        $app->run_callbacks( 'cms_post_save.' . $type, $app, $entry, $orig_obj );
     }
     $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
     $app->call_return;
 }
 *save_pages = \&save_entries;
 
-sub save_entry {
+sub remove_preview_file {
     my $app = shift;
-    $app->validate_magic or return;
 
     # Clear any preview file that may exist (returning from
     # a preview using the 'reedit', 'cancel' or 'save' buttons)
     if ( my $preview = $app->param('_preview_file') ) {
-
-        # FIXME: First, verify a 'TF' session record exists.
         require MT::Session;
         if (
             my $tf = MT::Session->load(
@@ -12120,6 +12158,13 @@ sub save_entry {
             $tf->remove;
         }
     }
+}
+
+sub save_entry {
+    my $app = shift;
+    $app->validate_magic or return;
+
+    $app->remove_preview_file;
 
     if ( $app->param('is_power_edit') ) {
         return $app->save_entries(@_);
@@ -12315,8 +12360,10 @@ $ao
             || ( MT::Util::days_in( $2, $1 ) < $3
                 && !MT::Util::leap_day( $0, $1, $2 ) )
           );
-        $previous_old = $obj->previous(1);
-        $next_old     = $obj->next(1);
+        if ($obj->authored_on) {
+            $previous_old = $obj->previous(1);
+            $next_old     = $obj->next(1);
+        }
         my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
         $obj->authored_on($ts);
     }
@@ -13722,12 +13769,11 @@ sub preview_entry {
     my $fullscreen;
     my $archive_file;
     my $orig_file;
+    my $file_ext;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
-        my $file_ext = $blog->file_extension || '';
-        $blog->file_extension('');
+        $file_ext = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
-        $blog->file_extension($file_ext);
 
         my $blog_path = $type eq 'page' ?
             $blog->site_path :
@@ -13793,7 +13839,7 @@ sub preview_entry {
             $fmgr->put_data( $html, $archive_file );
             $param{preview_file} = $preview_basename;
             my $preview_url = $entry->archive_url;
-            $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$1!x;
+            $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
             $param{preview_url}  = $preview_url;
 
             # we have to make a record of this preview just in case it
@@ -14683,6 +14729,7 @@ sub send_notify {
       ? $author->nickname . ' <' . $author->email . '>'
       : $author->email;
     my %head = (
+        id      => 'notify_entry',
         To      => $address,
         From    => $address,
         Subject => $subj,
@@ -14764,15 +14811,15 @@ sub start_upload {
     %param = @_ if @_;
     my $label_path;
 
+    $param{enable_archive_paths} = $blog->column('archive_path');
+    $param{local_site_path}      = $blog->site_path;
+    $param{local_archive_path}   = $blog->archive_path;
     if ( $param{enable_archive_paths} ) {
         $label_path = $app->translate('Archive Root');
     }
     else {
         $label_path = $app->translate('Site Root');
     }
-    $param{enable_archive_paths} = $blog->column('archive_path');
-    $param{local_site_path}      = $blog->site_path;
-    $param{local_archive_path}   = $blog->archive_path;
     my @extra_paths;
     my $date_stamp = epoch2ts( $blog, time );
     $date_stamp =~ s!^(\d\d\d\d)(\d\d)(\d\d).*!$1/$2/$3!;
@@ -14903,7 +14950,7 @@ sub complete_insert {
         else {
             require JSON;
             $param->{tags_js} = JSON::objToJson(
-                MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset' ) );
+                MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
         }
     }
 
@@ -15433,7 +15480,6 @@ sub core_search_apis {
             'order'         => 500,
             'permission'    => 'edit_templates',
             'label'         => 'Templates',
-            'view'          => 'blog',
             'perm_check' => sub {
                 my ($obj) = @_;
 
@@ -16948,6 +16994,41 @@ sub handle_junk {
     my $blog_id = $app->param('blog_id');
     my ( %rebuild_entries, %rebuild_categories );
 
+    my @obj_ids = $app->param('id');
+    if ( my $req_nonce = $app->param('nonce') ) {
+        if ( scalar @obj_ids == 1 ) {
+            my $cmt_id = $obj_ids[0];
+            if ( my $obj = $class->load($cmt_id) ) {
+                my $nonce =
+                  MT::Util::perl_sha1_digest_hex( $obj->id
+                      . $obj->created_on
+                      . $obj->blog_id
+                      . $app->config->SecretToken );
+                return $app->errtrans("Invalid request.")
+                  unless $nonce eq $req_nonce;
+                my $return_args = $app->uri_params(
+                    mode => 'view',
+                    args => {
+                        '_type' => $type,
+                        id      => $cmt_id,
+                        blog_id => $obj->blog_id
+                    }
+                );
+                $return_args =~ s!^\?!!;
+                $app->return_args($return_args);
+            }
+            else {
+                return $app->errtrans("Invalid request.");
+            }
+        }
+        else {
+            return $app->errtrans("Invalid request.");
+        }
+    }
+    else {
+        $app->validate_magic() or return;
+    }
+
     foreach my $id (@ids) {
         next unless $id;
 
@@ -17627,16 +17708,9 @@ sub start_backup {
     }
     $param{system_overview_nav} = 1 unless $blog_id;
     $param{nav_backup} = 1;
-    my $missing_tgz = 0;
-    eval "require Archive::Tar;";
-    $missing_tgz = 1 if $@;
-    eval "require IO::Compress::Gzip;";
-    $missing_tgz = 1 if $@;
-    $param{targz} = !$missing_tgz;
-    my $missing_zip = 0;
-    eval "require Archive::Zip;";
-    $missing_zip = 1 if $@;
-    $param{zip} = !$missing_zip;
+    require MT::Util::Archive;
+    my @formats = MT::Util::Archive->available_formats();
+    $param{archive_formats} = \@formats;
 
     my $limit = $app->config('CGIMaxUpload') || 2048;
     $param{over_300}  = 1 if $limit >= 300 * 1024;
@@ -17759,23 +17833,6 @@ sub backup {
       @ts[ 3, 2, 1, 0 ];
     my $file = "Movable_Type-$ts" . '-Backup';
 
-    if ( '1' eq $archive ) {
-        eval "require Archive::Tar;";
-        return $app->errtrans(
-            'Archive::Tar is required to archive in tar.gz format.')
-          if $@;
-        eval "require IO::Compress::Gzip;";
-        return $app->errtrans(
-            'IO::Compress::Gzip is required to archive in tar.gz format.')
-          if $@;
-    }
-    elsif ( '2' eq $archive ) {
-        eval "require Archive::Zip;";
-        return $app->errtrans(
-            'Archive::Zip is required to archive in zip format.')
-          if $@;
-    }
-
     my $param = { return_args => '__mode=start_backup' };
     $app->{no_print_body} = 1;
     $app->add_breadcrumb(
@@ -17825,48 +17882,25 @@ sub backup {
                 $app->_backup_finisher( $fname, $param );
             };
         }
-        elsif ( '1' eq $archive ) {    # tar.gz
-            require Archive::Tar;
+        else {  # archive/compress files
             $printer =
               sub { my ($data) = @_; $arc_buf .= $data; return length($data); };
             $finisher = sub {
+                require MT::Util::Archive;
                 my ($asset_files) = @_;
-                ( $fh, my $filepath ) =
-                  File::Temp::tempfile( 'tar.XXXXXXXX', DIR => $temp_dir );
+                ( my $fh, my $filepath ) =
+                  File::Temp::tempfile( $archive . '.XXXXXXXX', DIR => $temp_dir );
                 ( my $vol, my $dir, $fname ) = File::Spec->splitpath($filepath);
-                my $arc = Archive::Tar->new;
-                $arc->add_data( "$file.xml", $arc_buf );
-                $arc->add_data( "$file.manifest",
+                close $fh;
+                unlink $filepath;
+                my $arc = MT::Util::Archive->new($archive, $filepath);
+                $arc->add_string( $arc_buf, "$file.xml" );
+                $arc->add_string(
                         "<manifest xmlns='"
                       . MT::BackupRestore::NS_MOVABLETYPE()
-                      . "'><file type='backup' name='$file.xml' /></manifest>"
-                );
-                require IO::Compress::Gzip;
-                my $z = IO::Compress::Gzip->new($fh);
-                $arc->write($z);
-                $z->close;
-                $app->_backup_finisher( $fname, $param );
-            };
-        }
-        elsif ( '2' eq $archive ) {    # zip
-            require Archive::Zip;
-            $printer =
-              sub { my ($data) = @_; $arc_buf .= $data; return length($data); };
-            $finisher = sub {
-                my ($asset_files) = @_;
-                ( $fh, my $filepath ) =
-                  File::Temp::tempfile( 'zip.XXXXXXXX', DIR => $temp_dir );
-                ( my $vol, my $dir, $fname ) = File::Spec->splitpath($filepath);
-                my $arc = Archive::Zip->new;
-                $arc->addString( $arc_buf, "$file.xml" );
-                $arc->addString(
-                    "<manifest xmlns='"
-                      . MT::BackupRestore::NS_MOVABLETYPE()
                       . "'><file type='backup' name='$file.xml' /></manifest>",
-                    "$file.manifest"
-                );
-                $arc->writeToFileHandle($fh);
-                close $fh;
+                      "$file.manifest");
+                $arc->close;
                 $app->_backup_finisher( $fname, $param );
             };
         }
@@ -17977,40 +18011,22 @@ sub backup {
                 my @fnames = map { $_->{filename} } @files;
                 $app->_backup_finisher( \@fnames, $param );
             }
-            elsif ( '1' eq $archive ) {    # tar.gz
-                require Archive::Tar;
-                my $arc = Archive::Tar->new;
-                for my $f (@files) {
-                    my $tmp_filename =
-                      File::Spec->catfile( $temp_dir, $f->{filename} );
-                    my @arc_files = $arc->add_files($tmp_filename);
-                    $arc_files[0]->rename( $f->{filename} );
-                    unlink $tmp_filename;
-                }
+            else {
                 my ( $fh_arc, $filepath ) =
-                  File::Temp::tempfile( 'tar.XXXXXXXX', DIR => $temp_dir );
+                  File::Temp::tempfile( $archive . '.XXXXXXXX', DIR => $temp_dir );
                 ( my $vol, my $dir, $fname ) = File::Spec->splitpath($filepath);
-                require IO::Compress::Gzip;
-                my $z = IO::Compress::Gzip->new($fh_arc);
-                $arc->write($z);
-                $z->close;
-                $app->_backup_finisher( $fname, $param );
-            }
-            elsif ( '2' eq $archive ) {    # zip
-                require Archive::Zip;
-                my $arc = Archive::Zip->new;
-                for my $f (@files) {
-                    my $tmp_filename =
-                      File::Spec->catfile( $temp_dir, $f->{filename} );
-                    $arc->addFile( $tmp_filename, $f->{filename} );
-                }
-                my ( $fh_arc, $filepath ) =
-                  File::Temp::tempfile( 'zip.XXXXXXXX', DIR => $temp_dir );
-                ( my $vol, my $dir, $fname ) = File::Spec->splitpath($filepath);
-                $arc->writeToFileHandle($fh_arc);
+                require MT::Util::Archive;
                 close $fh_arc;
-                unlink File::Spec->catfile( $temp_dir, $_->{filename} )
-                  foreach grep { !defined( $_->{path} ) } @files;
+                unlink $filepath;
+                my $arc = MT::Utiil::Archive->new($archive, $filepath);
+                for my $f (@files) {
+                    $arc->add_file( $temp_dir, $f->{filename} );
+                }
+                $arc->close;
+                # for safery, don't unlink before closing $arc here.
+                for my $f (@files) {
+                    unlink File::Spec->catfile( $temp_dir, $f->{filename} );
+                }
                 $app->_backup_finisher( $fname, $param );
             }
         };
@@ -18106,7 +18122,7 @@ sub backup_download {
         $contenttype = "text/xml; charset=$enc";
         $newfilename .= '.xml';
     }
-    elsif ( $filename =~ m/^tar\..+$/i ) {
+    elsif ( $filename =~ m/^tgz\..+$/i ) {
         $contenttype = 'application/x-tar-gz';
         $newfilename .= '.tar.gz';
     }
@@ -18118,7 +18134,7 @@ sub backup_download {
         $contenttype = 'application/octet-stream';
     }
 
-    if ( open( my $fh, "<$fname" ) ) {
+    if ( open( my $fh, "<", $fname ) ) {
         binmode $fh;
         $app->{no_print_body} = 1;
         $app->set_header(
@@ -18130,7 +18146,6 @@ sub backup_download {
         }
         close $fh;
         $app->print($data);
-        unlink $fname;
         $app->log(
             {
                 message => $app->translate(
@@ -18142,6 +18157,7 @@ sub backup_download {
                 category => 'restore'
             }
         );
+        unlink $fname;
     }
     else {
         $app->errtrans('Specified file was not found.');
@@ -18222,117 +18238,62 @@ sub restore {
                 $param->{blog_ids} = join( ',', @$blog_ids );
             }
         }
-        elsif ( $uploaded_filename =~ /^.+\.tar(\.gz)?$/i ) {
-            my $e = '';
-            eval "require Archive::Tar;";
-            $e = $@;
-            if ($1) {
-                eval "require IO::Uncompress::Gunzip;";
-                $e = $@;
+        else {
+            require MT::Util::Archive;
+            my $arc;
+            my $error;
+            if ( $uploaded_filename =~ /^.+\.tar(\.gz)?$/i ) {
+                $arc = MT::Util::Archive->new('tgz', $fh);
             }
-            if ($e) {
-                $result = 0;
+            elsif ( $uploaded_filename =~ /^.+\.zip$/i ) {
+                $arc = MT::Util::Archive->new('zip', $fh);
+            }
+            else {
                 $error =
                   $app->translate(
-'Required modules (Archive::Tar and/or IO::Uncompress::Gunzip) are missing.'
+                    'Please use xml, tar.gz, zip, or manifest as a file extension.'
                   );
             }
-            else {
-                my $temp_dir = $app->config('TempDir');
-                require File::Temp;
-                my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
-                    DIR => $temp_dir );
-                my $z;
-                my $tar;
-                if ($1) {
-
-                    # it's a gz file
-                    eval {
-                        bless $fh, 'IO::File';
-                        $z = new IO::Uncompress::Gunzip $fh or die $@;
-                    };
-                    if ( $e = $@ ) {
-                        $result = 0;
-                        $app->print($e);
-                        $param->{restore_success} = 0;
-                        $param->{error}           = $e;
-                        File::Path::rmtree($tmp);
-                        $app->print(
-                            $app->build_page( "restore_end.tmpl", $param ) );
-                        close $fh if !$no_upload;
-                        return 1;
-                    }
+            unless ($arc) {
+                $result = 0;
+                $param->{restore_success} = 0;
+                if ($error) {
+                    $param->{error}           = $error;
                 }
                 else {
-                    $z = bless $fh, 'IO::File';
-                }
-                eval { $tar = Archive::Tar->new($z) or die $@; };
-                if ( $e = $@ ) {
-                    $result = 0;
-                    $error  = $e;
-                    File::Path::rmtree($tmp);
-                    $app->print(
-                        $app->translate(
-                            "Uploaded file was invalid: [_1]", $e
-                        )
+                    $error = MT->translate('Unknown file format');
+                    $app->log(
+                        {
+                            message  => $error . ":$uploaded_filename",
+                            level    => MT::Log::WARNING(),
+                            class    => 'system',
+                            category => 'restore',
+                            metadata => MT::Util::Archive->errstr,
+                        }
                     );
                 }
-                else {
-                    for my $file ( $tar->list_files ) {
-                        my $f = File::Spec->catfile( $tmp, $file );
-                        $tar->extract_file( $file, $f );
-                    }
-                    close $z;
-                    my ( $blog_ids, $asset_ids ) =
-                      $app->restore_directory( $tmp, \$error );
-                    if (defined $blog_ids) {
-                        $param->{open_dialog} = 1;
-                        $param->{blog_ids} = join( ',', @$blog_ids )
-                          if defined $blog_ids;
-                        $param->{asset_ids} = join( ',', @$asset_ids )
-                          if defined $asset_ids;
-                        $param->{tmp_dir} = $tmp;
-                    }
-                }
+                $app->print( $error );
+                $app->print(
+                    $app->build_page( "restore_end.tmpl", $param ) );
+                close $fh if !$no_upload;
+                return 1;
             }
-        }
-        elsif ( $uploaded_filename =~ /^.+\.zip$/i ) {
-            eval "require Archive::Zip;";
-            if ($@) {
-                $result = 0;
-                $error =
-                  $app->translate('Required module (Archive::Zip) is missing.');
+            my $temp_dir = $app->config('TempDir');
+            require File::Temp;
+            my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
+                DIR => $temp_dir );
+            $arc->extract($tmp);
+            $arc->close;
+            my ( $blog_ids, $asset_ids ) =
+              $app->restore_directory( $tmp, \$error );
+            if (defined $blog_ids) {
+                $param->{open_dialog} = 1;
+                $param->{blog_ids} = join( ',', @$blog_ids )
+                  if defined $blog_ids;
+                $param->{asset_ids} = join( ',', @$asset_ids )
+                  if defined $asset_ids;
+                $param->{tmp_dir} = $tmp;
             }
-            else {
-                my $temp_dir = $app->config('TempDir');
-                require File::Temp;
-                my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
-                    DIR => $temp_dir );
-                bless $fh, 'IO::File';
-                my $zip = Archive::Zip->new;
-                my $s   = $zip->readFromFileHandle($fh);
-                for my $member ( $zip->memberNames ) {
-                    my $f = File::Spec->catfile( $tmp, $member );
-                    $zip->extractMember( $member, $f );
-                }
-                my ( $blog_ids, $asset_ids ) =
-                  $app->restore_directory( $tmp, \$error );
-                if (defined $blog_ids) {
-                    $param->{open_dialog} = 1;
-                    $param->{blog_ids} = join( ',', @$blog_ids )
-                      if defined $blog_ids;
-                    $param->{asset_ids} = join( ',', @$asset_ids )
-                      if defined $asset_ids;
-                    $param->{tmp_dir} = $tmp;
-                }
-            }
-        }
-        else {
-            $result = 0;
-            $error =
-              $app->translate(
-                'Please use xml, tar.gz, zip, or manifest as a file extension.'
-              );
         }
     }
     $param->{restore_success} = !$error;
@@ -18413,7 +18374,7 @@ sub restore_file {
         my $log_url = $app->uri( mode => 'view_log', args => {} );
         $$errormsg .= '; ' if $$errormsg;
         $$errormsg .= $app->translate(
-"Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">activity log</a>.",
+'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
             $log_url
         );
         return $blogs;
@@ -18504,7 +18465,7 @@ sub restore_directory {
         $app->_log_dirty_restore($deferred);
         my $log_url = $app->uri( mode => 'view_log', args => {} );
         $$error = $app->translate(
-"Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">activity log</a>.",
+'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
             $log_url
         );
         return ( $blogs, $assets );

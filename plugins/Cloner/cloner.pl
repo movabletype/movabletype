@@ -72,7 +72,7 @@ function progress(str, id) {
 }
 </script>
 SCRIPT
-    $app->print($app->build_page('dialog/header.tmpl', { page_title => "Clone Blog", html_head => $html_head }));
+    $app->print($app->build_page('dialog/header.tmpl', { page_title => $plugin->translate("Clone Blog"), html_head => $html_head }));
     $app->print($plugin->translate_templatized(<<"HTML"));
 <h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name"></h2>
 

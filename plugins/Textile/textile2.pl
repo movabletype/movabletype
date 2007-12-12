@@ -85,6 +85,8 @@ sub textile_2 {
         $textile = _new_textile();
     }
 
+    require MT::I18N;
+    $str = MT::I18N::encode_text( $str, MT->instance->config->PublishCharset, 'utf-8' );
     #if (my $charset = $textile->charset) {
     #    $str = Encode::decode($charset, $str) if $Have_Encode;
     #}
@@ -107,6 +109,7 @@ sub textile_2 {
         $str =~ s|<((block)?code)([^>]*?) language="([^"]+?)"([^>]*?)>(.+?)</\1>|_highlight($1, $3, $5, $4, $textile->decode_html($6))|ges; # "
     }
 
+    $str = MT::I18N::encode_text( $str, 'utf-8', MT->instance->config->PublishCharset );
     # translate from utf8 characters back to 
     # bytes, as MT expects...
     #if (my $charset = $textile->charset) {
@@ -135,9 +138,10 @@ sub _new_textile {
         $textile->char_encoding(0);
     }
 
-    if ($cfg->PublishCharset) {
-        $textile->charset($cfg->PublishCharset);
-    }
+#    if ($cfg->PublishCharset) {
+#        $textile->charset($cfg->PublishCharset);
+#    }
+        $textile->charset('utf-8');
 
     $textile;
 }

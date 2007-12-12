@@ -243,7 +243,8 @@ function format_ts($format, $ts, $blog, $lang = null) {
     if ($lang == 'ja') {
         if (count($Languages[$lang]) >= 8) {
             $format = preg_replace('!%B %Y!', $Languages[$lang][6], $format);
-            $format = preg_replace('!^%Y$!', $Languages[$lang][7], $format);
+            $format = preg_replace('!%B %E,? %Y!', $Languages[$lang][4], $format);
+            $format = preg_replace('!%B %E!', $Languages[$lang][7], $format);
         }
     }
     if (isset($format)) {
@@ -885,7 +886,7 @@ function get_category_context(&$ctx) {
             }
         } else {
             $tag = $ctx->this_tag();
-            return $ctx->error("mt$tag must be used in a category context");
+            return $ctx->error("$tag must be used in a category context");
         }
     }
     return $cat;
@@ -1214,7 +1215,7 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
 
     switch($src_type) {
     case 1: #GIF
-        $src_img = @imagecreatefromgif($file_name);
+        $src_img = @imagecreatefromgif($filename);
         break;
     case 2: #JPEG
         $src_img = @imagecreatefromjpeg($filename);

@@ -15,6 +15,8 @@ use MT::I18N qw(encode_text);
 sub send {
     my $class = shift;
     my($hdrs_arg, $body) = @_;
+    my $id = delete $hdrs_arg->{id} if exists $hdrs_arg->{id};
+
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     foreach my $h (keys %hdrs) {
         if (ref($hdrs{$h}) eq 'ARRAY') {
@@ -73,6 +75,10 @@ sub send {
     $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . lc $mail_enc . q(");
     $hdrs{'Content-Transfer-Encoding'} = ((lc $mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
     $hdrs{'MIME-Version'} ||= "1.0";
+
+    return 1 unless
+        MT->run_callbacks('mail_filter', args => $hdrs_arg, headers => \%hdrs,
+            body => \$body, transfer => \$xfer, id => $id );
 
     if ($xfer eq 'sendmail') {
         return $class->_send_mt_sendmail(\%hdrs, $body, $mgr);

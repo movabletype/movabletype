@@ -18,11 +18,20 @@
             class="primary-button"
             ><mt:var name="value"></button>
         <button
+            id="close-button"
             onclick="window.close()"
             type="submit"
             accesskey="x"
+            class="hidden"
             title="<__trans phrase="Close (x)">"
             ><__trans phrase="Close"></button>
+<script type="text/javascript">
+/* <![CDATA[ */
+// show the close button if error is in modal or popup
+if ((window.parent && (window.parent.window !== window)) || window.opener)
+    document.getElementById("close-button").className = "";
+/* ]]> */
+</script>
     </div>
 </div>
 

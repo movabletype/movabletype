@@ -2,6 +2,10 @@
 
 BEGIN { unshift @INC, 't/' }
 
+use lib 't/lib';
+use lib 'lib';
+use lib 'extlib';
+
 use Test;
 use XMLRPC::Lite;
 use MT;

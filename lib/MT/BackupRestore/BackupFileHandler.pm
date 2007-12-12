@@ -44,8 +44,14 @@ sub start_element {
             my $schema = $attrs->{'{}schema_version'}->{Value};
             if (('ignore' ne $self->{schema_version}) && ($schema > $self->{schema_version})) {
                 $self->{critical} = 1;
-                die MT->translate('Uploaded file was backed up from Movable Type with the newer schema version ([_1]) than the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.', $schema, $self->{schema_version})
-                
+                my $message = MT->translate('Uploaded file was backed up from Movable Type with the newer schema version ([_1]) than the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.', MT::I18N::encode_text(MT::I18N::utf8_off($schema), 'utf-8'), $self->{schema_version});
+                MT->log({ 
+                    message => $message,
+                    level => MT::Log::ERROR(),
+                    class => 'system',
+                    category => 'restore',
+                });
+                die $message;
             }
         }
         $self->{start} = 0;
@@ -200,11 +206,11 @@ sub end_element {
                 if (my $tag = MT::Tag->load({ name => $obj->name }, { binary => { name => 1 } } )) {
                     $exists = 1;
                     $self->{objects}->{"$class#$old_id"} = $tag;
+                    $self->{callback}->("\n");
                     $self->{callback}->(
                         MT->translate("Tag '[_1]' exists in the system.",
                             $obj->name)
                     );
-                    $self->{callback}->("\n");
                 }
             } elsif ('trackback' eq $name) {
                 my $term;
@@ -232,6 +238,13 @@ sub end_element {
                         if $records && ($records % 10 == 0);
                     $self->{records} = $records + 1;
                 }
+            }
+            elsif ('permission' eq $name) {
+                my $perm = $class->count( {
+                    author_id => $obj->author_id,
+                    blog_id   => $obj->blog_id
+                });
+                $exists = 1 if $perm;
             }
             unless ($exists) {
                 if ($obj->save()) {

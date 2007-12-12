@@ -50,7 +50,7 @@ sub init {
 sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
-
+    $app->set_no_cache;
     $app->{default_mode} = 'view';
     my $q = $app->param;
 
@@ -597,6 +597,7 @@ sub _send_signup_confirmation {
     }
 
     my %head = (
+        id => 'commenter_confirm',
         To => $email,
         $from_addr ? ( From       => $from_addr ) : (),
         $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
@@ -779,6 +780,7 @@ sub _send_registration_notification {
         }
 
         my %head = (
+            id => 'commenter_notify',
             To => $a->email,
             $from_addr ? ( From       => $from_addr ) : (),
             $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
@@ -923,6 +925,7 @@ sub _builtin_throttle {
         my $blog = MT::Blog->load( $entry->blog_id );
         if ( $author && $author->email ) {
             my %head = (
+                id      => 'comment_throttle',
                 To      => $author->email,
                 From    => $cfg->EmailAddressMain,
                 Subject => '['
@@ -931,10 +934,11 @@ sub _builtin_throttle {
             );
             my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
             $head{'Content-Type'} = qq(text/plain; charset="$charset");
-            my $body =
-              $app->translate( '_THROTTLED_COMMENT_EMAIL', $blog->name,
-                10 * $throttle_period,
-                $user_ip, $user_ip );
+            my $body = $app->build_email('comment_throttle.tmpl', {
+                blog_name => $blog->name,
+                throttled_ip => $user_ip,
+                throttle_seconds => 10 * $throttle_period,
+            });
             $body = wrap_text( $body, 72 );
             MT::Mail->send( \%head, $body );
         }

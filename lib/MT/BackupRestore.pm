@@ -173,6 +173,10 @@ sub _loop_through_objects {
         my $offset = 0;
         my $terms = $term_arg->{terms} || {};
         my $args = $term_arg->{args};
+        unless ( exists $args->{sort} ) {
+            $args->{sort} = 'id';
+            $args->{direction} = 'ascend';
+        }
         while (1) {
             $args->{offset} = $offset;
             $args->{limit} = 50;
@@ -368,6 +372,10 @@ sub restore_asset {
     my ($vol, $dir, $fn) = File::Spec->splitpath($path);
     my $voldir =  "$vol$dir";
     if (!-w $voldir) {
+        unless (defined $fmgr) {
+            my $blog = MT->model('blog')->load($asset->blog_id);
+            $fmgr = $blog->file_mgr if $blog;
+        }
         unless (defined $fmgr) {
             # we do need utf8_off here
             $errors->{$id} = MT->translate('[_1] is not writable.', MT::I18N::utf8_off($voldir)) ;

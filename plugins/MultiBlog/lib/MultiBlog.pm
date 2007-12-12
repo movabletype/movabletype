@@ -82,9 +82,9 @@ sub post_feedback_save {
 
 sub post_entry_save {
     my $plugin = shift;
-    my ( $eh, $entry ) = @_;
+    my ( $eh, $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
-    my $app = MT->instance;
+
     foreach my $scope ("blog:$blog_id", "system") {
         my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
         while ( my ( $id, $a ) = each( %{ $d->{'entry_save'} } ) ) {

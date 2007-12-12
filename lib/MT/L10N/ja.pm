@@ -1,7 +1,7 @@
 # Copyright 2003-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -851,8 +851,8 @@ use vars qw( @ISA %Lexicon );
 	'TrackBack on "[_1]" from "[_2]".' => '[_2]から\'[_1]\'にトラックバックがありました。',
 	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'カテゴリ\'[_1]\'にトラックバックがありました。',
 	'Can\'t create RSS feed \'[_1]\': ' => 'フィード([_1])を作成できません: ',
-	'New TrackBack Ping to Entry [_1] ([_2])' => 'ブログ記事\'[_2]\'への新しいトラックバック',
-	'New TrackBack Ping to Category [_1] ([_2])' => 'カテゴリ\'[_2]\'への新しいトラックバック',
+	'New TrackBack Ping to Entry [_1] ([_2])' => 'ブログ記事\'[_2]\'(ID: [_1])への新しいトラックバック',
+	'New TrackBack Ping to Category [_1] ([_2])' => 'カテゴリ\'[_2]\'(ID: [_1])への新しいトラックバック',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
@@ -907,7 +907,9 @@ use vars qw( @ISA %Lexicon );
 	'No such comment' => 'コメントがありません。',
 	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => '[_1]からのコメントが[_2]秒間に8個続いたため、このIPアドレスを禁止リストに登録しました。',
 	'IP Banned Due to Excessive Comments' => '大量コメントによるIP禁止',
-	'_THROTTLED_COMMENT_EMAIL' => 'ブログ[_1]に[_2]秒の間に許可された数を超えるコメントをしたユーザーが自動的に禁止されました。これはスクリプトによる大量のコメントを防ぐための処置です。禁止されたIPアドレスは[_3]です。これが間違いである場合は、Movable Typeにログインして、ブログの設定画面に進み、IP禁止リストからIPアドレスを削除してください。',
+	#'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => '',
+	#'This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => '',
+	#'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => '',
 	'Invalid request' => '不正な要求です。',
 	'No such entry \'[_1]\'.' => 'ブログ記事\'[_1]\'がありません。',
 	'You are not allowed to add comments.' => 'コメントできません。',
@@ -1243,7 +1245,7 @@ use vars qw( @ISA %Lexicon );
 	'Required module (Archive::Zip) is missing.' => '必須モジュール(Archive::Zip)がありません。',
 	'Please use xml, tar.gz, zip, or manifest as a file extension.' => '拡張子がxml、tar.gz、zip、manifestのいずれかのファイルをアップロードしてください。',
 	'Some [_1] were not restored because their parent objects were not restored.' => '親となるオブジェクトがないため[_1]を復元できませんでした。',
-	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">activity log</a>.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細は<a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>ログ</a>を参照してください。',
+	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細は<a href="javascript:void(0)" onclick="closeDialog(\'[_1]\')">ログ</a>を参照してください。',
 	'Successfully restored objects to Movable Type system by user \'[_1]\'' => '\'[_1]\'がMovable Typeシステムを復元しました。',
 	'[_1] is not a directory.' => '[_1]はディレクトリではありません。',
 	'Error occured during restore process.' => '復元中にエラーがありました。',
@@ -2314,11 +2316,12 @@ use vars qw( @ISA %Lexicon );
 	'Back' => '戻る',
 
 ## tmpl/cms/edit_role.tmpl
-	'Role Details' => 'ロールの詳細',
+	'Edit Role' => 'ロールの編集',
 	'_USAGE_ROLE_PROFILE' => 'ロールとロールに割り当てられた権限を設定できます。',
 	'List Roles' => 'ロールの一覧',
 	'[quant,_1,User,Users] with this role' => '現在のユーザー数: [quant,_1,人,人]',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'このロールの権限を変更しました。これによって、このロールに関連付けられているユーザーができることが変化します。このロールに異なる名前を付けて保存したほうがいいかもしれません。このロールに関連付けられているユーザーの権限が変更されていることに注意してください。',
+	'Role Details' => 'ロールの詳細',
 	'Created by' => '作成者',
 	'Privileges' => '権限',
 	'Check All' => 'すべてチェックする',
@@ -2339,7 +2342,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/restore_end.tmpl
 	'Make sure that you remove the files that you restored from the \'import\' folder, so that if/when you run the restore process again, those files will not be re-restored.' => '再度復元を行う際に同じファイルから復元しないよう、importフォルダからファイルを削除してください。',
-	'An error occurred during the restore process: [_1] Please check activity log for more details.' => '復元の過程でエラーが発生しました。詳細についてはログを確認してください。',
+	'An error occurred during the restore process: [_1] Please check activity log for more details.' => '復元の過程でエラーが発生しました。[_1] 詳細についてはログを確認してください。',
 
 ## tmpl/cms/import.tmpl
 	'You must select a blog to import.' => 'インポート先のブログを選択してください。',
@@ -3259,7 +3262,7 @@ use vars qw( @ISA %Lexicon );
 	'Custom...' => 'カスタム...',
 
 ## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '0',
+	'_LOCALE_WEEK_START' => '0', # Translate - New
 	'Sunday' => '日曜日',
 	'Monday' => '月曜日',
 	'Tuesday' => '火曜日',
@@ -3622,10 +3625,10 @@ use vars qw( @ISA %Lexicon );
 	'Bulk Author Export' => 'ユーザーの一括出力',
 	'Bulk Author Import' => 'ユーザーの一括登録',
 	'Synchronize Users' => 'ユーザーの同期',
-	'Are you sure you want to delete the selected group(s)?' => '選択されているグループを削除してよろしいですか?',
 
 ## addons/Enterprise.pack/app-wizard.yaml
 	'This module is required in order to use the LDAP Authentication.' => 'LDAP認証を利用する場合に必要です。',
+	'This module is required in order to use SSL/TLS connection with the LDAP Authentication.' => 'LDAP認証でSSLまたはTLS接続を利用する場合に必要です。',
 
 ## addons/Enterprise.pack/config.yaml
 	'Enterprise Pack' => 'Enterprise Pack',
@@ -3643,14 +3646,11 @@ use vars qw( @ISA %Lexicon );
 	'Edit Group' => 'グループの編集',
 	'Create Group' => 'グループの作成',
 	'Group profile has been updated.' => 'グループのプロフィールを更新しました。',
-	'Group Disabled' => '無効なグループ',
-	'_USAGE_GROUP_PROFILE' => 'グループのプロフィールを編集できます。',
-	'_USAGE_NEW_GROUP' => 'システムに新しくグループを作成できます。',
 	'LDAP Group ID' => 'LDAPグループID',
 	'The LDAP directory ID for this group.' => 'LDAPディレクトリでこのグループに適用されている識別子',
+	'Status of group in the system. Disabling a group removes its members&rsquo; access to the system but preserves their content and history.' => 'グループの状態。グループを無効にするとメンバーのシステムへのアクセスに影響があります。メンバーのコンテンツや履歴は削除されません。',
 	'The name used for identifying this group.' => 'グループを識別する名前',
 	'The display name for this group.' => 'グループの表示名',
-	'Status of group in the system. Disabling a group removes its members&rsquo; access to the system but preserves their content and history.' => 'グループの状態。グループを無効にするとメンバーのシステムへのアクセスに影響があります。メンバーのコンテンツや履歴は削除されません。',
 	'Enter a description for your group.' => 'グループの説明を入力してください。',
 	'Created on' => '作成日時',
 
@@ -3669,6 +3669,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/tmpl/list_group_member.tmpl
 	'[_1]: Group Members' => '[_1]グループのメンバー',
 	'<em>[_1]</em>: Group Members' => '[_1]グループのメンバー',
+	'Group Disabled' => '無効なグループ',
 	'You have successfully deleted the users.' => 'ユーザーを削除しました。',
 	'You have successfully added new users to this group.' => 'グループに新しいユーザーを追加しました。',
 	'You have successfully synchronized users\' information with external directory.' => '外部のディレクトリとユーザー情報を同期しました。',
@@ -3699,10 +3700,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1]: User&rsquo;s Groups' => 'ユーザー: [_1]のグループ',
 	'Groups: System Wide' => 'システム全体: グループ',
 	'The user <em>[_1]</em> is currently disabled.' => 'ユーザー「[_1]」は無効化されています。',
-	'_USAGE_GROUPS_USER_LDAP' => 'ユーザーが所属しているグループの一覧です。',
-	'_USAGE_GROUPS_LDAP' => '現在Movable Typeに登録されているグループの一覧です。チェックボックスにチェックしてからボタンをクリックすると、グループを有効化・無効化できます。名前をクリックして、グループ名を編集することもできます。',
-	'_USAGE_GROUPS_USER' => 'ユーザーが所属しているグループの一覧です。チェックボックスにチェックしてから「削除」ボタンをクリックすれば、ユーザーをグループから外すことができます。',
-	'_USAGE_GROUPS' => '現在Movable Typeに登録されているグループの一覧です。チェックボックスにチェックしてからボタンをクリックすると、グループを有効化・無効化できます。名前をクリックして、グループ名を編集することもできます。',
 	'Synchronize groups now' => '今すぐグループ情報を同期',
 	'You have successfully disabled the selected group(s).' => '選択されたグループを無効にしました。',
 	'You have successfully enabled the selected group(s).' => '選択されたグループを有効にしました。',
@@ -3712,6 +3709,7 @@ use vars qw( @ISA %Lexicon );
 	'Add [_1] to another group' => '[_1] を新しくグループに追加する',
 	'Are you sure you want to remove this [_1]?' => '[_1]を削除してよろしいですか?',
 	'Are you sure you want to remove the [_1] selected [_2]?' => '選択されている[_2]を削除してよろしいですか?',
+	'Are you sure you want to delete the selected group(s)?' => '選択されているグループを削除してよろしいですか?',
 
 ## addons/Enterprise.pack/tmpl/cfg_ldap.tmpl
 	'Authentication Configuration' => '認証の構成',
@@ -3926,8 +3924,8 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/Cloner/cloner.pl
 	'Clones a weblog and all of its contents.' => '内容も含めてブログを複製します。',
-	'Cloning blog \'[_1]\'...' => 'ブログ「[_1]」を複製しています',
-	'Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">return to the blog listing</a> or <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">configure the Site root and URL of the new blog</a>.' => '完了しました。<a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">ブログの一覧に戻る</a>か、または<a href="javascript:void(0);" onclick="closeDialog(\'[_2]\');">新しいブログのサイト・パスとサイトURLを設定</a>できます。',
+	'Cloning blog \'[_1]\'...' => 'ブログ「[_1]」を複製しています...',
+	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a> or <a href="javascript:void(0);" onclick="closeDialog(\'[_2]\');">configure the Site root and URL of the new blog</a>.' => '完了しました。<a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">ブログの一覧に戻る</a>か、または<a href="javascript:void(0);" onclick="closeDialog(\'[_2]\');">新しいブログのサイト・パスとサイトURLを設定</a>できます。',
 	'No blog was selected to clone.' => '複製するブログが選択されていません。',
 	'This action can only be run for a single blog at a time.' => '一度にひとつのブログしか選択できません。',
 	'Invalid blog_id' => '不正なブログID',

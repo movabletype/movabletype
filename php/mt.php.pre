@@ -767,7 +767,7 @@ function _strip_index($url, $blog) {
 }
 
 function translate_phrase_param($str, $params = null) {
-    if (is_array($params) && strpos($str, '[_')) {
+    if (is_array($params) && (strpos($str, '[_') !== false)) {
         for ($i = 1; $i <= count($params); $i++) {
             $str = preg_replace("/\\[_$i\\]/", $params[$i-1], $str);
         }

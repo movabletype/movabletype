@@ -10,6 +10,7 @@ use MT::Util qw(encode_js);
 
 my $js = `cat mt-static/mt.js`;
 $js .= `cat mt-static/js/edit.js`;
+$js .= `cat mt-static/js/archetype_editor.js`;
 $js .= `cat mt-static/js/dialog.js`;
 $js .= `cat mt-static/js/assetdetail.js`;
 $js .= `cat tmpl/cms/edit_template.tmpl`;

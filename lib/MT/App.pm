@@ -199,6 +199,11 @@ sub list_actions {
         $actions->{$a}{key} = $a;
         $actions->{$a}{core} = 1
             unless UNIVERSAL::isa($actions->{$a}{plugin}, 'MT::Plugin');
+        if ( exists $actions->{$a}{continue_prompt_handler} ) {
+            my $code = $app->handler_to_coderef($actions->{$a}{continue_prompt_handler});
+            $actions->{$a}{continue_prompt} = $code->()
+                if 'CODE' eq ref($code);
+        }
         push @actions, $actions->{$a};
     }
     $actions = $app->filter_conditional_list(\@actions, @param);
@@ -1367,6 +1372,7 @@ sub _send_comment_notification {
               if $comment->author;
         }
         my %head = (
+            id => 'new_comment',
             To => $author->email,
             $from_addr ? ( From       => $from_addr ) : (),
             $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
@@ -1628,13 +1634,6 @@ sub post_run { MT->run_callbacks((ref $_[0]) . '::post_run', $_[0]); 1 }
 sub run {
     my $app = shift;
     my $q = $app->param;
-
-    ## Add the Pragma: no-cache header.
-    if ($ENV{MOD_PERL}) {
-        $app->{apache}->no_cache(1);
-    } else {
-        $q->cache('no');
-    }
 
     my($body);
     eval {
@@ -1905,60 +1904,6 @@ sub takedown {
 
 sub l10n_filter { $_[0]->translate_templatized($_[1]) }
 
-sub template_paths {
-    my $app = shift;
-    my @paths;
-    my $path = $app->config->TemplatePath;
-    if ($app->{plugin_template_path}) {
-        if (File::Spec->file_name_is_absolute($app->{plugin_template_path})) {
-            push @paths, $app->{plugin_template_path}
-                if -d $app->{plugin_template_path};
-        } else {
-            my $dir = File::Spec->catdir($app->app_dir,
-                                         $app->{plugin_template_path}); 
-            if (-d $dir) {
-                push @paths, $dir;
-            } else {
-                $dir = File::Spec->catdir($app->mt_dir,
-                                          $app->{plugin_template_path});
-                push @paths, $dir if -d $dir;
-            }
-        }
-    }
-    if (my $alt_path = $app->config->AltTemplatePath) {
-        if (-d $alt_path) {    # AltTemplatePath is absolute
-            push @paths, File::Spec->catdir($alt_path,
-                                            $app->{template_dir})
-                if $app->{template_dir};
-            push @paths, $alt_path;
-        }
-    }
- 
-    for my $addon ( @{ $app->find_addons('pack') } ) {
-        push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $app->{template_dir})
-            if $app->{template_dir};
-        push @paths, File::Spec->catdir($addon->{path}, 'tmpl');
-    }
-
-    push @paths, File::Spec->catdir($path, $app->{template_dir})
-        if $app->{template_dir};
-    push @paths, $path;
- 
-    return @paths;
-}
-
-sub find_file {
-    my $app = shift;
-    my ($paths, $file) = @_;
-    my $filename;
-    foreach my $p (@$paths) {
-        my $filepath = File::Spec->canonpath(File::Spec->catfile($p, $file));
-        $filename = File::Spec->canonpath($filepath);
-        return $filename if -f $filename;
-    }
-    undef;
-}
-
 sub load_widgets {
     my $app = shift;
     my ($page, $param, $default_widgets) = @_;
@@ -1987,10 +1932,11 @@ sub load_widgets {
             if ($page eq 'dashboard') {
                 if ($user->id == 1) {
                     # first user! good enough guess at this.
-                    $widgets->{new_install} = { order => -1, set => 'main' };
+                    $widgets->{new_install} = { order => -2, set => 'main' };
                 } else {
-                    $widgets->{new_user} = { order => -1, set => 'main' };
+                    $widgets->{new_user} = { order => -2, set => 'main' };
                 }
+                $widgets->{new_version} = { order => -1, set => 'main' };
             }
         }
     }
@@ -2231,183 +2177,6 @@ sub load_list_actions {
     my $filters = $app->list_filters( $type, @p );
     $param->{list_filters} = $filters if $filters;
     return $param;
-}
-
-sub load_tmpl {
-    my $app = shift;
-    if ($app->{component}) {
-        if (my $c = $app->component($app->{component})) {
-            return $c->load_tmpl(@_);
-        }
-    }
-
-    my($file, @p) = @_;
-    my $param;
-    if (@p && (ref($p[$#p]) eq 'HASH')) {
-        $param = pop @p;
-    }
-    my $cfg = $app->config;
-    require MT::Template;
-    my $tmpl;
-    my @paths = $app->template_paths;
-
-    my $type = {'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref'}->{ref $file}
-        || 'filename';
-    $tmpl = MT::Template->new(
-        type => $type, source => $file,
-        path => \@paths,
-        filter => sub {
-            my ($str, $fname) = @_;
-            if ($fname) {
-                $fname = File::Basename::basename($fname);
-                $fname =~ s/\.tmpl$//;
-                $app->run_callbacks("template_source.$fname", $app, @_);
-            } else {
-                $app->run_callbacks("template_source", $app, @_);
-            }
-            return $str;
-        },
-        @p);
-    return $app->error(
-        $app->translate("Loading template '[_1]' failed.", $file)) unless $tmpl;
-    $tmpl->{__file} = $file if $type eq 'filename';
-    $app->set_default_tmpl_params($tmpl);
-    $tmpl->param($param) if $param;
-    $tmpl;
-}
-
-sub set_default_tmpl_params {
-    my $app = shift;
-    my ($tmpl) = @_;
-    my $param = {};
-    if (my $author = $app->user) {
-        $param->{author_id} = $author->id;
-        $param->{author_name} = $author->name;
-    }
-    ## We do this in load_tmpl because show_error and login don't call
-    ## build_page; so we need to set these variables here.
-    require MT::Auth;
-    $param->{mt_debug} = $MT::DebugMode;
-    $param->{can_logout} = MT::Auth->can_logout;
-    $param->{static_uri} = $app->static_path;
-    $param->{script_url} = $app->uri;
-    $param->{mt_url} = $app->mt_uri;
-    $param->{script_path} = $app->path;
-    $param->{script_full_url} = $app->base . $app->uri;
-    $param->{mt_version} = MT->version_id;
-    $param->{mt_product_code} = MT->product_code;
-    $param->{mt_product_name} = $app->translate(MT->product_name);
-    $param->{language_tag} = substr($app->current_language, 0, 2);
-    $param->{language_encoding} = $app->charset;
-    $param->{agent_mozilla} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /gecko/i;
-    $param->{agent_ie} = ( $ENV{HTTP_USER_AGENT} || '' ) =~ /\bMSIE\b/;
-    if (!$tmpl->param('template_filename')) {
-        if (my $fname = $tmpl->{__file}) {
-            $fname =~ s!\\!/!g;
-            $fname =~ s/\.tmpl$//;
-            $param->{template_filename} = $fname;
-        }
-    }
-    $tmpl->param($param);
-}
-
-sub process_mt_template {
-    my $app = shift;
-    my ($body) = @_;
-    $body =~ s@<(?:_|MT)_ACTION\s+mode="([^"]+)"(?:\s+([^>]*))?>@
-        my $mode = $1; my %args;
-        %args = $2 =~ m/\s*(\w+)="([^"]*?)"\s*/g if defined $2; # "
-        MT::Util::encode_html($app->uri(mode => $mode, args => \%args));
-    @geis;
-    # Strip out placeholder wrappers to facilitate tmpl_* callbacks
-    $body =~ s/<\/?MT_(\w+):(\w+)>//g;
-    $body;
-}
-
-sub build_page {
-    my $app = shift;
-    my($file, $param) = @_;
-    my $tmpl;
-    my $mode = $app->mode;
-    $param->{"mode_$mode"} ||= 1;
-    $param->{breadcrumbs} = $app->{breadcrumbs};
-    if ($param->{breadcrumbs}[-1]) {
-        $param->{breadcrumbs}[-1]{is_last} = 1;
-        $param->{page_titles} = [ reverse @{ $app->{breadcrumbs} } ];
-    }
-    pop @{ $param->{page_titles} };
-    if (my $lang_id = $app->current_language) {
-        $param->{local_lang_id} ||= lc $lang_id if $lang_id !~ m/^en/i;
-    }
-    $param->{magic_token} = $app->current_magic if $app->user;
-
-    # List of installed packs in the application footer
-    my @packs_installed;
-    my $packs = $app->find_addons('pack');
-    if ($packs) {
-        foreach my $pack (@$packs) {
-            my $c = $app->component(lc $pack->{id});
-            if ($c) {
-                my $label = $c->label || $pack->{label};
-                $label = $label->() if ref($label) eq 'CODE';
-                push @packs_installed, {
-                    label => $label,
-                    version => $c->version,
-                    id => $c->id,
-                };
-            }
-        }
-    }
-    @packs_installed = sort { $a->{label} cmp $b->{label} } @packs_installed;
-    $param->{packs_installed} = \@packs_installed;
-    $param->{portal_url} = $app->translate("http://www.movabletype.com/");
-
-    my $tmpl_file;
-    if (UNIVERSAL::isa($file, 'MT::Template')) {
-        $tmpl = $file;
-        $tmpl_file = (exists $file->{__file}) ? '.'.$file->{__file} : '';
-    } else {
-        $tmpl = $app->load_tmpl($file) or return;
-        $tmpl_file = '.' . $file;
-    }
-    if ($tmpl_file) {
-        $tmpl_file =~ s/\.tmpl$//;
-    }
-
-    if (($mode && ($mode !~ m/delete/)) && ($app->{login_again} ||
-        ($app->{requires_login} && !$app->user))) {
-        ## If it's a login screen, direct the user to where they were going
-        ## (query params including mode and all) unless they were logging in,
-        ## logging out, or deleting something.
-        my $q = $app->{query};
-        if ($mode) {
-            my @query = map { {name => $_, value => scalar $q->param($_)}; }
-                grep { ($_ ne 'username') && ($_ ne 'password') && ($_ ne 'submit') && ($mode eq 'logout' ? ($_ ne '__mode') : 1) } $q->param;
-            $param->{query_params} = \@query;
-        }
-        $param->{login_again} = $app->{login_again};
-    }
-
-    my $blog = $app->blog;
-    $tmpl->context()->stash('blog', $blog) if $blog;
-
-    $tmpl->param($param) if $param;
-    $app->run_callbacks('template_param' . $tmpl_file, $app, $tmpl->param, $tmpl);
-
-    my $output = $app->build_page_in_mem($tmpl);
-    return unless defined $output;
-
-    $app->run_callbacks('template_output' . $tmpl_file, $app, \$output, $tmpl->param, $tmpl);
-    return $output;
-}
-
-sub build_page_in_mem {
-    my $app = shift;
-    my($tmpl, $param) = @_;
-    $tmpl->param($param) if $param;
-    my $out = $tmpl->output;
-    return $app->error($tmpl->errstr) unless defined $out;
-    return $app->translate_templatized($app->process_mt_template($out));
 }
 
 sub current_magic {
@@ -2778,6 +2547,16 @@ sub DESTROY {
     MT::Request->finish();
     undef $MT::Object::DRIVER;
     undef $MT::ConfigMgr::cfg;
+}
+
+sub set_no_cache {
+    my $app = shift;
+    ## Add the Pragma: no-cache header.
+    if ($ENV{MOD_PERL}) {
+        $app->{apache}->no_cache(1);
+    } else {
+        $app->param->cache('no');
+    }
 }
 
 1;

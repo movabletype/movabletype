@@ -257,12 +257,26 @@ sub thumbnail_url {
         if (my ($thumbnail_file, $w, $h) = $asset->thumbnail_file(@_)) {
             return $asset->stock_icon_url(@_) if !defined $thumbnail_file;
             my $file = File::Basename::basename($thumbnail_file);
-            my $site_url = $param{Pseudo} ? '%r' : $blog->site_url;
-            if ($file && $site_url) {
+            my $asset_file_path = $asset->SUPER::file_path();
+            my $site_url;
+            if ( $asset_file_path =~ m/^%a/ ) {
+                $site_url = $param{Pseudo} ? '%a' : $blog->archive_path;
+            } else {
+                $site_url = $param{Pseudo} ? '%r' : $blog->site_url;
+            }
+
+           if ($file && $site_url) {
                 require MT::Util;
                 my $path = $param{Path};
                 if (!defined $path) {
                     $path = MT::Util::caturl(MT->config('AssetCacheDir'), unpack('A4A2', $asset->created_on));
+                } else {
+                    require File::Spec;
+                    my @path = File::Spec->splitdir($path);
+                    $path = '';
+                    for my $p (@path) {
+                        $path = MT::Util::caturl($path, $p);
+                    }
                 }
                 $file =~ s/%([A-F0-9]{2})/chr(hex($1))/gei;
                 $site_url = MT::Util::caturl($site_url, $path, $file);
@@ -323,14 +337,24 @@ sub _make_cache_path {
         $path = MT->config('AssetCacheDir');
     } else {
         my $merge_path = '';
-        my @split = split '/', $path;
+        my @split = File::Spec->splitdir($path);
         for my $p (@split) {
             $merge_path = File::Spec->catfile($merge_path, $p);
         }
         $path = $merge_path if $merge_path;
     }
 
-    my $asset_cache_path = File::Spec->catdir(($pseudo ? '%r' : $blog->site_path),
+    my $asset_file_path = $asset->SUPER::file_path();
+    my $format;
+    my $root_path;
+    if ( $asset_file_path =~ m/^%a/ ) {
+        $format = '%a';
+        $root_path = $blog->archive_path;
+    } else {
+        $format = '%r';
+        $root_path = $blog->site_path;
+    }
+    my $asset_cache_path = File::Spec->catdir(($pseudo ? $format : $root_path),
         $path, $year_stamp, $month_stamp);
     my $real_cache_path = File::Spec->catdir($blog->site_path,
         $path, $year_stamp, $month_stamp);

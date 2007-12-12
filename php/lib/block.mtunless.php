@@ -8,25 +8,25 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
         } elseif (isset($args['name'])) {
             $val = $ctx->__stash['vars'][$args['name']];
         }
-        if ($args['eq']) {
+        if (array_key_exists('eq', $args)) {
             $val2 = $args['eq'];
             $result = $val == $val2;
-        } elseif ($args['ne']) {
+        } elseif (array_key_exists('ne', $args)) {
             $val2 = $args['ne'];
             $result = $val != $val2;
-        } elseif ($args['gt']) {
+        } elseif (array_key_exists('gt', $args)) {
             $val2 = $args['gt'];
             $result = $val > $val2;
-        } elseif ($args['lt']) {
+        } elseif (array_key_exists('lt', $args)) {
             $val2 = $args['lt'];
             $result = $val < $val2;
-        } elseif ($args['ge']) {
+        } elseif (array_key_exists('ge', $args)) {
             $val2 = $args['ge'];
             $result = $val >= $val2;
-        } elseif ($args['le']) {
+        } elseif (array_key_exists('le', $args)) {
             $val2 = $args['le'];
             $result = $val <= $val2;
-        } elseif ($args['like']) {
+        } elseif (array_key_exists('like', $args)) {
             $patt = $args['like'];
             $patt = preg_replace("!/!", "\\/", $patt);
             $result = preg_match("/$patt/", $val);

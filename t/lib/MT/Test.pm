@@ -183,6 +183,7 @@ sub sample_data {
     my $johnd = MT::Author->new();
     $johnd->set_values({
         name => 'John Doe',
+        nickname => 'John Doe',
         email => 'jdoe@doe.com',
         auth_type => 'TypeKey',
     });

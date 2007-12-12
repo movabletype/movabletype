@@ -39,7 +39,7 @@ sub init_request {
 
     # prevents init_request from trying to process the configuration file.
     $app->SUPER::init_request(@_);
-
+    $app->set_no_cache;
     $app->{requires_login} = 0;
 
     my $mode = $app->mode;
@@ -621,7 +621,8 @@ sub optional {
             $cfg->MailTransfer($param{mail_transfer}) if $param{mail_transfer};
             $cfg->SMTPServer($param{smtp_server}) if $param{smtp_server};
             $cfg->SendMailPath($param{sendmail_path}) if $param{sendmail_path};
-            my %head = (To => $param{test_mail_address},
+            my %head = (id => 'wizard_test',
+                        To => $param{test_mail_address},
                         From => $cfg->EmailAddressMain || $param{test_mail_address},
                         Subject => $app->translate("Test email from Movable Type Configuration Wizard") );
             my $charset = $cfg->MailEncoding || $cfg->PublishCharset;

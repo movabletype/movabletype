@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use lib 'lib';
+use lib 'extlib';
+use lib 't/lib';
+
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
@@ -12,8 +16,7 @@ use MT;
 use MT::ConfigMgr;
 
 use vars qw( $BASE );
-use lib 't';
-require 'test-common.pl';
+require 't/test-common.pl';
 
 my($cfg_file, $cfg, $mt);
 

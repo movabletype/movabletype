@@ -468,6 +468,7 @@ sub _send_ping_notification {
                 $cat->id, $cat->label );
         }
         my %head = (
+            id   => 'new_ping',
             To   => $author->email,
             From => $app->config('EmailAddressMain')
               || (

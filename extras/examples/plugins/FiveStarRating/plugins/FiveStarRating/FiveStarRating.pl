@@ -40,10 +40,18 @@ sub _hdlr_rating_thunk {
            '<$MTFiveStarRatingThunk$>' ));
     my $type;
     my $obj;
-    foreach ( qw( entry asset comment ping ) ) {
-        $type = $_;
-        $obj = $ctx->stash($_);
-        last if $obj;
+    if ( exists $args->{'for'} ) {
+        $obj = $ctx->stash($args->{'for'});
+    }
+    if ($obj) {
+        $type = $args->{'for'};
+    }
+    else {
+        foreach ( qw( entry asset comment ping ) ) {
+            $type = $_;
+            $obj = $ctx->stash($_);
+            last if $obj;
+        }
     }
     return $ctx->error($plugin->translate(
         "You used an [_1] tag outside of the proper context.",
@@ -53,7 +61,7 @@ sub _hdlr_rating_thunk {
     my $scorer_url = MT->config->CGIPath . 'plugins/FiveStarRating/rate.cgi';
     my $image_url = MT->config->StaticWebPath . 'plugins/FiveStarRating';
     my $id = $obj->id;
-    my $rating = $obj->score_avg();
+    my $rating = $obj->score_avg('FiveStarRating');
 
     my ($src1, $src2, $src3, $src4, $src5);
     if ($rating < 1) {
@@ -167,3 +175,21 @@ SCRIPT
     }
     return $html;
 }
+
+1;
+__END__
+
+=head1 NAME
+
+FiveStarRating -- Example plugin to use MT4's rating API.
+
+=head1 SYNOPSIS
+
+    <MTEntries>
+      <$MTFiveStarRatingThunk$>: <$MTEntryTitle$>
+      <MTComments>
+        <$MTFiveStarRatingThunk for="comment"$>
+        <MTCommentBody>
+      </MTComments>
+    </MTEntries>
+

@@ -138,7 +138,7 @@
     </mt:if>
 </mt:unless>
 
-<mtapp:widget tabbed="1" label="Blog Stats" can_close="1">
+<mtapp:widget tabbed="1" label="Blog Stats" can_close="1" class="blog_stats-widget">
     <mt:setvarblock name="widget_header">
     <ul class="tabs">
         <li id="comment-tab" class="tab <mt:if name="tab" eq="comment">selected-tab</mt:if>" mt:tab="comment" mt:command="select-tab" onclick="blogStatsTabSelect('comment')"><a  href="javascript:void(0)"><span><__trans phrase="Comments"></span></a></li>

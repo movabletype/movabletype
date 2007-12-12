@@ -716,8 +716,7 @@ The author's homepage URL.
 
 =item * hint
 
-The answer to the question used when recovering the user's password. Currently
-this is the birthplace of the author, though this may change in the future.
+The answer to the question used when recovering the user's password.
 
 =item * external_id
 

@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use lib 'lib';
+use lib 'extlib';
+use lib 't/lib';
+
 use Test::More tests => 9;
 
 use MT::ErrorHandler;

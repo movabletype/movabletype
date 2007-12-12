@@ -222,6 +222,8 @@ BEGIN {
                 default => 'weblog=MT::AtomServer::Weblog'
             },
             'SchemaVersion'   => undef,
+            'MTVersion'       => undef,
+            'NotifyUpgrade'   => { default => 1 },
             'Database'        => undef,
             'DBHost'          => undef,
             'DBSocket'        => undef,
@@ -467,6 +469,8 @@ BEGIN {
             'NwcReplaceField' =>
               { default => 'title,text,text_more,keywords,excerpt,tags', },
             'DisableNotificationPings'   => { default => 0 },
+            'SyncTarget' => { type => 'ARRAY' },
+            'RsyncOptions' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -542,6 +546,16 @@ BEGIN {
             'mt_sync' => {
                 label => "Synchronizes content to other server(s).",
                 class => 'MT::Worker::Sync',
+            },
+        },
+        archivers => {
+            'zip' => {
+                class => 'MT::Util::Archive::Zip',
+                label => 'zip',
+            },
+            'tgz' => {
+                class => 'MT::Util::Archive::Tgz',
+                label => 'tar.gz',
             },
         },
         template_snippets        => {
@@ -658,7 +672,7 @@ sub load_core_tasks {
         },
         'CleanTemporaryFiles' => {
             label => 'Remove Temporary Files',
-            frequency => 68 * 60,   # once per hour
+            frequency => 60 * 60,   # once per hour
             code => sub {
                 MT::Core->remove_temporary_files;
             },

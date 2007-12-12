@@ -90,5 +90,40 @@ sub load_selected_modules {
     WidgetManager::Plugin::load_selected_modules(@_); 
 }
 
+sub templates {
+    my $plugin = shift;
+    my ($app) = @_;
+    my $default_widget_templates;
+
+    use File::Spec;
+    my $widgets_dir = File::Spec->catfile($plugin->{full_path}, 'default_widgets');
+    my $cfg_file = File::Spec->catfile($widgets_dir, 'widgets.cfg');
+    
+    local(*FH, $_, $/);
+    $/ = "\n";
+    open FH, $cfg_file or
+        return $app->error(MT->translate(
+                               "Error opening file '[_1]': [_2]", $cfg_file, "$!" ));
+    my $cfg = join('',<FH>);
+    eval "$cfg;";
+    close FH;
+
+    my @tmpls;
+    require MT::Template;
+    foreach (@$default_widget_templates) {
+        open(TMPL, File::Spec->catfile($widgets_dir, $_->{template})) or die "Error: $!\n";
+        while (my $line = <TMPL>) {
+            $_->{text} .= $line;
+        }
+        close TMPL;
+        my $tmpl = MT::Template->new;
+        $tmpl->{type} = 'widget';
+        $tmpl->{name} = $plugin->translate($_->{label});
+        $tmpl->{text} = $plugin->translate_templatized($_->{text});
+        push @tmpls, $tmpl;
+    }
+    return \@tmpls;
+}
+
 1;
 __END__

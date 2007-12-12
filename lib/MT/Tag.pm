@@ -72,11 +72,13 @@ sub normalize {
     } elsif (!$str && (ref $tag)) {
         $str = $tag->name;
     }
-    # FIXME: character set issues here...
+
     my $private = $str =~ m/^@/;
+    $str = MT::I18N::encode_text( $str, MT->instance->config->PublishCharset, 'utf-8' );
     $str =~ s/[@!`\\<>\*&#\/~\?'"\.\,=\(\)\${}\[\];:\ \+\-\r\n]+//gs;
     $str = lc $str;
     $str = '@' . $str if $private;
+    $str = MT::I18N::encode_text( $str, 'utf-8', MT->instance->config->PublishCharset );
     $str;
 }
 
@@ -180,7 +182,7 @@ sub cache_obj {
 
     require MT::Session;
     # Clear any tag cache if tags were modified upon saving
-    my $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds;
+    my $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ($param{private} ? ';private' : '');
     my $tag_cache = MT::Session::get_unexpired_value(60 * 60, {
         kind => 'TC',  # tag cache
         id => $sess_id
@@ -196,7 +198,12 @@ sub cache_obj {
 
 sub clear_cache {
     my $pkg = shift;
-    my $tag_cache = $pkg->cache_obj(@_);
+    my (%param) = @_;
+    my $tag_cache = $pkg->cache_obj(\%param);
+    $tag_cache->remove;
+
+    $param{private} = 1;
+    $tag_cache = $pkg->cache_obj(\%param);
     $tag_cache->remove;
 }
 
@@ -239,7 +246,7 @@ sub cache {
         my $limit = MT->config->MaxTagAutoCompletionItems;
         while (my $entry = $iter->()) {
             my @etags = $entry->tags;
-            @etags = grep /^[^@]/, @etags;
+            @etags = grep /^[^@]/, @etags unless $param{private};
             @etags = grep { !exists($tags_seen{$_}) } @etags;
             next if 0 == scalar(@etags);
 
@@ -459,8 +466,21 @@ sub tag_count {
         delete $terms->{blog_id};
     }
     $jterms->{object_datasource} = $obj->datasource;
+    my $pkg_terms = {};
+    $pkg_terms->{id} = \'=objecttag_object_id';
+    if ( $pkg->class_type eq 'entry' or $pkg->class_type eq 'page' ) {
+        $pkg_terms->{class} = $pkg->class_type;
+    }
     require MT::ObjectTag;
-    MT::Tag->count(undef, { join => MT::ObjectTag->join_on('tag_id', $jterms, { unique => 1 } )});
+    MT::Tag->count(
+        undef,
+        {
+            join => MT::ObjectTag->join_on(
+                'tag_id', $jterms,
+                { unique => 1, join => $pkg->join_on( undef, $pkg_terms ) }
+            )
+        }
+    );
 }
 
 # counts number of objects tagged with a given tag

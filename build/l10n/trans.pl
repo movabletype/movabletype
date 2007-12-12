@@ -57,6 +57,7 @@ do {
                 }
                 $trans =~ s/([^\\]?)'/$1\\'/g;
                 $args{phrase} =~ s/([^\\])'/$1\\'/g;
+                $args{phrase} =~ s/\\"/"/g;
 		
                 unless ($phrase{$args{phrase}}) {
                     $phrase{$args{phrase}} = 1;
@@ -91,7 +92,7 @@ do {
             $args{phrase} =~ s/['"]\s*.\s*\n\s*['"]//gs;
             $args{phrase} =~ s/['"]\s*\n\s*.\s*['"]//gs;
             my $phrase = $args{phrase};
-            $phrase =~ s/\\'/'/g;
+            $phrase =~ s/\\?\\'/'/g;
             if ($trans eq '' && $conv{$phrase}) {
                  $trans = $conv{$phrase};
                  $is_used{$phrase} = 1;
@@ -103,6 +104,7 @@ do {
             if ($args{phrase} =~ /\\n|[^\\]'/) {
                $q = '"';
             }
+            $args{phrase} =~ s/\\\\'/\\'/g;
             if ($trans) {
                 printf "\t$q%s$q => '%s',\n", $args{phrase}, $trans; # Print out the translation if there was an existing one
             } else {

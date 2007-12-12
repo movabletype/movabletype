@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use lib 'lib';
+use lib 'extlib';
+
 use Test::More tests => 55;
 use File::Temp qw( tempfile );
 
@@ -16,28 +20,27 @@ use MT::Template::Context;
 use MT::Util qw( first_n_words html_text_transform );
 
 use vars qw( $DB_DIR $T_CFG $BASE );
-use lib 't';
 
-require 'test-common.pl';
-system("rm -r t/db/*"); # needed because some earlier test craps up the db
-require 'blog-common.pl';
+use MT::Test qw(:db :data);
 
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok($mt, 'MT');
 
-MT->add_text_filter(wiki => {
-    label => 'Wiki',
-    on_format => sub {
-        require Text::WikiFormat;
-        Text::WikiFormat::format($_[0]);
-    },
-});
-
 sub build {
+#    my($ctx, $markup) = @_;
+#    my $b = MT::Builder->new;
+#    my $tokens = $b->compile($ctx, $markup) or die $b->errstr;
+#    $b->build($ctx, $tokens);
+
     my($ctx, $markup) = @_;
-    my $b = MT::Builder->new;
-    my $tokens = $b->compile($ctx, $markup) or die $b->errstr;
-    $b->build($ctx, $tokens);
+    my $b = $ctx->stash('builder');
+    my $tokens = $b->compile($ctx, $markup);
+    print('# -- error compiling: ' . $b->errstr), return undef
+        unless defined $tokens;
+    my $res = $b->build($ctx, $tokens);
+    print '# -- error building: ' . ($b->errstr ? $b->errstr : '') . "\n"
+        unless defined $res;
+    return $res;
 }
 
 ## Need to test:
@@ -74,6 +77,7 @@ my $ctx = MT::Template::Context->new;
 isa_ok($ctx, 'MT::Template::Context');
 $ctx->stash('blog', $blog);
 $ctx->stash('blog_id', $blog->id);
+$ctx->stash('builder', MT::Builder->new);
 isa_ok($ctx, 'MT::Template::Context');
 
 
@@ -159,11 +163,12 @@ is(build($ctx, '<$MTEntryExcerpt no_generate="1"$>'), '', 'no_generate 1');
 
 ## Make sure text formatting is applied before excerpt is generated,
 ## unless convert_breaks="0" is explicitly set.
-$entry->convert_breaks('wiki');
-$entry->text(q(This text is ''strong''));
-is(build($ctx, '<$MTEntryExcerpt$>'), 'This text is strong...', 'MTEntryExcerpt');
-is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), 'This text is strong...', 'convert_breaks 1');
-is(build($ctx, '<$MTEntryExcerpt convert_breaks="0"$>'), q(This text is ''strong''...), 'convert_breaks 0');
+## Change to use Markdown
+$entry->convert_breaks('markdown');
+$entry->text(q(This text is **strong**));
+is(build($ctx, '<$MTEntryExcerpt$>'), q(This text is strong...), 'MTEntryExcerpt');
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), q(This text is strong...), 'convert_breaks 1');
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="0"$>'), q(This text is **strong**...), 'convert_breaks 0');
 
 $entry->convert_breaks('__default__');
 $entry->text('Elvis was a hero to most but he never meant shit to me');

@@ -59,7 +59,8 @@ sub subscribe {
         return $app->error($app->translate("The email address '[_1]' is already in the notification list for this weblog.", $subscr_addr));
     }
 
-    my %head = ( From => $admin_email_addr,
+    my %head = ( id => 'verify_subscribe',
+                 From => $admin_email_addr,
                  To => $subscr_addr,
                  Subject => $app->translate("Please verify your email to subscribe"));
     my $charset = $app->config('MailEncoding') || $app->config('PublishCharset');

@@ -2174,7 +2174,6 @@ sub queue_build_file_filter {
     $job->funcname('MT::Worker::Publish');
     $job->uniqkey( $fi->id );
     $job->coalesce( $$ . ':' . ( time - ( time % 100 ) ) );
-    MT::TheSchwartz->insert($job);
 
     # my $at = $fi->archive_type || '';
     #
@@ -2205,38 +2204,11 @@ sub queue_build_file_filter {
     #
     # $rqf->save;
 
+    MT::TheSchwartz->insert($job);
+
     return 0;
 }
 
-# Something was built while the queue itself was disabled; make sure
-# the item is marked for syncing.
-# sub queue_build_file {
-#     my ($cb, %args) = @_;
-#
-#     # preconditions
-#     my $fi = $args{FileInfo} or return $cb->error("Blog is not configured for FileInfo support.");
-#     return unless $plugin->blog_enabled($fi->blog_id);
-#
-#     require RebuildQueue::File;
-#     my $rqf = RebuildQueue::File->load($fi->id);
-#     if (!$rqf) {
-#         $rqf = new RebuildQueue::File;
-#         $rqf->id($fi->id);
-#         $rqf->build_time(time);
-#         $rqf->worker($plugin->blog_worker($fi->blog_id));
-#         $rqf->sync_me(1);
-#         $rqf->save;
-#     } else {
-#         if (!$rqf->rebuild_me) {
-#             if (!$rqf->sync_me) {
-#                 $rqf->sync_me(1);
-#                 $rqf->build_time(time);
-#                 $rqf->worker($plugin->blog_worker($fi->blog_id));
-#                 $rqf->save;
-#             }
-#         }
-#     }
-# }
 
 # ----- ARCHIVING -----
 

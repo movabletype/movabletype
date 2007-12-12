@@ -704,6 +704,13 @@ sub default_templates {
     my $tmpl_list = MT::DefaultTemplates->templates;
     return $app->error( $app->translate("Error loading default templates.") )
       unless $tmpl_list;
+
+    eval {
+        my $widgetmgr = MT::Plugin::WidgetManager->instance;
+        my $widget_tmpls = $widgetmgr->templates($app);
+        push @$tmpl_list, @$widget_tmpls;
+    };
+
     $tmpl_list;
 }
 
@@ -770,7 +777,7 @@ sub refresh_blog_templates {
             my $terms = {};
             $terms->{blog_id} = $blog_id;
             if ( $val->{type} =~
-                m/^(archive|individual|page|category|index|custom)$/ )
+                m/^(archive|individual|page|category|index|custom|widget)$/ )
             {
                 $terms->{name} = $val->{name};
             }
@@ -802,7 +809,7 @@ sub refresh_blog_templates {
                     $backup->name(
                         $backup->name . ' (Backup from ' . $ts . ')' );
                     if ( $backup->type !~
-                        m/^(archive|individual|page|category|index|custom)$/ )
+                        m/^(archive|individual|page|category|index|custom|widget)$/ )
                     {
                         $backup->type('custom')
                           ;      # system templates can't be created
@@ -892,7 +899,7 @@ sub refresh_individual_templates {
     foreach my $tmpl (@$tmpl_list) {
         $tmpl->{text} = $app->translate_templatized( $tmpl->{text} );
         $trnames->{ $app->translate( $tmpl->{name} ) } = $tmpl->{name};
-        if ( $tmpl->{type} !~ m/^(archive|individual|page|category|index|custom)$/ )
+        if ( $tmpl->{type} !~ m/^(archive|individual|page|category|index|custom|widget)$/ )
         {
             $tmpl_types->{ $tmpl->{type} } = $tmpl;
         }
@@ -943,7 +950,7 @@ sub refresh_individual_templates {
             delete $backup->{changed_cols}->{id};
             $backup->name( $backup->name . ' (Backup from ' . $ts . ')' );
             if ( $backup->type !~
-                m/^(archive|individual|page|category|index|custom)$/ )
+                m/^(archive|individual|page|category|index|custom|widget)$/ )
             {
                 $backup->type('custom');    # system templates can't be created
             }

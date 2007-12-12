@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 use lib 'lib';
-use Test::More tests => 98;
+use lib 'extlib';
+use Test::More tests => 100;
 use_ok 'MT::Bootstrap';
 use_ok 'MT';
 use_ok 'MT::App';
@@ -29,7 +30,10 @@ use_ok 'MT::BasicAuthor';
 use_ok 'MT::BasicSession';
 use_ok 'MT::Blog';
 use_ok 'MT::Builder';
-use_ok 'MT::BulkCreation';
+SKIP: {
+    skip 'Enable Enterprise Pack', 1;
+    use_ok 'MT::BulkCreation';
+}
 use_ok 'MT::Callback';
 use_ok 'MT::Category';
 use_ok 'MT::Comment';
@@ -73,6 +77,10 @@ SKIP: {
     eval { require DBD::Oracle };
     skip 'DBD::Oracle not installed', 1 if $@;
     use_ok 'MT::ObjectDriver::Driver::DBD::Oracle';
+    eval { require DBD::odbc };
+    skip 'DBD::odbc not installed', 1 if $@;
+    use_ok 'MT::ObjectDriver::Driver::DBD::MSSQLServer';
+    use_ok 'MT::ObjectDriver::Driver::DBD::UMSSQLServer';
 }
 use_ok 'MT::ObjectDriver::Driver::DBD::Pg';
 use_ok 'MT::ObjectDriver::Driver::DBD::SQLite';
@@ -112,6 +120,8 @@ use_ok 'MT::XMLRPC';
 use_ok 'MT::XMLRPCServer';
 use_ok 'MT::Asset';
 use_ok 'MT::Asset::Image';
+use_ok 'MT::Asset::Video';
+use_ok 'MT::Asset::Audio';
 use_ok 'MT::BackupRestore';
 use_ok 'MT::BackupRestore::BackupFileHandler';
 use_ok 'MT::BackupRestore::ManifestFileHandler';

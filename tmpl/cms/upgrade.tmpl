@@ -97,8 +97,23 @@ function show(id) {
         </form>
     </div>
 
-<mt:else>
+<mt:else><mt:if name="mt_version_incremented">
+    <p><__trans phrase="Congratulations, you have successfully upgraded to Movable Type [_1]." params="<mt:var name="mt_version">"></p>
 
+    <form method="get" action="<mt:var name="mt_url">">
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions right">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Return to Movable Type"> (s)"
+                    class="primary-button"
+                    ><__trans phrase="Return to Movable Type"></button>
+            </div>
+        </div>
+    </form>
+
+<mt:else>
     <p><__trans phrase="Your Movable Type installation is already up to date."></p>
 
     <form method="get" action="<mt:var name="mt_url">">
@@ -114,7 +129,7 @@ function show(id) {
         </div>
     </form>
 
-</mt:if>
+</mt:if></mt:if>
 
 </div>
 

@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use lib 'textlib';
+use lib 'lib';
+
 use Test::More tests => 14;
 use Test::MockObject;
 
@@ -12,9 +16,8 @@ use Net::Ping;
 use MT;
 use MT::XMLRPC;
 use vars qw( $DB_DIR $T_CFG );
-use lib 't';
-require 'test-common.pl';
-require 'blog-common.pl';
+
+use MT::Test qw(:db :data);
 
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok($mt, 'MT');

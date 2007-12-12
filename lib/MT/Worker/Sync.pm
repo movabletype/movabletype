@@ -15,8 +15,8 @@ sub work {
     # Build this
     my $mt = MT->instance;
 
-    my $rsync_opt = $mt->{rsync} || '';
-    my $targets = $mt->{target} || [];
+    my $rsync_opt = $mt->config('RsyncOptions') || '';
+    my @targets = $mt->config('SyncTarget');
 
     # We got triggered to build; lets find coalescing jobs
     # and process them in one pass.
@@ -61,11 +61,11 @@ sub work {
     if (@files) {
         $synced = scalar @files;
         require File::Spec;
-        my $file = File::Spec->catfile($mt->config('TempDir'), "rebuildq-rsync-$$.lst");
+        my $file = File::Spec->catfile($mt->config('TempDir'), "publishq-rsync-$$.lst");
         open FOUT, ">$file";
         print FOUT join("\n", @files) . "\n";
         close FOUT;
-        foreach my $target (@$targets) {
+        foreach my $target (@targets) {
             my $cmd = "rsync $rsync_opt --files-from=\"$file\" / \"$target\"";
             MT::TheSchwartz->debug("Syncing files to $target...");
             my $start = [gettimeofday];

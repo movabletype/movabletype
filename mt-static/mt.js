@@ -940,6 +940,8 @@ function dirify (s) {
     s = s.replace(/&[^;\s]+;/g, '');
     s = s.replace(/[^-a-z0-9_ ]/g, '');
     s = s.replace(/\s+/g, '_');
+    s = s.replace(/_+$/, '');
+    s = s.replace(/_+/g, '_');
     return s;
 }
 

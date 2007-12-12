@@ -1,7 +1,7 @@
 # Copyright 2003-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::es;
 use strict;
@@ -793,11 +793,9 @@ use vars qw( @ISA %Lexicon );
 	'No such comment' => 'No existe dicho comentario',
 	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => 'IP [_1] bloqueada porque excedió el ritmo de comentarios, más de 8 en [_2] segundos.',
 	'IP Banned Due to Excessive Comments' => 'IP bloqueada debido al exceso de comentarios',
-	'_THROTTLED_COMMENT_EMAIL' => 'Se bloqueó automáticamente a una persona que visitó su weblog [_1] debido a que insertó más comentarios de los permitidos en menos de [_2] segundos. Esto se hizo para impedir que nadie o nada desborde malintencionadamente su weblog con comentarios. La dirección bloqueada es
-
-    [_3]
-
-Si se ha tratado de un error, puede desbloquear la IP y permitir que el visitante pueda comentar de nuevo identificándose en la instalación de Movable Type, llendo a la Configuración del weblog - Bloqueo de IPs y borrando la IP [_4] de la lista de direcciones bloqueadas.',
+	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => 'Se bloqueó automáticamente a una persona que visitó su weblog [_1] debido a que insertó más comentarios de los permitidos en menos de [_2] segundos.',
+	'This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => 'Esto se hizo para impedir que nadie o nada desborde malintencionadamente su weblog con comentarios. La dirección bloqueada es',
+	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'Si se ha tratado de un error, puede desbloquear la IP y permitir que el visitante pueda comentar de nuevo identificándose en la instalación de Movable Type, llendo a la Configuración del weblog - Bloqueo de IPs y borrando la IP [_1] de la lista de direcciones bloqueadas.',
 	'Invalid request' => 'Petición no válida',
 	'No such entry \'[_1]\'.' => 'No existe la entrada \'[_1]\'.',
 	'You are not allowed to add comments.' => 'No tiene permisos para añadir comentarios.',
@@ -1131,7 +1129,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Add a [_1]' => 'Añador un [_1]',
 	'No label' => 'Sin título',
 	'Category name cannot be blank.' => 'El nombre de la categoría no puede estar en blanco.',
-	'Populating blog with default templates failed: [_1]' => 'Fallo guardando el blog con las plantillas por defecto: [_1]',
+	'Populating blog with default templates failed: [_1]' => 'Falló el guardando del blog con las plantillas por defecto: [_1]',
 	'Setting up mappings failed: [_1]' => 'Fallo la configuración de mapeos: [_1]',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'Error: Movable Type no puede escribir en el directorio de caché de las plantillas. Por favor, compruebe los permisos del directorio llamado <code>[_1]</code> dentro del directorio de su blog.',
 	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.' => 'Error: Movable Type no pudo crear un directorio para cachear las plantillas dinámicas. Debe crear un directorio llamado <code>[_1]</code> dentro del directorio de su blog.',
@@ -2400,8 +2398,8 @@ que la dirección provista es correcta y le pertenece.',
 	'with' => 'con',
 
 ## tmpl/cms/include/asset_table.tmpl
-	'content' => 'contenido', # Translate - New
-	'Delete selected assets (x)' => 'Borrar los contenidos seleccionados (x)', # Translate - New
+	'content' => 'contenido',
+	'Delete selected assets (x)' => 'Borrar los contenidos seleccionados (x)',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -3258,7 +3256,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Setup Your First Blog' => 'Configure su primer blog',
 
 ## tmpl/wizard/start.tmpl
-	'Your Movable Type configuration file already exists. The Wizard cannot continue with this file present.' => 'El fichero de configuración de Movable Type configuration ya existe. El asistente no puede continuar si el fichero existe.',
+	'Configuration File Exists' => 'Configuración de archivos existentes', # Translate - New
+	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => 'Una configuración del archivo (mt-config,cgi) existe, <a href="[_1]>identificarse</a> a Movable Type.', # Translate - New
+	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Para crear una nueva configuración del archivo usando Wizard, borre la configuración actual del archivo y actualice la página', # Translate - New
 	'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type necesita que JavaScript esté disponible en el navegador. Por favor, active JavaScript y recargue esta página para continuar.',
 	'This wizard will help you configure the basic settings needed to run Movable Type.' => 'Este asistente le ayudará a configurar las opciones básicas necesarias para ejecutar Movable Type.',
 	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Error: \'[_1]\' no ha sido encontrado.</strong> Por favor,mueva sus archivos estáticos al primer directorio o corrija la configuración si no es correcta.',
@@ -3448,7 +3448,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Microsoft SQL Server Database' => 'Base de Datos Microsoft SQL Server',
 	'Microsoft SQL Server Database (UTF-8 support)' => 'Base de Datos Microsoft SQL Server (UTF-8 support)',
 	'External Directory Synchronization' => 'Sincronización del Directorio Externo',
-	'Populating author\'s external ID to have lower case user name...' => 'Creación del ID externo del autor para tener un nombre de usuario en minúscula...', # Translate - New
+	'Populating author\'s external ID to have lower case user name...' => 'Propagar el ID externo de los autores para tener un nombre de usuario en minúscula...', # Translate - New
 
 ## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
 	'You need to create some groups.' => 'Necesita crear algunos grupos.',
@@ -3641,7 +3641,7 @@ que la dirección provista es correcta y le pertenece.',
 	'User cannot be updated: [_1].' => 'Usuario no puede ser actualizado [_1].',
 	'Failed login attempt by user \'[_1]\' deleted from LDAP.' => 'Login entrado sin suceso por el usuario [_1] borrado de LDAP.',
 	'User \'[_1]\' updated with LDAP login name \'[_2]\'.' => 'Usuario [_1] actualizado con el nombre de login LDAP [_2]',
-	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => '"Login entrado sin suceso por el usuario [_1]. Otro usuario existe actualmente con el mismo nombre en el sistema, pero con un UUID diferent."', # Translate - New
+	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => 'Error durante la identificación del usuario [_1].  Otro usuario utiliza el mismo nombre de usuario en el sistema con otro UUID.', # Translate - New
 	'User \'[_1]\' account is disabled.' => 'La cuenta del usuario [_1] ha sido desactivada.',
 	'LDAP users synchronization interrupted.' => 'La sincronización de los usuarios LDAP ha sido interrumpida.',
 	'Loading MT::LDAP failed: [_1]' => 'El cargamiento de MT::LDAP falló: [_1]',
@@ -3654,7 +3654,7 @@ que la dirección provista es correcta y le pertenece.',
 	'LDAP groups synchronized with existing groups.' => 'Grupos LDAP sincronizados con los grupos existentes.',
 	'The following groups\' information were modified:' => 'Las informaciones de los siguientes grupos han sido actualizados.',
 	'No LDAP group was found using given filter.' => 'Ningún grupo LDAP ha sido encontrado con el filtro dado.',
-	"Filter used to search for groups: [_1]\nSearch base: [_2]" => 'Filtro usado para buscar grupos: [_1]\nBase de búsqueda: [_2]', # Translate - New
+	"Filter used to search for groups: [_1]\nSearch base: [_2]" => 'Filtro usado para buscar en los grupos: [_1]\nBúsqueda: [_2]', # Translate - New
 	'(none)' => '(ninguno)',
 	'The following groups were deleted:' => 'Los siguientes grupos han sido borrados:',
 	'Failed to create a new group: [_1]' => 'Falló la creación de un nuevo grupo: [_1]',
@@ -3737,6 +3737,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Enterprise.pack/app-cms.yaml
 	'Bulk Author Export' => 'Exportación masiva de autores',
 	'Synchronize Users' => 'Sincronización de Usuarios',
+	'Are you sure you want to delete the selected group(s)?' => '¿Está seguro de querer borrar el(los) grupo(s) seleccionados?', # Translate - New
 
 ## plugins/feeds-app-lite/tmpl/config.tmpl
 	'Feeds.App Lite Widget Creator' => 'Creador de widgets de Feeds.App Lite',
@@ -4110,6 +4111,6 @@ que la dirección provista es correcta y le pertenece.',
 
 );
 
-## New words: 16
+## New words: 60
 
 1;

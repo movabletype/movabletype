@@ -88,6 +88,9 @@ TC.TagComplete.prototype.keyDown = function( evt )
 {
     evt = evt || event;
     var element = evt.target || evt.srcElement;
+    if (evt.ctrlKey) {
+        return true;
+    }
     if ( evt.keyCode == 8 ) {   // backspace
         this.truncateWord();
     }

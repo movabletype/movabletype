@@ -22,6 +22,7 @@ sub id { 'search' }
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
+    $app->set_no_cache;
     $app->add_methods( search => \&execute );
     $app->{default_mode} = 'search';
     $app;

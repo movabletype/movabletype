@@ -12,6 +12,7 @@ function smarty_function_mtassetfilepath($args, &$ctx) {
     $asset_file = preg_replace('/^%a/', $blog_site_path, $asset_file);
 
     $blog_archive_path = $blog['blog_archive_path'];
+    if (!$blog_archive_path) $blog_archive_path = $blog_site_path;
     if ($blog_archive_path) {
         $blog_archive_path = preg_replace('/\/$/', '', $blog_archive_path);
         $asset_file = preg_replace('/^%r/', $blog_archive_path, $asset_file);

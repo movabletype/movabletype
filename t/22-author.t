@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use lib 'lib';
+use lib 'extlib';
+
 use Test::More tests => 54;
 
 use MT;

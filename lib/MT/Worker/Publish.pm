@@ -57,8 +57,7 @@ sub work {
             ## MT::TheSchwartz->debug("Publishing: " . RebuildQueue::Daemon::_summary($fi));
             my $res = $mt->publisher->rebuild_from_fileinfo($fi);
             if ($res) {
-                my $arg = $job->arg || {};
-                if ($arg->{sync_me}) {
+                if ( MT->config('SyncTarget') ) {
                     my $sync_job = TheSchwartz::Job->new();
                     $sync_job->funcname('MT::Worker::Sync');
                     $sync_job->uniqkey($fi_id);

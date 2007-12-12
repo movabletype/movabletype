@@ -37,6 +37,10 @@ This allows the inner 'if' statements to do their work. See above
 for how the '$conditional' variable is used.
 */
 function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
+    // used to serialize attributes when creating tag stack for
+    // function tags.
+    $var_export = function_exists('var_export');
+
     global $mt;
     $ctx =& $mt->context();
     $ldelim = $ctx->left_delimiter;
@@ -107,7 +111,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             }
             if (isset($ctx->sanitized[$mttag])) {
                 if (!isset($attrs['sanitize'])) {
-                    $modargs .= '|sanitize:"1"';
+                    $modargs = '|sanitize:"1"' . $modargs;
                 }
             }
             if (isset($ctx->nofollowed[$mttag])) {
@@ -117,6 +121,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             }
 
             if (preg_match('!^MTIf!i', $mttag) ||
+                preg_match('!^MTHas!i', $mttag) ||
                 (preg_match('![a-z]If[A-Z]!i', $mttag) &&
                 !preg_match('![a-z]Modified[A-Z]!i', $mttag)) ||
                 isset($ctx->conditionals[$mttag])) {
@@ -144,11 +149,12 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                     array_push($tokenstack, $tokname);
                 } else {
                     $tokname = array_pop($tokenstack);
-                    $smart_source .= $ldelim.'/defun'.$rdelim;#.$ldelim.'fun name="'.$tokname.'"'.$rdelim;
+                    $smart_source .= $ldelim.'/defun'.$rdelim;
                 }
             }
 
             $open_mod_args = false; $close_mod_args = ''; $uniqid = '';
+            $fn_tag = 0;
             if (_block_handler_exists($ctx2, $mttag)) {
                 if ($open == '/') {
                     $tag = array_pop($tagstack);
@@ -174,10 +180,19 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                 }
             } else {
                 if ($close == '/') $close = '';
+                $fn_tag = 1;
             }
 
             if ($open_mod_args) {
                 $smart_source .= $ldelim . 'capture' . $rdelim;
+            }
+
+            if ($fn_tag) {
+                $smart_source .= $ldelim . 'php' . $rdelim
+                    . '$this->_tag_stack[] = array("' . $mttag . '"'
+                    // . ', array(' . implode(',', $ctx2->_compile_arg_list(null, null, $attrs, $dummy)) . '));'
+                    . ($var_export ? ', ' . var_export($attrs, true) : '')
+                    . ');' . $ldelim . '/php' . $rdelim;
             }
 
             $smart_source .= $ldelim.$open.
@@ -185,6 +200,11 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                                   $modargs.
                                   $attrargs.
                                   $rdelim;
+            if ($fn_tag) {
+                $smart_source .= $ldelim . 'php' . $rdelim
+                    . 'array_pop($this->_tag_stack);'
+                    . $ldelim . '/php' . $rdelim;
+            }
 
             if ($close_mod_args) {
                 $smart_source .= $ldelim . '/capture' . $rdelim . $ldelim . '$smarty.capture.default' . $close_mod_args . $rdelim;

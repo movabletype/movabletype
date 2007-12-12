@@ -1,7 +1,7 @@
 # Copyright 2003-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::de;
 use strict;
@@ -793,11 +793,9 @@ use vars qw( @ISA %Lexicon );
 	'No such comment' => 'Kein entsprechender Kommentar',
 	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => 'IP [_1] gesperrt, da mehr als 8 Kommentare in [_2] Sekunden abgegeben wurden.',
 	'IP Banned Due to Excessive Comments' => 'IP-Adresse wegen exzessiver Kommentarabgabe gesperrt',
-	'_THROTTLED_COMMENT_EMAIL' => 'Die IP-Adrese eines Besuchers Ihres Weblogs [_1] wurde automatisch gesperrt, da er in den letzten [_2] Sekunden mehr Kommentare als zulässig zu veröffentlichen versucht hat. Die gesperrte IP-Adrese lautet
-	
-	[_3]
-	
-	Sollte die Sperrung ein Irrtum sein, können Sie sie aufheben. Der Besucher kann dann wieder kommentieren. Löschen Sie dazu die IP-Adresse [_4] im Konfigurationsmenü Ihres Weblog von der IP-Sperrlite.',
+	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => 'Die IP-Adrese eines Besuchers Ihres Weblogs [_1] wurde automatisch gesperrt, da er in den letzten [_2] Sekunden mehr Kommentare als zulässig zu veröffentlichen versucht hat.',
+	'Die gesperrte IP-Adrese lautet' => 'Esto se hizo para impedir que nadie o nada desborde malintencionadamente su weblog con comentarios. La dirección bloqueada es',
+	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'Sollte die Sperrung ein Irrtum sein, können Sie sie aufheben. Der Besucher kann dann wieder kommentieren. Löschen Sie dazu die IP-Adresse [_1] im Konfigurationsmenü Ihres Weblog von der IP-Sperrlite.',
 	'Invalid request' => 'Ungültige Anfrage',
 	'No such entry \'[_1]\'.' => 'Kein Eintrag \'[_1]\'.',
 	'You are not allowed to add comments.' => 'Sie sind nicht berechtigt, Kommentare hinzuzufügen.',
@@ -1152,7 +1150,7 @@ use vars qw( @ISA %Lexicon );
 	'Select Roles' => 'Rollen auswählen',
 	'Role Name' => 'Rollenname',
 	'Roles Selected' => 'Gewählte Rollen',
-	'' => '', # Translate - New # OK
+	'' => ' ', # Translate - New # OK
 	'Grant Permissions' => 'Rechte zuweisen',
 	'Backup' => 'Sichern',
 	'Backup & Restore' => 'Sichern & Wiederherstellen',
@@ -2399,8 +2397,8 @@ use vars qw( @ISA %Lexicon );
 	'with' => 'mit',
 
 ## tmpl/cms/include/asset_table.tmpl
-	'content' => 'Inhalt', # Translate - New # OK
-	'Delete selected assets (x)' => 'Gewählte Assets löschen (x)', # Translate - New # OK
+	'content' => 'Inhalt',
+	'Delete selected assets (x)' => 'Gewählte Assets löschen (x)',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2567,7 +2565,7 @@ use vars qw( @ISA %Lexicon );
 	'Oct' => 'Okt',
 	'Nov' => 'Nov',
 	'Dec' => 'Dez',
-	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]', # Translate - New # OK
+	'[_1:calMonth] [_2:calYear]' => '[_1:calMonth] [_2:calYear]',
 
 ## tmpl/cms/include/overview-left-nav.tmpl
 	'List Weblogs' => 'Weblogs anzeigen',
@@ -3257,7 +3255,9 @@ use vars qw( @ISA %Lexicon );
 	'Setup Your First Blog' => 'Richten Sie Ihr erstes Blog ein',
 
 ## tmpl/wizard/start.tmpl
-	'Your Movable Type configuration file already exists. The Wizard cannot continue with this file present.' => 'Es ist bereits eine Konfigurationsdatei vorhanden. Wenn Sie den Konfigurationshelfer erneut ausführen möchten, entfernen Sie diese Datei bitte.',
+	'Configuration File Exists' => 'Es ist bereits eine Konfigurationsdatei vorhanden', # Translate - New # OK
+	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => 'Es ist bereits eine Konfigurationsdatei (mt-config.cgi) vorhanden. Sie können sich daher sofort <a href="[_1]">bei Movable Type anmelden</a>.', # Translate - New # OK
+	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Um mit dem Konfigurationshelfer eine neue Konfigurationsdatei zu erzeugen, entfernen Sie die vorhandene Konfigurationsdatei und laden Sie diese Seite neu.', # Translate - New # OK
 	'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type erfordert JavaScript. Bitte aktivieren Sie es in Ihren Browsereinstellungen und laden diese Seite dann neu.',
 	'This wizard will help you configure the basic settings needed to run Movable Type.' => 'Dieser Konfigurationshelfer hilft Ihnen, die zum Betrieb von Movable Type erforderlichen Grundeinstellungen vorzunehmen.',
 	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Fehler: \'[_1]\' konnte nicht gefunden werden.</strong> Bitte kopieren Sie erst die statischen Dateien in den Ordner oder überprüfen Sie, falls das bereits geschehen ist, die Einstellungen.',
@@ -3447,8 +3447,8 @@ use vars qw( @ISA %Lexicon );
 	'Microsoft SQL Server Database' => 'Microsoft SQL Server-Datenbank',
 	'Microsoft SQL Server Database (UTF-8 support)' => 'Microsoft SQL Server-Datenbank (mit UTF-8-Unterstüzung)',
 	'External Directory Synchronization' => 'Synchronisierung mit externem Verzeichnis',
-	'Populating author\'s external ID to have lower case user name...' => 'Übernehme externe Benutzerkennungen für Namen in Kleinschrift...', # Translate - New # OK
-
+	'Populating author\'s external ID to have lower case user name...' => 'Übernehme externe Autorenkennungen für Benutzernamen in Kleinschrift...', # Translate - New # OK
+	
 ## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
 	'You need to create some groups.' => 'Bitte legen Sie einige Gruppen an.',
 	'Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Click here</a> to create a group.' => 'Bitte legen Sie zuerst einige Gruppen an. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Klicken Sie hier </a> um Gruppen anzulegen.',
@@ -3618,7 +3618,7 @@ use vars qw( @ISA %Lexicon );
 	'PublishCharset [_1] is not supported in this version of MS SQL Server Driver.' => 'PublishCharset [_1] wird von dieser Version des Microsoft SQL Server-Treibers nicht unterstützt.',
 
 ## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/UMSSQLServer.pm
-	'This version of UMSSQLServer driver requires DBD::ODBC version 1.14.' => 'Diese Version des UMSSQLServer-Treibers erfordert DBD::ODBC in der Version 1.14.', # Translate - New # OK
+	'This version of UMSSQLServer driver requires DBD::ODBC version 1.14.' => 'Diese Version des UMSSQLServer-Treibers erfordert DBD::ODBC in der Version 1.14.',
 	'This version of UMSSQLServer driver requires DBD::ODBC compiled with Unicode support.' => 'Diese Version des UMSSQLServer-Treiber erfodert ein mit Unicode-Unterstützung compiliertes DBD::ODBC.',
 
 ## addons/Enterprise.pack/lib/MT/LDAP.pm
@@ -3723,26 +3723,27 @@ use vars qw( @ISA %Lexicon );
 	'Groups Selected' => 'Gewählte Gruppen',
 	'Type a group name to filter the choices below.' => 'Geben Sie einen Gruppennamen ein, um die Auswahl einzuschränken.',
 	'Search Groups' => 'Gruppen suchen',
-	'Bulk import cannot be used under external user management.' => 'Stapelimport ist nicht möglich bei externer Benutzerverwaltung.',
+	'Bulk import cannot be used under external user management.' => 'Stapelimport ist bei externer Benutzerverwaltung nicht möglich.',
 	'Bulk management' => 'Stapelverwaltung',
 	'The group' => 'Die Gruppe',
 	'User/Group' => 'Benutzer/Gruppe',
-	'A user can\'t change his/her own username in this environment.' => 'Benutzer kann eigenen Benutzernamen in diesem Kontext nicht ändern.',
+	'A user can\'t change his/her own username in this environment.' => 'Benutzer können ihre eigenen Benutzernamen in diesem Kontext nicht ändern.',
 	'An error occurred when enabling this user.' => 'Bei der Aktivierung dieses Benutzerkontos ist ein Fehler aufgetreten',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
-	'Fixing binary data for Microsoft SQL Server storage...' => 'Bereite Binärdaten für Speicherung in Microsoft SQL Server vor...',
+	'Fixing binary data for Microsoft SQL Server storage...' => 'Bereite Binärdaten zur Speicherung in Microsoft SQL Server vor...',
 
 ## addons/Enterprise.pack/app-cms.yaml
 	'Bulk Author Export' => 'Stapelexport von Autoren',
 	'Synchronize Users' => 'Benutzer synchronisieren',
+	'Are you sure you want to delete the selected group(s)?' => 'Gewählte Gruppe(n) wirklich löschen?', # Translate - New # OK
 
 ## plugins/feeds-app-lite/tmpl/config.tmpl
 	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widget Creator',
 	'Configure feed widget settings' => 'Feed-Widget konfigurieren',
 	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Vergeben Sie einen Namen für das Widget. Dieser Name wird auch als Name des Feeds in Ihrem Blog angezeigt werden.',
 	'[_1] Feed Widget' => '[_1]-Feed-Widget',
-	'Select the maximum number of entries to display.' => 'Anzahl der Einträge, die höchstens angezeigt werden sollen.',
+	'Select the maximum number of entries to display.' => 'Anzahl der höchstens anzuzeigenden Einträge',
 	'3' => '3',
 	'5' => '5',
 	'10' => '10',
@@ -3810,7 +3811,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving page (\'[_1]\')...' => 'Speichere Seite (\'[_1]\')...',
 
 ## plugins/TemplateRefresh/tmpl/results.tmpl
-	'No templates were selected to process.' => 'Keine Vorlagen ausgewählt.',
+	'No templates were selected to process.' => 'Keine Vorlagen gewählt.',
 	'Return to templates' => 'Zurück zu den Vorlagen',
 
 ## plugins/TemplateRefresh/TemplateRefresh.pl
@@ -3838,7 +3839,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/WidgetManager/tmpl/edit.tmpl
 	'Edit Widget Set' => 'Widgetgruppe bearbeiten',
 	'Please use a unique name for this widget set.' => 'Bitte verwenden Sie für die Widgetgruppe einen eindeutigen Namen.',
-	'You already have a widget set named \'[_1].\' Please use a unique name for this widget set.' => 'Eine Widgetgruppe namens \'[_1]\' ist bereits vorhanden. Bitte wählen Sie Namen, der noch nicht verwendet wurde.',
+	'You already have a widget set named \'[_1].\' Please use a unique name for this widget set.' => 'Eine Widgetgruppe namens \'[_1]\' ist bereits vorhanden. Bitte wählen Sie einen Namen, der noch nicht verwendet wurde.',
 	'Your changes to the Widget Set have been saved.' => 'Änderungen gespeichert.',
 	'Set Name' => 'Gruppenname',
 	'Drag and drop the widgets you want into the Installed column.' => 'Ziehen Sie die Widgets, die angezeigt werden sollen, in die Spalte \'Installierte Widgets\'. Soll ein Widget nicht mehr angezeigt werden, schieben Sie es zurück in die Spalte \'Verfügbare Widgets\'.',
@@ -3917,7 +3918,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/WidgetManager/default_widgets/powered_by.tmpl
 
 ## plugins/WidgetManager/default_widgets/creative_commons.tmpl
-	'This weblog is licensed under a' => 'Dieser Weblog steht unter einer',
+	'This weblog is licensed under a' => 'Dieses Weblog steht unter einer',
 	'Creative Commons License' => 'Creative Commons-Lizenz',
 
 ## plugins/WidgetManager/default_widgets/search.tmpl
@@ -4109,6 +4110,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 32
+## New words: 60 + improved words: 42 = total words 102
 
 1;

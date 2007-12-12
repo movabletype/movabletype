@@ -940,7 +940,7 @@ sub _hdlr_app_widget {
     my $hosted_widget = $ctx->var('widget_id') ? 1 : 0;
     my $id = $args->{id} || $ctx->var('widget_id') || '';
     my $label = $args->{label};
-    my $class = $args->{class} || $id . '-widget';
+    my $class = $args->{class} || $id;
     my $label_link = $args->{label_link} || "";
     my $closable = $args->{can_close} ? 1 : 0;
     my $label_onclick = $args->{label_onclick} || "";
@@ -1205,11 +1205,13 @@ sub _hdlr_app_setting {
 
     return $ctx->build(<<"EOT");
 <div id="$id-field" class="field$req_class $label_class pkg $class"$indent_css>
-    <div class="field-header">
-        <label id="$id-label" for="$id">$label$req</label>
-    </div>
-    <div class="field-content $content_class">
-        $insides$hint$warning
+    <div class="field-inner">
+        <div class="field-header">
+            <label id="$id-label" for="$id">$label$req</label>
+        </div>
+        <div class="field-content $content_class">
+            $insides$hint$warning
+        </div>
     </div>
 </div>
 EOT
@@ -1796,11 +1798,18 @@ sub _hdlr_archive_type_enabled {
 }
 
 sub sanitize_on {
-    $_[0]->{'sanitize'} = 1 unless exists $_[0]->{'sanitize'};
+    unless ( exists $_[0]->{'sanitize'} ) {
+        # Important to come before other manipulation attributes
+        # like encode_xml
+        unshift @{$_[0]->{'@'} ||= []}, ['sanitize' => 1];
+        $_[0]->{'sanitize'} = 1;
+    }
 }
 
 sub nofollowfy_on {
-    $_[0]->{'nofollowfy'} = 1 unless exists $_[0]->{'nofollowfy'};
+    unless ( exists $_[0]->{'nofollowfy'} ) {
+        $_[0]->{'nofollowfy'} = 1;
+    }
 }
 
 {
@@ -2058,7 +2067,7 @@ sub _hdlr_if_nonempty {
     my $value;
     if (exists $args->{tag}) {
         $args->{tag} =~ s/^MT:?//i;
-        my $handler = $ctx->handler_for($args->{tag});
+        my ($handler) = $ctx->handler_for($args->{tag});
         if (defined($handler)) {
             local $ctx->{__stash}{tag} = $args->{tag};
             $value = $handler->($ctx, { %$args });
@@ -2083,7 +2092,7 @@ sub _hdlr_if_nonzero {
     my $value;
     if (exists $args->{tag}) {
         $args->{tag} =~ s/^MT:?//i;
-        my $handler = $ctx->handler_for($args->{tag});
+        my ($handler) = $ctx->handler_for($args->{tag});
         if (defined($handler)) {
             local $ctx->{__stash}{tag} = $args->{tag};
             $value = $handler->($ctx, { %$args });
@@ -5203,24 +5212,23 @@ sub _hdlr_pings {
         $args{direction} = $args->{sort_order} || 'descend';
         $args{limit} = $limit;
     }
-    my $iter = MT::TBPing->load_iter(\%terms, \%args);
+    my @pings = MT::TBPing->load(\%terms, \%args);
     my $count = 0;
-    my $next = $iter->();
+    my $max = scalar @pings;
     my $vars = $ctx->{__stash}{vars} ||= {};
-    while (my $ping = $next) {
-        $next = $iter->();
+    for my $ping (@pings) {
         $count++;
-        $ctx->stash('ping' => $ping);
+        local $ctx->{__stash}{ping} = $ping;
         local $ctx->{__stash}{blog} = $ping->blog;
         local $ctx->{__stash}{blog_id} = $ping->blog_id;
         local $ctx->{current_timestamp} = $ping->created_on;
         local $vars->{__first__} = $count == 1;
-        local $vars->{__last__} = !$next;
+        local $vars->{__last__} = ($count == ($max));
         local $vars->{__odd__} = ($count % 2) == 1;
         local $vars->{__even__} = ($count % 2) == 0;
         local $vars->{__counter__} = $count;
         my $out = $builder->build($ctx, $tokens, { %$cond,
-            PingsHeader => $count == 1, PingsFooter => !$next });
+            PingsHeader => $count == 1, PingsFooter => ($count == $max) });
         return $ctx->error( $builder->errstr ) unless defined $out;
         $res .= $out;
     }

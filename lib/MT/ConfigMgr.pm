@@ -168,6 +168,7 @@ sub set {
     my($var, $val, $db_flag) = @_;
     $var = lc $var;
     if (my $h = $mgr->{__settings}{$var}{handler}) {
+        $h = MT->handler_to_coderef($h) unless ref $h;
         return $h->($mgr, $val, $db_flag);
     }
     return $mgr->set_internal(@_);

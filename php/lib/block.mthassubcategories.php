@@ -1,23 +1,15 @@
 <?php
 function smarty_block_mthassubcategories($args, $content, &$ctx, &$repeat) {
-    $localvars = array('conditional','else_content');
-
     if (!isset($content)) {
-        $ctx->localize($localvars);
         $class = 'category';
         if (isset($args['class'])){
             $class = $args['class'];
         }
         $has_sub_cats = _has_sub_categories($ctx, $class);
-        $ctx->stash('conditional', $has_sub_cats);
-        $ctx->stash('else_content', null);
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $has_sub_cats);
     } else {
-        if (!$ctx->stash('conditional')) {
-            $content = $ctx->stash('else_content');
-        }
-        $ctx->restore($localvars);
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
-    return $content;
 }
 
 function _has_sub_categories(&$ctx, $class = 'category') {
