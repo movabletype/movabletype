@@ -1,0 +1,28 @@
+[%+ IF theme.utility.pkg.addition %]
+[%- theme.utility.pkg.addition %]:after,
+[% END %]
+[%+ IF theme.utility.pkg.exclusion != '#header' %]#header:after,[% END %]
+[%+ IF theme.utility.pkg.exclusion != '#header-inner' %]#header-inner:after,[% END %]
+[%+ IF theme.utility.pkg.exclusion != '#content' %]#content:after,[% END %]
+[%+ IF theme.utility.pkg.exclusion != '#alpha-inner' %]#alpha-inner:after,[% END %]
+[%+ IF theme.utility.pkg.exclusion != '#beta-inner' %]#beta-inner:after,[% END %]
+[%+ IF theme.utility.pkg.exclusion != '#gamma-inner' %]#gamma-inner:after[% END %][% IF theme.utility.pkg.exclusion != '#footer' %],[% END %]
+[%+ IF theme.utility.pkg.exclusion != '#footer' %]#footer:after[% END %] {
+    content: " ";
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0.1px;
+    font-size: 0.1em;
+    line-height: 0;
+}
+
+[%+ IF theme.utility.holly.addition %]
+[%- theme.utility.holly.addition %],
+[% END %]
+[%+ IF theme.utility.holly.exclusion != '#header-inner' %]#header-inner,[% END %]
+[%+ IF theme.utility.holly.exclusion != '#content-inner' %]#content-inner,[% END %]
+[%+ IF theme.utility.holly.exclusion != '#footer-inner' %]#footer-inner[% END %][% IF theme.utility.holly.exclusion != '.asset-body' %],[% END %]
+[%+ IF theme.utility.holly.exclusion != '.asset-body' %].asset-body[% END %] {
+    height: 1%;
+}

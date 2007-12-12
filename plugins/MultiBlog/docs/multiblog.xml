@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+		"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+
+<article>
+	<artheader>
+		<title>MultiBlog Documentation</title>
+		<author>
+			<firstname>David</firstname>
+			<surname>Raynes</surname>
+			<affiliation>
+				<address><email>rayners@rayners.org</email></address>
+			</affiliation>
+		</author>
+		
+	</artheader>
+
+	<sect1 id="purpose"><title>Purpose</title>
+
+	<para>MultiBlog is a plugin that provides the user with the ability to include templated content from other blogs in their MovableType installation.   It also allows the user to define rebuild triggers as normally posts to one blog do not cause rebuild in another that might be including content from it.  Finally, MultiBlog allows the user to define access controls for the blogs in their system, to prevent one blog from accessing the content of another.</para>
+	</sect1>
+
+	<sect1 id="installation"><title>Installation</title>
+
+	<para>Download the plugin archive and unpack it into the main directory of your Movable Type installation.</para>
+
+		<sect2 id="installation_1_x"><title>Installation for 1.x (not 1.99.x)</title>
+
+		<para>Unpack the archive and places the following files in the specified locations.</para>
+
+		<variablelist>
+		<varlistentry><term><filename>multiblog.pl</filename></term>
+			<listitem><para><filename>plugins/</filename></para></listitem>
+		</varlistentry>
+		<varlistentry><term><filename>multiblog-config.cgi</filename></term>
+			<listitem><para>the main MT directory, and have its permissions set so that it may be execute (usually 'chmod 755')</para></listitem>
+		</varlistentry>
+		<varlistentry>
+			<term><filename>MultiBlog.pm</filename></term>
+			<term><filename>MultiBlogApp.pm</filename></term>
+			<term><filename>MultiBlogPlugin.pm</filename></term>
+			<listitem><para><filename>extlib/rayners/</filename></para></listitem>
+		</varlistentry>
+		</variablelist>
+
+		</sect2>
+
+		<sect2 id="installation_2_x"><title>Installation for 2.x and 1.99.x</title>
+
+		<para>Simply unpack the archive into the main MT directory.  The files will be expanded into the appropriate directories.</para>
+		<para>If upgrading from a 1.x version of MultiBlog, please remove all files from the previous version of the plugin before unpacking the archive.</para>
+
+		</sect2>
+
+	</sect1>
+
+	<sect1 id="configuration"><title>Configuration and Setup</title>
+
+	<para>Section on MultiBlog setup and configuration.</para>
+	
+		<sect2 id="config_access"><title>Access Controls</title>
+		</sect2>
+
+		<sect2 id="config_rebuilds"><title>Rebuild Triggers</title>
+		</sect2>
+
+	</sect1>
+
+	<sect1 id="template_usage"><title>Template Usage</title>
+
+<!--	<variablelist>
+		<title>List of template tags</title>
+		<varlistentry><term>MTMultiBlog</term><listitem>A tag and such</listitem></varlistentry>
+	</variablelist>
+
+	<segmentedlist><title>Template Tags</title>
+	<?dbhtml list-presentation="table"?>
+	<?dbfo list-presentation="table"?>
+	<segtitle>Tag</segtitle>
+	<segtitle>Description</segtitle>
+	<seglistitem><seg><link linkend="mtmultiblog">MTMultiBlog</link></seg><seg>A tag and such</seg></seglistitem>
+	<seglistitem><seg>MTMultiBlogEntries</seg><seg>Another tag that does things with entries</seg></seglistitem>
+	<seglistitem><seg>MTMUltiBlogComments</seg><seg>More tags</seg></seglistitem>
+
+	</segmentedlist>-->
+
+		<sect2 id="mtmultiblog"><title>MTMultiBlog</title>
+
+		<para>MTMultiBlog is a MTBlogs replacement that allows the user to specify which blog or blogs they wish to access.</para>
+
+		<itemizedlist>
+			<listitem><para>include_blogs: a comma seperated list of blog ids to include (e.g., "1,3,4")</para></listitem>
+			<listitem><para>exclude_blogs: a comma separated list of blog ids to exclude (e.g., "2,5")</para></listitem>
+		</itemizedlist>
+
+		</sect2>
+
+		<sect2 id="mtmultiblogiflocalblog"><title>MTMultiBlogIfLocalBlog</title>
+
+		</sect2>
+
+		<sect2 id="mtmultiblogifnotlocalblog"><title>MTMultiBlogIfNotLocalBlog</title>
+
+		</sect2>
+
+		<sect2 id="mtmultiblogentries"><title>MTMultiBlogEntries</title>
+		</sect2>
+
+		<sect2 id="mtmultiblogcomments"><title>MTMultiBlogComments</title>
+		</sect2>
+
+		
+
+	</sect1>
+
+	<sect1 id="examples"><title>Example MultiBlog Usage</title>
+
+		<sect2 id="example_side_blog"><title>Including Content from a Side Blog</title>
+
+		<para>First, make sure that the current blog is allowed to access content in the included blog (which is the default).  Once that has been established, the following template code can be included in the "Main Index" template, though it could be any index template that is rebuilt when indexes are rebuilt.</para>
+
+		<code>&lt;h3&gt;Side Blog&lt;/h3&gt;
+
+&lt;MTMultiBlog include_blogs="7"&gt;
+
+&lt;MTEntries lastn="10"&gt;
+&lt;div class="entry"&gt;
+&lt;h4&gt;&lt;$MTEntryTitle$&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;$MTEntryBody$&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/MTEntries&gt;
+
+&lt;/MTMultiBlog&gt;</code>
+
+		<para>If you do not know the blog id for your side blog, simply navigate to it in the Movable Type interface and look at the URL in the browser.</para>
+
+		</sect2>
+
+		<sect2 id="example_combo_blog"><title>Combining Multiple Blogs Into One</title>
+		</sect2>
+
+	</sect1>
+</article>

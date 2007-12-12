@@ -1,0 +1,20 @@
+#dialog-container {
+    position: absolute;
+}
+
+#selector-nav #create-entry a {
+    display: inline;
+}
+
+#blog-nav li li a,
+#selector-nav li li a,
+#utility-nav li li a,
+#blog-nav li li span,
+#selector-nav li li span,
+#utility-nav li li span {
+    width: 100%;
+}
+
+#new_entry_prefs {
+    height: 1%;
+}

@@ -1,0 +1,21 @@
+<MTSetVar name="body_class" value="mt-main-index">
+<MTSetVar name="main_template" value="1">
+<MTSetVar name="main_index" value="1">
+<MTSetVar name="sidebar" value="1">
+<MTSetVar name="module_recent_entries" value="1">
+<MTSetVar name="module_category_archives" value="1">
+<MTSetVar name="module_author_archives" value="1">
+<MTSetVar name="module_monthly_archives" value="1">
+
+<$MTInclude module="<__trans phrase="Header">"$>
+
+<MTEntries>
+    <$MTEntryTrackbackData$>
+    <$MTInclude module="<__trans phrase="Entry Summary">"$>
+</MTEntries>
+
+<div class="content-nav">
+    <a href="<$MTLink template="archive_index"$>"><__trans phrase="Archives"></a>
+</div>
+
+<$MTInclude module="<__trans phrase="Footer">"$>

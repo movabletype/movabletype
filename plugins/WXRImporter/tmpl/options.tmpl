@@ -1,0 +1,21 @@
+<mt:if name="missing_paths">
+<div class="error-message"><__trans phrase="Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first." params="<mt:var name="script_uri">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">"></div>
+</mt:if>
+
+    <mtapp:setting
+        id="wp_path"
+        label="<__trans phrase="Upload path for this WordPress blog">">
+<input name="wp_path" id="wp_path"  size="50" value="wp-content/uploads" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="mt_site_path"
+        label="<__trans phrase="Replace with">">
+<select name="mt_site_path" onchange="setExtraPath(this)">
+<option value="1">&#60;<MT_TRANS phrase="Site Root">&#62;</option>
+<mt:if name="enable_archive_paths">
+<option value="0">&#60;<MT_TRANS phrase="Archive Root">&#62;</option>
+</mt:if>
+</select>
+/ <input name="mt_extra_path" id="mt_extra_path" />
+    </mtapp:setting>

@@ -1,0 +1,42 @@
+[%# rounded corners on beta and gamma columns like Unity and Cycling. This is an include in the "block" template and should not be called separately %]
+
+.layout-wt #beta-decor b {
+    z-index: 3;
+    display: block;
+    background: [% PROCESS bg_image file='corner-left' %] transparent no-repeat;
+    width: 2px;
+    height: 2px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.layout-twt #beta-decor b,
+.layout-tw #beta-decor b {
+    z-index: 3;
+    display: block;
+    background: [% PROCESS bg_image file='corner-right' %] no-repeat;
+    width: 2px;
+    height: 2px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.layout-wtt #gamma-decor b,
+.layout-twt #gamma-decor b {
+    z-index: 3;
+    display: block;
+    background: [% PROCESS bg_image file='corner-left' %] transparent no-repeat;
+    width: 2px;
+    height: 2px;
+    position: absolute;
+    top: 0;
+    left: 1px;
+}
+
+.layout-wm .recent-comments-stream-widget .widget-header {
+    background-image: [% PROCESS bg_image file='corner-left' %];
+    background-position: 0 0;
+    background-repeat: no-repeat;
+}

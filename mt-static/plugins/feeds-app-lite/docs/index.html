@@ -1,0 +1,174 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="en" />
+	
+	<title>Movable Type Publishing Platform</title>
+	
+	<style type="text/css">
+		<!--
+		
+			body {
+				font-family : Trebuchet MS, Tahoma, Verdana, Arial, Helvetica, Sans Serif;
+				font-size : smaller;
+				padding-top : 0px;
+				padding-left : 0px;
+				margin : 0px;
+				padding-bottom : 40px;
+				width : 80%;
+				border-right : 1px dotted #8faebe;
+			}
+			
+			h1 {
+				background : #8faebe;
+				font-size: large;
+				color : white;
+				padding : 10px;
+				margin-top : 0px;
+				margin-bottom : 20px;
+				text-align : center;
+			}
+			
+			h2 {
+				color: #fff;
+				font-size: small;
+				background : #8faebe;
+				padding : 5px 10px 5px 10px;
+				margin-top : 30px;
+				margin-left : 40px;
+				margin-right : 40px;
+			}
+			
+			h3 {
+				color: #333;
+				font-size: small;
+				margin-left : 40px;
+				margin-bottom : 0px;
+				padding-left : 20px;
+			}
+	
+			p {
+				padding-left : 20px;
+				margin-left : 40px;
+				margin-right : 60px;
+				color : #666;
+			}
+			
+			ul {
+				padding-left : 40px;
+				margin-left : 40px;
+			}
+			
+			.info {
+				margin-left : 60px;
+				margin-right : 60px;
+				padding : 20px;
+				border : 1px solid #666;
+				background : #eaf2ff;
+				color : black;
+			}
+		
+			.login {
+				width: 250px;
+				margin: 30px auto 10px auto;
+				border-width: 2px;
+				border-style: solid;
+				border-color: #EEE #D5D5D5 #D5D5D5 #EEE;
+				padding: 10px 0;
+				color: #000;
+				font-size: large;
+				text-align: center;
+				background-color: #E5E5E5;
+			}
+		
+		//-->
+	</style>
+</head>
+
+<body>
+
+<h1>Feeds.App Lite</h1>
+
+<h2>ABOUT</h2>
+
+<p>Feeds.App Lite makes it simple to add RSS and/or Atom feed content from other sites to your published blog.</p>
+    
+<p>The plugin currently requires static publishing of the template which includes the Feeds.App Lite tags or feed widget.</p>
+
+<p>Feeds.App Lite was created by <a href="http://www.appnel.com/">Timothy Appnel</a> for distribution with Movable Type and Movable Type Enterprise and provide a basic subset of the functionality found in <a href="http://code.appnel.com/feeds-app">Feeds.App</a>, a commercial plugin for more advanced uses of syndicated content.</p>
+
+<h2>HOW TO USE</h2>
+
+<p>To create a feed using Feeds.App Lite, navigate to the template listing or main menu of the blog into which you wish to include the feeds.  Click on the "Create a feed widget" link found in the Plugin Actions section of either page to launch the Feeds.App Lite Widget Creator.</p>
+    
+<p style="text-align:center;"><img src="plugin_actions.png" /></p>
+
+<p>On the resulting page, enter the full URL to the feed.  In many cases, you may be able to enter just the URL of a blog or a page containing a link to the feed.  In this case, Feeds.App Lite will auto-discover the available feeds.</p>
+
+<p style="text-align:center;"><img src="feed_url.png" /></p>
+
+<p>The available feed or feeds will be displayed in a list on the resulting page.  Select the one you would like to use.</p>
+
+<p style="text-align:center;"><img src="feed_selection.png" /></p>
+
+<p>On the next page, you have the opportunity to give the feed a custom name for display on your blog and to choose the maximum number of feed items that should be displayed from it.</p>
+
+<p style="text-align:center;"><img src="feed_customize.png" /></p>
+
+<p>Upon clicking "Save", the feed widget will be created.  Feeds widgets are WidgetManager-compatible template modules that can be included into your template either via WidgetManager or using the <code>MTInclude</code> tag.</p>
+
+<p style="text-align:center;"><img src="feed_final.png" /></p>
+
+<p>When the feed widget is included into a statically-published template and that template is rebuilt, Feeds.App Lite automatically retrieves the latest version of a feed for inclusion onto the published page.  The feed content is cached locally and only updated when the template is rebuilt <em>and</em> the feed content has changed.</p>
+    
+<p><strong>WARNING:</strong> The use of caching and "conditional requests" greatly reduces the overhead on publishing performance.  However, it should be noted that having a large number of feeds will adversely impact your publishing times.</p>
+
+<h2>TAGS</h2>
+
+<p>If you prefer to create feeds without using the Feeds.App Lite Widget Creator, you can do so using the template tags provided by the plugin.  Although we briefly describe each tag below, examples of usage can be seen by creating a single feed widget.</p>
+
+<p><em><strong>NOTE:</strong> Items shown in square brackets ([ ]) are optional attributes.</em></p>
+
+<ul>
+<li>MTFeed uri=""
+
+<p>A container tag representing a syndication (RSS or Atom) feed. The
+uri argument is required and should be the URI of the feed. Supported protocols are http://, https://
+and file://.</p></li>
+
+<li>MTFeedTitle
+
+<p>The title of the remote feed.  This tag is not required and can be omitted if you wish to use a custom title in the display of the feed on your blog.</p></li>
+
+<li>MTFeedLink
+
+<p>The URL of the syndication feed. When multiple links exist Feeds.App Lite will selects the first link with a relationship of "alternate" (rel="alternate) or where no relationship has been defined.</p></li>
+
+<li>MTFeedEntries [offset="" lastn=""]
+
+<p>A container tag that will loop through the entries of the feed in
+context. Like <code>MTEntries</code> this tag supports optional arguments of
+<code>limit</code> and <code>offset</code> to control the number entries and starting
+point to be inserted. Entries are returned in the order that they
+appear in the feed.</p></li>
+
+<li>MTFeedEntryTitle
+
+<p>The title of the feed entry in context within the MTFeedEntries loop.</p></li>
+
+<li>MTFeedEntryLink
+
+<p>The URL of the feed entry in context within the MTFeedEntries loop.</p></li>
+
+<li>MTFeedInclude uri="" [lastn=""]
+
+<p>This tag does all of the work of previous tags and is a one-line feed widget.  The tag will output a generic unordered list of title and
+links from the feed entries. As with <code>MTFeed</code>, the <code>uri</code> argument is required. The <code>lastn</code> argument is optional and controls the maximum number of items to display.</p></li>
+</ul>
+
+</body>
+
+</html>

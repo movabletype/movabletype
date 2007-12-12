@@ -1,0 +1,101 @@
+/* $Id: base.css 44986 2007-01-11 23:59:03Z ydnar $ */
+
+/* base.css - resets default properties */
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* this will make flyouts position correctly from the bottom in internet explorer */
+/* needs some heavy visual qa, so disabling for now
+body {
+    position: relative;
+}
+*/
+
+h1, h2, h3, h4, h5, h6, p, blockquote, pre, 
+ol, ul, li, dl, dt, dd,
+table, td, form, fieldset,
+abbr, code {
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font-size: 1em;
+    font-weight: normal;
+}
+
+a { text-decoration: none; }
+
+ol, ul { list-style: none; }
+
+a img, :link img, :visited img { border: 0; }
+
+.clr,
+.clr-l,
+.clr-r {
+    overflow: hidden;
+    clear: both;
+    width: 1px;
+    height: 1px;
+    margin: 0 -1px -1px 0;
+    border: 0;
+    padding: 0;
+    font-size: 0;
+    line-height: 0;
+}
+
+.clr-l {
+    clear: left;
+}
+
+.clr-r {
+    clear: right;
+}
+
+/* .pkg class wraps enclosing block element around inner floated elements */
+.pkg:after {
+    content: " ";
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0.1px;
+    font-size: 0.1em;
+    line-height: 0;
+}
+.pkg { display: inline-block; }
+/* no ie mac \*/
+* html .pkg { height: 1%; }
+.pkg[class] { height: auto; }
+.pkg { display: block; }
+/* */
+
+.hidden { display: none !important; }
+
+.invisible {
+    display: block !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    font-size: 0.1px !important;
+    line-height: 0 !important;
+}
+
+.overflow-auto { overflow: auto; }
+
+.overflow-hidden { overflow: hidden; }
+
+.right { float: right; }
+
+.left {
+    float: left;
+    display: inline; /* ie hack */
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}

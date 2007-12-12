@@ -1,0 +1,107 @@
+<mt:setvarblock name="page_title"><__trans phrase="Create an account"></mt:setvarblock>
+<mt:include name="../cms/include/chromeless_header.tmpl">
+
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+
+<mt:setvarblock name="common_fields" id="common_fields">
+    <mtapp:setting
+        id="nickname"
+        label="<__trans phrase="Display Name">"
+        required="1"
+        hint="<__trans phrase="The name appears on your comment.">">
+        <input name="nickname" id="nickname" value="<mt:var name="nickname" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="email"
+        label="<__trans phrase="Email Address">"
+        required="1"
+        hint="<__trans phrase="Your email address.">">
+        <input name="email" id="email" value="<mt:var name="email" escape="html">" />
+    </mtapp:setting>
+</mt:setvarblock>
+
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<mt:if name="auth_mode_mt">
+<input type="hidden" name="__mode" value="do_signup" />
+
+    <mtapp:setting
+        id="username"
+        label="<__trans phrase="Username">"
+        required="1"
+        hint="<__trans phrase="Your login name.">">
+        <input name="username" id="username" value="<mt:var name="username" escape="html">" />
+    </mtapp:setting>
+
+    <$mt:var name="common_fields"$>
+
+    <mtapp:setting
+        id="password"
+        label="<__trans phrase="Initial Password">"
+        required="1"
+        hint="<__trans phrase="Select a password for yourself.">">
+        <input type="password" name="password" id="password" value="" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="pass_verify"
+        label="<__trans phrase="Password Confirm">"
+        required="1"
+        hint="<__trans phrase="Repeat the password for confirmation.">">
+        <input type="password" name="pass_verify" id="pass_verify" value="" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="hint"
+        label="<__trans phrase="Password recovery word/phrase">"
+        required="1"
+        hint="<__trans phrase="This word or phrase will be required to recover the password if you forget it.">">
+        <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="url"
+        label="<__trans phrase="Website URL">"
+        hint="<__trans phrase="The URL of your website. (Optional)">">
+        <input name="url" id="url" value="<mt:var name="url" escape="html">" />
+    </mtapp:setting>
+
+<mt:if name="captcha_fields"><div class="setting">
+<mt:var name="captcha_fields">
+</div></mt:if>
+
+<mt:else>
+<input type="hidden" name="__mode" value="do_signup" />
+<input type="hidden" name="external_auth" value="1" />
+    <mtapp:setting
+        id="external_username"
+        label="<__trans phrase="Username">"
+        required="1"
+        hint="<__trans phrase="Your login name.">">
+        <input name="username" id="username" value="<mt:var name="username" escape="html">" />
+    </mtapp:setting>
+
+    <$mt:var name="common_fields"$>
+</mt:if>
+
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions">
+            <button
+                type="submit"
+                class="primary-button"
+                ><__trans phrase="Register"></button>
+        </div>
+    </div>
+
+</form>
+
+<mt:include name="../cms/include/chromeless_footer.tmpl">

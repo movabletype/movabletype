@@ -1,0 +1,18 @@
+<MTIfArchiveTypeEnabled archive_type="Category"><div class="widget-categories widget">
+   <h3 class="widget-header"><MT_TRANS phrase="Categories"></h3>
+   <div class="widget-content">
+   <MTTopLevelCategories>
+   <MTSubCatIsFirst><ul class="widget-list"></MTSubCatIsFirst>
+      <MTIfNonZero tag="MTCategoryCount">
+      <li class="widget-list-item"><a href="<$MTCategoryArchiveLink$>" title="<$MTCategoryDescription$>"><MTCategoryLabel></a>
+      <MTElse>
+      <li class="widget-list-item"><MTCategoryLabel>
+      </MTElse>
+      </MTIfNonZero>
+         <MTSubCatsRecurse>
+      </li>
+   <MTSubCatIsLast></ul></MTSubCatIsLast>
+   </MTTopLevelCategories>
+   </div>
+</div>
+</MTIfArchiveTypeEnabled>

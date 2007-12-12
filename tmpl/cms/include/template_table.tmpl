@@ -1,0 +1,49 @@
+<mt:setvarblock name="action_buttons">
+<mt:unless name="template_type" eq="system">
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
+        accesskey="x"
+        title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+        ><__trans phrase="Delete"></a>
+</mt:unless>
+</mt:setvarblock>
+<mtapp:listing hide_pager="1" class="show-all">
+    <mt:if __first__>
+        <thead>
+            <tr>
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                <th class="template-name"><__trans phrase="Template Name"></th>
+                <th class="output-file"><__trans phrase="Output File"></th>
+        <mt:unless name="filter">
+                <th class="template-type"><__trans phrase="Type"></th>
+        </mt:unless>
+        <mt:unless name="blog_id">
+                <th class="blog"><__trans phrase="Blog"></th>
+        </mt:unless>
+                <th class="linked-template si"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
+                <th class="dynamic-template si"><!-- <span><__trans phrase="Dynamic"></span> --><img src="<mt:var name="static_uri">images/status_icons/dynamic.gif" alt="<__trans phrase="Dynamic Template">" title="<__trans phrase="Dynamic Template">" width="11" height="9" /></th>
+                <th class="rebuild-template si"><!-- <span><__trans phrase="Published w/Indexes"></span> --><img src="<mt:var name="static_uri">images/status_icons/rebuild.gif" alt="<__trans phrase="Published Template w/Indexes">" title="<__trans phrase="Published Template w/Indexes">" width="9" height="9" /></th>
+                <th class="view-template si"><span><__trans phrase="View"></span></th>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type"$>">
+                <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
+                <td class="template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
+                <td class="output-file"><mt:if name="outfile"><mt:var name="outfile" escape="html"><mt:else><span><__trans phrase="-"></span></mt:if></td>
+        <mt:unless name="filter">
+                <td class="template-type"><$mt:var name="type"$></td>
+        </mt:unless>
+        <mt:unless name="blog_id">
+                <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
+        </mt:unless>
+                <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
+                <td class="dynamic-template si status-<mt:if name="build_dynamic">dynamic<mt:else>static</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="build_dynamic"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
+                <td class="rebuild-template si status-<mt:if name="rebuild_me">rebuild<mt:else>norebuild</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="rebuild_me"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
+                <td class="view-template si status-view"><mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a><mt:else><__trans phrase="-"></mt:if></td>
+            </tr>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+</mtapp:listing>

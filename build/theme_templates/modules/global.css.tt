@@ -1,0 +1,24 @@
+body {
+    color: [% theme.default.color || '#333' %];
+[% IF theme.default.font.family %]
+[% font_family = theme.default.font.family %]
+    font-family: [% FONT_FAMILIES.$font_family || font_family %];
+[% END %]
+[% theme.body.background.image = PROCESS bg_image file='body' %]
+[% IF theme.body.background.image %]
+    background: [% theme.body.background.color %] [% theme.body.background.image %] [% theme.body.background.repeat || "repeat" %] [% theme.body.background.attachment %] [% theme.body.background.position || "top center" %];
+[% ELSE %]
+    background-color: [% theme.body.background.color %];
+[% END %]
+}
+
+a {
+    color: [% theme.default.link.color %];
+[% IF theme.default.link.weight %]
+    font-weight: [% theme.default.link.weight %];
+[% END %]
+}
+
+a:hover {
+    text-decoration: none;
+}

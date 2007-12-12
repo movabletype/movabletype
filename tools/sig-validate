@@ -1,0 +1,36 @@
+#!/usr/bin/perl -w
+
+use lib 'lib';
+
+use MT::App::Comments;
+
+use MT;
+
+$mt = new MT;
+
+sub usage {
+    print <<HERE;
+Usage: sig-validate [email::name::nick::ts::token] [r::s]
+[] brackets are optional
+r and s are the fields of the signature
+HERE
+    exit(1);
+}
+
+$ARGV[0] or usage();
+$ARGV[1] or usage();
+
+$ARGV[0] =~ s/^[(.*)]$/$1/;
+$ARGV[1] =~ s/^[(.*)]$/$1/;
+
+my ($email, $name, $nick, $ts, $token) = split '::', $ARGV[0];
+
+my $validation = MT::App::Comments::_validate_signature($mt, 
+                                                        $ARGV[1],
+                                                        email => $email,
+                                                        name => $name,
+                                                        nick => $nick,
+                                                        ts => $ts,
+                                                        token => $token);
+print "The signature with timestamp together are: ",
+    $validation ? "VALID" : "invalid", "\n";

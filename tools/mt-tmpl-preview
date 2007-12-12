@@ -1,0 +1,64 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+# establish blog id for cases where we process
+# a template from a file...
+my $blog_id = $ENV{MT_BLOG};
+if (!$blog_id) {
+    die "Please specify a MT_BLOG shell parameter.";
+}
+
+use lib 'lib';
+use MT::Bootstrap;
+use MT;
+use MT::Template::Context;
+use MT::Builder;
+use MT::Util;
+use MT::Template;
+use MT::Entry;
+
+$SIG{__WARN__} = sub {};
+
+my $mt = MT->new();
+
+my $template = '';
+while (<STDIN>) {
+    $template .= $_;
+}
+
+if ($template =~ m/<MT_TRANS/) {
+    $template = MT->translate_templatized($template);
+}
+
+require MT::Blog;
+my $blog = MT::Blog->load($blog_id);
+
+if (!$blog) {
+    print STDERR "failed to load blog $blog_id\n";
+    exit 1;
+}
+
+my $ctx = MT::Template::Context->new;
+my $builder = MT::Builder->new;
+my $tokens = $builder->compile($ctx, $template);
+$ctx->{archive_type} = 'Individual';
+$ctx->stash('blog',$blog);
+$ctx->stash('blog_id',$blog->id);
+my @lt = localtime;
+my $ts = sprintf("%04d%02d%02d%02d%02d%02d", $lt[5]+1900,$lt[4]+1,$lt[3],$lt[2],$lt[1],$lt[0]);
+$ctx->{current_timestamp} = $ts;
+
+my $out = $builder->build($ctx, $tokens, {});
+
+warn "Builder error: ".$builder->errstr if $builder->errstr;
+warn "Context error: ".$ctx->errstr if $ctx->errstr;
+
+if ($out =~ m!</head>!) {
+    my $site_url = $blog->site_url;
+    if ($out !~ m/<base /) {
+        $out =~ s!</head>!<base href="$site_url" /></head>!;
+    }
+}
+
+print $out if defined $out;

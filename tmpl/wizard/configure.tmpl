@@ -1,0 +1,284 @@
+<mt:setvarblock name="page_title"><__trans phrase="Database Configuration"></mt:setvarblock>
+
+<mt:include name="../cms/include/chromeless_header.tmpl">
+
+<script type="text/javascript">
+<!--
+var needValidate = true;
+
+function validate (f) {
+    if (needValidate) {
+        var db = f.dbtype.options[f.dbtype.selectedIndex].value;
+        if ((db == "sqlite") || (db == "sqlite2")) {
+            if (!f.dbpath.value) {
+                alert('<__trans phrase="You must set your Database Path." escape="js">');
+                f.dbpath.focus();
+                return false;
+            }
+        } else {    
+            if (!f.dbname.value) {
+                alert('<__trans phrase="You must set your Database Name." escape="js">');
+                f.dbname.focus();
+                return false;
+            } else if ((!f.dbuser.value) && (db != "mssqlserver") && (db != "umssqlserver")) {
+                alert('<__trans phrase="You must set your Username." escape="js">');
+                f.dbuser.focus();
+                return false;
+            } else if ((!f.dbserver.value) && (db != "oracle")) {
+                alert('<__trans phrase="You must set your Database Server." escape="js">');
+                f.dbserver.focus();
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+function go(mode) {
+    var f = document.forms[0];
+    f['__mode'].value = mode;
+}
+function db_select(sel) {
+    var db = sel.options[sel.selectedIndex].value;
+    if ((db == "mysql") || (db == "postgres") || (db == "oracle") || (db == "mssqlserver") || (db == "umssqlserver")) {
+        showByID("login");
+        hideByID("goback");
+        showByID("server");
+        hideByID("path");
+        showByID("submit");
+        showByID("params");
+        showByID("use_setnames");
+        if (db == "mssqlserver") {
+            showByID("charset");
+        } else {
+            hideByID("charset");
+        }
+        if (db == "oracle") {
+            hideByID("dbserver-field");
+        } else {
+        }
+        document.forms[0].dbname.focus();
+    } else if ((db == "sqlite") || (db == "sqlite2")) {
+        hideByID("login"); hideByID("server"); hideByID("goback"); hideByID("use_setnames");
+        showByID("path");
+        showByID("submit");
+        showByID("params");
+        document.forms[0].dbpath.focus();
+    } else {
+        showByID("goback");
+        hideByID("submit");
+        hideByID("params");
+    }
+    return true;
+}
+
+function toggleMore() {
+    var more = getByID('error_more');
+    if (more) {
+        if (more.style.display == 'none')
+            more.style.display = 'block';
+        else
+            more.style.display = 'none';
+    }
+}
+
+function reTest() {
+  needValidate = false; 
+  go('retry'); 
+  document.forms[0].submit();
+}
+
+<mt:unless name="success">
+<mt:if one_db>
+window.onload = function() {
+    document.forms[0].dbtype.selectedIndex = 0;
+    db_select(document.forms[0].dbtype);
+}
+</mt:if>
+</mt:unless>
+
+// -->
+</script>
+
+<form method="post" onsubmit="return validate(this)">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="step" value="configure" />
+<input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri">" />
+<input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
+
+<mt:if name="connect_error">
+    <mtapp:statusmsg
+        id="connect_error"
+        class="error">
+        <mt:var name="error"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()">More</a>.</mt:if>
+    </mtapp:statusmsg>
+    <div id="error_more" style="display:none"><mt:var name="error_more"></div>
+<mt:else>
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:if>
+
+<mt:if name="success">
+<div>
+<p class="intro"><span class="ready"><__trans phrase="Your database configuration is complete."></span> <__trans phrase="You may proceed to the next step."></p>
+</div>
+<div id="continue" class="pkg">
+<div class="left">
+<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
+</div>
+<div class="right">
+<input name="continue" type="submit" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
+</div>
+</div>
+<br />
+<mt:else>
+<p class="intro"><__trans phrase="Please enter the parameters necessary for connecting to your database."></p>
+</mt:if>
+
+<mt:if name="success">
+    <p id="show_settings"><a href="javascript:void(0)" onclick="show('db_settings'); hide('show_settings'); return false;"><__trans phrase="Show Current Settings"></a></p>
+</mt:if>
+
+<fieldset id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
+
+    <mtapp:setting
+        id="dbtype"
+        label="<__trans phrase="Database Type">">
+<select id="dbtype" name="dbtype" onchange="db_select(this); hide('db_hint');">
+<mt:unless one_db>
+<option value=""><__trans phrase="Select One..."></option>
+</mt:unless>
+<mt:loop name="db_loop">
+<option value="<mt:var name="id">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
+</mt:loop>
+</select>
+    </mtapp:setting>
+
+<mt:unless name="success">
+<p id="db_hint" class="hint"><__trans phrase="If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>." params="http://www.sixapart.com/movabletype/kb/installation/database_option.html%%reTest();"></p>
+</mt:unless>
+
+<div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+
+<!-- database file path -->
+
+<div id="path"<mt:unless name="path_required"> style="display: none"</mt:unless>>
+
+    <mtapp:setting
+        id="dbpath"
+        label="<__trans phrase="Database Path">">
+<input type="text" id="dbpath" name="dbpath" value="<mt:if name="dbpath"><mt:var name="dbpath" escape="html"><mt:else>./db/mt.db</mt:if>" /><br />
+<__trans phrase="The physical file path for your SQLite database. "><mt:unless name="dbpath"><__trans phrase="A default location of './db/mt.db' will store the database file underneath your Movable Type directory."></p></mt:unless>
+    </mtapp:setting>
+
+</div>
+
+<!-- server configuration parameters -->
+
+<div id="server"<mt:if name="path_required"> style="display: none"</mt:if>>
+
+    <mtapp:setting
+        id="dbserver"
+        label="<__trans phrase="Database Server">"
+        hint="<__trans phrase="This is usually 'localhost'.">"
+        show_hint="1">
+<input type="text" name="dbserver" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="dbname"
+        label="<__trans phrase="Database Name">"
+        hint="<__trans phrase="The name of your SQL database (this database must already exist).">">
+<input type="text" id="dbname" name="dbname" value="<mt:var name="dbname" escape="html">" /><br />
+    </mtapp:setting>
+
+
+<!-- database login parameters -->
+
+<div id="login"<mt:unless name="login_required"> style="display: none"</mt:unless>>
+
+    <mtapp:setting
+        id="dbuser"
+        label="<__trans phrase="Username">"
+        hint="<__trans phrase="The username to login to your SQL database.">">
+    <input type="text" name="dbuser" value="<mt:var name="dbuser" escape="html">" /><br />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="dbpass"
+        label="<__trans phrase="Password">"
+        hint="<__trans phrase="The password to login to your SQL database.">">
+    <input type="password" name="dbpass" value="<mt:var name="dbpass" escape="html">" /><br />
+    </mtapp:setting>
+
+</div>
+
+    <p id="more"><a href="javascript:void(0)" onclick="showByID('db_port_socket'); hideByID('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
+    <div id="db_port_socket" style="display: none;">
+    <mtapp:setting
+        id="dbport"
+        label="<__trans phrase="Database Port">"
+        hint="<__trans phrase="This can usually be left blank.">">
+    <input type="text" name="dbport" value="<mt:var name="dbport" escape="html">" /><br />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="dbsocket"
+        label="<__trans phrase="Database Socket">"
+        hint="<__trans phrase="This can usually be left blank.">">
+    <input type="text" name="dbsocket" value="<mt:var name="dbsocket" escape="html">" /><br />
+    </mtapp:setting>
+    </div>
+
+</div>
+
+<div id="charset" <mt:unless name="publish_charset">style="display: none"</mt:unless>>
+
+    <mtapp:setting
+        id="publish_charset"
+        label="<__trans phrase="Publish Charset">"
+        hint="<__trans phrase="MS SQL Server driver must use either Shift_JIS or ISO-8859-1.  MS SQL Server driver does not support UTF-8 or any other character set.">">
+        <input type="text" name="publish_charset" value="<mt:var name="publish_charset" escape="html">" />
+    </mtapp:setting>
+
+</div>
+</div>
+
+
+<mt:unless name="success">
+<div class="left">
+<div id="goback" <mt:if name="dbtype">style="display: none"</mt:if>>
+<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
+</div>
+</div>
+
+<div id="submit" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+<div class="left">
+<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false;this.form.reset(); go('previous_step');" />
+</div>
+<div class="right">
+<input name="test" type="submit" value="<__trans phrase="Test Connection">" onclick="go('test');" />
+</div>
+</div>
+</mt:unless>
+
+<mt:if name="success">
+<div id="continue">
+<div class="left">
+<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
+</div>
+<div class="right">
+<input name="test" type="submit" value="<__trans phrase="Test Connection">" onclick="go('test');" />
+<input name="continue" type="submit" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
+</div>
+</div>
+</mt:if>
+
+</fieldset>
+</form>
+<mt:include name="../cms/include/chromeless_footer.tmpl">
