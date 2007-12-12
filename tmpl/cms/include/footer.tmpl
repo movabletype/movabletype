@@ -32,7 +32,7 @@
 </mt:if>
         <mt:include name="include/copyright.tmpl">
         <div id="version">
-            <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version">"></strong>
+            <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
             <mt:if name="packs_installed">
             <__trans phrase="with">:
             <mt:loop name="packs_installed" glue=", "><a href="<mt:var name="portal_url">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>

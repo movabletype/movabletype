@@ -412,7 +412,7 @@
 
 <mt:setvarblock name="js_include" append="1">
     <!--// this MUST loaded after mt.js // -->
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version" escape="url"$>"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:setvarblock>
 
 <mt:if name="rich_editor"><mt:var name="rich_editor"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
