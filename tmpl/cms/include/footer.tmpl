@@ -5,11 +5,13 @@
         </div></div> <!-- /related-content -->
 </mt:if>
     </div></div><!-- /content -->
-    
+
+    <mt:if name="mt_beta">
     <div id="msg-beta">
-        <p id="msg-beta-inner" class="inner"><__trans phrase="This is Beta software and is not intended for production use. The license to use this software expires on January 31, 2008. <a href="[_1]" target="_blank">View license</a>" params="http://www.movabletype.org/license_beta.html"></p>
+        <p id="msg-beta-inner" class="inner"><__trans phrase="Hey, this is a Beta version of MT: Don't use it in production! And you'll want to upgrade to the release version by January 31, 2008. (<a href="[_1]" target="_blank">License details</a>)" params="http://www.movabletype.org/license_beta.html"></p>
     </div>
-    
+    </mt:if>
+
     <div id="footer"><div id="footer-inner" class="inner">
 <mt:if name="author_name">
         <ul id="footer-nav" class="inline-nav">

@@ -4445,7 +4445,7 @@ body.dialog {
     background-position: -22px 0;
 }
 
-/* MT3 Styles to depreciate ---------------------------------------------------------------------------------- */
+/* MT3 Styles to deprecate ----------------------------------------------------------------------------------- */
 
 .setting-advanced {
     display: none;
@@ -4453,21 +4453,21 @@ body.dialog {
 
 /* Beta icon and message ------------------------------------------------------------------------------------- */
 
-#brand {
+.mt-beta #brand {
     padding-right: 45px;
     background: transparent url(../images/beta_icons/beta_icon.png) right center no-repeat;
 }
 
-.system #brand {
+.mt-beta .system #brand {
     background-image: url(../images/beta_icons/beta_icon_system.png);
 }
 
-#msg-beta {
+.mt-beta #msg-beta {
     border-top: 1px solid #CDDEE7;
     background-color: #ff9;
 }
 
-#msg-beta-inner {
+.mt-beta #msg-beta-inner {
     width: 875px;
     padding: 0.8em 0 0.8em 45px;
     margin: 0 auto;
@@ -4475,7 +4475,7 @@ body.dialog {
     text-align: left;
 }
 
-.system #msg-beta-inner {
+.mt-beta .system #msg-beta-inner {
     background-image: url(../images/beta_icons/beta_icon_system.png);
 }
 

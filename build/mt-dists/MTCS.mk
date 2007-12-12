@@ -1,2 +1,2 @@
-PRODUCT_NAME = Movable Type Commercial
+PRODUCT_NAME = Movable Type
 PRODUCT_CODE = MT

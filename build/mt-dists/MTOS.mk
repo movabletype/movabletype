@@ -1,3 +1,3 @@
-PRODUCT_NAME = Movable Type Open Source Project
-PRODUCT_CODE = MTOS
+PRODUCT_NAME = Movable Type Open Source
+PRODUCT_CODE = MT
 LICENSE = GPL

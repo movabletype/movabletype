@@ -1,6 +1,11 @@
+BUILD_LANGUAGE ?= en_US
+BUILD_PACKAGE ?= MTOS
+
 -include build/mt-dists/default.mk
 -include build/mt-dists/$(BUILD_PACKAGE).mk
 -include build/mt-dists/$(BUILD_LANGUAGE).mk
+
+BUILD_VERSION_ID ?= $(PRODUCT_VERSION)
 
 latin1_modules = lib/MT/L10N/es-iso-8859-1.pm \
 		 lib/MT/L10N/fr-iso-8859-1.pm \
@@ -125,24 +130,6 @@ $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm
 
 $(latin1_modules): %-iso-8859-1.pm: %.pm
 	iconv -f utf-8 -t iso-8859-1 $< > $@
-
-# Defunct
-#.PHONY: docs docs-en_US docs-fr docs-de docs-es docs-ja
-#
-#docs-en_US:
-#	$(MAKE) -C docs-en_US
-#	-rm -rf mt-static/docs
-#	cp -R docs-en_US mt-static/docs
-#
-#docs-nl: docs-en_US
-#	-rm -rf mt-static/docs
-#	cp -R docs-en_US mt-static/docs
-#
-#docs-fr docs-de docs-es docs-ja:
-#	-rm -rf mt-static/docs
-#	cp -R docs-$(BUILD_LANGUAGE) mt-static/docs
-#
-#docs: check docs-$(BUILD_LANGUAGE) build-language-stamp
 
 index.html: check build-language-stamp
 	cp index.html.en_US $@.pre
