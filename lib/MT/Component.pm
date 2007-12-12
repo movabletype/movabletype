@@ -372,40 +372,16 @@ sub load_tmpl {
     return $c->error(
         $mt->translate( "Loading template '[_1]' failed: [_2]", $file, MT::Template->errstr ) )
       unless defined $tmpl;
+    my $text = $tmpl->text;
+    if (($text =~ m/<(mt|_)_trans/i) && ($c->id)) {
+        $tmpl->text( '<__trans_section component="' . $c->id . '">' . $text . '</__trans_section>');
+    }
     $tmpl->{__file} = $file if $type eq 'filename';
 
     ## We do this in load_tmpl because show_error and login don't call
     ## build_page; so we need to set these variables here.
-    if ( $mt->isa('MT::App') ) {
-        $mt->set_default_tmpl_params($tmpl);
-        $tmpl->param($param) if $param;
-    }
-    else {
-        my $author = $mt->user;
-        my %param = (
-            ($author ? (
-                author_id => $author->id,
-                author_name => $author->name,
-                can_logout => MT::Auth->can_logout,
-            ) : ()),
-            static_uri        => $mt->static_path,
-            script_path       => $mt->path,
-            mt_version        => MT->version_id,
-            language_tag      => $mt->current_language,
-            language_encoding => $mt->charset,
-            %{ $param || {} },
-        );
-        $tmpl->param( \%param );
-        if ($type eq 'filename') {
-            if (!$tmpl->param('template_filename')) {
-                my $fname = $file;
-                $fname =~ s!\\!/!g;
-                $fname =~ s/\.tmpl$//;
-                $tmpl->param('template_filename', $fname);
-            }
-        }
-    }
-
+    $mt->set_default_tmpl_params($tmpl);
+    $tmpl->param($param) if $param;
 
     return $tmpl;
 }
@@ -457,29 +433,44 @@ sub translate {
 sub translate_templatized {
     my $c = shift;
     my ($text) = @_;
+    my @cstack;
     while (1) {
-        $text =~
-s!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\3]+?)*?\3))+?\s*/?>)!
-        my($msg, %args) = ($1);
+        $text =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
+        my($msg, $close, $section, %args) = ($1, $2, $3);
         while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
             $args{$1} = $3;
         }
-        $args{params} = '' unless defined $args{params};
-        my @p = map MT::Util::decode_html($_),
-                split /\s*%%\s*/, $args{params}, -1;
-        @p = ('') unless @p;
-        my $translation = $c->translate($args{phrase}, @p);
-        if (exists $args{escape}) {
-            if (lc($args{escape}) eq 'html') {
-                $translation = encode_html($translation);
-            } elsif (lc($args{escape}) eq 'url') {
-                $translation = MT::Util::encode_url($translation);
+        if ($section) {
+            if ($close) {
+                $c = pop @cstack;
             } else {
-                # fallback for js/javascript/singlequotes
-                $translation = encode_js($translation);
+                if ($args{component}) {
+                    push @cstack, $c;
+                    $c = MT->component($args{component});
+                }
+                else {
+                    die "__trans_section without a component argument";
+                }
             }
+            '';
+        } else {
+            $args{params} = '' unless defined $args{params};
+            my @p = map MT::Util::decode_html($_),
+                    split /\s*%%\s*/, $args{params}, -1;
+            @p = ('') unless @p;
+            my $translation = $c->translate($args{phrase}, @p);
+            if (exists $args{escape}) {
+                if (lc($args{escape}) eq 'html') {
+                    $translation = encode_html($translation);
+                } elsif (lc($args{escape}) eq 'url') {
+                    $translation = MT::Util::encode_url($translation);
+                } else {
+                    # fallback for js/javascript/singlequotes
+                    $translation = encode_js($translation);
+                }
+            }
+            $translation;
         }
-        $translation;
         !igem or last;
     }
     return $text;

@@ -148,61 +148,8 @@ sub login {
         $param->{$key} = $val;
     }
 
-    my $external_authenticators = [];
-
-    my $ca_reg = $app->registry("commenter_authenticators");
-
     my $blog = MT::Blog->load( $param->{blog_id} );
-    my @auths = split ',', $blog->commenter_authenticators;
-    my %otherauths;
-    foreach my $key (@auths) {
-        if ( $key eq 'MovableType' ) {
-            $param->{enabled_MovableType} = 1;
-            $param->{default_signin} = 'MovableType';
-            my $cfg = $app->config;
-            if ( my $registration = $cfg->CommenterRegistration ) {
-                if ( $cfg->AuthenticationModule eq 'MT' ) {
-                    $param->{registration_allowed} = $registration->{Allow}
-                      && $blog->allow_commenter_regist ? 1 : 0;
-                }
-            }
-            require MT::Auth;
-            $param->{can_recover_password} = MT::Auth->can_recover_password;
-            next;
-        }
-        my $auth = $ca_reg->{$key};
-        next unless $auth;
-        if (   $key ne 'TypeKey'
-            && $key ne 'OpenID'
-            && $key ne 'Vox'
-            && $key ne 'LiveJournal' )
-        {
-            push @$external_authenticators,
-              {
-                name       => $auth->{label},
-                key        => $auth->{key},
-                login_form => $app->_get_options_html($key),
-                exists($auth->{logo}) ? (logo => $auth->{logo}) : (),
-              };
-        }
-        else {
-            $otherauths{$key} = {
-                name       => $auth->{label},
-                key        => $auth->{key},
-                login_form => $app->_get_options_html($key),
-                exists($auth->{logo}) ? (logo => $auth->{logo}) : (),
-            };
-        }
-    }
-
-    unshift @$external_authenticators, $otherauths{'TypeKey'}
-      if exists $otherauths{'TypeKey'};
-    unshift @$external_authenticators, $otherauths{'Vox'}
-      if exists $otherauths{'Vox'};
-    unshift @$external_authenticators, $otherauths{'LiveJournal'}
-      if exists $otherauths{'LiveJournal'};
-    unshift @$external_authenticators, $otherauths{'OpenID'}
-      if exists $otherauths{'OpenID'};
+    my $external_authenticators = $app->external_authenticators($blog, $param);
 
     if ( @$external_authenticators ) {
         $param->{auth_loop}      = $external_authenticators;
@@ -334,7 +281,7 @@ sub do_login {
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
             $app->_make_commenter_session( $app->make_magic_token,
                 $commenter->email, $commenter->name,
-                ($commenter->nickname || 'User#' . $commenter->id),
+                ($commenter->nickname || $app->translate('(Display Name not set)')),
                 $commenter->id, undef, $ctx->{permanent} ? '+10y' : 0 );
             #$app->start_session( $commenter, $ctx->{permanent} ? 1 : 0 );
             return $app->redirect_to_target;
@@ -464,17 +411,10 @@ sub _send_signup_confirmation {
     }
 
     my $param = {
-        blog_name   => $blog->name,
-        blog_id     => $blog->id,
-        email       => $email,
+        blog => $blog,
         confirm_url => $url,
+        author => $author,
     };
-    if ( $author && ( $author->nickname ) ) {
-        $param->{author_name} = $author->nickname;
-    }
-    else {
-        $param->{author_name} = 'Movable Type';
-    }
     my $body = MT->build_email( 'commenter_confirm.tmpl', $param );
 
     require MT::Mail;
@@ -644,11 +584,8 @@ sub _send_registration_notification {
     }
 
     my $param = {
-        blogname    => $blog->name,
-        blog_id     => $blog->id,
-        username    => $user->name,
-        fullname    => $user->nickname,
-        email       => $user->email,
+        blog => $blog,
+        commenter => $user,
         profile_url => $url
     };
     my $body = MT->build_email( 'commenter_notify.tmpl', $param );
@@ -799,8 +736,7 @@ sub _builtin_throttle {
             my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
             $head{'Content-Type'} = qq(text/plain; charset="$charset");
             my $body = $app->build_email('comment_throttle.tmpl', {
-                blog_name => $blog->name,
-                blog_id => $blog->id,
+                blog => $blog,
                 throttled_ip => $user_ip,
                 throttle_seconds => 10 * $throttle_period,
             });
@@ -1345,6 +1281,7 @@ sub _make_commenter {
                 type      => MT::Author::COMMENTER,
                 url       => $params{url},
                 auth_type => $params{auth_type},
+                ($params{external_id} ? (external_id => $params{external_id}) : ()),
                 ($params{remote_auth_username} ? (remote_auth_username => $params{remote_auth_username}) : ()),
             }
         );
@@ -1358,6 +1295,7 @@ sub _make_commenter {
                 password => "(none)",
                 type     => MT::Author::COMMENTER,
                 url      => $params{url},
+                ($params{external_id} ? (external_id => $params{external_id}) : ()),
             }
         );
         $cmntr->save();
@@ -1819,7 +1757,7 @@ sub save_commenter_profile {
     if ($renew_session) {
         $app->_make_commenter_session( $app->make_magic_token, $cmntr->email,
             $cmntr->name,
-            ($cmntr->nickname || 'User#' . $cmntr->id),
+            ($cmntr->nickname || $app->translate('(Display Name not set)')),
             $cmntr->id );
         #    $app->start_session( $cmntr, $ctx->{permanent} );
     }
@@ -1838,66 +1776,6 @@ sub blog {
         $app->{_blog} = $entry->blog if $entry;
     }
     return $app->{_blog};
-}
-
-sub _get_options_tmpl {
-    my $self = shift;
-    my ($authenticator) = @_;
-
-    my $tmpl = $authenticator->{login_form};
-    return q() unless $tmpl;
-    return $tmpl->($authenticator) if ref $tmpl eq 'CODE';
-    if ( $tmpl =~ /\s/ ) {
-        return $tmpl;
-    }
-    else {    # no spaces in $tmpl; must be a filename...
-        if ( my $plugin = $authenticator->{plugin} ) {
-            return $plugin->load_tmpl($tmpl) or die $plugin->errstr;
-        }
-        else {
-            return MT->instance->load_tmpl($tmpl);
-        }
-    }
-}
-
-sub _get_options_html {
-    my $app           = shift;
-    my ($key)         = @_;
-    my $authenticator = MT->commenter_authenticator($key);
-    return q() unless $authenticator;
-
-    my $snip_tmpl = $app->_get_options_tmpl($authenticator);
-    return q() unless $snip_tmpl;
-
-    require MT::Template;
-    my $tmpl;
-    if ( ref $snip_tmpl ne 'MT::Template' ) {
-        $tmpl = MT::Template->new(
-            type   => 'scalarref',
-            source => ref $snip_tmpl ? $snip_tmpl : \$snip_tmpl
-        );
-    }
-    else {
-        $tmpl = $snip_tmpl;
-    }
-
-    $app->set_default_tmpl_params($tmpl);
-    if ( my $p = $authenticator->{login_form_params} ) {
-        my $params = $p->(
-            $key,
-            $app->param('blog_id'),
-            $app->param('entry_id') || undef,
-            $app->param('static')
-        );
-        $tmpl->param($params) if $params;
-    }
-    my $html = $tmpl->output();
-    if ( UNIVERSAL::isa( $authenticator, 'MT::Plugin' )
-        && ( $html =~ m/<__trans / ) )
-    {
-        $html = $authenticator->translate_templatized($html);
-    }
-    $html;
 }
 
 1;

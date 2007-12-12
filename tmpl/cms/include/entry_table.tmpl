@@ -83,18 +83,22 @@
         <mt:if name="has_publish_access">
                 <td class="status">
                     <select name="status_<$mt:var name="id"$>">
-                        <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished"></option>
+                        <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
                         <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
+                        <option value="3"<mt:if name="status_review"> selected="selected"</mt:if>><__trans phrase="Unpublished (Review)"></option>
                         <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
                     </select>
                 </td>
         <mt:else>
-                <td class="status si<mt:if name="status_draft"> status-draft</mt:if><mt:if name="status_publish"> status-publish</mt:if><mt:if name="status_future"> status-future</mt:if>">
+                <td class="status si<mt:if name="status_draft"> status-draft</mt:if><mt:if name="status_publish"> status-publish</mt:if><mt:if name="status_review"> status-review</mt:if><mt:if name="status_future"> status-future</mt:if>">
             <mt:if name="status_draft">
-                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=1" title="<__trans phrase="Only show unpublished [_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished">" width="9" height="9" /></a>
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=1" title="<__trans phrase="Only show unpublished [_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished (Draft)">" width="9" height="9" /></a>
             </mt:if>
             <mt:if name="status_publish">
                     <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=2" title="<__trans phrase="Only show published [_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
+            </mt:if>
+            <mt:if name="status_review">
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=3" title="<__trans phrase="Only show [_1] for review" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished (Review)">" width="9" height="9" /></a>
             </mt:if>
             <mt:if name="status_future">
                     <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=4" title="<__trans phrase="Only show scheduled [_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Scheduled">" width="9" height="9" /></a>

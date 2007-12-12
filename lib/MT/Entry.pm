@@ -130,26 +130,50 @@ sub authored_on_obj {
 
 sub next {
     my $entry = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {status => RELEASE} : {};
-    $entry->_nextprev('next', $publish_only);
+    my($opt) = @_;
+    my $terms;
+    if (ref $opt) {
+        $terms = $opt;
+    }
+    else {
+        $terms = $opt ? { status => RELEASE } : {};
+    }
+    $entry->_nextprev('next', $terms);
 }
 
 sub previous {
     my $entry = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {status => RELEASE} : {};
-    $entry->_nextprev('previous', $publish_only);
+    my($opt) = @_;
+    my $terms;
+    if (ref $opt) {
+        $terms = $opt;
+    }
+    else {
+        $terms = $opt ? { status => RELEASE } : {};
+    }
+    $entry->_nextprev('previous', $terms);
 }
 
 sub _nextprev {
     my $obj = shift;
     my $class = ref($obj);
-    my ($direction, $publish_only) = @_;
+    my ($direction, $terms) = @_;
     return undef unless ($direction eq 'next' || $direction eq 'previous');
     my $next = $direction eq 'next';
 
+    $terms->{author_id} = $obj->author_id if delete $terms->{by_author};
+    if (delete $terms->{by_category}) {
+        if (my $c = $obj->category) {
+            $terms->{category_id} = $c->id;
+        }
+        else {
+            return undef;
+        }
+    }
+
     my $label = '__' . $direction;
+    $label .= ':author='. $terms->{author_id} if exists $terms->{author_id};
+    $label .= ':category='. $terms->{category_id} if exists $terms->{category_id};
     return $obj->{$label} if $obj->{$label};
 
     # Selecting the adjacent object can be tricky since timestamps
@@ -159,16 +183,27 @@ sub _nextprev {
     # id as a secondary sort column.
 
     my ($id, $ts) = ($obj->id, $obj->authored_on);
+    my $args = {
+        'sort' => 'authored_on',
+        'direction' => $next ? 'ascend' : 'descend',
+        'range_incl' => { 'authored_on' => 1 },
+    };
+    if (my $cat_id = delete $terms->{category_id}) {
+        my $join = MT::Placement->join_on('entry_id',
+            { category_id => $cat_id }
+        );
+        if (exists $args->{join}) {
+            $args->{join} = [ $args->{join}, -and => $join ];
+        } else {
+            $args->{join} = $join;
+        }
+    }
     my $iter = $class->load_iter({
         blog_id => $obj->blog_id,
         class => $obj->class,
         authored_on => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        %{$publish_only}
-    }, {
-        'sort' => 'authored_on',
-        'direction' => $next ? 'ascend' : 'descend',
-        'range_incl' => { 'authored_on' => 1 },
-    });
+        %{$terms}
+    }, $args);
 
     # This selection should always succeed, but handle situation if
     # it fails by returning undef.
@@ -448,10 +483,12 @@ sub archive_file {
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
+        return '' if $at eq 'Page';
         my %at = map { $_ => 1 } split /,/, $at;
         # FIXME: should draw from list of registered archive types
-        for my $tat (qw( Individual Daily Weekly Monthly Category )) {
+        for my $tat (qw( Individual Daily Weekly Author-Monthly Category-Monthly Monthly Category )) {
             $at = $tat if $at{$tat};
+            last;
         }
     }
     archive_file_for($entry, $blog, $at);

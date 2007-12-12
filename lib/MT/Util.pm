@@ -208,7 +208,7 @@ sub relative_date {
 
 use vars qw( %Languages );
 sub format_ts {
-    my($format, $ts, $blog, $lang) = @_;
+    my($format, $ts, $blog, $lang, $is_mail) = @_;
     return '' unless defined $ts;
     my %f;
     unless ($lang) {
@@ -274,6 +274,17 @@ sub format_ts {
         $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
     }
     $format =~ s!%(\w)!$f{$1}!g if defined $format;
+
+    if ($is_mail) {
+        $format =~ s!&#([0-9]+);!chr($1)!ge;
+        $format =~ s!&#[xX]([0-9A-Fa-f]+);!chr(hex $1)!ge;
+
+        require MT::I18N;
+        my $enc   = MT->config->PublishCharset;
+        $format = MT::I18N::encode_text( $format, undef, 'utf-8' );
+        $format = MT::I18N::encode_text( $format, 'utf-8', $enc )
+            unless 'utf-8' eq lc $enc;
+    }
     $format;
 }
 

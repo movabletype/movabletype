@@ -53,10 +53,10 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
     $tpl_source = preg_replace('/<MT:?IfStatic[^>]*?>.*?<\/MT:?IfStatic>/is', '', $tpl_source);
     $tpl_source = preg_replace('/<MT:?Ignore\b[^>]*?>.*?<\/MT:?Ignore>/is', '', $tpl_source);
 
-    if ($parts = preg_split('!(<(?:\$?|/)MT(?:(?:<[^>]*?>|.)+?)(?:\$?|/)>)!is', $tpl_source, -1,
+    if ($parts = preg_split('!(<(?:\$?|/)MT(?:(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(?:\$?|/)>)!is', $tpl_source, -1,
                        PREG_SPLIT_DELIM_CAPTURE)) {
         foreach ($parts as $part) {
-            if (!preg_match('!<(\$?|/)(MT:?(?:<[^>]*?>|.)+?)(\$?|/)>!is', $part, $matches)) {
+            if (!preg_match('!<(\$?|/)(MT:?(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(\$?|/)>!is', $part, $matches)) {
                 $smart_source .= $part;
                 continue;
             }
@@ -72,7 +72,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             $mttag = preg_replace('/:/', '', strtolower($mttag));
             $attrs = array();
 
-            if (preg_match_all('!(?:(\w+)\s*=\s*(["\'])((?:<[^>]*?>|.)*?)?\2((?:[,:](["\'])((?:<[^>]*?>|.)*?)?\5)*)?|(\w+))!s', $args,
+            if (preg_match_all('!(?:(\w+)\s*=\s*(["\'])((?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)*?)?\2((?:[,:](["\'])((?:<[^>]*?>|.)*?)?\5)*)?|(\w+))!s', $args,
                                $arglist, PREG_SET_ORDER)) {
                 for ($a = 0; $a < count($arglist); $a++) {
                     if (isset($arglist[$a][7])) {
@@ -96,6 +96,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                             $attrs[$attr] = '$vars.' . $matches[1];
                         }
                         $quote = '';
+                    } else {
+                        $attrs[$attr] = preg_replace('/\$/', '\\\\$', $attrs[$attr]);
                     }
                     if ($ctx->global_attr[$attr]) {
                         $modargs .= '|';
@@ -132,8 +134,13 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             if (preg_match('!^MTIf!i', $mttag) ||
                 preg_match('!^MTHas!i', $mttag) ||
                 (preg_match('![a-z]If[A-Z]!i', $mttag) &&
-                !preg_match('![a-z]Modified[A-Z]!i', $mttag)) ||
+                !preg_match('![a-z]Modified[A-Z]!i', $mttag) &&
+                !preg_match('![a-z]Notify[A-Z]!i', $mttag)) ||
                 isset($ctx->conditionals[$mttag])) {
+                $conditional = 1;
+            } elseif (($mttag == 'mtentries') ||
+                ($mttag == 'mtcomments') ||
+                ($mttag == 'mtcommentreplies')) {
                 $conditional = 1;
             } else {
                 $conditional = 0;
@@ -178,9 +185,15 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         }
                     }
                     if ($tag != $mttag) {
-                        die("error in template: $tag found but $mttag was expected");
+                        die("error in template: $tag found but $mttag was expected\n");
                     }
                 } else {
+                    if ($mttag == 'mtelse') {
+                        if ($tagstack[count($tagstack)-1] == 'mtelse') {
+                            $smart_source .= $ldelim . '/mtelse' . $rdelim;
+                            array_pop($tagstack);
+                        }
+                    }
                     $tagstack[] = $mttag . $modargs;
                     if ($modargs != '') {
                         $modargs = '';
@@ -227,7 +240,13 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
 
             if (strtolower($mttag) == 'mtelse') {
                 if ($open != '/') {
-                    $smart_source .= $ldelim.'if !$conditional'.$rdelim;
+                    if (count($args)) {
+                        # else-if
+                        $smart_source .= $ldelim.'if $elseif_conditional'.$rdelim;
+                    } else {
+                        # else
+                        $smart_source .= $ldelim.'if !$conditional'.$rdelim;
+                    }
                 } else {
                     $smart_source .= $ldelim.'if $conditional'.$rdelim;
                 }
@@ -245,6 +264,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
     // smarty php blocks...
     $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
                                  $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
+
     #echo "smart source = [$smart_source]\n\n";
     return $smart_source;
 }

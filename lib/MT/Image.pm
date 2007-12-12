@@ -44,6 +44,36 @@ sub get_dimensions {
     ($w, $h);
 }
 
+sub inscribe_square {
+    my $class = shift;
+    my %params = @_;
+    my ($w, $h) = @params{qw( Width Height )};
+
+    my ($dim, $x, $y);
+
+    if ($w > $h) {
+        $dim = $h;
+        $x = int(($w - $dim) / 2);
+        $y = 0;
+    }
+    else {
+        $dim = $w;
+        $x = 0;
+        $y = int(($h - $dim) / 2);
+    }
+
+    return ( Size => $dim, X => $x, Y => $y ); 
+}
+
+sub make_square {
+    my $image = shift;
+    my %square = $image->inscribe_square(
+        Width  => $image->{width},
+        Height => $image->{height},
+    );
+    $image->crop(%square);
+}
+
 sub check_upload {
     my $class = shift;
     my %params = @_;
@@ -79,14 +109,16 @@ sub check_upload {
     ## If the image exceeds the dimension limit, resize it before writing.
     if (my $max_dim = $params{MaxDim}) {
         if (defined($w) && defined($h) && ($w > $max_dim || $h > $max_dim)) {
-            my $resized_fh;  # ?
-
             my $uploaded_data = eval { local $/; <$fh> };
-
             my $img = $class->new( Data => $uploaded_data )
                 or return $class->error($class->errstr);
+
+            if ($params{Square}) {
+                (undef, $w, $h) = $img->make_square()
+                    or return $class->error($img->errstr);
+            }
             (my($resized_data), $w, $h) = $img->scale(
-                (($w > $max_dim) ? 'Width' : 'Height') => $max_dim )
+                (($w > $h) ? 'Width' : 'Height') => $max_dim )
                     or return $class->error($img->errstr);
 
             $write_file = sub {
@@ -153,7 +185,40 @@ sub scale {
     return $image->error(MT->translate(
         "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err)) if $err;
     $magick->Profile("*") if $magick->can('Profile');
+    ($image->{width}, $image->{height}) = ($w, $h);
     wantarray ? ($magick->ImageToBlob, $w, $h) : $magick->ImageToBlob;
+}
+
+sub crop {
+    my $image = shift;
+    my %param = @_;
+    my ($size, $x, $y) = @param{qw( Size X Y )};
+    my $magick = $image->{magick};
+
+    my $err = $magick->Crop(width => $size, height => $size, x => $x, y => $y);
+    return $image->error(MT->translate(
+        "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]", $size, $x,
+        $y, $err)) if $err;
+
+    ## Remove page offsets from the original image, per this thread:
+    ## http://studio.imagemagick.org/pipermail/magick-users/2003-September/010803.html
+    $magick->Set( page => '+0+0' );
+
+    ($image->{width}, $image->{height}) = ($size, $size);
+    wantarray ? ($magick->ImageToBlob, $size, $size) : $magick->ImageToBlob;
+}
+
+sub convert {
+    my $image = shift;
+    my %param = @_;
+    my $type = $param{Type};
+
+    my $magick = $image->{magick};
+    my $err = $magick->Set( magick => uc $type );
+    return $image->error(MT->translate(
+            "Converting image to [_1] failed: [_2]", $type, $err)) if $err;
+
+    $magick->ImageToBlob;
 }
 
 package MT::Image::NetPBM;
@@ -218,7 +283,67 @@ sub scale {
         \@out, \$out, \$err)
         or return $image->error(MT->translate(
             "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err));
+    ($image->{width}, $image->{height}) = ($w, $h);
     wantarray ? ($out, $w, $h) : $out;
+}
+
+sub crop {
+    my $image = shift;
+    my %param = @_;
+    my ($size, $x, $y) = @param{qw( Size X Y )};
+    
+    my($w, $h) = $image->get_dimensions(@_);
+    my $type = $image->{type};
+    my($out, $err);
+    my $pbm = $image->_find_pbm or return;
+    my @in = ("$pbm${type}topnm", ($image->{file} ? $image->{file} : ()));
+
+    my @crop = ("${pbm}pnmcut", $x, $y, $size, $size);
+    my @out;
+    for my $try (qw( ppm pnm )) {
+        my $prog = "${pbm}${try}to$type";
+        @out = ($prog), last if -x $prog;
+    }
+    my(@quant);
+    if ($type eq 'gif') {
+        push @quant, ([ "${pbm}ppmquant", 256 ], '|');
+    }
+    IPC::Run::run(\@in, '<', ($image->{file} ? \undef : \$image->{data}), '|',
+        \@crop, '|',
+        @quant,
+        \@out, \$out, \$err)
+        or return $image->error(MT->translate(
+            "Cropping to [_1]x[_1] failed: [_2]", $size, $err));
+    ($image->{width}, $image->{height}) = ($w, $h);
+    wantarray ? ($out, $w, $h) : $out;
+}
+
+sub convert {
+    my $image = shift;
+    my %param = @_;
+
+    my $type = $image->{type};
+    my $outtype = lc $param{Type};
+
+    my($out, $err);
+    my $pbm = $image->_find_pbm or return;
+    my @in = ("$pbm${type}topnm", ($image->{file} ? $image->{file} : ()));
+
+    my @out;
+    for my $try (qw( ppm pnm )) {
+        my $prog = "${pbm}${try}to$outtype";
+        @out = ($prog), last if -x $prog;
+    }
+    my(@quant);
+    if ($type eq 'gif') {
+        push @quant, ([ "${pbm}ppmquant", 256 ], '|');
+    }
+    IPC::Run::run(\@in, '<', ($image->{file} ? \undef : \$image->{data}), '|',
+        @quant,
+        \@out, \$out, \$err)
+        or return $image->error(MT->translate(
+            "Converting to [_1] failed: [_2]", $type, $err));
+    $out;
 }
 
 sub _find_pbm {

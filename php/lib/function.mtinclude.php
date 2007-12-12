@@ -6,6 +6,17 @@ function smarty_function_mtinclude($args, &$ctx) {
     // status: partial
     // parameters: module, file
     // notes: file case needs work -- search through blog site archive path, etc...
+
+    // push to ctx->vars
+    $ext_args = array();
+    while(list ($key, $val) = each($args)) {
+        if (!preg_match('/(^file$|^module$|^widget$|^blog_id$|^identifier$|^type$)/', $key)) {
+            require_once("function.mtsetvar.php");
+            smarty_function_mtsetvar(array('name' => $key, 'value' => $val), $ctx);
+            $ext_args[] = $key;
+        }
+    }
+
     static $_include_cache = array();
     $blog_id = $args['blog_id'];
     $blog_id or $blog_id = $ctx->stash('blog_id');
@@ -27,6 +38,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 $_include_cache[$cache_id] = $_var_compiled;
             } else {
+                _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");
             }
         }
@@ -40,6 +52,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 $_include_cache[$cache_id] = $_var_compiled;
             } else {
+                _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");
             }
         }
@@ -53,6 +66,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 $_include_cache[$cache_id] = $_var_compiled;
             } else {
+                _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");
             }
         }
@@ -61,6 +75,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         $base_filename = basename($file);
         global $restricted_include_filenames;
         if (array_key_exists(strtolower($base_filename), $restricted_include_filenames)) {
+            _clear_vars($ctx, $ext_args);
             return "";
         }
         $cache_id = 'file::' . $blog_id . '::' . $file;
@@ -83,12 +98,14 @@ function smarty_function_mtinclude($args, &$ctx) {
                     $contents = @file($path);
                     $tmpl = implode('', $contents);
                 } else {
+                    _clear_vars($ctx, $ext_args);
                     return $ctx->error("Could not open file '$file'");
                 }
             }
             if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 $_include_cache[$cache_id] = $_var_compiled;
             } else {
+                _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template file '$file'");
             }
         }
@@ -104,12 +121,15 @@ function smarty_function_mtinclude($args, &$ctx) {
                     $_include_cache[$cache_id] = $_var_compiled;
                 } else {
                     if ($type != 'dynamic_error') {
+                        _clear_vars($ctx, $ext_args);
                         return $ctx->error("Error compiling template module '$module'");
                      } else {
+                        _clear_vars($ctx, $ext_args);
                          return null;
                      }
                 }
             } else {
+                _clear_vars($ctx, $ext_args);
                 return null;
             }
         }
@@ -120,6 +140,17 @@ function smarty_function_mtinclude($args, &$ctx) {
     $_contents = ob_get_contents();
     ob_end_clean();
 
+    _clear_vars($ctx, $ext_args);
+
     return $_contents;
+}
+
+function _clear_vars(&$ctx, $ext_vars) {
+    # unset vars
+    $vars =& $ctx->__stash['vars'];
+    foreach ($ext_vars as $v) {
+        unset($vars[$v]);
+    }
+    $ctx->__stash['vars'] =& $vars;
 }
 ?>

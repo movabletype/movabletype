@@ -108,15 +108,15 @@
     <mtapp:widget
         id="tag-list"
         class="hidden"
-        label="Tag Documentation"
-        label_link="http://www.movabletype.org/documentation/appendices/tags/">
+        label="<__trans phrase="Tag Documentation">"
+        label_link="<__trans phrase="http://www.movabletype.org/documentation/appendices/tags/">">
         <div id="tag-list-inner">
         </div>
     </mtapp:widget>
     <mtapp:widget
         id="badtag-list"
         class="hidden"
-        label="Unrecognized Tags">
+        label="<__trans phrase="Unrecognized Tags">">
         <div id="badtag-list-inner">
         </div>
     </mtapp:widget>
@@ -181,15 +181,19 @@ function clearDirty () {
 
 var tag_docs = <tmpl_var name="tag_docs" to_json="1">;
 
-function documentTags() {
+function documentTags( useTextInput ) {
     // scan text of editor for tags
     var str;
-    if ( window.app && window.app.cpeList ) {
+    if ( !useTextInput && ( window.app && window.app.cpeList.length > 0
+        && window.app.cpeList[0].editor ) ) {
         str = window.app.cpeList[0].getCode();
     } else {
-        var area = DOM.getElement('text');
+        var area = DOM.getElement('text_cpe') || DOM.getElement('text');
         str = area.value;
     }
+    
+    if ( !defined( str ) )
+        str = '';
 
     // clear any ignore blocks
     var re = new RegExp('(<m' + 't:?ignore([^>])*?>)[\\S\\s]*?</mt:?ignore>',
@@ -432,7 +436,6 @@ function init() {
             }
         }
     }
-    window.setTimeout(documentTags, 100);
 }
 
 TC.attachLoadEvent( init );
@@ -555,7 +558,6 @@ TC.attachLoadEvent( init );
     </mtapp:setting>
 </mt:if>
 
-<mt:if name="blog_id">
 <mtapp:setting
     label="<__trans phrase="Link to File">"
     id="linked_file"
@@ -565,7 +567,6 @@ TC.attachLoadEvent( init );
         <input name="linked_file" id="linked_file" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
     </div>
 </mtapp:setting>
-</mt:if>
 
 <mt:if name="archive_types">
     <mtapp:setting
@@ -614,10 +615,18 @@ TC.attachLoadEvent( init );
 <!--
 App.singletonConstructor =
 MT.App = new Class( MT.App, {
+
+    initComponents: function() {
+       arguments.callee.applySuper( this, arguments );
+       documentTags( true );
+    },
+
+
     autoSave: function() {
         arguments.callee.applySuper( this, arguments );
         documentTags();
     }
+
 } );
 -->
 </script>

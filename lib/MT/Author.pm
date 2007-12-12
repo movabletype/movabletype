@@ -606,6 +606,8 @@ sub unpack_external_id { return unpack('H*', $_[1]); }
 
 sub auth_icon_url {
     my $author = shift;
+    my ($size) = @_;
+    $size ||= 'logo_small';
 
     my $app = MT->instance;
     my $static_path = $app->static_path;
@@ -619,9 +621,9 @@ sub auth_icon_url {
     
     my $authenticator = MT->commenter_authenticator( $auth_type );
     return q() unless $authenticator;
-    return q() unless exists $authenticator->{logo_small};
+    return q() unless exists $authenticator->{$size};
 
-    my $logo = $authenticator->{logo_small};
+    my $logo = $authenticator->{$size};
     if ( ( $logo !~ m!^https?://! ) || ( $logo !~ m!^/! ) ) {
         $logo = $static_path . $logo;
     }
@@ -633,10 +635,72 @@ sub userpic {
 
     my $asset_id = $author->userpic_asset_id or return;
     require MT::Asset;
-    my $asset = MT::Asset->lookup($asset_id) or return;
-    return if !$asset->isa('MT::Asset::Image');
+    my $asset = MT->model('asset.image')->load($asset_id) or return;
 
     $asset;
+}
+
+sub userpic_thumbnail_options {
+    my $author = shift;
+
+    # Specify these to put an author's userpic thumbnail in a consistent
+    # place whenever userpic_url is called as an instance method on a
+    # particular author.
+    my %real_userpic_options = (
+        Path   => File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' ),
+        Format => MT->translate('userpic-[_1]-%wx%h%x', $author->id),
+    ) if ref $author;
+
+    my $max_dim = MT->config->UserpicThumbnailSize;
+    return (
+        Width  => $max_dim,
+        Height => $max_dim,
+        Square => 1,
+        Type   => 'png',
+        %real_userpic_options,
+    );
+}
+
+sub userpic_file {
+    my $author = shift;
+
+    my $asset = $author->userpic;
+    if (!$asset) {
+        $asset = MT->model('asset.image')->new;
+        $asset->file_name('userpic');
+    }
+
+    my %thumb_param = $author->userpic_thumbnail_options();
+    my $thumb_file = File::Spec->catfile(
+        $asset->thumbnail_path(%thumb_param),
+        $asset->thumbnail_filename(%thumb_param),
+    );
+
+    return $thumb_file;
+}
+
+sub userpic_url {
+    my $author = shift;
+    my (%param) = @_;
+
+    my $asset = delete $param{Asset};
+    if (!$asset && ref $author) {
+        $asset = $author->userpic;
+    }
+    return if !$asset;
+
+    my @info = $asset->thumbnail_url(
+        $author->userpic_thumbnail_options(),
+        %param,
+    );
+    return wantarray ? @info : $info[0];
+}
+
+sub userpic_html {
+    my $author = shift;
+    my ($thumb_url, $w, $h) = $author->userpic_url(@_) or return;
+    sprintf q{<img src="%s" width="%d" height="%d" alt="" />},
+        MT::Util::encode_html($thumb_url), $w, $h;
 }
 
 1;

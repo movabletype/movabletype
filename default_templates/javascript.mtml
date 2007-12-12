@@ -153,7 +153,7 @@ if ('<$MTCGIHost exclude_port="1"$>' != '<$MTBlogHost exclude_port="1"$>') {
 // copyright notice is included. By Tomer Shiran.
 
     function setCookie (name, value, expires, path, domain, secure) {
-        var curCookie = name + "=" + escape(value) + (expires ? "; expires=" + expires : "") +
+        var curCookie = name + "=" + escape(value) + (expires ? "; expires=" + expires.toGMTString() : "") +
             (path ? "; path=" + path : "") + (domain ? "; domain=" + domain : "") + (secure ? "secure" : "");
         document.cookie = curCookie;
     }

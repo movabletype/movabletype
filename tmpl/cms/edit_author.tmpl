@@ -198,10 +198,10 @@ TC.attachLoadEvent(init);
             <br />
         </span>
         <a href="javascript:void(0)" onclick="return openDialog(false, 'list_assets', '_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic')"><__trans phrase="Select Userpic"></a>
-        <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" escape="html">" />
+        <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
         <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
             <br />
-            <a href="javascript:void(0)" onclick="getByID('userpic_asset_id').value = ''; toggleHidden(getByID('userpic-preview')); toggleHidden(getByID('remove-userpic')); return false"><__trans phrase="Remove Userpic"></a>
+            <a href="javascript:void(0)" onclick="getByID('userpic_asset_id').value = ''; hide('userpic-preview'); hide('remove-userpic'); return false"><__trans phrase="Remove Userpic"></a>
         </span>
     </mtapp:setting>
 

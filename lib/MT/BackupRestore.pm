@@ -220,14 +220,14 @@ sub _loop_through_objects {
 
 sub restore_file {
     my $class = shift;
-    my ($fh, $errormsg, $schema_version, $callback) = @_;
+    my ($fh, $errormsg, $schema_version, $overwrite, $callback) = @_;
 
     my $objects = {};
     my $deferred = {};
     my $errors = [];
 
     my ($blog_ids, $asset_ids) = eval { $class->restore_process_single_file(
-        $fh, $objects, $deferred, $errors, $schema_version, $callback
+        $fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback
     ); };
     $$errormsg = join('; ', @$errors);
     #my @blog_ids;
@@ -241,7 +241,7 @@ sub restore_file {
  
 sub restore_process_single_file {
     my $class = shift;
-    my ($fh, $objects, $deferred, $errors, $schema_version, $callback) = @_;
+    my ($fh, $objects, $deferred, $errors, $schema_version, $overwrite,  $callback) = @_;
     
     my %restored_blogs = map { $objects->{$_}->id => 1; } grep { 'blog' eq $objects->{$_}->datasource } keys %$objects;
 
@@ -253,6 +253,7 @@ sub restore_process_single_file {
         deferred => $deferred,
         errors => $errors,
         schema_version => $schema_version,
+        overwrite_template => $overwrite,
     );
 
     require MT::Util;

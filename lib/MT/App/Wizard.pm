@@ -182,6 +182,10 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Mail-Sendmail',
                 label => 'This module is required for sending mail via SMTP Server.',
             },
+            'Safe' => {
+                link => 'http://search.cpan.org/dist/Safe',
+                label => 'This module is used in test attribute of MTIf conditional tag.',
+            },
         },
         required_packages => {
             'Image::Size' => {

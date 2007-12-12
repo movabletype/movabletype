@@ -1,6 +1,6 @@
 <?php
 function smarty_block_mtcommentreplies($args, $content, &$ctx, &$repeat) {
-    $localvars = array('comments', 'comment_order_num', 'comment','current_timestamp', 'commenter', 'blog', 'blog_id', '_comment_replies_tokens');
+    $localvars = array('comments', 'comment_order_num', 'comment','current_timestamp', 'commenter', 'blog', 'blog_id', '_comment_replies_tokens', 'conditional', 'else_content');
     $token_fn = $ctx->stash('_comment_replies_tokens');
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -17,6 +17,12 @@ function smarty_block_mtcommentreplies($args, $content, &$ctx, &$repeat) {
         $comments = $ctx->stash('comments');
         $counter = $ctx->stash('comment_order_num');
     }
+
+    $ctx->stash('conditional', $comments ? 1 : 0);
+    if (!$comments) {
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+    }
+
     if ($counter < count($comments)) {
         $blog_id = $ctx->stash('blog_id');
         $comment = $comments[$counter];

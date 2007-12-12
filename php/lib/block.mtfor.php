@@ -4,12 +4,15 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
         // first invocation; setup loop
-        $ctx->localize($localvars);
-        $start = array_key_exists('start', $args) ? $args['start']
-            : array_key_exists('from', $args) ? $args['from'] : 0;
+        $start = array_key_exists('start', $args) ?
+            $args['start']
+            : (array_key_exists('from', $args) ?
+               $args['from']
+               : 0);
         $end = array_key_exists('end', $args) ? $args['end']
-            : array_key_exists('to', $args) ? $args['to'] : null;
+            : (array_key_exists('to', $args) ? $args['to'] : null);
         $var = $args['var'];
+
         if ($end === null) {
             $content = '';
             $repeat = false;

@@ -22,6 +22,8 @@ sub class_label_plural {
     MT->translate('Audio');
 }
 
+# translate('audio')
+
 1;
 
 __END__

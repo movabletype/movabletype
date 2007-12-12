@@ -5,7 +5,7 @@
 <MTSetVar name="comment_preview_template" value="1">
 <MTSetVar name="feedback_template" value="1">
 <MTSetVarBlock name="page_title"><__trans phrase="Comment on [_1]" params="<$MTEntryTitle$>"></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTBlogName$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 

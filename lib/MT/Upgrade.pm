@@ -710,6 +710,28 @@ sub core_upgrade_functions {
                 $self->upgrade_templates({ Install => 1 });
             },
         },
+        'core_replace_openid_username' => {
+            version_limit => 4.0033,
+            priority => 3.2,
+            updater => {
+                type => 'author',
+                label => 'Moving OpenID usernames to external_id fields...',
+                condition => sub {
+                    return 0 if 'MT' eq $_[0]->auth_type;
+                    my $auth = MT->commenter_authenticator($_[0]->auth_type);
+                    return 0 unless $auth && %$auth && exists($auth->{class});
+                    my $auth_class = $auth->{class};
+                    eval "require $auth_class;";
+                    return 0 if $@;
+                    return UNIVERSAL::isa($auth_class, 'MT::Auth::OpenID');
+                },
+                code => sub {
+                    return unless $_[0]->url;
+                    $_[0]->external_id($_[0]->name);
+                    $_[0]->name($_[0]->url);
+                },
+            },
+        },
     }
 }
 

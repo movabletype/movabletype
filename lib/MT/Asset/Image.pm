@@ -67,6 +67,13 @@ sub has_thumbnail {
     1;
 }
 
+sub thumbnail_path {
+    my $asset   = shift;
+    my (%param) = @_;
+
+    $asset->_make_cache_path($param{Path});
+}
+
 sub thumbnail_file {
     my $asset     = shift;
     my (%param)   = @_;
@@ -81,6 +88,14 @@ sub thumbnail_file {
     my $asset_cache_path = $asset->_make_cache_path($param{Path});
     my ( $i_h, $i_w ) = ( $asset->image_height, $asset->image_width );
     return undef unless $i_h && $i_w;
+
+    # Pretend the image is already square, for calculation purposes.
+    if ($param{Square}) {
+        require MT::Image;
+        my %square = MT::Image->inscribe_square(
+            Width => $i_w, Height => $i_h );
+        ($i_h, $i_w) = @square{qw( Size Size )};
+    }
 
     if ( my $scale = $param{Scale} ) {
         $param{Width}  = int( ( $i_w * $scale ) / 100 );
@@ -111,7 +126,8 @@ sub thumbnail_file {
     return undef unless $fmgr->can_write($asset_cache_path);
 
     my $data;
-    if ( ( $n_w == $i_w ) && ( $n_h == $i_h ) ) {
+    if ( ( $n_w == $i_w ) && ( $n_h == $i_h ) && !$param{Square}
+      && !$param{Type} ) {
         $data = $fmgr->get_data( $file_path, 'upload' );
     }
     else {
@@ -121,9 +137,22 @@ sub thumbnail_file {
         my $img = new MT::Image( Filename => $file_path )
           or return $asset->error( MT::Image->errstr );
 
+        # Really make the image square, so our scale calculation works out.
+        if ($param{Square}) {
+            ($data) = $img->make_square()
+              or return $asset->error(
+                MT->translate( "Error cropping image: [_1]", $img->errstr ) );
+        }
+
         ($data) = $img->scale( Height => $n_h, Width => $n_w )
           or return $asset->error(
             MT->translate( "Error scaling image: [_1]", $img->errstr ) );
+
+        if (my $type = $param{Type}) {
+            ($data) = $img->convert( Type => $type )
+              or return $asset->error(
+                MT->translate( "Error converting image: [_1]", $img->errstr ) );
+        }
     }
     $fmgr->put_data( $data, $thumbnail, 'upload' )
       or return $asset->error(
@@ -191,7 +220,7 @@ sub thumbnail_filename {
     $file =~ s/\.\w+$//;
     my $base = File::Basename::basename($file);
     my $id   = $asset->id;
-    my $ext  = $asset->file_ext || '';
+    my $ext  = lc($param{Type}) || $asset->file_ext || '';
     $ext = '.' . $ext;
     $format =~ s/%w/$width/g;
     $format =~ s/%h/$height/g;

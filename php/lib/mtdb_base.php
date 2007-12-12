@@ -1287,6 +1287,7 @@ class MTDatabaseBase extends ezsql {
         global $mt;
         $args['blog_id'] = $mt->blog_id;
         $args['author_id'] = $author_id;
+        $args['any_type'] = 1;
         $result = $this->fetch_authors($args);
         $author = null;
         if (is_array($result)) {
@@ -1344,7 +1345,8 @@ class MTDatabaseBase extends ezsql {
                 $entry_filter .= " and entry_blog_id = ".$args['blog_id'];
             }
         } else {
-            $author_filter .= " and author_type = 1";
+            if ( ! $args['any_type'] )
+                $author_filter .= " and author_type = 1";
         }
 
         # a context hash for filter routines

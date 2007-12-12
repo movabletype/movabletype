@@ -2249,7 +2249,9 @@ MT.App.CodePress = new Class( Object, {
         this.editor.body = this.iframe.contentWindow.document.getElementsByTagName( 'body' )[0];
         if ( this.editor.body.spellcheck )
             this.editor.body.spellcheck = false;
-        this.editor.setCode( this.textarea.value );
+        /* ugly bug in codepress, if setCode is called with nothing then it breaks */
+        if ( this.textarea.value != '' )
+            this.editor.setCode( this.textarea.value );
         this.setOptions();
         this.editor.syntaxHighlight( 'init' );
         this.textarea.style.display = 'none';
@@ -2339,7 +2341,7 @@ MT.App.CodePress = new Class( Object, {
     },
 
 
-    setCode: function(code) {
+    setCode: function( code ) {
         this.textarea.disabled ? this.editor.setCode( code ) : this.textarea.value = code;
     },
 

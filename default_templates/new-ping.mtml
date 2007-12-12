@@ -1,24 +1,23 @@
-<mt:if name="unapproved"><mt:if name="entry_id"><__trans phrase="An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site." params="<mt:var name="blog_name" escape="html">%%<mt:var name="entry_id">%%<mt:var name="entry_title">"><mt:else><mt:if name="category_id"><__trans phrase="An unapproved TrackBack has been posted on your blog [_1], for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site." params="<mt:var name="blog_name" escape="html">%%<mt:var name="category_id">%%<mt:var name="category_label">"></mt:if></mt:if></mt:if><mt:unless name="unapproved"><mt:if name="entry_id"><__trans phrase="A new TrackBack has been posted on your blog [_1], on entry #[_2] ([_3])." params="<mt:var name="blog_name" escape="html">%%<mt:var name="entry_id">%%<mt:var name="entry_title">"><mt:else><mt:if name="category_id"><__trans phrase="A new TrackBack has been posted on your blog [_1], on category #[_2] ([_3])." params="<mt:var name="blog_name" escape="html">%%<mt:var name="category_id">%%<mt:var name="category_label">"></mt:if></mt:if></mt:unless>
+<mt:if name="unapproved"><mt:if name="entry">An unapproved TrackBack has been posted on your blog <$MTBlogName$>, for entry #<$MTEntryID$> (<$MTEntryTitle$>). You need to approve this TrackBack before it will appear on your site.<mt:else><mt:if name="category">An unapproved TrackBack has been posted on your blog <$MTBlogName$>, for category #<$MTCategoryID$>, (<$MTCategoryLabel$>). You need to approve this TrackBack before it will appear on your site.</mt:if></mt:if></mt:if><mt:unless name="unapproved"><mt:if name="entry">A new TrackBack has been posted on your blog <$MTBlogName$>, on entry #<$MTEntryID$> (<$MTEntryTitle$>).<mt:else><mt:if name="category">A new TrackBack has been posted on your blog <$MTBlogName$>, on category #<$MTCategoryID$> (<$MTCategoryLabel$>).</mt:if></mt:if></mt:unless>
 
-<__trans phrase="Excerpt: ">
-<mt:var name="ping_excerpt">
+Excerpt: 
+<$MTPingExcerpt wrap_text="72"$>
 
-<__trans phrase="URL: [_1]" params="<mt:var name="ping_url">">
-<__trans phrase="Title: [_1]" params="<mt:var name="ping_title">">
-<__trans phrase="Blog: [_1]" params="<mt:var name="ping_blog_name">">
-<__trans phrase="IP address: [_1]" params="<mt:var name="ping_ip">">
+URL: <$MTPingURL$>
+Title: <$MTPingTitle$>
+Blog: <$MTPingBlogName$>
+IP address: <$MTPingIP$>
 
-<mt:if name="state_editable"><mt:if name="unapproved"><__trans phrase="Approve TrackBack: ">
+<mt:if name="state_editable"><mt:if name="unapproved">Approve TrackBack: 
   <<mt:var name="approve_url">>
 </mt:if></mt:if>
-<mt:if name="view_url"><__trans phrase="View TrackBack: ">
-  <<mt:var name="view_url">>
-</mt:if>
-<mt:if name="state_editable"><__trans phrase="Report TrackBack as spam: ">
+<mt:if name="entry"><mt:ifnonempty tag="EntryPermalink">View TrackBack: 
+  <<$MTEntryPermalink$>>
+</mt:ifnonempty></mt:if>
+<mt:if name="state_editable">Report TrackBack as spam: 
   <<mt:var name="spam_url">>
 </mt:if>
-<__trans phrase="Edit TrackBack: ">
+Edit TrackBack: 
   <<mt:var name="edit_url">>
 
-
-<mt:include module="Mail Footer">
+<mt:include module="<__trans phrase="Mail Footer">">

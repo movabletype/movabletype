@@ -1,6 +1,6 @@
 <?php
 function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
-    $localvars = array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id');
+    $localvars = array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id', 'conditional', 'else_content');
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
         return $ctx->error($ctx->mt->translate('sort_by="score" must be used in combination with namespace.'));
     }
@@ -70,6 +70,12 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $entries =& $ctx->mt->db->fetch_entries($args);
         $ctx->stash('entries', $entries);
     }
+
+    $ctx->stash('conditional', $entries ? 1 : 0);
+    if (!$entries) {
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+    }
+
     $ctx->stash('_entries_glue', $args['glue']);
     if (($lastn > count($entries)) || ($lastn == -1)) {
         $lastn = count($entries);

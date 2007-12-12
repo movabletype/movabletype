@@ -130,6 +130,21 @@ sub start_element {
                             $self->{loaded} = 1;
                         }
                     }
+                } elsif ('template' eq $name) {
+                    if (!$column_data{blog_id}) {
+                        $obj = $class->load({ blog_id => 0, identifier => $column_data{identifier} });
+                        if ($obj) {
+                            my $old_id = delete $column_data{id};
+                            $objects->{"$class#$old_id"} = $obj;
+                            if ($self->{overwrite_template}) {
+                                $obj->set_values(\%column_data);
+                                $self->{current} = $obj;
+                            } else {
+                                $self->{skip} += 1;
+                            }
+                            $self->{loaded} = 1;
+                        }
+                    }
                 }
                 unless ($obj) {
                     $obj = $class->new;
@@ -195,7 +210,7 @@ sub end_element {
             }
         } else {
             my $old_id = $obj->id;
-            unless (('author' eq $name) && (exists $self->{loaded})) {
+            unless ((('author' eq $name) || ('template' eq $name)) && (exists $self->{loaded})) {
                 delete $obj->{column_values}->{id};
                 delete $obj->{changed_cols}->{id};
             } else {

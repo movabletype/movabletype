@@ -86,10 +86,8 @@ class MT {
                     }
                     $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
                         . DIRECTORY_SEPARATOR . 'php';
-                    if (is_dir($plugin_dir)) {
-                        $ctx->plugins_dir[] = $plugin_dir;
-                        $this->load_plugin($plugin_dir);
-                    }
+                    if (is_dir($plugin_dir))
+                        $ctx->add_plugin_dir($plugin_dir);
                 }
                 closedir($dh);
             }
@@ -99,18 +97,16 @@ class MT {
     function init_plugins() {
         $plugin_paths = $this->config('PluginPath');
         $ctx =& $this->context();
+
         foreach ($plugin_paths as $path) {
             if ($dh = opendir($path)) {
                  while (($file = readdir($dh)) !== false) {
-                     if ($file == "." || $file == "..") {
+                     if ($file == "." || $file == "..")
                          continue;
-                     }
                      $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
                          . DIRECTORY_SEPARATOR . 'php';
-                     if (is_dir($plugin_dir)) {
-                         $ctx->plugins_dir[] = $plugin_dir;
-                         $this->load_plugin($plugin_dir);
-                     }
+                     if (is_dir($plugin_dir))
+                         $ctx->add_plugin_dir($plugin_dir);
                  }
                  closedir($dh);
             }
@@ -118,15 +114,16 @@ class MT {
 
         $plugin_dir = $this->config('PHPDir') . DIRECTORY_SEPARATOR
             . 'plugins';
-        if (is_dir($plugin_dir)) {
-            $this->load_plugin($plugin_dir);
-        }
+        if (is_dir($plugin_dir))
+            $ctx->add_plugin_dir($plugin_dir);
+
+        # Load any php directories found during the 'init_addons' loop
+        foreach ($ctx->plugins_dir as $plugin_dir)
+            if (is_dir($plugin_dir))
+                $this->load_plugin($plugin_dir);
     }
 
     function load_plugin($plugin_dir) {
-        $path_sep = (strtoupper(substr(PHP_OS, 0, 3) == 'WIN')) ? ';' : ':';
-        ini_set('include_path', $plugin_dir . $path_sep . ini_get('include_path'));
-
         $ctx =& $this->context();
         // global filters have to be handled differently from
         // tag attributes, so this causes them to be recognized
@@ -326,6 +323,8 @@ class MT {
             $cfg['typekeyversion'] = '1.1';
         isset($cfg['assetcachedir']) or
             $cfg['assetcachedir'] = 'assets_c';
+        isset($cfg['userpicthumbnailsize']) or
+            $cfg['userpicthumbnailsize'] = '100';
         isset($cfg['pluginpath']) or
             $cfg['pluginpath'] = array($this->config('MTDir') . DIRECTORY_SEPARATOR . 'plugins');
     }

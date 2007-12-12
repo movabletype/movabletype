@@ -501,7 +501,7 @@ class AuthorBasedArchiver extends BaseArchiver {
             if (isset($author)) {
                 $author_name = $author['author_nickname'];
                 $author_name or $author_name =
-                    $ctx->mt->translate('Author (#').$author['author_id'].')';
+                    $ctx->mt->translate('(Display Name not set)');
             }
         }
         return $author_name;
@@ -1420,6 +1420,19 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         $year_ext = $mt->db->apply_extract_date('year', 'entry_authored_on');
         $ctx = $mt->context();
         $index = $ctx->stash('index_archive');
+        $inside = $ctx->stash('inside_archive_list');
+        if (!isset($inside)) {
+          $inside = false;
+        }
+        if ($inside) {
+            $ts = $ctx->stash('current_timestamp');
+            $tsend = $ctx->stash('current_timestamp_end');
+            if ($ts && $tsend) {
+                $ts = $mt->db->ts2db($ts);
+                $tsend = $mt->db->ts2db($tsend);
+                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+            }
+        }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
@@ -1438,6 +1451,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
                and entry_status = 2
                and entry_class = 'entry'
                $cat_filter
+               $date_filter
              group by
                    $year_ext,
                    placement_category_id
@@ -1504,6 +1518,19 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         $month_ext = $mt->db->apply_extract_date('month', 'entry_authored_on');
         $ctx = $mt->context();
         $index = $ctx->stash('index_archive');
+        $inside = $ctx->stash('inside_archive_list');
+        if (!isset($inside)) {
+          $inside = false;
+        }
+        if ($inside) {
+            $ts = $ctx->stash('current_timestamp');
+            $tsend = $ctx->stash('current_timestamp_end');
+            if ($ts && $tsend) {
+                $ts = $mt->db->ts2db($ts);
+                $tsend = $mt->db->ts2db($tsend);
+                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+            }
+        }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
@@ -1523,6 +1550,7 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
                and entry_status = 2
                and entry_class = 'entry'
                $cat_filter
+               $date_filter
              group by
                    $year_ext,
                    $month_ext,
@@ -1594,6 +1622,19 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
         $day_ext = $mt->db->apply_extract_date('day', 'entry_authored_on');
         $ctx = $mt->context();
         $index = $ctx->stash('index_archive');
+        $inside = $ctx->stash('inside_archive_list');
+        if (!isset($inside)) {
+          $inside = false;
+        }
+        if ($inside) {
+            $ts = $ctx->stash('current_timestamp');
+            $tsend = $ctx->stash('current_timestamp_end');
+            if ($ts && $tsend) {
+                $ts = $mt->db->ts2db($ts);
+                $tsend = $mt->db->ts2db($tsend);
+                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+            }
+        }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
@@ -1614,6 +1655,7 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
                and entry_status = 2
                and entry_class = 'entry'
                $cat_filter
+               $date_filter
              group by
                    placement_category_id,
                    $year_ext,
@@ -1688,6 +1730,19 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
             : '';
         $ctx = $mt->context();
         $index = $ctx->stash('index_archive');
+        $inside = $ctx->stash('inside_archive_list');
+        if (!isset($inside)) {
+          $inside = false;
+        }
+        if ($inside) {
+            $ts = $ctx->stash('current_timestamp');
+            $tsend = $ctx->stash('current_timestamp_end');
+            if ($ts && $tsend) {
+                $ts = $mt->db->ts2db($ts);
+                $tsend = $mt->db->ts2db($tsend);
+                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+            }
+        }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
@@ -1706,6 +1761,7 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
                and entry_status = 2
                and entry_class = 'entry'
                $cat_filter
+               $date_filter
              group by
                    entry_week_number,
                    placement_category_id

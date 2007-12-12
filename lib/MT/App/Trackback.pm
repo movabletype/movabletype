@@ -512,47 +512,37 @@ sub _send_ping_notification {
                 nonce   => $nonce
             }
           );
+        my $edit_link = $base
+          . $app->uri_params(
+            'mode' => 'view',
+            args => { blog_id => $blog->id, '_type' => 'ping', id => $ping->id }
+          );
+        my $ban_link = $base
+          . $app->uri_params(
+            'mode' => 'save',
+            args   => {
+                '_type' => 'banlist',
+                blog_id => $blog->id,
+                ip      => $ping->ip
+            }
+          );
         my %param = (
-            blog_name   => $blog->name,
-            blog_id     => $blog->id,
-            approve_url => $approve_link,
-            spam_url    => $spam_link,
-            edit_url    => $base
-              . $app->uri_params(
-                'mode' => 'view',
-                args =>
-                  { blog_id => $blog->id, '_type' => 'ping', id => $ping->id }
-              ),
-            ban_url => $base
-              . $app->uri_params(
-                'mode' => 'save',
-                args   => {
-                    '_type' => 'banlist',
-                    blog_id => $blog->id,
-                    ip      => $ping->ip
-                }
-              ),
-            ping_ip        => $ping->ip,
-            ping_url       => $ping->source_url,
-            ping_excerpt   => wrap_text( $ping->excerpt, 72 ),
-            ping_blog_name => $ping->blog_name,
-            ping_title     => $ping->title,
+            blog           => $blog,
+            approve_url    => $approve_link,
+            spam_url       => $spam_link,
+            edit_url       => $edit_link,
+            ban_url        => $ban_link,
+            ping           => $ping,
             unapproved     => !$ping->visible(),
-            state_editable => ( $author->is_superuser()
-                || ( $author->permissions($blog->id)->can_manage_feedback
-                  || $author->permissions($blog->id)->can_publish_post )
+            state_editable => (
+                $author->is_superuser()
+                  || ( $author->permissions( $blog->id )->can_manage_feedback
+                    || $author->permissions( $blog->id )->can_publish_post )
               ) ? 1 : 0,
         );
-        my $author;
-        if ($entry) {
-            $param{entry_id}    = $entry->id;
-            $param{entry_title} = $entry->title;
-            $param{view_url}    = $entry->permalink;
-        }
-        elsif ($cat) {
-            $param{category_id}    = $cat->id;
-            $param{category_label} = $cat->label;
-        }
+        $param{entry}    = $entry if $entry;
+        $param{category} = $cat   if $cat;
+
         my $charset = $app->config('MailEncoding') || $app->charset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
         my $body = MT->build_email( 'new-ping.tmpl', \%param );

@@ -1126,6 +1126,10 @@ li#config-menu {
     background-image: url('../images/status_icons/success.gif');
 }
 
+.dashboard .entry-status-review .entry-inner {
+    background-image: url('../images/status_icons/warning.gif');
+}
+
 .dashboard .entry-status-draft .entry-inner {
     background-image: url('../images/status_icons/draft.gif');
 }
@@ -1871,6 +1875,7 @@ optgroup option {
 .listing .status-draft img { background-image: url(../images/status_icons/draft.gif); }
 .listing .status-future img { background-image: url(../images/status_icons/future.gif); }
 .listing .status-pending img { background-image: url(../images/status_icons/warning.gif); }
+.listing .status-review img { background-image: url(../images/status_icons/warning.gif); }
 .listing .status-trusted img { background-image: url(../images/status_icons/trusted.gif); }
 .listing .status-banned img { background-image: url(../images/status_icons/banned.gif); }
 .listing .status-authenticated img { background-image: url(../images/status_icons/authenticated.gif); }
@@ -1897,6 +1902,7 @@ optgroup option {
 .listing .selected .status-draft img { background-image: url(../images/status_icons/invert-draft.gif); }
 .listing .selected .status-future img { background-image: url(../images/status_icons/invert-future.gif); }
 .listing .selected .status-pending img { background-image: url(../images/status_icons/invert-warning.gif); }
+.listing .selected .status-review img { background-image: url(../images/status_icons/invert-warning.gif); }
 .listing .selected .status-trusted img { background-image: url(../images/status_icons/invert-trusted.gif); }
 .listing .selected .status-banned img { background-image: url(../images/status_icons/invert-banned.gif); }
 .listing .selected .status-authenticated img { background-image: url(../images/status_icons/invert-authenticated.gif); }
@@ -2417,9 +2423,6 @@ optgroup option {
     width: 75%;
 }
 
-#entry-date {
-    width: 85%;
-}
 
 #basename-lock {
     display: block;
@@ -2436,13 +2439,13 @@ optgroup option {
     clear: left;
 }
 
-#authored_on-field .field-content span * {
+.date-time-fields * {
     float: left;
 }
 
 .entry-date,
 .entry-time {
-    width: 40%;
+    width: 80px;
 }
 
 .date-picker {
@@ -3057,12 +3060,21 @@ body.preview-screen {
     background-position: right center;
 }
 
-.icon-mini-comments { background-image: url('../images/nav_icons/mini/comments.gif'); }
-.icon-mini-docs { background-image: url('../images/nav_icons/mini/docs.gif'); }
-.icon-mini-view-site { background-image: url('../images/nav_icons/mini/view-site.gif'); }
-.icon-mini-templates { background-image: url('../images/nav_icons/mini/templates.gif'); }
-.icon-mini-settings { background-image: url('../images/nav_icons/mini/settings.gif'); }
-.icon-mini-delete { background-image: url('../images/nav_icons/mini/delete.gif'); }
+.icon-mini-comments     { background-image: url('../images/nav_icons/mini/comments.gif'); }
+.icon-mini-docs         { background-image: url('../images/nav_icons/mini/docs.gif'); }
+.icon-mini-view-site    { background-image: url('../images/nav_icons/mini/view-site.gif'); }
+.icon-mini-templates    { background-image: url('../images/nav_icons/mini/templates.gif'); }
+.icon-mini-settings     { background-image: url('../images/nav_icons/mini/settings.gif'); }
+.icon-mini-delete       { background-image: url('../images/nav_icons/mini/delete.gif'); }
+.icon-mini-trackbacks   { background-image: url('../images/nav_icons/mini/trackbacks.gif'); }
+.icon-mini-rebuild      { background-image: url('../images/nav_icons/mini/rebuild.gif'); }
+.icon-mini-dashboard    { background-image: url('../images/nav_icons/mini/dashboard.gif'); }
+.icon-mini-new-entry    { background-image: url('../images/nav_icons/mini/entry-new.gif'); }
+.icon-mini-new-page     { background-image: url('../images/nav_icons/mini/page-new.gif'); }
+.icon-mini-new-asset    { background-image: url('../images/nav_icons/mini/asset-new.gif'); }
+.icon-mini-entries      { background-image: url('../images/nav_icons/mini/entries.gif'); }
+.icon-mini-pages        { background-image: url('../images/nav_icons/mini/pages.gif'); }
+.icon-mini-assets       { background-image: url('../images/nav_icons/mini/assets.png'); }
 
 .icon-mini-delete span { display: none; }
 

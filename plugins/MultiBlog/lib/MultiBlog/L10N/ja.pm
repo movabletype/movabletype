@@ -7,11 +7,21 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+## plugins/MultiBlog/lib/MultiBlog/Tags.pm
+	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlogタグは入れ子にできません。',
+	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'mode属性が不正です。loopまたはcontextを指定してください。',
+
+## plugins/MultiBlog/lib/MultiBlog.pm
+	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'include_blogs、exclude_blogs、blog_ids、そしてblog_id属性は一緒に使えません。',
+	'The attribute exclude_blogs cannot take "all" for a value.' => 'exclude_blogs属性はallを設定できません。',
+	'The value of the blog_id attribute must be a single blog ID.' => 'blog_id属性にはブログIDをひとつしか指定できません。',
+	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'include_blogs/exclude_blogs属性はカンマで区切ったひとつ以上のIDを設定できます。',
+
 ## plugins/MultiBlog/tmpl/dialog_create_trigger.tmpl
 	'Create MultiBlog Trigger' => 'MultiBlog トリガーの作成',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
-	'When' => '', # Translate - New
+	'When' => '',
 	'Any Weblog' => 'すべてのブログ',
 	'Weblog' => 'ブログ',
 	'Trigger' => 'トリガー',
@@ -35,8 +45,7 @@ use vars qw( %Lexicon );
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログを>またがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブロ>グからのコンテンツへのアクセスを許可することもできます。',
 
 ## plugins/MultiBlog/multiblog.pl
-	'MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.' => 'MultiBlogを使うと、他のブログにあるテンプレートコンテンツあるいは通常のコンテンツを公開することができます。再構築時の依存関係やアクセス制御を設定する
-こともできます。',
+	'MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.' => 'MultiBlogを使うと他のブログのコンテンツを公開したりブログ同士での公開ルールの設定やアクセス制限を行うことができます。',
 	'MultiBlog' => 'マルチブログ',
 	'Create Trigger' => 'トリガーを作成',
 	'Weblog Name' => 'ブログ名',
@@ -50,16 +59,6 @@ use vars qw( %Lexicon );
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新情報を送信する',
-
-## plugins/MultiBlog/lib/MultiBlog/Tags.pm
-	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlogタグは入れ子にできません。',
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'mode属性が不正です。loopまたはcontextを指定してください。',
-
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'include_blogs、exclude_blogs、blog_ids、そしてblog_id属性は一緒に使えません。',
-	'The attribute exclude_blogs cannot take "all" for a value.' => 'exclude_blogs属性はallを設定できません。',
-	'The value of the blog_id attribute must be a single blog ID.' => 'blog_id属性にはブログIDをひとつしか指定できません。',
-	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'include_blogs/exclude_blogs属性はカンマで区切ったひとつ以上のIDを設定できます。',
 
 );
 

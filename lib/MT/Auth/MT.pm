@@ -125,8 +125,14 @@ sub validate_credentials {
             }
         }
         if ($author && !$author->is_active) {
-            $result = MT::Auth::INACTIVE();
-            $app->user(undef);
+            if ( MT::Author::INACTIVE() == $author->status ) {
+                $result = MT::Auth::INACTIVE();
+                $app->user(undef);
+            }
+            elsif ( MT::Author::PENDING() == $author->status ) {
+                $result = MT::Auth::PENDING();
+                # leave user in $app - removed later in app
+            }
         }
     }
     return $result;

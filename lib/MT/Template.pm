@@ -347,8 +347,14 @@ sub _sync_from_disk {
     my $tmpl = shift;
     my $lfile = $tmpl->linked_file;
     unless (File::Spec->file_name_is_absolute($lfile)) {
-        my $blog = MT::Blog->load($tmpl->blog_id);
-        $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        if ($tmpl->blog_id) {
+            my $blog = MT::Blog->load($tmpl->blog_id);
+            $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        }
+        else {
+            # use MT path to base relative paths
+            $lfile = File::Spec->catfile(MT->instance->server_path, $lfile);
+        }
     }
     return unless -e $lfile;
     my($size, $mtime) = (stat _)[7,9];
@@ -379,8 +385,12 @@ sub _sync_to_disk {
         }
     }
     unless (File::Spec->file_name_is_absolute($lfile)) {
-        my $blog = MT::Blog->load($tmpl->blog_id);
-        $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        if ($tmpl->blog_id) {
+            my $blog = MT::Blog->load($tmpl->blog_id);
+            $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        } else {
+            $lfile = File::Spec->catfile(MT->instance->server_path, $lfile);
+        }
     }
     local *FH;
     ## If the linked file already exists, and there is no template text

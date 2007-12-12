@@ -40,9 +40,13 @@ mt-static/themes/unity-purple
 
 # Conditional SKIP rule; format: #?(var=value) RULE
 #?package=MT ^addons
+#?package=MT ^mt-cp.cgi
 #?package=MT ^mt-static/addons
+#?package=MT ^mt-static/themes/tristan-blue
 #?package=MTE ^addons/Community.pack
 #?package=MTE ^mt-static/addons/Community.pack
+#?package=MTE ^mt-cp.cgi
+#?package=MTE ^mt-static/themes/tristan-blue
 #?package=MTCP ^addons/Enterprise.pack
 #?package=MTCP ^mt-static/addons/Enterprise.pack
 

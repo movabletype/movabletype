@@ -10,9 +10,6 @@ use strict;
 use MT::Util qw( decode_url is_valid_email escape_unicode );
 use MT::I18N qw( encode_text );
 
-use Net::OpenID::Consumer;
-use XML::XPath;
-
 sub login {
     my $class = shift;
     my ($app) = @_;
@@ -63,26 +60,26 @@ sub handle_sign_in {
     if(my $setup_url = $csr->user_setup_url( post_grant => 'return' )) {
         return $app->redirect($setup_url);
     } elsif(my $vident = $csr->verified_identity) {
-        my $nick = _get_nickname($vident);
-        my $name = _url_hash($vident->url);
-        $nick = $name unless $nick;
+        my $name = $vident->url;
+        my $nick = $class->get_nickname($vident);
 
         # Signature was valid, so create a session, etc.
         my $enc = $app->{cfg}->PublishCharset || '';
         my $nick_escaped = escape_unicode($nick);
         $nick = encode_text($nick, 'utf-8', undef);
         $session = $app->_make_commenter_session($app->make_magic_token, q(),
-                                                 $name, $nick_escaped, undef, $vident->url);
+                                                 $name, $nick_escaped, undef, $name);
         unless ($session) {
             $app->error($app->errstr() || $app->translate("Couldn't save the session"));
             return 0;
         }
         $cmntr = $app->_make_commenter(
-            email     => q(),
-            nickname  => $nick,
-            name      => $name,
-            url       => $vident->url,
-            auth_type => $auth_type,
+            email       => q(),
+            nickname    => $nick,
+            name        => $name,
+            url         => $vident->url,
+            auth_type   => $auth_type,
+            external_id => _url_hash($vident->url),
         );
     } else {
         # If there's no signature, then we trust the cookie.
@@ -108,12 +105,22 @@ sub _get_csr {
     my ($params, $blog) = @_;
     my $secret = MT->config->SecretToken;
     my $ua = eval { require LWPx::ParanoidAgent; LWPx::ParanoidAgent->new; };
-    $ua ||= LWP::UserAgent->new;
+    unless ($ua) {
+        require LWP::UserAgent;
+        $ua = LWP::UserAgent->new;
+    }
+    require Net::OpenID::Consumer;
     Net::OpenID::Consumer->new(
         ua => $ua,
         args => $params,
         consumer_secret => $secret,
     );
+}
+
+sub get_nickname {
+    my $class = shift;
+    my ($vident) = @_;
+    _get_nickname(@_);
 }
 
 sub _get_nickname {
@@ -130,6 +137,7 @@ sub _get_nickname {
         if($resp->is_success) {
             my $name;
 
+            require XML::XPath;
             my $xml = XML::XPath->new( xml => $resp->content );
             $xml->set_namespace('RDF', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#');
             $xml->set_namespace('FOAF', 'http://xmlns.com/foaf/0.1/');
@@ -147,7 +155,8 @@ sub _get_nickname {
         my $resp = $ua->get($atom_url);
         if($resp->is_success) {
             my $name;
-            
+
+            require XML::XPath;
             my $xml = XML::XPath->new( xml => $resp->content );
             if(my ($name_el) = $xml->findnodes('/feed/author/name')) {
                 $name = $name_el->string_value;
@@ -158,7 +167,7 @@ sub _get_nickname {
         }
     }
 
-    return $vident->display;
+    return $vident->display ? $vident->display : $vident->url;
 }
 
 sub _url_hash {

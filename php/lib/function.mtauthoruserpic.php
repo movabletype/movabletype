@@ -7,13 +7,13 @@ function smarty_function_mtauthoruserpic($args, &$ctx) {
     $blog =& $ctx->stash('blog');
 
     require_once("MTUtil.php");
-    $asset_url = asset_url($asset[0]['asset_url'], $blog);
+    $userpic_url = userpic_url($asset[0], $blog, $author);
     $asset_path = asset_path($asset[0]['asset_file_path'], $blog);
     list($src_w, $src_h, $src_type, $src_attr) = getimagesize($asset_path);
     $dimensions = sprintf('width="%s" height="%s"', $src_w, $src_h);
 
     $link =sprintf('<img src="%s" %s alt="%s" />',
-                   encode_html($asset_url), $dimensions, encode_html($asset['label']));
+                   encode_html($userpic_url), $dimensions, encode_html($asset['label']));
 
     return $link;
 }

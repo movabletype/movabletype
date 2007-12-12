@@ -116,6 +116,31 @@ MT.App = new Class( MT.App, {
                 break;
 
             default:
+                if (command) {
+                    var calendarFields = command.match( /openCalendar(.+)/ );
+                    if (calendarFields) {
+                        var fieldName = calendarFields[1];
+                        fieldName = fieldName.replace( /^Xxx_/, "d_" );
+                        if (!fieldName) break;
+                        this['handle' + fieldName ] = function ( date ) {
+                            if ( !date )
+                                return;
+
+                            DOM.getElement( fieldName ).value
+                                = date.toISOString().replace( /^(.+)T.*/, "$1" );
+
+                            this.changed = true;
+                        };
+                        this.calendar.open(
+                            {
+                                date: DOM.getElement( fieldName ).value
+                            },
+                            this.getIndirectMethod( "handle" + fieldName ),
+                            event.commandElement
+                        );
+                        break;
+                    }
+                }
                 return arguments.callee.applySuper( this, arguments );
 
         }

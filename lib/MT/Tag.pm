@@ -396,7 +396,6 @@ sub save_tags {
         }
         $clear_cache = 1;
     }
-    print STDERR "clear_cache:$clear_cache\n";
     delete $obj->{__save_tags};
     if ($clear_cache) {
         MT::Tag->clear_cache(datasource => $obj->datasource, ($blog_id ? (blog_id => $blog_id) : ()));

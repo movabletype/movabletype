@@ -18,6 +18,7 @@ use constant DELETED          => 5;
 use constant REDIRECT_NEEDED  => 6;
 use constant NEW_LOGIN        => 7;
 use constant NEW_USER         => 8;
+use constant PENDING          => 9;
 
 {
 my $auth_module;

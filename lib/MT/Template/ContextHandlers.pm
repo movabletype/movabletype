@@ -20,7 +20,7 @@ use Time::Local qw( timegm timelocal );
 use MT::Promise qw(lazy delay force);
 use MT::Category;
 use MT::Entry;
-use MT::I18N qw( first_n_text const uppercase lowercase substr_text length_text );
+use MT::I18N qw( first_n_text const uppercase lowercase substr_text length_text wrap_text );
 use MT::Asset;
 
 sub init_default_handlers {}
@@ -91,7 +91,7 @@ sub core_tags {
             Authors => \&_hdlr_authors,
 
             Blogs => \&_hdlr_blogs,
-            BlogIfCCLicense => \&_hdlr_blog_if_cc_license,
+            'BlogIfCCLicense?' => \&_hdlr_blog_if_cc_license,
             Entries => \&_hdlr_entries,
             EntriesHeader => \&_hdlr_pass_tokens,
             EntriesFooter => \&_hdlr_pass_tokens,
@@ -246,6 +246,7 @@ sub core_tags {
             SearchScript => \&_hdlr_search_script,
             XMLRPCScript => \&_hdlr_xmlrpc_script,
             AtomScript => \&_hdlr_atom_script,
+            NotifyScript => \&_hdlr_notify_script,
             Date => \&_hdlr_sys_date,
             Version => \&_hdlr_mt_version,
             ProductName => \&_hdlr_product_name,
@@ -255,12 +256,15 @@ sub core_tags {
             ConfigFile => \&_hdlr_config_file,
 
             CommenterNameThunk => \&_hdlr_commenter_name_thunk,
+            CommenterUsername => \&_hdlr_commenter_username, 
             CommenterName => \&_hdlr_commenter_name,
             CommenterEmail => \&_hdlr_commenter_email,
             CommenterAuthType => \&_hdlr_commenter_auth_type,
             CommenterAuthIconURL => \&_hdlr_commenter_auth_icon_url,
             CommenterUserpic => \&_hdlr_commenter_userpic,
+            CommenterUserpicURL => \&_hdlr_commenter_userpic_url,
             CommenterID => \&_hdlr_commenter_id,
+            CommenterURL => \&_hdlr_commenter_url,
             FeedbackScore => \&_hdlr_feedback_score,
 
             AuthorID => \&_hdlr_author_id,
@@ -271,6 +275,7 @@ sub core_tags {
             AuthorAuthType => \&_hdlr_author_auth_type,
             AuthorAuthIconURL => \&_hdlr_author_auth_icon_url,
             AuthorUserpic => \&_hdlr_author_userpic,
+            AuthorUserpicURL => \&_hdlr_author_userpic_url,
             AuthorNext => \&_hdlr_author_prev_next,
             AuthorPrevious => \&_hdlr_author_prev_next,
 
@@ -317,6 +322,7 @@ sub core_tags {
             EntryAuthorNickname => \&_hdlr_entry_author_nick,
             EntryAuthorID => \&_hdlr_entry_author_id,
             EntryAuthorUserpic => \&_hdlr_entry_author_userpic,
+            EntryAuthorUserpicURL => \&_hdlr_entry_author_userpic_url,
             EntryDate => \&_hdlr_entry_date,
             EntryCreatedDate => \&_hdlr_entry_create_date,
             EntryModifiedDate => \&_hdlr_entry_mod_date,
@@ -556,6 +562,7 @@ sub core_tags {
             'strip_tags' => \&_fltr_strip_tags,
             '_default' => \&_fltr_default,
             'nofollowfy' => \&_fltr_nofollowfy,
+            'wrap_text' => \&_fltr_wrap_text,
         },
     };
 }
@@ -835,6 +842,12 @@ sub _fltr_default {
 # sub _fltr_wordwrap {
 #     my ($str, $val, $ctx) = @_;
 # }
+
+sub _fltr_wrap_text {
+    my ($str, $val, $ctx) = @_;
+    my $ret = wrap_text($str, $val);
+    return $ret;
+}
 
 ##  Core template tags
 
@@ -1283,15 +1296,33 @@ sub _hdlr_else {
 sub _hdlr_if {
     my ($ctx, $args, $cond) = @_;
     my $var = $args->{name} || $args->{var};
-    my $value = $ctx->var($var);
-    if (ref($value)) {
-        if (UNIVERSAL::isa($value, 'MT::Template')) {
-            $value = $value->output();
-        } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
-            local $ctx->{__stash}{tokens} = $value;
-            $value = _hdlr_pass_tokens(@_) or return;
+    my $value;
+    if (defined $var) {
+        $value = $ctx->var($var);
+        if (ref($value)) {
+            if (UNIVERSAL::isa($value, 'MT::Template')) {
+                $value = $value->output();
+            } elsif (UNIVERSAL::isa($value, 'MT::Template::Tokens')) {
+                local $ctx->{__stash}{tokens} = $value;
+                $value = _hdlr_pass_tokens(@_) or return;
+            }
         }
     }
+    elsif (defined(my $tag = $args->{tag})) {
+        $tag =~ s/^MT:?//i;
+        my ($handler) = $ctx->handler_for($tag);
+        if (defined($handler)) {
+            local $ctx->{__stash}{tag} = $args->{tag};
+            $value = $handler->($ctx, { %$args });
+            if (my $ph = $ctx->post_process_handler) {
+                $value = $ph->($ctx, $args, $value);
+            }
+        }
+        else {
+            return $ctx->error(MT->translate("Invalid tag [_1] specified.", $tag));
+        }
+    }
+
     my $numeric = qr/^[-]?\d+(\.\d+)?$/;
     no warnings;
     if (exists $args->{eq}) {
@@ -1349,8 +1380,18 @@ sub _hdlr_if {
         }
     }
     elsif (exists $args->{like}) {
-        my $re = eval { qr/$args->{like}/ };
-        return defined($value) && ($value =~ m/$re/) ? 1 : 0;
+        my $like = $args->{like};
+        if (!ref $like) {
+            if ($like =~ m!^/.+/([si]+)?$!s) {
+                my $opt = $1;
+                $like =~ s!^/|/([si]+)?$!!g; # /abc/ => abc
+                $like = "(?$opt)" . $like if defined $opt;
+            }
+            my $re = eval { qr/$like/ };
+            return 0 unless $re;
+            $args->{like} = $like = $re;
+        }
+        return defined($value) && ($value =~ m/$like/) ? 1 : 0;
     }
     elsif (exists $args->{test}) {
         my $expr = $args->{'test'};
@@ -2425,6 +2466,11 @@ sub _hdlr_atom_script {
     return $ctx->{config}->AtomScript;
 }
 
+sub _hdlr_notify_script {
+    my ($ctx) = @_;
+    return $ctx->{config}->NotifyScript;
+}
+
 sub _no_author_error {
     return $_[0]->error(MT->translate(
         "You used an '[_1]' tag outside of the context of a author; " .
@@ -2604,7 +2650,7 @@ sub _hdlr_authors {
             while (my ($score, $object_id) = $scores->()) {
                 next if $score_offset && ($i + 1) < $score_offset;
                 push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
-                last unless %a;
+                $scores->('finish'), last unless %a;
                 $i++;
                 $scores->('finish'), last if $score_limit && $i >= $score_limit;
             }
@@ -2624,7 +2670,7 @@ sub _hdlr_authors {
             while (my ($score, $object_id) = $scores->()) {
                 next if $score_offset && ($i + 1) < $score_offset;
                 push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
-                last unless %a;
+                $scores->('finish'), last unless %a;
                 $i++;
                 $scores->('finish'), last if $score_limit && $i >= $score_limit;
             }
@@ -2670,7 +2716,7 @@ sub _hdlr_author_display_name {
         $a = $e->author if $e; 
     } 
     return $_[0]->_no_author_error('MTAuthorDisplayName') unless $a;
-    $a->nickname || MT->translate('Author (#[_1])', $a->id);
+    $a->nickname || MT->translate('(Display Name not set)', $a->id);
 } 
 
 sub _hdlr_author_email {
@@ -2697,14 +2743,20 @@ sub _hdlr_author_auth_type {
 sub _hdlr_author_auth_icon_url {
     my $author = $_[0]->stash('author')
         or return $_[0]->_no_author_error('MTAuthorAuthType');
-    return $author->auth_icon_url;
+    my $size = $_[1]->{size} || 'logo_small';
+    return $author->auth_icon_url($size);
 }
 
 sub _hdlr_author_userpic {
     my $author = $_[0]->stash('author')
         or return $_[0]->_no_author_error('MTAuthorUserpic');
-    my $asset = $author->userpic or return '';
-    $asset->as_html({ include => 1, enclose => 0 });
+    $author->userpic_html() || '';
+}
+
+sub _hdlr_author_userpic_url {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorUserpicURL');
+    $author->userpic_url() || '';
 }
 
 sub _hdlr_author_userpic_asset {
@@ -2990,8 +3042,9 @@ RDF
     $rdf;
 }
 sub _hdlr_blog_if_cc_license {
-    return '' unless $_[0]->stash('blog');
-    $_[0]->stash('blog')->cc_license ? _hdlr_pass_tokens(@_) : '';
+    my $blog = $_[0]->stash('blog');
+    return 0 unless $blog;
+    $blog->cc_license ? 1 : 0;
 }
 
 sub _hdlr_blog_file_extension {
@@ -3061,14 +3114,16 @@ sub _hdlr_entries {
     }
 
     if (($args->{limit} || '') eq 'auto') {
-        if (my $days = $ctx->stash('blog')->days_on_index) {
+        my ($days, $limit);
+        my $blog = $ctx->stash('blog');
+        if ($blog && ($days = $blog->days_on_index)) {
             my @ago = offset_time_list(time - 3600 * 24 * $days,
                 $blog_id);
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                 $ago[5]+1900, $ago[4]+1, @ago[3,2,1,0];
             $terms{authored_on} = [ $ago ];
             $args{range_incl}{authored_on} = 1;
-        } elsif (my $limit = $ctx->stash('blog')->entries_on_index) {
+        } elsif ($blog && ($limit = $blog->entries_on_index)) {
             $args->{lastn} = $limit;
         } else {
             delete $args->{limit};
@@ -3470,7 +3525,7 @@ sub _hdlr_entries {
             while (my ($score, $object_id) = $scores->()) {
                 $i++, next if $score_offset && $i < $score_offset;
                 push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
-                last unless %e;
+                $scores->('finish'), last unless %e;
                 $i++;
                 $scores->('finish'), last if $score_limit && (scalar @tmp) >= $score_limit;
             }
@@ -3501,7 +3556,7 @@ sub _hdlr_entries {
             while (my ($score, $object_id) = $scores->()) {
                 $i++, next if $score_offset && $i < $score_offset;
                 push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
-                last unless %e;
+                $scores->('finish'), last unless %e;
                 $i++;
                 $scores->('finish'), last if $score_limit && (scalar @tmp) >= $score_limit;
             }
@@ -3598,14 +3653,16 @@ sub _hdlr_entries_count {
         use MT::Entry;
         $terms{blog_id} = $blog_id;
         $terms{status} = MT::Entry::RELEASE();
-        if (my $days = $ctx->stash('blog')->days_on_index) {
+        my ($days, $limit);
+        my $blog = $ctx->stash('blog');
+        if ($blog && ($days = $blog->days_on_index)) {
             my @ago = offset_time_list(time - 3600 * 24 * $days,
                 $ctx->stash('blog_id'));
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                 $ago[5]+1900, $ago[4]+1, @ago[3,2,1,0];
             $terms{authored_on} = [ $ago ];
             $args{range_incl}{authored_on} = 1;
-        } elsif (my $limit = $ctx->stash('blog')->entries_on_index) {
+        } elsif ($blog && ($limit = $blog->entries_on_index)) {
             $args->{lastn} = $limit;
         }
         $args{'sort'} = 'authored_on';
@@ -3648,10 +3705,11 @@ sub _hdlr_entry_body {
         $text = asset_cleanup($text);
     }
 
+    my $blog = $_[0]->stash('blog');
     my $convert_breaks = exists $arg->{convert_breaks} ?
         $arg->{convert_breaks} :
             defined $e->convert_breaks ? $e->convert_breaks :
-                $_[0]->stash('blog')->convert_paras;
+                ( $blog ? $blog->convert_paras : '__default__' );
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
@@ -3674,10 +3732,11 @@ sub _hdlr_entry_more {
         $text = asset_cleanup($text);
     }
 
+    my $blog = $_[0]->stash('blog');
     my $convert_breaks = exists $arg->{convert_breaks} ?
         $arg->{convert_breaks} :
             defined $e->convert_breaks ? $e->convert_breaks :
-                $_[0]->stash('blog')->convert_paras;
+                ($blog ? $blog->convert_paras : '__default__');
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
@@ -3760,8 +3819,8 @@ sub _hdlr_entry_excerpt {
     } elsif ($args->{no_generate}) {
         return '';
     }
-    my $words = $ctx->stash('blog')->words_in_excerpt;
-    $words = 40 unless defined $words && $words ne '';
+    my $blog = $ctx->stash('blog');
+    my $words = $args->{words} || $blog ? $blog->words_in_excerpt : 40;
     my $excerpt = _hdlr_entry_body($ctx, { words => $words, %$args });
     return '' unless $excerpt;
     $excerpt . '...';
@@ -3877,8 +3936,14 @@ sub _hdlr_entry_author_userpic {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $a = $e->author or return '';
-    my $userpic = $a->userpic;
-    $userpic ? $userpic->as_html({ include => 1, enclose => 0 }) || '' : '';
+    $a->userpic_html() || '';
+}
+
+sub _hdlr_entry_author_userpic_url {
+    my $e = $_[0]->stash('entry')
+        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my $a = $e->author or return '';
+    $a->userpic_url() || '';
 }
 
 sub _hdlr_entry_author_userpic_asset {
@@ -3941,6 +4006,7 @@ sub _hdlr_entry_tb_data {
     ## SGML comments cannot contain double hyphens, so we convert
     ## any double hyphens to single hyphens.
     my $strip_hyphen = sub {
+        return unless defined $_[0];
         (my $s = $_[0]) =~ tr/\-//s;
         $s;
     };
@@ -4149,31 +4215,26 @@ sub _hdlr_entry_ping_count {
     $e->ping_count;
 }
 sub _hdlr_entry_previous {
-    my($ctx, $args, $cond) = @_;
-    my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
-    my $prev = $e->previous(1);
-    my $res = '';
-    if ($prev) {
-        my $builder = $ctx->stash('builder');
-        local $ctx->{__stash}->{entry} = $prev;
-        local $ctx->{current_timestamp} = $prev->authored_on;
-        my $out = $builder->build($ctx, $ctx->stash('tokens'), $cond);
-        return $ctx->error( $builder->errstr ) unless defined $out;
-        $res .= $out;
-    }
-    $res;
+    _hdlr_entry_nextprev('previous', @_);
 }
+
 sub _hdlr_entry_next {
-    my($ctx, $args, $cond) = @_;
+    _hdlr_entry_nextprev('next', @_);
+}
+
+sub _hdlr_entry_nextprev {
+    my($meth, $ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
-    my $next = $e->next(1);
+    my $terms = { status => MT::Entry::RELEASE() };
+    $terms->{by_author} = 1 if $args->{by_author};
+    $terms->{by_category} = 1 if $args->{by_category};
+    my $entry = $e->$meth($terms);
     my $res = '';
-    if ($next) {
+    if ($entry) {
         my $builder = $ctx->stash('builder');
-        local $ctx->{__stash}->{entry} = $next;
-        local $ctx->{current_timestamp} = $next->authored_on;
+        local $ctx->{__stash}->{entry} = $entry;
+        local $ctx->{current_timestamp} = $entry->authored_on;
         my $out = $builder->build($ctx, $ctx->stash('tokens'), $cond);
         return $ctx->error( $builder->errstr ) unless defined $out;
         $res .= $out;
@@ -4280,7 +4341,8 @@ sub _hdlr_date {
             }
         }
     }
-    return format_ts($args->{'format'}, $ts, $blog, $lang);
+    my $mail_flag = $args->{mail} || 0;
+    return format_ts($args->{'format'}, $ts, $blog, $lang, $mail_flag);
 }
 
 sub _comment_follow {
@@ -4380,15 +4442,23 @@ sub _hdlr_comments {
 
     my $so = lc ($args->{sort_order} || ($blog ? $blog->sort_order_comments : undef) || 'ascend');
     if ($comments) {
-        @comments = @$comments;
         my $n = $args->{lastn};
         if (@filters) {
-            COMMENTS: for my $c (@comments) {
+            COMMENTS: for my $c (@$comments) {
                 for (@filters) {
-                    push @comments, $c if $_->($c);
-                    last COMMENTS if ($n && (scalar @comments == $n))
+                    next COMMENTS unless $_->($c);
                 }
+                push @comments, $c;
             }
+        }
+        else {
+            @comments = @$comments;
+        }
+        if ($n) {
+            my $max = $n - 1 > $#comments ? $#comments : $n - 1;
+            @comments = $so eq 'ascend' ?
+                @comments[$#comments-$max..$#comments] :
+                @comments[0..$max];
         }
     } else {
         $terms{visible} = 1;
@@ -4402,22 +4472,22 @@ sub _hdlr_comments {
         if (my $e = $ctx->stash('entry')) {
             ## Sort in descending order, then grab the first $n ($n most
             ## recent) comments.
-            my $comments = $e->comments;
-            @comments = @$comments;
+            my $comments = $e->comments(\%terms, \%args);
             if (@filters) {
-                COMMENTS: for my $c (@comments) {
+                COMMENTS: for my $c (@$comments) {
                     for (@filters) {
-                        push @comments, $c if $_->($c);
-                        last COMMENTS if ($n && (scalar @comments == $n))
+                        next COMMENTS unless $_->($c);
                     }
+                    push @comments, $c;
                 }
             } else {
-                if ($n) {
-                    my $max = $n - 1 > $#comments ? $#comments : $n - 1;
-                    @comments = $so eq 'ascend' ?
-                        @comments[$#comments-$max..$#comments] :
-                        @comments[0..$max];
-                }
+                @comments = @$comments;
+            }
+            if ($n) {
+                my $max = $n - 1 > $#comments ? $#comments : $n - 1;
+                @comments = $so eq 'ascend' ?
+                    @comments[$#comments-$max..$#comments] :
+                    @comments[0..$max];
             }
         } else {
             $args{'sort'} = 'created_on';
@@ -4462,7 +4532,7 @@ sub _hdlr_comments {
             my @tmp;
             while (my ($score, $object_id) = $scores->()) {
                 push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
-                last unless %m;
+                $scores->('finish'), last unless %m;
             }
             @comments = @tmp;
         } elsif ('rate' eq $col) {
@@ -4477,7 +4547,7 @@ sub _hdlr_comments {
             my @tmp;
             while (my ($score, $object_id) = $scores->()) {
                 push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
-                last unless %m;
+                $scores->('finish'), last unless %m;
             }
             @comments = @tmp;
         }
@@ -4735,7 +4805,8 @@ sub _hdlr_comment_replies {
     require MT::Comment;
     my $iter = MT::Comment->load_iter(\%terms, \%args);
     my %entries;
-    my $so = lc ($args->{sort_order} || $ctx->stash('blog')->sort_order_comments || 'ascend');
+    my $blog = $ctx->stash('blog');
+    my $so = lc($args->{sort_order}) || ($blog ? $blog->sort_order_comments : undef) || 'ascend';
     my $n = $args->{lastn};
     my @comments;
     while (my $c = $iter->()) {
@@ -4801,7 +4872,8 @@ sub _hdlr_comment_replies_recurse {
     require MT::Comment;
     my $iter = MT::Comment->load_iter(\%terms, \%args);
     my %entries;
-    my $so = lc ($args->{sort_order} || $ctx->stash('blog')->sort_order_comments || 'ascend');
+    my $blog = $ctx->stash('blog');
+    my $so = lc($args->{sort_order}) || ($blog ? $blog->sort_order_comments : undef) || 'ascend';
     my $n = $args->{lastn};
     my @comments;
     while (my $c = $iter->()) {
@@ -4891,6 +4963,10 @@ sub _hdlr_commenter_name_thunk {
         return "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>";
     }
 }
+sub _hdlr_commenter_username {
+    my $a = $_[0]->stash('commenter');
+    $a ? $a->name : '';
+}
 sub _hdlr_commenter_name {
     my $a = $_[0]->stash('commenter');
     $a ? $a->nickname || '' : '';
@@ -4907,7 +4983,8 @@ sub _hdlr_commenter_auth_type {
 sub _hdlr_commenter_auth_icon_url {
     my $a = $_[0]->stash('commenter');
     return q() unless $a;
-    return $a->auth_icon_url;
+    my $size = $_[1]->{size} || 'logo_small';
+    return $a->auth_icon_url($size);
 }
 sub _hdlr_commenter_trusted {
     my ($ctx, $args, $cond) = @_;
@@ -4942,19 +5019,30 @@ sub _hdlr_commenter_isauthor {
     return _hdlr_pass_tokens_else(@_);
 }
 
-sub _hdlr_commenter_userpic {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
-    my $cmntr = $_[0]->stash('commenter') or return '';
-    my $userpic = $cmntr->userpic;
-    $userpic ? $userpic->as_html({ include => 1 }) || '' : '';
-}
-
 sub _hdlr_commenter_id {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error($_[0]->stash('tag'));
     my $cmntr = $_[0]->stash('commenter') or return '';
     return $cmntr->id;
+}
+
+sub _hdlr_commenter_url {
+    my $c = $_[0]->stash('comment')
+        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
+    my $cmntr = $_[0]->stash('commenter') or return '';
+    return $cmntr->url;
+}
+
+sub _hdlr_commenter_userpic {
+    my $c = $_[0]->stash('comment')
+        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
+    my $cmntr = $_[0]->stash('commenter') or return '';
+    $cmntr->userpic_html() || '';
+}
+
+sub _hdlr_commenter_userpic_url {
+    my $cmntr = $_[0]->stash('commenter') or return '';
+    $cmntr->userpic_url() || '';
 }
 
 sub _hdlr_commenter_userpic_asset {
@@ -6291,6 +6379,7 @@ sub _hdlr_sub_cats_recurse {
         local $ctx->{__stash}->{'subCatIsFirst'} = !$count;
         local $ctx->{__stash}->{'subCatIsLast'} = !scalar @$cats;
         local $ctx->{__stash}->{'subCatsDepth'} = $depth + 1;
+        local $ctx->{__stash}{vars}->{'__depth__'} = $depth + 1;
         local $ctx->{__stash}{'folder_header'} = !$count
             if $class_type ne 'category';
         local $ctx->{__stash}{'folder_footer'} = !scalar @$cats
@@ -7030,7 +7119,8 @@ sub _hdlr_assets {
             }
         }
     } else {
-        my $so = lc ($args->{sort_order} || $ctx->stash('blog')->sort_order_posts || '');
+        my $blog = $ctx->stash('blog');
+        my $so = lc($args->{sort_order}) || ($blog ? $blog->sort_order_posts : undef) || '';
         my $col = lc ($args->{sort_by} || 'created_on');
         # TBD: check column being sorted; if it is numeric, use numeric sort
         @$assets = $so eq 'ascend' ?

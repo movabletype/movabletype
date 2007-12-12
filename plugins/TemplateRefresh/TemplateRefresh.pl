@@ -31,7 +31,7 @@ MT::Plugin::TemplateRefresh->instance->refresh_all_templates(@_) },
                                         MT->app->blog,
                                     },
                                     order => 1000,
-                                    continue_prompt => 'This action will restore your blog\'s templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.',
+                                    continue_prompt => MT->translate('This action will restore your blog\'s templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.'),
                                 },
                                 refresh_global_templates => {
                                     label => "Refresh Global Templates",
@@ -42,7 +42,7 @@ MT::Plugin::TemplateRefresh->instance->refresh_all_templates(@_) },
                                         ! MT->app->blog,
                                     },
                                     order => 1000,
-                                    continue_prompt => 'This action will restore your global templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.',
+                                    continue_prompt => MT->translate('This action will restore your global templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.'),
                                 },
                             },
                         },
@@ -956,7 +956,14 @@ sub refresh_individual_templates {
 
     my $dict = default_dictionary();
 
-    my $tmpl_list = default_templates($app) or return;
+    my $set;
+    if ( my $blog_id = $app->param('blog_id') ) {
+        my $blog = $app->model('blog')->load($blog_id);
+        $set = $blog->template_set()
+            if $blog;
+    }
+    
+    my $tmpl_list = default_templates($app, $set) or return;
 
     my $trnames    = {};
     my $tmpl_types = {};

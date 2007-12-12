@@ -64,6 +64,28 @@ address {
 }
 
 
+/* Utilities ----------------------------------------------------------------- */
+
+.pkg:after, #content-inner:after {
+    content: " ";
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0.1px;
+    font-size: 0.1em;
+    line-height: 0;
+}
+.pkg, #content-inner { display: inline-block; }
+/* no ie mac \*/
+* html .pkg, * html #content-inner { height: 1%; }
+.pkg, #content-inner { display: block; }
+/* */
+
+.inline { display: inline; }
+.hidden { display: none; }
+
+
+
 /* Layout ----------------------------------------------------------------- */
 
 body {
@@ -184,26 +206,6 @@ body {
 .layout-wm #beta {
     width: 330px;
 }
-
-
-/* Utilities */
-
-.pkg:after, #content-inner:after {
-    content: " ";
-    display: block;
-    visibility: hidden;
-    clear: both;
-    height: 0.1px;
-    font-size: 0.1em;
-    line-height: 0;
-}
-.pkg, #content-inner { display: inline-block; }
-/* no ie mac \*/
-* html .pkg, * html #content-inner { height: 1%; }
-.pkg, #content-inner { display: block; }
-/* */
-
-.inline { display: inline; }
 
 
 /* Content ---------------------------------------------------------------- */
@@ -474,4 +476,8 @@ ul { list-style: disc outside; }
 .widget-syndicate .blog-feeds  {
     list-style: none;
     margin: 5px 0;
+}
+
+.input-default {
+    background-color: #9AAEC2;
 }

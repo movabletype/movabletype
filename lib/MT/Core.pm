@@ -331,6 +331,7 @@ BEGIN {
             'AtomScript'            => { default => 'mt-atom.cgi', },
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
             'CheckScript'           => { default => 'mt-check.cgi', },
+            'NotifyScript'          => { default => 'mt-add-notify.cgi', },
             'PublishCharset'        => {
                 default => 'utf-8',
             },
@@ -496,16 +497,17 @@ BEGIN {
                 tags => sub { MT->app->load_core_tags },
             },
             'cms'      => {
-                handler        => 'MT::App::CMS',
-                cgi_base       => 'mt',
-                page_actions   => sub { MT->app->core_page_actions(@_) },
-                list_actions   => sub { MT->app->core_list_actions(@_) },
-                list_filters   => sub { MT->app->core_list_filters(@_) },
-                search_apis    => sub { MT->app->core_search_apis(@_) },
-                menus          => sub { MT->app->core_menus() },
-                methods        => sub { MT->app->core_methods() },
-                widgets        => sub { MT->app->core_widgets() },
-                import_formats => sub {
+                handler         => 'MT::App::CMS',
+                cgi_base        => 'mt',
+                page_actions    => sub { MT->app->core_page_actions(@_) },
+                list_actions    => sub { MT->app->core_list_actions(@_) },
+                list_filters    => sub { MT->app->core_list_filters(@_) },
+                search_apis     => sub { MT->app->core_search_apis(@_) },
+                menus           => sub { MT->app->core_menus() },
+                methods         => sub { MT->app->core_methods() },
+                widgets         => sub { MT->app->core_widgets() },
+                blog_stats_tabs => sub { MT->app->core_blog_stats_tabs() },
+                import_formats  => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();
                 },
@@ -725,9 +727,12 @@ sub remove_expired_sessions {
     require MT::Session;
 
     my $expired = MT->config->UserSessionTimeout;
-    MT::Session->remove(
+    my @sesss = MT::Session->load(
         { kind => 'US', start => [ undef, time - $expired ] },
         { range => { start => 1 } } );
+    foreach my $s (@sesss) {
+        $s->remove if !$s->get('remember');
+    }
     return '';
 }
 

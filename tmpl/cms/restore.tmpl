@@ -44,6 +44,14 @@
                 <input name="ignore_schema_conflict" id="ignore_schema_conflict" type="checkbox" />
                 <label for="ignore_schema_conflict"><__trans phrase="Ignore schema version conflicts"></label>
         </mtapp:setting>
+        <mtapp:setting
+            id="overwrite_global_templates"
+            label="<__trans phrase="Options">"
+            show_label="0"
+            hint="<__trans phrase="Check this and existing global templates will be overwritten from the backup file.">">
+                <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" />
+                <label for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
+        </mtapp:setting>
         <mt:setvarblock name="action_buttons">
             <button
                 type="submit"

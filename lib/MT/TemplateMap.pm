@@ -94,18 +94,17 @@ sub remove {
             push @$ats, $at if $count > 0;
             $ats{$blog_id} = $ats;
         }
-        foreach my $blog_id (keys %ats) {
-            my $blog = MT->model('blog')->load($blog_id);
-            next unless $blog;
-            $blog->archive_type(join ',', @{ $ats{$blog_id} });
+        my $iter = MT::Blog->load_iter();
+        while ( my $blog = $iter->() ) {
+            $blog->archive_type( $ats{ $blog->id } ? join ',', @{ $ats{ $blog->id } } : '' );
             $blog->save;
-            for my $at (@{ $ats{$blog_id} }) {
+            for my $at ( @{ $ats{ $blog->id } } ) {
                 unless ( __PACKAGE__->count({
-                    blog_id => $blog_id, archive_type => $at, is_preferred => 1 
+                    blog_id => $blog->id, archive_type => $at, is_preferred => 1 
                 }) ) {
                     my $remaining = __PACKAGE__->load(
                       {
-                        blog_id => $blog_id,
+                        blog_id => $blog->id,
                         archive_type => $at,
                       },
                       {

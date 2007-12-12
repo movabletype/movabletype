@@ -13,6 +13,8 @@ class MTViewer extends Smarty {
     var $last_ts = 0;
     var $id;
 
+    var $path_sep;
+
     var $conditionals = array(
         'mtparentcategory' => 1,
         'mttoplevelparent' => 1,
@@ -63,6 +65,7 @@ class MTViewer extends Smarty {
         'space_pad' => 1,
         'zero_pad' => 1,
         'sprintf' => 1,
+        'wrap_text' => 1,
          # native smarty modifiers
         'regex_replace' => 1,
         'capitalize' => 1,
@@ -98,6 +101,7 @@ class MTViewer extends Smarty {
         $this->id = md5(uniqid('MTViewer',true));
         $_COOKIE['SMARTY_DEBUG'] = 0;
         $GLOBALS['HTTP_COOKIE_VARS']['SMARTY_DEBUG'] = 0;
+        $this->path_sep = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? ';' : ':';
         $this->Smarty();
         $this->mt =& $mt;
         $this->__stash =& $this->_tpl_vars;
@@ -110,6 +114,11 @@ class MTViewer extends Smarty {
 
         # Unregister the 'core' regex_replace so we can replace it
         $this->register_modifier('regex_replace', array(&$this, 'regex_replace'));
+    }
+
+    function add_plugin_dir($plugin_dir) {
+        ini_set('include_path', $plugin_dir . $this->path_sep . ini_get('include_path'));
+        $this->plugins_dir[] = $plugin_dir;
     }
 
     function regex_replace($string, $search, $replace) {
@@ -193,32 +202,68 @@ class MTViewer extends Smarty {
 
     function _hdlr_if($args, $content, &$ctx, &$repeat, $cond_tag = 1) {
         if (!isset($content)) {
-            $ctx->localize(array('conditional','else_content'));
-            if ($cond_tag == '1' or $cond_tag == '0') {
-                $ctx->stash('conditional', $cond_tag);
-            } else {
-                $ctx->stash('conditional', $ctx->stash($cond_tag));
+            if (!isset($args['elseif'])) {
+                $ctx->localize(array('conditional', 'else_content', 'elseif_content', 'elseif_conditional'));
+                unset($ctx->_tpl_vars['conditional']);
+                unset($ctx->_tpl_vars['else_content']);
+                unset($ctx->_tpl_vars['elseif_content']);
+                unset($ctx->_tpl_vars['elseif_conditional']);
             }
-            $ctx->stash('else_content', null);
+            if ($cond_tag == '1' or $cond_tag == '0')
+                $ctx->_tpl_vars['conditional'] = $cond_tag;
+            else
+                $ctx->_tpl_vars['conditional'] = $ctx->_tpl_vars[$cond_tag];
         } else {
-            if (!$ctx->stash('conditional')) {
-                $content = $ctx->stash('else_content');
+            if (!$ctx->_tpl_vars['conditional']) {
+                if (isset($ctx->_tpl_vars['else_content'])) {
+                    $content = $ctx->_tpl_vars['else_content'];
+                } else {
+                    $content = '';
+                }
             }
-            $ctx->restore(array('conditional','else_content'));
+            else {
+                if (isset($ctx->_tpl_vars['elseif_content'])) {
+                    $content = $ctx->_tpl_vars['elseif_content'];
+                }
+            }
+            if (!isset($args['elseif'])) {
+                $ctx->restore(array('conditional', 'else_content', 'elseif_content', 'elseif_conditional'));
+            }
         }
         return $content;
     }
 
     function smarty_block_else($args, $content, &$ctx, &$repeat) {
-        if (!isset($content)) {
-            $ctx->stash('else_content', '');
-            if ($ctx->stash('conditional')) {
-                $repeat = false;
+        if (isset($ctx->_tpl_vars['elseif_content'])
+            or ($ctx->_tpl_vars['conditional'])) {
+            $repeat = false;
+            return '';
+        }
+        if (count($args)) { # else-if case
+            require_once("block.mtif.php");
+            $args['elseif'] = 1;
+            if (!isset($content)) {
+                $out = smarty_block_mtif($args, $content, $ctx, $repeat);
+                if ($ctx->_tpl_vars['conditional']) {
+                    $ctx->_tpl_vars['elseif_conditional'] = 1;
+                    unset($ctx->_tpl_vars['conditional']);
+                }
+            } else {
+                // $out = smarty_block_mtif($args, $content, $ctx, $repeat);
+                if ($ctx->_tpl_vars['elseif_conditional']) {
+                    $ctx->_tpl_vars['elseif_content'] = $content;
+                    $ctx->_tpl_vars['conditional'] = 1;
+                }
             }
+            return '';
+        }
+        if (!isset($content)) {
+            if ($ctx->_tpl_vars['conditional'])
+                $repeat = false;
         } else {
-            $else_content = $ctx->stash('else_content');
+            $else_content = $ctx->_tpl_vars['else_content'];
             $else_content .= $content;
-            $ctx->stash('else_content', $else_content);
+            $ctx->_tpl_vars['else_content'] = $else_content;
         }
         return '';
     }

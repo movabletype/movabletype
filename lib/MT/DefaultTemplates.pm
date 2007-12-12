@@ -187,7 +187,7 @@ BEGIN {
                 label => 'New Comment',
             },
             'new-ping' => {
-                label => 'new Ping',
+                label => 'New Ping',
             },
             'notify-entry' => {
                 label => 'Entry Notify',

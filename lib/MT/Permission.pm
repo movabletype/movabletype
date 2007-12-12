@@ -26,7 +26,7 @@ __PACKAGE__->install_properties(
             # 'role_mask3'      => 'integer',
             # 'role_mask4'      => 'integer',
             'permissions'    => 'text',
-            'entry_prefs'    => 'string(255)',
+            'entry_prefs'    => 'text',
             'blog_prefs'     => 'string(255)',
             'template_prefs' => 'string(255)',
             'restrictions'   => 'text',

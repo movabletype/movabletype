@@ -243,7 +243,7 @@ function format_ts($format, $ts, $blog, $lang = null) {
     if ($lang == 'ja') {
         if (count($Languages[$lang]) >= 8) {
             $format = preg_replace('!%B %Y!', $Languages[$lang][6], $format);
-            $format = preg_replace('!%B %E,? %Y!', $Languages[$lang][4], $format);
+            $format = preg_replace('!%B %E,? %Y!i', $Languages[$lang][4], $format);
             $format = preg_replace('!%B %E!', $Languages[$lang][7], $format);
         }
     }
@@ -1254,20 +1254,28 @@ function asset_path($path, $blog) {
     return $path;
 }
 
-function asset_url($url, $blog) {
-    $site_url = $blog['blog_site_url'];
-    $site_url = preg_replace('/\/$/', '', $site_url);
-    $url = preg_replace('/^%r/', $site_url, $url);
-
+function userpic_url($asset, $blog, $author) {
+    $url = $asset['asset_url'];
     $static_path = static_path($blog['blog_site_url']);
     $static_path = preg_replace('/\/$/', '', $static_path);
-    $url = preg_replace('/^%s/', $static_path, $url);
+    $static_path .= '/support';
 
-    $archive_url = $blog['blog_archive_url'];
-    if ($archive_url) {
-        $archive_url = preg_replace('/\/$/', '', $archive_url);
-        $url = preg_replace('/^%a/', $archive_url, $url);
-    }
+    global $mt;
+    $cache_path = $mt->config('AssetCacheDir');
+    $image_path = $cache_path . '/' . 'userpics';
+
+    $format = $mt->translate('userpic-[_1]-%wx%h%x', array($author['author_id']));
+    $max_dim = $mt->config('UserpicThumbnailSize');
+    $ext = '.' . 'png';
+    $patterns[0] = '/%w/';
+    $patterns[1] = '/%h/';
+    $patterns[2] = '/%x/';
+    $replacement[0] = $max_dim;
+    $replacement[1] = $max_dim;
+    $replacement[2] = $ext;
+    $filename = preg_replace($patterns, $replacement, $format);
+
+    $url = sprintf("%s/%s/%s", $static_path, $image_path, $filename);
 
     return $url;
 }

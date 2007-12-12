@@ -42,6 +42,10 @@ sub core_widgets {
     {}
 }
 
+sub core_blog_stats_tabs {
+    {}
+}
+
 sub core_search_apis {
     {}
 }
@@ -741,7 +745,7 @@ sub _cb_mark_blog {
     if ($obj_type eq 'MT::Blog') {
         $blogs_touched->{$obj->id} = 0;
     } else {
-        $blogs_touched->{$obj->blog_id}++;
+        $blogs_touched->{$obj->blog_id} = 1 if $obj->blog_id;
     }
     $mt_req->stash('blogs_touched', $blogs_touched);
 }
@@ -911,13 +915,14 @@ sub make_magic_token {
 }
 
 sub make_session {
-    my $auth = shift;
+    my ($auth, $remember) = @_;
     require MT::Session;
     my $sess = new MT::Session;
     $sess->id(make_magic_token());
     $sess->kind('US');  # US == User Session
     $sess->start(time);
     $sess->set('author_id', $auth->id);
+    $sess->set('remember', 1) if $remember;
     $sess->save;
     $sess;
 }
@@ -1055,7 +1060,7 @@ sub start_session {
         my ($x, $y);
         ($x, $y, $remember) = split(/::/, $app->cookie_val($app->user_cookie));
     }
-    my $session = make_session($author);
+    my $session = make_session($author, $remember);
     my %arg = (-name => $COOKIE_NAME,
                -value => join('::',
                               $author->name,
@@ -1067,6 +1072,131 @@ sub start_session {
     $app->{session} = $session;
     $app->bake_cookie(%arg);
     \%arg;
+}
+
+sub _get_options_tmpl {
+    my $self = shift;
+    my ($authenticator) = @_;
+
+    my $tmpl = $authenticator->{login_form};
+    return q() unless $tmpl;
+    return $tmpl->($authenticator) if ref $tmpl eq 'CODE';
+    if ( $tmpl =~ /\s/ ) {
+        return $tmpl;
+    }
+    else {    # no spaces in $tmpl; must be a filename...
+        if ( my $plugin = $authenticator->{plugin} ) {
+            return $plugin->load_tmpl($tmpl) or die $plugin->errstr;
+        }
+        else {
+            return MT->instance->load_tmpl($tmpl);
+        }
+    }
+}
+
+sub _get_options_html {
+    my $app           = shift;
+    my ($key)         = @_;
+    my $authenticator = MT->commenter_authenticator($key);
+    return q() unless $authenticator;
+
+    my $snip_tmpl = $app->_get_options_tmpl($authenticator);
+    return q() unless $snip_tmpl;
+
+    require MT::Template;
+    my $tmpl;
+    if ( ref $snip_tmpl ne 'MT::Template' ) {
+        $tmpl = MT::Template->new(
+            type   => 'scalarref',
+            source => ref $snip_tmpl ? $snip_tmpl : \$snip_tmpl
+        );
+    }
+    else {
+        $tmpl = $snip_tmpl;
+    }
+
+    $app->set_default_tmpl_params($tmpl);
+    if ( my $p = $authenticator->{login_form_params} ) {
+        my $params = $p->(
+            $key,
+            $app->param('blog_id'),
+            $app->param('entry_id') || undef,
+            $app->param('static') || encode_url($app->param('return_to'))
+        );
+        $tmpl->param($params) if $params;
+    }
+    my $html = $tmpl->output();
+    if ( UNIVERSAL::isa( $authenticator, 'MT::Plugin' )
+        && ( $html =~ m/<__trans / ) )
+    {
+        $html = $authenticator->translate_templatized($html);
+    }
+    $html;
+}
+
+sub external_authenticators {
+    my $app = shift;
+    my ($blog, $param) = @_;
+    return [] unless $blog;
+
+    $param ||= {};
+
+    my @external_authenticators;
+
+    my $ca_reg = $app->registry("commenter_authenticators");
+
+    my @auths = split ',', $blog->commenter_authenticators;
+    my %otherauths;
+    foreach my $key (@auths) {
+        if ( $key eq 'MovableType' ) {
+            $param->{enabled_MovableType} = 1;
+            $param->{default_signin} = 'MovableType';
+            my $cfg = $app->config;
+            if ( my $registration = $cfg->CommenterRegistration ) {
+                if ( $cfg->AuthenticationModule eq 'MT' ) {
+                    $param->{registration_allowed} = $registration->{Allow}
+                      && $blog->allow_commenter_regist ? 1 : 0;
+                }
+            }
+            require MT::Auth;
+            $param->{can_recover_password} = MT::Auth->can_recover_password;
+            next;
+        }
+        my $auth = $ca_reg->{$key};
+        next unless $auth;
+        if (   $key ne 'TypeKey'
+            && $key ne 'OpenID'
+            && $key ne 'Vox'
+            && $key ne 'LiveJournal' )
+        {
+            push @external_authenticators,
+              {
+                name       => $auth->{label},
+                key        => $auth->{key},
+                login_form => $app->_get_options_html($key),
+                exists($auth->{logo}) ? (logo => $auth->{logo}) : (),
+              };
+        }
+        else {
+            $otherauths{$key} = {
+                name       => $auth->{label},
+                key        => $auth->{key},
+                login_form => $app->_get_options_html($key),
+                exists($auth->{logo}) ? (logo => $auth->{logo}) : (),
+            };
+        }
+    }
+
+    unshift @external_authenticators, $otherauths{'TypeKey'}
+      if exists $otherauths{'TypeKey'};
+    unshift @external_authenticators, $otherauths{'Vox'}
+      if exists $otherauths{'Vox'};
+    unshift @external_authenticators, $otherauths{'LiveJournal'}
+      if exists $otherauths{'LiveJournal'};
+    unshift @external_authenticators, $otherauths{'OpenID'}
+      if exists $otherauths{'OpenID'};
+
+    \@external_authenticators;
 }
 
 sub _is_commenter {
@@ -1105,6 +1235,22 @@ sub _is_commenter {
         return -1;
     } 
     return $commenter_blog_id;
+}
+
+# virutal method overridden when pending user has special treatment
+sub login_pending { q() }
+
+# virutal method overridden when commenter needs special treatment
+sub commenter_loggedin {
+    my $app = shift;
+    my ($commenter, $commenter_blog_id) = @_;
+    my $blog = $app->model('blog')->load($commenter_blog_id);
+    my $url = $app->config('CGIPath') . $app->config('CommentScript');
+    $url .= '?__mode=edit_profile';
+    $url .= '&commenter=' . $commenter->id;
+    $url .= '&blog_id=' . $commenter_blog_id;
+    $url .= '&static=' . $blog->site_url;
+    $url;
 }
 
 # MT::App::login
@@ -1152,6 +1298,24 @@ sub login {
         });
         return $app->error($app->translate(
             'This account has been disabled. Please see your system administrator for access.'));
+    } elsif ($res == MT::Auth::PENDING()) {
+        # Login invalid; auth layer reports user was pending
+        # Check if registration is allowed and if so send special message
+        my $message;
+        if ( my $registration = $app->config->CommenterRegistration ) {
+            if ( $registration->{Allow} ) {
+                $message = $app->login_pending();
+            }
+        }
+        $message ||= $app->translate(
+            'This account has been disabled. Please see your system administrator for access.');
+        $app->user(undef);
+        $app->log({
+            message => $app->translate("Failed login attempt by pending user '[_1]'", $user),
+            level => MT::Log::WARNING(),
+            category => 'login_user',
+        });
+        return $app->error($message);
     } elsif ($res == MT::Auth::INVALID_PASSWORD()) {
         # Login invlaid (password error, etc...)
         return $app->error($app->translate('Invalid login.'));
@@ -1232,19 +1396,14 @@ sub login {
                     $app->make_magic_token, 
                     $author->email, 
                     $author->name, 
-                    ($author->nickname || 'User#' . $author->id), 
+                    ($author->nickname || $app->translate('(Display Name not set)')), 
                     $author->id, 
                     undef, 
                     $ctx->{permanent} ? '+10y' : 0
                 );
 
                 if ($commenter_blog_id) {
-                    my $blog = $app->model('blog')->load($commenter_blog_id);
-                    my $url = $app->config('CGIPath') . $app->config('CommentScript');
-                    $url .= '?__mode=edit_profile';
-                    $url .= '&commenter=' . $author->id;
-                    $url .= '&blog_id=' . $commenter_blog_id;
-                    $url .= '&static=' . $blog->site_url;
+                    my $url = $app->commenter_loggedin($author, $commenter_blog_id);
                     return $app->redirect($url);
                 }
             }
@@ -1510,15 +1669,7 @@ sub _send_comment_notification {
                 nonce   => $nonce
             }
           );
-        my %param = (
-            blog_name   => $blog->name,
-            blog_id     => $blog->id,
-            entry_id    => $entry->id,
-            entry_title => $entry->title,
-            view_url    => $comment_link,
-            approve_url => $approve_link,
-            spam_url    => $spam_link,
-            edit_url    => $base
+        my $edit_link = $base
               . $app->uri_params(
                 'mode' => 'view',
                 args   => {
@@ -1526,8 +1677,8 @@ sub _send_comment_notification {
                     '_type' => 'comment',
                     id      => $comment->id
                 }
-              ),
-            ban_url => $base
+              );
+        my $ban_link = $base
               . $app->uri_params(
                 'mode' => 'save',
                 args   => {
@@ -1535,16 +1686,16 @@ sub _send_comment_notification {
                     blog_id => $blog->id,
                     ip      => $comment->ip
                 }
-              ),
-            comment_ip   => $comment->ip,
-            comment_name => $comment->author,
-            (
-                is_valid_email( $comment->email )
-                ? ( comment_email => $comment->email )
-                : ()
-            ),
-            comment_url  => $comment->url,
-            comment_text => wrap_text( $comment->text, 72 ),
+              );
+        my %param = (
+            blog   => $blog,
+            entry    => $entry,
+            view_url    => $comment_link,
+            approve_url => $approve_link,
+            spam_url    => $spam_link,
+            edit_url    => $edit_link,
+            ban_url => $ban_link,
+            comment   => $comment,
             unapproved   => !$comment->visible(),
             state_editable => ( $author->is_superuser()
                 || ( $author->permissions($blog->id)->can_manage_feedback
@@ -1908,7 +2059,9 @@ sub run {
                 }
 
                 if ($code) {
-                    my $content = $code->($app);
+                    my @forward_params = @{ $app->{forward_params} }
+                        if $app->{forward_params};
+                    my $content = $code->($app, @forward_params);
                     $app->response_content($content)
                         if defined $content;
                 }
@@ -2110,7 +2263,6 @@ sub load_widgets {
     $all_widgets = $app->filter_conditional_list($all_widgets, $page, $scope);
 
     my @loop;
-    my $num = 0;
     my @ordered_list;
     my %orders;
     my $order_num = 0;
@@ -2127,6 +2279,35 @@ sub load_widgets {
     }
     @ordered_list = sort { $orders{$a} <=> $orders{$b} } @ordered_list;
 
+    $app->build_widgets(
+        set            => $widget_set,
+        param          => $param,
+        widgets        => $all_widgets,
+        widget_cfgs    => $widgets,
+        order          => \@ordered_list,
+    ) or return;
+
+    if ($resave_widgets) {
+        my $widget_store = $user->widgets();
+        $widget_store->{$widget_set} = $widgets;
+        $user->widgets($widget_store);
+        $user->save;
+    }
+    return $param;
+}
+
+sub build_widgets {
+    my $app = shift;
+    my %params = @_;
+    my ($widget_set, $param, $widgets, $widget_cfgs, $order, $passthru_param) =
+        @params{qw( set param widgets widget_cfgs order passthru_param )};
+    $widget_cfgs    ||= {};
+    $order          ||= [ keys %$widgets ];
+    $passthru_param ||= [ qw( html_head js_include ) ];
+
+    my $blog = $app->blog;
+    my $blog_id = $blog->id if $blog;
+
     # The list of widgets in a user's record
     # is going to look like this:
     #    xxx-1
@@ -2136,15 +2317,14 @@ sub load_widgets {
     # Any numeric suffix is just a means to distinguish
     # the instance of the widget from other instances.
     # The actual widget id is this minus the instance number.
-    my @passthru_param = qw( html_head js_include );
-    foreach my $widget_inst (@ordered_list) {
+    foreach my $widget_inst (@$order) {
         my $widget_id = $widget_inst;
         $widget_id =~ s/-\d+$//;
-        my $widget = $all_widgets->{$widget_id};
+        my $widget = $widgets->{$widget_id};
         next unless $widget;
-        my $widget_cfg = $widgets->{$widget_inst} || {};
+        my $widget_cfg = $widget_cfgs->{$widget_inst} || {};
         my $widget_param = { %$param, %{ $widget_cfg->{param} || {} } };
-        foreach (@passthru_param) {
+        foreach (@$passthru_param) {
             $widget_param->{$_} = '';
         }
         my $tmpl_name = $widget->{template};
@@ -2161,7 +2341,6 @@ sub load_widgets {
         }
         next unless $tmpl;
 
-        $num++;
         my $set = $widget->{set} || $widget_cfg->{set} || 'main';
         local $widget_param->{blog_id} = $blog_id;
         local $widget_param->{widget_block} = $set;
@@ -2191,17 +2370,11 @@ sub load_widgets {
         # header. No other widget-parameters are to leak into the
         # parent template parameter namespace (ie, a widget cannot
         # set/alter the page_title).
-        foreach (@passthru_param) {
+        foreach (@$passthru_param) {
             $param->{$_} = ($param->{$_} || '') . "\n" . $tmpl->param($_);
         }
     }
 
-    if ($resave_widgets) {
-        my $widget_store = $user->widgets();
-        $widget_store->{$widget_set} = $widgets;
-        $user->widgets($widget_store);
-        $user->save;
-    }
     return $param;
 }
 

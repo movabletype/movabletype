@@ -1,0 +1,16 @@
+<mt:if name="tag_cloud">
+    <mt:setvarblock name="tabs" append="1">
+        <li id="tag-tab" class="tab <mt:if name="tab" eq="tag">selected-tab</mt:if>" mt:tab="tag" mt:command="select-tab" onclick="return blogStatsTabSelect('tag');"><a href="javascript:void(0);"><span><__trans phrase="Tags"></span></a></li>
+    </mt:setvarblock>
+
+    <div id="tag-panel" class="<mt:unless name="tab" eq="tag">hidden</mt:unless>" mt:tab-content="tag">
+        <div id="tag-cloud">
+            <ul id="tag-cloud-list">
+            <MTTags blog_ids="$blog_scope" top="100" sort_by="name">
+                <li class="tag-<$MTTagRank$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<MTTagName escape="js">', 'tag-cloud-recent-entries'); return false"><$MTTagName$></a></li>
+            </MTTags>
+            </ul>
+        </div>
+        <div id="tag-cloud-recent-entries"></div>
+    </div>
+</mt:if>

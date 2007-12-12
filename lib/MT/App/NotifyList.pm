@@ -78,10 +78,9 @@ sub subscribe {
     $cgipath .= '/' unless $cgipath =~ m!/$!;
     my $body = MT->build_email('verify-subscribe.tmpl', {
         script_path => $cgipath . 'mt-add-notify.cgi',
-        blog_id => $blog->id,
-        entry_id => $entry_id,
+        blog => $blog,
+        entry => $entry,
         redirect_url => $redirect_url,
-        blog_name => $blog->name,
         magic => $magic,
         email => $subscr_addr
     }); 

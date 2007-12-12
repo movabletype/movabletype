@@ -81,10 +81,10 @@
         var mode = 'complete_upload';
     <mt:if name="entry_insert">
         mode = 'asset_insert';
-    <mt:else>
-    <mt:if name="can_create_post">
+    <mt:else name="asset_select">
+        mode = 'asset_insert';
+    <mt:else name="can_create_post">
         if (f.new_entry && f.new_entry.checked) mode = 'start_upload_entry';
-    </mt:if>
     </mt:if>
         if (mode != 'asset_insert') {
             f.target = "_top";
@@ -147,20 +147,22 @@
             </div>
     </mtapp:setting>
         </div>
-    <mt:unless name="entry_insert">
-        <mt:if name="can_create_post">
-            <mtapp:setting
-                id="new_entry"
-                label="<__trans phrase="Create entry using this uploaded file">"
-                label_class="no-header"
-                hint=""
-                show_hint="0"
-                help_page="file_upload"
-                help_section="creating_a_new_entry">
-                <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
-                <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
-            </mtapp:setting>
-        </mt:if>
+    <mt:unless name="asset_select">
+        <mt:unless name="entry_insert">
+            <mt:if name="can_create_post">
+                <mtapp:setting
+                    id="new_entry"
+                    label="<__trans phrase="Create entry using this uploaded file">"
+                    label_class="no-header"
+                    hint=""
+                    show_hint="0"
+                    help_page="file_upload"
+                    help_section="creating_a_new_entry">
+                    <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
+                    <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
+                </mtapp:setting>
+            </mt:if>
+        </mt:unless>
     </mt:unless>
 </mt:unless>
 

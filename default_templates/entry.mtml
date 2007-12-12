@@ -3,7 +3,7 @@
 <MTSetVar name="module_about_context" value="1">
 <MTIfCommentsAccepted><$MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)"$></MTIfCommentsAccepted>
 <MTSetVarBlock name="page_title"><$MTEntryTitle$></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTGetVar name="page_title"$> - <$MTBlogName$></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTGetVar name="page_title"$> - <$MTBlogName encode_html="1"$></MTSetVarBlock>
 <MTSetVarBlock name="html_head">
     <MTEntryPrevious><link rel="prev" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryPrevious>
     <MTEntryNext><link rel="next" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryNext>

@@ -250,7 +250,13 @@ var custom_fields = new Array();
 <mt:if name="disp_prefs_show_feedback">custom_fields.push('feedback');</mt:if>
 
 function savedEntryOptions(c) {
-    showMsg('<__trans phrase="Your entry screen preferences have been saved." escape="js">', 'saved-prefs-msg', 'success');
+    var message = '<__trans phrase="Your entry screen preferences have been saved." escape="js">';
+    for (var i = 0; i < custom_fields.length; i++) {
+        if (custom_fields[i].match( /^customfield_/ )) {
+            message = '<__trans phrase="Your entry screen preferences have been saved. Please refresh the page to reorder the custom fields." escape="js">'
+        }
+    }
+    showMsg(message, 'saved-prefs-msg', 'success');
 }
 
 function saveEntryFieldOptions() {
@@ -1017,7 +1023,7 @@ function listPreviousPings () {
         label="$authored_on_label"
         help_page="entries"
         help_section="date">
-        <span class="<mt:if name="status_future"><mt:if name="can_publish_post">highlight</mt:if></mt:if>">
+        <span class="date-time-fields<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>">
             <input id="created-on" class="entry-date" name="authored_on_date" tabindex="10" value="<$mt:var name="authored_on_date" escape="html"$>" />
             <a href="javascript:void(0);" mt:command="open-calendar-created-on" class="date-picker" title="<__trans phrase="Select entry date">"><span>Choose Date</span></a>
             <input class="entry-time" name="authored_on_time" tabindex="11" value="<$mt:var name="authored_on_time" escape="html"$>" />

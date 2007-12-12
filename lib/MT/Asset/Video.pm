@@ -27,6 +27,8 @@ sub class_label_plural {
     MT->translate('Videos');
 }
 
+# translate('video')
+
 1;
 
 __END__

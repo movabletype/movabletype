@@ -193,7 +193,7 @@ sub wrap_text_encode {
     $tab_init = '' unless defined $tab_init;
     $tab_sub = '' unless defined $tab_sub;
     require Text::Wrap;
-    $Text::Wrap::column = $col;
+    $Text::Wrap::columns = $col;
     $text = Text::Wrap::wrap($tab_init, $tab_sub, $text);
     return $text;
 }

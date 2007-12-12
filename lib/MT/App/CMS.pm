@@ -287,6 +287,28 @@ sub core_widgets {
     };
 }
 
+sub core_blog_stats_tabs {
+    my $app = shift;
+    return {
+        entry => {
+            label    => 'Entries',
+            template => 'widget/blog_stats_entry.tmpl',
+            handler  => \&mt_blog_stats_widget_entry_tab,
+            stats    => \&generate_dashboard_stats_entry_tab,
+        },
+        comment => {
+            label    => 'Comments',
+            template => 'widget/blog_stats_comment.tmpl',
+            handler  => \&mt_blog_stats_widget_comment_tab,
+            stats    => \&generate_dashboard_stats_comment_tab,
+        },
+        tag_cloud => {
+            label    => 'Tag Cloud',
+            template => 'widget/blog_stats_tag_cloud.tmpl',
+        },
+    };
+}
+
 sub js_recent_entries_for_tag {
     my $app          = shift;
     my $user         = $app->user or return;
@@ -1271,7 +1293,7 @@ sub core_list_filters {
                         $terms->{blog_id} = 0;
                         $scope = 'global:system';
                     }
-                    my @tmpl_path = $set ? ("template_sets", $set, 'templates', $scope) : ("default_templates", $scope);
+                    my @tmpl_path = ( $set && ($set ne 'mt_blog')) ? ("template_sets", $set, 'templates', $scope) : ("default_templates", $scope);
                     my $sys_tmpl = MT->registry(@tmpl_path) || {};
                     $terms->{type} = [ keys %$sys_tmpl ];
                 },
@@ -1613,6 +1635,12 @@ sub core_menus {
             label => "Blogs",
             mode  => 'list_blogs',
             order => 200,
+        },
+        'system:template' => {
+            label             => "Global Templates",
+            mode              => 'list_template',
+            order             => 250,
+            system_permission => 'edit_templates',
         },
         'system:settings' => {
             label             => "Settings",
@@ -2289,6 +2317,8 @@ sub list_assets {
 
     my $dialog_view = $app->param('dialog_view') ? 1 : 0;
     my $perms = $app->permissions;
+    my %carry_params = map { $_ => $app->param($_) || '' }
+        (qw( edit_field upload_mode require_type next_mode asset_select ));
     $app->listing(
         {
             terms    => \%terms,
@@ -2312,8 +2342,6 @@ sub list_assets {
                 is_image         => defined $app->param('filter_val')
                   && $app->param('filter_val') eq 'image' ? 1 : 0,
                 dialog_view      => $dialog_view,
-                edit_field       => $app->param('edit_field') || '',
-                upload_mode      => $app->param('upload_mode') || '',
                 search_label     => MT::Asset->class_label_plural,
                 search_type      => 'asset',
                 class_loop       => \@class_loop,
@@ -2323,7 +2351,7 @@ sub list_assets {
                 nav_assets       => 1,
                 panel_searchable => 1,
                 object_type      => 'asset',
-                next_mode        => ($app->param('next_mode') || ''),
+                %carry_params,
             },
         }
     );
@@ -3090,88 +3118,104 @@ sub generate_dashboard_stats {
     my $stats_static_path = $static_path . 'support/dashboard/stats/' .
         $top_dir . '/' . $sub_dir . '/' . $low_dir;
 
-    my $comment_file = 'comment.xml';
-    $param->{comment_stat_url} = $stats_static_path . '/' . $comment_file;
-    my $comment_path = File::Spec->catfile( $param->{support_path}, $comment_file );
+    my $tabs = $app->registry('blog_stats_tabs') or return;
+    while (my ($tab_id, $tab) = each %$tabs) {
+        my $file = "${tab_id}.xml";
+        $param->{stat_url}->{$tab_id} = $stats_static_path . '/' . $file;
+        my $path = File::Spec->catfile( $param->{support_path}, $file );
 
-    my $entry_file = 'entry.xml';
-    $param->{entry_stat_url} = $stats_static_path . '/' . $entry_file;
-    my $entry_path = File::Spec->catfile( $param->{support_path}, $entry_file );
+        my $time = ( stat($path) )[9] if -f $path;
 
-    # Entry statistics
+        if ( !$time || ( time - $time > $cache_time ) ) {
+            my $gen_stats = $tab->{stats};
+            next if !$gen_stats;
+            $gen_stats = $app->handler_to_coderef($gen_stats);
 
-    my $entry_time = ( stat($entry_path) )[9] if -f $entry_path;
+            my %counts = $gen_stats->($app, $tab);
 
-    if ( !$entry_time || ( time - $entry_time > $cache_time ) ) {
-        my $entry_class = $app->model('entry');
-        my $terms       = { status => MT::Entry::RELEASE() };
-        my $args        = {
-            group => [
-                "extract(year from authored_on)",
-                "extract(month from authored_on)",
-                "extract(day from authored_on)"
-            ],
-        };
-        $terms->{blog_id} = $blog_id if $blog_id;
-        if ( !$user->is_superuser && !$blog_id ) {
-            $args->{join} = MT::Permission->join_on(
-                undef,
-                {
-                    blog_id   => \'= entry_blog_id',
-                    author_id => $user_id
-                },
-            );
-        }
-
-        my $entry_iter = $entry_class->count_group_by( $terms, $args );
-        my %counts;
-        while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
-            my $date = sprintf( "%04d%02d%02dT00:00:00", $y, $m, $d );
-            $counts{$date} = $count;
-        }
-        unless ( $app->create_dashboard_stats_file( $entry_path, \%counts ) ) {
-            delete $param->{entry_stat_url};
-        }
-    }
-
-    # Comment statistics
-
-    my $comment_time = ( stat($comment_path) )[9] if -f $comment_path;
-
-    if ( !$comment_time || ( time - $comment_time > $cache_time ) ) {
-        my $cmt_class = $app->model('comment');
-        my $terms = { visible => 1 };
-        $terms->{blog_id} = $blog_id if $blog_id;
-        my $args = {
-            group => [
-                "extract(year from created_on)",
-                "extract(month from created_on)",
-                "extract(day from created_on)"
-            ],
-        };
-        if ( !$user->is_superuser && !$blog_id ) {
-            $args->{join} = MT::Permission->join_on(
-                undef,
-                {
-                    blog_id   => \'= comment_blog_id',
-                    author_id => $user_id
-                },
-            );
-        }
-        my $cmt_iter = $cmt_class->count_group_by( $terms, $args );
-
-        my %counts;
-        while ( my ( $count, $y, $m, $d ) = $cmt_iter->() ) {
-            my $date = sprintf( "%04d%02d%02dT00:00:00", $y, $m, $d );
-            $counts{$date} = $count;
-        }
-        unless ( $app->create_dashboard_stats_file( $comment_path, \%counts ) )
-        {
-            delete $param->{comment_stat_url};
+            unless ( $app->create_dashboard_stats_file( $path, \%counts ) ) {
+                delete $param->{stat_url}->{$tab_id};
+            }
         }
     }
 
     1;
+}
+
+sub generate_dashboard_stats_entry_tab {
+    my $app = shift;
+    my ($tab) = @_;
+    
+    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $user    = $app->user;
+    my $user_id = $user->id;
+
+    my $entry_class = $app->model('entry');
+    my $terms       = { status => MT::Entry::RELEASE() };
+    my $args        = {
+        group => [
+            "extract(year from authored_on)",
+            "extract(month from authored_on)",
+            "extract(day from authored_on)"
+        ],
+    };
+    $terms->{blog_id} = $blog_id if $blog_id;
+    if ( !$user->is_superuser && !$blog_id ) {
+        $args->{join} = MT::Permission->join_on(
+            undef,
+            {
+                blog_id   => \'= entry_blog_id',
+                author_id => $user_id
+            },
+        );
+    }
+
+    my $entry_iter = $entry_class->count_group_by( $terms, $args );
+    my %counts;
+    while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
+        my $date = sprintf( "%04d%02d%02dT00:00:00", $y, $m, $d );
+        $counts{$date} = $count;
+    }
+
+    %counts;
+}
+
+sub generate_dashboard_stats_comment_tab {
+    my $app = shift;
+    my ($tab) = @_;
+    
+    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $user    = $app->user;
+    my $user_id = $user->id;
+
+    my $cmt_class = $app->model('comment');
+    my $terms = { visible => 1 };
+    $terms->{blog_id} = $blog_id if $blog_id;
+    my $args = {
+        group => [
+            "extract(year from created_on)",
+            "extract(month from created_on)",
+            "extract(day from created_on)"
+        ],
+    };
+    if ( !$user->is_superuser && !$blog_id ) {
+        $args->{join} = MT::Permission->join_on(
+            undef,
+            {
+                blog_id   => \'= comment_blog_id',
+                author_id => $user_id
+            },
+        );
+    }
+    my $cmt_iter = $cmt_class->count_group_by( $terms, $args );
+
+    my %counts;
+    while ( my ( $count, $y, $m, $d ) = $cmt_iter->() ) {
+        my $date = sprintf( "%04d%02d%02dT00:00:00", $y, $m, $d );
+        $counts{$date} = $count;
+    }
+
+    %counts;
 }
 
 sub create_dashboard_stats_file {
@@ -3805,7 +3849,6 @@ sub dashboard {
     $param->{no_breadcrumbs}      = 1;
     $param->{screen_class}        = "dashboard";
     $param->{screen_id}           = "dashboard";
-    $param->{mt_version}          = $app->version_number;
 
     my $default_widgets = {
         'blog_stats' =>
@@ -3823,18 +3866,13 @@ sub dashboard {
     return $app->load_tmpl( "dashboard.tmpl", $param );
 }
 
-sub mt_blog_stats_widget {
-    my $app = shift;
-    my ( $tmpl, $param ) = @_;
+sub mt_blog_stats_widget_comment_tab {
+    my ($app, $tmpl, $param) = @_;
 
-    # For stats shown on this page
-    $app->generate_dashboard_stats($param);
-
-    # Recent comments
     my $user    = $app->user;
     my $blog    = $app->blog;
     my $blog_id = $blog->id if $blog;
-
+    
     my $comments = sub {
         my $args = {
             limit     => 10,
@@ -3860,7 +3898,18 @@ sub mt_blog_stats_widget {
         \@c;
     };
 
-    # Recent entries
+    require MT::Promise;
+    my $ctx = $tmpl->context;
+    $ctx->stash( 'comments',  MT::Promise::delay($comments) );
+}
+
+sub mt_blog_stats_widget_entry_tab {
+    my ($app, $tmpl, $param) = @_;
+
+    my $user    = $app->user;
+    my $blog    = $app->blog;
+    my $blog_id = $blog->id if $blog;
+    
     my $entries = sub {
         my $args = {
             limit     => 10,
@@ -3884,8 +3933,44 @@ sub mt_blog_stats_widget {
 
     require MT::Promise;
     my $ctx = $tmpl->context;
-    $ctx->stash( 'comments', MT::Promise::delay($comments) );
     $ctx->stash( 'entries',  MT::Promise::delay($entries) );
+}
+
+sub mt_blog_stats_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    # For stats shown on this page
+    $app->generate_dashboard_stats($param);
+
+    my $tabs = $app->registry('blog_stats_tabs') or return;
+    $tabs = $app->filter_conditional_list($tabs, 'dashboard', ($param->{widget_scope} || ''));
+
+    $param->{tab_html_head} = '';
+    {
+        local $param->{main};
+        local $param->{html_head};
+
+        my %cfgs;
+        while (my ($tab_id, $url) = each %{ $param->{stat_url} }) {
+            $cfgs{$tab_id} = {
+                param => {
+                    tab_id   => $tab_id,
+                    stat_url => $url,
+                },
+            };
+        }
+        $app->build_widgets(
+            set            => 'blog_stats',
+            param          => $param,
+            widgets        => $tabs,
+            widget_cfgs    => \%cfgs,
+            passthru_param => [qw( html_head js_include tabs )],
+        ) or return;
+
+        $param->{blog_stats} = $param->{main};
+        $param->{tab_html_head} .= $param->{html_head};
+    }
 }
 
 sub mt_news_widget {
@@ -3945,11 +4030,10 @@ sub this_is_you_widget {
         $param->{last_post_ts}      = $last_post->authored_on;
     }
 
-    if (my $asset = $user->userpic) {
-        my ($url, $w, $h) = $asset->thumbnail_url( Width => 50, Height => 50 );
+    if (my ($url) = $user->userpic_url()) {
         $param->{author_userpic_url}    = $url;
-        $param->{author_userpic_width}  = $w;
-        $param->{author_userpic_height} = $h;
+        $param->{author_userpic_width}  = 50;
+        $param->{author_userpic_height} = 50;
     }
 }
 
@@ -5124,7 +5208,7 @@ sub edit_object {
 
     my $edit_mode = $app->mode . '_' . $type;
     if ( my $hdlrs = $app->handlers_for_mode($edit_mode) ) {
-        return $app->forward($edit_mode);
+        return $app->forward($edit_mode, @_);
     }
 
     my %param = $_[0] ? %{ $_[0] } : ();
@@ -6059,9 +6143,7 @@ sub edit_object {
             $param{editing_other_profile} = 1
               if !$param{is_me} && $author->is_superuser;
 
-            my $userpic = $obj->userpic;
-            $param{userpic} = $userpic->as_html({ include => 1, enclose => 0 })
-                if $userpic;
+            $param{userpic} = $obj->userpic_html();
 
             require MT::Permission;
 
@@ -8524,6 +8606,7 @@ sub CMSPostDelete_blog {
             category => 'delete'
         }
     );
+    $app->_delete_pseudo_association(undef, $obj->id);
 }
 
 sub CMSPostDelete_notification {
@@ -8870,7 +8953,7 @@ sub save_object {
             return $app->cfg_archives( \%param );
         }
         else {
-            return $app->edit_object( \%param );
+            return $app->forward( 'edit', \%param );
         }
     }
 
@@ -9155,6 +9238,16 @@ sub save_object {
             )
         );
     }
+    elsif ( $type eq 'author' ) {
+        # Delete the author's userpic thumb (if any); it'll be regenerated.
+        if ($original->userpic_asset_id != $obj->userpic_asset_id) {
+            my $thumb_file = $original->userpic_file();
+            my $fmgr = MT::FileMgr->new('Local');
+            if ($fmgr->exists($thumb_file)) {
+                $fmgr->delete($thumb_file);
+            }
+        }
+    }
     $app->add_return_arg( 'id' => $obj->id ) if !$original->id;
     $app->add_return_arg( 'saved' => 1 );
     $app->call_return;
@@ -9179,6 +9272,13 @@ sub list_template {
             $app->param( 'filter_key', 'index_templates' );
         }
         else {
+            $filter = 'module_templates';
+            $app->param( 'filter_key', 'module_templates' );
+        }
+    }
+    else {
+        # global index templates redirect to module templates
+        if ( !$app->blog && $filter eq 'index_templates' ) {
             $filter = 'module_templates';
             $app->param( 'filter_key', 'module_templates' );
         }
@@ -9468,16 +9568,21 @@ sub list_objects {
 
 sub _delete_pseudo_association {
     my $app = shift;
-    my ($pid) = @_;
-    my ( $pseudo, $rid, $bid ) = split '-', $pid;
+    my ($pid, $bid) = @_;
+    my $rid;
+    if ($pid) {
+        ( my $pseudo, $rid, $bid ) = split '-', $pid;
+    }
     my @newdef;
     if ( my $def = $app->config->DefaultAssignments ) {
         my @def = split ',', $def;
         while ( my $role_id = shift @def ) {
             my $blog_id = shift @def;
             next unless $role_id && $blog_id;
-            push @newdef, "$role_id,$blog_id"
-              unless ( $role_id == $rid ) && ( $blog_id == $bid );
+            next
+              if ( $rid && ( $role_id == $rid ) && ( $blog_id == $bid ) )
+                || ( $blog_id == $bid );
+            push @newdef, "$role_id,$blog_id";
         }
     }
     if (@newdef) {
@@ -9836,16 +9941,25 @@ sub asset_insert {
 
 sub asset_userpic {
     my $app = shift;
+    my (%param) = @_;
 
-    my $id = scalar $app->param('id');
-    my $asset = $app->model('asset')->lookup($id);
-    
+    my ($id, $asset);
+    if ($asset = $param{asset}) {
+        $id = $asset->id;
+    }
+    else {
+        $id = $param{asset_id} || scalar $app->param('id');
+        $asset = $app->model('asset')->lookup($id);
+    }
+
+    my $thumb_html = $app->model('author')->userpic_html( Asset => $asset );
+
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
         {
             asset_id       => $id,
             edit_field     => $app->param('edit_field') || '',
-            author_userpic => $asset->as_html({ include => 1, enclose => 0 }),
+            author_userpic => $thumb_html,
         },
     );
 }
@@ -10775,8 +10889,11 @@ sub build_template_table {
         if ($blog) {
             $row->{weblog_name} = $blog->name;
         }
-        else {
+        elsif ($tmpl->blog_id) {
             $row->{weblog_name} = '* ' . $app->translate('Orphaned') . ' *';
+        }
+        else {
+            $row->{weblog_name} = '* ' . $app->translate('Global Templates') . ' *';
         }
         $row->{object} = $tmpl;
         push @data, $row;
@@ -14834,33 +14951,18 @@ sub send_notify {
 
     my $cols = 72;
     my %params;
-    $params{blog_name}   = $blog->name;
-    $params{blog_id}     = $blog->id;
-    $params{entry_title} = $entry->title;
-    my @ts = offset_time_list( time, $blog );
-    my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900, $ts[4] + 1,
-      @ts[ 3, 2, 1, 0 ];
-    my $date = format_ts( '%Y.%m.%d %H:%M:%S', $ts, $blog, $app->user ? $app->user->preferred_language : undef );
-    my $fill_left = ' ' x int( ( $cols - length($date) ) / 2 );
-    $params{entry_date}  = $date;
-    $params{spacer_date} = $fill_left;
+    $params{blog} = $blog;
+    $params{entry} = $entry;
+    $params{author} = $author;
 
     if ( $q->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
-        $params{entry_excerpt} =
-          wrap_text( $entry->get_excerpt, $cols - 4, "    ", "    " );
     }
-    $params{entry_permalink} =
-      $entry->status == MT::Entry::RELEASE() ? $entry->permalink : '';
     $params{message} = wrap_text( $q->param('message'), $cols, '', '' );
     if ( $q->param('send_body') ) {
         $params{send_body} = 1;
-        $params{entry_text} = wrap_text( $entry->text, $cols );
     }
 
-    $params{sender_name} = $author->nickname
-      || q();    #TBD: 'A Movable Type Author'?
-    $params{sender_email} = $author->email;
     my $entry_editurl = $app->uri(
         'mode' => 'view',
         args   => {
@@ -14874,14 +14976,6 @@ sub send_notify {
         $entry_editurl = $blog_domain . $entry_editurl;
     }
     $params{entry_editurl} = $entry_editurl;
-
-    my $class = $app->model($entry->class);
-    if ( $class && $class->can('class_label') ) {
-        $params{object_label} = $class->class_label;
-    }
-    else {
-        $params{object_label} = $app->translate('entry');
-    }
 
     my $addrs;
     if ( $q->param('send_notify_list') ) {
@@ -15052,9 +15146,10 @@ sub start_upload {
         $param{local_archive_path}   = '';
     }
 
-    $param{entry_insert} = $app->param('entry_insert');
-    $param{edit_field}   = $app->param('edit_field');
-    $param{upload_mode} ||= $app->param('upload_mode');
+    for my $field (qw( entry_insert edit_field upload_mode require_type
+      asset_select )) {
+        $param{$field} ||= $app->param($field);
+    }
 
     $app->load_tmpl( 'dialog/asset_upload.tmpl', \%param );
 }
@@ -15085,21 +15180,22 @@ sub complete_insert {
     my $param = {
         asset_id            => $asset->id,
         bytes               => $args{bytes},
-        direct_asset_insert => scalar $app->param('direct_asset_insert') || 0,
-        edit_field          => scalar $app->param('edit_field') || '',
-        entry_insert        => scalar $app->param('entry_insert') || 0,
         fname               => $asset->file_name,
         is_image            => $args{is_image} || 0,
-        site_path           => scalar $app->param('site_path') || '',
         url                 => $asset->url,
         middle_path         => $app->param('middle_path') || '',
         extra_path          => $app->param('extra_path') || '',
     };
+    for my $field (qw( direct_asset_insert edit_field entry_insert site_path
+      asset_select )) {
+        $param->{$field} = scalar $app->param($field) || '';
+    }
     if ( $args{is_image} ) {
         $param->{width}  = $asset->image_width;
         $param->{height} = $asset->image_height;
     }
-    if ( $perms->can_create_post || $app->user->is_superuser ) {
+    if ( !$app->param('asset_select')
+      && ($perms->can_create_post || $app->user->is_superuser) ) {
         my $html = $asset->insert_options($param);
         if ( $param->{direct_asset_insert} && !$html ) {
             $app->param( 'id', $asset->id );
@@ -15172,7 +15268,10 @@ sub _make_string_csv {
 sub upload_file {
     my $app = shift;
 
-    my ($asset, $bytes) = $app->_upload_file(@_);
+    my ($asset, $bytes) = $app->_upload_file(
+        require_type => ($app->param('require_type') || ''),
+        @_,
+    );
     return if !defined $asset;
     return $asset if !defined $bytes;  # whatever it is
 
@@ -15184,28 +15283,20 @@ sub upload_file {
 
 sub upload_userpic {
     my $app = shift;
-    
+
     my ($asset, $bytes) = $app->_upload_file(
         @_,
-        max_size            => ($app->config('UserpicMaxUpload') || 0),
-        max_image_dimension => ($app->config('UserpicThumbnailSize') || 0),
+        require_type => 'image',
     );
     return if !defined $asset;
     return $asset if !defined $bytes;  # whatever it is
 
-    ## TODO: should this be layerd into _upload_file somehow, so we don't
+    ## TODO: should this be layered into _upload_file somehow, so we don't
     ## save the asset twice?
     $asset->tags('@userpic');
     $asset->save;
 
-    $app->load_tmpl(
-        'dialog/asset_userpic.tmpl',
-        {
-            asset_id       => $asset->id,
-            edit_field     => $app->param('edit_field') || '',
-            author_userpic => $asset->as_html({ include => 1, enclose => 0 }),
-        },
-    );
+    $app->forward( 'asset_userpic', asset => $asset );
 }
 
 sub _upload_file {
@@ -15257,6 +15348,31 @@ sub _upload_file {
     if ( $basename =~ m!\.\.|\0|\|! ) {
         return $app->start_upload( %param,
             error => $app->translate( "Invalid filename '[_1]'", $basename ) );
+    }
+
+    if (my $asset_type = $upload_param{require_type}) {
+        require MT::Asset;
+        my $asset_pkg = MT::Asset->handler_for_file($basename);
+
+        my %settings_for = (
+            audio => {
+                class => 'MT::Asset::Audio',
+                error => $app->translate( "Please select an audio file to upload." ),
+            },
+            image => {
+                class => 'MT::Asset::Image',
+                error => $app->translate( "Please select an image to upload." ),
+            },
+            video => {
+                class => 'MT::Asset::Video',
+                error => $app->translate( "Please select a video to upload." ),
+            },
+        );
+
+        if (my $settings = $settings_for{$asset_type}) {
+            return $app->start_upload( %param, error => $settings->{error} )
+                if !$asset_pkg->isa($settings->{class});
+        }
     }
 
     my ($blog_id, $blog, $fmgr, $local_file, $asset_file, $base_url,
@@ -15415,6 +15531,7 @@ sub _upload_file {
                         temp         => $tmp,
                         extra_path   => $relative_path_save,
                         site_path    => scalar $q->param('site_path'),
+                        asset_select => $q->param('asset_select'),
                         entry_insert => $q->param('entry_insert'),
                         edit_field   => $app->param('edit_field'),
                         middle_path  => $middle_path,
@@ -18681,10 +18798,11 @@ sub restore_file {
       $q->param('ignore_schema_conflict')
       ? 'ignore'
       : $app->config('SchemaVersion');
+    my $overwrite_template = $q->param('overwrite_global_templates') ? 1 : 0;
 
     require MT::BackupRestore;
     my ( $deferred, $blogs ) =
-      MT::BackupRestore->restore_file( $fh, $errormsg, $schema_version,
+      MT::BackupRestore->restore_file( $fh, $errormsg, $schema_version, $overwrite_template,
         sub { $app->_progress(@_); } );
 
     if ( !defined($deferred) || scalar( keys %$deferred ) ) {

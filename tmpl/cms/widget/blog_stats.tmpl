@@ -3,7 +3,7 @@
 <mt:unless name="tab"><mt:setvar name="tab" value="entry"></mt:unless>
 <mt:if name="tab" eq="tag"><mt:unless name="tag_cloud"><mt:var name="tab" value="entry"></mt:unless></mt:if>
 <mt:setvarblock name="html_head" append="1">
-    <mt:if name="comment_stat_url">
+    <mt:if name="stat_url">
     <script type="text/javascript" src="<mt:var name="static_uri">js/flash/JavaScriptFlashGateway.js"></script>
     </mt:if>
     <script type="text/javascript">
@@ -49,7 +49,7 @@
         f['tab'].value = activeStatsPanel;
         updateWidget('blog_stats');
     }
-    <mt:if name="comment_stat_url">
+    <mt:if name="stat_url">
         var lcId = new Date().getTime();
         var flashProxy = new FlashProxy(lcId, "<mt:var name="static_uri">flash/JavaScriptFlashGateway.swf");
         /*
@@ -59,22 +59,7 @@
         var line_color = '999999';
         var box_color = '006699';
         var bar_color = '0066CC';
-        var slider_variable = '<__trans phrase="Entries" escape="js">';
-        var slider_variable_singular = '<__trans phrase="Entry" escape="js">';
-        var file_name = '<mt:var name="entry_stat_url">';
-
-        var entriesSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable+"&slider_variable_singular="+slider_variable_singular+"&lang=<mt:var name="language_tag">&static_path="+escape(StaticURI+"flash"), 540, 122);
-        entriesSlider.setFlashvars("lcId=" + lcId);
-        entriesSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
         var activeStatsPanel = '<mt:var name="tab" escape="js" default="comment">';
-
-        slider_variable = '<__trans phrase="Comments" escape="js">';
-        slider_variable_singular = '<__trans phrase="Comment" escape="js">';
-        file_name = '<mt:var name="comment_stat_url">';
-
-        var commentsSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable+"&slider_variable_singular="+slider_variable_singular+"&lang=<mt:var name="language_tag">&static_path="+escape(StaticURI+"flash"), 540, 122);
-        commentsSlider.setFlashvars("lcId=" + lcId);
-        commentsSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
 
         var months = {
             '01': '<__trans phrase="Jan." escape="js">',
@@ -121,9 +106,10 @@
         blogStatsTabs = new Array('comment','entry'<mt:if name="tag_cloud">,'tag'</mt:if>);
     //-->
     </script>
+    <mt:var name="tab_html_head">
 </mt:setvarblock>
 
-<mt:unless name="comment_stat_url">
+<mt:unless name="stat_url">
     <mt:if name="is_administrator">
         <mt:unless name="static_file_path">
             <mt:setvarblock name="error"><__trans phrase="Movable Type was unable to locate your 'mt-static' directory. Please configure the 'StaticFilePath' configuration setting in your mt-config.cgi file, and create a writable 'support' directory underneath your 'mt-static' directory."></mt:setvarblock>
@@ -141,101 +127,11 @@
 <mtapp:widget tabbed="1" label="Blog Stats" can_close="1" class="blog_stats-widget">
     <mt:setvarblock name="widget_header">
     <ul class="tabs">
-        <li id="comment-tab" class="tab <mt:if name="tab" eq="comment">selected-tab</mt:if>" mt:tab="comment" mt:command="select-tab" onclick="blogStatsTabSelect('comment')"><a  href="javascript:void(0)"><span><__trans phrase="Comments"></span></a></li>
-        <li id="entry-tab" class="tab <mt:if name="tab" eq="entry">selected-tab</mt:if>" mt:tab="entry" mt:command="select-tab" onclick="return blogStatsTabSelect('entry');"><a href="javascript:void(0)" ><span><__trans phrase="Entries"></span></a></li>
-    <mt:if name="tag_cloud">
-        <li id="tag-tab" class="tab <mt:if name="tab" eq="tag">selected-tab</mt:if>" mt:tab="tag" mt:command="select-tab" onclick="return blogStatsTabSelect('tag');"><a href="javascript:void(0);"><span><__trans phrase="Tags"></span></a></li>
-    </mt:if>
+        <mt:var name="tabs">
     </ul>
     </mt:setvarblock>
     <input type="hidden" name="tab" value="<mt:var name="tab" escape="html">" />
-    <div id="comment-panel" class="<mt:unless name="tab" eq="comment">hidden</mt:unless>" mt:tab-content="comment">
-        <mt:if name="comment_stat_url">
-        <script type="text/javascript">
-        <!--
-        commentsSlider.write(document);
-        // -->
-        </script>
-        <div class="stats-summary" id="stats-summary-comment">&nbsp;</div>
-        </mt:if>
 
-        <h4 class="tab-panel-header"><__trans phrase="Most Recent Comments"></h4>
+    <mt:var name="blog_stats">
 
-        <MTComments>
-        <div id="comment-<$MTCommentID$>" class="comment comment-<mt:if name="__odd__">odd<mt:else>even</mt:if> comment-<MTCommentIfModerated>status-publish<MTElse>status-pending</MTCommentIfModerated>">
-            <div class="comment-inner">
-                <div class="comment-content">
-                    <$MTCommentBody$>
-                </div>
-                <div class="comment-meta">
-                    <__trans phrase="[_1] [_2], [_3] on [_4]" params="<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>%%<$MTCommentAuthorLink default_name="Anonymous"$>%%<$MTCommentDate relative="1"$>%%<MTCommentEntry><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;id=<$MTEntryID$>&amp;blog_id=<$MTEntryBlogID$>"><$MTEntryTitle$></a></MTCommentEntry>">
-                    (<a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<$MTCommentID$>&amp;blog_id=<$MTCommentBlogID$>"><__trans phrase="Edit Comment"></a>)
-                </div>
-            </div>
-        </div>
-        <mt:if name="__last__">
-        <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all comments"></a></div>
-        </mt:if>
-        <MTElse>
-            <__trans phrase="No comments available.">
-        </MTComments>
-    </div>
-    <div id="entry-panel" class="<mt:unless name="tab" eq="entry">hidden</mt:unless>" mt:tab-content="entry">
-        <mt:if name="entry_stat_url">
-        <script type="text/javascript">
-        <!--
-        entriesSlider.write(document);
-        // -->
-        </script>
-
-        <div class="stats-summary" id="stats-summary-entry">&nbsp;</div>
-        </mt:if>
-
-        <h4 class="tab-panel-header"><__trans phrase="Most Recent Entries"></h4>
-
-        <MTEntries>
-            <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if> entry-status-<MTEntryStatus lower_case="1">">
-                <div class="entry-inner">
-                    <div class="entry-title">
-                        <h4><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></a></h4>
-                    </div>
-                    <div class="entry-content">
-                        <p><$MTEntryExcerpt$></p>
-                    </div>
-                    <div class="entry-meta">
-                    <MTIfNonEmpty tag="MTEntryAuthorDisplayName">
-                        <mt:setvarblock name="entry_author"><$MTEntryAuthorLink show_email="0"$></mt:setvarblock>
-                    <MTElse>
-                        <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername$></mt:setvarblock>
-                    </MTIfNonEmpty>
-                    <MTIfNonEmpty tag="EntryCategory">
-                        <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel$></a></MTEntryCategories>">
-                    <MTElse>
-                        <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
-                    </MTIfNonEmpty>
-                    <MTEntryIfTagged>
-                        <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a></MTEntryTags>">
-                    </MTEntryIfTagged>
-                    </div>
-                </div>
-            </div>
-            <mt:if name="__last__">
-            <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all entries"></a></div>
-            </mt:if>
-        <MTElse>
-            <__trans phrase="No entries available.">
-        </MTEntries>
-    </div>
-    <mt:if name="tag_cloud">
-    <div id="tag-panel" class="<mt:unless name="tab" eq="tag">hidden</mt:unless>" mt:tab-content="tag">
-        <div id="tag-cloud">
-            <ul id="tag-cloud-list">
-            <MTTags blog_ids="$blog_scope" top="100" sort_by="name">
-                <li class="tag-<$MTTagRank$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<MTTagName escape="js">', 'tag-cloud-recent-entries'); return false"><$MTTagName$></a></li>
-            </MTTags>
-            </ul>
-        </div>
-        <div id="tag-cloud-recent-entries"></div>
-    </div>
-    </mt:if>
 </mtapp:widget>

@@ -1,9 +1,9 @@
 <?php
-function smarty_function_mtauthordisplayname($args, &$ctx) {
+function smarty_function_mtentryauthorid($args, &$ctx) {
     // status: complete
     // parameters: none
-    $author = $ctx->stash('entry');
-    $author = $author['author_ic'];
-    return $author;
+    $entry = $ctx->stash('entry');
+    if (!$entry) return '';
+    return $entry['entry_author_id'];
 }
 ?>

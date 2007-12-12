@@ -32,9 +32,11 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     $count = 0;
     $res = '';
 
+    require_once("function.mtsetvar.php");
     $ctx->localize($localvars);
     $ctx->stash('subCatsDepth', $depth + 1);
     while ($c = array_shift($cats)) {
+        smarty_function_mtsetvar(array('name' => '__depth__', 'value' => ($depth + 1)), $ctx);
         $ctx->stash('category', $c);
         $ctx->stash('subCatIsFirst', !$count);
         $ctx->stash('subCatIsLast', !count($cats));

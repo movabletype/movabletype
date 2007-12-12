@@ -552,3 +552,12 @@ ul#profile-data li {
     padding-left: 0;
     list-style: none;
 }
+
+#profile_userpic-field .field-content label {
+    display: block;
+    margin-top: 5px;
+}
+
+.mt-profile-edit form {
+    margin-bottom: .75em;
+}
