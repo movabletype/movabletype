@@ -12,9 +12,10 @@ use base qw(MT::ErrorHandler);
 
 sub form_fields {
     my $self = shift;
+    my ($blog_id) = @_;
 	
 	my $plugin = MT::Plugin::reCaptcha->instance;
-    my $config = $plugin->get_config_hash();
+    my $config = $plugin->get_config_hash("blog:$blog_id");
     my $publickey = $config->{recaptcha_publickey};
     my $privatekey = $config->{recaptcha_privatekey};
 	return q() unless $publickey && $privatekey;
@@ -48,8 +49,15 @@ FORM_FIELD
 sub validate_captcha {
     my $self = shift;
     my ($app) = @_;
+    my $entry_id = $app->param('entry_id')
+      or return 0;
 
-    my $config = MT::Plugin::reCaptcha->instance->get_config_hash();
+    my $entry = $app->model('entry')->load($entry_id)
+      or return 0;
+
+    my $blog_id = $entry->blog_id;
+
+    my $config = MT::Plugin::reCaptcha->instance->get_config_hash("blog:$blog_id");
     my $privatekey = $config->{recaptcha_privatekey};
  
     my $challenge = $app->param('recaptcha_challenge_field');

@@ -8,7 +8,11 @@
 
 package MT::Scorable;
 
+use strict;
 use MT::ObjectScore;
+use MT::Memcached;
+
+use constant SCORE_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
 sub get_score {
     my $obj = shift;
@@ -20,7 +24,7 @@ sub get_score {
         author_id => $user->id,
         object_ds => $obj->datasource,
     };
-    my $s = MT::ObjectScore->load($term) or return undef;
+    my $s = @{ $obj->_load_score_data($term) }[0] or return undef;
     $s->score;
 }
 
@@ -28,13 +32,23 @@ sub set_score {
     my $obj = shift;
     my ( $namespace, $user, $score, $overwrite ) = @_;
 
+    return $obj->error( MT->translate('Object must be saved first.') )
+      unless $obj->id;
+
+    my $mt = MT->instance;
+    my $ip;
+    if ( $mt->isa('MT::App') ) {
+        $ip = $mt->remote_ip;
+    }
+
     my $term = {
         namespace => $namespace,
         object_id => $obj->id,
-        author_id => $user->id,
+        ( $ip ? ( ip => $ip ) : () ),
+        ( $user ? ( author_id => $user->id ) : ( author_id => 0 ) ),
         object_ds => $obj->datasource,
     };
-    my $s = MT::ObjectScore->load($term);
+    my $s = @{ $obj->_load_score_data($term) }[0];
     return $obj->error( MT->translate('Already scored for this object.') )
       if $s && !$overwrite;
 
@@ -46,17 +60,18 @@ sub set_score {
     $s->save
       or return $obj->error(
         MT->translate(
-            "Can not set score to the object '[_1]'(ID: [_2])",
+            "Could not set score to the object '[_1]'(ID: [_2])",
             $obj->datasource, $obj->id
         )
       );
+    $obj->_flush_score_cache($term);
     return $s;
 }
 
 sub _get_objectscores {
     my $obj         = shift;
     my ($namespace) = @_;
-    my @scores      = MT::ObjectScore->load(
+    my $scores      = $obj->_load_score_data(
         {
             namespace => $namespace,
             object_id => $obj->id,
@@ -64,8 +79,8 @@ sub _get_objectscores {
         }
     );
     my $req = MT::Request->instance();
-    $req->cache( $obj->datasource . '_scores_' . $obj->id . "_$namespace" , \@scores );
-    return \@scores;
+    $req->cache( $obj->datasource . '_scores_' . $obj->id . "_$namespace", $scores );
+    return $scores;
 }
 
 sub score_for {
@@ -83,7 +98,7 @@ sub score_for {
     return $sum;
 }
 
-sub vote_for {
+sub votes_for {
     my $obj         = shift;
     my ($namespace) = @_;
     my $req         = MT::Request->instance();
@@ -93,6 +108,7 @@ sub vote_for {
     }
     return scalar @$scores;
 }
+*vote_for = \&votes_for; # backward-compatible mapping for typo
 
 sub _score_top {
     my $obj = shift;
@@ -149,34 +165,18 @@ sub rank_for {
     my ( $namespace, $max, $dbd_args ) = @_;
     $max = 6 unless defined $max;
     my $score = $obj->score_for($namespace);
-    return q() unless $score || ($score eq '0');
+    return q() unless $score || ( $score eq '0' );
 
     my $req   = MT::Request->instance();
     my $total = $req->stash( $obj->datasource . "_score_total_$namespace" );
     my $high  = $req->stash( $obj->datasource . "_score_high_$namespace" );
     my $low   = $req->stash( $obj->datasource . "_score_low_$namespace" );
     unless ( $total && $high && $low ) {
-        my $sgb_iter = MT::ObjectScore->sum_group_by(
-            {
-                'object_ds' => $obj->datasource,
-                'namespace' => $namespace,
-            },
-            {
-                'sum' => 'score',
-                group => ['object_id'],
-                ( defined($dbd_args) && %$dbd_args ) ? (%$dbd_args) : (),
-            }
-        );
-        $total = 0;
-        $high  = 0;
-        $low   = 0;
-
-        while ( my ( $score, $object_id ) = $sgb_iter->() ) {
-            $low = $score if ( ( $score || $score == 0 ) && ( $score < $low ) ) || $low == 0;
-            $high = $score if ( ( $score || $score == 0 ) && ( $score > $high ) );
-            $score *= -1 if ( 0 > $score );
-            $total += $score;
-        }
+        my $term = {
+            'object_ds' => $obj->datasource,
+            'namespace' => $namespace,
+        };
+        ( $total, $high, $low ) = $obj->_load_rank_data( $term, $score, $dbd_args );
         $req->cache( $obj->datasource . "_score_total_$namespace", $total );
         $req->cache( $obj->datasource . "_score_high_$namespace",  $high );
         $req->cache( $obj->datasource . "_score_low_$namespace",   $low );
@@ -192,12 +192,97 @@ sub rank_for {
         $factor = ( $max - 1 ) / log( $high - $low + 1 );
     }
 
-    if (( 0 < $total ) && ( $total < $max )) {
+    if ( ( 0 < $total ) && ( $total < $max ) ) {
         $factor *= ( $total / $max );
     }
 
     my $level = int( log( $score - $low + 1 ) * $factor );
     $max - $level;
+}
+
+sub _cache_key {
+    my $obj = shift;
+    my ($term) = @_;
+    my $key;
+    if ( $term->{author_id} ) {
+        $key = sprintf "%sscore%s-%d-%d", $term->{object_ds},
+          $term->{namespace}, $term->{object_id}, $term->{author_id};
+    }
+    elsif ( $term->{object_id} ) {
+        $key = sprintf "%sscore%s-%d", $term->{object_ds}, $term->{namespace},
+          $term->{object_id};
+    }
+    else {
+        $key = sprintf "%sscore%s", $term->{object_ds}, $term->{namespace};
+    }
+    return $key;
+}
+
+sub _load_score_data {
+    my $obj    = shift;
+    my ($term) = @_;
+    my $cache  = MT::Memcached->instance;
+    my $memkey = $obj->_cache_key($term);
+    my $scores;
+    $scores = $cache->get($memkey);
+    unless ( $scores = $cache->get($memkey) ) {
+        $scores = [ grep { defined } MT::ObjectScore->load($term) ];
+        $cache->set( $memkey, $scores, SCORE_CACHE_TIME );
+    }
+    return $scores;
+}
+
+sub _load_rank_data {
+    my $obj = shift;
+    my ( $term, $score, $dbd_args ) = @_;
+    my $cache  = MT::Memcached->instance;
+    my $memkey = $obj->_cache_key($term);
+    my $total  = $cache->get( $memkey . "_total" );
+    my $high   = $cache->get( $memkey . "_high" );
+    my $low    = $cache->get( $memkey . "_low" );
+    unless ( $total && $high && $low ) {
+        my $sgb_iter = MT::ObjectScore->sum_group_by(
+            $term,
+            {
+                'sum' => 'score',
+                group => ['object_id'],
+                ( defined($dbd_args) && %$dbd_args ) ? (%$dbd_args) : (),
+            }
+        );
+        $total = 0;
+        $high  = 0;
+        $low   = 0;
+
+        while ( my ( $score, $object_id ) = $sgb_iter->() ) {
+            $low = $score
+              if ( ( $score || $score == 0 ) && ( $score < $low ) )
+              || $low == 0;
+            $high = $score
+              if ( ( $score || $score == 0 ) && ( $score > $high ) );
+            $score *= -1 if ( 0 > $score );
+            $total += $score;
+        }
+        $cache->set( $memkey . "_total", $total, SCORE_CACHE_TIME );
+        $cache->set( $memkey . "_high",  $high,  SCORE_CACHE_TIME );
+        $cache->set( $memkey . "_low",   $high,  SCORE_CACHE_TIME );
+    }
+
+    return ( $total, $high, $low );
+}
+
+sub _flush_score_cache {
+    my $obj    = shift;
+    my ($term) = @_;
+    my $memkey = $obj->_cache_key($term);
+    MT::Memcached->instance->delete($memkey);
+    delete $term->{author_id};
+    $memkey = $obj->_cache_key($term);
+    MT::Memcached->instance->delete($memkey);
+    delete $term->{object_id};
+    $memkey = $obj->_cache_key($term);
+    MT::Memcached->instance->delete( $memkey . "_total" );
+    MT::Memcached->instance->delete( $memkey . "_high" );
+    MT::Memcached->instance->delete( $memkey . "_low" );
 }
 
 1;

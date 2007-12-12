@@ -58,7 +58,7 @@ sub form_fields {
 <div class="field">
 <input type="hidden" name="token" value="$token" />
 <img src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><br />
-<input name="captcha_code" id="captcha_code" value="" />
+<input name="captcha_code" id="captcha_code" value="" autocomplete="off" />
 <p>$description</p>
 </div>
 FORM_FIELDS
@@ -104,16 +104,36 @@ sub validate_captcha {
     return 1;
 }
 
+sub _makerandom {
+    my $size = shift;
+
+    my $bytes = int($size / 8) + ($size % 8 ? 1 : 0);
+
+    my $rand;
+    if (-e "/dev/urandom") {
+        my $fh;
+        open($fh, '/dev/urandom')
+            or die "Couldn't open /dev/urandom";
+        my $got = sysread $fh, $rand, $bytes;
+        die "Didn't read all bytes from urandom" unless $got == $bytes;
+        close $fh;
+    } else {
+        for (1..$bytes) {
+            $rand .= chr(int(rand(256)));
+        }
+    }
+    $rand;
+}
+
 sub _generate_code {
     my $self = shift;
     my($len) = @_;
 
     my $code = '';
 
-    require Crypt::DH;
-    my $genval = unpack('H*', Crypt::DH::_makerandom($len*8/2));
+    my $genval = unpack('H*', _makerandom($len*2*8/2));
 
-    # Cycle throught the octets pulling off the lower 5 bits then mapped into
+    # Cycle through the octets pulling off the lower 5 bits then mapped into
     # our acceptable characters
     foreach my $i (0..($len-1)) {
       my $byte = ord(pack('H2', substr($genval, $i*2, 2)));

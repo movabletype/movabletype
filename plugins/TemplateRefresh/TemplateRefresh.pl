@@ -20,17 +20,43 @@ BEGIN {
             registry => {
                 applications => {
                     cms => {
+                        page_actions => {
+                            list_templates => {
+                                refresh_all_blog_templates => {
+                                    label => "Refresh Blog Templates",
+                                    code => sub {
+                                        MT->app->param('no_backup', 1);
+MT::Plugin::TemplateRefresh->instance->refresh_all_templates(@_) },
+                                    condition => sub {
+                                        MT->app->blog,
+                                    },
+                                    order => 1000,
+                                    continue_prompt => 'This action will restore your blog\'s templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.',
+                                },
+                                refresh_global_templates => {
+                                    label => "Refresh Global Templates",
+                                    code => sub {
+                                        MT->app->param('no_backup', 1);
+                                            MT::Plugin::TemplateRefresh->instance->refresh_all_templates(@_) },
+                                    condition => sub {
+                                        ! MT->app->blog,
+                                    },
+                                    order => 1000,
+                                    continue_prompt => 'This action will restore your global templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.',
+                                },
+                            },
+                        },
                         list_actions => {
                             blog => {
                                 refresh_blog_templates => {
                                     label => "Refresh Template(s)",
-                                    code => sub { $plugin->refresh_blog_templates(@_) },
+                                    code => sub { MT::Plugin::TemplateRefresh->instance->refresh_all_templates(@_) },
                                 },
                             },
                             template => {
                                 refresh_tmpl_templates => {
                                     label => "Refresh Template(s)",
-                                    code => sub { $plugin->refresh_individual_templates(@_) },
+                                    code => sub { MT::Plugin::TemplateRefresh->instance->refresh_individual_templates(@_) },
                                     permissions => 'can_edit_templates',
                                 },
                             },
@@ -701,7 +727,7 @@ sub default_templates {
     my $app = shift;
 
     require MT::DefaultTemplates;
-    my $tmpl_list = MT::DefaultTemplates->templates;
+    my $tmpl_list = MT::DefaultTemplates->templates(@_);
     return $app->error( $app->translate("Error loading default templates.") )
       unless $tmpl_list;
 
@@ -714,22 +740,35 @@ sub default_templates {
     $tmpl_list;
 }
 
-sub refresh_blog_templates {
+sub refresh_all_templates {
     my $plugin = shift;
     my ($app) = @_;
 
+    my $backup = 1;
+    if ($app->param('no_backup')) {
+        $backup = 0;
+    }
+
     my $t = time;
 
-    my @id = $app->param('id');
-    require MT::Template;
+    my @id;
+    if ($app->param('blog_id')) {
+        @id = ( scalar $app->param('blog_id') );
+    }
+    else {
+        @id = $app->param('id');
+        if (! @id) {
+            # refresh global templates
+            @id = ( 0 );
+        }
+    }
 
+    require MT::Template;
 
     # logic:
     #    process scope of templates...
 
     #    load default templates:
-    my $tmpl_list = default_templates($app) or return;
-
     my $dict = default_dictionary();
 
     my @msg;
@@ -738,8 +777,11 @@ sub refresh_blog_templates {
     require MT::Util;
 
     foreach my $blog_id (@id) {
-        my $blog = MT::Blog->load($blog_id);
-        next unless $blog;
+        my $blog;
+        if ($blog_id) {
+            $blog = MT::Blog->load($blog_id);
+            next unless $blog;
+        }
         if ( !$app->{author}->is_superuser() ) {
             my $perms = MT::Permission->load(
                 { blog_id => $blog_id, author_id => $app->{author}->id } );
@@ -751,26 +793,47 @@ sub refresh_blog_templates {
             {
                 push @msg,
                   $app->translate(
-"Insufficient permissions to modify templates for weblog '[_1]'",
+"Insufficient permissions to modify templates for blog '[_1]'",
                     $blog->name()
                   );
                 next;
             }
         }
 
-        push @msg,
-          $app->translate( "Processing templates for weblog '[_1]'",
-            $blog->name );
+        my $tmpl_list;
+        if ($blog_id) {
+            push @msg,
+              $app->translate( "Processing templates for blog '[_1]'",
+                $blog->name );
+            $tmpl_list = default_templates($app, $blog->template_set)
+                or default_templates($app);
+        }
+        else {
+            push @msg,
+              $app->translate( "Processing global templates" );
+            $tmpl_list = default_templates($app);
+        }
 
         foreach my $val (@$tmpl_list) {
+            if ($blog_id) {
+                # when refreshing blog templates,
+                # skip over global templates which
+                # specify a blog_id of 0...
+                next if $val->{global};
+            }
+            else {
+                next unless exists $val->{global};
+            }
+
             if ( !$val->{orig_name} ) {
                 $val->{orig_name} = $val->{name};
                 $val->{name}      = $app->translate( $val->{name} );
                 $val->{text}      = $app->translate_templatized( $val->{text} );
             }
+
             my $orig_name = $val->{orig_name};
 
-            my @ts = MT::Util::offset_time_list( $t, $blog_id );
+            my @ts = MT::Util::offset_time_list( $t, ( $blog_id ? $blog_id : undef ) );
             my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
               $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
@@ -790,7 +853,7 @@ sub refresh_blog_templates {
             # "system" templates; or for a type + name, which should be
             # unique for that blog.
             my $tmpl = MT::Template->load($terms);
-            if ($tmpl) {
+            if ($tmpl && $backup) {
 
                 # check for default template text...
                 # if it is a default template, then outright replace it
@@ -822,15 +885,16 @@ sub refresh_blog_templates {
                     $backup->save;
                     push @msg,
                       $app->translate(
-'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
-                        $blog_id, $backup->id, $tmpl->name );
+'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
+                        ( $blog_id ? "&amp;blog_id=" . $blog_id : '' ), $backup->id, $tmpl->name );
                 }
-                else {
+            }
+            if ($tmpl) {
+                if (!$backup) {
                     push @msg,
                       $app->translate( "Refreshing template '[_1]'.",
                         $tmpl->name );
                 }
-
                 # we found that the previous template had not been
                 # altered, so replace it with new default template...
                 $tmpl->text( $val->{text} );
@@ -841,7 +905,6 @@ sub refresh_blog_templates {
                 $tmpl->save;
             }
             else {
-
                 # create this one...
                 my $tmpl = new MT::Template;
                 $tmpl->build_dynamic(0);
@@ -885,9 +948,11 @@ sub refresh_individual_templates {
         $app->translate(
             "Insufficient permissions for modifying templates for this weblog.")
       )
-      unless $perms->can_edit_templates()
-      || $perms->can_administer_blog
-      || $app->{author}->is_superuser();
+      #TODO: system level-designer permission
+      unless $app->{author}->is_superuser()
+      || ( $perms
+        && ( $perms->can_edit_templates()
+          || $perms->can_administer_blog ) );
 
     my $dict = default_dictionary();
 

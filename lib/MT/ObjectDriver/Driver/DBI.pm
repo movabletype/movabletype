@@ -88,6 +88,18 @@ sub sum_group_by {
     $driver->_do_group_by("SUM($sum_column) AS sum_$sum_column", @_);
 }
 
+sub avg_group_by {
+    my $driver = shift;
+    my ($class, $terms, $args) = @_;
+
+    my $avg_column = delete $args->{avg};
+    return unless $avg_column;
+    $avg_column = $driver->_decorate_column_name($class, $avg_column);
+    $args->{sort} = "avg_$avg_column" unless exists $args->{sort};
+    $args->{direction} = 'descend' unless exists $args->{direction};
+    $driver->_do_group_by("AVG($avg_column) AS avg_$avg_column", @_);
+}
+
 sub _do_group_by {
     my $driver = shift;
     my ($agg_func, $class, $terms, $args) = @_;
@@ -105,6 +117,7 @@ sub _do_group_by {
     my $order = delete $args->{sort};
     my $direction = delete $args->{direction};
     my $limit = exists $args->{limit} ? delete $args->{limit} : undef;
+    my $offset = exists $args->{offset} ? delete $args->{offset} : undef;
     my $stmt = $driver->prepare_statement($class, $terms, $args);
 
     ## Ugly. Maybe we need a clear_select method in D::OD::SQL?
@@ -137,8 +150,8 @@ sub _do_group_by {
 
     my $dbh = $driver->r_handle;
     $driver->start_query($sql, $stmt->bind);
-    my $sth = $dbh->prepare_cached($sql);
-    $sth->execute(@{ $stmt->bind });
+    my $sth = $dbh->prepare_cached($sql) or die $sql;
+    $sth->execute(@{ $stmt->bind }) or die $sql;
 
     my @bindvars;
     for (@{ $args->{group} }) {
@@ -146,6 +159,14 @@ sub _do_group_by {
     }
     $sth->bind_columns(undef, \my($count), @bindvars);
 
+    if ($offset) {
+        while ($offset--) {
+            unless ($sth->fetch) {
+                $driver->end_query($sth);
+                return;
+            }
+        }
+    }
     my $i = 0;
     return sub {
         unless ($sth->fetch && defined $count && (!defined $limit || ($i < $limit))) {

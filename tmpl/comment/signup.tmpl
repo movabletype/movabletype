@@ -13,17 +13,19 @@
     <mtapp:setting
         id="nickname"
         label="<__trans phrase="Display Name">"
+        label_class="top-label"
         required="1"
         hint="<__trans phrase="The name appears on your comment.">">
-        <input name="nickname" id="nickname" value="<mt:var name="nickname" escape="html">" />
+        <input type="text" name="nickname" id="nickname" class="ti" value="<mt:var name="nickname" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="email"
         label="<__trans phrase="Email Address">"
+        label_class="top-label"
         required="1"
         hint="<__trans phrase="Your email address.">">
-        <input name="email" id="email" value="<mt:var name="email" escape="html">" />
+        <input type="text" name="email" id="email" class="ti" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
 </mt:setvarblock>
 
@@ -37,9 +39,10 @@
     <mtapp:setting
         id="username"
         label="<__trans phrase="Username">"
+        label_class="top-label"
         required="1"
         hint="<__trans phrase="Your login name.">">
-        <input name="username" id="username" value="<mt:var name="username" escape="html">" />
+        <input type="text" name="username" id="username" class="ti" value="<mt:var name="username" escape="html">" />
     </mtapp:setting>
 
     <$mt:var name="common_fields"$>
@@ -47,32 +50,36 @@
     <mtapp:setting
         id="password"
         label="<__trans phrase="Initial Password">"
+        label_class="top-label"
         required="1"
         hint="<__trans phrase="Select a password for yourself.">">
-        <input type="password" name="password" id="password" value="" />
+        <input type="password" name="password" id="password" class="pw" value="" />
     </mtapp:setting>
 
     <mtapp:setting
         id="pass_verify"
         label="<__trans phrase="Password Confirm">"
+        label_class="top-label"
         required="1"
         hint="<__trans phrase="Repeat the password for confirmation.">">
-        <input type="password" name="pass_verify" id="pass_verify" value="" />
+        <input type="password" name="pass_verify" id="pass_verify" class="pw" value="" />
     </mtapp:setting>
 
     <mtapp:setting
         id="hint"
         label="<__trans phrase="Password recovery word/phrase">"
+        label_class="top-label"
         required="1"
         hint="<__trans phrase="This word or phrase will be required to recover the password if you forget it.">">
-        <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
+        <input type="text" name="hint" id="hint" class="ti" value="<mt:var name="hint" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="url"
         label="<__trans phrase="Website URL">"
+        label_class="top-label"
         hint="<__trans phrase="The URL of your website. (Optional)">">
-        <input name="url" id="url" value="<mt:var name="url" escape="html">" />
+        <input type="text" name="url" id="url" class="ti" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
 
 <mt:if name="captcha_fields"><div class="setting">
@@ -85,9 +92,10 @@
     <mtapp:setting
         id="external_username"
         label="<__trans phrase="Username">"
+        label_class="top-label"
         required="1"
         hint="<__trans phrase="Your login name.">">
-        <input name="username" id="username" value="<mt:var name="username" escape="html">" />
+        <input type="text" name="username" id="username" class="ti" value="<mt:var name="username" escape="html">" />
     </mtapp:setting>
 
     <$mt:var name="common_fields"$>

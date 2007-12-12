@@ -24,7 +24,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  start_background_task launch_background_tasks substr_wref
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
-                 sax_parser trim ltrim rtrim asset_cleanup caturl );
+                 sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter );
 
 sub leap_day {
     my ($y, $m, $d) = @_;
@@ -1664,20 +1664,35 @@ sub unescape_unicode {
 }
 
 sub multi_iter {
-    my ($iters) = @_;
+    my ($iters, $picker) = @_;
     my @streams;
     foreach my $iter (@$iters) {
         my $head = $iter->();
         push @streams, { iter => $iter, head => $head };
     }
     sub {
+        my ($f) = @_;
+        if ($f && ($f eq 'finish')) {
+            foreach my $iter (@streams) {
+                $iter->{iter}->('finish');
+            }
+            return;
+        }
         # find the head with greatest created_on
-        my $which = $streams[0];
+        my $which;
         foreach my $iter (@streams) {
             next unless defined($iter->{head});
-            $which = $iter;
-            last;
+            if (!$which) {
+                $which = $iter;
+                last unless $picker;
+            } else {
+                if (!$picker || ($picker && $picker->($iter->{head}, $which->{head}))) {
+                    $which = $iter;
+                }
+            }
         }
+        return unless $which;
+
         # Advance the chosen one
         my $result = $which->{head};
         if (defined $result) {

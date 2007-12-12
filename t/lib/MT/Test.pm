@@ -192,20 +192,40 @@ sub sample_data {
     $johnd->id(4);
     $johnd->save() or die "Couldn't save author record 4: " . $johnd->errstr;
 
-    require MT::Permission;
-    my $perm = MT::Permission->new();
-    $perm->author_id($chuckd->id);
-    $perm->blog_id(1);
-    $perm->can_post(1);
-    $perm->can_edit_all_posts(1);
-    $perm->save() or die "Couldn't save permission record 1: ".$perm->errstr;
+    my $hiro = MT::Author->new();
+    $hiro->set_values({
+        name => 'Hiro Nakamura',
+        nickname => 'Hiro',
+        email => 'hiro@heroes.com',
+        auth_type => 'MT',
+    });
+    $hiro->type(MT::Author::AUTHOR());
+    $hiro->password('time');
+    $hiro->id(5);
+    $hiro->status(2);
+    $hiro->save() or die "Couldn't save author record 5: " . $hiro->errstr;
 
-    $perm = MT::Permission->new();
-    $perm->author_id($bobd->id);
-    $perm->blog_id(1);
-    $perm->can_post(1);
-    $perm->can_edit_templates(1);
-    $perm->save() or die "Couldn't save permission record 2: ".$perm->errstr;
+    require MT::Association;
+    my $assoc = MT::Association->new();
+    $assoc->author_id($chuckd->id);
+    $assoc->blog_id(1);
+    $assoc->role_id(3);
+    $assoc->type(1);
+    $assoc->save();
+
+    $assoc = MT::Association->new();
+    $assoc->author_id($bobd->id);
+    $assoc->blog_id(1);
+    $assoc->role_id(4);
+    $assoc->type(1);
+    $assoc->save();
+
+    $assoc = MT::Association->new();
+    $assoc->author_id($hiro->id);
+    $assoc->blog_id(1);
+    $assoc->role_id(3);
+    $assoc->type(1);
+    $assoc->save();
 
     # set permission record for johnd commenter on blog 1
     $johnd->approve(1);

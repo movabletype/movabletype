@@ -1,3 +1,9 @@
+# Copyright 2006-2007 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# Original Copyright (c) 2004-2006 David Raynes
+#
 # $Id$
 
 package MultiBlog::Tags;

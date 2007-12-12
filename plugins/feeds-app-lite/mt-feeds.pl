@@ -45,6 +45,7 @@ sub init {
                             label => 'Create a Feed Widget',
                             dialog  => 'feedswidget_start',
                             permission => 'edit_templates',
+                            condition => sub { MT->instance->blog },
                         }
                     },
                 },

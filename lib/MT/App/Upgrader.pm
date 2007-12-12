@@ -289,6 +289,7 @@ sub init_blog {
     $param{blog_url} = $app->param('blog_url') || '';
     $param{blog_path} = $app->param('blog_path') || '';
     $param{blog_timezone} = $app->param('blog_timezone');
+    $param{blog_template_set} = $app->param('blog_template_set');
     $param{blog_path} =~ s!(/|\\)$!!;
     $param{blog_url} .= '/' if $param{blog_url} !~ m!/$!;
 
@@ -296,6 +297,14 @@ sub init_blog {
     my $param_name = 'blog_timezone_'.$tz;
     $param_name =~ s/[\-\.]/_/g;
     $param{$param_name} = 1;
+
+    my $sets = $app->registry("template_sets");
+    $sets->{$_}{key} = $_ for keys %$sets;
+    $sets->{'mt_blog'}{selected} = 1;
+    $sets = [ values %$sets ];
+    no warnings;
+    @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
+    $param{'template_set_loop'} = $sets;
 
     if ($app->param('back')) {
         return $app->init_user;
@@ -355,6 +364,7 @@ sub init_blog {
         blog_url => uri_escape($param{blog_url}),
         blog_path => uri_escape($param{blog_path}),
         blog_timezone => $param{blog_timezone},
+        blog_template_set => $param{blog_template_set},
     };
 
     my $steps;

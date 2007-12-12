@@ -14,8 +14,9 @@
 
     <mtapp:setting
         id="dbtype"
-        label="<__trans phrase="_REBUILD_PUBLISH">">
-    <select name="type" class="full-width">
+        label="<__trans phrase="_REBUILD_PUBLISH">"
+        label_class="top-label">
+    <select name="type" class="full-width se">
         <option value="<mt:var name="build_order">" selected="selected"><__trans phrase="All Files"></option>
         <mt:if name="index_tmpl_id">
         <option value="index-<mt:var name="index_tmpl_id">" selected="selected"><__trans phrase="Index Template: [_1]" params="<mt:var name="index_tmpl_name" escape="html">"></option>

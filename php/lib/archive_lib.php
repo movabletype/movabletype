@@ -347,6 +347,13 @@ class MonthlyArchiver extends DateBasedArchiver {
     }
 
     function &get_archive_list($ctx, $args) {
+        $inside = $ctx->stash('inside_archive_list');
+        if (!isset($inside)) {
+          $inside = false;
+        }
+        $args['inside_archive_list'] = $inside;
+        $args['current_timestamp'] = $ctx->stash('current_timestamp');
+        $args['current_timestamp_end'] = $ctx->stash('current_timestamp_end');
         return $ctx->mt->db->get_archive_list($args);
     }
     
@@ -396,6 +403,13 @@ class DailyArchiver extends DateBasedArchiver {
     }
 
     function &get_archive_list($ctx, $args) {
+        $inside = $ctx->stash('inside_archive_list');
+        if (!isset($inside)) {
+          $inside = false;
+        }
+        $args['inside_archive_list'] = $inside;
+        $args['current_timestamp'] = $ctx->stash('current_timestamp');
+        $args['current_timestamp_end'] = $ctx->stash('current_timestamp_end');
         return $ctx->mt->db->get_archive_list($args);
     }
     
@@ -449,6 +463,13 @@ class WeeklyArchiver extends DateBasedArchiver {
     }
 
     function &get_archive_list($ctx, $args) {
+        $inside = $ctx->stash('inside_archive_list');
+        if (!isset($inside)) {
+          $inside = false;
+        }
+        $args['inside_archive_list'] = $inside;
+        $args['current_timestamp'] = $ctx->stash('current_timestamp');
+        $args['current_timestamp_end'] = $ctx->stash('current_timestamp_end');
         return $ctx->mt->db->get_archive_list($args);
     }
     

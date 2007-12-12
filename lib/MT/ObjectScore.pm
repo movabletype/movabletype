@@ -17,11 +17,13 @@ __PACKAGE__->install_properties({
         'author_id'    => 'integer',
         'score'        => 'float',
         'object_ds'    => 'string(50) not null',
+        'ip'           => 'string(16)',
     },
     indexes => {
         namespace => 1,
         object_id => 1,
         author_id => 1,
+        ip        => 1,
     },
     defaults => {
         object_id => 0,
@@ -54,7 +56,7 @@ __END__
 
 =head1 NAME
 
-MT::Scorable - An interface for any MT::Object that wishes to rated.
+MT::Scorable - An interface for any MT::Object that wishes to be rated.
 
 =head1 SYNOPSIS
 

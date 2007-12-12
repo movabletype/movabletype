@@ -75,29 +75,29 @@ function toggleConfig() {
 
 <mt:unless name="config_created">
 <p>
-    <input id="manually" type="checkbox" name="manually" value="1" onclick="toggleConfig()" <mt:if name="manually">checked="checked"</mt:if>> <label for="manually"><__trans phrase="I will create the mt-config.cgi file manually."></label>
+    <input id="manually" class="cb" type="checkbox" name="manually" value="1" onclick="toggleConfig()" <mt:if name="manually">checked="checked"</mt:if>> <label for="manually"><__trans phrase="I will create the mt-config.cgi file manually."></label>
 </p>
 </mt:unless>
 
 <p>
     <div id="automatic" <mt:if name="FILE_NOT_FOUND">style="display:none;"</mt:if>>
         <div class="left">
-            <input type="submit" value="<__trans phrase="Back">" onclick="go('previous_step')" />
+            <input type="submit" class="sb" value="<__trans phrase="Back">" onclick="go('previous_step')" />
         </div>
         <div class="right">
 <mt:unless name=CONFIG_CREATED>
-            <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry')" />
+            <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry')" />
 <mt:else>
-            <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="document.location.href='<mt:var name="mt_script">'; return false" />
+            <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="document.location.href='<mt:var name="mt_script">'; return false" />
 </mt:unless>
         </div>
     </div>
     <div id="retry" <mt:unless name="file_not_found">style="display:none;"</mt:unless>>
         <div class="left">
-            <input type="submit" value="<__trans phrase="Back">" onclick="go('retry')" />
+            <input type="submit" class="sb" value="<__trans phrase="Back">" onclick="go('retry')" />
         </div>
         <div class="right">
-            <input name="retry" type="submit" value="<__trans phrase="Continue">" onclick="go('retry')" />
+            <input name="retry" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="go('retry')" />
         </div>
     </div>
 </p>

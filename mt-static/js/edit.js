@@ -418,7 +418,7 @@ MT.App.CategorySelector = new Class( Transient, {
             return log.error( r );
         var obj = eval( "(" + r + ")" );
         if ( obj.error )
-            return log.error( obj.error );
+            return alert( obj.error );
         if ( obj.result && obj.result.id )
             this.addCategory( obj.result.id, p.label, p.arguments.parent );
     },

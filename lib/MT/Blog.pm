@@ -111,6 +111,7 @@ __PACKAGE__->install_meta({
         'publish_queue',
         'nwc_smart_replace',
         'nwc_replace_field',
+        'template_set',
     ],
 });
 
@@ -193,7 +194,7 @@ sub set_defaults {
 
 sub create_default_blog {
     my $class = shift;
-    my ($blog_name) = @_;
+    my ($blog_name, $blog_template) = @_;
     $blog_name ||= MT->translate("First Blog");
     $class = ref $class if ref $class;
 
@@ -205,10 +206,10 @@ sub create_default_blog {
     $blog->follow_auth_links(1);
     
     # Enable default commenter authentication
-    $blog->commenter_authenticators('MovableType,LiveJournal,Vox');
+    $blog->commenter_authenticators(MT->config('DefaultCommenterAuth'));
 
     $blog->save or return $class->error($blog->errstr);
-    $blog->create_default_templates
+    $blog->create_default_templates($blog_template || 'mt_blog')
         or return $class->error($blog->errstr);
     return $blog;
 }
@@ -217,44 +218,53 @@ sub create_default_templates {
     my $blog = shift;
 
     require MT::DefaultTemplates;
-    my $tmpl_list = MT::DefaultTemplates->templates;
+    my $tmpl_list = MT::DefaultTemplates->templates( @_ );
     return $blog->error(MT->translate("No default templates were found."))
         if !$tmpl_list || (ref($tmpl_list) ne 'ARRAY') || (!@$tmpl_list);
 
     require MT::Template;
     my @arch_tmpl;
     for my $val (@$tmpl_list) {
+        next if $val->{global};
+
         my $obj = MT::Template->new;
+        my $p = $val->{plugin} || 'MT'; # component and/or MT package for translate
         local $val->{name} = $val->{name}; # name field is translated in "templates" call
-        local $val->{text} = MT->translate_templatized($val->{text});
+        local $val->{text} = $p->translate_templatized($val->{text});
         $obj->build_dynamic(0);
         foreach my $v (keys %$val) {
             $obj->column($v, $val->{$v}) if $obj->has_column($v);
         }
         $obj->blog_id($blog->id);
         $obj->save;
-        if ($val->{type} eq 'archive' || $val->{type} eq 'individual' ||
-            $val->{type} eq 'page') {
-            push @arch_tmpl, $obj;
+        if ($val->{mappings}) {
+            push @arch_tmpl, {
+                template => $obj,
+                mappings => $val->{mappings},
+                exists($val->{preferred}) ? (preferred => $val->{preferred}) : ()
+            };
         }
     }
 
     if (@arch_tmpl) {
         require MT::TemplateMap;
-        for my $tmpl (@arch_tmpl) {
-            my(@at);
-            if ($tmpl->type eq 'archive') {
-                @at = qw( Monthly Category-Monthly Author-Monthly Category );
-            } elsif ($tmpl->type eq 'individual') {
-                @at = qw( Individual );
-            } elsif ($tmpl->type eq 'page') {
-                @at = qw( Page );
-            }
-            for my $at (@at) {
+        for my $map_set (@arch_tmpl) {
+            my $tmpl = $map_set->{template};
+            my $mappings = $map_set->{mappings};
+            foreach my $map_key (keys %$mappings) {
+                my $m = $mappings->{$map_key};
+                my $at = $m->{archive_type};
+                # my $preferred = $mappings->{$map_key}{preferred};
                 my $map = MT::TemplateMap->new;
                 $map->archive_type($at);
-                $map->is_preferred(1);
+                if ( exists $m->{preferred} ) {
+                    $map->is_preferred($m->{preferred});
+                }
+                else {
+                    $map->is_preferred(1);
+                }
                 $map->template_id($tmpl->id);
+                $map->file_template($m->{file_template}) if $m->{file_template};
                 $map->blog_id($tmpl->blog_id);
                 $map->save;
             }

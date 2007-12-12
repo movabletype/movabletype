@@ -1195,17 +1195,88 @@ function tag_normalize($str) {
     return $str;
 }
 
-function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h%x') {
-    # Get parameter
-    $filename = $asset['asset_file_path'];
+function static_path($host) {
+    global $mt;
+    $path = $mt->config('StaticWebPath');
+    if (!$path) {
+        $path = $mt->config('CGIPath');
+        if (substr($path, 0, 1) == '/') {  # relative
+            if (!preg_match('!/$!', $host))
+                $host .= '/';
+            if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {
+                $path = $matches[1] . $path;
+            }
+        }
+        if (substr($path, strlen($path) - 1, 1) != '/')
+            $path .= '/';
+        $path .= 'mt-static/';
+    } elseif (substr($path, 0, 1) == '/') {
+        if (!preg_match('!/$!', $host))
+            $host .= '/';
+        if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {
+            $path = $matches[1] . $path;
+        }        
+    }
+    if (substr($path, strlen($path) - 1, 1) != '/')
+        $path .= '/';
+
+    return $path;
+}
+
+function static_file_path() {
+    global $mt;
+    $path = $mt->config('StaticFilePath');
+    if (!$path) {
+        $path = dirname(dirname(dirname(__FILE__)));
+        $path .= DIRECTORY_SEPARATOR . 'mt-static' . DIRECTORY_SEPARATOR;
+    }
+    if (substr($path, strlen($path) - 1, 1) != DIRECTORY_SEPARATOR)
+        $path .= DIRECTORY_SEPARATOR;
+
+    return $path;
+}
+
+function asset_path($path, $blog) {
     $site_path = $blog['blog_site_path'];
     $site_path = preg_replace('/\/$/', '', $site_path);
-    $filename = preg_replace('/^%r/', $site_path, $filename);
+    $path = preg_replace('/^%r/', $site_path, $path);
+
+    $static_file_path = static_file_path();
+    $static_file_path = preg_replace('/\/$/', '', $static_file_path);
+    $path = preg_replace('/^%s/', $static_file_path, $path);
+
     $archive_path = $blog['blog_archive_path'];
     if ($archive_path) {
         $archive_path = preg_replace('/\/$/', '', $archive_path);
-        $filename = preg_replace('/^%a/', $archive_path, $filename);
+        $path = preg_replace('/^%a/', $archive_path, $path);
     }
+
+    return $path;
+}
+
+function asset_url($url, $blog) {
+    $site_url = $blog['blog_site_url'];
+    $site_url = preg_replace('/\/$/', '', $site_url);
+    $url = preg_replace('/^%r/', $site_url, $url);
+
+    $static_path = static_path($blog['blog_site_url']);
+    $static_path = preg_replace('/\/$/', '', $static_path);
+    $url = preg_replace('/^%s/', $static_path, $url);
+
+    $archive_url = $blog['blog_archive_url'];
+    if ($archive_url) {
+        $archive_url = preg_replace('/\/$/', '', $archive_url);
+        $url = preg_replace('/^%a/', $archive_url, $url);
+    }
+
+    return $url;
+}
+
+function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h%x') {
+    # Get parameter
+    $site_path = $blog['blog_site_path'];
+    $site_path = preg_replace('/\/$/', '', $site_path);
+    $filename = asset_path($asset['asset_file_path'], $blog);
 
     # Get source image information
     list($src_w, $src_h, $src_type, $src_attr) = getimagesize($filename);
@@ -1321,5 +1392,102 @@ function asset_cleanup_cb($matches) {
     $inner = $matches[3];
     $attr = preg_replace('/\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=([\'"][^\'"]*?[\'"]|[Ff][Aa][Ll][Ss][Ee])/', '', $attr);
     return '<span' . $attr . $inner . '</span>';
+}
+
+function create_role_expr_function($expr, &$roles, $datasource = 'author') {
+    $roles_used = array();
+    $orig_expr = $expr;
+    
+    foreach ($roles as $role) {
+        $rolen = $role['role_name'];
+        $roleid = $role['role_id'];
+        $oldexpr = $expr;
+        $expr = preg_replace("!(?:\Q[$rolen]\E|\Q$rolen\E)!", "#$roleid", $expr);
+        if ($oldexpr != $expr)
+            $roles_used[$roleid] = $role;
+    }
+
+    $expr = preg_replace('/\bOR\b/i', '||', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+
+    $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
+    if ($test_expr != '') {
+        echo "Invalid role filter: $orig_expr";
+        return;
+    }
+
+    if (!preg_match('/!/', $expr))
+        $roles = array_values($roles_used);
+
+    $column_name = $datasource . '_id';
+    $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$tm)", $expr);
+
+    $expr = '$tm = array_key_exists($e["'.$datasource.'_id"], $c["r"]) ? $c["r"][$e["'.$datasource.'_id"]] : array(); return ' . $expr . ';';
+    $fn = create_function('&$e,&$c', $expr);
+    if ($fn === FALSE) {
+        echo "Invalid role filter: $orig_expr";
+        return;
+    }
+    return $fn;
+}
+
+function create_status_expr_function($expr, &$status, $datasource = 'author') {
+    $orig_expr = $expr;
+
+    foreach ($status as $s) {
+        $statusn = $s['name'];
+        $statusid = $s['id'];
+        $oldexpr = $expr;
+        $expr = preg_replace("!(?:\Q[$statusn]\E|\Q$statusn\E)!", "#$statusid", $expr);
+    }
+
+    $expr = preg_replace('/\bOR\b/i', '||', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+
+    $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
+    if ($test_expr != '') {
+        echo "Invalid status filter: $orig_expr";
+        return;
+    }
+
+    $expr = preg_replace('/#(\d+)/', '$e["'.$datasource.'_status"] == \\1', $expr);
+    $expr = 'return ' . $expr . ';';
+
+    $fn = create_function('&$e,&$c', $expr);
+    if ($fn === FALSE) {
+        echo "Invalid status filter: $orig_expr";
+        return;
+    }
+    return $fn;
+}
+
+function create_rating_expr_function($expr, $filter, $namespace, $datasource = 'entry') {
+    $orig_expr = $expr;
+
+    require_once 'rating_lib.php';
+    $expr = '$ctx = $c; if ($ctx == null) { global $mt; $ctx = $mt->context(); } $old = $ctx->mt->db->result; ';
+    if ($filter == 'min_score') {
+        $expr .= '$ret = score_for($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
+    } elseif ($filter == 'max_score') {
+        $expr .= '$ret = score_for($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
+    } elseif ($filter == 'min_rate') {
+        $expr .= '$ret = score_avg($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
+    } elseif ($filter == 'max_rate') {
+        $expr .= '$ret = score_avg($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
+    } elseif ($filter == 'min_count') {
+        $expr .= '$ret = score_count($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
+    } elseif ($filter == 'max_count') {
+        $expr .= '$ret = score_count($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
+    } elseif ($filter == 'scored_by') {
+        $expr .= '$ret = get_score($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'", '.$orig_expr.') > 0;';
+    }
+    $expr .= ' $ctx->mt->db->result = $old; return $ret;';
+
+    $fn = create_function('&$e,&$c', $expr);
+    if ($fn === FALSE) {
+        echo "Invalid rating filter: $orig_expr";
+        return;
+    }
+    return $fn;
 }
 ?>

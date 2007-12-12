@@ -55,11 +55,14 @@ sub file_path {
 
     $path = $asset->cache_property(sub {
         my $path = $asset->SUPER::file_path();
-        if ($path && ($path =~ m!^\%([ra])!)) {
-            my $blog = $asset->blog or return undef;
-            my $root = $1 eq 'r' ? $blog->site_path : $blog->archive_path;
+        if ($path && ($path =~ m!^\%([ras])!)) {
+            my $blog = $asset->blog;
+            my $root = !$blog || $1 eq 's' ? MT->instance->static_file_path
+                     : $1 eq 'r'           ? $blog->site_path
+                     :                       $blog->archive_path
+                     ;
             $root =~ s!(/|\\)$!!;
-            $path =~ s!^\%[ra]!$root!;
+            $path =~ s!^\%[ras]!$root!;
         }
         $path;
     }, @_);
@@ -73,11 +76,14 @@ sub url {
 
     $url = $asset->cache_property(sub {
         my $url = $asset->SUPER::url();
-        if ($url =~ m!^\%([ra])!) {
-            my $blog = $asset->blog or return undef;
-            my $root = $1 eq 'r' ? $blog->site_url : $blog->archive_url;
+        if ($url =~ m!^\%([ras])!) {
+            my $blog = $asset->blog;
+            my $root = !$blog || $1 eq 's' ? MT->instance->static_path
+                     : $1 eq 'r'           ? $blog->site_url
+                     :                       $blog->archive_url
+                     ;
             $root =~ s!/$!!;
-            $url =~ s!^\%[ra]!$root!;
+            $url =~ s!^\%[ras]!$root!;
         }
         return $url;
     }, @_);
@@ -100,10 +106,10 @@ sub remove {
     my $asset = shift;
     if (ref $asset) {
         my $blog = MT::Blog->load($asset->blog_id);
-        if ($blog) {
-            my $file = $asset->file_path;
-            $blog->file_mgr->delete($file);
-        }
+        require MT::FileMgr;
+        my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
+        my $file = $asset->file_path;
+        $fmgr->delete($file);
         $asset->remove_cached_files;
 
         # remove children.
@@ -144,7 +150,8 @@ sub remove_cached_files {
     if ($asset->id && $blog) {
         my $cache_dir = $asset->_make_cache_path;
         if ($cache_dir) {
-            my $fmgr = $blog->file_mgr;
+            require MT::FileMgr;
+            my $fmgr = $blog->file_mgr || MT::FileMgr->new('Local');
             if ($fmgr) {
                 my $basename = $asset->file_name;
                 my $ext = '.'.$asset->file_ext;
@@ -252,38 +259,44 @@ sub thumbnail_url {
     my $asset = shift;
     my (%param) = @_;
 
-    if (my $blog = $asset->blog) {
-        require File::Basename;
-        if (my ($thumbnail_file, $w, $h) = $asset->thumbnail_file(@_)) {
-            return $asset->stock_icon_url(@_) if !defined $thumbnail_file;
-            my $file = File::Basename::basename($thumbnail_file);
-            my $asset_file_path = $asset->SUPER::file_path();
-            my $site_url;
-            if ( $asset_file_path =~ m/^%a/ ) {
-                $site_url = $param{Pseudo} ? '%a' : $blog->archive_path;
-            } else {
-                $site_url = $param{Pseudo} ? '%r' : $blog->site_url;
-            }
+    require File::Basename;
+    if (my ($thumbnail_file, $w, $h) = $asset->thumbnail_file(@_)) {
+        return $asset->stock_icon_url(@_) if !defined $thumbnail_file;
+        my $file = File::Basename::basename($thumbnail_file);
+        my $asset_file_path = $asset->SUPER::file_path();
+        my $site_url;
+        my $blog = $asset->blog;
+        if (!$blog) {
+            $site_url = $param{Pseudo} ? '%s' : MT->instance->static_path;
+            $site_url .= '/' unless $site_url =~ m!/$!;
+            $site_url .= 'support/';
+        }
+        elsif ( $asset_file_path =~ m/^%a/ ) {
+            $site_url = $param{Pseudo} ? '%a' : $blog->archive_url;
+        }
+        else {
+            $site_url = $param{Pseudo} ? '%r' : $blog->site_url;
+        }
 
-           if ($file && $site_url) {
-                require MT::Util;
-                my $path = $param{Path};
-                if (!defined $path) {
-                    $path = MT::Util::caturl(MT->config('AssetCacheDir'), unpack('A4A2', $asset->created_on));
-                } else {
-                    require File::Spec;
-                    my @path = File::Spec->splitdir($path);
-                    $path = '';
-                    for my $p (@path) {
-                        $path = MT::Util::caturl($path, $p);
-                    }
+        if ($file && $site_url) {
+            require MT::Util;
+            my $path = $param{Path};
+            if (!defined $path) {
+                $path = MT::Util::caturl(MT->config('AssetCacheDir'), unpack('A4A2', $asset->created_on));
+            } else {
+                require File::Spec;
+                my @path = File::Spec->splitdir($path);
+                $path = '';
+                for my $p (@path) {
+                    $path = MT::Util::caturl($path, $p);
                 }
-                $file =~ s/%([A-F0-9]{2})/chr(hex($1))/gei;
-                $site_url = MT::Util::caturl($site_url, $path, $file);
-                return ($site_url, $w, $h);
             }
+            $file =~ s/%([A-F0-9]{2})/chr(hex($1))/gei;
+            $site_url = MT::Util::caturl($site_url, $path, $file);
+            return ($site_url, $w, $h);
         }
     }
+
     # Use a stock icon
     return $asset->stock_icon_url(@_);
 }
@@ -326,7 +339,7 @@ sub on_upload {
 sub _make_cache_path {
     my $asset = shift;
     my ($path, $pseudo) = @_;
-    my $blog = $asset->blog or return undef;
+    my $blog = $asset->blog;
 
     require File::Spec;
     my $year_stamp = '';
@@ -347,22 +360,29 @@ sub _make_cache_path {
     my $asset_file_path = $asset->SUPER::file_path();
     my $format;
     my $root_path;
-    if ( $asset_file_path =~ m/^%a/ ) {
+    if ( !$blog ) {
+        $format = '%s';
+        $root_path = File::Spec->catdir(MT->instance->static_file_path, 'support');
+    }
+    elsif ( $asset_file_path =~ m/^%a/ ) {
         $format = '%a';
         $root_path = $blog->archive_path;
-    } else {
+    }
+    else {
         $format = '%r';
         $root_path = $blog->site_path;
     }
-    my $asset_cache_path = File::Spec->catdir(($pseudo ? $format : $root_path),
-        $path, $year_stamp, $month_stamp);
-    my $real_cache_path = File::Spec->catdir($blog->site_path,
-        $path, $year_stamp, $month_stamp);
 
+    my $real_cache_path = File::Spec->catdir($root_path, $path, $year_stamp,
+        $month_stamp);
     if (!-d $real_cache_path) {
-        my $fmgr = $blog->file_mgr;
+        require MT::FileMgr;
+        my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
         $fmgr->mkpath($real_cache_path) or return undef;
     }
+
+    my $asset_cache_path = File::Spec->catdir(($pseudo ? $format : $root_path),
+        $path, $year_stamp, $month_stamp);
     $asset_cache_path;
 }
 

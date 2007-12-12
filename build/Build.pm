@@ -175,7 +175,7 @@ sub setup {
     # Create the build-stamp if one is not already defined.
     if( !$self->{'stamp=s'} ) {
         # Read-in the configuration variables for substitution.
-        my $config = $self->read_conf( "build/mt-dists/$self->{'pack=s'}.mk" );
+        my $config = $self->read_conf( "build/mt-dists/default.mk", "build/mt-dists/$self->{'pack=s'}.mk" );
         my @stamp = ();
         push @stamp, $config->{PRODUCT_VERSION} . (
             $self->{'alpha=s'} ? "a$self->{'alpha=s'}"

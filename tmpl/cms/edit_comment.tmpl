@@ -90,11 +90,25 @@
         label_class="left-label <$mt:var name="comment_status"$>"
         hint="<__trans phrase="Update the status of this comment">"
         show_hint="0">
+        <mt:if name="has_publish_access">
         <select id="status" name="status" class="width90 comment-status">
             <option value="publish" <mt:if name="comment_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
             <option value="moderate" <mt:if name="comment_pending">selected="selected"</mt:if>><__trans phrase="Unapproved"></option>
             <option value="junk" <mt:if name="is_junk">selected="selected"</mt:if>><__trans phrase="Reported as Spam"></option>
         </select>
+        <mt:else>
+            <mt:if name="comment_approved">
+        <span><__trans phrase="Approved"></span><input type="hidden" name="status" value="publish" />
+        <mt:else>
+            <mt:if name="comment_pending">
+        <span><__trans phrase="Unapproved"></span><input type="hidden" name="status" value="moderate" />
+            <mt:else>
+                <mt:if name="is_junk">
+        <span><__trans phrase="Reported as Spam"></span><input type="hidden" name="status" value="junk" />
+                </mt:if>
+            </mt:if>
+        </mt:if>
+        </mt:if>
         <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">&amp;<mt:if name="is_junk">tab=junk<mt:else>filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if></mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 
         <mt:if name="junk_log_loop">

@@ -702,6 +702,14 @@ sub core_upgrade_functions {
                 },
             },
         },
+        'core_add_email_template' => {
+            version_limit => 4.0030,
+            priority => 9.3,
+            code => sub {
+                my $self = shift;
+                $self->upgrade_templates({ Install => 1 });
+            },
+        },
     }
 }
 
@@ -1147,6 +1155,7 @@ sub install_database {
     $self->check_schema;
     # this will populate them...
     $self->add_step('core_seed_database', %$user);
+    $self->add_step('core_upgrade_templates');
     $self->add_step('core_finish');
     1;
 }
@@ -1306,12 +1315,13 @@ sub seed_database {
     $self->create_default_roles(%param);
 
     require MT::Blog;
-    my $blog = MT::Blog->create_default_blog(MT->translate('First Blog'))
+    my $blog = MT::Blog->create_default_blog(MT->translate('First Blog'), $param{blog_template_set})
         or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Blog->errstr));
     $blog->site_path(exists $param{blog_path} ? uri_unescape($param{blog_path}) : '');
     $blog->site_url(exists $param{blog_url} ? uri_unescape($param{blog_url}) : '');
     $blog->name(exists $param{blog_name} ? uri_unescape($param{blog_name}) : '');
     $blog->server_offset(exists $param{blog_timezone} ? ($param{blog_timezone} || 0) : 0);
+    $blog->template_set($param{blog_template_set});
     $blog->save;
 
     # Create an initial entry and comment for this blog
@@ -1456,37 +1466,54 @@ sub upgrade_templates {
     require MT::Template;
     require MT::Blog;
 
-    for my $val (@$tmpl_list) {
-        if (!$install) {
-            next if $val->{type} =~ m/^(archive|individual|page|category|index|custom)$/;
-        }
-
-        $val->{name} = $mt->translate($val->{name});
-        $val->{text} = $mt->translate_templatized($val->{text});
+    my $installer = sub {
+        my ($val, $blog_id) = @_;
 
         my $terms = {};
         $terms->{type} = $val->{type};
         $terms->{name} = $val->{name}
-            if $val->{type} =~ m/^(archive|individual|page|category|index|custom)$/;
-        my @exists = MT::Template->load( $terms,
-                                         { limit => 1 } );
-        next if @exists;
+            if $val->{set} ne 'system';
+        $terms->{blog_id} = $blog_id;
+
+        return 1 if MT::Template->count( $terms );
 
         $self->progress($self->translate_escape("Creating new template: '[_1]'.", $val->{name}));
 
-        my $iter = MT::Blog->load_iter();
-        while (my $blog = $iter->()) {
-            my $obj = MT::Template->new;
-            $obj->build_dynamic(0);
-            foreach my $v (keys %$val) {
-                $obj->column($v, $val->{$v}) if $obj->has_column($v);
+        my $obj = MT::Template->new;
+        $obj->build_dynamic(0);
+        foreach my $v (keys %$val) {
+            $obj->column($v, $val->{$v}) if $obj->has_column($v);
+        }
+        $obj->blog_id($blog_id);
+        $obj->save or return $self->error($self->translate_escape("Error saving record: [_1].", $obj->errstr));
+        $updated = 1;
+        if ($val->{mappings}) {
+            push @arch_tmpl, {
+                template => $obj,
+                mappings => $val->{mappings},
+            };
+        }
+        return 1;
+    };
+
+    for my $val (@$tmpl_list) {
+        if (!$install) {
+            if (!$val->{global}) {
+                next if $val->{set} ne 'system';
             }
-            $obj->blog_id($blog->id);
-            $obj->save or return $self->error($self->translate_escape("Error saving record: [_1].", $obj->errstr));
-            $updated = 1;
-            if ($val->{type} eq 'archive' || $val->{type} eq 'individual' ||
-                $val->{type} eq 'page' || $val->{type} eq 'category') {
-                push @arch_tmpl, $obj;
+        }
+
+        my $p = $val->{plugin} || $mt;
+        $val->{name} = $p->translate($val->{name});
+        $val->{text} = $p->translate_templatized($val->{text});
+
+        if ($val->{global}) {
+            $installer->($val, 0) or return;
+        }
+        else {
+            my $iter = MT::Blog->load_iter();
+            while (my $blog = $iter->()) {
+                $installer->($val, $blog->id);
             }
         }
     }
@@ -1494,23 +1521,21 @@ sub upgrade_templates {
     if (@arch_tmpl) {
         $self->progress($self->translate_escape("Mapping templates to blog archive types..."));
         require MT::TemplateMap;
-    
-        for my $tmpl (@arch_tmpl) {
-            my(@at);
-            if ($tmpl->type eq 'archive') {
-                @at = qw( Daily Weekly Monthly Category-Monthly Author-Monthly Category );
-            } elsif ($tmpl->type eq 'individual') {
-                @at = qw( Individual );
-            } elsif ($tmpl->type eq 'page') {
-                @at = qw( Page );
-            }
-            for my $at (@at) {
+
+        for my $map_set (@arch_tmpl) {
+            my $tmpl = $map_set->{template};
+            my $mappings = $map_set->{mappings};
+            foreach my $map_key (keys %$mappings) {
+                my $m = $mappings->{$map_key};
+                my $at = $m->{archive_type};
+                # my $preferred = $mappings->{$map_key}{preferred};
                 my $map = MT::TemplateMap->new;
                 $map->archive_type($at);
                 $map->is_preferred(1);
                 $map->template_id($tmpl->id);
+                $map->file_template($m->{file_template}) if $m->{file_template};
                 $map->blog_id($tmpl->blog_id);
-                $map->save or return $self->error($self->translate_escape("Error saving record: [_1].", $map->errstr));
+                $map->save;
             }
         }
     }

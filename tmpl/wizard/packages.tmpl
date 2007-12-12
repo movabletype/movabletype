@@ -55,7 +55,7 @@ function toggleList() {
 <mt:if name="optional">
 <p class="intro"><span class="ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type."></p>
 <div class="right pkg">
-   <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
+   <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="go('next_step');" />
 </div>
 <p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
 </mt:if>
@@ -119,28 +119,28 @@ function toggleList() {
 
 <div id="buttons" <mt:if name="optional">style="display:none;"</mt:if>>
 <div class="left">
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step');" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step');" />
 </div>
 <div class="right">
 <mt:if name="missing_db_or_optional">
 <mt:if name="missing_db">
-   <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
+   <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
 <mt:else>
    <mt:if name="optional">
-      <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
-      <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
+      <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
+      <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="go('next_step');" />
    <mt:else>
-      <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
+      <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
    </mt:if>
 </mt:if>
 <mt:else>
 <mt:if name="required">
-   <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
+   <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
 </mt:if>
 </mt:if>
 
 <mt:if name="success">
-   <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
+   <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="go('next_step');" />
 </mt:if>
 </div>
 </div>

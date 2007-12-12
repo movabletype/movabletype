@@ -26,6 +26,10 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $lastn = $ctx->stash('_entries_lastn');
         $counter = $ctx->stash('_entries_counter');
     }
+    if (!isset($args['class'])) {
+        $args['class'] = 'entry';
+    }
+
     $entries = $ctx->stash('entries');
     if (!isset($entries)) {
         global $_archivers;
@@ -50,7 +54,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
             }
             $archiver->setup_args($ctx, $args);
         }
-        if ($cat = $ctx->stash('category')) {
+        if (($cat = $ctx->stash('category')) && $args['class'] == 'entry') {
             $args['category'] or $args['categories'] or $args['category_id'] = $cat['category_id'];
             if ($ctx->stash('inside_mt_categories')) {
                 $args['category_id'] = $cat['category_id'];

@@ -5,7 +5,7 @@ body{
     font-size: 12px;
 }
 
-h2, p, ul {
+h1, h2, p, ul {
     margin-bottom: 12px;
 }
 
@@ -144,20 +144,13 @@ fieldset {
     margin-bottom: .75em;
 }
 
-.field-left-label .field-header {
-    float: none;
-    text-align: left;
-    width: 100%;
-    padding: 5px 0;
-}
-
 .field-header label {
     font-weight: bold;
 }
 
-.field-left-label .field-content,
-.field-left-label .field-content select,
-.field-left-label .field-content input {
+.field-content select,
+.field-content input.ti,
+.field-content input.pw {
     margin: 0;
     width: 318px;
 }
@@ -550,4 +543,12 @@ table.show-admin td {
     overflow-x: auto;
     overflow-y: hidden;
     height: 2.75em
+}
+
+/* Profile ---------------------------------------------------------------------------------- */
+
+ul#profile-data li {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
 }

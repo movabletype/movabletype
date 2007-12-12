@@ -33,6 +33,36 @@ sub metadata {
     $meta;
 }
 
+sub image_height {
+    my $asset = shift;
+    my $height = $asset->meta('image_height', @_);
+    return $height if $height || @_;
+
+    eval { require Image::Size; };
+    return undef if $@;
+    my ( $w, $h, $id ) = Image::Size::imgsize($asset->file_path);
+    $asset->meta('image_height', $h);
+    if ($asset->id) {
+        $asset->save;
+    }
+    return $h;
+}
+
+sub image_width {
+    my $asset = shift;
+    my $width = $asset->meta('image_width', @_);
+    return $width if $width || @_;
+
+    eval { require Image::Size; };
+    return undef if $@;
+    my ( $w, $h, $id ) = Image::Size::imgsize($asset->file_path);
+    $asset->meta('image_width', $w);
+    if ($asset->id) {
+        $asset->save;
+    }
+    return $w;
+}
+
 sub has_thumbnail {
     1;
 }
@@ -45,7 +75,6 @@ sub thumbnail_file {
     return undef unless @imginfo;
 
     my $blog = $param{Blog} || $asset->blog;
-    return undef unless $blog;
     my $fmgr;
 
     require MT::Util;
@@ -76,7 +105,8 @@ sub thumbnail_file {
     }
 
     # stale or non-existent thumbnail. let's create one!
-    $fmgr ||= $blog->file_mgr;
+    require MT::FileMgr;
+    $fmgr ||= $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
     return undef unless $fmgr;
     return undef unless $fmgr->can_write($asset_cache_path);
 
@@ -176,6 +206,8 @@ sub as_html {
     my ($param) = @_;
     my $text    = '';
 
+    $param->{enclose} = 1 unless exists $param->{enclose};
+
     if ( $param->{include} ) {
 
         my $fname = $asset->file_name;
@@ -269,7 +301,7 @@ q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=
         );
     }
 
-    return $asset->enclose($text);
+    return $param->{enclose} ? $asset->enclose($text) : $text;
 }
 
 # Return a HTML snippet of form options for inserting this asset

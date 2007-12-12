@@ -1,6 +1,13 @@
+# Copyright 2006-2007 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# Original Copyright (c) 2004-2006 David Raynes
+#
+# $Id$
+
 package MT::Plugin::MultiBlog;
 
-# $Id$
 use strict;
 use warnings;
 
@@ -10,11 +17,10 @@ our $VERSION = '2.0';
 my $plugin  = MT::Plugin::MultiBlog->new({
     id          =>  'multiblog',
     name        =>  'MultiBlog',
-    description =>  '<MT_TRANS phrase="MultiBlog allows you to publish templated or raw content from other blogs and define rebuild dependencies and access controls between them.">',
+    description =>  '<MT_TRANS phrase="MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.">',
     version                => $VERSION,
-    plugin_link            => 'http://www.rayners.org/plugins/multiblog/',
-    author_name            => 'David Raynes',
-    author_link            => 'http://www.rayners.org/',
+    author_name            => 'Six Apart, Ltd.',
+    author_link            => 'http://www.sixapart.com/',
     system_config_template => 'system_config.tmpl',
     blog_config_template   => 'blog_config.tmpl',
     settings               => new MT::PluginSettings([
@@ -36,6 +42,7 @@ my $plugin  = MT::Plugin::MultiBlog->new({
             },
         },
         tags => {
+            help_url => sub { MT->translate('http://www.movabletype.org/documentation/appendices/tags/%t.html') },
             block => {
                 Entries => 'MultiBlog::preprocess_native_tags',
                 Categories => 'MultiBlog::preprocess_native_tags',

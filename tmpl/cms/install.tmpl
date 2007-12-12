@@ -141,29 +141,33 @@ function validate(f) {
     <mtapp:setting
         id="admin_username"
         label="<__trans phrase="Username">"
+        label_class="top-label"
         hint="<__trans phrase="The name used by this user to login.">">
-        <input type="text" id="admin_username" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+        <input type="text" id="admin_username" class="ti" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="admin_nickname"
         label="<__trans phrase="Display Name">"
+        label_class="top-label"
         hint="<__trans phrase="The name used when published.">">
-        <input name="admin_nickname" id="admin_nickname" class="half-width" value="<mt:var name="admin_nickname" escape="html">" />
+        <input name="admin_nickname" id="admin_nickname" class="ti" value="<mt:var name="admin_nickname" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="admin_email"
         label="<__trans phrase="Email Address">"
+        label_class="top-label"
         hint="<__trans phrase="The user&rsquo;s email address.">">
-        <input type="text" id="admin_email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
+        <input type="text" id="admin_email" class="ti" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="preferred_language"
         label="<__trans phrase="Language">"
+        label_class="top-label"
         hint="<__trans phrase="The user&rsquo;s preferred language.">">
-        <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="se"><mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
     </mtapp:setting>
@@ -171,22 +175,25 @@ function validate(f) {
     <mtapp:setting
         id="admin_password"
         label="<__trans phrase="Password">"
+        label_class="top-label"
         hint="<__trans phrase="Select a password for your account.">">
-        <input type="password" id="admin_password" name="admin_password" />
+        <input type="password" id="admin_password" class="pw" name="admin_password" />
     </mtapp:setting>
 
     <mtapp:setting
         id="admin_password_confirm"
         label="<__trans phrase="Password Confirm">"
+        label_class="top-label"
         hint="<__trans phrase="Repeat the password for confirmation.">">
-        <input type="password" name="admin_password_confirm" />
+        <input type="password" class="pw" name="admin_password_confirm" />
     </mtapp:setting>
 
     <mtapp:setting
         id="hint"
         label="<__trans phrase="Password recovery word/phrase">"
+        label_class="top-label"
         hint="<__trans phrase="This word or phrase will be required to recover your password if you forget it.">">
-        <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
+        <input name="hint" id="hint" class="ti" value="<mt:var name="hint" escape="html">" />
     </mtapp:setting>
 
 </mt:if>
@@ -196,15 +203,17 @@ function validate(f) {
     <mtapp:setting
         id="admin_username"
         label="<__trans phrase="Username">"
+        label_class="top-label"
         hint="<__trans phrase="Your LDAP username.">">
-        <input type="text" id="admin_username" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+        <input type="text" id="admin_username" class="ti" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="preferred_language"
         label="<__trans phrase="Language">"
+        label_class="top-label"
         hint="<__trans phrase="The user&rsquo;s preferred language.">">
-        <select name="preferred_language" id="preferred_language"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="se"><mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
     </mtapp:setting>
@@ -212,8 +221,9 @@ function validate(f) {
     <mtapp:setting
         id="admin_password"
         label="<__trans phrase="Password">"
+        label_class="top-label"
         hint="<__trans phrase="Enter your LDAP password.">">
-        <input type="password" id="admin_password" name="admin_password" />
+        <input type="password" id="admin_password" class="pw" name="admin_password" />
     </mtapp:setting>
 
 </mt:if>

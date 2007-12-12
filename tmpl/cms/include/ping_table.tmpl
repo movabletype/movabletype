@@ -1,10 +1,10 @@
 <mt:setvarblock name="action_buttons">
     <mt:unless name="filter_spam">
-        <a href="javascript:void(0)"
+        <mt:if name="state_editable"><a href="javascript:void(0)"
             onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">', 'id', 'approve_item', {}, '<__trans phrase="to publish" escape="js">'); return false;"
             accesskey="p"
             title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
-            ><__trans phrase="Publish"></a>
+            ><__trans phrase="Publish"></a></mt:if>
     </mt:unless>
         <a href="javascript:void(0)"
             onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
@@ -12,21 +12,21 @@
             title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
             ><__trans phrase="Delete"></a>
     <mt:unless name="filter_spam">
-        <a href="javascript:void(0)"
+        <mt:if name="state_editable"><a href="javascript:void(0)"
             onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
             accesskey="j"
             title="<__trans phrase="Report selected [_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
-            ><__trans phrase="Spam"></a>
+            ><__trans phrase="Spam"></a></mt:if>
     <mt:else>
-        <a href="javascript:void(0)"
+        <mt:if name="state_editable"><a href="javascript:void(0)"
             onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
             accesskey="j"
             title="<__trans phrase="Report selected [_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
-            ><__trans phrase="Not Spam"></a>
-        <a href="javascript:void(0)" mt:command="submit" mt:mode="empty_junk"
+            ><__trans phrase="Not Spam"></a></mt:if>
+        <mt:if name="can_empty_junk"><a href="javascript:void(0)" mt:command="submit" mt:mode="empty_junk"
             mt:confirm-msg="<__trans phrase="Are you sure you want to remove all TrackBacks reported as spam?">"
             title="<__trans phrase="Deletes all [_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
-            ><__trans phrase="Empty"></a>
+            ><__trans phrase="Empty"></a></mt:if>
     </mt:unless>
     <mt:if name="is_ip_filter">
         <a href="javascript:void(0)"

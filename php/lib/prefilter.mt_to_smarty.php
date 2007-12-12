@@ -84,8 +84,17 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $attrs[$attr] = $arglist[$a][3];
                         $quote = $arglist[$a][2];
                     }
-                    if (preg_match('/^\$(\w+)$/', $attrs[$attr], $matches)) {
-                        $attrs[$attr] = '$vars.' . $matches[1];
+                    if (preg_match('/^\$([A-Za-z_](\w|\.)*)$/', $attrs[$attr], $matches)) {
+                        if (preg_match('/^(config|request)\.(.+)$/i', $matches[1], $m)) {
+                            if (strtolower($m[1]) == 'config') {
+                                $attrs[$attr] = $mt->config[strtolower($m[2])];
+                            }
+                            elseif (strtolower($m[1]) == 'request') {
+                                $attrs[$attr] = '$smarty.request.' . $m[2];
+                            }
+                        } else {
+                            $attrs[$attr] = '$vars.' . $matches[1];
+                        }
                         $quote = '';
                     }
                     if ($ctx->global_attr[$attr]) {
@@ -249,8 +258,17 @@ function _parse_modifier($str) {
         for ($a = 0; $a < count($matches); $a++) {
             $val = $matches[$a][1];
             if (strlen($val)) {
-                if (preg_match('/^([\'"])\$(\w+)\1$/', $val, $matches)) {
-                    $val = '$vars.' . $matches[2];
+                if (preg_match('/^([\'"])\$([A-Za-z_]\w*)\1$/', $val, $matches)) {
+                    if (preg_match('/^(config|request)\.(.+)$/i', $matches[2], $m)) {
+                        if (strtolower($m[1]) == 'config') {
+                            $val = $mt->config[strtolower($m[2])];
+                        }
+                        elseif (strtolower($m[1]) == 'request') {
+                            $val = '$smarty.request.' . $m[2];
+                        }
+                    } else {
+                        $val = '$vars.' . $matches[2];
+                    }
                 }
                 $result .= ':' . $val;
             }

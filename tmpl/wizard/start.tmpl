@@ -204,14 +204,15 @@ window.onload = js_check;
             <mtapp:setting
                 id="set_static_uri_to"
                 label="<__trans phrase="Static web path">"
+                label_class="top-label"
                 show_hint="1"
                 hint="$hintfoo">
-                <input type="text" name="set_static_uri_to" id="set_static_uri_to" value="<$mt:var name="set_static_uri_to" default="$static_uri"$>" size="">
+                <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="ti" value="<$mt:var name="set_static_uri_to" default="$static_uri"$>" size="">
             </mtapp:setting>
         </fieldset>
     </div>
 
-    <div class="right"><input type="submit" value="<__trans phrase="Begin">" /></div>
+    <div class="right"><input type="submit" class="sb" value="<__trans phrase="Begin">" /></div>
 
 </form>
 

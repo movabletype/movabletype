@@ -17,18 +17,20 @@
             accesskey="s"
             class="primary-button"
             ><mt:var name="value"></button>
+        <mt:unless name="dialog">
         <button
             id="close-button"
-            onclick="window.close()"
+            onclick="if ( window.opener ) { window.close(); } else { window.parent.closeDialog(); }"
             type="submit"
             accesskey="x"
             class="hidden"
             title="<__trans phrase="Close (x)">"
             ><__trans phrase="Close"></button>
+        </mt:unless>
 <script type="text/javascript">
 /* <![CDATA[ */
 // show the close button if error is in modal or popup
-if ((window.parent && (window.parent.window !== window)) || window.opener)
+if ( window != window.parent || window.opener )
     document.getElementById("close-button").className = "";
 /* ]]> */
 </script>

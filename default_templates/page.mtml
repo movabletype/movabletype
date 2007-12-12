@@ -1,7 +1,12 @@
 <MTSetVar name="body_class" value="mt-archive-listing mt-page-archive">
 <MTSetVar name="sidebar" value="1">
-<MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)">
-<MTSetVarBlock name="page_title"><$MTPageTitle remove_html="1"$></MTSetVarBlock>
+<MTIfCommentsAccepted><$MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)"$></MTIfCommentsAccepted>
+<MTSetVarBlock name="page_title"><$MTPageTitle$></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTGetVar name="page_title"$> - <$MTBlogName$></MTSetVarBlock>
+<MTSetVarBlock name="html_head">
+    <MTIfPingsAccepted><$MTEntryTrackbackData$></MTIfPingsAccepted>
+    <MTIfCommentsAccepted><script type="text/javascript" src="<$MTLink template="javascript"$>"></script></MTIfCommentsAccepted>
+</MTSetVarBlock>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 

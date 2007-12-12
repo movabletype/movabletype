@@ -3,16 +3,18 @@
 <MTSetVar name="search_results_template" value="1">
 <MTSetVar name="sidebar" value="1">
 <MTSetVarBlock name="page_title"><__trans phrase="Search Results"></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTBlogName$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
 <MTIfStraightSearch>
     <MTSetVar name="search_type" value="search">
 <MTElse>
     <MTSetVar name="search_type" value="tag">
 </MTIfStraightSearch>
+
 <$MTInclude module="<__trans phrase="Header">"$>
 
 <MTSearchResults>
     <MTBlogResultHeader>
-<h1 class="search-results-header">
+<h1 id="page-title" class="search-results-header">
         <MTIfStraightSearch>
     <__trans phrase="Results matching &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName encode_html="1"$>">
         </MTIfStraightSearch>
@@ -29,7 +31,7 @@
 </MTSearchResults>
 
 <MTNoSearchResults>
-<h1 class="search-results-header">
+<h1 id="page-title" class="search-results-header">
     <MTIfStraightSearch>
     <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$MTSearchString$>">
     </MTIfStraightSearch>
@@ -41,7 +43,7 @@
 </MTNoSearchResults>
 
 <MTNoSearch>
-<h1 class="search-results-header"><__trans phrase="Instructions"></h1>
+<h1 id="page-title" class="search-results-header"><__trans phrase="Instructions"></h1>
 <p><__trans phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
 <blockquote>
     <p><code>"<__trans phrase="movable type">"</code></p>

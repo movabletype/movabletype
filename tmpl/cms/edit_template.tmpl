@@ -105,6 +105,21 @@
         </ul>
         </mtapp:widget>
     </mt:if>
+    <mtapp:widget
+        id="tag-list"
+        class="hidden"
+        label="Tag Documentation"
+        label_link="http://www.movabletype.org/documentation/appendices/tags/">
+        <div id="tag-list-inner">
+        </div>
+    </mtapp:widget>
+    <mtapp:widget
+        id="badtag-list"
+        class="hidden"
+        label="Unrecognized Tags">
+        <div id="badtag-list-inner">
+        </div>
+    </mtapp:widget>
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
     <button
@@ -162,6 +177,98 @@ function setDirty () {
 function clearDirty () {
     log.warn('deprecated function clearDirty(), call app.clearDirty instead');
     app.clearDirty();
+}
+
+var tag_docs = <tmpl_var name="tag_docs" to_json="1">;
+
+function documentTags() {
+    // scan text of editor for tags
+    var str;
+    if ( window.app && window.app.cpeList ) {
+        str = window.app.cpeList[0].getCode();
+    } else {
+        var area = DOM.getElement('text');
+        str = area.value;
+    }
+
+    // clear any ignore blocks
+    var re = new RegExp('(<m' + 't:?ignore([^>])*?>)[\\S\\s]*?</mt:?ignore>',
+        'gi');
+    str = str.replace(re, '$1');
+    // scan template string for MT tags and build
+    // a hash of unique tag names
+    var tags = {};
+    var matches = str.match(/<\$?[mM][tT]:?[^\s>]+/g);
+    if (matches) {
+        for (var i = 0; i < matches.length; i++ ) {
+            var orig_tag = matches[i];
+            if (orig_tag.match(/^<\$/)) {
+                if (!orig_tag.match(/\$$/))
+                    orig_tag += '$';
+            }
+            orig_tag = orig_tag.replace(/^</, '&lt;');
+            orig_tag += '&gt;';
+            var tag = matches[i].replace(/^<\$?[mM][tT]:?/, '');
+            tag = tag.replace(/\$$/, '');
+            tags[dirify(tag.toLowerCase())] = orig_tag;
+        }
+    }
+
+    // construct a set of bullets for all discovered tags
+    // separate into valid/invalid lists
+    var sorted_tags = [];
+    for ( var t in tags ) {
+        if ( !tags.hasOwnProperty( t ) )
+            continue;
+        sorted_tags.push(t);
+    }
+    sorted_tags.sort();
+    var list = '';
+    var bad_list = '';
+    for ( var i = 0; i < sorted_tags.length; i++ ) {
+        var t = sorted_tags[i];
+        var url = tagDocURL( t );
+        var tag_name = tags[t];
+        if (!url) {
+            bad_list = bad_list + "<li>" + tag_name + "</li>";
+            continue;
+        }
+        var link = "<a target=\"mt_docs\" href=\"" + url + "\">" + tag_name + "</a>";
+        list = list + "<li>" + link + "</li>";
+    }
+
+    // if we found tags to list, display the tag-list widget, otherwise
+    // hide it
+    if (list != '') {
+        list = '<ul>' + list + '</ul>';
+        DOM.getElement("tag-list-inner").innerHTML = list;
+        DOM.removeClassName("tag-list", "hidden");
+    } else {
+        DOM.addClassName("tag-list", "hidden");
+    }
+    // if we found invalid tags, display them in badtag-list, otherwise
+    // hide it
+    if (bad_list != '') {
+        bad_list = '<ul>' + bad_list + '</ul>';
+        DOM.getElement("badtag-list-inner").innerHTML = bad_list;
+        DOM.removeClassName("badtag-list", "hidden");
+    } else {
+        DOM.addClassName("badtag-list", "hidden");
+    }
+}
+
+function tagDocURL(name) {
+    var re = new RegExp('(?:^|,)' + name + '\\??(?:,|$)', 'i');
+    for ( var u in tag_docs ) {
+        if ( !tag_docs.hasOwnProperty(u) ) continue;
+
+        var tags = tag_docs[u];
+        var m;
+        if (m = tags.match(re)) {
+            return u.replace(/\%t/, name);
+        }
+    }
+    return;
 }
 
 function archiveFileSelect(sel) {
@@ -325,6 +432,7 @@ function init() {
             }
         }
     }
+    window.setTimeout(documentTags, 100);
 }
 
 TC.attachLoadEvent( init );
@@ -372,7 +480,7 @@ TC.attachLoadEvent( init );
 <mtapp:setting
     id="template-body"
     label="$template_name"
-    label_class = "no-header"
+    label_class="no-header"
     help_page="templates"
     help_section="template_name">
     <div id="template-body-actions">
@@ -390,7 +498,7 @@ TC.attachLoadEvent( init );
         </mt:if>
     </div>
     <div id="textarea-enclosure" style="position: relative; padding-bottom: 10px; height: <mt:var name="disp_prefs_height_text" default="290">px" mt:min-height="66" mt:update-field-height="text_height">
-        <textarea tabindex="3" class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off"><mt:var name="text" escape="html"></textarea>
+        <textarea tabindex="3" class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
         <input type="hidden" name="text_height" id="text_height" value="<mt:var name="disp_prefs_height_text" default="290">" />
         <div class="resizer" mt:delegate="resizer" mt:target="textarea-enclosure" mt:lock="x">
             <img src="<$mt:var name="static_uri"$>images/spacer.gif" width="100%" height="10"/>
@@ -447,6 +555,7 @@ TC.attachLoadEvent( init );
     </mtapp:setting>
 </mt:if>
 
+<mt:if name="blog_id">
 <mtapp:setting
     label="<__trans phrase="Link to File">"
     id="linked_file"
@@ -456,6 +565,7 @@ TC.attachLoadEvent( init );
         <input name="linked_file" id="linked_file" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
     </div>
 </mtapp:setting>
+</mt:if>
 
 <mt:if name="archive_types">
     <mtapp:setting
@@ -499,5 +609,17 @@ TC.attachLoadEvent( init );
 </form>
 
 </div>
+
+<script type="text/javascript">
+<!--
+App.singletonConstructor =
+MT.App = new Class( MT.App, {
+    autoSave: function() {
+        arguments.callee.applySuper( this, arguments );
+        documentTags();
+    }
+} );
+-->
+</script>
 
 <mt:include name="include/footer.tmpl">

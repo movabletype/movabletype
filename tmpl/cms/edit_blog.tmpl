@@ -36,7 +36,7 @@ function dirify_blog_name(fld) {
     if (basic_site_url && (url.value.indexOf(basic_site_url) == 0))
         url.value = basic_site_url + dir_blog_name + '/';
     if (basic_site_path && (path.value.indexOf(basic_site_path) == 0))
-        path.value = basic_site_path + dir_blog_name + slash;
+        path.value = basic_site_path + dir_blog_name;
 }
 function validate (f) {
 <mt:if name="can_edit_config">
@@ -135,6 +135,19 @@ TC.attachLoadEvent(init);
         help_page="blog_settings_general"
         help_section="blog_name">
                 <input name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onkeyup="dirify_blog_name(this)" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="template_set"
+        label="<__trans phrase="Template Set">"
+        hint="<__trans phrase="Select the templates you wish to use for this new blog.">"
+        help_page="blog_settings_general"
+        help_section="template_set">
+        <select name="template_set">
+        <mt:loop name="template_set_loop">
+            <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </select>
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_set_publish_paths">

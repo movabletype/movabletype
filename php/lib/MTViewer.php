@@ -119,7 +119,6 @@ class MTViewer extends Smarty {
             /* remove eval-modifier from $search */
             $search = substr($search, 0, -strlen($match[1])) . preg_replace('![eg\s]+!', '', $match[1]);
         }
-
         return preg_replace($search, $replace, $string, $global ? -1 : 1);
     }
 
@@ -259,8 +258,7 @@ class MTViewer extends Smarty {
             $ts = gmdate('YmdHis', strtotime("$y-$mo-$d $h:$m:$s $four_digit_offset"));
         }
         if (isset($args['format_name'])) {
-            $format = $args['format_name'];
-            if ($format == 'rfc822') {
+            if ($format = $args['format_name']) {
                 $tz = 'Z';
                 if (!$args['utc']) {
                     $blog = $ctx->stash('blog');
@@ -269,11 +267,22 @@ class MTViewer extends Smarty {
                     }
                     $so = $blog['blog_server_offset'];
                     $partial_hour_offset = 60 * abs($so - intval($so));
-                    $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
+                    if ($format == 'rfc822') {
+                        $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
                                   abs($so), $partial_hour_offset);
+                    }
+                    elseif ($format == 'iso8601') {
+                        $tz = sprintf("%s%02d:%02d", $so < 0 ? '-' : '+',
+                                  abs($so), $partial_hour_offset);
+                    }
                 }
-                $args['format'] = '%a, %d %b %Y %H:%M:%S ' . $tz;
-                $args['language'] = 'en';
+                if ($format == 'rfc822') {
+                    $args['format'] = '%a, %d %b %Y %H:%M:%S ' . $tz;
+                    $args['language'] = 'en';
+                }
+                elseif ($format == 'iso8601') {
+                    $args['format'] = '%Y-%m-%dT%H:%M:%S'. $tz;
+                }
             }
         }
         if (!isset($args['format'])) $args['format'] = null;

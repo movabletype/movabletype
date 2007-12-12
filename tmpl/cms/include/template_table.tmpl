@@ -17,7 +17,7 @@
         <mt:unless name="filter">
                 <th class="template-type"><__trans phrase="Type"></th>
         </mt:unless>
-        <mt:unless name="blog_id">
+        <mt:unless name="blog_view">
                 <th class="blog"><__trans phrase="Blog"></th>
         </mt:unless>
                 <th class="linked-template si"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
@@ -35,7 +35,7 @@
         <mt:unless name="filter">
                 <td class="template-type"><$mt:var name="type"$></td>
         </mt:unless>
-        <mt:unless name="blog_id">
+        <mt:unless name="blog_view">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
         </mt:unless>
                 <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>

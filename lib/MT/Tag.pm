@@ -199,12 +199,21 @@ sub cache_obj {
 sub clear_cache {
     my $pkg = shift;
     my (%param) = @_;
-    my $tag_cache = $pkg->cache_obj(\%param);
-    $tag_cache->remove;
+    my $blog_id = $param{blog_id};
+    my $ds = $param{datasource};
 
-    $param{private} = 1;
-    $tag_cache = $pkg->cache_obj(\%param);
-    $tag_cache->remove;
+    my $tag_cache;
+    my $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds;
+    $tag_cache = MT::Session->load({
+        kind => 'TC',
+        id => $sess_id});
+    $tag_cache->remove if $tag_cache;
+
+    $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ';private';
+    $tag_cache = MT::Session->load({
+        kind => 'TC',
+        id => $sess_id});
+    $tag_cache->remove if $tag_cache;
 }
 
 sub cache {
@@ -267,11 +276,13 @@ sub cache {
             last if ($limit <= scalar(@tags));
         }
         $data = {};
-        foreach my $tag (@tags) {
-            $data->{$tag->name} = $tag_count->{$tag->id} || 1;
+        if (@tags) {
+            foreach my $tag (@tags) {
+                $data->{$tag->name} = $tag_count->{$tag->id} || 1;
+            }
+            $tag_cache->set('tag_cache', $data);
+            $tag_cache->save;
         }
-        $tag_cache->set('tag_cache', $data);
-        $tag_cache->save;
     }
     $data || {};
 }
@@ -385,6 +396,7 @@ sub save_tags {
         }
         $clear_cache = 1;
     }
+    print STDERR "clear_cache:$clear_cache\n";
     delete $obj->{__save_tags};
     if ($clear_cache) {
         MT::Tag->clear_cache(datasource => $obj->datasource, ($blog_id ? (blog_id => $blog_id) : ()));

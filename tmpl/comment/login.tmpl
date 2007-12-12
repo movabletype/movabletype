@@ -70,18 +70,20 @@
     <mt:unless name="auth_mode_mt"><input type="hidden" name="external_auth" value="1" /></mt:unless>
     <mtapp:setting
         id="username"
-        label="<__trans phrase="Username">">
-        <input name="username" id="username" />
+        label="<__trans phrase="Username">"
+        label_class="top-label">
+        <input type="text" name="username" id="username" class="ti" />
     </mtapp:setting>
     <mtapp:setting
         id="password"
-        label="<__trans phrase="Password">">
-        <input type="password" name="password" id="password" />
+        label="<__trans phrase="Password">"
+        label_class="top-label">
+        <input type="password" name="password" id="password" class="pw" />
     </mtapp:setting>
     <mt:if name="can_recover_password">
     <div class="right"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></div>
     </mt:if>
-    <p><label><__trans phrase="Remember me?"></label> <input type="checkbox" name="remember" value="1" accesskey="r" /></p>
+    <p><label><__trans phrase="Remember me?"></label> <input type="checkbox" name="remember" value="1" accesskey="r" class="cb" /></p>
     <div class="actions-bar actions-bar-login">
         <div class="actions-bar-inner pkg actions">
             <button

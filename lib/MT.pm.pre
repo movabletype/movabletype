@@ -1613,9 +1613,9 @@ sub update_ping_list {
         my ($text) = @_;
         while (1) {
             $text =~
-s!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!
+s!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\3]+?)*?\3))+?\s*/?>)!
             my($msg, %args) = ($1);
-            while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {  #"
+            while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
                 $args{$1} = $3;
             }
             $args{params} = '' unless defined $args{params};
@@ -2026,10 +2026,44 @@ sub build_email {
     my $class = shift;
     my ( $file, $param ) = @_;
     my $mt = $class->instance;
-    local $mt->{template_dir} = 'email';
-    my $tmpl = $mt->load_tmpl($file);
+
+    # basically, try to load from database
+    my $blog_id = $param->{blog_id} || 0;
+    my $id = $file;
+    $id =~ s/\.tmpl$//;
+
+    require MT::Template;
+    my @tmpl = MT::Template->load(
+        {
+            ( $blog_id ? ( blog_id => [ $blog_id, 0 ] ) : ( blog_id => 0 ) ),
+            identifier => $id,
+            type       => 'email',
+        }
+    );
+    my $tmpl =
+      @tmpl
+      ? (
+        scalar @tmpl > 1
+        ? ( $tmpl[0]->blog_id ? $tmpl[0] : $tmpl[1] )
+        : $tmpl[0]
+      )
+      : undef;
+
+    # try to load from file
+    unless ($tmpl) {
+        local $mt->{template_dir} = 'email';
+        $tmpl = $mt->load_tmpl($file);
+    }
+
     return unless $tmpl;
-    return $mt->build_page_in_mem($tmpl, $param);
+    my $ctx = $tmpl->context;
+    foreach my $p (%$param) {
+        if (ref($p)) {
+            $ctx->stash($p, $param->{$p});
+        }
+    }
+    $ctx->stash('blog_id', $blog_id) if $blog_id;
+    return $mt->build_page_in_mem( $tmpl, $param );
 }
 
 sub get_next_sched_post_for_user {

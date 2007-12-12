@@ -129,28 +129,43 @@ function submit_form(f, command) {
 
     <mtapp:setting
         id="blog_name"
-        label="<__trans phrase="Blog Name">">
-        <input type="text" id="blog_name" name="blog_name" value="<mt:if name="blog_name"><mt:var name="blog_name" escape="html"><mt:else><__trans phrase="My First Blog"></mt:if>" onkeyup="dirify_blog_name(this)" />
+        label="<__trans phrase="Blog Name">"
+        label_class="top-label">
+        <input type="text" id="blog_name" class="ti" name="blog_name" value="<mt:if name="blog_name"><mt:var name="blog_name" escape="html"><mt:else><__trans phrase="My First Blog"></mt:if>" onkeyup="dirify_blog_name(this)" />
     </mtapp:setting>
 
     <mtapp:setting
         id="blog_url"
-        label="<__trans phrase="Blog URL">">
-        <input type="text" id="blog_url" name="blog_url" value="<mt:if name="blog_url"><mt:var name="blog_url" escape="html"></mt:if>" />
+        label="<__trans phrase="Blog URL">"
+        label_class="top-label">
+        <input type="text" id="blog_url" class="ti" name="blog_url" value="<mt:if name="blog_url"><mt:var name="blog_url" escape="html"></mt:if>" />
     </mtapp:setting>
 
     <mtapp:setting
         id="blog_path"
-        label="<__trans phrase="Publishing Path">">
-        <input type="text" id="blog_path" name="blog_path" value="<mt:if name="blog_path"><mt:var name="blog_path" escape="html"></mt:if>" />
+        label="<__trans phrase="Publishing Path">"
+        label_class="top-label">
+        <input type="text" id="blog_path" class="ti" name="blog_path" value="<mt:if name="blog_path"><mt:var name="blog_path" escape="html"></mt:if>" />
         <p class="hint"><__trans phrase="Your 'Publishing Path' is the path on your web server's file system where Movable Type will publish all the files for your blog. Your web server must have write access to this directory."></p>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="blog_template_set"
+        label="<__trans phrase="Template Set">"
+        hint="<__trans phrase="Select the templates you wish to use for this new blog.">">
+        <select name="blog_template_set">
+        <mt:loop name="template_set_loop">
+            <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </select>
     </mtapp:setting>
 
     <mtapp:setting
         id="blog_timezone"
         label="<__trans phrase="Timezone">"
+        label_class="top-label"
         hint="<__trans phrase="Select your timezone from the pulldown menu.">">
-        <select name="blog_timezone" id="blog_timezone">
+        <select name="blog_timezone" id="blog_timezone" class="se">
         <option value=""><__trans phrase="Time zone not selected"></option>
         <option value="13"<mt:if name="BLOG_TIMEZONE_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
         <option value="12"<mt:if name="BLOG_TIMEZONE_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>

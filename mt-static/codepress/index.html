@@ -6,10 +6,9 @@
 <script type="text/javascript">
 	var loc = location.href;
 	var params = loc.substring( loc.indexOf( "?" ) + 1 );
-	var v = new Array();
     var c = params.split( "&" );
-	for( i = 0; i < c.length && c.length > 0; i++ ) {
-	    v = c[ i ].split( "=" );
+	for ( var i = 0, len = c.length; i < len && len > 0; i++ ) {
+	    var v = c[ i ].split( "=" );
         if ( v.length != 2 )
             continue;
         switch ( v[ 0 ] ) {
@@ -26,7 +25,6 @@
     if ( window.language )
         language = language.replace( /'|"|<|>/g, '' );
 
-
 	var ts = ( new Date ).getTime();
 
 	if ( window.language == null || window.language == '' )
@@ -40,6 +38,8 @@
             engine = 'opera'; 
         else if( ua.match( 'Gecko' ) )
             engine = 'gecko';
+        else
+            engine = 'older';
 	}
 
     document.write('<link type="text/css" href="codepress.css?ts='+ts+'" rel="stylesheet" />');
@@ -47,15 +47,17 @@
 	document.write('<scr'+'ipt type="text/javascript" src="engines/'+engine+'.js?ts='+ts+'"></scr'+'ipt>');
 	document.write('<scr'+'ipt type="text/javascript" src="languages/'+language+'.js?ts='+ts+'"></scr'+'ipt>');
 	document.write('<scr'+'ipt type="text/javascript" src="languages/mt.js?ts='+ts+'"></scr'+'ipt>');
-    
-    if ( engine == "gecko" )
-        document.write( '<body> </body>' );
-    else if ( engine == "msie" )
-        document.write( '<body><pre></pre></body>' );
-    else if ( engine == "opera" )
-        document.write( '<body></body>' );
-        
 </script>
 </head>
-<body></body>
+<script type="text/javascript">
+    switch ( engine ) {
+        case "msie":
+        case "gecko":
+            document.write( '<body><pre> </pre></body>' );
+            break;
+        case "opera":
+            document.write( '<body></body>' );
+            break;
+    }
+</script>
 </html>

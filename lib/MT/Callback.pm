@@ -29,6 +29,9 @@ sub method {
 
 sub invoke {
     my $cb = shift;
+    unless (ref($cb->{code})) {
+        $cb->{code} = MT->handler_to_coderef($cb->{code});
+    }
     return $cb->{code}->($cb, @_);
 }
 

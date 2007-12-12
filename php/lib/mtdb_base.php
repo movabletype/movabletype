@@ -335,7 +335,7 @@ class MTDatabaseBase extends ezsql {
         return $this->get_results($sql, ARRAY_A);
     }
 
-    function get_template_text($ctx, $module, $blog_id = null, $type = 'custom') {
+    function get_template_text($ctx, $module, $blog_id = null, $type = 'custom', $global = null) {
         $blog_id or $blog_id = $ctx->stash('blog_id');
         if (($type === 'custom' || $type === 'widget')) {
             $col = 'template_name';
@@ -344,12 +344,20 @@ class MTDatabaseBase extends ezsql {
             $col = 'template_identifier';
             $type_filter = "";
         }
+        if (!isset($global)) {
+            $blog_filter = "template_blog_id in (".$this->escape($blog_id).",0)";
+        } elseif ($global) {
+            $blog_filter = "template_blog_id=0";
+        } else {
+            $blog_filter = "template_blog_id=".$this->escape($blog_id);
+        }
         $row = $this->get_row("
             select template_text, template_modified_on, template_linked_file, template_linked_file_mtime, template_linked_file_size
               from mt_template
-             where template_blog_id=".$this->escape($blog_id)."
+             where $blog_filter
                and $col='".$this->escape($module)."'
-               $type_filter", ARRAY_N);
+               $type_filter
+               order by template_blog_id desc", ARRAY_N);
         if (!$row) return '';
         list($tmpl, $ts, $file, $mtime, $size) = $row;
         if ($file) {
@@ -540,7 +548,6 @@ class MTDatabaseBase extends ezsql {
                     $include_private = 1;
                 }
             }
-            
             if (isset($blog_ctx_arg))
                 $tags =& $this->fetch_entry_tags(array($blog_ctx_arg, 'tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class']));
             else
@@ -569,6 +576,37 @@ class MTDatabaseBase extends ezsql {
                 $filters[] = $cexpr;
             } else {
                 return null;
+            }
+        }
+
+        # Adds a score or rate filter to the filters list.
+        if (isset($args['namespace'])) {
+            require_once("MTUtil.php");
+            $arg_names = array('min_score', 'max_score', 'min_rate', 'max_rate', 'min_count', 'max_count' );
+            foreach ($arg_names as $n) {
+                if (isset($args[$n])) {
+                    $rating_args = $args[$n];
+                    $cexpr = create_rating_expr_function($rating_args, $n, $args['namespace']);
+                    if ($cexpr) {
+                        $filters[] = $cexpr;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+
+            if (isset($args['scored_by'])) {
+                $voter = $this->fetch_author_by_name($args['scored_by']);
+                if (!$voter) {
+                    echo "Invalid scored by filter: ".$args['scored_by'];
+                    return null;
+                }
+                $cexpr = create_rating_expr_function($voter['author_id'], 'scored_by', $args['namespace']);
+                if ($cexpr) {
+                    $filters[] = $cexpr;
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -647,19 +685,58 @@ class MTDatabaseBase extends ezsql {
             $class = 'entry';
         }
         $class_filter = "and entry_class='$class'";
+        
+        $join_score = "";
+        $distinct = "";
+        if ( isset($args['sort_by'])
+          && (($args['sort_by'] == 'score') || ($args['sort_by'] == 'rate')) ) {
+            $join_score = "left join mt_objectscore on objectscore_object_id = entry_id and objectscore_namespace='"
+                . $args['namespace']."' and objectscore_object_ds='".$class."'";
+            $distinct = " distinct";
+        }
 
         if (isset($args['offset']))
             $offset = $args['offset'];
 
         if (isset($args['limit'])) {
-            $base_order = ($args['sort_order'] == 'ascend' ? 'asc' : 'desc');
-            $base_order or $base_order = 'desc';
+            if (isset($args['sort_by'])) {  
+                if ($args['sort_by'] == 'title') {  
+                    $sort_field = 'entry_title';  
+                } elseif ($args['sort_by'] == 'id') {  
+                    $sort_field = 'entry_id';  
+                } elseif ($args['sort_by'] == 'status') {  
+                    $sort_field = 'entry_status';  
+                } elseif ($args['sort_by'] == 'modified_on') {  
+                    $sort_field = 'entry_modified_on';  
+                } elseif ($args['sort_by'] == 'author_id') {  
+                    $sort_field = 'entry_author_id';  
+                } elseif ($args['sort_by'] == 'excerpt') {  
+                    $sort_field = 'entry_excerpt';  
+                } elseif ($args['sort_by'] == 'comment_created_on') {  
+                    $sort_field = $args['sort_by'];  
+                } elseif ($args['sort_by'] == 'score' || $args['sort_by'] == 'rate') {  
+                    $post_sort_limit = $limit;
+                    $post_sort_offset = $offset;
+                    $limit = 0; $offset = 0;
+                } else {  
+                    $sort_field = 'entry_' . $args['sort_by'];  
+                }  
+                if ($sort_field) $no_resort = 1;  
+            }  
+            else {
+                $sort_field ='entry_authored_on';
+            }
+            if ($sort_field) {
+                $base_order = ($args['sort_order'] == 'ascend' ? 'asc' : 'desc');
+                $base_order or $base_order = 'desc';
+            }
         } else {
             $base_order = 'desc';
             if (isset($args['base_sort_order'])) {
                 if ($args['base_sort_order'] == 'ascend')
                     $base_order = 'asc';
             }
+            $sort_field ='entry_authored_on'; 
             $no_resort = 0;
         }
 
@@ -670,11 +747,12 @@ class MTDatabaseBase extends ezsql {
         }
 
         $sql = "
-            select mt_entry.*, mt_placement.*, mt_author.*,
+            select$distinct mt_entry.*, mt_placement.*, mt_author.*,
                    mt_trackback.*
               from mt_entry
               left outer join mt_trackback on trackback_entry_id = entry_id
               left outer join mt_placement on placement_entry_id = entry_id
+              $join_score
                    and placement_is_primary = 1,
                    mt_author
              where entry_status = 2
@@ -685,8 +763,11 @@ class MTDatabaseBase extends ezsql {
                    $date_filter
                    $day_filter
                    $class_filter
-             order by entry_authored_on $base_order
         ";
+        if ($sort_field) {
+            $sql .= "
+                order by $sort_field $base_order";
+        }
         if (isset($args['recently_commented_on'])) {
             $rco = $args['recently_commented_on'];
             $sql = $this->entries_recently_commented_on_sql($sql);
@@ -712,7 +793,12 @@ class MTDatabaseBase extends ezsql {
             if (!isset($e)) break;
             if (count($filters)) {
                 foreach ($filters as $f) {
-                    if (!$f($e, $ctx)) continue 2;
+                    $old_result = $this->result;
+                    if (!$f($e, $ctx)) {
+                        $this->result = $old_result;
+                        continue 2;
+                    }
+                    $this->result = $old_result;
                 }
             }
             if ($offset && ($j++ < $offset)) continue;
@@ -724,6 +810,7 @@ class MTDatabaseBase extends ezsql {
         }
 
         if (!$no_resort) {
+            $sort_field = '';
             if (isset($args['sort_by'])) {
                 if ($args['sort_by'] == 'title') {
                     $sort_field = 'entry_title';
@@ -741,6 +828,8 @@ class MTDatabaseBase extends ezsql {
                     $sort_field = $args['sort_by'];
                 } elseif ($args['sort_by'] == 'score') {
                     $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'rate') {
+                    $sort_field = $args['sort_by'];
                 } else {
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
@@ -749,6 +838,8 @@ class MTDatabaseBase extends ezsql {
             }
             if ($sort_field) {
                 if ($sort_field == 'score') {
+                    $offset = $post_sort_offset ? $post_sort_offset : 0;
+                    $limit = $post_sort_limit ? $post_sort_limit : 0;
                     $entries_tmp = array();
                     foreach ($entries as $e) {
                         $entries_tmp[$e['entry_id']] = $e;
@@ -763,13 +854,53 @@ class MTDatabaseBase extends ezsql {
                     );
                     $entries_sorted = array();
                     foreach($scores as $score) {
+                        if (--$offset >= 0) continue;
                         if (array_key_exists($score['objectscore_object_id'], $entries_tmp)) {
                             array_push($entries_sorted, $entries_tmp[$score['objectscore_object_id']]);
                             unset($entries_tmp[$score['objectscore_object_id']]);
+                            if (--$limit == 0) break;
                         }
                     }
                     foreach ($entries_tmp as $et) {
-                        array_push($entries_sorted, $et);
+                        if ($limit == 0) break;
+                        if ($order == 'asc')
+                            array_unshift($entries_sorted, $et);
+                        else
+                            array_push($entries_sorted, $et);
+                        $limit--;
+                    }
+                    $entries = $entries_sorted;
+                } elseif ($sort_field == 'rate') {
+                    $offset = $post_sort_offset ? $post_sort_offset : 0;
+                    $limit = $post_sort_limit ? $post_sort_limit : 0;
+                    $entries_tmp = array();
+                    foreach ($entries as $e) {
+                        $entries_tmp[$e['entry_id']] = $e;
+                    }
+                    $scores = $this->fetch_avg_scores($args['namespace'], 'entry', $order,
+                        $blog_filter . "\n" .
+                        $entry_filter . "\n" .
+                        $author_filter . "\n" .
+                        $date_filter . "\n" .
+                        $day_filter . "\n" .
+                        $class_filter . "\n"
+                    );
+                    $entries_sorted = array();
+                    foreach($scores as $score) {
+                        if (--$offset >= 0) continue;
+                        if (array_key_exists($score['objectscore_object_id'], $entries_tmp)) {
+                            array_push($entries_sorted, $entries_tmp[$score['objectscore_object_id']]);
+                            unset($entries_tmp[$score['objectscore_object_id']]);
+                            if (--$limit == 0) break;
+                        }
+                    }
+                    foreach ($entries_tmp as $et) {
+                        if ($limit == 0) break;
+                        if ($order == 'asc')
+                            array_unshift($entries_sorted, $et);
+                        else
+                            array_push($entries_sorted, $et);
+                        $limit--;
                     }
                     $entries = $entries_sorted;
                 } else {
@@ -1165,94 +1296,286 @@ class MTDatabaseBase extends ezsql {
         return $author;
     }
 
+    function &fetch_author_by_name($author_name) {
+        global $mt;
+        $args['blog_id'] = $mt->blog_id;
+        $args['author_name'] = $this->escape($author_name);
+        $result = $this->fetch_authors($args);
+        $author = null;
+        if (is_array($result)) {
+            $author = $result[0];
+            $this->_author_id_cache[$author['author_id']] = $author;
+        }
+        return $author;
+    }
+
     function &fetch_authors($args) {
-        # make filters
-        $filters = array();
-
+        # Adds blog join
         $extend_column = '';
-        # Adds blog filter
-
         if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'join mt_permission on permission_author_id = author_id and permission_blog_id ' . $sql;
+            $blog_join = 'join mt_permission on permission_author_id = author_id and permission_blog_id ' . $sql;
             $extend_column = ', mt_permission.*';
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
-            $blog_filter = "join mt_permission on permission_author_id = author_id and permission_blog_id = $blog_id";
+            $blog_join = "join mt_permission on permission_author_id = author_id and permission_blog_id = $blog_id";
             $extend_column = ', mt_permission.*';
         }
 
         # Adds author filter
         if (isset($args['author_id'])) {
             $author_id = intval($args['author_id']);
-            array_push($filters, "author_id = $author_id");
+            $author_filter = " and author_id = $author_id";
         }
         if (isset($args['author_nickname'])) {
-            array_push($filters, "author_nickname = '".$args['author_nickname']."'");
+            $author_filter .= " and author_nickname = '".$args['author_nickname']."'";
+        }
+        if (isset($args['author_name'])) {
+            $author_filter .= " and author_name = '".$args['author_name']."'";
         }
 
-        # Adds entry filter
+        # Adds entry join and filter
         if ($args['need_entry']) {
-            $entry_filter = 'join mt_entry on author_id = entry_author_id';
+            $entry_join = 'join mt_entry on author_id = entry_author_id';
             $unique_filter = 'distinct';
-            array_push($filters, "entry_status = 2");
-            if ($blog_filter) {
-                array_push($filters, "entry_blog_id = permission_blog_id");
+            $entry_filter = " and entry_status = 2";
+            if ($blog_join) {
+                $entry_filter .= " and entry_blog_id = permission_blog_id";
             } else {
-                array_push($filters, "entry_blog_id = ".$args['blog_id']);
+                $entry_filter .= " and entry_blog_id = ".$args['blog_id'];
+            }
+        } else {
+            $author_filter .= " and author_type = 1";
+        }
+
+        # a context hash for filter routines
+        $ctx = array();
+        $filters = array();
+
+        if (isset($args['status'])) {
+            $status_arg = $args['status'];
+            require_once("MTUtil.php");
+            $status = array(
+                array('name' => 'enabled', 'id' => 1),
+                array('name' => 'disabled', 'id' => 2));
+
+            $cexpr = create_status_expr_function($status_arg, $status);
+            if ($cexpr) {
+                $filters[] = $cexpr;
+            }
+        }
+
+        if (isset($args['roles']) or isset($args['role'])) {
+            $role_arg = isset($args['role']) ? $args['role'] : $args['roles'];
+            require_once("MTUtil.php");
+            $roles =& $this->fetch_all_roles();
+            if (!is_array($roles)) $roles = array();
+
+            $cexpr = create_role_expr_function($role_arg, $roles);
+            if ($cexpr) {
+                $rmap = array();
+                $role_list = array();
+                foreach ($roles as $role) {
+                    $role_list[] = $role['role_id'];
+                }
+                $as =& $this->fetch_associations(array('blog_id' => $blog_id, 'role_id' => $role_list));
+                if ($as) {
+                    foreach ($as as $a) {
+                        $rmap[$a['association_author_id']][$a['association_role_id']]++;
+                    }
+                }
+                $ctx['r'] =& $rmap;
+                $filters[] = $cexpr;
+            }
+        }
+
+        # Adds a score or rate filter to the filters list.
+        $re_sort = false;
+        if (isset($args['namespace'])) {
+            require_once("MTUtil.php");
+            $arg_names = array('min_score', 'max_score', 'min_rate', 'max_rate', 'min_count', 'max_count' );
+            foreach ($arg_names as $n) {
+                if (isset($args[$n])) {
+                    $rating_args = $args[$n];
+                    $cexpr = create_rating_expr_function($rating_args, $n, $args['namespace'], 'author');
+                    if ($cexpr) {
+                        $filters[] = $cexpr;
+                        $re_sort = true;
+                    } else {
+                        return null;
+                    }
+                }
             }
         }
 
         # sort
+        $join_score = "";
         if (isset($args['sort_by'])) {
-            $sort_col = $args['sort_by'];
-            $order = '';
-            if (isset($args['sort_order'])) {
-                if ($args['sort_order'] == 'ascend')
-                    $order = 'asc';
-                else
-                    $order = 'desc';
-            }
-            $order_sql = "order by $sort_col $order";
-
-            if (isset($args['start_string'])) {
-                $val = $args['start_string'];
-                if ($order == 'asc')
-                    $val_order = '>';
-                else
-                    $val_order = '<';
-                array_push($filters, "$sort_col $val_order '$val'");
-            }
-
-            if (isset($args['start_num'])) {
-                $val = $args['start_num'];
-                if ($order == 'asc')
-                    $val_order = '>';
-                else
-                    $val_order = '<';
-                array_push($filters, "$sort_col $val_order $val");
+            if (($args['sort_by'] == 'score') || ($args['sort_by'] == 'rate')) {
+                $join_score = "join mt_objectscore on objectscore_object_id = author_id and objectscore_namespace='".$args['namespace']."' and objectscore_object_ds='author'";
+                $unique_filter = 'distinct';
+                $order_sql = "order by author_created_on desc";
+                $re_sort = true;
+            } else {
+                $sort_col = $args['sort_by'];
+                $order = '';
+                if (isset($args['sort_order'])) {
+                    if ($args['sort_order'] == 'ascend')
+                        $order = 'asc';
+                    else
+                        $order = 'desc';
+                }
+                $order_sql = "order by $sort_col $order";
+    
+                if (isset($args['start_string'])) {
+                    $val = $args['start_string'];
+                    if ($order == 'asc')
+                        $val_order = '>';
+                    else
+                        $val_order = '<';
+                    $sort_filter =  " and $sort_col $val_order '$val'";
+                }
+    
+                if (isset($args['start_num'])) {
+                    $val = $args['start_num'];
+                    if ($order == 'asc')
+                        $val_order = '>';
+                    else
+                        $val_order = '<';
+                    $sort_filter .= " and $sort_col $val_order $val";
+                }
             }
         }
 
-        # implode filters
-        $filter = implode(' and ', $filters);
-        if ($filter != '') {
-            $filter = "where $filter";
-        }
+        $limit = 0;
+        $offset = 0;
+        if (isset($args['lastn']))
+            $limit = $args['lastn'];
+        if (isset($args['offset']))
+            $limit = $args['offset'];
 
+        if ($re_sort) {
+            $post_select_limit = $limit;
+            $post_select_offset = $offset;
+            $limit = 0; $offset = 0;
+        }
+        
         $sql = "
             select $unique_filter
                    mt_author.*
                    $extend_column
               from mt_author
-                   $blog_filter
-                   $entry_filter
-              $filter
+                   $blog_join
+                   $entry_join
+                   $join_score
+              where 1 = 1
+                $author_filter
+                $entry_filter
+                $sort_filter
               $order_sql
                    <LIMIT>
         ";
-        $sql = $this->apply_limit_sql($sql, $args['lastn'], $args['offset']);
-        $results = $this->get_results($sql, ARRAY_A);
-        return $results;
+        $sql = $this->apply_limit_sql($sql, $limit, $offset);
+
+        $result = $this->query_start($sql);
+        if (!$result) return null;
+
+        $authors = array();
+        if ($args['sort_by'] != 'score' && $args['sort_by'] != 'rate') {
+            $offset = $post_select_offset ? $post_select_offset : 0;
+            $limit = $post_select_limit ? $post_select_limit : 0;
+        }
+        $j = 0;
+        while (true) {
+            $e = $this->query_fetch(ARRAY_A);
+            if ($offset && ($j++ < $offset)) continue;
+            if (!isset($e)) break;
+            if (count($filters)) {
+                foreach ($filters as $f) {
+                    if (!$f($e, $ctx)) continue 2;
+                }
+            }
+            $authors[] = $e;
+            if (($limit > 0) && (count($authors) >= $limit)) break;
+        }
+
+        if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
+            $authors_tmp = array();
+            $order = 'asc';
+            if (isset($args['sort_order']))
+                $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
+            foreach ($authors as $a) {
+                $authors_tmp[$a['author_id']] = $a;
+            }
+            $scores = $this->fetch_sum_scores($args['namespace'], 'author', $order,
+                $author_filter
+            );
+            $offset = $post_select_offset ? $post_select_offset : 0;
+            $limit = $post_select_limit ? $post_select_limit : 0;
+            $j = 0;
+            $authors_sorted = array();
+            foreach($scores as $score) {
+                if (array_key_exists($score['objectscore_object_id'], $authors_tmp)) {
+                    if ($offset && ($j++ < $offset)) continue;
+                    array_push($authors_sorted, $authors_tmp[$score['objectscore_object_id']]);
+                    unset($authors_tmp[$score['objectscore_object_id']]);
+                    if (($limit > 0) && (count($authors_sorted) >= $limit)) break;
+                }
+            }
+            $authors = $authors_sorted;
+
+        } elseif (isset($args['sort_by']) && ('rate' == $args['sort_by'])) {
+            $authors_tmp = array();
+            $order = 'asc';
+            if (isset($args['sort_order']))
+                $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
+            foreach ($authors as $a) {
+                $authors_tmp[$a['author_id']] = $a;
+            }
+            $scores = $this->fetch_avg_scores($args['namespace'], 'author', $order,
+                $author_filter
+            );
+            $offset = $post_select_offset ? $post_select_offset : 0;
+            $limit = $post_select_limit ? $post_select_limit : 0;
+            $j = 0;
+            $authors_sorted = array();
+            foreach($scores as $score) {
+                if (array_key_exists($score['objectscore_object_id'], $authors_tmp)) {
+                    if ($offset && ($j++ < $offset)) continue;
+                    array_push($authors_sorted, $authors_tmp[$score['objectscore_object_id']]);
+                    unset($authors_tmp[$score['objectscore_object_id']]);
+                    if (($limit > 0) && (count($authors_sorted) >= $limit)) break;
+                }
+            }
+            $authors = $authors_sorted;
+
+        }
+
+        return $authors;
+    }
+
+    function &fetch_all_roles() {
+        $sql = "select *
+                  from mt_role
+              order by role_name";
+        $result = $this->get_results($sql, ARRAY_A);
+        return $result;
+    }
+
+    function &fetch_associations($args) {
+        $id_list = implode(",", $args['role_id']);
+        if (empty($id_list))
+            return;
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and association_blog_id  ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_filter = 'and association_blog_id = ' . intval($args['blog_id']);
+        }
+        $sql = "select *
+                  from mt_association
+                 where association_role_id in ($id_list)
+                   $blog_filter";
+        $result = $this->get_results($sql, ARRAY_A);
+        return $result;
     }
 
     function &fetch_tag($tag_id) {
@@ -1296,7 +1619,7 @@ class MTDatabaseBase extends ezsql {
             where objectscore_namespace='$namespace'
             and objectscore_object_id='$obj_id'
             and objectscore_object_ds='$datasource'
-            and objectscore_user_id='$user_id'
+            and objectscore_author_id='$user_id'
         ", ARRAY_A);
         return $score;
     }
@@ -1312,6 +1635,29 @@ class MTDatabaseBase extends ezsql {
         $join_where = "AND ($join_column = objectscore_object_id)";
         $sql_scores = 
             "SELECT SUM(objectscore_score) AS sum_objectscore_score, objectscore_object_id
+             FROM mt_objectscore, mt_$datasource $othertables
+             WHERE (objectscore_namespace = '$namespace')
+             AND (objectscore_object_ds = '$datasource')
+             $join_where
+             $otherwhere
+             $filters
+             GROUP BY objectscore_object_id 
+             ORDER BY sum_objectscore_score " . $order;
+        $scores = $this->get_results($sql_scores, ARRAY_A);
+        return $scores;
+    }
+
+    function fetch_avg_scores($namespace, $datasource, $order, $filters) {
+        $othertables = '';
+        $otherwhere = '';
+        if ($datasource == 'asset') {
+            $othertables = ', mt_author';
+            $otherwhere = 'AND (objectscore_author_id = author_id)';
+        }
+        $join_column = $datasource . '_id';
+        $join_where = "AND ($join_column = objectscore_object_id)";
+        $sql_scores = 
+            "SELECT AVG(objectscore_score) AS sum_objectscore_score, objectscore_object_id
              FROM mt_objectscore, mt_$datasource $othertables
              WHERE (objectscore_namespace = '$namespace')
              AND (objectscore_object_ds = '$datasource')
@@ -1457,6 +1803,18 @@ class MTDatabaseBase extends ezsql {
         return $count;
     }
 
+    function category_comment_count($args) {
+        $cat_id = (int)$args['category_id'];
+        $sql = "select count(*)
+             from mt_placement, mt_comment, mt_entry
+            where placement_category_id=$cat_id
+              and entry_id=placement_entry_id
+              and entry_status=2
+              and comment_entry_id=entry_id
+              and comment_visible=1";
+        return $this->get_var($sql);
+    }
+
     function blog_ping_count($args) {
 
         if ($sql = $this->include_exclude_blogs($args)) {
@@ -1576,6 +1934,7 @@ class MTDatabaseBase extends ezsql {
     }
 
     function &fetch_comments($args) {
+        # load comments
         $entry_id = intval($args['entry_id']);
 
         $sql = $this->include_exclude_blogs($args);
@@ -1587,7 +1946,36 @@ class MTDatabaseBase extends ezsql {
             $blog =& $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and comment_blog_id = ' . $blog['blog_id'];
         }
-        # load comments
+
+        # Adds a score or rate filter to the filters list.
+        if (isset($args['namespace'])) {
+            require_once("MTUtil.php");
+            $arg_names = array('min_score', 'max_score', 'min_rate', 'max_rate', 'min_count', 'max_count' );
+            foreach ($arg_names as $n) {
+                if (isset($args[$n])) {
+                    $comment_args = $args[$n];
+                    $cexpr = create_rating_expr_function($comment_args, $n, $args['namespace'], 'comment');
+                    if ($cexpr) {
+                        $filters[] = $cexpr;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+            if (isset($args['scored_by'])) {
+                $voter = $this->fetch_author_by_name($args['scored_by']);
+                if (!$voter) {
+                    echo "Invalid scored by filter: ".$args['scored_by'];
+                    return null;
+                }
+                $cexpr = create_rating_expr_function($voter['author_id'], 'scored_by', $args['namespace'], 'comment');
+                if ($cexpr) {
+                    $filters[] = $cexpr;
+                } else {
+                    return null;
+                }
+            }
+        }
 
         $order = 'desc';
         if (isset($args['sort_order'])) {
@@ -1603,23 +1991,106 @@ class MTDatabaseBase extends ezsql {
             $reorder = 1;
             $order = 'desc';
         }
+
         if ($entry_id) {
             $entry_filter = " and comment_entry_id = $entry_id";
         } else {
             $entry_join = "join mt_entry on entry_id = comment_entry_id and entry_status = 2";
         }
+
+        $join_score = "";
+        $distinct = "";
+        if ( isset($args['sort_by'])
+          && (($args['sort_by'] == 'score') || ($args['sort_by'] == 'rate')) ) {
+            $join_score = "join mt_objectscore on objectscore_object_id = comment_id and objectscore_namespace='".$args['namespace']."' and objectscore_object_ds='comment'";
+            $distinct = " distinct";
+        }
+
+        $limit = 0;
+        $offset = 0;
+        if (isset($args['lastn']))
+            $limit = $args['lastn'];
+        if (isset($args['offset']))
+            $limit = $args['offset'];
+        if (count($filters)) {
+            $post_select_limit = $limit;
+            $post_select_offset = $offset;
+            $limit = 0; $offset = 0;
+        }
+
         $sql = "
-            select *
+            select $distinct
+                   mt_comment.*
               from mt_comment
                    $entry_join
-             where 1 = 1
+                   $join_score
+             where comment_visible = 1
                    $entry_filter
                    $blog_filter
-               and comment_visible = 1
              order by comment_created_on $order
                    <LIMIT>";
-        $sql = $this->apply_limit_sql($sql, $args['lastn'], $args['offset']);
-        $comments = $this->get_results($sql, ARRAY_A);
+        $sql = $this->apply_limit_sql($sql, $limit, $offset);
+
+        # Fetch resultset
+        $result = $this->query_start($sql);
+        if (!$result) return null;
+
+        $comments = array();
+        while (true) {
+            $e = $this->query_fetch(ARRAY_A);
+            if ($offset && ($j++ < $offset)) continue;
+            if (!isset($e)) break;
+            if (count($filters)) {
+                foreach ($filters as $f) {
+                    if (!$f($e, $ctx)) continue 2;
+                }
+            }
+            $comments[] = $e;
+            if (($limit > 0) && (count($comments) >= $limit)) break;
+        }
+
+        if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
+            $comments_tmp = array();
+            foreach ($comments as $c) {
+                $comments_tmp[$c['comment_id']] = $c;
+            }
+            $scores = $this->fetch_sum_scores($args['namespace'], 'comment', $order,
+                $blog_filter . "\n" .
+                $entry_filter . "\n"
+            );
+            $comments_sorted = array();
+            foreach($scores as $score) {
+                if (array_key_exists($score['objectscore_object_id'], $comments_tmp)) {
+                    array_push($comments_sorted, $comments_tmp[$score['objectscore_object_id']]);
+                    unset($comments_tmp[$score['objectscore_object_id']]);
+                }
+            }
+            foreach ($comments_tmp as $et) {
+                array_push($comments_sorted, $et);
+            }
+            $comments = $comments_sorted;
+        } elseif (isset($args['sort_by']) && ('rate' == $args['sort_by'])) {
+            $comments_tmp = array();
+            foreach ($comments as $c) {
+                $comments_tmp[$c['comment_id']] = $c;
+            }
+            $scores = $this->fetch_avg_scores($args['namespace'], 'comment', $order,
+                $blog_filter . "\n" .
+                $entry_filter . "\n"
+            );
+            $comments_sorted = array();
+            foreach($scores as $score) {
+                if (array_key_exists($score['objectscore_object_id'], $comments_tmp)) {
+                    array_push($comments_sorted, $comments_tmp[$score['objectscore_object_id']]);
+                    unset($comments_tmp[$score['objectscore_object_id']]);
+                }
+            }
+            foreach ($comments_tmp as $et) {
+                array_push($comments_sorted, $et);
+            }
+            $comments = $comments_sorted;
+        }
+
         if (!is_array($comments))
             return array();
 
@@ -2018,7 +2489,38 @@ class MTDatabaseBase extends ezsql {
             $ext_filter = "and asset_file_ext ='" . $args['file_ext'] . "'";
         }
 
-        # Addes sort order
+        # Adds a score or rate filter to the filters list.
+        if (isset($args['namespace'])) {
+            require_once("MTUtil.php");
+            $arg_names = array('min_score', 'max_score', 'min_rate', 'max_rate', 'min_count', 'max_count' );
+            foreach ($arg_names as $n) {
+                if (isset($args[$n])) {
+                    $rating_args = $args[$n];
+                    $cexpr = create_rating_expr_function($rating_args, $n, $args['namespace'], 'asset');
+                    if ($cexpr) {
+                        $filters[] = $cexpr;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+
+            if (isset($args['scored_by'])) {
+                $voter = $this->fetch_author_by_name($args['scored_by']);
+                if (!$voter) {
+                    echo "Invalid scored by filter: ".$args['scored_by'];
+                    return null;
+                }
+                $cexpr = create_rating_expr_function($voter['author_id'], 'scored_by', $args['namespace'], 'asset');
+                if ($cexpr) {
+                    $filters[] = $cexpr;
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        # Adds sort order
         $order = 'desc';
         $sort_by = 'asset_created_on';
         if (isset($args['sort_order'])) {
@@ -2029,15 +2531,38 @@ class MTDatabaseBase extends ezsql {
         }
         
         if (isset($args['sort_by'])) {
-            if ('score' != $args['sort_by']) {
+            if ('score' != $args['sort_by'] && 'rate' != $args['sort_by']) {
                 $sort_by = 'asset_' . $args['sort_by'];
             }
+        }
+        if (isset($args['lastn']))
+            $order = 'desc';
+
+        $join_score = "";
+        $distinct = "";
+        if ( isset($args['sort_by'])
+          && (($args['sort_by'] == 'score') || ($args['sort_by'] == 'rate')) ) {
+            $join_score = "left join mt_objectscore on objectscore_object_id = asset_id";
+            $distinct = " distinct";
+        }
+        
+        $limit = 0;
+        $offset = 0;
+        if (isset($args['lastn']))
+            $limit = $args['lastn'];
+        if (isset($args['offset']))
+            $offset = $args['offset'];
+
+        if (count($filters)) {
+            $post_select_limit = $limit;
+            $post_select_offset = $offset;
+            $limit = 0; $offset = 0;
         }
 
         # Build SQL
         $sql = "
-            select mt_asset.*, mt_author.* $entry_join
-            from mt_asset, mt_author $entry_join_tbl
+            select $distinct mt_asset.*, mt_author.* $entry_join
+            from mt_asset $join_score, mt_author $entry_join_tbl
             where
                 author_id = asset_created_by
                 $id_filter
@@ -2054,14 +2579,18 @@ class MTDatabaseBase extends ezsql {
         ";
 
         # Added Limit and offset
-        $sql = $this->apply_limit_sql($sql, $args['lastn'], $args['offset']);
+        $sql = $this->apply_limit_sql($sql, $limit, $offset);
 
         # Fetch resultset
         $result = $this->query_start($sql);
         if (!$result) return null;
         $assets = array();
+        $offset = $post_select_offset ? $post_select_offset : 0;
+        $limit = $post_select_limit ? $post_select_limit : 0;
+
         while (true) {
             $e = $this->query_fetch(ARRAY_A);
+            if ($offset && ($j++ < $offset)) continue;
             if (!isset($e)) break;
             if (count($filters)) {
                 foreach ($filters as $f) {
@@ -2070,8 +2599,16 @@ class MTDatabaseBase extends ezsql {
             }
             $e = $this->expand_meta($e);
             $assets[] = $e;
+            if (($limit > 0) && (count($assets) >= $limit)) break;
         }
 
+        $order = 'desc';
+        if (isset($args['sort_order'])) {
+            if ($args['sort_order'] == 'ascend')
+                $order = 'asc';
+            else if ($args['sort_order'] == 'descend')
+                $order = 'desc';
+        }
         if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
             $assets_tmp = array();
             foreach ($assets as $a) {
@@ -2094,7 +2631,39 @@ class MTDatabaseBase extends ezsql {
                 }
             }
             foreach ($assets_tmp as $et) {
-                array_push($assets_sorted, $et);
+                if ($order == 'asc')
+                    array_unshift($assets_sorted, $et);
+                else
+                    array_push($assets_sorted, $et);
+            }
+            $assets = $assets_sorted;
+
+        } elseif (isset($args['sort_by']) && ('rate' == $args['sort_by'])) {
+            $assets_tmp = array();
+            foreach ($assets as $a) {
+                $assets_tmp[$a['asset_id']] = $a;
+            }
+            $scores = $this->fetch_avg_scores($args['namespace'], 'asset', $order,
+                $id_filter . "\n" .
+                $blog_filter . "\n" .
+                $author_filter . "\n" .
+                $day_filter . "\n" .
+                $type_filter . "\n" .
+                $ext_filter . "\n" .
+                $thumb_filter . "\n"
+            );
+            $assets_sorted = array();
+            foreach($scores as $score) {
+                if (array_key_exists($score['objectscore_object_id'], $assets_tmp)) {
+                    array_push($assets_sorted, $assets_tmp[$score['objectscore_object_id']]);
+                    unset($assets_tmp[$score['objectscore_object_id']]);
+                }
+            }
+            foreach ($assets_tmp as $et) {
+                if ($order == 'asc')
+                    array_unshift($assets_sorted, $et);
+                else
+                    array_push($assets_sorted, $et);
             }
             $assets = $assets_sorted;
 
@@ -2110,6 +2679,19 @@ class MTDatabaseBase extends ezsql {
         $year_ext = $this->apply_extract_date('year', 'entry_authored_on');
         $month_ext = $this->apply_extract_date('month', 'entry_authored_on');
         $day_ext = $this->apply_extract_date('day', 'entry_authored_on');
+
+        $date_filter = '';
+        $inside = $args['inside_archive_list'];
+        if ($inside) {
+            $ts = $args['current_timestamp'];
+            $tsend = $args['current_timestamp_end'];
+            if ($ts && $tsend) {
+                $ts = $this->ts2db($ts);
+                $tsend = $this->ts2db($tsend);
+                $date_filter = "and (entry_authored_on between '$ts' and '$tsend')";
+            }
+        }
+
         if ($at == 'Daily') {
             $sql = "
                 select count(*),
@@ -2120,6 +2702,7 @@ class MTDatabaseBase extends ezsql {
                  where entry_blog_id = $blog_id
                    and entry_status = 2
                    and entry_class = 'entry'
+                   $date_filter
                  group by
                        $year_ext,
                        $month_ext,
@@ -2137,6 +2720,7 @@ class MTDatabaseBase extends ezsql {
                  where entry_blog_id = $blog_id
                    and entry_status = 2
                    and entry_class = 'entry'
+                   $date_filter
                  group by entry_week_number
                  order by entry_week_number $order
                        <LIMIT>";
@@ -2149,6 +2733,7 @@ class MTDatabaseBase extends ezsql {
                  where entry_blog_id = $blog_id
                    and entry_status = 2
                    and entry_class = 'entry'
+                   $date_filter
                  group by
                        $year_ext,
                        $month_ext

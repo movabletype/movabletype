@@ -1,12 +1,18 @@
 <MTSetVarBlock name="body_class">mt-archive-listing mt-<MTVar name="archive_class"></MTSetVarBlock>
 <MTSetVar name="sidebar" value="1">
 <MTSetVar name="module_about_context" value="1">
-
 <MTSetVarBlock name="page_title"><__trans phrase="[_1] Archives" params="<$MTArchiveTitle$>"></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTBlogName$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
+<MTIf name="datebased_archive">
+    <MTSetVarBlock name="html_head">
+        <MTArchivePrevious><link rel="prev" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchivePrevious>
+        <MTArchiveNext><link rel="next" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchiveNext>
+    </MTSetVarBlock>
+</MTIf>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 
-<h1 class="archive-title">
+<h1 id="page-title" class="archive-title">
 <MTUnless name="datebased_archive">
     <MTIfArchiveType archive_type="Category">
 <__trans phrase="Recently in <em>[_1]</em> Category" params="<$MTArchiveTitle$>">

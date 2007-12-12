@@ -68,7 +68,7 @@ sub compile {
     # Other namespaces (like 'Foo') would require the colon.
     # Tag and attributes are case-insensitive. So you can write:
     #   <mtfoo>...</MTFOO>
-    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|.)+?)[\$/]?>)!gis) {
+    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"[^"]*?"|'[^']*?'|.)+?)[\$/]?>)!gis) {
         my($whole_tag, $prefix, $tag) = ($1, $2, $3);
         ($tag, my($args)) = split /\s+/, $tag, 2;
         my $sec_start = pos $text;
@@ -345,12 +345,12 @@ sub build {
                 foreach my $v (keys %args) {
                     if (ref $args{$v} eq 'ARRAY') {
                         foreach (@{$args{$v}}) {
-                            if (m/^\$(\w+)$/) {
+                            if (m/^\$([A-Za-z_](\w|\.)*)$/) {
                                 $_ = $ctx->var($1);
                             }
                         }
                     } else {
-                        if ($args{$v} =~ m/^\$(\w+)$/) {
+                        if ($args{$v} =~ m/^\$([A-Za-z_](\w|\.)*)$/) {
                             $args{$v} = $ctx->var($1);
                         }
                     }
@@ -361,12 +361,12 @@ sub build {
                     if (ref $arg->[1] eq 'ARRAY') {
                         $arg->[1] = [ @{$arg->[1]} ];
                         foreach (@{$arg->[1]}) {
-                            if (m/^\$(\w+)$/) {
+                            if (m/^\$([A-Za-z_](\w|\.)*)$/) {
                                 $_ = $ctx->var($1);
                             }
                         }
                     } else {
-                        if ($arg->[1] =~ m/^\$(\w+)$/) {
+                        if ($arg->[1] =~ m/^\$([A-Za-z_](\w|\.)*)$/) {
                             $arg->[1] = $ctx->var($1);
                         }
                     }
@@ -377,8 +377,17 @@ sub build {
                 local $args{'@'} = \@args;
                 my $out = $h->($ctx, \%args, $cond);
 
-                return $build->error(MT->translate("Error in <mt:[_1]> tag: [_2]", $t->[0], $ctx->errstr || ''))
-                    unless defined $out;
+                unless (defined $out) {
+                    my $err = $ctx->errstr;
+                    if (defined $err) {
+                        return $build->error(MT->translate("Error in <mt:[_1]> tag: [_2]", $t->[0], $ctx->errstr));
+                    }
+                    else {
+                        # no error was given, so undef will mean '' in
+                        # such a scenario
+                        $out = '';
+                    }
+                }
 
                 if ((defined $type) && ($type == 2)) {
                     # conditional; process result

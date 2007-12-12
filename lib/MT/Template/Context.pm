@@ -130,6 +130,19 @@ sub stash {
 sub var {
     my $ctx = shift;
     my $key = lc shift;
+    if ($key =~ m/^(config|request)\.(.+)$/i) {
+        if (lc($1) eq 'request') {
+            my $mt = MT->instance;
+            return '' unless $mt->isa('MT::App');
+            return $mt->param($2);
+        }
+        elsif (lc($1) eq 'config') {
+            my $setting = $2;
+            return '' if $setting =~ m/password/i;
+            return MT->config($setting);
+        }
+        return '';
+    }
     my $value = $ctx->{__stash}{vars}{$key};
     # protects $_ value set during template attribute interpolation
     local $_ = $_;
@@ -442,6 +455,53 @@ sub compile_tag_filter {
     $@ ? undef : $cexpr;
 }
 
+sub compile_role_filter {
+    my ($ctx, $role_expr, $roles) = @_;
+
+    my %roles_used;
+    foreach my $role (@$roles) {
+        my $name = $role->name;
+        my $id = $role->id;
+        if ($role_expr =~ s/(?<![#\d])\Q$name\E/#$id/g) {
+            $roles_used{$id} = $role;
+        }
+    }
+    @$roles = values %roles_used;
+
+    $role_expr =~ s/\bOR\b/||/gi;
+    $role_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+
+    my $test_expr = $role_expr;
+    $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
+    return undef if $test_expr;
+
+    $role_expr =~ s/#(\d+)/(exists \$p->{\$e}{$1})/g;
+    my $expr = 'sub{my($e,$p)=@_;'.$role_expr.';}';
+    my $cexpr = eval $expr;
+    $@ ? undef : $cexpr;
+}
+
+sub compile_status_filter {
+    my ($ctx, $status_expr, $status) = @_;
+
+    foreach my $s (@$status) {
+        my $name = $s->{name};
+        my $id = $s->{id};
+        $status_expr =~ s/(?<![#\d])\Q$name\E/#$id/g;
+    }
+
+    $status_expr =~ s/\bOR\b/||/gi;
+    $status_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+
+    my $test_expr = $status_expr;
+    $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
+    return undef if $test_expr;
+
+    $status_expr =~ s/#(\d+)/(\$_[0]->status == $1)/g;
+    my $expr = 'sub{'.$status_expr.';}';
+    my $cexpr = eval $expr;
+    $@ ? undef : $cexpr;
+}
 
 1;
 __END__

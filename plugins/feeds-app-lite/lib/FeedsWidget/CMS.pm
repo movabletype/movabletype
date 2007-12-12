@@ -95,7 +95,7 @@ sub save {
       or
       return $app->redirect($app->uri( mode => "feedswidget_config", args => { blog_id => $blog_id }));
     my $lastn = $app->param('lastn');
-    my $title = $app->param('feed_title');
+    my $title = $app->param('feed_title') || $uri;
 
     my $p = {blog_id => $blog_id, site_url => $blog->site_url};
     # $title here is unknown length, so trim resulting template name to

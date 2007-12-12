@@ -27,10 +27,10 @@ sub lazy (&) {
 }
 
 sub force {
-    my ($this) = @_;
+    my $this = shift;
     return $this if (ref $this ne 'MT::Promise');
     if (ref $$this eq 'CODE') {
-        $$this = $$this->();
+        $$this = $$this->(@_);
     } else {
         return $$this;
     } 

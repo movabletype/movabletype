@@ -11,7 +11,7 @@ use base qw( MT );
 
 use File::Spec;
 use MT::Request;
-use MT::Util qw( encode_html offset_time_list decode_html encode_url is_valid_email );
+use MT::Util qw( encode_html offset_time_list decode_html encode_url is_valid_email is_valid_url );
 use MT::I18N qw( encode_text wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
@@ -1338,6 +1338,100 @@ sub logout {
     });
 }
 
+sub create_user_pending {
+    my $app     = shift;
+    my $q       = $app->param;
+    my ($param) = @_;
+    $param      ||= {};
+
+    my $cfg   = $app->config;
+    $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
+
+    my $blog  = $app->model('blog')->load( $param->{blog_id} );
+
+    my ( $password, $hint, $url );
+    unless ( $q->param('external_auth') ) {
+        $password = $q->param('password');
+        unless ($password) {
+            return $app->error($app->translate("User requires password."));
+        }
+
+        if ( $q->param('password') ne $q->param('pass_verify') ) {
+            return $app->error($app->translate('Passwords do not match.'));
+        }
+
+        $hint = $q->param('hint');
+        unless ($hint) {
+            return $app->error($app->translate("User requires password recovery word/phrase."));
+        }
+
+        $url = $q->param('url');
+        if ( $url && !is_valid_url($url) ) {
+            return $app->error($app->translate("URL is invalid."));
+        }
+    }
+
+    my $name = $q->param('username');
+    if ( defined $name ) {
+        $name =~ s/(^\s+|\s+$)//g;
+        $param->{name} = $name;
+    }
+    unless ( defined($name) && $name ) {
+        return $app->error($app->translate("User requires username."));
+    }
+
+    my $existing = MT::Author->count( { name => $name } );
+    return $app->error($app->translate("A user with the same name already exists."))
+        if $existing;
+
+    my $nickname = $q->param('nickname');
+    unless ($nickname) {
+        return $app->error($app->translate("User requires display name."));
+    }
+
+    my $email = $q->param('email');
+    if ($email) {
+        unless ( is_valid_email($email) ) {
+            delete $param->{email};
+            return $app->error($app->translate("Email Address is invalid."));
+        }
+    }
+    else {
+        delete $param->{email};
+        return $app->error($app->translate("Email Address is required for password recovery."));
+    }
+
+    if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
+        unless ( $provider->validate_captcha($app) ) {
+            return $app->error($app->translate("Text entered was wrong.  Try again."));
+        }
+    }
+
+    my $user = $app->model('author')->new;
+    $user->name($name);
+    $user->nickname($nickname);
+    $user->email($email);
+    unless ( $q->param('external_auth') ) {
+        $user->set_password( $q->param('password') );
+        $user->url($url)   if $url;
+        $user->hint($hint) if $hint;
+    }
+    else {
+        $user->password( '(none)' );
+    }
+    $user->type( MT::Author::AUTHOR() );
+    $user->status( MT::Author::PENDING() );
+    $user->auth_type( $app->config->AuthenticationModule );
+
+    unless ( $user->save ) {
+        return $app->error($app->translate(
+            "Something wrong happened when trying to process signup: [_1]",
+            $user->errstr ));
+    }
+    return $user;
+
+}
+
 sub _send_comment_notification {
     my $app = shift;
     my ( $comment, $comment_link, $entry, $blog, $commenter ) = @_;
@@ -1418,6 +1512,7 @@ sub _send_comment_notification {
           );
         my %param = (
             blog_name   => $blog->name,
+            blog_id     => $blog->id,
             entry_id    => $entry->id,
             entry_title => $entry->title,
             view_url    => $comment_link,
@@ -1451,10 +1546,78 @@ sub _send_comment_notification {
             comment_url  => $comment->url,
             comment_text => wrap_text( $comment->text, 72 ),
             unapproved   => !$comment->visible(),
+            state_editable => ( $author->is_superuser()
+                || ( $author->permissions($blog->id)->can_manage_feedback
+                  || $author->permissions($blog->id)->can_publish_post )
+              ) ? 1 : 0,
         );
         my $body = MT->build_email( 'new-comment.tmpl', \%param );
         MT::Mail->send( \%head, $body )
 		  or return $app->error( MT::Mail->errstr() );
+    }
+}
+
+sub _send_sysadmins_email {
+    my $app = shift;
+    my ( $ids, $email_id, $body, $subject, $from ) = @_;
+    my $cfg = $app->config;
+
+    my @ids = split ',', $ids;
+    my @sysadmins = MT::Author->load(
+        {
+            id   => \@ids,
+            type => MT::Author::AUTHOR()
+        },
+        {
+            join => MT::Permission->join_on(
+                'author_id',
+                {
+                    permissions => "\%'administer'\%",
+                    blog_id     => '0',
+                },
+                { 'like' => { 'permissions' => 1 } }
+            )
+        }
+    );
+
+    require MT::Mail;
+
+    my $from_addr;
+    my $reply_to;
+    if ( $cfg->EmailReplyTo ) {
+        $reply_to = $cfg->EmailAddressMain || $from;
+    }
+    else {
+        $from_addr = $cfg->EmailAddressMain || $from;
+    }
+    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
+    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
+
+    unless ( $from_addr || $reply_to ) {
+        $app->log(
+            {
+                message =>
+                  MT->translate("System Email Address is not configured."),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'email'
+            }
+        );
+        return;
+    }
+
+    foreach my $a (@sysadmins) {
+        next unless $a->email && is_valid_email( $a->email );
+        my %head = (
+            id => $email_id,
+            To => $a->email,
+            $from_addr ? ( From       => $from_addr ) : (),
+            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
+            Subject => $subject,
+        );
+        my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
+        $head{'Content-Type'} = qq(text/plain; charset="$charset");
+        MT::Mail->send( \%head, $body );
     }
 }
 
@@ -1595,6 +1758,7 @@ sub show_error {
         $tmpl->param(NAME => $app->{name} || 'dialog' );
         $tmpl->param(GOBACK => $app->{goback} || 'closeDialog()');
         $tmpl->param(VALUE => $app->{value} || $app->translate("Close"));
+        $tmpl->param(dialog => 1);
     } else {
         $tmpl->param(GOBACK => $app->{goback} || 'history.back()');
         $tmpl->param(VALUE => $app->{value} || $app->translate("Go Back"));
@@ -1753,7 +1917,7 @@ sub run {
             $app->post_run;
 
             if (my $new_mode = $app->{forward}) {
-                $app->mode($new_mode);
+                $app->mode($new_mode, @{ $app->{forward_params} || [] });
                 goto REQUEST;
             }
 
@@ -1775,13 +1939,6 @@ sub run {
             $app->error(undef);
         }  ## end REQUEST block
     };
-    unless (defined $body) {
-        my $err = $app->errstr || $@;
-        $body = $app->show_error($err);
-    }
-    if (ref($body) && ($body->isa('MT::Template'))) {
-        $body = $@ || $app->errstr;
-    }
 
     if ((!defined $body) && $app->{login_again}) {
         # login again!
@@ -1794,6 +1951,13 @@ sub run {
             delegate_auth => MT::Auth->delegate_auth,
         })
             or $body = $app->show_error( $app->errstr );
+    } elsif (!defined $body) {
+        my $err = $app->errstr || $@;
+        $body = $app->show_error($err);
+    }
+
+    if (ref($body) && ($body->isa('MT::Template'))) {
+        $body = $@ || $app->errstr;
     }
 
     if (my $url = $app->{redirect}) {
@@ -1839,8 +2003,9 @@ sub run {
 
 sub forward {
     my $app = shift;
-    my ($new_mode) = @_;
+    my ($new_mode, @params) = @_;
     $app->{forward} = $new_mode;
+    $app->{forward_params} = \@params;
     return undef;
 }
 
@@ -2384,7 +2549,8 @@ sub uri_params {
             if (ref $param{args}{$p}) {
                 push @params, ($p . '=' . encode_url($_)) foreach @{$param{args}{$p}};
             } else {
-                push @params, ($p . '=' . encode_url($param{args}{$p}));
+                push @params, ($p . '=' . encode_url($param{args}{$p}))
+                    if defined $param{args}{$p};
             }
         }
     }

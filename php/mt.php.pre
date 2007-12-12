@@ -633,6 +633,8 @@ class MT {
 
     function error_handler($errno, $errstr, $errfile, $errline) {
         if ($errno & (E_ALL ^ E_NOTICE)) {
+            $errstr = htmlentities($errstr);
+            $errfile = htmlentities($errfile);
             $mtphpdir = $this->config('PHPDir');
             $ctx =& $this->context();
             $ctx->stash('blog_id', $this->blog_id);

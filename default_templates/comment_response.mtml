@@ -35,9 +35,11 @@
     </MTSetVarBlock>
 </MTIf>
 
+<MTSetVarBlock name="title"><$MTBlogName$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
+
 <$MTInclude module="<__trans phrase="Header">"$>
 
-<h1><$MTGetVar name="heading"$></h1>
+<h1 id="page-title"><$MTGetVar name="heading"$></h1>
 
 <$MTGetVar name="message"$>
 

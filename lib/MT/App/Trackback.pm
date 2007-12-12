@@ -514,6 +514,7 @@ sub _send_ping_notification {
           );
         my %param = (
             blog_name   => $blog->name,
+            blog_id     => $blog->id,
             approve_url => $approve_link,
             spam_url    => $spam_link,
             edit_url    => $base
@@ -537,6 +538,10 @@ sub _send_ping_notification {
             ping_blog_name => $ping->blog_name,
             ping_title     => $ping->title,
             unapproved     => !$ping->visible(),
+            state_editable => ( $author->is_superuser()
+                || ( $author->permissions($blog->id)->can_manage_feedback
+                  || $author->permissions($blog->id)->can_publish_post )
+              ) ? 1 : 0,
         );
         my $author;
         if ($entry) {

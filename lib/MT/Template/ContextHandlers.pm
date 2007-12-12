@@ -28,6 +28,7 @@ sub init_default_filters {}
 
 sub core_tags {
     return {
+        help_url => sub { MT->translate('http://www.movabletype.org/documentation/appendices/tags/%t.html') },
         block => {
             'App:Setting' => \&_hdlr_app_setting,
             'App:Widget' => \&_hdlr_app_widget,
@@ -39,6 +40,8 @@ sub core_tags {
             # Core tags
             'If?' => \&_hdlr_if,
             'Unless?' => sub { defined(my $r = &_hdlr_if) or return; !$r },
+            'For' => \&_hdlr_for,
+            'Else' => \&_hdlr_else,
 
             'EntryIfTagged?' => \&_hdlr_entry_if_tagged,
 
@@ -71,7 +74,8 @@ sub core_tags {
             'HasSubFolders?' => \&_hdlr_has_sub_folders,
             'HasParentFolder?' => \&_hdlr_has_parent_folder,
 
-            Else => \&_hdlr_pass_tokens,
+            IncludeBlock => \&_hdlr_include_block,
+
             Loop => \&_hdlr_loop,
             Section => \&_hdlr_section,
             IfNonEmpty => \&_hdlr_if_nonempty,
@@ -82,6 +86,8 @@ sub core_tags {
             IfCommenterIsAuthor => \&_hdlr_commenter_isauthor,
             IfCommenterIsEntryAuthor => \&_hdlr_commenter_isauthor,
 
+            'IfBlog?' => \&_hdlr_blog_id,
+            'IfAuthor?' => \&_hdlr_if_author,
             Authors => \&_hdlr_authors,
 
             Blogs => \&_hdlr_blogs,
@@ -107,6 +113,7 @@ sub core_tags {
 
             SetVarBlock => \&_hdlr_set_var,
             SetVarTemplate => \&_hdlr_set_var,
+            SetVars => \&_hdlr_set_vars,
 
             IfCommentsModerated => \&_hdlr_comments_moderated,
             IfRegistrationRequired => \&_hdlr_reg_required,
@@ -186,6 +193,9 @@ sub core_tags {
             AssetIsLastInRow => \&_hdlr_pass_tokens,
             AssetsHeader => \&_hdlr_pass_tokens,
             AssetsFooter => \&_hdlr_pass_tokens,
+            AuthorUserpicAsset => \&_hdlr_author_userpic_asset,
+            EntryAuthorUserpicAsset => \&_hdlr_entry_author_userpic_asset,
+            CommenterUserpicAsset => \&_hdlr_commenter_userpic_asset,
 
             # Page handlers
             Pages => \&_hdlr_pages,
@@ -249,6 +259,8 @@ sub core_tags {
             CommenterEmail => \&_hdlr_commenter_email,
             CommenterAuthType => \&_hdlr_commenter_auth_type,
             CommenterAuthIconURL => \&_hdlr_commenter_auth_icon_url,
+            CommenterUserpic => \&_hdlr_commenter_userpic,
+            CommenterID => \&_hdlr_commenter_id,
             FeedbackScore => \&_hdlr_feedback_score,
 
             AuthorID => \&_hdlr_author_id,
@@ -258,6 +270,7 @@ sub core_tags {
             AuthorURL => \&_hdlr_author_url,
             AuthorAuthType => \&_hdlr_author_auth_type,
             AuthorAuthIconURL => \&_hdlr_author_auth_icon_url,
+            AuthorUserpic => \&_hdlr_author_userpic,
             AuthorNext => \&_hdlr_author_prev_next,
             AuthorPrevious => \&_hdlr_author_prev_next,
 
@@ -279,6 +292,7 @@ sub core_tags {
             BlogCCLicenseImage => \&_hdlr_blog_cc_license_image,
             CCLicenseRDF => \&_hdlr_cc_license_rdf,
             BlogFileExtension => \&_hdlr_blog_file_extension,
+            BlogTemplateSetID => \&_hdlr_blog_template_set_id,
             EntriesCount => \&_hdlr_entries_count,
             EntryID => \&_hdlr_entry_id,
             EntryTitle => \&_hdlr_entry_title,
@@ -302,6 +316,7 @@ sub core_tags {
             EntryAuthorLink => \&_hdlr_entry_author_link,
             EntryAuthorNickname => \&_hdlr_entry_author_nick,
             EntryAuthorID => \&_hdlr_entry_author_id,
+            EntryAuthorUserpic => \&_hdlr_entry_author_userpic,
             EntryDate => \&_hdlr_entry_date,
             EntryCreatedDate => \&_hdlr_entry_create_date,
             EntryModifiedDate => \&_hdlr_entry_mod_date,
@@ -338,6 +353,7 @@ sub core_tags {
             CommentAuthorLink => \&_hdlr_comment_author_link,
             CommentAuthorIdentity => \&_hdlr_comment_author_identity,
             CommentEmail => \&_hdlr_comment_email,
+            CommentLink => \&_hdlr_comment_link,
             CommentURL => \&_hdlr_comment_url,
             CommentBody => \&_hdlr_comment_body,
             CommentOrderNumber => \&_hdlr_comment_order_num,
@@ -382,6 +398,7 @@ sub core_tags {
             CategoryDescription => \&_hdlr_category_desc,
             CategoryArchiveLink => \&_hdlr_category_archive,
             CategoryCount => \&_hdlr_category_count,
+            CategoryCommentCount => \&_hdlr_category_comment_count,
             CategoryTrackbackLink => \&_hdlr_category_tb_link,
             CategoryTrackbackCount => \&_hdlr_category_tb_count,
 
@@ -677,10 +694,15 @@ sub _fltr_regex_replace {
         }
         my $re = eval { qr/$patt/ };
         if (defined $re) {
+            $replace =~ s!\\\\(\d+)!\$$1!g; # for php, \\1 is how you write $1
             if ($global) {
                 $str =~ s/$re/$replace/g;
+                my @matches = ($0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20);
+                $str =~ s/\$(\d+)/$matches[$1]/g;
             } else {
                 $str =~ s/$re/$replace/;
+                my @matches = ($0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20);
+                $str =~ s/\$(\d+)/$matches[$1]/g;
             }
         }
     }
@@ -1073,11 +1095,11 @@ sub _hdlr_app_page_actions {
                 <ul>
             </mt:if>
             <mt:if name="page">
-                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
+                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"><mt:var name="label"></a></li>
+                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
             </mt:if><mt:if name="dialog">
-                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', '<mt:if name="dialog_args"><mt:var name="dialog_args" escape="url">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">')"><mt:var name="label"></a></li>
+                    <li class="icon-left icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="javascript:void(0)" onclick="<mt:if name="continue_prompt">if(!confirm('<mt:var name="continue_prompt" escape="js">'))return false;</mt:if>return openDialog(false, '<mt:var name="dialog">', '<mt:if name="dialog_args"><mt:var name="dialog_args" escape="url">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">')"><mt:var name="label"></a></li>
             </mt:if></mt:if>
             <mt:if name="__last__">
                 </ul>
@@ -1205,16 +1227,57 @@ sub _hdlr_app_setting {
 
     return $ctx->build(<<"EOT");
 <div id="$id-field" class="field$req_class $label_class pkg $class"$indent_css>
-    <div class="field-inner">
-        <div class="field-header">
-            <label id="$id-label" for="$id">$label$req</label>
-        </div>
-        <div class="field-content $content_class">
-            $insides$hint$warning
-        </div>
+    <div class="field-header">
+        <label id="$id-label" for="$id">$label$req</label>
+    </div>
+    <div class="field-content $content_class">
+        $insides$hint$warning
     </div>
 </div>
 EOT
+}
+
+sub _hdlr_for {
+    my ($ctx, $args, $cond) = @_;
+
+    my $start = (exists $args->{from} ? $args->{from} : $args->{start}) || 0;
+    $start = 0 unless $start =~ /^\d+$/;
+    my $end = (exists $args->{to} ? $args->{to} : $args->{end}) || 0;
+    return q() unless $end =~ /^\d+$/;
+    my $incr = $args->{increment} || $args->{step} || 1;
+    $incr = 1 unless $incr =~ /^\d+$/;
+
+    my $builder = $ctx->stash('builder');
+    my $tokens = $ctx->stash('tokens');
+    my $cnt = 1;
+    my $out = '';
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    my $glue = $args->{glue};
+    $glue = '' unless defined $glue;
+    my $var = $args->{var};
+    for (my $i = $start; $i <= $end; $i += $incr) {
+        local $vars->{__first__} = $i == $start;
+        local $vars->{__last__} = $i == $end;
+        local $vars->{__odd__} = ($cnt % 2 ) == 1;
+        local $vars->{__even__} = ($cnt % 2 ) == 0;
+        local $vars->{__index__} = $i;
+        local $vars->{__counter__} = $cnt;
+        local $vars->{$var} = $i if defined $var;
+        my $res = $builder->build($ctx, $tokens, $cond);
+        return $ctx->error($builder->errstr) unless defined $res;
+        $out .= $glue if $cnt > 1;
+        $out .= $res;
+        $cnt++;
+    }
+    return $out;
+}
+
+sub _hdlr_else {
+    my ($ctx, $args, $cond) = @_;
+    local $args->{'@'};
+    delete $args->{'@'};
+    return _hdlr_if(@_) ? $ctx->slurp(@_) : $ctx->else() if %$args;
+    return $ctx->slurp(@_);
 }
 
 sub _hdlr_if {
@@ -1232,10 +1295,24 @@ sub _hdlr_if {
     my $numeric = qr/^[-]?\d+(\.\d+)?$/;
     no warnings;
     if (exists $args->{eq}) {
-        return defined($value) && ($value eq $args->{eq});
-    } elsif (exists $args->{ne}) {
-        return defined($value) && ($value ne $args->{ne});
-    } elsif (exists $args->{gt}) {
+        return 0 unless defined($value);
+        my $eq = $args->{eq};
+        if ($value =~ m/$numeric/ && $eq =~ m/$numeric/) {
+            return $value == $eq;
+        } else {
+            return $value eq $eq;
+        }
+    }
+    elsif (exists $args->{ne}) {
+        return 0 unless defined($value);
+        my $ne = $args->{ne};
+        if ($value =~ m/$numeric/ && $ne =~ m/$numeric/) {
+            return $value != $ne;
+        } else {
+            return $value ne $ne;
+        }
+    }
+    elsif (exists $args->{gt}) {
         return 0 unless defined($value);
         my $gt = $args->{gt};
         if ($value =~ m/$numeric/ && $gt =~ m/$numeric/) {
@@ -1243,7 +1320,8 @@ sub _hdlr_if {
         } else {
             return $value gt $gt;
         }
-    } elsif (exists $args->{lt}) {
+    }
+    elsif (exists $args->{lt}) {
         return 0 unless defined($value);
         my $lt = $args->{lt};
         if ($value =~ m/$numeric/ && $lt =~ m/$numeric/) {
@@ -1251,7 +1329,8 @@ sub _hdlr_if {
         } else {
             return $value lt $lt;
         }
-    } elsif (exists $args->{ge}) {
+    }
+    elsif (exists $args->{ge}) {
         return 0 unless defined($value);
         my $ge = $args->{ge};
         if ($value =~ m/$numeric/ && $ge =~ m/$numeric/) {
@@ -1259,7 +1338,8 @@ sub _hdlr_if {
         } else {
             return $value ge $ge;
         }
-    } elsif (exists $args->{le}) {
+    }
+    elsif (exists $args->{le}) {
         return 0 unless defined($value);
         my $le = $args->{le};
         if ($value =~ m/$numeric/ && $le =~ m/$numeric/) {
@@ -1267,9 +1347,35 @@ sub _hdlr_if {
         } else {
             return $value le $le;
         }
-    } elsif (exists $args->{like}) {
+    }
+    elsif (exists $args->{like}) {
         my $re = eval { qr/$args->{like}/ };
         return defined($value) && ($value =~ m/$re/) ? 1 : 0;
+    }
+    elsif (exists $args->{test}) {
+        my $expr = $args->{'test'};
+        my $safe = $ctx->{__safe_compartment};
+        if (!$safe) {
+            $safe = eval { require Safe; new Safe; }
+                or return $ctx->error("Cannot evaluate expression [$expr]: Perl 'Safe' module is required.");
+            $ctx->{__safe_compartment} = $safe;
+        }
+        my $vars = $ctx->{__stash}{vars};
+        my $ns = $safe->root;
+        {
+            no strict 'refs';
+            foreach my $v (keys %$vars) {
+                # or should we be using $ctx->var here ?
+                # can we limit this step to just the variables
+                # mentioned in $expr ??
+                ${ $ns . '::' . $v } = $vars->{$v};
+            }
+        }
+        my $res = $safe->reval($expr);
+        if ($@) {
+            return $ctx->error("Error in expression [$expr]: $@");
+        }
+        return $res;
     }
     if ((defined $value) && $value) {
         if (ref($value) eq 'ARRAY') {
@@ -1446,6 +1552,29 @@ sub _tags_for_blog {
     ($tag_cache->{$cache_id}{tags}, $tag_cache->{$cache_id}{min}, $tag_cache->{$cache_id}{max}), $tag_cache->{$cache_id}{all_count};
 }
 
+sub _tag_sort {
+    my ($tags, $column, $order) = @_;
+    $column ||= 'name';
+    $order ||= ($column eq 'name' ? 'ascend' : 'descend');
+    no warnings;
+    if ($column eq 'rank' or $column eq 'count') {
+        @$tags = grep { $_->{__entry_count} }
+            lc $order eq 'ascend'
+                ? sort { $a->{__entry_count} <=> $b->{__entry_count} } @$tags
+                : sort { $b->{__entry_count} <=> $a->{__entry_count} } @$tags;
+    } elsif ($column eq 'id') {
+        @$tags = grep { $_->{__entry_count} }
+            lc $order eq 'descend'
+                ? sort { $b->{column_values}{$column} <=> $a->{column_values}{$column} } @$tags
+                : sort { $a->{column_values}{$column} <=> $b->{column_values}{$column} } @$tags;
+    } else {
+        @$tags = grep { $_->{__entry_count} }
+            lc $order eq 'descend'
+                ? sort { lc $b->{column_values}{name} cmp lc $a->{column_values}{name} } @$tags
+                : sort { lc $a->{column_values}{name} cmp lc $b->{column_values}{name} } @$tags;
+    }
+}
+
 sub _hdlr_tags {
     my ($ctx, $args, $cond) = @_;
 
@@ -1503,27 +1632,20 @@ sub _hdlr_tags {
 
     my $column = lc( $args->{sort_by} || 'name' );
     $args->{sort_order} ||= '';
-    @$tags = grep { $_->{__entry_count} }
-        lc $args->{sort_order} eq 'descend'
-            ? sort { lc $b->{column_values}{name} cmp lc $a->{column_values}{name} } @$tags
-            : sort { lc $a->{column_values}{name} cmp lc $b->{column_values}{name} } @$tags;
-    if ($column eq 'rank' or $column eq 'count') {
-        @$tags = grep { $_->{__entry_count} }
-            lc $args->{sort_order} eq 'ascend'
-                ? sort { $a->{__entry_count} <=> $b->{__entry_count} } @$tags
-                : sort { $b->{__entry_count} <=> $a->{__entry_count} } @$tags;
-    } elsif ($column eq 'id') {
-        @$tags = grep { $_->{__entry_count} }
-            lc $args->{sort_order} eq 'descend'
-                ? sort { $b->{column_values}{$column} <=> $a->{column_values}{$column} } @$tags
-                : sort { $a->{column_values}{$column} <=> $b->{column_values}{$column} } @$tags;
-    }
     my $tags_length = @$tags;
     my @slice_tags;
-    if (defined $args->{limit} && $args->{limit} > 0 && $tags_length > $args->{limit}){
-        @slice_tags = @$tags[ 0 .. $args->{limit} - 1 ];
+    if (defined $args->{top} && $args->{top} > 0 && $tags_length > $args->{top}){
+        _tag_sort($tags, 'rank');
+        @slice_tags = @$tags[ 0 .. $args->{top} - 1 ];
     } else {
         @slice_tags = @$tags;
+    }
+    $tags_length = scalar @slice_tags;
+    if ($column ne 'rank') {
+        _tag_sort(\@slice_tags, $column, $args->{sort_order});
+    }
+    if (defined $args->{limit} && $args->{limit} > 0 && $tags_length > $args->{limit}){
+        @slice_tags = @slice_tags[ 0 .. $args->{limit} - 1 ];
     }
 
     local $ctx->{__stash}{include_blogs} = $args->{include_blogs};
@@ -1819,10 +1941,19 @@ sub nofollowfy_on {
         'passwd' => 1
     );
 
+sub _hdlr_include_block {
+    my($ctx, @param) = @_;
+    my $contents = $ctx->slurp(@param);
+    my $args = $param[0];
+    my $name = delete $args->{var} || 'contents';
+    local $ctx->{__stash}{vars}{$name} = $contents;
+    return $ctx->tag('include', @param);
+}
+
 sub _hdlr_include {
     my($ctx, $arg, $cond) = @_;
     my $req = MT::Request->instance;
-    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id};
+    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
 
     # Pass through include arguments as variables to included template
     my $vars = $ctx->{__stash}{vars} ||= {};
@@ -1848,12 +1979,28 @@ sub _hdlr_include {
         my $builder = $ctx->{__stash}{builder};
         my $tokens = $req->stash($stash_id);
         unless ($tokens) {
+            my $blog_id_param;
+            if (exists $arg->{global}) {
+                if ($arg->{global}) {
+                    $blog_id_param = 0;
+                }
+                else {
+                    $blog_id_param = $blog_id;
+                }
+            }
+            else {
+                $blog_id_param = [ $blog_id, 0 ];
+            }
             require MT::Template;
-            my $tmpl = MT::Template->load({ ($arg->{identifier} ? ( identifier => $tmpl_name) : ( name => $tmpl_name,
+            my @tmpl = MT::Template->load({ ($arg->{identifier} ? ( identifier => $tmpl_name) : ( name => $tmpl_name,
                                             type => $type )),
-                                            blog_id => $blog_id })
+                                            blog_id => $blog_id_param }, {
+                                            sort      => 'blog_id',
+                                            direction => 'descend',
+                                        })
                 or return $ctx->error(MT->translate(
                     "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
+            my $tmpl = $tmpl[0];
             return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
                 if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
             $tokens = $builder->compile($ctx, $tmpl->text);
@@ -2117,6 +2264,24 @@ sub _hdlr_error_message {
     defined $err ? $err : '';
 }
 
+sub _hdlr_set_vars {
+    my($ctx, $args) = @_;
+    my $tag = lc $ctx->stash('tag');
+    my $val =_hdlr_pass_tokens(@_);
+    $val =~ s/(^\s+|\s+$)//g;
+    my @pairs = split /\r?\n/, $val;
+    foreach my $line (@pairs) {
+        next if $line =~ m/^\s*$/;
+        my ($var, $value) = split /\s*=/, $line, 2;
+        unless (defined($var) && defined($value)) {
+            return $ctx->error("Invalid variable assignment: $line");
+        }
+        $var =~ s/^\s+//;
+        $ctx->var($var, $value);
+    }
+    return '';
+}
+
 sub _hdlr_set_var {
     my($ctx, $args) = @_;
     my $tag = lc $ctx->stash('tag');
@@ -2221,8 +2386,10 @@ sub _hdlr_static_path {
     if ($path =~ m!^/!) {
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
-        my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-        $path = $blog_domain . $path;
+        if ($blog) {
+            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+            $path = $blog_domain . $path;
+        }
     }
     $path .= '/' unless $path =~ m!/$!;
     return $path;
@@ -2265,6 +2432,10 @@ sub _no_author_error {
         "container?", $_[1] ));
 }
 
+sub _hdlr_if_author {
+    return $_[0]->stash('author') ? 1 : 0;
+}
+
 sub _hdlr_authors {
     my($ctx, $args, $cond) = @_;
     my $blog_id = $ctx->stash('blog_id');
@@ -2277,34 +2448,202 @@ sub _hdlr_authors {
     my (%blog_terms, %blog_args);
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
-    my (%terms, %args);
+    my (@filters, %terms, %args);
 
     if ($args->{display_name}) {
         $terms{nickname} = $args->{display_name};
     }
-    $terms{status} = 1;         # only enabled
+    if (my $status_arg = $args->{status} || 'enabled') {
+        if ($status_arg !~ m/\b(OR)\b|\(|\)/i) {
+            my @status = MT::Tag->split(',', $status_arg);
+            $status_arg = join " or ", @status;
+        }
+        my $status = [
+            { name => 'enabled', id  => 1 },
+            { name => 'disabled', id  => 2 },
+        ];
+        my $cexpr = $ctx->compile_status_filter($status_arg, $status);
+        if ($cexpr) {
+            push @filters, $cexpr;
+        }
+    }
+    if (my $role_arg = $args->{role} || $args->{roles}) {
+        if ($role_arg !~ m/\b(OR)\b|\(|\)/i) {
+            my @roles = MT::Tag->split(',', $role_arg);
+            $role_arg = join " or ", @roles;
+        }
+        require MT::Association;
+        require MT::Role;
+        my $roles = [ MT::Role->load(undef, { sort => 'name' }) ];
+        my $cexpr = $ctx->compile_role_filter($role_arg, $roles);
+        if ($cexpr) {
+            my %map;
+            for my $role (@$roles) {
+                my $iter = MT::Association->load_iter({
+                    role_id => $role->id,
+                    %blog_terms
+                }, \%blog_args);
+                while (my $as = $iter->()) {
+                    $map{$as->author_id}{$role->id}++;
+                }
+            }
+            push @filters, sub { $cexpr->($_[0]->id, \%map) };
+        }
+    }
 
-    $blog_args{'unique'} = 1;
-    $blog_terms{'status'} = MT::Entry::RELEASE();
-    $args{'join'} = MT::Entry->join_on('author_id', \%blog_terms, \%blog_args);
-    $args{'sort'} = $args->{sort_by} ?
-        (lc $args->{sort_by} eq 'display_name' ?
-            'nickname' : $args->{sort_by})
-        : 'created_on';
-    $args{'direction'} = $args->{sort_order} || 'ascend';
+    if (defined $args->{need_entry} ? $args->{need_entry} : 1) {
+        $blog_args{'unique'} = 1;
+        $blog_terms{'status'} = MT::Entry::RELEASE();
+        $args{'join'} = MT::Entry->join_on('author_id', \%blog_terms, \%blog_args);
+    } else {
+        $terms{'type'} = 1;
+        require MT::Association;
+        $args{'join'} = MT::Association->join_on('author_id', { blog_id => $blog_id }, { unique => 1 });
+    }
+
+    if ($args->{namespace}) {
+        my $namespace = $args->{namespace};
+
+        my $need_join = 0;
+        if ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
+            $need_join = 1;
+        } else {
+            for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
+                if ($args->{$f}) {
+                    $need_join = 1;
+                    last;
+                }
+            }
+        }
+        if ($need_join) {
+            $args{join} = MT->model('objectscore')->join_on(undef,
+                {
+                    object_id => \'=author_id',
+                    object_ds => 'author',
+                    namespace => $namespace,
+                }, {
+                    unique => 1,
+            });
+        }
+
+        # Adds a rate or score filter to the filter list.
+        if ($args->{min_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+        }
+        if ($args->{max_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+        }
+        if ($args->{min_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+        }
+        if ($args->{max_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+        }
+        if ($args->{min_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+        }
+        if ($args->{max_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+        }
+    }
+
+    my $re_sort = 0;
+    my $score_limit = 0;
+    my $score_offset = 0;
+    $args{'sort'} = 'created_on';
+    if ($args->{'sort_by'}) {
+        if (lc $args->{'sort_by'} eq 'display_name') {
+            $args{'sort'} = 'nickname';
+        } elsif ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by}) {
+            $score_limit = delete($args->{lastn}) || 0;
+            $score_offset = delete($args->{offset}) || 0;
+            $re_sort = 1;
+        }
+    }
+
+    if ($re_sort) {
+        $args{'direction'} = 'ascend';
+    } else{
+        $args{'direction'} = $args->{sort_order} || 'ascend';
+    }
+
     my $iter = MT::Author->load_iter(\%terms, \%args);
     my $count = 0;
+    my $next = $iter->();
     my $n = $args->{lastn};
-    my $res = '';
-    while (my $author = $iter->()) {
+    my @authors;
+    AUTHOR: while ($next) {
+        my $author = $next;
+        $next = $iter->();
+        for (@filters) {
+            next AUTHOR unless $_->($author);
+        }
+        push @authors, $author;
         $count++;
         if ($n && ($count > $n)) {
             $iter->('finish');
             last;
         }
-        # TBD: add __first__, __last__, __odd__, etc.
+    }
+
+    if ($re_sort && (scalar @authors)) {
+        my $col = $args->{sort_by};
+        my $namespace = $args->{'namespace'};
+        if ('score' eq $col) {
+            my $so = $args->{sort_order} || '';
+            my %a = map { $_->id => $_ } @authors;
+            my @aid = keys %a;
+            require MT::ObjectScore;
+            my $scores = MT::ObjectScore->sum_group_by(
+                { 'object_ds' => 'author', 'namespace' => $namespace, object_id => \@aid },
+                { 'sum' => 'score', group => ['object_id'],
+                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                });
+            my @tmp;
+            my $i = 0;
+            while (my ($score, $object_id) = $scores->()) {
+                next if $score_offset && ($i + 1) < $score_offset;
+                push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
+                last unless %a;
+                $i++;
+                $scores->('finish'), last if $score_limit && $i >= $score_limit;
+            }
+            @authors = @tmp;
+        } elsif ('rate' eq $col) {
+            my $so = $args->{sort_order} || '';
+            my %a = map { $_->id => $_ } @authors;
+            my @aid = keys %a;
+            require MT::ObjectScore;
+            my $scores = MT::ObjectScore->avg_group_by(
+                { 'object_ds' => 'author', 'namespace' => $namespace, object_id => \@aid },
+                { 'avg' => 'score', group => ['object_id'],
+                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                });
+            my @tmp;
+            my $i = 0;
+            while (my ($score, $object_id) = $scores->()) {
+                next if $score_offset && ($i + 1) < $score_offset;
+                push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
+                last unless %a;
+                $i++;
+                $scores->('finish'), last if $score_limit && $i >= $score_limit;
+            }
+            @authors = @tmp;
+        }
+    }
+
+    my $res = '';
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    $count = 0;
+    for my $author (@authors) {
+        $count++;
         local $ctx->{__stash}{author} = $author;
         local $ctx->{__stash}{author_id} = $author->id;
+        local $vars->{__first__} = $count == 1;
+        local $vars->{__last__} = !$next || ($n && ($count == $n));
+        local $vars->{__odd__} = ($count % 2) == 1;
+        local $vars->{__even__} = ($count % 2) == 0;
+        local $vars->{__counter__} = $count;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
         $res .= $out;
@@ -2325,10 +2664,6 @@ sub _hdlr_author_name {
 }
 
 sub _hdlr_author_display_name { 
-    my $curr_auth = $_[0]->stash('current_author_name');
-    if ($curr_auth) {
-        return $curr_auth;
-    }
     my $a = $_[0]->stash('author'); 
     unless ($a) { 
         my $e = $_[0]->stash('entry'); 
@@ -2363,6 +2698,27 @@ sub _hdlr_author_auth_icon_url {
     my $author = $_[0]->stash('author')
         or return $_[0]->_no_author_error('MTAuthorAuthType');
     return $author->auth_icon_url;
+}
+
+sub _hdlr_author_userpic {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorUserpic');
+    my $asset = $author->userpic or return '';
+    $asset->as_html({ include => 1, enclose => 0 });
+}
+
+sub _hdlr_author_userpic_asset {
+    my ($ctx, $args, $cond) = @_;
+
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error('MTAuthorUserpicAsset');
+    my $asset = $author->userpic or return '';
+
+    my $tok = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+
+    local $ctx->{__stash}{asset} = $asset;
+    $builder->build($ctx, $tok, { %$cond });
 }
 
 sub _hdlr_blogs {
@@ -2414,24 +2770,31 @@ sub _hdlr_blogs {
 
 sub _hdlr_blog_id {
     my ($ctx, $args, $cond) = @_;
-    $ctx->stash('blog')->id;
+    my $blog = $ctx->stash('blog');
+    $blog ? $blog->id : 0;
 }
 
 sub _hdlr_blog_name {
     my ($ctx, $args, $cond) = @_;
-    my $name = $ctx->stash('blog')->name;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $name = $blog->name;
     defined $name ? $name : '';
 }
 
 sub _hdlr_blog_description {
     my ($ctx, $args, $cond) = @_;
-    my $d = $ctx->stash('blog')->description;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $d = $blog->description;
     defined $d ? $d : '';
 }
 
 sub _hdlr_blog_url {
     my ($ctx, $args, $cond) = @_;
-    my $url = $ctx->stash('blog')->site_url;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $url = $blog->site_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
     $url;
@@ -2439,7 +2802,9 @@ sub _hdlr_blog_url {
 
 sub _hdlr_blog_site_path {
     my ($ctx, $args, $cond) = @_;
-    my $path = $ctx->stash('blog')->site_path;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $path = $blog->site_path;
     return '' unless defined $path;
     $path .= '/' unless $path =~ m!/$!;
     $path;
@@ -2447,7 +2812,9 @@ sub _hdlr_blog_site_path {
 
 sub _hdlr_blog_archive_url {
     my ($ctx, $args, $cond) = @_;
-    my $url = $ctx->stash('blog')->archive_url;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $url = $blog->archive_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
     $url;
@@ -2455,7 +2822,9 @@ sub _hdlr_blog_archive_url {
 
 sub _hdlr_blog_relative_url {
     my ($ctx, $args, $cond) = @_;
-    my $host = $ctx->stash('blog')->site_url;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $host = $blog->site_url;
     return '' unless defined $host;
     if ($host =~ m!^https?://[^/]+(/.*)$!) {
         return $1;
@@ -2465,7 +2834,9 @@ sub _hdlr_blog_relative_url {
 }
 
 sub _hdlr_blog_timezone {
-    my $so = $_[0]->stash('blog')->server_offset;
+    my $blog = $_[0]->stash('blog');
+    return '' unless $blog;
+    my $so = $blog->server_offset;
     my $no_colon = $_[1]->{no_colon};
     my $partial_hour_offset = 60 * abs($so - int($so));
     sprintf("%s%02d%s%02d", $so < 0 ? '-' : '+',
@@ -2477,7 +2848,8 @@ sub _hdlr_blog_timezone {
     my %real_lang = (cz => 'cs', dk => 'da', jp => 'ja', si => 'sl');
 sub _hdlr_blog_language {
     my ($ctx, $args, $cond) = @_;
-    my $lang_tag = $ctx->stash('blog')->language || '';
+    my $blog = $ctx->stash('blog');
+    my $lang_tag = ($blog ? $blog->language : $ctx->{config}->DefaultLanguage) || '';
     $lang_tag = ($real_lang{$lang_tag} || $lang_tag);
     if ($args->{'locale'}) {
         $lang_tag =~ s/^(..)([-_](..))?$/$1 . '_' . uc($3||$1)/e;
@@ -2491,7 +2863,9 @@ sub _hdlr_blog_language {
 
 sub _hdlr_blog_host {
     my ($ctx, $args, $cond) = @_;
-    my $host = $ctx->stash('blog')->site_url;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $host = $blog->site_url;
     if ($host =~ m!^https?://([^/:]+)(:\d+)?/!) {
         if ($args->{signature}) {
             # using '_' to replace '.' since '-' is a valid
@@ -2558,11 +2932,15 @@ sub _hdlr_blog_ping_count {
 }
 
 sub _hdlr_blog_cc_license_url {
-    $_[0]->stash('blog')->cc_license_url;
+    my $blog = $_[0]->stash('blog');
+    return '' unless $blog;
+    return $blog->cc_license_url;
 }
 
 sub _hdlr_blog_cc_license_image {
-    my $cc = $_[0]->stash('blog')->cc_license or return;
+    my $blog = $_[0]->stash('blog');
+    return '' unless $blog;
+    my $cc = $blog->cc_license or return '';
     my ($code, $license, $image_url) = $cc =~ /(\S+) (\S+) (\S+)/;
     return $image_url if $image_url;
     "http://creativecommons.org/images/public/" .
@@ -2571,6 +2949,7 @@ sub _hdlr_blog_cc_license_image {
 sub _hdlr_cc_license_rdf {
     my($ctx, $arg) = @_;
     my $blog = $ctx->stash('blog');
+    return '' unless $blog;
     my $cc = $blog->cc_license or return '';
     my $cc_url = $blog->cc_license_url;
     my $rdf = <<RDF;
@@ -2611,15 +2990,26 @@ RDF
     $rdf;
 }
 sub _hdlr_blog_if_cc_license {
+    return '' unless $_[0]->stash('blog');
     $_[0]->stash('blog')->cc_license ? _hdlr_pass_tokens(@_) : '';
 }
 
 sub _hdlr_blog_file_extension {
     my($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
+    return '' unless $blog;
     my $ext = $blog->file_extension || '';
     $ext = '.' . $ext if $ext ne '';
     $ext;
+}
+
+sub _hdlr_blog_template_set_id {
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
+    return '' unless $blog;
+    my $set = $blog->template_set || 'classic_blog';
+    $set =~ s/_/-/g;
+    return $set;
 }
 
 sub _hdlr_entries {
@@ -2689,7 +3079,7 @@ sub _hdlr_entries {
 
     $terms{status} = MT::Entry::RELEASE();
 
-    if (!$entries) {
+    if (!$entries && $class_type eq 'entry') {
         if ($ctx->{inside_mt_categories}) {
             if (my $cat = $ctx->stash('category')) {
                 $args->{category} ||= [ 'OR', [ $cat ] ];
@@ -2825,12 +3215,70 @@ sub _hdlr_entries {
         }
     }
 
+    if ($args->{namespace}) {
+        my $namespace = $args->{namespace};
+
+        my $need_join = 0;
+        for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
+            if ($args->{$f}) {
+                $need_join = 1;
+                last;
+            }
+        }
+        if ($need_join) {
+            my $scored_by = $args->{scored_by} || undef;
+            if ($scored_by) {
+                require MT::Author;
+                my $author = MT::Author->load({ name => $scored_by }) or
+                    return $ctx->error(MT->translate(
+                        "No such user '[_1]'", $scored_by ));
+                $scored_by = $author;
+            }
+
+            $args{join} = MT->model('objectscore')->join_on(undef,
+                {
+                    object_id => \'=entry_id',
+                    object_ds => 'entry',
+                    namespace => $namespace,
+                    (!$entries && $scored_by ? (author_id => $scored_by->id) : ()),
+                }, {
+                    unique => 1,
+            });
+            if ($entries && $scored_by) {
+                push @filters, sub { $_[0]->get_score($namespace, $scored_by) };
+            }
+        }
+
+        # Adds a rate or score filter to the filter list.
+        if ($args->{min_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+        }
+        if ($args->{max_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+        }
+        if ($args->{min_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+        }
+        if ($args->{max_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+        }
+        if ($args->{min_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+        }
+        if ($args->{max_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+        }
+    }
+
     my $published = $ctx->{__stash}{entry_ids_published} ||= {};
     if ($args->{unique}) {
         push @filters, sub { !exists $published->{$_[0]->id} }
     }
 
+    my $namespace = $args->{namespace};
     my $no_resort = 0;
+    my $score_limit = 0;
+    my $score_offset = 0;
     my @entries;
     if (!$entries) {
         my ($start, $end) = ($ctx->{current_timestamp},
@@ -2849,7 +3297,16 @@ sub _hdlr_entries {
         } else {
             # Check attributes
             my $found_valid_args = 0;
-            foreach my $valid_key ('lastn', 'category', 'categories', 'tag', 'tags', 'author', 'days', 'recently_commented_on') {
+            foreach my $valid_key (
+                'lastn',      'category',
+                'categories', 'tag',
+                'tags',       'author',
+                'days',       'recently_commented_on',
+                'min_score',  'max_score',
+                'min_rate',    'max_rate',
+                'min_count',  'max_count'
+              )
+            {
                 if (exists($args->{$valid_key})) {
                     $found_valid_args = 1;
                     last;
@@ -2873,13 +3330,21 @@ sub _hdlr_entries {
 
         # Adds class_type
         $terms{class} = $class_type;
+
+        $args{'sort'} = 'authored_on';
         if ($args->{sort_by}) {
             if ($class->has_column($args->{sort_by})) {
                 $args{sort} = $args->{sort_by};
                 $no_resort = 1;
+            } elsif ($args->{limit} && ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by})) {
+                $score_limit = delete($args->{limit}) || 0;
+                $score_offset = delete($args->{offset}) || 0;
+                if ( $score_limit || $score_offset ) {
+                    delete $args->{lastn};
+                }
+                $no_resort = 0;
             }
         }
-        $args{'sort'} ||= 'authored_on';
 
         if (!@filters) {
             if ((my $last = $args->{lastn}) && (!exists $args->{limit})) {
@@ -2888,8 +3353,12 @@ sub _hdlr_entries {
                 $args{limit} = $last;
                 $no_resort = 0 if $args->{sort_by};
             } else {
-                $args{direction} = $args->{sort_order} || 'descend';
+                $args{direction} = $args->{sort_order} || 'descend'
+                  if exists($args{sort});
                 $no_resort = 1 unless $args->{sort_by};
+                if ((my $last = $args->{lastn}) && (exists $args->{limit})) {
+                    $args{limit} = $last;
+                }
             }
             $args{offset} = $args->{offset} if $args->{offset};
             @entries = $class->load(\%terms, \%args);
@@ -2913,7 +3382,7 @@ sub _hdlr_entries {
                 next if $off && $j++ < $off;
                 push @entries, $e;
                 $i++;
-                last if $n && $i >= $n;
+                $iter->('finish'), last if $n && $i >= $n;
             }
         }
         if ($args->{recently_commented_on}) {
@@ -2924,21 +3393,27 @@ sub _hdlr_entries {
             $no_resort = 1;
         }
     } else {
-        my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : undef) || '';
-        my $col = $args->{sort_by} || 'authored_on';
-        if ( $col ne 'score' ) {
-            if (my $def = $class->column_def($col)) {
-                if ($def->{type} =~ m/^integer|float$/) {
-                    @$entries = $so eq 'ascend' ?
-                        sort { $a->$col() <=> $b->$col() } @$entries :
-                        sort { $b->$col() <=> $a->$col() } @$entries;
-                } else {
-                    @$entries = $so eq 'ascend' ?
-                        sort { $a->$col() cmp $b->$col() } @$entries :
-                        sort { $b->$col() cmp $a->$col() } @$entries;
+        # Don't resort a predefined list that's not in a published archive
+        # page when we didn't request sorting.
+        if ($args->{sort_by} || $args->{sort_order} || $ctx->{archive_type}) {
+            my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : undef) || '';
+            my $col = $args->{sort_by} || 'authored_on';
+            if ( $col ne 'score' ) {
+                if (my $def = $class->column_def($col)) {
+                    if ($def->{type} =~ m/^integer|float$/) {
+                        @$entries = $so eq 'ascend' ?
+                            sort { $a->$col() <=> $b->$col() } @$entries :
+                            sort { $b->$col() <=> $a->$col() } @$entries;
+                    } else {
+                        @$entries = $so eq 'ascend' ?
+                            sort { $a->$col() cmp $b->$col() } @$entries :
+                            sort { $b->$col() cmp $a->$col() } @$entries;
+                    }
+                    $no_resort = 1;
                 }
-                $no_resort = 1;
             }
+        } else {
+            $no_resort = 1;
         }
 
         if (@filters) {
@@ -2975,27 +3450,71 @@ sub _hdlr_entries {
 
     # $entries were on the stash or were just loaded
     # based on a start/end range.
-
     my $res = '';
     my $tok = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    unless ($no_resort) {
+    if (!$no_resort && (scalar @entries)) {
         my $col = $args->{sort_by} || 'authored_on';
         if ('score' eq $col) {
-            my $namespace = $args->{namespace};
             my $so = $args->{sort_order} || '';
             my %e = map { $_->id => $_ } @entries;
+            my @eid = keys %e;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->sum_group_by(
-                { 'object_ds' => 'entry', 'namespace' => $namespace },
+                { 'object_ds' => $class_type, 'namespace' => $namespace, object_id => \@eid },
                 { 'sum' => 'score', group => ['object_id'],
                   $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
                 });
             my @tmp;
+            my $i = 0;
             while (my ($score, $object_id) = $scores->()) {
+                $i++, next if $score_offset && $i < $score_offset;
                 push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
+                last unless %e;
+                $i++;
+                $scores->('finish'), last if $score_limit && (scalar @tmp) >= $score_limit;
             }
-            push @tmp, $_ foreach (values %e);
+
+            if (!$score_limit || (scalar @tmp) < $score_limit) {
+                foreach (values %e) {
+                    if ($so eq 'ascend') {
+                        unshift @tmp, $_;
+                    } else {
+                        push @tmp, $_;
+                    }
+                    last if $score_limit && (scalar @tmp) >= $score_limit;
+                }
+            }
+            @entries = @tmp;
+        } elsif ('rate' eq $col) {
+            my $so = $args->{sort_order} || '';
+            my %e = map { $_->id => $_ } @entries;
+            my @eid = keys %e;
+            require MT::ObjectScore;
+            my $scores = MT::ObjectScore->avg_group_by(
+                { 'object_ds' => $class_type, 'namespace' => $namespace, object_id => \@eid },
+                { 'avg' => 'score', group => ['object_id'],
+                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                });
+            my @tmp;
+            my $i = 0;
+            while (my ($score, $object_id) = $scores->()) {
+                $i++, next if $score_offset && $i < $score_offset;
+                push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
+                last unless %e;
+                $i++;
+                $scores->('finish'), last if $score_limit && (scalar @tmp) >= $score_limit;
+            }
+            if (!$score_limit || (scalar @tmp) < $score_limit) {
+                foreach (values %e) {
+                    if ($so eq 'ascend') {
+                        unshift @tmp, $_;
+                    } else {
+                        push @tmp, $_;
+                    }
+                    last if $score_limit && (scalar @tmp) >= $score_limit;
+                }
+            }
             @entries = @tmp;
         } else {
             my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : 'descend') || '';
@@ -3123,6 +3642,12 @@ sub _hdlr_entry_body {
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $text = $e->text;
     $text = '' unless defined $text;
+
+    # Strip the mt:asset-id attribute from any span tags...
+    if ($text =~ m/\smt:asset-id="\d+"/) {
+        $text = asset_cleanup($text);
+    }
+
     my $convert_breaks = exists $arg->{convert_breaks} ?
         $arg->{convert_breaks} :
             defined $e->convert_breaks ? $e->convert_breaks :
@@ -3133,11 +3658,6 @@ sub _hdlr_entry_body {
         $text = MT->apply_text_filters($text, $filters, $_[0]);
     }
     return first_n_text($text, $arg->{words}) if exists $arg->{words};
-
-    # Strip the mt:asset-id attribute from any span tags...
-    if ($text =~ m/\smt:asset-id="\d+"/) {
-        $text = asset_cleanup($text);
-    }
 
     return $text;
 }
@@ -3148,6 +3668,12 @@ sub _hdlr_entry_more {
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $text = $e->text_more;
     $text = '' unless defined $text;
+
+    # Strip the mt:asset-id attribute from any span tags...
+    if ($text =~ m/\smt:asset-id="\d+"/) {
+        $text = asset_cleanup($text);
+    }
+
     my $convert_breaks = exists $arg->{convert_breaks} ?
         $arg->{convert_breaks} :
             defined $e->convert_breaks ? $e->convert_breaks :
@@ -3159,10 +3685,6 @@ sub _hdlr_entry_more {
     }
     return first_n_text($text, $arg->{words}) if exists $arg->{words};
 
-    # Strip the mt:asset-id attribute from any span tags...
-    if ($text =~ m/\smt:asset-id="\d+"/) {
-        $text = asset_cleanup($text);
-    }
     return $text;
 }
 
@@ -3251,6 +3773,8 @@ sub _hdlr_entry_keywords {
     defined $e->keywords ? $e->keywords : '';
 }
 
+# FIXME: This should be a container tag providing an author
+# context for the entry in context.
 sub _hdlr_entry_author {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
@@ -3318,17 +3842,25 @@ sub _hdlr_entry_author_link {
     }
     if ($type eq 'url') {
         if ($a->url && ($displayname ne '')) {
-            return sprintf qq(<a href="%s"%s>%s</a>), $a->url, $target, $displayname;
+            # Add vcard properties to link if requested (with hcard="1")
+            my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
+            return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard, $a->url, $target, $displayname;
         }
     } elsif ($type eq 'email') {
         if ($a->email && ($displayname ne '')) {
+            # Add vcard properties to email if requested (with hcard="1")
+            my $hcard = $args->{show_hcard} ? ' class="fn email"' : '';
             my $str = "mailto:" . $a->email;
             $str = spam_protect($str) if $args->{'spam_protect'};
-            return sprintf qq(<a href="%s">%s</a>), $str, $displayname;
+            return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str, $displayname;
         }
     } elsif ($type eq 'archive') {
-        if (my $link = _hdlr_archive_link($ctx, { type => 'Author' }, $cond)) {
-            return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target, $displayname;
+        require MT::Author;
+        if ($a->type == MT::Author::AUTHOR()) {
+            local $ctx->{__stash}{author} = $a;
+            if (my $link = _hdlr_archive_link($ctx, { type => 'Author' }, $cond)) {
+                return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target, $displayname;
+            }
         }
     }
     return $displayname;
@@ -3339,6 +3871,30 @@ sub _hdlr_entry_author_id {
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $a = $e->author;
     $a ? $a->id || '' : '';
+}
+
+sub _hdlr_entry_author_userpic {
+    my $e = $_[0]->stash('entry')
+        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my $a = $e->author or return '';
+    my $userpic = $a->userpic;
+    $userpic ? $userpic->as_html({ include => 1, enclose => 0 }) || '' : '';
+}
+
+sub _hdlr_entry_author_userpic_asset {
+    my ($ctx, $args, $cond) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error($ctx->stash('tag'));
+    my $author = $e->author;
+    return '' unless $author;
+
+    my $asset = $author->userpic or return '';
+
+    my $tok = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+
+    local $ctx->{__stash}{asset} = $asset;
+    $builder->build($ctx, $tok, { %$cond });
 }
 
 sub _hdlr_entry_id {
@@ -3422,7 +3978,7 @@ sub _hdlr_entry_link {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
     my $blog = $ctx->stash('blog');
-    my $arch = $blog->archive_url;
+    my $arch = $blog->archive_url || '';
     $arch = $blog->site_url if $e->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
 
@@ -3685,17 +4241,26 @@ sub _hdlr_date {
         $ts = sprintf("%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s);
     }
     if (my $format = lc ($args->{format_name} || '')) {
-        if ($format eq 'rfc822') {
-            my $tz = 'Z';
-            unless ($args->{utc}) {
-                my $so = $blog->server_offset;
-                my $partial_hour_offset = 60 * abs($so - int($so));
+        my $tz = 'Z';
+        unless ($args->{utc}) {
+            my $so = $blog->server_offset;
+            my $partial_hour_offset = 60 * abs($so - int($so));
+            if ($format eq 'rfc822') {
                 $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
                     abs($so), $partial_hour_offset);
             }
+            elsif ($format eq 'iso8601') {
+                $tz = sprintf("%s%02d:%02d", $so < 0 ? '-' : '+',
+                    abs($so), $partial_hour_offset);
+            }
+        }
+        if ($format eq 'rfc822') {
             ## RFC-822 dates must be in English.
             $args->{'format'} = '%a, %d %b %Y %H:%M:%S ' . $tz;
             $lang = 'en';
+        }
+        elsif ($format eq 'iso8601') {
+            $args->{format} = '%Y-%m-%dT%H:%M:%S' . $tz;
         }
     }
     if (my $r = $args->{relative}) {
@@ -3749,19 +4314,87 @@ sub _no_comment_error {
 }
 sub _hdlr_comments {
     my($ctx, $args, $cond) = @_;
+
+    my (%terms, %args);
+    my @filters;
     my @comments;
     my $comments = $ctx->stash('comments');
+    my $blog_id = $ctx->stash('blog_id');
+    my $blog = $ctx->stash('blog');
+    my $namespace = $args->{namespace};
+    if ($args->{namespace}) {
+        my $need_join = 0;
+        if ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
+            $need_join = 1;
+        } else {
+            for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
+                if ($args->{$f}) {
+                    $need_join = 1;
+                    last;
+                }
+            }
+        }
+        if ($need_join) {
+            my $scored_by = $args->{scored_by} || undef;
+            if ($scored_by) {
+                require MT::Author;
+                my $author = MT::Author->load({ name => $scored_by }) or
+                    return $ctx->error(MT->translate(
+                        "No such user '[_1]'", $scored_by ));
+                $scored_by = $author;
+            }
+            $args{join} = MT->model('objectscore')->join_on(undef,
+                {
+                    object_id => \'=comment_id',
+                    object_ds => 'comment',
+                    namespace => $namespace,
+                    (!$comments && $scored_by ? (author_id => $scored_by->id) : ()),
+                }, {
+                    unique => 1,
+            });
+            if ($comments && $scored_by) {
+                push @filters, sub { $_[0]->get_score($namespace, $scored_by) };
+            }
+        }
+
+        # Adds a rate or score filter to the filter list.
+        if ($args->{min_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+        }
+        if ($args->{max_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+        }
+        if ($args->{min_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+        }
+        if ($args->{max_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+        }
+        if ($args->{min_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+        }
+        if ($args->{max_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+        }
+    }
+
+    my $so = lc ($args->{sort_order} || ($blog ? $blog->sort_order_comments : undef) || 'ascend');
     if ($comments) {
         @comments = @$comments;
+        my $n = $args->{lastn};
+        if (@filters) {
+            COMMENTS: for my $c (@comments) {
+                for (@filters) {
+                    push @comments, $c if $_->($c);
+                    last COMMENTS if ($n && (scalar @comments == $n))
+                }
+            }
+        }
     } else {
-        my $blog_id = $ctx->stash('blog_id');
-        my $blog = $ctx->stash('blog');
-        my (%terms, %args);
         $terms{visible} = 1;
         $ctx->set_blog_load_context($args, \%terms, \%args)
             or return $ctx->error($ctx->errstr);
 
-        my $so = lc ($args->{sort_order} || ($blog ? $blog->sort_order_comments : undef) || 'ascend');
         ## If there is a "lastn" arg, then we need to check if there is an entry
         ## in context. If so, grab the N most recent comments for that entry;
         ## otherwise, grab the N most recent comments for the entire blog.
@@ -3770,17 +4403,21 @@ sub _hdlr_comments {
             ## Sort in descending order, then grab the first $n ($n most
             ## recent) comments.
             my $comments = $e->comments;
-            @comments = $so eq 'ascend' ?
-                sort { $a->created_on <=> $b->created_on } @$comments :
-                sort { $b->created_on <=> $a->created_on } @$comments;
-            # filter out comments from unapproved commenters
-            @comments = grep { $_->visible() } @comments;
-
-            if ($n) {
-                my $max = $n - 1 > $#comments ? $#comments : $n - 1;
-                @comments = $so eq 'ascend' ?
-                    @comments[$#comments-$max..$#comments] :
-                    @comments[0..$max];
+            @comments = @$comments;
+            if (@filters) {
+                COMMENTS: for my $c (@comments) {
+                    for (@filters) {
+                        push @comments, $c if $_->($c);
+                        last COMMENTS if ($n && (scalar @comments == $n))
+                    }
+                }
+            } else {
+                if ($n) {
+                    my $max = $n - 1 > $#comments ? $#comments : $n - 1;
+                    @comments = $so eq 'ascend' ?
+                        @comments[$#comments-$max..$#comments] :
+                        @comments[0..$max];
+                }
             }
         } else {
             $args{'sort'} = 'created_on';
@@ -3788,22 +4425,62 @@ sub _hdlr_comments {
             require MT::Comment;
             my $iter = MT::Comment->load_iter(\%terms, \%args);
             my %entries;
-            while (my $c = $iter->()) {
+            COMMENT: while (my $c = $iter->()) {
                 my $e = $entries{$c->entry_id} ||= $c->entry;
                 next unless $e;
                 next if $e->status != MT::Entry::RELEASE();
+                for (@filters) {
+                    next COMMENT unless $_->($c);
+                }
                 push @comments, $c;
                 if ($n && (scalar @comments == $n)) {
                     $iter->('finish');
                     last;
                 }
             }
-            @comments = $so eq 'ascend' ?
+        }
+    }
+
+    my $col = lc ($args->{sort_by} || 'created_on');
+    if (@comments) {
+        if ('created_on' eq $col) {
+            my @comm;
+            @comm = $so eq 'ascend' ?
                 sort { $a->created_on <=> $b->created_on } @comments :
                 sort { $b->created_on <=> $a->created_on } @comments;
+            # filter out comments from unapproved commenters
+            @comments = grep { $_->visible() } @comm;
+        } elsif ('score' eq $col) {
+            my %m = map { $_->id => $_ } @comments;
+            my @cid = keys %m;
+            require MT::ObjectScore;
+            my $scores = MT::ObjectScore->sum_group_by(
+                { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
+                { 'sum' => 'score', group => ['object_id'],
+                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                });
+            my @tmp;
+            while (my ($score, $object_id) = $scores->()) {
+                push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
+                last unless %m;
+            }
+            @comments = @tmp;
+        } elsif ('rate' eq $col) {
+            my %m = map { $_->id => $_ } @comments;
+            my @cid = keys %m;
+            require MT::ObjectScore;
+            my $scores = MT::ObjectScore->avg_group_by(
+                { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
+                { 'avg' => 'score', group => ['object_id'],
+                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                });
+            my @tmp;
+            while (my ($score, $object_id) = $scores->()) {
+                push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
+                last unless %m;
+            }
+            @comments = @tmp;
         }
-
-        @comments = grep { $_->visible() } @comments;
     }
 
     my $html = '';
@@ -3875,6 +4552,9 @@ sub _hdlr_comment_if_moderated {
         return _hdlr_pass_tokens_else(@_);
     }
 }
+
+# FIXME: This should be a container tag providing an author
+# context for the comment.
 sub _hdlr_comment_author {
     sanitize_on($_[1]);
     my $tag = $_[0]->stash('tag');
@@ -3969,6 +4649,14 @@ sub _hdlr_comment_author_identity {
     qq{<a class="commenter-profile" href=\"$link\"><img alt=\"Author Profile Page\" src=\"$logo\" width=\"16\" height=\"16\" /></a>};
 }
 
+sub _hdlr_comment_link {
+    my $c = $_[0]->stash('comment')
+        or return $_[0]->_no_comment_error('MT' . $_[0]->stash('tag'));
+    my $entry = $c->entry
+        or return $_[0]->error("No entry exists for comment #" . $c->id);
+    return $entry->archive_url . '#comment-' . $c->id;
+}
+
 sub _hdlr_comment_url {
     sanitize_on($_[1]);
     my $c = $_[0]->stash('comment')
@@ -3995,6 +4683,7 @@ sub _hdlr_comment_body {
     $t = $convert_breaks ?
         MT->apply_text_filters($t, $blog->comment_text_filters, $ctx) :
         $t;
+    return first_n_text($t, $arg->{words}) if exists $arg->{words};
     if (!(exists $arg->{autolink} && !$arg->{autolink}) &&
         $blog->autolink_urls) {
         $t =~ s!(^|\s|>)(https?://[^\s<]+)!$1<a href="$2">$2</a>!gs;
@@ -4252,6 +4941,40 @@ sub _hdlr_commenter_isauthor {
     }
     return _hdlr_pass_tokens_else(@_);
 }
+
+sub _hdlr_commenter_userpic {
+    my $c = $_[0]->stash('comment')
+        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
+    my $cmntr = $_[0]->stash('commenter') or return '';
+    my $userpic = $cmntr->userpic;
+    $userpic ? $userpic->as_html({ include => 1 }) || '' : '';
+}
+
+sub _hdlr_commenter_id {
+    my $c = $_[0]->stash('comment')
+        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
+    my $cmntr = $_[0]->stash('commenter') or return '';
+    return $cmntr->id;
+}
+
+sub _hdlr_commenter_userpic_asset {
+    my ($ctx, $args, $cond) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error($ctx->stash('tag'));
+    my $cmntr = $ctx->stash('commenter');
+    # undef means commenter has no commenter_id
+    # need default userpic asset? do nothing now.
+    return '' unless $cmntr;
+
+    my $asset = $cmntr->userpic or return '';
+
+    my $tok = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+
+    local $ctx->{__stash}{asset} = $asset;
+    $builder->build($ctx, $tok, { %$cond });
+}
+
 sub _hdlr_feedback_score {
     my $fb = $_[0]->stash('comment') || $_[0]->stash('ping');
     $fb ? $fb->junk_score || 0 : '';
@@ -4984,6 +5707,27 @@ sub _hdlr_category_count {
         require MT::Placement;
         $count = scalar $class->count(@args);
     }
+    $count;
+}
+
+sub _hdlr_category_comment_count {
+    my($ctx) = @_;
+    my $cat = ($ctx->stash('category') || $_[0]->stash('archive_category'))
+        or return $_[0]->error(MT->translate(
+            "You used an [_1] tag outside of the proper context.",
+            '<$MT'.$_[0]->stash('tag').'$>'));
+    my($count);
+    my $blog_id = $ctx->stash ('blog_id');
+    my $class = MT->model(
+        $ctx->stash('tag') =~ m/Category/ig ? 'entry' : 'page');
+    my @args = ({ blog_id => $blog_id, visible => 1 },
+                { 'join' => MT::Entry->join_on(undef,
+                              { id => \'= comment_entry_id',
+                              status => MT::Entry::RELEASE(),
+                              blog_id => $blog_id, },
+                              { 'join' => MT::Placement->join_on('entry_id', { category_id => $cat->id, blog_id => $blog_id } ) } ) } );
+    require MT::Comment;
+    $count = scalar MT::Comment->count(@args);
     $count;
 }
 
@@ -5905,11 +6649,14 @@ sub _hdlr_is_ancestor {
 
     # Get the possible child category
     my $blog_id = $ctx->stash('blog_id');
-    my $child = MT::Category->load({ blog_id => $blog_id,
-                                     label => $args->{'child'} }) || undef;
-        return if (!defined $cat && !defined $child);
+    my $iter = MT::Category->load_iter({ blog_id => $blog_id,
+                                         label => $args->{'child'} }) || undef;
+    while (my $child = $iter->()) {
+        my $ret = $cat->is_ancestor($child);
+        return 1 if $ret;
+    }
 
-    return $cat->is_ancestor($child);
+    0;
 }
 
 sub _hdlr_is_descendant {
@@ -5922,11 +6669,14 @@ sub _hdlr_is_descendant {
 
     # Get the possible parent category
     my $blog_id = $ctx->stash('blog_id');
-    my $parent = MT::Category->load({ blog_id => $blog_id,
-                                      label => $args->{'parent'} }) || undef;
-        return if (!defined $parent);
+    my $iter = MT::Category->load_iter({ blog_id => $blog_id,
+                                         label => $args->{'parent'} });
+    while (my $parent = $iter->()) {
+        my $ret = $cat->is_descendant($parent);
+        return 1 if $ret;
+    }
 
-    return $cat->is_descendant($parent);
+    0;
 }
 
 sub _get_category_context {
@@ -6159,10 +6909,65 @@ sub _hdlr_assets {
         }
     }
 
-    require MT::Asset;
-    my $no_resort = 0;
-    my @assets;
+    if ($args->{namespace}) {
+        my $namespace = $args->{namespace};
 
+        my $need_join = 0;
+        for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
+            if ($args->{$f}) {
+                $need_join = 1;
+                last;
+            }
+        }
+
+        if ($need_join) {
+            my $scored_by = $args->{scored_by} || undef;
+            if ($scored_by) {
+                require MT::Author;
+                my $author = MT::Author->load({ name => $scored_by }) or
+                    return $ctx->error(MT->translate(
+                        "No such user '[_1]'", $scored_by ));
+                $scored_by = $author;
+            }
+
+            $args{join} = MT->model('objectscore')->join_on(undef,
+                {
+                    object_id => \'=asset_id',
+                    object_ds => 'asset',
+                    namespace => $namespace,
+                    (!$assets && $scored_by ? (author_id => $scored_by->id) : ()),
+                }, {
+                    unique => 1,
+            });
+            if ($assets && $scored_by) {
+                push @filters, sub { $_[0]->get_score($namespace, $scored_by) };
+            }
+        }
+
+        # Adds a rate or score filter to the filter list.
+        if ($args->{min_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+        }
+        if ($args->{max_score}) {
+            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+        }
+        if ($args->{min_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+        }
+        if ($args->{max_rate}) {
+            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+        }
+        if ($args->{min_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+        }
+        if ($args->{max_count}) {
+            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+        }
+    }
+
+    my $no_resort = 0;
+    require MT::Asset;
+    my @assets;
     if (!$assets) {
         my ($start, $end) = ($ctx->{current_timestamp},
                             $ctx->{current_timestamp_end});
@@ -6179,15 +6984,37 @@ sub _hdlr_assets {
             $args{range_incl}{created_on} = 1;
         }
         $args{'sort'} = 'created_on';
-        $args{direction} = 'descend';
+        if ($args->{sort_by}) {
+            if (MT::Asset->has_column($args->{sort_by})) {
+                $args{sort} = $args->{sort_by};
+                $no_resort = 1;
+            } elsif ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by}) {
+                $no_resort = 0;
+            }
+        }
+
         if (!@filters) {
             if (my $last = $args->{lastn}) {
-                $args{direction} = $args->{sort_order} || 'descend';
+                $args{'sort'} = 'created_on';
+                $args{direction} = 'descend';
                 $args{limit} = $last;
+                $no_resort = 0 if $args->{sort_by};
+            } else {
+                $args{direction} = $args->{sort_order} || 'descend'
+                  if exists($args{sort});
+                $no_resort = 1 unless $args->{sort_by};
             }
             $args{offset} = $args->{offset} if $args->{offset};
             @assets = MT::Asset->load(\%terms, \%args);
         } else {
+            if ($args->{lastn}) {
+                $args{direction} = 'descend';
+                $args{sort} = 'created_on';
+                $no_resort = 0 if $args->{sort_by};
+            } else {
+                $args{direction} = $args->{sort_order} || 'descend';
+                $no_resort = 1 unless $args->{sort_by};
+            }
             my $iter = MT::Asset->load_iter(\%terms, \%args);
             my $i = 0; my $j = 0;
             my $off = $args->{offset} || 0;
@@ -6259,7 +7086,31 @@ sub _hdlr_assets {
             while (my ($score, $object_id) = $scores->()) {
                 push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
             }
-            push @tmp, $_ foreach (values %a);
+            if ($so eq 'ascend') {
+                unshift @tmp, $_ foreach (values %a);
+            } else {
+                push @tmp, $_ foreach (values %a);
+            }
+            @assets = @tmp;
+        } elsif ('rate' eq $col) {
+            my $namespace = $args->{namespace};
+            my $so = $args->{sort_order} || '';
+            my %a = map { $_->id => $_ } @assets;
+            require MT::ObjectScore;
+            my $scores = MT::ObjectScore->avg_group_by(
+                { 'object_ds' => 'asset', 'namespace' => $namespace },
+                { 'avg' => 'score', group => ['object_id'],
+                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                });
+            my @tmp;
+            while (my ($score, $object_id) = $scores->()) {
+                push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
+            }
+            if ($so eq 'ascend') {
+                unshift @tmp, $_ foreach (values %a);
+            } else {
+                push @tmp, $_ foreach (values %a);
+            }
             @assets = @tmp;
         } else {
             # TBD: check column being sorted; if it is numeric, use numeric sort
@@ -6514,10 +7365,10 @@ sub _hdlr_asset_thumbnail_link {
     my $class = ref($a);
     return '' unless UNIVERSAL::isa($a, 'MT::Asset::Image');
 
-    # Load MT::Image
-    require MT::Image;
-    my $img = new MT::Image(Filename => $a->file_path)
-        or return $_[0]->error(MT->translate(MT::Image->errstr));
+    # # Load MT::Image
+    # require MT::Image;
+    # my $img = new MT::Image(Filename => $a->file_path)
+    #     or return $_[0]->error(MT->translate(MT::Image->errstr));
 
     # Get dimensions
     my %arg;
@@ -6529,7 +7380,7 @@ sub _hdlr_asset_thumbnail_link {
     if ($args->{new_window}) {
         $ret .= qq( target="_blank");
     }
-    $ret .= sprintf qq(><img src="%s" width="%d" height="%d"></a>), $url, $w, $h;
+    $ret .= sprintf qq(><img src="%s" width="%d" height="%d" alt="" /></a>), $url, $w, $h;
     $ret;
 }
 
@@ -7137,10 +7988,9 @@ sub _hdlr_section {
     if (defined $timeout && ($timeout > 0)) {
         if (defined $cache_id) {
             if ($args->{by_blog}) {
-                my $blog = $app->blog
-                    or return $ctx->error(MT->translate(
-                        "Can't load blog."));
-                $cache_id .= ':blog_id='.$blog->id;
+                my $blog = $app->blog;
+                $cache_id .= ':blog_id=';
+                $cache_id .= $blog ? $blog->id : '0';
             }
             if ($args->{by_user}) {
                 my $author = $app->user

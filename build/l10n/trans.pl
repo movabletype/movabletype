@@ -42,6 +42,32 @@ do {
         #printf "\n\t## %s\n", $tmpl;
         printf "\n## %s\n", $tmpl;
         $tmpl = $ARGV;
+        if ( $tmpl =~ m|plugins/(\w+)/\w+| ) {
+            my $plugin = $1;
+            eval { 
+                unshift @INC, "plugins/$plugin/lib";
+                require "plugins/$plugin/lib/$plugin/L10N/$lang.pm"
+            };
+            unless ($@) {
+                %conv = (
+                    %conv,
+                    %{$plugin . '::L10N::' . $lang . '::Lexicon'},
+                );
+            }
+        }
+        elsif ( $tmpl =~ m|addons/(\w+)\.pack/\w+| ) {
+            my $addon = $1;
+            eval { 
+                unshift @INC, "addons/$addon.pack/lib";
+                require "addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm"
+            };
+            unless ($@) {
+                %conv = (
+                    %conv,
+                    %{'MT::' . $addon . '::L10N::' . $lang . '::Lexicon'},
+                );
+            }
+        }
         %phrase = ();
         my $t;
         while ($text =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {

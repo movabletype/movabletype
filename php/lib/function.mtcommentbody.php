@@ -17,6 +17,10 @@ function smarty_function_mtcommentbody($args, &$ctx) {
             $text = $mod($text);
         }
     }
+    if (isset($args['words'])) {
+        require_once("MTUtil.php");
+        return first_n_text($text, $args['words']);
+    }
     if ($blog['blog_autolink_urls']) {
         $text = preg_replace('!(^|\s|>)(https?://[^\s<]+)!s', '$1<a href="$2">$2</a>', $text);
     }

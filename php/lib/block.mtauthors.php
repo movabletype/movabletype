@@ -11,11 +11,18 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
             if ($args['sort_by'] == 'display_name') {
                 $args['sort_by'] = 'nickname';
             }
-            $args['sort_by'] = 'author_'.$args['sort_by'];
+            if ($args['sort_by'] != 'score' && $args['sort_by'] != 'rate') {
+                $args['sort_by'] = 'author_'.$args['sort_by'];
+            }
         } else {
             $args['sort_by'] = 'author_created_on';
         }
-        $args['need_entry'] = 1;
+        if (!isset($args['status'])) {
+            $args['status'] = 'enabled';
+        }
+        if (!isset($args['need_entry'])) {
+            $args['need_entry'] = 1;
+        }
         $authors = $ctx->mt->db->fetch_authors($args);
         $ctx->stash('authors', $authors);
         $counter = 0;

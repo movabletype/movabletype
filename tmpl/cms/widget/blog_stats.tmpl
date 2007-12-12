@@ -230,7 +230,7 @@
     <div id="tag-panel" class="<mt:unless name="tab" eq="tag">hidden</mt:unless>" mt:tab-content="tag">
         <div id="tag-cloud">
             <ul id="tag-cloud-list">
-            <MTTags blog_ids="$blog_scope" limit="100" sort_by="rank">
+            <MTTags blog_ids="$blog_scope" top="100" sort_by="name">
                 <li class="tag-<$MTTagRank$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<MTTagName escape="js">', 'tag-cloud-recent-entries'); return false"><$MTTagName$></a></li>
             </MTTags>
             </ul>

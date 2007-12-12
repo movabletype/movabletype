@@ -1,5 +1,6 @@
 /*
- * CodePress color styles for ASP-VB syntax highlighting by Martin
+ * CodePress color styles for ASP-VB syntax highlighting 
+ * By Martin D. Kirk
  */
 
 /* tags */
@@ -16,10 +17,19 @@ strong dfn, strong dfn a,strong dfn var, strong dfn a u, strong dfn u{
 	color:gray;
 	font-weight:normal;
 }
- /* attributes and strings */ 
-s, s b, strong s u, strong s cite {
-	color:#5656fa;
+ /* attributes */ 
+s, s b, span s u, span s cite, strong span s {
+	color:#5656fa ;
 	font-weight:normal;
+}
+ /* strings */ 
+strong s,strong s b, strong s u, strong s cite {
+	color:#009900;
+	font-weight:normal;
+}
+strong ins{
+	color:#000000;
+	font-weight:bold;
 }
  /* Syntax */
 strong a, strong a u {
@@ -58,4 +68,4 @@ ins {
 cite, s cite {
 	color:red;
 	font-weight:bold;
-} 
+}

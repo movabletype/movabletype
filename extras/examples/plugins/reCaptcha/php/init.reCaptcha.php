@@ -11,9 +11,9 @@ class reCaptcha extends BaseCaptchaProvider {
     function get_classname() {
         return 'reCaptcha';
     }
-    function form_fields() {
+    function form_fields($blog_id) {
         global $mt;
-        $config = $mt->db->fetch_plugin_config('reCaptcha');
+        $config = $mt->db->fetch_plugin_config('reCaptcha', 'blog:' . $blog_id);
         if ($config) {
             $publickey = $config['recaptcha_publickey'];
         }

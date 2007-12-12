@@ -189,6 +189,22 @@ TC.attachLoadEvent(init);
         <input name="url" id="url" class="half-width" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
 
+    <mtapp:setting
+        id="userpic_asset_id"
+        label="<__trans phrase="Userpic">"
+        hint="<__trans phrase="The image associated with this user.">">
+        <span id="userpic-preview"<mt:unless name="userpic"> class="hidden"</mt:unless>
+            <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
+            <br />
+        </span>
+        <a href="javascript:void(0)" onclick="return openDialog(false, 'list_assets', '_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic')"><__trans phrase="Select Userpic"></a>
+        <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" escape="html">" />
+        <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
+            <br />
+            <a href="javascript:void(0)" onclick="getByID('userpic_asset_id').value = ''; toggleHidden(getByID('userpic-preview')); toggleHidden(getByID('remove-userpic')); return false"><__trans phrase="Remove Userpic"></a>
+        </span>
+    </mtapp:setting>
+
     <mt:if name="can_modify_password">
         <mt:unless name="new_object">
             <mtapp:setting
@@ -299,6 +315,7 @@ TC.attachLoadEvent(init);
             <li><input name="is_superuser" id="is_superuser" type="checkbox" value="1"<mt:if name="perm_is_superuser"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this)" /> <label for="is_superuser"><__trans phrase="System Administrator"></label></li>
             <li><input name="can_create_blog" id="can_create_blog" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_create_blog"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_create_blog"><__trans phrase="Create Blogs"></label></li>
             <li><input name="can_view_log" id="can_view_log" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_view_log"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_view_log"><__trans phrase="View Activity Log"></label></li>
+            <li><input name="can_edit_templates" id="can_edit_templates" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_edit_templates"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_edit_templates"><__trans phrase="Manage Templates"></label></li>
             <li><input name="can_manage_plugins" id="can_manage_plugins" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_manage_plugins"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_manage_plugins"><__trans phrase="Manage Plugins"></label></li>
         </ul>
     </mtapp:setting>

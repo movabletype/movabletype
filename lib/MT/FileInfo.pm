@@ -30,6 +30,7 @@ __PACKAGE__->install_properties({
         template_id => 1,
         templatemap_id => 1,
         url => 1,
+        startdate => 1,
     },
     datasource => 'fileinfo',
     primary_key => 'id',

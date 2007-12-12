@@ -48,7 +48,7 @@ function setExtraPath(sel) {
     </mt:if>
 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
-    <input type="hidden" name="__mode" value="upload_file" />
+    <input type="hidden" name="__mode" value="<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>upload_file</mt:if>" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
     <input type="hidden" name="entry_insert" value="<mt:var name="entry_insert">" />
@@ -64,29 +64,31 @@ function setExtraPath(sel) {
         <input type="file" name="file" />
     </mtapp:setting>
 
-    <mt:setvarblock name="upload_hint">
-        <__trans phrase="_USAGE_UPLOAD" params="<$mt:var name="blog_name" escape="html"$>">
-    </mt:setvarblock>
-    <mtapp:setting
-        id="folder"
-        label_class="top-label"
-        label="<__trans phrase="Upload Destination">"
-        hint="<$mt:var name="upload_hint"$>"
-        show_hint="1">
-        <!-- <$mt:var name="blog_url" escape="html"$> -->
-        <select name="site_path" onchange="setExtraPath(this)">
-            <option value="1">&#60;<__trans phrase="Site Root">&#62;</option>
-        <mt:if name="enable_archive_paths">
-            <option value="0"<mt:if name="archive_path"> selected="selected"</mt:if>>&#60;<__trans phrase="Archive Root">&#62;</option>
-        </mt:if>
-        <mt:if name="extra_paths">
-            <mt:loop name="extra_paths">
-            <option value="<mt:if name="enable_archive_paths">0<mt:else>1</mt:if>" middle_path="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
-            </mt:loop>
-        </mt:if>
-        </select>
-        / <input name="extra_path" id="extra_path" value="<mt:var name="extra_path" escape="html">" />
-    </mtapp:setting>
+    <mt:if name="enable_destination">
+        <mt:setvarblock name="upload_hint">
+            <__trans phrase="_USAGE_UPLOAD" params="<$mt:var name="blog_name" escape="html"$>">
+        </mt:setvarblock>
+        <mtapp:setting
+            id="folder"
+            label_class="top-label"
+            label="<__trans phrase="Upload Destination">"
+            hint="<$mt:var name="upload_hint"$>"
+            show_hint="1">
+            <!-- <$mt:var name="blog_url" escape="html"$> -->
+            <select name="site_path" onchange="setExtraPath(this)">
+                <option value="1">&#60;<__trans phrase="Site Root">&#62;</option>
+            <mt:if name="enable_archive_paths">
+                <option value="0"<mt:if name="archive_path"> selected="selected"</mt:if>>&#60;<__trans phrase="Archive Root">&#62;</option>
+            </mt:if>
+            <mt:if name="extra_paths">
+                <mt:loop name="extra_paths">
+                <option value="<mt:if name="enable_archive_paths">0<mt:else>1</mt:if>" middle_path="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+                </mt:loop>
+            </mt:if>
+            </select>
+            / <input name="extra_path" id="extra_path" value="<mt:var name="extra_path" escape="html">" />
+        </mtapp:setting>
+    </mt:if>
 
     <div class="actions-bar">
         <div class="actions-bar-inner pkg actions">

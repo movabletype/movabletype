@@ -20,14 +20,14 @@ my $plugin = MT::Plugin::reCaptcha->new({
 	blog_config_template => <<TMPL,
 <dl>
 <dt>reCaptcha public key</dt>
-<dd><input name="recaptcha_publickey" size="40" value="<mt:var name="recaptcha_public_key">" /></dd>
+<dd><input name="recaptcha_publickey" size="40" value="<mt:var name="recaptcha_publickey">" /></dd>
 <dt>reCaptcha private key</dt>
-<dd><input name="recaptcha_privatekey" size="40" value="<mt:var name="recaptcha_private_key">" /></dd>
+<dd><input name="recaptcha_privatekey" size="40" value="<mt:var name="recaptcha_privatekey">" /></dd>
 </dl>
 TMPL
     settings => new MT::PluginSettings([
-        ['recaptcha_publickey'],
-        ['recaptcha_privatekey'],
+        ['recaptcha_publickey', { Scope   => 'blog' }],
+        ['recaptcha_privatekey', { Scope   => 'blog' }],
     ]),
     version => '0.2',
 });

@@ -23,7 +23,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
-            $tmpl = $ctx->mt->db->get_template_text($ctx, $module, $blog_id, 'custom');
+            $tmpl = $ctx->mt->db->get_template_text($ctx, $module, $blog_id, 'custom', $args['global']);
             if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 $_include_cache[$cache_id] = $_var_compiled;
             } else {
@@ -36,7 +36,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
-            $tmpl = $ctx->mt->db->get_template_text($ctx, $module, $blog_id, 'widget');
+            $tmpl = $ctx->mt->db->get_template_text($ctx, $module, $blog_id, 'widget', $args['global']);
             if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 $_include_cache[$cache_id] = $_var_compiled;
             } else {
@@ -49,7 +49,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
-            $tmpl = $ctx->mt->db->get_template_text($ctx, $module, $blog_id, '');
+            $tmpl = $ctx->mt->db->get_template_text($ctx, $module, $blog_id, '', $args['global']);
             if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 $_include_cache[$cache_id] = $_var_compiled;
             } else {

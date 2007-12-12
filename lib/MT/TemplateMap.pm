@@ -99,6 +99,25 @@ sub remove {
             next unless $blog;
             $blog->archive_type(join ',', @{ $ats{$blog_id} });
             $blog->save;
+            for my $at (@{ $ats{$blog_id} }) {
+                unless ( __PACKAGE__->count({
+                    blog_id => $blog_id, archive_type => $at, is_preferred => 1 
+                }) ) {
+                    my $remaining = __PACKAGE__->load(
+                      {
+                        blog_id => $blog_id,
+                        archive_type => $at,
+                      },
+                      {
+                        limit => 1,
+                      }
+                    );
+                    if ($remaining) {
+                        $remaining->is_preferred(1);
+                        $remaining->save;
+                    }
+                }
+            }
         }
     }
     $result;

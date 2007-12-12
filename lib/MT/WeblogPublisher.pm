@@ -2345,13 +2345,18 @@ sub monthly_group_iter {
       ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
     require MT::Entry;
     $iter = MT::Entry->count_group_by(
         {
             blog_id => $blog->id,
-            status  => MT::Entry::RELEASE()
+            status  => MT::Entry::RELEASE(),
+            ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
         },
         {
+            ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
             group => [
                 "extract(year from authored_on)",
                 "extract(month from authored_on)"
@@ -2644,13 +2649,18 @@ sub daily_group_iter {
       ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
     require MT::Entry;
     $iter = MT::Entry->count_group_by(
         {
             blog_id => $blog->id,
-            status  => MT::Entry::RELEASE()
+            status  => MT::Entry::RELEASE(),
+            ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
         },
         {
+            ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
             group => [
                 "extract(year from authored_on)",
                 "extract(month from authored_on)",
@@ -2745,13 +2755,18 @@ sub weekly_group_iter {
       ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
+    my $ts    = $ctx->{current_timestamp};
+    my $tsend = $ctx->{current_timestamp_end};
+
     require MT::Entry;
     $iter = MT::Entry->count_group_by(
         {
             blog_id => $blog->id,
-            status  => MT::Entry::RELEASE()
+            status  => MT::Entry::RELEASE(),
+            ( $ts && $tsend ? ( authored_on => [ $ts, $tsend ] ) : () ),
         },
         {
+            ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
             group => [ "extract(year from authored_on)", "week_number" ],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
             sort => "extract(year from authored_on) $order,
@@ -2820,7 +2835,7 @@ sub _archive_entries_count {
             ( $auth ? ( author_id => $auth->id ) : () ),
         },
         {
-            ( $ts ? ( range => { authored_on => 1 } ) : () ),
+            ( $ts ? ( range_incl => { authored_on => 1 } ) : () ),
             (
                 $cat
                 ? (
@@ -2861,7 +2876,7 @@ sub date_based_group_entries {
             authored_on => [ $start, $end ]
         },
         {
-            range  => { authored_on => 1 },
+            range_incl  => { authored_on => 1 },
             'sort' => 'authored_on',
             'direction' => 'descend',
         }
@@ -2891,7 +2906,6 @@ sub author_archive_file {
 
     my $name = dirify( $this_author->nickname );
     $name = "author" . $this_author->id if $name !~ /\w/;
-    $ctx->{__stash}{current_author_name} = $name;
     if ( !$file_tmpl ) {
         $file = sprintf( "%s/index", $name );
     }

@@ -81,6 +81,7 @@ sub core_methods {
         'list_role'        => \&list_roles,
 
         'asset_insert'        => \&asset_insert,
+        'asset_userpic'       => \&asset_userpic,
         'save_commenter_perm' => \&save_commenter_perm,
         'trust_commenter'     => \&trust_commenter,
         'ban_commenter'       => \&ban_commenter,
@@ -124,6 +125,7 @@ sub core_methods {
         'send_notify'        => \&send_notify,
         'start_upload'       => \&start_upload,
         'upload_file'        => \&upload_file,
+        'upload_userpic'     => \&upload_userpic,
         'complete_insert'    => \&complete_insert,
         'complete_upload'    => \&complete_upload,
         'start_upload_entry' => \&start_upload_entry,
@@ -843,8 +845,7 @@ sub core_list_filters {
         entry => {
             published => {
                 label => sub {
-                    my $label = _entry_label;
-                    $app->translate( 'Published [_1]', $label );
+                    $app->translate( 'Published [_1]', _entry_label );
                 },
                 order   => 100,
                 handler => sub {
@@ -854,8 +855,7 @@ sub core_list_filters {
             },
             unpublished => {
                 label => sub {
-                    my $label = _entry_label;
-                    $app->translate( 'Unpublished [_1]', $label );
+                    $app->translate( 'Unpublished [_1]', _entry_label );
                 },
                 order   => 200,
                 handler => sub {
@@ -865,8 +865,7 @@ sub core_list_filters {
             },
             scheduled => {
                 label => sub {
-                    my $label = _entry_label;
-                    $app->translate( 'Scheduled [_1]', $label );
+                    $app->translate( 'Scheduled [_1]', _entry_label );
                 },
                 order   => 300,
                 handler => sub {
@@ -876,8 +875,7 @@ sub core_list_filters {
             },
             my_posts => {
                 label => sub {
-                    my $label = _entry_label;
-                    $app->translate( 'My [_1]', $label );
+                    $app->translate( 'My [_1]', _entry_label );
                 },
                 order   => 400,
                 handler => sub {
@@ -887,9 +885,8 @@ sub core_list_filters {
             },
             received_comments_in_last_7_days => {
                 label => sub {
-                    my $label = _entry_label;
                     $app->translate( '[_1] with comments in the last 7 days',
-                        $label );
+                        _entry_label );
                 },
                 order   => 500,
                 handler => sub {
@@ -904,6 +901,12 @@ sub core_list_filters {
                         },
                         { range_incl => { created_on => 1 }, unique => 1 }
                     );
+                    # Since we're selecting content from the mt_entry
+                    # table, but we want to sort by the joined
+                    # 'comment_created_on' column, we have to specify the
+                    # sort column as a reference and a full field name,
+                    # to prevent MT from adding a 'entry_' prefix to
+                    # the column name.
                     $args->{sort}      = \'comment_created_on';
                     $args->{direction} = 'descend';
                 },
@@ -1044,6 +1047,19 @@ sub core_list_filters {
                     require MT::Entry;
                     my $app = MT->instance;
                     $terms->{junk_status} = [ 0, 1 ];
+                    # This join syntax employs a hack that allows us
+                    # to do joins on abitrary columns. Typically,
+                    # objectdriver joins are applied with the primary
+                    # key column of the driving table (here,
+                    # mt_comment.comment_id), but we actually want to
+                    # join to the mt_entry table where the entry_id
+                    # matches to mt_comment.comment_entry_id (not the
+                    # primary key). So by specifying NO 'join' column
+                    # (which is always compared with the primary key),
+                    # we specify the actual join conditions in the
+                    # terms. And using a reference for the
+                    # 'comment_entry_id' column name, to pass that
+                    # on directly to the SQL statement that is generated.
                     $args->{join} = MT::Entry->join_on(
                         undef,
                         {
@@ -1204,6 +1220,9 @@ sub core_list_filters {
                     my ( $terms, $args ) = @_;
                     $terms->{type} = 'index';
                 },
+                condition => sub {
+                    $app->param('blog_id');
+                },
             },
             archive_templates => {
                 label   => "Archive Templates",
@@ -1212,6 +1231,9 @@ sub core_list_filters {
                     my ( $terms, $args ) = @_;
                     $terms->{type} =
                       [ 'individual', 'page', 'archive', 'category' ];
+                },
+                condition => sub {
+                    $app->param('blog_id');
                 },
             },
             module_templates => {
@@ -1222,14 +1244,39 @@ sub core_list_filters {
                     $terms->{type} = 'custom';
                 },
             },
-            system_templates => {
-                label   => "System Templates",
-                order   => 400,
+            email_templates => {
+                label   => "E-mail Templates",
+                order   =>  400,
                 handler => sub {
                     my ($terms) = @_;
-                    my $sys_tmpl = MT->registry( 'default_templates', 'system' )
-                      || {};
+                    $terms->{type} = 'email';
+                },
+                condition => sub {
+                    !$app->param('blog_id');
+                },
+            },
+            system_templates => {
+                label   => "System Templates",
+                order   => 500,
+                handler => sub {
+                    my ($terms) = @_;
+                    my $scope;
+                    my $set;
+                    if ( my $blog_id = $app->param('blog_id') ) {
+                        my $blog  = $app->model('blog')->load($blog_id);
+                        $set   = $blog->template_set;
+                        $scope .= 'system';
+                    }
+                    else {
+                        $terms->{blog_id} = 0;
+                        $scope = 'global:system';
+                    }
+                    my @tmpl_path = $set ? ("template_sets", $set, 'templates', $scope) : ("default_templates", $scope);
+                    my $sys_tmpl = MT->registry(@tmpl_path) || {};
                     $terms->{type} = [ keys %$sys_tmpl ];
+                },
+                condition => sub {
+                    $app->param('blog_id');
                 },
             },
         },
@@ -1448,8 +1495,7 @@ sub core_menus {
             args          => { _type => 'template' },
             order         => 100,
             permission    => 'edit_templates',
-            requires_blog => 1,
-            view          => "blog",
+            system_permission    => 'edit_templates',
         },
 
         'prefs:general' => {
@@ -1475,7 +1521,7 @@ sub core_menus {
         },
         'prefs:plugins' => {
             label             => "Plugins",
-            order             => 500,
+            order             => 600,
             mode              => "cfg_plugins",
             permission        => "administer_blog",
             system_permission => "manage_plugins",
@@ -1487,6 +1533,13 @@ sub core_menus {
             permission        => 'administer_blog,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => "blog",
+        },
+        'prefs:custom_fields' => {
+            label             => "Custom Fields",
+            mode              => 'list_field',
+            order             => 500,
+            permission        => 'administer_blog,edit_config',
+            system_permission => 'administer',
         },
         'prefs:notification' => {
             label      => "Address Book",
@@ -2196,6 +2249,9 @@ sub list_assets {
     if ($blog_id) {
         $terms{blog_id} = $blog_id;
     }
+    elsif ((defined $blog_id) && ($blog_id ne '')) {
+        $terms{blog_id} = '0';
+    }
     else {
         unless ( $app->user->is_superuser ) {
             my @perms = MT::Permission->load( { author_id => $app->user->id } );
@@ -2250,16 +2306,16 @@ sub list_assets {
                         blog_name => $blog->name
                           || '',
                         edit_blog_id => $blog_id,
-                        edit_field   => $app->param('edit_field')
-                          || '',
-                        dialog_view => $dialog_view,
-                        is_image => defined $app->param('filter_val')
-                          && $app->param('filter_val') eq 'image' ? 1 : 0,
                       )
                     : (),
-                    search_label     => MT::Asset->class_label_plural,
-                    search_type => 'asset',
                 ),
+                is_image         => defined $app->param('filter_val')
+                  && $app->param('filter_val') eq 'image' ? 1 : 0,
+                dialog_view      => $dialog_view,
+                edit_field       => $app->param('edit_field') || '',
+                upload_mode      => $app->param('upload_mode') || '',
+                search_label     => MT::Asset->class_label_plural,
+                search_type      => 'asset',
                 class_loop       => \@class_loop,
                 can_delete_files => (
                     $perms ? $perms->can_edit_assets : $app->user->is_superuser
@@ -2267,6 +2323,7 @@ sub list_assets {
                 nav_assets       => 1,
                 panel_searchable => 1,
                 object_type      => 'asset',
+                next_mode        => ($app->param('next_mode') || ''),
             },
         }
     );
@@ -2900,6 +2957,7 @@ sub set_default_tmpl_params {
         $param->{can_create_blog}  = $auth->can_create_blog;
         $param->{can_view_log} ||= $auth->can_view_log;
         $param->{can_manage_plugins}    = $auth->can_manage_plugins;
+        $param->{can_edit_templates}    = $auth->can_edit_templates;
         $param->{can_publish_feedbacks} = $auth->is_superuser;
         $param->{can_search_replace}    = $auth->is_superuser;
         $param->{has_authors_button}    = $auth->is_superuser;
@@ -3293,11 +3351,13 @@ sub build_menus {
 
     my @top_ids = grep { !/:/ } keys %$menus;
     my @top;
-    my $perms = $app->permissions;
     my @sys;
     my $user = $app->user
       or return;
+    my $perms = $app->permissions || $user->permissions;
     my $view = $blog_id ? "blog" : "system";
+
+    my $hide_disabled_options = $app->config('HideDisabledMenus') || 0;
 
     my $admin =
       $user->is_superuser();    # || ($perms && $perms->has('administer_blog'));
@@ -3353,7 +3413,7 @@ sub build_menus {
             $menu->{allowed} = 0 if $menu->{system_permission} && !$admin;
         }
 
-        # next unless $menu->{allowed};  ## EXPERIMENTAL
+        next if $hide_disabled_options && (! $menu->{allowed});
 
         if (@sub) {
             if ( $id eq 'system' ) {
@@ -3431,7 +3491,7 @@ sub build_menus {
             }
             @sub = sort { $a->{order} <=> $b->{order} } @sub;
 
-            # @sub = grep { $_->{allowed} } @sub; ## EXPERIMENTAL
+            @sub = grep { $_->{allowed} } @sub if $hide_disabled_options;
             if ( !$menu->{mode} ) {
                 $menu->{link} = $sub[0]->{link};
             }
@@ -3443,8 +3503,8 @@ sub build_menus {
         }
     }
 
-    # @top = grep { $_->{allowed} } @top; ## EXPERIMENTAL
-    # @sys = grep { $_->{allowed} } @sys; ## EXPERIMENTAL
+    @top = grep { $_->{allowed} } @top if $hide_disabled_options;
+    @sys = grep { $_->{allowed} } @sys if $hide_disabled_options;
     @top = sort { $a->{order} <=> $b->{order} } @top;
     $param->{top_nav_loop} = \@top;
     $param->{sys_nav_loop} = \@sys;
@@ -3883,6 +3943,13 @@ sub this_is_you_widget {
         $param->{last_post_id}      = $last_post->id;
         $param->{last_post_blog_id} = $last_post->blog_id;
         $param->{last_post_ts}      = $last_post->authored_on;
+    }
+
+    if (my $asset = $user->userpic) {
+        my ($url, $w, $h) = $asset->thumbnail_url( Width => 50, Height => 50 );
+        $param->{author_userpic_url}    = $url;
+        $param->{author_userpic_width}  = $w;
+        $param->{author_userpic_height} = $h;
     }
 }
 
@@ -4797,6 +4864,7 @@ sub export_log {
     my $enc = $app->config('ExportEncoding');
     $enc = $app->config('LogExportEncoding') if ( !$enc );
     $enc = ( $app->charset || '' ) if ( !$enc );
+    my $blog_enc = $app->config('PublishCharset');
 
     my $q           = $app->param;
     my $filter_args = $q->param('filter_args');
@@ -4862,9 +4930,12 @@ sub export_log {
             push @col, format_ts( "%Y-%m-%d %H:%M:%S", $log->created_on, undef, $app->user ? $app->user->preferred_language : undef );
         }
         push @col, $log->ip;
+        my $blog;
         if ( $log->blog_id ) {
-            my $blog = $blogs{ $log->blog_id } ||=
+            $blog = $blogs{ $log->blog_id } ||=
               $blog_class->load( $log->blog_id );
+        }
+        if ( $blog ) {
             my $name = $blog->name;
             $name =~ s/"/\\"/gs;
             $name =~ s/[\r\n]+/ /gs;
@@ -4875,7 +4946,7 @@ sub export_log {
             push @col, '';
         }
         my $msg = $log->message;
-        $msg = encode_text( $msg, undef, $enc ) if $enc;
+        $msg = encode_text( $msg, $blog_enc, $enc ) if $enc;
         $msg =~ s/"/\\"/gs;
         $msg =~ s/[\r\n]+/ /gs;
         push @col, '"' . $msg . '"';
@@ -5121,7 +5192,7 @@ sub edit_object {
             && ( $type eq 'entry' || $type eq 'page'
                  || $type eq 'category' || $type eq 'folder'
                  || $type eq 'comment'  || $type eq 'commenter'
-                 || $type eq 'ping' || $type eq 'template' ) ) {
+                 || $type eq 'ping' ) ) {
             return $app->return_to_dashboard( redirect => 1 );
         }
     }
@@ -5146,6 +5217,9 @@ sub edit_object {
     if ($blog_id) {
         $blog = $blog_class->load($blog_id);
     }
+    else {
+        $blog_id = 0;
+    }
 
     if ($id) {    # object exists, we're just editing it.
           # Stash the object itself so we don't have to keep forcing the promise
@@ -5165,9 +5239,8 @@ sub edit_object {
 
         # Make certain any blog-specific element matches the blog we're
         # dealing with. If not, call shenanigans.
-        if (   defined($blog_id)
-            && ( exists $param{blog_id} )
-            && ( $blog_id != $obj->blog_id ) )
+        if (   ( exists $param{blog_id} )
+            && ( $blog_id != ($obj->blog_id || 0) ) )
         {
             return $app->return_to_dashboard( redirect => 1 );
         }
@@ -5357,6 +5430,10 @@ sub edit_object {
                 $tab = 'widget';
                 $param{template_group_trans} = $app->translate('widget');
             }
+            elsif ( $obj->type eq 'email' ) {
+                $tab = 'email';
+                $param{template_group_trans} = $app->translate('email');
+            }
             else {
                 $tab = 'system';
                 $param{template_group_trans} = $app->translate('system');
@@ -5382,7 +5459,7 @@ sub edit_object {
               (      ( $obj->type eq 'index' )
                   && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
             $param{custom_dynamic} =
-              ( $blog->custom_dynamic_templates || "" ) eq 'custom';
+              $blog && ( $blog->custom_dynamic_templates || "" ) eq 'custom';
             $param{has_build_options} =
               ( $param{custom_dynamic} || $param{has_rebuild} );
 
@@ -5433,16 +5510,19 @@ sub edit_object {
                     $seen{$type}{$mod} = 1;
                     my $other = MT::Template->load(
                         {
-                            blog_id => $obj->blog_id,
+                            blog_id => [ $obj->blog_id, 0 ],
                             name    => $mod,
                             type    => $type,
+                        }, {
+                            sort      => 'blog_id',
+                            direction => 'descend',
                         }
                     );
                     if ($other) {
                         $include->{include_link} = $app->mt_uri(
                             mode => 'view',
                             args => {
-                                blog_id => $other->blog_id,
+                                blog_id => $other->blog_id || 0,
                                 '_type' => 'template',
                                 id      => $other->id
                             }
@@ -5979,13 +6059,17 @@ sub edit_object {
             $param{editing_other_profile} = 1
               if !$param{is_me} && $author->is_superuser;
 
+            my $userpic = $obj->userpic;
+            $param{userpic} = $userpic->as_html({ include => 1, enclose => 0 })
+                if $userpic;
+
             require MT::Permission;
 
             # General permissions...
             my $sys_perms = MT::Permission->perms('system');
             foreach (@$sys_perms) {
                 $param{ 'perm_can_' . $_->[0] } =
-                  $obj->permissions(0)->has( $_->[0] ) ? 1 : 0;
+                  ($obj->is_superuser || $obj->permissions(0)->has( $_->[0] )) ? 1 : 0;
             }
             $param{perm_is_superuser} = $obj->is_superuser;
 
@@ -6039,8 +6123,14 @@ sub edit_object {
                 $param{commenter_banned} =
                   $obj->commenter_status($blog_id) == MT::Author::BANNED();
                 $param{commenter_url} = $obj->url if $obj->url;
-                $param{object_type}   = 'commenter';
-                $param{search_label}  = $app->translate('Commenters');
+                if ( $app->user->is_superuser()
+                  || ($perms && $perms->can_administer_blog ) ) {
+                    $param{object_type}   = 'author';
+                    $param{search_label}  = $app->translate('Users');
+                }
+                else {
+                    $param{object_type}   = 'entry';
+                }
             }
             else {
                 my $list_pref = $app->list_pref('comment');
@@ -6241,8 +6331,9 @@ sub edit_object {
                     $template_type = $1;
                     $template_type = 'custom' if $template_type eq 'module';
                     my $template_id = $2;
+                    my $set = $blog ? $blog->template_set : undef;
                     require MT::DefaultTemplates;
-                    my $def_tmpl = MT::DefaultTemplates->templates || [];
+                    my $def_tmpl = MT::DefaultTemplates->templates($set) || [];
                     my ($tmpl) =
                       grep { $_->{identifier} eq $template_id } @$def_tmpl;
                     $param{text} = $app->translate_templatized( $tmpl->{text} )
@@ -6314,10 +6405,10 @@ sub edit_object {
               (      ( $template_type eq 'index' )
                   && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
             $param{custom_dynamic} =
-              $blog->custom_dynamic_templates eq 'custom';
+              $blog && $blog->custom_dynamic_templates eq 'custom';
             $param{has_build_options} =
-                 $blog->custom_dynamic_templates eq 'custom'
-              || $param{has_rebuild};
+                 $blog && ($blog->custom_dynamic_templates eq 'custom'
+              || $param{has_rebuild});
 
             # FIXME: enumeration of types
                  $param{is_special} = $param{type} ne 'index'
@@ -6341,6 +6432,14 @@ sub edit_object {
             $param{ 'server_offset_' . $tz } = 1;
             $param{'can_edit_config'}        = $app->user->can_create_blog;
             $param{'can_set_publish_paths'}  = $app->user->can_create_blog;
+
+            my $sets = $app->registry("template_sets");
+            $sets->{$_}{key} = $_ for keys %$sets;
+            $sets->{'mt_blog'}{selected} = 1;
+            $sets = $app->filter_conditional_list([ values %$sets ]);
+            no warnings;
+            @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
+            $param{'template_set_loop'} = $sets;
         }
     }
 
@@ -6554,14 +6653,23 @@ sub edit_object {
         $param{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
     }
     elsif ( $type eq 'template' ) {
+        my $set = $blog ? $blog->template_set : undef;
         require MT::DefaultTemplates;
-        my $tmpls = MT::DefaultTemplates->templates;
+        my $tmpls = MT::DefaultTemplates->templates($set);
         my @tmpl_ids;
         foreach my $dtmpl (@$tmpls) {
             if ( !$param{has_name} ) {
-                if ( $dtmpl->{type} eq $obj->type ) {
-                    $param{template_name_label} = $dtmpl->{label};
-                    $param{template_name}       = $dtmpl->{name};
+                if ($obj->type eq 'email') {
+                    if ($dtmpl->{identifier} eq $obj->identifier) {
+                        $param{template_name_label} = $dtmpl->{label};
+                        $param{template_name}       = $dtmpl->{name};
+                    }
+                }
+                else {
+                    if ( $dtmpl->{type} eq $obj->type ) {
+                        $param{template_name_label} = $dtmpl->{label};
+                        $param{template_name}       = $dtmpl->{name};
+                    }
                 }
             }
             if ( $dtmpl->{type} eq 'index' ) {
@@ -6583,6 +6691,7 @@ sub edit_object {
             %param = ( %param, %$pref_param );
         }
 
+        # Populate structure for template snippets
         if ( my $snippets = $app->registry('template_snippets') || {} ) {
             my @snippets;
             for my $snip_id ( keys %$snippets ) {
@@ -6599,6 +6708,29 @@ sub edit_object {
             @snippets = sort { $a->{label} cmp $b->{label} } @snippets;
             $param{template_snippets} = \@snippets;
         }
+
+        # Populate structure for tag documentation
+        my $all_tags = MT::Component->registry("tags");
+        my $tag_docs = {};
+        foreach my $tag_set (@$all_tags) {
+            my $url = $tag_set->{help_url};
+            $url = $url->() if ref($url) eq 'CODE';
+            # hey, at least give them a google search
+            $url ||= 'http://www.google.com/search?q=mt%t';
+            my $tag_list = '';
+            foreach my $type (qw( block function )) {
+                my $tags = $tag_set->{$type} or next;
+                $tag_list .= ($tag_list eq '' ? '' : ',') . join(",", keys(%$tags));
+            }
+            $tag_list =~ s/(^|,)plugin(,|$)/,/;
+            if (exists $tag_docs->{$url}) {
+                $tag_docs->{$url} .= ',' . $tag_list;
+            }
+            else {
+                $tag_docs->{$url} = $tag_list;
+            }
+        }
+        $param{tag_docs} = $tag_docs;
 
         # template language
         $param{template_lang} = 'html';
@@ -6985,7 +7117,7 @@ sub CMSViewPermissionFilter_blog {
 sub CMSViewPermissionFilter_template {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
-    return !$id || $perms->can_edit_templates;
+    return !$id || ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
 }
 
 sub CMSViewPermissionFilter_page {
@@ -7379,6 +7511,11 @@ sub CMSPreSave_template {
 
     ## Strip linefeed characters.
     ( my $text = $obj->text ) =~ tr/\r//d;
+
+    if ($text =~ m/<(MT|_)_trans/i) {
+        $text = $app->translate_templatized($text);
+    }
+
     $obj->text($text);
 
     # update text heights if necessary
@@ -7892,7 +8029,7 @@ sub CMSPostSave_blog {
     if ( !$original->id ) {    # If the object is new, the "orignal" was blank
         ## If this is a new blog, we need to set up a permissions
         ## record for the existing user.
-        $obj->create_default_templates();
+        $obj->create_default_templates( $obj->template_set );
 
         # Add this blog to the user's "favorite blogs", pushing any 10th
         # blog off the list
@@ -8115,7 +8252,7 @@ sub CMSSavePermissionFilter_blog {
 sub CMSSavePermissionFilter_template {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
-    return $perms->can_edit_templates;
+    return ($perms && $perms->can_edit_templates) || (!$perms && $app->user->can_edit_templates);
 }
 
 sub CMSSavePermissionFilter_folder {
@@ -8370,7 +8507,7 @@ sub CMSDeletePermissionFilter_template {
     my ( $eh, $app, $obj ) = @_;
     return 1 if $app->user->is_superuser();
     my $perms = $app->permissions;
-    return $perms && $perms->can_edit_templates;
+    return ($perms && $perms->can_edit_templates) || (!$perms && $app->user->can_edit_templates);
 }
 
 sub CMSPostDelete_blog {
@@ -8689,7 +8826,7 @@ sub save_object {
     my $perms = $app->permissions;
 
     if ( !$author->is_superuser ) {
-        if ( $type ne 'author' )
+        if ( ($type ne 'author') && ($type ne 'template') )
         {    # for authors, blog-ctx $perms is not relevant
             return $app->errtrans("Permisison denied.")
               if !$perms && $id;
@@ -8822,7 +8959,7 @@ sub save_object {
     if ( $type eq 'author' ) {
 
         #FIXME: Legacy columns - remove them
-        my @cols = qw(is_superuser can_create_blog can_view_log);
+        my @cols = qw(is_superuser can_create_blog can_view_log can_edit_templates);
         if ( !$author->is_superuser ) {
             delete $values{$_} for @cols;
         }
@@ -8858,8 +8995,8 @@ sub save_object {
     }
 
     if ( $type eq 'blog' ) {
-        ## If this is a new blog, set the preferences and archive
-        ## settings to the defaults.
+        # If this is a new blog, set the preferences, archive settings
+        # and template set to the defaults.
         if ( !$obj->id ) {
             $obj->language( $app->user->preferred_language );
             my @authenticators = qw( MovableType );
@@ -8873,6 +9010,8 @@ sub save_object {
                 push @authenticators, $auth;
             }
             $obj->commenter_authenticators( join ',', @authenticators );
+            my $set = $app->param('template_set');
+            $obj->template_set( $set );
         }
 
         if ( $values{file_extension} ) {
@@ -9024,19 +9163,25 @@ sub save_object {
 sub list_template {
     my $app = shift;
 
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->return_to_dashboard( redirect => 1 )
-      unless $perms;
+      unless $perms || $app->user->is_superuser;
     if ( $perms && !$perms->can_edit_templates ) {
         return $app->return_to_dashboard( permission => 1 );
     }
 
     require MT::Template;
-    my $blog_id = $app->param('blog_id');
+    my $blog_id = $app->param('blog_id') || 0;
     my $filter  = $app->param('filter_key');
     if ( !$filter ) {
-        $filter = 'index_templates';
-        $app->param( 'filter_key', 'index_templates' );
+        if ($app->blog) {
+            $filter = 'index_templates';
+            $app->param( 'filter_key', 'index_templates' );
+        }
+        else {
+            $filter = 'module_templates';
+            $app->param( 'filter_key', 'module_templates' );
+        }
     }
     my $terms = { blog_id => $blog_id };
     my $args  = { sort    => 'name' };
@@ -9056,6 +9201,9 @@ sub list_template {
         }
         elsif ( $type eq 'custom' ) {
             $template_type = 'module';
+        }
+        elsif ( $type eq 'email' ) {
+            $template_type = 'email';
         }
         else {
             $template_type = 'system';
@@ -9082,6 +9230,7 @@ sub list_template {
     $app->load_list_actions( 'template', $params );
     $params->{page_actions} = $app->page_actions('list_templates');
     $params->{search_label} = $app->translate("Templates");
+    $params->{blog_view} = 1;
 
     return $app->listing(
         {
@@ -9158,8 +9307,9 @@ sub list_objects {
     my (%authors);
     my $blog_class = $app->model('blog');
     my $blog       = $blog_class->load($blog_id);
+    my $set        = $blog ? $blog->template_set : undef;
     require MT::DefaultTemplates;
-    my $dtmpl = MT::DefaultTemplates->templates || [];
+    my $dtmpl = MT::DefaultTemplates->templates($set) || [];
     my %dtmpl = map { $_->{type} => $_ } @$dtmpl;
 
     while ( my $obj = $iter->() ) {
@@ -9462,6 +9612,7 @@ sub delete {
                     my @at = split /,/, $at;
                     for my $target (@at) {
                         my $archiver = $app->publisher->archiver($target);
+                        next unless $archiver;
                         if ( $archiver->category_based ) {
                             if ( $archiver->date_based ) {
                                 my @entries = MT::Entry->load(
@@ -9506,6 +9657,7 @@ sub delete {
                     my @at = split (/,/, $at);
                     for my $target (@at) {
                         my $archiver = $app->publisher->archiver($target);
+                        next unless $archiver;
                         my $entries_count = $archiver->archive_entries_count;
                         if ($entries_count){
                             my $count = $entries_count->($blog, $target, $obj);
@@ -9678,6 +9830,22 @@ sub asset_insert {
         {
             upload_html => $text || '',
             edit_field => scalar $app->param('edit_field') || '',
+        },
+    );
+}
+
+sub asset_userpic {
+    my $app = shift;
+
+    my $id = scalar $app->param('id');
+    my $asset = $app->model('asset')->lookup($id);
+    
+    $app->load_tmpl(
+        'dialog/asset_userpic.tmpl',
+        {
+            asset_id       => $id,
+            edit_field     => $app->param('edit_field') || '',
+            author_userpic => $asset->as_html({ include => 1, enclose => 0 }),
         },
     );
 }
@@ -10045,13 +10213,6 @@ sub open_batch_editor {
 sub approve_item {
     my $app   = shift;
     my $perms = $app->permissions;
-    return
-      unless $app->user->is_superuser()
-      || (
-        $app->param('blog_id')
-        && (   $perms->can_manage_feedback
-            || $perms->can_publish_post )
-      );
     $app->param( 'approve', 1 );
     $app->set_item_visible;
 }
@@ -10059,13 +10220,6 @@ sub approve_item {
 sub unapprove_item {
     my $app   = shift;
     my $perms = $app->permissions;
-    return
-      unless $app->user->is_superuser()
-      || (
-        $app->param('blog_id')
-        && (   $perms->can_manage_feedback
-            || $perms->can_publish_post )
-      );
     $app->param( 'unapprove', 1 );
     $app->set_item_visible;
 }
@@ -10414,6 +10568,14 @@ sub list_comments {
     my $user  = $app->user;
     my $admin = $user->is_superuser
       || ( $perms && $perms->can_administer_blog );
+    my $can_empty_junk = $admin
+      || ( $perms && $perms->can_manage_feedback )
+      ? 1 : 0;
+    my $state_editable = $admin
+      || ( $perms
+        && ( $perms->can_publish_post
+          || $perms->can_edit_all_posts || $perms->can_manage_feedback ) )
+      ? 1 : 0;
     my $entry_pkg = $app->model('entry');
     my $code      = sub {
         my ( $obj, $row ) = @_;
@@ -10485,9 +10647,7 @@ sub list_comments {
             $row->{created_on_relative} = relative_date( $ts, time, $blog );
         }
 
-        $row->{has_edit_access} = $admin
-          || ( $perms
-            && ( $perms->can_edit_all_posts || $perms->can_manage_feedback ) )
+        $row->{has_edit_access} = $state_editable
           || ( $entry && ( $user->id == $entry->author_id ) );
 
         # Blog column
@@ -10517,6 +10677,8 @@ sub list_comments {
     $param{screen_id}         = 'list-comment';
     $param{screen_class}      = 'list-comment';
     $param{search_label}      = $app->translate('Comments');
+    $param{state_editable}    = $state_editable;
+    $param{can_empty_junk}    = $can_empty_junk;
     return $app->listing(
         {
             type   => 'comment',
@@ -10611,10 +10773,10 @@ sub build_template_table {
         $row->{can_delete} = 1
           if $tmpl->type =~ m/(custom|index|archive|page|individual|category)/;
         if ($blog) {
-            $row->{blog_name} = $blog->name;
+            $row->{weblog_name} = $blog->name;
         }
         else {
-            $row->{blog_name} = '* ' . $app->translate('Orphaned') . ' *';
+            $row->{weblog_name} = '* ' . $app->translate('Orphaned') . ' *';
         }
         $row->{object} = $tmpl;
         push @data, $row;
@@ -11076,10 +11238,22 @@ sub list_pings {
     my $q     = $app->param;
     my $perms = $app->permissions;
 
+    my $can_empty_junk = 1;
+    my $state_editable = 1;
+    my $admin = $app->user->is_superuser
+      || ( $perms && $perms->can_administer_blog );
     if ($perms) {
         unless ( $perms->can_view_feedback ) {
             return $app->error( $app->translate("Permission denied.") );
         }
+        $can_empty_junk = $admin
+          || ( $perms && $perms->can_manage_feedback )
+          ? 1 : 0;
+        $state_editable = $admin
+          || ( $perms
+            && ( $perms->can_publish_post
+              || $perms->can_edit_all_posts || $perms->can_manage_feedback ) )
+          ? 1 : 0;
     }    # otherwise we simply filter the list of objects
 
     my $list_pref = $app->list_pref('ping');
@@ -11238,6 +11412,8 @@ sub list_pings {
     $param{approved}           = $q->param('approved');
     $param{unapproved}         = $q->param('unapproved');
     $param{emptied}            = $q->param('emptied');
+    $param{state_editable}     = $state_editable;
+    $param{can_empty_junk}     = $can_empty_junk;
     $param{saved_deleted_ping} = $q->param('saved_deleted')
       || $q->param('saved_deleted_ping');
     $param{object_type}         = 'ping';
@@ -12311,6 +12487,15 @@ sub save_entry {
           if !$id
           && !$perms->can_publish_post
           && !$perms->can_edit_all_posts;
+    }
+
+    my $filter_result = $app->run_callbacks( 'cms_save_filter.' . $type, $app );
+
+    if ( !$filter_result ) {
+        my %param = ();
+        $param{error}       = $app->errstr;
+        $param{return_args} = $app->param('return_args');
+        return $app->edit_object( \%param );
     }
 
     # check to make sure blog has site url and path defined.
@@ -13887,7 +14072,8 @@ sub preview_entry {
           || $col eq 'pinged_urls'
           || $col eq 'tangent_cache'
           || $col eq 'template_id'
-          || $col eq 'class';
+          || $col eq 'class'
+          || $col eq 'meta';
         if ( $col eq 'basename' ) {
             if (   ( !defined $q->param('basename') )
                 || ( $q->param('basename') eq '' ) )
@@ -13911,6 +14097,9 @@ sub preview_entry {
             data_value => scalar $q->param($data)
           };
     }
+
+    $app->run_callbacks( 'cms_pre_preview', $app, \@data );
+
     $param{entry_loop} = \@data;
     my $list_mode;
     my $list_title;
@@ -14646,6 +14835,7 @@ sub send_notify {
     my $cols = 72;
     my %params;
     $params{blog_name}   = $blog->name;
+    $params{blog_id}     = $blog->id;
     $params{entry_title} = $entry->title;
     my @ts = offset_time_list( time, $blog );
     my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900, $ts[4] + 1,
@@ -14798,63 +14988,73 @@ sub send_notify {
 }
 
 sub start_upload {
-    my $app   = shift;
-    my $perms = $app->permissions
-      or return $app->error( $app->translate("No permissions") );
-    return $app->error( $app->translate("Permission denied.") )
-      unless $perms->can_upload;
-    my $blog_id = $app->param('blog_id');
-    require MT::Blog;
-    my $blog = MT::Blog->load($blog_id);
+    my $app = shift;
+
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
     %param = @_ if @_;
     my $label_path;
 
-    $param{enable_archive_paths} = $blog->column('archive_path');
-    $param{local_site_path}      = $blog->site_path;
-    $param{local_archive_path}   = $blog->archive_path;
-    if ( $param{enable_archive_paths} ) {
-        $label_path = $app->translate('Archive Root');
+    if (my $perms = $app->permissions) {
+        return $app->error( $app->translate("Permission denied.") )
+          unless $perms->can_upload;
+        my $blog_id = $app->param('blog_id');
+        require MT::Blog;
+        my $blog = MT::Blog->load($blog_id);
+
+        $param{enable_archive_paths} = $blog->column('archive_path');
+        $param{local_site_path}      = $blog->site_path;
+        $param{local_archive_path}   = $blog->archive_path;
+        if ( $param{enable_archive_paths} ) {
+            $label_path = $app->translate('Archive Root');
+        }
+        else {
+            $label_path = $app->translate('Site Root');
+        }
+        my @extra_paths;
+        my $date_stamp = epoch2ts( $blog, time );
+        $date_stamp =~ s!^(\d\d\d\d)(\d\d)(\d\d).*!$1/$2/$3!;
+        my $path_hash = {
+            path  => $date_stamp,
+            label => '<' . $app->translate($label_path) . '>' . '/' . $date_stamp,
+        };
+
+        if ( exists( $param{middle_path} )
+            && ( $date_stamp eq $param{middle_path} ) )
+        {
+            $path_hash->{selected} = 1;
+            delete $param{archive_path};
+        }
+        push @extra_paths, $path_hash;
+        $param{extra_paths} = \@extra_paths;
+        $param{refocus}     = 1;
+        $param{missing_paths} =
+          (      ( defined $blog->site_path || defined $blog->archive_path )
+              && ( -d $blog->site_path || -d $blog->archive_path ) ) ? 0 : 1;
+
+        if ( $param{missing_paths} ) {
+            if (
+                $app->user->is_superuser
+                || $app->run_callbacks(
+                    'cms_view_permission_filter.blog',
+                    $app, $blog_id, $blog
+                )
+              )
+            {
+                $param{have_permissions} = 1;
+            }
+        }
+
+        $param{enable_destination} = 1;
     }
     else {
-        $label_path = $app->translate('Site Root');
+        $param{local_site_path}      = '';
+        $param{local_archive_path}   = '';
     }
-    my @extra_paths;
-    my $date_stamp = epoch2ts( $blog, time );
-    $date_stamp =~ s!^(\d\d\d\d)(\d\d)(\d\d).*!$1/$2/$3!;
-    my $path_hash = {
-        path  => $date_stamp,
-        label => '<' . $app->translate($label_path) . '>' . '/' . $date_stamp,
-    };
 
-    if ( exists( $param{middle_path} )
-        && ( $date_stamp eq $param{middle_path} ) )
-    {
-        $path_hash->{selected} = 1;
-        delete $param{archive_path};
-    }
-    push @extra_paths, $path_hash;
-    $param{extra_paths} = \@extra_paths;
-    $param{refocus}     = 1;
-    $param{missing_paths} =
-      (      ( defined $blog->site_path || defined $blog->archive_path )
-          && ( -d $blog->site_path || -d $blog->archive_path ) ) ? 0 : 1;
     $param{entry_insert} = $app->param('entry_insert');
     $param{edit_field}   = $app->param('edit_field');
-
-    if ( $param{missing_paths} ) {
-        if (
-            $app->user->is_superuser
-            || $app->run_callbacks(
-                'cms_view_permission_filter.blog',
-                $app, $blog_id, $blog
-            )
-          )
-        {
-            $param{have_permissions} = 1;
-        }
-    }
+    $param{upload_mode} ||= $app->param('upload_mode');
 
     $app->load_tmpl( 'dialog/asset_upload.tmpl', \%param );
 }
@@ -14970,11 +15170,53 @@ sub _make_string_csv {
 }
 
 sub upload_file {
-    my $app   = shift;
-    my $perms = $app->permissions
-      or return $app->error( $app->translate("No permissions") );
-    return $app->error( $app->translate("Permission denied.") )
-      unless $perms->can_upload;
+    my $app = shift;
+
+    my ($asset, $bytes) = $app->_upload_file(@_);
+    return if !defined $asset;
+    return $asset if !defined $bytes;  # whatever it is
+
+    $app->complete_insert(
+        asset => $asset,
+        bytes => $bytes,
+    );
+}
+
+sub upload_userpic {
+    my $app = shift;
+    
+    my ($asset, $bytes) = $app->_upload_file(
+        @_,
+        max_size            => ($app->config('UserpicMaxUpload') || 0),
+        max_image_dimension => ($app->config('UserpicThumbnailSize') || 0),
+    );
+    return if !defined $asset;
+    return $asset if !defined $bytes;  # whatever it is
+
+    ## TODO: should this be layerd into _upload_file somehow, so we don't
+    ## save the asset twice?
+    $asset->tags('@userpic');
+    $asset->save;
+
+    $app->load_tmpl(
+        'dialog/asset_userpic.tmpl',
+        {
+            asset_id       => $asset->id,
+            edit_field     => $app->param('edit_field') || '',
+            author_userpic => $asset->as_html({ include => 1, enclose => 0 }),
+        },
+    );
+}
+
+sub _upload_file {
+    my $app = shift;
+    my (%upload_param) = @_;
+
+    if (my $perms = $app->permissions) {
+        return $app->error( $app->translate("Permission denied.") )
+          unless $perms->can_upload;
+    }
+
     $app->validate_magic() or return;
 
     my $q = $app->param;
@@ -14999,12 +15241,12 @@ sub upload_file {
     }
     my $has_overwrite = $q->param('overwrite_yes') || $q->param('overwrite_no');
     my %param = (
-        blog_id      => $q->param('blog_id'),
         entry_insert => $q->param('entry_insert'),
         middle_path  => $q->param('middle_path'),
         edit_field   => $q->param('edit_field'),
         site_path    => $q->param('site_path'),
         extra_path   => $q->param('extra_path'),
+        upload_mode  => $app->mode,
     );
     return $app->start_upload( %param,
         error => $app->translate("Please select a file to upload.") )
@@ -15016,169 +15258,225 @@ sub upload_file {
         return $app->start_upload( %param,
             error => $app->translate( "Invalid filename '[_1]'", $basename ) );
     }
-    my $blog_id = $q->param('blog_id');
-    require MT::Blog;
-    my $blog = MT::Blog->load($blog_id);
-    my $fmgr = $blog->file_mgr;
 
-    ## Set up the full path to the local file; this path could start
-    ## at either the Local Site Path or Local Archive Path, and could
-    ## include an extra directory or two in the middle.
-    my ( $root_path, $relative_path, $middle_path );
-    if ( $q->param('site_path') ) {
-        $root_path = $blog->site_path;
-    }
-    else {
-        $root_path = $blog->archive_path;
-    }
-    return $app->error(
-        $app->translate(
-            "Before you can upload a file, you need to publish your blog."
-        )
-    ) unless -d $root_path;
-    $relative_path = $q->param('extra_path');
-    $middle_path = $q->param('middle_path') || '';
-    my $relative_path_save = $relative_path;
-    if ( $middle_path ne '' ) {
-        $relative_path =
-          $middle_path . ( $relative_path ? '/' . $relative_path : '' );
-    }
-    my $path = $root_path;
-    if ($relative_path) {
-        if ( $relative_path =~ m!\.\.|\0|\|! ) {
-            return $app->start_upload(
-                %param,
-                error => $app->translate(
-                    "Invalid extra path '[_1]'", $relative_path
-                )
-            );
+    my ($blog_id, $blog, $fmgr, $local_file, $asset_file, $base_url,
+      $asset_base_url, $relative_url, $relative_path);
+    if ($blog_id = $q->param('blog_id')) {
+        $param{blog_id} = $blog_id;
+        require MT::Blog;
+        $blog = MT::Blog->load($blog_id);
+        $fmgr = $blog->file_mgr;
+
+        ## Set up the full path to the local file; this path could start
+        ## at either the Local Site Path or Local Archive Path, and could
+        ## include an extra directory or two in the middle.
+        my ( $root_path, $middle_path );
+        if ( $q->param('site_path') ) {
+            $root_path = $blog->site_path;
         }
-        $path = File::Spec->catdir( $path, $relative_path );
-        ## Untaint. We already checked for security holes in $relative_path.
-        ($path) = $path =~ /(.+)/s;
-        ## Build out the directory structure if it doesn't exist. DirUmask
-        ## determines the permissions of the new directories.
-        unless ( $fmgr->exists($path) ) {
-            $fmgr->mkpath($path)
-              or return $app->start_upload(
-                %param,
-                error => $app->translate(
-                    "Can't make path '[_1]': [_2]",
-                    $path, $fmgr->errstr
-                )
-              );
+        else {
+            $root_path = $blog->archive_path;
         }
-    }
-    my $relative_url =
-      File::Spec->catfile( $relative_path, encode_url($basename) );
-    $relative_path = $relative_path
-      ? File::Spec->catfile( $relative_path, $basename )
-      : $basename;
-    my $asset_file = $q->param('site_path') ? '%r' : '%a';
-    $asset_file = File::Spec->catfile( $asset_file, $relative_path );
-    my $local_file = File::Spec->catfile( $path, $basename );
-
-    ## Untaint. We have already tested $basename and $relative_path for security
-    ## issues above, and we have to assume that we can trust the user's
-    ## Local Archive Path setting. So we should be safe.
-    ($local_file) = $local_file =~ /(.+)/s;
-
-    ## If $local_file already exists, we try to write the upload to a
-    ## tempfile, then ask for confirmation of the upload.
-    if ( $fmgr->exists($local_file) ) {
-        if ($has_overwrite) {
-            my $tmp = $q->param('temp');
-            if ( $tmp =~ m!([^/]+)$! ) {
-                $tmp = $1;
+        return $app->error(
+            $app->translate(
+                "Before you can upload a file, you need to publish your blog."
+            )
+        ) unless -d $root_path;
+        $relative_path = $q->param('extra_path');
+        $middle_path = $q->param('middle_path') || '';
+        my $relative_path_save = $relative_path;
+        if ( $middle_path ne '' ) {
+            $relative_path =
+              $middle_path . ( $relative_path ? '/' . $relative_path : '' );
+        }
+        my $path = $root_path;
+        if ($relative_path) {
+            if ( $relative_path =~ m!\.\.|\0|\|! ) {
+                return $app->start_upload(
+                    %param,
+                    error => $app->translate(
+                        "Invalid extra path '[_1]'", $relative_path
+                    )
+                );
             }
-            else {
-                return $app->error(
-                    $app->translate( "Invalid temp file name '[_1]'", $tmp ) );
-            }
-            my $tmp_dir = $app->config('TempDir');
-            my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
-            if ( $q->param('overwrite_yes') ) {
-                $fh = gensym();
-                open $fh, $tmp_file
-                  or return $app->error(
-                    $app->translate(
-                        "Error opening '[_1]': [_2]",
-                        $tmp_file, "$!"
+            $path = File::Spec->catdir( $path, $relative_path );
+            ## Untaint. We already checked for security holes in $relative_path.
+            ($path) = $path =~ /(.+)/s;
+            ## Build out the directory structure if it doesn't exist. DirUmask
+            ## determines the permissions of the new directories.
+            unless ( $fmgr->exists($path) ) {
+                $fmgr->mkpath($path)
+                  or return $app->start_upload(
+                    %param,
+                    error => $app->translate(
+                        "Can't make path '[_1]': [_2]",
+                        $path, $fmgr->errstr
                     )
                   );
             }
-            else {
-                if ( -e $tmp_file ) {
-                    unlink($tmp_file)
+        }
+        $relative_url =
+          File::Spec->catfile( $relative_path, encode_url($basename) );
+        $relative_path = $relative_path
+          ? File::Spec->catfile( $relative_path, $basename )
+          : $basename;
+        $asset_file = $q->param('site_path') ? '%r' : '%a';
+        $asset_file = File::Spec->catfile( $asset_file, $relative_path );
+        $local_file = File::Spec->catfile( $path, $basename );
+        $base_url = $app->param('site_path') ? $blog->site_url
+          : $blog->archive_url;
+        $asset_base_url = $app->param('site_path') ? '%r' : '%a';
+
+        ## Untaint. We have already tested $basename and $relative_path for security
+        ## issues above, and we have to assume that we can trust the user's
+        ## Local Archive Path setting. So we should be safe.
+        ($local_file) = $local_file =~ /(.+)/s;
+
+        ## If $local_file already exists, we try to write the upload to a
+        ## tempfile, then ask for confirmation of the upload.
+        if ( $fmgr->exists($local_file) ) {
+            if ($has_overwrite) {
+                my $tmp = $q->param('temp');
+                if ( $tmp =~ m!([^/]+)$! ) {
+                    $tmp = $1;
+                }
+                else {
+                    return $app->error(
+                        $app->translate( "Invalid temp file name '[_1]'", $tmp ) );
+                }
+                my $tmp_dir = $app->config('TempDir');
+                my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
+                if ( $q->param('overwrite_yes') ) {
+                    $fh = gensym();
+                    open $fh, $tmp_file
                       or return $app->error(
                         $app->translate(
-                            "Error deleting '[_1]': [_2]",
+                            "Error opening '[_1]': [_2]",
                             $tmp_file, "$!"
                         )
                       );
                 }
-                return $app->start_upload;
-            }
-        }
-        else {
-            eval { require File::Temp };
-            if ($@) {
-                return $app->error(
-                    $app->translate(
-                        "File with name '[_1]' already exists. (Install "
-                          . "File::Temp if you'd like to be able to overwrite "
-                          . "existing uploaded files.)",
-                        $basename
-                    )
-                );
-            }
-            my $tmp_dir = $app->config('TempDir');
-            my ( $tmp_fh, $tmp_file );
-            eval {
-                ( $tmp_fh, $tmp_file ) =
-                  File::Temp::tempfile( DIR => $tmp_dir );
-            };
-            if ($@) {    #!$tmp_fh
-                return $app->errtrans(
-                    "Error creating temporary file; please check your TempDir "
-                      . "setting in your coniguration file (currently '[_1]') "
-                      . "this location should be writable.",
-                    (
-                          $tmp_dir
-                        ? $tmp_dir
-                        : '[' . $app->translate('unassigned') . ']'
-                    )
-                );
-            }
-            defined( _write_upload( $fh, $tmp_fh ) )
-              or return $app->error(
-                $app->translate(
-                    "File with name '[_1]' already exists; Tried to write "
-                      . "to tempfile, but open failed: [_2]",
-                    $basename,
-                    "$!"
-                )
-              );
-            my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
-            return $app->load_tmpl(
-                'dialog/asset_replace.tmpl',
-                {
-                    temp         => $tmp,
-                    extra_path   => $relative_path_save,
-                    site_path    => scalar $q->param('site_path'),
-                    entry_insert => $q->param('entry_insert'),
-                    edit_field   => $app->param('edit_field'),
-                    middle_path  => $middle_path,
-                    fname        => $basename
+                else {
+                    if ( -e $tmp_file ) {
+                        unlink($tmp_file)
+                          or return $app->error(
+                            $app->translate(
+                                "Error deleting '[_1]': [_2]",
+                                $tmp_file, "$!"
+                            )
+                          );
+                    }
+                    return $app->start_upload;
                 }
-            );
+            }
+            else {
+                eval { require File::Temp };
+                if ($@) {
+                    return $app->error(
+                        $app->translate(
+                            "File with name '[_1]' already exists. (Install "
+                              . "File::Temp if you'd like to be able to overwrite "
+                              . "existing uploaded files.)",
+                            $basename
+                        )
+                    );
+                }
+                my $tmp_dir = $app->config('TempDir');
+                my ( $tmp_fh, $tmp_file );
+                eval {
+                    ( $tmp_fh, $tmp_file ) =
+                      File::Temp::tempfile( DIR => $tmp_dir );
+                };
+                if ($@) {    #!$tmp_fh
+                    return $app->errtrans(
+                        "Error creating temporary file; please check your TempDir "
+                          . "setting in your coniguration file (currently '[_1]') "
+                          . "this location should be writable.",
+                        (
+                              $tmp_dir
+                            ? $tmp_dir
+                            : '[' . $app->translate('unassigned') . ']'
+                        )
+                    );
+                }
+                defined( _write_upload( $fh, $tmp_fh ) )
+                  or return $app->error(
+                    $app->translate(
+                        "File with name '[_1]' already exists; Tried to write "
+                          . "to tempfile, but open failed: [_2]",
+                        $basename,
+                        "$!"
+                    )
+                  );
+                my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
+                return $app->load_tmpl(
+                    'dialog/asset_replace.tmpl',
+                    {
+                        temp         => $tmp,
+                        extra_path   => $relative_path_save,
+                        site_path    => scalar $q->param('site_path'),
+                        entry_insert => $q->param('entry_insert'),
+                        edit_field   => $app->param('edit_field'),
+                        middle_path  => $middle_path,
+                        fname        => $basename
+                    }
+                );
+            }
         }
     }
+    else {
+        $blog_id        = 0;
+        $asset_base_url = '%s/support/uploads';
+        $base_url       = $app->static_path . 'support/uploads';
+        $param{support_path} =
+          File::Spec->catdir( $app->static_file_path, 'support', 'uploads' );
+
+        require MT::FileMgr;
+        $fmgr = MT::FileMgr->new('Local');
+        unless ( $fmgr->exists( $param{support_path} ) ) {
+            $fmgr->mkpath( $param{support_path} );
+            unless ( $fmgr->exists( $param{support_path} ) ) {
+                return $app->error( $app->translate(
+                    "Could not create upload path '[_1]': [_2]",
+                        $param{support_path}, $fmgr->errstr
+                ) );
+            }
+        }
+
+        require File::Basename;
+        my ($stem, undef, $type) = File::Basename::fileparse( $basename,
+            qr/\.[A-Za-z0-9]+$/ );
+        my $unique_stem = $stem;
+        $local_file = File::Spec->catfile( $param{support_path},
+            $unique_stem . $type );
+        my $i = 1;
+        while ($fmgr->exists($local_file)) {
+            $unique_stem = join q{-}, $stem, $i++;
+            $local_file = File::Spec->catfile( $param{support_path},
+                $unique_stem . $type );
+        }
+
+        my $unique_basename = $unique_stem . $type;
+        $relative_path  = $unique_basename;
+        $relative_url   = encode_url($unique_basename);
+        $asset_file     = File::Spec->catfile( '%s', 'support', 'uploads',
+          $unique_basename );
+    }
+
+    require MT::Image;
+    my ($w, $h, $id, $write_file) = MT::Image->check_upload(
+        Fh => $fh, Fmgr => $fmgr, Local => $local_file,
+        Max => $upload_param{max_size},
+        MaxDim => $upload_param{max_image_dimension}
+    );
+
+    return $app->error(MT::Image->errstr)
+        unless $write_file;
 
     ## File does not exist, or else we have confirmed that we can overwrite.
     my $umask = oct $app->config('UploadUmask');
     my $old   = umask($umask);
-    defined( my $bytes = $fmgr->put( $fh, $local_file, 'upload' ) )
+    defined( my $bytes = $write_file->() )
       or return $app->error(
         $app->translate(
             "Error writing upload to '[_1]': [_2]", $local_file,
@@ -15186,19 +15484,6 @@ sub upload_file {
         )
       );
     umask($old);
-
-    ## Use Image::Size to check if the uploaded file is an image, and if so,
-    ## record additional image info (width, height). We first rewind the
-    ## filehandle $fh, then pass it in to imgsize.
-    seek $fh, 0, 0;
-    eval { require Image::Size; };
-    return $app->error(
-        $app->translate(
-                "Perl module Image::Size is required to determine "
-              . "width and height of uploaded images."
-        )
-    ) if $@;
-    my ( $w, $h, $id ) = Image::Size::imgsize($fh);
 
     ## Close up the filehandle.
     close $fh;
@@ -15228,11 +15513,10 @@ sub upload_file {
     $relative_path =~ s!^/!!;
     $relative_url  =~ s!\\!/!g;
     $relative_url  =~ s!^/!!;
-    my $url = $app->param('site_path') ? $blog->site_url : $blog->archive_url;
+    my $url = $base_url;
     $url .= '/' unless $url =~ m!/$!;
     $url .= $relative_url;
-    my $asset_url = $app->param('site_path') ? '%r' : '%a';
-    $asset_url .= '/' . $relative_url;
+    my $asset_url = $asset_base_url . '/' . $relative_url;
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
@@ -15329,10 +15613,7 @@ sub upload_file {
         );
     }
 
-    $app->complete_insert(
-        asset => $asset,
-        bytes => $bytes,
-    );
+    return ($asset, $bytes);
 }
 
 sub _write_upload {
@@ -16489,8 +16770,9 @@ sub reset_blog_templates {
     for my $tmpl (@tmpl) {
         $tmpl->remove or return $app->error( $tmpl->errstr );
     }
+    my $set = $blog ? $blog->template_set : undef;
     require MT::DefaultTemplates;
-    my $tmpl_list = MT::DefaultTemplates->templates || [];
+    my $tmpl_list = MT::DefaultTemplates->templates($set) || [];
     my @arch_tmpl;
     for my $val (@$tmpl_list) {
         $val->{name} = $app->translate( $val->{name} );
@@ -17029,12 +17311,28 @@ sub handle_junk {
         $app->validate_magic() or return;
     }
 
+    my $perms = $app->permissions;
+    my $perm_checked = ( $app->user->is_superuser()
+      || (
+        $app->param('blog_id')
+        && (   $perms->can_manage_feedback
+            || $perms->can_edit_all_posts )
+      ) ) ? 1 : 0;
+
     foreach my $id (@ids) {
         next unless $id;
 
-        # TODO: Check permissions
         my $obj = $class->load($id) or die "No $class $id";
         my $old_visible = $obj->visible || 0;
+        unless ($perm_checked) {
+            if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
+                next if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ( $obj->isa('MT::Comment') ) {
+                next if $obj->entry->author_id != $app->user->id;
+            }
+            next unless $perms->can_publish_post;
+        }
         $obj->junk;
         $app->run_callbacks( 'handle_spam', $app, $obj )
           ;            # mv this into blk below?
@@ -17066,15 +17364,35 @@ sub handle_junk {
 
 sub not_junk {
     my $app = shift;
+
+    my $perms = $app->permissions;
+
     my @ids = $app->param("id");
     my @item_loop;
     my $i     = 0;
     my $type  = $app->param('_type');
     my $class = $app->model($type);
     my %rebuild_set;
+
+    my $perm_checked = ( $app->user->is_superuser()
+      || (
+        $app->param('blog_id')
+        && (   $perms->can_manage_feedback
+            || $perms->can_edit_all_posts )
+      ) ) ? 1 : 0;
+
     foreach my $id (@ids) {
         next unless $id;
         my $obj = $class->load($id);
+        unless ($perm_checked) {
+            if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
+                next if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ( $obj->isa('MT::Comment') ) {
+                next if $obj->entry->author_id != $app->user->id;
+            }
+            next unless $perms->can_publish_post;
+        }
         $obj->approve;
         $app->run_callbacks( 'handle_ham', $app, $obj );
         if ( $obj->isa('MT::TBPing') ) {
@@ -18018,7 +18336,7 @@ sub backup {
                 require MT::Util::Archive;
                 close $fh_arc;
                 unlink $filepath;
-                my $arc = MT::Utiil::Archive->new($archive, $filepath);
+                my $arc = MT::Util::Archive->new($archive, $filepath);
                 for my $f (@files) {
                     $arc->add_file( $temp_dir, $f->{filename} );
                 }
@@ -19220,9 +19538,7 @@ sub do_reply {
 
     MT::Util::start_background_task(
         sub {
-            $app->rebuild_entry( Entry => $parent->entry_id )
-              or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
-            $app->rebuild_indexes( Blog => $parent->blog )
+            $app->rebuild_entry( Entry => $parent->entry_id, BuildDependencies => 1 )
               or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
                 $app->model('blog')->load( $param->{blog_id} ), $app->user );

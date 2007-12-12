@@ -473,7 +473,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning' => '警告',
 	'No [_1] could be found.' => '[_1]が見つかりません。',
 	'Recursion attempt on [_1]: [_2]' => '[_1]でお互いがお互いを参照している状態になっています: [_2]',
-	'Can\'t find included template [_1] \'[_2]\'' => '[_1]というテンプレートが見つかりませんでした: [_2]',
+	'Can\'t find included template [_1] \'[_2]\'' => '「[_2]」という[_1]テンプレートが見つかりませんでした。',
 	'Can\'t find blog for id \'[_1]' => 'ID;[_1]のブログが見つかりませんでした。',
 	'Can\'t find included file \'[_1]\'' => '[_1]というファイルが見つかりませんでした。',
 	'Error opening included file \'[_1]\': [_2]' => '[_1]を開けませんでした: [_2]',

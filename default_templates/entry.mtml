@@ -1,8 +1,15 @@
 <MTSetVar name="body_class" value="mt-archive-listing mt-entry-archive">
 <MTSetVar name="sidebar" value="1">
 <MTSetVar name="module_about_context" value="1">
-<MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)">
-<MTSetVarBlock name="page_title"><$MTEntryTitle remove_html="1"$></MTSetVarBlock>
+<MTIfCommentsAccepted><$MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)"$></MTIfCommentsAccepted>
+<MTSetVarBlock name="page_title"><$MTEntryTitle$></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTGetVar name="page_title"$> - <$MTBlogName$></MTSetVarBlock>
+<MTSetVarBlock name="html_head">
+    <MTEntryPrevious><link rel="prev" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryPrevious>
+    <MTEntryNext><link rel="next" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryNext>
+    <MTIfPingsAccepted><$MTEntryTrackbackData$></MTIfPingsAccepted>
+    <MTIfCommentsAccepted><script type="text/javascript" src="<$MTLink template="javascript"$>"></script></MTIfCommentsAccepted>
+</MTSetVarBlock>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 

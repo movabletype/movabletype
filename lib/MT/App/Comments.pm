@@ -395,120 +395,25 @@ sub do_signup {
     my $app = shift;
     my $q   = $app->param;
 
-    my $cfg   = $app->config;
     my $param = {};
     $param->{$_} = $q->param($_)
       foreach
       qw(blog_id entry_id static email url username nickname email hint);
-    $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
 
-    my $blog = $app->model('blog')->load( $param->{blog_id} );
-
-    if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
-        $param->{captcha_fields} = $provider->form_fields( $blog->id );
-    }
-
-    my ( $password, $hint, $url );
-    unless ( $q->param('external_auth') ) {
-        my $password = $q->param('password');
-        unless ($password) {
-            $param->{error} = $app->translate("User requires password.");
-            return $app->build_page( 'signup.tmpl', $param );
-        }
-
-        if ( $q->param('password') ne $q->param('pass_verify') ) {
-            $param->{error} = $app->translate('Passwords do not match.');
-            return $app->build_page( 'signup.tmpl', $param );
-        }
-
-        my $hint = $q->param('hint');
-        unless ($hint) {
-            $param->{error} =
-              $app->translate("User requires password recovery word/phrase.");
-            return $app->build_page( 'signup.tmpl', $param );
-        }
-
-        my $url = $q->param('url');
-        if ( $url && !is_valid_url($url) ) {
-            delete $param->{url};
-            $param->{error} = $app->translate("URL is invalid.");
-            return $app->build_page( 'signup.tmpl', $param );
-        }
-    }
-
-    my $name = $q->param('username');
-    if ( defined $name ) {
-        $name =~ s/(^\s+|\s+$)//g;
-        $param->{name} = $name;
-    }
-    unless ( defined($name) && $name ) {
-        $param->{error} = $app->translate("User requires username.");
-        return $app->build_page( 'signup.tmpl', $param );
-    }
-
-    my $existing = MT::Author->count( { name => $name } );
-    $param->{error} =
-      $app->translate("A user with the same name already exists.");
-    return $app->build_page( 'signup.tmpl', $param ) if $existing;
-
-    my $nickname = $q->param('nickname');
-    unless ($nickname) {
-        $param->{error} = $app->translate("User requires display name.");
-        return $app->build_page( 'signup.tmpl', $param );
-    }
-
-    my $email = $q->param('email');
-    if ($email) {
-        unless ( is_valid_email($email) ) {
-            delete $param->{email};
-            $param->{error} = $app->translate("Email Address is invalid.");
-            return $app->build_page( 'signup.tmpl', $param );
-        }
-    }
-    else {
-        delete $param->{email};
-        $param->{error} =
-          $app->translate("Email Address is required for password recovery.");
-        return $app->build_page( 'signup.tmpl', $param );
-    }
-
-    if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
-        unless ( $provider->validate_captcha($app) ) {
-            $param->{error} =
-              $app->translate("Text entered was wrong.  Try again.");
+    my $user = $app->create_user_pending($param);
+    unless ($user) {
+        my $blog = $app->model('blog')->load( $param->{blog_id} );
+        if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
             $param->{captcha_fields} = $provider->form_fields( $blog->id );
-            return $app->build_page( 'signup.tmpl', $param );
         }
-    }
-
-    my $commenter = $app->model('author')->new;
-    $commenter->name($name);
-    $commenter->nickname($nickname);
-    $commenter->email($email);
-    unless ( $q->param('external_auth') ) {
-        $commenter->set_password( $q->param('password') );
-        $commenter->url($url)   if $url;
-        $commenter->hint($hint) if $hint;
-    }
-    else {
-        $commenter->password( '(none)' );
-    }
-    $commenter->type( MT::Author::AUTHOR() );
-    $commenter->status( MT::Author::PENDING() );
-    $commenter->auth_type( $app->config->AuthenticationModule );
-
-    unless ( $commenter->save ) {
-        $param->{error} =
-          $app->translate(
-            "Something wrong happened when trying to process signup: [_1]",
-            $commenter->errstr );
+        $param->{error} = $app->errstr;
         return $app->build_page( 'signup.tmpl', $param );
     }
 
     ## Send confirmation email in the background.
     MT::Util::start_background_task(
         sub {
-            $app->_send_signup_confirmation( $commenter->id, $email,
+            $app->_send_signup_confirmation( $user->id, $user->email,
                 $param->{entry_id}, $param->{blog_id}, $param->{static} );
         }
     );
@@ -517,11 +422,11 @@ sub do_signup {
     if ($entry) {
         my $entry_url = $entry->permalink;
         $app->build_page( 'signup_thanks.tmpl',
-            { email => $email, entry_url => $entry_url } );
+            { email => $user->email, entry_url => $entry_url } );
     }
     else {
         $app->build_page( 'signup_thanks.tmpl',
-            { email => $email, return_url => is_valid_url( $param->{static} ) }
+            { email => $user->email, return_url => is_valid_url( $param->{static} ) }
         );
     }
 }
@@ -560,6 +465,7 @@ sub _send_signup_confirmation {
 
     my $param = {
         blog_name   => $blog->name,
+        blog_id     => $blog->id,
         email       => $email,
         confirm_url => $url,
     };
@@ -704,8 +610,7 @@ sub do_register {
             ## Send notification email in the background.
             MT::Util::start_background_task(
                 sub {
-                    $app->_send_registration_notification( $commenter->name,
-                        $commenter->nickname, $email, $entry_id, $blog_id, $ids );
+                    $app->_send_registration_notification( $commenter, $entry_id, $blog_id, $ids );
                 }
             );
         }
@@ -719,77 +624,36 @@ sub do_register {
 
 sub _send_registration_notification {
     my $app = shift;
-    my ( $username, $nickname, $email, $entry_id, $blog_id, $ids ) = @_;
-    my $cfg = $app->config;
+    my ( $user, $entry_id, $blog_id, $ids ) = @_;
 
-    my @ids = split ',', $ids;
-    my @sysadmins = MT::Author->load(
-        {
-            id   => \@ids,
-            type => MT::Author::AUTHOR()
-        },
-        {
-            join => MT::Permission->join_on(
-                'author_id',
-                {
-                    permissions => "\%'administer'\%",
-                    blog_id     => '0',
-                },
-                { 'like' => { 'permissions' => 1 } }
-            )
-        }
-    );
     my $blog    = MT::Blog->load($blog_id);
     my $subject = $app->translate( "[_1] registered to the blog '[_2]'",
-        $username, $blog->name );
-    foreach my $a (@sysadmins) {
-        next unless $a->email && is_valid_email( $a->email );
+        $user->name, $blog->name );
 
-        my $param = {
-            blogname => $blog->name,
-            username => $username,
-            fullname => $nickname,
-            email => $email,
-        };
-        my $body = MT->build_email( 'commenter_notify.tmpl', $param );
-
-        require MT::Mail;
-
-        my $from_addr;
-        my $reply_to;
-        if ( $cfg->EmailReplyTo ) {
-            $reply_to = $cfg->EmailAddressMain || $email;
-        }
-        else {
-            $from_addr = $cfg->EmailAddressMain || $email;
-        }
-        $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-        $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
-
-        unless ( $from_addr || $reply_to ) {
-            $app->log(
-                {
-                    message =>
-                      MT->translate("System Email Address is not configured."),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
+    my $url = $app->mt_uri(
+                mode => 'view',
+                args => {
+                    '_type' => 'author',
+                    id      => $user->id
                 }
             );
-            return;
-        }
 
-        my %head = (
-            id => 'commenter_notify',
-            To => $a->email,
-            $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
-            Subject => $subject,
-        );
-        my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
-        $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        MT::Mail->send( \%head, $body );
+    if ( $url =~ m!^/! ) {
+        my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
+        $url = $blog_domain . $url;
     }
+
+    my $param = {
+        blogname    => $blog->name,
+        blog_id     => $blog->id,
+        username    => $user->name,
+        fullname    => $user->nickname,
+        email       => $user->email,
+        profile_url => $url
+    };
+    my $body = MT->build_email( 'commenter_notify.tmpl', $param );
+
+    $app->_send_sysadmins_email($ids, 'commenter_notify', $body, $subject, $user->email);
 }
 
 sub generate_captcha {
@@ -936,6 +800,7 @@ sub _builtin_throttle {
             $head{'Content-Type'} = qq(text/plain; charset="$charset");
             my $body = $app->build_email('comment_throttle.tmpl', {
                 blog_name => $blog->name,
+                blog_id => $blog->id,
                 throttled_ip => $user_ip,
                 throttle_seconds => 10 * $throttle_period,
             });

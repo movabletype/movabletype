@@ -110,6 +110,11 @@ BEGIN {
                 group => 'sys_admin',
                 order => 200,
             },
+            'system.edit_templates' => {
+                label => trans('Manage Templates'),
+                group => 'sys_admin',
+                order => 250,
+            },
             'system.view_log' => {
                 label => trans("View System Activity Log"),
                 group => 'sys_admin',
@@ -231,10 +236,11 @@ BEGIN {
             'DBUser'          => undef,
             'DBPassword'      => undef,
             'DefaultLanguage' => {
-                default => 'en_US',    # FIXME: make a handler for this
+                default => 'en_US',
             },
             'DefaultSiteRoot' => { default => '', },
             'DefaultSiteURL'  => { default => '', },
+            'DefaultCommenterAuth' => { default => 'MovableType,LiveJournal,Vox' },
             'TemplatePath'    => {
                 default => 'tmpl',
                 path    => 1,
@@ -471,6 +477,8 @@ BEGIN {
             'DisableNotificationPings'   => { default => 0 },
             'SyncTarget' => { type => 'ARRAY' },
             'RsyncOptions' => undef,
+            'UserpicMaxUpload' => { default => 0 },
+            'UserpicThumbnailSize' => { default => 100 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -537,6 +545,16 @@ BEGIN {
         captcha_providers        => \&load_captcha_providers,
         tasks                    => \&load_core_tasks,
         default_templates        => \&load_default_templates,
+        template_sets => {
+            mt_blog => {
+                label => "Classic Blog",
+                order => 100,
+                # means, load from 'default_templates' registry
+                # which we've established for core templates with
+                # the MT 4.0 registry
+                templates => '*',
+            },
+        },
         junk_filters             => \&load_junk_filters,
         task_workers             => {
             'mt_rebuild' => {

@@ -44,6 +44,68 @@ sub get_dimensions {
     ($w, $h);
 }
 
+sub check_upload {
+    my $class = shift;
+    my %params = @_;
+
+    my $fh = $params{Fh};
+
+    ## Use Image::Size to check if the uploaded file is an image, and if so,
+    ## record additional image info (width, height). We first rewind the
+    ## filehandle $fh, then pass it in to imgsize.
+    seek $fh, 0, 0;
+    eval { require Image::Size; };
+    return $class->error(
+        MT->translate(
+                "Perl module Image::Size is required to determine "
+              . "width and height of uploaded images."
+        )
+    ) if $@;
+    my ( $w, $h, $id ) = Image::Size::imgsize($fh);
+
+    my $write_file = sub {
+        $params{Fmgr}->put( $fh, $params{Local}, 'upload' );
+    };
+
+    ## Check file size?
+    my $file_size;
+    if ($params{Max}) {
+        ## Seek to the end of the handle to find the size.
+        seek $fh, 0, 2;  # wind to end
+        $file_size = tell $fh;
+        seek $fh, 0, 0;
+    }
+
+    ## If the image exceeds the dimension limit, resize it before writing.
+    if (my $max_dim = $params{MaxDim}) {
+        if (defined($w) && defined($h) && ($w > $max_dim || $h > $max_dim)) {
+            my $resized_fh;  # ?
+
+            my $uploaded_data = eval { local $/; <$fh> };
+
+            my $img = $class->new( Data => $uploaded_data )
+                or return $class->error($class->errstr);
+            (my($resized_data), $w, $h) = $img->scale(
+                (($w > $max_dim) ? 'Width' : 'Height') => $max_dim )
+                    or return $class->error($img->errstr);
+
+            $write_file = sub {
+                $params{Fmgr}->put_data( $resized_data, $params{Local}, 'upload' )
+            };
+            $file_size = length $resized_data;
+        }
+    }
+
+    if (my $max_size = $params{Max}) {
+        if ($max_size < $file_size) {
+            return $class->error(MT->translate( "File size exceeds maximum allowed: [_1] > [_2]",
+                    $file_size, $max_size ) );
+        }
+    }
+
+    ($w, $h, $id, $write_file);
+}
+
 package MT::Image::ImageMagick;
 @MT::Image::ImageMagick::ISA = qw( MT::Image );
 

@@ -61,7 +61,7 @@ package MT::XMLRPCServer;
 use strict;
 
 use MT;
-use MT::Util qw( first_n_words decode_html start_background_task);
+use MT::Util qw( first_n_words decode_html start_background_task archive_file_for );
 use MT::I18N qw( encode_text first_n_text const );
 
 use MT::ErrorHandler;
@@ -532,6 +532,9 @@ sub supportedMethods {
       'blogger.getUsersBlogs', 'blogger.getUserInfo', 'blogger.deletePost',
       'metaWeblog.getPost', 'metaWeblog.newPost', 'metaWeblog.editPost',
       'metaWeblog.getRecentPosts', 'metaWeblog.newMediaObject',
+      'metaWeblog.getCategories', 'metaWeblog.deletePost',
+      'metaWeblog.getUsersBlogs',
+       # not yet supported: metaWeblog.getTemplate, metaWeblog.setTemplate
       'mt.getCategoryList', 'mt.setPostCategories', 'mt.getPostCategories',
       'mt.getTrackbackPings', 'mt.supportedTextFilters',
       'mt.getRecentPostTitles', 'mt.publishPost', 'mt.getTagList' ];
@@ -573,6 +576,33 @@ sub getCategoryList {
         push @data, {
             categoryName => SOAP::Data->type(string => encode_text($cat->label, undef, 'utf-8')),
             categoryId => SOAP::Data->type(string => $cat->id)
+        };
+    }
+    \@data;
+}
+
+sub getCategories {
+    my $class = shift;
+    my($blog_id, $user, $pass) = @_;
+    my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
+    my($author, $perms) = $class->_login($user, $pass, $blog_id);
+    die _fault(MT->translate("Invalid login")) unless $author;
+    die _fault(MT->translate("User does not have privileges"))
+        unless $perms && $perms->can_post;
+    require MT::Category;
+    my $iter = MT::Category->load_iter({ blog_id => $blog_id });
+    my @data;
+    my $blog = MT::Blog->load($blog_id);
+    require File::Spec;
+    while (my $cat = $iter->()) {
+        my $url = File::Spec->catfile($blog->site_url, archive_file_for( undef, $blog, 'Category', $cat ));
+        push @data, {
+            categoryId => SOAP::Data->type(string => encode_text($cat->id, undef, 'utf-8')),
+            parentId => ($cat->parent_category ? SOAP::Data->type(string => encode_text($cat->parent_category->id, undef, 'utf-8')) : undef),
+            categoryName => SOAP::Data->type(string => encode_text($cat->label, undef, 'utf-8')),
+            title => SOAP::Data->type(string => encode_text($cat->label, undef, 'utf-8')),
+            description => SOAP::Data->type(string => encode_text($cat->description, undef, 'utf-8')),
+            htmlUrl => SOAP::Data->type(string => encode_text($url, undef, 'utf-8')),
         };
     }
     \@data;

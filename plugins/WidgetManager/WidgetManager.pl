@@ -29,6 +29,7 @@ sub init_registry {
     my $plugin = shift;
     $plugin->registry({
         tags => {
+            help_url => sub { MT->translate('http://www.movabletype.org/documentation/appendices/tags/%t.html') },
             function => {
                 WidgetManager => '$WidgetManager::WidgetManager::Plugin::_hdlr_widget_manager',
                 WidgetSet => '$WidgetManager::WidgetManager::Plugin::_hdlr_widget_manager',

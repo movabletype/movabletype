@@ -1,9 +1,9 @@
-<div id="entry-<$MTEntryID$>" class="entry-asset asset">
+<div id="entry-<$MTEntryID$>" class="entry-asset asset hentry">
     <div class="asset-header">
-        <h2 class="asset-name"><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h2>
+        <h2 class="asset-name entry-title"><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h2>
         <$MTInclude module="<__trans phrase="Entry Metadata">"$>
     </div>
-    <div class="asset-content">
+    <div class="asset-content entry-content">
 <MTIfNonEmpty tag="EntryBody">
         <div class="asset-body">
             <$MTEntryBody$>
@@ -14,7 +14,7 @@
 </MTIfTagSearch>
 <MTIfNonEmpty tag="EntryMore" convert_breaks="0">
         <div class="asset-more-link">
-            <__trans phrase="Continue reading <a href="[_1]">[_2]</a>." params="<$MTEntryPermalink$>#more%%<$MTEntryTitle$>">
+            <__trans phrase="Continue reading <a rel="bookmark" href="[_1]">[_2]</a>." params="<$MTEntryPermalink$>#more%%<$MTEntryTitle$>">
         </div>
 </MTIfNonEmpty>
     </div>

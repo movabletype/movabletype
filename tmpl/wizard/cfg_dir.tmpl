@@ -57,31 +57,32 @@ function go(mode) {
     <mtapp:setting
         id="temp_dir"
         label="<__trans phrase="TempDir">"
+        label_class="top-label"
         hint="<__trans phrase="The physical path for temporary directory.">">
-<input type="text" id="temp_dir" name="temp_dir" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" /><br />
+<input type="text" id="temp_dir" class="ti" name="temp_dir" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" /><br />
     </mtapp:setting>
 
 <div id="goback" <mt:unless name="success">style="display: none"</mt:unless>>
 <div class="left">
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step');" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step');" />
 </div>
 
 <div class="right">
-<input name="continue" type="submit" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
+<input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
 </div>
 
 <div class="right">
-<input name="test" type="submit" value="<__trans phrase="Test">" onclick="go('test')" />
+<input name="test" type="submit" class="sb" value="<__trans phrase="Test">" onclick="go('test')" />
 </div>
 
 </div>
 
 <div id="submit" <mt:if name="success">style="display: none"</mt:if>>
 <div class="left">
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step')" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step')" />
 </div>
 <div class="right">
-<input name="test" type="submit" value="<__trans phrase="Test">" onclick="go('test')" />
+<input name="test" type="submit" class="sb" value="<__trans phrase="Test">" onclick="go('test')" />
 </div>
 </div>
 

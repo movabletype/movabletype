@@ -154,6 +154,7 @@ sub apply {
       File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
     my $webthemeroot = $app->static_path . 'support/themes/';
     my $mtthemeroot  = $app->static_path . 'themes/';
+    my $mtthemebase  = $app->static_path . 'themes-base/';
 
     # Break up the css url in to a couple useful pieces
     my @url = split( /\//, $url );
@@ -240,11 +241,9 @@ sub apply {
         }
         $url = "$webthemeroot$basename/$basename.css";
     }
+    
 
-    my $base_theme =
-      $app->model('template')
-      ->load( { identifier => 'base_theme', blog_id => $blog_id } );
-    my $url2 = $base_theme ? $base_theme->outfile : 'base_theme.css';
+    my $url2 = $mtthemebase . "blog.css";
 
     # Replacing the theme import or adding a new one at the beginning
     my $template_text  = $tmpl->text();
@@ -391,7 +390,7 @@ sub load_style_template {
         $tmpl->identifier('styles');
         $tmpl->outfile("styles.css");
         $tmpl->text(<<'EOT');
-@import url(<$MTLink template="base_theme"$>);
+@import url(<$MTStaticWebPath$>themes-base/blog.css);
 @import url(<$MTStaticWebPath$>themes/minimalist-red/styles.css);
 EOT
         $tmpl->save();

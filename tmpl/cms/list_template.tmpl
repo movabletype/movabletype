@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Blog Templates"></mt:setvarblock>
+<mt:if name="blog_id"><mt:setvarblock name="page_title"><__trans phrase="Blog Templates"></mt:setvarblock><mt:else><mt:setvarblock name="page_title"><__trans phrase="Global Templates"></mt:setvarblock></mt:if>
 <mt:setvarblock name="related_content">
     <mtapp:widget
         id="quickfilters"
@@ -110,29 +110,11 @@ function sectionToggle(selectedTab) {
         <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a>
     </p>
         <mt:else>
+            <mt:unless name="template_type" eq="email">
     <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=<mt:var name="template_type" escape="url">&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create [_1] template" params="<mt:var name="template_type_label">"></a></p>
+            </mt:unless>
         </mt:if>
     </mt:unless>
-    <mt:ignore>
-                        <mtapp:form mode="view" object_type="template">
-                        <select name="create_new_template">
-                            <option value="blank:index"><__trans phrase="Create Template..."></option>
-                                <optgroup label="<__trans phrase="Blank Template">">
-                            <mt:loop name="template_type_loop">
-                                    <option value="blank:<mt:var name="id">"><mt:var name="label" escape="html"></option>
-                            </mt:loop>
-                                </optgroup>
-                            <mt:loop name="template_type_loop">
-                                <optgroup label="<mt:var name="label" escape="html">">
-                                <mt:loop name="template_loop">
-                                    <option value="default:<mt:var name="type_id">:<mt:var name="id">"><mt:var name="label" escape="html"></option>
-                                </mt:loop>
-                                </optgroup>
-                            </mt:loop>
-                        </select>
-                        <input type="submit" value="<__trans phrase="Go">">
-                        </mtapp:form>
-    </mt:ignore>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
 <$mt:var name="list_filter_form"$>

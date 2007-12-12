@@ -213,6 +213,10 @@ MT.App.Editor.Textarea = new Class( Editor.Textarea, {
                 this.setSelection( "bq. " + text );
                 break;
             
+            case "underline":
+                this.setSelection( "<u>" + text + "</u>" );
+                break;
+            
             case "insertUnorderedList":
             case "insertOrderedList":
                 var list = text.split( /\r?\n/ );
@@ -223,15 +227,23 @@ MT.App.Editor.Textarea = new Class( Editor.Textarea, {
                 break;
 
             case "justifyLeft":
-                this.setSelection( "< " + text );
+                this.setSelection( "p< " + text );
                 break;
 
             case "justifyCenter":
-                this.setSelection( "= " + text );
+                this.setSelection( "p= " + text );
                 break;
 
             case "justifyRight":
-                this.setSelection( "> " + text );
+                this.setSelection( "p> " + text );
+                break;
+            
+            case "fontSizeSmaller":
+                this.setSelection( "<small>" + text + "</small>" );
+                break;
+
+            case "fontSizeLarger":
+                this.setSelection( "<big>" + text + "</big>" );
                 break;
         }
     }

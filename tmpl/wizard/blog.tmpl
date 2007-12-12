@@ -41,30 +41,32 @@ Commenting out until someone can input proper error checking if any
 
     <mtapp:setting
         id="blogname"
-        label="<__trans phrase="Blog Name">">
-<input type="text" id="blogname" name="blogname" value="<__trans phrase="My First Blog">" />
+        label="<__trans phrase="Blog Name">"
+        label_class="top-label">
+<input type="text" id="blogname" class="ti" name="blogname" value="<__trans phrase="My First Blog">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="blogurl"
-        label="<__trans phrase="Blog URL">">
-<input type="text" id="blogurl" name="blogurl" value="<mt:if name="blogurl"><mt:var name="blogurl" escape="html"></mt:if>" />
+        label="<__trans phrase="Blog URL">"
+        label_class="top-label">
+<input type="text" id="blogurl" class="ti" name="blogurl" value="<mt:if name="blogurl"><mt:var name="blogurl" escape="html"></mt:if>" />
     </mtapp:setting>
 
     <mtapp:setting
         id="blogpath"
-        label="<__trans phrase="Publishing Path">">
-<input type="text" id="blogpath" name="blogpath" value="<mt:if name="blogpath"><mt:var name="blogpath" escape="html"></mt:if>" />
+        label="<__trans phrase="Publishing Path">"
+        label_class="top-label">
+<input type="text" id="blogpath" class="ti" name="blogpath" value="<mt:if name="blogpath"><mt:var name="blogpath" escape="html"></mt:if>" />
 <p class="hint"><__trans phrase="Your 'Publishing Path' is the path on your web server's file system where Movable Type will publish all the files for your blog. Your web server must have write access to this directory."></p>
-
     </mtapp:setting>
 
 <div id="continue">
 <div class="left">
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
 </div>
 <div class="right">
-<input name="continue" type="submit" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
+<input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
 </div>
 </div>
 

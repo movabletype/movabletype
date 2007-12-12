@@ -10,6 +10,17 @@ function smarty_function_mtvar($args, &$ctx) {
     $value = '';
     $name = $args['name'];
     $name or $name = $args['var'];
+    if (preg_match('/^(config|request)\.(.+)$/i', $name, $m)) {
+        if (strtolower($m[1]) == 'config') {
+            if (!preg_match('/password/i', $m[2])) {
+                global $mt;
+                return $mt->config[strtolower($m[2])];
+            }
+        }
+        elseif (strtolower($m[1]) == 'request') {
+            return $_REQUEST[$m[2]];
+        }
+    }
     if (!$name) return '';
     if (isset($vars[$name]))
         $value = $vars[$name];

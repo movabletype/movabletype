@@ -1342,13 +1342,16 @@ MT.App = new Class( App, {
                 continue;
 
             this.form = forms[ i ];
-            log('found autosave form '+i);
 
+            var ad = forms[ i ].getAttribute( "mt:auto-save-delay" );
             var autoSaveDelay;
-            if ( autoSaveDelay = parseInt( forms[ i ].getAttribute( "mt:auto-save-delay" ) ) || 0 ) {
+            if ( ad !== null ) {
+                autoSaveDelay = parseInt( ad ) || 0;
                 this.autoSaveDelay = autoSaveDelay;
-                log('using auto save delay: '+this.autoSaveDelay);
-            }
+            } else
+                log.warn("auto-save-delay not defined on this form. Defaulting to "+this.autoSaveDelay);
+
+            log('using auto save delay: '+this.autoSaveDelay);
 
             var es = Array.fromPseudo(
                 forms[ i ].getElementsByTagName( "input" ),
@@ -2122,6 +2125,8 @@ MT.App.NavMenu = new Class( Object, {
 
     eventMouseOut: function( event ) {
         var el = DOM.getFirstAncestorByClassName( event.target, "nav-menu", true );
+        if ( !el && defined( event.relatedTarget ) )
+            el = DOM.getFirstAncestorByClassName( event.relatedTarget, "nav-menu", true );
         if ( !el )
             return;
 
@@ -2251,7 +2256,10 @@ MT.App.CodePress = new Class( Object, {
         this.iframe.style.position = 'static';
         this.iframe.style.visibility = 'visible';
         this.iframe.style.display = 'inline';
-        this.editor.onModified = app.getIndirectMethod( "setDirty" );
+		if ( window.controllers )
+            DOM.addEventListener( this.iframe.contentWindow.document, "keyup", app.getIndirectMethod( "setDirty" ) );
+        else
+            DOM.addEventListener( this.iframe.contentWindow.document, "keydown", app.getIndirectMethod( "setDirty" ) );
         /* match the textarea's tab index */
         if ( this.textarea[ "tabIndex" ] )
             this.iframe.setAttribute( "tabIndex", this.textarea[ "tabIndex" ] );
@@ -2318,6 +2326,8 @@ MT.App.CodePress = new Class( Object, {
 
     autoSave: function( data ) {
         if ( !this.textarea.disabled )
+            return;
+        if ( !this.editor )
             return;
         log('setting autosave data on: '+this.textarea.name);
         data[ this.textarea.name ] = this.editor.getCode();

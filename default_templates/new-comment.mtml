@@ -7,13 +7,13 @@
 <__trans phrase="Commenter URL: [_1]" params="<mt:var name="comment_url">">
 <__trans phrase="Commenter IP address: [_1]" params="<mt:var name="comment_ip">">
 
-<mt:if name="unapproved"><__trans phrase="Approve comment:">
-  <<mt:var name="approve_url">></mt:if>
+<mt:if name="unapproved"><mt:if name="state_editable"><__trans phrase="Approve comment:">
+  <<mt:var name="approve_url">></mt:if></mt:if>
 <mt:if name="view_url"><__trans phrase="View comment:">
   <<mt:var name="view_url">></mt:if>
 <__trans phrase="Edit comment:">
   <<mt:var name="edit_url">>
-<__trans phrase="Report comment as spam:">
-  <<mt:var name="spam_url">>
+<mt:if name="state_editable"><__trans phrase="Report comment as spam:">
+  <<mt:var name="spam_url">></mt:if>
 
-<mt:include name="footer-email.tmpl">
+<mt:include module="Mail Footer">

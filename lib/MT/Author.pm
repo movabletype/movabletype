@@ -34,6 +34,7 @@ __PACKAGE__->install_properties({
         'is_superuser' => 'boolean',
         'can_view_log' => 'boolean',
         'auth_type' => 'string(255)',
+        'userpic_asset_id' => 'integer',
     },
     defaults => {
         type => 1,
@@ -264,6 +265,7 @@ sub is_superuser {
             $author->permissions(0)->can_create_blog(@_);
             $author->permissions(0)->can_view_log(@_);
             $author->permissions(0)->can_manage_plugins(@_);
+            $author->permissions(0)->can_edit_templates(@_);
         }
     } else {
         $author->permissions(0)->can_administer() ||
@@ -298,6 +300,16 @@ sub can_manage_plugins {
     } else {
         $author->is_superuser() ||
             $author->permissions(0)->can_manage_plugins(@_);
+    }
+}
+
+sub can_edit_templates {
+    my $author = shift;
+    if (@_) {
+        $author->permissions(0)->can_edit_templates(@_);
+    } else {
+        $author->is_superuser() ||
+            $author->permissions(0)->can_edit_templates(@_);
     }
 }
 
@@ -614,6 +626,17 @@ sub auth_icon_url {
         $logo = $static_path . $logo;
     }
     return $logo;
+}
+
+sub userpic {
+    my $author = shift;
+
+    my $asset_id = $author->userpic_asset_id or return;
+    require MT::Asset;
+    my $asset = MT::Asset->lookup($asset_id) or return;
+    return if !$asset->isa('MT::Asset::Image');
+
+    $asset;
 }
 
 1;

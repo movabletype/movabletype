@@ -4,10 +4,11 @@
 <MTSetVar name="sidebar" value="1">
 <MTSetVar name="module_about_context" value="1">
 <MTSetVarBlock name="page_title"><__trans phrase="Archives"></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTBlogName$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 
-<h1 class="archive-title"><$MTGetVar name="page_title"$></h1>
+<h1 id="page-title" class="archive-title"><$MTGetVar name="page_title"$></h1>
 
 <MTIfArchiveTypeEnabled archive_type="Individual">
 <div class="archive-individual archive-date-based archive">

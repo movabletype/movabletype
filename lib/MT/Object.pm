@@ -270,26 +270,32 @@ sub pre_search_scope_terms_to_class {
     # scope search terms to class
 
     $terms ||= {};
-    return if exists ($terms->{id});
+    return if (ref $terms eq 'HASH') && exists($terms->{id});
 
     my $props = $class->properties;
     my $col = $props->{class_column}
         or return;
-    if (exists $terms->{$col}) {
-        if ($terms->{$col} eq '*') {
-            # class term is '*', which signifies filtering for all classes.
-            # simply delete the term in this case.
-            delete $terms->{$col} ;
-        } elsif ($terms->{$col} =~ m/^(\w+:)\*$/) {
-            # class term is in form "foo:*"; translate to a sql-compatible
-            # syntax of "like 'foo:%'"
-            $terms->{$col} = \"like '$1%'";
+    if (ref $terms eq 'HASH') {
+        if (exists $terms->{$col}) {
+            if ($terms->{$col} eq '*') {
+                # class term is '*', which signifies filtering for all classes.
+                # simply delete the term in this case.
+                delete $terms->{$col} ;
+            } elsif ($terms->{$col} =~ m/^(\w+:)\*$/) {
+                # class term is in form "foo:*"; translate to a sql-compatible
+                # syntax of "like 'foo:%'"
+                $terms->{$col} = \"like '$1%'";
+            }
+            # term has been explicitly given or explictly removed. make
+            # no further changes.
+            return;
         }
-        # term has been explicitly given or explictly removed. make
-        # no further changes.
-        return;
+        $terms->{$col} = $props->{class_type};
     }
-    $terms->{$col} = $props->{class_type};
+    elsif (ref $terms eq 'ARRAY') {
+        @$terms = ( { $col => $props->{class_type} } => 'AND' => [ @$terms ] );
+
+    }
 }
 
 sub class_label {
@@ -509,6 +515,7 @@ sub translate_audited_fields {
 sub count          { shift->_proxy('count',          @_) }
 sub count_group_by { shift->_proxy('count_group_by', @_) }
 sub sum_group_by   { shift->_proxy('sum_group_by',   @_) }
+sub avg_group_by   { shift->_proxy('avg_group_by',   @_) }
 sub remove_all     { shift->_proxy('remove_all',     @_) }
 
 sub remove {
@@ -523,7 +530,7 @@ sub remove {
 
 sub load {
     my $self = shift;
-    if (defined $_[0] && (!ref $_[0] || ref $_[0] ne 'HASH')) {
+    if (defined $_[0] && (!ref $_[0] || (ref $_[0] ne 'HASH' && ref $_[0] ne 'ARRAY'))) {
         return $self->lookup($_[0]);
     } else {
         if (wantarray) {
@@ -762,8 +769,7 @@ sub column_as_datetime {
 }
 
 sub join_on {
-    my ($pkg, $col, $terms, $args) = @_;
-    [$pkg, $col, $terms, $args];
+    return [ @_ ];
 }
 
 sub remove_children {
@@ -1350,6 +1356,16 @@ of values, rather than one specific value.
 The value of I<range> should be a hash reference, where the keys are column
 names, and the values are all C<1>; each key specifies a column that should
 be interpreted as a range.
+
+    MT::Foo->load( { created_on => [ '20011008000000', undef ] },
+        { range => { created_on => 1 } } );
+
+This selects C<MT::Foo> objects whose created_on date is greater than
+2001-10-08 00:00:00.
+
+=item * range_incl
+
+Like the 'range' attribute, but defines an inclusive range.
 
 =item * join
 

@@ -5,13 +5,19 @@ function smarty_block_mtifisancestor($args, $content, &$ctx, &$repeat) {
        require_once("MTUtil.php");
        $cat = get_category_context($ctx);
        $ctx->localize($localvars);
-       list($child) = $ctx->mt->db->fetch_categories(array('label' => $args['child'], 'blog_id' => $ctx->stash('blog_id'), 'show_empty' => 1));
-       if ($child) {
-           if (!_is_ancestor($cat, $child, $ctx))
-               $child = null;
+       $children = $ctx->mt->db->fetch_categories(array('label' => $args['child'], 'blog_id' => $ctx->stash('blog_id'), 'show_empty' => 1));
+       $ret = false;
+       if ($children) {
+           foreach ($children as $child) {
+               if (_is_ancestor($cat, $child, $ctx)) {
+                   $ret = true;
+                   break;
+               }
+           }
+           unset($child);
        }
        $ctx->stash('else_content', null);
-       $ctx->stash('conditional', $child ? 1 : 0);
+       $ctx->stash('conditional', $ret ? 1 : 0);
     } else {
        if (!$ctx->stash('conditional'))
            $content = $ctx->stash('else_content');
@@ -20,7 +26,7 @@ function smarty_block_mtifisancestor($args, $content, &$ctx, &$repeat) {
     return $content;
 }
 
-function _is_ancestor(&$cat, &$possible_child, &$ctx) {
+function _is_ancestor($cat, $possible_child, $ctx) {
     # Catch the different blog edge case
     if ($cat['category_blog_id'] != $possible_child['category_blog_id']) 
         return 0;

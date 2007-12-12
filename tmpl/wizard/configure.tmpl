@@ -129,10 +129,10 @@ window.onload = function() {
 </div>
 <div id="continue" class="pkg">
 <div class="left">
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
 </div>
 <div class="right">
-<input name="continue" type="submit" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
+<input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
 </div>
 </div>
 <br />
@@ -148,7 +148,8 @@ window.onload = function() {
 
     <mtapp:setting
         id="dbtype"
-        label="<__trans phrase="Database Type">">
+        label="<__trans phrase="Database Type">"
+        label_class="top-label">
 <select id="dbtype" name="dbtype" onchange="db_select(this); hide('db_hint');">
 <mt:unless one_db>
 <option value=""><__trans phrase="Select One..."></option>
@@ -171,8 +172,9 @@ window.onload = function() {
 
     <mtapp:setting
         id="dbpath"
-        label="<__trans phrase="Database Path">">
-<input type="text" id="dbpath" name="dbpath" value="<mt:if name="dbpath"><mt:var name="dbpath" escape="html"><mt:else>./db/mt.db</mt:if>" /><br />
+        label="<__trans phrase="Database Path">"
+        label_class="top-label">
+<input type="text" id="dbpath" class="ti" name="dbpath" value="<mt:if name="dbpath"><mt:var name="dbpath" escape="html"><mt:else>./db/mt.db</mt:if>" /><br />
 <__trans phrase="The physical file path for your SQLite database. "><mt:unless name="dbpath"><__trans phrase="A default location of './db/mt.db' will store the database file underneath your Movable Type directory."></p></mt:unless>
     </mtapp:setting>
 
@@ -185,16 +187,18 @@ window.onload = function() {
     <mtapp:setting
         id="dbserver"
         label="<__trans phrase="Database Server">"
+        label_class="top-label"
         hint="<__trans phrase="This is usually 'localhost'.">"
         show_hint="1">
-<input type="text" name="dbserver" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" />
+<input type="text" name="dbserver" class="ti" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" />
     </mtapp:setting>
 
     <mtapp:setting
         id="dbname"
         label="<__trans phrase="Database Name">"
+        label_class="top-label"
         hint="<__trans phrase="The name of your SQL database (this database must already exist).">">
-<input type="text" id="dbname" name="dbname" value="<mt:var name="dbname" escape="html">" /><br />
+<input type="text" id="dbname" class="ti" name="dbname" value="<mt:var name="dbname" escape="html">" /><br />
     </mtapp:setting>
 
 
@@ -205,15 +209,17 @@ window.onload = function() {
     <mtapp:setting
         id="dbuser"
         label="<__trans phrase="Username">"
+        label_class="top-label"
         hint="<__trans phrase="The username to login to your SQL database.">">
-    <input type="text" name="dbuser" value="<mt:var name="dbuser" escape="html">" /><br />
+    <input type="text" name="dbuser" class="ti" value="<mt:var name="dbuser" escape="html">" /><br />
     </mtapp:setting>
 
     <mtapp:setting
         id="dbpass"
         label="<__trans phrase="Password">"
+        label_class="top-label"
         hint="<__trans phrase="The password to login to your SQL database.">">
-    <input type="password" name="dbpass" value="<mt:var name="dbpass" escape="html">" /><br />
+    <input type="password" name="dbpass" class="pw" value="<mt:var name="dbpass" escape="html">" /><br />
     </mtapp:setting>
 
 </div>
@@ -223,15 +229,17 @@ window.onload = function() {
     <mtapp:setting
         id="dbport"
         label="<__trans phrase="Database Port">"
+        label_class="top-label"
         hint="<__trans phrase="This can usually be left blank.">">
-    <input type="text" name="dbport" value="<mt:var name="dbport" escape="html">" /><br />
+    <input type="text" name="dbport" class="ti" value="<mt:var name="dbport" escape="html">" /><br />
     </mtapp:setting>
 
     <mtapp:setting
         id="dbsocket"
         label="<__trans phrase="Database Socket">"
+        label_class="top-label"
         hint="<__trans phrase="This can usually be left blank.">">
-    <input type="text" name="dbsocket" value="<mt:var name="dbsocket" escape="html">" /><br />
+    <input type="text" name="dbsocket" class="ti" value="<mt:var name="dbsocket" escape="html">" /><br />
     </mtapp:setting>
     </div>
 
@@ -242,8 +250,9 @@ window.onload = function() {
     <mtapp:setting
         id="publish_charset"
         label="<__trans phrase="Publish Charset">"
+        label_class="top-label"
         hint="<__trans phrase="MS SQL Server driver must use either Shift_JIS or ISO-8859-1.  MS SQL Server driver does not support UTF-8 or any other character set.">">
-        <input type="text" name="publish_charset" value="<mt:var name="publish_charset" escape="html">" />
+        <input type="text" name="publish_charset" class="ti" value="<mt:var name="publish_charset" escape="html">" />
     </mtapp:setting>
 
 </div>
@@ -253,16 +262,16 @@ window.onload = function() {
 <mt:unless name="success">
 <div class="left">
 <div id="goback" <mt:if name="dbtype">style="display: none"</mt:if>>
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
 </div>
 </div>
 
 <div id="submit" <mt:unless name="dbtype">style="display: none"</mt:unless>>
 <div class="left">
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false;this.form.reset(); go('previous_step');" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="needValidate = false;this.form.reset(); go('previous_step');" />
 </div>
 <div class="right">
-<input name="test" type="submit" value="<__trans phrase="Test Connection">" onclick="go('test');" />
+<input name="test" type="submit" class="sb" value="<__trans phrase="Test Connection">" onclick="go('test');" />
 </div>
 </div>
 </mt:unless>
@@ -270,11 +279,11 @@ window.onload = function() {
 <mt:if name="success">
 <div id="continue">
 <div class="left">
-<input name="back" type="submit" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
+<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="needValidate = false; this.form.reset(); go('previous_step');" />
 </div>
 <div class="right">
-<input name="test" type="submit" value="<__trans phrase="Test Connection">" onclick="go('test');" />
-<input name="continue" type="submit" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
+<input name="test" type="submit" class="sb" value="<__trans phrase="Test Connection">" onclick="go('test');" />
+<input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
 </div>
 </div>
 </mt:if>

@@ -40,6 +40,7 @@ MT->add_plugin(__PACKAGE__->new({
             },
         },
         tags => {
+            help_url => sub { MT->translate('http://www.movabletype.org/documentation/appendices/tags/%t.html') },
             block => {
                 Textile => \&Textile,
             },

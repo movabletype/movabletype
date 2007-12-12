@@ -8,7 +8,7 @@ class BaseCaptchaProvider {
     function get_key() { }
     function get_name() { }
     function get_classname() { }
-    function form_fields() { }
+    function form_fields($blog_id) { }
 }
 
 class MTUtilCaptcha extends BaseCaptchaProvider {
@@ -43,7 +43,7 @@ class MTUtilCaptcha extends BaseCaptchaProvider {
 <div class=\"field\">
 <input type=\"hidden\" name=\"token\" value=\"$token\" />
 <img src=\"$cgipath$commentscript/captcha/$blog_id/$token\" width=\"150\" height=\"35\" /><br />
-<input name=\"captcha_code\" id=\"captcha-code\" value=\"\" />
+<input name=\"captcha_code\" id=\"captcha-code\" value=\"\" autocomplete=\"off\" />
 <p>$description</p>
 </div>";
         return $form;
