@@ -168,7 +168,7 @@ class MTViewer extends Smarty {
             $old_val = $this->__stash[$name];
         else
             $old_val = null;
-        if(isset($value))
+        if(func_num_args() > 1)
             $this->__stash[$name] = $value;
         return $old_val;
     }

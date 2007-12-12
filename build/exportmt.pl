@@ -17,8 +17,8 @@ $build->get_options();
 # Show the usage if requested.
 $build->usage() if $build->help();
 
-for( $build->languages() ) {
-    $build->setup( language => $_ );
+foreach my $lang ( $build->languages() ) {
+    $build->setup( language => $lang );
 
     # Summarize what we are about to do.
     $build->verbose( sprintf '* Debug mode is %s and system calls %s be made.',
@@ -33,6 +33,9 @@ for( $build->languages() ) {
 
     # Export any plugins that are requested.
     $build->plugin_export();
+
+    # Export any addons that are requested.
+    ## $build->addons_export();
 
     # Add a non-production footer.
     $build->inject_footer();

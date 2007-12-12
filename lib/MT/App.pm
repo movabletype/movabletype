@@ -2340,6 +2340,8 @@ sub build_widgets {
             $tmpl = $app->load_tmpl($tmpl_name);
         }
         next unless $tmpl;
+        $tmpl_name = '.' . $tmpl_name;
+        $tmpl_name =~ s/\.tmpl$//;
 
         my $set = $widget->{set} || $widget_cfg->{set} || 'main';
         local $widget_param->{blog_id} = $blog_id;
@@ -2358,10 +2360,16 @@ sub build_widgets {
             $ctx->stash('blog_id', $blog_id);
             $ctx->stash('blog', $blog);
         }
+
+        $app->run_callbacks('template_param' . $tmpl_name, $app, $tmpl->param, $tmpl);
+        
         my $content = $tmpl->output();
         if (!defined $content) {
             return $app->error("Error processing template for widget $widget_id: " . $tmpl->errstr);
         }
+
+        $app->run_callbacks('template_output' . $tmpl_name, $app, \$content, $tmpl->param, $tmpl);
+        
         $param->{$set} ||= '';
         $param->{$set} .= $content;
         # Widgets often need to populate script/styles/etc into

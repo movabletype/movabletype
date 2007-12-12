@@ -47,8 +47,8 @@ mt-static/themes/unity-purple
 #?package=MTE ^mt-static/addons/Community.pack
 #?package=MTE ^mt-cp.cgi
 #?package=MTE ^mt-static/themes/tristan-blue
-#?package=MTCP ^addons/Enterprise.pack
-#?package=MTCP ^mt-static/addons/Enterprise.pack
+#?package=MTCS ^addons/Enterprise.pack
+#?package=MTCS ^mt-static/addons/Enterprise.pack
 
 ^schemas
 \bknown-issues

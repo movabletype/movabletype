@@ -12,7 +12,7 @@ class MTDatabase_postgres extends MTDatabaseBase {
     var $vendor = 'postgres';
 
     function unserialize($data) {
-        $data = preg_replace('/\\\\([0-9]{3})/e', 'chr(\1)', $data);
+        $data = pg_unescape_bytea($data);
         return parent::unserialize($data);
     }
 

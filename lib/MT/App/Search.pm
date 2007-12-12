@@ -41,8 +41,8 @@ sub load_core_tags {
         block => {
             SearchResults => \&MT::App::Search::Context::_hdlr_results,
 
-            IfTagSearch => \&MT::Template::Context::_hdlr_pass_tokens,
-            IfStraightSearch => \&MT::Template::Context::_hdlr_pass_tokens,
+            'IfTagSearch?' => sub { MT->instance->{searchparam}{Type} eq 'tag' },
+            'IfStraightSearch?' => sub { MT->instance->{searchparam}{Type} eq 'straight' },
             NoSearchResults => \&MT::Template::Context::_hdlr_pass_tokens,
             NoSearch => \&MT::Template::Context::_hdlr_pass_tokens,
             BlogResultHeader => \&MT::Template::Context::_hdlr_pass_tokens,
@@ -366,8 +366,6 @@ sub execute {
                     ($app->{searchparam}{Type} ne 'newcomments' &&
                       (!$ctx->stash('search_string') ||
                       $ctx->stash('search_string') !~ /\S/)) ? 1 : 0,
-        IfTagSearch => ($app->{searchparam}{Type} eq 'tag'),
-        IfStraightSearch => ($app->{searchparam}{Type} eq 'straight'),
         NoSearchResults => $ctx->stash('search_string') &&
                            $ctx->stash('search_string') =~ /\S/ &&
                            !scalar @results,

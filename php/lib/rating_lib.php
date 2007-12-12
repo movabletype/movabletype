@@ -129,7 +129,7 @@ function rank_for(&$ctx, $obj_id, $datasource, $namespace, $max, $filter) {
     return $max - $level;
 }
 
-function hdlr_score($ctx, $datasource, $namespace) {
+function hdlr_score($ctx, $datasource, $namespace, $default) {
     if (!isset($namespace)) {
         return '';
     }
@@ -142,7 +142,10 @@ function hdlr_score($ctx, $datasource, $namespace) {
     if (!isset($object)) {
         return '';
     }
-    return score_for($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    $score = score_for($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    if ( !$score && isset($default) )
+        return $default;
+    return $score;
 }
 
 function hdlr_score_high($ctx, $datasource, $namespace) {

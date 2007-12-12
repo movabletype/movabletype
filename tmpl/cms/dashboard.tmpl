@@ -66,6 +66,16 @@
     </mtapp:statusmsg>
 </mt:if>
 
+<mt:unless name="has_uploads_path">
+    <mt:if name="is_administrator">
+        <mtapp:statusmsg
+            id="permissions"
+            class="error">
+            <__trans phrase="The directory you have configured for uploading avatars is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]" params="<mt:var name="support_path">">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:unless>
+
 <mt:unless name="main">
 <mtapp:statusmsg
     id="empty_dashboard"

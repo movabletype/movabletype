@@ -56,7 +56,7 @@ code_common = lib/MT.pm php/mt.php mt-check.cgi \
         mt-static/js/mt_core_compact.js \
         mt-static/css/main.css \
         mt-static/css/simple.css \
-	mt-config.cgi-original index.html
+	mt-config.cgi-original index.html readme.html
 
 code: check code-$(BUILD_LANGUAGE)
 code-en_US code-de code-fr code-nl code-es: check $(code_common) \
@@ -151,6 +151,14 @@ index.html: check build-language-stamp
 	index.html.pre > index.html
 	rm $@.pre
 
+readme.html: check build-language-stamp
+	cp readme.html.en_US $@.pre
+	-cp readme.html.$(BUILD_LANGUAGE) $@.pre
+	sed -e 's!__HELP_URL__!$(HELP_URL)!g' \
+	    -e 's!__PRODUCT_VERSION__!$(PRODUCT_VERSION)!g' \
+	readme.html.pre > readme.html
+	rm $@.pre
+
 ##### Other useful targets
 
 .PHONY: test cover clean all
@@ -195,6 +203,7 @@ clean:
 	-rm -rf php/mt.php
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf index.html
+	-rm -rf readme.html
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
 

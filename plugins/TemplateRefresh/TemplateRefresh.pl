@@ -845,6 +845,7 @@ sub refresh_all_templates {
                 $terms->{name} = $val->{name};
             }
             else {
+                $terms->{identifier} = $val->{identifier};
                 $terms->{type} = $val->{type};
             }
 
@@ -943,13 +944,14 @@ sub refresh_individual_templates {
 
     require MT::Util;
 
-    my $perms = $app->{perms};
+    my $user = $app->user;
+    my $perms = $app->permissions;
     return $app->error(
         $app->translate(
             "Insufficient permissions for modifying templates for this weblog.")
       )
       #TODO: system level-designer permission
-      unless $app->{author}->is_superuser()
+      unless $user->is_superuser() || $user->can_edit_templates()
       || ( $perms
         && ( $perms->can_edit_templates()
           || $perms->can_administer_blog ) );
@@ -967,9 +969,11 @@ sub refresh_individual_templates {
 
     my $trnames    = {};
     my $tmpl_types = {};
+    my $tmpl_ids = {};
     my $tmpls      = {};
     foreach my $tmpl (@$tmpl_list) {
         $tmpl->{text} = $app->translate_templatized( $tmpl->{text} );
+        $tmpl_ids->{ $tmpl->{identifier} } = $tmpl;
         $trnames->{ $app->translate( $tmpl->{name} ) } = $tmpl->{name};
         if ( $tmpl->{type} !~ m/^(archive|individual|page|category|index|custom|widget)$/ )
         {
@@ -997,7 +1001,8 @@ sub refresh_individual_templates {
           $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
         my $orig_name = $trnames->{ $tmpl->name } || $tmpl->name;
-        my $val = $tmpl_types->{ $tmpl->type() }
+        my $val = ( $tmpl->identifier ? $tmpl_ids->{ $tmpl->identifier() } : undef )
+          || $tmpl_types->{ $tmpl->type() }
           || $tmpls->{ $tmpl->type() }{$orig_name};
         if ( !$val ) {
             push @msg,

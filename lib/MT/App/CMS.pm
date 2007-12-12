@@ -1556,13 +1556,6 @@ sub core_menus {
             system_permission => 'administer',
             view              => "blog",
         },
-        'prefs:custom_fields' => {
-            label             => "Custom Fields",
-            mode              => 'list_field',
-            order             => 500,
-            permission        => 'administer_blog,edit_config',
-            system_permission => 'administer',
-        },
         'prefs:notification' => {
             label      => "Address Book",
             mode       => 'list',
@@ -3858,6 +3851,21 @@ sub dashboard {
         'mt_news'       => { order => 3, set => 'sidebar' },
     };
 
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $param->{support_path} =
+        File::Spec->catdir( $app->static_file_path, 'support', 'uploads' );
+    if ( $fmgr->exists( $param->{support_path} ) ) {
+        $param->{has_uploads_path} = 1;
+    } else {
+        $fmgr->mkpath( $param->{support_path} );
+        if ( $fmgr->exists( $param->{support_path} )
+             && $fmgr->can_write( $param->{support_path} ) )
+        {
+            $param->{has_uploads_path} = 1;
+        }
+    }
+
     # We require that the determination of the 'single blog mode'
     # state be done PRIOR to the generation of the widgets
     $app->build_blog_selector($param);
@@ -3941,7 +3949,7 @@ sub mt_blog_stats_widget {
     my ( $tmpl, $param ) = @_;
 
     # For stats shown on this page
-    $app->generate_dashboard_stats($param);
+    $app->generate_dashboard_stats($param) or return;
 
     my $tabs = $app->registry('blog_stats_tabs') or return;
     $tabs = $app->filter_conditional_list($tabs, 'dashboard', ($param->{widget_scope} || ''));
@@ -3952,20 +3960,17 @@ sub mt_blog_stats_widget {
         local $param->{html_head};
 
         my %cfgs;
-        while (my ($tab_id, $url) = each %{ $param->{stat_url} }) {
-            $cfgs{$tab_id} = {
-                param => {
-                    tab_id   => $tab_id,
-                    stat_url => $url,
-                },
-            };
+        my $stat_url = delete $param->{stat_url};
+        while (my ($tab_id, $url) = each %$stat_url) {
+            $param->{has_stat_urls} = 1;
+            $cfgs{$tab_id} = { param => { stat_url => $url } };
         }
         $app->build_widgets(
             set            => 'blog_stats',
             param          => $param,
             widgets        => $tabs,
             widget_cfgs    => \%cfgs,
-            passthru_param => [qw( html_head js_include tabs )],
+            passthru_param => [qw( html_head js_include tabs active_stats_panel_updates )],
         ) or return;
 
         $param->{blog_stats} = $param->{main};
@@ -5211,7 +5216,8 @@ sub edit_object {
         return $app->forward($edit_mode, @_);
     }
 
-    my %param = $_[0] ? %{ $_[0] } : ();
+    my %param = eval { $_[0] ? %{ $_[0] } : (); };
+    die Carp::longmess if $@;
     my $class = $app->model($type) or return;
     my $blog_id = $q->param('blog_id');
 
@@ -9941,14 +9947,14 @@ sub asset_insert {
 
 sub asset_userpic {
     my $app = shift;
-    my (%param) = @_;
+    my ($param) = @_;
 
     my ($id, $asset);
-    if ($asset = $param{asset}) {
+    if ($asset = $param->{asset}) {
         $id = $asset->id;
     }
     else {
-        $id = $param{asset_id} || scalar $app->param('id');
+        $id = $param->{asset_id} || scalar $app->param('id');
         $asset = $app->model('asset')->lookup($id);
     }
 
@@ -15296,7 +15302,7 @@ sub upload_userpic {
     $asset->tags('@userpic');
     $asset->save;
 
-    $app->forward( 'asset_userpic', asset => $asset );
+    $app->forward( 'asset_userpic', { asset => $asset } );
 }
 
 sub _upload_file {

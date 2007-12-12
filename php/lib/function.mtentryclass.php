@@ -5,10 +5,6 @@ function smarty_function_mtentryclass($args, &$ctx) {
     if (!isset($class)) {
         return '';
     }
-    if (isset($args['upper_case']) || isset($args['lower_case'])) {
-        return $class; // to have global filters handle it.
-    }
-    // to be compatible with Perl version
-    return strtoupper(substr($class, 0, 1)) . substr($class, 1);
+    return $class;
 } 
 ?>

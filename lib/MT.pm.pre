@@ -2009,10 +2009,15 @@ sub build_page_in_mem {
 
 sub new_ua {
     my $class = shift;
-    eval { require LWP::UserAgent; };
-    return undef if $@;
     my ($opt) = @_;
     $opt ||= {};
+    my $lwp_class = 'LWP::UserAgent';
+    if ($opt->{paranoid}) {
+        eval { require LWPx::ParanoidAgent; };
+        $lwp_class = 'LWPx::ParanoidAgent' unless $@;
+    }
+    eval "require $lwp_class;";
+    return undef if $@;
     my $cfg = $class->config;
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
     my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout || $cfg->PingTimeout;
@@ -2028,7 +2033,7 @@ sub new_ua {
         );
     }
 
-    my $ua = LWP::UserAgent->new;
+    my $ua = $lwp_class->new;
     $ua->max_size($max_size) if (defined $max_size) && $ua->can('max_size');
     $ua->agent( $agent );
     $ua->timeout( $timeout ) if defined $timeout;
@@ -2184,7 +2189,7 @@ sub core_commenter_authenticators {
 <mtapp:setting
     id="openid_display"
     label="<__trans phrase="OpenID URL">"
-    hint="<__trans phrase="Sign in using your LiveJournal username.">">
+    hint="<__trans phrase="Sign in using your OpenID identity.">">
 <input type="hidden" name="key" value="OpenID" />
 <input name="openid_url" style="background: #fff url('<mt:var name="static_uri">images/comment/openid_logo.png') no-repeat left; padding-left: 18px; padding-bottom: 1px; border: 1px solid #5694b6; width: 304px; font-size: 110%;" />
     <p class="hint"><__trans phrase="OpenID is an open and decentralized single sign-on identity system."></p>

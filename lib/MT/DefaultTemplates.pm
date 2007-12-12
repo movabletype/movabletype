@@ -230,7 +230,7 @@ sub templates {
     my $all_tmpls = MT::Component->registry(@tmpl_path) || [];
     my $weblog_templates_path = MT->config('WeblogTemplatesPath');
 
-    my %tmpls;
+    my (%tmpls, %global_tmpls);
     foreach my $def_tmpl (@$all_tmpls) {
         # copy structure, then run filter
 
@@ -286,19 +286,19 @@ sub templates {
                     }
                 }
 
-                if (exists $tmpls{$tmpl_id}) {
+                my $local_global_tmpls = $tmpl->{global} ? \%global_tmpls : \%tmpls;
+                if (exists $local_global_tmpls->{$tmpl_id}) {
                     # allow components/plugins to override core
                     # templates
-                    $tmpls{$tmpl_id} = $tmpl if $tmpls{$tmpl_id}->{global} && !$tmpl->{global};
-                    $tmpls{$tmpl_id} = $tmpl if $p && ($p->id ne 'core');
+                    $local_global_tmpls->{$tmpl_id} = $tmpl if $p && ($p->id ne 'core');
                 }
                 else {
-                    $tmpls{$tmpl_id} = $tmpl;
+                    $local_global_tmpls->{$tmpl_id} = $tmpl;
                 }
             }
         }
     }
-    my @tmpls = values %tmpls;
+    my @tmpls = (values(%tmpls), values(%global_tmpls));
     MT->run_callbacks('DefaultTemplateFilter' . ($set ? '.' . $set : ''), \@tmpls);
     return \@tmpls;
 }

@@ -313,6 +313,7 @@ sub core_tags {
             EntryAtomID => \&_hdlr_entry_atom_id,
             EntryPermalink => \&_hdlr_entry_permalink,
             EntryClass => \&_hdlr_entry_class,
+            EntryClassLabel => \&_hdlr_entry_class_label,
             EntryAuthor => \&_hdlr_entry_author,
             EntryAuthorDisplayName => \&_hdlr_entry_author_display_name,
             EntryAuthorUsername => \&_hdlr_entry_author_username,
@@ -4106,10 +4107,13 @@ sub _hdlr_entry_class {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
-    my $class = $e->class;
-    if ( exists $args->{'upper_case'} || exists $args->{'lower_case'} ) {
-        return $class; # to have global filters handle it.
-    }
+    $e->class;
+}
+
+sub _hdlr_entry_class_label {
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error($ctx->stash('tag'));
     $e->class_label;
 }
 
@@ -7825,7 +7829,12 @@ sub _object_score_for {
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
-    return $object->score_for($key);
+    my $score = $object->score_for($key);
+    if ( !$score && exists($args->{default}) ) {
+        return $args->{default};
+    }
+    $score;
+      
 }
 
 sub _hdlr_entry_score {

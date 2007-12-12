@@ -1,35 +1,20 @@
-<mt:setvarblock name="widget_label"><__trans phrase="Welcome to the Movable Type Community Solution"></mt:setvarblock>
+<mt:unless name="widget_label">
+<mt:setvarblock name="widget_label"><__trans phrase="What's new in Movable Type [_1]" params="<mt:var name="mt_version">"></mt:setvarblock>
+</mt:unless>
 <mtapp:widget label="$widget_label" class="welcome-widget" can_close="1">
-    <p><__trans phrase="The Community Solution gives you to the tools to build a successful community with active, engaged conversations. Some key features to explore:"></p>
+    <p><mt:if name="widget_description"><mt:var name="widget_description"><mt:else><__trans phrase="Here is the summary of new features found in this version:"></mt:if></p>
     <ul>
-        <li>
-            <a href="http://www.movabletype.org/documentation/community/user-profiles.html"><__trans phrase="Member Profiles"></a>
-            <p><__trans phrase="Allow registered members of your community to create and customize profiles, including user pictures"></p>
-        </li>
-        <li>
-            <a href="http://www.movabletype.org/documentation/community/custom-fields.html"><__trans phrase="Custom Fields"></a>
-            <p><__trans phrase="Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need"></p>
-        </li>
-        <li>
-            <a href="http://www.movabletype.org/documentation/community/favorites.html"><__trans phrase="Favoriting, Recommendations and User Voting"></a>
-            <p><__trans phrase="Your community can vote for its favorite content, making it easy for your readers and authors to see what's most popular"></p>
-        </li>
-        <li>
-            <a href="http://www.movabletype.org/documentation/community/contributed-content.html"><__trans phrase="User-Contributed Content"></a>
-            <p><__trans phrase="Registered users can submit content to your site, and administrators have full control over what gets published"></p>
-        </li>
-        <li>
-            <a href="http://www.movabletype.org/documentation/community/template-sets.html"><__trans phrase="Forums and Community Blogs"></a>
-            <p><__trans phrase="Add forums and group blogs to your site with just a few clicks"></p>
-        </li>
-        <li>
-            <a href="http://www.movabletype.org/documentation/community/shared-templates.html"><__trans phrase="Consistent Shared Templates"></a>
-            <p><__trans phrase="Reuse elements of your site design or layout across all the sections of your site, making site-wide updates easy"></p>
-        </li>
-        <li>
-            <a href="http://www.movabletype.org/documentation/community/shared-templates.html"><__trans phrase="Completely Customizable Design"></a>
-            <p><__trans phrase="Every element of your site experience is customizable, including login screens, registration forms, profile editing, and even email messages"></p>
-        </li>
-
+        <mt:loop name="feature_loop">
+            <li>
+                <mt:if name="feature_url">
+                    <a href="<mt:var name="feature_url" escape="html">"><mt:var name="feature_label" escape="html"></a>
+                <mt:else>
+                    <mt:var name="feature_label" escape="html">
+                </mt:if>
+                <mt:if name="feature_description">
+                    <p><mt:var name="feature_description" escape="html"></p>
+                </mt:if>
+            </li>
+        </mt:loop>
     </ul>
 </mtapp:widget>

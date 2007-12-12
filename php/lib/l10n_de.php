@@ -1,47 +1,6 @@
 <?php
-function translate_phrase($str, $params = null) {
-	$Lexicon_de = array(
-
-## php/lib/function.mtauthordisplayname.php
-	'Author (#' => 'Autor (#',
-
-## php/lib/function.mtproductname.php
-	'[_1] [_2]' => '[_1] [_2]',
-
-## php/lib/function.mtcommentfields.php
-	'Thanks for signing in,' => 'Danke für Ihre Anmeldung',
-	'Now you can comment.' => 'Sie können jetzt Ihren Kommentar verfassen.',
-	'sign out' => 'abmelden',
-	'(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(Wenn Sie auf dieser Site bisher noch nicht kommentiert haben, wird Ihr Kommentar eventuell erst zeitverzögert freigeschaltet werden. Vielen Dank für Ihre Geduld.)',
-	'Remember me?' => 'Benutzername speichern?',
-	'Yes' => 'Ja',
-	'No' => 'Nein',
-	'Comments' => 'Kommentare',
-	'Preview' => 'Vorschau',
-	'Submit' => 'Abschicken',
-	'You are not signed in. You need to be registered to comment on this site.' => 'Sie sind nicht angemeldet. Sie müssen sich registrieren, um hier zu kommentieren.',
-	'Sign in' => 'Anmelden',
-	'. Now you can comment.' => '. Sie können jetzt Ihren Kommentar verfassen.',
-	'If you have a TypeKey identity, you can ' => 'Wenn Sie eine TypeKey-Identität besitzen, können Sie ',
-	'sign in' => 'anmelden',
-	'to use it here.' => ', um es hier zu verwenden.',
-	'Name' => 'Name',
-	'Email Address' => 'E-Mail-Adresse',
-	'URL' => 'URL',
-	'(You may use HTML tags for style)' => '(HTML-Tags erlaubt)',
-
-## php/lib/block.mtentries.php
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" erfordert einen Namespace.',
-
-## php/lib/function.mtremotesigninlink.php
-	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'TypeKey-Authentifizierung in diesem Weblog nicht aktiviert -  MTRemoteSignInLink kann nicht verwendet werden.',
-
-## php/lib/block.mtassets.php
-
-## php/lib/captcha_lib.php
-	'Captcha' => 'Captcha',
-	'Type the characters you see in the picture above.' => 'Geben Sie die Buchstaben ein, die Sie in obigem Bild sehen.',
-
+global $Lexicon_de;
+$Lexicon_de = array(
 ## php/lib/archive_lib.php
 	'Page' => 'Seite',
 	'Individual' => 'Individuell',
@@ -50,17 +9,42 @@ function translate_phrase($str, $params = null) {
 	'Daily' => 'Täglich',
 	'Weekly' => 'Wöchentlich',
 	'Author' => 'Autor',
+	'(Display Name not set)' => '(Kein Anzeigename gewählt)',
 	'Author Yearly' => 'Autor jährlich',
 	'Author Monthly' => 'Autor monatlich',
 	'Author Daily' => 'Autor täglich',
 	'Author Weekly' => 'Autor wöchentlich',
 	'Category Yearly' => 'Kategorie jährlich',
 	'Category Monthly' => 'Kategorie monatlich',
-	'Category Daily' => 'Kategorie ätglich',
+	'Category Daily' => 'Kategorie täglich',
 	'Category Weekly' => 'Kategorie wöchentlich',
+
+## php/lib/function.mtremotesigninlink.php
+	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'TypeKey-Authentifizierung ist in diesem Blog nicht aktiviert. MTRemoteSignInLink kann daher nicht verwendet werden.',
+
+## php/lib/function.mtproductname.php
+	'[_1] [_2]' => '[_1] [_2]',
+
+## php/lib/captcha_lib.php
+	'Captcha' => 'Captcha',
+	'Type the characters you see in the picture above.' => 'Geben Sie die Buchstaben ein, die Sie in obigem Bild sehen.',
+
+## php/lib/block.mtassets.php
+	'sort_by="score" must be used in combination with namespace.' => 'Sort_by="score" erfordert einen Namespace.',
+
+## php/lib/block.mtentries.php
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
+
+## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtentryclasslabel.php
+	'page' => 'erneut veröffentlichen',
+	'entry' => 'Eintrag',
+	'Entry' => 'Eintrag',
 );
-	
-	function translate_phrase($str, $params = null) {
+function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_de;
     $l10n_str = isset($Lexicon_de[$str]) ? $Lexicon_de[$str] : (isset($Lexicon[$str]) ? $Lexicon[$str] : $str);
     if (extension_loaded('mbstring')) {

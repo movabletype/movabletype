@@ -941,6 +941,13 @@ li#config-menu {
     padding-top: 0;
 }
 
+.dashboard .user-pic {
+    float: left;
+    width: 50px;
+    margin-right: 10px;
+    text-align: right;
+}
+
 /* Dashboard Widget Tabs */
 
 .widget-header-tabs .widget-label,
@@ -1160,6 +1167,18 @@ li#config-menu {
 .dashboard .tag-5 { font-size: 16px;}
 .dashboard .tag-6 { font-size: 14px;}
 
+/* Blog Stats: Registrations */
+
+.dashboard .auth-icon {
+    width: 12px;
+    height: 12px;
+    vertical-align: -10%;
+}
+
+.dashboard .you-widget .user-stats {
+    margin-left: 60px;
+}
+
 /* You Widget */
 
 .dashboard .you-widget {
@@ -1179,16 +1198,6 @@ li#config-menu {
     background: url('../images/widget/you-br.gif') no-repeat right bottom;
     height: 4px;
 }
-
-.dashboard .you-widget .user-pic {
-    float: left;
-    width: 50px;
-    margin-right: 10px;
-    text-align: right;
-}
-/*.dashboard .you-widget .user-stats {
-    margin-left: 60px;
-}*/
 
 .dashboard .you-widget .user-stats p {
     text-align: right;

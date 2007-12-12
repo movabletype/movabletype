@@ -1,11 +1,11 @@
 <mt:setvarblock name="action_buttons">
-<mt:unless name="template_type" eq="system">
+<mt:unless name="template_type" eq="system"><mt:unless name="template_type" eq="email">
     <a href="javascript:void(0)"
         onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
         ><__trans phrase="Delete"></a>
-</mt:unless>
+</mt:unless></mt:unless>
 </mt:setvarblock>
 <mtapp:listing hide_pager="1" class="show-all">
     <mt:if __first__>

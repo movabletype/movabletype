@@ -43,9 +43,10 @@ sub subscribe {
     my $blog = MT::Blog->load($q->param('blog_id'))
         || die "No blog found with the given blog_id.";
     my $entry_id = $q->param('entry_id');
+    my $entry;
     if ($entry_id) {
         require MT::Entry;
-        my $entry = MT::Entry->load({id => $entry_id, blog_id => $blog->id, status => MT::Entry::RELEASE()})
+        $entry = MT::Entry->load({id => $entry_id, blog_id => $blog->id, status => MT::Entry::RELEASE()})
             || die "No entry found with the given entry_id.";
     }
 

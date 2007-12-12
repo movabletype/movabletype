@@ -31,6 +31,17 @@ no strict 'refs';
 %conv = %{'MT::L10N::' . $lang . '::Lexicon'};
 foreach (keys %conv) {
     $lconv{lc $_} = $conv{$_};
+    my $key = $_;
+    my $key_esc = $key;
+    my $value_esc = $conv{$key};
+    $key_esc =~ s/\'/\\'/sg;
+    $conv{$key_esc}=$value_esc;
+    $key_esc = $key;
+    $key_esc =~ s/\n/\\n/sg;
+    $conv{$key_esc}=$value_esc;    
+    $key_esc = $key;
+    $key_esc =~ s/\"/\\"/sg;
+    $conv{$key_esc}=$value_esc;
 }
 
 my (%phrase, %is_used, $args);
@@ -132,17 +143,18 @@ do {
             }
             $args{phrase} =~ s/\\\\'/\\'/g;
             if ($trans) {
-                printf "\t$q%s$q => '%s',\n", $args{phrase}, $trans; # Print out the translation if there was an existing one
+                printf "\t$q%s$q => $q%s$q,\n", $args{phrase}, $trans; # Print out the translation if there was an existing one
             } else {
                 $trans = $lconv{lc $args{phrase}} || '';
                 my $reason = $trans ? "Case" : "New"; # New translation, or just different case?
-                printf "\t$q%s$q => '%s', # Translate - $reason\n", $args{phrase}, $trans; # Print out the translation if there was an existing one based on the lowercase string, else empty
+                printf "\t$q%s$q => $q%s$q, # Translate - $reason\n", $args{phrase}, $trans; # Print out the translation if there was an existing one based on the lowercase string, else empty
             }
         }
         while ($text =~ /\s*label\s*=>\s*(["'])(.*?)([^\\])\1/gs) { 
             my($msg, %args);
             my $trans = '';
             $args{phrase} = $2.$3;
+
             if ($trans eq '' && $conv{$args{phrase}}) {
                  $trans = $conv{$args{phrase}};
                  $is_used{$args{phrase}} = 1;

@@ -1,9 +1,7 @@
-<mt:if name="blog_id"><mt:setvar name="blog_scope" value="$blog_id"><mt:else><mt:setvar name="blog_scope" value="all"></mt:if>
-<mt:setvar name="tag_cloud" value="0"><MTTags blog_ids="$blog_scope" limit="1"><mt:setvar name="tag_cloud" value="1"></MTTags>
 <mt:unless name="tab"><mt:setvar name="tab" value="entry"></mt:unless>
 <mt:if name="tab" eq="tag"><mt:unless name="tag_cloud"><mt:var name="tab" value="entry"></mt:unless></mt:if>
 <mt:setvarblock name="html_head" append="1">
-    <mt:if name="stat_url">
+    <mt:if name="has_stat_urls">
     <script type="text/javascript" src="<mt:var name="static_uri">js/flash/JavaScriptFlashGateway.js"></script>
     </mt:if>
     <script type="text/javascript">
@@ -49,7 +47,7 @@
         f['tab'].value = activeStatsPanel;
         updateWidget('blog_stats');
     }
-    <mt:if name="stat_url">
+    <mt:if name="has_stat_urls">
         var lcId = new Date().getTime();
         var flashProxy = new FlashProxy(lcId, "<mt:var name="static_uri">flash/JavaScriptFlashGateway.swf");
         /*
@@ -100,6 +98,7 @@
             } else if (activeStatsPanel == 'entry') {
                 str = trans("You have <a href='[_3]'>[quant,_1,entry,entries] from [_2]</a>", total_count, clean_range, search_url);
             }
+            <mt:var name="active_stats_panel_updates">
             getByID("stats-summary-"+activeStatsPanel).innerHTML = str;
         }
         </mt:if>
@@ -109,7 +108,7 @@
     <mt:var name="tab_html_head">
 </mt:setvarblock>
 
-<mt:unless name="stat_url">
+<mt:unless name="has_stat_urls">
     <mt:if name="is_administrator">
         <mt:unless name="static_file_path">
             <mt:setvarblock name="error"><__trans phrase="Movable Type was unable to locate your 'mt-static' directory. Please configure the 'StaticFilePath' configuration setting in your mt-config.cgi file, and create a writable 'support' directory underneath your 'mt-static' directory."></mt:setvarblock>

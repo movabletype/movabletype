@@ -168,6 +168,21 @@ use vars qw( @ISA %Lexicon );
 	'Thanks for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => '[_1]のアップデート通知にご登録いただきありがとうございました。以下のリンクから登録を完了させてください。',
 	'If the link is not clickable, just copy and paste it into your browser.' => 'リンクをクリックできない場合は、お使いのウェブブラウザに貼り付けてください。',
 
+## default_templates/new-ping.mtml
+	'An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ[_1]のブログ記事[_3] (ID:[_2])に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
+	'An unapproved TrackBack has been posted on your blog [_1], for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ[_1]のカテゴリ[_3](ID:[_2])に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
+	'A new TrackBack has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'ブログ[_1]のブログ記事[_3](ID:[_2])に新しいトラックバックがあります。',
+	'A new TrackBack has been posted on your blog [_1], on category #[_2] ([_3]).' => 'ブログ[_1]のカテゴリ[_3](ID:[_2])に新しいトラックバックがあります。',
+	'Excerpt' => '概要',
+	'URL' => 'URL',
+	'Title' => 'タイトル',
+	'Blog' => 'ブログ',
+	'IP address' => 'IPアドレス',
+	'Approve TrackBack' => 'トラックバックを承認する',
+	'View TrackBack' => 'トラックバックを見る',
+	'Report TrackBack as spam' => 'トラックバックをスパムとして報告する',
+	'Edit TrackBack' => 'トラックバックの編集',
+
 ## default_templates/comment_detail.mtml
 	'[_1] [_2] said:' => '[_1] [_2]:',
 	'<a href="[_1]" title="Permalink to this comment">[_2]</a>' => '<a href="[_1]" title="コメントのURL">[_2]</a>',
@@ -176,7 +191,6 @@ use vars qw( @ISA %Lexicon );
 	'Leave a comment' => 'コメントする',
 	'Name' => '名前',
 	'Email Address' => '電子メール',
-	'URL' => 'URL',
 	'Remember personal info?' => 'ログイン情報を記憶',
 	'(You may use HTML tags for style)' => '(スタイル用のHTMLタグを使うことができます)',
 	'Preview' => '確認',
@@ -184,6 +198,7 @@ use vars qw( @ISA %Lexicon );
 	'Cancel' => 'キャンセル',
 
 ## default_templates/comment_throttle.mtml
+	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'これが間違いである場合は、Movable Typeにログインして、ブログの設定画面に進み、IP禁止リストからIPアドレスを削除してください。',
 	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => '[_1]を禁止しました。[_2]秒の間に許可された以上のコメントが送信されました。',
 	'This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => 'これは悪意のスクリプトがブログをコメントで飽和させるのを阻止するための措置です。以下のIPアドレスを禁止しました。',
 
@@ -228,14 +243,14 @@ use vars qw( @ISA %Lexicon );
 	'Mail Footer' => 'メールフッター',
 
 ## default_templates/javascript.mtml
-	'Thanks for signing in,' => '',
+	'Thanks for signing in,' => '', # Translate - New
 	'. Now you can comment.' => 'さん、コメントをどうぞ。',
 	'sign out' => 'サインアウト',
 	'You do not have permission to comment on this blog.' => 'このブログにはコメントする権限を持っていません。',
 	'Sign in' => 'サインイン',
 	' to comment on this entry.' => 'してからコメントしてください。',
 	' to comment on this entry,' => 'してからコメントしてください。',
-	'or ' => '',
+	'or ' => '', # Translate - New
 	'comment anonymously.' => '匿名でコメントすることもできます。',
 
 ## default_templates/commenter_confirm.mtml
@@ -244,7 +259,7 @@ use vars qw( @ISA %Lexicon );
 	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'アカウントの確認のため、次のURLをクリックするか、コピーしてブラウザのアドレス欄に貼り付けてください。',
 	'If you did not make this request, or you don\'t want to register for an account to comment on [_1], then no further action is required.' => 'このメールに覚えがない場合や、[_1]に登録するのをやめたい場合は、何もする必要はありません。',
 	'Thank you very much for your understanding.' => 'ご協力ありがとうございます。',
-	'Sincerely,' => '',
+	'Sincerely,' => '', # Translate - New
 
 ## default_templates/archive_index.mtml
 	'Monthly Archives' => '月別アーカイブ',
@@ -408,11 +423,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/TheSchwartz/ExitStatus.pm
 	'Job Exit Status' => 'ジョブ終了状態',
 
-## lib/MT/L10N/fr.pm
-	'Edit Profile' => 'プロフィールの編集',
-	'Sign out' => 'サインアウト',
-	'Register' => '登録する',
-
 ## lib/MT/ObjectDriver/Driver/DBD/SQLite.pm
 	'Can\'t open \'[_1]\': [_2]' => '\'[_1]\'を開けません: [_2]',
 
@@ -574,7 +584,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のプロフィールを更新できませんでした: [_1]',
 
 ## lib/MT/App/Search.pm
-	'You are currently performing a search. Please wait until your search is completed.' => 'You are currently performing a search. Please wait until your search is completed.',
+	'You are currently performing a search. Please wait until your search is completed.' => '連続した検索を抑制しています。しばらく待ってから再度検索してください。',
 	'Search failed. Invalid pattern given: [_1]' => '検索に失敗しました。パターンが不正です: [_1]',
 	'Search failed: [_1]' => '検索に失敗しました: [_1]',
 	'No alternate template is specified for the Template \'[_1]\'' => '\'[_1]\'に対応するテンプレートがありません。',
@@ -727,7 +737,6 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Settings' => '公開設定',
 	'Plugin Settings' => 'プラグイン設定',
 	'Settings' => '設定',
-	'Edit TrackBack' => 'トラックバックの編集',
 	'Edit Comment' => 'コメントの編集',
 	'Authenticated Commenters' => '認証されているコメント投稿者',
 	'Commenter Details' => 'コメントの詳細',
@@ -888,11 +897,9 @@ use vars qw( @ISA %Lexicon );
 	'Could not create upload path \'[_1]\': [_2]' => '[_1]を作成できませんでした: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'アップロードされたファイルを[_1]に書き込めませんでした: [_2]',
 	'Search & Replace' => '検索/置換',
-	'Title' => 'タイトル',
 	'Entry Body' => '本文',
 	'Extended Entry' => '続き',
 	'Keywords' => 'キーワード',
-	'Excerpt' => '概要',
 	'Basename' => '出力ファイル名',
 	'Comment Text' => '本文',
 	'IP Address' => 'IPアドレス',
@@ -948,7 +955,7 @@ use vars qw( @ISA %Lexicon );
 	'Select Roles' => 'ロールを選択',
 	'Role Name' => 'ロール名',
 	'Roles Selected' => '選択されたロール',
-	'' => '',
+	'' => '', # Translate - New
 	'Grant Permissions' => '権限の付与',
 	'Backup' => 'バックアップ',
 	'Backup & Restore' => 'バックアップ/復元',
@@ -1047,14 +1054,12 @@ use vars qw( @ISA %Lexicon );
 	'Design' => 'デザイン',
 	'Preferences' => '設定',
 	'Tools' => 'ツール',
-	'Blog' => 'ブログ',
 	'Entry' => 'ブログ記事',
 	'Assets' => 'アイテム',
 	'Folders' => 'フォルダ',
 	'General' => '全般',
 	'Feedback' => 'コミュニケーション',
 	'Blog Settings' => 'ブログの設定',
-	'Custom Fields' => 'カスタムフィールド',
 	'Address Book' => 'アドレス帳',
 	'Import' => 'インポート',
 	'Export' => 'エクスポート',
@@ -1224,6 +1229,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning user authentication type...' => 'ユーザーに認証タイプを設定しています...',
 	'Adding new feature widget to dashboard...' => '新機能紹介のウィジェットをダッシュボードに追加しています...',
 	'Moving OpenID usernames to external_id fields...' => '既存のOpenIDユーザー名を移動しています...',
+	'Assigning blog template set...' => 'ブログにテンプレートセットを設定しています...',
 
 ## lib/MT/Core.pm
 	'Create Blogs' => 'ブログの作成',
@@ -1648,7 +1654,7 @@ use vars qw( @ISA %Lexicon );
 	'Version [_1]' => 'バージョン [_1]',
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'OpenID URL' => 'あなたのOpenID URL',
-	'Sign in using your LiveJournal username.' => 'あなたのLiveJournalのユーザー名でサインインします。',
+	'Sign in using your OpenID identity.' => 'あなたのOpenID',
 	'OpenID is an open and decentralized single sign-on identity system.' => 'OpenIDはオープンで分散されたシングルサインオンのための認証システムです。',
 	'Sign In' => 'サインイン',
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
@@ -2066,7 +2072,7 @@ use vars qw( @ISA %Lexicon );
 	'_USER_DISABLED' => '無効',
 
 ## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '0',
+	'_LOCALE_WEEK_START' => '0', # Translate - New
 	'Sunday' => '日曜日',
 	'Monday' => '月曜日',
 	'Tuesday' => '火曜日',
@@ -2366,21 +2372,8 @@ use vars qw( @ISA %Lexicon );
 	'No Learning Movable Type news available.' => 'Learning Movable Typeに新着ブログ記事はありません。',
 
 ## tmpl/cms/widget/new_version.tmpl
-	'Welcome to the Community Solution' => 'Community Solutionの新機能',
-	'The Community Solution provides you with a set of features that embody the best practices around promoting a healthy, vibrant and thriving online community. Those features include:' => 'Community Solutionには、活気にあふれたオンラインコミュニティを運営するために求められる様々な機能が含まれています。',
-	'User Profiles' => 'ユーザープロファイル',
-	'Allow users to build for themselves rich profiles.' => 'ユーザー自身が自分のプロファイルを設定できます。',
-	'Favoriting, Recommendations and User Voting' => 'ユーザーによる評価、投票',
-	'Allow readers to vote for their favorite content and then sort that content by popularity.' => '読者が好きなコンテンツに投票できます。コンテンツを評価の高い順に並べることができます。',
-	'Reader Contributed Content' => 'ユーザーからの投稿',
-	'Allow users to submit rich media content to your site.' => 'コンテンツをユーザーがブログの側から投稿できます。',
-	'Forums and Community Blogs' => '掲示板とコミュニティブログ',
-	'Deploy forums and community blogging features with a couple of clicks.' => '掲示板やコミュニティブログを簡単にセットアップできます。',
-	'Shared Templates' => 'グローバルテンプレート',
-	'Share template fragments across multiple blogs making it easier to deploy design changes.' => 'テンプレートの共通部分を複数のブログにまたがって利用できます。',
-	'Customize <em>Every</em> Template' => 'あらゆるテンプレートのカスタマイズ',
-	'Edit the login screen, registration screen, edit profile screen, emails and more.' => 'ログイン画面、登録画面、プロファイルの編集、メールなど様々なテンプレートを編集できます。',
-	'Customize the input forms and data models for entries, pages, folders, categories and users.' => 'ブログ記事、ウェブページ、フォルダ、カテゴリ、ユーザーの編集画面やデータモデルをカスタマイズできます。',
+	'What\'s new in Movable Type [_1]' => 'Movable Type [_1] の新機能',
+	'Here is the summary of new features found in this version:' => '以下の新しい機能が追加されました。',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => 'タグ&ldquo;[_2]&rdquo;の付いたブログ記事([quant,_1,件,件])',
@@ -2604,6 +2597,7 @@ use vars qw( @ISA %Lexicon );
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
 	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
+	'The directory you have configured for uploading avatars is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]' => 'ユーザー画像をアップロードするためのディレクトリに書き込みできない設定になっています。ユーザーがユーザー画像をアップロードできるようにするために、「[_1]」をWebサーバーから書き込めるようにしてください。',
 	'Your dashboard is empty!' => 'ダッシュボードが空です。',
 
 ## tmpl/cms/edit_commenter.tmpl
@@ -2922,7 +2916,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_banlist.tmpl
 	'IP Banning Settings' => '禁止IPアドレス設定',
-	'IP address' => 'IPアドレス',
 	'IP addresses' => 'IPアドレス',
 	'Delete selected IP Address (x)' => '選択されたIPアドレスを削除する (x)',
 	'You have added [_1] to your list of banned IP addresses.' => '禁止IPアドレスリストに[_1]を追加しました。',
@@ -2982,7 +2975,7 @@ use vars qw( @ISA %Lexicon );
 	'Clear TypeKey Token' => 'TypeKeyのトークンを削除',
 	'Please click the Save Changes button below to disable authentication.' => '保存ボタンをクリックして認証を無効にしてください。',
 	'TypeKey is not enabled.' => 'TypeKeyは有効ではありません。',
-	'or' => '',
+	'or' => '', # Translate - New
 	'Obtain TypeKey token' => 'TypeKeyのトークンを取得',
 	'Please click the Save Changes button below to enable TypeKey.' => '保存ボタンをクリックしてTypeKeyを有効にしてください。',
 	'External Notifications' => '更新通知',
@@ -3056,6 +3049,7 @@ use vars qw( @ISA %Lexicon );
 	'Only allow the sites on the following domains:' => '以下のドメインのサイトのみ',
 
 ## tmpl/cms/edit_author.tmpl
+	'Edit Profile' => 'プロフィールの編集',
 	'This profile has been updated.' => 'プロフィールを更新しました。',
 	'A new password has been generated and sent to the email address [_1].' => '新しいパスワードが作成され、メールアドレス[_1]に送信されました。',
 	'Your Web services password is currently' => 'ウェブサービスのパスワード',
@@ -3423,7 +3417,7 @@ use vars qw( @ISA %Lexicon );
 	'Note: Registration is currently disabled at the system level.' => '注:ユーザー登録は現在システムレベルで無効となっています。',
 	'Authentication Methods' => '認証方式',
 	'Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication.' => '注: 認証されたコメント投稿者からのコメントだけを許可する設定になっていますが、コメント認証が有効になっていません。',
-	'Native' => '',
+	'Native' => '', # Translate - New
 	'Require E-mail Address for Comments via TypeKey' => 'TypeKey経由のコメントにメールアドレスを要求する',
 	'If enabled, visitors must allow their TypeKey account to share e-mail address when commenting.' => '閲覧者はコメント投稿時にTypeKeyアカウントでメールアドレスを共有することを許可する必要があります。',
 	'Setup TypeKey' => 'TypeKeyの設定',
@@ -3518,6 +3512,7 @@ use vars qw( @ISA %Lexicon );
 	'Select a password for yourself.' => 'パスワード選択してください。',
 	'This word or phrase will be required to recover the password if you forget it.' => 'パスワード再設定用のフレーズです。',
 	'The URL of your website. (Optional)' => 'あなたのウェブサイトのURLです。（オプション）',
+	'Register' => '登録する',
 
 ## tmpl/comment/signup.tmpl
 
@@ -3617,7 +3612,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/Cloner/cloner.pl
 	'Clones a weblog and all of its contents.' => '内容も含めてブログを複製します。',
 	'Cloning blog \'[_1]\'...' => 'ブログ「[_1]」を複製しています...',
-	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a> or <a href="javascript:void(0);" onclick="closeDialog(\'[_2]\');">configure the Site root and URL of the new blog</a>.' => '完了しました。<a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">ブログの一覧に戻る</a>か、または<a href="javascript:void(0);" onclick="closeDialog(\'[_2]\');">新しいブログのサイト・パスとサイトURLを設定</a>できます。',
+	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a> or <a href="javascript:void(0);" onclick="closeDialog(\'[_2]\');">configure the Site root and URL of the new blog</a>.' => '', # Translate - New
 	'No blog was selected to clone.' => '複製するブログが選択されていません。',
 	'This action can only be run for a single blog at a time.' => '一度にひとつのブログしか選択できません。',
 	'Invalid blog_id' => '不正なブログID',
@@ -3630,8 +3625,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'テキストをHTMLに整形するプラグインです。',
 	'Markdown' => 'Markdown',
-
-
 
 ## plugins/TemplateRefresh/tmpl/results.tmpl
 	'No templates were selected to process.' => 'テンプレートが選択されていません。',
@@ -3732,28 +3725,31 @@ use vars qw( @ISA %Lexicon );
 	'SpamLookup Link Memory' => 'SpamLookup リンクメモリ',
 	'SpamLookup Email Memory' => 'SpamLookup メールメモリ',
 
-
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'テキストをHTMLに整形します。',
 	'Textile 2' => 'Textile 2',
 
-## addons/Community.pack/templates/global/password_reset_form.mtml
-	'Reset Password' => 'パスワードの再設定',
-	'Simple Header' => 'シンプルヘッダー',
-	'Back to the original page' => '元のページに戻る',
-	'Simple Footer' => 'シンプルフッター',
+## addons/Community.pack/templates/global/profile_feed_rss.mtml
 
 ## addons/Community.pack/templates/global/register_form.mtml
 	'Sign up' => 'サインアップ',
+	'Simple Header' => 'シンプルヘッダー',
 
 ## addons/Community.pack/templates/global/simple_footer.mtml
 
 ## addons/Community.pack/templates/global/profile_error.mtml
-	'Profile Error' => 'プロファイルエラー',
+	'Profile Error' => 'プロフィールエラー',
 	'Status Message' => 'ステータスメッセージ',
+
+## addons/Community.pack/templates/global/login_form.mtml
 
 ## addons/Community.pack/templates/global/userpic.mtml
 	'default userpic' => '既定のユーザー画像',
+
+## addons/Community.pack/templates/global/password_reset_form.mtml
+	'Reset Password' => 'パスワードの再設定',
+	'Back to the original page' => '元のページに戻る',
+	'Simple Footer' => 'シンプルフッター',
 
 ## addons/Community.pack/templates/global/new_entry_email.mtml
 	'A new entry \'[_1]([_2])\' has been posted on your blog [_3].' => 'ブログ「[_3]」に新しいブログ記事「[_1]」(ID: [_2])が投稿されました。',
@@ -3769,8 +3765,6 @@ use vars qw( @ISA %Lexicon );
 	'User Name' => 'ユーザー名',
 	'Upload New Userpic' => 'ユーザー画像をアップロード',
 
-## addons/Community.pack/templates/global/login_form.mtml
-
 ## addons/Community.pack/templates/global/header.mtml
 	'Blog Description' => 'ブログの説明',
 	'GlobalJavaScript' => 'GlobalJavaScript',
@@ -3783,7 +3777,7 @@ use vars qw( @ISA %Lexicon );
 	'Forgot Password' => 'パスワードの再設定',
 
 ## addons/Community.pack/templates/global/profile_view.mtml
-	'User Profile' => 'ユーザーのプロファイル',
+	'User Profile' => 'ユーザーのプロフィール',
 	'Website:' => 'ウェブサイト',
 	'Recent Comments' => '最近のコメント',
 	'Responses to Comments' => 'コメントへの返信',
@@ -3797,6 +3791,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] has not added any favorites yet.' => '[_1]は何もお気に入り登録していません。',
 
 ## addons/Community.pack/templates/global/user_navigation.mtml
+	'Sign out' => 'サインアウト',
 	'Not a member? <a href="[_1]">Register</a>' => '<a href="[_1]">サインアップ</a>？',
 
 ## addons/Community.pack/templates/global/register_confirmation.mtml
@@ -3832,8 +3827,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/blog/main_index.mtml
 
-## addons/Community.pack/templates/blog/content_nav.mtml  
-	'Blog Home' => 'ブログのホームページ',  
+## addons/Community.pack/templates/blog/content_nav.mtml
+	'Blog Home' => 'ブログのホームページ',
 
 ## addons/Community.pack/templates/blog/entry_summary.mtml
 	'A favorite' => 'お気に入り',
@@ -3851,10 +3846,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/entry_detail.mtml
 
 ## addons/Community.pack/templates/blog/entry_form.mtml
-	'To create new entry, you have to sign in as a user who is registered to Movable Type and has enough permission assigned.  (<a href="[_1]">Sign out</a>).' => 'ブログ記事を投稿するには、Movable Typeにユーザー登録をして、適切な権限をもらう必要があります(<a href="[_1]">サインアウト</a>)。',
+	'You don\'t have permission to post.' => '投稿する権限がありません。',
 	'<a href="[_1]">Sign in</a> to create an entry.' => 'ブログ記事を作成するために<a href="[_1]">サインイン</a>してください。',
 	'Select Category...' => 'カテゴリを選択...',
-	'File' => 'ファイル',
 
 ## addons/Community.pack/templates/blog/entry_create.mtml
 	'Entry Form' => 'ブログ記事フォーム',
@@ -3928,8 +3922,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/forum/entry_detail.mtml
 
 ## addons/Community.pack/templates/forum/entry_form.mtml
-	'To start a topic, you must sign in as a user who is registered to Movable Type and has enough permission assigned.  (<a href="[_1]">Sign out</a>).' => 'トピックを投稿するには、Movable Typeにユーザー登録をして、適切な権限をもらう必要があります(<a href="[_1]">サインアウト</a>)。',
-	'<a href="[_1]">Sign in</a> to create an topic.' => 'トピックを投稿するために<a href="[_1]">サインイン</a>してください。',
+	'<a href="[_1]">Sign in</a> to create a topic.' => 'トピックを投稿するために<a href="[_1]">サインイン</a>してください。',
 	'Topic' => 'トピック',
 	'Select Forum...' => '掲示板を選択...',
 	'Forum' => '掲示板',
@@ -3971,7 +3964,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/forum/comments.mtml
 	'[_1] Replies' => '返信([_1])',
-	' ([_1]) A favorite' => '([_1]) お気に入り',
+	'_NUM_FAVORITES' => '票',
 	'Favorite This' => 'お気に入りに追加',
 
 ## addons/Community.pack/templates/forum/search_results.mtml
@@ -3986,6 +3979,18 @@ use vars qw( @ISA %Lexicon );
 	'Reply on [_1]' => '[_1]への返信',
 	'Previewing your Reply' => '返信の確認',
 
+## addons/Community.pack/tmpl/widget/blog_stats_registration.mtml
+	'You have [quant,_1,registration,registrations] from [_2]' => '[_2]に[quant,_1,件,件]の登録がありました。',
+
+## addons/Enterprise.pack/tmpl/list_group.tmpl
+	'You did not select any [_1] to remove.' => '削除する[_1]が選択されていません。',
+	'Are you sure you want to remove this [_1]?' => '[_1]を削除してよろしいですか?',
+	'Are you sure you want to remove the [_1] selected [_2]?' => '選択されている[_2]を削除してよろしいですか?',
+	'to remove' => '削除する',
+
+## addons/Enterprise.pack/tmpl/list_group_member.tmpl
+	'Are you sure you want to remove this [_1] from this group?' => 'このグループからこの[_1]を削除してよろしいですか?',
+	'Are you sure you want to remove the [_1] selected [_2] from this group?' => 'このグループから選択されている[_2]を削除してよろしいですか?',
 
 );
 

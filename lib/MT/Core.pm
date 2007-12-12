@@ -478,6 +478,7 @@ BEGIN {
             'DisableNotificationPings'   => { default => 0 },
             'SyncTarget' => { type => 'ARRAY' },
             'RsyncOptions' => undef,
+            'UserpicAllowRect' => { default => 0 },
             'UserpicMaxUpload' => { default => 0 },
             'UserpicThumbnailSize' => { default => 100 },
         },

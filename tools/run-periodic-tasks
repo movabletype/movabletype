@@ -13,6 +13,13 @@ use MT;
 
 my $mt = MT->new() or die MT->errstr;
 
+$mt->{vtbl} = { };
+$mt->{is_admin} = 0;
+$mt->{template_dir} = 'cms';
+$mt->{user_class} = 'MT::Author';
+$mt->{plugin_template_path} = 'tmpl';
+$mt->run_callbacks('init_app', $mt);
+
 require Getopt::Long;
 my $daemonize = 0;
 my $sleep     = 5;

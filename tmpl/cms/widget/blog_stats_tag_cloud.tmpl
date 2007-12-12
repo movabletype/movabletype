@@ -1,3 +1,5 @@
+<mt:if name="blog_id"><mt:setvar name="blog_scope" value="$blog_id"><mt:else><mt:setvar name="blog_scope" value="all"></mt:if>
+<mt:setvar name="tag_cloud" value="0"><MTTags blog_ids="$blog_scope" limit="1"><mt:setvar name="tag_cloud" value="1"></MTTags>
 <mt:if name="tag_cloud">
     <mt:setvarblock name="tabs" append="1">
         <li id="tag-tab" class="tab <mt:if name="tab" eq="tag">selected-tab</mt:if>" mt:tab="tag" mt:command="select-tab" onclick="return blogStatsTabSelect('tag');"><a href="javascript:void(0);"><span><__trans phrase="Tags"></span></a></li>

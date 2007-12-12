@@ -732,6 +732,20 @@ sub core_upgrade_functions {
                 },
             },
         },
+        'core_set_template_set' => {
+            version_limit => 4.0034,
+            priority => 3.2,
+            updater => {
+                type => 'blog',
+                label => 'Assigning blog template set...',
+                condition => sub {
+                    !$_[0]->template_set;
+                },
+                code => sub {
+                    $_[0]->template_set('mt_blog');
+                },
+            },
+        },
     }
 }
 
@@ -1350,7 +1364,7 @@ sub seed_database {
     require MT::Entry;
     my $entry = MT::Entry->new;
     $entry->blog_id($blog->id);
-    $entry->title(MT->translate("I just finished installing Movable Type [_1]!", MT->product_version));
+    $entry->title(MT->translate("I just finished installing Movable Type [_1]!", int(MT->product_version)));
     $entry->text(MT->translate("Welcome to my new blog powered by Movable Type. This is the first post on my blog and was created for me automatically when I finished the installation process. But that is ok, because I will soon be creating posts of my own!"));
     $entry->author_id($author->id);
     $entry->status(MT::Entry::RELEASE());

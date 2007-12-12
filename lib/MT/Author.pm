@@ -651,11 +651,13 @@ sub userpic_thumbnail_options {
         Format => MT->translate('userpic-[_1]-%wx%h%x', $author->id),
     ) if ref $author;
 
-    my $max_dim = MT->config->UserpicThumbnailSize;
+    my $cfg = MT->config;
+    my $max_dim = $cfg->UserpicThumbnailSize;
+    my $square  = $cfg->UserpicAllowRect ? 0 : 1;
     return (
         Width  => $max_dim,
         Height => $max_dim,
-        Square => 1,
+        Square => $square,
         Type   => 'png',
         %real_userpic_options,
     );
@@ -699,6 +701,7 @@ sub userpic_url {
 sub userpic_html {
     my $author = shift;
     my ($thumb_url, $w, $h) = $author->userpic_url(@_) or return;
+    return unless $thumb_url;
     sprintf q{<img src="%s" width="%d" height="%d" alt="" />},
         MT::Util::encode_html($thumb_url), $w, $h;
 }
