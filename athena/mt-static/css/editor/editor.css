@@ -1,0 +1,313 @@
+/* editor */
+
+.editor {
+    border: 1px solid #ccc;
+    border-top: 0;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    padding: 0 0 10px 0;
+}
+
+.editor-plaintext .editor-toolbar a.button.command-toggle-wysiwyg,
+.editor-plaintext .editor-toolbar a.button.command-toggle-html,
+.editor-plaintext .editor-toolbar a.button.command-outdent {
+    display: none;
+}
+
+.editor iframe,
+.editor textarea {
+    display: block;
+    position: absolute;
+    overflow: auto;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.editor-mode-iframe iframe,
+.editor-mode-textarea textarea {
+    width: 100%;
+    height: 100%;
+}
+
+
+/* toolbar */
+
+.editor-toolbar {
+    -moz-user-select: none !important;
+    -moz-user-focus: none !important;
+}
+
+.editor-header select {
+    margin-right: 3px;
+    margin-top: 3px;
+}
+
+.editor-toolbar a.button {
+    display: block;
+    overflow: hidden;
+    float: left;
+    width: 22px;
+    height: 22px;
+    margin: 0 4px 0 0;
+    padding: 0;
+    color: #000;
+    background: url(../../images/buttons/toolbar/toolbar.gif) left top no-repeat;
+    text-indent: 1000em;
+    min-width: 0;
+    -moz-user-select: none !important;
+    -moz-user-focus: none !important;
+    -moz-outline: none !important;
+    -khtml-user-select: none !important;
+}
+
+.webkit-detected .editor-toolbar a.button.command-insert-link,
+.webkit-detected .editor-toolbar a.button.command-indent,
+.webkit-detected .editor-toolbar a.button.command-outdent {
+    display: none;
+}
+
+.editor-toolbar a.button:hover:active {
+    background-image: url(../../images/buttons/toolbar/toolbar-active.gif);
+}
+
+.editor-toolbar a.button:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-hover.gif);
+}
+
+.editor-toolbar a.button s,
+.editor-toolbar a.button b {
+    display: none;
+}
+
+.editor-toolbar a.button.command-font-size-smaller,
+.editor-toolbar a.button.command-font-size-smaller:hover {
+    background-position: 0 0;
+}
+
+.editor-toolbar a.button.command-font-size-larger,
+.editor-toolbar a.button.command-font-size-larger:hover {
+    background-position: -22px 0;
+}
+
+.editor-toolbar a.button.command-bold,
+.editor-toolbar a.button.command-bold:hover {
+    background-position: -44px 0;
+}
+
+.editor-state-bold a.button.command-bold,
+.editor-state-bold a.button.command-bold:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-italic,
+.editor-toolbar a.button.command-italic:hover {
+    background-position: -66px 0;
+}
+
+.editor-state-italic a.button.command-italic,
+.editor-state-italic a.button.command-italic:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-underline,
+.editor-toolbar a.button.command-underline:hover {
+    background-position: -88px 0;
+}
+
+.editor-state-underline a.button.command-underline,
+.editor-state-underline a.button.command-underline:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-strikethrough,
+.editor-toolbar a.button.command-strikethrough:hover {
+    margin-right: 10px;
+    background-position: -110px 0;
+}
+
+.editor-state-strikethrough a.button.command-strikethrough,
+.editor-state-strikethrough a.button.command-strikethrough:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-color,
+.editor-toolbar a.button.command-color:hover {
+    margin-right: 10px;
+    background-position: -132px 0;
+}
+
+.editor-toolbar a.button.command-insert-link,
+.editor-toolbar a.button.command-insert-link:hover {
+    background-position: -154px 0;
+}
+
+.editor-toolbar a.button.command-insert-email,
+.editor-toolbar a.button.command-insert-email:hover {
+    margin-right: 10px;
+    background-position: -176px 0;
+}
+
+.editor-toolbar a.button.command-indent,
+.editor-toolbar a.button.command-indent:hover {
+    background-position: -198px 0;
+}
+
+.editor-toolbar a.button.command-outdent,
+.editor-toolbar a.button.command-outdent:hover {
+    background-position: -220px 0;
+}
+
+.editor-toolbar a.button.command-insert-unordered-list,
+.editor-toolbar a.button.command-insert-unordered-list:hover {
+    background-position: -242px 0;
+}
+
+.editor-state-unordered-list a.button.command-insert-unordered-list,
+.editor-state-unordered-list a.button.command-insert-unordered-list:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-insert-ordered-list,
+.editor-toolbar a.button.command-insert-ordered-list:hover {
+    margin-right: 10px;
+    background-position: -264px 0;
+}
+
+.editor-state-ordered-list a.button.command-insert-ordered-list,
+.editor-state-ordered-list a.button.command-insert-ordered-list:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-enclosure-align-left,
+.editor-toolbar a.button.command-enclosure-align-left:hover {
+    background-position: -286px 0;
+}
+
+.editor-state-enclosure-align-left a.button.command-enclosure-align-left,
+.editor-state-enclosure-align-left a.button.command-enclosure-align-left:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-enclosure-align-center,
+.editor-toolbar a.button.command-enclosure-align-center:hover {
+    background-position: -308px 0;
+}
+
+.editor-state-enclosure-align-center a.button.command-enclosure-align-center,
+.editor-state-enclosure-align-center a.button.command-enclosure-align-center:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-enclosure-align-right,
+.editor-toolbar a.button.command-enclosure-align-right:hover {
+    background-position: -330px 0;
+}
+
+.editor-state-enclosure-align-right a.button.command-enclosure-align-right,
+.editor-state-enclosure-align-right a.button.command-enclosure-align-right:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-justify-left,
+.editor-toolbar a.button.command-justify-left:hover {
+    background-position: -352px 0;
+}
+
+.editor-state-justify-left a.button.command-justify-left,
+.editor-state-justify-left a.button.command-justify-left:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-justify-center,
+.editor-toolbar a.button.command-justify-center:hover {
+    background-position: -374px 0;
+}
+
+.editor-state-justify-center a.button.command-justify-center,
+.editor-state-justify-center a.button.command-justify-center:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-justify-right,
+.editor-toolbar a.button.command-justify-right:hover {
+    margin-right: 10px;
+    background-position: -396px 0;
+}
+
+.editor-state-justify-right a.button.command-justify-right,
+.editor-state-justify-right a.button.command-justify-right:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+/*
+.editor-toolbar a.button.command-spell-check,
+.editor-toolbar a.button.command-spell-check:hover {
+    background-position: -462px 0;
+}
+*/
+
+.editor-toolbar a.button.command-insert-image,
+.editor-toolbar a.button.command-insert-image:hover {
+    background-position: -440px 0;
+}
+
+.editor-state-insert-image a.button.command-insert-image,
+.editor-state-insert-image a.button.command-insert-image:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+.editor-toolbar a.button.command-insert-file,
+.editor-toolbar a.button.command-insert-file:hover {
+    margin-right: 10px;
+    background-position: -462px 0;
+}
+
+.editor-state-insert-file a.button.command-insert-file,
+.editor-state-insert-file a.button.command-insert-file:hover {
+    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+}
+
+
+/* toggle */
+
+.editor-toolbar a.button.command-toggle-wysiwyg,
+.editor-toolbar a.button.command-toggle-html {
+    background-image: url(../../images/buttons/toolbar/toggle.gif);
+}
+
+.editor-toolbar a.button.command-toggle-wysiwyg:hover,
+.editor-toolbar a.button.command-toggle-html:hover {
+    background-image: url(../../images/buttons/toolbar/toggle-hover.gif);
+}
+
+.editor-mode-iframe .editor-toolbar a.button.command-toggle-wysiwyg,
+.editor-mode-textarea .editor-toolbar a.button.command-toggle-html {
+    background-image: url(../../images/buttons/toolbar/toggle-active.gif);
+}
+
+.editor-toolbar a.button.command-toggle-wysiwyg,
+.editor-toolbar a.button.command-toggle-wysiwyg:hover {
+    margin-right: 0;
+    border-right: 1px solid #b2b2b2;
+    background-position: 0 0;
+}
+
+.editor-toolbar a.button.command-toggle-html,
+.editor-toolbar a.button.command-toggle-html:hover {
+    background-position: -22px 0;
+}
+
+
+/* comment */
+
+.comment-form-toolbar a.button.command-underline,
+.comment-form-toolbar a.button.command-insert-link {
+    margin-right: 10px;
+}

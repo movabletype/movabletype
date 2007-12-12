@@ -1,0 +1,45 @@
+<MTSetVarBlock name="body_class">mt-archive-listing mt-<MTVar name="archive_class"></MTSetVarBlock>
+<MTSetVar name="sidebar" value="1">
+<MTSetVar name="module_about_context" value="1">
+
+<MTSetVarBlock name="page_title"><__trans phrase="[_1] Archives" params="<$MTArchiveTitle$>"></MTSetVarBlock>
+
+<$MTInclude module="<__trans phrase="Header">"$>
+
+<h1 class="archive-title">
+<MTUnless name="datebased_archive">
+    <MTIfArchiveType archive_type="Category">
+<__trans phrase="Recently in <em>[_1]</em> Category" params="<$MTArchiveTitle$>">
+    </MTIfArchiveType>
+    <MTIfArchiveType archive_type="Author">
+<__trans phrase="Recently by <em>[_1]</em>" params="<$MTArchiveTitle$>">
+    </MTIfArchiveType>
+<MTElse>
+<$MTGetVar name="page_title"$>
+</MTUnless>
+</h1>
+
+<MTIf name="datebased_archive">
+    <MTEntries>
+<$MTEntryTrackbackData$>
+<$MTInclude module="<__trans phrase="Entry Summary">"$>
+    </MTEntries>
+<MTElse>
+    <MTEntries limit="auto">
+<$MTEntryTrackbackData$>
+<$MTInclude module="<__trans phrase="Entry Summary">"$>
+    </MTEntries>
+</MTIf>
+
+<div class="content-nav">
+    <MTArchivePrevious>
+    <a href="<$MTArchiveLink$>">&laquo; <$MTArchiveTitle$></a> |
+    </MTArchivePrevious>
+    <a href="<$MTLink template="main_index"$>"><__trans phrase="Main Index"></a> |
+    <a href="<$MTLink template="archive_index"$>"><__trans phrase="Archives"></a>
+    <MTArchiveNext>
+    | <a href="<$MTArchiveLink$>"><$MTArchiveTitle$> &raquo;</a>
+    </MTArchiveNext>
+</div>
+
+<$MTInclude module="<__trans phrase="Footer">"$>

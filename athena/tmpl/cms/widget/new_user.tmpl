@@ -1,0 +1,25 @@
+<mtapp:widget class="welcome-widget"
+    label="<__trans phrase="Welcome to Movable Type">"
+    can_close="1">
+    <p><__trans phrase="Welcome to Movable Type, the world's most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:"></p>
+    <ul>
+<mt:if name="blog_id">
+    <mt:if name="can_create_post">
+        <li>
+            <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Write your first post"></a>
+            <p><__trans phrase="What would a blog be without content? Start your Movable Type experience by creating your very first post."></p>
+        </li>
+    </mt:if>
+    <mt:if name="can_edit_templates">
+        <li>
+            <a href="<mt:var name="script_url">?__mode=stylecatcher_theme&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Design your blog"></a>
+            <p><__trans phrase="Customize the look and feel of your blog quickly by selecting a design from one of our professionally designed themes."></p>
+        </li>
+    </mt:if>
+</mt:if>
+        <li>
+            <a href="<__trans phrase="_MTCOM_URL">"><__trans phrase="Explore what's new in Movable Type 4"></a>
+            <p><__trans phrase="Whether you're new to Movable Type or using it for the first time, learn more about what this tool can do for you."></p>
+        </li>
+    </ul>
+</mtapp:widget>

@@ -1,0 +1,122 @@
+<mt:if name="needs_upgrade">
+    <mt:setvarblock name="page_title"><__trans phrase="Time to Upgrade!"></mt:setvarblock>
+<mt:else>
+    <mt:setvarblock name="page_title"><__trans phrase="Upgrade Check"></mt:setvarblock>
+</mt:if>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<style type="text/css">
+div.warning#version-warning {
+    position: absolute;
+    padding: 1em;
+    width: 700px;
+}
+</style>
+
+<script type="text/javascript">
+function dismiss(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display = 'none';
+    }
+}
+
+function show(id) {
+    var el = getByID(id);
+    if (el) {
+        el.style.display= 'block';
+    }
+}
+
+</script>
+
+<div class="upgrade">
+
+<mt:if name="needs_upgrade">
+
+    <mt:if name="version_warning">
+    <div class="message" id="version-warning">
+        <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
+        <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
+        <p><__trans phrase="Do you want to proceed with the upgrade anyway?"></p>
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions right">
+                <input type="hidden" name="continue" value="1" />
+                <button
+                    onclick="dismiss('version-warning'); show('warning_gone'); return false;"
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Yes (s)">"
+                    class="primary-button"
+                    ><__trans phrase="Yes"></button>
+                <button
+                    onclick="javascript:location.href='mt-check.cgi'"
+                    type="submit"
+                    accesskey="x"
+                    title="<__trans phrase="View MT-Check (x)">"
+                    ><__trans phrase="No"></button>
+            </div>
+        </div>
+    </div>
+    </mt:if>
+
+    <div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
+    <mt:if name="mt_upgrade">
+        <p><__trans phrase="A new version of Movable Type has been installed.  We'll need to complete a few tasks to update your database."></p>
+        <p><__trans phrase="Information about this upgrade can be found <a href='[_1]' target='_blank'>here</a>." params="<mt:var name="help_url">upgrade/?to_schema=<mt:var name="to_schema" escape="url">&amp;from_schema=<mt:var name="from_schema" escape="url">&amp;mt_version=<mt:var name="mt_version" escape="url">"></p>
+    </mt:if>
+
+    <mt:if name="plugin_upgrades">
+        <mt:if name="mt_upgrade">
+        <p><__trans phrase="In addition, the following Movable Type components require upgrading or installation:"></p>
+        <mt:else>
+        <p><__trans phrase="The following Movable Type components require upgrading or installation:"></p>
+        </mt:if>
+
+        <ul>
+        <mt:loop name="plugin_upgrades">
+            <li><p><mt:var name="name"><mt:if name="version"> <__trans phrase="Version [_1]" params="<mt:var name="version">"></mt:if></p></li>
+        </mt:loop>
+        </ul>
+    </mt:if>
+
+        <form method="post" action="<mt:var name="script_url">">
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <input type="hidden" name="__mode" value="upgrade" />
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions right">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Begin Upgrade"> (s)"
+                    class="primary-button"
+                    ><__trans phrase="Begin Upgrade"></button>
+            </div>
+        </div>
+        </form>
+    </div>
+
+<mt:else>
+
+    <p><__trans phrase="Your Movable Type installation is already up to date."></p>
+
+    <form method="get" action="<mt:var name="mt_url">">
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions right">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Return to Movable Type"> (s)"
+                    class="primary-button"
+                    ><__trans phrase="Return to Movable Type"></button>
+            </div>
+        </div>
+    </form>
+
+</mt:if>
+
+</div>
+
+<mt:include name="include/chromeless_footer.tmpl">
+    

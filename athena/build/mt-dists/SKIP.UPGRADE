@@ -1,0 +1,5 @@
+^mt\.cfg
+^index\.html
+^mt-load\.cgi
+^mt-upgrade221\.cgi
+^mt-db-pass\.cgi

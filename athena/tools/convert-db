@@ -1,0 +1,226 @@
+#!/usr/bin/perl -w
+
+# Copyright 2001-2005 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# $Id$
+
+use strict;
+
+use Getopt::Long;
+GetOptions( "old:s" => \my($old_config),
+            "new:s" => \my($new_config));
+
+use lib 'extlib';
+use lib 'lib';
+
+unless ($new_config) {
+    print "Need configuration file location. cf: convert-db --new==mt-config.cgi.new";
+    exit;
+}
+
+$old_config ||= '.';
+
+my @CLASSES = qw( MT::Author MT::Blog MT::Category MT::Comment MT::Entry
+                  MT::IPBanList MT::Log MT::Notification MT::Permission
+                  MT::Placement MT::Template MT::TemplateMap MT::Trackback
+                  MT::TBPing MT::Session MT::PluginData MT::Config MT::FileInfo
+                  MT::Tag MT::ObjectTag MT::Group MT::Role MT::Association
+                  MT::Asset
+                  );
+
+use File::Spec;
+
+eval {
+    local $SIG{__WARN__} = sub { print "**** WARNING: $_[0]\n" };
+
+    require MT;
+    my $mt = MT->new(Config => $old_config) or die MT->errstr;
+    my $cfg = $mt->{cfg};
+
+    my $cfg_file_orig = $mt->{cfg_file};
+    my $cfg_file_new = $mt->find_config({Config=>$new_config});
+
+    $cfg->read_config($cfg_file_new);
+
+    warn $cfg_file_orig;
+    warn $cfg_file_new;
+
+    require MT::Object;
+    MT::Object->set_driver($cfg->ObjectDriver)
+        or die MT::ObjectDriver->errstr;
+
+    use MT::Upgrade;
+    my @stmts;
+    foreach (@CLASSES) {
+        push @stmts, MT::Upgrade->check_class($_);
+    }
+
+    print "Loading database schema...\n\n";
+    MT::Upgrade->do_upgrade(Install => 1);
+
+    ## %ids will hold the highest IDs of each class.
+    my %ids;
+
+    print "Loading data...\n";
+    for my $class (@CLASSES ) {
+        print $class, "\n";
+        $cfg->read_config($cfg_file_orig);
+        MT::Object->set_driver($cfg->ObjectDriver);
+        eval "use $class";
+        my $iter = $class->load_iter;
+
+        my %names;
+        my %cat_parent;
+
+        $cfg->read_config($cfg_file_new);
+        MT::Object->set_driver($cfg->ObjectDriver);
+        while (my $obj = $iter->()) {
+            print "    ", $obj->id, "\n";
+            $obj = clean_object($obj);
+            # Update IDs only auto_increment.
+            $ids{$class} = $obj->id
+                if $obj->column_defs->{id}->{auto} &&
+                   (!$ids{$class} || $obj->id > $ids{$class});
+            ## Look for duplicate template, category, and author names,
+            ## because we have uniqueness constraints in the DB.
+            if ($class eq 'MT::Template') {
+                my $key = $obj->blog_id . ':' . lc($obj->name);
+                if ($names{$class}{$key}++) {
+                    print "        Found duplicate template name '" .
+                          $obj->name;
+                    $obj->name($obj->name . ' ' . $names{$class}{$key});
+                    print "'; renaming to '" . $obj->name . "'\n";
+                }
+                ## Touch the text column to make sure we read in
+                ## any linked templates.
+                my $text = $obj->text;
+            } elsif ($class eq 'MT::Author') {
+                my $key = lc($obj->name);
+                if ($names{$class . $obj->type}{$key}++) {
+                    print "        Found duplicate author name '" .
+                          $obj->name;
+                    $obj->name($obj->name . ' ' . $names{$class}{$key});
+                    print "'; renaming to '" . $obj->name . "'\n";
+                }
+                $obj->email('') unless defined $obj->email;
+                $obj->set_password('') unless defined $obj->password;
+            } elsif ($class eq 'MT::Comment') {
+                $obj->visible(1) unless defined $obj->visible;
+            } elsif ($class eq 'MT::TBPing') {
+                $obj->visible(1) unless defined $obj->visible;
+            } elsif ($class eq 'MT::Category') {
+                my $key = lc($obj->label) . $obj->blog_id;
+                if ($names{$class}{$key}++) {
+                    print "        Found duplicate category label '" .
+                          $obj->label;
+                    $obj->label($obj->label . ' ' . $names{$class}{$key});
+                    print "'; renaming to '" . $obj->label . "'\n";
+                }
+                # save the parent value for assignment at the end
+                if ($obj->parent) {
+                    $cat_parent{$obj->id} = $obj->parent;
+                    $obj->parent(0);
+                }
+            } elsif ($class eq 'MT::Trackback') {
+                $obj->entry_id(0) unless defined $obj->entry_id;
+                $obj->category_id(0) unless defined $obj->category_id;
+            } elsif ($class eq 'MT::Entry') {
+                $obj->allow_pings(0)
+                    if defined $obj->allow_pings && $obj->allow_pings eq '';
+                $obj->allow_comments(0)
+                    if defined $obj->allow_comments && $obj->allow_comments eq '';
+            }
+            $obj->save
+                or die $obj->errstr;
+        }
+
+        # fix up the category parents
+        foreach my $id (keys %cat_parent) {
+            my $cat = MT::Category->load($id);
+            $cat->parent( $cat_parent{$id} );
+            $cat->save;
+        }
+
+        print "\n";
+    }
+
+    if ($cfg->ObjectDriver =~ /postgres/) {
+        print "Updating sequences\n";
+        my $dbh = MT::Object->driver->{dbh};
+        for my $class (keys %ids) {
+            print "    $class => $ids{$class}\n";
+            my $seq = 'mt_' . $class->datasource . '_' .
+                      $class->properties->{primary_key};
+            $dbh->do("select setval('$seq', $ids{$class})")
+                or die $dbh->errstr;
+        }
+    } elsif ($cfg->ObjectDriver =~ /oracle/) {
+        print "Updating sequences\n";
+        for my $class (keys %ids) {
+            print "    $class => $ids{$class}\n";
+            MT::Object->driver->drop_sequence($class);
+            MT::Object->driver->create_sequence($class);
+        }
+    }
+
+    $cfg->SchemaVersion(MT->schema_version(), 1);
+    $cfg->save_config();
+};
+if ($@) {
+    print "An error occurred while loading data: $@\n";
+} else {
+    print "Done copying data! All went well.\n";
+}
+
+
+sub clean_object {
+    my $obj = shift;
+    my $defs = $obj->column_defs;
+
+    foreach my $col (keys %{$defs}) {
+        my $def = $defs->{$col};
+        if ($def->{type} =~ /(?:integer|smallint)/ && $obj->$col) {
+            my $val = $obj->$col;
+            if ($val =~ /\D/) {
+                $val =~ s/\D//g;
+                $obj->$col($val);
+            }
+        }
+        if ($def->{type} =~ /(?:string)/ && $obj->$col) {
+            require MT::I18N;
+            my $val = $obj->$col;
+            if (MT::I18N::length_text($val) > $def->{size}) {
+                $obj->$col(MT::I18N::substr_text($val,0,$def->{size}));
+            }
+        }
+    }
+    return $obj;
+}
+1;
+
+__END__
+
+=head1 NAME
+
+convert-db - A tool to convert backend database of Movable Type
+
+=head1 SYNOPSIS
+
+convert-db --new=mt-config.cgi.new [--old=mt-config.cgi.current]
+
+=head1 DESCRIPTION
+
+I<convert-db> is a tool to convert database of Movable Type to 
+others.  It is useful when it is necessary to switch like from 
+MySQL to PostgreSQL.
+
+The following options are available:
+
+  --new       mt-config.cgi file of destination
+  --old       mt-config.cgi file of source (optional)
+
+It is also useful to replicate Movable Type database.
+
+=cut

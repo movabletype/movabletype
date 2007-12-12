@@ -1,0 +1,53 @@
+<mt:setvarblock name="page_title"><__trans phrase="System Information"></mt:setvarblock>
+<mt:setvar name="system-information" value="1">
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/tools_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<mtapp:setting
+    id="system_users"
+    label="<__trans phrase="User Counts">"
+    label_class="top-label"
+    content_class="field-content-text"
+    hint="<__trans phrase="Number of users in this system.">"
+    show_label="0">
+    <div class="listing">
+        <table cellspacing="0">
+            <thead>
+                <tr>
+                    <th><__trans phrase="Total Users"></th>
+                    <th><__trans phrase="Active Users"></th>
+                    <th><__trans phrase="Commenters"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="odd">
+                    <td><$mt:var name="user_count"$></td>
+                    <td><$mt:var name="licensed_user_count"$></td>
+                    <td><$mt:var name="commenter_count"$></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="hint">
+        <__trans phrase="Users who have logged in within 90 days are considered <strong>active</strong> in Movable Type license agreement.">
+    </div>
+</mtapp:setting>
+
+<mtapp:setting
+    id="system_check"
+    label="System Info (MTCheck)"
+    label_class="top-label"
+    show_label="0"
+    hint="">
+    <div class="info">
+        <mt:if name="syscheck_html">
+            <$mt:var name="syscheck_html"$>
+        <mt:else>
+            <p><__trans phrase="Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, please ensure that the mt-check.cgi script exists and/or the CheckScript configuration parameter references it properly."></p>
+        </mt:if>
+    </div>
+</mtapp:setting>
+
+<mt:include name="include/footer.tmpl">

@@ -1,0 +1,149 @@
+<mt:setvarblock name="page_title"><__trans phrase="Requirements Check"></mt:setvarblock> 
+
+<mt:include name="../cms/include/chromeless_header.tmpl">
+
+<script type="text/javascript">
+<!--
+function go(mode) {
+    var f = document.forms[0];
+    f['__mode'].value = mode;
+}
+
+function toggleList() {
+    var list = getByID('package-list');
+    var list_msg = getByID('package-list-msg');
+    if (list) {
+        if (list.style.display == 'none') {
+            list.style.display = 'block';
+            list_msg.style.display = 'none';
+        } else {
+            list.style.display = 'none';
+            list_msg.style.display = 'block';
+        }
+    }
+    var bttns = getByID('buttons');
+    if (bttns) {
+        if (bttns.style.display == 'none')
+            bttns.style.display = 'block';
+        else
+            bttns.style.display = 'none';
+    }
+    var more = getByID('show-more');
+    if (more) {
+        if (more.style.display == 'none')
+            more.style.display = 'block';
+        else
+            more.style.display = 'none';
+    }
+}
+//-->
+</script>
+
+<form method="post">
+<input type="hidden" name="__mode" value="" />
+<input type="hidden" name="step" value="start" />
+<input type="hidden" name="config" value="<$mt:var name="config" escape="html"$>" />
+<input type="hidden" name="set_static_uri_to" value="<mt:var name="static_uri">" />
+
+<mt:if name="missing_db">
+    <mtapp:statusmsg
+        id="missing_db"
+        class="error">
+        <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog's data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="optional">
+<p class="intro"><span class="ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type."></p>
+<div class="right pkg">
+   <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
+</div>
+<p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
+</mt:if>
+<mt:if name="required">
+    <mtapp:statusmsg
+        id="required"
+        class="error">
+        <__trans phrase="One or more Perl modules required by Movable Type could not be found.">
+    </mtapp:statusmsg>
+    <p><__trans phrase="The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages."></p>
+</mt:if>
+
+<mt:if name="optional">
+<div id="package-list" style="display: none">
+</mt:if>
+
+    <p class="note"><__trans phrase="Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click 'Retry' to test for the modules again."></p>
+
+<mt:if name="missing_db">
+    <mtapp:statusmsg
+        id="missing_db"
+        class="error">
+        <__trans phrase="Missing Database Modules">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="optional">
+    <mtapp:statusmsg
+        id="optional"
+        class="info">
+        <__trans phrase="Missing Optional Modules">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="required">
+    <mtapp:statusmsg
+        id="required"
+        class="error">
+        <__trans phrase="Missing Required Modules">
+    </mtapp:statusmsg>
+</mt:if>
+<ul id="packages-list">
+<mt:loop name="package_loop">
+<li><span class="module-name"><a href="<mt:var name="link">" target="cpan"><mt:var name="module"></a></span> - <mt:var name="description">
+<mt:if name="version">
+<br /><em><__trans phrase="Minimal version requirement: [_1]" params="<mt:var name="version">"></em>
+</mt:if>
+</li>
+</mt:loop>
+</ul>
+
+<mt:if name="optional">
+<p><a target="cpan" href="http://www.cpan.org/modules/INSTALL.html"><__trans phrase="Learn more about installing Perl modules."></a></p>
+</div>
+</mt:if>
+
+<p>
+<mt:if name="success">
+<div class="message">
+<__trans phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations.">
+</div>
+</mt:if>
+
+<div id="buttons" <mt:if name="optional">style="display:none;"</mt:if>>
+<div class="left">
+<input name="back" type="submit" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step');" />
+</div>
+<div class="right">
+<mt:if name="missing_db_or_optional">
+<mt:if name="missing_db">
+   <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
+<mt:else>
+   <mt:if name="optional">
+      <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
+      <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
+   <mt:else>
+      <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
+   </mt:if>
+</mt:if>
+<mt:else>
+<mt:if name="required">
+   <input name="retry" type="submit" value="<__trans phrase="Retry">" onclick="go('retry');" />
+</mt:if>
+</mt:if>
+
+<mt:if name="success">
+   <input name="continue" type="submit" value="<__trans phrase="Continue">" onclick="go('next_step');" />
+</mt:if>
+</div>
+</div>
+
+</form>
+<mt:include name="../cms/include/chromeless_footer.tmpl">

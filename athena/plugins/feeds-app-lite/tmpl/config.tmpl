@@ -1,0 +1,51 @@
+<mt:include name="dialog/header.tmpl" page_title="<__trans phrase="Feeds.App Lite Widget Creator">">
+
+<p><__trans phrase="Configure feed widget settings"></p>
+
+<form method="post" action="<$mt:var name="script_url"$>">
+    <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+    <input type="hidden" name="__mode" value="feedswidget_save" />
+    <input type="hidden" name="uri" value="<$mt:var name="feed_uri" escape="html"$>" />
+
+    <mtapp:setting
+        id="feed_title"
+        label="<__trans phrase="Title">"
+        hint="<__trans phrase="Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.">">
+        <div class="textarea-wrapper">
+            <input name="feed_title" id="feed_title" class="full-width" value="<__trans phrase="[_1] Feed Widget" params="<$mt:var name="feed_title" escape="html"$>">" maxlength="42" type="text" />
+        </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="lastn"
+        label="<__trans phrase="Entries">"
+        hint="<__trans phrase="Select the maximum number of entries to display.">">
+        <select name="lastn" id="lastn">
+            <option value="3"><__trans phrase="3"></option>
+            <option value="5" selected="selected"><__trans phrase="5"></option>
+            <option value="10"><__trans phrase="10"></option>
+            <option value=""><__trans phrase="All"></option>
+        </select>
+    </mtapp:setting>
+
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Save (s)">"
+                class="primary-button"
+                ><__trans phrase="Save"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                class="cancel"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+        </div>
+    </div>
+
+</form>
+
+<mt:include name="dialog/footer.tmpl">

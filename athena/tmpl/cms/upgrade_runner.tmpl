@@ -1,0 +1,234 @@
+<mt:if name="installing">
+<mt:setvarblock name="page_title"><__trans phrase="Initializing database..."></mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Upgrading database..."></mt:setvarblock>
+</mt:if>
+
+<mt:setvar name="complete" value="1">
+
+<mt:include name="include/chromeless_header.tmpl">
+
+<mt:unless name="up_to_date">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version" escape="url">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version" escape="url">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js?v=<mt:var name="mt_version" escape="url">"></script>
+
+	<script type="text/javascript">
+	<!--
+    function upgradeDone(success) {
+        var progress = getByID("progress-bar");
+        if (progress) {
+            progress.style.display = "none";
+        }
+        if (success) {
+            var complete = getByID("completed-action");
+            if (complete) {
+                complete.style.display = "block";
+            }
+            current_task.style.display = "none";
+<mt:if name="installing">
+            page_title.innerHTML = "<__trans phrase="Installation complete!">";
+<mt:else>
+            page_title.innerHTML = "<__trans phrase="Upgrade complete!">";
+</mt:if>
+        } else {
+            var error = getByID("error-message-div");
+            if (error) {
+                error.style.display = "block";
+            }
+        }
+    }
+
+    var actionList = [];
+<mt:if name="initial_steps">
+    actionList = <mt:var name="initial_steps">;
+</mt:if>
+
+    function actionError(c, message) {
+        alert( 'Error: ' + message );
+    }
+
+    var response_pos = 0;
+    var upgrade_progress;
+    var upgrade_container;
+    var current_task;
+    function actionInteractive(c) {
+        var responseText;
+        try {
+            responseText = c.responseText;
+        } catch ( e ) {
+            return;
+        }
+        if (!responseText) return;
+        var text = responseText.substr(response_pos);
+        text = text.replace(/\s*JSON:(.|\n)*/, '');
+        // strip any partial lines. we'll grab 'em next time
+        if (!text.match(/\n$/))
+            text = text.replace(/(\r?\n)[^\r\n]*$/, '$1');
+        response_pos += text.length;
+        if (!text.length) return;
+
+        text = text.replace(/\r?\n$/, '');
+
+        var lines = text.split(/\r?\n/);
+        var last_line;
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var matches = line.match(/^#([^ ]+?) (.*)/);
+            if (matches && matches.length) {
+                var id = matches[1];
+                last_line = matches[2];
+                var li = getByID(id);
+                if (li) {
+                    li.innerHTML = matches[2];
+                } else {
+                    li = document.createElement('li');
+                    li.setAttribute('id', id);
+                    li.appendChild(document.createTextNode(''));
+                    li.innerHTML = matches[2];
+                    upgrade_progress.appendChild(li);
+                    scrollPanelDown(upgrade_container);
+                }
+            } else {
+                matches = line.match(/^([^ ]+)/);
+                if (matches && matches.length) {
+                    last_line = line;
+                    li = document.createElement('li');
+                    li.appendChild(document.createTextNode(''));
+                    li.innerHTML = line;
+                    upgrade_progress.appendChild(li);
+                    scrollPanelDown(upgrade_container);
+                }
+            }
+        }
+        if (last_line) {
+            current_task.innerHTML = last_line;
+        }
+    }
+
+    function scrollPanelDown(el) {
+        el.scrollTop = el.scrollHeight;
+    }
+
+    function setCookie (name, value, expires, path, domain, secure) {
+        var curCookie = name + "=" + escape(value) + (expires ? "; expires=" + expires : "") +
+            (path ? "; path=" + path : "") + (domain ? "; domain=" + domain : "") + (secure ? "secure" : "");
+        document.cookie = curCookie;
+    }
+
+    function actionDone(c, result) {
+        actionInteractive(c); // make sure our progress is up to date...
+        if (result) {
+            result = result.replace(/^(.|\n)*JSON:/, '');
+            var response = eval('('+result+')');
+            if (response.cookie) {
+                setCookie(response.cookie['-name'], response.cookie['-value'],
+                response.cookie['-expires'], response.cookie['-path']);
+            }
+            if (response.steps.length) {
+                if (!response.error) {
+                    actionList = response.steps;
+                    setTimeout('runActions()',10);
+                } else {
+                    var err = getByID("error-message-text");
+                    if (err) {
+                        err.innerHTML = response.error;
+                    }
+                    upgradeDone(false);  // we got an error
+                }
+            } else {
+                // we must be finished.
+                upgradeDone(true);
+            }
+        }
+    }
+
+    function runActions(steps) {
+        if (!actionList.length) return;
+        // reset response_pos so we know where to pull from
+        // for any interactive output...
+        response_pos = 0;
+        var actions = actionList.toJSON();
+        TC.Client.call({
+            'load': actionDone,
+            'interactive': actionInteractive,
+            'error': actionError,
+	        'method': 'POST',
+            'uri': '<mt:var name="script_url">',
+            'arguments': { '__mode' : 'run_actions',
+<mt:unless name="installing">
+                           'magic_token' : '<mt:var name="magic_token">',
+<mt:else>
+                           'installing' : '1',
+</mt:unless>
+                           'steps' : actions }
+        });
+    }
+    function init() {
+        upgrade_progress = getByID('upgrade-progress');
+        upgrade_container = getByID('upgrade-container');
+        current_task = getByID('current-task');
+        page_title = getByID('page-title');
+        runActions();
+    }
+    TC.attachLoadEvent( init );
+	//-->
+	</script>
+</mt:unless>
+
+<div class="upgrade">
+
+
+<mt:unless name="up_to_date">
+
+<h4 id="current-task"><mt:if name="installing"><__trans phrase="Starting installation..."><mt:else><__trans phrase="Starting upgrade..."></mt:if></h4>
+
+<div id="upgrade-container" class="upgrade-process">
+<ul id="upgrade-progress">
+</ul>
+</div>
+
+<div class="right">
+<div id="progress-bar"><img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+</div>
+
+<div id="error-message-div" style="display: none">
+  <p id="error-message" class="error-message"><mt:if name="installing"><__trans phrase="Error during installation:"><mt:else><__trans phrase="Error during upgrade:"></mt:if> <span id="error-message-text"></span></p>
+</div>
+
+<form method="post" action="<mt:var name="mt_url">" id="completed-action" style="display: none">
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<mt:if name="installing"><__trans phrase="Sign in to Movable Type (s)"><mt:else><__trans phrase="Return to Movable Type (s)"></mt:if>"
+                class="primary-button"
+                ><mt:if name="installing"><__trans phrase="Sign in to Movable Type"><mt:else><__trans phrase="Return to Movable Type"></mt:if></button>
+        </div>
+    </div>
+</form>
+
+<mt:else>
+
+<p><__trans phrase="Your database is already current."></p>
+
+<form method="post" action="<mt:var name="mt_url">">
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Return to Movable Type (s)">"
+                class="primary-button"
+                ><__trans phrase="Return to Movable Type"></button>
+        </div>
+    </div>
+</form>
+
+
+</mt:unless>
+
+</div>
+
+<mt:include name="include/chromeless_footer.tmpl">

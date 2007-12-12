@@ -1,0 +1,140 @@
+<mt:setvarblock name="page_title"><__trans phrase="Blog Templates"></mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="quickfilters"
+        label="<__trans phrase="Quickfilters">">
+        <$mtapp:ListFilters$>
+    </mtapp:widget>
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <mt:if name="can_edit_config">
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Blog Publishing Settings"></a></li>
+        </ul>
+        </mt:if>
+    </mtapp:widget>
+    <$MTApp:PageActions from="list_template"$>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+<!--
+var tableSelect;
+function init() {
+    tableSelect = new TC.TableSelect( 'template-listing-table' );
+    tableSelect.rowSelect = true;
+    <mt:if name="template_group">
+    sectionToggle('<mt:var name="template_group" escape="js">');
+    </mt:if>
+}
+TC.attachLoadEvent(init);
+
+function doEditTemplate (type, id) {
+    var url = '<mt:var name="script_url">?__mode=view&_type=template&blog_id=<mt:var name="blog_id">';
+    if (id)
+        url += '&id=' + id;
+    else if (type)
+        url += '&type=' + type;
+    window.location = url;
+}
+
+function sectionToggle(selectedTab) {
+    var tabs = new Array('index','archive','system','module', 'widget');
+
+    var t = getByID("template-listing-table");
+    for (var i = 0; i < tabs.length; i++) {
+        if (tabs[i] == selectedTab) {
+            TC.addClassName(t, "show-" + tabs[i]);
+        } else {
+            TC.removeClassName(t, "show-" + tabs[i]);
+        }
+    }
+    TC.removeClassName(t, "show-all");
+}
+//-->
+</script>
+</mt:setvarblock>
+<mt:setvarblock name="list_filter_form">
+<form id="filter-form" method="get" action="<mt:var name="mt_url">">
+    <input type="hidden" name="__mode" value="<mt:var name="mode">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input id="filter" type="hidden" name="filter" value="" />
+    <input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+<form id="filter-select-form" method="get" onsubmit="return execFilter(this)">
+    <div class="filter">
+        <div id="filter-title">
+        <mt:if name="filter_key">
+            <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
+            <!-- <a class="filter-link" href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">">[ <__trans phrase="Remove filter"> ]</a> -->
+        <mt:else>
+            <mt:unless name="filter">
+            <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
+            <!-- <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a> -->
+            <mt:else>
+            <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
+            <a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>"><__trans phrase="Remove filter"></a>
+            </mt:unless>
+        </mt:if>
+        </div>
+    </div>
+</form>
+    </div>
+</div>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You have successfully deleted the checked template(s).">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="dynamic_set">
+        <mtapp:statusmsg
+            id="dynamic-set"
+            class="success">
+            <__trans phrase="Your settings have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:unless name="template_type" eq="system">
+        <mt:if name="template_type" eq="archive">
+    <p><__trans phrase="Create Archive Template:">
+        &nbsp;
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a>
+        &nbsp;
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a>
+        &nbsp;
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a>
+    </p>
+        <mt:else>
+    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=<mt:var name="template_type" escape="url">&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create [_1] template" params="<mt:var name="template_type_label">"></a></p>
+        </mt:if>
+    </mt:unless>
+    <mt:ignore>
+                        <mtapp:form mode="view" object_type="template">
+                        <select name="create_new_template">
+                            <option value="blank:index"><__trans phrase="Create Template..."></option>
+                                <optgroup label="<__trans phrase="Blank Template">">
+                            <mt:loop name="template_type_loop">
+                                    <option value="blank:<mt:var name="id">"><mt:var name="label" escape="html"></option>
+                            </mt:loop>
+                                </optgroup>
+                            <mt:loop name="template_type_loop">
+                                <optgroup label="<mt:var name="label" escape="html">">
+                                <mt:loop name="template_loop">
+                                    <option value="default:<mt:var name="type_id">:<mt:var name="id">"><mt:var name="label" escape="html"></option>
+                                </mt:loop>
+                                </optgroup>
+                            </mt:loop>
+                        </select>
+                        <input type="submit" value="<__trans phrase="Go">">
+                        </mtapp:form>
+    </mt:ignore>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+<$mt:var name="list_filter_form"$>
+<$mt:include name="include/template_table.tmpl"$>
+<mt:include name="include/footer.tmpl">

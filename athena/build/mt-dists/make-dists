@@ -1,0 +1,140 @@
+#!/usr/bin/perl -w
+#
+# $Id$
+#
+use strict;
+use lib 'extlib', 'lib';
+use ExtUtils::Manifest qw( maniread manicopy mkmanifest );
+use File::Copy;
+use File::Spec::Functions;
+use File::Basename;
+use Getopt::Long;
+
+my $langlist = '';
+my $stamp = '';
+my $package = '';
+my $silent = 0;
+
+GetOptions(
+    'language:s' => \$langlist,
+    'package:s' => \$package,
+    'silent' => \$silent,
+    'stamp:s' => \$stamp,
+) or die "ERROR: Couldn't get the command-line options";
+
+my %options;
+
+my $make = 'make';
+$make .= ' -s' if $silent;
+$ExtUtils::Manifest::Quiet = $silent; # XXX This appears to be broken.
+
+my $skip = 'MANIFEST.SKIP';
+my $skip_bak = "$skip.bak";
+
+my $orig = eval {
+    verbose_command("$make clean");
+    verbose_command("$make lib/MT.pm");
+    require MT;
+    $package . '-' . MT->VERSION;
+} or die "ERROR: Failed to get version from package $package";
+
+my $skip_rules = `cat $skip`;
+if ($skip_rules =~ m/^#\?/m) { # conditional rule
+	move($skip, $skip_bak);
+}
+
+my @languages = split(/,/, $langlist);
+@languages = qw( en_US nl fr de es ja ) unless @languages;
+for my $lang (@languages) {
+	$options{language} = $lang;
+	$options{package} = $package;
+
+    print join(" ", @languages), "\n";
+    my $short_lang = $lang;
+    # If there are not any _'s in the language double it: xx_XX.
+    my $long_lang = ($lang =~ /_/ ? $lang : $lang . '_' . uc($lang));
+    # ..unless we are Japanese.
+    $long_lang = 'ja' if ($lang eq 'ja');
+
+    # Override the distribution name if we are given a stamp.
+    my $distname = defined $stamp && $stamp ne ''
+        ? $stamp
+        : $orig . '-' . $long_lang;
+
+    print "---------------- Building $lang ----------------\n";
+    verbose_command("$make clean");  # to clean MT.pm
+    verbose_command($make);
+
+	make_manifest_skip($skip_rules, $skip);
+
+    # my $lang_skip = "$skip.$lang";
+    # if (-e $lang_skip) {
+    #     move($skip, $skip_bak);
+    #     move($lang_skip, $skip);
+    # }           
+
+    mkmanifest();
+    manicopy(maniread(), $distname, 'best');
+
+    verbose_command("find $distname -name .exists | xargs rm");
+    verbose_command("chmod +x $distname/*.cgi"); 
+    verbose_command("chmod +x $distname/tools/*"); 
+
+    my $options = $silent ? 'cf' : 'cvf';
+    verbose_command("tar $options $distname.tar --wildcards --exclude '*.zip' $distname");
+    $options = $silent ? '-q' : '';
+    verbose_command("gzip $options --best $distname.tar");
+    verbose_command("zip -r $distname.zip $distname -x $distname/extras/\*.gz");
+
+    verbose_command("rm -rf $distname");
+    unlink("MANIFEST");
+}
+
+END {
+    move($skip_bak, $skip) if -e $skip_bak;
+}
+
+sub make_manifest_skip {
+	my ($rules, $file) = @_;
+	my @rules = split /\n/, $rules;
+
+	my @result;
+	foreach my $rule (@rules) {
+		if ($rule =~ m/^#\?([^=]+)=([^ ]+) +(.+)$/) {
+			# a conditional rule
+			my $var = $1;
+			my $val = $2;
+			my $skip = $3;
+
+			if (($options{$var} || '') eq $val) {
+				push @result, $skip;
+			}
+		}
+		push @result, $rule;
+	}
+
+	my $result = join "\n", @result;
+
+	local *FOUT;
+	open *FOUT, ">$file";
+	print FOUT $result;
+	close FOUT;
+}
+
+sub verbose_command {
+    my $command = shift;
+    print 'Execute:', "  $command" unless $silent;
+    system $command;
+    if( $? == -1 ) {
+        die "ERROR: Failed to execute: $!";
+    }
+    elsif( $? & 127 ) {
+        die sprintf( "ERROR: Child died with signal %d, with%s coredump\n",
+            ( $? & 127 ), ( $? & 128 ? '' : 'out' )
+        );
+    }
+    else {
+#        printf "Child exited with value %d\n", $? >> 8;
+    }
+    return $command;
+}

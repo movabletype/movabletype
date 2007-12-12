@@ -1,0 +1,61 @@
+<mt:include name="dialog/header.tmpl" page_title="<__trans phrase="Feeds.App Lite Widget Creator">">
+
+<mt:if name="not_found">
+    <mtapp:statusmsg
+        class="error"
+        can_close="0">
+        <__trans phrase="No feeds could be discovered using [_1]" params="<strong><$mt:var name="uri" escape="html"$></strong>">
+    </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="feederr">
+    <mtapp:statusmsg
+        class="error"
+        can_close="0">
+        <__trans phrase="An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again." params="<$mt:var name="uri" escape="html"$>%%<$mt:var name="uri" escape="url"$>">
+    </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="saved">
+    <mtapp:statusmsg
+        id="created"
+        class="success"
+        can_close="0">
+        <__trans phrase="A widget named <strong>[_1]</strong> has been created." params="<$mt:var name="module" escape="html"$>">
+    </mtapp:statusmsg>
+    <mt:if name="wm_is">
+<p><__trans phrase="You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:" params="<$mt:var name="module" escape="html"$>%%<$mt:var name="script_url"$>?__mode=view&amp;amp;_type=template&amp;amp;blog_id=<$mt:var name="blog_id"$>&amp;amp;id=<$mt:var name="module_id"$>%%<$mt:var name="wm_url" escape="html"$>"></p>
+    <mt:else>
+<p><__trans phrase="You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:" params="<$mt:var name="module" escape="html"$>%%<$mt:var name="script_url"$>?__mode=view&amp;amp;_type=template&amp;amp;blog_id=<$mt:var name="blog_id"$>&amp;amp;id=<$mt:var name="module_id"$>"></p>
+    </mt:if>
+
+<div style="margin-left: 1em"><strong>&lt;$MTInclude widget="<$mt:var name="module" escape="html"$>"$&gt;</strong></div>
+</mt:if>
+
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+<mt:if name="saved">
+        <button
+            onclick="closeDialog('<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;filter_key=widget_templates&amp;blog_id=<$mt:var name="blog_id"$>')"
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Finish (s)">"
+            class="primary-button"
+            ><__trans phrase="Finish"></button>
+<mt:else>
+        <button
+            onclick="closeDialog(); return false"
+            type="submit"
+            accesskey="x"
+            title="<__trans phrase="Cancel (x)">"
+            ><__trans phrase="Cancel"></button>
+</mt:if>
+        <button
+            onclick="window.location='<$mt:var name="script_url" escape="html"$>?__mode=feedswidget_start&amp;blog_id=<$mt:var name="blog_id"$>'"
+            type="submit"
+            title="<__trans phrase="Create Another">"
+            ><__trans phrase="Create Another"></button>
+    </div>
+</div>
+
+<mt:include name="dialog/footer.tmpl">

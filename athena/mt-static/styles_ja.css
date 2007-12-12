@@ -1,0 +1,86 @@
+.welcome-widget .widget-label {
+  margin-bottom: 0.5em;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.welcome-widget .widget-content li a {
+  font-size: 16px;
+}
+
+.dialog #page-title {
+  font-size: 20px;
+}
+
+#selector-nav #create-entry a {
+  line-height: 26px;
+}
+
+#content-header #content-header-inner #page-title {
+  line-height: 1.2;
+}
+
+.tabs span {
+  padding: 7px 10px 3px; 
+}
+
+.dashboard .you-widget li {
+  line-height: 1.5;
+}
+
+.shortcuts-widget ul li {
+  margin-bottom: 0;
+}
+
+.main-screen .field-left-label .field-header {
+  width: 145px;
+}
+
+.main-screen .field-left-label .field-content, 
+.main-screen .settings-actions-bar .actions-bar-inner {
+  margin-left: 155px;
+}
+
+.edit-entry .field-left-label .field-header {
+  width: 85px;
+}
+
+.edit-entry .field-left-label .field-content {
+  margin-left: 95px;
+}
+
+#calendar #calendar-content {
+  overflow: auto;
+}
+
+.calendar-footer {
+  clear: both;
+}
+
+.actions-bar .actions a:link,
+.actions-bar .actions a:visited,
+.listing .actions-bar .actions a { 
+  font-size: 12px;
+  font-weight: normal;
+}
+
+div#filter-select select,
+div#filter-select input, 
+div#filter-select textarea {
+  font-size: 12px;
+  padding: 0;
+}
+
+.category-listing-table .actions  {
+  width: 155px;
+}
+
+div.module {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+#create-inline-notification-form #email-field input, 
+#create-inline-notification-form #website-field input {
+  width: 160px;
+}
