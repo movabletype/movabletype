@@ -7,6 +7,7 @@
 
 global $Lexicon_nl;
 $Lexicon_nl = array(
+
 ## php/lib/archive_lib.php
 	'Page' => 'Pagina',
 	'Individual' => 'per bericht',
