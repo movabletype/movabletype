@@ -21,6 +21,9 @@ my $package = '';
 my $license = '';
 my $silent = 0;
 
+# disables resource fork handling for tar command on OS X
+$ENV{COPYFILE_DISABLE} = 'true';
+
 GetOptions(
     'language:s' => \$langlist,
     'package:s' => \$package,
@@ -33,7 +36,8 @@ my %options;
 
 my $make = 'make';
 $make .= ' -s' if $silent;
-$ExtUtils::Manifest::Quiet = $silent; # XXX This appears to be broken.
+$ExtUtils::Manifest::Quiet = $silent;
+$ExtUtils::Manifest::Verbose = ! $silent;
 
 my $skip = 'MANIFEST.SKIP';
 my $skip_bak = "$skip.bak";
@@ -75,14 +79,10 @@ for my $lang (@languages) {
 
     make_manifest_skip($skip_rules, $skip);
 
-    # my $lang_skip = "$skip.$lang";
-    # if (-e $lang_skip) {
-    #     move($skip, $skip_bak);
-    #     move($lang_skip, $skip);
-    # }           
-
     mkmanifest();
-    manicopy(maniread(), $distname, 'best');
+
+    # Copy files for non-GPL license since we will be modifying the content
+    manicopy(maniread(), $distname, ( $license eq 'GPL' ? 'best' : 'cp' ));
 
     if (($license || '') ne 'GPL') {
         assign_license( $distname );
@@ -96,7 +96,8 @@ for my $lang (@languages) {
     verbose_command("tar $options $distname.tar --wildcards --exclude '*.zip' $distname");
     $options = $silent ? '-q' : '';
     verbose_command("gzip $options --best $distname.tar");
-    verbose_command("zip -r $distname.zip $distname -x $distname/extras/\*.gz");
+    $options = $silent ? '-rq' : '-r';
+    verbose_command("zip $options $distname.zip $distname -x $distname/extras/\*.gz");
 
     verbose_command("rm -rf $distname");
     unlink("MANIFEST");
@@ -147,12 +148,15 @@ sub process_file_for_license {
 EOT
     chomp($license);
 
-    $content =~ s{$open (\d+(-\d+)?).*?$close}
-        { '# Movable Type (r) (C) ' . $1 . ' Six Apart, Ltd. All Rights Reserved.' . $license }se;
+    if ($content =~ s{$open (\d+(-\d+)?).*?$close}
+        { '# Movable Type (r) (C) ' . $1 . ' Six Apart, Ltd. All Rights Reserved.' . $license }se) {
 
-    open FOUT, ">$file";
-    print FOUT $content;
-    close FOUT;
+        ## print "applying license changes to $file...\n"; return;
+
+        open FOUT, ">$file";
+        print FOUT $content;
+        close FOUT;
+    }
 }
 
 sub make_manifest_skip {

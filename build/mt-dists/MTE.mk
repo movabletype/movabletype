@@ -1,2 +1,2 @@
-PRODUCT_NAME = Movable Type Publishing Platform
+PRODUCT_NAME = Movable Type Commercial
 PRODUCT_CODE = MT
