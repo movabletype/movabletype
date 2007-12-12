@@ -2338,7 +2338,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/new_install.tmpl
 	'Thank you for installing Movable Type' => 'Bedankt om Movable Type te installeren!',
-	'Congratulations on installing Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => 'Gelukwensen met de installatie van Movable Type, het krachtigste blog-, publicatie- en social mediaplatform ter wereld.  Om u te helpen van start te gaan hebben we enkele links verzameld naar de meest voorkomende dingen die nieuwe gebruikers willen doen:',
+	'Congratulations on installing Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => '\n	Gelukwensen met de installatie van Movable Type, het krachtigste blog-, publicatie- en social mediaplatform ter wereld.  Om u te helpen van start te gaan hebben we enkele links verzameld naar de meest voorkomende dingen die nieuwe gebruikers willen doen:',
 	'Add more users to your blog' => 'Voeg meer gebruikers toe aan uw weblog',
 	'Start building your network of blogs and your community now. Invite users to join your blog and promote them to authors.' => 'Begin met het opbouwen van uw blognetwerk en uw gemeenschap.  Nodig gebruikers uit om lid te worden van uw blog en promoveer hen tot auteur.',
 
@@ -3746,7 +3746,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/forum/comment_response.mtml
 	'Reply Submitted' => 'Antwoord ingediend',
 	'Your reply has been accepted' => 'Uw antwoord is ontvangen',
-	'Thank you for your reply. It has been accepted and should appear momentarily.' => 'Bedankt voor uw antwoord.  Het is ontvangen en zou over enkele ogenblikken moeten verschijnen.',
+	'Thank you for your reply. It has been accepted and should appear momentarily.' => 'Bedankt voor uw antwoord.  Het is ontvangen en zou zodadelijk moeten verschijnen.',
 	'Reply Pending' => 'Antwoord wordt beoordeeld',
 	'Your reply has been received' => 'Uw antwoord  werd ontvangen',
 	'Thank you for your reply. However, your reply is currently being held for approval by the forum\'s administrator.' => 'Bedankt voor uw antwoord.  Het wordt momenteel bewaard tot een administrator van het forum het kan beoordelen.',
@@ -3875,7 +3875,7 @@ use vars qw( @ISA %Lexicon );
 	'Select date' => 'Selecteer datum',
 
 ## addons/Commercial.pack/tmpl/edit_field.tmpl
-	'New Field' => 'Nieuw veld',
+	'New Field' => 'Nieuw weld',
 	'The selected fields(s) has been deleted from the database.' => 'Geselecteerd(e) veld(en) verwijderd uit de database.',
 	'Please ensure all required fields (highlighted) have been filled in.' => 'Gelieve te controleren dat alle verplichte velden (gekleurd) ingevuld zijn.',
 	'System Object' => 'Systeemobject',
@@ -3887,7 +3887,7 @@ use vars qw( @ISA %Lexicon );
 	'Should a value be chosen or entered into this field?' => 'Moet er een waarde gekozen of ingevuld worden in dit veld?',
 	'Default' => 'Standaard',
 	'You will need to first save this field in order to set a default value' => 'U moet dit veld eerst opslaan om een standaardwaarde te kunnen instellen',
-	'_CF_BASENAME' => 'Basisnaam',
+	'_CF_BASENAME' => 'Basename',
 	'The basename is used within block (container) tags as the sort_by attribute as well as for entering custom field data through a 3rd party client. It must be unique.' => 'De basisnaam wordt gebruikt',
 	'Unlock this for editing' => 'Maak dit aanpasbaar',
 	'Warning: Changing this field\'s basename may cause serious data loss.' => 'Waarschuwing: de basinaam van dit veld aanpassen kan leiden tot ernstig gegevensverlies.',
