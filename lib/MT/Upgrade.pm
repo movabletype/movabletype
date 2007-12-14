@@ -1283,13 +1283,13 @@ sub type_diff {
 
             if (!$db_def) {
                 # column is missing altogether; we're going to have to add it
-                push @cols_to_add, $col_def;
+                push @cols_to_add, $col;
             } else {
                 if (($col_def->{type} eq 'string')
                  && ($db_def->{type} eq 'string')
                  && ($col_def->{size} <= $db_def->{size})) {
                     if (($col_def->{not_null} || 0) != ($db_def->{not_null} || 0)) {
-                        push @cols_to_alter, $col_def;
+                        push @cols_to_alter, $col;
                     }
                 } elsif ($ddl->type2db($col_def)
                       ne $ddl->type2db($db_def)) {
@@ -1299,9 +1299,9 @@ sub type_diff {
                     next if ($db_def->{type} eq 'integer')
                          && ($col_def->{type} eq 'smallint'
                           || $col_def->{type} eq 'boolean');
-                    push @cols_to_alter, $col_def;
+                    push @cols_to_alter, $col;
                 } elsif (($col_def->{not_null} || 0) != ($db_def->{not_null} || 0)) {
-                    push @cols_to_alter, $col_def;
+                    push @cols_to_alter, $col;
                 }
             }
         }
@@ -1797,7 +1797,7 @@ sub post_add_column {
     my ($class, $col_defs) = @_;
 
     if (!$Installing) {
-        my %cols = map { $_->{name} => 1 } @$col_defs;
+        my %cols = map { $_ => 1 } @$col_defs;
         foreach (keys %functions) {
             my $func = $functions{$_};
             next unless $func->{on_field};
