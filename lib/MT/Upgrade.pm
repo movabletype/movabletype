@@ -1968,9 +1968,9 @@ sub run_statements {
                         my $err;
                         $dbh->do($stmt) or $err = $dbh->errstr;
                         if ($err) {
-                            # ignore drop errors; the table/sequence
+                            # ignore drop errors; the table/sequence/constraint
                             # didn't exist
-                            if ($stmt !~ m/^drop /i) {
+                            if (($stmt !~ m/^drop /i) && ($stmt !~ m/DROP CONSTRAINT /i)) {
                                 die "failed to execute statement $stmt: $err";
                             }
                         }
