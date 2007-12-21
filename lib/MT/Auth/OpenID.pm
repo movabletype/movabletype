@@ -24,8 +24,21 @@ sub login {
         (my $u = $q->param('openid_userid')) && $class->can('url_for_userid')) {
         $identity = $class->url_for_userid($u);
     }
-    my $claimed_identity = $csr->claimed_identity($identity)
-        or return $app->error($app->translate("Could not discover claimed identity: [_1]", $csr->err));
+    my $claimed_identity = $csr->claimed_identity($identity);
+    if (!$claimed_identity) {
+        my ($err_code, $err_msg) = ($csr->errcode, $csr->errtext);
+        if ($err_code eq 'no_head_tag' || $err_code eq 'no_identity_server' || $err_code eq 'url_gone') {
+            $err_msg = $app->translate('The address entered does not appear to be an OpenID');
+        }
+        elsif ($err_code eq 'empty_url' || $err_code eq 'bogus_url') {
+            $err_msg = $app->translate('The text entered does not appear to be a web address');
+        }
+        elsif ($err_code eq 'url_fetch_error') {
+            $err_msg =~ s{ \A Error \s fetching \s URL: \s }{}xms;
+            $err_msg = $app->translate('Unable to connect to [_1]: [_2]', $identity, $err_msg);
+        }
+        return $app->error($app->translate("Could not verify the OpenID provided: [_1]", $err_msg));
+    }
 
     my $root = $class->_get_root($blog);
     my $return_to = $app->base . $app->uri . '?__mode=handle_sign_in'

@@ -3,6 +3,7 @@
     value="<__trans phrase="Refresh Blog Templates">">
 
 <mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 <script type="text/javascript">
 <!--
 function enable(id) {
@@ -15,17 +16,46 @@ function disable(id) {
     if (el)
         el.disabled = true;
 }
+var dialog;
+var panels;
+function dialog_closed(ok) {
+    if (ok) {
+        // fill out form and submit to create the association
+        var frm = getByID("refresh_form");
+        frm.submit();
+    } else {
+        closeDialog();
+    }
+}
+function init() {
+    dialog = new Dialog.MultiPanel("refresh");
+    panels = [];
+    var panel;
+    panel = new ListingPanel("refresh");
+    panels[panels.length] = panel;
+    panel = new ListingPanel("confirm");
+    panels[panels.length] = panel;
+    dialog.setPanels(panels);
+    dialog.open({}, dialog_closed);
+}
+TC.attachLoadEvent(init);
 // -->
 </script>
 </mt:setvarblock>
 
 <mt:include name="dialog/header.tmpl">
 
-<form name="refresh_form" id="refresh_form" method="post" action="<mt:var name="script_url">" target="_top">
+<form name="refresh_form" id="refresh_form" method="post" action="<mt:var name="script_url">" target="_top" onsubmit="return false">
     <input type="hidden" name="__mode" value="refresh_all_templates" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+
+    <div id="refresh-panel" class="hidden panel">
+
+        <!-- <div class="panel-header">
+            <h2><__trans phrase="Refresh Templates"></h2>
+        </div> -->
 
     <mtapp:setting
         id="refresh_templates"
@@ -35,7 +65,7 @@ function disable(id) {
         show_hint="1"
         hint="<__trans phrase="Updates current templates while retaining any user-created or user-modified templates.">">
         <div class="field-header">
-            <label for="refresh_type_refresh"><input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set')" /> <__trans phrase="Refresh templates"></label>
+            <label for="refresh_type_refresh"><input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');hide('confirm-clean');show('confirm-refresh');" checked="checked" /> <__trans phrase="Refresh templates"></label>
         </div>
     </mtapp:setting>
 
@@ -48,7 +78,7 @@ function disable(id) {
         label_class="top-label">
 
         <div class="field-header">
-            <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set')" /> <__trans phrase="Clean start"></label>
+            <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');hide('confirm-refresh');show('confirm-clean');" /> <__trans phrase="Clean start"></label>
         </div>
 
         <ul>
@@ -67,26 +97,72 @@ function disable(id) {
 
     </mtapp:setting>
 
-    <div>
-    <input type="checkbox" id="backup" name="backup" value="1" checked="checked" />
-    <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
+        <div>
+        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" />
+        <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
+        </div>
+
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    class="primary-button next"
+                    ><__trans phrase="Continue"></button>
+                <button
+                    onclick="closeDialog(); return false"
+                    type="submit"
+                    class="cancel"
+                    accesskey="x"
+                    title="<__trans phrase="Cancel (x)">"
+                    ><__trans phrase="Cancel"></button>
+            </div>
+        </div>
+
     </div>
 
-    <div class="actions-bar">
-        <div class="actions-bar-inner pkg actions">
-            <button
-                type="submit"
-                accesskey="s"
-                class="primary-button"
-                ><__trans phrase="Continue"></button>
-            <button
-                onclick="closeDialog(); return false"
-                type="submit"
-                accesskey="x"
-                title="<__trans phrase="Cancel (x)">"
-                ><__trans phrase="Cancel"></button>
+    <div id="confirm-panel" class="hidden panel">
+        <div id="confirm-refresh">
+            <p><__trans phrase="You have requested to refresh your templates. This action will:"></p>
+
+            <ul>
+                <li><__trans phrase="potentially install new templates"></li>
+                <li><__trans phrase="overwrite some existing templates with new template code"></li>
+                <li><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
+            </ul>
         </div>
+
+        <div id="confirm-clean" style="display:none">
+            <p><__trans phrase="You have requested to start over with a new template set. This action will:"></p>
+
+            <ul>
+                <li><__trans phrase="delete all of the templates in your blog"></li>
+                <li><__trans phrase="install new templates from the selected template set"></li>
+                <li><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
+            </ul>
+        </div>
+
+        <p><__trans phrase="Are you sure you wish to continue?"></p>
+
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions">
+                <button
+                    type="button"
+                    accesskey="s"
+                    class="primary-button close"
+                    ><__trans phrase="Confirm"></button>
+                <button
+                    onclick="closeDialog(); return false"
+                    type="submit"
+                    class="cancel"
+                    accesskey="x"
+                    title="<__trans phrase="Cancel (x)">"
+                    ><__trans phrase="Cancel"></button>
+            </div>
+        </div>
+
     </div>
+
 </form>
 
 <mt:include name="dialog/footer.tmpl">

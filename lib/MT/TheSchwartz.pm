@@ -125,6 +125,18 @@ sub is_database_dead {
     return 0;
 }
 
+# Replacement for TheSchwartz::get_server_time
+# to simply return value from dbd->sql_for_unixtime
+# if it is a plain number (the driver has no function,
+# it's just returning time())
+sub get_server_time {
+    my TheSchwartz $client = shift;
+    my($driver) = @_;
+    my $unixtime_sql = $driver->dbd->sql_for_unixtime;
+    return $unixtime_sql if $unixtime_sql =~ m/^\d+$/;
+    return $driver->rw_handle->selectrow_array("SELECT $unixtime_sql");
+}
+
 sub work_periodically {
     my TheSchwartz $client = shift;
     my($delay) = @_;

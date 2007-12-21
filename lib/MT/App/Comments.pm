@@ -7,8 +7,7 @@
 package MT::App::Comments;
 use strict;
 
-use MT::App;
-@MT::App::Comments::ISA = qw( MT::App );
+use base 'MT::App';
 
 use MT::Comment;
 use MT::I18N qw( wrap_text encode_text );
@@ -251,7 +250,7 @@ sub do_login {
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     $ctx->{blog_id} = $blog_id;
     my $result = MT::Auth->validate_credentials($ctx);
-    my $message;
+    my ($message, $error);
     if (   ( MT::Auth::NEW_LOGIN() == $result )
         || ( MT::Auth::NEW_USER() == $result )
         || ( MT::Auth::SUCCESS() == $result ) )
@@ -282,10 +281,11 @@ sub do_login {
             $app->_make_commenter_session( $app->make_magic_token,
                 $commenter->email, $commenter->name,
                 ($commenter->nickname || $app->translate('(Display Name not set)')),
-                $commenter->id, undef, $ctx->{permanent} ? '+10y' : 0 );
+                $commenter->id, undef, $ctx->{permanent} ? '+10y' : 0, $blog_id );
             #$app->start_session( $commenter, $ctx->{permanent} ? 1 : 0 );
             return $app->redirect_to_target;
         }
+        $error = $app->translate("Permission denied.");
         $message =
           $app->translate( "Login failed: permission denied for user '[_1]'",
             $name );
@@ -314,7 +314,7 @@ sub do_login {
     );
     $ctx->{app} ||= $app;
     MT::Auth->invalidate_credentials($ctx);
-    return $app->login( error => $app->translate('Invalid login.') );
+    return $app->login( error => $error || $app->translate("Invalid login") );
 }
 
 sub signup {
@@ -667,7 +667,6 @@ sub _builtin_throttle {
         $ts[4] + 1,
         @ts[ 3, 2, 1, 0 ]
     );
-    require MT::Comment;
 
     if (
         MT::Comment->count(
@@ -1120,8 +1119,20 @@ sub _extend_commenter_session {
 sub _check_commenter_author {
     my $app = shift;
     my ( $commenter, $blog_id ) = @_;
-    return 0 if $commenter->status == MT::Author::INACTIVE();
-    if ( MT::Author::PENDING() eq $commenter->status ) {
+
+    # Using MT::Author::commenter_status here, since it also
+    # takes the permission "restrictions" into account.
+    my $status = $commenter->commenter_status($blog_id);
+
+    # INACTIVE == BANNED
+    return 0 if $status == MT::Author::BANNED();
+
+    # NOT using $status for this test, since $status may be
+    # assigned 'PENDING' by 'commenter_status' if no permission
+    # record exists at all. We want to check below to see if
+    # commenting permission is auto-vivified based on blog configuration
+    # in such a case.
+    if ( MT::Author::PENDING() == $commenter->status() ) {
         $app->error(
             $app->translate(
                 "Failed comment attempt by pending registrant '[_1]'",
@@ -1134,6 +1145,10 @@ sub _check_commenter_author {
         return 1;
     }
     else {
+        # No explicit permissions are given for this commenter, so
+        # see if blog is configured as "open to registration" for
+        # commenting. If it is, auto-assign commenting permissions
+        # for this blog only.
         if ( my $registration = $app->config->CommenterRegistration ) {
             my $blog = MT::Blog->load($blog_id);
             if ( $registration->{Allow} && $blog->allow_commenter_regist ) {
@@ -1146,6 +1161,8 @@ sub _check_commenter_author {
                     MT::Association->link( $commenter => $role => $blog );
                 }
                 else {
+                    # FIXME: In this case, we should probably return 0
+                    # here, since no permission was actually granted.
                     $app->log(
                         {
                             message => MT->translate(
@@ -1245,6 +1262,18 @@ sub _make_comment {
         if ( $val =~ m/\x00/ ) {
             $val =~ tr/\x00//d;
             $comment->column( $field, $val );
+        }
+    }
+
+    if (my $parent_id = $app->param('parent_id')) {
+        # verify that parent_id is for a comment that is
+        # published for this entry
+        my $parent_comment = MT::Comment->load( $parent_id );
+        if ($parent_comment && $parent_comment->entry_id == $entry->id) {
+            $comment->parent_id( $parent_id );
+        }
+        else {
+            return $app->error("Invalid 'parent_id' parameter.");
         }
     }
 
@@ -1401,13 +1430,12 @@ sub commenter_name_js {
     my $commenter_name = $app->cookie_val('commenter_name');
     my $ids            = $app->cookie_val('commenter_id') || q();
     my $commenter_url  = $app->cookie_val('commenter_url') || q();
+    my $blog_id        = $app->param('blog_id') || 0;
 
     my $commenter_id;
     if ($ids) {
         my @ids = split ':', $ids;
         $commenter_id    = $ids[0];
-        # FIXME: This assignment is lost...
-        my $blog_ids     = $ids[1];
     }
 
     # FIXME: how do we know this is coming in as utf-8?
@@ -1421,22 +1449,57 @@ sub commenter_name_js {
         my @blogs;
         my $user = $app->model('author')->load($commenter_id);
         if ($user && $user->is_superuser) {
-            @blogs = $app->model('blog')->load;
+            @blogs = $app->model('blog')->load( undef, { fetchonly => [ 'id' ] } );
         }
         else {
+            # FIXME: this may be incomplete since the user
+            # may in fact be able to comment on other blogs;
+            # they just haven't signed into them yet
             @blogs = $app->model('blog')->load(undef,
-              {
+              { fetchonly => [ 'id' ],
                 join => MT::Permission->join_on('blog_id',
                   {
-                    permissions => "\%'comment'\%",
+                    permissions => { like => "\%'comment'\%" },
                     author_id   => $commenter_id
-                  },
-                  { 'like' => { 'permissions' => 1 } }
+                  }
                 )
               }
             );
         }
-        $blog_ids = "'" . join("','", map { $_->id } @blogs) . "'";
+        $blog_ids = @blogs ? "'" . join("','", map { $_->id } @blogs) . "'" : '';
+
+        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $commenter_id });
+        if ($perm) {
+            # double-check to see if this user hasn't been denied commenting
+            # permission. user has 'comment' permission through a role,
+            # but check for a restriction to comment on this blog
+            if ($perm->is_restricted('comment')) {
+                $blog_ids =~ s/(,|^)'$blog_id'(,|$)//;
+            }
+
+            # But if the permission carries a 'can administer' permission
+            # they should be allowed
+            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
+                if ($perm->can_administer_blog()) {
+                    # user is a blog administrator, so yes, they can comment too
+                    $blog_ids .= ($blog_ids ne '' ? ',' : '')
+                        . "'" . $blog_id . "'";
+                }
+            }
+        }
+        else {
+            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
+                # extra check to see if this user can comment on requested
+                # blog
+                if ( $app->_check_commenter_author($user, $blog_id) ) {
+                    # is this blog open to commenting from registered users?
+                    # if so, this user really can comment, even though they
+                    # don't have explicit permissions for it
+                    $blog_ids .= ($blog_ids ne '' ? ',' : '')
+                        . "'" . $blog_id . "'";
+                }
+            }
+        }
     }
     $commenter_name = encode_js( $commenter_name );
     $commenter_url  = encode_js( $commenter_url );

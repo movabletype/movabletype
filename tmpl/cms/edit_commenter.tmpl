@@ -45,14 +45,14 @@
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="t"
-            title="<__trans phrase="Trust [lc,_1] (t)" params="<mt:var name="object_label">">"
+            title="<__trans phrase="Trust user (t)">"
             ><__trans phrase="Trust"></button>
             <mt:else>
         <button
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'untrust'}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="t"
-            title="<__trans phrase="Untrust [lc,_1] (t)" params="<mt:var name="object_label">">"
+            title="<__trans phrase="Untrust user (t)">"
             ><__trans phrase="Untrust"></button>
             </mt:unless>
             </mt:unless>
@@ -61,14 +61,14 @@
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="b"
-            title="<__trans phrase="Ban [lc,_1] (b)" params="<mt:var name="object_label">">"
+            title="<__trans phrase="Ban user (b)">"
             ><__trans phrase="Ban"></button>
             <mt:else>
         <button
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'unban'}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="b"
-            title="<__trans phrase="Unban [lc,_1] (b)" params="<mt:var name="object_label">">"
+            title="<__trans phrase="Unban user (b)">"
             ><__trans phrase="Unban"></button>
             </mt:unless>
         <mt:else>
@@ -76,13 +76,13 @@
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="t"
-            title="<__trans phrase="Trust [lc,_1] (t)" params="<mt:var name="object_label">">"
+            title="<__trans phrase="Trust user (t)">"
             ><__trans phrase="Trust"></button>
         <button
             onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
             type="submit"
             accesskey="b"
-            title="<__trans phrase="Ban [lc,_1] (b)" params="<mt:var name="object_label">">"
+            title="<__trans phrase="Ban user (b)">"
             ><__trans phrase="Ban"></button>
             />
         </mt:if>

@@ -79,10 +79,10 @@ sub edit {
     return $app->error($app->translate('Permission denied.'))
         unless _permission_check();
 
-      install_default_widgets(1);
-
       my $q = $app->param();
       my $blog_id = scalar $q->param('blog_id');
+
+      install_default_widgets($blog_id, 1);
 
       my $tmpl = $app->load_tmpl('edit.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
@@ -178,8 +178,6 @@ sub list {
       $app->add_breadcrumb($blog->name,$app->mt_uri( mode => 'menu', args => { blog_id => $blog_id }));
       $app->add_breadcrumb($app->translate("Widget Manager"));
 
-      install_default_widgets() unless installed();
-
       my $modulesets = plugin()->load_selected_modules($blog_id) || {};
 
       my (%constraints, %options);
@@ -255,11 +253,11 @@ sub in_array {
 }
 
 sub install_module {
-    my($name, $text) = @_;
+    my($blog_id, $name, $text) = @_;
     my $app = MT->instance;
     require MT::Template;
     my $tmpl = MT::Template->new;
-    $tmpl->blog_id($app->blog->id);
+    $tmpl->blog_id($blog_id);
     $tmpl->type('widget');
     $tmpl->name($app->translate($name));
     $tmpl->text($app->translate_templatized($text));
@@ -267,10 +265,63 @@ sub install_module {
     return $tmpl;
 }
 
+sub create_default_widgetsets {
+    my $app = MT->instance;
+    my ($blog_id) = @_;
+
+    my ( %constraints, %options );
+    $constraints{blog_id} = $blog_id;
+    $constraints{type}    = 'widget';
+    $options{sort}        = 'name';
+    $options{direction}   = 'ascend';
+
+    require MT::Template;
+    my $iter = MT::Template->load_iter( \%constraints, \%options );
+    my %widgets;
+    while ( my $tmpl = $iter->() ) {
+        my $name = $tmpl->name();
+        $widgets{$name} = $tmpl->id();
+    }
+
+    my $widgetsets = [
+        {
+            label   => '2-column layout - Sidebar',
+            widgets => [
+                'Search',            'About This Page',
+                'Home Page Widgets', 'Archives',
+                'Pages',             'Syndication',
+                'Powered By',
+            ],
+        },
+        {
+            label   => '3-column layout - Primary Sidebar',
+            widgets => [ 'Archives', 'Pages', 'Syndication', 'Powered By', ],
+        },
+        {
+            label   => '3-column layout - Secondary Sidebar',
+            widgets => [ 'Search', 'Home Page Widgets', 'About This Page', ],
+        },
+    ];
+
+    my $modulesets = plugin()->load_selected_modules($blog_id);
+    $modulesets = {} unless $modulesets;
+
+    foreach my $widgetset ( @{$widgetsets} ) {
+        my $label = $app->translate( $widgetset->{label} );
+        my @ids;
+        foreach my $widget ( @{ $widgetset->{widgets} } ) {
+            my $name = $app->translate($widget);
+            push @ids, $widgets{$name};
+        }
+        $modulesets->{$label} = join ',', @ids;
+    }
+
+    plugin()->set_config_value( 'modulesets', $modulesets, "blog:$blog_id" );
+}
+
 sub install_default_widgets {
     my $app = MT->instance;
-    my $reinstall = shift;
-    my $blog_id = $app->blog->id;
+    my ( $blog_id, $reinstall ) = @_;
     my @preinstalled;
     my ($tmpl,$default_widget_templates);
 
@@ -302,13 +353,13 @@ sub install_default_widgets {
             $_->{text} .= $line;
         }
         close TMPL;
-        $tmpl = install_module($_->{label}, $_->{text});
+        $tmpl = install_module($blog_id, $_->{label}, $_->{text});
         push @preinstalled, $tmpl->id;
     }
 
     unless( $reinstall ) {
         # Set the 'installed' bit in the config
-        installed(1);
+        installed($blog_id, 1);
 
         # Now that the plugin is installed for this blog, create a first widgetmanager
         # with all modules pre-installed.
@@ -317,16 +368,17 @@ sub install_default_widgets {
         $modulesets->{$app->translate('First Widget Manager')} = join (',', @preinstalled);
 
         plugin()->set_config_value('modulesets',$modulesets,"blog:$blog_id");
+        create_default_widgetsets($blog_id);
     }
 }
 
 sub installed {
     my $config = {};
     my $app = MT->instance;
-    my $blog_id = $app->param('blog_id');
+    my ( $blog_id, $save ) = @_;
 
     my $plugin = plugin();
-    if (@_) {
+    if ($save) {
         # Set the installed bit, save and return
         return $plugin->set_config_value('installed',1,"blog:$blog_id");
     } else {

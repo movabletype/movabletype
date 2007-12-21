@@ -175,11 +175,10 @@ sub process_log_feed {
 
     require MT::Log;
     my $cfg = $app->config;
+    my @data = MT::Log->load($terms,
+        {'sort' => 'id', 'direction' => 'descend'});
     my $iter = MT::Log->load_iter($terms,
-        { ($cfg->ObjectDriver ne 'DBM' ?  # work around a flaw in DBM driver
-          ('sort' => 'id') :
-          ('sort' => 'created_on')),
-           'direction' => 'descend'});
+        {'sort' => 'id', 'direction' => 'descend'});
     my $count = 0;
     my $res = '';
     my @entries;
@@ -285,7 +284,11 @@ sub apply_log_filter {
                     $arg{category} = 'publish';
                 }
                 else {
-                    $arg{class} = [ split /,/, $val ];
+                    if ($val =~ m/,/) {
+                        $arg{class} = [ split /,/, $val ];
+                    } else {
+                        $arg{class} = $val;
+                    }
                 }
             }
         }

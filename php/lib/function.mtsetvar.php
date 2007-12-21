@@ -123,11 +123,18 @@ function smarty_function_mtsetvar($args, &$ctx) {
     else {
         $data = $value;
     }
-    if (is_array($vars)) {
-        $vars[$name] = $data;
-    } else {
-        $vars = array($name => $data);
-        $ctx->__stash['vars'] =& $vars;
+    $hash = $ctx->stash('__inside_set_hashvar');
+    if (isset($hash)) {
+        $hash[$name] = $data;
+        $ctx->stash('__inside_set_hashvar', $hash);
+    }
+    else {
+        if (is_array($vars)) {
+            $vars[$name] = $data;
+        } else {
+            $vars = array($name => $data);
+            $ctx->__stash['vars'] =& $vars;
+        }
     }
     return '';
 }

@@ -4,11 +4,11 @@
 <mt:if name="category_archive">
     <mt:IfArchiveTypeEnabled archive_type="Category-Monthly">
         <$mt:include widget="Current Category Monthly Archives"$>
-    </mt:If>
+    </mt:IfArchiveTypeEnabled>
 </mt:if>
 <mt:IfArchiveTypeEnabled archive_type="Category">
     <$mt:include widget="Category Archives"$>
-</mt:If>
+</mt:IfArchiveTypeEnabled>
 <mt:IfArchiveTypeEnabled archive_type="Monthly">
     <$mt:include widget="Monthly Archives"$>
-</mt:If>
+</mt:IfArchiveTypeEnabled>

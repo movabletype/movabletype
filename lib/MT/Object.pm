@@ -52,9 +52,10 @@ sub install_properties {
         return;
     }
 
-    if (my $super_props = $class->SUPER::properties()) {
+    my $super_props = $class->SUPER::properties();
+    if ($super_props) {
         # subclass; merge hash
-        for (qw(primary_key meta_column class_column datasource driver audit)) {
+        for (qw(primary_key meta_column class_column datasource driver audit meta)) {
             $props->{$_} = $super_props->{$_}
                 if exists $super_props->{$_} && !(exists $props->{$_});
         }
@@ -116,8 +117,10 @@ sub install_properties {
             push @{$props->{columns}}, $col;
             $props->{indexes}{$col} = 1;
         }
-        $class->add_trigger( pre_search => \&pre_search_scope_terms_to_class );
-        $class->add_trigger( post_load => \&post_load_rebless_object );
+        if (!$super_props || !$super_props->{class_column}) {
+            $class->add_trigger( pre_search => \&pre_search_scope_terms_to_class );
+            $class->add_trigger( post_load => \&post_load_rebless_object );
+        }
         if (my $type = $props->{class_type}) {
             $props->{defaults}{$col} = $type;
             $props->{__class_to_type}{$class} = $type;

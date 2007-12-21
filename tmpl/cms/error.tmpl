@@ -17,6 +17,18 @@
             accesskey="s"
             class="primary-button"
             ><mt:var name="value"></button>
+        <mt:if name="button_loop">
+            <mt:loop name="button_loop">
+            <button
+                type="submit"
+                <mt:if name="dialog">
+                onclick="if ( window.opener ) { window.close(); } else { window.parent.closeDialog('<mt:var name="link" escape="js">'); }; return false;"
+                <mt:else>
+                onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
+                </mt:if>
+            ><mt:var name="label"></button>
+            </mt:loop>
+        </mt:if>
         <mt:unless name="dialog">
         <button
             id="close-button"

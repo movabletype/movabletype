@@ -57,8 +57,9 @@ sub import {
         # die if something bad happens
         my $app;
         eval {
+            # line __LINE__ __FILE__
             require MT;
-            eval "require $class; 1;" or die $@;
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $class; 1;" or die $@;
             if ($fast_cgi) {
                 $ENV{FAST_CGI} = 1;
                 while (my $cgi = new CGI::Fast) {
@@ -78,6 +79,7 @@ sub import {
         if (my $err = $@) {
             my $charset = 'utf-8';
             eval {
+                # line __LINE__ __FILE__
                 my $cfg = MT::ConfigMgr->instance;  #this is needed
                 $app ||= MT->instance;
                 my $c = $app->find_config;
@@ -86,6 +88,7 @@ sub import {
             };
             if ($app && UNIVERSAL::isa($app, 'MT::App')) {
                 eval {
+                    # line __LINE__ __FILE__
                     my %param = ( error => $err );
                     if ($err =~ m/Bad ObjectDriver/) {
                         $param{error_database_connection} = 1;

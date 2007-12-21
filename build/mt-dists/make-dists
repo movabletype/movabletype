@@ -21,6 +21,19 @@ my $package = '';
 my $license = '';
 my $silent = 0;
 
+no warnings;
+# WHY, oh why?
+*ExtUtils::Manifest::cp = sub {
+    my ($srcFile, $dstFile) = @_;
+    my ($perm,$access,$mod) = (stat $srcFile)[2,8,9];
+    copy($srcFile,$dstFile);
+    utime $access, $mod, $dstFile;
+    # chmod a+rX-w,go-w
+    chmod(  0644 | ( $perm & 0111 ? 0111 : 0 ),  $dstFile )
+      unless ($^O eq 'MacOS');
+};
+use warnings;
+
 # disables resource fork handling for tar command on OS X
 $ENV{COPYFILE_DISABLE} = 'true';
 

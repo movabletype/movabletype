@@ -483,10 +483,18 @@ sub cb_restore_objects {
             $related{ $asset_hash->{old_id} } = $asset_hash->{object};
         }
 
-        $callback->(
-            MT->translate("Restoring asset associations in [lc,_1] ... ( [_2] )", $entry->class_label, $i++),
-            'cb-restore-entry-asset'
-        );
+        if ($entry->class == 'entry') {
+            $callback->(
+                MT->translate("Restoring asset associations in entry ... ( [_1] )", $i++),
+                'cb-restore-entry-asset'
+            );
+        } else {
+            $callback->(
+                MT->translate("Restoring asset associations in page ... ( [_1] )", $i++),
+                'cb-restore-entry-asset'
+            );
+        }
+        
         for my $col ( qw( text text_more ) ) {
             my $text = $entry->$col;
             next unless $text;
@@ -554,10 +562,17 @@ sub cb_restore_asset {
         my $entry = MT->model('entry')->load( $placement->object_id );  
         next unless $entry;  
         
-        $callback->(
-            MT->translate('Restoring url of the assets in [lc,_1] ( [_2] )...', $entry->class_label, $i++),
-            'cb-restore-asset-url'
-        );
+        if ($entry->class == 'entry') {
+            $callback->(
+                MT->translate('Restoring url of the assets in entry ( [_1] )...', $i++),
+                'cb-restore-asset-url'
+            );
+        } else {
+            $callback->(
+                MT->translate('Restoring url of the assets in page ( [_1] )...', $i++),
+                'cb-restore-asset-url'
+            );
+        }
         for my $col ( qw( text text_more ) ) {
             my $text = $entry->$col;
             next unless $text;

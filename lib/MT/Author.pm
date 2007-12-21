@@ -229,7 +229,7 @@ sub save {
     if (defined $privs) {
         my $perm = $auth->permissions(0);
         $perm->permissions($privs);
-        $perm->save or return $perm->error($perm->errstr);
+        $perm->save or return $auth->error("Error saving permission: " . $perm->errstr);
     }
     1;
 }

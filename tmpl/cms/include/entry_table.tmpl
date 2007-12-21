@@ -1,42 +1,51 @@
+<mt:if name="object_type" eq="entry">
+    <$mt:setvar name="save_button_title" value="<__trans phrase="Save these entries (s)">"$>
+    <$mt:setvar name="republish_button_title" value="<__trans phrase="Republish selected entries (r)">"$>
+    <$mt:setvar name="delete_button_title" value="<__trans phrase="Delete selected entries (x)">"$>
+<mt:else>
+    <$mt:setvar name="save_button_title" value="<__trans phrase="Save these pages (s)">"$>
+    <$mt:setvar name="republish_button_title" value="<__trans phrase="Republish selected pages (r)">"$>
+    <$mt:setvar name="delete_button_title" value="<__trans phrase="Delete selected pages (x)">"$>
+</mt:if>
 <mt:if name="blog_id"><mt:var name="blog_view" value="1"></mt:if>
 
 <mt:setvarblock name="action_buttons">
     <mt:if name="object_type" eq="entry">
         <mt:if name="is_power_edit">
                 <a href="javascript:void(0)" mt:command="submit" mt:mode="save_entries" accesskey="s"
-                    title="<__trans phrase="Save these [lc,_1] (s)" params="<mt:var name="object_label_plural">">"
+                    title="<$mt:var name="save_button_title"$>"
                     ><__trans phrase="Save"></a>
         <mt:else>
             <mt:if name="can_republish">
                 <a href="javascript:void(0)"
                     onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to republish" escape="js">'); return false;"
                     accesskey="r"
-                    title="<__trans phrase="Republish selected [lc,_1] (r)" params="<mt:var name="object_label_plural">">"
+                    title="<$mt:var name="republish_button_title"$>"
                     ><__trans phrase="Republish"></a>
             </mt:if>
                 <a href="javascript:void(0)"
                     onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">'); return false;"
                     accesskey="x"
-                    title="<__trans phrase="Delete selected [lc,_1] (x)" params="<mt:var name="object_label_plural">">"
+                    title="<$mt:var name="delete_button_title"$>"
                     ><__trans phrase="Delete"></a>
         </mt:if>
     <mt:else>
         <mt:if name="is_power_edit">
                 <a href="javascript:void(0)" mt:command="submit" mt:mode="save_pages" accesskey="s"
-                    title="<__trans phrase="Save these [lc,_1] (s)" params="<$mt:var name="object_label_plural"$>">"
+                    title="<$mt:var name="save_button_title"$>"
                     ><__trans phrase="Save"></a>
         <mt:else>
             <mt:if name="can_republish">
                 <a href="javascript:void(0)"
                     onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="page" escape="js">', '<__trans phrase="pages" escape="js">', null, 'rebuild_new_phase', {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>}, '<__trans phrase="to republish" escape="js">'); return false;"
                     accesskey="r"
-                    title="<__trans phrase="Republish selected [lc,_1] (r)" params="<mt:var name="object_label_plural">">"
+                    title="<$mt:var name="republish_button_title"$>"
                     ><__trans phrase="Republish"></a>
             </mt:if>
                 <a href="javascript:void(0)"
                     onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="page" escape="js">', '<__trans phrase="pages" escape="js">'); return false;" name="delete_pages" value="<__trans phrase="Delete">"
                     accesskey="x"
-                    title="<__trans phrase="Delete selected [lc,_1] (x)" params="<mt:var name="object_label_plural">">"
+                    title="<$mt:var name="delete_button_title"$>"
                     ><__trans phrase="Delete"></a>
         </mt:if>
     </mt:if>
@@ -92,16 +101,16 @@
         <mt:else>
                 <td class="status si<mt:if name="status_draft"> status-draft</mt:if><mt:if name="status_publish"> status-publish</mt:if><mt:if name="status_review"> status-review</mt:if><mt:if name="status_future"> status-future</mt:if>">
             <mt:if name="status_draft">
-                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=1" title="<__trans phrase="Only show unpublished [lc,_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished (Draft)">" width="9" height="9" /></a>
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=1" title="<mt:if name="object_type" eq="entry"><__trans phrase="Only show unpublished entries"><mt:else><__trans phrase="Only show unpublished pages"></mt:if>"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished (Draft)">" width="9" height="9" /></a>
             </mt:if>
             <mt:if name="status_publish">
-                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=2" title="<__trans phrase="Only show published [lc,_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=2" title="<mt:if name="object_type" eq="entry"><__trans phrase="Only show published entries"><mt:else><__trans phrase="Only show published pages"></mt:if><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
             </mt:if>
             <mt:if name="status_review">
-                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=3" title="<__trans phrase="Only show [lc,_1] for review" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished (Review)">" width="9" height="9" /></a>
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=3" title="<mt:if name="object_type" eq="entry"><__trans phrase="Only show entries for review"><mt:else><__trans phrase="Only show pages for review"></mt:if><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished (Review)">" width="9" height="9" /></a>
             </mt:if>
             <mt:if name="status_future">
-                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=4" title="<__trans phrase="Only show scheduled [lc,_1]" params="<mt:var name="object_label_plural">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Scheduled">" width="9" height="9" /></a>
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=4" title="<mt:if name="object_type" eq="entry"><__trans phrase="Only show scheduled entries"><mt:else><__trans phrase="Only show scheduled pages"></mt:if><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Scheduled">" width="9" height="9" /></a>
             </mt:if>
                 </td>
         </mt:if>
@@ -133,7 +142,7 @@
             <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
                 <td>&#160;</td>
                 <td>&#160;</td>
-                <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Edit [lc,_1]" params="<mt:var name="object_label">"></a><mt:else>&#160;</mt:if></td>
+                <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="page"><__trans phrase="Edit Entry"><mt:else><__trans phrase="Edit Page"></mt:if></a><mt:else>&#160;</mt:if></td>
         </mt:if>
                 <td class="category">
         <mt:if name="is_editable">
@@ -188,7 +197,7 @@
         <mt:unless name="is_power_edit">
                 <td class="view si status-view">
             <mt:if name="entry_permalink">
-                    <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View [lc,_1]" params="<mt:var name="object_label">">"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="View [lc,_1]" params="<mt:var name="object_label">">" width="13" height="9" /></a>
+                    <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">" title="<mt:if name="object_type" eq="entry"><__trans phrase="View entry"><mt:else><__trans phrase="View page"></mt:if>"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<mt:if name="object_type" eq="entry"><__trans phrase="View entry"><mt:else><__trans phrase="View page"></mt:if>" width="13" height="9" /></a>
             <mt:else>
                     &#160;
             </mt:if>

@@ -731,8 +731,11 @@ sub core_upgrade_functions {
                 },
                 code => sub {
                     return unless $_[0]->url;
-                    $_[0]->external_id($_[0]->name);
-                    $_[0]->name($_[0]->url);
+                    my $existing = MT::Author->load({ name => $_[0]->url, auth_type => 'OpenID' });
+                    unless ($existing) {
+                        $_[0]->external_id($_[0]->name);
+                        $_[0]->name($_[0]->url);
+                    }
                 },
             },
         },
@@ -2385,8 +2388,9 @@ sub core_update_records {
                 next unless $cond->($obj, %param);
             }
             $code->($obj);
+use Data::Dumper;
             $obj->save()
-                or return $self->error($self->translate_escape("Error saving record: [_1].", $obj->errstr));
+                or return $self->error($self->translate_escape("Error saving [_1] record # [_3]: [_2]... [_4].", $class_label, $obj->errstr, $obj->id, Dumper($obj)));
             $continue = 1, last if time > $start + $MAX_TIME;
         }
     }

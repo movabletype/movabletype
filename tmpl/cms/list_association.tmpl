@@ -22,15 +22,17 @@
 <mt:setvarblock name="actions_link" id="actions_link">
     <mt:unless name="blog_id">
         <mt:if name="edit_name">
-            <mt:unless name="status_enabled">
+            <mt:unless name="status_enabled"><mt:if name="edit_author_id" ne="PSEUDO">
     <li class="icon-left icon-warning"><__trans phrase="[_1] <em>[_2]</em> is currently disabled." params="<mt:var name="edit_object" escape="html">%%<mt:var name="edit_name" escape="html">"></li>
-            </mt:unless>
+            </mt:if></mt:unless>
         </mt:if>
     </mt:unless>
     <mt:if name="user_view">
         <mt:if name="can_create_association">
         <li>
             <mt:if name="status_enabled">
+            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
+            <mt:else name="edit_author_id" eq="PSEUDO">
             <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
             <mt:else>
             <span class="disabled icon-left icon-create-disabled" title="<__trans phrase="You can not create permissions for disabled users.">"><__trans phrase="Grant Permission"></span>

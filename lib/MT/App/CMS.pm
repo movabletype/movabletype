@@ -95,7 +95,7 @@ sub core_methods {
         'cfg_plugins'      => \&cfg_plugins,
         'cfg_comments'     => \&cfg_comments,
         'cfg_trackbacks'   => \&cfg_trackbacks,
-        'cfg_registration'   => \&cfg_registration,
+        'cfg_registration' => \&cfg_registration,
         'cfg_spam'         => \&cfg_spam,
         'cfg_entry'        => \&cfg_entry,
         'cfg_web_services' => \&cfg_web_services,
@@ -218,6 +218,7 @@ sub core_methods {
         'convert_to_html'   => \&convert_to_html,
         'update_list_prefs' => \&update_list_prefs,
         'js_add_category'   => \&js_add_category,
+        'remove_userpic'    => \&remove_userpic,
 
         # declared in MT::App
         'update_widget_prefs' => sub { return shift->update_widget_prefs(@_) },
@@ -258,6 +259,7 @@ sub core_widgets {
             template => 'widget/new_version.tmpl',
             set      => 'main',
             singular => 1,
+            handler  => \&new_version_widget,
         },
         this_is_you => {
             label    => 'This is You',
@@ -325,8 +327,8 @@ sub core_page_actions {
             refresh_global_templates => {
                 label => "Refresh Global Templates",
                 code => sub {
-                    MT->app->param('no_backup', 1);
-                        MT::Plugin::TemplateRefresh->instance->refresh_all_templates(@_) },
+                    MT->app->refresh_all_templates(@_);
+                },
                 condition => sub {
                     ! MT->app->blog,
                 },
@@ -869,7 +871,11 @@ sub core_list_actions {
         'blog' => {
             refresh_blog_templates => {
                 label => "Refresh Template(s)",
-                code => sub { MT->app->refresh_all_templates(@_) },
+                code => sub {
+                    my $app = MT->app;
+                    $app->param('backup', 1);
+                    $app->refresh_all_templates(@_)
+                },
             },
         },
         'template' => {
@@ -2279,11 +2285,13 @@ sub build_asset_hasher {
     return sub {
         my ( $obj, $row, %param ) = @_;
         my ($thumb_width, $thumb_height) = @param{qw( ThumbWidth ThumbHeight )};
+        $row->{id} = $obj->id;
         my $blog = $blogs{ $obj->blog_id } ||= $obj->blog;
         $row->{blog_name} = $blog ? $blog->name : '-';
         $row->{url} = $obj->url; # this has to be called to calculate
         $row->{asset_class} = $obj->class_label;
         my $file_path = $obj->file_path; # has to be called to calculate
+        my $meta = $obj->metadata;
         if ( $file_path && ( -f $file_path ) ) {
             $row->{file_path} = $file_path;
             $row->{file_name} = File::Basename::basename( $file_path );
@@ -2301,17 +2309,17 @@ sub build_asset_hasher {
                 $row->{file_size_formatted} =
                   sprintf( "%.1f MB", $size / 1024000 );
             }
+            $meta->{'file_size'} = $row->{file_size_formatted};
         }
         else {
             $row->{file_is_missing} = 1 if $file_path;
         }
         $row->{file_label} = $row->{label} = $obj->label || $row->{file_name} || $app->translate('Untitled');
 
-        my $meta = $obj->metadata;
         if ($obj->has_thumbnail) { 
             $row->{has_thumbnail} = 1;
-            my $height = $thumb_height || $default_thumb_height || 240;
-            my $width  = $thumb_width  || $default_thumb_width  || 350;
+            my $height = $thumb_height || $default_thumb_height || 75;
+            my $width  = $thumb_width  || $default_thumb_width  || 75;
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
               = $obj->thumbnail_url( Height => $height, Width => $width );
 
@@ -2377,6 +2385,24 @@ sub list_assets {
     if ( $filter eq 'class' ) {
         $class_filter = $app->param('filter_val');
     }
+    elsif ($filter eq 'userpic') {
+        $class_filter = 'image';
+        $terms{created_by} = $app->param('filter_val');
+
+        my $tag = MT::Tag->load( { name => '@userpic' },
+            { binary => { name => 1 } } );
+        if ($tag) {
+            require MT::ObjectTag;
+            $args{'join'} = MT::ObjectTag->join_on(
+                'object_id',
+                {
+                    tag_id            => $tag->id,
+                    object_datasource => MT::Asset->datasource
+                },
+                { unique => 1 }
+            );
+        }
+    }
 
     $app->add_breadcrumb( $app->translate("Files") );
     if ($blog_id) {
@@ -2395,7 +2421,7 @@ sub list_assets {
         }
     }
 
-    my $hasher = $app->build_asset_hasher( ThumbWidth => 75, ThumbHeight => 75,
+    my $hasher = $app->build_asset_hasher(
         PreviewWidth => 240, PreviewHeight => 240 );
 
     if ($class_filter) {
@@ -2425,6 +2451,8 @@ sub list_assets {
     my $perms = $app->permissions;
     my %carry_params = map { $_ => $app->param($_) || '' }
         (qw( edit_field upload_mode require_type next_mode asset_select ));
+    $carry_params{'user_id'} = $app->param('filter_val')
+        if $filter eq 'userpic';
     $app->_set_start_upload_params(\%carry_params);
     $app->listing(
         {
@@ -2446,8 +2474,8 @@ sub list_assets {
                       )
                     : (),
                 ),
-                is_image         => defined $app->param('filter_val')
-                  && $app->param('filter_val') eq 'image' ? 1 : 0,
+                is_image         => defined $class_filter
+                  && $class_filter eq 'image' ? 1 : 0,
                 dialog_view      => $dialog_view,
                 search_label     => MT::Asset->class_label_plural,
                 search_type      => 'asset',
@@ -3395,7 +3423,7 @@ sub build_blog_selector {
     @fav_blogs = grep { $_ != $blog_id } @fav_blogs if $blog_id;
 
     # Special case for when a user only has access to a single blog.
-    if ( ( @blogs == 1 ) && ( scalar @fav_blogs <= 1 ) ) {
+    if ( (!defined($app->param('blog_id'))) && ( @blogs == 1 ) && ( scalar @fav_blogs <= 1 ) ) {
 
         # User only has visibility to a single blog. Don't
         # bother giving them a dashboard link for 'all blogs', or
@@ -3678,7 +3706,7 @@ sub get_lmt_content {
     my $app = shift;
     my $newsbox_url = $app->config('LearningNewsURL');
     if ( $newsbox_url && $newsbox_url ne 'disable' ) {
-        return MT::Util::get_newsbox_html($newsbox_url, 'LW', 1); #cached only
+        return MT::Util::get_newsbox_html($newsbox_url, 'LW');
     }
     return q();
 }
@@ -3902,7 +3930,7 @@ sub dashboard {
     $param->{permission} ||= $app->param('permission');
     $param->{saved}      ||= $app->param('saved');
 
-    $param->{system_overview_nav} = 0;
+    $param->{system_overview_nav} = $app->param('blog_id') ? 0 : defined($app->param('blog_id')) ? 1 : 0;
     $param->{quick_search}        = 0;
     $param->{no_breadcrumbs}      = 1;
     $param->{screen_class}        = "dashboard";
@@ -4049,6 +4077,28 @@ sub mt_news_widget {
 
     $param->{news_html} = $app->get_newsbox_content() || '';
     $param->{learning_mt_news_html} = $app->get_lmt_content() || '';
+}
+
+sub new_version_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    push @{ $param->{feature_loop} ||= [] },
+      {
+        feature_label => MT->translate('Shared Template Modules'),
+        feature_url  => $app->translate('http://www.movabletype.org/documentation/') . 'designer/shared-templates.html',
+        feature_description => MT->translate('Reuse elements of your site design or layout across all the blogs and sites managed within Movable Type.')
+      },
+      {
+        feature_label => MT->translate('Userpics'),
+        feature_url  => $app->translate('http://www.movabletype.org/documentation/') . 'author/userpics.html',
+        feature_description => MT->translate('Allow authors and commenters to upload a photo of themselves to be displayed alongside their comments.')
+      },
+      {
+        feature_label => MT->translate('Template Sets'),
+        feature_url  => $app->translate('http://www.movabletype.org/documentation/') . 'designer/template-sets.html',
+        feature_description => MT->translate('Template sets provide an easy way to bundle an entire design and install it into Movable Type.')
+      };
 }
 
 sub this_is_you_widget {
@@ -4706,7 +4756,11 @@ sub apply_log_filter {
                     $arg{category} = 'publish';
                 }
                 else {
-                    $arg{class} = [ split /,/, $val ];
+                    if ($val =~ m/,/) {
+                        $arg{class} = [ split /,/, $val ];
+                    } else {
+                        $arg{class} = $val;
+                    }
                 }
             }
         }
@@ -5003,17 +5057,33 @@ sub export_notification {
 
 sub show_error {
     my $app  = shift;
+    my ($param) = @_;
+
+    # handle legacy scalar error string signature
+    $param = { error => $param } unless ref($param) eq 'HASH';
+
     my $mode = $app->mode;
     if ( $mode eq 'rebuild' ) {
+
+        my $r = MT::Request->instance;
+        if (my $tmpl = $r->cache('build_template')) {
+            # this is the template that likely caused the rebuild error
+            push @{ $param->{button_loop} ||= [] }, {
+                link => $app->uri( mode => 'view', args => { blog_id => $tmpl->blog_id, '_type' => 'template', id => $tmpl->id }),
+                label => $app->translate("Edit Template"),
+            };
+        }
+
         my $blog_id = $app->param('blog_id');
         my $url     = $app->uri(
             mode => 'rebuild_confirm',
             args => { blog_id => $blog_id }
         );
-        $app->{goback} ||= qq{window.location='$url'};
-        $app->{value}  ||= $app->translate('Go Back');
+        $param->{goback} ||= qq{window.location='$url'};
+        $param->{value}  ||= $app->translate('Go Back');
     }
-    return $app->SUPER::show_error(@_);
+
+    return $app->SUPER::show_error($param);
 }
 
 sub export_log {
@@ -5760,10 +5830,15 @@ sub edit_object {
                         # only include if it is NOT an entry-based archive type
                         next if $archiver->entry_based;
                     }
-                    elsif ( $obj_type eq 'page' || $obj_type eq 'individual' ) {
-
-                        # only include if it is a entry-based archive type
+                    elsif ( $obj_type eq 'page' ) {
+                        # only include if it is a entry-based archive type and page
                         next unless $archiver->entry_based;
+                        next if $archiver->entry_class ne 'page';
+                    }
+                    elsif ( $obj_type eq 'individual' ) {
+                        # only include if it is a entry-based archive type and entry
+                        next unless $archiver->entry_based;
+                        next if $archiver->entry_class eq 'page';
                     }
                     push @archive_types,
                       {
@@ -5902,7 +5977,7 @@ sub edit_object {
                 $param{system_allow_outbound_pings} =
                   $cfg->OutboundTrackbackLimit eq 'any';
                 my %selected_pings = map { $_ => 1 }
-                  split ',', $obj->update_pings;
+                  split ',', ($obj->update_pings || '');
                 my $pings = $app->registry('ping_servers');
                 my @pings;
                 push @pings,
@@ -6361,7 +6436,7 @@ sub edit_object {
             $param{asset} = $obj;
             $param{search_label} = $app->translate('Assets');
 
-            my $hasher = $app->build_asset_hasher( ThumbWidth => 75, ThumbHeight => 75 );
+            my $hasher = $app->build_asset_hasher;
             $hasher->($obj, \%param, ThumbWidth => 240, ThumbHeight => 240);
 
             my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
@@ -6413,6 +6488,10 @@ sub edit_object {
                         $app->user ? $app->user->preferred_language : undef );
                 }
                 push @appears_in, \%entry_data;
+            }
+            if (11 == @appears_in) {    
+                pop @appears_in;
+                $param{appears_in_more} = 1;
             }
             $param{appears_in} = \@appears_in if @appears_in;
 
@@ -6779,6 +6858,8 @@ sub edit_object {
                     MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry', private => 1 )
                   );
             }
+
+            $param{can_edit_categories} = $perms->can_edit_categories;
         }
 
         my $data = $app->_build_category_list(
@@ -6794,6 +6875,7 @@ sub edit_object {
               {
                 id    => -1,
                 label => '/',
+                basename => '/',
                 path  => [],
               };
             $top_cat ||= -1;
@@ -6808,6 +6890,7 @@ sub edit_object {
               {
                 id => $_->{category_id},
                 label => $_->{category_label} . ( $type eq 'page' ? '/' : '' ),
+                basename => $_->{category_basename} . ( $type eq 'page' ? '/' : '' ),
                 path => $_->{category_path_ids} || [],
               };
             push @sel_cats, $_->{category_id}
@@ -6890,8 +6973,10 @@ sub edit_object {
         my $editors = $app->registry("richtext_editors");
         my $edit_reg = $editors->{$rte} || $editors->{archetype};
         my $rich_editor_tmpl;
-        $rich_editor_tmpl = $edit_reg->{plugin}->load_tmpl($edit_reg->{template});
-        $param{rich_editor} = $rich_editor_tmpl;
+        if ($rich_editor_tmpl = $edit_reg->{plugin}->load_tmpl($edit_reg->{template})) {
+            $param{rich_editor} = $rte;
+            $param{rich_editor_tmpl} = $rich_editor_tmpl;
+        }
 
         $param{object_type}  = $type;
         $param{quickpost_js} = $app->quickpost_js($type);
@@ -7114,7 +7199,7 @@ sub edit_object {
             $param{commenter_url} = $cmntr->url;
         }
     }
-    $param{page_actions} = $app->page_actions($type);
+    $param{page_actions} = $app->page_actions($type, $obj);
     if ( $class->can('class_label') ) {
         $param{object_label} = $class->class_label;
     }
@@ -8150,6 +8235,11 @@ sub _convert_word_chars {
         $s =~ s/\342\200\224/--/g;
         $s =~ s/\342\200[\234\235]/"/g;
     }
+
+    # While we're fixing Word, remove processing instructions with
+    # colons, as they can break PHP.
+    $s =~ s{ <\? xml:namespace [^>]*> }{}xmsg;
+
     $s;
 }
 
@@ -9475,6 +9565,7 @@ sub save_object {
             }
         }
     }
+
     $app->add_return_arg( 'id' => $obj->id ) if !$original->id;
     $app->add_return_arg( 'saved' => 1 );
     $app->call_return;
@@ -9813,7 +9904,7 @@ sub _delete_pseudo_association {
             next unless $role_id && $blog_id;
             next
               if ( $rid && ( $role_id == $rid ) && ( $blog_id == $bid ) )
-                || ( $blog_id == $bid );
+                || ( !defined($rid) && ( $blog_id == $bid ) );
             push @newdef, "$role_id,$blog_id";
         }
     }
@@ -10186,6 +10277,23 @@ sub asset_userpic {
     }
 
     my $thumb_html = $app->model('author')->userpic_html( Asset => $asset );
+
+    my $user_id = $param->{user_id} || $app->param('user_id');
+    if ($user_id) {
+        my $user = $app->model('author')->load( {id => $user_id} );
+        if ($user) {
+            # Delete the author's userpic thumb (if any); it'll be regenerated.
+            if ($user->userpic_asset_id != $asset->id) {
+                my $old_file = $user->userpic_file();
+                my $fmgr = MT::FileMgr->new('Local');
+                if ($fmgr->exists($old_file)) {
+                    $fmgr->delete($old_file);
+                }
+                $user->userpic_asset_id($asset->id);
+                $user->save;
+            }
+        }
+    }
 
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
@@ -11434,7 +11542,8 @@ sub build_plugin_table {
                 # Process template independent of $app to avoid premature
                 # localization (give plugin a chance to do L10N first).
                 $tmpl->param( \%plugin_param );
-                $config_html = $tmpl->output();
+                $config_html = $tmpl->output()
+                    or $config_html = "Error in configuration template: " . $tmpl->errstr;
                 $config_html = $plugin->translate_templatized($config_html)
                   if $config_html =~ m/<(?:__trans|mt_trans) /i;
             }
@@ -12037,6 +12146,19 @@ sub list_entries {
             }
             $filter_value = $cat->label;
         }
+        elsif ( $filter_col eq 'asset_id' ) {
+            $filter_name = $app->translate('Asset');
+            my $asset_class = MT->model('asset');
+            my $asset = $asset_class->load($filter_val);
+            return $app->errtrans( "Load failed: [_1]", $asset_class->errstr )
+              unless $asset;
+            if ($asset->blog_id != $blog_id) {
+                $filter_key = '';
+                $filter_col = '';
+                $filter_val = '';
+            }
+            $filter_value = $param{asset_label} = $asset->label;
+        }
     }
     if ( $filter_col && $filter_val ) {
         if ( 'power_edit' eq $filter_col ) {
@@ -12052,6 +12174,14 @@ sub list_entries {
                     'entry_id',
                     { category_id => $filter_val },
                     { unique      => 1 }
+                );
+            }
+            elsif ( $filter_col eq 'asset_id' ) {
+                $arg{'join'} = MT->model('objectasset')->join_on(
+                    'object_id',
+                    { object_ds => $type,
+                      asset_id  => $filter_val },
+                    { unique    => 1 }
                 );
             }
             elsif (( $filter_col eq 'normalizedtag' )
@@ -12210,6 +12340,41 @@ sub list_entries {
         }
     }
     $param{entry_author_loop} = \@authors;
+
+    $iter = $app->model('asset')->load_iter(
+        { class => '*', blog_id => $blog_id },
+        {
+            'join' => MT->model('objectasset')->join_on(
+                'asset_id',
+                {},
+                { unique => 1 }
+            ),
+            'sort'    => 'created_on',
+            direction => 'descend',
+        }
+    );
+    %seen = ();
+    my @assets;
+    while ( my $asset = $iter->() ) {
+        next if $seen{ $asset->id };
+        $seen{ $asset->id } = 1;
+        my $row = {
+            asset_label => $asset->label,
+            asset_id    => $asset->id,
+        };
+        push @assets, $row;
+        if ( @assets == 50 ) {
+            $iter->('finish');
+            last;
+        }
+    }
+    if ($filter_col eq 'asset_id' && !$seen{$filter_val}) {
+        push @assets, {
+            asset_label => $param{asset_label},
+            asset_id    => $filter_val,
+        };
+    }
+    $param{entry_asset_loop} = \@assets;
 
     $param{page_actions}        = $app->page_actions( $app->mode );
     $param{list_filters}        = $app->list_filters('entry');
@@ -13342,6 +13507,11 @@ sub list_category {
     $param{entry_label}         = $entry_class->class_label;
     $param{search_label}        = $param{entry_label_plural};
     $param{search_type}         = $entry_type;
+    $param{screen_id} =
+        $type eq 'folder'
+      ? 'list-folder'
+      : 'list-category';
+    $param{listing_screen}      = 1;
     $app->add_breadcrumb( $param{object_label_plural} );
 
     $param{screen_class} = "list-${type}";
@@ -13620,7 +13790,8 @@ sub cfg_comments {
     $app->edit_object(
         {
             output         => 'cfg_comments.tmpl',
-            screen_class   => 'settings-screen comments-screen'
+            screen_class   => 'settings-screen',
+            screen_id      => 'comment-settings',
         }
     );
 }
@@ -13636,7 +13807,8 @@ sub cfg_trackbacks {
     $app->edit_object(
         {
             output       => 'cfg_trackbacks.tmpl',
-            screen_class => 'settings-screen trackbacks-screen'
+            screen_class => 'settings-screen',
+            screen_id    => 'trackback-settings',
         }
     );
 }
@@ -14386,6 +14558,10 @@ sub preview_entry {
     $app->_translate_naughty_words($entry);
 
     $entry->convert_breaks( scalar $q->param('convert_breaks') );
+        
+    my @data = ( { data_name => 'author_id', data_value => $user_id } );
+    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
+
     my $ctx = $tmpl->context;
     $ctx->stash( 'entry', $entry );
     $ctx->stash( 'blog',  $blog );
@@ -14466,7 +14642,6 @@ sub preview_entry {
     $param{new_object} = $param{id} ? 0 : 1;
     $param{title} = $entry->title;
     my $cols = $entry_class->column_names;
-    my @data = ( { data_name => 'author_id', data_value => $user_id } );
 
     for my $col (@$cols) {
         next
@@ -14504,8 +14679,6 @@ sub preview_entry {
             data_value => scalar $q->param($data)
           };
     }
-
-    $app->run_callbacks( 'cms_pre_preview', $app, \@data );
 
     $param{entry_loop} = \@data;
     my $list_mode;
@@ -15428,6 +15601,32 @@ sub _set_start_upload_params {
         }
 
         $param->{enable_destination} = 1;
+        
+        my $data = $app->_build_category_list(
+            blog_id => $blog_id,
+            markers => 1,
+            type    => 'folder',
+        );
+        my $top_cat = -1;
+        my $cat_tree = [{
+            id    => -1,
+            label => '/',
+            basename => '/',
+            path  => [],
+        }];
+        foreach (@$data) {
+            next unless exists $_->{category_id};
+            $_->{category_path_ids} ||= [];
+            unshift @{ $_->{category_path_ids} }, -1;
+            push @$cat_tree,
+              {
+                id => $_->{category_id},
+                label => $_->{category_label} . '/',
+                basename => $_->{category_basename} . '/',
+                path => $_->{category_path_ids} || [],
+              };
+        }
+        $param->{category_tree} = $cat_tree;
     }
     else {
         $param->{local_site_path}      = '';
@@ -15596,7 +15795,9 @@ sub upload_userpic {
     $asset->tags('@userpic');
     $asset->save;
 
-    $app->forward( 'asset_userpic', { asset => $asset } );
+    my $user_id = $app->param('user_id');
+
+    $app->forward( 'asset_userpic', { asset => $asset, user_id => $user_id } );
 }
 
 sub _upload_file {
@@ -16054,6 +16255,25 @@ sub _write_upload {
     $bytes;
 }
 
+sub remove_userpic {
+    my $app = shift;
+    $app->validate_magic() or return;
+    my $q  = $app->param;
+    my $user_id = $q->param('user_id');
+    my $user = $app->model('author')->load( { id => $user_id } )
+        or return;
+    if ($user->userpic_asset_id) {
+        my $old_file = $user->userpic_file();
+        my $fmgr = MT::FileMgr->new('Local');
+        if ($fmgr->exists($old_file)) {
+            $fmgr->delete($old_file);
+        }
+        $user->userpic_asset_id(0);
+        $user->save;
+    }
+    return 'success';
+}
+
 sub search_replace {
     my $app = shift;
     my $param = $app->do_search_replace(@_) or return;
@@ -16211,6 +16431,7 @@ sub core_search_apis {
             'search_cols' => {
                 'file_name' => sub { $app->translate('Filename') },
                 'description' => sub { $app->translate('Description') },
+                'label' => sub { $app->translate('Label') },
             },
             'replace_cols'       => [],
             'can_replace'        => 0,
@@ -18202,14 +18423,19 @@ sub dialog_grant_role {
 
         # traditional, full-screen listing
         my $params = {
-            $author_id
+            ($author_id || 0) eq 'PSEUDO'
             ? (
-                edit_author_name => $user->nickname
-                ? $user->nickname
-                : $user->name,
-                edit_author_id => $user->id,
+                edit_author_name => $app->translate('(newly created user)'),
+                edit_author_id   => 'PSEUDO'
               )
-            : (),
+            : $author_id
+              ? (
+                  edit_author_name => $user->nickname
+                  ? $user->nickname
+                  : $user->name,
+                  edit_author_id => $user->id,
+                )
+              : (),
             $role_id
             ? (
                 role_name => $role->name,
@@ -18415,7 +18641,14 @@ sub grant_role {
     }
     $app->error(undef);
 
-    push @authors, MT::Author->load($author_id) if $author_id;
+    if ($author_id) {
+        if ( $author_id eq 'PSEUDO' ) {
+            $add_pseudo_new_user = 1;
+        }
+        else {
+            push @authors, MT::Author->load($author_id);
+        }
+    }
     push @blogs,   MT::Blog->load($blog_id)     if $blog_id;
     push @roles,   MT::Role->load($role_id)     if $role_id;
 
@@ -20122,11 +20355,7 @@ sub dialog_refresh_templates {
 sub refresh_all_templates {
     my ($app) = @_;
 
-    my $backup = 1;
-    if ($app->param('no_backup')) {
-        $backup = 0;
-    }
-
+    my $backup = 0;
     if ($app->param('backup')) {
         # refresh templates dialog uses a 'backup' field
         $backup = 1;
@@ -20150,6 +20379,7 @@ sub refresh_all_templates {
     }
 
     require MT::Template;
+    require MT::DefaultTemplates;
     require MT::Blog;
     require MT::Permission;
     require MT::Util;
@@ -20176,14 +20406,13 @@ sub refresh_all_templates {
         my $tmpl_list;
         if ($blog_id) {
 
-
             if ($refresh_type eq 'clean') {
                 # the user wants to back up all templates and
                 # install the new ones
 
-                my @ts = MT::Util::offset_time_list( $t, ( $blog_id ? $blog_id : undef ) );
-                my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
-                  $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+                my @ts = MT::Util::offset_time_list( $t, $blog_id );
+                my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d",
+                    $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
                 my $tmpl_iter = MT::Template->load_iter({
                     blog_id => $blog_id,
@@ -20191,23 +20420,28 @@ sub refresh_all_templates {
                 });
 
                 while (my $tmpl = $tmpl_iter->()) {
-                    $tmpl->type('backup');
-                    # zap all template maps
-                    require MT::TemplateMap;
-                    MT::TemplateMap->remove({
-                        template_id => $tmpl->id,
-                    });
-                    $tmpl->name(
-                        $tmpl->name . ' (Backup from ' . $ts . ')' );
-                    $tmpl->identifier(undef);
-                    $tmpl->rebuild_me(0);
-                    $tmpl->linked_file(undef);
-                    $tmpl->outfile('');
-                    $tmpl->save;
+                    if ($backup) {
+                        # zap all template maps
+                        require MT::TemplateMap;
+                        MT::TemplateMap->remove({
+                            template_id => $tmpl->id,
+                        });
+                        $tmpl->type('backup');
+                        $tmpl->name(
+                            $tmpl->name . ' (Backup from ' . $ts . ')' );
+                        $tmpl->identifier(undef);
+                        $tmpl->rebuild_me(0);
+                        $tmpl->linked_file(undef);
+                        $tmpl->outfile('');
+                        $tmpl->save;
+                    } else {
+                        $tmpl->remove;
+                    }
                 }
 
                 # This also creates our template mappings
-                $blog->create_default_templates( $template_set || $blog->template_set || 'mt_blog' );
+                $blog->create_default_templates( $template_set ||
+                    $blog->template_set || 'mt_blog' );
 
                 if ($template_set) {
                     $blog->template_set( $template_set );
@@ -20215,15 +20449,11 @@ sub refresh_all_templates {
                 }
 
                 next;
-
             }
 
-            require MT::DefaultTemplates;
             $tmpl_list = MT::DefaultTemplates->templates($template_set || $blog->template_set) || MT::DefaultTemplates->templates();
-
         }
         else {
-            require MT::DefaultTemplates;
             $tmpl_list = MT::DefaultTemplates->templates();
         }
 
@@ -20424,11 +20654,7 @@ sub refresh_individual_templates {
               ->{id};    # make sure we don't overwrite original
             delete $backup->{changed_cols}->{id};
             $backup->name( $backup->name . ' (Backup from ' . $ts . ')' );
-            if ( $backup->type !~
-                m/^(archive|individual|page|category|index|custom|widget)$/ )
-            {
-                $backup->type('custom');    # system templates can't be created
-            }
+            $backup->type('backup');
             $backup->outfile('');
             $backup->linked_file( $tmpl->linked_file );
             $backup->rebuild_me(0);

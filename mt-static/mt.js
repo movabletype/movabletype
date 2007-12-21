@@ -1332,7 +1332,7 @@ MT.App = new Class( App, {
         
         if ( this.constructor.TabContainer )
             this.setDelegate( "tabContainer", new this.constructor.TabContainer() );
-        
+            
         var forms = DOM.getElementsByTagAndAttribute( this.document, "form", "mt:auto-save" );
         if ( forms.length )
             window.onbeforeunload = this.getIndirectEventListener( "eventBeforeUnload" );
@@ -2460,6 +2460,260 @@ MT.App.CodePress = new Class( Object, {
 
 
 } );
+
+MT.App.CategorySelector = new Class( Transient, {
+    
+
+    transitory: true,
+    opening: false,
+    
+    
+    initObject: function( element, template ) {
+        arguments.callee.applySuper( this, arguments );
+
+        this.catForm = DOM.getElement( "add-category-form" );
+        this.catInput = DOM.getElement( "add-category-input" );
+
+        this.list = this.addComponent( new List( element + '-list', template ) );
+        this.list.setOption( "checkboxSelection", true );
+        this.list.addObserver( this );
+
+        if ( element.match( /category/ ) ) {
+            this.type = "category";
+            this.list.setOption( "singleSelect", false );
+            this.list.setOption( "toggleSelect", true );
+        } else {
+            this.type = "folder";
+            this.list.setOption( "singleSelect", true );
+            this.list.setOption( "toggleSelect", false );
+        }
+
+        this.parentID = 0;
+        var cats = MT.App.categoryList;
+        var selcats = MT.App.selectedCategoryList;
+        var catlen = cats.length;
+        var selected = {};
+        for ( var i = 0; i < selcats; i++ )
+            selected[ selcats[ i ] ] = true;
+        for ( var i = 0; i < catlen; i++ )
+            this.list.addItem( cats[ i ], selected.hasOwnProperty( cats[ i ] ) );
+    },
+
+    
+    destroyObject: function() {
+        this.list = null;
+        this.catForm = null;
+        this.catInput = null;
+        this.catFormMovable = null;
+        arguments.callee.applySuper( this, arguments );
+    },
+
+
+    eventKeyDown: function( event ) {
+        if ( event.target.nodeName != "INPUT" )
+            return;
+
+        if ( event.keyCode == 13 ) {
+            this.createCategory();
+            return event.stop();
+        }
+    },
+    
+    
+    open: function() {
+        arguments.callee.applySuper( this, arguments );
+        /* hack to keep the broadcast from nuking our list */
+        this.opening = true;
+        this.list.resetSelection();
+        this.opening = false;
+        /* this keeps our list order if they made one a primary since the last open */
+        this.list.setSelection( MT.App.selectedCategoryList );
+    },
+
+
+    eventClick: function( event ) {
+        var command = this.getMouseEventCommand( event );
+        switch( command ) {
+
+            case "close":
+                this.removeMovable();
+                this.close( this.list.getSelectedIDs() );
+                break;
+            
+            case "showAddCategory":
+                this.removeMovable();
+                /* show the add category block inside the flyout */
+                var id = DOM.getMouseEventAttribute( event, "mt:id" );
+                if ( id ) {
+                    /* adding a sub cat/folder */
+                    this.catInput.value = '';
+                    DOM.addClassName( this.catForm, "hidden" );
+                    var item = this.list.getListElementFromTarget( event.target );
+                    this.catFormMovable = document.createElement( "div" );
+                    this.catFormMovable.innerHTML = Template.process( "categorySelectorAddForm", { div: this.catFormMovable } );
+                    this.list.content.insertBefore( this.catFormMovable, item.nextSibling );
+                    this.catInputMovable = DOM.getElement( "add-category-input-movable" );
+                    DOM.removeClassName( this.catFormMovable, "hidden" );
+                    this.parentID = id;
+                    this.catInputMovable.focus();
+                } else {
+                    DOM.removeClassName( this.catForm, "hidden" );
+                    this.catInput.focus();
+                }
+                break;
+
+            case "cancel":
+                this.removeMovable();
+                /* hide it */
+                DOM.addClassName( this.catForm, "hidden" );
+                break;
+
+            case "add":
+                /* add a category */
+                this.createCategory();
+                break;
+
+            default:
+                return;
+
+        }
+        return event.stop();
+    },
+
+
+    removeMovable: function() {
+        this.parentID = 0;
+        if ( !this.catFormMovable )
+            return;
+        this.catFormMovable.parentNode.removeChild( this.catFormMovable );
+        this.catFormMovable = undefined;
+    },
+
+
+    createCategory: function() {
+        var inputElement = ( this.parentID == 0 )
+            ? this.catInput : this.catInputMovable;
+        var name = inputElement.value;
+        if ( !name || name == "" || name.match( /^\s+$/ ) )
+            return;
+        
+        /* ignore the faded default text that could be in the box */
+        var defaultText = inputElement.getAttribute( "mt:default" );
+        if ( defaultText && name == defaultText )
+            return;
+
+        DOM.addClassName( this.catForm, "hidden" );
+        DOM.addClassName( this.catFormMovable, "hidden" );
+        this.catInput.value = '';
+        
+        var args = {
+            __mode: "js_add_category",
+            magic_token: app.form["magic_token"].value,
+            blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
+            parent: parseInt( this.parentID ),
+            _type: this.type
+        };
+        args.label = name;
+        
+        /* hahah, safari crashes during the keydown */
+        new Timer( this.getIndirectMethod( "removeMovable" ), 20, 1 );
+        
+        TC.Client.call({
+            load: this.getIndirectMethod( "createCategoryComplete" ),
+            error: this.getIndirectMethod( "createCategoryError" ),
+            method: 'POST',
+            uri: app.form.action,
+            arguments: args,
+            label: name
+        });
+    },
+
+
+    createCategoryComplete: function( c, r, p ) {
+        /* {"error":null,"result":{"basename":"foobar","id":7}} */
+        log("create category complete "+r+' parent:'+p.arguments.parent );
+        if ( r.charAt( 0 ) != "{" )
+            return log.error( r );
+        var obj = eval( "(" + r + ")" );
+        if ( obj.error )
+            return alert( obj.error );
+        if ( obj.result && obj.result.id )
+            this.addCategory( obj.result.id, p.label, obj.result.basename, p.arguments.parent );
+    },
+
+
+    createCategoryError: function( c, r ) {
+        log.error("error creating category");
+    },
+
+
+    addCategory: function( id, name, basename, parent ) {
+        var cat = {
+            id: id,
+            label: name + ( MT.App.objectType && MT.App.objectType == 'page' ? '/' : '' ),
+            basename: basename + ( MT.App.objectType && MT.App.objectType == 'page' ? '/' : '' ),
+            path: []
+        };
+        var catlist = MT.App.categoryList;
+        parent = parseInt( parent );
+
+        /* single selection, and we're about to select the new folder */
+        if ( this.type == 'folder' )
+            this.list.resetSelection();
+
+        if ( parent != 0 ) {
+            var idx;
+            for ( var i = 0; i < catlist.length; i++ )
+                if ( parseInt( catlist[ i ].id ) == parent ) {
+                    idx = i;
+                    parent = catlist[ i ];
+                    break;
+                }
+            if ( !defined( idx ) )
+                return log.error( "can't find parent id "+parent.id+" in category list");
+            /* get the parents path for our own, and add the parent */
+            /* use fromPseudo to copy this array, not take a ref to it */
+            cat.path = Array.fromPseudo( parent.path || [] );
+            cat.path.push( parent.id );
+            catlist.splice( idx, 0, cat );
+            /* update the cache */
+            app.catCache.setItem( "cat:" + cat.id, cat );
+            /* add puts the item at the bottom, so we hide it and move it */
+            this.list.addItem( cat, true, "list-item hidden" );
+            var div = this.list.getItem( cat.id );
+            div.parentNode.removeChild( div );
+            var parentItem = this.list.getItem( parent.id );
+            /* move it after the parent */
+            this.list.content.insertBefore( div, parentItem.nextSibling );
+            DOM.removeClassName( div, "hidden" );
+        } else {
+            catlist.push( cat );
+            /* update the cache */
+            app.catCache.setItem( "cat:" + cat.id, cat );
+            this.list.addItem( cat, true );
+        }
+        /* recheck selection */
+        this.listItemsSelected( this.list );
+    },
+
+
+    listItemsSelected: function( list, ids ) {
+        MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
+        app.catList.redraw();
+    },
+
+
+    listItemsUnSelected: function( list, ids ) {
+        if ( this.opening || this.type == "folder" )
+            return;
+        MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
+        app.catList.redraw();
+    }
+
+
+} );
+
+
 
 extend( MT.App.CodePress, {
    

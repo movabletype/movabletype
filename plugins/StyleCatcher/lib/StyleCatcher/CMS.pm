@@ -292,6 +292,7 @@ EOT
         $backup->rebuild_me(0);
         $backup->build_dynamic(0);
         $backup->identifier(undef);
+        $backup->type('backup');
         $backup->save;
         $tmpl->linked_file('');    # make sure this one isn't linked now
         $tmpl->identifier('styles');

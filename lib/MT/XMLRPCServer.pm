@@ -13,17 +13,15 @@ use MT::I18N qw( encode_text first_n_text const );
 sub mt_new {
     my $cfg = $ENV{MOD_PERL} ?
         Apache->request->dir_config('MTConfig') :
-        $MT::XMLRPCServer::MT_DIR . '/mt.cfg';
+        $MT::XMLRPCServer::MT_DIR . '/mt-config.cgi';
     my $mt = MT->new( Config => $cfg )
         or die MT::XMLRPCServer::_fault(MT->errstr);
-    #$main::server->serializer->encoding($mt->config('PublishCharset'));
     # we need to be UTF-8 here no matter which PublishCharset
     $main::server->serializer->encoding('UTF-8');
     $mt->run_callbacks('init_app', $mt, {App => 'xmlrpc'});
     $mt;
 }
 
-# TBD: Refactor me!
 sub iso2ts {
     my($blog, $iso) = @_;
     die MT::XMLRPCServer::_fault(MT->translate("Invalid timestamp format"))
@@ -64,11 +62,9 @@ use strict;
 use MT;
 use MT::Util qw( first_n_words decode_html start_background_task archive_file_for );
 use MT::I18N qw( encode_text first_n_text const );
+use base qw( MT::ErrorHandler );
 
-use MT::ErrorHandler;
-BEGIN { @MT::XMLRPCServer::ISA = qw( MT::ErrorHandler ) }
-
-use vars qw( $MT_DIR );
+our $MT_DIR;
 
 my($HAVE_XML_PARSER);
 BEGIN {
@@ -309,7 +305,7 @@ sub _new_entry {
         or die _fault(MT->translate("Invalid blog ID '[_1]'", $blog_id));
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("No publishing privileges")) unless $perms && $perms->can_post;
+    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_create_post;
     my $entry = MT->model($obj_type)->new;
     my $orig_entry = $entry->clone;
     $entry->blog_id($blog_id);
@@ -321,9 +317,9 @@ sub _new_entry {
     ## *unless* the user has set "NoPublishMeansDraft 1" in mt.cfg, which
     ## enables the old behavior.
     if ($mt->{cfg}->NoPublishMeansDraft) {
-        $entry->status($publish ? MT::Entry::RELEASE() : MT::Entry::HOLD());
+        $entry->status($publish && $perms->can_publish_post ? MT::Entry::RELEASE() : MT::Entry::HOLD());
     } else {
-        $entry->status(MT::Entry::RELEASE());
+        $entry->status($perms->can_publish_post ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
     }
     $entry->allow_comments($blog->allow_comments_default);
     $entry->allow_pings($blog->allow_pings_default);
@@ -378,9 +374,9 @@ sub _new_entry {
 
     require MT::Log;
     $mt->log({
-        message => $mt->translate("User '[_1]' (user #[_2]) added entry #[_3]", $author->name, $author->id, $entry->id),
+        message => $mt->translate("User '[_1]' (user #[_2]) added [lc,_4] #[_3]", $author->name, $author->id, $entry->id, $entry->class_label),
         level => MT::Log::INFO(),
-        class => 'entry',
+        class => $obj_type,
         category => 'new',
         metadata => $entry->id
     });
@@ -477,20 +473,22 @@ sub _edit_entry {
     }
     $entry->discover_tb_from_entry();
 
-    MT->run_callbacks('api_pre_save.entry', $mt, $entry, $orig_entry)
+    MT->run_callbacks("api_pre_save.$obj_type", $mt, $entry,
+        $orig_entry)
         || die MT::XMLRPCServer::_fault(MT->translate("PreSave failed [_1]", MT->errstr));
 
     $entry->save;
 
     $class->_save_placements($entry, $item, \%param);
 
-    MT->run_callbacks('api_post_save.entry', $mt, $entry, $orig_entry);
+    MT->run_callbacks("api_post_save.$obj_type", $mt, $entry,
+        $orig_entry);
 
     require MT::Log;
     $mt->log({
-        message => $mt->translate("User '[_1]' (user #[_2]) edited entry #[_3]", $author->name, $author->id, $entry->id),
+        message => $mt->translate("User '[_1]' (user #[_2]) edited [lc,_4] #[_3]", $author->name, $author->id, $entry->id, $entry->class_label),
         level => MT::Log::INFO(),
-        class => 'entry',
+        class => $obj_type,
         category => 'new',
         metadata => $entry->id
     });
@@ -539,7 +537,7 @@ sub getUsersBlogs {
     my $iter = MT::Permission->load_iter({ author_id => $author->id });
     my @res;
     while (my $perms = $iter->()) {
-        next unless $perms->can_post;
+        next unless $perms->can_create_post;
         my $blog = MT::Blog->load($perms->blog_id);
         next unless $blog;
         push @res, { url => SOAP::Data->type(string => $blog->site_url),
@@ -579,7 +577,7 @@ sub _get_entries {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("No publishing privileges")) unless $perms && $perms->can_post;
+    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_create_post;
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id);
     my $iter = MT->model($obj_type)->load_iter({ blog_id => $blog_id },
@@ -659,12 +657,12 @@ sub _delete_entry {
         or die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("Not privileged to delete entry"))
+    die _fault(MT->translate("Permission denied."))
         unless $perms && $perms->can_edit_entry($entry, $author);
     $entry->remove;
 
     $mt->log({
-        message => $mt->translate("Entry '[_1]' (entry #[_2]) deleted by '[_3]' (user #[_4]) from xml-rpc", $entry->title, $entry->id, $author->name, $author->id),
+        message => $mt->translate("Entry '[_1]' ([lc,_5] #[_2]) deleted by '[_3]' (user #[_4]) from xml-rpc", $entry->title, $entry->id, $author->name, $author->id, $entry->class_label),
         level => MT::Log::INFO(),
         class => 'system',
         category => 'delete' 
@@ -807,8 +805,8 @@ sub getCategoryList {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("User does not have privileges"))
-        unless $perms && $perms->can_post;
+    die _fault(MT->translate("Permission denied."))
+        unless $perms && $perms->can_create_post;
     require MT::Category;
     my $iter = MT::Category->load_iter({ blog_id => $blog_id });
     my @data;
@@ -827,8 +825,8 @@ sub getCategories {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("User does not have privileges"))
-        unless $perms && $perms->can_post;
+    die _fault(MT->translate("Permission denied."))
+        unless $perms && $perms->can_create_post;
     require MT::Category;
     my $iter = MT::Category->load_iter({ blog_id => $blog_id });
     my @data;
@@ -854,8 +852,8 @@ sub getTagList {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("User does not have privileges"))
-        unless $perms && $perms->can_post;
+    die _fault(MT->translate("Permission denied."))
+        unless $perms && $perms->can_create_post;
     require MT::Tag;
     require MT::ObjectTag;
     my $iter = MT::Tag->load_iter(undef, { join => ['MT::ObjectTag', 'tag_id', { blog_id => $blog_id }, { unique => 1 } ] } );
@@ -878,7 +876,7 @@ sub getPostCategories {
         or die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("No publishing privileges")) unless $perms && $perms->can_post;
+    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_create_post;
     my @data;
     my $prim = $entry->category;
     my $cats = $entry->categories;
@@ -1190,6 +1188,7 @@ An XMLRPC API interface for communicating with Movable Type.
 =over 4
 
 =item api_pre_save.entry
+=item api_pre_save.page
 
     callback($eh, $mt, $entry, $original_entry)
 
@@ -1198,6 +1197,7 @@ $original_entry will have an unassigned 'id'. This callback is executed
 as a filter, so your handler must return 1 to allow the entry to be saved.
 
 =item api_post_save.entry
+=item api_post_save.page
 
     callback($eh, $mt, $entry, $original_entry)
 

@@ -2,7 +2,7 @@
 <mt:setvarblock name="widget_label"><__trans phrase="What's new in Movable Type [_1]" params="<mt:var name="mt_version">"></mt:setvarblock>
 </mt:unless>
 <mtapp:widget label="$widget_label" class="welcome-widget" can_close="1">
-    <p><mt:if name="widget_description"><mt:var name="widget_description"><mt:else><__trans phrase="Here is the summary of new features found in this version:"></mt:if></p>
+    <p><mt:if name="widget_description"><mt:var name="widget_description"><mt:else><__trans phrase="Congratulations, you have successfully installed Movable Type [_1]. Listed below is an overview of the new features found in this release." params="<mt:var name="mt_version">"></mt:if></p>
     <ul>
         <mt:loop name="feature_loop">
             <li>

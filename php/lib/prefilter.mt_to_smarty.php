@@ -185,9 +185,13 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $close_mod_args = $matches[2];
                     }
                     if (($tag == 'mtelse') && ($tag != $mttag)) {
-                        if ($tagstack[count($tagstack)-1] == $mttag) {
-                            $smart_source .= $ldelim . '/mtelse' . $rdelim;
+                        $smart_source .= $ldelim . '/mtelse' . $rdelim;
+                        if ($mttag == $tagstack[count($tagstack)-1]) {
                             $tag = array_pop($tagstack);
+                        } elseif (preg_match('/^('. $mttag . ')(\|.+)$/', $tagstack[count($tagstack)-1], $matches)) {
+                            $tag = array_pop($tagstack);
+                            $tag = $matches[1];
+                            $close_mod_args = $matches[2];
                         }
                     }
                     if ($tag != $mttag) {
@@ -271,7 +275,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
     $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
                                  $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
 
-    #echo "smart source = [$smart_source]\n\n";
     return $smart_source;
 }
 

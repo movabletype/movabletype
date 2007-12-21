@@ -1,5 +1,5 @@
 <$mt:setvar name="position_actions_bottom" value="1"$>
-<mt:setvarblock name="page_title"><__trans phrase="Edit [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Edit Trackback"></mt:setvarblock>
 <mt:setvarblock name="content_header">
     <mt:if name="saved">
         <mtapp:statusmsg
@@ -37,14 +37,14 @@
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
+        title="<__trans phrase="Save changes to this TrackBack (s)">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
     <button
         onclick="doRemoveItems(this.form, '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBack" escape="js">', false, { 'return_args' : '__mode=list_pings&blog_id=<mt:var name="blog_id">'})"
         type="submit"
         accesskey="x"
-        title="<__trans phrase="Delete this [lc,_1] (x)" params="<mt:var name="object_label">">"
+        title="<__trans phrase="Delete this TrackBack (x)">"
         ><__trans phrase="Delete"></button>
     <mt:if name="is_ip_filter">
         <mt:if name="blog_id">

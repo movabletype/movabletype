@@ -48,12 +48,15 @@ all: code
 
 mt-static/js/mt_core_compact.js: $(core_js)
 	cat $(core_js) > mt-static/js/mt_core_compact.js
+	./build/minifier.pl mt-static/js/mt_core_compact.js
 
 mt-static/css/main.css: $(main_css)
 	cat $(main_css) > mt-static/css/main.css
+	./build/minifier.pl mt-static/css/main.css
 
 mt-static/css/simple.css: $(simple_css)
 	cat $(simple_css) > mt-static/css/simple.css
+	./build/minifier.pl mt-static/css/simple.css
 
 .PHONY: code-common code code-en_US code-de code-fr code-nl \
 	code-es code-ja
@@ -94,6 +97,7 @@ lib/MT.pm: %: %.pre build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk buil
 	    -e 's!__NEWSBOX_URL__!$(NEWSBOX_URL)!g' \
 	    -e 's!__LEARNINGNEWS_URL__!$(LEARNINGNEWS_URL)!g' \
 	    -e 's!__SUPPORT_URL__!$(SUPPORT_URL)!g' \
+	    -e 's!__PORTAL_URL__!$(PORTAL_URL)!g' \
 	    -e 's!__NEWS_URL__!$(NEWS_URL)!g' \
 	    -e 's!__HELP_URL__!$(HELP_URL)!g' \
 	    -e 's!__DEFAULT_TIMEZONE__!$(DEFAULT_TIMEZONE)!g' \

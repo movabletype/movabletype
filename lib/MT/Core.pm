@@ -230,7 +230,10 @@ BEGIN {
         config_settings => {
             'AtomApp' => {
                 type    => 'HASH',
-                default => 'weblog=MT::AtomServer::Weblog'
+                default => {
+                    weblog => 'MT::AtomServer::Weblog::Legacy',
+                    '1.0'  => 'MT::AtomServer::Weblog',
+                },
             },
             'SchemaVersion'   => undef,
             'MTVersion'       => undef,
@@ -406,7 +409,7 @@ BEGIN {
             'EmailAddressMain'      => undef,
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },
-            'CommentSessionTimeout' => { default => 60 * 60 * 1, },
+            'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
             'UserSessionTimeout'    => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks' => { default => 0 },
             'TypeKeyVersion'        => { default => '1.1' },
@@ -689,7 +692,7 @@ sub load_junk_filters {
 
 sub load_core_tasks {
     my $cfg = MT->config;
-    my $tasks = {
+    return {
         'FuturePost' => {
             label     => 'Publish Scheduled Entries',
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
@@ -720,18 +723,6 @@ sub load_core_tasks {
             },
         },
     };
-    if ( my $newsbox_url = $cfg->LearningNewsURL ) {
-        if ( $newsbox_url ne 'disable' ) {
-            $tasks->{LearningNewsRetrieval} = {
-                label => 'Retrieve Learning MT Updates',
-                frequency => 60 * 60 * 24,   # once a day
-                code => sub {
-                    MT::Util::get_newsbox_html($newsbox_url, 'LW');
-                },
-            };
-        }
-    }
-    $tasks;
 }
 
 sub remove_temporary_files {

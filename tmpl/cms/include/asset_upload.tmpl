@@ -36,7 +36,7 @@ function setExtraPath(sel) {
         </mtapp:statusmsg>
     </mt:if>
 
-<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" id="upload-form">
     <input type="hidden" name="__mode" value="<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>upload_file</mt:if>" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
@@ -45,6 +45,9 @@ function setExtraPath(sel) {
     <input type="hidden" name="edit_field" value="<mt:var name="edit_field">" />
     <input type="hidden" name="require_type" value="<mt:var name="require_type">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <mt:if name="user_id">
+    <input type="hidden" name="user_id" value="<mt:var name="user_id">" />
+    </mt:if>        
 
     <mtapp:setting
         id="file"
@@ -65,7 +68,70 @@ function setExtraPath(sel) {
             label="<__trans phrase="Upload Destination">"
             hint="<$mt:var name="upload_hint"$>"
             show_hint="1">
+            <mt:var name="object_type" value="page">
+            <mt:include name="include/category_selector.tmpl">
+            <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+            <script type="text/javascript">
+                /* <![CDATA[ */
+                    MT.App.selectedCategoryList = [];
+                    MT.App.objectType = '<mt:var name="object_type" escape="js">';
+
+                    App.singletonConstructor =
+                    MT.App = new Class( MT.App, {
+                        
+                        initComponents: function() {
+                            arguments.callee.applySuper( this, arguments );
+
+                            this.categorySelector = this.addComponent( new this.constructor.CategorySelector( "folder-selector", "categorySelectorList" ) );
+                            var cats = MT.App.categoryList;
+                            if ( cats ) {
+                                /* cache all the categories */
+                                this.catCache = new Cache( cats.length + 50 );
+                                for ( var i = 0; i < cats.length; i++ )
+                                    this.catCache.setItem( 'cat:'+cats[ i ].id, cats[ i ] );
+                            }
+
+                            this.catList = { redraw: this.getIndirectMethod( "redrawFolderList" ) };
+                            /* we don't need the modal mask here */
+                            this.modalMask = { element: DOM.getElement( "folder-selector" ), show: Function.stub, hide: Function.stub };
+                            this.form = DOM.getElement( "upload-form" );
+                        },
+
+
+                        redrawFolderList: function() {
+                            var item = this.catCache.getItem( "cat:" + MT.App.selectedCategoryList );
+                            var path = [];
+                            var cat;
+                            for ( var i = 1, len = item.path.length; i < len; i++ ) {
+                                cat = this.catCache.getItem( "cat:" + item.path[ i ] );
+                                if ( cat ) 
+                                    path.push( cat.basename );
+                            }
+                            path.push( item.basename );
+                            /* no leading slash */
+                            path[ 0 ] = path[ 0 ].replace( /^\//, '' );
+                            DOM.getElement( "extra_path" ).value = path.join( '' );
+                        },
+
+
+                        eventClick: function( event ) {
+                            var command = this.getMouseEventCommand( event );
+                            switch( command ) {
+
+                                case "openFolderSelector":
+                                    this.categorySelector.open( null, Function.stub, event.commandElement );
+                                    break;
+
+                            }
+                            return arguments.callee.applySuper( this, arguments );
+                        }
+                        
+                    } );
+                /* ]]> */
+            </script>
+                
             <!-- <$mt:var name="blog_url" escape="html"$> -->
+            
             <select name="site_path" onchange="setExtraPath(this)">
                 <option value="1">&#60;<__trans phrase="Site Root">&#62;</option>
             <mt:if name="enable_archive_paths">
@@ -78,6 +144,7 @@ function setExtraPath(sel) {
             </mt:if>
             </select>
             / <input name="extra_path" id="extra_path" value="<mt:var name="extra_path" escape="html">" />
+            &nbsp;<a href="javascript:void(0);" mt:command="open-folder-selector"><__trans phrase="Choose Folder"></a>
         </mtapp:setting>
     </mt:if>
 
@@ -107,4 +174,14 @@ function setExtraPath(sel) {
     </div>
 
 </form>
+
+<mt:if name="enable_destination">
+    <div id="folder-selector" style="position:static;" class="category-selector autolayout-flyout-auto flyout"><div id="folder-selector-inner" class="inner"-->
+        <div id="add-category-form" class="add-category-form hidden"><input id="add-category-input" class="add-category-input input-hint" type="text" value="<__trans phrase="Add [lc,_1] name" params="Folder">" mt:default="<__trans phrase="Add [lc,_1] name" params="Folder">" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span>&nbsp;&nbsp;&nbsp;</a></div>
+        <div id="folder-selector-list" class="category-selector-list">
+        </div>
+        <a class="add-category-ok-link" href="javascript:void(0)" mt:command="close"><__trans phrase="OK"></a>
+    </div></div><!-- /category-selector -->
+</mt:if>
+
 </mt:if>

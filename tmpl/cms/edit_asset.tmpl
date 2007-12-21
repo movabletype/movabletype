@@ -44,6 +44,10 @@
         </ul>
                 </mt:if>
             </mt:loop>
+            <mt:if name="appears_in_more">
+                <p><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="blog_id">&amp;filter=asset_id&amp;filter_val=<mt:var name="id">"><__trans phrase="Show all entries"></a></p>
+                <p><a href="<mt:var name="script_url">?__mode=list_pages&amp;blog_id=<mt:var name="blog_id">&amp;filter=asset_id&amp;filter_val=<mt:var name="id">"><__trans phrase="Show all pages"></a></p>
+            </mt:if>
         <mt:else>
             <span class="hint"><__trans phrase="This asset has not been used."></span>
         </mt:if>
@@ -72,6 +76,7 @@
             </ul>
         </mtapp:widget>
     </mt:if>
+    <$MTApp:PageActions$>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript">
@@ -79,18 +84,17 @@
     function validate(form) {    
         if (form.label.value.match(/\S/,''))
             return true;
-        alert('<__trans phrase="You must specify a label for the folder." escape="singlequotes">');
+        alert('<__trans phrase="You must specify a label for the asset." escape="singlequotes">');
         form.label.focus();
         return false;
     }
     //-->
     </script>
-    <$MTApp:PageActions$>
 </mt:setvarblock>
 <mt:setvarblock name="object_nav">
     <ul class="object-nav"> 
         <li id="previous-link"><mt:if name="previous_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Previous"></a><mt:else><span><__trans phrase="Previous"></span></mt:if></li>
-        <li id="manage-link"><a href="<$mt:var name="script_url"$>?__mode=list_<$mt:var name="object_type" lower_case="1"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage [_1]" params="<$mt:var name="object_label_plural"$>"></a></li>
+        <li id="manage-link"><a href="<$mt:var name="script_url"$>?__mode=list_<$mt:var name="object_type" lower_case="1"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Assets"></a></li>
         <li id="next-link"><mt:if name="next_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"></a><mt:else><span><__trans phrase="Next"></span></mt:if></li> 
     </ul>
 </mt:setvarblock>
@@ -147,8 +151,8 @@
                 id="label"
                 label="<__trans phrase="Label">"
                 label_class="text-top"
-                help_page="folders"
-                help_section="folder_label">
+                help_page="assets"
+                help_section="asset_label">
                 <div class="textarea-wrapper">
                     <input name="label" id="label" maxlength="100" value="<mt:var name="label" escape="html">" class="full-width" />
                 </div>
@@ -175,7 +179,7 @@
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
+        title="<__trans phrase="Save changes to this asset (s)">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>

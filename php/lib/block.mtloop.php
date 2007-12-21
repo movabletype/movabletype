@@ -42,14 +42,21 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
                     'return strcmp($a, $b);'
                 ));
             } elseif (preg_match('/\bvalue\b/', $sort)) {
+                $sort_fn = '';
+                foreach (array_keys($value) as $key) {
+                    $v = $value[$key];
+                    $sort_fn .= "\$value['$key']='$v';";
+                }
                 if (preg_match('/\bnumeric\b/', $sort)) {
+                    $sort_fn .= 'return $value[$a] === $value[$b] ? 0 : ($value[$a] > $value[$b] ? 1 : -1);';
                     $sorter = create_function(
                         '$a,$b',
-                        'return $value[$a] === $value[$b] ? 0 : ($value[$a] > $value[$b] ? 1 : -1);');
+                        $sort_fn);
                 } else {
+                    $sort_fn .= 'return strcmp($value[$a], $value[$b]);';
                     $sorter = create_function(
                         '$a,$b',
-                        'return strcmp($value[$a], $value[$b]);');
+                        $sort_fn);
                 }
                 usort($keys, $sorter);
             }

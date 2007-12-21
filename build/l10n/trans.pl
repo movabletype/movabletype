@@ -59,16 +59,42 @@ do {
         #printf "\n\t## %s\n", $tmpl;
         printf "\n## %s\n", $tmpl;
         $tmpl = $ARGV;
-        if ( $tmpl =~ m|plugins/(\w+)/\w+| ) {
+        if ( $tmpl =~ m|plugins/([\-\w]+)/\w+| ) {
             my $plugin = $1;
             eval { 
                 unshift @INC, "plugins/$plugin/lib";
-                require "plugins/$plugin/lib/$plugin/L10N/$lang.pm"
             };
-            unless ($@) {
+            eval {
+                require "plugins/$plugin/lib/$plugin/L10N/$lang.pm";
+            };
+            if ($@) {
+                # Deep dive into sub directories to find L10N
+                my $path = "plugins/$plugin/lib";
+                $path = find_l10n_dir($path);
+                if ( $path && ($path =~ /L10N$/) ) {
+                    eval {
+                        require "$path/$lang.pm";
+                    };
+                    if ($@) {
+                        $plugin = undef;
+                    }
+                    else {
+                        $path =~ s|plugins/$plugin/lib/||g;
+                        $path =~ s|/|::|g;
+                        $plugin = $path;
+                    }
+                }
+                else {
+                    $plugin = undef;
+                }
+            }
+            else {
+                $plugin .= '::L10N';
+            }
+            if ($plugin) {
                 %conv = (
                     %conv,
-                    %{$plugin . '::L10N::' . $lang . '::Lexicon'},
+                    %{$plugin . '::' . $lang . '::Lexicon'},
                 );
             }
         }
@@ -229,6 +255,28 @@ foreach my $p (keys %conv) {
 	printf "\t$q%s$q => '%s',\n", $p, '';#$trans;
     #printf "\nmsgid \"%s\"\nmsgstr \"%s\"\n", $p, $trans;
     }
+}
+
+sub find_l10n_dir {
+    my ($path) = @_;
+    return 0 unless -d $path;
+    if ( opendir my $dh, $path ) {
+        my @items = readdir $dh;
+        closedir $dh;
+        for my $item (@items) {
+            next if ( $item =~ /^\.\.?$/ || $item =~ /~$/ );
+            require File::Spec;
+            my $full_path = File::Spec->catfile( $path, $item );
+            next if ( -f $full_path );
+            if ( ( $item eq 'L10N' ) && -d $full_path ) {
+                return $full_path;
+            }
+            if ( my $found = find_l10n_dir($full_path) ) {
+                return $found;
+            }
+        }
+    }
+    return 0;
 }
 
 1;

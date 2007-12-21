@@ -231,6 +231,7 @@ sub build {
         return $tmpl->error(MT->translate(
             "Publish error in template '[_1]': [_2]",
             $tmpl->name || $tmpl->{__file}, $build->errstr));
+    $res =~ s/^\s*//;
     return $res;
 }
 

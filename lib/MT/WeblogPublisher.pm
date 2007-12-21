@@ -1430,6 +1430,10 @@ sub rebuild_file {
             my $html = undef;
             $ctx->stash( 'blog', $blog );
             $ctx->stash( 'entry', $entry ) if $entry;
+
+            require MT::Request;
+            MT::Request->instance->cache('build_template', $tmpl);
+
             $html = $tmpl->build( $ctx, $cond );
             defined($html)
               or return $mt->error(
@@ -1691,6 +1695,10 @@ sub rebuild_indexes {
             )
           );
         $ctx->stash( 'blog', $blog );
+
+        require MT::Request;
+        MT::Request->instance->cache('build_template', $tmpl);
+
         my $html = $tmpl->build($ctx);
         return $mt->error( $tmpl->errstr ) unless defined $html;
 

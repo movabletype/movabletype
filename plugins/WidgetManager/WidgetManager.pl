@@ -91,6 +91,19 @@ sub init_registry {
     });
 }
 
+sub init_app {
+    my $plugin = shift;
+    $plugin->SUPER::init_app(@_);
+
+    require MT::Blog;
+    my $iter = MT::Blog->load_iter();
+    require WidgetManager::CMS;
+    while ( my $blog = $iter->() ) {
+      WidgetManager::CMS::install_default_widgets( $blog->id )
+          unless WidgetManager::CMS::installed( $blog->id );
+    }
+}
+
 sub load_selected_modules { 
     require WidgetManager::Plugin; 
     WidgetManager::Plugin::load_selected_modules(@_); 

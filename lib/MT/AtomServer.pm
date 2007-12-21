@@ -154,7 +154,7 @@ sub get_auth_info {
 sub authenticate {
     my $app = shift;
     my $auth = $app->get_auth_info
-        or return $app->auth_failure(400, "No authentication info");
+        or return $app->auth_failure(401, "Unauthorized");
     for my $f (qw( Username PasswordDigest Nonce Created )) {
         return $app->auth_failure(400, "X-WSSE requires $f")
             unless $auth->{$f};
@@ -304,12 +304,54 @@ use MT::Permission;
 use File::Spec;
 use File::Basename;
 
-use constant NS_CATEGORY => 'http://sixapart.com/atom/category#';
+use constant NS_APP => 'http://www.w3.org/2007/app';
 use constant NS_DC => 'http://purl.org/dc/elements/1.1/';
-use constant NS_PHOTOS => 'http://sixapart.com/atom/photo#';
 use constant NS_TYPEPAD => 'http://sixapart.com/atom/typepad#';
 
-sub script { $_[0]->{cfg}->AtomScript . '/weblog' }
+sub script { $_[0]->{cfg}->AtomScript . '/1.0' }
+
+sub atom_content_type   { 'application/atom+xml' }
+sub atom_x_content_type { 'application/atom+xml' }
+
+sub edit_link_rel { 'edit' }
+sub get_posts_order_field { 'modified_on' }
+
+sub new_feed {
+    my $app = shift;
+    XML::Atom::Feed->new( Version => 1.0 );
+}
+
+sub new_with_entry {
+    my $app = shift;
+    my ($entry) = @_;
+    my $atom = MT::Atom::Entry->new_with_entry( $entry, Version => 1.0 );
+
+    my $mo = MT::Atom::Entry::_create_issued($entry->modified_on, $entry->blog);
+    $atom->set(NS_APP(), 'edited', $mo);
+
+    $atom;
+}
+
+sub apply_basename {
+    my $app = shift;
+    my ($entry, $atom) = @_;
+
+    if (my $basename = $app->get_header('Slug')) {
+        my $entry_class = ref $entry;
+        my $basename_uses = $entry_class->count({
+            blog_id  => $entry->blog_id,
+            basename => $basename,
+            ($entry->id ? ( id => { op => '!=', value => $entry->id } ) : ()),
+        });
+        if ($basename_uses) {
+            $basename = MT::Util::make_unique_basename($entry);
+        }
+
+        $entry->basename($basename);
+    }
+
+    $entry;
+}
 
 sub handle_request {
     my $app = shift;
@@ -358,7 +400,7 @@ sub authenticate {
         my $perms = $app->{perms} = MT::Permission->load({
                     author_id => $app->{user}->id,
                     blog_id => $app->{blog}->id });
-        return $app->error(403, "No permissions") unless $perms && $perms->can_post;
+        return $app->error(403, "Permission denied.") unless $perms && $perms->can_create_post;
     }
     1;
 }
@@ -382,33 +424,83 @@ sub get_weblogs {
     my $iter = $user->is_superuser
         ? MT::Blog->load_iter()
         : MT::Permission->load_iter({ author_id => $user->id });
-    my $feed = XML::Atom::Feed->new;
     my $base = $app->base . $app->uri;
+
+    # TODO: libxml support? XPath should always be available...
+    require XML::XPath;
+    require XML::XPath::Node::Element;
+    require XML::XPath::Node::Namespace;
+    require XML::XPath::Node::Text;
+
+    my $doc = XML::XPath::Node::Element->new('service');
+    my $app_ns = XML::XPath::Node::Namespace->new('#default' => NS_APP());
+    $doc->appendNamespace($app_ns);
+    my $atom_ns = XML::XPath::Node::Namespace->new('atom' => 'http://www.w3.org/2005/Atom');
+    $doc->appendNamespace($atom_ns);
+
     while (my $thing = $iter->()) {
+        # TODO: provide media collection if author can upload to this blog.
         if ($thing->isa('MT::Permission')) {
-            next unless $thing->can_post;
+            next if !$thing->can_create_post;
         }
+
         my $blog = $thing->isa('MT::Blog') ? $thing
             : MT::Blog->load($thing->blog_id);
         my $uri = $base . '/blog_id=' . $blog->id;
-        my $blogname = encode_text($blog->name . ' #' . $blog->id, undef, 'utf-8');
-        $feed->add_link({ rel => 'service.post', title => $blogname,
-                          href => $uri, type => 'application/x.atom+xml' });
-        $feed->add_link({ rel => 'service.feed', title => $blogname,
-                          href => $uri, type => 'application/x.atom+xml' });
-        $feed->add_link({ rel => 'service.upload', title => $blogname,
-                          href => $uri . '/svc=upload',
-                          type => 'application/x.atom+xml' });
-        $feed->add_link({ rel => 'service.categories', title => $blogname,
-                          href => $uri . '/svc=categories',
-                          type => 'application/x.atom+xml' });
-        $feed->add_link({ rel => 'alternate', title => $blogname,
-                          href => $blog->site_url,
-                          type => 'text/html' });
+
+        my $workspace = XML::XPath::Node::Element->new('workspace');
+        $doc->appendChild($workspace);
+
+        my $title = XML::XPath::Node::Element->new('atom:title', 'atom');
+        $title->appendChild(XML::XPath::Node::Text->new($blog->name));
+        $workspace->appendChild($title);
+
+        my $entries = XML::XPath::Node::Element->new('collection');
+        $entries->appendAttribute(XML::XPath::Node::Attribute->new('href', $uri));
+        $workspace->appendChild($entries);
+
+        my $e_title = XML::XPath::Node::Element->new('atom:title', 'atom');
+        $e_title->appendChild(XML::XPath::Node::Text->new(MT->translate('Entries')));
+        $entries->appendChild($e_title);
+
+        my $cats = XML::XPath::Node::Element->new('categories');
+        $cats->appendAttribute(XML::XPath::Node::Attribute->new('href', $uri . '?svc=categories'));
+        $entries->appendChild($cats);
     }
     $app->response_code(200);
-    $app->response_content_type('application/x.atom+xml');
-    $feed->as_xml;
+    $app->response_content_type('application/atomsvc+xml');
+    '<?xml version="1.0" encoding="utf-8"?>' . "\n" .                                                          
+        $doc->toString;
+}
+
+sub get_categories {
+    my $app = shift;
+    my $blog = $app->{blog};
+
+    # TODO: libxml support? XPath should always be available...
+    require XML::XPath;
+    require XML::XPath::Node::Element;
+    require XML::XPath::Node::Namespace;
+    require XML::XPath::Node::Text;
+
+    my $doc = XML::XPath::Node::Element->new('categories');
+    my $app_ns = XML::XPath::Node::Namespace->new('#default' => NS_APP());
+    $doc->appendNamespace($app_ns);
+    my $atom_ns = XML::XPath::Node::Namespace->new('atom' => 'http://www.w3.org/2005/Atom');
+    $doc->appendNamespace($atom_ns);
+    $doc->appendAttribute(XML::XPath::Node::Attribute->new('fixed', 'yes'));
+
+    my $iter = MT::Category->load_iter({ blog_id => $blog->id });
+    while (my $cat = $iter->()) {
+        my $cat_node = XML::XPath::Node::Element->new('atom:category', 'atom');
+        $cat_node->appendAttribute(XML::XPath::Node::Attribute->new('term', $cat->label));
+        $doc->appendChild($cat_node);
+    }
+
+    $app->response_code(200);
+    $app->response_content_type('application/atomcat+xml');
+    '<?xml version="1.0" encoding="utf-8"?>' . "\n" .                                                          
+        $doc->toString;
 }
 
 sub new_post {
@@ -416,6 +508,7 @@ sub new_post {
     my $atom = $app->atom_body or return $app->error(500, "No body!");
     my $blog = $app->{blog};
     my $user = $app->{user};
+    my $perms = $app->{perms};
     my $enc = $app->config('PublishCharset');
     ## Check for category in dc:subject. We will save it later if
     ## it's present, but we want to give an error now if necessary.
@@ -454,7 +547,7 @@ sub new_post {
     $entry->blog_id($blog->id);
     $entry->author_id($user->id);
     $entry->created_by($user->id);
-    $entry->status(MT::Entry::RELEASE());
+    $entry->status($perms->can_publish_post ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
     $entry->allow_comments($blog->allow_comments_default);
     $entry->allow_pings($blog->allow_pings_default);
     $entry->convert_breaks($blog->convert_paras);
@@ -472,6 +565,7 @@ sub new_post {
         }
     }
 ## xxx mt/typepad-specific fields
+    $app->apply_basename($entry, $atom);
     $entry->discover_tb_from_entry();
 
     if (my @link = $atom->link) {
@@ -503,7 +597,7 @@ sub new_post {
 
     require MT::Log;
     $app->log({
-        message => $app->translate("User '[_1]' (user #[_2]) added entry #[_3]", $user->name, $user->id, $entry->id),
+        message => $app->translate("User '[_1]' (user #[_2]) added [lc,_4] #[_3]", $user->name, $user->id, $entry->id, $entry->class_label),
         level => MT::Log::INFO(),
         class => 'entry',
         category => 'new',
@@ -524,12 +618,12 @@ sub new_post {
     $app->publish($entry);
     $app->response_code(201);
     $app->response_content_type('application/atom+xml');
-	my $edit_uri = $app->base . $app->uri . '/blog_id=' . $entry->blog_id . '/entry_id=' . $entry->id;
+    my $edit_uri = $app->base . $app->uri . '/blog_id=' . $entry->blog_id . '/entry_id=' . $entry->id;
     $app->set_header('Location', $edit_uri);
-    $atom = MT::Atom::Entry->new_with_entry($entry);
-    $atom->add_link({ rel => 'service.edit',
+    $atom = $app->new_with_entry($entry);
+    $atom->add_link({ rel => $app->edit_link_rel,
                       href => $edit_uri,
-                      type => 'application/atom+xml',
+                      type => 'application/atom+xml',  # even in Legacy
                       title => $entry->title });
     $atom->as_xml;
 }
@@ -561,6 +655,7 @@ sub edit_post {
         }
     }
 ## xxx mt/typepad-specific fields
+    $app->apply_basename($entry, $atom);
     $entry->discover_tb_from_entry();
 
     MT->run_callbacks('api_pre_save.entry', $app, $entry, $orig_entry)
@@ -570,7 +665,7 @@ sub edit_post {
 
     require MT::Log;
     $app->log({
-        message => $app->translate("User '[_1]' (user #[_2]) edited entry #[_3]", $app->{user}->name, $app->{user}->id, $entry->id),
+        message => $app->translate("User '[_1]' (user #[_2]) edited [lc,_4] #[_3]", $app->{user}->name, $app->{user}->id, $entry->id, $entry->class_label),
         level => MT::Log::INFO(),
         class => 'entry',
         category => 'new',
@@ -583,8 +678,8 @@ sub edit_post {
         $app->publish($entry) or return $app->error(500, "Entry not published");
     }
     $app->response_code(200);
-    $app->response_content_type('application/xml');
-    $atom = MT::Atom::Entry->new_with_entry($entry);
+    $app->response_content_type($app->atom_content_type);
+    $atom = $app->new_with_entry($entry);
     $atom->as_xml;
 }
 
@@ -592,12 +687,12 @@ sub get_posts {
     my $app = shift;
     my $blog = $app->{blog};
     my %terms = (blog_id => $blog->id);
-    my %arg = (sort => 'authored_on', direction => 'descend');
+    my %arg = (sort => $app->get_posts_order_field, direction => 'descend');
     my $Limit = 20;
     $arg{limit} = $Limit + 1;
     $arg{offset} = $app->{param}{offset} || 0;
     my $iter = MT::Entry->load_iter(\%terms, \%arg);
-    my $feed = XML::Atom::Feed->new;
+    my $feed = $app->new_feed();
     my $uri = $app->base . $app->uri . '/blog_id=' . $blog->id;
     my $blogname = encode_text($blog->name, undef, 'utf-8');
     $feed->add_link({ rel => 'alternate', type => 'text/html',
@@ -607,13 +702,13 @@ sub get_posts {
                       href => $uri, title => $blogname });
     $uri .= '/entry_id=';
     while (my $entry = $iter->()) {
-        my $e = MT::Atom::Entry->new_with_entry($entry);
-        $e->add_link({ rel => 'service.edit', type => 'application/x.atom+xml',
+        my $e = $app->new_with_entry($entry);
+        $e->add_link({ rel => $app->edit_link_rel, type => $app->atom_x_content_type,
                        href => ($uri . $entry->id), title => encode_text($entry->title, undef,'utf-8') });
         $feed->add_entry($e);
     }
     ## xxx add next/prev links
-    $app->response_content_type('application/xml');
+    $app->response_content_type($app->atom_content_type);
     $feed->as_xml;
 }
 
@@ -626,8 +721,12 @@ sub get_post {
         or return $app->error(400, "Invalid entry_id");
     return $app->error(403, "Access denied")
         unless $app->{perms}->can_edit_entry($entry, $app->{user});
-    $app->response_content_type('application/xml');
-    my $atom = MT::Atom::Entry->new_with_entry($entry);
+    $app->response_content_type($app->atom_content_type);
+    my $atom = $app->new_with_entry($entry);
+    my $uri = $app->base . $app->uri . '/blog_id=' . $blog->id;
+    $uri .= '/entry_id=';
+    $atom->add_link({ rel => $app->edit_link_rel, type => $app->atom_x_content_type,
+                      href => ($uri . $entry->id), title => encode_text($entry->title, undef,'utf-8') });
     $atom->as_xml;
 }
 
@@ -653,7 +752,7 @@ sub _upload_to_asset {
     my $user = $app->{user};
     my %MIME2EXT = (
         'text/plain'         => '.txt',
-	    'image/jpeg'         => '.jpg',
+        'image/jpeg'         => '.jpg',
         'video/3gpp'         => '.3gp',
         'application/x-mpeg' => '.mpg',
         'video/mp4'          => '.mp4',
@@ -764,6 +863,77 @@ sub handle_upload {
     $app->response_code(201);
     $app->response_content_type('application/x.atom+xml');
     $atom->as_xml;
+}
+
+package MT::AtomServer::Weblog::Legacy;
+use strict;
+
+use base qw( MT::AtomServer::Weblog );
+
+use MT::I18N qw( encode_text );
+use XML::Atom;  # for LIBXML
+use XML::Atom::Feed;
+use base qw( MT::AtomServer );
+use MT::Blog;
+use MT::Permission;
+
+use constant NS_CATEGORY => 'http://sixapart.com/atom/category#';
+use constant NS_DC => MT::AtomServer::Weblog->NS_DC();
+
+sub script { $_[0]->{cfg}->AtomScript . '/weblog' }
+
+sub atom_content_type   { 'application/xml' }
+sub atom_x_content_type { 'application/x.atom+xml' }
+
+sub edit_link_rel { 'service.edit' }
+sub get_posts_order_field { 'authored_on' }
+
+sub new_feed {
+    my $app = shift;
+    XML::Atom::Feed->new();
+}
+
+sub new_with_entry {
+    my $app = shift;
+    my ($entry) = @_;
+    MT::Atom::Entry->new_with_entry($entry);
+}
+
+sub apply_basename {}
+
+sub get_weblogs {
+    my $app = shift;
+    my $user = $app->{user};
+    my $iter = $user->is_superuser
+        ? MT::Blog->load_iter()
+        : MT::Permission->load_iter({ author_id => $user->id });
+    my $feed = $app->new_feed();
+    my $base = $app->base . $app->uri;
+    while (my $thing = $iter->()) {
+        if ($thing->isa('MT::Permission')) {
+            next unless $thing->can_create_post;
+        }
+        my $blog = $thing->isa('MT::Blog') ? $thing
+            : MT::Blog->load($thing->blog_id);
+        my $uri = $base . '/blog_id=' . $blog->id;
+        my $blogname = encode_text($blog->name . ' #' . $blog->id, undef, 'utf-8');
+        $feed->add_link({ rel => 'service.post', title => $blogname,
+                          href => $uri, type => 'application/x.atom+xml' });
+        $feed->add_link({ rel => 'service.feed', title => $blogname,
+                          href => $uri, type => 'application/x.atom+xml' });
+        $feed->add_link({ rel => 'service.upload', title => $blogname,
+                          href => $uri . '/svc=upload',
+                          type => 'application/x.atom+xml' });
+        $feed->add_link({ rel => 'service.categories', title => $blogname,
+                          href => $uri . '/svc=categories',
+                          type => 'application/x.atom+xml' });
+        $feed->add_link({ rel => 'alternate', title => $blogname,
+                          href => $blog->site_url,
+                          type => 'text/html' });
+    }
+    $app->response_code(200);
+    $app->response_content_type('application/x.atom+xml');
+    $feed->as_xml;
 }
 
 sub get_categories {

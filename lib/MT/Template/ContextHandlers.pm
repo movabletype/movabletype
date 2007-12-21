@@ -116,6 +116,7 @@ sub core_tags {
             SetVarBlock => \&_hdlr_set_var,
             SetVarTemplate => \&_hdlr_set_var,
             SetVars => \&_hdlr_set_vars,
+            SetHashVar => \&_hdlr_set_hashvar,
 
             IfCommentsModerated => \&_hdlr_comments_moderated,
             IfRegistrationRequired => \&_hdlr_reg_required,
@@ -453,6 +454,7 @@ sub core_tags {
             AssetThumbnailURL => \&_hdlr_asset_thumbnail_url,
             AssetLink => \&_hdlr_asset_link,
             AssetThumbnailLink => \&_hdlr_asset_thumbnail_link,
+            AssetDescription => \&_hdlr_asset_description,
 
             AssetCount => \&_hdlr_asset_count,
 
@@ -566,8 +568,15 @@ sub core_tags {
             '_default' => \&_fltr_default,
             'nofollowfy' => \&_fltr_nofollowfy,
             'wrap_text' => \&_fltr_wrap_text,
+            'setvar' => \&_fltr_setvar,
         },
     };
+}
+
+sub _fltr_setvar {
+    my ($str, $arg, $ctx) = @_;
+    $ctx->var($arg, $str);
+    return '';
 }
 
 sub _fltr_nofollowfy {
@@ -2188,6 +2197,7 @@ sub _hdlr_include {
         local $include_stack{$stash_id} = 1;
         my $builder = $ctx->{__stash}{builder};
         my $tokens = $req->stash($stash_id);
+        my $tmpl;
         unless ($tokens) {
             my $blog_id_param;
             if (exists $arg->{global}) {
@@ -2210,15 +2220,23 @@ sub _hdlr_include {
                                         })
                 or return $ctx->error(MT->translate(
                     "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
-            my $tmpl = $tmpl[0];
+            $tmpl = $tmpl[0];
             return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
                 if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
             $tokens = $builder->compile($ctx, $tmpl->text);
-            return $ctx->error($builder->errstr) unless defined $tokens;
+            unless (defined $tokens) {
+                $req->cache('build_template', $tmpl);
+                return $ctx->error($builder->errstr);
+            }
             $req->stash($stash_id, $tokens);
         }
         my $ret = $builder->build($ctx, $tokens, $cond);
-        return defined($ret) ? $ret : $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
+        if (defined $ret) {
+            return $ret;
+        } else {
+            $req->cache('build_template', $tmpl) if $tmpl;
+            return $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
+        }
     } elsif (my $file = $arg->{file}) {
         require File::Basename;
         my $base_filename = File::Basename::basename($file);
@@ -2504,6 +2522,27 @@ sub _hdlr_set_vars {
     return '';
 }
 
+sub _hdlr_set_hashvar {
+    my($ctx, $args) = @_;
+    my $tag = lc $ctx->stash('tag');
+    my $name = $args->{name} || $args->{var};
+    if ($name =~ m/^$/) {
+        $name = $ctx->var($name);
+    }
+    return $ctx->error(MT->translate(
+        "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ))
+        unless defined $name;
+
+    my $hash = $ctx->var($name) || {};
+    return $ctx->error(MT->translate( "[_1] is not a hash.", $name ))
+        unless 'HASH' eq ref($hash);
+
+    local $ctx->{__inside_set_hashvar} = $hash;
+    _hdlr_pass_tokens(@_);
+    $ctx->var($name, $hash);
+    return q();
+}
+
 sub _hdlr_set_var {
     my($ctx, $args) = @_;
     my $tag = lc $ctx->stash('tag');
@@ -2548,24 +2587,8 @@ sub _hdlr_set_var {
     if (($tag eq 'setvar') || ($tag eq 'var')) {
         $val = defined $args->{value} ? $args->{value} : '';
     } elsif ($tag eq 'setvarblock') {
-        my $vars = $ctx->{__stash}{vars};
-        {
-            # local $ctx->{__stash}{vars};
-            # my %local_vars = map { $_ => $vars->{$_} } keys %$vars;
-            # $ctx->{__stash}{vars} = \%local_vars;
-            $val = _hdlr_pass_tokens(@_);
-            return unless defined($val);
-            # $data = {} unless defined($data);
-            # if ( 'HASH' eq ref($data) ) {
-            #     while ( my ($inner_key, $inner_value) = each %local_vars ) {
-            #         if ( !exists($vars->{$inner_key})
-            #           || ( $vars->{$inner_key} ne $inner_value ) )
-            #         {
-            #             $data->{$inner_key} = $inner_value;
-            #         }
-            #     }
-            # }
-        }
+        $val = _hdlr_pass_tokens(@_);
+        return unless defined($val);
     } elsif ($tag eq 'setvartemplate') {
         $val = $ctx->stash('tokens');
         return unless defined($val);
@@ -2589,7 +2612,7 @@ sub _hdlr_set_var {
     elsif ($args->{append}) {
         $val = $existing . $val;
     }
-    elsif ( $existing && ( my $op = $args->{op} ) ) {
+    elsif ( defined($existing) && ( my $op = $args->{op} ) ) {
         $val = _math_operation($ctx, $op, $existing, $val);
     }
 
@@ -2640,7 +2663,12 @@ sub _hdlr_set_var {
         $data = $val;
     }
 
-    $ctx->var($name, $data);
+    if ( my $hash = $ctx->{__inside_set_hashvar} ) {
+        $hash->{$name} = $data;
+    }
+    else {
+        $ctx->var($name, $data);
+    }
     return '';
 }
 
@@ -4491,8 +4519,8 @@ sub _hdlr_remote_sign_in_link {
     my $signon_url = $cfg->SignOnURL;
     my $path = _hdlr_cgi_path($ctx);
     my $comment_script = $cfg->CommentScript;
-    my $static_arg = $args->{static} ? "static=1" : "static=0";
-    my $e = $_[0]->stash('entry');
+    my $static_arg = $args->{static} ? $args->{static} : "static=0";
+    my $e = $ctx->stash('entry');
     my $tk_version = $cfg->TypeKeyVersion ? "&amp;v=" . $cfg->TypeKeyVersion : "";
     my $language = "&amp;lang=" . ($args->{lang} || $cfg->DefaultLanguage || $blog->language);
     return "$signon_url$needs_email$language&amp;t=$rem_auth_token$tk_version&amp;_return=$path$comment_script%3f__mode=handle_sign_in%26key=TypeKey%26$static_arg" .
@@ -6140,14 +6168,28 @@ sub _hdlr_category_archive {
             "You used an [_1] tag outside of the proper context.",
             '<$MTCategoryArchiveLink$>' ));
     my $curr_at = $_[0]->{current_archive_type} || $_[0]->{archive_type} || 'Category';
-    my $archiver = MT->publisher->archiver($curr_at);
-    return '' unless defined $archiver;
-    return '' unless $archiver->category_based;
+
+    my $blog = $_[0]->stash('blog');
+    return '' unless $blog || $curr_at eq 'Category';
+    if ( $curr_at ne 'Category' ) {
+        # Check if "Category" archive is published
+        my $at = $blog->archive_type;
+        my @at = split /,/, $at;
+        my $cat_arc = 0;
+        for (@at) {
+            if ( 'Category' eq $_ ) {
+                $cat_arc = 1;
+                last;
+            }
+        }
+        return $_[0]->error(MT->translate(
+            "[_1] cannot be used without publishing Category archive.",
+            '<$MTCategoryArchiveLink$>' )) unless $cat_arc;
+    }
 
     my @entries = MT::Entry->load({ status => MT::Entry::RELEASE() },
         { join => [ 'MT::Placement', 'entry_id', { category_id => $cat->id }, { unqiue => 1 } ] } );
     my $entry = $entries[0] if @entries;
-    my $blog = $_[0]->stash('blog');
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
     $arch = $arch . archive_file_for($entry, $blog, 'Category', $cat);
@@ -7636,6 +7678,13 @@ sub _hdlr_asset_label {
     my $a = $_[0]->stash('asset')
         or return $_[0]->_no_asset_error('MTAssetLabel');
     defined $a->label ? $a->label : '';
+}
+
+sub _hdlr_asset_description {
+    my $args = $_[1];
+    my $a = $_[0]->stash('asset')
+        or return $_[0]->_no_asset_error('MTAssetDescription');
+    defined $a->description ? $a->description : '';
 }
 
 sub _hdlr_asset_url {

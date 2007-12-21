@@ -534,6 +534,7 @@ class MT {
         header("Content-Type: $content_type");
 
         // finally, issue output
+        $output = preg_replace('/^\s*/', '', $output);
         echo $output;
 
         if ($this->debugging) {

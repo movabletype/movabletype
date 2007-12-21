@@ -349,7 +349,7 @@ my $cwd = '';
     }
 }
 
-my $ver = $^V ? join('.', unpack 'C*', $^V) : $];
+my $ver = ref($^V) eq 'version' ? $^V->normal : ( $^V ? join('.', unpack 'C*', $^V) : $] );
 my $perl_ver_check = '';
 if ($] < 5.006001) {  # our minimal requirement for support
     $perl_ver_check = <<EOT;

@@ -655,6 +655,18 @@ li#config-menu {
 
 .display-options-link {
     float: right;
+    padding-right: 15px;
+    background: transparent url(../images/display-options-link.gif) no-repeat right center;
+}
+.display-options-link:hover {
+    background-image: url(../images/display-options-link-system.gif);
+}
+
+.system .display-options-link {
+    background-image: url(../images/display-options-link-system.gif);
+}
+.system .display-options-link:hover {
+    background-image: url(../images/display-options-link.gif);
 }
 
 #content-header-inner {
@@ -823,7 +835,9 @@ li#config-menu {
 #list-widget-set #main-content,
 #list-associations #main-content,
 #list-author #main-content,
-#list-role #main-content {
+#list-role #main-content,
+#list-category #main-content,
+#list-folder #main-content {
     padding-top: 5px;
 }
 
@@ -1129,8 +1143,25 @@ li#config-menu {
     top: -1000px;
     text-align: left;
     background-color: #fff;
-    border: 1px solid #cddee7;
-    width: 180px;
+    width: 247px;
+}
+#display-options-widget .widget-header {
+    border: 3px solid #000;
+    border-bottom: none;
+    margin: 0;
+}
+#display-options-widget .widget-header-inner {
+    border: 3px solid #cddee7;
+    border-bottom: none;
+    padding: 8px;
+}
+#display-options-widget .widget-content {
+    border: 3px solid #000;
+    border-top: none;
+}
+#display-options-widget .widget-content-inner {
+    border: 3px solid #cddee7;
+    border-top: none;
 }
 
 #entryfield-options li .cb,
@@ -1618,6 +1649,9 @@ fieldset h3 {
     display: block;
     font-weight: bold;
     margin-top: 2px;
+}
+
+.main-screen .field-header label {
     color: #777;
 }
 
@@ -1718,6 +1752,11 @@ fieldset h3 {
 }
 .system .actions-bar {
     border-color: #c1c1c1;
+}
+
+.listing-screen .actions-bar-top,
+.listing-screen .actions-bar-bottom {
+    padding: 0;
 }
 
 .edit-entry .actions-bar-top,
@@ -3446,6 +3485,7 @@ body.preview-screen {
 .selected .icon-group { background-image: url('../images/nav_icons/gray/group.gif'); }
 
 .icon-align { background-position: left top; }
+.icon-align-none { background-image: url('../images/align_none.gif'); }
 .icon-align-left { background-image: url('../images/align_left.gif'); }
 .icon-align-center { background-image: url('../images/align_center.gif'); }
 .icon-align-right { background-image: url('../images/align_right.gif'); }

@@ -98,6 +98,29 @@ function togglePerms(c) {
     }
 }
 
+function removeUserpic() {
+    var param = '__mode=remove_userpic'
+        + '&user_id=<mt:var name="id">'
+        + '&magic_token=<mt:var name="magic_token">';
+    var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: removedUserpic };
+    TC.Client.call(params);
+}
+
+function removedUserpic(c) {
+    var res = c.responseText;
+    if (res != 'success') {
+        message = '<__trans phrase="Error occurred while removing userpic." escape="js">';
+        showMsg(message, 'ajax-message', 'error');
+    }
+
+    getByID('userpic_asset_id').value = '0';
+    if (!DOM.hasClassName('userpic-preview', 'hidden'))
+       toggleHidden('userpic-preview');
+    if (!DOM.hasClassName('remove-userpic', 'hidden'))
+       toggleHidden('remove-userpic');
+    return false
+}
+
 function init() {
     var c = document.forms['profile'].elements['is_superuser'];
     if (c.checked)
@@ -189,6 +212,7 @@ TC.attachLoadEvent(init);
         <input name="url" id="url" class="half-width" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
 
+<mt:if name="id">
     <mtapp:setting
         id="userpic_asset_id"
         label="<__trans phrase="Userpic">"
@@ -198,13 +222,15 @@ TC.attachLoadEvent(init);
             <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
             <br />
         </span>
-        <a href="javascript:void(0)" onclick="return openDialog(false, 'list_assets', '_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic')"><__trans phrase="Select Userpic"></a>
+        <a href="javascript:void(0)" onclick="return openDialog(false, 'list_assets', '_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="html">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic')"><__trans phrase="Select Userpic"></a>
         <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
         <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
             <br />
-            <a href="javascript:void(0)" onclick="getByID('userpic_asset_id').value = '0'; if (!DOM.hasClassName('userpic-preview', 'hidden')) toggleHidden('userpic-preview'); if (!DOM.hasClassName('remove-userpic', 'hidden')) toggleHidden('remove-userpic'); return false"><__trans phrase="Remove Userpic"></a>
+            <a href="javascript:void(0)" onclick="removeUserpic()"><__trans phrase="Remove Userpic"></a>
+            <span id="ajax-message"></span>
         </span>
     </mtapp:setting>
+</mt:if>
 
     <mt:if name="can_modify_password">
         <mt:unless name="new_object">
@@ -340,14 +366,14 @@ TC.attachLoadEvent(init);
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Create [_1] (s)" params="<mt:var name="object_label">">"
+        title="<__trans phrase="Create User (s)">"
         class="primary-button"
-        ><__trans phrase="Create [_1]" params="<mt:var name="object_label">"></button>
+        ><__trans phrase="Create User"></button>
     <mt:else>
     <button
         type="submit"
         accesskey="s"
-        title="<__trans phrase="Save changes to this [lc,_1] (s)" params="<mt:var name="object_label">">"
+        title="<__trans phrase="Save changes to this author (s)">"
         class="primary-button"
         ><__trans phrase="Save Changes"></button>
     </mt:if>

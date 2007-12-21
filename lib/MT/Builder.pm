@@ -405,7 +405,7 @@ sub build {
                 }
             } else {
                 if ($t->[0] !~ m/^_/) { # placeholder tag. just ignore
-                    return $build->error(MT->translate("No handler exists for tag [_1]", $t->[0]));
+                    return $build->error(MT->translate("Unknown tag found: [_1]", $t->[0]));
                 }
             }
         }

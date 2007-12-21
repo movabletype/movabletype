@@ -85,14 +85,24 @@ sub score {
 
     # Run all the registered filters & average their results.
     foreach my $filter ( $pkg->all_filters ) {
-        my ( $score, $log ) = eval { $filter->{code}->($obj) };
+        my $hdlr = $filter->{code} || $filter->{handler};
+        next unless defined $hdlr;
+        unless (ref $hdlr eq 'CODE') {
+            $hdlr = $filter->{code} = MT->handler_to_coderef($hdlr);
+            next unless $hdlr;
+        }
+        my ( $score, $log ) = eval { $hdlr->($obj) };
         if ($@) {
             my $err = $@;
+            my $name  = $filter->{name};
+            if ( my $plugin = $filter->{plugin} ) {
+                $name ||= $plugin->name;
+            }
             MT->instance->log(
                 MT->translate(
                     "Junk Filter [_1] died with: [_2]",
                     (
-                        $filter->{name}
+                        $name
                           || ( MT->translate("Unnamed Junk Filter") )
                     ),
                     $err

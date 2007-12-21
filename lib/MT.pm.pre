@@ -539,9 +539,10 @@ sub add_callback {
                 '4th argument to add_callback must be a CODE reference.');
         }
         else {
-            if ($plugin) {
-                $code = MT->handler_to_coderef($code);
-            }
+            # Defer until callback is used
+            # if ($plugin) {
+            #     $code = MT->handler_to_coderef($code);
+            # }
         }
     }
 
@@ -1959,7 +1960,7 @@ sub build_page {
     }
     @packs_installed = sort { $a->{label} cmp $b->{label} } @packs_installed;
     $param->{packs_installed} = \@packs_installed;
-    $param->{portal_url} = $mt->translate("http://www.movabletype.com/");
+    $param->{portal_url} = $mt->translate("__PORTAL_URL__");
 
     my $tmpl_file = '';
     if (UNIVERSAL::isa($file, 'MT::Template')) {

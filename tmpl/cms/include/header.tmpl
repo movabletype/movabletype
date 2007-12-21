@@ -58,7 +58,7 @@
 <$mt:var name="js_include"$>
 </head>
 
-<body id="<$mt:var name="screen_id"$>" class="<mt:if name="blog_id">blog blog-<$mt:var name="blog_id"$><mt:else>system</mt:if> <$mt:var name="screen_type" default="main-screen"$> <mt:if name="screen_class"> <$mt:var name="screen_class"$></mt:if><mt:if name="new_object"> create-new</mt:if><mt:if name="mt_beta"> mt-beta</mt:if>">
+<body id="<$mt:var name="screen_id"$>" class="<mt:if name="system_overview_nav">system<mt:else>blog blog-<$mt:var name="blog_id"$></mt:if> <$mt:var name="screen_type" default="main-screen"$> <mt:if name="screen_class"> <$mt:var name="screen_class"$></mt:if><mt:if name="new_object"> create-new</mt:if><mt:if name="mt_beta"> mt-beta</mt:if>">
 <div id="modal-mask" class="autolayout-height-parent modal-mask hidden">
     <div></div>
 </div>
@@ -72,20 +72,20 @@
 <mt:if name="author_name">
     <div id="utility-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0">
         <ul id="utility-nav-list">
-    <mt:if name="blog_id">
+    <mt:unless name="system_overview_nav">
     <mt:loop name="sys_nav_loop">
             <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
-        <mt:if name="allowed"><a href="<$mt:var name="link"$>" class="nav-menu-link"><span><$mt:var name="label"$></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
+        <mt:if name="allowed"><a href="<$mt:var name="link" escape="html"$>" class="nav-menu-link"><span><$mt:var name="label"$></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
         <mt:if name="sub_nav_loop">
                 <ul>
         <mt:loop name="sub_nav_loop">
-                    <li<mt:if name="divider"> class="section"</mt:if>><mt:if name="allowed"><a<mt:if name="dialog"> href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', 'blog_id=<$mt:var name="blog_id"$>&amp;return_args=<mt:var name="return_args" escape="url">')"<mt:else> href="<$mt:var name="link"$>"</mt:if>><$mt:var name="label"$></a><mt:else><span><$mt:var name="label"$></span></mt:if></li>
+                    <li<mt:if name="divider"> class="section"</mt:if>><mt:if name="allowed"><a<mt:if name="dialog"> href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', 'blog_id=<$mt:var name="blog_id"$>&amp;return_args=<mt:var name="return_args" escape="url">')"<mt:else> href="<$mt:var name="link" escape="html"$>"</mt:if>><$mt:var name="label"$></a><mt:else><span><$mt:var name="label"$></span></mt:if></li>
         </mt:loop>
                 </ul>
         </mt:if>
             </li>
     </mt:loop>
-    </mt:if>
+    </mt:unless>
             <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
             <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>"><__trans phrase="Hi [_1]," params="<$mt:var name="author_name"$>"></a></li>
         <mt:if name="can_logout">
@@ -106,14 +106,14 @@
                     <mt:if name="__last__">
                         <mt:unless name="single_blog_mode">
                             <mt:if name="blog_id">
-                            <li id="all-blogs"><a href="<$mt:var name="mt_url">?blog_id=&amp;<$mt:var name="return_args" escape="html"$>"><em><__trans phrase="System Overview"></em></a></li>
+                            <li id="all-blogs"><a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><em><__trans phrase="System Overview"></em></a></li>
                             </mt:if>
                             <mt:unless name="selector_hide_chooser">
                             <li id="select-blog"><a mt:command="open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
                             </mt:unless>
                         </mt:unless>
                         <mt:if name="can_create_blog">
-                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
+                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
                         </mt:if>
                     </mt:if>
                 </mt:loop>
@@ -134,12 +134,12 @@
                         <ul>
                 <mt:unless name="single_blog_mode">
                         <mt:if name="blog_id">
-                            <li id="all-blogs"><a href="<$mt:var name="mt_url">?blog_id=&amp;<$mt:var name="return_args" escape="html"$>"><em><__trans phrase="System Overview"></em></a></li>
+                            <li id="all-blogs"><a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><em><__trans phrase="System Overview"></em></a></li>
                         </mt:if>
                             <li id="select-blog"><a class="command-open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
                 </mt:unless>
                         <mt:if name="can_create_blog">
-                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
+                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
                         </mt:if>
                         </ul>
                 </mt:unless>
@@ -156,14 +156,14 @@
             <div id="blog-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0">
                 <div id="blog-nav-inner">
                     <ul id="blog-nav-list" class="blog-nav-list pkg">
-                        <li id="blog-dashboard"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="blog_id"$>" title="<__trans phrase="Blog Dashboard">"><span><__trans phrase="Blog Dashboard"></span></a></li>
+                        <li id="blog-dashboard"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="blog_id" _default="0"$>" title="<__trans phrase="Blog Dashboard">"><span><__trans phrase="Blog Dashboard"></span></a></li>
                 <mt:loop name="top_nav_loop">
                         <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
-                    <mt:if name="allowed"><a href="<$mt:var name="link"$>"><span><$mt:var name="label"$><span mt:command="open-menu">&nbsp;</span></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
+                    <mt:if name="allowed"><a href="<$mt:var name="link" escape="html"$>"><span><$mt:var name="label"$><span mt:command="open-menu">&nbsp;</span></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
                     <mt:if name="sub_nav_loop">
                             <ul>
                     <mt:loop name="sub_nav_loop">
-                                <li<mt:if name="divider"> class="section"</mt:if>><mt:if name="allowed"><a<mt:if name="dialog"> href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', 'blog_id=<$mt:var name="blog_id"$>&amp;return_args=<mt:var name="return_args" escape="url">')"<mt:else> href="<$mt:var name="link"$>"</mt:if>><$mt:var name="label"$></a><mt:else><span><$mt:var name="label"$></span></mt:if></li>
+                                <li<mt:if name="divider"> class="section"</mt:if>><mt:if name="allowed"><a<mt:if name="dialog"> href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', 'blog_id=<$mt:var name="blog_id"$>&amp;return_args=<mt:var name="return_args" escape="url">')"<mt:else> href="<$mt:var name="link" escape="html"$>"</mt:if>><$mt:var name="label"$></a><mt:else><span><$mt:var name="label"$></span></mt:if></li>
                     </mt:loop>
                             </ul>
                     </mt:if>

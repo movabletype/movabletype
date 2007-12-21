@@ -31,7 +31,7 @@ sub metadata {
     my $height = $obj->image_height;
     $meta->{image_width}  = $width  if defined $width;
     $meta->{image_height} = $height if defined $height;
-    $meta->{ MT->translate("Actual Dimensions") } =
+    $meta->{image_dimensions} = $meta->{ MT->translate("Actual Dimensions") } =
       MT->translate( "[_1] x [_2] pixels", $width, $height )
       if defined $width && defined $height;
 
@@ -269,15 +269,17 @@ sub as_html {
         my $wrap_style = '';
         if ( $param->{wrap_text} && $param->{align} ) {
             $wrap_style = 'class="mt-image-' . $param->{align} . '" ';
-            if ( $param->{align} eq 'left' ) {
+            if ( $param->{align} eq 'none' ) {
+                $wrap_style .= q{style=""};
+            }
+            elsif ( $param->{align} eq 'left' ) {
                 $wrap_style .= q{style="float: left; margin: 0 20px 20px 0;"};
             }
             elsif ( $param->{align} eq 'right' ) {
                 $wrap_style .= q{style="float: right; margin: 0 0 20px 20px;"};
             }
             elsif ( $param->{align} eq 'center' ) {
-                $wrap_style .=
-q{style="text-align: center; display: block; margin: 0 auto 20px;"};
+                $wrap_style .= q{style="text-align: center; display: block; margin: 0 auto 20px;"};
             }
         }
 
@@ -358,8 +360,8 @@ sub insert_options {
     $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
     $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
     $param->{ 'align_' . $_ } =
-      ( $blog->image_default_align || 'left' ) eq $_ ? 1 : 0
-      for qw(left center right);
+      ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+      for qw(none left center right);
     $param->{ 'unit_w' . $_ } =
       ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
       for qw(percent pixels);

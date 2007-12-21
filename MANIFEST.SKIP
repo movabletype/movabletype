@@ -40,6 +40,7 @@ mt-static/themes/unity-purple
 
 # Conditional SKIP rule; format: #?(var=value) RULE
 #?package=MT ^COPYING
+#?package=MT ^COPYRIGHT
 #?package=MT ^mt-cp.cgi
 #?package=MT ^mt-static/themes/tristan-blue
 #?package=MT ^addons/Community.pack
@@ -47,8 +48,12 @@ mt-static/themes/unity-purple
 #?package=MT ^addons/Enterprise.pack
 #?package=MT ^mt-static/addons/Enterprise.pack
 
+# Held from beta releases for now
+#?package=MT ^plugins/TypePadAntiSpam
+
 #?package=MTP ^addons
 #?package=MTP ^COPYING
+#?package=MTP ^COPYRIGHT
 #?package=MTP ^mt-cp.cgi
 #?package=MTP ^mt-static/addons
 #?package=MTP ^mt-static/themes/tristan-blue
@@ -59,12 +64,14 @@ mt-static/themes/unity-purple
 #?package=MTOS ^mt-static/themes/tristan-blue
 
 #?package=MTE ^COPYING
+#?package=MTE ^COPYRIGHT
 #?package=MTE ^addons/Community.pack
 #?package=MTE ^mt-static/addons/Community.pack
 #?package=MTE ^mt-cp.cgi
 #?package=MTE ^mt-static/themes/tristan-blue
 
 #?package=MTCS ^COPYING
+#?package=MTCS ^COPYRIGHT
 #?package=MTCS ^addons/Enterprise.pack
 #?package=MTCS ^mt-static/addons/Enterprise.pack
 

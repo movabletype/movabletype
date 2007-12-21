@@ -136,7 +136,7 @@ function writeCommenterGreeting(commenter_name, entry_id, blog_id, commenter_id,
 
 <MTIfRegistrationAllowed>
 if ('<$MTCGIHost exclude_port="1"$>' != '<$MTBlogHost exclude_port="1"$>') {
-    document.write('<script src="<$MTCGIPath$><$MTCommentScript$>?__mode=cmtr_name_js"></script>');
+    document.write('<script src="<$MTCGIPath$><$MTCommentScript$>?__mode=cmtr_name_js&blog_id=<$MTBlogID$>"></script>');
 } else {
     commenter_name = getCookie('commenter_name');
     ids = getCookie('commenter_id').split(':');

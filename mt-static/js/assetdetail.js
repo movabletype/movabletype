@@ -163,16 +163,19 @@ function showPage(id) {
         + "</div>";
     }
     var metadata;
-    if (asset['Actual Dimensions']) {
-        var metadata = "<div class=\"asset-preview-meta\">" + asset['Actual Dimensions'] + "</div>";
+    if (asset['image_dimensions']) {
+        metadata = "<div class=\"asset-preview-meta\">" + asset['image_dimensions']
+            + ( asset['file_size'] ? " - " + asset['file_size'] : "") + "</div>";
+    } else if (asset['file_size']) {
+        metadata = asset['file_size'];
     } else {
-        var metadata = ""
+        metadata = ""
     };
     var label;
     if (asset['Name']) {
         label = asset['Name'];
     } else {
-        label = asset.name;
+        label = asset['name'];
     };
     detail_inner.innerHTML = close_link
         + "<div class=\"asset-preview-image\">" + preview + "</div>"

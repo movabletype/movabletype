@@ -34,7 +34,7 @@ sub work {
     my $sync = MT->config('SyncTarget');
 
     my $throttles = $mt->{throttle} || {};
-    MT::TheSchwartz->debug($mt->translate("Publishing: [quant,_1,file]...", scalar(@jobs)));
+    MT::TheSchwartz->debug($mt->translate("Publishing: [quant,_1,file,files]...", scalar(@jobs)));
 
     my $start = [gettimeofday];
     my $rebuilt = 0;
@@ -102,7 +102,7 @@ sub work {
     }
 
     if ($rebuilt) {
-        MT::TheSchwartz->debug($mt->translate("-- set complete ([quant,_1,file] in [_2] seconds)", $rebuilt, sprintf("%0.02f", tv_interval($start))));
+        MT::TheSchwartz->debug($mt->translate("-- set complete ([quant,_1,file,files] in [_2] seconds)", $rebuilt, sprintf("%0.02f", tv_interval($start))));
     }
 
 }

@@ -116,7 +116,7 @@ __PACKAGE__->install_meta({
 });
 
 # Image upload defaults.
-use constant ALIGN => 'left';
+use constant ALIGN => 'none';
 use constant UNITS => 'pixels';
 
 sub class_label {

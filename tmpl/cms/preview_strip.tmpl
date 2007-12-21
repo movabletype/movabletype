@@ -1,3 +1,14 @@
+<mt:if name="object_type" eq="entry">
+    <$mt:setvar name="save_button_value" value="<__trans phrase="Save this entry">"$>
+    <$mt:setvar name="save_button_title" value="<__trans phrase="Save this entry (s)">"$>
+    <$mt:setvar name="edit_button_value" value="Re-Edit this entry"$>
+    <$mt:setvar name="edit_button_title" value="Re-Edit this entry (e)"$>
+<mt:else>
+    <$mt:setvar name="save_button_value" value="<__trans phrase="Save this page">"$>
+    <$mt:setvar name="save_button_title" value="<__trans phrase="Save this page (s)">"$>
+    <$mt:setvar name="edit_button_value" value="Re-Edit this page"$>
+    <$mt:setvar name="edit_button_title" value="Re-Edit this page (e)"$>
+</mt:if>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
@@ -56,7 +67,7 @@
 <table id="preview-layout">
     <tr>
         <td id="entry-preview-control-strip">
-            <div id="preview-label"><__trans phrase="You are previewing the [lc,_1] titled &ldquo;[_2]&rdquo;" params="<$mt:var name="object_label"$>%%<$mt:var name="title" escape="html"$>"></div>
+            <div id="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" escape="html"$>"><mt:else><__trans phrase="You are previewing the page titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" escape="html"$>"></mt:if></div>
             <form method="post" action="<$mt:var name="script_url"$>">
                 <div class="actions-bar">
                     <div class="actions-bar-inner pkg actions">
@@ -66,18 +77,18 @@
                             name="save"
                             value="save"
                             accesskey="s"
-                            title="<__trans phrase="Save this [_1] (s)" params="<$mt:var name="object_label"$>">"
+                            title="<$mt:var name="save_button_title"$>"
                             class="primary-button"
-                            ><__trans phrase="Save this [_1]" params="<$mt:var name="object_label"$>"></button>
+                            ><$mt:var name="save_button_value"$></button>
                         <button
                             mt:mode="view"
                             type="submit"
                             name="reedit"
                             value="reedit"
                             accesskey="e"
-                            title="<__trans phrase="Re-Edit this [_1] (e)" params="<$mt:var name="object_label"$>">"
+                            title="<$mt:var name="edit_button_title"$>"
                             class="primary-button"
-                            ><__trans phrase="Re-Edit this [_1]" params="<$mt:var name="object_label"$>"></button>
+                            ><$mt:var name="edit_button_value"$></button>
                     </div>
                 </div>
                 <input type="hidden" name="__mode" value="save_entry" />

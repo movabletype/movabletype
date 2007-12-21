@@ -1,12 +1,12 @@
 <mt:if name="page_layout" eq="layout-tw">
     <$mt:setvar name="page_columns" value="2"$>
-</mt:else name="page_layout" eq="layout-wt">
+<mt:else name="page_layout" eq="layout-wt">
     <$mt:setvar name="page_columns" value="2"$>
-</mt:else name="page_layout" eq="layout-wm">
+<mt:else name="page_layout" eq="layout-wm">
     <$mt:setvar name="page_columns" value="2"$>
-</mt:else name="page_layout" eq="layout-mw">
+<mt:else name="page_layout" eq="layout-mw">
     <$mt:setvar name="page_columns" value="2"$>
-</mt:else name="page_layout" eq="layout-wtt">
+<mt:else name="page_layout" eq="layout-wtt">
     <$mt:setvar name="page_columns" value="3"$>
 <mt:else name="page_layout" eq="layout-twt">
     <$mt:setvar name="page_columns" value="3"$>
@@ -16,7 +16,7 @@
     <div id="beta-inner">
 <mt:if name="page_columns" eq="2">
     <$mt:WidgetSet name="2-column layout - Sidebar"$>
-</mt:else name="page_columns" eq="3">
+<mt:else name="page_columns" eq="3">
     <$mt:WidgetSet name="3-column layout - Primary Sidebar"$>
 </mt:if>
     </div>
@@ -24,7 +24,7 @@
 <mt:if name="page_columns" eq="3">
 <div id="gamma">
     <div id="gamma-inner">
-    <$mt:WidgetSet name="3-column layout - Primary Sidebar"$>
+    <$mt:WidgetSet name="3-column layout - Secondary Sidebar"$>
     </div>
 </div>
 </mt:if>

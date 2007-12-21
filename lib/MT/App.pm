@@ -524,7 +524,7 @@ sub response_content {
 sub send_http_header {
     my $app = shift;
     my($type) = @_;
-    $type ||= 'text/html';
+    $type ||= $app->{response_content_type} || 'text/html';
     if (my $charset = $app->charset) {
         $type .= "; charset=$charset"
             if $type =~ m!^text/! && $type !~ /\bcharset\b/;
@@ -982,7 +982,7 @@ sub session_user {
 
 sub _make_commenter_session {
     my $app = shift;
-    my ($session_key, $email, $name, $nick, $id, $url, $timeout) = @_;
+    my ($session_key, $email, $name, $nick, $id, $url, $timeout, $blog_id) = @_;
 
     my $enc = $app->charset;
     $nick = encode_text($nick, $enc, 'utf-8');
@@ -1002,11 +1002,14 @@ sub _make_commenter_session {
     if (defined $id) {
         my @blogs;
         if ($app->user && $app->user->is_superuser) {
-            @blogs = $app->model('blog')->load;
+            @blogs = $app->model('blog')->load( undef, {
+                fetchonly => [ 'id' ],
+            });
         }
         else {
             @blogs = $app->model('blog')->load(undef,
               {
+                fetchonly => [ 'id' ],
                 join => MT::Permission->join_on('blog_id',
                   {
                     permissions => "\%'comment'\%",
@@ -1017,7 +1020,44 @@ sub _make_commenter_session {
               }
             );
         }
-        my $blog_ids = "'" . join("','", map { $_->id } @blogs) . "'";
+        my $blog_ids = @blogs ? "'" . join("','", map { $_->id } @blogs) . "'" : '';
+
+        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
+        if ($perm) {
+            # double-check to see if this user hasn't been denied commenting
+            # permission. user has 'comment' permission through a role,
+            # but check for a restriction to comment on this blog
+            if ($perm->is_restricted('comment')) {
+                $blog_ids =~ s/(,|^)'$blog_id'(,|$)//;
+            }
+
+            # But if the permission carries a 'can administer' permission
+            # they should be allowed
+            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
+                if ($perm->can_administer_blog()) {
+                    # user is a blog administrator, so yes, they can comment too
+                    $blog_ids .= ($blog_ids ne '' ? ',' : '')
+                        . "'" . $blog_id . "'";
+                }
+            }
+        }
+        else {
+            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
+                # extra check to see if this user can comment on requested
+                # blog; this is specific to the Comment application, so
+                # only do this if we're running the comments app.
+                if ( $app->isa( 'MT::App::Comments' )) {
+                    if ( $app->_check_commenter_author($app->user, $blog_id) ) {
+                        # is this blog open to commenting from registered users?
+                        # if so, this user really can comment, even though they
+                        # don't have explicit permissions for it
+                        $blog_ids .= ($blog_ids ne '' ? ',' : '')
+                            . "'" . $blog_id . "'";
+                    }
+                }
+            }
+        }
+
         my %id_kookee = (-name => "commenter_id",
                            -value => $id . ':' . $blog_ids,
                            -path => '/',
@@ -1912,31 +1952,36 @@ sub cookies {
 
 sub show_error {
     my $app = shift;
-    my($error) = @_;
+    my ($param) = @_;
     my $tmpl;
     my $mode = $app->mode;
     my $url =  $app->uri;
     my $blog_id = $app->param('blog_id');
+    if (ref $param ne 'HASH') {
+        # old scalar signature
+        $param = { error => $param };
+    }
+
     if ($MT::DebugMode && $@) {
-        $error = '<pre>'.encode_html($error).'</pre>';
+        $param->{error} = '<pre>' . encode_html( $param->{error} ) . '</pre>';
     } else {
-        $error = encode_html($error);
-        $error =~ s!(https?://\S+)!<a href="$1" target="_blank">$1</a>!g;
+        $param->{error} = encode_html( $param->{error} );
+        $param->{error} =~ s!(https?://\S+)!<a href="$1" target="_blank">$1</a>!g;
     }
     $tmpl = $app->load_tmpl('error.tmpl') or
         return "Can't load error template; got error '" . $app->errstr .
-               "'. Giving up. Original error was <pre>$error</pre>";
-    $tmpl->param(ERROR => $error);
+               "'. Giving up. Original error was <pre>$param->{error}</pre>";
     my $type = $app->param('__type') || '';
     if ($type eq 'dialog') {
-        $tmpl->param(NAME => $app->{name} || 'dialog' );
-        $tmpl->param(GOBACK => $app->{goback} || 'closeDialog()');
-        $tmpl->param(VALUE => $app->{value} || $app->translate("Close"));
-        $tmpl->param(dialog => 1);
+        $param->{name} ||= $app->{name} || 'dialog';
+        $param->{goback} ||= $app->{goback} || 'closeDialog()';
+        $param->{value} ||= $app->{value} || $app->translate("Close");
+        $param->{dialog} = 1;
     } else {
-        $tmpl->param(GOBACK => $app->{goback} || 'history.back()');
-        $tmpl->param(VALUE => $app->{value} || $app->translate("Go Back"));
+        $param->{goback} ||= $app->{goback} || 'history.back()';
+        $param->{value} ||= $app->{value} || $app->translate("Go Back");
     }
+    $tmpl->param( $param );
     $app->l10n_filter($tmpl->output);
 }
 
@@ -1975,6 +2020,7 @@ sub run {
 
     my($body);
     eval {
+        # line __LINE__ __FILE__
         require MT::Auth;
         if ($ENV{MOD_PERL}) {
             unless ($app->{no_read_body}) {
@@ -2018,7 +2064,7 @@ sub run {
                 my ($author) = $app->login;
                 if (!$author || !$app->is_authorized) {
                     $body = ref ($author) eq $app->user_class
-                        ? $app->show_error( $app->errstr )
+                        ? $app->show_error( { error => $app->errstr } )
                         : $app->build_page('login.tmpl',{
                             error => $app->errstr,
                             no_breadcrumbs => 1,
@@ -2110,7 +2156,7 @@ sub run {
             $body =~ s/^\s+(<!DOCTYPE)/$1/s if defined $body;
 
             unless (defined $body || $app->{redirect} || $app->{login_again} || $app->{no_print_body}) {
-                $body = $app->show_error( $app->errstr );
+                $body = $app->show_error( { error => $app->errstr } );
             }
             $app->error(undef);
         }  ## end REQUEST block
@@ -2126,10 +2172,10 @@ sub run {
             can_recover_password => MT::Auth->can_recover_password,
             delegate_auth => MT::Auth->delegate_auth,
         })
-            or $body = $app->show_error( $app->errstr );
+            or $body = $app->show_error( { error => $app->errstr } );
     } elsif (!defined $body) {
         my $err = $app->errstr || $@;
-        $body = $app->show_error($err);
+        $body = $app->show_error( { error => $err } );
     }
 
     if (ref($body) && ($body->isa('MT::Template'))) {

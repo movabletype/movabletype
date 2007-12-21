@@ -16,10 +16,12 @@ function smarty_block_mtifnonempty($args, $content, &$ctx, &$repeat) {
             $largs = $args; // local arguments without 'tag' element
             unset($largs['tag']);
             $output = $ctx->tag($tag, $largs);
+        } elseif (isset($args['name'])) {
+            $output = $ctx->__stash['vars'][$args['name']];
         } elseif (isset($args['var'])) {
             $output = $ctx->__stash['vars'][$args['var']];
         }
-        $ctx->stash('conditional', !empty($output));
+        $ctx->stash('conditional', isset($output));
         $ctx->stash('else_content', null);
     } else {
         if (!$ctx->stash('conditional')) {
