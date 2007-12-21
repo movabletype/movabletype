@@ -307,10 +307,10 @@ sub create_default_widgetsets {
     $modulesets = {} unless $modulesets;
 
     foreach my $widgetset ( @{$widgetsets} ) {
-        my $label = $app->translate( $widgetset->{label} );
+        my $label = plugin()->translate( $widgetset->{label} );
         my @ids;
         foreach my $widget ( @{ $widgetset->{widgets} } ) {
-            my $name = $app->translate($widget);
+            my $name = plugin()->translate($widget);
             push @ids, $widgets{$name};
         }
         $modulesets->{$label} = join ',', @ids;
@@ -322,7 +322,6 @@ sub create_default_widgetsets {
 sub install_default_widgets {
     my $app = MT->instance;
     my ( $blog_id, $reinstall ) = @_;
-    my @preinstalled;
     my ($tmpl,$default_widget_templates);
 
     # Gather the existing modules.
@@ -347,27 +346,21 @@ sub install_default_widgets {
     close FH;
 
     foreach (@$default_widget_templates) {
-        next if exists $modules->{$app->translate($_->{label})};
+        next if exists $modules->{plugin()->translate($_->{label})};
         open(TMPL, File::Spec->catfile($widgets_dir, $_->{template})) or die "Error: $!\n";
         while (my $line = <TMPL>) {
             $_->{text} .= $line;
         }
         close TMPL;
         $tmpl = install_module($blog_id, $_->{label}, $_->{text});
-        push @preinstalled, $tmpl->id;
     }
 
     unless( $reinstall ) {
         # Set the 'installed' bit in the config
         installed($blog_id, 1);
 
-        # Now that the plugin is installed for this blog, create a first widgetmanager
+        # Now that the plugin is installed for this blog, create a default widget sets
         # with all modules pre-installed.
-
-        my $modulesets = {};
-        $modulesets->{$app->translate('First Widget Manager')} = join (',', @preinstalled);
-
-        plugin()->set_config_value('modulesets',$modulesets,"blog:$blog_id");
         create_default_widgetsets($blog_id);
     }
 }
