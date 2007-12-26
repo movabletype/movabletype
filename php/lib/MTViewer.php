@@ -114,6 +114,7 @@ class MTViewer extends Smarty {
         $this->register_block('mtdynamic', array(&$this, 'smarty_block_dynamic'),
                               false);
         $this->register_block('mtelse', array(&$this, 'smarty_block_else'));
+        $this->register_block('mtelseif', array(&$this, 'smarty_block_elseif'));
 
         # Unregister the 'core' regex_replace so we can replace it
         $this->register_modifier('regex_replace', array(&$this, 'regex_replace'));
@@ -236,11 +237,21 @@ class MTViewer extends Smarty {
         return $content;
     }
 
+    function smarty_block_elseif($args, $content, &$ctx, &$repeat) {
+        return $this->smarty_block_else($args, $content, $ctx, $repeat);
+    }
+
     function smarty_block_else($args, $content, &$ctx, &$repeat) {
         if (isset($ctx->_tpl_vars['elseif_content'])
             or ($ctx->_tpl_vars['conditional'])) {
             $repeat = false;
             return '';
+        }
+        if (!isset($args['name']) && !isset($args['var']) && !isset($args['tag'])) {
+            require_once("function.mtgetvar.php");
+            $var = smarty_function_mtgetvar(array('name' => '__name__'), $ctx);
+            if (isset($var) && $var != '')
+                $args['name'] = $var;
         }
         if (count($args)) { # else-if case
             require_once("block.mtif.php");

@@ -42,6 +42,7 @@ sub core_tags {
             'Unless?' => sub { defined(my $r = &_hdlr_if) or return; !$r },
             'For' => \&_hdlr_for,
             'Else' => \&_hdlr_else,
+            'ElseIf' => \&_hdlr_elseif,
 
             'EntryIfTagged?' => \&_hdlr_entry_if_tagged,
 
@@ -1299,8 +1300,20 @@ sub _hdlr_else {
     my ($ctx, $args, $cond) = @_;
     local $args->{'@'};
     delete $args->{'@'};
+    if  ((keys %$args) == 1) {
+        my $name = $args->{name} || $args->{var} || $args->{tag} || undef;
+        $name = ($ctx->var('__name__') || undef) unless $name;
+        $args->{name} = $name if $name;
+    }
     return _hdlr_if(@_) ? $ctx->slurp(@_) : $ctx->else() if %$args;
     return $ctx->slurp(@_);
+}
+
+sub _hdlr_elseif {
+    my ($ctx, $args, $cond) = @_;
+    $args->{name} = $ctx->var('__name__')
+        unless ($args->{name} || $args->{var} || $args->{tag} || undef);
+    return _hdlr_else($ctx, $args, $cond);
 }
 
 sub _hdlr_if {
@@ -1352,6 +1365,9 @@ sub _hdlr_if {
             return $ctx->error(MT->translate("Invalid tag [_1] specified.", $tag));
         }
     }
+
+    $ctx->{__stash}{vars}->{__value__} = $value;
+    $ctx->{__stash}{vars}->{__name__} = $var;
 
     if ( my $op = $args->{op} ) {
         my $rvalue = $args->{'value'};

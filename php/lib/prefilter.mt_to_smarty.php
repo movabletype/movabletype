@@ -158,7 +158,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             }
 
             if ((($open == '/' && $conditional) ||
-                 (strtolower($mttag) == 'mtelse')) &&
+                 ($mttag == 'mtelse' || $mttag == 'mtelseif')) &&
                 $close != '/') {
                 $smart_source .= $ldelim.'/if'.$rdelim;
             }
@@ -184,8 +184,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $tag = $matches[1];
                         $close_mod_args = $matches[2];
                     }
-                    if (($tag == 'mtelse') && ($tag != $mttag)) {
-                        $smart_source .= $ldelim . '/mtelse' . $rdelim;
+                    if (($tag == 'mtelse' || $tag == 'mtelseif') && ($tag != $mttag)) {
+                        $smart_source .= $ldelim . '/' . $tag . $rdelim;
                         if ($mttag == $tagstack[count($tagstack)-1]) {
                             $tag = array_pop($tagstack);
                         } elseif (preg_match('/^('. $mttag . ')(\|.+)$/', $tagstack[count($tagstack)-1], $matches)) {
@@ -198,9 +198,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         die("error in template: $tag found but $mttag was expected\n");
                     }
                 } else {
-                    if ($mttag == 'mtelse') {
-                        if ($tagstack[count($tagstack)-1] == 'mtelse') {
-                            $smart_source .= $ldelim . '/mtelse' . $rdelim;
+                    if ($mttag == 'mtelse' || $mttag == 'mtelseif') {
+                        if ($tagstack[count($tagstack)-1] == 'mtelse' || $tagstack[count($tagstack)-1] == 'mtelseif') {
+                            $smart_source .= $ldelim . '/' . $tagstack[count($tagstack)-1] . $rdelim;
                             array_pop($tagstack);
                         }
                     }
@@ -248,7 +248,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                 }
             }
 
-            if (strtolower($mttag) == 'mtelse') {
+            if ($mttag == 'mtelse') {
                 if ($open != '/') {
                     if (count($args)) {
                         # else-if
@@ -259,6 +259,13 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                     }
                 } else {
                     $smart_source .= $ldelim.'if $conditional'.$rdelim;
+                }
+            } elseif ($mttag == 'mtelseif') {
+                if ($open != '/') {
+                    if (count($args)) {
+                        # else-if
+                        $smart_source .= $ldelim.'if $elseif_conditional'.$rdelim;
+                    }
                 }
             } elseif ($open != '/' && $conditional && $close != '/') {
                 $smart_source .= $ldelim.'if $conditional'.$rdelim;
@@ -274,7 +281,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
     // smarty php blocks...
     $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
                                  $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
-
+#    echo $smart_source;
     return $smart_source;
 }
 

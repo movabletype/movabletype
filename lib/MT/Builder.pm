@@ -246,7 +246,7 @@ sub _consume_up_to {
         }
     }
     # special case for unclosed 'else' tag:
-    if (lc($stoptag) eq 'else') {
+    if (lc($stoptag) eq 'else' || lc($stoptag) eq 'elseif') {
         return ($start + length($$text), $start + length($$text));
     }
     return (0, 0);
@@ -305,7 +305,7 @@ sub build {
                 # walk the children and look for an MTElse.
                 # the children of the MTElse will become $tokens
                 for my $tok (@{ $t->[2] }) {
-                    if (lc $tok->[0] eq 'else') {
+                    if (lc $tok->[0] eq 'else' || lc $tok->[0] eq 'elseif') {
                         $tokens = $tok->[2];
                         $uncompiled = $tok->[3];
                         last;
@@ -319,7 +319,7 @@ sub build {
                     # those which are inside an else and those which are not.
                     ($tokens, $tokens_else) = ([], []);
                     for my $sub (@{ $t->[2] }) {
-                        if (lc $sub->[0] eq 'else') {
+                        if (lc $sub->[0] eq 'else' || lc $sub->[0] eq 'elseif') {
                             push @$tokens_else, $sub;
                         } else {
                             push @$tokens, $sub;
@@ -393,6 +393,8 @@ sub build {
                 if ((defined $type) && ($type == 2)) {
                     # conditional; process result
                     $out = $out ? $ctx->slurp(\%args, $cond) : $ctx->else(\%args, $cond);
+                    delete $ctx->{__stash}{vars}->{__value__};
+                    delete $ctx->{__stash}{vars}->{__name__};
                 }
 
                 $out = $ph->($ctx, \%args, $out, \@args)
