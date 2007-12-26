@@ -201,7 +201,6 @@
 <mt:setvarblock name="category_setting">
     <mtapp:setting
         id="category"
-        shown="$disp_prefs_show_category"
         label="$container_label"
         label_class="$container_label_class"
         help_page="entries"
@@ -302,7 +301,7 @@
         </mtapp:widget>
     </mt:unless>
     
-<div id="publishing-field">
+<div id="publishing-field"<mt:unless name="disp_prefs_show_publishing"> class="hidden"</mt:unless>>
     <mtapp:widget
         id="entry-publishing-widget"
         label="<__trans phrase="Publishing">">
@@ -408,7 +407,7 @@
         </mtapp:setting>
     </mtapp:widget>
 </div>
-<div id="categories-field">
+<div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
     <mt:if name="object_type" eq="entry">
         <mt:if name="can_edit_categories">
         <mtapp:widget
@@ -419,7 +418,7 @@
         </mt:if>
     </mt:if>
 </div>
-<div id="feedback-field">
+<div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> class="hidden"</mt:unless>>
     <mtapp:widget
         id="entry-feedback-widget"
         label="<__trans phrase="Feedback">">
@@ -482,14 +481,14 @@
     <script type="text/javascript">
     /* <![CDATA[ */
 var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
-var customizable_fields = new Array(<mt:unless name="object_type" eq="page">'categories',</mt:unless>'excerpt','keywords','tags','publishing','feedback');
+var customizable_fields = new Array(<mt:unless name="object_type" eq="page">'category',</mt:unless>'excerpt','keywords','tags','publishing','feedback');
 var default_fields = new Array();
 <mt:loop name="disp_prefs_default_fields">
 default_fields.push('<mt:var name="name" escape="js">');
 </mt:loop>
 var custom_fields = new Array();
 <mt:unless name="object_type" eq="page">
-<mt:if name="disp_prefs_show_category">custom_fields.push('categories');</mt:if>
+<mt:if name="disp_prefs_show_category">custom_fields.push('category');</mt:if>
 </mt:unless>
 <mt:if name="disp_prefs_show_excerpt">custom_fields.push('excerpt');</mt:if>
 <mt:if name="disp_prefs_show_keywords">custom_fields.push('keywords');</mt:if>
@@ -988,7 +987,7 @@ function listPreviousPings () {
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Body"></label></li>
                         <li><label><input type="checkbox" onclick="setCustomFields(); return true;" name="custom_prefs" id="custom-prefs-tags" value="tags" <mt:if name="disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Tags"></label></li>
                         <mt:if name="object_type" ne="page">
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-categories" value="categories" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Category"></label></li>
+                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Category"></label></li>
                         </mt:if>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Keywords"></label></li>
