@@ -274,6 +274,20 @@ subroutine for further examples of using the callback.
 
 =back
 
+=item * <package>::post_create_default_templates
+
+    callback($cb, $blog, $tmpl_list)
+
+This callback in particular is also unique to the I<MT::Blog> package.
+It is run when the user creates a new blog, or when the user refreshes
+all templates for existing blog to have it clean start again. 
+If a plugin has something to do with template sets and with when user 
+uses the particular set, you should hook into this callback to capture 
+this event.
+
+C<$blog> argument carries the blog user created.  C<$tmpl_list> carries
+the list of template data associated to the blog.
+
 =back
 
 =head1 Application Callbacks

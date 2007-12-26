@@ -271,6 +271,12 @@ sub create_default_templates {
         }
     }
 
+    MT->run_callbacks(
+        ref($blog). '::post_create_default_templates',
+        $blog, 
+        $tmpl_list
+    );
+
     return $blog;
 }
 

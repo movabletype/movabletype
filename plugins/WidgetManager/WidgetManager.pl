@@ -49,6 +49,7 @@ sub init_registry {
                 handler => '$WidgetManager::WidgetManager::Plugin::remove_blog_widgetmanager',
             },
             'DefaultTemplateFilter' => '$WidgetManager::MT::Plugin::WidgetManager::default_templates',
+            'MT::Blog::post_create_default_templates' => '$WidgetManager::WidgetManager::Plugin::create_default_widgetsets',
         },
         applications => {
             cms => {
@@ -89,19 +90,6 @@ sub init_registry {
             },
         },
     });
-}
-
-sub init_app {
-    my $plugin = shift;
-    $plugin->SUPER::init_app(@_);
-
-    require MT::Blog;
-    my $iter = MT::Blog->load_iter();
-    require WidgetManager::CMS;
-    while ( my $blog = $iter->() ) {
-      WidgetManager::CMS::install_default_widgets( $blog->id )
-          unless WidgetManager::CMS::installed( $blog->id );
-    }
 }
 
 sub load_selected_modules { 

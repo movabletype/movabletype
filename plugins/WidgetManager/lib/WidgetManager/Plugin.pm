@@ -108,4 +108,11 @@ sub remove_blog_widgetmanager {
     $_->remove foreach @pdata_objs;
 }
 
+sub create_default_widgetsets {
+    my ($cb, $blog, $tmpl_list) = @_;
+    require WidgetManager::CMS;
+    WidgetManager::CMS::create_default_widgetsets($blog->id);
+    1;
+}
+
 1;

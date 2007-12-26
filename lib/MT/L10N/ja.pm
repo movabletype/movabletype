@@ -192,6 +192,11 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/rss.mtml
 	'Copyright [_1]' => 'Copyright [_1]',
 
+## default_templates/sidebar.mtml
+	'2-column layout - Sidebar' => '2カラムのサイドバー', # Translate - New
+	'3-column layout - Primary Sidebar' => '3カラムのサイドバー(メイン)', # Translate - New
+	'3-column layout - Secondary Sidebar' => '3カラムのサイドバー(サブ)', # Translate - New
+
 ## default_templates/sidebar_3col.mtml
 	'About this Entry' => 'このブログ記事について',
 	'About this Archive' => 'このアーカイブについて',
