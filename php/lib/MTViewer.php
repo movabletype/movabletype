@@ -253,7 +253,7 @@ class MTViewer extends Smarty {
             if (isset($var) && $var != '')
                 $args['name'] = $var;
         }
-        if (count($args)) { # else-if case
+        if (count($args) > 1) { # else-if case
             require_once("block.mtif.php");
             $args['elseif'] = 1;
             if (!isset($content)) {
