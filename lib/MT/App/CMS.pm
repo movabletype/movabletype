@@ -2864,7 +2864,7 @@ sub list_tag_for {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( $offset < 0 ) {
+    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
         $arg{offset} = $offset = 0;
     }
     else {
@@ -11834,7 +11834,7 @@ sub list_pings {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( $offset < 0 ) {
+    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
         $arg{offset} = $offset = 0;
     }
     elsif ($offset) {
@@ -12271,7 +12271,7 @@ sub list_entries {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( $offset < 0 ) {
+    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
         $arg{offset} = $offset = 0;
     }
     else {
@@ -12414,6 +12414,11 @@ sub list_entries {
     if ( my $blog = MT::Blog->load($blog_id) ) {
         $param{sitepath_unconfigured} = $blog->site_path ? 0 : 1;
     }
+
+    $param->{return_args} ||= $app->make_return_args;
+    my @return_args = grep { $_ !~ /offset=\d/ } split /&/, $param->{return_args};
+    $param{return_args} = join '&', @return_args;
+    $param{return_args} .= "&offset=$offset" if $offset;
     $app->load_tmpl( "list_entry.tmpl", \%param );
 }
 
