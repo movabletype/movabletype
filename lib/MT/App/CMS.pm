@@ -6471,7 +6471,7 @@ sub edit_object {
                 my $entry = $entry_class->load($place->object_id);
                 my %entry_data = (
                     id    => $place->object_id,
-                    class => $place->object_ds,
+                    class => $entry->class_type,
                     entry => $entry,
                     title => $entry->title,
                 );
