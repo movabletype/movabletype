@@ -472,9 +472,14 @@ ul { list-style: disc outside; }
     width: 70px;
 }
 
-.widget-search .search-options,
-.widget-syndicate .blog-feeds  {
+.widget-search ul,
+.widget-syndication ul {
+    margin-left: 0;
     list-style: none;
+}
+
+.widget-search li,
+.widget-syndication li  {
     margin: 5px 0;
 }
 
