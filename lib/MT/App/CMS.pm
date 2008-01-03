@@ -20350,6 +20350,7 @@ sub dialog_refresh_templates {
         $param->{'template_set_index'} = $#$sets;
 
         $param->{template_sets} = $sets;
+        $param->{screen_id} = "refresh-templates-dialog";
     }
 
     # load template sets

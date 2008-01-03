@@ -3973,6 +3973,13 @@ body.dialog {
     display: inline;
 }
 
+/* Refresh Templates Dialog ---------------------------------------------------------------------------------- */
+
+#refresh-templates-dialog ul {
+    list-style: disc;
+    margin-left: 30px;
+}
+
 /* Edit Comment & Trackback ---------------------------------------------------------------------------------- */
 
 .edit-comment .button-actions,

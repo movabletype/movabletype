@@ -619,7 +619,11 @@ function tabToggle(selectedTab, tabs) {
 function show(id, d, style) {
     var el = getByID(id, d);
     if (!el) return;
-    el.style.display = style ? style : 'block';
+    if ( DOM.hasClassName( el, "hidden" ) ) {
+        DOM.removeClassName ( el, "hidden");
+    } else {
+        el.style.display = style ? style : 'block';
+    }
     /* hack */
     if ( DOM.hasClassName( el, "autolayout-height-parent" ) )
         DOM.setHeight( el, finiteInt( el.parentNode.clientHeight ) );
@@ -628,7 +632,11 @@ function show(id, d, style) {
 function hide(id, d) {
     var el = getByID(id, d);
     if (!el) return;
-    el.style.display = 'none';
+    if ( !DOM.hasClassName( el, "hidden" ) ) {
+        DOM.addClassName ( el, "hidden");
+    } else {
+        el.style.display = 'none';
+    }
 }
 
 function showReply(id, d, style) {
