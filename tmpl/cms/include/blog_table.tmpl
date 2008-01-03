@@ -19,9 +19,9 @@
             <th id="bt-authors"><__trans phrase="Users"></th>
             <th id="bt-settings"><__trans phrase="Settings"></th>
         <mt:unless name="mode_search_replace">
-            <mt:unless name="is_administrator">
+            <mt:if name="is_administrator">
             <th id="bt-delete"><__trans phrase="Delete"></th>
-            </mt:unless>
+            </mt:if>
         </mt:unless>
         </tr>
     </thead>
@@ -35,9 +35,11 @@
             <td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
             <td align="right"><mt:var name="num_authors"></td>
             <td><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
-            <mt:unless name="mode_search_replace"><mt:if name="is_administrator">
+    <mt:unless name="mode_search_replace">
+        <mt:if name="is_administrator">
             <td><a href="javascript:void(0)" onclick="doRemoveBlog('<mt:var name="id">'); return false;"><img src="<mt:var name="static_uri">images/nav_icons/mini/delete.gif" width="9" height="11" alt="<__trans phrase="Delete">" /></a></td>
-            <mt:else><td>&nbsp;</td></mt:if></mt:unless>
+        </mt:if>
+    </mt:unless>
         </tr>
     <mt:if name="__last__">
     </tbody>
