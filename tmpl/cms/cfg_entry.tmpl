@@ -3,11 +3,7 @@
 <mt:setvarblock name="content_nav">
     <mt:include name="include/cfg_content_nav.tmpl">
 </mt:setvarblock>
-
-<mt:include name="include/header.tmpl" position_actions_bottom="1">
-
-<mt:section html_tag="div" id="msg-block">
-
+<MTSetVarBlock name="content_header">
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -21,11 +17,12 @@
             id="saved"
             class="success"
             rebuild="all">
-            <__trans phrase="Your blog preferences have been saved.">
+            <__trans phrase="Your preferences have been saved.">
         </mtapp:statusmsg>
     </mt:if>
+</MTSetVarBlock>
 
-</mt:section>
+<mt:include name="include/header.tmpl" position_actions_bottom="1">
 
 <mt:section html_tag="div" id="cfg-entry_display">
 
