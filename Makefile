@@ -99,7 +99,6 @@ lib/MT.pm: %: %.pre build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk buil
 	    -e 's!__SUPPORT_URL__!$(SUPPORT_URL)!g' \
 	    -e 's!__PORTAL_URL__!$(PORTAL_URL)!g' \
 	    -e 's!__NEWS_URL__!$(NEWS_URL)!g' \
-	    -e 's!__HELP_URL__!$(HELP_URL)!g' \
 	    -e 's!__DEFAULT_TIMEZONE__!$(DEFAULT_TIMEZONE)!g' \
 	    -e 's!__MAIL_ENCODING__!$(MAIL_ENCODING)!g' \
 	    -e 's!__EXPORT_ENCODING__!$(EXPORT_ENCODING)!g' \

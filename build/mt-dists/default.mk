@@ -12,7 +12,6 @@ SUPPORT_URL = http://www.sixapart.com/movabletype/support/
 NEWS_URL = http://www.sixapart.com/movabletype/news/
 NEWSBOX_URL = http://www.sixapart.com/movabletype/news/mt4_news_widget.html
 LEARNINGNEWS_URL = http://learning.movabletype.org/newsbox.html
-HELP_URL = http://www.sixapart.com/movabletype/docs/4.0/
 CATEGORY_NAME_NODASH = 0
 DEFAULT_TIMEZONE = 0
 MAIL_ENCODING = ISO-8859-1

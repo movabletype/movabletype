@@ -6,7 +6,6 @@ SUPPORT_URL = http://www.sixapart.jp/movabletype/support/
 NEWS_URL = http://www.sixapart.jp/movabletype/
 NEWSBOX_URL = http://www.sixapart.jp/movabletype/news/newsbox.html
 LEARNINGNEWS_URL = http://www.movabletype.jp/newsbox.html
-HELP_URL = http://www.movabletype.jp/documentation/
 CATEGORY_NAME_NODASH = 1
 DEFAULT_TIMEZONE = 9
 MAIL_ENCODING = ISO-2022-JP

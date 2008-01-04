@@ -3173,7 +3173,7 @@ sub set_default_tmpl_params {
     }
 
     my $static_app_url = $app->static_path;
-    $param->{help_url} = $app->config('HelpURL') || $static_app_url . 'docs/';
+    $param->{help_url} = $app->help_url() || $static_app_url . 'docs/';
 
     $param->{show_ip_info} ||= $app->config('ShowIPInformation');
     my $type = $app->param('_type') || '';
@@ -4086,17 +4086,17 @@ sub new_version_widget {
     push @{ $param->{feature_loop} ||= [] },
       {
         feature_label => MT->translate('Shared Template Modules'),
-        feature_url  => $app->translate('http://www.movabletype.org/documentation/') . 'designer/shared-templates.html',
+        feature_url  => $app->help_url('designer/shared-templates.html'),
         feature_description => MT->translate('Reuse elements of your site design or layout across all the blogs and sites managed within Movable Type.')
       },
       {
         feature_label => MT->translate('Userpics'),
-        feature_url  => $app->translate('http://www.movabletype.org/documentation/') . 'author/userpics.html',
+        feature_url  => $app->help_url('author/userpics.html'),
         feature_description => MT->translate('Allow authors and commenters to upload a photo of themselves to be displayed alongside their comments.')
       },
       {
         feature_label => MT->translate('Template Sets'),
-        feature_url  => $app->translate('http://www.movabletype.org/documentation/') . 'designer/template-sets.html',
+        feature_url  => $app->help_url('designer/template-sets.html'),
         feature_description => MT->translate('Template sets provide an easy way to bundle an entire design and install it into Movable Type.')
       };
 }
@@ -7065,6 +7065,7 @@ sub edit_object {
             }
         }
         $param{tag_docs} = $tag_docs;
+        $param{link_doc} = $app->help_url('appendices/tags/');
 
         # template language
         $param{template_lang} = 'html';

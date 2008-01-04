@@ -608,7 +608,7 @@ sub main {
         $app->config->save_config;
     }
 
-    $param->{help_url} = $app->{cfg}->HelpURL;
+    $param->{help_url} = $app->help_url();
     $param->{to_schema} = $cur_schema;
     $param->{from_schema} = $schema;
     $param->{mt_version} = $cur_version;

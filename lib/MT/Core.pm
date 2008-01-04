@@ -418,9 +418,10 @@ BEGIN {
             'ShowIPInformation'     => { default => 0, },
             'AllowComments'         => { default => 1, },
             'AllowPings'            => { default => 1, },
-            'HelpURL'               => {
-                default => 'http://www.sixapart.com/movabletype/docs/4.0/',
-            },
+            'HelpURL'               => undef,
+            #'HelpURL'               => {
+            #    default => 'http://www.sixapart.com/movabletype/docs/4.0/',
+            #},
             'UsePlugins'               => { default => 1, },
             'PluginSwitch'             => { type    => 'HASH', },
             'PluginSchemaVersion'      => { type    => 'HASH', },

@@ -964,7 +964,7 @@ sub init_core {
     $defaults->{LearningNewsURL}{default} = '__LEARNINGNEWS_URL__';
     $defaults->{SupportURL}{default} = '__SUPPORT_URL__';
     $defaults->{NewsURL}{default} = '__NEWS_URL__';
-    $defaults->{HelpURL}{default} = '__HELP_URL__';
+    #$defaults->{HelpURL}{default} = '__HELP_URL__';
     $defaults->{DefaultTimezone}{default} = '__DEFAULT_TIMEZONE__';
     $defaults->{MailEncoding}{default} = '__MAIL_ENCODING__';
     $defaults->{ExportEncoding}{default} = '__EXPORT_ENCODING__';
@@ -2493,6 +2493,19 @@ sub handler_to_coderef {
         }
     }
     return $code;
+}
+
+sub help_url {
+    my $pkg = shift;
+    my ( $append ) = @_;
+
+    my $url = $pkg->config->HelpURL;
+    return $url if defined $url;
+    $url = $pkg->translate('http://www.movabletype.org/documentation/');
+    if ( $append ) {
+        $url .= $append;
+    }
+    $url;
 }
 
 1;

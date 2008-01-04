@@ -756,7 +756,7 @@ sub seed {
     }
 
     # authentication configuration
-    $param{help_url} = $app->config('HelpURL');
+    $param{help_url} = $app->help_url();
 
     my $tmpls = $app->registry("wizard_template") || [];
 
