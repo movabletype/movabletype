@@ -1962,6 +1962,10 @@ sub build_page {
     $param->{packs_installed} = \@packs_installed;
     $param->{portal_url} = $mt->translate("__PORTAL_URL__");
 
+    for my $config_field (keys %{ MT::ConfigMgr->instance->{__var} || {} }) {
+        $param->{ $config_field . '_readonly' } = 1;
+    }
+
     my $tmpl_file = '';
     if (UNIVERSAL::isa($file, 'MT::Template')) {
         $tmpl = $file;
