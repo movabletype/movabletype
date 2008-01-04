@@ -4247,10 +4247,13 @@ body.dialog {
 
 /* Edit Author ---------------------------------------------------------------------------------- */
 
-.edit-author ul.inline-list li {
+.edit-author #system_permissions-field li {
     float: left;
-    white-space: nowrap;
     width: 175px;
+}
+
+.edit-author #system_permissions-field li label {
+    white-space: nowrap;
 }
 
 
