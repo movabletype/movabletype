@@ -2218,7 +2218,6 @@ EOT
     my $mt = MT->instance;
     $tmpl->name($mt->translate("Comment Response"));
     $tmpl->text($mt->translate_templatized(<<"EOT"));
-<MTSetVar name="page_layout" value="layout-one-column">
 <MTSetVar name="system_template" value="1">
 <MTSetVar name="feedback_template" value="1">
 
