@@ -879,7 +879,7 @@ sub _hdlr_app_listing {
         return $ctx->build(qq{<mtapp:statusmsg
             id="zero-state"
             class="info zero-state">
-            $msg
+            $msg Create Asset
             </mtapp:statusmsg>});
     }
 

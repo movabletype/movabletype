@@ -207,4 +207,14 @@
     <mt:if __last__>
         </tbody>
     </mt:if>
+<mt:else>
+    <mt:if name="object_type" eq="entry">
+        <mtapp:statusmsg id="zero-state" class="info zero-state">
+            <__trans phrase="No entries could be found. <a href="[_1]">Create Entry</a>" params="<$mt:var name="mt_url"$>?__mode=view&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>">
+        </mtapp:statusmsg>
+    <mt:else>
+        <mtapp:statusmsg id="zero-state" class="info zero-state">
+            <__trans phrase="No page could be found. <a href="[_1]">Create Page</a>" params="<$mt:var name="mt_url"$>?__mode=view&amp;_type=page&amp;blog_id=<$mt:var name="blog_id"$>">
+        </mtapp:statusmsg>
+    </mt:if>
 </mtapp:listing>
