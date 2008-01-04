@@ -263,6 +263,9 @@ TC.attachLoadEvent( init );
         </tbody>
     </mt:if>
 <mt:else>
+    <mtapp:statusmsg id="zero-state" class="info zero-state">
+        <__trans phrase="No folders could be found.">
+    </mtapp:statusmsg>
     <form id="folder-listing-form" method="post" action="<$mt:var name="script_url"$>">
         <input type="hidden" name="__mode" value="save_cat" />
         <input type="hidden" name="_type" value="folder" />
