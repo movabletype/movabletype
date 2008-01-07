@@ -1898,7 +1898,7 @@ MT.App.Resizer = new Class( Object, {
         this.dragging = false;
         var d = DOM.getAbsoluteCursorPosition( event );
             
-        DOM.addClassName( DOM.getElement( "resize-mask" ), "hidden" );
+        DOM.addClassName( "resize-mask", "hidden" );
         
         /* cleanup */
         if ( this.element && this.element.parentNode )
