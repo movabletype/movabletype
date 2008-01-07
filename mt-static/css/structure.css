@@ -1144,24 +1144,19 @@ li#config-menu {
     text-align: left;
     background-color: #fff;
     width: 247px;
+    border: 2px solid #575757;
+    border-top-color: #fff;
+    border-left-color: #fff;
 }
+#display-options-widget .widget-inner {
+    border: 3px solid #cddee7;
+}
+
 #display-options-widget .widget-header {
-    border: 3px solid #000;
-    border-bottom: none;
     margin: 0;
 }
 #display-options-widget .widget-header-inner {
-    border: 3px solid #cddee7;
-    border-bottom: none;
     padding: 8px;
-}
-#display-options-widget .widget-content {
-    border: 3px solid #000;
-    border-top: none;
-}
-#display-options-widget .widget-content-inner {
-    border: 3px solid #cddee7;
-    border-top: none;
 }
 
 #entryfield-options li .cb,
