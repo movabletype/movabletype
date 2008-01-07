@@ -370,6 +370,12 @@ function openDialog(f, mode, params) {
     // handle escape key for closing modal dialog
     window.onkeypress = dialogKeyPress;
     openDialogUrl(url);
+    if ( document.all && DOM.getElement( "dialog-container" ) ) {
+        DOM.addClassName( "dialog-container", "hidden" );
+        new Timer(function() {
+            DOM.removeClassName( "dialog-container", "hidden" );
+        }, 500, 1 );
+    }
     return false;
 }
 
@@ -1595,10 +1601,11 @@ MT.App = new Class( App, {
         window.onkeypress = dialogKeyPress;
         openDialogUrl( ScriptURI + "?" + params );
         /* IE hack to get the dialog modal to reflow */
-        if ( document.all ) {
-            var container = DOM.getElement( "dialog-container" );
-            DOM.addClassName( container, "hidden" );
-            DOM.removeClassName( container, "hidden" );
+        if ( document.all && DOM.getElement( "dialog-container" ) ) {
+            DOM.addClassName( "dialog-container", "hidden" );
+            new Timer(function() {
+                DOM.removeClassName( "dialog-container", "hidden" );
+            }, 500, 1 );
         }
     },
 
