@@ -18,6 +18,13 @@
     <$mt:setvar name="submit_button_title" value="<__trans phrase="Save this page (s)" escape="html">"$>
     <$mt:setvar name="preview_button_title" value="<__trans phrase="Preview this page (v)" escape="html">"$>
     <$mt:setvar name="delete_button_title" value="<__trans phrase="Delete this page (x)" escape="html">"$>
+    <mt:if name="status_publish">
+        <mt:if name="entry_permalink">
+            <mt:setvarblock name="view_link">
+                <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View Page"></a></li>
+            </mt:setvarblock>
+        </mt:if>
+    </mt:if>
 <mt:else>
     <$mt:setvar name="page_title" value="<__trans phrase="Edit Entry">"$>
     <mt:if name="new_object">
@@ -35,6 +42,13 @@
     <$mt:setvar name="submit_button_title" value="<__trans phrase="Save this entry (s)" escape="html">"$>
     <$mt:setvar name="preview_button_title" value="<__trans phrase="Preview this entry (v)" escape="html">"$>
     <$mt:setvar name="delete_button_title" value="<__trans phrase="Delete this entry (x)" escape="html">"$>
+    <mt:if name="status_publish">
+        <mt:if name="entry_permalink">
+            <mt:setvarblock name="view_link">
+                <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View Entry"></a></li>
+            </mt:setvarblock>
+        </mt:if>
+    </mt:if>
 </mt:if>
 <mt:setvartemplate name="action_buttons">
     <button
@@ -90,6 +104,7 @@
             <mt:else>
                 <__trans phrase="This page has been saved.">
             </mt:if>
+            <$mt:var name="view_link"$>
         </mtapp:statusmsg>
     </mt:if>
 
@@ -98,6 +113,7 @@
             id="saved-changes"
             class="success">
             <__trans phrase="Your changes have been saved.">
+            <$mt:var name="view_link"$>
         </mtapp:statusmsg>
     </mt:if>
     
