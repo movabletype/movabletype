@@ -326,7 +326,8 @@ sub _new_entry {
     $entry->convert_breaks(defined $item->{mt_convert_breaks} ? $item->{mt_convert_breaks} : $blog->convert_paras);
     $entry->allow_comments($item->{mt_allow_comments})
         if exists $item->{mt_allow_comments};
-    $entry->title($item->{title} || first_n_text($item->{description}, const('LENGTH_ENTRY_TITLE_FROM_TEXT')));
+    $entry->title($item->{title})
+        if exists $item->{title};
 
     $class->_apply_basename($entry, $item, \%param);
 
