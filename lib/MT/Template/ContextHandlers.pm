@@ -4840,22 +4840,23 @@ sub _hdlr_comments {
         if (my $e = $ctx->stash('entry')) {
             ## Sort in descending order, then grab the first $n ($n most
             ## recent) comments.
+            $args{'sort'} = 'created_on';
+            $args{'direction'} = 'descend';
             my $comments = $e->comments(\%terms, \%args);
+            my $i = 0;
             if (@filters) {
                 COMMENTS: for my $c (@$comments) {
                     for (@filters) {
                         next COMMENTS unless $_->($c);
                     }
                     push @comments, $c;
+                    last if $n && ( $n <= ++$i );
                 }
+            } elsif ($n) {
+                my $max = $n - 1 > $#$comments ? $#$comments : $n - 1;
+                @comments = @$comments[0..$max];
             } else {
                 @comments = @$comments;
-            }
-            if ($n) {
-                my $max = $n - 1 > $#comments ? $#comments : $n - 1;
-                @comments = $so eq 'ascend' ?
-                    @comments[$#comments-$max..$#comments] :
-                    @comments[0..$max];
             }
         } else {
             $args{'sort'} = 'created_on';
