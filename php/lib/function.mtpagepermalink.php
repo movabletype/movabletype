@@ -8,6 +8,8 @@
 require_once('function.mtentrypermalink.php');
 function smarty_function_mtpagepermalink($args, &$ctx) {
     $entry = $ctx->stash('entry');
+    if (!$entry)
+        return '';
     $blog = $ctx->stash('blog');
     $at = 'Page';
     if (!isset($args['blog_id']))

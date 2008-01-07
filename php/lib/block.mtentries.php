@@ -78,7 +78,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
     }
 
     $ctx->stash('conditional', $entries ? 1 : 0);
-    if (!$entries) {
+    if (!isset($entries)) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
     }
 
