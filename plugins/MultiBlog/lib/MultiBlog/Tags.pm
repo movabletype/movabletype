@@ -43,6 +43,7 @@ sub MultiBlog {
     }
 
     # Filter MultiBlog args through access controls
+    require MultiBlog;
     if ( ! MultiBlog::filter_blogs_from_args($plugin, $ctx, $args) ) {
         return $ctx->errstr ? $ctx->error($ctx->errstr) : '';
     }
