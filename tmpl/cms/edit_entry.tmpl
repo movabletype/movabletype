@@ -966,13 +966,13 @@ function listPreviousPings () {
 </mt:setvarblock>
 <mt:setvarblock name="html_body" append="1">
 <mt:include name="include/category_selector.tmpl">
+<mt:if name="dirty">
 <script type="text/javascript">
     /* <![CDATA[ */
-        <mt:if name="dirty">
         MT.App.dirty = true;
-        </mt:if>
     /* ]]> */
 </script>
+</mt:if>
 <mt:include name="include/calendar.tmpl">
     <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector <mt:if name="object_type" eq="page">autolayout-flyout-smart<mt:else>autolayout-flyout-left-from-right</mt:if> flyout"><div id="<$mt:var name="container_type" lower_case="1"$>-selector-inner" class="inner">
         <h3><$mt:var name="container_label_plural"$></h3>
