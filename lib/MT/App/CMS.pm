@@ -4708,7 +4708,8 @@ sub build_author_table {
         push @author, $row;
     }
     return [] unless @author;
-    my $entry_class = $app->model('entry');
+    my $type = $app->param('entry_type') || 'entry';
+    my $entry_class = $app->model($type);
     my $author_entry_count_iter =
       $entry_class->count_group_by( { author_id => [ keys %entry_count_refs ] },
         { group => ['author_id'] } );
@@ -16278,6 +16279,7 @@ sub search_replace {
     $param->{screen_class} = "search-replace";
     $param->{screen_id}    = "search-replace";
     $param->{search_tabs}  = $app->search_apis($blog_id ? 'blog' : 'system');
+    $param->{entry_type}  = $app->param('entry_type');
     my $tmpl = $app->load_tmpl( 'search_replace.tmpl', $param );
     my $placeholder = $tmpl->getElementById('search_results');
     $placeholder->innerHTML(delete $param->{results_template});

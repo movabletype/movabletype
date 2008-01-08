@@ -67,7 +67,11 @@ function enableFilterButton(fld) {
     if (fld && (fld.id == "author_id-val" || fld.id == "asset_id-val")) {
         var opt = fld.options[fld.selectedIndex];
         if (opt.id == 'filter-user-search') {
-            window.location = ScriptURI + '?__mode=search_replace&_type=author';
+<mt:if name="object_type" eq="entry">
+            window.location = ScriptURI + '?__mode=search_replace&_type=author&entry_type=entry';
+<mt:else>
+            window.location = ScriptURI + '?__mode=search_replace&_type=author&entry_type=page';
+</mt:if>
         }
         else if (opt.id == 'filter-asset-search') {
             window.location = ScriptURI + '?__mode=search_replace&_type=asset';

@@ -139,6 +139,9 @@
 <mt:if name="blog_id">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 </mt:if>
+<mt:if name="entry_type">
+    <input type="hidden" name="entry_type" value="<mt:var name="entry_type">" />
+</mt:if>
 <mt:if name="searched"><mt:if name="search">
     <input type="hidden" name="orig_search" value="<mt:var name="search" escape="html">" /></mt:if>
 </mt:if>
