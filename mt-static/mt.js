@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) Open Source (C) 2001-2007 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -278,7 +278,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
             if (opt['dialog']) {
                 f.target = "dialog_iframe";
                 show("dialog-container");
-                DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
+                window.onkeypress = dialogKeyPress;
             }
         }
         for (var arg in args) {
@@ -356,7 +356,7 @@ function doItemsAreNotJunk (f, type, plural, nameRestrict) {
 function dialogKeyPress(e) {
     if (e.keyCode == 27) {
         // escape key...
-        DOM.removeEventListener( document.body, "keypress", dialogKeyPress, true );
+        window.onkeypress = null;
         closeDialog();
     }
 }
@@ -368,7 +368,7 @@ function openDialog(f, mode, params) {
     url += '&__type=dialog';
     show("dialog-container");
     // handle escape key for closing modal dialog
-    DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
+    window.onkeypress = dialogKeyPress;
     openDialogUrl(url);
     if ( document.all && DOM.getElement( "dialog-container" ) ) {
         DOM.addClassName( "dialog-container", "hidden" );
@@ -1598,7 +1598,7 @@ MT.App = new Class( App, {
         show("dialog-container");
         /* TODO remove this cruft */
         /*  handle escape key for closing modal dialog */
-        DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
+        window.onkeypress = dialogKeyPress;
         openDialogUrl( ScriptURI + "?" + params );
         /* IE hack to get the dialog modal to reflow */
         if ( document.all && DOM.getElement( "dialog-container" ) ) {
@@ -2743,8 +2743,8 @@ extend( MT.App.CodePress, {
         css : 'CSS', 
         generic : 'Generic',
         html : 'HTML',
-        javascript : 'JavaScript', 
         java : 'Java', 
+        javascript : 'JavaScript', 
         perl : 'Perl', 
         ruby : 'Ruby',  
         php : 'PHP', 
