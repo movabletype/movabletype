@@ -425,13 +425,11 @@
 </div>
 <div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
     <mt:if name="object_type" eq="entry">
-        <mt:if name="can_edit_categories">
         <mtapp:widget
             id="entry-category-widget"
             label="<__trans phrase="Categories">">
             <$mt:var name="category_setting"$>
         </mtapp:widget>
-        </mt:if>
     </mt:if>
 </div>
 <div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> class="hidden"</mt:unless>>
@@ -980,7 +978,7 @@ function listPreviousPings () {
         <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="category-selector-list">
         </div>
 <mt:if name="object_type" eq="entry">
-        <a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add new"></a>
+        <mt:if name="can_edit_categories"><a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add new"></a></mt:if>
 </mt:if>
         <a class="add-category-ok-link" href="javascript:void(0)" mt:command="close"><__trans phrase="OK"></a>
     </div></div><!-- /category-selector -->
