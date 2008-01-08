@@ -1,7 +1,7 @@
 # Copyright 2003-2007 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -2471,7 +2471,7 @@ use vars qw( @ISA %Lexicon );
 	'Nov' => '11月',
 	'Dec' => '12月',
 	'OK' => 'OK',
-	'[_1:calMonth] [_2:calYear]' => '[_2:calYear]年[_1:calMonth]月',
+	'[_1:calMonth] [_2:calYear]' => '[_2:calYear]年[_1:calMonth]',
 
 ## tmpl/cms/include/notification_table.tmpl
 	'Date Added' => '日付',
