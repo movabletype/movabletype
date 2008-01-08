@@ -631,28 +631,34 @@ sub init_request {
         }
     }
 
-    if (   ( $mode ne 'logout' )
-        && ( $mode ne 'start_recover' )
-        && ( $mode ne 'recover' )
-        && ( $mode ne 'upgrade' ) )
-    {
-        my $schema  = $app->config('SchemaVersion');
-        my $version = $app->config('MTVersion');
-        if ( !$schema  || ( $schema  < $app->schema_version )
-          || ( ( !$version || ( $version < $app->version_number ) ) 
-            && $app->config->NotifyUpgrade ) ) {
-            $app->{requires_login} = 0;
-            $app->mode('upgrade');
-        }
-        else {
-            foreach my $plugin (@MT::Components) {
-                if ( $plugin->needs_upgrade ) {
-                    $app->{requires_login} = 0;
-                    $app->mode('upgrade');
-                    last;
+    unless (defined $app->{upgrade_required}) {
+        $app->{upgrade_required} = 0;
+        if (   ( $mode ne 'logout' )
+            && ( $mode ne 'start_recover' )
+            && ( $mode ne 'recover' )
+            && ( $mode ne 'upgrade' ) )
+        {
+            my $schema  = $app->config('SchemaVersion');
+            my $version = $app->config('MTVersion');
+            if ( !$schema  || ( $schema  < $app->schema_version )
+              || ( ( !$version || ( $version < $app->version_number ) ) 
+                && $app->config->NotifyUpgrade ) ) {
+                $app->{upgrade_required} = 1;
+            }
+            else {
+                foreach my $plugin (@MT::Components) {
+                    if ( $plugin->needs_upgrade ) {
+                        $app->{upgrade_required} = 1;
+                        last;
+                    }
                 }
             }
         }
+    }
+
+    if ($app->{upgrade_required}) {
+        $app->{requires_login} = 0;
+        $app->mode('upgrade');
     }
 }
 
