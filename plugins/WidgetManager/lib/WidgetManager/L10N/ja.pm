@@ -114,6 +114,7 @@ use vars qw( %Lexicon );
 	'Blogs that link here' => 'リンクしているブログ',
 
 ## plugins/WidgetManager/default_widgets/recent_comments.mtml
+	'Recent Comments' => '最近のコメント',
 	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] から [_3] に対するコメント</a>: [_4]',
 
 ## plugins/WidgetManager/WidgetManager.pl
