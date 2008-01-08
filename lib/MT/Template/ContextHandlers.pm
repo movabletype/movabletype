@@ -44,6 +44,8 @@ sub core_tags {
             'Else' => \&_hdlr_else,
             'ElseIf' => \&_hdlr_elseif,
 
+            'IfImageSupport?' => \&_hdlr_if_image_support,
+
             'EntryIfTagged?' => \&_hdlr_entry_if_tagged,
 
             'IfArchiveTypeEnabled?' => \&_hdlr_archive_type_enabled,
@@ -1701,6 +1703,17 @@ sub _hdlr_get_var {
         return JSON::objToJson($value);
     }
     return defined $value ? $value : "";
+}
+
+sub _hdlr_if_image_support {
+    my ($ctx, $args, $cond) = @_;
+    my $if_image_support = MT->request('if_image_support');
+    if (!defined $if_image_support) {
+        require MT::Image;
+        $if_image_support = defined MT::Image->new ? 1 : 0;
+        MT->request('if_image_support', $if_image_support);
+    }
+    return $if_image_support;
 }
 
 sub _hdlr_build_template_id {
