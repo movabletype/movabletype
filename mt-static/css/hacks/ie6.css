@@ -18,3 +18,7 @@
 #new_entry_prefs {
     height: 1%;
 }
+
+#content-nav ul li a {
+    height: 1%;
+}
