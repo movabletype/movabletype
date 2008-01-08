@@ -6094,7 +6094,7 @@ sub edit_object {
                 $app->add_breadcrumb( $app->translate('Settings') );
             }
             ( my $offset = $obj->server_offset ) =~ s![-\.]!_!g;
-            $offset =~ s!_0+$!!;
+            $offset =~ s!_0+$!!; # fix syntax highlight ->!
             $param{ 'server_offset_' . $offset } = 1;
             if ( $output eq 'cfg_comments.tmpl' ) {
                 ## Load text filters.
@@ -6741,7 +6741,7 @@ sub edit_object {
         elsif ( $type eq 'blog' ) {
             $app->add_breadcrumb( $app->translate('New Blog') );
             ( my $tz = $cfg->DefaultTimezone ) =~ s![-\.]!_!g;
-            $tz =~ s!_00$!!;
+            $tz =~ s!_00$!!; # fix syntax highlight ->!
             $param{ 'server_offset_' . $tz } = 1;
             $param{'can_edit_config'}        = $app->user->can_create_blog;
             $param{'can_set_publish_paths'}  = $app->user->can_create_blog;
@@ -7070,26 +7070,15 @@ sub edit_object {
         # template language
         $param{template_lang} = 'html';
         if ( $obj && $obj->outfile ) {
-            if ( $obj->outfile =~ m/\.js$/ ) {
-                $param{template_lang} = 'js';
-            }
-            elsif ( $obj->outfile =~ m/\.css$/ ) {
-                $param{template_lang} = 'css';
-            }
-            elsif ( $obj->outfile =~ m/\.js$/ ) {
-                $param{template_lang} = 'javascript';
-            }
-            elsif ( $obj->outfile =~ m/\.html$/ ) {
-                $param{template_lang} = 'html';
-            }
-            elsif ( $obj->outfile =~ m/\.php$/ ) {
-                $param{template_lang} = 'php';
-            }
-            elsif ( $obj->outfile =~ m/\.pl$/ ) {
-                $param{template_lang} = 'perl';
-            }
-            elsif ( $obj->outfile =~ m/\.asp$/ ) {
-                $param{template_lang} = 'asp';
+            if ( $obj->outfile =~ m/\.(css|js|html|php|pl|asp)$/ ) {
+                $param{template_lang} = {
+                    css => 'css',
+                    js => 'javascript',
+                    html => 'html',
+                    php => 'php',
+                    pl => 'perl',
+                    asp => 'asp',
+                }->{$1};
             }
         }
     }
