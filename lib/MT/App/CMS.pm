@@ -15808,21 +15808,7 @@ sub _upload_file {
     $app->validate_magic() or return;
 
     my $q = $app->param;
-    my ( $fh, $no_upload );
-    if ( $ENV{MOD_PERL} ) {
-        my $up = $q->upload('file');
-        $no_upload = !$up || !$up->size;
-        $fh = $up->fh if $up;
-    }
-    else {
-        ## Older versions of CGI.pm didn't have an 'upload' method.
-        eval { $fh = $q->upload('file') };
-        if ( $@ && $@ =~ /^Undefined subroutine/ ) {
-            $fh = $q->param('file');
-        }
-        $no_upload = !$fh;
-    }
-    my $info = $q->uploadInfo($fh);
+    my ($fh, $info) = $app->upload_info('file');
     my $mimetype;
     if ($info) {
         $mimetype = $info->{'Content-Type'};
@@ -15838,7 +15824,7 @@ sub _upload_file {
     );
     return $app->start_upload( %param,
         error => $app->translate("Please select a file to upload.") )
-      if $no_upload && !$has_overwrite;
+      if !$fh && !$has_overwrite;
     my $basename = $q->param('file') || $q->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
@@ -17075,29 +17061,9 @@ sub do_import {
 
     $app->validate_magic() or return;
 
-    my ( $fh, $no_upload );
-    if ( $ENV{MOD_PERL} ) {
-        my $up = $q->upload('file');
-        $no_upload = !$up || !$up->size;
-        $fh = $up->fh if $up;
-    }
-    else {
-        ## Older versions of CGI.pm didn't have an 'upload' method.
-        eval { $fh = $q->upload('file') };
-        if ( $@ && $@ =~ /^Undefined subroutine/ ) {
-            $fh = $q->param('file');
-        }
-        $no_upload = !$fh;
-    }
-
+    my ($fh) = $app->upload_info('file');
     my $encoding = $q->param('encoding');
-    my $stream;
-    if ($no_upload) {
-        $stream = $app->config('ImportPath');
-    }
-    else {
-        $stream = $fh;
-    }
+    my $stream = $fh ? $fh : $app->config('ImportPath');
 
     $app->{no_print_body} = 1;
 
@@ -17105,7 +17071,7 @@ sub do_import {
     $app->send_http_header('text/html');
 
     my $param;
-    $param = { import_as_me => $import_as_me, import_upload => !$no_upload };
+    $param = { import_as_me => $import_as_me, import_upload => ($fh ? 0 : 1) };
 
     $app->print( $app->build_page( 'include/import_start.tmpl', $param ) );
 
@@ -17147,9 +17113,7 @@ sub do_import {
 
     $app->print( $app->build_page( "include/import_end.tmpl", $param ) );
 
-    if ( !$no_upload ) {
-        close $fh;
-    }
+    close $fh if $fh;
     1;
 }
 
@@ -19173,20 +19137,7 @@ sub restore {
 
     my $q = $app->param;
 
-    my ( $fh, $no_upload );
-    if ( $ENV{MOD_PERL} ) {
-        my $up = $q->upload('file');
-        $no_upload = !$up || !$up->size;
-        $fh = $up->fh if $up;
-    }
-    else {
-        ## Older versions of CGI.pm didn't have an 'upload' method.
-        eval { $fh = $q->upload('file') };
-        if ( $@ && $@ =~ /^Undefined subroutine/ ) {
-            $fh = $q->param('file');
-        }
-        $no_upload = !$fh;
-    }
+    my ($fh) = $app->upload_info('file');
     my $uploaded = $q->param('file');
     my ( $volume, $directories, $uploaded_filename ) =
       File::Spec->splitpath($uploaded)
@@ -19218,7 +19169,7 @@ sub restore {
 
     my $error = '';
     my $result;
-    if ($no_upload) {
+    if (!$fh) {
         $param->{restore_upload} = 0;
         my $dir = $app->config('ImportPath');
         my ( $blog_ids, $asset_ids ) = $app->restore_directory( $dir, \$error );
@@ -19276,7 +19227,7 @@ sub restore {
                 $app->print( $error );
                 $app->print(
                     $app->build_page( "restore_end.tmpl", $param ) );
-                close $fh if !$no_upload;
+                close $fh if $fh;
                 return 1;
             }
             my $temp_dir = $app->config('TempDir');
@@ -19320,7 +19271,7 @@ sub restore {
     }
 
     $app->print( $app->build_page( "restore_end.tmpl", $param ) );
-    close $fh if !$no_upload;
+    close $fh if $fh;
     1;
 }
 
@@ -19554,7 +19505,7 @@ sub restore_upload_manifest {
       . '&amp;redirect=1';
     $app->load_tmpl( 'restore.tmpl', $param );
 
-    #close $fh if !$no_upload;
+    #close $fh if $fh;
 }
 
 sub dialog_restore_upload {
@@ -19581,20 +19532,7 @@ sub dialog_restore_upload {
     $deferred = JSON::jsonToObj( $q->param('deferred_json') )
       if $q->param('deferred_json');
 
-    my ( $fh, $no_upload );
-    if ( $ENV{MOD_PERL} ) {
-        my $up = $q->upload('file');
-        $no_upload = !$up || !$up->size;
-        $fh = $up->fh if $up;
-    }
-    else {
-        ## Older versions of CGI.pm didn't have an 'upload' method.
-        eval { $fh = $q->upload('file') };
-        if ( $@ && $@ =~ /^Undefined subroutine/ ) {
-            $fh = $q->param('file');
-        }
-        $no_upload = !$fh;
-    }
+    my ($fh) = $app->upload_info('file');
 
     my $param = {};
     $param->{start}          = $q->param('start') || 0;
@@ -19624,7 +19562,7 @@ sub dialog_restore_upload {
         }
     }
 
-    if ($no_upload) {
+    if (!$fh) {
         $param->{error} = $app->translate('File was not uploaded.')
           if !( $q->param('redirect') );
         return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
@@ -19791,7 +19729,7 @@ sub dialog_restore_upload {
     MT->run_callbacks('restore', $objects, $deferred, \@errors, sub { $app->_progress(@_) });
 
     $app->print( $app->build_page( 'dialog/restore_end.tmpl', $param ) );
-    close $fh if !$no_upload;
+    close $fh if $fh;
 }
 
 sub restore_premature_cancel {

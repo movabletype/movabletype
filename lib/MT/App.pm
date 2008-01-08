@@ -1901,6 +1901,36 @@ sub request_method {
     $app->{request_method};
 }
 
+sub upload_info {
+    my $app = shift;
+    my ($param_name) = @_;
+    my $q = $app->param;
+
+    my ($fh, $info, $no_upload);
+    if ($ENV{MOD_PERL}) {
+        if (my $up = $q->upload($param_name)) {
+            $fh        =  $up->fh;
+            $info      =  $up->info;
+            $no_upload = !$up->size;
+        }
+        else {
+            $no_upload = 1;
+        }
+    }
+    else {
+        ## Older versions of CGI.pm didn't have an 'upload' method.
+        eval { $fh = $q->upload($param_name) };
+        if ( $@ && $@ =~ /^Undefined subroutine/ ) {
+            $fh = $q->param($param_name);
+        }
+        $no_upload = !$fh;
+        $info = $q->uploadInfo($fh);
+    }
+
+    return if $no_upload;
+    return ($fh, $info);
+}
+
 sub cookie_val {
     my $app = shift;
     my $cookies = $app->cookies;
