@@ -992,11 +992,11 @@ sub _hdlr_app_widget {
     my $label = $args->{label};
     my $class = $args->{class} || $id;
     my $label_link = $args->{label_link} || "";
-    my $closable = $args->{can_close} ? 1 : 0;
     my $label_onclick = $args->{label_onclick} || "";
-    my $close_html = '';
+    my $header_action = $args->{header_action} || "";
+    my $closable = $args->{can_close} ? 1 : 0;
     if ($closable) {
-        $close_html = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id'); return false;" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
+        $header_action = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id'); return false;" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
     }
     my $widget_header = "";
     if ($label_link && $label_onclick) {
@@ -1050,7 +1050,7 @@ EOT
     <div class="widget-inner inner">
         <div class="widget-header $header_class">
             <div class="widget-header-inner pkg">
-                $close_html
+                $header_action
                 $widget_header
             </div>
         </div>

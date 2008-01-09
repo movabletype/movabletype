@@ -22,3 +22,7 @@
 #content-nav ul li a {
     height: 1%;
 }
+
+#folder-selector {
+    left: 0;
+}

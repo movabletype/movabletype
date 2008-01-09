@@ -28,6 +28,11 @@ ul.main-nav-list ul a {
     background: url('../../images/spacer.gif') no-repeat left center;
 }
 
+#category-field .field-content {
+    width: 190px;
+}
+
+
 #entryfield-options li input.cb,
 #entryfield-options li input.rb { margin: -2px -4px; }
 
@@ -101,3 +106,4 @@ button.big-button {
     top: 1px;
     margin-bottom: 0;
 }
+

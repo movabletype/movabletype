@@ -220,16 +220,7 @@
         label="$container_label"
         label_class="$container_label_class"
         help_page="entries"
-        help_section="entry_categories"
-        content_class="field-content-text">
-        <mt:if name="object_type" eq="page">
-        <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Add folder">"><__trans phrase="Add"/></a>
-        <div mt:delegate="category-list" id="category-list"></div>
-        <mt:else>
-        <a href="javascript:void(0);" class="add-new-category-link" mt:command="open-category-selector" title="<__trans phrase="Add category">"><__trans phrase="Add"/></a>
-        <div mt:delegate="category-list" id="category-list"></div>
-        </mt:if>
-        <input id="category-ids" type="hidden" name="category_ids" value="<$mt:var name="selected_category_loop" glue=","$>" />
+        help_section="entry_categories">
     <script type="text/javascript">
         /* <![CDATA[ */
             MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
@@ -278,6 +269,15 @@
             </mt:section>';
         /* ]]> */
     </script>
+        <mt:if name="object_type" eq="page">
+        <div mt:delegate="category-list" id="category-list"></div>
+        <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Add folder">"><__trans phrase="Change Folder"/></a>
+        </mt:if>
+        <mt:include name="include/category_selector.tmpl">
+        <mt:if name="object_type" eq="entry">
+        <div mt:delegate="category-list" id="category-list"></div>
+        </mt:if>
+        <input id="category-ids" type="hidden" name="   " value="<$mt:var name="selected_category_loop" glue=","$>" />
     </mtapp:setting>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
@@ -425,9 +425,14 @@
 </div>
 <div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
     <mt:if name="object_type" eq="entry">
+        <mt:setvarblock name="header_action">
+            <a href="javascript:void(0)" class="add-new-category-link" mt:command="open-category-selector" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
+            <a href="javascript:void(0)" class="add-category-toggle-link" mt:command="close"><__trans phrase="close"></a>
+        </mt:setvarblock>
         <mtapp:widget
             id="entry-category-widget"
-            label="<__trans phrase="Categories">">
+            label="<__trans phrase="Categories">"
+            header_action="$header_action">
             <$mt:var name="category_setting"$>
         </mtapp:widget>
     </mt:if>
@@ -963,25 +968,14 @@ function listPreviousPings () {
         </script>
 </mt:setvarblock>
 <mt:setvarblock name="html_body" append="1">
-<mt:include name="include/category_selector.tmpl">
-<mt:if name="dirty">
-<script type="text/javascript">
-    /* <![CDATA[ */
-        MT.App.dirty = true;
-    /* ]]> */
-</script>
-</mt:if>
-<mt:include name="include/calendar.tmpl">
-    <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector <mt:if name="object_type" eq="page">autolayout-flyout-smart<mt:else>autolayout-flyout-left-from-right</mt:if> flyout"><div id="<$mt:var name="container_type" lower_case="1"$>-selector-inner" class="inner">
-        <h3><$mt:var name="container_label_plural"$></h3>
-        <div id="add-category-form" class="add-category-form hidden"><input id="add-category-input" class="add-category-input input-hint" type="text" value="<$mt:var name="add_container_label"$>" mt:default="<$mt:var name="add_container_label_name"$>" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span>&nbsp;&nbsp;&nbsp;</a></div>
-        <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="category-selector-list">
-        </div>
-<mt:if name="object_type" eq="entry">
-        <mt:if name="can_edit_categories"><a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add new"></a></mt:if>
-</mt:if>
-        <a class="add-category-ok-link" href="javascript:void(0)" mt:command="close"><__trans phrase="OK"></a>
-    </div></div><!-- /category-selector -->
+    <mt:if name="dirty">
+    <script type="text/javascript">
+        /* <![CDATA[ */
+            MT.App.dirty = true;
+        /* ]]> */
+    </script>
+    </mt:if>
+    <mt:include name="include/calendar.tmpl">
 </mt:setvarblock>
 <mt:setvarblock name="html_body_footer">
     <$mt:setvar name="show_display_options_link" value="1"$>

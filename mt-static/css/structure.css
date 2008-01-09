@@ -3282,16 +3282,29 @@ body.preview-screen {
 /* Category Selector ---------------------------------------------------------------------------------- */
 
 .category-selector {
-    position: absolute;
-    text-align: left;
+    width: 280px;
+    background-color: #cddee7;
+}
+#folder-selector {
+    position: relative;
+    left: -90px;
+}
+
+#category-field .widget-content-inner {
+    padding-top: 0;
+}
+
+.category-selector-header {
+    padding: 2px 4px;
 }
 
 .category-selector-list {
     border: 1px solid #cddee7;
     background: #fff;
-    height: 200px;
+    height: 150px;
     overflow: scroll;
     overflow-x: hidden;
+    clear: both;
 }
 
 .category-selector-list .list-item {
@@ -3340,9 +3353,6 @@ body.preview-screen {
 }
 
 .add-category-new-parent-link {
-    position: absolute;
-    top: 3px;
-    right: 0;
     padding-left: 11px;
     background: url('../images/status_icons/create.gif') no-repeat left center;
 }
@@ -3360,14 +3370,19 @@ body.preview-screen {
     margin-left: 2px;
 }
 
-.add-category-ok-link {
-    display: block;
-    margin-top: 3px;
-    text-align: center;
+.add-category-toggle-link {
+    float: right;
+    position: relative;
+    right: 2px;
+    top: 9px;
+}
+
+.edit-page .add-category-toggle-link {
+    position: static;
 }
 
 #category-list {
-    margin: 0;
+    margin-top: 4px;
 }
 
 #category-list a.primary,
@@ -3391,15 +3406,23 @@ body.preview-screen {
     display: none;
 }
 
-.add-new-category-link,
-.change-folder-link {
+.add-new-category-link {
     float: right;
     padding-left: 11px;
     background: url(../images/status_icons/create.gif) no-repeat left center;
+    position: relative;
+    right: 2px;
+    top: 9px;
 }
 
 .edit-page .add-new-category-link {
     float: none;
+    position: static;
+}
+
+.change-folder-link {
+    padding-left: 11px;
+    background: url(../images/status_icons/create.gif) no-repeat left center;
 }
 
 
