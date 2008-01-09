@@ -12416,6 +12416,15 @@ sub list_entries {
     my @return_args = grep { $_ !~ /offset=\d/ } split /&/, $param->{return_args};
     $param{return_args} = join '&', @return_args;
     $param{return_args} .= "&offset=$offset" if $offset;
+    $param{screen_id} = "list-entry";
+    $param{screen_id} = "list-page"
+      if $param{object_type} eq "page";
+    if ( $param{is_power_edit} ) {
+        $param{screen_id} = "batch-edit-entry";
+        $param{screen_id} = "batch-edit-page"
+          if $param{object_type} eq "page";
+        $param{screen_class} .= " batch-edit";
+    }
     $app->load_tmpl( "list_entry.tmpl", \%param );
 }
 

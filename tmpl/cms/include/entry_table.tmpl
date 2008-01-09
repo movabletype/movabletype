@@ -51,7 +51,12 @@
     </mt:if>
 </mt:setvarblock>
 
-<mtapp:listing>
+<mt:if name="is_power_edit">
+    <$mt:setvar name="hide_pager" value="1"$>
+</mt:if>
+
+<mtapp:listing
+    hide_pager="$hide_pager">
     <mt:if __first__>
         <thead>
             <tr>

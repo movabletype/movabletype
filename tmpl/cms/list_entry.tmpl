@@ -1,8 +1,14 @@
 <mt:if name="object_type" eq="entry">
     <$mt:setvar name="page_title" value="<__trans phrase="Manage Entries">"$>
+    <mt:if name="is_power_edit">
+        <$mt:setvar name="page_title" value="<__trans phrase="Batch Edit Entries">"$>
+    </mt:if>
     <$mt:setvar name="object_type_feed" value="<__trans phrase="Entries Feed">"$>
 <mt:else>
     <$mt:setvar name="page_title" value="<__trans phrase="Manage Pages">"$>
+    <mt:if name="is_power_edit">
+        <$mt:setvar name="page_title" value="<__trans phrase="Batch Edit Pages">"$>
+    </mt:if>
     <$mt:setvar name="object_type_feed" value="<__trans phrase="Pages Feed">"$>
 </mt:if>
 <mt:setvarblock name="content_header">
@@ -151,13 +157,7 @@ TC.attachLoadEvent( init );
 </mt:setvarblock>
 
 <mt:setvarblock name="list_filter_form">
-<mt:if name="is_power_edit">
-    <div class="filter">
-        <div id="filter-title">
-            &laquo;&nbsp;<a href="<mt:var name="script_url">?__mode=<mt:var name="mode">&amp;blog_id=<mt:var name="blog_id">&amp;is_power_edit=0"><__trans phrase="Go back"></a>
-        </div>
-    </div>
-<mt:else>
+<mt:unless name="is_power_edit">
     <div class="listing-filter">
         <div class="listing-filter-inner inner pkg">
 <form id="filter-form" method="get" action="<mt:var name="mt_url">">
@@ -270,7 +270,7 @@ TC.attachLoadEvent( init );
 </form>
     </div>
 </div>
-</mt:if>
+</mt:unless>
 </mt:setvarblock>
 
 <$mt:include name="include/header.tmpl"$>

@@ -837,7 +837,8 @@ li#config-menu {
 #list-author #main-content,
 #list-role #main-content,
 #list-category #main-content,
-#list-folder #main-content {
+#list-folder #main-content,
+.batch-edit #main-content {
     padding-top: 5px;
 }
 
