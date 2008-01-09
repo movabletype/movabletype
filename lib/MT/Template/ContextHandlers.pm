@@ -4548,7 +4548,7 @@ sub _hdlr_remote_sign_in_link {
     my $signon_url = $cfg->SignOnURL;
     my $path = _hdlr_cgi_path($ctx);
     my $comment_script = $cfg->CommentScript;
-    my $static_arg = $args->{static} ? $args->{static} : "static=0";
+    my $static_arg = $args->{static} ? "static=" . $args->{static} : "static=0";
     my $e = $ctx->stash('entry');
     my $tk_version = $cfg->TypeKeyVersion ? "&amp;v=" . $cfg->TypeKeyVersion : "";
     my $language = "&amp;lang=" . ($args->{lang} || $cfg->DefaultLanguage || $blog->language);
