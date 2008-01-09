@@ -278,7 +278,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
             if (opt['dialog']) {
                 f.target = "dialog_iframe";
                 show("dialog-container");
-                window.onkeypress = dialogKeyPress;
+                DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
             }
         }
         for (var arg in args) {
@@ -356,7 +356,7 @@ function doItemsAreNotJunk (f, type, plural, nameRestrict) {
 function dialogKeyPress(e) {
     if (e.keyCode == 27) {
         // escape key...
-        window.onkeypress = null;
+        DOM.removeEventListener( document.body, "keypress", dialogKeyPress, true );
         closeDialog();
     }
 }
@@ -368,7 +368,7 @@ function openDialog(f, mode, params) {
     url += '&__type=dialog';
     show("dialog-container");
     // handle escape key for closing modal dialog
-    window.onkeypress = dialogKeyPress;
+    DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
     openDialogUrl(url);
     if ( document.all && DOM.getElement( "dialog-container" ) ) {
         DOM.addClassName( "dialog-container", "hidden" );
@@ -1598,7 +1598,7 @@ MT.App = new Class( App, {
         show("dialog-container");
         /* TODO remove this cruft */
         /*  handle escape key for closing modal dialog */
-        window.onkeypress = dialogKeyPress;
+        DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
         openDialogUrl( ScriptURI + "?" + params );
         /* IE hack to get the dialog modal to reflow */
         if ( document.all && DOM.getElement( "dialog-container" ) ) {
@@ -2746,8 +2746,8 @@ extend( MT.App.CodePress, {
         css : 'CSS', 
         generic : 'Generic',
         html : 'HTML',
-        java : 'Java', 
         javascript : 'JavaScript', 
+        java : 'Java', 
         perl : 'Perl', 
         ruby : 'Ruby',  
         php : 'PHP', 
