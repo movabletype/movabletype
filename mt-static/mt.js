@@ -2325,6 +2325,9 @@ MT.App.CodePress = new Class( Object, {
         if ( t && t.value && t.value != "" ) {
             log( 'codepress editor off: '+t.value);
             this.toggleOff();
+        } else if ( !t && navigator.userAgent.toLowerCase().match( /opera/ ) ) {
+            log('opera detected, defaulting to codpress: off');
+            this.toggleOff();
         }
     },
 
