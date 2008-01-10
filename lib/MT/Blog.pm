@@ -112,6 +112,7 @@ __PACKAGE__->install_meta({
         'nwc_smart_replace',
         'nwc_replace_field',
         'template_set',
+        'page_layout',
     ],
 });
 

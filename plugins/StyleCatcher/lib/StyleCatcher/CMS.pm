@@ -262,11 +262,7 @@ sub apply {
     my $header =
 '/* This is the StyleCatcher theme addition. Do not remove this block. */';
     my $footer = '/* end StyleCatcher imports */';
-    my $layout_str = '';
-    if ($layout && ($layout =~ m/^[-\w]+$/)) {
-        $layout_str = qq{/* Selected Layout: <MTSetVar name="page_layout" value="$layout"> */\n};
-    }
-    my $styles = $header . "\n" . $layout_str . <<"EOT" . $footer;
+    my $styles = $header . "\n" . <<"EOT" . $footer;
 \@import url($url2);
 \@import url($url);
 EOT
@@ -301,6 +297,11 @@ EOT
 
     # Putting the stylesheet back together again
     $tmpl->save or return $app->json_error( $tmpl->errstr );
+
+    my $blog = MT->model('blog')->load($blog_id)    
+      or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
+    $blog->page_layout($layout);
+    $blog->save();
 
     # rebuild only the stylesheet! forcibly. with prejudice.
     $app->rebuild_indexes(

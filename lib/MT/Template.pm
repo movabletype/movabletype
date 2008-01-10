@@ -52,7 +52,7 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 __PACKAGE__->install_meta({
-    columns => ['last_rebuild_time'],
+    columns => ['last_rebuild_time', 'page_layout'],
 });
 __PACKAGE__->add_trigger('pre_remove' => \&pre_remove_children);
 
@@ -226,6 +226,21 @@ sub build {
             $ctx->stash('blog_id', $blog->id);
         }
         MT->config->TimeOffset($blog->server_offset);
+        $ctx->var( 'page_layout', $blog->page_layout )
+            if $blog->page_layout;
+    }
+    $ctx->var( 'page_layout', $tmpl->page_layout )
+        if $tmpl->page_layout;
+    if (my $layout = $ctx->var('page_layout')) {
+        my $columns = {
+            'layout-wt'  => 2,
+            'layout-tw'  => 2,
+            'layout-wm'  => 2,
+            'layout-mw'  => 2,
+            'layout-wtt' => 3,
+            'layout-twt' => 3,
+        }->{$layout};
+        $ctx->var( 'page_columns', $columns ) if $columns;
     }
     defined(my $res = $build->build($ctx, $tokens, $cond)) or
         return $tmpl->error(MT->translate(
