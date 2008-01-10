@@ -36,6 +36,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             }
             if (isset($name)) {
                 $value = $ctx->__stash['vars'][$name];
+                require_once("MTUtil.php");
                 if (is_hash($value)) {
                     if ( isset($key) ) {
                         if ($key != chr(0)) {

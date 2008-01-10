@@ -24,9 +24,12 @@ function smarty_block_mtcommentreplies($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('comment_order_num');
     }
 
-    $ctx->stash('conditional', $comments ? 1 : 0);
-    if (!$comments) {
-        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+    $ctx->stash('conditional', empty($comments) ? 0 : 1);
+    if (empty($comments)) {
+        $ret = $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+        if (!$repeat)
+              $ctx->restore($localvars);
+        return $ret;
     }
 
     if ($counter < count($comments)) {

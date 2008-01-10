@@ -77,9 +77,12 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $ctx->stash('entries', $entries);
     }
 
-    $ctx->stash('conditional', $entries ? 1 : 0);
-    if (!isset($entries)) {
-        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+    $ctx->stash('conditional', empty($entries) ? 0 : 1);
+    if (empty($entries)) {
+        $ret = $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+        if (!$repeat)
+              $ctx->restore($localvars);
+        return $ret;
     }
 
     $ctx->stash('_entries_glue', $args['glue']);

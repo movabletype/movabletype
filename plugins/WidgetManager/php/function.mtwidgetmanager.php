@@ -14,10 +14,15 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     if (! $config = widgetmanager_config($ctx)) 
         return;
 
-    foreach (explode(",",$config['modulesets'][$widgetmanager]) as $template_id)
-        $widget_source[] = $ctx->mt->fetch('mt:'.$template_id);
-
-    return implode('',$widget_source);
+    foreach (explode(",",$config['modulesets'][$widgetmanager]) as $template_id) {
+      if ($template_id)
+          $widget_source[] = $ctx->mt->fetch('mt:'.$template_id);
+    }
+    $source = '';
+    if ($widget_source) {
+        $source = implode('',$widget_source);
+    }
+    return $source;
 }
 
 function widgetmanager_config($ctx) {

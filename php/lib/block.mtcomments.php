@@ -23,10 +23,14 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('comment_order_num');
     }
 
-    if (!$comments)
-        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+    if (empty($comments)) {
+        $ret = $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+        if (!$repeat)
+              $ctx->restore($localvars);
+        return $ret;
+    }
 
-    $ctx->stash('conditional', $comments ? 1 : 0);
+    $ctx->stash('conditional', empty($comments) ? 0 : 1);
     if ($counter < count($comments)) {
         $blog_id = $ctx->stash('blog_id');
         $comment = $comments[$counter];

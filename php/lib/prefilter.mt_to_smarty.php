@@ -148,6 +148,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                 $conditional = 1;
             } elseif (($mttag == 'mtentries') ||
                 ($mttag == 'mtcomments') ||
+                ($mttag == 'mtpages') ||
                 ($mttag == 'mtcommentreplies')) {
                 $conditional = 1;
             } else {
