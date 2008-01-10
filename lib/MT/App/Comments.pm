@@ -32,7 +32,6 @@ sub init {
         do_register      => \&do_register,
         preview          => \&preview,
         post             => \&post,
-        view             => \&view,
         handle_sign_in   => \&handle_sign_in,
         cmtr_name_js     => \&commenter_name_js,
         edit_profile     => \&edit_commenter_profile,
@@ -50,7 +49,7 @@ sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
     $app->set_no_cache;
-    $app->{default_mode} = 'view';
+    $app->{default_mode} = 'post';
     my $q = $app->param;
 
     ## We don't really have a __mode parameter, because we have to
@@ -1512,81 +1511,6 @@ commenter_blog_ids = "$blog_ids";
 JS
 }
 
-sub view {
-    my $app       = shift;
-    my $q         = $app->param;
-    my %param     = $app->param_hash();
-    my %overrides = ref( $_[0] ) ? %{ $_[0] } : ();
-    @param{ keys %overrides } = values %overrides;
-
-    my $cmntr;
-    my $session_key;
-
-    if ( $q->param('logout') ) {
-        return $app->handle_sign_in;
-    }
-
-    if ( $q->param('sig') ) {
-        $cmntr = $app->handle_sign_in
-          or return $app->handle_error(
-            $app->translate(
-"The sign-in validation was not successful. Please make sure your weblog is properly configured and try again."
-            )
-          );
-    }
-    else {
-        ( $session_key, $cmntr ) = $app->_get_commenter_session();
-    }
-
-    require MT::Template;
-    require MT::Template::Context;
-
-    require MT::Entry;
-    my $entry_id = $q->param('entry_id')
-      or return $app->error( $app->translate("No entry_id") );
-    my $entry = MT::Entry->load($entry_id)
-      or return $app->error(
-        $app->translate( "No such entry ID '[_1]'", $entry_id ) );
-    return $app->error(
-        $app->translate( "No such entry ID '[_1]'", $entry_id ) )
-      if $entry->status != RELEASE;
-
-    my $cfg = $app->config;
-    require MT::Blog;
-    my $blog = MT::Blog->load( $entry->blog_id );
-    if ($cmntr) {
-        if (   !$blog->manual_approve_commenters
-            && ( $cmntr->type == MT::Author::COMMENTER() )
-            && ( $cmntr->commenter_status( $entry->blog_id ) == MT::Author::PENDING() ) )
-        {
-            $cmntr->approve( $entry->blog_id );
-        }
-    }
-
-    my $ctx = MT::Template::Context->new;
-    $ctx->stash( 'entry', $entry );
-    $ctx->stash( 'commenter', $cmntr ) if ($cmntr);
-    $ctx->{current_timestamp} = $entry->authored_on;
-    my %cond;
-    my $tmpl = MT::Template->load(
-            {
-                type    => 'individual',
-                blog_id => $entry->blog_id
-            }
-          );
-
-    unless ($tmpl) {
-        # Load default template and translate it
-        require MT::DefaultTemplates;
-        $tmpl = MT::DefaultTemplates->load( { type => 'individual' } );
-        $tmpl->text( $app->translate_templatized( $tmpl->text ) );
-    }
-
-    my $html = $tmpl->build( $ctx, \%cond );
-    $html = MT::Util::encode_html( $tmpl->errstr ) unless defined $html;
-    $html;
-}
-
 sub handle_error {
     my $app = shift;
     my ( $err, $status_line ) = @_;
@@ -1907,10 +1831,6 @@ Mode that handles posting of a new comment.
 =head2 $app->preview
 
 Mode for previewing a comment before posting.
-
-=head2 $app->view
-
-Mode for displaying a dynamic view of comments for a particular entry.
 
 =head1 CALLBACKS
 
