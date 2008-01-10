@@ -80,7 +80,11 @@ MT.App = new Class( MT.App, {
         switch( command ) {
             
             case "openCategorySelector":
-                this.categorySelector.open( null, Function.stub, event.commandElement );
+                this.categorySelector.open( event.commandElement )
+                break;
+            
+            case "closeCategorySelector":
+                this.categorySelector.close( event.commandElement );
                 break;
             
             /* editor commands */
@@ -344,7 +348,11 @@ MT.App.CategoryList = new Class( Object, {
                 break;
                 
             case "openCategorySelector":
-                app.categorySelector.open( null, Function.stub, event.commandElement );
+                app.categorySelector.open( event.commandElement );
+                break;
+
+            case "closeCategorySelector":
+                app.categorySelector.close( event.commandElement );
                 break;
 
             default:

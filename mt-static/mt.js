@@ -2481,10 +2481,9 @@ MT.App.CodePress = new Class( Object, {
 
 } );
 
-MT.App.CategorySelector = new Class( Transient, {
+MT.App.CategorySelector = new Class( Component, {
     
 
-    transitory: true,
     opening: false,
     
     
@@ -2540,14 +2539,27 @@ MT.App.CategorySelector = new Class( Transient, {
     },
     
     
-    open: function() {
-        arguments.callee.applySuper( this, arguments );
+    open: function( el ) {
+        this.openingEl = el;
+        DOM.addClassName( el, "hidden" );
+        var closeEl = el.getAttribute( "mt:close-el" );
+        if ( closeEl ) 
+            DOM.removeClassName( closeEl, "hidden" );
+        DOM.removeClassName( this.element, "hidden" );
         /* hack to keep the broadcast from nuking our list */
         this.opening = true;
         this.list.resetSelection();
         this.opening = false;
         /* this keeps our list order if they made one a primary since the last open */
         this.list.setSelection( MT.App.selectedCategoryList );
+    },
+
+
+    close: function( el ) {
+        if ( el )
+            DOM.addClassName( el, "hidden" );
+        DOM.addClassName( this.element, "hidden" );
+        DOM.removeClassName( this.openingEl, "hidden" );
     },
 
 

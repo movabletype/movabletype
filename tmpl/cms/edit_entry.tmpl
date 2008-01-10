@@ -426,8 +426,8 @@
 <div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
     <mt:if name="object_type" eq="entry">
         <mt:setvarblock name="header_action">
-            <a href="javascript:void(0)" class="add-new-category-link" mt:command="open-category-selector" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
-            <a href="javascript:void(0)" class="add-category-toggle-link" mt:command="close"><__trans phrase="close"></a>
+            <a href="javascript:void(0)" class="add-new-category-link" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">"><__trans phrase="edit"/></a>
+            <a href="javascript:void(0)" class="add-category-toggle-link hidden" mt:command="close-category-selector" id="close-category-selector1"><__trans phrase="close"></a>
         </mt:setvarblock>
         <mtapp:widget
             id="entry-category-widget"
