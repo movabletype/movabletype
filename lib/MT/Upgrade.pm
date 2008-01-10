@@ -753,6 +753,29 @@ sub core_upgrade_functions {
                 },
             },
         },
+        'core_set_page_layout' => {
+            version_limit => 4.0036,
+            priority => 3.2,
+            updater => {
+                type => 'blog',
+                label => 'Assigning blog page layout...',
+                condition => sub {
+                    !$_[0]->page_layout;
+                },
+                code => sub {
+                    my ($blog) = @_;
+                    my $layout = 'layout-wt';
+                    require MT::Template;
+                    my $styles = MT::Template->load({ blog_id => $blog->id, identifier => 'styles' });
+                    if ($styles) {
+                        if ($styles->text =~ m{ <mt:?setvar \s+ name="page_layout" \s+ value="([^"]+)"> }xmsi) {
+                            $layout = $1;
+                        }
+                    }
+                    $blog->page_layout($layout);
+                },
+            },
+        },
     }
 }
 
