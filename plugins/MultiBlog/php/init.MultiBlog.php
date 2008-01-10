@@ -41,6 +41,10 @@ $multiblog_orig_handlers['mtcomments']
     = $ctx->add_container_tag('comments', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtcategories']
     = $ctx->add_container_tag('categories', 'multiblog_block_wrapper');
+$multiblog_orig_handlers['mtpages']
+    = $ctx->add_container_tag('pages', 'multiblog_block_wrapper');
+$multiblog_orig_handlers['mtfolders']
+    = $ctx->add_container_tag('folders', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtpings']
     = $ctx->add_container_tag('pings', 'multiblog_block_wrapper');
 $multiblog_orig_handlers['mtblogs']
