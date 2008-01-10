@@ -71,6 +71,23 @@ MT.App.Editor.Toolbar = new Class( Editor.Toolbar, {
                 app.openDialog( event.commandElement.getAttribute( "mt:dialog-params" ) );
                 break;
 
+            case "openFlyout":
+                var name = event.commandElement.getAttribute( "mt:flyout" );
+                var el = DOM.getElement( name );
+                if ( !defined( el ) )
+                    return;
+
+                app.closeFlyouts( event.target );
+
+                DOM.removeClassName( el, "hidden" );
+                app.targetElement = event.target;
+                app.applyAutolayouts( el );
+                app.targetElement = null;
+
+                app.openFlyouts.add( name );
+
+                break;
+
             default:
                 return arguments.callee.applySuper( this, arguments );
         

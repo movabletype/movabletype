@@ -366,6 +366,7 @@ function openDialog(f, mode, params) {
     url += '?__mode=' + mode;
     if (params) url += '&' + params;
     url += '&__type=dialog';
+    if (app) app.closeFlyouts();
     show("dialog-container");
     // handle escape key for closing modal dialog
     DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
@@ -1481,7 +1482,7 @@ MT.App = new Class( App, {
         var es = Array.fromPseudo( this.openFlyouts );
         for ( var i = 0, len = es.length; i < len; i++ ) {
             if ( ( flyout = DOM.getElement( es[ i ] ) ) ) {
-                if ( DOM.hasAncestor( target, flyout ) )
+                if ( target && DOM.hasAncestor( target, flyout ) )
                     continue;
                 DOM.addClassName( flyout, "hidden" );
                 this.openFlyouts.remove( es[ i ] );
@@ -1595,6 +1596,7 @@ MT.App = new Class( App, {
 
 
     openDialog: function( params ) {
+        this.closeFlyouts();
         show("dialog-container");
         /* TODO remove this cruft */
         /*  handle escape key for closing modal dialog */
