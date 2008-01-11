@@ -209,6 +209,9 @@ sub create_default_blog {
     # Enable default commenter authentication
     $blog->commenter_authenticators(MT->config('DefaultCommenterAuth'));
 
+    # set default page layout
+    $blog->page_layout('layout-wtt');
+
     $blog->save or return $class->error($blog->errstr);
     $blog->create_default_templates($blog_template || 'mt_blog')
         or return $class->error($blog->errstr);

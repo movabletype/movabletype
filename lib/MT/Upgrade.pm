@@ -773,6 +773,7 @@ sub core_upgrade_functions {
                         }
                     }
                     $blog->page_layout($layout);
+                    $blog->save;
                 },
             },
         },

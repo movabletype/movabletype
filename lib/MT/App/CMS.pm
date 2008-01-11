@@ -9396,6 +9396,7 @@ sub save_object {
             $obj->language( $app->user->preferred_language );
             $obj->nofollow_urls(1);
             $obj->follow_auth_links(1);
+            $obj->page_layout('layout-wtt');
             my @authenticators = qw( MovableType );
             foreach my $auth (qw( Vox LiveJournal )) {
                 my $a = MT->commenter_authenticator($auth);
