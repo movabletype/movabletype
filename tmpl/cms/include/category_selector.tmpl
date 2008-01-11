@@ -20,9 +20,6 @@
 </script>
 <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector hidden"><div id="<$mt:var name="container_type" lower_case="1"$>-selector-inner" class="inner">
     <div class="category-selector-header">
-<mt:if name="object_type" eq="page">
-        <a class="add-category-toggle-link" href="javascript:void(0)" mt:command="close"><__trans phrase="close"></a>
-</mt:if>
 <mt:if name="object_type" eq="entry">
         <mt:if name="can_edit_categories"><a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add new"></a></mt:if>
 </mt:if>

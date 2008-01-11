@@ -2551,9 +2551,9 @@ MT.App.CategorySelector = new Class( Component, {
         /* hack to keep the broadcast from nuking our list */
         this.opening = true;
         this.list.resetSelection();
-        this.opening = false;
         /* this keeps our list order if they made one a primary since the last open */
         this.list.setSelection( MT.App.selectedCategoryList );
+        this.opening = false;
     },
 
 
@@ -2735,7 +2735,7 @@ MT.App.CategorySelector = new Class( Component, {
     listItemsSelected: function( list, ids ) {
         MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
         app.catList.redraw();
-        if ( this.type == 'folder' )
+        if ( !this.opening && this.type == 'folder' )
             this.close();
     },
 
