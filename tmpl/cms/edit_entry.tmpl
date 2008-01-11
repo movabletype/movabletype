@@ -1146,9 +1146,9 @@ function listPreviousPings () {
     </mtapp:setting>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
-
+<mt:ignore>NOTE: Below, trans tag is not written in the standard way and a mtvar tag is embedded in the phrase.  This is necessary to workaround a bug in ActivePerl.  BugId:64704</mt:ignore>
 <div id="quickpost">
-    <__trans phrase="<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser's toolbar then click it when you are on a site you want to blog about." params="<mt:var name="quickpost_js" escape="html">%%<$mt:var name="blog_name" escape="html"$>">
+    <__trans phrase="<a href="<mt:var name="quickpost_js" escape="html">">QuickPost to [_1]</a> - Drag this link to your browser's toolbar then click it when you are on a site you want to blog about." params="<$mt:var name="blog_name" escape="html"$>">
 </div>
 <mt:setvarblock name="form_footer">
 </form>
