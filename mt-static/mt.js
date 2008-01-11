@@ -2499,7 +2499,7 @@ MT.App.CategorySelector = new Class( Component, {
 
         if ( element.match( /category/ ) ) {
             this.type = "category";
-            this.list.setOption( "singleSelect", false );
+            this.listsetOption( "singleSelect", false );
             this.list.setOption( "toggleSelect", true );
         } else {
             this.type = "folder";
@@ -2540,11 +2540,13 @@ MT.App.CategorySelector = new Class( Component, {
     
     
     open: function( el ) {
-        this.openingEl = el;
-        DOM.addClassName( el, "hidden" );
-        var closeEl = el.getAttribute( "mt:close-el" );
-        if ( closeEl ) 
-            DOM.removeClassName( closeEl, "hidden" );
+        if ( el ) {
+           this.openingEl = el;
+           DOM.addClassName( el, "hidden" );
+           var closeEl = el.getAttribute( "mt:close-el" );
+           if ( closeEl ) 
+               DOM.removeClassName( closeEl, "hidden" );
+        }
         DOM.removeClassName( this.element, "hidden" );
         /* hack to keep the broadcast from nuking our list */
         this.opening = true;
@@ -2559,7 +2561,8 @@ MT.App.CategorySelector = new Class( Component, {
         if ( el )
             DOM.addClassName( el, "hidden" );
         DOM.addClassName( this.element, "hidden" );
-        DOM.removeClassName( this.openingEl, "hidden" );
+        if ( this.openingEl )
+            DOM.removeClassName( this.openingEl, "hidden" );
     },
 
 
@@ -2569,7 +2572,7 @@ MT.App.CategorySelector = new Class( Component, {
 
             case "close":
                 this.removeMovable();
-                this.close( this.list.getSelectedIDs() );
+                this.close();
                 break;
             
             case "showAddCategory":
@@ -2732,6 +2735,8 @@ MT.App.CategorySelector = new Class( Component, {
     listItemsSelected: function( list, ids ) {
         MT.App.selectedCategoryList = Array.fromPseudo( list.getSelectedIDs() );
         app.catList.redraw();
+        if ( this.type == 'folder' )
+            this.close();
     },
 
 

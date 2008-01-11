@@ -69,7 +69,6 @@ function setExtraPath(sel) {
             hint="<$mt:var name="upload_hint"$>"
             show_hint="1">
             <mt:var name="object_type" value="page">
-            <mt:include name="include/category_selector.tmpl">
             <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
             <script type="text/javascript">
                 /* <![CDATA[ */
@@ -116,12 +115,13 @@ function setExtraPath(sel) {
 
                         eventClick: function( event ) {
                             var command = this.getMouseEventCommand( event );
+                            log('command:'+command);
                             switch( command ) {
 
                                 case "openFolderSelector":
-                                    this.categorySelector.open( null, Function.stub, event.commandElement );
+                                    this.categorySelector.open( event.commandElement );
                                     break;
-
+                                
                             }
                             return arguments.callee.applySuper( this, arguments );
                         }
@@ -176,12 +176,8 @@ function setExtraPath(sel) {
 </form>
 
 <mt:if name="enable_destination">
-    <div id="folder-selector" style="position:static;" class="category-selector autolayout-flyout-auto flyout"><div id="folder-selector-inner" class="inner"-->
-        <div id="add-category-form" class="add-category-form hidden"><input id="add-category-input" class="add-category-input input-hint" type="text" value="<__trans phrase="Add [lc,_1] name" params="Folder">" mt:default="<__trans phrase="Add [lc,_1] name" params="Folder">" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span>&nbsp;&nbsp;&nbsp;</a></div>
-        <div id="folder-selector-list" class="category-selector-list">
-        </div>
-        <a class="add-category-ok-link" href="javascript:void(0)" mt:command="close"><__trans phrase="OK"></a>
-    </div></div><!-- /category-selector -->
+   <$mt:var name="container_type" value="folder"$>
+   <mt:include name="include/category_selector.tmpl">
 </mt:if>
 
 </mt:if>
