@@ -19,11 +19,11 @@
     /* ]]> */
 </script>
 <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector hidden"><div id="<$mt:var name="container_type" lower_case="1"$>-selector-inner" class="inner">
-    <div class="category-selector-header">
 <mt:if name="object_type" eq="entry">
+    <div class="category-selector-header">
         <mt:if name="can_edit_categories"><a class="add-category-new-parent-link" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><__trans phrase="Add new"></a></mt:if>
-</mt:if>
     </div>
+</mt:if>
     <div id="add-category-form" class="add-category-form hidden"><input id="add-category-input" class="add-category-input input-hint" type="text" value="<$mt:var name="add_container_label"$>" mt:default="<$mt:var name="add_container_label_name"$>" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span>&nbsp;&nbsp;&nbsp;</a></div>
     <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="category-selector-list">
     </div>

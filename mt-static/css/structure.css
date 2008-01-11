@@ -3386,22 +3386,27 @@ body.preview-screen {
     margin-top: 4px;
 }
 
-#category-list a.primary,
 #category-list strong {
-    padding-left: 11px;
-    background: url(../images/status_icons/role-inactive.gif) no-repeat 0 .3em;
+    padding-left: 13px;
+    background: url(../images/status_icons/primary.png) no-repeat 0 50%;
 }
-#category-list .focus a.primary,
-#category-list strong {
-    background-image: url(../images/status_icons/role-active.gif);
+
+#category-list a.primary {
+    padding-left: 13px;
+    color: #33789C;
+}
+#category-list .focus a.primary {
+    background: url(../images/status_icons/primary-disabled.png) no-repeat 0 50%;
 }
 
 #category-list .delete {
     padding-right: 9px;
-    background: url(../images/status_icons/close-disabled.gif) no-repeat right center;
 }
 #category-list .focus .delete {
-    background-image: url(../images/status_icons/close.gif);
+    background: url(../images/status_icons/close-disabled.gif) no-repeat right center;
+}
+#category-list .focus .delete:hover {
+    background: url(../images/status_icons/close.gif) no-repeat right center;
 }
 #category-list .delete span {
     display: none;

@@ -275,6 +275,7 @@ TC.attachLoadEvent( init );
 </mt:if>
 
 <h3><__trans phrase="Publishing Options"></h3>
+<fieldset>
 
 <mtapp:setting
     id="preferred_archive_type"
@@ -344,7 +345,6 @@ TC.attachLoadEvent( init );
 
 </div>
 </mt:unless>
-<fieldset>
     <mtapp:setting
         id="file_extension"
         label="<__trans phrase="File Extension for Archive Files">"
@@ -355,6 +355,7 @@ TC.attachLoadEvent( init );
     </mtapp:setting>
 
 </fieldset>
+
 
 <mt:setvarblock name="action_buttons">
     <button
