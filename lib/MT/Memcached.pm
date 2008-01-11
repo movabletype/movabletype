@@ -12,10 +12,11 @@ sub new {
     my $cfg = MT->config;
 
     if (my @servers = $cfg->MemcachedServers) {
-        require Cache::Memcached;
+        my $driver_class = $cfg->MemcachedDriver;
+        eval "require $driver_class;";
         my $ns = $cfg->MemcachedNamespace;
         return bless {
-            memcached => Cache::Memcached->new({
+            memcached => $driver_class->new({
                 servers => \@servers,
                 ( $ns ? ( namespace => $ns ) : () ),
                 debug   => 0,
@@ -29,7 +30,8 @@ sub new {
 sub is_available {
     my $class = shift;
     my @servers = MT->config->MemcachedServers;
-    return @servers > 0 && eval { require Cache::Memcached } ? 1 : 0;
+    my $driver_class = MT->config->MemcachedDriver;
+    return @servers > 0 && eval "require $driver_class;" ? 1 : 0;
 }
 
 our $Instance;
@@ -39,7 +41,8 @@ sub instance {
 
 sub cleanup {
     undef $Instance;
-    Cache::Memcached->disconnect_all;
+    Cache::Memcached->disconnect_all
+        if MT->config->MemcachedDriver eq 'Cache::Memcached';
 }
 
 sub DESTROY { }

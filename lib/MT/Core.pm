@@ -474,6 +474,7 @@ BEGIN {
             'AssetCacheDir'             => { default => 'assets_c', },
             'MemcachedServers'          => { type    => 'ARRAY', },
             'MemcachedNamespace'        => undef,
+            'MemcachedDriver'           => { default => 'Cache::Memcached' },
             'CommenterRegistration'     => {
                 type    => 'HASH',
                 default => {
