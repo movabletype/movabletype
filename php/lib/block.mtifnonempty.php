@@ -21,7 +21,7 @@ function smarty_block_mtifnonempty($args, $content, &$ctx, &$repeat) {
         } elseif (isset($args['var'])) {
             $output = $ctx->__stash['vars'][$args['var']];
         }
-        $ctx->stash('conditional', isset($output));
+        $ctx->stash('conditional', (isset($output) && strlen($output)));
         $ctx->stash('else_content', null);
     } else {
         if (!$ctx->stash('conditional')) {
