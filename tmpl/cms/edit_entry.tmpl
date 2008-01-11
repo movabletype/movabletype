@@ -691,22 +691,6 @@ function setCustomFields() {
     // from view if all fields within it are hidden. alternatively,
     // if the user enables a field, the fieldset should be enabled.
 
-    var fieldsets = DOM.getElementsByTagAndAttribute(document, "fieldset", "mt:fields");
-    var fs_state = {};
-    var fs_map = {};
-    for (var i = 0; i < fieldsets.length; i++) {
-        var fieldset = fieldsets[i];
-        var idents = fieldset.getAttribute("mt:fields");
-        if (idents) {
-            fs_state[fieldset.id] = 'hidden';
-            var identlist = idents.split(/\s+/);
-            if (identlist && identlist.length) {
-                for (var j = 0; j < identlist.length; j++)
-                    fs_map[identlist[j]] = fieldset;
-            }
-        }
-    }
-
     // add only the fields which are currently checked and enabled
     for (i = 0; i < customizable_fields.length; i++) {
         var hide = true;
@@ -718,23 +702,11 @@ function setCustomFields() {
         }
         var div = TC.elementOrId(customizable_fields[i] + '-field');
         if (div) {
-            var fieldset = fs_map[customizable_fields[i]];
-            
-            if (hide) {
+            if (hide)
                 TC.addClassName(div, 'hidden');
-            } else {
-                if (fieldset) fs_state[fieldset.id] = null;
+            else
                 TC.removeClassName(div, 'hidden');
-            }
         }
-    }
-
-    for (var i = 0; i < fieldsets.length; i++) {
-        var state = fs_state[fieldsets[i].id];
-        if (state == 'hidden')
-            TC.addClassName(fieldsets[i], "hidden");
-        else
-            TC.removeClassName(fieldsets[i], "hidden");
     }
 
     var entry_prefs = getByID('entry_prefs');
