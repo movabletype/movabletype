@@ -764,7 +764,7 @@ sub core_upgrade_functions {
                 },
                 code => sub {
                     my ($blog) = @_;
-                    my $layout = 'layout-wt';
+                    my $layout = 'layout-wtt';
                     require MT::Template;
                     my $styles = MT::Template->load({ blog_id => $blog->id, identifier => 'styles' });
                     if ($styles) {
