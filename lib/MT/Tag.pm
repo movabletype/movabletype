@@ -204,6 +204,7 @@ sub clear_cache {
 
     my $tag_cache;
     my $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds;
+    require MT::Session;
     $tag_cache = MT::Session->load({
         kind => 'TC',
         id => $sess_id});
