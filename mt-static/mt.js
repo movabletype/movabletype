@@ -2499,7 +2499,7 @@ MT.App.CategorySelector = new Class( Component, {
 
         if ( element.match( /category/ ) ) {
             this.type = "category";
-            this.listsetOption( "singleSelect", false );
+            this.list.setOption( "singleSelect", false );
             this.list.setOption( "toggleSelect", true );
         } else {
             this.type = "folder";
