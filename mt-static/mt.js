@@ -2548,6 +2548,11 @@ MT.App.CategorySelector = new Class( Component, {
                DOM.removeClassName( closeEl, "hidden" );
         }
         DOM.removeClassName( this.element, "hidden" );
+        this.redraw();
+    },
+
+
+    redraw: function() {
         /* hack to keep the broadcast from nuking our list */
         this.opening = true;
         this.list.resetSelection();

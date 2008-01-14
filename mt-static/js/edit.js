@@ -333,6 +333,7 @@ MT.App.CategoryList = new Class( Object, {
                 MT.App.selectedCategoryList.splice( idx, 1 );
                 MT.App.selectedCategoryList.splice( 0, 0, id );
                 this.redraw();
+                app.categorySelector.redraw();
                 break;
             
             case "remove":
@@ -345,6 +346,7 @@ MT.App.CategoryList = new Class( Object, {
                     return log.error('could not find cat id:'+id);
                 MT.App.selectedCategoryList.splice( idx, 1 );
                 this.redraw();
+                app.categorySelector.redraw();
                 break;
                 
             case "openCategorySelector":
