@@ -84,7 +84,7 @@ function sectionToggle(selectedTab) {
     </div>
 </div>
 </mt:setvarblock>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
             id="saved-deleted"
@@ -113,6 +113,8 @@ function sectionToggle(selectedTab) {
             <__trans phrase="Your templates have been published.">
         </mtapp:statusmsg>
     </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
     <mt:unless name="template_type" like="/system|email|backup/">
         <mt:if name="template_type" eq="archive">
     <p><__trans phrase="Create Archive Template:">

@@ -132,6 +132,7 @@ iframe {
 }
 
 .main-screen #header-inner,
+.main-screen #system-msg-inner,
 .main-screen #content-header-inner,
 .main-screen #content-inner,
 .main-screen #footer-inner {
@@ -677,7 +678,7 @@ li#config-menu {
     text-align: center;
     position: absolute;
     right: 240px;
-    top: 27px;
+    top: 9px;
 }
 .edit-entry .object-nav,
 .edit-asset .object-nav {
@@ -692,14 +693,16 @@ li#config-menu {
 
 /* Content Header ---------------------------------------------------------------------------------- */
 
-#content-header {
+#content-header,
+#system-msg {
     background: #E7F0F6;
 }
-.system #content-header {
+.system #content-header,
+.system #system-msg {
     background: #EAF3D8;
 }
 
-#content-header-inner {
+#system-msg-inner {
     padding-top: 18px;
 }
 
@@ -902,9 +905,6 @@ li#config-menu {
 .content-nav .action-link-list {
     margin-left: 140px;
     padding-left: 20px;
-}
-.content-nav .msg {
-    margin-left: 160px;
 }
 .content-nav .msg-info {
     margin-left: 0px;

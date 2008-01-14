@@ -1,5 +1,5 @@
 <mt:setvarblock name="page_title"><__trans phrase="Manage Comments"></mt:setvarblock>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
@@ -7,7 +7,6 @@
             <__trans phrase="Your changes have been saved.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="approved">
         <mtapp:statusmsg
             id="approved"
@@ -15,7 +14,6 @@
             <__trans phrase="The selected comment(s) has been approved.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="emptied">
         <mtapp:statusmsg
             id="emptied"
@@ -23,7 +21,6 @@
             <__trans phrase="All comments reported as spam have been removed.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="unapproved">
         <mtapp:statusmsg
             id="unapproved"
@@ -31,7 +28,6 @@
             <__trans phrase="The selected comment(s) has been unapproved.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="junked">
         <mtapp:statusmsg
             id="junked"
@@ -39,7 +35,6 @@
             <__trans phrase="The selected comment(s) has been reported as spam.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="unjunked">
         <mtapp:statusmsg
             id="unjunked"
@@ -47,7 +42,6 @@
             <__trans phrase="The selected comment(s) has been recovered from spam.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
             id="saved-deleted"
@@ -55,7 +49,6 @@
             <__trans phrase="The selected comment(s) has been deleted from the database.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="unauth">
         <mtapp:statusmsg
             id="unaugh"
@@ -63,7 +56,6 @@
             <__trans phrase="One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be Banned or Trusted.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="no_junk_found">
         <mtapp:statusmsg
             id="no-junk-found"

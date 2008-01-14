@@ -1,9 +1,7 @@
 <mt:setvar name="page_title" value="<__trans phrase="Spam Settings">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="spam" value="1">
-<MTSetVarBlock name="content_header">
-
-
+<MTSetVarBlock name="system_msg">
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -11,7 +9,6 @@
             <mt:var name="error">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved">
         <mt:if name="can_rebuild">
             <mt:if name="need_full_rebuild">
@@ -51,7 +48,6 @@
             </mtapp:statusmsg> 
         </mtif> 
     </mt:if>
-
 </MTSetVarBlock>
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/cfg_content_nav.tmpl">

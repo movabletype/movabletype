@@ -1,6 +1,6 @@
 <mt:setvar name="page_title" value="<__trans phrase="Create Blog">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -8,7 +8,6 @@
             <mt:var name="error">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
@@ -18,7 +17,6 @@
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
-
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 <!--

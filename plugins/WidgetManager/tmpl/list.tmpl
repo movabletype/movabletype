@@ -40,18 +40,19 @@ TC.attachLoadEvent( init );
         </ul>
     </mtapp:widget>
 </mt:setvarblock>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="rebuild">
         <mtapp:statusmsg id="saved-msg" class="success" rebuild="all">
         <__trans phrase="Your changes to the widget set have been saved.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="deleted">
         <mtapp:statusmsg id="delete-msg" class="info" rebuild="all">
         <__trans phrase="You have successfully deleted the selected widget set(s) from your blog.">
         </mtapp:statusmsg>
     </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
     <ul>
         <li><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">&amp;widgetmanager=<__trans phrase="New Widget Set" escape="url">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></li>
     </ul>

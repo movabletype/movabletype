@@ -1,6 +1,6 @@
 <mt:setvar name="activity-log" value="1">
 <mt:setvar name="page_title" value="<__trans phrase="Activity Log">">
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="reset">
         <mtapp:statusmsg
             id="reset"
@@ -8,6 +8,8 @@
             <__trans phrase="The activity log has been reset.">
         </mtapp:statusmsg>
     </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
     <p class="page-desc">
     <mt:if name="time_offset">
     <__trans phrase="All times are displayed in GMT[_1]." params="<mt:var name="time_offset">">

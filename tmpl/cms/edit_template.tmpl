@@ -1,7 +1,7 @@
 <mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="has_name"><mt:var name="name"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_bottom" value="1">
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:unless name="recovered_object">
         <mt:if name="autosaved_object_exists">
             <mtapp:statusmsg
@@ -12,7 +12,6 @@
             </mtapp:statusmsg>
         </mt:if>
     </mt:unless>
-
     <mt:if name="recovered_object">
         <mtapp:statusmsg
             id="recovered-object"
@@ -20,7 +19,6 @@
             <__trans phrase="You have successfully recovered your saved [_1]." params="<mt:var name="object_label">">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="recovered_failed">
         <mtapp:statusmsg
             id="recovered-failed"
@@ -28,7 +26,6 @@
             <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved">
         <mt:if name="error">
             <mtapp:statusmsg

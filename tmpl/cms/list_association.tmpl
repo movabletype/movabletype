@@ -55,7 +55,7 @@
         </mt:if>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
             id="saved-deleted"
@@ -70,7 +70,8 @@
             <__trans phrase="You have successfully granted the given permission(s).">
         </mtapp:statusmsg>
     </mt:if>
-
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
     <ul class="action-link-list">
         <$mt:var name="actions_link"$>
     </ul>

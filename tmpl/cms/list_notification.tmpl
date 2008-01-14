@@ -1,5 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Address Book">">
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
@@ -7,7 +7,6 @@
             <mt:var name="error">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
@@ -15,7 +14,6 @@
             <__trans phrase="You have added [_1] to your address book." params="<strong><$mt:var name="saved" escape="html"$></strong>">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
             id="saved-deleted"

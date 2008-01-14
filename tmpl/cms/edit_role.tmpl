@@ -8,7 +8,7 @@
     <mt:else>
         <mt:setvar name="page_title" value="<__trans phrase="Create Role">">
     </mt:if>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved-added"
@@ -16,7 +16,8 @@
             <__trans phrase="Your changes have been saved.">
         </mtapp:statusmsg>
     </mt:if>
-    
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
     <ul class="action-link-list">
         <li>
             <a href="<mt:var name="script_url">?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a>
@@ -25,7 +26,6 @@
     </mt:if>
         </li>
     </ul>
-
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">
 

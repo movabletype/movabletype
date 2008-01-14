@@ -1,7 +1,6 @@
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="page_title" value="<__trans phrase="Commenter Details">">
-<MTSetVarBlock name="content_header">
-
+<MTSetVarBlock name="system_msg">
     <mt:if name="saved_commenter">
         <mtapp:statusmsg
             id="saved-commenter"
@@ -9,7 +8,6 @@
             <__trans phrase="Your changes have been saved.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="trusted">
         <mtapp:statusmsg
             id="trusted"
@@ -17,7 +15,6 @@
             <__trans phrase="The commenter has been trusted.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="banned">
         <mtapp:statusmsg
             id="banned"

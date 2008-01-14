@@ -1,6 +1,6 @@
 <$mt:setvar name="list_users" value="1"$>
 <mt:setvarblock name="page_title"><__trans phrase="Users: System-wide"></mt:setvarblock>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="external_user_management">
         <p class="page-desc"><__trans phrase="_USAGE_AUTHORS_LDAP"></p>
     </mt:if>
@@ -49,6 +49,8 @@
             <__trans phrase="An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information." params="<mt:var name="script_url">?__mode=view_log">
         </mtapp:statusmsg>
     </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
     <mt:unless name="external_user_management">
         <mt:if name="can_create_user">
         <ul class="action-link-list">

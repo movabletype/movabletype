@@ -78,9 +78,8 @@
     </mt:if>
     <div id="autosave-notification-<$mt:var name="bar_position" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <div id="msg-block">
-
     <mt:unless name="recovered_object">
         <mt:if name="autosaved_object_exists">
             <mtapp:statusmsg
@@ -94,7 +93,6 @@
             </mtapp:statusmsg>
         </mt:if>
     </mt:unless>
-
     <mt:if name="saved_added">
         <mtapp:statusmsg
             id="saved-added"
@@ -107,7 +105,6 @@
             <$mt:var name="view_link"$>
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_changes">
         <mtapp:statusmsg
             id="saved-changes"
@@ -116,7 +113,6 @@
             <$mt:var name="view_link"$>
         </mtapp:statusmsg>
     </mt:if>
-    
     <mt:if name="ping_errors">
         <mtapp:statusmsg
             id="ping-errors"
@@ -124,7 +120,6 @@
             <__trans phrase="One or more errors occurred when sending update pings or TrackBacks."> <mt:if name="can_view_log"><__trans phrase="_USAGE_VIEW_LOG" params="<$mt:var name="script_url"$>?__mode=view_log&amp;blog_id=<$mt:var name="blog_id"$>"></mt:if>
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_prefs">
         <mtapp:statusmsg    
             id="saved-prefs"
@@ -132,7 +127,6 @@
             <__trans phrase="Your customization preferences have been saved, and are visible in the form below.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_comment">
         <mtapp:statusmsg    
             id="saved-comment"
@@ -141,7 +135,6 @@
             <__trans phrase="Your changes to the comment have been saved.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_notify">
         <mtapp:statusmsg    
             id="saved-notify"
@@ -149,7 +142,6 @@
             <__trans phrase="Your notification has been sent.">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="recovered_object">
         <mtapp:statusmsg    
             id="recovered-object"
@@ -161,7 +153,6 @@
             </mt:if>
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="recovered_failed">
         <mtapp:statusmsg    
             id="recovered-failed"
@@ -173,7 +164,6 @@
             </mt:if>
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_deleted">
         <mtapp:statusmsg    
             id="saved-deleted"
@@ -181,7 +171,6 @@
             <__trans phrase="You have successfully deleted the checked comment(s).">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="saved_deleted_ping">
         <mtapp:statusmsg    
             id="saved-deleted-ping"
@@ -189,7 +178,6 @@
             <__trans phrase="You have successfully deleted the checked TrackBack(s).">
         </mtapp:statusmsg>
     </mt:if>
-
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"

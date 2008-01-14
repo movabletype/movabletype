@@ -39,7 +39,7 @@ TC.attachLoadEvent( init );
         title="<__trans phrase="Delete selected IP Address (x)">"
         ><__trans phrase="Delete"></a>
 </mt:setvarblock>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="system_msg">
     <mt:if name="error">
     <mtapp:statusmsg
         id="generic-error"
@@ -63,11 +63,11 @@ TC.attachLoadEvent( init );
             <__trans phrase="You have successfully deleted the selected IP addresses from the list.">
         </mtapp:statusmsg>
     </mt:if>
-
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
     <mt:if name="show_ip_info">
     <p id="create-ip"><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Ban IP Address"></a></p>
     </mt:if>
-
     <div id="create-inline-ipban" class="create-inline">
         <form id="create-inline-ipban-form" method="post" action="<mt:var name="script_url">">
             <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
