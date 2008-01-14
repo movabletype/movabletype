@@ -23,9 +23,9 @@ MT.App = new Class( MT.App, {
             this.catCache = new Cache( cats.length + 50 );
             for ( var i = 0; i < cats.length; i++ )
                 this.catCache.setItem( 'cat:'+cats[ i ].id, cats[ i ] );
-            if ( DOM.getElement( "folder-selector" ) ) {
+            if ( DOM.getElement( "folder-selector" ) )
                 this.categorySelector = this.addComponent( new this.constructor.CategorySelector( "folder-selector", "categorySelectorList" ) );
-            } else
+            else
                 this.categorySelector = this.addComponent( new this.constructor.CategorySelector( "category-selector", "categorySelectorList" ) );
         }
 
@@ -36,6 +36,10 @@ MT.App = new Class( MT.App, {
             this.setDelegate( "categoryList", this.catList );
             this.catList.redraw( this.catCache );
         }
+        
+        var cs = DOM.getElement( "open-category-selector1" );
+        if ( MT.App.selectedCategoryList.length == 0 && cs )
+            this.categorySelector.open( cs );
         
         if ( DOM.getElement( "calendar" ) )
             this.calendar = new this.constructor.Calendar( "calendar", "calendar" );
