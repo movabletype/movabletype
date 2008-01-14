@@ -1392,166 +1392,164 @@ sub rebuild_file {
     return 1 if ( $tmpl->build_dynamic );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
 
-    if ( !$tmpl->build_dynamic ) {
-        if (
-            $build_static
-            && MT->run_callbacks(
-                'build_file_filter',
-                Context      => $ctx,
-                context      => $ctx,
-                ArchiveType  => $at,
-                archive_type => $at,
-                TemplateMap  => $map,
-                template_map => $map,
-                Blog         => $blog,
-                blog         => $blog,
-                Entry        => $entry,
-                entry        => $entry,
-                FileInfo     => $finfo,
-                file_info    => $finfo,
-                File         => $file,
-                file         => $file,
-                Template     => $tmpl,
-                template     => $tmpl,
-                PeriodStart  => $start,
-                period_start => $start,
-                Category     => $category,
-                category     => $category,
-            )
-          )
-        {
-            if ( $archiver->archive_group_entries ) {
+    if (
+        $build_static
+        && MT->run_callbacks(
+            'build_file_filter',
+            Context      => $ctx,
+            context      => $ctx,
+            ArchiveType  => $at,
+            archive_type => $at,
+            TemplateMap  => $map,
+            template_map => $map,
+            Blog         => $blog,
+            blog         => $blog,
+            Entry        => $entry,
+            entry        => $entry,
+            FileInfo     => $finfo,
+            file_info    => $finfo,
+            File         => $file,
+            file         => $file,
+            Template     => $tmpl,
+            template     => $tmpl,
+            PeriodStart  => $start,
+            period_start => $start,
+            Category     => $category,
+            category     => $category,
+        )
+      )
+    {
+        if ( $archiver->archive_group_entries ) {
 
-                # TBD: Would it help to use MT::Promise here?
-                my $entries = $archiver->archive_group_entries->($ctx);
-                $ctx->stash( 'entries', $entries );
-            }
-
-            my $html = undef;
-            $ctx->stash( 'blog', $blog );
-            $ctx->stash( 'entry', $entry ) if $entry;
-
-            require MT::Request;
-            MT::Request->instance->cache('build_template', $tmpl);
-
-            $html = $tmpl->build( $ctx, $cond );
-            defined($html)
-              or return $mt->error(
-                (
-                    $category ? MT->translate(
-                        "An error occurred publishing [_1] '[_2]': [_3]",
-                        lowercase( $category->class_label ),
-                        $category->id,
-                        $tmpl->errstr
-                      )
-                    : $entry ? MT->translate(
-                        "An error occurred publishing [_1] '[_2]': [_3]",
-                        lowercase( $entry->class_label ),
-                        $entry->title,
-                        $tmpl->errstr
-                      )
-                    : MT->translate(
-"An error occurred publishing date-based archive '[_1]': [_2]",
-                        $at . $start,
-                        $tmpl->errstr
-                    )
-                )
-              );
-            my $orig_html = $html;
-            MT->run_callbacks(
-                'build_page',
-                Context      => $ctx,
-                context      => $ctx,
-                ArchiveType  => $at,
-                archive_type => $at,
-                TemplateMap  => $map,
-                template_map => $map,
-                Blog         => $blog,
-                blog         => $blog,
-                Entry        => $entry,
-                entry        => $entry,
-                FileInfo     => $finfo,
-                file_info    => $finfo,
-                PeriodStart  => $start,
-                period_start => $start,
-                Category     => $category,
-                category     => $category,
-                RawContent   => \$orig_html,
-                raw_content  => \$orig_html,
-                Content      => \$html,
-                content      => \$html,
-                BuildResult  => \$orig_html,
-                build_result => \$orig_html,
-                Template     => $tmpl,
-                template     => $tmpl,
-                File         => $file,
-                file         => $file
-            );
-            ## First check whether the content is actually
-            ## changed. If not, we won't update the published
-            ## file, so as not to modify the mtime.
-            return 1 unless $fmgr->content_is_updated( $file, \$html );
-
-            ## Determine if we need to build directory structure,
-            ## and build it if we do. DirUmask determines
-            ## directory permissions.
-            require File::Spec;
-            my $path = dirname($file);
-            $path =~ s!/$!!
-              unless $path eq '/'; ## OS X doesn't like / at the end in mkdir().
-            unless ( $fmgr->exists($path) ) {
-                $fmgr->mkpath($path)
-                  or return $mt->trans_error( "Error making path '[_1]': [_2]",
-                    $path, $fmgr->errstr );
-            }
-
-            ## By default we write all data to temp files, then rename
-            ## the temp files to the real files (an atomic
-            ## operation). Some users don't like this (requires too
-            ## liberal directory permissions). So we have a config
-            ## option to turn it off (NoTempFiles).
-            my $use_temp_files = !$mt->{NoTempFiles};
-            my $temp_file = $use_temp_files ? "$file.new" : $file;
-            defined( $fmgr->put_data( $html, $temp_file ) )
-              or return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
-                $temp_file, $fmgr->errstr );
-            if ($use_temp_files) {
-                $fmgr->rename( $temp_file, $file )
-                  or return $mt->trans_error(
-                    "Renaming tempfile '[_1]' failed: [_2]",
-                    $temp_file, $fmgr->errstr );
-            }
-            MT->run_callbacks(
-                'build_file',
-                Context      => $ctx,
-                context      => $ctx,
-                ArchiveType  => $at,
-                archive_type => $at,
-                TemplateMap  => $map,
-                template_map => $map,
-                FileInfo     => $finfo,
-                file_info    => $finfo,
-                Blog         => $blog,
-                blog         => $blog,
-                Entry        => $entry,
-                entry        => $entry,
-                PeriodStart  => $start,
-                period_start => $start,
-                RawContent   => \$orig_html,
-                raw_content  => \$orig_html,
-                Content      => \$html,
-                content      => \$html,
-                BuildResult  => \$orig_html,
-                build_result => \$orig_html,
-                Template     => $tmpl,
-                template     => $tmpl,
-                Category     => $category,
-                category     => $category,
-                File         => $file,
-                file         => $file
-            );
-
+            # TBD: Would it help to use MT::Promise here?
+            my $entries = $archiver->archive_group_entries->($ctx);
+            $ctx->stash( 'entries', $entries );
         }
+
+        my $html = undef;
+        $ctx->stash( 'blog', $blog );
+        $ctx->stash( 'entry', $entry ) if $entry;
+
+        require MT::Request;
+        MT::Request->instance->cache('build_template', $tmpl);
+
+        $html = $tmpl->build( $ctx, $cond );
+        defined($html)
+          or return $mt->error(
+            (
+                $category ? MT->translate(
+                    "An error occurred publishing [_1] '[_2]': [_3]",
+                    lowercase( $category->class_label ),
+                    $category->id,
+                    $tmpl->errstr
+                  )
+                : $entry ? MT->translate(
+                    "An error occurred publishing [_1] '[_2]': [_3]",
+                    lowercase( $entry->class_label ),
+                    $entry->title,
+                    $tmpl->errstr
+                  )
+                : MT->translate(
+"An error occurred publishing date-based archive '[_1]': [_2]",
+                    $at . $start,
+                    $tmpl->errstr
+                )
+            )
+          );
+        my $orig_html = $html;
+        MT->run_callbacks(
+            'build_page',
+            Context      => $ctx,
+            context      => $ctx,
+            ArchiveType  => $at,
+            archive_type => $at,
+            TemplateMap  => $map,
+            template_map => $map,
+            Blog         => $blog,
+            blog         => $blog,
+            Entry        => $entry,
+            entry        => $entry,
+            FileInfo     => $finfo,
+            file_info    => $finfo,
+            PeriodStart  => $start,
+            period_start => $start,
+            Category     => $category,
+            category     => $category,
+            RawContent   => \$orig_html,
+            raw_content  => \$orig_html,
+            Content      => \$html,
+            content      => \$html,
+            BuildResult  => \$orig_html,
+            build_result => \$orig_html,
+            Template     => $tmpl,
+            template     => $tmpl,
+            File         => $file,
+            file         => $file
+        );
+        ## First check whether the content is actually
+        ## changed. If not, we won't update the published
+        ## file, so as not to modify the mtime.
+        return 1 unless $fmgr->content_is_updated( $file, \$html );
+
+        ## Determine if we need to build directory structure,
+        ## and build it if we do. DirUmask determines
+        ## directory permissions.
+        require File::Spec;
+        my $path = dirname($file);
+        $path =~ s!/$!!
+          unless $path eq '/'; ## OS X doesn't like / at the end in mkdir().
+        unless ( $fmgr->exists($path) ) {
+            $fmgr->mkpath($path)
+              or return $mt->trans_error( "Error making path '[_1]': [_2]",
+                $path, $fmgr->errstr );
+        }
+
+        ## By default we write all data to temp files, then rename
+        ## the temp files to the real files (an atomic
+        ## operation). Some users don't like this (requires too
+        ## liberal directory permissions). So we have a config
+        ## option to turn it off (NoTempFiles).
+        my $use_temp_files = !$mt->{NoTempFiles};
+        my $temp_file = $use_temp_files ? "$file.new" : $file;
+        defined( $fmgr->put_data( $html, $temp_file ) )
+          or return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
+            $temp_file, $fmgr->errstr );
+        if ($use_temp_files) {
+            $fmgr->rename( $temp_file, $file )
+              or return $mt->trans_error(
+                "Renaming tempfile '[_1]' failed: [_2]",
+                $temp_file, $fmgr->errstr );
+        }
+        MT->run_callbacks(
+            'build_file',
+            Context      => $ctx,
+            context      => $ctx,
+            ArchiveType  => $at,
+            archive_type => $at,
+            TemplateMap  => $map,
+            template_map => $map,
+            FileInfo     => $finfo,
+            file_info    => $finfo,
+            Blog         => $blog,
+            blog         => $blog,
+            Entry        => $entry,
+            entry        => $entry,
+            PeriodStart  => $start,
+            period_start => $start,
+            RawContent   => \$orig_html,
+            raw_content  => \$orig_html,
+            Content      => \$html,
+            content      => \$html,
+            BuildResult  => \$orig_html,
+            build_result => \$orig_html,
+            Template     => $tmpl,
+            template     => $tmpl,
+            Category     => $category,
+            category     => $category,
+            File         => $file,
+            file         => $file
+        );
+
     }
     1;
 }
@@ -1802,66 +1800,68 @@ sub rebuild_from_fileinfo {
         file_info    => $fi
       );
 
-    if ( $at ne 'index' ) {
-        return 1 if $at eq 'None';
-		my ( $start, $end );
-        my $blog = MT::Blog->load( $fi->blog_id )
-          if $fi->blog_id;
-        my $entry = MT::Entry->load( $fi->entry_id )
-          or return $pub->error(
-            MT->translate( "Parameter '[_1]' is required", 'Entry' ) )
-          if $fi->entry_id;
-        if ( $fi->startdate ) {
-            my $archiver = $pub->archiver($at);
-
-            if ( my $range = $archiver->date_range ) {
-                ( $start, $end ) = $range->( $fi->startdate );
-                $entry = MT::Entry->load( { authored_on => [ $start, $end ] },
-                    { range_incl => { authored_on => 1 }, limit => 1 } )
-                  or return $pub->error(
-                    MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
-            }
-        }
-        my $cat = MT::Category->load( $fi->category_id )
-          if $fi->category_id;
-
-        ## Load the template-archive-type map entries for this blog and
-        ## archive type. We do this before we load the list of entries, because
-        ## we will run through the files and check if we even need to rebuild
-        ## anything. If there is nothing to rebuild at all for this entry,
-        ## we save some time by not loading the list of entries.
-        my $map = MT::TemplateMap->load( $fi->templatemap_id );
-        my $file = $pub->archive_file_for( $entry, $blog, $at, $cat, $map );
-        if ( !defined($file) ) {
-            return $pub->error( $blog->errstr() );
-        }
-        $map->{__saved_output_file} = $file;
-
-        my $ctx = MT::Template::Context->new;
-        $ctx->{current_archive_type} = $at;
-		if ( $start && $end ) {
-        	$ctx->{current_timestamp} = $start;
-        	$ctx->{current_timestamp_end} = $end;
-		}
-
-        my $arch_root =
-          ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
-        return $pub->error(
-            MT->translate("You did not set your blog publishing path") )
-          unless $arch_root;
-
-        my %cond;
-        $pub->rebuild_file( $blog, $arch_root, $map, $at, $ctx, \%cond, 1,
-            FileInfo => $fi, )
-          or return;
-    }
-    else {
+    if ( $at eq 'index' ) {
         $pub->rebuild_indexes(
             BlogID   => $fi->blog_id,
             Template => MT::Template->load( $fi->template_id ),
             Force    => 1,
         ) or return;
+        return 1;
     }
+
+    return 1 if $at eq 'None';
+
+    my ( $start, $end );
+    my $blog = MT::Blog->load( $fi->blog_id )
+      if $fi->blog_id;
+    my $entry = MT::Entry->load( $fi->entry_id )
+      or return $pub->error(
+        MT->translate( "Parameter '[_1]' is required", 'Entry' ) )
+      if $fi->entry_id;
+    if ( $fi->startdate ) {
+        my $archiver = $pub->archiver($at);
+
+        if ( my $range = $archiver->date_range ) {
+            ( $start, $end ) = $range->( $fi->startdate );
+            $entry = MT::Entry->load( { authored_on => [ $start, $end ] },
+                { range_incl => { authored_on => 1 }, limit => 1 } )
+              or return $pub->error(
+                MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
+        }
+    }
+    my $cat = MT::Category->load( $fi->category_id )
+      if $fi->category_id;
+
+    ## Load the template-archive-type map entries for this blog and
+    ## archive type. We do this before we load the list of entries, because
+    ## we will run through the files and check if we even need to rebuild
+    ## anything. If there is nothing to rebuild at all for this entry,
+    ## we save some time by not loading the list of entries.
+    my $map = MT::TemplateMap->load( $fi->templatemap_id );
+    my $file = $pub->archive_file_for( $entry, $blog, $at, $cat, $map );
+    if ( !defined($file) ) {
+        return $pub->error( $blog->errstr() );
+    }
+    $map->{__saved_output_file} = $file;
+
+    my $ctx = MT::Template::Context->new;
+    $ctx->{current_archive_type} = $at;
+    if ( $start && $end ) {
+        $ctx->{current_timestamp} = $start;
+        $ctx->{current_timestamp_end} = $end;
+    }
+
+    my $arch_root =
+      ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
+    return $pub->error(
+        MT->translate("You did not set your blog publishing path") )
+      unless $arch_root;
+
+    my %cond;
+    $pub->rebuild_file( $blog, $arch_root, $map, $at, $ctx, \%cond, 1,
+        FileInfo => $fi, )
+      or return;
+
     1;
 }
 
