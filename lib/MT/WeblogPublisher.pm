@@ -1831,6 +1831,8 @@ sub rebuild_from_fileinfo {
     }
     my $cat = MT::Category->load( $fi->category_id )
       if $fi->category_id;
+    my $author = MT::Author->load( $fi->author_id )
+      if $fi->author_id;
 
     ## Load the template-archive-type map entries for this blog and
     ## archive type. We do this before we load the list of entries, because
@@ -1838,7 +1840,8 @@ sub rebuild_from_fileinfo {
     ## anything. If there is nothing to rebuild at all for this entry,
     ## we save some time by not loading the list of entries.
     my $map = MT::TemplateMap->load( $fi->templatemap_id );
-    my $file = $pub->archive_file_for( $entry, $blog, $at, $cat, $map );
+    my $file = $pub->archive_file_for( $entry, $blog, $at, $cat, $map,
+        undef, $author );
     if ( !defined($file) ) {
         return $pub->error( $blog->errstr() );
     }
