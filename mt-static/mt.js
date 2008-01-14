@@ -2547,6 +2547,7 @@ MT.App.CategorySelector = new Class( Component, {
            if ( closeEl ) 
                DOM.removeClassName( closeEl, "hidden" );
         }
+        DOM.addClassName( "cateogry-field", "selector-active" );
         DOM.removeClassName( this.element, "hidden" );
         this.redraw();
     },
@@ -2566,6 +2567,7 @@ MT.App.CategorySelector = new Class( Component, {
         if ( el )
             DOM.addClassName( el, "hidden" );
         DOM.addClassName( this.element, "hidden" );
+        DOM.removeClassName( "cateogry-field", "selector-active" );
         if ( this.openingEl )
             DOM.removeClassName( this.openingEl, "hidden" );
     },
