@@ -1097,7 +1097,7 @@ li#config-menu {
 
 .stats-widget .object-stats li {
     padding: 3px 5px;
-    border-bottom: 1px dashed #cddee7;
+    border-bottom: 1px dotted #cddee7;
 }
 
 #manage-link {
@@ -3011,7 +3011,7 @@ body.preview-screen {
 .edit-asset #related-content .asset {
     clear: left;
     margin-bottom: 8px;
-    border-bottom: 1px dashed #cddee7;
+    border-bottom: 1px dotted #cddee7;
     padding-bottom: 4px;
 }
 
