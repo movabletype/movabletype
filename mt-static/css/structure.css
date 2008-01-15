@@ -655,9 +655,11 @@ li#config-menu {
 }
 
 .display-options-link {
-    float: right;
-    padding-right: 15px;
+    position: absolute;
+    top: 9px;
+    right: 20px;
     background: transparent url(../images/display-options-link.gif) no-repeat right center;
+    padding-right: 18px;
 }
 .display-options-link:hover {
     background-image: url(../images/display-options-link-system.gif);
