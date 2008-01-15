@@ -17136,7 +17136,7 @@ sub do_import {
     $app->send_http_header('text/html');
 
     my $param;
-    $param = { import_as_me => $import_as_me, import_upload => ($fh ? 0 : 1) };
+    $param = { import_as_me => $import_as_me, import_upload => ($fh ? 1 : 0) };
 
     $app->print( $app->build_page( 'include/import_start.tmpl', $param ) );
 
