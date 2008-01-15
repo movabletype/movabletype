@@ -391,6 +391,11 @@ sub js_recent_entries_for_tag {
     $tmpl->param( 'script_url', $app->uri );
     $tmpl->param( 'tag',        $tag_name );
     $tmpl->param( 'blog_id',    $blog_id ) if $blog_id;
+    my $editable = $app->user->is_superuser;
+    if ( $blog_id && !$editable ) {
+        $editable = $user->permissions($blog_id)->can_edit_all_posts;
+    }
+    $tmpl->param('editable',    $editable);
     my $html = $app->build_page( $tmpl );
     return $app->json_result( { html => $html } );
 }
@@ -1546,13 +1551,45 @@ sub core_menus {
             label      => "Entries",
             mode       => 'list_entry',
             order      => 1000,
-            permission => 'create_post,publish_post,edit_all_posts',
+            condition  => sub {
+                return 1 if $app->user->is_superuser;
+                if ( $app->param('blog_id') ) {
+                    my $perms = $app->user->permissions($app->param('blog_id'));
+                    return 1 if $perms->can_create_post || $perms->can_publish_post || $perms->can_edit_all_posts;
+                }
+                else {
+                    require MT::Permission;
+                    my @blogs = 
+                        map { $_->blog_id }
+                          grep { $_->can_create_post || $_->can_pubish_post || $_->can_edit_all_posts }
+                          MT::Permission->load( { author_id => $app->user->id } );
+                    return 1 if @blogs;
+                }
+                return 0;
+            },
+            #permission => 'create_post,publish_post,edit_all_posts',
         },
         'manage:comment' => {
             label      => "Comments",
-            mode       => 'list_comments',
+            mode       => 'list_comment',
             order      => 2000,
-            permission => 'create_post,edit_all_posts,manage_feedback,comment',
+            condition  => sub {
+                return 1 if $app->user->is_superuser;
+                if ( $app->param('blog_id') ) {
+                    my $perms = $app->user->permissions($app->param('blog_id'));
+                    return 1 if $perms->can_create_post || $perms->can_manage_feedback || $perms->can_edit_all_posts || $perms->can_comment;
+                }
+                else {
+                    require MT::Permission;
+                    my @blogs = 
+                        map { $_->blog_id }
+                          grep { $_->can_create_post || $_->can_manage_feedback || $_->can_edit_all_posts || $_->can_comment }
+                          MT::Permission->load( { author_id => $app->user->id } );
+                    return 1 if @blogs;
+                }
+                return 0;
+            },
+            #permission => 'create_post,edit_all_posts,manage_feedback,comment',
         },
         'manage:asset' => {
             label      => "Assets",
@@ -3980,7 +4017,13 @@ sub mt_blog_stats_widget_comment_tab {
     my $user    = $app->user;
     my $blog    = $app->blog;
     my $blog_id = $blog->id if $blog;
-    
+
+    $param->{editable} = $user->is_superuser;
+    if ( $blog && !$param->{editable} ) {
+        $param->{editable} = $user->permissions($blog_id)->can_edit_all_posts;
+        $param->{comment_editable} = $user->permissions($blog_id)->can_manage_feedback;
+    }
+
     my $comments = sub {
         my $args = {
             limit     => 10,
@@ -4017,7 +4060,12 @@ sub mt_blog_stats_widget_entry_tab {
     my $user    = $app->user;
     my $blog    = $app->blog;
     my $blog_id = $blog->id if $blog;
-    
+
+    $param->{editable} = $user->is_superuser;
+    if ( $blog && !$param->{editable} ) {
+        $param->{editable} = $user->permissions($blog_id)->can_edit_all_posts;
+    }
+
     my $entries = sub {
         my $args = {
             limit     => 10,
@@ -6205,7 +6253,7 @@ sub edit_object {
             $app->add_breadcrumb(
                 $app->translate('Comments'),
                 $app->uri(
-                    'mode' => 'list_comments',
+                    'mode' => 'list_comment',
                     args   => { blog_id => $blog_id }
                 )
             );
