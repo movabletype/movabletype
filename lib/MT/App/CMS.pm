@@ -2295,7 +2295,8 @@ sub build_asset_hasher {
         my $blog = $blogs{ $obj->blog_id } ||= $obj->blog;
         $row->{blog_name} = $blog ? $blog->name : '-';
         $row->{url} = $obj->url; # this has to be called to calculate
-        $row->{asset_class} = $obj->class_label;
+        $row->{asset_type} = $obj->class_type;
+        $row->{asset_class_label} = $obj->class_label;
         my $file_path = $obj->file_path; # has to be called to calculate
         my $meta = $obj->metadata;
         if ( $file_path && ( -f $file_path ) ) {
