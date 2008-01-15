@@ -289,13 +289,13 @@ sub create_default_widgetsets {
             widgets => [
                 'Search',            'About This Page',
                 'Home Page Widgets', 'Archives',
-                'Pages',             'Syndication',
+                'Page Listing',             'Syndication',
                 'Powered By',
             ],
         },
         {
             label   => '3-column layout - Primary Sidebar',
-            widgets => [ 'Archives', 'Pages', 'Syndication', 'Powered By', ],
+            widgets => [ 'Archives', 'Page Listing', 'Syndication', 'Powered By', ],
         },
         {
             label   => '3-column layout - Secondary Sidebar',
