@@ -54,7 +54,7 @@ TC.attachLoadEvent(init);
     <div id="refresh-panel" class="hidden panel">
 
     <mt:setvarblock name="refresh_label"><mt:loop name="template_set_loop"><mt:if name="selected"><__trans phrase="Refresh [_1] template set" params="<mt:var name="label" escape="html">"></mt:if></mt:loop></mt:setvarblock>
-        
+
     <mtapp:setting
         id="refresh_templates"
         label="$refresh_label"
@@ -67,33 +67,40 @@ TC.attachLoadEvent(init);
         </div>
     </mtapp:setting>
 
+    <mt:if name="template_set_count" gt="1">
     <mt:setvarblock name="new_label"><__trans phrase="Apply a new template set"></mt:setvarblock>
+    <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and install the selected template set."></mt:setvarblock>
+    <mt:else>
+    <mt:setvarblock name="new_label"><__trans phrase="Reset to factory defaults"></mt:setvarblock>
+    <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and installs factory default template set."></mt:setvarblock>
+    </mt:if>
 
     <mtapp:setting
         id="clean_start"
         label="$new_label"
         show_label="0"
         show_hint="1"
-        hint="<__trans phrase="Deletes all existing templates and installs factory default template set.">"
+        hint="$new_hint"
         label_class="top-label">
 
         <div class="field-header">
             <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" /> <$mt:var name="new_label"$></label>
         </div>
 
-        <mt:if name="template_set_index" gt="1">
+        <mt:if name="template_set_count" gt="1">
         <select id="template_set" name="template_set" size="1" disabled="disabled">
             <mt:loop name="template_set_loop">
             <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
             </mt:loop>
-        </select>
         <mt:else>
             <mt:loop name="template_set_loop">
-        <input type="hidden" name="template_set" value="<mt:var name="key" escape="html">" />
+            <input type="hidden" name="template_set" value="<mt:var name="key" escape="html">" />
             </mt:loop>
         </mt:if>
+        </select>
 
     </mtapp:setting>
+
 
         <div>
         <input type="checkbox" id="backup" name="backup" value="1" checked="checked" />
