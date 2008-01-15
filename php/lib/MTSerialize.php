@@ -72,8 +72,12 @@ class MTSerialize {
                     $key_name_len = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                     $key_name = substr($s["frozen"], $s["pos"] + 4, $key_name_len["len"]);
                     $s["pos"] += 4 + $key_name_len["len"];
-                    $h = $s["heater"];
-                    $values[$key_name] = $h($s);
+                    if ( strlen($s["frozen"]) >= $s["pos"] + 4 ) {
+                        $h = $s["heater"];
+                        $values[$key_name] = $h($s);
+                    } else {
+                        $values[$key_name] = "";
+                    }
                 }
                 return $values;
             '),
