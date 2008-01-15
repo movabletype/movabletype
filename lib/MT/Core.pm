@@ -247,6 +247,7 @@ BEGIN {
             'DefaultLanguage' => {
                 default => 'en_US',
             },
+            'LocalPreviews'   => { default => 0 },
             'DefaultSiteRoot' => { default => '', },
             'DefaultSiteURL'  => { default => '', },
             'DefaultCommenterAuth' => { default => 'MovableType,LiveJournal,Vox' },

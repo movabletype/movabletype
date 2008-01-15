@@ -14650,6 +14650,20 @@ sub preview_entry {
         $fullscreen = 1;
     }
 
+    # If MT is configured to do 'local' previews, convert all
+    # the normal blog URLs into the domain used by MT itself (ie,
+    # blog is published to www.example.com, which is a different
+    # server from where MT runs, mt.example.com; previews therefore
+    # should occur locally, so replace all http://www.example.com/
+    # with http://mt.example.com/).
+    my ($old_url, $new_url);
+    if ($app->config('LocalPreviews')) {
+        $old_url = $blog->site_url;
+        $old_url =~ s!^(https?://[^/]+?/)(.*)?!$1!;
+        $new_url = $app->base . '/';
+        $html =~ s!\Q$old_url\E!$new_url!g;
+    }
+
     if ( !$fullscreen ) {
         my $fmgr = $blog->file_mgr;
 
@@ -14669,6 +14683,13 @@ sub preview_entry {
             $param{preview_file} = $preview_basename;
             my $preview_url = $entry->archive_url;
             $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
+
+            # We also have to translate the URL used for the
+            # published file to be on the MT app domain.
+            if (defined $new_url) {
+                $preview_url =~ s!^\Q$old_url\E!$new_url!;
+            }
+
             $param{preview_url}  = $preview_url;
 
             # we have to make a record of this preview just in case it
