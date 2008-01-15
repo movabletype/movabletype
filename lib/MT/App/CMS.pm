@@ -8487,6 +8487,8 @@ sub CMSPostSave_blog {
                 category => 'new',
             }
         );
+
+        $app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
     }
     else {
 
@@ -8510,6 +8512,11 @@ sub CMSPostSave_blog {
         if ( grep { $original->column($_) ne $obj->column($_) }
             qw(allow_pings allow_comment_html) )
         {
+            $app->add_return_arg( need_full_rebuild => 1 );
+        }
+
+        if ( ($original->template_set || '') ne ($obj->template_set || '') ) {
+            $app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
             $app->add_return_arg( need_full_rebuild => 1 );
         }
     }
@@ -20469,6 +20476,7 @@ sub refresh_all_templates {
                 if ($template_set) {
                     $blog->template_set( $template_set );
                     $blog->save;
+                    $app->run_callbacks( 'blog_template_set_change', { blog => $blog } );
                 }
 
                 next;

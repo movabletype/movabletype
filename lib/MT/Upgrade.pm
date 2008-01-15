@@ -750,6 +750,7 @@ sub core_upgrade_functions {
                 },
                 code => sub {
                     $_[0]->template_set('mt_blog');
+                    MT->run_callbacks( 'blog_template_set_change', { blog => $_[0] } );
                 },
             },
         },
@@ -1440,6 +1441,7 @@ sub seed_database {
     $blog->server_offset(exists $param{blog_timezone} ? ($param{blog_timezone} || 0) : 0);
     $blog->template_set($param{blog_template_set});
     $blog->save;
+    MT->run_callbacks( 'blog_template_set_change', { blog => $obj } );
 
     # Create an initial entry and comment for this blog
     require MT::Entry;
