@@ -570,7 +570,11 @@ class MT {
             && isset($data['fileinfo']['fileinfo_entry_id'])
             && is_numeric($data['fileinfo']['fileinfo_entry_id'])
         ) {
-            $entry = $this->db->fetch_entry($data['fileinfo']['fileinfo_entry_id']);
+            if (strtolower($data['templatemap']['templatemap_archive_type']) == 'page') {
+                $entry = $this->db->fetch_page($data['fileinfo']['fileinfo_entry_id']);
+            } else {
+                $entry = $this->db->fetch_entry($data['fileinfo']['fileinfo_entry_id']);
+            }
             require_once('function.mtentrystatus.php');
             if (!isset($entry) || $entry['entry_status'] != STATUS_RELEASE)
                 return;
