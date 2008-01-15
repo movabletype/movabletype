@@ -1893,7 +1893,8 @@ sub publish_future_posts {
         my $iter = MT::Entry->load_iter(
             {
                 blog_id => $blog->id,
-                status  => MT::Entry::FUTURE()
+                status  => MT::Entry::FUTURE(),
+                class   => '*'
             },
             {
                 'sort'    => 'authored_on',
