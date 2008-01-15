@@ -43,6 +43,12 @@ function validate (f) {
     }
     return true;
 }
+
+function setLicense() {
+    var w = window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no');
+    if ( w ) w.focus();
+   return false;
+}
 //-->
 </script>
 
@@ -130,11 +136,11 @@ function validate (f) {
 <div id="has-license" style="display: none;">
 <mt:if name="cc_license"><a href="<mt:var name="cc_license_url">"><img src="<mt:var name="cc_license_image_url">" /></a><br /></mt:if>
 <__trans phrase="Your blog is currently licensed under:"> <strong id="cc-license-name"><mt:var name="cc_license_name"></strong><br />
-<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="javascript:void(0)"><__trans phrase="Change license"></a> | <a onclick="doRemoveLicense(); return false" href="javascript:void(0)"><__trans phrase="Remove license"></a>
+<a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a> | <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a>
 </div>
 <div id="no-license" style="display: none;">
 <__trans phrase="Your blog does not have an explicit Creative Commons license."><br />
-<a onclick="window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no'); return false" href="javascript:void(0)"><__trans phrase="Select a license"></a>
+<a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
 </div>
 <mt:if name="cc_license">
 <script type="text/javascript">
