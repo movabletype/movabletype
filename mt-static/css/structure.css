@@ -2305,6 +2305,7 @@ optgroup option {
     position: relative;
     height: 79px;
     width: 79px;
+    overflow: hidden;
     background: #000;
     border: none;
 }
@@ -2315,6 +2316,11 @@ optgroup option {
 }
 #asset-listing-table .asset-thumb a span {
     display: none;
+}
+
+#asset-listing-table .asset-thumbnail .asset-type-youtube .asset-thumb a img {
+    margin-left: -25px;
+    margin-top: -9px;
 }
 
 #asset-listing-table .status-missing .as-asset-type {
