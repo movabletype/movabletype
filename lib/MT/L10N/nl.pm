@@ -1,8 +1,7 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Copyright 2003-2008 Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::nl;
 use strict;
@@ -236,9 +235,9 @@ use vars qw( @ISA %Lexicon );
 	'Tracked on <a href="[_1]">[_2]</a>' => 'Getracked op <a href="[_1]">[_2]</a>',
 
 ## default_templates/sidebar.mtml
-	'2-column layout - Sidebar' => 'layout twee kolommen - Zijkolom', # Translate - New
-	'3-column layout - Primary Sidebar' => 'layout drie kolommen - Primaire zijkolom', # Translate - New
-	'3-column layout - Secondary Sidebar' => 'layout drie kolommen - Secundaire zijkolom', # Translate - New
+	'2-column layout - Sidebar' => 'layout twee kolommen - Zijkolom',
+	'3-column layout - Primary Sidebar' => 'layout drie kolommen - Primaire zijkolom',
+	'3-column layout - Secondary Sidebar' => 'layout drie kolommen - Secundaire zijkolom',
 
 ## default_templates/categories.mtml
 
@@ -549,8 +548,6 @@ use vars qw( @ISA %Lexicon );
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Mislukte poging om een reactie achter te laten van op registratie wachtende gebruiker \'[_1]\'',
 	'Registered User' => 'Geregistreerde gebruiker',
 	'The sign-in attempt was not successful; please try again.' => 'Aanmeldingspoging mislukt; gelieve opnieuw te proberen.',
-	'The sign-in validation was not successful. Please make sure your weblog is properly configured and try again.' => 'De validering bij het aanmelden is mislukt. Gelieve u ervan te vergewissen dat uw weblog goed is ingesteld en probeer opnieuw.',
-	'No such entry ID \'[_1]\'' => 'Geen bericht-ID \'[_1]\'',
 	'No entry was specified; perhaps there is a template problem?' => 'Geen bericht opgegeven; misschien is er een sjabloonprobleem?',
 	'Somehow, the entry you tried to comment on does not exist' => 'Het bericht waar u een reactie op probeerde achter te laten, bestaat niet',
 	'Invalid commenter ID' => 'Ongeldig reageerder-ID',
@@ -990,6 +987,7 @@ use vars qw( @ISA %Lexicon );
 	'Parent comment was not found.' => 'Ouder-reactie werd niet gevonden.',
 	'You can\'t reply to unapproved comment.' => 'U kunt niet antwoorden op een niet-gekeurde reactie.',
 	'You can\'t reply to unpublished comment.' => 'U kunt niet reageren op een niet gepubliceerde reactie.',
+	' (Backup from [_1])' => ' (Backup van [_1])', # Translate - New
 	'Error creating new template: ' => 'Fout bij aanmaken nieuw sjabloon: ',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Sjabloon \'[_1]\' wordt overgeslagen, omdat het blijkbaar een gepersonaliseerd sjabloon is.',
 	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => 'Bezig sjabloon <strong>[_3]</strong> te verversen met <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
@@ -1234,6 +1232,7 @@ use vars qw( @ISA %Lexicon );
 	'Adding new feature widget to dashboard...' => 'Nieuw widget wordt aan dashbord toegevoegd...',
 	'Moving OpenID usernames to external_id fields...' => 'OpenID gebruikersnamen aan het verplaatsen naar external_id velden...',
 	'Assigning blog template set...' => 'Blog sjabloonset aan het toekennen...',
+	'Assigning blog page layout...' => 'Blog pagina layout aan het toekennen...', # Translate - New
 
 ## lib/MT/Core.pm
 	'Create Blogs' => 'Blogs aanmaken',
@@ -1841,7 +1840,7 @@ use vars qw( @ISA %Lexicon );
 	'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'Deze map is ofwel van naam veranderd of is verplaatst naar een locatie buiten de Movable Type map.',
 	'Once the [_1] directory is in a web-accessible location, specify the location below.' => 'Zodra de [_1] map verplaatst is naar een web-toegankelijke plaats, geef dan de locatie ervan hieronder op.',
 	'This URL path can be in the form of [_1] or simply [_2]' => 'Dit URL pad kan in de vorm zijn van [_1] of eenvoudigweg [_2]',
-	'This path must be in the form of [_1]' => 'Dit pad moet deze vorm hebben [_1]', # Translate - New
+	'This path must be in the form of [_1]' => 'Dit pad moet deze vorm hebben [_1]',
 	'Static web path' => 'Pad voor statische bestanden',
 	'Static file path' => 'Statisch bestandspad',
 	'Begin' => 'Start!',
@@ -1905,7 +1904,7 @@ use vars qw( @ISA %Lexicon );
 	'Users for [_1]' => 'Gebruikers voor [_1]',
 
 ## tmpl/cms/include/copyright.tmpl
-	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.', # Translate - New
+	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
 
 ## tmpl/cms/include/comment_table.tmpl
 	'comment' => 'reactie',
@@ -2085,12 +2084,12 @@ use vars qw( @ISA %Lexicon );
 	'Only show pages for review' => 'Enkel na te kijken pagina\'s tonen',
 	'Only show scheduled entries' => 'Enkel geplande berichten tonen',
 	'Only show scheduled pages' => 'Enkel geplande pagina\'s tonen',
-	'Edit Entry' => 'Bericht bewerken', # Translate - New
-	'Edit Page' => 'Pagina bewerken', # Translate - New
+	'Edit Entry' => 'Bericht bewerken',
+	'Edit Page' => 'Pagina bewerken',
 	'View entry' => 'Bericht bekijken',
-	'View page' => 'Pagina bekijken', # Translate - New
-	'No entries could be found. <a href="[_1]">Create Entry</a>' => 'Er werden geen berichten gevonden <a href="[_1]">Bericht aanmaken</a>', # Translate - New
-	'No page could be found. <a href="[_1]">Create Page</a>' => '', # Translate - New
+	'View page' => 'Pagina bekijken',
+	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Er werden geen berichten gevonden. Nu <a href="[_1]">een bericht aanmaken</a>.', # Translate - New
+	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'Er werden geen pagina\'s gevonden. Nu <a href="[_1]">een pagina aanmaken</a>.', # Translate - New
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2147,6 +2146,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'Subcategorie toevoegen',
+	'Add new' => 'Nieuw toevogen',
 
 ## tmpl/cms/include/display_options.tmpl
 	'Display Options' => 'Opties voor schermindeling',
@@ -2193,12 +2193,11 @@ use vars qw( @ISA %Lexicon );
 	'Select File to Upload' => 'Selecteer bestand om te uploaden',
 	'_USAGE_UPLOAD' => 'U kunt het bestand opladen naar een submap van het geselecteerde pad.  De submap zal worden aangemaakt als die nog niet bestaat.',
 	'Upload Destination' => 'Uploadbestemming',
-	'Choose Folder' => '', # Translate - New
+	'Choose Folder' => 'Kies map',
 	'Upload (s)' => 'Opladen (s)',
 	'Upload' => 'Opladen',
 	'Back (b)' => 'Terug (b)',
 	'Cancel (x)' => 'Annuleren (x)',
-	'Add [lc,_1] name' => 'Voeg [lc,_1] naam toe',
 
 ## tmpl/cms/include/header.tmpl
 	'Hi [_1],' => 'Hallo [_1],',
@@ -2311,20 +2310,20 @@ use vars qw( @ISA %Lexicon );
 	'No assets could be found.' => 'Kon geen mediabestand vinden',
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
-	'Refresh Template Set' => '', # Translate - New
-	'Refresh [_1] template set' => '', # Translate - New
-	'Updates current templates while retaining any user-created or user-modified templates.' => '', # Translate - New
-	'Apply a new template set' => '', # Translate - New
-	'Deletes all existing templates and installs factory default template set.' => '', # Translate - New
-	'Make backups of existing templates first' => '', # Translate - New
-	'You have requested to <strong>refresh the current template set</strong>. This action will:' => '', # Translate - New
-	'potentially install new templates' => '', # Translate - New
-	'overwrite some existing templates with new template code' => '', # Translate - New
-	'backups will be made of your templates and can be accessed through your backup filter' => '', # Translate - New
-	'You have requested to <strong>apply a new template set</strong>. This action will:' => '', # Translate - New
-	'delete all of the templates in your blog' => '', # Translate - New
-	'install new templates from the selected template set' => '', # Translate - New
-	'Are you sure you wish to continue?' => '', # Translate - New
+	'Refresh Template Set' => 'Sjabloonset verversen',
+	'Refresh [_1] template set' => 'Ververs [_1] sjabloonset',
+	'Updates current templates while retaining any user-created or user-modified templates.' => 'Werkt huidige sjablonen bij behalve die door gebruiker(s) zijn aangemaakt of aangepast.',
+	'Apply a new template set' => 'Nieuwe sjabloonset toepassen',
+	'Deletes all existing templates and installs factory default template set.' => 'Verwijdert alle bestaande sjablonen en installeert de standaard sjabloonset uit de \'fabrieksinstellingen\'.',
+	'Make backups of existing templates first' => 'Eerst backups nemen van bestaande sjablonen',
+	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'U heeft gevraagd om <strong>de huidige sjabloonset te verversen</strong>.  Deze actie zal:',
+	'potentially install new templates' => 'potentiëel nieuwe sjablonen installeren',
+	'overwrite some existing templates with new template code' => 'enkele bestaande sjablonen overschrijven met nieuwe sjablooncode',
+	'backups will be made of your templates and can be accessed through your backup filter' => 'backups zullen gemaakt worden van al uw sjabonen waartoe u achteraf via de backup-filter toegang kunt krijgen.',
+	'You have requested to <strong>apply a new template set</strong>. This action will:' => 'U heeft gevraagd om <strong>een nieuwe sjabloonset toe te passen</strong>. Deze actie zal:',
+	'delete all of the templates in your blog' => 'alle sjablonen in uw blog verwijderen',
+	'install new templates from the selected template set' => 'nieuwe sjablonen installeren uit de geselecteerde sjabloonset',
+	'Are you sure you wish to continue?' => 'Bent u zeker dat verder u wenst te gaan?',
 
 ## tmpl/cms/dialog/comment_reply.tmpl
 	'Reply to comment' => 'Reactie beantwoorden',
@@ -2406,6 +2405,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => 'quant,_1,entry,entries] getagd &ldquo;[_2]&rdquo;',
+	'...' => '...',
 	'Posted by [_1] [_2] in [_3]' => 'Gepubliceerd door [_1] [_2] op [_3]',
 	'Posted by [_1] [_2]' => 'Gepubliceerd door [_1] [_2]',
 	'Tagged: [_1]' => 'Getagd: [_1]',
@@ -2442,10 +2442,10 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/new_version.tmpl
 	'What\'s new in Movable Type [_1]' => 'Nieuw in Movable Type [_1]',
-	'Congratulations, you have successfully installed Movable Type [_1]. Listed below is an overview of the new features found in this release.' => '', # Translate - New
+	'Congratulations, you have successfully installed Movable Type [_1]. Listed below is an overview of the new features found in this release.' => 'Proficiat, u heeft met succes Movable Type [_1] geïnstalleerd.  Hieronder vindt u een overzicht van de nieuwe mogelijkheden in deze release.',
 
 ## tmpl/cms/widget/this_is_you.tmpl
-	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => '', # Translate - New
+	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => 'Uw <a href="[_1]">laatste bericht</a> was [_2] op <a href="[_3]">[_4]</a>.',
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => 'U heeft <a href="[_1]">[quant,_2,kladbericht, kladberichten]</a>.',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'U heeft <a href="[_1]">[quant,_2,bericht,berichten]</a> geschreven met <a href="[_3]">[quant,_4,reactie,reacties]</a>.',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>.' => 'U heeft <a href="[_1]">[quant,_2,bericht,berichten]</a> geschreven.',
@@ -2476,7 +2476,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/blog_stats_entry.tmpl
 	'Most Recent Entries' => 'Recentste berichten',
-	'...' => '...',
 	'View all entries' => 'Alle berichten bekijken',
 
 ## tmpl/cms/widget/blog_stats_tag_cloud.tmpl
@@ -2529,12 +2528,12 @@ use vars qw( @ISA %Lexicon );
 	'Commenting' => 'Reageren',
 	'Duplicate Roles' => 'Dubbele rollen',
 	'These roles have the same privileges as this role' => 'Deze rollen hebben dezelfde rechten als deze rol',
-	'Save changes to this role (s)' => '', # Translate - New
+	'Save changes to this role (s)' => 'Wijzigingen aan deze rol opslaan (s)',
 
 ## tmpl/cms/cfg_plugin.tmpl
 	'System Plugin Settings' => 'Systeeminstellingen plugins',
 	'Useful links' => 'Nuttige links',
-	'http://plugins.movabletype.org/' => '', # Translate - New
+	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.org',
 	'Find Plugins' => 'Plugins vinden',
 	'Plugin System' => 'Plugin systeem',
 	'Manually enable or disable plugin-system functionality. Re-enabling plugin-system functionality, will return all plugins to their original state.' => 'Manueel pluginsysteem functionaliteit in- of uitschakelen.  Pluginsysteem functionaliteit opnieuw inschakelen zal alle plugins weer in hun oorspronkelijke staat brengen.',
@@ -2596,7 +2595,7 @@ use vars qw( @ISA %Lexicon );
 	'Save (s)' => 'Opslaan (s)',
 	'Save and Publish this template (r)' => 'Dit sjabloon opslaan en publiceren (r)',
 	'Save &amp; Publish' => 'Opslaan &amp; publiceren',
-	'You have unsaved changes to this template that will be lost.' => '', # Translate - New
+	'You have unsaved changes to this template that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan dit sjabloon die verloren zullen gaan.',
 	'You must set the Template Name.' => 'U moet de naam van het sjabloon instellen',
 	'You must set the template Output File.' => 'U moet het uitvoerbestand van het sjabloon instellen.',
 	'Please wait...' => 'Even wachten...',
@@ -2652,23 +2651,22 @@ use vars qw( @ISA %Lexicon );
 	'Setting Ignored' => 'Instelling genegeerd',
 	'Note: The above option is currently ignored since outbound pings are disabled system-wide.' => 'Opmerking: bovenstaande optie wordt momenteel genegeerd omdat uitgaande pings op systeemniveau uitgeschakeld zijn.',
 	'Enable Internal TrackBack Auto-Discovery' => 'Interne automatische TrackBack-ontdekking inschakelen',
-	'Save changes to these settings (s)' => '', # Translate - New
+	'Save changes to these settings (s)' => 'Wijzigingen aan deze instellingen opslaan (s)',
 
 ## tmpl/cms/list_entry.tmpl
-	'Entries Feed' => '', # Translate - New
-	'Pages Feed' => '', # Translate - New
-	'The entry has been deleted from the database.' => '', # Translate - New
-	'The page has been deleted from the database.' => '', # Translate - New
+	'Entries Feed' => 'Berichtenfeed',
+	'Pages Feed' => 'Feed pagina\'s',
+	'The entry has been deleted from the database.' => 'Dit bericht werd verwijderd uit de database',
+	'The page has been deleted from the database.' => 'Deze pagina werd verwijderd uit de database',
 	'Quickfilters' => 'Snelfilters',
 	'[_1] (Disabled)' => '[_1] (Uitgeschakeld)',
-	'Go back' => 'Ga terug',
 	'Showing only: [_1]' => 'Enkel: [_1]',
 	'Remove filter' => 'Filter verwijderen',
 	'All [_1]' => 'Alle [_1]',
 	'change' => 'wijzig',
 	'[_1] where [_2] is [_3]' => '[_1] waar [_2] gelijk is aan [_3]',
-	'Show only entries where' => '', # Translate - New
-	'Show only pages where' => '', # Translate - New
+	'Show only entries where' => 'Toon enkel berichten waar',
+	'Show only pages where' => 'Toon enkel pagina\'s waar',
 	'status' => 'status',
 	'tag (exact match)' => 'tag (exacte overeenkomst)',
 	'tag (fuzzy match)' => 'tag (fuzzy overeenkomst)',
@@ -2676,9 +2674,9 @@ use vars qw( @ISA %Lexicon );
 	'published' => 'gepubliceerd',
 	'unpublished' => 'ongepubliceerd',
 	'scheduled' => 'gepland',
-	'Select An Asset:' => '', # Translate - New
-	'Asset Search...' => '', # Translate - New
-	'Recent Assets...' => '', # Translate - New
+	'Select An Asset:' => 'Selecteer een mediabestand',
+	'Asset Search...' => 'Zoek mediabestanden...',
+	'Recent Assets...' => 'Recente mediabestanden',
 	'Select A User:' => 'Selecteer een gebruiker:',
 	'User Search...' => 'Zoeken naar gebruiker...',
 	'Recent Users...' => 'Recente gebruikers...',
@@ -2690,14 +2688,14 @@ use vars qw( @ISA %Lexicon );
 	'Comments from [_1]' => 'Reacties van [_1]',
 	'commenter' => 'reageerder',
 	'commenters' => 'reageerders',
-	'Trust user (t)' => '', # Translate - New
-	'Trust' => 'Vertrouw',
-	'Untrust user (t)' => '', # Translate - New
-	'Untrust' => 'Wantrouw',
-	'Ban user (b)' => '', # Translate - New
+	'Trust user (t)' => 'Gebruiker vertrouwen (t)',
+	'Trust' => 'Vertrouwen',
+	'Untrust user (t)' => 'Gebruiker niet meer vertrouwen (r)',
+	'Untrust' => 'Niet vetrouwen',
+	'Ban user (b)' => 'Gebruiker verbannen (b)',
 	'Ban' => 'Verban',
-	'Unban user (b)' => '', # Translate - New
-	'Unban' => 'Ontban',
+	'Unban user (b)' => 'Ban op gebruiker opheffen',
+	'Unban' => 'Ban opheffen',
 	'The Name of the commenter' => 'Naam van de reageerder',
 	'View all comments with this name' => 'Alle reacties met deze naam bekijken',
 	'The Identity of the commenter' => 'De identiteit van de reageerder',
@@ -2723,7 +2721,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Users' => 'Gebruikers beheren',
 	'Are you sure you want to remove this role?' => 'Bent u zeker dat u deze rol wenst te verwijderen?',
 	'Add a user to this blog' => 'Voeg een gebruiker toe aan deze blog',
-	'Show only users where' => '', # Translate - New
+	'Show only users where' => 'Enkel gebruikers tonen waar',
 	'role' => 'rol',
 	'enabled' => 'ingeschakeld',
 	'disabled' => 'uitgeschakeld',
@@ -2784,62 +2782,66 @@ use vars qw( @ISA %Lexicon );
 	'Make Backup' => 'Backup maken',
 
 ## tmpl/cms/edit_entry.tmpl
-	'Create Page' => '', # Translate - New
-	'Add folder' => '', # Translate - New
-	'Add folder name' => '', # Translate - New
-	'Add new folder parent' => '', # Translate - New
-	'Save this page (s)' => '', # Translate - New
-	'Preview this page (v)' => '', # Translate - New
-	'Delete this page (x)' => '', # Translate - New
-	'Add category' => '', # Translate - New
-	'Add category name' => '', # Translate - New
-	'Add new category parent' => '', # Translate - New
-	'Save this entry (s)' => '', # Translate - New
-	'Preview this entry (v)' => '', # Translate - New
-	'Delete this entry (x)' => '', # Translate - New
-	'A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => '', # Translate - New
-	'A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => '', # Translate - New
-	'This entry has been saved.' => '', # Translate - New
-	'This page has been saved.' => '', # Translate - New
+	'Create Page' => 'Pagina aanmaken',
+	'Add folder' => 'Map toevoegen',
+	'Add folder name' => 'Mapnaam toevoegen',
+	'Add new folder parent' => 'Nieuwe bovenliggende map toevoegen',
+	'Save this page (s)' => 'Pagina opslaan (s)',
+	'Preview this page (v)' => 'Voorbeeld pagina bekijken (v)',
+	'Delete this page (x)' => 'Pagina verwijderen (x)',
+	'View Page' => 'Pagina bekijken', # Translate - Case
+	'Add category' => 'Categorie toevoegen',
+	'Add category name' => 'Categorienaam toevoegen',
+	'Add new category parent' => 'Nieuwe bovenliggende categorie toevoegen',
+	'Save this entry (s)' => 'Bericht opslaan (s)',
+	'Preview this entry (v)' => 'Voorbeeld bericht bekijken (v)',
+	'Delete this entry (x)' => 'Bericht verwijderen (x)',
+	'View Entry' => 'Bericht bekijken',
+	'A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'Een veiligheidskopie van dit bericht werd automatisch opgeslagen [_2]. <a href="[_1]">Automatisch opgeslagen inhoud terughalen</a>', # Translate - New
+	'A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'Een veiligheidskopie van deze pagina werd automatisch opgeslagen [_2]. <a href="[_1]">Automatisch opgeslagen inhoud terughalen</a>', # Translate - New
+	'This entry has been saved.' => 'Dit bericht werd opgeslagen', # Translate - New
+	'This page has been saved.' => 'Deze pagina werd opgeslagen', # Translate - New
 	'One or more errors occurred when sending update pings or TrackBacks.' => 'Eén of meer problemen deden zich voor bij het versturen van update pings of TrackBacks.',
 	'_USAGE_VIEW_LOG' => 'Controleer het <a href=\"[_1]\">Activiteitenlog</a> op deze fout.',
 	'Your customization preferences have been saved, and are visible in the form below.' => 'Uw voorkeuren zijn opgeslagen en het formulier hieronder is aangepast.',
 	'Your changes to the comment have been saved.' => 'Uw wijzigingen aan de reactie zijn opgeslagen.',
 	'Your notification has been sent.' => 'Uw notificatie is verzonden.',
-	'You have successfully recovered your saved entry.' => '', # Translate - New
-	'You have successfully recovered your saved page.' => '', # Translate - New
-	'An error occurred while trying to recover your saved entry.' => '', # Translate - New
-	'An error occurred while trying to recover your saved page.' => '', # Translate - New
+	'You have successfully recovered your saved entry.' => 'Veiligheidskopie van opgeslagen bericht met succes teruggehaald.', # Translate - New
+	'You have successfully recovered your saved page.' => 'Veiligheidskopie van opgeslagen pagina met succes teruggehaald.', # Translate - New
+	'An error occurred while trying to recover your saved entry.' => 'Er deed zich een fout voor bij het terughalen van uw opgeslagen bericht.', # Translate - New
+	'An error occurred while trying to recover your saved page.' => 'Er deed zich een fout voor bij het terughalen van uw opgeslagen pagina.', # Translate - New
 	'You have successfully deleted the checked comment(s).' => 'Verwijdering van de geselecteerde reactie(s) is geslaagd.',
 	'You have successfully deleted the checked TrackBack(s).' => 'U heeft de geselecteerde TrackBack(s) met succes verwijderd.',
-	'Stats' => '', # Translate - New
-	'Share' => '', # Translate - New
-	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '', # Translate - New
-	'<a href="[_2]">[quant,_1,trackback,trackbacks]</a>' => '', # Translate - New
+	'Change Folder' => 'Map wijzigen', # Translate - New
+	'Stats' => 'Statistieken', # Translate - New
+	'Share' => 'Delen', # Translate - New
+	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,reactie,reacties]</a>', # Translate - New
+	'<a href="[_2]">[quant,_1,trackback,trackbacks]</a>' => '<a href="[_2]">[quant,_1,trackback,trackbacks]</a>', # Translate - New
 	'Unpublished' => 'Ongepubliceerd',
-	'You must configure this blog before you can publish this entry.' => '', # Translate - New
-	'You must configure this blog before you can publish this page.' => '', # Translate - New
-	'[_1] - Created by [_2]' => '', # Translate - New
-	'[_1] - Published by [_2]' => '', # Translate - New
-	'[_1] - Edited by [_2]' => '', # Translate - New
+	'You must configure this blog before you can publish this entry.' => 'U moet deze weblog configureren voor u dit bericht kunt publiceren.', # Translate - New
+	'You must configure this blog before you can publish this page.' => 'U moet deze weblog configureren voor u deze pagina kunt publiceren.', # Translate - New
+	'[_1] - Created by [_2]' => '[_1] - aangemaakt door [_2]', # Translate - New
+	'[_1] - Published by [_2]' => '[_1] - gepubliceerd door [_2]', # Translate - New
+	'[_1] - Edited by [_2]' => '[_1] - bewerkt door [_2]', # Translate - New
 	'Publish On' => 'Publiceren op',
 	'Publish Date' => 'Datum publicatie',
 	'Select entry date' => 'Selecteer berichtdatum',
 	'Unlock this entry&rsquo;s output filename for editing' => 'Maak het mogelijk om de uitvoerbestandsnaam te wijzigen',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => 'Waarschuwing: de basisnaam van het bericht met de hand aanpassen kan een conflict met een ander bericht veroorzaken.',
 	'Warning: Changing this entry\'s basename may break inbound links.' => 'Waarschuwing: de basisnaam van het bericht aanpassen kan inkomende links breken.',
+	'edit' => 'bewerken',
+	'close' => 'Sluiten',
 	'Accept' => 'Aanvaarden',
 	'Outbound TrackBack URLs' => 'Uitgaande TrackBack URLs',
 	'View Previously Sent TrackBacks' => 'Eerder verzonden TrackBacks bekijken',
-	'You have unsaved changes to this entry that will be lost.' => '', # Translate - New
-	'You have unsaved changes to this page that will be lost.' => '', # Translate - New
+	'You have unsaved changes to this entry that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan dit bericht die verloren zullen gaan.', # Translate - New
+	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan deze pagina die verloren zullen gaan.', # Translate - New
 	'Enter the link address:' => 'Vul het adres van de link in:',
 	'Enter the text to link to:' => 'Vul de tekst van de link in:',
 	'Your entry screen preferences have been saved.' => 'Uw voorkeuren voor het berichtenscherm zijn opgeslagen.',
 	'Your entry screen preferences have been saved. Please refresh the page to reorder the custom fields.' => 'Uw voorkeuren voor uw berichtenscherm zijn opgeslagen.  Gelieve de pagina te verversen om de volgorde van uw extra velden te zien veranderen.',
 	'Are you sure you want to use the Rich Text editor?' => 'Bent u zeker dat u de Rich Text Editor wenst te gebruiken?',
 	'Make primary' => 'Maak dit een hoofdcategorie',
-	'Add new' => 'Nieuw toevogen',
 	'Fields' => 'Velden',
 	'Body' => 'Romp',
 	'Reset display options' => 'Opties schermindeling terugzetten',
@@ -2852,7 +2854,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(lijst gescheiden met komma\'s)',
 	'(space-delimited list)' => '(lijst gescheiden met spaties)',
 	'(delimited by \'[_1]\')' => '(gescheiden door \'[_1]\')',
-	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.' => '', # Translate - New
+	'<a href="<mt:var name="quickpost_js" escape="html">' => '<a href="<mt:var name="quickpost_js" escape="html">', # Translate - New
 	'None selected' => 'Geen geselecteerd',
 
 ## tmpl/cms/view_log.tmpl
@@ -2927,7 +2929,7 @@ use vars qw( @ISA %Lexicon );
 	'Back (x)' => 'Terug (x)',
 
 ## tmpl/cms/refresh_results.tmpl
-	'Template Refresh' => '', # Translate - New
+	'Template Refresh' => 'Sjabloonverversing', # Translate - New
 	'No templates were selected to process.' => 'Er werden geen sjablonen geselecteerd om te bewerken.',
 	'Return to templates' => 'Terugkeren naar sjablonen',
 
@@ -2950,7 +2952,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit Folder' => 'Map bewerken',
 	'Your folder changes have been made.' => 'De wijzigingen aan de map zijn uitgevoerd.',
 	'You must specify a label for the folder.' => 'U moet een naam opgeven voor de map',
-	'Save changes to this folder (s)' => '', # Translate - New
+	'Save changes to this folder (s)' => 'Wijzigingen aan deze map opslaan (s)', # Translate - New
 
 ## tmpl/cms/list_notification.tmpl
 	'You have added [_1] to your address book.' => 'U heeft [_1] toegevoegd aan uw adresboek.',
@@ -2990,7 +2992,7 @@ use vars qw( @ISA %Lexicon );
 	'Outbound TrackBacks' => 'Uitgaande TrackBacks',
 	'Trackback URLs' => 'TrackBack URL\'s',
 	'Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)' => 'Vul de URL(s) in van de websites waar u een TrackBack naartoe wenst te sturen elke keer u een bericht aanmaakt in deze categorie.  (Splits URL\'s van elkaar met een carriage return.)',
-	'Save changes to this category (s)' => '', # Translate - New
+	'Save changes to this category (s)' => 'Wijzigingen aan deze categorie opslaan (s)', # Translate - New
 
 ## tmpl/cms/list_banlist.tmpl
 	'IP Banning Settings' => 'IP-verbanningsinstellingen',
@@ -3010,7 +3012,7 @@ use vars qw( @ISA %Lexicon );
 	'The selected TrackBack(s) has been recovered from spam.' => 'De geselecteerde TrackBack(s) zijn teruggehaald uit de spam-map',
 	'The selected TrackBack(s) has been deleted from the database.' => 'De geselecteerde TrackBack(s) zijn uit de database verwijderd.',
 	'No TrackBacks appeared to be spam.' => 'Geen enkele TrackBack leek spam te zijn.',
-	'Show only [_1] where' => '', # Translate - New
+	'Show only [_1] where' => 'Enkel [_1] tonen waar', # Translate - New
 	'approved' => 'goedgekeurd',
 	'unapproved' => 'niet goedgekeurd',
 
@@ -3065,10 +3067,10 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Blogsjablonen',
 	'Blog Publishing Settings' => 'Blogpublicatie-instellingen',
-	'All Templates' => '', # Translate - New
+	'All Templates' => 'Alle sjablonen', # Translate - New
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
-	'You have successfully refreshed your templates.' => '', # Translate - New
-	'Your templates have been published.' => '', # Translate - New
+	'You have successfully refreshed your templates.' => 'U heeft met succes uw sjablonen ververst.', # Translate - New
+	'Your templates have been published.' => 'Uw sjablonen werden gepubliceerd.', # Translate - New
 	'Create Archive Template:' => 'Archiefsjabloon aanmaken:',
 	'Create [_1] template' => 'Nieuw [_1] sjabloon aanmaken',
 
@@ -3083,7 +3085,7 @@ use vars qw( @ISA %Lexicon );
 	'Rename [_1]' => 'Wijzig de naam van [_1]',
 	'Rename' => 'Naam wijzigen',
 	'Show all [_1] with this tag' => 'Alle [_1] tonen met deze tag',
-	'[quant,_1,_2,_3]' => '', # Translate - New
+	'[quant,_1,_2,_3]' => '[quant,_1,_2,_3]', # Translate - New
 	'[quant,_1,entry,entries]' => '[quant,_1,bericht,berichten]',
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all blogs?' => 'De tag \'[_2]\' bestaat al.  Zeker dat u \'[_1]\' en \'[_2]\' wenst samen te voegen over alle blogs?',
 	'An error occurred while testing for the new tag name.' => 'Er deed zich een fout voor bij het testen op de nieuwe tagnaam.',
@@ -3133,7 +3135,7 @@ use vars qw( @ISA %Lexicon );
 	'A new password has been generated and sent to the email address [_1].' => 'Een nieuw wachtwoord werd gegenerereerd en is verzonden naar het e-mail adres [_1].',
 	'Your Web services password is currently' => 'Uw huidig webservices wachtwoord is',
 	'_WARNING_PASSWORD_RESET_SINGLE' => 'U staat op het punt het wachtwoord voor \"[_1]\" opnieuw in te stellen.  Een nieuw wachtwoord zal willekeurig worden aangemaakt en zal rechtstreeks naar het e-mail adres van deze gebruiker ([_2]) worden gestuurd.\n\nWenst u verder te gaan?',
-	'Error occurred while removing userpic.' => '', # Translate - New
+	'Error occurred while removing userpic.' => 'Er deed zich een fout voor bij het verwijderen van de gebruikersafbeelding', # Translate - New
 	'Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.' => 'Status van de gebruiker in het systeem.  Een gebruiker uitschakelen ontzegt hem/haar toegang tot het systeem maar bewaart content en geschiedenis.',
 	'_USER_PENDING' => 'Te keuren',
 	'The username used to login.' => 'Gebruikersnaam om mee aan te melden',
@@ -3167,15 +3169,15 @@ use vars qw( @ISA %Lexicon );
 	'System Permissions' => 'Systeempermissies',
 	'Options' => 'Opties',
 	'Create personal blog for user' => 'Persoonlijke blog aanmaken voor gebruiker',
-	'Create User (s)' => '', # Translate - New
-	'Save changes to this author (s)' => '', # Translate - New
+	'Create User (s)' => 'Gebruiker aanmaken (s)', # Translate - New
+	'Save changes to this author (s)' => 'Wijzigingen aan deze auteur opslaan (s)', # Translate - New
 	'_USAGE_PASSWORD_RESET' => 'Hieronder kunt u een nieuw wachtwoord laten instellen voor deze gebruiker.  Als u ervoor kiest om dit te doen, zal een willekeurig gegenereerd wachtwoord worden aangemaakt en rechtstreeks naar volgend e-mail adres worden verstuurd: [_1].',
 	'Initiate Password Recovery' => 'Procedure starten om wachtwoord terug te halen',
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'De reactie is goedgekeurd.',
-	'Save changes to this comment (s)' => '', # Translate - New
-	'Delete this comment (x)' => '', # Translate - New
+	'Save changes to this comment (s)' => 'Wijzigingen aan deze reactie opslaan (s)', # Translate - New
+	'Delete this comment (x)' => 'Deze reactie verwijderen (x)', # Translate - New
 	'Previous Comment' => 'Vorige reactie',
 	'Next Comment' => 'Volgende reactie',
 	'View entry comment was left on' => 'Bekijk het bericht waar dit een reactie op is',
@@ -3217,7 +3219,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_asset.tmpl
 	'You have successfully deleted the asset(s).' => 'U heeft met suuces de mediabestand(en) verwijderd.',
-	'Show only assets where' => '', # Translate - New
+	'Show only assets where' => 'Enkel mediabestanden tonen waar', # Translate - New
 	'type' => 'type',
 
 ## tmpl/cms/import.tmpl
@@ -3330,18 +3332,18 @@ use vars qw( @ISA %Lexicon );
 	'Publishing [_1] templates...' => 'Bezig [_1] sjablonen te publiceren...',
 
 ## tmpl/cms/edit_asset.tmpl
-	'Edit Asset' => '', # Translate - New
-	'Your asset changes have been made.' => '', # Translate - New
-	'[_1] - Modified by [_2]' => '', # Translate - New
-	'Appears in...' => '', # Translate - New
-	'Published on [_1]' => '', # Translate - New
-	'Show all entries' => '', # Translate - New
-	'Show all pages' => '', # Translate - New
-	'This asset has not been used.' => '', # Translate - New
-	'Related Assets' => '', # Translate - New
-	'You must specify a label for the asset.' => '', # Translate - New
-	'Embed Asset' => '', # Translate - New
-	'Save changes to this asset (s)' => '', # Translate - New
+	'Edit Asset' => 'Mediabestand bewerken', # Translate - New
+	'Your asset changes have been made.' => 'De wijzigingen aan uw mediabestanden zijn aangebracht.', # Translate - New
+	'[_1] - Modified by [_2]' => '[_1] - aangepast door [_2]', # Translate - New
+	'Appears in...' => 'Komt voor in...', # Translate - New
+	'Published on [_1]' => 'Gepubliceerd op [_1]', # Translate - New
+	'Show all entries' => 'Alle berichten tonen', # Translate - New
+	'Show all pages' => 'Alle pagina\'s tonen', # Translate - New
+	'This asset has not been used.' => 'Dit mediabestand wordt nergens gebruikt.', # Translate - New
+	'Related Assets' => 'Gerelateerde mediabestanden', # Translate - New
+	'You must specify a label for the asset.' => 'U moet een label opgeven voor dit mediabestand.', # Translate - New
+	'Embed Asset' => 'Mediabestand inbedden', # Translate - New
+	'Save changes to this asset (s)' => 'Wijzigingen aan dit mediabestand opslaan (s)', # Translate - New
 
 ## tmpl/cms/upgrade.tmpl
 	'Time to Upgrade!' => 'Tijd voor een upgrade!',
@@ -3364,11 +3366,11 @@ use vars qw( @ISA %Lexicon );
 	'You can not have spaces in your Site URL.' => 'Er mogen geen spaties in de URL van uw site zitten.',
 	'You can not have spaces in your Local Site Path.' => 'Er mogen geen spaties in het locale pad van uw site.',
 	'Your Local Site Path is not valid.' => 'Het lokale pad van uw site is niet geldig.',
-	'Blog Details' => '', # Translate - New
+	'Blog Details' => 'Blog details', # Translate - New
 	'Name your blog. The blog name can be changed at any time.' => 'Geef uw blog een naam.  De blognaam kan op elk moment aangepast worden.',
 	'Enter the URL of your public website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/weblog/' => 'Vul de URL in van uw publieke website.  Laat de bestandsnaam weg (m.a.w. laat index.html weg).  Voorbeeld: http://www.voorbeeld.com/blog/',
 	'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog' => 'Vul het pad in waar uw hoofdindexbestand zich zal bevingen.  Een absoluut pad (dat begint met \'/\') verdient de voorkeur, maar u kunt ook een pad gebruiken relatief aan de Movable Type map.  Voorbeeld: /home/melody/public_html/weblog',
-	'Create Blog (s)' => '', # Translate - New
+	'Create Blog (s)' => 'Blog aanmaken (s)', # Translate - New
 
 ## tmpl/cms/pinging.tmpl
 	'Trackback' => 'TrackBack',
@@ -3391,37 +3393,37 @@ use vars qw( @ISA %Lexicon );
 	'Re-Edit this [_1]' => '[_1] opnieuw bewerken',
 	'Re-Edit this [_1] (e)' => '[_1] opnieuw bewerken (e)',
 	'Save this [_1]' => '[_1] bewaren',
-	'Save this [_1] (s)' => '', # Translate - New
+	'Save this [_1] (s)' => 'Deze [_1] opslaan (s)', # Translate - New
 	'Cancel (c)' => 'Annuleer (c)',
 
 ## tmpl/cms/list_folder.tmpl
-	'Manage Folders' => '', # Translate - New
-	'Your folder changes and additions have been made.' => '', # Translate - New
-	'You have successfully deleted the selected folder.' => '', # Translate - New
-	'Delete selected folders (x)' => '', # Translate - New
-	'Create top level folder' => '', # Translate - New
+	'Manage Folders' => 'Mappen beheren', # Translate - New
+	'Your folder changes and additions have been made.' => 'De wijzigingen en toevoegingen aan uw mappen zijn aangebracht.', # Translate - New
+	'You have successfully deleted the selected folder.' => 'De geselecteerde map werden met succes verwijderd.', # Translate - New
+	'Delete selected folders (x)' => 'Geselecteerde mappen verwijderen (x)', # Translate - New
+	'Create top level folder' => 'Nieuwe map op topniveau aanmaken', # Translate - New
 	'New Parent [_1]' => 'Nieuwe ouder-[_1]',
-	'Create Folder' => '', # Translate - New
+	'Create Folder' => 'Map aanmaken', # Translate - New
 	'Top Level' => 'Topniveau',
-	'Create Subfolder' => '', # Translate - New
-	'Move Folder' => '', # Translate - New
+	'Create Subfolder' => 'Submap aanmaken', # Translate - New
+	'Move Folder' => 'Map verplaatsen', # Translate - New
 	'Move' => 'Verplaatsen',
 	'[quant,_1,page,pages]' => '[quant,_1,pagina,pagina\'s]',
-	'No folders could be found.' => '', # Translate - New
+	'No folders could be found.' => 'Er werden geen mappen gevonden.', # Translate - New
 
 ## tmpl/cms/list_association.tmpl
 	'permission' => 'permissie',
 	'permissions' => 'permissies',
-	'Remove selected permissions (x)' => '', # Translate - New
+	'Remove selected permissions (x)' => 'Geselecteerde permissies verwijderen (x)', # Translate - New
 	'Revoke Permission' => 'Permissie intrekken',
 	'[_1] <em>[_2]</em> is currently disabled.' => '[_1] <em>[_2]</em> is momenteel uitgeschakeld.',
 	'Grant Permission' => 'Permissie toekennen',
-	'You can not create permissions for disabled users.' => '', # Translate - New
+	'You can not create permissions for disabled users.' => 'U kunt geen permissies aanmaken voor non-actieve gebruikers.', # Translate - New
 	'Assign Role to User' => 'Ken rol toe aan gebruiker',
 	'Grant permission to a user' => 'Ken permissie toe aan gebruiker',
 	'You have successfully revoked the given permission(s).' => 'De gekozen permissie(s) zijn met succes ingetrokken.',
 	'You have successfully granted the given permission(s).' => 'De gekozen permissie(s) zijn met succes toegekend.',
-	'No permissions could be found.' => '', # Translate - New
+	'No permissions could be found.' => 'Er werden geen permissies gevonden.', # Translate - New
 
 ## tmpl/cms/login.tmpl
 	'Your Movable Type session has ended.' => 'Uw Movable Type sessie is beëindigd.',
@@ -3431,17 +3433,17 @@ use vars qw( @ISA %Lexicon );
 	'Sign In (s)' => 'Aanmelden (s)',
 
 ## tmpl/cms/list_category.tmpl
-	'Your category changes and additions have been made.' => '', # Translate - New
-	'You have successfully deleted the selected category.' => '', # Translate - New
+	'Your category changes and additions have been made.' => 'Uw wijzigingen en toevoegingen aan de categorieën zijn uitgevoerd.', # Translate - New
+	'You have successfully deleted the selected category.' => 'De geselecteerde categorie werd met succes verwijderd.', # Translate - New
 	'categories' => 'categorieën',
-	'Delete selected category (x)' => '', # Translate - New
-	'Create top level category' => '', # Translate - New
-	'Create Category' => '', # Translate - New
+	'Delete selected category (x)' => 'Geselecteerde categorie verwijderen (x)', # Translate - New
+	'Create top level category' => 'Hoofdcategorie aanmaken', # Translate - New
+	'Create Category' => 'Categorie aanmaken', # Translate - New
 	'Collapse' => 'Inklappen',
 	'Expand' => 'Uitklappen',
-	'Move Category' => '', # Translate - New
+	'Move Category' => 'Categorie verplaatsen', # Translate - New
 	'[quant,_1,TrackBack,TrackBacks]' => '[quant,_1,TrackBack,TrackBacks]',
-	'No categories could be found.' => '', # Translate - New
+	'No categories could be found.' => 'Er werden categorieën gevonden.', # Translate - New
 
 ## tmpl/cms/cfg_entry.tmpl
 	'Entry Settings' => 'Berichtinstellingen',
@@ -3587,18 +3589,21 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,result,results] found' => '[quant,_1,resultaat,resultaten] found',
 
 ## tmpl/cms/preview_strip.tmpl
-	'Save this entry' => '', # Translate - New
-	'Save this page' => '', # Translate - New
-	'You are previewing the entry titled &ldquo;[_1]&rdquo;' => '', # Translate - New
-	'You are previewing the page titled &ldquo;[_1]&rdquo;' => '', # Translate - New
+	'Save this entry' => 'Dit bericht opslaan', # Translate - New
+	'Re-Edit this entry' => 'Dit bericht opnieuw bewerken', # Translate - New
+	'Re-Edit this entry (e)' => 'Dit bericht opnieuw bewerken (e)', # Translate - New
+	'Save this page' => 'Deze pagina opslaan', # Translate - New
+	'Re-Edit this page' => 'Deze pagina opnieuw bewerken', # Translate - New
+	'Re-Edit this page (e)' => 'Deze pagina opnieuw bewerken (e)', # Translate - New
+	'You are previewing the entry titled &ldquo;[_1]&rdquo;' => 'U bekijkt een voorbeeld van het bericht met de titel &ldquo;[_1]&rdquo;', # Translate - New
+	'You are previewing the page titled &ldquo;[_1]&rdquo;' => 'U bekijkt een voorbeeld van de pagina met de titel &ldquo;[_1]&rdquo;', # Translate - New
 
 ## tmpl/cms/edit_ping.tmpl
 	'Edit Trackback' => 'TrackBack bewerken',
 	'The TrackBack has been approved.' => 'De TrackBack is goedgekeurd.',
 	'List &amp; Edit TrackBacks' => 'TrackBacks tonen &amp; bewerken',
-	'View Entry' => 'Bericht bekijken',
-	'Save changes to this TrackBack (s)' => '', # Translate - New
-	'Delete this TrackBack (x)' => '', # Translate - New
+	'Save changes to this TrackBack (s)' => 'Wijzigingen aan deze TrackBack opslaan (s)', # Translate - New
+	'Delete this TrackBack (x)' => 'Deze TrackBack verwijderen (x)', # Translate - New
 	'Update the status of this TrackBack' => 'Status van deze TrackBack bijwerken',
 	'Junk' => 'Spam',
 	'View all TrackBacks with this status' => 'Alle TrackBacks met deze status bekijken',
@@ -3689,99 +3694,6 @@ use vars qw( @ISA %Lexicon );
 	'CGI Path Configuration Required' => 'CGI-pad configuratie vereist',
 	'_ERROR_CGI_PATH' => 'Uw CGIPath configuratieinstelling is ofwel ongeldig ofwel ontbreekt ze in uw Movable Type configuratiebestand. Bekijk het deel <a href=\"#\">Installation and Configuration</a> van de Movable Type handleiding voor meer informatie.',
 
-## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
-	'Show' => 'Toon',
-	'Date & Time' => 'Datum en tijd',
-	'Date Only' => 'Enkel datum',
-	'Time Only' => 'Enkel tijd',
-	'Please enter all allowable options for this field as a comma delimited list' => 'Gelieve alle toegestane waarden voor dit veld in te vullen als een lijst gescheiden door komma\'s',
-	'Custom Fields' => 'Extra velden',
-	'[_1] Fields' => 'Velden bij [_1]',
-	'Edit Field' => 'Veld bewerken',
-	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Ongeldige datum \'[_1]\'; datums moeten in het formaat YYYY-MM-DD HH:MM:SS staan.',
-	'Invalid date \'[_1]\'; dates should be real dates.' => 'Ongeldige datum \'[_1]\'; datums moeten echte datums zijn.',
-	'Please enter some value for required \'[_1]\' field.' => 'Gelieve een waarde in te vullen voor het verplichte \'[_1]\' veld.',
-	'Please ensure all required fields have been filled in.' => 'Kijk na of alle verplichte velden ingevuld zijn.',
-	'The template tag \'[_1]\' is an invalid tag name.' => '', # Translate - New
-	'The template tag \'[_1]\' is already in use.' => 'De sjabloontag \'[_1]\' is al in gebruik.',
-	'The basename \'[_1]\' is already in use.' => 'De basisnaam \'[_1]\' is al in gebruik',
-	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => '', # Translate - New
-	' ' => '', # Translate - New
-	'Single-Line Text' => 'Een regel tekst',
-	'Multi-Line Textfield' => 'Meerdere regels tekst',
-	'Checkbox' => 'Checkbox',
-	'Date and Time' => 'Datum en tijd',
-	'Drop Down Menu' => 'Uitklapmenu',
-	'Radio Buttons' => 'Radiobuttons',
-
-## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
-	'Are you sure you have used a \'[_1]\' tag in the correct context? We could not find the [_2]' => 'Bent u zeker dat u een \'[_1]\' tag gebruikte in de juiste context?  We vonden geen [_2]',
-	'You used an \'[_1]\' tag outside of the context of the correct content; ' => 'U gebruikte een \'[_1]\' tag buiten de correcte context;',
-
-## addons/Commercial.pack/lib/CustomFields/Upgrade.pm
-	'Moving metadata storage for pages...' => '', # Translate - New
-
-## addons/Commercial.pack/lib/CustomFields/BackupRestore.pm
-	'Restoring custom fields data stored in MT::PluginData...' => '', # Translate - New
-	'Restoring asset associations found in custom fields ( [_1] ) ...' => '', # Translate - New
-	'Restoring url of the assets associated in custom fields ( [_1] )...' => '', # Translate - New
-
-## addons/Commercial.pack/lib/CustomFields/Util.pm
-	'Failed to find [_1]::[_2]' => 'Kon [_1]::[_2] niet vinden',
-
-## addons/Commercial.pack/lib/CustomFields/Field.pm
-	'Field' => 'Veld',
-
-## addons/Commercial.pack/tmpl/date-picker.tmpl
-	'Select date' => 'Selecteer datum',
-
-## addons/Commercial.pack/tmpl/edit_field.tmpl
-	'New Field' => 'Nieuw weld',
-	'The selected fields(s) has been deleted from the database.' => 'Geselecteerd(e) veld(en) verwijderd uit de database.',
-	'Please ensure all required fields (highlighted) have been filled in.' => 'Gelieve te controleren dat alle verplichte velden (gekleurd) ingevuld zijn.',
-	'System Object' => 'Systeemobject',
-	'Select the system object this field is for' => 'Selecteer het systeemobject waar dit veld voor dient',
-	'Select...' => 'Selecteer...',
-	'Required?' => 'Verplicht?',
-	'Should a value be chosen or entered into this field?' => 'Moet er een waarde gekozen of ingevuld worden in dit veld?',
-	'Default' => 'Standaard',
-	'You will need to first save this field in order to set a default value' => 'U moet dit veld eerst opslaan om een standaardwaarde te kunnen instellen',
-	'_CF_BASENAME' => 'Basename',
-	'The basename is used for entering custom field data through a 3rd party client. It must be unique.' => '', # Translate - New
-	'Unlock this for editing' => 'Maak dit aanpasbaar',
-	'Warning: Changing this field\'s basename may cause serious data loss.' => 'Waarschuwing: de basinaam van dit veld aanpassen kan leiden tot ernstig gegevensverlies.',
-	'Template Tag' => 'Sjabloontag',
-	'Create a custom template tag for this field.' => 'Maak een gepersonaliseerde sjabloontag aan voor dit veld',
-	'Example Template Code' => 'Voorbeeldsjablooncode',
-	'Save this field (s)' => '', # Translate - New
-	'field' => 'veld',
-	'fields' => 'velden',
-	'Delete this field (x)' => '', # Translate - New
-
-## addons/Commercial.pack/tmpl/reorder_fields.tmpl
-	'Your field order has been saved. Please refresh this page to see the new order.' => 'De volgorde van uw velden is opgeslagen.  Vernieuw deze pagina om de nieuwe volgorde te zien.',
-	'Reorder Fields' => 'Velden rangschikken',
-	'Save field order' => 'Volgorde opslaan',
-	'Close field order widget' => 'Widged volgorde velden sluiten',
-	'open' => '', # Translate - New
-	'close' => 'Sluiten',
-	'click-down and drag to move this field' => '', # Translate - New
-	'click to %toggle% this box' => '', # Translate - New
-	'use the arrow keys to move this box' => '', # Translate - New
-	', or press the enter key to %toggle% it' => '', # Translate - New
-
-## addons/Commercial.pack/tmpl/list_field.tmpl
-	'New [_1] Field' => 'Nieuw [_1] veld',
-	'Delete selected fields (x)' => 'Geselecteerde velden verwijderen (x)',
-	'No fields could be found.' => 'Er werden geen velden gevonden.',
-	'System-Wide' => 'Over heel het systeem',
-
-## addons/Commercial.pack/tmpl/asset-chooser.tmpl
-	'Choose [_1]' => 'Kies [_1]',
-	'Remove [_1]' => 'Verwijder [_1]',
-
-## addons/Commercial.pack/config.yaml
-
 ## addons/Community.pack/lib/MT/App/Community.pm
 	'No login form template defined' => 'Geen sjabloon gedefiniëerd voor het aanmeldformulier',
 	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'Voor u kunt aanmelden, moet u eerst uw e-mail adres bevestigen. <a href="[_1]">Klik hier</a> om de verificatiemail opnieuw te versturen.',
@@ -3822,7 +3734,7 @@ use vars qw( @ISA %Lexicon );
 	'Registrations' => 'Registraties',
 	'Recent Registrations' => 'Recent geregistreerd',
 	'default userpic' => 'standaardfoto gebruiker',
-	'You have [quant,_1,registration,registrations] from [_2]' => '', # Translate - New
+	'You have [quant,_1,registration,registrations] from [_2]' => 'U heeft [quant,_1,registratie,registraties] van [_2]', # Translate - New
 
 ## addons/Community.pack/tmpl/widget/most_popular_entries.mtml
 	'Most Popular Entries' => 'Populairste berichten',
@@ -3840,7 +3752,7 @@ use vars qw( @ISA %Lexicon );
 	'Anonymous Recommendation' => 'Anonieme aanbevelingen',
 	'Check to allow anonymous users (users not logged in) to recommend discussion.  IP address is recorded and used to identify each user.' => 'Kruis dit vakje aan om anonieme gebruikers (gebruikers die niet zijn aangemeld) toe te laten discussies aan te raden.  Het IP adres van de gebruiker wordt gebruikt om gebruikers uit elkaar te houden.',
 	'Allow anonymous user to recommend' => 'Anonieme gebruikers toelaten aanbevelingen te doen',
-	'Save changes to blog (s)' => '', # Translate - New
+	'Save changes to blog (s)' => 'Wijzigingen aan blog opslaan (s)', # Translate - New
 
 ## addons/Community.pack/templates/global/register_form.mtml
 	'Sign up' => 'Registreer',
@@ -4070,7 +3982,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/forum/sidebar.mtml
 	'Category Groups' => 'Categoriegroepen',
 	'All Forums' => 'Alle forums',
-	'[_1] Forum' => '', # Translate - New
+	'[_1] Forum' => '[_] forum', # Translate - New
 
 ## addons/Community.pack/templates/forum/category_groups.mtml
 	'Forum Groups' => 'Forum groepen',
@@ -4112,6 +4024,100 @@ use vars qw( @ISA %Lexicon );
 	'Entry Feed (Atom)' => 'Berichtfeed (Atom)',
 	'Entry Feed (RSS)' => 'Berichtfeed (RSS)',
 	'Displays error, pending or confirmation message when submitting a entry.' => 'Toont foutboodschappen, \'even geduld\' berichten of bevestigingen bij het indienen van een bericht.',
+
+## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
+	'Show' => 'Toon',
+	'Date & Time' => 'Datum en tijd',
+	'Date Only' => 'Enkel datum',
+	'Time Only' => 'Enkel tijd',
+	'Please enter all allowable options for this field as a comma delimited list' => 'Gelieve alle toegestane waarden voor dit veld in te vullen als een lijst gescheiden door komma\'s',
+	'Custom Fields' => 'Extra velden',
+	'[_1] Fields' => 'Velden bij [_1]',
+	'Edit Field' => 'Veld bewerken',
+	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Ongeldige datum \'[_1]\'; datums moeten in het formaat YYYY-MM-DD HH:MM:SS staan.',
+	'Invalid date \'[_1]\'; dates should be real dates.' => 'Ongeldige datum \'[_1]\'; datums moeten echte datums zijn.',
+	'Please enter valid URL for the URL field: [_1]' => 'Gelieve een geldige URL in te vullen in het URL veld: [_1]', # Translate - New
+	'Please enter some value for required \'[_1]\' field.' => 'Gelieve een waarde in te vullen voor het verplichte \'[_1]\' veld.',
+	'Please ensure all required fields have been filled in.' => 'Kijk na of alle verplichte velden ingevuld zijn.',
+	'The template tag \'[_1]\' is an invalid tag name.' => 'Sjabloontag \'[_1]\' is een ongeldige tagnaam.', # Translate - New
+	'The template tag \'[_1]\' is already in use.' => 'De sjabloontag \'[_1]\' is al in gebruik.',
+	'The basename \'[_1]\' is already in use.' => 'De basisnaam \'[_1]\' is al in gebruik',
+	'Default value must be valid URL.' => 'Standaardwaarde moet een geldige URL zijn.', # Translate - New
+	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Pas de formulieren en velden aan voor berichten, pagina\'s, mappen, categoriën en gebruikers aan en sla exact die informatie op die u nodig heeft.', # Translate - New
+	' ' => '', # Translate - New
+	'Single-Line Text' => 'Een regel tekst',
+	'Multi-Line Textfield' => 'Meerdere regels tekst',
+	'Checkbox' => 'Checkbox',
+	'Date and Time' => 'Datum en tijd',
+	'Drop Down Menu' => 'Uitklapmenu',
+	'Radio Buttons' => 'Radiobuttons',
+
+## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
+	'Are you sure you have used a \'[_1]\' tag in the correct context? We could not find the [_2]' => 'Bent u zeker dat u een \'[_1]\' tag gebruikte in de juiste context?  We vonden geen [_2]',
+	'You used an \'[_1]\' tag outside of the context of the correct content; ' => 'U gebruikte een \'[_1]\' tag buiten de correcte context;',
+
+## addons/Commercial.pack/lib/CustomFields/Upgrade.pm
+	'Moving metadata storage for pages...' => 'Metadata opslag voor pagina\'s word verplaatst...', # Translate - New
+
+## addons/Commercial.pack/lib/CustomFields/BackupRestore.pm
+	'Restoring custom fields data stored in MT::PluginData...' => 'Custom Fields data opgeslagen in MT::PluginData aan het terugzetten...', # Translate - New
+	'Restoring asset associations found in custom fields ( [_1] ) ...' => 'Mediabestand-associaties aan het terugzetten die werden gevonden in gepersonaliseerde velden ( [_1] ) ...', # Translate - New
+	'Restoring url of the assets associated in custom fields ( [_1] )...' => 'URL van de mediabestand aan het terugzetten geassocieerd via gepersonaliseerde velden ( [_1] )', # Translate - New
+
+## addons/Commercial.pack/lib/CustomFields/Util.pm
+	'Failed to find [_1]::[_2]' => 'Kon [_1]::[_2] niet vinden',
+
+## addons/Commercial.pack/lib/CustomFields/Field.pm
+	'Field' => 'Veld',
+
+## addons/Commercial.pack/tmpl/date-picker.tmpl
+	'Select date' => 'Selecteer datum',
+
+## addons/Commercial.pack/tmpl/edit_field.tmpl
+	'New Field' => 'Nieuw weld',
+	'The selected fields(s) has been deleted from the database.' => 'Geselecteerd(e) veld(en) verwijderd uit de database.',
+	'Please ensure all required fields (highlighted) have been filled in.' => 'Gelieve te controleren dat alle verplichte velden (gekleurd) ingevuld zijn.',
+	'System Object' => 'Systeemobject',
+	'Select the system object this field is for' => 'Selecteer het systeemobject waar dit veld voor dient',
+	'Select...' => 'Selecteer...',
+	'Required?' => 'Verplicht?',
+	'Should a value be chosen or entered into this field?' => 'Moet er een waarde gekozen of ingevuld worden in dit veld?',
+	'Default' => 'Standaard',
+	'You will need to first save this field in order to set a default value' => 'U moet dit veld eerst opslaan om een standaardwaarde te kunnen instellen',
+	'_CF_BASENAME' => 'Basename',
+	'The basename is used for entering custom field data through a 3rd party client. It must be unique.' => 'De basisnaam wordt gebruikt om gepersonaliseerde veld informatie in te voeren via een cliënt van derden.  Hij moet uniek zijn.', # Translate - New
+	'Unlock this for editing' => 'Maak dit aanpasbaar',
+	'Warning: Changing this field\'s basename may cause serious data loss.' => 'Waarschuwing: de basinaam van dit veld aanpassen kan leiden tot ernstig gegevensverlies.',
+	'Template Tag' => 'Sjabloontag',
+	'Create a custom template tag for this field.' => 'Maak een gepersonaliseerde sjabloontag aan voor dit veld',
+	'Example Template Code' => 'Voorbeeldsjablooncode',
+	'Save this field (s)' => 'Dit veld opslaan (s)', # Translate - New
+	'field' => 'veld',
+	'fields' => 'velden',
+	'Delete this field (x)' => 'Dit veld verwijderen (x)', # Translate - New
+
+## addons/Commercial.pack/tmpl/reorder_fields.tmpl
+	'Your field order has been saved. Please refresh this page to see the new order.' => 'De volgorde van uw velden is opgeslagen.  Vernieuw deze pagina om de nieuwe volgorde te zien.',
+	'Reorder Fields' => 'Velden rangschikken',
+	'Save field order' => 'Volgorde opslaan',
+	'Close field order widget' => 'Widged volgorde velden sluiten',
+	'open' => 'open', # Translate - New
+	'click-down and drag to move this field' => 'klik en sleep om dit veld te verplaatsen', # Translate - New
+	'click to %toggle% this box' => 'klik om dit vakje te %schakelen%', # Translate - New
+	'use the arrow keys to move this box' => 'gebruik de pijltjestoetsen om dit vakje te verplaatsen', # Translate - New
+	', or press the enter key to %toggle% it' => ', of druk op de enter-toets om het te %schakelen%', # Translate - New
+
+## addons/Commercial.pack/tmpl/list_field.tmpl
+	'New [_1] Field' => 'Nieuw [_1] veld',
+	'Delete selected fields (x)' => 'Geselecteerde velden verwijderen (x)',
+	'No fields could be found.' => 'Er werden geen velden gevonden.',
+	'System-Wide' => 'Over heel het systeem',
+
+## addons/Commercial.pack/tmpl/asset-chooser.tmpl
+	'Choose [_1]' => 'Kies [_1]',
+	'Remove [_1]' => 'Verwijder [_1]',
+
+## addons/Commercial.pack/config.yaml
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
 	'Fixing binary data for Microsoft SQL Server storage...' => 'Binaire data aan het fixen voor opslag in Microsoft SQL Server...',
@@ -4249,21 +4255,21 @@ Zoekbasis: [_2]",
 ## addons/Enterprise.pack/tmpl/include/group_table.tmpl
 	'group' => 'groep',
 	'groups' => 'groepen',
-	'Enable selected group (e)' => '', # Translate - New
-	'Disable selected group (d)' => '', # Translate - New
-	'Remove selected group (d)' => '', # Translate - New
+	'Enable selected group (e)' => 'Geselecteerde groep activeren (e)', # Translate - New
+	'Disable selected group (d)' => 'Geselecteerde groep deactiveren (d)', # Translate - New
+	'Remove selected group (d)' => 'Geselecteerde groep verwijderen (d)', # Translate - New
 	'Only show enabled groups' => 'Enkel actieve groepen tonen',
 	'Only show disabled groups' => 'Enkel niet-actieve groepen tonen',
 
 ## addons/Enterprise.pack/tmpl/list_group.tmpl
 	'[_1]: User&rsquo;s Groups' => '[_1] groepen van gebruiker',
 	'Groups: System Wide' => 'Groepen: over heel het systeem',
-	'The user <em>[_1]</em> is currently disabled.' => 'De gebruiker <em>[_1]</em> is momenteel niet actief.',
 	'Synchronize groups now' => 'Groepen nu synchroniseren',
 	'You have successfully disabled the selected group(s).' => 'De geselecteerde groep(en) werden met suuces uitgeschakeld.',
 	'You have successfully enabled the selected group(s).' => 'De geselecteerde groep(en) werden met suuces ingeschakeld.',
 	'You have successfully deleted the groups from the Movable Type system.' => 'De geselecteerde groep werd verwijderd uit het Movable Type systeem.',
 	'You have successfully synchronized groups\' information with the external directory.' => 'U heeft met succes groepsinformatie gesynchroniseerd met de externe directory.',
+	'The user <em>[_1]</em> is currently disabled.' => 'De gebruiker <em>[_1]</em> is momenteel niet actief.',
 	'You can not add disabled users to groups.' => 'U kunt geen uitgeschakelde gebruikers toevoegen aan een groep.',
 	'Add [_1] to another group' => 'Voeg [_1] toe aan een andere groep',
 	'Create Group' => 'Groep aanmaken',
@@ -4279,18 +4285,18 @@ Zoekbasis: [_2]",
 ## addons/Enterprise.pack/tmpl/list_group_member.tmpl
 	'[_1]: Group Members' => '[_1]: Groepsleden',
 	'<em>[_1]</em>: Group Members' => '<em>[_1]</em>: Groepsleden',
-	'Group Disabled' => 'Groep uitgeschakeld',
 	'You have successfully deleted the users.' => 'De geselecteerde gebruikers werden verwijderd',
 	'You have successfully added new users to this group.' => 'U heeft met succes nieuwe gebruikers toegevoegd aan deze groep.',
 	'You have successfully synchronized users\' information with external directory.' => 'U heeft met succes de gebruikersinformatie gesynchroniseerd met een externe directory.',
 	'Some ([_1]) of the selected users could not be re-enabled because they were no longer found in LDAP.' => 'Enkele ([_1]) van de geselecteerde gebruikers konden niet opnieuw worden ingeschakeld omdat ze niet meer werden gevonden in de LDAP.',
 	'You have successfully removed the users from this group.' => 'U heeft met succes de gebruikers verwijderd uit deze groep.',
+	'Group Disabled' => 'Groep uitgeschakeld',
+	'You can not add users to a disabled group.' => 'U kunt geen leden toevoegen aan een uitgeschakelde groep.',
+	'Add user to [_1]' => 'Gebruiker toevoegen aan [_1]',
 	'member' => 'lid',
 	'Show Enabled Members' => 'Actieve gebruikers tonen',
 	'Show Disabled Members' => 'Niet-actieve gebruikers tonen',
 	'Show All Members' => 'Alle leden tonen',
-	'You can not add users to a disabled group.' => 'U kunt geen leden toevoegen aan een uitgeschakelde groep.',
-	'Add user to [_1]' => 'Gebruiker toevoegen aan [_1]',
 	'None.' => 'Geen.',
 	'(Showing all users.)' => '(Alle gebruikers worden getoond.)',
 	'Showing only users whose [_1] is [_2].' => 'Enkel gebruikers waarvan de [_1] [_2] is.',
@@ -4387,7 +4393,7 @@ Zoekbasis: [_2]",
 	'The display name for this group.' => 'De getoonde naam van deze groep.',
 	'Enter a description for your group.' => 'Vul een beschrijving in voor uw groep.',
 	'Created on' => 'Aangemaakt',
-	'Save changes to this field (s)' => '', # Translate - New
+	'Save changes to this field (s)' => 'Wijzigingen aan dit veld opslaan (s)', # Translate - New
 
 ## addons/Enterprise.pack/app-wizard.yaml
 	'This module is required in order to use the LDAP Authentication.' => 'Deze module is vereist als u LDAP authenticatie wenst te gebruiken.',
@@ -4407,7 +4413,7 @@ Zoekbasis: [_2]",
 	'Populating author\'s external ID to have lower case user name...' => 'Extern auteurs-ID wordt ingevuld om een gebruikersnaam in kleine letters te krijgen.',
 
 ## plugins/Cloner/cloner.pl
-	'Clones a blog and all of its contents.' => '', # Translate - New
+	'Clones a blog and all of its contents.' => 'Maakt een kloon van een blog en alle inhoud er in.', # Translate - New
 	'Cloning blog \'[_1]\'...' => 'Bezit blog \'[_1]\' te klonen...',
 	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a> or <a href="javascript:void(0);" onclick="closeDialog(\'[_2]\');">configure the Site root and URL of the new blog</a>.' => 'Klaar! U kan nu <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_1]\');\">terugkeren naar het overzicht van de blogs</a> of <a href=\"javascript:void(0);\" onclick=\"closeDialog(\'[_2]\');\">de siteroot en URL van de nieuwe blog configureren</a>',
 	'No blog was selected to clone.' => 'U selecteerde geen blog om te klonen.',
@@ -4427,27 +4433,27 @@ Zoekbasis: [_2]",
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'Bestand is niet in WXR formaat.',
-	'Duplicate asset (\'[_1]\') found.  Skipping.' => '', # Translate - New
+	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'Dubbel mediabestand (\'[_1]\') gevonden.  Wordt overgeslagen.', # Translate - New
 	'Saving asset (\'[_1]\')...' => 'Bezig met opslaan mediabestand (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' en mediabestand zal getagd worden als (\'[_1]\')...',
-	'Duplicate entry (\'[_1]\') found.  Skipping.' => '', # Translate - New
+	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'Dubbel bericht (\'[_1]\') gevonden.  Wordt overgeslagen.', # Translate - New
 	'Saving page (\'[_1]\')...' => 'Pagina aan het opslaan (\'[_1]\')...',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
 	'Before you import WordPress posts to Movable Type, we recommend that you <a href=\'[_1]\'>configure your blog\'s publishing paths</a> first.' => '\n	Voor u WordPress berichten importeert in Movable Type, raden we aan om eerst <a href=\'[_1]\'>de publicatiepaden van uw weblog in te stellen</a>.',
 	'Upload path for this WordPress blog' => 'Uploadpad voor deze WordPress blog',
 	'Replace with' => 'Vervangen door',
-	'Download attachments' => '', # Translate - New
-	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => '', # Translate - New
-	'Download attachments (images and files) from the imported WordPress powered blog.' => '', # Translate - New
+	'Download attachments' => 'Attachments downloaden', # Translate - New
+	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Vereist het gebruik van een cronjob om attachments van een WordPress blog te downloaden op de achtergrond.', # Translate - New
+	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Attachments (afbeeldingen en bestanden) downloaden van de geïmporteerde WordPress blog.', # Translate - New
 
 ## plugins/WXRImporter/WXRImporter.pl
 	'Import WordPress exported RSS into MT.' => 'Importeer RSS geëxporteerd uit WordPress in MT.',
 	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
-	'Download WP attachments via HTTP.' => '', # Translate - New
+	'Download WP attachments via HTTP.' => 'WP attachments downloaden via HTTP.', # Translate - New
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => '', # Translate - New
+	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Uw mt-static map kon niet worden gevonden.  Gelieve \'StaticFilePath\' te configureren om verder te gaan.', # Translate - New
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
 	'Error downloading image: [_1]' => 'Fout bij downloaden afbeelding: [_1]',
 	'Successfully applied new theme selection.' => 'Nieuwe thema-selectie met succes toegepast.',
@@ -4636,7 +4642,7 @@ Zoekbasis: [_2]",
 ## plugins/WidgetManager/default_widgets/category_archive_list.mtml
 
 ## plugins/WidgetManager/default_widgets/calendar.mtml
-	'Monthly calendar with links to daily posts' => '', # Translate - New
+	'Monthly calendar with links to daily posts' => 'Maandkalender met links naar de berichten van alle dagen', # Translate - New
 	'Sun' => 'Zon',
 	'Mon' => 'Maa',
 	'Tue' => 'Din',
@@ -4650,20 +4656,21 @@ Zoekbasis: [_2]",
 ## plugins/WidgetManager/default_widgets/current_author_monthly_archive_list.mtml
 
 ## plugins/WidgetManager/default_widgets/date_based_author_archives.mtml
-	'Author Yearly Archives' => '', # Translate - New
-	'Author Weekly Archives' => '', # Translate - New
-	'Author Daily Archives' => '', # Translate - New
+	'Author Yearly Archives' => 'Archieven per auteur per jaar', # Translate - New
+	'Author Weekly Archives' => 'Archieven per auteur per week', # Translate - New
+	'Author Daily Archives' => 'Archieven per auteur per dag', # Translate - New
 
 ## plugins/WidgetManager/default_widgets/main_index_meta_widget.mtml
-	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => '', # Translate - New
+	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Dit is een gepersonaliseerde set widgets die enkel op de hoofpagina (of "hoofdindex") verschijnen.  Meer info: [_1]', # Translate - New
+	'Recent Assets' => 'Recente mediabestanden', # Translate - New
 
 ## plugins/WidgetManager/default_widgets/syndication.mtml
-	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => '', # Translate - New
+	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Zoekresultaten die overeen komen met &ldquo;<$mt:SearchString$>&rdquo;', # Translate - New
 
 ## plugins/WidgetManager/default_widgets/current_category_monthly_archive_list.mtml
 
 ## plugins/WidgetManager/default_widgets/recent_comments.mtml
-	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '', # Translate - New
+	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] reageerde op [_3]</a>: [_4]', # Translate - New
 
 ## plugins/WidgetManager/default_widgets/technorati_search.mtml
 	'Technorati' => 'Technorati',
@@ -4681,25 +4688,25 @@ Zoekbasis: [_2]",
 ## plugins/WidgetManager/default_widgets/pages_list.mtml
 
 ## plugins/WidgetManager/default_widgets/archive_meta_widget.mtml
-	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => '', # Translate - New
+	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Dit is een set widgets die andere inhoud tonen gebaseerd op het archieftype waarin ze voorkomen.  Meer info: [_1]', # Translate - New
+	'Current Category Monthly Archives' => 'Archieven van de huidige categorie per maand', # Translate - New
+	'Category Archives' => 'Archieven per categorie', # Translate - New
 
 ## plugins/WidgetManager/default_widgets/date_based_category_archives.mtml
-	'Category Yearly Archives' => '', # Translate - New
-	'Category Weekly Archives' => '', # Translate - New
-	'Category Daily Archives' => '', # Translate - New
+	'Category Yearly Archives' => 'Archieven per categorie per jaar', # Translate - New
+	'Category Weekly Archives' => 'Archieven per categorie per week', # Translate - New
+	'Category Daily Archives' => 'Archieven per categorie per dag', # Translate - New
 
 ## plugins/WidgetManager/default_widgets/widgets.cfg
-	'About This Page' => '', # Translate - New
-	'Current Author Monthly Archives' => '', # Translate - New
+	'About This Page' => 'Over deze pagina', # Translate - New
+	'Current Author Monthly Archives' => 'Archieven per maand van de huidige auteur', # Translate - New
 	'Calendar' => 'Kalender',
-	'Category Archives' => '', # Translate - New
-	'Current Category Monthly Archives' => '', # Translate - New
 	'Creative Commons' => 'Creative Commons',
-	'Home Page Widgets' => '', # Translate - New
-	'Monthly Archives Dropdown' => '', # Translate - New
-	'Recent Assets' => '', # Translate - New
+	'Home Page Widgets' => 'Hoofdpaginawidgets', # Translate - New
+	'Monthly Archives Dropdown' => 'Uitklapmenu archieven per maand', # Translate - New
+	'Page Listing' => '', # Translate - New
 	'Powered By' => 'Aangedreven door',
-	'Syndication' => '', # Translate - New
+	'Syndication' => 'Syndicatie', # Translate - New
 	'Technorati Search' => 'Technorati zoekformulier',
 	'Date-Based Author Archives' => 'Datum-gebaseerde auteursactieven',
 	'Date-Based Category Archives' => 'Datum-gebaseerde categorie-archieven',
@@ -4728,9 +4735,8 @@ Zoekbasis: [_2]",
 	'Set Name' => 'Naam instellen',
 	'Drag and drop the widgets you want into the Installed column.' => 'Klik en sleep de widgets die u wenst in de \'Geïnstalleerde widgets\' kolom.',
 	'Installed Widgets' => 'Geïnstalleerde widgets',
-	'edit' => 'bewerken',
 	'Available Widgets' => 'Beschikbare widgets',
-	'Save changes to this widget set (s)' => '', # Translate - New
+	'Save changes to this widget set (s)' => 'Wijzignen aan deze widgetset opslaan (s)', # Translate - New
 
 ## plugins/WidgetManager/tmpl/list.tmpl
 	'Widget Sets' => 'Widgetsets',
@@ -4751,6 +4757,6 @@ Zoekbasis: [_2]",
 
 );
 
-## New words: 1094
+## New words: 807
 
 1;
