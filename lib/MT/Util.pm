@@ -1748,7 +1748,7 @@ sub asset_cleanup {
         ([^>]*?)
         \s
         mt:asset-id="\d+"
-        ([^>]+?>)(.*?)
+        ([^>]*?>)(.*?)
         <\/(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])>
     /
     my $attr = $1 . $2;
