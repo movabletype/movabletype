@@ -1671,6 +1671,7 @@ fieldset h3 {
     margin-left: 70px;
 }
 
+.create-inline .field-inner,
 .create-inline .field-inline,
 .create-inline .field-header,
 .create-inline .field-content,
@@ -1683,7 +1684,7 @@ fieldset h3 {
     width: auto;
 }
 .create-inline .field-inline {
-    margin-right: 1em;
+    margin-right: .5em;
 }
 
 .field-no-header  .field-header {

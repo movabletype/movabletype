@@ -201,8 +201,8 @@ TC.attachLoadEvent( init );
                         show_hint="0">
                         <span class="buttons"> 
                             <a href="javascript:void(0)" mt:command="submit"
-                                title="<__trans phrase="Create Category" params="<mt:var name="sub_object_label">">" 
-                                ><__trans phrase="Create Category"></a> 
+                                title="<__trans phrase="Create Category">" 
+                                ><__trans phrase="Create"></a> 
                             <a href="javascript:void(0)" 
                                 onclick="cancelCreateMode(0); return false"
                                 ><__trans phrase="Cancel"></a> 
@@ -233,7 +233,7 @@ TC.attachLoadEvent( init );
                     <div style="margin-left: <mt:var name="category_pixel_depth">px;"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">"><mt:var name="category_label_full"></a></div>
                 </td>
                 <td id="action-<mt:var name="category_id">" class="actions">
-                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create Category">"><__trans phrase="Create"></a>
+                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create Subcategory">"><__trans phrase="Create"></a>
                     <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move Category">"><__trans phrase="Move"></a>
                 </td>
                 <td class="entry">
@@ -264,7 +264,7 @@ TC.attachLoadEvent( init );
             <tr class="create-row create-inline" id="create-<mt:var name="category_id">">
                 <td class="move-col" colspan="2">&nbsp;</td>
                 <td colspan="4" style="padding-left: 15px;">
-                    <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+                    <div style="margin-left: <mt:var name="category_pixel_depth">px;">
                         <mt:setvarblock name="new_label"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
                         <mtapp:setting
                             id="new_category"
@@ -283,13 +283,14 @@ TC.attachLoadEvent( init );
                             <span class="buttons"> 
                                 <a href="javascript:void(0)"
                                 mt:command="submit" 
-                                    ><__trans phrase="Create Category"></a> 
+                                title="<__trans phrase="Create Category">" 
+                                    ><__trans phrase="Create"></a> 
                                 <a href="javascript:void(0)" 
                                     onclick="cancelCreateMode(<mt:var name="category_id">); return false"
                                     ><__trans phrase="Cancel"></a> 
                             </span> 
                         </mtapp:setting>
-                    </span></td>
+                    </div></td>
             </tr>
     <mt:if __last__>
         </tbody>
@@ -323,7 +324,9 @@ TC.attachLoadEvent( init );
                         hint=""
                         show_hint="0">
                         <span class="buttons"> 
-                            <a href="javascript:void(0)" mt:command="submit"
+                            <a href="javascript:void(0)"
+                                mt:command="submit"
+                                title="<__trans phrase="Create Category">" 
                                 ><__trans phrase="Create"></a> 
                             <a href="javascript:void(0)" 
                                 onclick="cancelCreateMode(0); return false"
