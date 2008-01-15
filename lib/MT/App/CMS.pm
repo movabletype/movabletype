@@ -20435,6 +20435,7 @@ sub refresh_all_templates {
 
             my $terms = {};
             $terms->{blog_id} = $blog_id;
+            $terms->{type} = $val->{type};
             if ( $val->{type} =~
                 m/^(archive|individual|page|category|index|custom|widget)$/ )
             {
@@ -20442,7 +20443,6 @@ sub refresh_all_templates {
             }
             else {
                 $terms->{identifier} = $val->{identifier};
-                $terms->{type} = $val->{type};
             }
 
             # this should only return 1 template; we're searching
@@ -20467,7 +20467,7 @@ sub refresh_all_templates {
                       ->{id};    # make sure we don't overwrite original
                     delete $backup->{changed_cols}->{id};
                     $backup->name(
-                        $backup->name . ' (Backup from ' . $ts . ')' );
+                        $backup->name . $app->translate( ' (Backup from [_1])', $ts ) );
                     $backup->type('backup');
                     # if ( $backup->type !~
                     #         m/^(archive|individual|page|category|index|custom|widget)$/ )
