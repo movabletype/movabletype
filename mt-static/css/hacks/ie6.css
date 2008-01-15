@@ -26,3 +26,14 @@
 #folder-selector {
     left: 0;
 }
+
+#category-field.selector-active .field-content {
+    position: relative;
+    height: 180px;
+}
+
+#category-field.selector-active #folder-selector {
+    position: absolute;
+    left: -90px;
+    top: 30px;
+}
