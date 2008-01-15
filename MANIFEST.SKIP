@@ -75,6 +75,10 @@ mt-static/themes/unity-purple
 #?package=MTCS ^addons/Enterprise.pack
 #?package=MTCS ^mt-static/addons/Enterprise.pack
 
+# MT::App::Viewer
+lib/MT/App/Viewer.pm
+mt-view.cgi
+
 ^schemas
 \bknown-issues
 ^t/
