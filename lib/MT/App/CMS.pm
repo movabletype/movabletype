@@ -7167,7 +7167,7 @@ sub edit_object {
             }
         }
 
-    # If not yet defined, set the site_url to the config default, if one exists.
+        # If not yet defined, set the site_url to the config default, if one exists.
         $param{site_url} ||= $app->config('DefaultSiteURL');
         if ( !$param{site_url} ) {
             $param{suggested_site_url} = $app->base . '/';
