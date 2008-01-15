@@ -5972,7 +5972,7 @@ sub _hdlr_calendar {
             $day < $pad_start+1 || $day > $pad_start+$days_in_month;
         my($this_day, @entries) = ('');
         local($ctx->{__stash}{entries}, $ctx->{__stash}{calendar_day},
-              $ctx->{current_timestamp});
+              $ctx->{current_timestamp}, $ctx->{current_timestamp_end});
         local $ctx->{__stash}{calendar_cell} = $day;
         unless ($is_padding) {
             $this_day = $prefix . sprintf("%02d", $day - $pad_start);
@@ -5997,6 +5997,7 @@ sub _hdlr_calendar {
             }
             $ctx->{__stash}{entries} = \@entries;
             $ctx->{current_timestamp} = $this_day . '000000';
+            $ctx->{current_timestamp_end} = $this_day . '215959';
             $ctx->{__stash}{calendar_day} = $day - $pad_start;
         }
         defined(my $out = $builder->build($ctx, $tokens, {
