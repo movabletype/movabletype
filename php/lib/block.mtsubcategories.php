@@ -53,6 +53,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         }
 
         if (!$cats) {
+            $ctx->restore($localvars);
             $repeat = false;
             return '';
         }
