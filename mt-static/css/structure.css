@@ -1723,8 +1723,8 @@ fieldset h3 {
     clear: both;
 } 
 
-.actions-bar-top, 
-.actions-bar-bottom { 
+.pkg .actions-bar-top, 
+.pkg .actions-bar-bottom { 
     display: none;
 }
 .listing-screen .actions-bar-top, 
