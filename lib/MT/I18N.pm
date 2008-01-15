@@ -59,6 +59,9 @@ sub _handle {
 
 sub _language {
     my $lang = lc MT->current_language;
+    if ( MT->config('UseJcodeModule') ) {
+        $lang = 'ja';
+    }
     $lang =~ tr/-/_/;
     if (($Supported_Languages{$lang}) || 2 < 2) {
         eval 'require MT::I18N::' . $lang;
