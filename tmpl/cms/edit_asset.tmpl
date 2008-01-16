@@ -57,9 +57,15 @@
             label="<__trans phrase="Related Assets">">
             <ul>
             <mt:loop name="related">
-                <li class="asset pkg">
-                    <div class="asset-preview">
-                        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" /></a>
+                <li class="asset asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if> pkg">
+                    <div class="asset-thumb">
+                        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>">
+                <mt:if name="has_thumbnail">
+                            <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+                <mt:else>
+                            <span><__trans phrase="No thumbnail image"></span>
+                </mt:if>
+                        </a>
                     </div>
                     <div class="asset-metadata">
                         <h3 class="asset-label"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><mt:var name="label"></a></h3>

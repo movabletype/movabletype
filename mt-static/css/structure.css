@@ -2974,15 +2974,6 @@ body.preview-screen {
     border: 2px solid #CCC;
     background: #EEE url(../images/asset/file.gif) no-repeat center center;
 }
-.edit-asset #main-content .asset-thumb { background-image: url(../images/asset/file.gif); }
-.edit-asset #main-content .asset-type-image .asset-thumb { background-image: url(../images/asset/image.gif); }
-.edit-asset #main-content .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio.gif); }
-.edit-asset #main-content .asset-type-video .asset-thumb { background-image: url(../images/asset/video.gif); }
-
-.edit-asset #main-content .status-missing .asset-thumb { background-image: url(../images/asset/file-warning.gif); }
-.edit-asset #main-content .status-missing .asset-type-image .asset-thumb { background-image: url(../images/asset/image-warning.gif); }
-.edit-asset #main-content .status-missing .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio-warning.gif); }
-.edit-asset #main-content .status-missing .asset-type-video .asset-thumb { background-image: url(../images/asset/video-warning.gif); }
 
 .edit-asset #main-content .asset-thumbnail .asset-thumb {
     float: right;
@@ -3028,13 +3019,32 @@ body.preview-screen {
     font-size: 11px;
 }
 
-.edit-asset #related-content .asset-preview {
-    float: left;
-    margin: 3px 10px 10px 0;
-    border: 2px solid #000;
-    width: 79px;
-    background-color: #000;
+.edit-asset #related-content .asset-thumb {
     text-align: center;
+    float: left;
+    height: 75px;
+    width: 75px;
+    border: 2px solid #CCC;
+    background: #EEE url(../images/asset/file.gif) no-repeat center center;
+}
+
+.edit-asset #related-content .asset-thumbnail .asset-thumb {
+    position: relative;
+    height: 79px;
+    width: 79px;
+    overflow: hidden;
+    background: #000;
+    border: none;
+}
+.edit-asset #related-content .asset-no-thumbnail .asset-thumb a {
+    display: block;
+    height: 75px;
+}
+.edit-asset #related-content .asset-thumbnail .asset-thumb img {
+    margin-top: 2px;
+}
+.edit-asset #related-content .asset-thumb a span {
+    display: none;
 }
 
 .edit-asset #related-content .asset .asset-metadata {
@@ -3053,6 +3063,17 @@ body.preview-screen {
 .edit-asset .actions-bar {
     clear: both;
 }
+
+.edit-asset .asset-thumb { background-image: url(../images/asset/file.gif); }
+.edit-asset .asset-type-image .asset-thumb { background-image: url(../images/asset/image.gif); }
+.edit-asset .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio.gif); }
+.edit-asset .asset-type-video .asset-thumb { background-image: url(../images/asset/video.gif); }
+
+.edit-asset .status-missing .asset-thumb { background-image: url(../images/asset/file-warning.gif); }
+.edit-asset .status-missing .asset-type-image .asset-thumb { background-image: url(../images/asset/image-warning.gif); }
+.edit-asset .status-missing .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio-warning.gif); }
+.edit-asset .status-missing .asset-type-video .asset-thumb { background-image: url(../images/asset/video-warning.gif); }
+
 
 /* Edit Role ---------------------------------------------------------------------------------- */
 
