@@ -147,7 +147,7 @@
             <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
                 <td>&#160;</td>
                 <td>&#160;</td>
-                <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="page"><__trans phrase="Edit Entry"><mt:else><__trans phrase="Edit Page"></mt:if></a><mt:else>&#160;</mt:if></td>
+                <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" ne="page"><__trans phrase="Edit Entry"><mt:else><__trans phrase="Edit Page"></mt:if></a><mt:else>&#160;</mt:if></td>
         </mt:if>
                 <td class="category">
         <mt:if name="is_editable">
