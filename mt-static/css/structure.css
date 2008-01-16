@@ -1653,12 +1653,18 @@ fieldset h3 {
     color: #777;
 }
 
+.edit-author .field .field-header,
+.edit-folder .field .field-header,
+.edit-category .field .field-header,
 .field-left-label .field-header {
     float: left;
     width: 120px;
     margin-right: 10px;
     text-align: right;
 }
+.edit-author .field .field-content,
+.edit-folder .field .field-content,
+.edit-category .field .field-content,
 .field-left-label .field-content {
     margin-left: 130px;
 }
