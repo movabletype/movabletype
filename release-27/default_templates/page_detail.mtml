@@ -1,0 +1,18 @@
+<div id="page-<$MTPageID$>" class="page-asset asset">
+    <div class="asset-header">
+        <h1 id="page-title" class="asset-name"><$MTPageTitle$></h1>
+    </div>
+    <div class="asset-content">
+<MTIfNonEmpty tag="PageBody">
+        <div class="asset-body">
+            <$MTPageBody$>
+        </div>
+</MTIfNonEmpty>
+<MTIfNonEmpty tag="PageMore" convert_breaks="0">
+        <div id="more" class="asset-more">
+            <$MTPageMore$>
+        </div>
+</MTIfNonEmpty>
+    </div>
+    <div class="asset-footer"></div>
+</div>

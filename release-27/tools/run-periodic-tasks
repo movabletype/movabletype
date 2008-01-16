@@ -1,0 +1,65 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+use strict;
+
+use lib 'lib', '../lib';
+use MT::Bootstrap;
+use MT;
+
+my $mt = MT->new() or die MT->errstr;
+
+$mt->{vtbl} = { };
+$mt->{is_admin} = 0;
+$mt->{template_dir} = 'cms';
+$mt->{user_class} = 'MT::Author';
+$mt->{plugin_template_path} = 'tmpl';
+$mt->run_callbacks('init_app', $mt);
+
+require Getopt::Long;
+my $daemonize = 0;
+my $sleep     = 5;
+my $help      = 0;
+# my $sync      = 0;
+# my $rsync_opt = '';
+my $load      = 10;
+my $verbose   = 0;
+my $scoreboard;
+
+Getopt::Long::GetOptions(
+    "daemon"      => \$daemonize,
+    "sleep=i"     => \$sleep,
+    # "help|?"      => \$help,
+    # "throttle=i"  => \%throttle,
+    # "worker=s"    => \$worker,
+    # "sync"        => \$sync,
+    # "to|target=s" => \@target,
+    # "rsync=s"     => \$rsync_opt,
+    "load=i"      => \$load,
+    "scoreboard=s"=> \$scoreboard,
+    "verbose"     => \$verbose,
+);
+
+my %cfg;
+$cfg{verbose} = $verbose;
+$cfg{scoreboard} = $scoreboard;
+
+require MT::TheSchwartz;
+my $client = MT::TheSchwartz->new(%cfg);
+no warnings 'once';
+$TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
+
+if ($daemonize) {
+    $client->work_periodically($sleep);
+} else {
+    # First, run periodic tasks
+    $mt->run_tasks();
+    $client->work_until_done;
+}
+
+1;

@@ -1,0 +1,24 @@
+<mtapp:widget id="mt_shortcuts" class="shortcuts-widget" label="<__trans phrase="Handy Shortcuts">" can_close="1">
+    <ul class="shortcuts-list pkg">
+        <mt:if name="can_manage_plugins">
+        <li><a href="<mt:var name="script_url">?__mode=cfg_plugins<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left-xwide icon-plugins"><__trans phrase="Plugins"></a></li>
+        </mt:if>
+        <mt:if name="can_search_replace">
+        <li><a href="<mt:var name="script_url">?__mode=search_replace<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left-xwide icon-search"><__trans phrase="Search &amp; Replace"></a></li>
+        </mt:if>
+        <mt:if name="can_publish_feedbacks">
+        <li><a href="<mt:var name="script_url">?__mode=list_ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left-xwide icon-trackbacks"><__trans phrase="Trackbacks"></a></li>
+        </mt:if>
+        <mt:if name="can_view_log">
+        <li><a href="<mt:var name="script_url">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>" class="icon-left-xwide icon-log"><__trans phrase="Activity Log"></a></li>
+        </mt:if>
+        <mt:if name="blog_id">
+        <mt:if name="can_administer_blog">
+        <li><a href="<mt:var name="script_url">?__mode=start_import&amp;blog_id=<mt:var name="blog_id">" class="icon-left-xwide icon-import"><__trans phrase="Import Content"></a></li>
+        </mt:if>
+        <mt:if name="can_edit_config">
+        <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">" class="icon-left-xwide icon-settings"><__trans phrase="Blog Preferences"></a></li>
+        </mt:if>
+        </mt:if>
+    </ul>
+</mtapp:widget>

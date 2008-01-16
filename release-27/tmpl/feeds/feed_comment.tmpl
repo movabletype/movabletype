@@ -1,0 +1,95 @@
+<entry>
+  <title type="html"><TMPL_VAR NAME=LOG.MESSAGE ESCAPE=HTML></title>
+  <published><TMPL_VAR NAME=LOG.COMMENT.CREATED_ON_ISO></published>
+  <updated><TMPL_VAR NAME=LOG.COMMENT.MODIFIED_ON_ISO></updated>
+  <id><TMPL_VAR NAME=LOG.ATOM_ID></id>
+  <TMPL_IF NAME=LOG.COMMENT.ENTRY.STATUS_IS_2><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>#c<TMPL_VAR NAME=LOG.COMMENT.ID>"/><TMPL_ELSE><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.PERMALINK>"/></TMPL_IF>
+  <author>
+  <TMPL_IF NAME=LOG.COMMENT.AUTHOR>
+    <name><TMPL_VAR NAME=LOG.COMMENT.AUTHOR></name>
+    <TMPL_IF NAME=LOG.COMMENT.URL><uri><TMPL_VAR NAME=LOG.COMMENT.URL></uri></TMPL_IF>
+    <TMPL_IF NAME=LOG.COMMENT.EMAIL><uri><TMPL_VAR NAME=LOG.COMMENT.EMAIL></uri></TMPL_IF>
+  <TMPL_ELSE>
+    <name>(<MT_TRANS phrase="system">)</name>
+  </TMPL_IF>
+  </author>
+  <content type="html">
+    &lt;div class="content"&gt;
+        <TMPL_IF NAME=LOG.COMMENT.VISIBLE>
+        &lt;p style="float:right;"&gt;&lt;img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/success.gif" alt="<MT_TRANS phrase="Published">" width="9" height="9" /&gt;&lt;a href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>"&gt;<MT_TRANS phrase="Published">&lt;/a&gt;&lt;/p&gt;
+        <TMPL_ELSE>
+        &lt;p style="float:right;"&gt;&lt;img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/draft.gif" alt="<MT_TRANS phrase="Unpublished">" width="9" height="9" /&gt;&lt;href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>"&gt;<MT_TRANS phrase="Unpublished">&lt;/a&gt;&lt;/p&gt;
+        </TMPL_IF>
+
+        &lt;p&gt;
+        &lt;b&gt;<MT_TRANS phrase="Blog">:&lt;/b&gt; &lt;a href="<TMPL_VAR NAME=LOG.COMMENT.BLOG.SITE_URL>"&gt;<TMPL_VAR NAME=LOG.COMMENT.BLOG.NAME ESCAPE=HTML>&lt;/a&gt;&lt;br /&gt;
+        <TMPL_IF NAME=LOG.COMMENT.ENTRY.STATUS_IS_2>
+        &lt;b&gt;<MT_TRANS phrase="Entry">:&lt;/b&gt; &lt;a href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>"&gt;<TMPL_IF NAME=LOG.COMMENT.ENTRY.TITLE><TMPL_VAR NAME=LOG.COMMENT.ENTRY.TITLE ESCAPE=HTML><TMPL_ELSE>(<MT_TRANS phrase="Untitled">)</TMPL_IF>&lt;/a&gt;&lt;br /&gt;
+        <TMPL_ELSE>
+        &lt;b&gt;<MT_TRANS phrase="Entry">:&lt;/b&gt; <TMPL_IF NAME=LOG.COMMENT.ENTRY.TITLE><TMPL_VAR NAME=LOG.COMMENT.ENTRY.TITLE ESCAPE=HTML><TMPL_ELSE>(<MT_TRANS phrase="Untitled">)</TMPL_IF>&lt;br /&gt;
+        </TMPL_IF>
+        &lt;b&gt;<MT_TRANS phrase="Commenter">:&lt;/b&gt; <TMPL_VAR NAME=LOG.COMMENT.AUTHOR ESCAPE=HTML>&lt;br /&gt;
+        &lt;b&gt;<MT_TRANS phrase="Email">:&lt;/b&gt; <TMPL_VAR NAME=LOG.COMMENT.EMAIL ESCAPE=HTML>&lt;br /&gt;
+        &lt;b&gt;<MT_TRANS phrase="URL">:&lt;/b&gt; <TMPL_VAR NAME=LOG.COMMENT.URL ESCAPE=HTML>&lt;br /&gt;
+        &lt;/p&gt;
+
+      <TMPL_VAR NAME=LOG.COMMENT.TEXT_HTML ESCAPE=HTML>
+      &lt;hr /&gt;
+    &lt;/div&gt;
+
+
+    &lt;div class="actions" style="float:left;width:49%;"&gt;
+
+        &lt;ul&gt;
+            &lt;strong&gt;<MT_TRANS phrase="Actions">:&lt;/strong&gt;&lt;br /&gt;
+    
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;&lt;/li&gt;
+
+            <TMPL_IF NAME=LOG.COMMENT.VISIBLE>
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=unapprove_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            <TMPL_ELSE>
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=approve_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            </TMPL_IF>
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=handle_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
+
+          <TMPL_IF NAME=LOOP_ACTIONS>
+          <TMPL_LOOP NAME=LOOP_ACTIONS>
+          &lt;li&gt;&lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL>&lt;/a&gt;&lt;/li&gt;
+          </TMPL_LOOP>
+          </TMPL_IF>
+        &lt;/ul&gt;
+    &lt;/div&gt;
+
+    &lt;div class="discovery" style="float:right;width:49%;"&gt;
+
+        &lt;ul&gt;
+        &lt;strong&gt;<MT_TRANS phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
+
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
+
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ENTRY.ID>&amp;tab=comments"&gt;<MT_TRANS phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
+
+        <TMPL_IF NAME=LOG.COMMENT.AUTHOR.AUTHENTICATED>
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=commenter&amp;id=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;tab=comments"&gt;<MT_TRANS phrase="By commenter identity">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>
+
+        <TMPL_IF NAME=LOG.COMMENT.AUTHOR>
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR ESCAPE=URL>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="By commenter name">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>
+
+        <TMPL_IF NAME=LOG.COMMENT.EMAIL>
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.COMMENT.EMAIL ESCAPE=URL>&amp;is_limited=1&amp;search_cols=email&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter email">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>
+
+        <TMPL_IF NAME=LOG.COMMENT.URL>
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;_type=comment&amp;search=<TMPL_VAR NAME=LOG.COMMENT.URL ESCAPE=URL>&amp;is_limited=1&amp;search_cols=url&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter URL">&lt;/a&gt;&lt;/li&gt;
+        </TMPL_IF>
+
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;from=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;to=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;show_all=1&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      
+    &lt;/div&gt;
+    &lt;br style="clear: both;" /&gt;
+
+  </content>
+</entry>

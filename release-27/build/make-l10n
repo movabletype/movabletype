@@ -1,0 +1,165 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+use strict;
+
+if (grep { /--help/ } @ARGV) {
+    print <<USAGE;
+Mode d\'emploi:
+
+    make-l10n <root directory>
+
+<root directory> defaults to typepad.
+USAGE
+exit(1);
+}
+
+my $wc = 0;
+my $root_dir = ($ARGV[0] || 'typepad');
+my $languagename = ($ARGV[1] || 'fr');
+
+my $lib_dir = $root_dir . '/lib';
+
+use lib './lib';
+
+
+print <<"PACKAGENAME";
+package MT::L10N::$languagename;
+PACKAGENAME
+
+my $yr = (localtime(time))[5] + 1900;
+
+my $parent_class = $languagename eq 'en_us' ? 'MT::L10N' : 'MT::L10N::en_us';
+print <<"HEADER";
+# Copyright 2001-$yr Six Apart. This code cannot be redistributed without
+# permission from www.sixapart.com.  For more information, consult your
+# Movable Type license.
+#
+# \$Id\$
+
+use strict;
+use $parent_class;
+use vars qw( \@ISA \%Lexicon );
+\@ISA = qw( $parent_class );
+
+sub encoding { 'utf-8' } 
+
+## The following is the translation table.
+
+\%Lexicon = (
+HEADER
+
+%MT::L10N::en_us::Lexicon = ();  ## Suppress warning.
+require MT::L10N::en_us;
+eval ("require MT::L10N::$languagename");
+use File::Find;
+
+find \&wanted, $root_dir;
+
+print "\n    ## Other phrases, with English translations.\n";
+for my $phrase (keys %MT::L10N::en_us::Lexicon) {
+    print encode_phrase($phrase, eval ('$MT::L10N::'.$languagename.'::Lexicon{$phrase}'));
+}
+
+
+print "\n    ## Error messages, strings in the app code.\n";
+find \&wanted_app, $root_dir;
+
+print <<FOOTER;
+);
+
+
+1;
+
+## New words: $wc
+FOOTER
+
+my %SeenPhrase;
+sub wanted {
+    my $file = $File::Find::name;
+    return unless $file =~ /\.(tmpl|pl|cgi\.pre)$/;
+    print "\n    ## $file\n";
+    open my $fh, $_ or die "Can't open $_: $!";
+    local $_ = do { local $/; <$fh> };
+    close $fh;
+    while (/<MT_TRANS ([^>]+)>/g) {
+        my($msg, %args) = ($1);
+        while ($msg =~ /(\w+)\s*=\s*(\\?["'])(.*?[^\\])\2/gs) {   #"
+# try avoiding strings ending in escape chars					 
+#        while ($msg =~ /(\w+)\s*=\s*(\\?["'])(.*?)\2/g) {   #"
+            $args{$1} = $3;
+        }
+        next unless $args{phrase};
+        next if $SeenPhrase{$args{phrase}}++;
+        next if $args{phrase} =~ /^_[A-Z]/;
+        $args{phrase} =~ s/\\\'/\'/sg;
+        print encode_phrase($args{phrase}, eval('$MT::L10N::'.$languagename.'::Lexicon{$args{phrase}}'));
+    }
+}
+
+sub wanted_app {
+    my $file = $File::Find::name;
+    return unless $file =~ m!/mt\.js$! || $file =~ /\.(pm|pl|cgi\.pre)$/;
+    print "\n    ## $file\n";
+    open my $fh, $_ or die "Can't open $_: $!";
+    local $_ = do { local $/; <$fh> };
+    close $fh;
+    if ($file =~ m/\.js/) {
+        while (/trans\('(.+?[^\\])'/gs) { # Anything between trans(' and '), including escaped quotes
+            my($phrase) = $1;
+            next if $SeenPhrase{$phrase}++;
+            next if $phrase =~ /^_[A-Z]/;
+	    $phrase =~ s/\\\'/\'/sg; # Turn escaped quotes back into regular quotes, because the encode_phrase will re-encode them if needed
+            print encode_phrase($phrase,eval('$MT::L10N::'.$languagename.'::Lexicon{$phrase}'));
+        }
+    } else {
+        while (/(?:translate|errtrans|maketext|trans_error)\s*\(\s*("([^"]*?[^\\])"|'([^']*?[^\\])')/gs) { #"
+	# Try avoiding escape symbols at end of string
+#        while (/(?:translate|errtrans|maketext|trans_error)\s*\(\s*("([^"]*)"|'([^']*)')/gs) { #"
+	# Translate, errtrans... followed by open and closed brackets with either 
+	# a double quote followed by non double quotes followed by a double quote
+	# or 
+	# a single quote followed by non single quotes followed by a single quote
+            my($phrase) = ($2 || $3);
+            next if $SeenPhrase{$phrase}++;
+            next if $phrase =~ /^_[A-Z]/;
+            print encode_phrase($phrase,eval('$MT::L10N::'.$languagename.'::Lexicon{$phrase}'));
+        }
+    }
+}
+
+sub encode_phrase {
+    my($l, $r, $words) = @_;
+    $r ||= '';
+    $l =~ s/'/\\'/g;
+    $r =~ s/'/\\'/g;
+    $l =~ s/\\\\/\\/g;
+    $r =~ s/\\\\/\\/g;
+    $words = wordcount($l);
+    $wc += $words if ($r eq '');
+    if ($r eq '') {
+        sprintf qq(    '%s' => '%s', # Translate - New (%s)\n), $l, $l, $words;
+    } else {
+        if ($l eq $r) {
+            sprintf qq(    '%s' => '%s', # Translate - Previous (%s)\n), $l, $r, $words;
+        } else {
+            sprintf qq(    '%s' => '%s',\n), $l, $r;
+        }
+    }
+}
+    
+
+
+
+sub wordcount {
+	my $l = shift;
+    $l =~ s/[`!"$%^&*()_+={[}\];:@~#,.<>?\\\/]/ /g; #`
+    $l =~ s/\ ([ei])\ ([ge])\ / $1.$2./g;
+    my @words = split(/\W*\s+\W*/, $l);         # see the Camel book p.39
+	return ($#words + 1);
+}

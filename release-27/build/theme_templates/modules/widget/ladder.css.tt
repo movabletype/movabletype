@@ -1,0 +1,62 @@
+[%#
+    Block Widget Styling
+    - border, colors, fonts, background images
+    - sample themes: Manga, Scribble
+    if widget border-bottom-color is not the default border color use theme.widget.header.border.color
+%]
+
+[% INCLUDE widget/columns.css.tt %]
+
+#content .widget {
+    border-bottom: 1px solid [% theme.widget.header.border.color || theme.default.border.color %];
+}
+
+.widget-header,
+.widget-content {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.widget-header {
+    margin-top: 10px;
+}
+
+.widget-header,
+.widget-header a {
+    color: [% theme.widget.header.color || theme.default.header.color || theme.default.link.color %];
+    font-weight: [% theme.widget.header.font.weight || theme.default.header.font.weight || 'bold' %];
+}
+
+.widget-content {
+    margin-bottom: 15px;
+}
+
+.widget-content a {
+    color: [% theme.widget.beta.link.color || "#999" %];
+}
+
+.widget-about .widget-header {
+    margin-bottom: 10px;
+}
+
+#content .widget-powered .widget-content {
+    margin: 0;
+    background-color: [% theme.default.background.color %];
+}
+
+.layout-wtt #content #beta .widget-powered .widget-content,
+.layout-twt #content #gamma .widget-powered .widget-content,
+.layout-wt #content #beta .widget-powered .widget-content {
+    margin-left: 1px;
+}
+
+.layout-twt #content #beta .widget-powered .widget-content,
+.layout-tw #content #beta .widget-powered .widget-content {
+    margin-right: 1px;
+}
+
+.widget-email .widget-content,
+.widget-subscribe .widget-content,
+.widget-syndicate .widget-content {
+    margin-top: 15px;
+}

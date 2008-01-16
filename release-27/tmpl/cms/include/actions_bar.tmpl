@@ -1,0 +1,15 @@
+<mt:unless name="screen_class" eq="search-replace">
+<div class="actions-bar actions-bar-<$mt:var name="bar_position" default="top"$><mt:if name="settings_bar"> settings-actions-bar</mt:if> pkg">
+    <div class="actions-bar-inner">
+    <mt:unless name="hide_pager">
+        <mt:include name="include/pagination.tmpl">
+    </mt:unless>
+        <div class="button-actions actions">
+    <$mt:var name="action_buttons"$>
+        </div>
+        <span class="plugin-actions actions">
+    <mt:include name="include/itemset_action_widget.tmpl">
+        </span>
+    </div>
+</div>
+</mt:unless>

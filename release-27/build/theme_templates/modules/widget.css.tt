@@ -1,0 +1,73 @@
+[% IF theme.widget.template %]
+    [% templatename = "widget/" _ theme.widget.template _ ".css.tt" %]
+[%+ INCLUDE $templatename %]
+[% ELSE %]
+[%+ INCLUDE widget/basic.css.tt %]
+[% END %]
+
+.widget-header {
+    font-size: 14px;
+}
+
+.widget-header a {
+    text-decoration: none;
+}
+
+.widget-header a:hover {
+    text-decoration: underline;
+}
+
+.widget-content {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 11px;
+}
+
+
+/* "Powered By" Widget */
+
+.widget-powered .widget-content {
+    padding: 10px;
+    text-align: center;
+}
+
+[%+ IF theme.find_file('mt-powered') -%]
+.widget-powered .widget-content a {
+    display: block;
+    background: [% PROCESS bg_image file='mt-powered' %] no-repeat 50% 50%;
+}
+
+.widget-powered .widget-content img {
+    visibility: hidden;
+}
+
+[%+ END -%]
+
+/* Calendar Widget */
+
+.widget-calendar .widget-content table {
+    font-size: 10px;
+}
+
+
+/* Footer Widgets */
+
+#footer .widget {
+    margin: 10px 0;
+}
+
+#footer .widget-content {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#footer .widget-powered .widget-content {
+    padding: 0;
+    text-align: left;
+}
+
+[%+ IF theme.find_file('mt-powered') -%]
+#footer .widget-powered .widget-content a {
+    background: transparent;
+}
+[%+ END -%]

@@ -1,0 +1,51 @@
+body{
+/*    font-size:13px;*/
+/*    *font-size:small;*/
+/*    *font:x-small;*/
+/*    font-family: "trebuchet ms", trebuchet, verdana, arial, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;*/
+
+/*    font-family: arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;*/
+/*    font-family: "century gothic", futura, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;*/
+/*    font-family: georgia, "times new roman", times, "hiraminpro-w3", "ms mincho", serif;*/
+/*    font-family: "gil sans", helvetica, arial, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;*/
+/*    font-family: "hoefler text", georgia, "times new  roman", times, "hiraminpro-w3", "ms mincho", serif;*/
+/*    font-family: impact, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;*/
+/*    font-family: "lucida sans", arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;*/
+/*    font-family: "trebuchet ms", arial, "hirakakupro-w3", osaka, "ms pgothic", sans-serif;*/
+/*    font-family: verdana, arial, helvetica, hirakakupro-w3, osaka, "ms pgothic", sans-serif;*/
+}
+table {
+/*    font-size:inherit;*/
+/*    font:100%;*/
+}
+select, input, textarea {
+/*    font:99% Arial,Helvetica,clean,HiraKakuPro-W3,Osaka,sans-serif;*/
+}
+pre, code {
+/*    font:115% monospace;*/
+/*    *font-size:100%;*/
+}
+body * {
+/*    line-height:1.22em;*/
+}
+
+/*
+    77% = 10px
+    85% = 11px
+    92% = 12px
+    100% = 13px
+    107% = 14px
+    114% = 15px
+    122% = 16px
+    129% = 17px
+    136% = 18px
+    144% = 19px
+    152% = 20px
+    159% = 21px
+    167% = 22px
+    174% = 23px
+    182% = 24px
+    189% = 25px
+    197% = 26px h2
+*/
+

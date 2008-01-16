@@ -1,0 +1,1109 @@
+=pod
+
+=head1 NAME
+
+Callback.pod - Movable Type Callbacks
+
+=head1 DESCRIPTION
+
+The callback system in Movable Type is easy to use and is invoked at key areas
+throughout the application. This document is a reference of all available
+callbacks in Movable Type itself.
+
+It's important to note that this documentation (as with all API documentation)
+applies to the B<Movable Type platform> which includes both Movable Type and 
+Movable Type Enterprise.  In the rare occurance that something refers 
+exclusively to one or the other, it will be explicitly noted.
+
+=head1 OVERVIEW
+
+What follows is a listing of each available MT callback, grouped by
+system component. The callback is immediately followed by a I<signature>
+which describes how to write your callback subroutine to accept the
+parameters the callback provides.
+
+For example, if the signature reads like this:
+
+    callback($cb, $param1, $param2)
+
+Then your callback subroutine should be declared as:
+
+    sub my_callback {
+        my ($cb, $param1, $param2) = @_;
+
+    }
+
+If the callback signature looks like this:
+
+    callback($cb, %info)
+
+Then your callback subroutine should be:
+
+    sub my_callback {
+        my ($cb, %info) = @_;
+
+    }
+
+=head1 ERROR HANDLING
+
+The first argument to any callback routine is a I<MT::Callback>
+object. You can use this object to return errors to MT.
+
+To signal an error, just use the error() method:
+
+    sub my_callback {
+        my ($cb, $arg2, $arg3) = @_;
+
+        ....
+
+        if (some_condition) {
+            return $cb->error("The foofiddle was invalid.");
+        } 
+        ...
+    }
+
+In addition to the error() method, the I<MT::Callback> package also has
+metadata related to the plugin that registered the callback:
+
+    my $plugin = $cb->plugin;
+
+It's possible that this method will return undef if the callback
+was registered without a plugin.
+
+=head1 Naming Conventions
+
+MT callbacks are typically in one of these forms:
+
+=over 4
+
+=item * CallbackName
+
+This is a simple high-level callback. Typically an application (C<TakeDown>)
+or process-oriented callback (such as C<BuildFileFilter>).
+
+=item * callback_name
+
+Lower-cased callbacks signify a lower-level callback. These are common in
+the I<MT::Object> callbacks (such as C<pre_save>, C<post_save>, etc.)
+
+=item * Package::CallbackName
+
+Callbacks that are invoked with a package name prefix are used to distinguish
+a callback that may be used for many classes. The transformer callbacks are
+examples of this. These callbacks can also be hooked into with an wildcard
+syntax:
+
+    MT->add_callback('*::CallbackName', ...)
+
+or even just:
+
+    MT->add_callback('CallbackName', ...)
+
+So the namespace is there when you need your callback to be for a specific
+package, or can be registered without one when you want the callback to
+run regardless of the package.
+
+=item * Package::CallbackName.type
+
+=item * CallbackName.type
+
+This is a syntax for running callbacks with a parameter or identifier to
+distinguish it. This is also used to the hooks to be more selective. Some
+of the CMS application callbacks use this syntax:
+
+    MT->add_callback('CMSDeletePermissionFilter.entry', ...)
+
+The transformer callbacks use this syntax to let you target a specific
+application template:
+
+    MT->add_callback('AppTemplateSource.list_blog', ...)
+
+Some of these also allow you to register without the suffix:
+
+    MT->add_callback('AppTemplateSource', ...)
+
+And some also provide the package name syntax for scoping to a particular
+application/object type:
+
+    MT->add_callback('MT::App::CMS::AppTemplateSource.header', ...)
+
+This last example targets use of the header application template specifically
+for the CMS application (and only the CMS application).
+
+=back
+
+=head1 Object Callbacks
+
+The Object callbacks are those that are tied to I<MT::Object> and its
+descendants.  This includes classes such as I<MT::Entry>, I<MT::Blog>, etc.
+
+=over 4
+
+=item * <package>::pre_save
+
+    callback($cb, $obj, $original)
+
+Callback issued prior to saving C<$obj> to the database. C<$original> is
+the instance that was invoked to be saved. If C<$obj-E<gt>id> is unset,
+then it is a new object.
+
+=item * <package>::post_save
+
+    callback($cb, $obj, $original)
+
+Callback issued after to saving C<$obj> to the database. C<$original> is
+the instance that was invoked to be saved.
+
+=item * <package>::pre_update
+
+    callback($cb, $obj, $original)
+
+Callback issued prior to saving an existing C<$obj> to the database.
+C<$original> is the instance that was invoked to be saved.
+
+=item * <package>::post_update
+
+    callback($cb, $obj, $original)
+
+Callback issued after saving an existing C<$obj> to the database.
+C<$original> is the instance that was invoked to be saved.
+
+=item * <package>::pre_insert
+
+    callback($cb, $obj, $original)
+
+Callback issued prior to saving a new C<$obj> to the database. C<$original> is
+the instance that was invoked to be saved.
+
+=item * <package>::post_insert
+
+    callback($cb, $obj, $original)
+
+Callback issued after to saving a new C<$obj> to the database. C<$original> is
+the instance that was invoked to be saved.
+
+=item * <package>::pre_load
+
+    callback($cb, \@params)
+
+C<\@params> is an array containing the arguments that were passed to
+the C<load> method.
+
+=item * <package>::post_load
+
+    callback($cb, \@params, $obj)
+
+C<\@params> is an array containing the arguments that were passed to
+the C<load> method. The object returned by the load method is provided
+through the C<$obj> parameter.
+
+=item * <package>::pre_remove
+
+    callback($cb, $obj)
+
+=item * <package>::post_remove
+
+    callback($cb, $obj)
+
+=item * <package>::pre_remove_all
+
+    callback($cb, $class)
+
+=item * <package>::post_remove_all
+
+    callback($cb, $class)
+
+=item * <package>::post_clone
+
+    callback($cb, %param)
+
+This callback in particular is unique to the I<MT::Blog> package. It is
+run when the user does a blog cloning operation that makes a physical copy
+of the weblog and it's children objects. If a plugin has data that is
+associated with a blog and you wish to copy that data when the blog is
+cloned, you should hook into this callback to capture this event.
+
+When the blog is cloned, all of the children records are cloned along
+with it: entries, categories, templates, etc. As such, it may be important
+for you to know the original IDs of the cloned records, in addition to
+their new IDs. So the callback also provides this information, for
+the cloned entries, categories, trackback and template objects.
+
+Parameter data passed to the callback include:
+
+=over 4
+
+=item * OldObject
+
+The I<MT::Blog> object that was been cloned. This is the original blog
+object, not the newly created one.
+
+=item * NewObject
+
+The I<MT::Blog> object that was created from the original.
+
+=item * EntryMap
+
+A hashref containing keys of the original entry IDs and values of
+the newly created entry IDs.
+
+=item * CategoryMap
+
+A hashref containing keys of the original category IDs and values of
+the newly created category IDs.
+
+=item * TrackbackMap
+
+A hashref containing keys of the original trackback IDs and values of
+the newly created trackback IDs.
+
+=item * TemplateMap
+
+A hashref containing keys of the original template IDs and values of
+the newly created template IDs.
+
+=item * Callback
+
+A coderef that may be used to message the user as to the progress of
+the cloning operation. Call this with a message and a unique identifier.
+Each progress update with that identifier will refresh the same
+status message displayed. Refer to the I<MT::Blog::clone_with_children>
+subroutine for further examples of using the callback.
+
+    $callback->("Now cloning foozles...", "foozles");
+
+=back
+
+=item * <package>::post_create_default_templates
+
+    callback($cb, $blog, $tmpl_list)
+
+This callback in particular is also unique to the I<MT::Blog> package.
+It is run when the user creates a new blog, or when the user refreshes
+all templates for existing blog to have it clean start again. 
+If a plugin has something to do with template sets and with when user 
+uses the particular set, you should hook into this callback to capture 
+this event.
+
+C<$blog> argument carries the blog user created.  C<$tmpl_list> carries
+the list of template data associated to the blog.
+
+=back
+
+=head1 Application Callbacks
+
+=head2 MT::App
+
+These callbacks are common to all MT applications that descend from the
+I<MT::App> package.
+
+=over 4
+
+=item * <package>::pre_run
+
+    callback($cb, $app)
+
+Called at the beginning of the request, prior to invoking the mode
+handler (and prior to determining the application mode, so it is
+possible for the callback to alter the mode at this point).
+
+=item * <package>::post_run
+
+    callback($cb, $app)
+
+Called after running the mode handler for the request. This callback is
+run prior to the response being sent to the client.
+
+=item * TakeDown
+
+    callback($cb, $app)
+
+Executed as the application is finishing the service of a request. By
+this time the response has been sent to the client.
+
+=back
+
+In addition to the above callbacks, I<MT::App> also provides a set of
+"Transformer" callbacks that are documented in their own section,
+L<Transformer Callbacks>.
+
+=head2 MT::AtomServer and MT::XMLRPCServer
+
+=over 4
+
+=item * APIPreSave.entry
+
+    callback($cb, $app, $entry, $original)
+
+This callback is invoked prior to saving the entry object.
+If a new entry is being saved, C<$entry-E<gt>id> will not be set.
+
+=item * APIPostSave.entry
+
+    callback($cb, $app, $entry, $original)
+
+This callback is invoked after to saving the entry object.
+If a new entry has being saved, C<$original-E<gt>id> will not be set.
+
+=item * APIUploadFile
+
+    callback($cb, %params)
+
+This callback is invoked for each file the user uploads to the weblog.
+This callback is similar to the CMSUploadFile callback found in
+I<MT::App::CMS>. Currently, this callback is only used in I<MT::XMLRPCServer>,
+since the I<MT::AtomServer> app does not handle file uploads.
+
+The named parameters passed for this callback are:
+
+=over 4
+
+=item * File
+
+The full physical file path of the uploaded file.
+
+=item * Url
+
+The full URL to the file that has been uploaded.
+
+=item * Type
+
+For this callback, this value is currently always 'file'.
+
+=item * Blog
+
+The I<MT::Blog> object associated with the newly uploaded file.
+
+=back
+
+=back
+
+=head2 MT::App::CMS
+
+The following callbacks are unique to the I<MT::App::CMS> package. Many of
+these callbacks have a C<E<lt>typeE<gt>> suffix which is one of the
+registered datatypes for the CMS. The available types are:
+
+=over 4
+
+=item author           => MT::Author
+
+=item comment          => MT::Comment
+
+=item entry            => MT::Entry
+
+=item template         => MT::Template
+
+=item blog             => MT::Blog
+
+=item notification     => MT::Notification
+
+=item templatemap      => MT::TemplateMap
+
+=item category         => MT::Category
+
+=item banlist          => MT::IPBanList
+
+=item ping             => MT::TBPing
+
+=item ping_cat         => MT::TBPing
+
+=item group            => MT::Group
+
+=item role             => MT::Role
+
+=item association      => MT::Association
+
+=back
+
+=over 4
+
+=item * CMSViewPermissionFilter.<type>
+
+Calling convention is:
+
+    callback($cb, $app, $id, $obj_promise)
+
+Where C<$id> is the ID of an object, if it already exists, or
+C<undef> if the user will be creating a new object of this type.
+
+C<$obj_promise> is a promise for the object itself. You can use
+C<$obj_promise-E<gt>force> to get ahold of the object, if you need it, but
+typically you won't need it. (See I<MT::Promise>)
+
+Return a false value to abort the operation and display a message to
+the user that s/he doesn't have permission to view the object.
+
+=item * CMSSavePermissionFilter.<type>
+
+Calling convention is:
+
+    callback($cb, $app, $id)
+
+Where C<$id> is the ID of the object, if it already exists, or
+C<undef> if it is a new object with this request.
+
+Note that at this point, the object may not yet exist. The request can
+be understood through the query parameters of the app, accessible
+through C<$app-E<gt>param()>. A C<CMSSavePermissionFilter> callback
+should be "safe"--it should not modify the database.
+
+Return a false value to abort the operation and display a message to
+the user that s/he doesn't have permission to modify the object. The
+method is not called if the acting user is a superuser.
+
+=item * CMSDeletePermissionFilter.<type>
+
+    callback($cb, $app, $object)
+
+=item * CMSSaveFilter.<type>
+
+This callback gives you the chance to "decline" for reasons other than lack of permissions.
+
+The routine is called as follows:
+
+    callback($cb, $app)
+
+Returning a false value will decline the request. It is advisibable to
+return an error via the C<$cb> object in order to signal to the user
+what went wrong.
+
+Note that the new object has not been constructed yet. The operation
+can be understood by examining the C<$app> object's query parameters
+via C<$app-E<gt>param()>
+
+A C<CMSSaveFilter> callback should be "safe"--it should not modify the
+database.
+
+=item * CMSPreSave.<type>
+
+    callback($cb, $app, $object, $original)
+
+C<$object> and C<$original> hold the object which is about to be saved,
+and the object as it was when this request began, respectively. This
+allows the callback to determine what kind of changes are being
+attempted in the user's request. If the request is to create a new
+object, C<$original> will be a valid object reference, but the object
+will be "blank": it will be just what is returned by the C<new> method
+on that class.
+
+=item * CMSPostSave.<type>
+
+    callback($cb, $app, $object, $original)
+
+C<$object> and C<$original> hold the object which is about to be saved,
+and the object as it was when this request began, respectively. When
+the callback routine is called, the new object as C<$object> has already
+been committed to the database. This is a convenient time to trigger
+follow-up actions, such as notification and static-page rebuilds.
+
+=item * CMSPostDelete.<type>
+
+    callback($cb, $app, $object)
+
+C<$object> holds the object that has just been removed from the database.
+This callback is useful when removing data that is associated with
+the object being removed.
+
+=item * CMSUploadFile
+
+    callback($cb, %params)
+
+This callback is invoked for each file the user uploads to the weblog.
+It is called for each file, regardless of type. If the user uploads an
+image, both the C<CMSUploadFile> and C<CMSUploadImage> callbacks are invoked.
+
+The parameters passed in the C<%params> hash include:
+
+=over 4
+
+=item * File
+
+The full file path of the file that has been saved into the weblog.
+
+=item * Url
+
+The URL of the file that has been saved into the weblog.
+
+=item * Size
+
+The length of the file in bytes.
+
+=item * Type
+
+Either 'image', 'file' or 'thumbnail'.
+
+=item * Blog
+
+The I<MT::Blog> object the uploaded file is associated with.
+
+=back
+
+=item * CMSUploadImage
+
+    callback($cb, %params)
+
+This callback is invoked for each uploaded image. In the case the user
+creates a thumbnail for their uploaded image, this callback will be
+invoked twice-- once for the uploaded original image and a second time
+for the thumbnail that was generated for it.
+
+The parameters passed in the C<%params> hash include:
+
+=over 4
+
+=item * File
+
+The full path and filename for the uploaded file.
+
+=item * Url
+
+The full URL for the uploaded file.
+
+=item * Size
+
+The length of the uploaded image in bytes.
+
+=item * Type
+
+Either "image" or "thumbnail" (for generated thumbnails).
+
+=item * Height
+
+The height of the image in pixels (available if I<Image::Size> module
+is present).
+
+=item * Width
+
+The width of the image in pixels (available if I<Image::Size> module
+is present).
+
+=item * ImageType
+
+The image identifier as reported by the I<Image::Size> module. Typically,
+'GIF', 'JPG' or 'PNG'.
+
+=item * Blog
+
+The I<MT::Blog> object of the weblog the image is associated with.
+
+=back
+
+=item * HandleJunk
+
+    callback($cb, $app, $object)
+
+This callback is invoked when a user intentionally marks a given comment
+or TrackBack ping as junk. The C<$object> can be either a I<MT::Comment>
+or I<MT::TBPing> object.
+
+=item * HandleNotJunk
+
+    callback($cb, $app, $object)
+
+This callback is invoked when a user intentionally marks a given comment
+or TrackBack ping as non-junk. The C<$object> can be either a I<MT::Comment>
+or I<MT::TBPing> object.
+
+=item * RebuildOptions
+
+    callback($cb, $app, \@options)
+
+The RebuildOptions callback provides control over an array of additional
+custom rebuild options that are displayed in MT's rebuild window. The array
+is populated with hashrefs, each containing:
+
+=over 4
+
+=item code
+
+The code to execute when running the custom rebuild option.
+
+=item label
+
+The label to display in the list of rebuild options.
+
+=item key
+
+An identifier unique to this option (optional, will derive from the label
+if unavailable).
+
+=back
+
+    MT->add_callback('RebuildOptions', 5, undef, \&add_rebuild_options);
+    sub add_rebuild_options {
+        my ($cb, $app, $options) = @_;
+        push @$options, {
+            code => \&rebuild_by_author,
+            label => "Rebuild My Entries",
+            key => "rebuild_by_author",
+        }
+    }
+
+=back
+
+=head2 MT::App::Comments
+
+This application handles receiving all comments posted to the
+Movable Type installation.
+
+=over 4
+
+=item * CommentThrottleFilter
+
+    callback($cb, $app, $entry)
+
+Called as soon as a new comment has been received. The callback must
+return a boolean value. If the return value is false, the incoming
+comment data will be discarded and the app will output an error page
+about throttling. A CommentThrottleFilter callback has the following
+signature:
+
+    sub comment_throttle_filter {
+        my ($cb, $app, $entry) = @_;
+        ...
+        $boolean; # 1 to accept, 0 to reject
+    }
+
+C<$app> is the I<MT::App::Comments> object, whose interface is documented
+in I<MT::App::Comments>, and C<$entry> is the entry on which the
+comment is to be placed.
+
+Note that no comment object is passed, because it has not yet been
+built. As such, this callback can be used to tell the application to
+exit early from a comment attempt, before much processing takes place.
+
+When more than one CommentThrottleFilter is installed, the data is
+discarded unless all callbacks return true.
+
+=item * CommentFilter
+
+    callback($callback, $app, $comment)
+
+Called once the comment object has been constructed, but before saving
+it. If any CommentFilter callback returns false, the comment will not
+be saved. The callback has the following signature:
+
+    sub comment_filter {
+        my ($cb, $app, $comment) = @_;
+        ...
+        $boolean; # 1 to accept, 0 to reject
+    }
+
+=back
+
+=head2 MT::App::Trackback
+
+This application handles receiving all TrackBack pings sent to the
+Movable Type installation.
+
+=over 4
+
+=item * TBPingThrottleFilter
+
+    callback($cb, $app, $trackback)
+
+This callback is issued early on upon receiving a TrackBack ping and it
+allows the callback code to return a boolean as to whether the request
+should be accepted or rejected. So if the callback returns 0, it signals
+a reject for the ping. Returning 1 will accept it for further processing.
+
+    sub trackback_throttle_filter {
+        my ($cb, $app, $trackback) = @_;
+        ...
+        $boolean; # 1 to accept, 0 to reject
+    }
+
+=item * TBPingFilter
+
+    callback($cb, $app, $ping)
+
+Called once the TrackBack ping object has been constructed, but before
+saving it. If any TBPingFilter callback returns false, the ping will
+not be saved. The callback has the following signature:
+
+    sub trackback_filter {
+        my ($cb, $app, $ping) = @_;
+        ...
+        $boolean; # 1 to accept, 0 to reject
+    }
+
+=back
+
+=head2 MT::App::ActivityFeeds
+
+The Activity Feeds application handles the generation of various system
+activity feeds, based on the contents of the system activity log. The
+application uses callbacks to dispatch the creation of the feed. The
+callbacks that are used include:
+
+=over 4
+
+=item * ActivityFeed
+
+=item * ActivityFeed.system
+
+=item * ActivityFeed.comment
+
+=item * ActivityFeed.ping
+
+=item * ActivityFeed.entry
+
+=item * ActivityFeed.debug
+
+=item * ActivityFeed.blog
+
+All ActivityFeed callbacks have the same callback signature:
+
+    callback($cb, $app, $view, $feed)
+
+The C<$view> parameter is one of 'system', 'comment', 'ping', 'entry', 'blog',
+'debug', or whatever is given using the 'view' parameter to the activity
+feed script.
+
+The C<$feed> parameter is a scalar reference to a string-- the contents
+of the generated feed. Upon return, this value is printed out. The content
+should be an Atom-based feed.
+
+=back
+
+=head1 API Callbacks
+
+=head2 Publishing
+
+The Movable Type publishing callbacks are invoked from the
+I<MT::WeblogPublisher> module. These callbacks are used to allow manipulation
+of the publishing process.
+
+=over 4
+
+=item * BuildFileFilter
+
+This filter is called when Movable Type wants to rebuild a file, but
+before doing so. This gives plugins the chance to determine whether a
+file should actually be rebuild in particular situations.
+
+A BuildFileFilter callback routine is called as follows:
+
+    sub build_file_filter {
+        my ($cb, %args) = @_;
+        ...
+        return $boolean;
+    }
+
+As with other callback funcions, the first parameter is an
+I<MT::Callback> object. This can be used by the callback to
+propagate an error message to the surrounding context.
+
+The C<%args> parameters identify the page to be built. See
+I<MT::FileInfo> for more information on how a page is determined by
+these parameters. Elements in C<%args> are as follows:
+
+=over 4
+
+=item * C<Context>
+
+Holds the template context that has been constructed for building (see
+I<MT::Template::Context>).
+
+=item * C<ArchiveType> 
+
+The archive type of the file, usually one of C<'Index'>,
+C<'Individual'>, C<'Category'>, C<'Daily'>, C<'Monthly'>, or
+C<'Weekly'>.
+
+=item * C<TemplateMap>
+
+An I<MT::TemplateMap> object; this singles out which template is being
+built, and the filesystem path of the file to be written.
+
+=item * C<Blog>
+
+The I<MT::Blog> object representing the blog whose pages are being
+rebuilt.
+
+=item * C<Entry>
+
+In the case of an individual archive page, this points to the
+I<MT::Entry> object whose page is being rebuilt. In the case of an
+archive page other than an individual page, this parameter is not
+necessarily undefined. It is best to rely on the C<$at> parameter to
+determine whether a single entry is on deck to be built.
+
+=item * C<PeriodStart> 
+
+In the case of a date-based archive page, this is a timestamp at the
+beginning of the period from which entries will be included on this
+page, in Movable Type's standard 14-digit "timestamp" format. For
+example, if the page is a Daily archive for April 17, 1796, this value
+would be 17960417000000. If the page were a Monthly archive for March,
+2003, C<$start> would be 20030301000000. Again, this parameter may be
+defined even when the page on deck is not a date-based archive page.
+
+=item * C<Category>
+
+In the case of a Category archive, this parameter identifies the
+category which will be built on the page.
+
+=item * C<FileInfo>
+
+If defined, an L<MT::FileInfo> object which contains information about the
+file. See L<MT::FileInfo> for more information about what a I<MT::FileInfo>
+contains. Chief amongst all the members of I<MT::FileInfo>, for these
+purposes, will be the C<virtual> member. This is a boolean value which will be
+false if a page was actually created on disk for this "page," and false if no
+page was created (because the corresponding template is set to be
+built dynamically).
+
+It is possible for the FileInfo parameter to be undefined, namely if the blog has not been configured to publish anything dynamically, or if the
+installation is using a data driver that does not support dynamic publishing.
+
+=back
+
+=item * BuildPage
+
+BuildPage callbacks are invoked just after a page has been built, but
+before the content has been written to the file system.
+
+    sub build_page {
+        my ($cb, %args) = @_;
+    }
+
+The parameters given are include those sent to the BuildFileFilter callback.
+In addition, the following parameters are also given:
+
+=over 4
+
+=item * C<Content>
+
+This is a scalar reference to the content that will eventually be
+published.
+
+=item * C<BuildResult> / (or C<RawContent>, deprecated)
+
+This is a scalar reference to the content originally produced by building
+the page. This value is provided mainly for reference; modifications to it
+will be ignored.
+
+=back
+
+=item * BuildFile
+
+BuildFile callbacks are invoked just after a file has been built.
+
+    sub build_file {
+        my ($cb, %args) = @_;
+    }
+
+Parameters in %args are as with BuildPage.
+
+=back
+
+=head2 Transformer Callbacks
+
+These callbacks are available for any MT application that descends from
+the I<MT::App> class. These callbacks 
+
+=over 4
+
+=item * <package>::AppTemplateSource
+
+=item * <package>::AppTemplateSource.<filename>
+
+    callback($cb, $app, \$tmpl_str)
+
+Executed after loading the HTML::Template file.  The E<lt>packageE<gt> portion
+is the full package name of the application running. For example,
+
+    MT::App::CMS::AppTemplateSource.menu
+
+Is the full callback name for loading the menu.tmpl file under the
+I<MT::App::CMS> application. The "MT::App::CMS::AppTemplateSource" callback is
+also invoked for all templates loading by the CMS.  Finally, you can also hook
+into:
+
+    *::AppTemplateSource
+
+as a wildcard callback name to capture any C<HTML::Template> files that are 
+loaded regardless of application.
+
+=item * <package>::AppTemplateParam
+
+=item * <package>::AppTemplateParam.<filename>
+
+    callback($cb, $app, \%param, $tmpl_obj)
+
+This callback is invoked in conjunction with the MT::App-E<gt>build_page
+method. The $param argument is a hashref of I<HTML::Template> parameter
+data that will eventually be passed to the template to produce the page.
+
+=item * <package>::AppTemplateOutput
+
+=item * <package>::AppTemplateOutput.<filename>
+
+    callback($cb, $app, \$tmpl_str, \%param, $tmpl_obj)
+
+This callback is invoked in conjunction with the MT::App-E<gt>build_page
+method. The C<$tmpl_str> parameter is a string reference for the page that
+was built by the MT::App-E<gt>build_page method. Since it is a reference,
+it can be modified by the callback. The C<$param> parameter is a hash reference to the parameter data that was given to build the page. The C<$tmpl>
+parameter is the I<HTML::Template> object used to generate the page.
+
+=back
+
+=head2 Default Templates
+
+When a new weblog is created, Movable Type uses the I<MT::DefaultTemplates>
+module to retrieve the set of default templates to be installed. It also
+invokes a callback that provides plugins an opportunity to alter the set
+of default templates (either to amend, or to filter them).
+
+=over 4
+
+=item * DefaultTemplateFilter
+
+    callback($cb, \@templates)
+
+This callback is invoked prior to returning the list of default templates.
+This provides plugins an opportunity to adjust the set of default templates,
+by amending it, supplementing it, etc., using C<@templates> array reference
+passed to the callback. The contents of the array are hash references,
+each containing the following keys:
+
+=over 4
+
+=item * type
+
+The type of template. This should be one of the following values:
+
+=over 4
+
+=item * C<index>
+
+An index template.
+
+=item * C<individual>
+
+An individual archive template.
+
+=item * C<category>
+
+A category archive template.
+
+=item * C<archive>
+
+A date-based archive template.
+
+=item * C<comment_preview>
+
+A system template for comment previews.
+
+=item * C<search_template>
+
+A system template for search results.
+
+=item * C<comment_pending>
+
+A system template for the comment pending page.
+
+=item * C<comment_error>
+
+A system template for comment errors.
+
+=item * C<popup_image>
+
+A system template for inserting popup images.
+
+=item * C<comments>
+
+A system template for listing comments for a particular entry.
+
+=item * C<dynamic_error>
+
+A system template for a dynamic publishing error page.
+
+=item * C<pings>
+
+A system template for listing TrackBack pings.
+
+=back
+
+Note that only one template may be defined for each "system" template
+type.
+
+=item * name
+
+The name to give to the template being installed.
+
+=item * outfile
+
+The name of the output file when building a non-system template.
+
+=item * rebuild_me
+
+Set to '1' to cause the 'index' type templates to be rebuilt upon
+publishing new entries.
+
+=item * text
+
+The full text of the template. This template may also contain
+E<lt>MT_TRANSE<gt> tags which will become localized upon installing it to
+the database. Note: For plugins that are providing custom templates, the
+plugin should do the localize step itself, prior to providing the text
+to the callback. This will allow the plugin to use it's own lexicon for
+localizing the template for the currently logged-in user.
+
+=back
+
+=back
+
+=head2 New User Provisioning
+
+I<This feature is only available in Movable Type Enterprise.>
+
+=over 4
+
+=item * NewUserProvisioning
+
+    callback($cb, $user)
+
+This callback is invoked when a user is being added to Movable Type.
+Movable Type itself registers for this callback (with a priority of 5)
+to provision the user with a new weblog if the system has been configured
+to do so.
+
+=back
+
+=head2 Upgrade API
+
+=over 4
+
+=item * MT::Upgrade::SQL
+
+Called with each SQL statement that is executed against the database
+as part of the upgrade process. The parameters passed to this callback are:
+
+    callback($cb, $app, $sql_statement)
+
+The first parameter is an I<MT::Callback> object. C<$upgrade_app> is a
+package name or I<MT::App> object used to drive the upgrade process.
+C<$sql_statement> is the actual SQL query that is about to be executed
+against the database.
+
+=back 
+
+=head2 Task API
+
+=over 4
+
+=item * PeriodicTask
+
+    callback($cb)
+
+Prior to running scheduled tasks, this callback is invoked. It may be
+a point where a plugin might conditionally add a task to the list of
+tasks to run.
+
+=back
+
+=cut

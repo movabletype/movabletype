@@ -1,0 +1,9 @@
+<mt:if name="IS_ADMINISTRATOR">
+    <mt:setvarblock id="more_items" name="more_items"></mt:setvarblock>
+<ul>
+    <li<mt:if name="system-general-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_system"><b><__trans phrase="General"></b></a></li>
+    <li<mt:if name="system-user-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_system_users"><b><__trans phrase="User"></b></a></li>
+    <li<mt:if name="system-feedback-settings"> class="active"</mt:if>><a href="<mt:var name="SCRIPT_URL">?__mode=cfg_system_feedback"><b><__trans phrase="Feedback"></b></a></li>
+    <mt:var name="more_items">
+</ul>
+</mt:if>

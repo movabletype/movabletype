@@ -1,0 +1,18 @@
+<MTSetVar name="body_class" value="mt-main-index">
+<MTSetVar name="main_template" value="1">
+<MTSetVar name="main_index" value="1">
+<MTSetVar name="sidebar" value="1">
+<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$></MTSetVarBlock>
+
+<$MTInclude module="<__trans phrase="Header">"$>
+
+<MTEntries>
+    <$MTEntryTrackbackData$>
+    <$MTInclude module="<__trans phrase="Entry Summary">"$>
+</MTEntries>
+
+<div class="content-nav">
+    <a href="<$MTLink template="archive_index"$>"><__trans phrase="Archives"></a>
+</div>
+
+<$MTInclude module="<__trans phrase="Footer">"$>

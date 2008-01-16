@@ -1,0 +1,19 @@
+<div class="widget-technorati widget">
+    <h3 class="widget-header"><__trans phrase="Technorati"></h3>
+    <div class="widget-content">
+        <div id="technorati">
+            <form id="ts_s" method="post" action="http://technorati.com/search.php">
+                <fieldset>
+                    <legend><__trans phrase="<a href='http://www.technorati.com/'>Technorati</a> search"></legend>
+                    <input type="hidden" name="sub" value="searchlet" />
+                    <input type="text" id="ts_search" name="s" size="12" maxlength="255" value="" /><br />
+                    <input type="radio" checked="checked" name="from" id="ts_yb" value="<$mt:BlogURL$>" />
+                    <label for="ts_yb" title="<$mt:BlogName$>"><__trans phrase="this blog"></label>
+                    <input type="radio" name="from" id="ts_www" value="" /> <label for="ts_www"><__trans phrase="all blogs"></label>
+                    <input type="submit" class="btn" value="<__trans phrase="Search">" />
+                </fieldset>
+            </form>
+            <p id="ts_l" class="ts_l"><a href="http://technorati.com/search/<$mt:BlogURL$>" id="ts_lh">&#187; <__trans phrase="Blogs that link here"></a></p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+<p><input type="checkbox" id="allow_unreg_comments" name="allow_unreg_comments" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_unreg_comments"> checked="checked"</mt:if> /> <label for="allow_unreg_comments"><__trans phrase="Anonymous Comments"></label></p>
+<div id="allow_unreg_comments_prefs"<mt:unless name="allow_unreg_comments"> class="hidden"</mt:unless>>
+  <p style="margin-left: 25px;"><input type="checkbox" value="1" id="require_comment_emails" name="require_comment_emails"<mt:if name="REQUIRE_COMMENT_EMAILS"> checked="checked"</mt:if> class="cb" /> <label for="require_comment_emails"><__trans phrase="Require E-mail Address for Anonymous Comments"></label><br />
+  <span class="hint"><__trans phrase="If enabled, visitors must provide a valid e-mail address when commenting."></span></p>
+</div>

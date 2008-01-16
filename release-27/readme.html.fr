@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="en" />
+	<title>Movable Type 4.0 Lisez-moi</title>
+	<style type="text/css">
+        body { font-family: Arial, Helvetica, sans-serif; }
+        #container { margin: 0 auto 0 auto; width: 750px; }
+	</style>
+</head>
+<body>
+  <div id="container">
+    <img src="mt-static/readme/mt4-logo.png" width="750" height="250" />
+
+    <h1>Bienvenue dans Movable Type</h1>
+    <p>Merci d'avoir choisi Movable Type, la solution privilégiée pour tous vos besoins en blogs. Ce fichier va vous montrer comment démarrer. Cliquez sur les sections surlignées pour avoir plus d'information sur ce sujet.</p>
+
+    <h2>Avant de démarrer</h2>
+    <p>Movable Type nécessite les applications suivantes:</p>
+    <ul>
+      <li><p>Perl 5.6.1 ou supérieur;</p></li>
+      <li><p>Un serveur Web comme Apache, ou Windows IIS;</p></li>
+      <li><p>Accès à une base de données comme MySQL, SQLite ou Postgres;</p></li>
+      <li><p>Les modules Perl suivants:</p>
+        <ul>
+          <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+          <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+          <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+        </ul>
+        <p><em>Consultez la documentation suivante pour apprendre comment <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">déterminer si un module perl est déjà installé </a> et, s'il ne l'est pas, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">comment l'installer</a>.</em></p>
+    </ul>
+
+    <h2>Mettre à jour Movable Type</h2>
+    <p>Si vous mettez à jour Movable Type à partir d'une version précédente, nous recommandons que vous fassiez d'abord une sauvegarde de votre ancienne installation. Ensuite mettez les nouveaux fichiers de Movable Type 4 à la place des anciens fichiers. Accédez à Movable Type comme vous le faites d'habitude, et vous serez redirigé vers la procédure de mise à jour.</p>
+
+    <h2>Installer Movable Type</h2>
+    <p>Avant d'installer Movable Type:</p>
+    <ol>
+      <li>Mettez tous les fichiers de Movable Type dans un répertoire accessible via votre navigateur web. (Généralement, ce répertoire est nommé 'mt' à la racine de votre site web).</li>
+      <li>Assurez-vous que chaque fichier .cgi (ex: mt.cgi, mt-search.cgi, etc) qui se trouve dans le répertoire Movable Type a les <a href="http://www.elated.com/articles/understanding-permissions/">droits d'exécution</a> activés.</li>
+      <li>Assurez-vous que le répertoire 'mt' qui contient les fichiers de Movable Type est <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">autorisé à exécuter les scripts CGI</a>.</li>
+      <li>Ouvrez ce répertoire dans votre navigateur web (ex: <tt>http://www.monSiteWeb.com/mt/</tt>).
+      <li>Vous devriez voir un écran d'accueil Movable Type qui vous guidera à travers la procédure d'installation. Si le message d'accueil n'apparait pas, merci de consulter notre guide de dépannage ci-dessous.</li>
+    </ol>
+
+    <h2>Dépanner Movable Type</h2>
+    <h3>Régler votre répertoire web statique</h3>
+    <p>Avec certains serveurs web (et avec certaines configurations), les fichiers statiques comme les javascripts, les fichiers css et les images ne sont pas autorisés à l'intérieur des répertoires cgi-bin. Si vous avez installé Movable Type dans un répertoire cgi-bin vous devez placer vos fichiers statiques dans un autre répertoire accessible par le web. Lisez notre documentation pour régler votre <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">répertoire mt-static</a>.</p>
+
+    <h3>Erreurs internes de serveur</h3>
+    <p>Si vous recevez un message "Internal Server Error", un changement de configuration peut être nécessaire sur votre serveur. Merci de consulter notre <a href="http://www.movabletype.org/documentation/install/">guide d'installation</a> pour vous aider à résoudre ce problème, ou recherchez dans notre <a href="http://www.sixapart.com/movabletype/kb/">base de connaissance</a>.</p>
+
+    <h3>Trouver plus d'aide</h3>
+    <p>Vous avez besoin d'informations supplémentaires ou de support ? Lisez le <a href="http://www.movabletype.org/documentation/installation/">Guide d'installation détaillé</a>.</p>
+  </div>
+</body>
+</html>
