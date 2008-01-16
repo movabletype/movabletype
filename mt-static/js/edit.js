@@ -38,7 +38,7 @@ MT.App = new Class( MT.App, {
         }
         
         var cs = DOM.getElement( "open-category-selector1" );
-        if ( MT.App.selectedCategoryList.length == 0 && cs )
+        if ( defined( MT.App.selectedCategoryList ) && MT.App.selectedCategoryList.length == 0 && cs )
             this.categorySelector.open( cs );
         
         if ( DOM.getElement( "calendar" ) )
