@@ -735,7 +735,8 @@ sub rebuild {
                 next if $entry->class ne $archiver->entry_class;
                 if ( $archiver->category_based ) {
                     my $cats = $entry->categories;
-                    for my $cat (@$cats) {
+                    CATEGORY: for my $cat (@$cats) {
+                        next CATEGORY if $archiver->category_class ne $cat->class_type;
                         $mt->_rebuild_entry_archive_type(
                             Entry       => $entry,
                             Blog        => $blog,
@@ -4499,7 +4500,8 @@ sub default_archive_templates {
 sub dynamic_template { shift->_getset( 'dynamic_template', @_ ) }
 sub dynamic_support  { shift->_getset( 'dynamic_support',  @_ ) }
 sub entry_class      { shift->_getset( 'entry_class',      @_ ) || 'entry' }
-sub template_params { shift->_getset('template_params') }
+sub category_class   { shift->_getset( 'category_class',   @_ ) || 'category' }
+sub template_params  { shift->_getset('template_params') }
 
 1;
 

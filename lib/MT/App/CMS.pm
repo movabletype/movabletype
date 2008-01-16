@@ -14898,7 +14898,10 @@ sub start_rebuild_pages {
         }
         elsif ( $archiver->category_based ) {
             require MT::Category;
-            my $terms = { blog_id => $blog_id, };
+            my $terms = {
+                blog_id => $blog_id,
+                class   => $archiver->category_class,
+            };
             $total = MT::Category->count($terms);
         }
         elsif ( $archiver->author_based ) {
