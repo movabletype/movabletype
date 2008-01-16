@@ -140,10 +140,11 @@ if (!$view) {
                 font-size: 13px;
                 margin: 0;
                 padding: 0;
+                background-color: #fff;
             }
             
             body.has-static {
-                background: url('$mt_static_path/images/chromeless/chromeless_top_bg.gif') repeat-x;
+                background: #fff url('$mt_static_path/images/chromeless/chromeless_top_bg.gif') repeat-x;
             }
             
             body.has-static #header {
