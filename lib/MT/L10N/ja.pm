@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -840,6 +840,7 @@ use vars qw( @ISA %Lexicon );
 	'Blogs' => 'ブログ',
 	'Blog Activity Feed' => 'ブログのログフィード',
 	'*User deleted*' => '*削除されました*',
+	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.' => '<a href="[_1]">[_2]へクイックポスト</a> - このリンクをブラウザのツールバーにドラッグすれば、興味のあるウェブページを見つけたときにいつでもブログを書くことができます。',
 	'All Feedback' => 'すべて',
 	'Publishing' => '公開',
 	'Activity Log' => 'ログ',
@@ -2835,7 +2836,6 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '（カンマ区切りリスト）',
 	'(space-delimited list)' => '（スペース区切りリスト）',
 	'(delimited by \'[_1]\')' => '（[_1]で区切る）',
-	'<a href="<mt:var name="quickpost_js" escape="html">' => '', # Translate - New
 	'None selected' => '選択されていません',
 
 ## tmpl/cms/rebuilding.tmpl
