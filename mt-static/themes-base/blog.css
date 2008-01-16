@@ -287,7 +287,6 @@ ul { list-style: disc outside; }
 .asset-content,
 .asset-body,
 .comments-header,
-.comment-header,
 .comment-content,
 .comment-footer,
 .comments-open-header,
@@ -379,6 +378,25 @@ ul { list-style: disc outside; }
 }
 
 
+/* User pics */
+
+
+.user-pic {
+    float: left;
+    position: relative;
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    margin: 0 10px 0 0;
+}
+
+.auth-icon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+
 /* Feedback */
 
 .comments-open label {
@@ -398,6 +416,28 @@ ul { list-style: disc outside; }
     font-weight: bold;
 }
 
+.comment,
+.trackback {
+    margin-bottom: .5em;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: .5em;
+}
+
+.comment .asset-meta,
+.trackback .asset-meta {
+    border: 0;
+}
+
+.comment-content {
+    clear: none;
+    margin-left: 60px;
+    line-height: 1.5;
+    margin-bottom: 1em;
+}
+
+.comment-content p {
+    margin-bottom: .5em;
+}
 
 /* Widgets */
 

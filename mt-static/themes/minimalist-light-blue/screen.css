@@ -72,18 +72,11 @@ body {
 }
 
 .asset-meta {
-    margin-top: .25em;
-    padding-top: 2px;
-    font-weight: normal;
-
-    display: block;
     border-top: 1px solid #ddf2fa;
-    padding-bottom: .3em;
 }
 
-.asset-footer a,
-.comment-footer a {
-    font-weight: normal;
+.asset-footer {
+    border-top: 1px solid #ddf2fa;
 }
 
 .content-nav {
@@ -94,14 +87,6 @@ body {
     margin: 5px 0 30px;
     font-size: 26px;
     font-weight: bold;
-}
-
-.trackbacks-info,
-.trackback-content,
-.comment-content,
-.comments-open-content,
-.comments-closed {
-    margin: 5px 0;
 }
 
 .widget-header,
@@ -123,8 +108,6 @@ body {
 
 .asset-more-link,
 .asset-meta,
-.comment-footer,
-.trackback-footer,
 .typelist-thumbnailed {
     font-size: 11px;
 }
@@ -243,14 +226,6 @@ a:hover {
     color: #5590a6;
 }
 
-.asset-footer,
-.asset-footer a,
-.comment-footer,
-.comment-footer a,
-.trackback-footer {
-    color: #999;
-}
-
 .asset-footer {
     border-top-color: #d6f4ff;
 }
@@ -263,6 +238,12 @@ a:hover {
 .search-results-header {
     color: #60a1ba;
 }
+
+.comment,
+.trackback {
+    border-color: #d6f4ff;
+}
+
 
  .asset-name a {
     margin-bottom: 8px;
@@ -404,7 +385,7 @@ a:hover {
 
 /* Custom Styles ---------------------------------------------------------- */
 
-#group-nav-inner {
+#header-nav-inner {
     position: relative;
     width: 900px;
     margin: 0 auto;

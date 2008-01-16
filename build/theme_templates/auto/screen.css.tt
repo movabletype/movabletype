@@ -3,8 +3,8 @@
 
 A Six Apart theme adapted for Movable Type default templates
 
-[% IF theme.title %]
-name: [% theme.title %]
+[% IF theme.name %]
+name: [% theme.name %]
 [% END %]
 [% IF theme.creator %]
 designer: [% theme.creator %]

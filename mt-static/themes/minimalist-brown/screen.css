@@ -3,7 +3,7 @@
 A Six Apart theme adapted for Movable Type default templates 
 name: Minimalist Brown  
 designer: Lilia Ahner  
-designer_url: http://lilia.vox.com/ 
+designer_url: http://lilia.vox.com 
 layouts: layout-wtt, layout-twt, layout-wt, layout-tw
 */
 
@@ -72,18 +72,11 @@ body {
 }
 
 .asset-meta {
-    margin-top: .25em;
-    padding-top: 2px;
-    font-weight: normal;
-
-    display: block;
     border-top: 1px solid #d3ac6d;
-    padding-bottom: .3em;
 }
 
-.asset-footer a,
-.comment-footer a {
-    font-weight: normal;
+.asset-footer {
+    border-top: 1px solid #d3ac6d;
 }
 
 .content-nav {
@@ -94,14 +87,6 @@ body {
     margin: 5px 0 30px;
     font-size: 26px;
     font-weight: bold;
-}
-
-.trackbacks-info,
-.trackback-content,
-.comment-content,
-.comments-open-content,
-.comments-closed {
-    margin: 5px 0;
 }
 
 .widget-header,
@@ -123,8 +108,6 @@ body {
 
 .asset-more-link,
 .asset-meta,
-.comment-footer,
-.trackback-footer,
 .typelist-thumbnailed {
     font-size: 11px;
 }
@@ -243,14 +226,6 @@ a:hover {
     color: #5a4118;
 }
 
-.asset-footer,
-.asset-footer a,
-.comment-footer,
-.comment-footer a,
-.trackback-footer {
-    color: #666;
-}
-
 .asset-footer {
     border-top-color: #e5c591;
 }
@@ -263,6 +238,12 @@ a:hover {
 .search-results-header {
     color: #8b6628;
 }
+
+.comment,
+.trackback {
+    border-color: #e5c591;
+}
+
 
  .asset-name a {
     margin-bottom: 8px;
@@ -404,7 +385,7 @@ a:hover {
 
 /* Custom Styles ---------------------------------------------------------- */
 
-#group-nav-inner {
+#header-nav-inner {
     position: relative;
     width: 900px;
     margin: 0 auto;

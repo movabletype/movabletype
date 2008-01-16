@@ -35,12 +35,6 @@
     color: [% theme.content.post_name.color || theme.default.header.color %];
 }
 
-.comment-footer,
-.comment-footer a,
-.trackback-footer {
-    color: [% theme.default.meta.color || "#999" %];
-}
-
 .asset-footer {
     border-top-color: [% theme.default.border.color || "#e0ebd6" %];
 }
@@ -53,6 +47,12 @@
 .search-results-header {
     color: [% theme.content.header2.color || theme.default.header.color %];
 }
+
+.comment,
+.trackback {
+    border-color: [% theme.default.border.color || '#999' %];
+}
+
 
 [%+ IF theme.content.post_header.template -%]
 [% templatename = "postheader/" _ theme.content.post_header.template _ ".css.tt" %]

@@ -12,15 +12,14 @@
         <div class="trackback" id="ping-<$MTPingID$>">
             <div class="inner">
                 <div class="trackback-header">
-                    <__trans phrase="&raquo; <a href="[_1]">[_2]</a> from [_3]" params="<$MTPingURL$>%%<$MTPingTitle$>%%<$MTPingBlogName$>">
+                    <div class="asset-meta">
+                        <__trans phrase="<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>" params="<$MTPingURL$>%%<$MTPingTitle$>%%<$MTPingBlogName$>%%#ping-<$MTPingID$>%%<$MTPingDate$>">
+                    </div>
                 </div>
                 <div class="trackback-content">
                     <p>
                         <__trans phrase="[_1] <a href="[_2]">Read More</a>" params="<$MTPingExcerpt$>%%<$MTPingURL$>">
                     </p>
-                </div>
-                <div class="trackback-footer">
-                    <__trans phrase="Tracked on <a href="[_1]">[_2]</a>" params="#ping-<$MTPingID$>%%<$MTPingDate$>">
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@
 A Six Apart theme adapted for Movable Type default templates 
 name: Cityscape Miami  
 designer: Tiffany Chow  
-designer_url: http://tiffany.vox.com/ 
+designer_url: http://tiffany.vox.com 
 layouts: layout-wtt, layout-twt, layout-wt, layout-tw
 */
 
@@ -72,18 +72,11 @@ body {
 }
 
 .asset-meta {
-    margin-top: .25em;
-    padding-top: 2px;
-    font-weight: normal;
-
-    display: block;
-    border-top: 1px dashed #432a69;
-    padding-bottom: .3em;
+    border-top: 1px solid #432a69;
 }
 
-.asset-footer a,
-.comment-footer a {
-    font-weight: normal;
+.asset-footer {
+    border-top: 1px solid #432a69;
 }
 
 .content-nav {
@@ -94,14 +87,6 @@ body {
     margin: 5px 0 30px;
     font-size: 26px;
     font-weight: bold;
-}
-
-.trackbacks-info,
-.trackback-content,
-.comment-content,
-.comments-open-content,
-.comments-closed {
-    margin: 5px 0;
 }
 
 .widget-header,
@@ -123,8 +108,6 @@ body {
 
 .asset-more-link,
 .asset-meta,
-.comment-footer,
-.trackback-footer,
 .typelist-thumbnailed {
     font-size: 11px;
 }
@@ -241,14 +224,6 @@ a:hover {
     color: #a086ba;
 }
 
-.asset-footer,
-.asset-footer a,
-.comment-footer,
-.comment-footer a,
-.trackback-footer {
-    color: #999;
-}
-
 .asset-footer {
     border-top-color: #432a69;
 }
@@ -261,6 +236,12 @@ a:hover {
 .search-results-header {
     color: #9a959f;
 }
+
+.comment,
+.trackback {
+    border-color: #432a69;
+}
+
 
 
 .archive-list-item {

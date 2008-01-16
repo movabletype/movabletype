@@ -79,11 +79,6 @@ body {
     border-top: 1px solid #dbe8f5;
 }
 
-.asset-footer a,
-.comment-footer a {
-    font-weight: normal;
-}
-
 .content-nav {
     margin: 5px 0 10px;
 }
@@ -92,14 +87,6 @@ body {
     margin: 5px 0 30px;
     font-size: 26px;
     font-weight: bold;
-}
-
-.trackbacks-info,
-.trackback-content,
-.comment-content,
-.comments-open-content,
-.comments-closed {
-    margin: 5px 0;
 }
 
 .widget-header,
@@ -121,8 +108,6 @@ body {
 
 .asset-more-link,
 .asset-meta,
-.comment-footer,
-.trackback-footer,
 .typelist-thumbnailed {
     font-size: 11px;
 }
@@ -247,12 +232,6 @@ a:hover {
     color: #69c;
 }
 
-.comment-footer,
-.comment-footer a,
-.trackback-footer {
-    color: #b3b3b3;
-}
-
 .asset-footer {
     border-top-color: #dbe8f5;
 }
@@ -265,6 +244,12 @@ a:hover {
 .search-results-header {
     color: #69c;
 }
+
+.comment,
+.trackback {
+    border-color: #dbe8f5;
+}
+
 
 
 .archive-list-item {
