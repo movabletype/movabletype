@@ -2380,6 +2380,9 @@ sub build_asset_hasher {
                 $meta->{preview_height_offset} = int(($default_preview_height - $meta->{preview_height}) / 2);
             }
         }
+        else {
+            $row->{has_thumbnail} = 0;
+        }
 
         my $ts = $obj->created_on;
         if ( my $by = $obj->created_by ) {
