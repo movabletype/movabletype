@@ -17,13 +17,11 @@
                 background-color: #fff;
             }
 
-            a:link,
-            a:visited {
+            a {
                 color: #33789c;
             }
 
-            a:hover,
-            a:active {
+            a:hover {
                 color: #a2ad00;
             }
 
