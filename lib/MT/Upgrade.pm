@@ -1441,7 +1441,7 @@ sub seed_database {
     $blog->server_offset(exists $param{blog_timezone} ? ($param{blog_timezone} || 0) : 0);
     $blog->template_set($param{blog_template_set});
     $blog->save;
-    MT->run_callbacks( 'blog_template_set_change', { blog => $obj } );
+    MT->run_callbacks( 'blog_template_set_change', { blog => $blog } );
 
     # Create an initial entry and comment for this blog
     require MT::Entry;
