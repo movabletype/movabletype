@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::ja;
 use strict;
@@ -485,7 +485,7 @@ use vars qw( @ISA %Lexicon );
 	'<[_1]> with no </[_1]> on line [_2].' => '<[_1]>に対応する</[_1]>がありません([_2]行目)。',
 	'<[_1]> with no </[_1]> on line [_2]' => '<[_1]>に対応する</[_1]>がありません([_2]行目)。',
 	'Error in <mt:[_1]> tag: [_2]' => 'テンプレートタグMT[_1]でエラーが発生しました: [_2]',
-	'Unknown tag found: [_1]' => '不明なタグです: [_1]', # Translate - New
+	'Unknown tag found: [_1]' => '不明なタグです: [_1]',
 
 ## lib/MT/JunkFilter.pm
 	'Action: Junked (score below threshold)' => '結果: スパム(スコアがしきい値以下)',
@@ -734,8 +734,6 @@ use vars qw( @ISA %Lexicon );
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'まだ登録を完了していないユーザー\'[_1]\'がコメントしようとしました。',
 	'Registered User' => '登録ユーザー',
 	'The sign-in attempt was not successful; please try again.' => 'サインインできませんでした。',
-	'The sign-in validation was not successful. Please make sure your weblog is properly configured and try again.' => 'サインインの検証に失敗しました。ブログの設定を確認してください。',
-	'No such entry ID \'[_1]\'' => '\'[_1]\'というIDはありません。',
 	'No entry was specified; perhaps there is a template problem?' => 'ブログ記事が指定されていません。テンプレートに問題があるかもしれません。',
 	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとしたブログ記事がありません。',
 	'Invalid commenter ID' => 'コメント投稿者のIDが不正です。',
@@ -1121,6 +1119,7 @@ use vars qw( @ISA %Lexicon );
 	'Parent comment was not found.' => '返信先のコメントが見つかりません。',
 	'You can\'t reply to unapproved comment.' => '未公開のコメントには返信できません。',
 	'You can\'t reply to unpublished comment.' => '公開されていないコメントには返信できません。',
+	' (Backup from [_1])' => '[_1]時点でのバックアップ', # Translate - New
 	'Error creating new template: ' => 'テンプレートの作成エラー:',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'カスタムテンプレートと思われるため、\'[_1]\'をスキップします。',
 	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
@@ -1733,6 +1732,7 @@ use vars qw( @ISA %Lexicon );
 	'Adding new feature widget to dashboard...' => '新機能紹介のウィジェットをダッシュボードに追加しています...',
 	'Moving OpenID usernames to external_id fields...' => '既存のOpenIDユーザー名を移動しています...',
 	'Assigning blog template set...' => 'ブログにテンプレートセットを設定しています...',
+	'Assigning blog page layout...' => 'ブログにページレイアウトを設定しています...', # Translate - New
 
 ## lib/MT/XMLRPCServer.pm
 	'Invalid timestamp format' => 'timestampの形式が不正です。',
@@ -1989,7 +1989,7 @@ use vars qw( @ISA %Lexicon );
 	'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'mt-static ディレクトリはMovable Typeのインストールディレクトリの外部に移動されたかまたは名前が変更されました。',
 	'Once the [_1] directory is in a web-accessible location, specify the location below.' => '[_1]ディレクトリをウェブアクセス可能な場所に置く場合には、以下にその場所を指定してください。',
 	'This URL path can be in the form of [_1] or simply [_2]' => 'このURLは[_1]のように記述するか、または簡略化して[_2]のように記述できます。',
-	'This path must be in the form of [_1]' => 'このパスは[_1]のように記述してください。', # Translate - New
+	'This path must be in the form of [_1]' => 'このパスは[_1]のように記述してください。',
 	'Static web path' => 'Static web path',
 	'Static file path' => 'Static file path',
 	'Begin' => '開始',
@@ -2105,8 +2105,12 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/preview_strip.tmpl
 	'Save this entry' => 'ブログ記事を保存',
 	'Save this entry (s)' => 'ブログ記事を保存する (s)',
+	'Re-Edit this entry' => 'ブログ記事を再編集', # Translate - New
+	'Re-Edit this entry (e)' => 'ブログ記事を再編集する (e)', # Translate - New
 	'Save this page' => 'ウェブページを保存',
 	'Save this page (s)' => 'ウェブページを保存する (s)',
+	'Re-Edit this page' => 'ウェブページを再編集', # Translate - New
+	'Re-Edit this page (e)' => 'ウェブページを再編集する', # Translate - New
 	'You are previewing the entry titled &ldquo;[_1]&rdquo;' => 'ブログ記事 &ldquo;[_1]&rdquo;のプレビュー',
 	'You are previewing the page titled &ldquo;[_1]&rdquo;' => 'ウェブページ &ldquo;[_1]&rdquo;のプレビュー',
 
@@ -2124,7 +2128,7 @@ use vars qw( @ISA %Lexicon );
 	'Move Folder' => 'フォルダの移動',
 	'Move' => '移動',
 	'[quant,_1,page,pages]' => '[quant,_1,件,件]',
-	'No folders could be found.' => 'フォルダが見つかりませんでした。', # Translate - New
+	'No folders could be found.' => 'フォルダが見つかりませんでした。',
 
 ## tmpl/cms/restore.tmpl
 	'Restore from a Backup' => 'バックアップから復元',
@@ -2353,6 +2357,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'サブカテゴリを追加',
+	'Add new' => '新規追加',
 
 ## tmpl/cms/include/cfg_system_content_nav.tmpl
 
@@ -2408,8 +2413,8 @@ use vars qw( @ISA %Lexicon );
 	'Edit Page' => 'ウェブページの編集',
 	'View entry' => 'ブログ記事を見る',
 	'View page' => 'ウェブページを表示',
-	'No entries could be found. <a href="[_1]">Create Entry</a>' => 'ブログ記事が見つかりませんでした。<a href="[_1]">ブログ記事の作成</a>', # Translate - New
-	'No page could be found. <a href="[_1]">Create Page</a>' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>', # Translate - New
+	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'ブログ記事が見つかりませんでした。<a href="[_1]">ブログ記事の作成</a>', # Translate - New
+	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>', # Translate - New
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Custom...' => 'カスタム...',
@@ -2417,7 +2422,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/tools_content_nav.tmpl
 
 ## tmpl/cms/include/copyright.tmpl
-	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.', # Translate - New
+	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
 
 ## tmpl/cms/include/pagination.tmpl
 
@@ -2550,12 +2555,11 @@ use vars qw( @ISA %Lexicon );
 	'Select File to Upload' => 'アップロードするファイルを選択',
 	'_USAGE_UPLOAD' => '下のオプションからアップロード先のパスを選択してください。サブディレクトリを指定することもできます。ディレクトリが存在しない場合は作成されます。',
 	'Upload Destination' => 'アップロード先',
-	'Choose Folder' => 'フォルダの選択', # Translate - New
+	'Choose Folder' => 'フォルダの選択',
 	'Upload (s)' => 'アップロード (s)',
 	'Upload' => 'アップロード',
 	'Back (b)' => '戻る (b)',
 	'Cancel (x)' => 'キャンセル (x)',
-	'Add [lc,_1] name' => '[_1]名を追加', # Translate - New
 
 ## tmpl/cms/include/comment_table.tmpl
 	'comment' => 'コメント',
@@ -2739,7 +2743,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/import.tmpl
 	'You must select a blog to import.' => 'インポート先のブログを選択してください。',
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => '他のMovable Typeやブログツールからブログ記事を移行したり、ブログ記事のコピーを作成します。',
-	'Blog to Import' => 'インポートするブログ',
+	'Import data into' => 'インポート先', # Translate - New
 	'Select a blog to import.' => 'インポート先のブログを選択してください。',
 	'Importing from' => 'インポート元',
 	'Ownership of imported entries' => 'インポートしたブログ記事の所有者',
@@ -2768,7 +2772,7 @@ use vars qw( @ISA %Lexicon );
 	'Add new folder parent' => '親フォルダを追加',
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Delete this page (x)' => 'ウェブページを削除 (x)',
-	'View Page' => 'ウェブページを表示', # Translate - Case
+	'View Page' => 'ウェブページを表示',
 	'Add category' => 'カテゴリを追加',
 	'Add category name' => 'カテゴリ名を追加',
 	'Add new category parent' => '親カテゴリを追加',
@@ -2790,6 +2794,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while trying to recover your saved page.' => 'ウェブページを元に戻す際にエラーが発生しました。',
 	'You have successfully deleted the checked comment(s).' => '選択したコメントを削除しました。',
 	'You have successfully deleted the checked TrackBack(s).' => '選択したトラックバックを削除しました。',
+	'Change Folder' => 'フォルダの変更', # Translate - New
 	'Stats' => '情報',
 	'Share' => '共有',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => 'コメント<a href="[_2]">[quant,_1,件,件]</a>',
@@ -2805,6 +2810,8 @@ use vars qw( @ISA %Lexicon );
 	'Unlock this entry&rsquo;s output filename for editing' => '出力ファイル名を編集するにはロックを解除してください。',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他のブログ記事と衝突を起こす可能性があります。',
 	'Warning: Changing this entry\'s basename may break inbound links.' => '警告: このブログ記事の出力ファイル名の変更は、内部のリンク切れの原因となります。',
+	'edit' => '編集', # Translate - Case
+	'close' => '閉じる', # Translate - Case
 	'Accept' => '受信設定',
 	'Outbound TrackBack URLs' => 'トラックバック送信先URL',
 	'View Previously Sent TrackBacks' => '送信済みのトラックバックを見る',
@@ -2816,7 +2823,6 @@ use vars qw( @ISA %Lexicon );
 	'Your entry screen preferences have been saved. Please refresh the page to reorder the custom fields.' => 'ブログ記事作成画面の設定を保存しました。カスタムフィールドを表示するために画面を更新してください。',
 	'Are you sure you want to use the Rich Text editor?' => 'リッチテキストエディタを使用しますか?',
 	'Make primary' => 'メインカテゴリにする',
-	'Add new' => '新規追加',
 	'Fields' => 'フィールド',
 	'Body' => '本文',
 	'Reset display options' => '表示オプションをリセット',
@@ -2829,7 +2835,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '（カンマ区切りリスト）',
 	'(space-delimited list)' => '（スペース区切りリスト）',
 	'(delimited by \'[_1]\')' => '（[_1]で区切る）',
-	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.' => '<a href="[_1]">[_2]へクイックポスト</a> - このリンクをブラウザのツールバーにドラッグすれば、興味のあるウェブページを見つけたときにいつでもブログを書くことができます。',
+	'<a href="<mt:var name="quickpost_js" escape="html">' => '', # Translate - New
 	'None selected' => '選択されていません',
 
 ## tmpl/cms/rebuilding.tmpl
@@ -3141,7 +3147,7 @@ use vars qw( @ISA %Lexicon );
 	'A new password has been generated and sent to the email address [_1].' => '新しいパスワードが作成され、メールアドレス[_1]に送信されました。',
 	'Your Web services password is currently' => 'ウェブサービスのパスワード',
 	'_WARNING_PASSWORD_RESET_SINGLE' => '[_1]のパスワードを再設定しようとしています。新しいパスワードはランダムに生成され、ユーザーにメールで送信されます。続行しますか?',
-	'Error occurred while removing userpic.' => 'ユーザー画像の削除中にエラーが発生しました。', # Translate - New
+	'Error occurred while removing userpic.' => 'ユーザー画像の削除中にエラーが発生しました。',
 	'Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.' => 'ユーザーの状態です。ユーザーを無効にするとログインできなくなりますが、ユーザーが作成したコンテンツはそのまま保持されます。',
 	'_USER_PENDING' => '保留',
 	'The username used to login.' => 'ログイン時に使用するユーザー名です。',
@@ -3186,7 +3192,7 @@ use vars qw( @ISA %Lexicon );
 	'Show all pages' => 'すべてのウェブページを表示',
 	'This asset has not been used.' => 'アイテムは利用されていません。',
 	'Related Assets' => '関連するアイテム',
-	'You must specify a label for the asset.' => 'アイテムにラベルを設定してください。', # Translate - New
+	'You must specify a label for the asset.' => 'アイテムにラベルを設定してください。',
 	'View Asset' => 'アイテムを表示',
 	'Embed Asset' => 'アイテムの埋め込み',
 	'Save changes to this asset (s)' => 'アイテムへの変更を保存 (s)',
@@ -3293,7 +3299,6 @@ use vars qw( @ISA %Lexicon );
 	'Pages Feed' => 'ウェブページフィード',
 	'The entry has been deleted from the database.' => 'ブログ記事をデータベースから削除しました。',
 	'The page has been deleted from the database.' => 'ウェブページをデータベースから削除しました。',
-	'Go back' => '戻る',
 	'Show only entries where' => 'ブログ記事を表示: ',
 	'Show only pages where' => 'ウェブページを表示: ',
 	'tag (exact match)' => 'タグ（完全一致）',
@@ -3358,9 +3363,10 @@ use vars qw( @ISA %Lexicon );
 	'Create Category' => 'カテゴリを作成',
 	'Collapse' => '折りたたむ',
 	'Expand' => '展開する',
+	'Create Subcategory' => 'サブカテゴリの作成', # Translate - New
 	'Move Category' => 'カテゴリの移動',
 	'[quant,_1,TrackBack,TrackBacks]' => '[quant,_1,トラックバック,トラックバック]',
-	'No categories could be found.' => 'カテゴリが見つかりませんでした。', # Translate - New
+	'No categories could be found.' => 'カテゴリが見つかりませんでした。',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
 	'TrackBack Settings' => 'トラックバック設定',
@@ -3424,6 +3430,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => 'タグ&ldquo;[_2]&rdquo;の付いたブログ記事([quant,_1,件,件])',
+	'...' => '...',
 	'Posted by [_1] [_2] in [_3]' => '[_2] [_1] カテゴリ: [_3]',
 	'Posted by [_1] [_2]' => '[_2] [_1]',
 	'Tagged: [_1]' => 'タグ: [_1]',
@@ -3432,7 +3439,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/blog_stats_entry.tmpl
 	'Most Recent Entries' => '最近のブログ記事',
-	'...' => '...',
 	'View all entries' => 'すべてのブログ記事を表示',
 
 ## tmpl/cms/widget/new_user.tmpl
@@ -3714,17 +3720,19 @@ use vars qw( @ISA %Lexicon );
 	'Go Back (x)' => '戻る (x)',
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
-	'Refresh Template Set' => 'テンプレートセットの初期化', # Translate - New
-	'Refresh [_1] template set' => 'テンプレートセット[_1]の初期化', # Translate - New
+	'Refresh Template Set' => 'テンプレートセットの初期化',
+	'Refresh [_1] template set' => 'テンプレートセット「[_1]」の初期化',
 	'Updates current templates while retaining any user-created or user-modified templates.' => 'テンプレートを初期化します。ユーザーが作成またはカスタマイズしたテンプレートは初期化しません。',
-	'Apply a new template set' => '新しいテンプレートセットを適用', # Translate - New
+	'Apply a new template set' => '新しいテンプレートセットを適用',
+	'Deletes all existing templates and install the selected template set.' => '既存のテンプレートをすべて削除して、選択された新しいテンプレートセットを適用します。', # Translate - New
+	'Reset to factory defaults' => 'リセットして初期状態に戻します。', # Translate - New
 	'Deletes all existing templates and installs factory default template set.' => '既存のテンプレートをすべて削除して、製品既定のテンプレートセットをインストールします。',
 	'Make backups of existing templates first' => '既存のテンプレートのバックアップを作成する',
-	'You have requested to <strong>refresh the current template set</strong>. This action will:' => '<strong>現在のテンプレートセットを初期化</strong>しようとしています。この操作では以下の作業を行います。', # Translate - New
+	'You have requested to <strong>refresh the current template set</strong>. This action will:' => '<strong>現在のテンプレートセットを初期化</strong>しようとしています。この操作では以下の作業を行います。',
 	'potentially install new templates' => '(もしあれば)新しいテンプレートをインストールします。',
 	'overwrite some existing templates with new template code' => '既存のテンプレートを新しいテンプレートで置き換えます。',
 	'backups will be made of your templates and can be accessed through your backup filter' => 'バックアップテンプレートのフィルタから、バックアップされたテンプレートにアクセスできます。',
-	'You have requested to <strong>apply a new template set</strong>. This action will:' => '<strong>新しいテンプレートセットを適用</strong>しようとしています。この操作では以下の作業を行います。', # Translate - New
+	'You have requested to <strong>apply a new template set</strong>. This action will:' => '<strong>新しいテンプレートセットを適用</strong>しようとしています。この操作では以下の作業を行います。',
 	'delete all of the templates in your blog' => 'ブログのテンプレートはすべて削除されます。',
 	'install new templates from the selected template set' => 'テンプレートセットのテンプレートを新規にインストールします。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',
