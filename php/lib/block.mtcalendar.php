@@ -8,7 +8,7 @@
 require_once("MTUtil.php");
 
 function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
-    $local_vars = array('cal_entries','cal_day','cal_pad_start','cal_pad_end','cal_days_in_month','cal_prefix','cal_left','CalendarDay','CalendarWeekHeader','CalendarWeekFooter','CalendarIfEntries','CalendarIfNoEntries','CalendarIfToday','CalendarIfBlank','entries','current_timestamp','cal_today','CalendarCellNumber');
+    $local_vars = array('cal_entries','cal_day','cal_pad_start','cal_pad_end','cal_days_in_month','cal_prefix','cal_left','CalendarDay','CalendarWeekHeader','CalendarWeekFooter','CalendarIfEntries','CalendarIfNoEntries','CalendarIfToday','CalendarIfBlank','entries','current_timestamp','current_timestamp_end','cal_today','CalendarCellNumber');
     // arguments supported: month, category
     // arguments implemented:
     if (!isset($content)) {
@@ -98,6 +98,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
             $ctx->stash('cal_left', $left);
             $ctx->stash('entries', $entries);
             $ctx->stash('current_timestamp', $this_day . '000000');
+            $ctx->stash('current_timestamp_end', $this_day . '235959');
             $ctx->stash('CalendarDay', $day - $pad_start);
         }
         $ctx->stash('CalendarWeekHeader', ($day - 1) % 7 == 0);

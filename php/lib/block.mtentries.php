@@ -48,16 +48,16 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         if (isset($args['id'])) {
             $args['entry_id'] = $args['id'];
         }
+        $ts = $ctx->stash('current_timestamp');
+        $tse = $ctx->stash('current_timestamp_end');
+        if ($ts && $tse) {
+            # assign date range if we have both
+            # start and end date
+            $args['current_timestamp'] = $ts;
+            $args['current_timestamp_end'] = $tse;
+        }
         if (isset($archiver)) {
             ($args['limit'] || $args['lastn']) or $args['lastn'] = -1;
-            $ts = $ctx->stash('current_timestamp');
-            $tse = $ctx->stash('current_timestamp_end');
-            if ($ts && $tse) {
-                # assign date range if we have both
-                # start and end date
-                $args['current_timestamp'] = $ts;
-                $args['current_timestamp_end'] = $tse;
-            }
             $archiver->setup_args($ctx, $args);
         }
         if (($cat = $ctx->stash('category')) && $args['class'] == 'entry') {
