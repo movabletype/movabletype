@@ -1530,11 +1530,13 @@ MT.App = new Class( App, {
                 this.applyAutolayouts( el );
                 this.targetElement = null;
 
+                hideDropDown();
                 this.openFlyouts.add( name );
 
                 break;
                 
             case "closeFlyout":
+                showDropDown();
                 this.closeFlyouts();
                 
                 break;
