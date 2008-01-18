@@ -22,15 +22,6 @@
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript">
     <!--
-    function doRemoveBlog(id) {
-        if (confirm("<__trans phrase="Are you sure you want to delete this blog?" escape="js">")) {
-            var f = getByID('delete_blog');
-            f['id'].value = id;
-            f.submit();
-        }
-        return false;
-    }
-
     var tableSelect;
     function init()
     {
