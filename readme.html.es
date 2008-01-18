@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="content-language" content="en" />
-	<title>Movable Type 4.0 Read Me</title>
+	<title>Movable Type 4.1 Read Me</title>
 	<style type="text/css">
         body { font-family: Arial, Helvetica, sans-serif; }
         #container { margin: 0 auto 0 auto; width: 750px; }

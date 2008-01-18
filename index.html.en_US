@@ -92,7 +92,7 @@
 
             <h2>Installing?</h2>
 
-            <p>If you are just starting with Movable Type, you may want to review the installation/upgrade guide posted on the <a href="__HELP_URL__">Movable Type documentation site</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>
+            <p>If you are just starting with Movable Type, you may want to review the installation/upgrade guide posted on the <a href="http://www.movabletype.org/documentation/">Movable Type documentation site</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>
         </div>
     </div>
 </body>

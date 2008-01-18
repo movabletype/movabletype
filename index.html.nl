@@ -92,7 +92,7 @@
 
             <h2>Installatie?</h2>
 
-            <p>Als u Movable Type aan het installeren bent, is het nuttig om de <a href="__HELP_URL__">installatie-instructies</a> te bekijken en om de <a rel="nofollow" href="mt-check.cgi">Movable Type systeemcontrole</a> uit te voeren om zeker te zijn dat u systeem alles heeft wat nodig is.</p>
+            <p>Als u Movable Type aan het installeren bent, is het nuttig om de <a href="http://www.movabletype.org/documentation/">installatie-instructies</a> te bekijken en om de <a rel="nofollow" href="mt-check.cgi">Movable Type systeemcontrole</a> uit te voeren om zeker te zijn dat u systeem alles heeft wat nodig is.</p>
         </div>
     </div>
 </body>
