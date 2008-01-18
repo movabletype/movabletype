@@ -1561,7 +1561,7 @@ sub core_menus {
                     require MT::Permission;
                     my @blogs = 
                         map { $_->blog_id }
-                          grep { $_->can_create_post || $_->can_pubish_post || $_->can_edit_all_posts }
+                          grep { $_->can_create_post || $_->can_publish_post || $_->can_edit_all_posts }
                           MT::Permission->load( { author_id => $app->user->id } );
                     return 1 if @blogs;
                 }
