@@ -1933,11 +1933,10 @@ sub _hdlr_tag_search_link {
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
 
-    my $param = 'tag=' . encode_url($tag->name);
+    my $param = '';
     my $blogs = $blog_terms{blog_id};
 
     if ($blogs) {
-        $param .= '&amp;';
         if (ref $blogs eq 'ARRAY') {
             if ($blog_args{not}{blog_id}) {
                 $param .= 'ExcludeBlogs=' . join(',', @$blogs);
@@ -1947,7 +1946,9 @@ sub _hdlr_tag_search_link {
         } else {
             $param .= 'blog_id=' . $blogs;
         }
+        $param .= '&amp;';
     }
+    $param .= 'tag=' . encode_url($tag->name);
     my $path = _hdlr_cgi_path($ctx);
     $path . $ctx->{config}->SearchScript . '?' . $param;
 }
