@@ -754,7 +754,7 @@ sub core_list_actions {
                 input_label => 'Tags to add to selected pages',
                 permission  => 'manage_pages',
                 condition   => sub {
-                    return 0 if $app->mode eq 'view';
+                    return $app->mode ne 'view';
                 },
             },
             'remove_tags' => {
@@ -765,7 +765,7 @@ sub core_list_actions {
                 input_label => 'Tags to remove from selected pages',
                 permission  => 'manage_pages',
                 condition   => sub {
-                    return 0 if $app->mode eq 'view';
+                    return $app->mode ne 'view';
                 },
             },
             'open_batch_editor' => {
