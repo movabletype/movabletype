@@ -1486,6 +1486,7 @@ MT.App = new Class( App, {
                     continue;
                 DOM.addClassName( flyout, "hidden" );
                 this.openFlyouts.remove( es[ i ] );
+                showDropDown();
             }
         }
     },
@@ -1536,7 +1537,6 @@ MT.App = new Class( App, {
                 break;
                 
             case "closeFlyout":
-                showDropDown();
                 this.closeFlyouts();
                 
                 break;
