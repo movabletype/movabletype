@@ -3326,6 +3326,9 @@ body.preview-screen {
     position: relative;
     left: -90px;
 }
+.dialog #folder-selector {
+    position: static;
+}
 
 #category-field .widget-content-inner {
     padding-top: 0;
