@@ -317,6 +317,19 @@ sub execute {
     }
     $ctx->stash('template_id', $app->{searchparam}{Template});
     $ctx->stash('maxresults', $app->{searchparam}{MaxResults});
+    $ctx->var( 'page_layout', $blog->page_layout )
+        if $blog && $blog->page_layout;
+    if (my $layout = $ctx->var('page_layout')) {
+        my $columns = {
+            'layout-wt'  => 2,
+            'layout-tw'  => 2,
+            'layout-wm'  => 2,
+            'layout-mw'  => 2,
+            'layout-wtt' => 3,
+            'layout-twt' => 3,
+        }->{$layout};
+        $ctx->var( 'page_columns', $columns ) if $columns;
+    }
 
     my $str;
     if ($include) {
