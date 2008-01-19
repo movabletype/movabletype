@@ -4412,6 +4412,7 @@ sub list_blogs {
     $param{next_max}        = 0 if ( $param{next_max} || 0 ) < $offset + 1;
     $param{can_create_blog} = $author->can_create_blog;
     $param{saved_deleted}   = $app->param('saved_deleted');
+    $param{refreshed}       = $app->param('refreshed');
     $param{nav_blogs}       = 1;
     $param{list_noncron}    = 1;
     $param{search_label}    = $app->translate('Blogs');
