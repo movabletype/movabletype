@@ -2911,8 +2911,8 @@ sub list_tag_for {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
-        $arg{offset} = $offset = 0;
+    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
+        $arg{offset} = $offset = $total - $limit;
     }
     else {
         $arg{offset} = $offset if $offset;
@@ -11894,8 +11894,8 @@ sub list_pings {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
-        $arg{offset} = $offset = 0;
+    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
+        $arg{offset} = $offset = $total - $offset;
     }
     elsif ($offset) {
         $arg{offset} = $offset;
@@ -12331,8 +12331,8 @@ sub list_entries {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
-        $arg{offset} = $offset = 0;
+    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
+        $arg{offset} = $offset = $total - $offset;
     }
     else {
         $arg{offset} = $offset if $offset;
