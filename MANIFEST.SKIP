@@ -48,9 +48,6 @@ mt-static/themes/unity-purple
 #?package=MT ^addons/Enterprise.pack
 #?package=MT ^mt-static/addons/Enterprise.pack
 
-# Held from beta releases for now
-#?package=MT ^plugins/TypePadAntiSpam
-
 #?package=MTP ^addons
 #?package=MTP ^COPYING
 #?package=MTP ^COPYRIGHT
@@ -62,6 +59,10 @@ mt-static/themes/unity-purple
 #?package=MTOS ^mt-cp.cgi
 #?package=MTOS ^mt-static/addons
 #?package=MTOS ^mt-static/themes/tristan-blue
+#?package=MTOS ^mt-static/themes/universal-black
+#?package=MTOS ^mt-static/plugins/feeds-app-lite
+#?package=MTOS ^plugins/feeds-app-lite
+#?package=MTOS ^plugins/CustomFields
 
 #?package=MTE ^COPYING
 #?package=MTE ^COPYRIGHT
@@ -96,6 +97,7 @@ mt-view.cgi
 \bCVS\b
 \bRCS\b
 \.svn\b
+\.gitignore
 ,v$
 
 # Hidden, temp and backup files.
@@ -107,16 +109,6 @@ mt-view.cgi
 \.tmp$
 ^\.DS_Store$
 
-# Doc files.
-^mt-static/docs
-^mt-static/docs/.*\.txt
-^mt-static/docs/.*\.pod
-^mt-static/docs/mtweblogs.*
-^mt-static/docs/mtapi
-^mt-static/docs/mttrackback
-^mt-static/docs/mtmanual-full.html$
-^docs-.*/
-
 # Packages
 ^lib/MT/FileMgr/SFTP.pm$
 ^lib/MT/FileMgr/FTP.pm$
@@ -126,7 +118,6 @@ mt-view.cgi
 ^extlib/perllocal.po
 Tangent\.pm$
 /no\.pm$
-#/ja\.pm$
 /it\.pm$
 
 # Language
@@ -177,4 +168,3 @@ Makefile
 ^MT.*\.gz
 index\.html\..*
 build-language-stamp
-.gitignore
