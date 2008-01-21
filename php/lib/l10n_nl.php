@@ -8,6 +8,12 @@
 global $Lexicon_nl;
 $Lexicon_nl = array(
 
+## php/lib/function.mtvar.php
+	'You used a [_1] tag without a valid name attribute.' => 'U gebruikte een [_1] tag zonder geldig name attribuut',
+	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' is geen geldige functie voor een hash.',
+	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' is geen geldige functie voor een array.',
+	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] is illegaal.',
+
 ## php/lib/archive_lib.php
 	'Page' => 'Pagina',
 	'Individual' => 'per bericht',
@@ -26,8 +32,17 @@ $Lexicon_nl = array(
 	'Category Daily' => 'per categorie per dag',
 	'Category Weekly' => 'per categorie per week',
 
+## php/lib/block.mtsethashvar.php
+
+## php/lib/block.mtif.php
+
 ## php/lib/function.mtremotesigninlink.php
 	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'TypeKey authenticatie is niet ingeschakeld op deze blog.  MTRemoteSignInLink kan niet worden gebruikt.',
+
+## php/lib/block.mtauthorhaspage.php
+	'No author available' => 'Geen auteur beschikbaar',
+
+## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -36,8 +51,16 @@ $Lexicon_nl = array(
 	'Captcha' => 'Captcha',
 	'Type the characters you see in the picture above.' => 'Tik te tekens in die u ziet in de afbeelding hierboven.',
 
+## php/lib/function.mtsetvar.php
+	'\'[_1]\' is not a hash.' => '\'[_1]\' is geen hash.',
+	'Invalid index.' => 'Ongeldige index.',
+	'\'[_1]\' is not an array.' => '\'[_1]\' is geen array.',
+	'\'[_1]\' is not a valid function.' => '\'[_1]\' is geen geldige functie.',
+
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
+
+## php/lib/block.mtsetvarblock.php
 
 ## php/lib/block.mtentries.php
 
@@ -45,6 +68,11 @@ $Lexicon_nl = array(
 	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtentryclasslabel.php
+	'page' => 'pagina',
+	'entry' => 'bericht',
+	'Entry' => 'Bericht',
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_nl;
