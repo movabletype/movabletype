@@ -258,7 +258,7 @@ use vars qw( @ISA %Lexicon );
 	'To view or edit this user, please click on or cut and paste the following URL into a web browser:' => 'このユーザーの情報を見たり編集する場合には、下記のURLをクリックするか、URLをコピーしてブラウザのアドレス欄に貼り付けてください。',
 
 ## default_templates/entry_metadata.mtml
-	'By [_1] on [_2]' => '[_2] [_1]',
+	'By [_1] on [_2]' => '[_1] ([_2])',
 	'Permalink' => '個別ページ',
 	'Comments ([_1])' => 'コメント([_1])',
 	'TrackBacks ([_1])' => 'トラックバック([_1])',
