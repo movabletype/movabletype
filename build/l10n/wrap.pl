@@ -31,10 +31,23 @@ EOF
 }
 
 my $tmpl;
+my $plugin = q();
+my %conv;
+my %pgconv;
 
 while (<>) {
     if (/^\s*##\s*(.*)$/) {
         $tmpl = $1;
+        if ( $tmpl =~ m!^plugins!
+          || $tmpl =~ m!^addons! ) {
+            my ($pg) = $tmpl =~ m!^(?:plugins|addons)/(.+?)/.+!;
+            warn $pg;
+            %pgconv = () unless $pg eq $plugin;
+            $plugin = $pg;
+        }
+        else {
+            $plugin = q();
+        }
         my $l = $_;
         last if eof();
         $_ = <>;
@@ -44,15 +57,20 @@ while (<>) {
     if (/^[#\s]+'(.+)' => '(.*)',($|\s*\#)/) { # Now also reads empty/to be translated strings
         my $base = $1; 
         my $trans = $2;
-        unless (defined $conv{$base}) {
-		print $_;
-		$words = wordcount($base);
-		$wc += $words unless ($trans);
+        if ( !exists($conv{$base}) && !exists($pgconv{$base}) ) {
+            print $_;
+            $words = wordcount($base);
+            $wc += $words unless ($trans);
         }
-        $conv{$base} = 1;
+        if ( $plugin ) {
+            $pgconv{$base} = 1;
+        }
+        else {
+            $conv{$base} = 1;
+        }
     }
     else{
-	    print $_;
+        print $_;
     }
 }
 
