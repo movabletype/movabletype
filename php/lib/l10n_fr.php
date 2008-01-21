@@ -7,6 +7,12 @@
 
 global $Lexicon_fr;
 $Lexicon_fr = array(
+## php/lib/function.mtvar.php
+	'You used a [_1] tag without a valid name attribute.' => 'Vous avez utilisé un tag [_1] sans un attribut de nom valide',
+	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' n\'est pas une fonction valide pour un hash',
+	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' n\'est pas une fonction valide pour un tableau',
+	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] est illégal.',
+
 ## php/lib/archive_lib.php
 	'Page' => 'Page',
 	'Individual' => 'Individuel',
@@ -25,8 +31,17 @@ $Lexicon_fr = array(
 	'Category Daily' => 'Par catégories et jours',
 	'Category Weekly' => 'Par catégories et semaines',
 
+## php/lib/block.mtsethashvar.php
+
+## php/lib/block.mtif.php
+
 ## php/lib/function.mtremotesigninlink.php
 	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'L\'authentification TypeKey n\'est pas activée sur ce blog.  MTRemoteSignInLink ne peut être utilisé.',
+
+## php/lib/block.mtauthorhaspage.php
+	'No author available' => 'Il n\'a pas d\'auteurs disponibles',
+
+## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
@@ -35,8 +50,16 @@ $Lexicon_fr = array(
 	'Captcha' => 'Captcha',
 	'Type the characters you see in the picture above.' => 'Saisissez les caractères que vous voyez dans l\'image ci-dessus.',
 
+## php/lib/function.mtsetvar.php
+	'\'[_1]\' is not a hash.' => '\'[_1]\' n\'est pas un hash',
+	'Invalid index.' => 'Index invalide',
+	'\'[_1]\' is not an array.' => '\'[_1]\' n\'est pas un tableau',
+	'\'[_1]\' is not a valid function.' => '\'[_1]\' n\'est pas une fonction valide',
+
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" doit être utilisé en combinaison avec le namespace.',
+
+## php/lib/block.mtsetvarblock.php
 
 ## php/lib/block.mtentries.php
 
@@ -49,7 +72,6 @@ $Lexicon_fr = array(
 	'page' => 'Page',
 	'entry' => 'note',
 	'Entry' => 'Note',
-
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_fr;
