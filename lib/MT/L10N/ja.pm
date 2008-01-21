@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -1118,7 +1118,7 @@ use vars qw( @ISA %Lexicon );
 	'Parent comment was not found.' => '返信先のコメントが見つかりません。',
 	'You can\'t reply to unapproved comment.' => '未公開のコメントには返信できません。',
 	'You can\'t reply to unpublished comment.' => '公開されていないコメントには返信できません。',
-	' (Backup from [_1])' => '[_1]時点でのバックアップ',
+	' (Backup from [_1])' => ' - バックアップ ([_1])',
 	'Error creating new template: ' => 'テンプレートの作成エラー:',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'カスタムテンプレートと思われるため、\'[_1]\'をスキップします。',
 	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
@@ -3722,7 +3722,7 @@ use vars qw( @ISA %Lexicon );
 	'Updates current templates while retaining any user-created or user-modified templates.' => 'テンプレートを初期化します。ユーザーが作成またはカスタマイズしたテンプレートは初期化しません。',
 	'Apply a new template set' => '新しいテンプレートセットを適用',
 	'Deletes all existing templates and install the selected template set.' => '既存のテンプレートをすべて削除して、選択された新しいテンプレートセットを適用します。',
-	'Reset to factory defaults' => 'リセットして初期状態に戻します。',
+	'Reset to factory defaults' => '初期状態にリセット',
 	'Deletes all existing templates and installs factory default template set.' => '既存のテンプレートをすべて削除して、製品既定のテンプレートセットをインストールします。',
 	'Make backups of existing templates first' => '既存のテンプレートのバックアップを作成する',
 	'You have requested to <strong>refresh the current template set</strong>. This action will:' => '<strong>現在のテンプレートセットを初期化</strong>しようとしています。この操作では以下の作業を行います。',
