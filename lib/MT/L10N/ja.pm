@@ -359,9 +359,9 @@ use vars qw( @ISA %Lexicon );
 	'You do not have permission to comment on this blog.' => 'このブログにはコメントする権限を持っていません。',
 	'Sign in' => 'サインイン',
 	' to comment on this entry.' => 'してからコメントしてください。',
-	' to comment on this entry,' => 'してからコメントしてください。',
+	' to comment on this entry,' => 'してください。',
 	'or ' => '', # Translate - New
-	'comment anonymously.' => '匿名でコメントすることもできます。',
+	'comment anonymously.' => '(匿名でコメントする)',
 
 ## default_templates/dynamic_error.mtml
 	'Page Not Found' => 'ページが見つかりません。',
