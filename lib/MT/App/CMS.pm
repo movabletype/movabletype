@@ -2972,6 +2972,16 @@ sub list_tag_for {
     $param{object_label}            = $tag_class->class_label;
     $param{object_label_plural}     = $tag_class->class_label_plural;
     $param{object_type}             = 'tag';
+
+    my $search_types = $app->search_apis($app->blog ? 'blog' : 'system');
+    if (grep { $_->{key} eq $param{tag_object_type} } @$search_types) {
+        $param{search_type} = $param{tag_object_type};
+        $param{search_label} = $param{tag_object_label_plural};
+    } else {
+        $param{search_type} = 'entry';
+        $param{search_label} = $app->translate("Entries");
+    }
+
     $param{list_start}              = $offset + 1;
     $param{list_end}                = $offset + scalar @$data;
     $param{list_total}              = $total;
