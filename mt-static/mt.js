@@ -1335,7 +1335,13 @@ MT.App = new Class( App, {
         this.setDelegate( "navMenu", new this.constructor.NavMenu() );
 
         this.initFormElements();
-        
+
+        /* fix a display issue */
+        var navEl = DOM.getElement( "content-nav" );
+        var navConEl = DOM.getElement( "content-header-inner" );
+        if ( navEl && navConEl )
+            navEl.style.top = "-" + DOM.getStyle( navConEl, "height" );
+
         if ( this.constructor.Resizer ) {
             this.setDelegate( "resizer", new this.constructor.Resizer( this.getIndirectMethod( "resizeComplete" ) ) );
             this.setDelegateListener( "eventMouseUp", "resizer" );
