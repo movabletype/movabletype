@@ -4242,7 +4242,7 @@ sub list_pref {
     # defaults:
     my $d = $app->config->DefaultListPrefs || {};
     my %default = (
-        Rows       => 20,
+        Rows       => 25,
         Format     => 'Compact',
         SortOrder  => 'Ascend',      # Ascend|Descend
         Button     => 'Above',       # Above|Below|Both
@@ -4263,7 +4263,7 @@ sub list_pref {
     }
     else {
         $list_pref = {
-            rows  => $default{Rows}       || 20,
+            rows  => $default{Rows}       || 25,
             view  => $default{Format}     || 'compact',
             bar   => $default{Button}     || 'above',
             dates => $default{DateFormat} || 'relative',
