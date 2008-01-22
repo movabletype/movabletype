@@ -1402,6 +1402,7 @@ MT.App = new Class( App, {
         arguments.callee.applySuper( this, arguments );
     },
 
+
     reflow: function() {
         arguments.callee.applySuper( this, arguments );
         /* fix a display issue */
@@ -1412,6 +1413,7 @@ MT.App = new Class( App, {
             navEl.style.top = "-" + (d.clientHeight - 13) + "px";
         }
     },
+
 
     initFormElements: function() {
         var forms = document.getElementsByTagName( "form" );
