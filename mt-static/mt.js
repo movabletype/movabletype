@@ -1339,8 +1339,10 @@ MT.App = new Class( App, {
         /* fix a display issue */
         var navEl = DOM.getElement( "content-nav" );
         var navConEl = DOM.getElement( "content-header-inner" );
-        if ( navEl && navConEl )
-            navEl.style.top = "-" + DOM.getStyle( navConEl, "height" );
+        if ( navEl && navConEl ) {
+            var d = DOM.getAbsoluteDimensions( navConEl );
+            navEl.style.top = "-" + d.clientHeight + "px";
+        }
 
         if ( this.constructor.Resizer ) {
             this.setDelegate( "resizer", new this.constructor.Resizer( this.getIndirectMethod( "resizeComplete" ) ) );
