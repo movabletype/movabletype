@@ -27,7 +27,7 @@ use vars qw( @ISA %Lexicon );
 	'Monthly' => 'Monatlich',
 	'Daily' => 'Täglich',
 	'Weekly' => 'Wöchentlich',
-	'Author' => 'Autor',
+	'Author' => 'Autor', 
 	'(Display Name not set)' => '(Kein Anzeigename gewählt)',
 	'Author Yearly' => 'Autor jährlich',
 	'Author Monthly' => 'Autor monatlich',
@@ -138,7 +138,7 @@ use vars qw( @ISA %Lexicon );
 	'An unapproved TrackBack has been posted on your blog [_1], for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Ein noch nicht freigeschaltetes TrackBack ist in Ihrem Weblog [_1] zur Kategorie #[_2] ([_3]) eingegangen. Schalten Sie das TrackBack frei, damit es auf Ihrem Weblog erscheint.',
 	'A new TrackBack has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'Ein neuer TrackBack ist in Ihrem Weblog [_1] zum Eintrag #[_2] ([_3]) eingegangen.',
 	'A new TrackBack has been posted on your blog [_1], on category #[_2] ([_3]).' => 'Ein neuer TrackBack ist in Ihrem Weblog [_1] zur Kategorie #[_2] ([_3]) eingegangen.',
-	'Excerpt' => 'Zusammen- fassung',
+	'Excerpt' => 'Zusammenfassung',
 	'URL' => 'URL',
 	'Title' => 'Titel',
 	'Blog' => 'Blog',
@@ -889,7 +889,7 @@ use vars qw( @ISA %Lexicon );
 	'Search & Replace' => 'Suchen & Ersetzen',
 	'Entry Body' => 'Eintragstext',
 	'Extended Entry' => 'Erweiterter Eintrag',
-	'Keywords' => 'Schlüssel- wörter',
+	'Keywords' => 'Schlüsselwörter',
 	'Basename' => 'Basisname',
 	'Comment Text' => 'Kommentartext',
 	'IP Address' => 'IP-Adresse',
@@ -993,7 +993,7 @@ use vars qw( @ISA %Lexicon );
 	'Skipping template \'[_1]\' since it has not been changed.' => 'Überspringe Vorlage \'[_1]\', da sie unverändert ist...',
 	'entries' => 'Einträge',
 	'This is You' => 'Das sind Sie',
-	'Handy Shortcuts' => 'Nützliche Abkürzungen',
+	'Handy Shortcuts' => 'Schnellzugriff',
 	'Movable Type News' => 'News von Movable Type',
 	'Blog Stats' => 'Statistik',
 	'Refresh Blog Templates' => 'Blog-Vorlagen neu aufbauen',
@@ -1908,7 +1908,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/comment_table.tmpl
 	'comment' => 'Kommentar',
 	'comments' => 'Kommentare',
-	'to publish' => 'zu Veröffentlichen',
+	'to publish' => 'zu veröffentlichen',
 	'Publish selected comments (a)' => 'Gewählte Kommentare veröffentlichen (a)',
 	'Delete selected comments (x)' => 'Gewählte Kommentare löschen (x)',
 	'Report selected comments as Spam (j)' => 'Gewählte Kommentare als Spam melden (j)',
@@ -1924,7 +1924,7 @@ use vars qw( @ISA %Lexicon );
 	'Date' => 'Datum',
 	'IP' => 'IP',
 	'Only show published comments' => 'Nur veröffentlichte Kommentare anzeigen',
-	'Published' => 'Veröffentlichen',
+	'Published' => 'Veröffentlicht',
 	'Only show pending comments' => 'Nur nicht veröffentlichte Kommentare anzeigen',
 	'Pending' => 'Auf Moderation wartend',
 	'Edit this comment' => 'Kommentar bearbeiten',
@@ -2379,10 +2379,10 @@ use vars qw( @ISA %Lexicon );
 	'Left' => 'Links',
 	'Center' => 'Zentriert',
 	'Right' => 'Rechts',
-	'Use thumbnail' => 'Vorschaubild verwenden',
+	'Use thumbnail' => "Vorschaubild verwenden\n",
 	'width:' => 'Breite:',
 	'pixels' => 'Pixel',
-	'Link image to full-size version in a popup window.' => 'Bild mit Großansicht in Popup-Fenster verlinken',
+	'Link image to full-size version in a popup window.' => 'Mit Großansicht in Popup verlinken',
 	'Remember these settings' => 'Einstellungen speichern',
 
 ## tmpl/cms/dialog/create_association.tmpl
@@ -2437,7 +2437,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/mt_shortcuts.tmpl
 	'Trackbacks' => 'TrackBacks',
-	'Import Content' => 'Inhalt importieren',
+	'Import Content' => 'Importieren',
 	'Blog Preferences' => 'Blog-Einstellungen',
 
 ## tmpl/cms/widget/new_version.tmpl
@@ -2514,7 +2514,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_role.tmpl
 	'Edit Role' => 'Rolle bearbeiten',
-	'Your changes have been saved.' => 'Änderungen gespeichert',
+	'Your changes have been saved.' => 'Änderungen gespeichert.',
 	'List Roles' => 'Rollen auflisten',
 	'[quant,_1,User,Users] with this role' => '[quant,_1,Benutzer,Benutzer] mit dieser Rolle',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'Sie haben die Berechtigungen dieser Rolle geändert. Dadurch werden auch die Rechte der mit dieser Rolle verknüpften Benutzer beeinflusst. Wenn Sie möchten, können Sie daher die Rolle unter neuem Namen speichern.',
@@ -2820,9 +2820,9 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished' => 'Nicht veröffentlicht',
 	'You must configure this blog before you can publish this entry.' => 'Bitte konfigurieren Sie das Blog, bevor Sie einen Eintrag veröffentlichen.',
 	'You must configure this blog before you can publish this page.' => 'Bitte konfigurieren Sie das Blog, bevor Sie eine Seite veröffentlichen.',
-	'[_1] - Created by [_2]' => '[_1] - Angelegt von [_2]',
-	'[_1] - Published by [_2]' => '[_1] - Veröffentlicht von [_2]',
-	'[_1] - Edited by [_2]' => '[_1] - Bearbeitet von [_2]',
+	'[_1] - Created by [_2]' => 'Angelegt von [_2] [_1]',
+	'[_1] - Published by [_2]' => 'Veröffentlicht von [_2] [_1]',
+	'[_1] - Edited by [_2]' => 'Bearbeitet von [_2] [_1]',
 	'Publish On' => 'Veröffentlichen um',
 	'Publish Date' => 'Veröffent- lichungs- zeitpunkt',
 	'Select entry date' => 'Eintragsdatum wählen',
@@ -2848,7 +2848,7 @@ use vars qw( @ISA %Lexicon );
 	'Reset display options to blog defaults' => 'Anzeigeoptionen auf Standardeinstellungen zurücksetzen',
 	'Reset defaults' => 'Auf Standardeinstellungen zurücksetzen',
 	'Previous' => 'Zurück',
-	'Next' => 'Nächstes',
+	'Next' => 'Vor',
 	'Extended' => 'Erweiterter Text',
 	'Format:' => 'Formatierung:',
 	'(comma-delimited list)' => '(Liste mit Kommatrennung)',
@@ -3704,12 +3704,12 @@ use vars qw( @ISA %Lexicon );
 	'_UTS_EDIT_LINK' => q{
 <!-- Entfernen Sie diesen Link nach der Bearbeitung -->
 <p class="admin-edit-link">
-<script type="text/javascript">document.write('<a href="' + adminurl + '?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id + '" target="_blank">Bestimmen Sie diesen Text</a>')</script>
+<script type="text/javascript">document.write('<a href="' + adminurl + '?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id + '" target="_blank">Diesen Text anpassen</a>')</script>
 </p>
 }, # Translate - New # OK
 	'_UTS_CONTACT' => 'Kontakt', # Translate - New # OK
 	'_UTS_SAMPLE_CONTACT' => q{
-<p>We'd love to hear from you. Send email to email (at) domainname.com</p>
+<p>Wir freuen uns darauf, von Ihnen zu hören. Senden Sie Ihre E-Mail an email (at) domainname.de</p>
 }, # Translate - New
 	'Welcome to our new website!' => 'Willkommen auf unserer neuen Website!', # Translate - New # OK
 	'_UTS_SAMPLE_WELCOME' => q{
@@ -4313,6 +4313,7 @@ use vars qw( @ISA %Lexicon );
 
 );
 
+## New words: 193
 
 
 1;

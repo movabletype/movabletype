@@ -8,9 +8,6 @@ use strict;
 use base 'WidgetManager::L10N::en_us';
 use vars qw( %Lexicon );
 
-## The following is the translation table.
-
-%Lexicon = (
 ## plugins/WidgetManager/lib/WidgetManager/Plugin.pm
 	'Can\'t find included template widget \'[_1]\'' => 'Kann in Vorlage angegebenes Widget \'[_1]\' nicht finden',
 	'Cloning Widgets for blog...' => 'Klone Widgets für Blog...',
