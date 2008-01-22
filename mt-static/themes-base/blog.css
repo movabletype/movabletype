@@ -430,7 +430,6 @@ ul { list-style: disc outside; }
 
 .comment-content {
     clear: none;
-    margin-left: 60px;
     line-height: 1.5;
     margin-bottom: 1em;
 }
