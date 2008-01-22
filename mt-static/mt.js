@@ -366,7 +366,7 @@ function openDialog(f, mode, params) {
     url += '?__mode=' + mode;
     if (params) url += '&' + params;
     url += '&__type=dialog';
-    if (app) app.closeFlyouts();
+    if (window.app) window.app.closeFlyouts();
     show("dialog-container");
     // handle escape key for closing modal dialog
     DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
