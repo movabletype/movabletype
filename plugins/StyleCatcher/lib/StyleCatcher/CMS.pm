@@ -456,6 +456,14 @@ sub fetch_themes {
             }
             next unless lc $attr{rel}  eq 'theme';
             next unless lc $attr{type} eq 'text/x-theme';
+
+            # Fix for relative theme locations
+            if ($css !~ m!^https?://!) {
+                my $new_css = $url;
+                $new_css =~ s!/[a-z0-9_-]+\.[a-z]+?$|/$!/!;
+                $new_css .= $css;
+                $css = $new_css;
+            }
             push @repo_themes, $css;
         }
 
@@ -582,6 +590,8 @@ sub fetch_theme {
 
 # Break up the css url in to a couple useful pieces (generalize and break me out)
         $theme = $url;
+        # discard any generic 'screen.css' filename
+        $theme =~ s!/screen.css$!!;
         $theme =~ s/.*[\\\/]//;
         my @url = split( /\//, $url );
         for ( 0 .. ( scalar(@url) - 2 ) ) {
