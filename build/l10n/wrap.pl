@@ -41,7 +41,6 @@ while (<>) {
         if ( $tmpl =~ m!^plugins!
           || $tmpl =~ m!^addons! ) {
             my ($pg) = $tmpl =~ m!^(?:plugins|addons)/(.+?)/.+!;
-            warn $pg;
             %pgconv = () unless $pg eq $plugin;
             $plugin = $pg;
         }
