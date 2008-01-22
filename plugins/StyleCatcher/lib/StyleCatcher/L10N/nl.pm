@@ -26,6 +26,7 @@ use vars qw( %Lexicon );
 	'3-Columns, Thin, Wide, Thin' => '3-kolommen, smal, breed, smal',
 	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed',
 	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal',
+	'2-Columns, Wide, Medium' => '2-kolommen, breed, medium', # Translate - New
 	'None available' => 'Geen beschikbaar',
 	'Applying...' => 'Wordt toegepast...',
 	'Apply Design' => 'Design toepassen',

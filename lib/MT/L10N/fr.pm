@@ -149,7 +149,6 @@ use vars qw( @ISA %Lexicon );
 	'Edit TrackBack' => 'Éditer les  trackbacks',
 
 ## default_templates/comment_detail.mtml
-	'default userpic' => 'Image de l\'utilisateur par défaut',
 	'By [_1] on [_2]' => 'Par [_1] le [_2]',
 
 ## default_templates/comment_form.mtml
@@ -229,7 +228,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] TrackBacks' => '[_1] trackbacks',
 	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'Voici la liste des liens vers les blogs faisant référence à cette note : <a href="[_1]">[_2]</a>.',
 	'TrackBack URL for this entry: <span id="trackbacks-link">[_1]</span>' => 'URL de trackback pour cette note : <span id="trackbacks-link">[_1]</span>',
-	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> depuis [_3] sur <a href="[_4]">[_5]</a>', # Translate - New
+	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> depuis [_3] sur <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Lire la suite</a>',
 
 ## default_templates/sidebar.mtml
@@ -680,6 +679,7 @@ use vars qw( @ISA %Lexicon );
 	'The user' => 'L\'utilisateur',
 	'User' => 'Utilisateur',
 	'Invalid type' => 'Type incorrect',
+	'Entries' => 'Notes',
 	'New name of the tag must be specified.' => 'Le nouveau nom de ce tag doit être spécifié.',
 	'No such tag' => 'Pas de tag de ce type',
 	'None' => 'Aucune',
@@ -709,7 +709,6 @@ use vars qw( @ISA %Lexicon );
 	'Permission denied: [_1]' => 'Autorisation refusée: [_1]',
 	'Load failed: [_1]' => 'Échec de chargement : [_1]',
 	'(no reason given)' => '(sans raison donnée)',
-	'Entries' => 'Notes',
 	'Pages' => 'Pages',
 	'(untitled)' => '(sans titre)',
 	'index' => 'index',
@@ -986,7 +985,7 @@ use vars qw( @ISA %Lexicon );
 	'Parent comment was not found.' => 'Commentaire parent non trouvé.',
 	'You can\'t reply to unapproved comment.' => 'Vous ne pouvez répondre à un commentaire non approuvé.',
 	'You can\'t reply to unpublished comment.' => 'Vous ne pouvez pas répondre à un commentaire non publié.',
-	' (Backup from [_1])' => ' (Sauvegarde depuis [_1])', # Translate - New
+	' (Backup from [_1])' => ' (Sauvegarde depuis [_1])',
 	'Error creating new template: ' => 'Erreur pendant la création du nouveau gabarit : ',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Saut du gabarit \'[_1]\' car c\'est un gabarit personnalisé.',
 	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => 'Réactualiser les gabarits <strong>[_3]</strong> depuis <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">la sauvegarde</a>',
@@ -1231,7 +1230,7 @@ use vars qw( @ISA %Lexicon );
 	'Adding new feature widget to dashboard...' => 'Ajout du nouveau widget au tableau de bord...',
 	'Moving OpenID usernames to external_id fields...' => 'Déplacement des identifiants OpenID vers les champs external_id...',
 	'Assigning blog template set...' => 'Attribution du groupe de gabarits de blogs',
-	'Assigning blog page layout...' => 'Attribution de la mise en page du blog', # Translate - New
+	'Assigning blog page layout...' => 'Attribution de la mise en page du blog',
 
 ## lib/MT/Core.pm
 	'Create Blogs' => 'Créer des blogs',
@@ -2086,8 +2085,8 @@ use vars qw( @ISA %Lexicon );
 	'Edit Page' => 'Éditer une page',
 	'View entry' => 'Afficher une note',
 	'View page' => 'Afficher une page',
-	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Aucune note n\'a été trouvée. <a href="[_1]">Créer une note</a> maintenant.', # Translate - New
-	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'Aucune page n\'a été trouvée. <a href="[_1]">Créer une page</a> maintenant.', # Translate - New
+	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Aucune note n\'a été trouvée. <a href="[_1]">Créer une note</a> maintenant.',
+	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'Aucune page n\'a été trouvée. <a href="[_1]">Créer une page</a> maintenant.',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2313,8 +2312,8 @@ use vars qw( @ISA %Lexicon );
 	'Updates current templates while retaining any user-created or user-modified templates.' => '
 	Met à jour les gabarits actuels en conservant les gabarits créés ou modifiés par n\'import quel utilisateur.',
 	'Apply a new template set' => 'Appliquer un nouveau groupe de gabarits',
-	'Deletes all existing templates and install the selected template set.' => 'Supprime tout les gabarits existants et installe le groupe de gabarits sélectionné.', # Translate - New
-	'Reset to factory defaults' => 'Remettre à zéro les modifications', # Translate - New
+	'Deletes all existing templates and install the selected template set.' => 'Supprime tout les gabarits existants et installe le groupe de gabarits sélectionné.',
+	'Reset to factory defaults' => 'Remettre à zéro les modifications',
 	'Deletes all existing templates and installs factory default template set.' => 'Supprime tous les gabartis existants et installe les groupes de gabarits par défaut ',
 	'Make backups of existing templates first' => 'Faire d\'abord des sauvegardes des gabarits existants',
 	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Vous avez demandé de <strong>réactualiser le groupe de gabarit actuel</strong>. Cette action va :',
@@ -2790,7 +2789,7 @@ use vars qw( @ISA %Lexicon );
 	'Save this page (s)' => 'Enregistrer cette page (s)',
 	'Preview this page (v)' => 'Prévisualiser cette page (v)',
 	'Delete this page (x)' => 'Supprimer cette page (x)',
-	'View Page' => 'Afficher une Page', # Translate - Case
+	'View Page' => 'Afficher une Page',
 	'Add category' => 'Ajouter une catégorie',
 	'Add category name' => 'Ajouter un nom de catégorie',
 	'Add new category parent' => 'Ajouter une nouvelle catégorie parente',
@@ -2813,7 +2812,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while trying to recover your saved page.' => 'Une erreur est survenue lors de la tentative de récupération de la page enregistrée.',
 	'You have successfully deleted the checked comment(s).' => 'Les commentaires sélectionnés ont été supprimés.',
 	'You have successfully deleted the checked TrackBack(s).' => 'Le(s) trackback(s) sélectionné(s) ont été correctement supprimé(s).',
-	'Change Folder' => 'Modifier le Dossier', # Translate - New
+	'Change Folder' => 'Modifier le Dossier',
 	'Stats' => 'Stats',
 	'Share' => 'Partager',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,commentaire,commentaires]</a>',
@@ -3224,7 +3223,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/import.tmpl
 	'You must select a blog to import.' => 'Vous devez sélectionner un blog à importer.',
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Transférer les notes dans Movable Type depuis une autre installation Movable Type ou à partir d\'un autre outil de publication de blogs afin de créer une sauvegarde ou une copie.',
-	'Import data into' => 'Importer les données dans', # Translate - New
+	'Import data into' => 'Importer les données dans',
 	'Select a blog to import.' => 'Sélectionner un blog à importer.',
 	'Importing from' => 'Importation à partir de',
 	'Ownership of imported entries' => 'Propriétaire des notes importées',
@@ -3440,7 +3439,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Category' => 'Créer une Catégorie',
 	'Collapse' => 'Réduire',
 	'Expand' => 'Développer',
-	'Create Subcategory' => 'Créer une Sous-catégorie', # Translate - New
+	'Create Subcategory' => 'Créer une Sous-catégorie',
 	'Move Category' => 'Déplacer une Catégorie',
 	'[quant,_1,TrackBack,TrackBacks]' => '[quant,_1,trackback,trackbacks]',
 	'No categories could be found.' => 'Aucune catégorie n\'a pu être trouvée.',
@@ -3590,11 +3589,11 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/preview_strip.tmpl
 	'Save this entry' => 'Enregistrer cette note',
-	'Re-Edit this entry' => 'Modifier à nouveau cette note', # Translate - New
-	'Re-Edit this entry (e)' => 'Modifier à nouveau cette note (e)', # Translate - New
+	'Re-Edit this entry' => 'Modifier à nouveau cette note',
+	'Re-Edit this entry (e)' => 'Modifier à nouveau cette note (e)',
 	'Save this page' => 'Enregistrer cette page',
-	'Re-Edit this page' => 'Modifier à nouveau cette page', # Translate - New
-	'Re-Edit this page (e)' => 'Modifier à nouveau cette page (e)', # Translate - New
+	'Re-Edit this page' => 'Modifier à nouveau cette page',
+	'Re-Edit this page (e)' => 'Modifier à nouveau cette page (e)',
 	'You are previewing the entry titled &ldquo;[_1]&rdquo;' => 'Vous prévisualisez la note suivante : &ldquo;[_1]&rdquo;',
 	'You are previewing the page titled &ldquo;[_1]&rdquo;' => 'Vous prévisualisez la page suivante : &ldquo;[_1]&rdquo;',
 
@@ -3695,35 +3694,35 @@ use vars qw( @ISA %Lexicon );
 	'_ERROR_CGI_PATH' => 'Votre configuration de chemin CGI est invalide ou absente de vos fichiers de configuration Movable Type. Merci de consulter la base de connaissance',
 
 ## addons/Commercial.pack/lib/MT/Commercial/Util.pm
-	'About' => 'A propos de', # Translate - New
-	'_UTS_REPLACE_THIS' => '<p><strong>Remplacez ce texte d\'exemple par vos propres informations.</strong></p>', # Translate - New
-	'_UTS_SAMPLE_ABOUT' => q{
+	'About' => 'A propos de',
+	'_UTS_REPLACE_THIS' => '<p><strong>Remplacez ce texte d\'exemple par vos propres informations.</strong></p>',
+	'_UTS_SAMPLE_ABOUT' => '
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
 
 <p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies.</p>
-}, # Translate - New
-	'_UTS_EDIT_LINK' => q{
-<!-- retirer ce lien après l'édition -->
+',
+	'_UTS_EDIT_LINK' => '
+<!-- retirer ce lien après l\'édition -->
 <p class="admin-edit-link">
-<script type="text/javascript">document.write('<a href="' + adminurl + '?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id + '" target="_blank">Éditer ce contenu</a>')</script>
+<script type="text/javascript">document.write(\'<a href="\' + adminurl + \'?__mode=view&_type=page&id=\' + page_id + \'&blog_id=\' + blog_id + \'" target="_blank">Éditer ce contenu</a>\')</script>
 </p>
-}, # Translate - New
-	'_UTS_CONTACT' => 'Contacter', # Translate - New
-	'_UTS_SAMPLE_CONTACT' => q{
+',
+	'_UTS_CONTACT' => 'Contacter',
+	'_UTS_SAMPLE_CONTACT' => '
 <p>Nous adorerions avoir de vos nouvelles. Envoyez un email à email (at) nomdedomaine.com</p>
-}, # Translate - New
-	'Welcome to our new website!' => 'Bienvenue sur notre nouveau site !', # Translate - New
-	'_UTS_SAMPLE_WELCOME' => q{
+',
+	'Welcome to our new website!' => 'Bienvenue sur notre nouveau site !',
+	'_UTS_SAMPLE_WELCOME' => '
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Aliquam erat volutpat. Ut placerat porta nibh. Donec vitae nulla. Pellentesque nisi leo, pretium a, gravida quis, sollicitudin non, eros. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
 
 <p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies. Aliquam sagittis volutpat metus.</p>
 
 <p>Sed enim. Integer hendrerit, arcu ac pretium nonummy, velit turpis faucibus risus, pulvinar egestas enim elit sed ante. Curabitur orci diam, placerat a, faucibus id, condimentum vitae, magna. Etiam enim massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
-}, # Translate - New
-	'New design launched using Movable Type' => 'Nouveau design lancé en utilisant Movable Type', # Translate - New
-	'_UTS_SAMPLE_NEWDESIGN' => q{
-<p>Notre nouveau site internet est habillé d'un nouvel habillage grâce à <a href="http://www.movabletype.com/">Movable Type</a> et les Groupes d'Habillages Universels. Les Groupes d'Habillages Universels rendent facile et accessible à n'importe qui la mise en place et l'animation d'un site internet utilisant Movable Type. Et cela ne vous prendra que quelques instants#160;! Sélectionnez-en un simplement pour votre nouveau site web et publiez. Voilà#160;! Merci Movable Type#160;!</p> 
-}, # Translate - New
+',
+	'New design launched using Movable Type' => 'Nouveau design lancé en utilisant Movable Type',
+	'_UTS_SAMPLE_NEWDESIGN' => '
+<p>Notre nouveau site internet est habillé d\'un nouvel habillage grâce à <a href="http://www.movabletype.com/">Movable Type</a> et les Groupes d\'Habillages Universels. Les Groupes d\'Habillages Universels rendent facile et accessible à n\'importe qui la mise en place et l\'animation d\'un site internet utilisant Movable Type. Et cela ne vous prendra que quelques instants#160;! Sélectionnez-en un simplement pour votre nouveau site web et publiez. Voilà#160;! Merci Movable Type#160;!</p> 
+',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => 'Afficher',
@@ -3736,15 +3735,15 @@ use vars qw( @ISA %Lexicon );
 	'Edit Field' => 'Modifier le champ',
 	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Date invalide \'[_1]\'; les dates doivent être dans le format YYYY-MM-DD HH:MM:SS.',
 	'Invalid date \'[_1]\'; dates should be real dates.' => 'Date invalide \'[_1]\'; les dates doivent être de vraies dates.',
-	'Please enter valid URL for the URL field: [_1]' => 'Merci de saisir une URL correcte pour le champ URL : [_1]', # Translate - New
+	'Please enter valid URL for the URL field: [_1]' => 'Merci de saisir une URL correcte pour le champ URL : [_1]',
 	'Please enter some value for required \'[_1]\' field.' => 'Merci de saisir une valeur pour le champ obligatoire \'[_1]\'.',
 	'Please ensure all required fields have been filled in.' => 'Merci de vérifier que tous les champs obligatoires ont été remplis.',
 	'The template tag \'[_1]\' is an invalid tag name.' => 'Le tag de gabarit \'[_1]\' est un nom de tag invalide',
 	'The template tag \'[_1]\' is already in use.' => 'Le tag de gabarit \'[_1]\' est déjà utilisé.',
 	'The basename \'[_1]\' is already in use.' => 'Le nom de base \'[_1]\' est déjà utilisé.',
-	'Default value must be valid URL.' => 'La valeur par défaut doit être une URL valide.', # Translate - New
+	'Default value must be valid URL.' => 'La valeur par défaut doit être une URL valide.',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Personnalisez les champs des notes, pages, répertoires, catégories et auteurs pour stocker toutes les informations dont vous avez besoin.',
-	' ' => ' ', # Translate - Case
+	' ' => ' ',
 	'Single-Line Text' => 'Texte sur une ligne',
 	'Multi-Line Textfield' => 'Champ texte de plusieurs lignes',
 	'Checkbox' => 'Case à cocher',
@@ -3832,6 +3831,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/commenter_notify.mtml
 
 ## addons/Commercial.pack/templates/recent_entries_expanded.mtml
+	'By [_1] | Comments ([_2])' => 'Par [_1] | Commentaires ([_1])', # Translate - New
 
 ## addons/Commercial.pack/templates/footer-email.mtml
 
@@ -3842,7 +3842,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/new-ping.mtml
 
 ## addons/Commercial.pack/templates/comment_detail.mtml
-	'[_1] [_2] on' => '[_1] [_2] sur', # Translate - New
+	'[_1] [_2] on' => '[_1] [_2] sur',
 	'<a href="[_1]" title="Permalink to this comment">[_2]</a>' => '<a href="[_1]" title="Lien permanent vers ce commentaire">[_2]</a>',
 
 ## addons/Commercial.pack/templates/comment_form.mtml
@@ -3856,13 +3856,15 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/contact.mtml
 
 ## addons/Commercial.pack/templates/footer.mtml
-	'Powered By (Footer)' => 'Powered By (Pied de Page)', # Translate - New
-	'Footer Links' => 'Liens de Pied de Page', # Translate - New
+	'Powered By (Footer)' => 'Powered By (Pied de Page)',
+	'Footer Links' => 'Liens de Pied de Page',
 
 ## addons/Commercial.pack/templates/tags.mtml
 
 ## addons/Commercial.pack/templates/navigation.mtml
 	'Home' => 'Accueil',
+
+## addons/Commercial.pack/templates/entry_metadata.mtml
 
 ## addons/Commercial.pack/templates/entry.mtml
 
@@ -3875,15 +3877,16 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/archive_index.mtml
 
 ## addons/Commercial.pack/templates/sign_in_top.mtml
-	'You are signed in as' => 'Vous êtes identifié comme étant', # Translate - New
-	'Sign Out' => 'Se Déconnecter', # Translate - Case
+	'You are signed in as' => 'Vous êtes identifié comme étant',
+	'.  <a href="[_1]">Sign Out</a>' => '<a href="[_1]">Se Déconnecter</a>', # Translate - New
+	'Sign Out' => 'Se Déconnecter',
 
 ## addons/Commercial.pack/templates/trackbacks.mtml
 	'&raquo; <a href="[_1]">[_2]</a> from [_3]' => '&raquo; <a href="[_1]">[_2]</a> de [_3]',
 	'Tracked on <a href="[_1]">[_2]</a>' => 'Tracké le <a href="[_1]">[_2]</a>',
 
 ## addons/Commercial.pack/templates/sidebar.mtml
-	'Recent Entries Expanded' => 'Entrées étendues récentes', # Translate - New
+	'Recent Entries Expanded' => 'Entrées étendues récentes',
 	'Recent Assets' => 'Éléments récents',
 	'Recent Comments' => 'Commentaires récents',
 	'Category Archives' => 'Archives par Catégories',
@@ -3899,10 +3902,10 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/search_top.mtml
 
 ## addons/Commercial.pack/templates/header.mtml
-	'Sign In (In Header)' => 'S\'identifier (Dans l\'En-tête de la Page)', # Translate - New
+	'Sign In (In Header)' => 'S\'identifier (Dans l\'En-tête de la Page)',
 	'Navigation' => 'Navigation',
-	'Search (In Navigation)' => 'Rechercher (Dans la Navigation)', # Translate - New
-	'Homepage Image' => 'Image de Page d\'Accueil', # Translate - New
+	'Search (In Navigation)' => 'Rechercher (Dans la Navigation)',
+	'Homepage Image' => 'Image de Page d\'Accueil',
 
 ## addons/Commercial.pack/templates/sidebar_2col.mtml
 
@@ -3911,16 +3914,17 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/dynamic_error.mtml
 
 ## addons/Commercial.pack/templates/footer_links.mtml
-	'Links' => 'Liens', # Translate - New
+	'Links' => 'Liens',
 
 ## addons/Commercial.pack/templates/comment_preview.mtml
 
 ## addons/Commercial.pack/templates/commenter_confirm.mtml
 
 ## addons/Commercial.pack/config.yaml
-	'Universal Website' => 'Site Universel', # Translate - New
-	'Blog Index' => 'Index du Blog', # Translate - New
-	'Blog Entry Listing' => 'Liste des Notes du Blog', # Translate - New
+	'Universal Website' => 'Site Universel',
+	'Themes that are compatible with the Universal Website template set.' => 'Thèmes étant compatibles avec les groupes de gabarits de Sites Universels.', # Translate - New
+	'Blog Index' => 'Index du Blog',
+	'Blog Entry Listing' => 'Liste des Notes du Blog',
 
 ## plugins/Cloner/cloner.pl
 	'Clones a blog and all of its contents.' => 'Dupliquer un blog et tout son contenu',
@@ -3971,10 +3975,11 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
 	'Select a Style' => 'Habillages',
-	'3-Columns, Wide, Thin, Thin' => '3-colonnes, large, fin, fin',
-	'3-Columns, Thin, Wide, Thin' => '3-colonnes, fin, large, fin',
-	'2-Columns, Thin, Wide' => '2-colonnes, fin, large',
-	'2-Columns, Wide, Thin' => '2-colonnes, large, fin',
+	'3-Columns, Wide, Thin, Thin' => '3-Colonnes, Large, Fin, Fin',
+	'3-Columns, Thin, Wide, Thin' => '3-Colonnes, Fin, Large, Fin',
+	'2-Columns, Thin, Wide' => '2-Colonnes, Fin, Large',
+	'2-Columns, Wide, Thin' => '2-Colonnes, Large, Fin',
+	'2-Columns, Wide, Medium' => '2-Colonnes, Large, Moyen', # Translate - New
 	'None available' => 'Aucun disponible',
 	'Applying...' => 'Appliquer...',
 	'Apply Design' => 'Appliquer l\'habillage',
@@ -4172,6 +4177,8 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/WidgetManager/default_widgets/main_index_meta_widget.mtml
 	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Ceci est un groupe de wigets personnalisé qui est conditioné pour n\'apparaître que sur la page d\'accueil (ou "main_index"). Plus d\'infos : [_1]',
+	'Recent Comments' => 'Commentaires récents',
+	'Recent Assets' => 'Éléments récents',
 
 ## plugins/WidgetManager/default_widgets/syndication.mtml
 	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Résultats de la recherche pour la requête &ldquo;<$mt:SearchString$>&rdquo;',
@@ -4199,6 +4206,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/WidgetManager/default_widgets/archive_meta_widget.mtml
 	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Ceci est un groupe de widgets personnalisé qui est conditioné pour afficher un contenu différent basé sur le type d\'archives qui est inclu. Plus d\'infos : [_1]',
 	'Current Category Monthly Archives' => 'Archives Mensuelles de la Catégorie Courante',
+	'Category Archives' => 'Archives par Catégories',
 
 ## plugins/WidgetManager/default_widgets/date_based_category_archives.mtml
 	'Category Yearly Archives' => 'Archives Annuelles par Catégories',
@@ -4212,7 +4220,7 @@ use vars qw( @ISA %Lexicon );
 	'Creative Commons' => 'Creative Commons',
 	'Home Page Widgets' => 'Widgets de Page d\'Accueil',
 	'Monthly Archives Dropdown' => 'Liste déroulante des Archives Mensuelles',
-	'Page Listing' => 'Liste des Pages', # Translate - New
+	'Page Listing' => 'Liste des Pages',
 	'Powered By' => 'Animé Par',
 	'Syndication' => 'Syndication',
 	'Technorati Search' => 'Recherche Technorati',
@@ -4264,10 +4272,11 @@ use vars qw( @ISA %Lexicon );
 	'Widgets' => 'Widgets',
 
 ## plugins/CustomFields/customfields.pl
-	'Moving Custom Fields storage...' => 'Déplacement de l\'emplacement des champs personnalisés...', # Translate - New
-	'Moving metadata storage for [lc,_1]...' => 'Déplacement de l\'emplacement des métadonnées pour les [lc,_1]...', # Translate - New
-	'Moving metadata storage for users...' => 'Déplacement de l\'emplacement des métadonnées pour les utilisateurs...', # Translate - New
-	'Moving metadata storage for entries...' => 'Déplacement de l\'emplacement des métadonnées pour les entrées...', # Translate - New
+	'Moving Custom Fields storage...' => 'Déplacement de l\'emplacement des champs personnalisés...',
+	'Moving metadata storage for [lc,_1]...' => 'Déplacement de l\'emplacement des métadonnées pour les [lc,_1]...',
+	'Moving metadata storage for users...' => 'Déplacement de l\'emplacement des métadonnées pour les utilisateurs...',
+	'Moving metadata storage for entries...' => 'Déplacement de l\'emplacement des métadonnées pour les entrées...',
+	'Moving metadata storage for pages...' => 'Déplacement de l\'emplacement des métadonnées des pages en cours ...',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Une erreur s\'est produite en traitant [_1]. La version précédente du flux a été utilisée. Un statut HTTP de [_2] a été retourné.',
@@ -4314,6 +4323,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 193
+## New words: 24
 
 1;

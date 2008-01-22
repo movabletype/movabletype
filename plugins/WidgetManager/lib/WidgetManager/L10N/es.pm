@@ -47,6 +47,8 @@ use vars qw( %Lexicon );
 
 ## plugins/WidgetManager/default_widgets/main_index_meta_widget.mtml
 	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Este es un conjunto personalizado de widgets creados para aparecer solo en la página de inicio (o "main_index"). Más información: [_1]',
+	'Recent Comments' => 'Comentarios recientes',
+	'Recent Assets' => 'Multimedia reciente',
 
 ## plugins/WidgetManager/default_widgets/syndication.mtml
 	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Resultados de la búsqueda &ldquo;<$mt:SearchString$>&rdquo;',
@@ -74,6 +76,7 @@ use vars qw( %Lexicon );
 ## plugins/WidgetManager/default_widgets/archive_meta_widget.mtml
 	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Conjunto personalizado de widgets creado para mostrar contenidos diferentes según el tipo de archivo que incluye. Más información: [_1]',
 	'Current Category Monthly Archives' => 'Archivos mensuales de la categoría actual',
+	'Category Archives' => 'Archivos por categoría',
 
 ## plugins/WidgetManager/default_widgets/date_based_category_archives.mtml
 	'Category Yearly Archives' => 'Archivos anuales por categoría',

@@ -53,6 +53,7 @@ use vars qw( %Lexicon );
 	'MT 3 Style Library' => 'MT 3-Design',
 	'A collection of styles compatible with Movable Type 3.3+ default templates.' => 'Mit den Standardvorlagen von MT 3.3+  kompatible Designvorlagen',
 	'Styles' => 'Designs',
+	'2-Columns, Wide, Medium' => 'Zweispaltig: breit - mittel', # Translate - New # OK
 	);
 
 1;

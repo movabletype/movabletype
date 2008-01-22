@@ -149,7 +149,6 @@ use vars qw( @ISA %Lexicon );
 	'Edit TrackBack' => 'Editar TrackBack',
 
 ## default_templates/comment_detail.mtml
-	'default userpic' => 'avatar predefinido',
 	'By [_1] on [_2]' => 'Por [_1] el [_2]',
 
 ## default_templates/comment_form.mtml
@@ -229,7 +228,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] TrackBacks' => '[_1] TrackBacks',
 	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'Abajo están listados los blogs que hacen referencia a esta entrada: <a href="[_1]">[_2]</a>.',
 	'TrackBack URL for this entry: <span id="trackbacks-link">[_1]</span>' => 'URL de TrackBack de esta entrada: <span id="trackbacks-link">[_1]</span>',
-	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> desde [_3] en <a href="[_4]">[_5]</a>', # Translate - New
+	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> desde [_3] en <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Leer más</a>',
 
 ## default_templates/sidebar.mtml
@@ -682,6 +681,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The user' => 'El usuario',
 	'User' => 'Usuario',
 	'Invalid type' => 'Tipo no válido',
+	'Entries' => 'Entradas',
 	'New name of the tag must be specified.' => 'El nuevo nombre de la etiqueta debe ser especificado',
 	'No such tag' => 'No existe dicha etiqueta',
 	'None' => 'Ninguno',
@@ -696,7 +696,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Blogs' => 'Blogs',
 	'Blog Activity Feed' => 'Sindicación de Actividades del blog',
 	'*User deleted*' => '*Usuario borrado*',
-	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.' => '<a href="[_1]">QuickPost en [_2]</a> - Arrastre este enlace a la barra de herramientas de su navegador y haga clic en él cuando desee publicar una entrada sobre la página que visita.', # Translate - New
+	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.' => '<a href="[_1]">QuickPost en [_2]</a> - Arrastre este enlace a la barra de herramientas de su navegador y haga clic en él cuando desee publicar una entrada sobre la página que visita.',
 	'All Feedback' => 'Todas las opiniones',
 	'Publishing' => 'Publicación',
 	'Activity Log' => 'Actividad',
@@ -711,7 +711,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Permission denied: [_1]' => 'Permiso denegado: [_1]',
 	'Load failed: [_1]' => 'Fallo carga: [_1]',
 	'(no reason given)' => '(ninguna razón ofrecida)',
-	'Entries' => 'Entradas',
 	'Pages' => 'Páginas',
 	'(untitled)' => '(sin título)',
 	'index' => 'índice',
@@ -1851,7 +1850,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog\'s data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'Los siguientes módulos de Perl son necesarios para la conexión con la base de datos. Movable Type necesita una base de datos para guardar los datos del blog. Por favor, instale los paquetes listados aquí para continuar. Cuando lo haya hecho, haga clic en el botón \'Reintentar\'.',
 	'All required Perl modules were found.' => 'Se encontraron todos los módulos de Perl necesarios.',
 	'You are ready to proceed with the installation of Movable Type.' => 'Está listo para continuar con la instalación de Movable Type.',
-	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'No se encontrarons algunos módulos opcionales de Perl. <a href="javascript:void(0)" onclick="[_1]">Mostrar lista de módulos opcionales</a>',
+	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'No se encontraron algunos módulos opcionales de Perl. <a href="javascript:void(0)" onclick="[_1]">Mostrar lista de módulos opcionales</a>',
 	'One or more Perl modules required by Movable Type could not be found.' => 'No se encontraron uno o varios módulos de Perl necesarios.',
 	'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'Los siguientes módulos de Perl son necesarios para que Movable Type se ejecute correctamente. Una vez los haya instalado, haga clic en el botón \'Reintentar\' para realizar la comprobación nuevamente.',
 	'Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click \'Retry\' to test for the modules again.' => 'No se encontraron algunos módulos opcionales de Perl. Puede continuar sin instalarlos. Podrá instalarlos cuando le sean necesarios. Haga clic en \'Reintentar\' para comprobar los módulos otra vez.',
@@ -2097,7 +2096,7 @@ que la dirección provista es correcta y le pertenece.',
 	'_USER_DISABLED' => 'Deshabilitado',
 
 ## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '0', # Translate - New
+	'_LOCALE_WEEK_START' => '_LOCALE_WEEK_START', # Translate - New
 	'Sunday' => 'Domingo',
 	'Monday' => 'Lunes',
 	'Tuesday' => 'Martes',
@@ -2314,8 +2313,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Refresh [_1] template set' => 'Refrescar el conjunto de plantillas [_1]',
 	'Updates current templates while retaining any user-created or user-modified templates.' => 'Actualiza las plantillas actuales conservando las modificadas o creadas por el usuario.',
 	'Apply a new template set' => 'Aplicar un nuevo conjunto',
-	'Deletes all existing templates and install the selected template set.' => 'Borra todas las plantillas existentes e instala el conjunto seleccionado.', # Translate - New
-	'Reset to factory defaults' => 'Valores de fábrica', # Translate - New
+	'Deletes all existing templates and install the selected template set.' => 'Borra todas las plantillas existentes e instala el conjunto seleccionado.',
+	'Reset to factory defaults' => 'Valores de fábrica',
 	'Deletes all existing templates and installs factory default template set.' => 'Borra todas las plantillas existentes e instala el conjunto de plantillas predefinido.',
 	'Make backups of existing templates first' => 'Primero, haga copias de seguridad de las plantillas',
 	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Ha solicitado <strong>refrescar el actual conjunto de plantillas</strong>. Esta acción:',
@@ -3225,7 +3224,7 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/import.tmpl
 	'You must select a blog to import.' => 'Debe seleccionar un blog a importar.',
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Transfiere las entradas de un weblog en Movable Type desde otras instalaciones de Movable Type o incluso otras herramientas de blogs, o exporta sus entradas para crear una copia de seguridad.',
-	'Import data into' => 'Importar datos en', # Translate - New
+	'Import data into' => 'Importar datos en',
 	'Select a blog to import.' => 'Seleccione un blog para importar.',
 	'Importing from' => 'Importar desde',
 	'Ownership of imported entries' => 'Autoría de las entradas importadas',
@@ -3441,7 +3440,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Create Category' => 'Crear categoría',
 	'Collapse' => 'Contraer',
 	'Expand' => 'Ampliar',
-	'Create Subcategory' => 'Crear subcategoría', # Translate - New
+	'Create Subcategory' => 'Crear subcategoría',
 	'Move Category' => 'Mover categoría',
 	'[quant,_1,TrackBack,TrackBacks]' => '[quant,_1,TrackBack,TrackBacks]',
 	'No categories could be found.' => 'No se encontró ninguna categoría.',
@@ -3696,32 +3695,32 @@ que la dirección provista es correcta y le pertenece.',
 	'_ERROR_CGI_PATH' => 'La opción de configuración CGIPath no es válida o no se encuentra en el fichero de configuración de Movable Type. Por favor, consulte la sección <a href="javascript:void(0)">Instalación y configuración</a> del manual de Movable Type manual para más información.',
 
 ## addons/Commercial.pack/lib/MT/Commercial/Util.pm
-	'About' => 'Sobre mi', # Translate - New
-	'_UTS_REPLACE_THIS' => '<p><strong>Reemplace el texto de ejemplo con sus propios datos.</strong></p>', # Translate - New
-	'_UTS_SAMPLE_ABOUT' => q{<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
+	'About' => 'Sobre mi',
+	'_UTS_REPLACE_THIS' => '<p><strong>Reemplace el texto de ejemplo con sus propios datos.</strong></p>',
+	'_UTS_SAMPLE_ABOUT' => '<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
 
 <p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies.</p>
-}, # Translate - New
-	'_UTS_EDIT_LINK' => q{
+',
+	'_UTS_EDIT_LINK' => '
 <!-- borrar este enlace después de la edición -->
 <p class="admin-edit-link">
-<script type="text/javascript">document.write('<a href="' + adminurl + '?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id + '" target="_blank">Editar este contenido</a>')</script>
+<script type="text/javascript">document.write(\'<a href="\' + adminurl + \'?__mode=view&_type=page&id=\' + page_id + \'&blog_id=\' + blog_id + \'" target="_blank">Editar este contenido</a>\')</script>
 </p>
-}, # Translate - New
-	'_UTS_CONTACT' => 'Contacto', # Translate - New
-	'_UTS_SAMPLE_CONTACT' => "<p>Nos encantará tener noticias suyas. Envíenos un mensaje a correo (arroba) dominio.com</p>", # Translate - New
-	'Welcome to our new website!' => '¡Bienvenido a nuestro nuevo sitio!', # Translate - New
-	'_UTS_SAMPLE_WELCOME' => q{
+',
+	'_UTS_CONTACT' => 'Contacto',
+	'_UTS_SAMPLE_CONTACT' => '<p>Nos encantará tener noticias suyas. Envíenos un mensaje a correo (arroba) dominio.com</p>',
+	'Welcome to our new website!' => '¡Bienvenido a nuestro nuevo sitio!',
+	'_UTS_SAMPLE_WELCOME' => '
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Aliquam erat volutpat. Ut placerat porta nibh. Donec vitae nulla. Pellentesque nisi leo, pretium a, gravida quis, sollicitudin non, eros. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
 
 <p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies. Aliquam sagittis volutpat metus.</p>
 
 <p>Sed enim. Integer hendrerit, arcu ac pretium nonummy, velit turpis faucibus risus, pulvinar egestas enim elit sed ante. Curabitur orci diam, placerat a, faucibus id, condimentum vitae, magna. Etiam enim massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
-}, # Translate - New
-	'New design launched using Movable Type' => 'Nuevo diseño lanzado utilizando Movable Type', # Translate - New
-	'_UTS_SAMPLE_NEWDESIGN' => q{
+',
+	'New design launched using Movable Type' => 'Nuevo diseño lanzado utilizando Movable Type',
+	'_UTS_SAMPLE_NEWDESIGN' => '
 <p>Nuestro sitio tiene un nuevo diseño gracias a <a href="http://www.movabletype.com/">Movable Type</a> y el Conjunto de Plantillas Universal. Este conjunto le permite a cualquier persona poner en marcha un nuevo web con Movable Type. Es realmente fácil, y solo con un par de clics. Seleccione un nombre para su nuevo sitio, seleccione el Conjunto de Plantillas Universal y publique. ¡Voilà! El nuevo sitio. ¡Gracias Movable Type!</p>
-}, # Translate - New
+',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => 'Mostrar',
@@ -3830,6 +3829,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/commenter_notify.mtml
 
 ## addons/Commercial.pack/templates/recent_entries_expanded.mtml
+	'By [_1] | Comments ([_2])' => 'Por [_1] | Commentarios ([_2]) ', # Translate - New
 
 ## addons/Commercial.pack/templates/footer-email.mtml
 
@@ -3840,7 +3840,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/new-ping.mtml
 
 ## addons/Commercial.pack/templates/comment_detail.mtml
-	'[_1] [_2] on' => '[_1] [_2] en', # Translate - New
+	'[_1] [_2] on' => '[_1] [_2] en',
 	'<a href="[_1]" title="Permalink to this comment">[_2]</a>' => '<a href="[_1]" title="Enlace permanente a este comentario">[_2]</a>',
 
 ## addons/Commercial.pack/templates/comment_form.mtml
@@ -3854,13 +3854,15 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/contact.mtml
 
 ## addons/Commercial.pack/templates/footer.mtml
-	'Powered By (Footer)' => 'Powered By (Pie)', # Translate - New
-	'Footer Links' => 'Enlaces del pie', # Translate - New
+	'Powered By (Footer)' => 'Powered By (Pie)',
+	'Footer Links' => 'Enlaces del pie',
 
 ## addons/Commercial.pack/templates/tags.mtml
 
 ## addons/Commercial.pack/templates/navigation.mtml
 	'Home' => 'Inicio',
+
+## addons/Commercial.pack/templates/entry_metadata.mtml
 
 ## addons/Commercial.pack/templates/entry.mtml
 
@@ -3873,15 +3875,16 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/archive_index.mtml
 
 ## addons/Commercial.pack/templates/sign_in_top.mtml
-	'You are signed in as' => 'Se ha identificado como', # Translate - New
-	'Sign Out' => 'Salir', # Translate - Case
+	'You are signed in as' => 'Se ha identificado como',
+	'.  <a href="[_1]">Sign Out</a>' => '.  <a href="[_1]">Salir</a>', # Translate - New
+	'Sign Out' => 'Salir',
 
 ## addons/Commercial.pack/templates/trackbacks.mtml
 	'&raquo; <a href="[_1]">[_2]</a> from [_3]' => '&raquo; <a href="[_1]">[_2]</a> de [_3]',
 	'Tracked on <a href="[_1]">[_2]</a>' => 'Enviado desde <a href="[_1]">[_2]</a>',
 
 ## addons/Commercial.pack/templates/sidebar.mtml
-	'Recent Entries Expanded' => 'Entradas recientes expandidas', # Translate - New
+	'Recent Entries Expanded' => 'Entradas recientes expandidas',
 	'Recent Assets' => 'Multimedia reciente',
 	'Recent Comments' => 'Comentarios recientes',
 	'Category Archives' => 'Archivos por categoría',
@@ -3897,10 +3900,10 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/search_top.mtml
 
 ## addons/Commercial.pack/templates/header.mtml
-	'Sign In (In Header)' => 'Identificación (en la cabecera)', # Translate - New
+	'Sign In (In Header)' => 'Identificación (en la cabecera)',
 	'Navigation' => 'Navegación',
-	'Search (In Navigation)' => 'Buscar (en la navegación)', # Translate - New
-	'Homepage Image' => 'Imagen de la página de inicio', # Translate - New
+	'Search (In Navigation)' => 'Buscar (en la navegación)',
+	'Homepage Image' => 'Imagen de la página de inicio',
 
 ## addons/Commercial.pack/templates/sidebar_2col.mtml
 
@@ -3909,16 +3912,17 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/dynamic_error.mtml
 
 ## addons/Commercial.pack/templates/footer_links.mtml
-	'Links' => 'Enlaces', # Translate - New
+	'Links' => 'Enlaces',
 
 ## addons/Commercial.pack/templates/comment_preview.mtml
 
 ## addons/Commercial.pack/templates/commenter_confirm.mtml
 
 ## addons/Commercial.pack/config.yaml
-	'Universal Website' => 'Sitio universal', # Translate - New
-	'Blog Index' => 'Índice del blog', # Translate - New
-	'Blog Entry Listing' => 'Lista de entradas', # Translate - New
+	'Universal Website' => 'Sitio universal',
+	'Themes that are compatible with the Universal Website template set.' => 'Temas que son compatibles con el sistema de las plantillas del Sitio Universal', # Translate - New
+	'Blog Index' => 'Índice del blog',
+	'Blog Entry Listing' => 'Lista de entradas',
 
 ## plugins/Cloner/cloner.pl
 	'Clones a blog and all of its contents.' => 'Clona un blog y todos sus contenidos.',
@@ -3973,6 +3977,7 @@ que la dirección provista es correcta y le pertenece.',
 	'3-Columns, Thin, Wide, Thin' => '3 columnas, delgada, ancha, delgada',
 	'2-Columns, Thin, Wide' => '2 columnas, delgada, ancha',
 	'2-Columns, Wide, Thin' => '2 columnas, ancha, delgada',
+	'2-Columns, Wide, Medium' => '2 columnas, ancha, media', # Translate - New
 	'None available' => 'Ninguno disponible',
 	'Applying...' => 'Aplicando...',
 	'Apply Design' => 'Aplicar diseño',
@@ -4170,6 +4175,8 @@ que la dirección provista es correcta y le pertenece.',
 
 ## plugins/WidgetManager/default_widgets/main_index_meta_widget.mtml
 	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Este es un conjunto personalizado de widgets creados para aparecer solo en la página de inicio (o "main_index"). Más información: [_1]',
+	'Recent Comments' => 'Comentarios recientes',
+	'Recent Assets' => 'Multimedia reciente',
 
 ## plugins/WidgetManager/default_widgets/syndication.mtml
 	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Resultados de la búsqueda &ldquo;<$mt:SearchString$>&rdquo;',
@@ -4197,6 +4204,7 @@ que la dirección provista es correcta y le pertenece.',
 ## plugins/WidgetManager/default_widgets/archive_meta_widget.mtml
 	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Conjunto personalizado de widgets creado para mostrar contenidos diferentes según el tipo de archivo que incluye. Más información: [_1]',
 	'Current Category Monthly Archives' => 'Archivos mensuales de la categoría actual',
+	'Category Archives' => 'Archivos por categoría',
 
 ## plugins/WidgetManager/default_widgets/date_based_category_archives.mtml
 	'Category Yearly Archives' => 'Archivos anuales por categoría',
@@ -4262,10 +4270,11 @@ que la dirección provista es correcta y le pertenece.',
 	'Widgets' => 'Widgets',
 
 ## plugins/CustomFields/customfields.pl
-	'Moving Custom Fields storage...' => 'Trasladando el almacenamiento de Custom Fields...', # Translate - New
-	'Moving metadata storage for [lc,_1]...' => 'Trasladando el almacenamiento de metadatos de [lc,_1]...', # Translate - New
-	'Moving metadata storage for users...' => 'Trasladando el almacenamiento de metadatos de los usuarios...', # Translate - New
-	'Moving metadata storage for entries...' => 'Trasladando el almacenamiento de metadatos de las entradas...', # Translate - New
+	'Moving Custom Fields storage...' => 'Trasladando el almacenamiento de Custom Fields...',
+	'Moving metadata storage for [lc,_1]...' => 'Trasladando el almacenamiento de metadatos de [lc,_1]...',
+	'Moving metadata storage for users...' => 'Trasladando el almacenamiento de metadatos de los usuarios...',
+	'Moving metadata storage for entries...' => 'Trasladando el almacenamiento de metadatos de las entradas...',
+	'Moving metadata storage for pages...' => 'Trasladando los metadatos de las páginas...',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. Se utilizó la versión previa de la fuente. Se devolvió el estado HTTP [_2].',
@@ -4312,6 +4321,6 @@ que la dirección provista es correcta y le pertenece.',
 
 );
 
-## New words: 160
+## New words: 28
 
 1;
