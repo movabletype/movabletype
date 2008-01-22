@@ -92,7 +92,7 @@
 
             <h2>Movable Type installieren?</h2>
 
-            <p>Wenn Sie Movable Type jetzt installieren möchten, lesen Sie bitte die Installationshinweise in der <a href="__HELP_URL__">Movable Type-Dokumentation</a> und nutzen Sie die <a rel="nofollow" href="mt-check.cgi">Movable Type-Systemüberprüfung</a>, die Ihren Server automatisch auf die erforderliche Software hin überprüft.</p>
+            <p>Wenn Sie Movable Type jetzt installieren möchten, lesen Sie bitte die Installationshinweise in der <a href="http://www.movabletype.org/documentation/">Movable Type-Dokumentation</a> und nutzen Sie die <a rel="nofollow" href="mt-check.cgi">Movable Type-Systemüberprüfung</a>, die Ihren Server automatisch auf die erforderliche Software hin überprüft.</p>
         </div>
     </div>
 </body>

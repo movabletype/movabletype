@@ -5998,7 +5998,7 @@ sub _hdlr_calendar {
             }
             $ctx->{__stash}{entries} = \@entries;
             $ctx->{current_timestamp} = $this_day . '000000';
-            $ctx->{current_timestamp_end} = $this_day . '215959';
+            $ctx->{current_timestamp_end} = $this_day . '235959';
             $ctx->{__stash}{calendar_day} = $day - $pad_start;
         }
         defined(my $out = $builder->build($ctx, $tokens, {

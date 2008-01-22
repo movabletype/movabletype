@@ -24,6 +24,7 @@ $build->get_options();
 $build->usage() if $build->help();
 
 foreach my $lang ( $build->languages() ) {
+    local $build->{'stamp=s'};
     $build->setup( language => $lang );
 
     # Summarize what we are about to do.

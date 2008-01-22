@@ -1335,7 +1335,13 @@ MT.App = new Class( App, {
         this.setDelegate( "navMenu", new this.constructor.NavMenu() );
 
         this.initFormElements();
-        
+
+        /* fix a display issue */
+        var navEl = DOM.getElement( "content-nav" );
+        var navConEl = DOM.getElement( "content-header-inner" );
+        if ( navEl && navConEl )
+            navEl.style.top = "-" + DOM.getStyle( navConEl, "height" );
+
         if ( this.constructor.Resizer ) {
             this.setDelegate( "resizer", new this.constructor.Resizer( this.getIndirectMethod( "resizeComplete" ) ) );
             this.setDelegateListener( "eventMouseUp", "resizer" );
@@ -1486,6 +1492,7 @@ MT.App = new Class( App, {
                     continue;
                 DOM.addClassName( flyout, "hidden" );
                 this.openFlyouts.remove( es[ i ] );
+                showAllDropDown();
             }
         }
     },
@@ -1530,13 +1537,13 @@ MT.App = new Class( App, {
                 this.applyAutolayouts( el );
                 this.targetElement = null;
 
-                hideDropDown();
+                hideAllDropDown();
+                showDropDown( el );
                 this.openFlyouts.add( name );
 
                 break;
                 
             case "closeFlyout":
-                showDropDown();
                 this.closeFlyouts();
                 
                 break;
@@ -2245,7 +2252,7 @@ MT.App.NavMenu = new Class( Object, {
         DOM.setElementAttribute( this.al, "mt:is-opened", "1" );
 
         /* actually hides select boxes, not the dropdown */
-        hideDropDown();
+        hideAllDropDown();
         this.inTimer = null;
         this.outTimer = null;
     },
@@ -2264,7 +2271,7 @@ MT.App.NavMenu = new Class( Object, {
         DOM.setElementAttribute( this.al, "mt:is-opened", "0" );
 
         /* actually shows select boxes, not the dropdown */
-        showDropDown();
+        showAllDropDown();
         this.outTimer = null;
         this.inTimer = null;
     }
@@ -2809,7 +2816,7 @@ function showMsg(message, id, type, rebuild, blogID) {
     getByID('msg-block').appendChild(msg);
 }
 
-function hideDropDown() { // hides SELECT lists under the nav on IE6
+function hideAllDropDown() { // hides SELECT lists under the nav on IE6
     if((/MSIE/.test(navigator.userAgent)) && parseInt(navigator.appVersion)==4) {
         var dd = document.getElementsByTagName('select');
     	for (var i=0; i<dd.length; i++) {
@@ -2819,7 +2826,7 @@ function hideDropDown() { // hides SELECT lists under the nav on IE6
 	return;
 }
 
-function showDropDown() {
+function showAllDropDown() {
     if ((/MSIE/.test(navigator.userAgent)) && parseInt(navigator.appVersion)==4) {
         var dd = document.getElementsByTagName('select');
     	for (var i=0; i<dd.length; i++) {
@@ -2827,6 +2834,16 @@ function showDropDown() {
     	}
     }
 	return;
+}
+
+function showDropDown(el) {
+    if ((/MSIE/.test(navigator.userAgent)) && parseInt(navigator.appVersion)==4) {
+        var dd = el.getElementsByTagName( "select" );
+        for ( var i = 0; i < dd.length; i++ ) {
+            dd[i].style.visibility = 'visible';
+        }
+    }
+    return;
 }
 
 function setBarPosition(radio) {

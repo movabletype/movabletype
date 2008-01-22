@@ -215,7 +215,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/footer.mtml
 	'Sidebar' => 'サイドバー',
-	'_POWERED_BY' => 'Powered by<br /><a href="http://www.sixapart.jp/movabletype/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Powered by <a href="http://www.sixapart.jp/movabletype/"><$MTProductName$></a>',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'このブログは<a href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
 
 ## default_templates/sidebar_2col.mtml
@@ -226,9 +226,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] TrackBacks' => 'トラックバック([_1])',
 	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'このブログ記事を参照しているブログ一覧: <a href="[_1]">[_2]</a>',
 	'TrackBack URL for this entry: <span id="trackbacks-link">[_1]</span>' => 'このブログ記事に対するトラックバックURL: <span id="trackbacks-link">[_1]</span>',
-	'&raquo; <a href="[_1]">[_2]</a> from [_3]' => '&raquo; <a href="[_1]">[_2]</a>([_3])~のトラックバック',
+	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)', # Translate - New
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
-	'Tracked on <a href="[_1]">[_2]</a>' => '<a href="[_1]">[_2]</a>',
 
 ## default_templates/entry_detail.mtml
 	'Entry Metadata' => 'ブログ記事のメタデータ',
@@ -259,7 +258,7 @@ use vars qw( @ISA %Lexicon );
 	'To view or edit this user, please click on or cut and paste the following URL into a web browser:' => 'このユーザーの情報を見たり編集する場合には、下記のURLをクリックするか、URLをコピーしてブラウザのアドレス欄に貼り付けてください。',
 
 ## default_templates/entry_metadata.mtml
-	'By [_1] on [_2]' => '[_2] [_1]',
+	'By [_1] on [_2]' => '[_1] ([_2])',
 	'Permalink' => '個別ページ',
 	'Comments ([_1])' => 'コメント([_1])',
 	'TrackBacks ([_1])' => 'トラックバック([_1])',
@@ -360,16 +359,15 @@ use vars qw( @ISA %Lexicon );
 	'You do not have permission to comment on this blog.' => 'このブログにはコメントする権限を持っていません。',
 	'Sign in' => 'サインイン',
 	' to comment on this entry.' => 'してからコメントしてください。',
-	' to comment on this entry,' => 'してからコメントしてください。',
+	' to comment on this entry,' => 'してください。',
 	'or ' => '', # Translate - New
-	'comment anonymously.' => '匿名でコメントすることもできます。',
+	'comment anonymously.' => '(匿名でコメントする)',
 
 ## default_templates/dynamic_error.mtml
 	'Page Not Found' => 'ページが見つかりません。',
 
 ## default_templates/comment_detail.mtml
-	'[_1] [_2] said:' => '[_1] [_2]:',
-	'<a href="[_1]" title="Permalink to this comment">[_2]</a>' => '<a href="[_1]" title="コメントのURL">[_2]</a>',
+	'default userpic' => '既定のユーザー画像', # Translate - New
 
 ## lib/MT.pm
 	'Powered by [_1]' => 'Powered by [_1]',
@@ -1120,7 +1118,7 @@ use vars qw( @ISA %Lexicon );
 	'Parent comment was not found.' => '返信先のコメントが見つかりません。',
 	'You can\'t reply to unapproved comment.' => '未公開のコメントには返信できません。',
 	'You can\'t reply to unpublished comment.' => '公開されていないコメントには返信できません。',
-	' (Backup from [_1])' => '[_1]時点でのバックアップ', # Translate - New
+	' (Backup from [_1])' => ' - バックアップ ([_1])',
 	'Error creating new template: ' => 'テンプレートの作成エラー:',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'カスタムテンプレートと思われるため、\'[_1]\'をスキップします。',
 	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
@@ -1733,7 +1731,7 @@ use vars qw( @ISA %Lexicon );
 	'Adding new feature widget to dashboard...' => '新機能紹介のウィジェットをダッシュボードに追加しています...',
 	'Moving OpenID usernames to external_id fields...' => '既存のOpenIDユーザー名を移動しています...',
 	'Assigning blog template set...' => 'ブログにテンプレートセットを設定しています...',
-	'Assigning blog page layout...' => 'ブログにページレイアウトを設定しています...', # Translate - New
+	'Assigning blog page layout...' => 'ブログにページレイアウトを設定しています...',
 
 ## lib/MT/XMLRPCServer.pm
 	'Invalid timestamp format' => 'timestampの形式が不正です。',
@@ -2106,12 +2104,12 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/preview_strip.tmpl
 	'Save this entry' => 'ブログ記事を保存',
 	'Save this entry (s)' => 'ブログ記事を保存する (s)',
-	'Re-Edit this entry' => 'ブログ記事を再編集', # Translate - New
-	'Re-Edit this entry (e)' => 'ブログ記事を再編集する (e)', # Translate - New
+	'Re-Edit this entry' => 'ブログ記事を再編集',
+	'Re-Edit this entry (e)' => 'ブログ記事を再編集する (e)',
 	'Save this page' => 'ウェブページを保存',
 	'Save this page (s)' => 'ウェブページを保存する (s)',
-	'Re-Edit this page' => 'ウェブページを再編集', # Translate - New
-	'Re-Edit this page (e)' => 'ウェブページを再編集する', # Translate - New
+	'Re-Edit this page' => 'ウェブページを再編集',
+	'Re-Edit this page (e)' => 'ウェブページを再編集する',
 	'You are previewing the entry titled &ldquo;[_1]&rdquo;' => 'ブログ記事 &ldquo;[_1]&rdquo;のプレビュー',
 	'You are previewing the page titled &ldquo;[_1]&rdquo;' => 'ウェブページ &ldquo;[_1]&rdquo;のプレビュー',
 
@@ -2414,8 +2412,8 @@ use vars qw( @ISA %Lexicon );
 	'Edit Page' => 'ウェブページの編集',
 	'View entry' => 'ブログ記事を見る',
 	'View page' => 'ウェブページを表示',
-	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'ブログ記事が見つかりませんでした。<a href="[_1]">ブログ記事の作成</a>', # Translate - New
-	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>', # Translate - New
+	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'ブログ記事が見つかりませんでした。<a href="[_1]">ブログ記事の作成</a>',
+	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>',
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Custom...' => 'カスタム...',
@@ -2626,8 +2624,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'システムからブログを削除しました。',
+	'You have successfully refreshed your templates.' => 'テンプレートの初期化を完了しました。',
 	'Create Blog' => 'ブログを作成する',
-	'Are you sure you want to delete this blog?' => 'このブログを削除してよろしいですか',
 
 ## tmpl/cms/edit_commenter.tmpl
 	'Your changes have been saved.' => '変更を保存しました。',
@@ -2736,7 +2734,6 @@ use vars qw( @ISA %Lexicon );
 	'Blog Publishing Settings' => 'ブログ公開設定',
 	'All Templates' => 'すべてのテンプレート',
 	'You have successfully deleted the checked template(s).' => '選択したテンプレートを削除しました。',
-	'You have successfully refreshed your templates.' => 'テンプレートの初期化を完了しました。',
 	'Your templates have been published.' => 'テンプレートを再構築しました。',
 	'Create Archive Template:' => 'アーカイブテンプレートを作成:',
 	'Create [_1] template' => '[_1]テンプレートを作成',
@@ -2744,7 +2741,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/import.tmpl
 	'You must select a blog to import.' => 'インポート先のブログを選択してください。',
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => '他のMovable Typeやブログツールからブログ記事を移行したり、ブログ記事のコピーを作成します。',
-	'Import data into' => 'インポート先', # Translate - New
+	'Import data into' => 'インポート先',
 	'Select a blog to import.' => 'インポート先のブログを選択してください。',
 	'Importing from' => 'インポート元',
 	'Ownership of imported entries' => 'インポートしたブログ記事の所有者',
@@ -2795,7 +2792,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while trying to recover your saved page.' => 'ウェブページを元に戻す際にエラーが発生しました。',
 	'You have successfully deleted the checked comment(s).' => '選択したコメントを削除しました。',
 	'You have successfully deleted the checked TrackBack(s).' => '選択したトラックバックを削除しました。',
-	'Change Folder' => 'フォルダの変更', # Translate - New
+	'Change Folder' => 'フォルダの変更',
 	'Stats' => '情報',
 	'Share' => '共有',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => 'コメント<a href="[_2]">[quant,_1,件,件]</a>',
@@ -2811,8 +2808,8 @@ use vars qw( @ISA %Lexicon );
 	'Unlock this entry&rsquo;s output filename for editing' => '出力ファイル名を編集するにはロックを解除してください。',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他のブログ記事と衝突を起こす可能性があります。',
 	'Warning: Changing this entry\'s basename may break inbound links.' => '警告: このブログ記事の出力ファイル名の変更は、内部のリンク切れの原因となります。',
-	'edit' => '編集', # Translate - Case
-	'close' => '閉じる', # Translate - Case
+	'edit' => '編集',
+	'close' => '閉じる',
 	'Accept' => '受信設定',
 	'Outbound TrackBack URLs' => 'トラックバック送信先URL',
 	'View Previously Sent TrackBacks' => '送信済みのトラックバックを見る',
@@ -3363,7 +3360,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Category' => 'カテゴリを作成',
 	'Collapse' => '折りたたむ',
 	'Expand' => '展開する',
-	'Create Subcategory' => 'サブカテゴリの作成', # Translate - New
+	'Create Subcategory' => 'サブカテゴリの作成',
 	'Move Category' => 'カテゴリの移動',
 	'[quant,_1,TrackBack,TrackBacks]' => '[quant,_1,トラックバック,トラックバック]',
 	'No categories could be found.' => 'カテゴリが見つかりませんでした。',
@@ -3724,8 +3721,8 @@ use vars qw( @ISA %Lexicon );
 	'Refresh [_1] template set' => 'テンプレートセット「[_1]」の初期化',
 	'Updates current templates while retaining any user-created or user-modified templates.' => 'テンプレートを初期化します。ユーザーが作成またはカスタマイズしたテンプレートは初期化しません。',
 	'Apply a new template set' => '新しいテンプレートセットを適用',
-	'Deletes all existing templates and install the selected template set.' => '既存のテンプレートをすべて削除して、選択された新しいテンプレートセットを適用します。', # Translate - New
-	'Reset to factory defaults' => 'リセットして初期状態に戻します。', # Translate - New
+	'Deletes all existing templates and install the selected template set.' => '既存のテンプレートをすべて削除して、選択された新しいテンプレートセットを適用します。',
+	'Reset to factory defaults' => '初期状態にリセット',
 	'Deletes all existing templates and installs factory default template set.' => '既存のテンプレートをすべて削除して、製品既定のテンプレートセットをインストールします。',
 	'Make backups of existing templates first' => '既存のテンプレートのバックアップを作成する',
 	'You have requested to <strong>refresh the current template set</strong>. This action will:' => '<strong>現在のテンプレートセットを初期化</strong>しようとしています。この操作では以下の作業を行います。',

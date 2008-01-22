@@ -754,7 +754,7 @@ sub core_list_actions {
                 input_label => 'Tags to add to selected pages',
                 permission  => 'manage_pages',
                 condition   => sub {
-                    return 0 if $app->mode eq 'view';
+                    return $app->mode ne 'view';
                 },
             },
             'remove_tags' => {
@@ -765,7 +765,7 @@ sub core_list_actions {
                 input_label => 'Tags to remove from selected pages',
                 permission  => 'manage_pages',
                 condition   => sub {
-                    return 0 if $app->mode eq 'view';
+                    return $app->mode ne 'view';
                 },
             },
             'open_batch_editor' => {
@@ -1561,7 +1561,7 @@ sub core_menus {
                     require MT::Permission;
                     my @blogs = 
                         map { $_->blog_id }
-                          grep { $_->can_create_post || $_->can_pubish_post || $_->can_edit_all_posts }
+                          grep { $_->can_create_post || $_->can_publish_post || $_->can_edit_all_posts }
                           MT::Permission->load( { author_id => $app->user->id } );
                     return 1 if @blogs;
                 }
@@ -2911,8 +2911,8 @@ sub list_tag_for {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
-        $arg{offset} = $offset = 0;
+    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
+        $arg{offset} = $offset = $total - $limit;
     }
     else {
         $arg{offset} = $offset if $offset;
@@ -2972,6 +2972,16 @@ sub list_tag_for {
     $param{object_label}            = $tag_class->class_label;
     $param{object_label_plural}     = $tag_class->class_label_plural;
     $param{object_type}             = 'tag';
+
+    my $search_types = $app->search_apis($app->blog ? 'blog' : 'system');
+    if (grep { $_->{key} eq $param{tag_object_type} } @$search_types) {
+        $param{search_type} = $param{tag_object_type};
+        $param{search_label} = $param{tag_object_label_plural};
+    } else {
+        $param{search_type} = 'entry';
+        $param{search_label} = $app->translate("Entries");
+    }
+
     $param{list_start}              = $offset + 1;
     $param{list_end}                = $offset + scalar @$data;
     $param{list_total}              = $total;
@@ -4412,6 +4422,7 @@ sub list_blogs {
     $param{next_max}        = 0 if ( $param{next_max} || 0 ) < $offset + 1;
     $param{can_create_blog} = $author->can_create_blog;
     $param{saved_deleted}   = $app->param('saved_deleted');
+    $param{refreshed}       = $app->param('refreshed');
     $param{nav_blogs}       = 1;
     $param{list_noncron}    = 1;
     $param{search_label}    = $app->translate('Blogs');
@@ -11894,8 +11905,8 @@ sub list_pings {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
-        $arg{offset} = $offset = 0;
+    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
+        $arg{offset} = $offset = $total - $offset;
     }
     elsif ($offset) {
         $arg{offset} = $offset;
@@ -12331,8 +12342,8 @@ sub list_entries {
     if ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
-    elsif ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) {
-        $arg{offset} = $offset = 0;
+    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
+        $arg{offset} = $offset = $total - $offset;
     }
     else {
         $arg{offset} = $offset if $offset;

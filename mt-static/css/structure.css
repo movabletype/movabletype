@@ -2978,7 +2978,6 @@ body.preview-screen {
     height: 256px;
     width: 256px;
     border: 2px solid #CCC;
-    background: #EEE url(../images/asset/file.gif) no-repeat center center;
 }
 
 .edit-asset #main-content .asset-thumbnail .asset-thumb {
@@ -3031,7 +3030,6 @@ body.preview-screen {
     height: 75px;
     width: 75px;
     border: 2px solid #CCC;
-    background: #EEE url(../images/asset/file.gif) no-repeat center center;
 }
 
 .edit-asset #related-content .asset-thumbnail .asset-thumb {
@@ -3070,7 +3068,7 @@ body.preview-screen {
     clear: both;
 }
 
-.edit-asset .asset-thumb { background-image: url(../images/asset/file.gif); }
+.edit-asset .asset-thumb { background: #EEE url(../images/asset/file.gif) no-repeat center center; }
 .edit-asset .asset-type-image .asset-thumb { background-image: url(../images/asset/image.gif); }
 .edit-asset .asset-type-audio .asset-thumb { background-image: url(../images/asset/audio.gif); }
 .edit-asset .asset-type-video .asset-thumb { background-image: url(../images/asset/video.gif); }
@@ -3325,6 +3323,9 @@ body.preview-screen {
 #folder-selector {
     position: relative;
     left: -90px;
+}
+.dialog #folder-selector {
+    position: static;
 }
 
 #category-field .widget-content-inner {

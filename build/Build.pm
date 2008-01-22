@@ -61,6 +61,7 @@ sub get_options {
       'alpha=s'         => 0,  # Alpha build number.
       'arch=s@'         => undef,  # Constructed below.
       'beta=s'          => 0,  # Beta build number.
+      'rc=s'            => 0,  # Release candidate build number.
       'cleanup!'        => 1,  # Remove the exported directory after deployment.
       'date!'           => 1,  # Toggle date stamping.
       'debug'           => 0,  # Turn on/off the actual system calls.
@@ -155,7 +156,7 @@ sub setup {
     $ENV{BUILD_LANGUAGE} = $self->{'lang=s'};
 
     # Handle option aliases.
-    if( $self->{'prod'} or $self->{'alpha=s'} or $self->{'beta=s'} ) {
+    if( $self->{'prod'} or $self->{'alpha=s'} or $self->{'beta=s'} or $self->{'rc=s'} ) {
         $self->{'symlink!'} = 0;
     }
     if( $self->{'make'} ) {
@@ -180,10 +181,15 @@ sub setup {
         my $config = $self->read_conf( "build/mt-dists/default.mk", "build/mt-dists/$self->{'pack=s'}.mk" );
         $self->{'license=s'} ||= $config->{LICENSE};
         my @stamp = ();
-        push @stamp, $config->{PRODUCT_VERSION} . (
-            $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
-          : $self->{'beta=s'}  ? "b$self->{'beta=s'}"
-          : '' );
+        if ($self->{'stamp=s'}) {
+            push @stamp, $self->{'stamp=s'};
+        } else {
+            push @stamp, $config->{PRODUCT_VERSION} . (
+                $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
+              : $self->{'beta=s'}  ? "b$self->{'beta=s'}"
+              : $self->{'rc=s'}    ? "rc$self->{'rc=s'}"
+              : '' );
+        }
         # Add repo, date and ldap to the stamp if we are not production.
         unless( $self->{'prod'} ) {
             push @stamp, $self->{'short-lang=s'};
@@ -843,7 +849,7 @@ sub inject_footer {
     # debug mode, doing a (local) make or are building an alpha/beta
     # version.
     return if $self->{'debug'} || $self->{'make'} ||
-        ($self->{'prod'} && !($self->{'beta=s'} || $self->{'alpha=s'}));
+        ($self->{'prod'} && !($self->{'beta=s'} || $self->{'alpha=s'} || $self->{'rc=s'}));
     $self->verbose( 'Entered inject_footer()' );
     return if $self->{'prod'} || $self->{'debug'} || $self->{'make'};
 
