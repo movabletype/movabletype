@@ -91,7 +91,7 @@ button.big-button {
    but above the modal dialog iframe; this allows the pulldown menus to
    display above all other elements on the screen */
 
-.main-screen #content-header {
+.main-screen #system-msg {
     margin-top: 120px;
 }
 .main-screen #header {
