@@ -25,6 +25,7 @@ $build->usage() if $build->help();
 
 foreach my $lang ( $build->languages() ) {
     local $build->{'stamp=s'};
+    local $ENV{BUILD_VERSION_ID};
     $build->setup( language => $lang );
 
     # Summarize what we are about to do.
