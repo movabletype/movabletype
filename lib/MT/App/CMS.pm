@@ -32,7 +32,7 @@ sub init {
     $app->{state_params} = [
         '_type',  'id',         'tab',     'offset',
         'filter', 'filter_val', 'blog_id', 'is_power_edit',
-        'filter_key'
+        'filter_key', 'type'
     ];
     $app->{template_dir}         = 'cms';
     $app->{plugin_template_path} = '';
