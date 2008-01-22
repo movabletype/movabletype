@@ -2,7 +2,7 @@
     <div class="inner">
         <div class="comment-header">
             <div class="asset-meta">
-                <span class="byline"><__trans phrase="By [_1] on [_2]" params='<span class="vcard author"><MTIfNonEmpty tag="CommenterID"><a href="<$MTCommenterURL$>"><$MTCommenterName$></a><MTElse><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></MTIfNonEmpty></span>%%<a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>'></span>
+                <span class="byline"><__trans phrase="By [_1] on [_2]" params='<span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span><MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>%%<a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>'></span>
             </div>
         </div>
         <div class="comment-content">
