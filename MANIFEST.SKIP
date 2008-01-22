@@ -59,7 +59,6 @@ mt-static/themes/unity-purple
 #?package=MTOS ^mt-cp.cgi
 #?package=MTOS ^mt-static/addons
 #?package=MTOS ^mt-static/themes/tristan-blue
-#?package=MTOS ^mt-static/themes/universal-black
 #?package=MTOS ^mt-static/plugins/feeds-app-lite
 #?package=MTOS ^plugins/feeds-app-lite
 #?package=MTOS ^plugins/CustomFields
