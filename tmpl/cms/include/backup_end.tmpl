@@ -2,12 +2,12 @@
 </div>
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 var progress = getByID("progress-bar");
 if (progress) {
     progress.style.display = "none";
 }
-// -->
+/* ]]> */
 </script>
 
 <mt:if name="backup_success">
@@ -46,6 +46,7 @@ if (progress) {
         </mt:if>
 </form>
 <script type="text/javascript">
+/* <![CDATA[ */
 var timer;
 
 function submit_form() {
@@ -60,6 +61,7 @@ function submit_form() {
 }
 
 timer = window.setTimeout("submit_form()", 3000);
+/* ]]> */
 </script>
 <p id="download_message"><strong><__trans phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong></p>
     </mt:if>

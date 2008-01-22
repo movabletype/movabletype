@@ -95,7 +95,7 @@
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function validate (f) {
     if (!f.site_path.value) {
         alert('<__trans phrase="You must set your Local Site Path." escape="singlequotes">');
@@ -183,7 +183,7 @@ function init() {
 }
 
 TC.attachLoadEvent( init );
-//-->
+/* ]]> */
 </script>
 </mt:setvarblock>
 

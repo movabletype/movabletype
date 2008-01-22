@@ -22,7 +22,7 @@
 </MTSetVarBlock>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function clearWeblogCloneSource() {
     var el_name = getByID("new_user_template_blog_name");
     var el_id = getByID("new_user_template_blog_id");
@@ -68,7 +68,7 @@ function clearNotifyUsers() {
         el_name.innerHTML = "<__trans phrase="(None selected)">";
     }
 }
--->
+/* ]]> */
 </script>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">

@@ -1,5 +1,5 @@
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function setExtraPath(sel) {
    var opt = sel.options[sel.selectedIndex];
    var path = opt.getAttribute("middle_path");
@@ -7,7 +7,7 @@ function setExtraPath(sel) {
    var middle = sel.form['middle_path'];
    if (middle) middle.value = path;
 }
-//-->
+/* ]]> */
 </script>
 
 <mt:if name="missing_paths">

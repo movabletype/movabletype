@@ -1,7 +1,7 @@
 <mt:setvarblock name="page_title"><__trans phrase="Manage Categories"></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 // build array of each category's id and the header id
 var categoryRows = new Array('0'<mt:loop name="category_loop">,'<mt:var name="category_id">'</mt:loop>);
 
@@ -125,7 +125,7 @@ function init()
 }
 
 TC.attachLoadEvent( init );
-//-->
+/* ]]> */
 </script>
 </mt:setvarblock>
 <mt:setvarblock name="system_msg">

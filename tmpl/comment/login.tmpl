@@ -1,7 +1,7 @@
 <mt:setvarblock name="page_title"><__trans phrase="Sign in to comment"></mt:setvarblock>
 <mt:setvarblock name="html_head">
     <script type="text/javascript">
-    <!--
+    /* <![CDATA[ */
     function signinToggle(choice) {
         var auths = new Array(<mt:if name="enabled_MovableType">'mt',</mt:if><mt:loop name="auth_loop">'<mt:var name="name">'<mt:unless name="__last__">,</mt:unless></mt:loop>);
 
@@ -20,7 +20,7 @@
             }
         }
     }
-    //-->
+    /* ]]> */
     </script>
 </mt:setvarblock>
 

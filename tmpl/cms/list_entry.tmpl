@@ -68,7 +68,7 @@
 </mt:unless>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function enableFilterButton(fld) {
     if (fld && (fld.id == "author_id-val" || fld.id == "asset_id-val")) {
         var opt = fld.options[fld.selectedIndex];
@@ -152,7 +152,7 @@ function init()
 }
 
 TC.attachLoadEvent( init );
-// -->
+/* ]]> */
 </script>
 </mt:setvarblock>
 

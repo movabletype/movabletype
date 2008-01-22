@@ -14,7 +14,7 @@
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
 	<script type="text/javascript">
-	<!--
+	/* <![CDATA[ */
     function upgradeDone(success) {
         var progress = getByID("progress-bar");
         if (progress) {
@@ -172,7 +172,7 @@
         runActions();
     }
     TC.attachLoadEvent( init );
-	//-->
+	/* ]]> */
 	</script>
 </mt:unless>
 

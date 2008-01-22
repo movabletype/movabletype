@@ -53,17 +53,17 @@
 </div>
 <mt:if name=open_dialog> 
 <script type="text/javascript"> 
-<!-- 
+/* <![CDATA[ */
 openDialog(false, '<mt:var name="dialog_mode">', '<mt:var name="dialog_params">'); 
-//--> 
+/* ]]> */
 </script> 
 </mt:if> 
 <div id="bootstrapper" class="hidden"></div>
 <mt:unless name="delayed_bootstrap">
 <script type="text/javascript">
-    // <![CDATA[
+    /* <![CDATA[ */
         App.bootstrapInline( false );
-    // ]]>
+    /* ]]> */
 </script>
 </mt:unless>
 </body>

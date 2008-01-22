@@ -20,7 +20,7 @@
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
-<!-- 
+/* <![CDATA[ */
 function validate(form) {    
     if (form.label.value.match(/\S/,''))
         return true;
@@ -53,7 +53,7 @@ function init()
     tableSelect.rowSelect = true;
 }
 TC.attachLoadEvent( init );
-//-->
+/* ]]> */
 </script>
 
 <div id="folder-details-content">

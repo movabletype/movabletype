@@ -5,6 +5,7 @@
     <script type="text/javascript" src="<mt:var name="static_uri">js/flash/JavaScriptFlashGateway.js"></script>
     </mt:if>
     <script type="text/javascript">
+    /* <![CDATA[ */
     function showRecentEntriesByTag(el_div, res) {
         var result = eval('(' + res.responseText + ')');
         if (result && result.result.html) {
@@ -103,7 +104,7 @@
         }
         </mt:if>
         blogStatsTabs = new Array('comment','entry'<mt:if name="tag_cloud">,'tag'</mt:if>);
-    //-->
+        /* ]]> */
     </script>
     <mt:var name="tab_html_head">
 </mt:setvarblock>

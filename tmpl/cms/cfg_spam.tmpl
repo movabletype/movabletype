@@ -57,7 +57,7 @@
 <div id="cfg-spam">
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function scoreNudge(amount) {
     var fld = getByID('junk_score_threshold');
     score = fld.value;
@@ -70,7 +70,7 @@ function scoreNudge(amount) {
     fld.value = score;
     return false;
 }
-//-->
+/* ]]> */
 </script>
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">

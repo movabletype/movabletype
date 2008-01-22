@@ -36,7 +36,7 @@ one page to the following page.
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 var dialog;
 var panels;
 function dialog_closed(ok) {
@@ -71,7 +71,7 @@ function init() {
 }
 
 TC.attachLoadEvent(init);
-//-->
+/* ]]> */
 </script>
 
 <form name="grant" id="grant" method="post" target="_top" action="<mt:var name="script_url">">

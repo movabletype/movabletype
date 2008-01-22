@@ -39,7 +39,7 @@
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function reveal_api_password() {
     var pw = getByID("api_password");
     alert("<__trans phrase="Your Web services password is currently">: " + pw.value);
@@ -128,7 +128,7 @@ function init() {
 }
 
 TC.attachLoadEvent(init);
-//-->
+/* ]]> */
 </script>
 
         <form name="profile" id="profile" method="post" action="<mt:var name="script_url">">

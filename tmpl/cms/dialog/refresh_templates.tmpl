@@ -5,7 +5,7 @@
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function enable(id) {
     var el = getByID(id);
     if (el)
@@ -39,7 +39,7 @@ function init() {
     dialog.open({}, dialog_closed);
 }
 TC.attachLoadEvent(init);
-// -->
+/* ]]> */
 </script>
 </mt:setvarblock>
 

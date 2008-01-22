@@ -2,7 +2,7 @@
 <$mt:setvar name="screen_type" value="restore-confirm-publishing-config"$>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function validate (f) {
     var items = TC.getElementsByClassName('path_field');
     for (var i = 0; i < items.length; ++i) {
@@ -51,7 +51,7 @@ function is_valid_path(path_){
     }
     return true;
 }
-//-->
+/* ]]> */
 </script>
 </mt:setvarblock>
 <mt:include name="dialog/header.tmpl">

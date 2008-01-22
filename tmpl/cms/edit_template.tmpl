@@ -147,7 +147,7 @@
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 var tag_inserts = {};
 var snippets = [];
 <mt:loop name="template_snippets">
@@ -436,7 +436,7 @@ function init() {
 }
 
 TC.attachLoadEvent( init );
-//-->
+/* ]]> */
 </script>
 </mt:setvarblock>
 
@@ -609,7 +609,7 @@ TC.attachLoadEvent( init );
 </div>
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 App.singletonConstructor =
 MT.App = new Class( MT.App, {
 
@@ -625,7 +625,7 @@ MT.App = new Class( MT.App, {
     }
 
 } );
--->
+/* ]]> */
 </script>
 
 <mt:include name="include/footer.tmpl">

@@ -48,11 +48,13 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
     <script type="text/javascript">
+        /* <![CDATA[ */
         CMSScriptURI = '<$mt:var name="mt_url"$>';
         ScriptURI = '<$mt:var name="script_url"$>';
         ScriptBaseURI = '<$mt:var name="script_base_url"$>';
         StaticURI = '<$mt:var name="static_uri"$>';
         HelpBaseURI = '<$mt:var name="help_url"$>';
+        /* ]]> */
     </script>
 </mt:setvarblock>
 <$mt:var name="html_head"$>
@@ -111,9 +113,9 @@
 <div id="bootstrapper" class="hidden"></div>
 <mt:unless name="delayed_bootstrap">
 <script type="text/javascript">
-    // <![CDATA[
+    /* <![CDATA[ */
         App.bootstrapInline( false );
-    // ]]>
+    /* ]]> */
 </script>
 </mt:unless>
 </body>

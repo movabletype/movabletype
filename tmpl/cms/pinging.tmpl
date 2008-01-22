@@ -3,12 +3,12 @@
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function doRedirect () {
     window.location.replace('<mt:var name="script_url">?__mode=ping&blog_id=<mt:var name="blog_id">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&magic_token=<mt:var name="magic_token">');
 }
 setTimeout('doRedirect()', 1000);
-// -->
+/* ]]> */
 </script>
 
 <mtapp:statusmsg

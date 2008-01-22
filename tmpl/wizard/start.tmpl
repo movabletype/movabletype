@@ -108,7 +108,7 @@
         </style>
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function getByID(n, d) {
     if (!d) d = document;
     if (d.getElementById)
@@ -122,7 +122,7 @@ function hide(id, d) {
     if (!el) return;
     el.style.display = 'none';
 }
-// -->
+/* ]]> */
 </script>
     </mt:setvarblock>
 <mt:else>
@@ -145,7 +145,7 @@ function hide(id, d) {
 }
 </style>
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function js_check() {
     if (! openManual ) {
         // mt.js not loading properly; static path incorrect
@@ -154,7 +154,7 @@ function js_check() {
     }
 }
 window.onload = js_check;
-// -->
+/* ]]> */
 </script>
 </mt:setvarblock>
 </mt:unless>

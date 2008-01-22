@@ -1,6 +1,7 @@
 <mt:setvarblock name="html_head" append="1">
     <mt:if name="stat_url">
 <script type="text/javascript">
+    /* <![CDATA[ */
     var slider_variable = '<__trans phrase="Comments" escape="js">';
     var slider_variable_singular = '<__trans phrase="Comment" escape="js">';
     var file_name = '<mt:var name="stat_url">';
@@ -8,6 +9,7 @@
     var commentsSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable+"&slider_variable_singular="+slider_variable_singular+"&lang=<mt:var name="language_tag">&static_path="+escape(StaticURI+"flash"), 540, 122);
     commentsSlider.setFlashvars("lcId=" + lcId);
     commentsSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+    /* ]]> */
 </script>
     </mt:if>
 </mt:setvarblock>
@@ -19,9 +21,9 @@
     <div id="comment-panel" class="<mt:unless name="tab" eq="comment">hidden</mt:unless>" mt:tab-content="comment">
         <mt:if name="stat_url">
         <script type="text/javascript">
-        <!--
+        /* <![CDATA[ */
         commentsSlider.write(document);
-        // -->
+        /* ]]> */
         </script>
         <div class="stats-summary" id="stats-summary-comment">&nbsp;</div>
         </mt:if>

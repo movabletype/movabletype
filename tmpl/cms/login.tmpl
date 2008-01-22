@@ -3,7 +3,7 @@
 <mt:include name="include/chromeless_header.tmpl">
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 // if this loads within our modal dialog iframe, force the user to
 // login from the 'top' of the browser.
 if (window.top && (window.top.location != window.location)) {
@@ -25,7 +25,7 @@ function init() {
     }
 }
 TC.attachLoadEvent(init);
-//-->
+/* ]]> */
 </script>
 
 <form method="post" action="<mt:var name="script_url">">

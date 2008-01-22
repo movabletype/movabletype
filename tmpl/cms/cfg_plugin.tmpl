@@ -119,7 +119,7 @@
 </MTSetVarBlock>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript">
-    <!--
+    /* <![CDATA[ */
     var last_shown;
     <mt:if name="can_config">
     function resetPlugin(f) {
@@ -173,7 +173,7 @@
         last_shown = plugin_id;
     }
     </mt:if>
-    //-->
+    /* ]]> */
     </script>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">

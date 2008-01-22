@@ -24,7 +24,7 @@
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function doRemoveLicense () {
     document.cfg_form.cc_license.value = '';
     var e = getByID('has-license');
@@ -49,7 +49,7 @@ function setLicense() {
     if ( w ) w.focus();
    return false;
 }
-//-->
+/* ]]> */
 </script>
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
@@ -142,17 +142,12 @@ function setLicense() {
 <__trans phrase="Your blog does not have an explicit Creative Commons license."><br />
 <a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
 </div>
-<mt:if name="cc_license">
 <script type="text/javascript">
-    var e = getByID('has-license');
+    /* <![CDATA[ */
+    var e = getByID(mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
     if (e) e.style.display = 'block';
+    /* ]]> */
 </script>
-<mt:else>
-<script type="text/javascript">
-    var e = getByID('no-license');
-    if (e) e.style.display = 'block';
-</script>
-</mt:if>
 <input type="hidden" name="cc_license" value="<mt:var name="cc_license" escape="html">" />
     </mtapp:setting>
 

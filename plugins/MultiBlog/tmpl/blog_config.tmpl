@@ -1,5 +1,5 @@
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 var multiBlogRebuilds = new Array();
 <TMPL_LOOP NAME=REBUILDS_LOOP>
 multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<TMPL_VAR NAME=ACTION_NAME ESCAPE=HTML>", "<TMPL_VAR NAME=ACTION_VALUE>", "<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>", "<TMPL_VAR NAME=BLOG_ID>", "<TMPL_VAR NAME=TRIGGER_NAME>", "<TMPL_VAR NAME=TRIGGER_VALUE>");
@@ -46,7 +46,7 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
     multiBlogRebuilds[multiBlogRebuilds.length] = [actionName, actionValue, blogName, blogId, triggerName, triggerValue];
     rebuildMultiBlogTriggerTable();
 }
-// -->
+/* ]]> */
 </script>
 
 <fieldset>

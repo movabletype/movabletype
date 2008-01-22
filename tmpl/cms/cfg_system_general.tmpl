@@ -23,7 +23,7 @@
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function clearWeblogCloneSource() {
     var el_name = getByID("new_user_template_blog_name");
     var el_id = getByID("new_user_template_blog_id");
@@ -61,7 +61,7 @@ function is_valid_path(path_){
     }
     return true;
 }
--->
+/* ]]> */
 </script>
 
 <form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">

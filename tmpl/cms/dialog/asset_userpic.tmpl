@@ -1,6 +1,6 @@
 <mt:include name="dialog/header.tmpl">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 var field = window.parent.getByID( '<mt:var name="edit_field">' );
 if (field) field.value = '<mt:var name="asset_id" escape="JS">';
 var author_userpic = '<mt:var name="author_userpic" escape="JS">';
@@ -13,6 +13,6 @@ if (author_userpic != '') {
         window.parent.toggleHidden( 'userpic-preview' );
 }
 closeDialog();
-//-->
+/* ]]> */
 </script>
 <mt:include name="dialog/footer.tmpl">

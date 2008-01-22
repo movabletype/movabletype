@@ -1,7 +1,7 @@
 <mt:setvar name="page_title" value="<__trans phrase="Send a Notification">">
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function doValidateNotifyRecips(f) {
     if (f.send_notify_list && f.send_notify_list.checked)
         return true
@@ -13,7 +13,7 @@ function doValidateNotifyRecips(f) {
 
     return true;
 }
-// -->
+/* ]]> */
 </script>
 </mt:setvarblock>
 <mt:include name="dialog/header.tmpl">

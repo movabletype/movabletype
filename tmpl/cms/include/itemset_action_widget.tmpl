@@ -1,9 +1,11 @@
 <mt:if name="has_list_actions">
 <script type="text/javascript">
+/* <![CDATA[ */
 <mt:loop name="list_actions">itemset_options['<mt:var name="key">'] = {type:'core'<mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if><mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if><mt:if name="dialog">,dialog:1</mt:if><mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if><mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if><mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>};
 </mt:loop>
 <mt:loop name="more_list_actions">itemset_options['<mt:var name="key">'] = {type:'plugin'<mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if><mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if><mt:if name="dialog">,dialog:1</mt:if><mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if><mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if><mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>};
 </mt:loop>
+/* ]]> */
 </script>
 <div style="position:relative; display:inline;">
 <select name="plugin_action_selector" onchange="updatePluginAction(this)">

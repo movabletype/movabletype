@@ -2,12 +2,12 @@
 </div>
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 var progress = getByID("progress-bar");
 if (progress) {
     progress.style.display = "none";
 }
-// -->
+/* ]]> */
 </script>
 
 <mt:if name="restore_end">
@@ -84,6 +84,7 @@ if (progress) {
     </div>
 </div>
 <script type="text/javascript">
+/* <![CDATA[ */
 function submit_form() {
     var f = document['next_page'];
     if (f) {
@@ -100,6 +101,7 @@ function stopTimer() {
     p.innerHTML = '';
     DOM.removeClassName(getByID('next-page-button'), 'hidden');
 }
+/* ]]> */
 </script>
 <p id="message"><__trans phrase="The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]" params="<a href='javascript:void(0)' onclick='return stopTimer()'>%%</a>"></p>
 </mt:if>
