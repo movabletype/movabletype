@@ -4178,7 +4178,10 @@ body.dialog {
 #comment-settings #allow_comments-field {
     background-color: #f3f6f9;
     padding: 1em 0;
-    
+}
+
+.content-nav .msg {
+    margin-left: 160px;
 }
 
 /* Plugin Settings ---------------------------------------------------------------------------------- */
