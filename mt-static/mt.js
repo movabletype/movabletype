@@ -1341,7 +1341,7 @@ MT.App = new Class( App, {
         var navConEl = DOM.getElement( "content-header-inner" );
         if ( navEl && navConEl ) {
             var d = DOM.getAbsoluteDimensions( navConEl );
-            navEl.style.top = "-" + (d.clientHeight + 5) + "px";
+            navEl.style.top = "-" + (d.clientHeight - 13) + "px";
         }
 
         if ( this.constructor.Resizer ) {
