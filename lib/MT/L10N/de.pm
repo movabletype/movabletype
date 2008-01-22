@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::de;
 use strict;
@@ -201,7 +201,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/recover-password.mtml
 	'_USAGE_FORGOT_PASSWORD_1' => 'Sie haben ein neues Movable Type-Passwort angefordert. Es wurde automatisch ein neues Passwort erzeugt. Es lautet:',
-	'_USAGE_FORGOT_PASSWORD_2' => 'Mit diesem Passwort können Sie sich nun am System anmelden. Im Anschluss sollten Sie ein neues Passwort Ihrer Wahl einstellen.',
+	'_USAGE_FORGOT_PASSWORD_2' => 'Mit diesem Passwort können Sie sich nun am System anmelden via dieser URL. Im Anschluss sollten Sie ein neues Passwort Ihrer Wahl einstellen.',
 	'Mail Footer' => 'Mail-Signatur',
 
 ## default_templates/javascript.mtml
