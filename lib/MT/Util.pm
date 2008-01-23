@@ -909,6 +909,25 @@ sub make_unique_category_basename {
     $base;
 }
 
+sub make_unique_author_basename {
+    my ($author) = @_;
+    my $name = MT::Util::dirify($author->nickname);
+    return "author" . $author->id if $name !~ /\w/;
+
+    my $limit = MT->instance->config('AuthorBasenameLimit');
+    $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
+    my $base = substr($name, 0, $limit);
+    $base =~ s/_+$//;
+    my $i = 1;
+    my $base_copy = $base;
+
+    my $author_class = ref $author;
+    while ($author_class->count({ basename => $base })) {
+        $base = $base_copy . '_' . $i++;
+    }
+    $base;
+}
+
 sub archive_file_for {
     MT->instance->publisher->archive_file_for(@_);
 }

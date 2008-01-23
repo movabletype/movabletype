@@ -8,7 +8,8 @@
 function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
     static $_next_cache = array();
     if (!isset($content)) {
-        $ctx->localize(array('author', 'conditional', 'else_content'));
+        $next_author = null;
+        $ctx->localize(array('author'));
         $author = $ctx->stash('author');
         if ($author) {
             $author_id = $author['author_id'];
@@ -24,17 +25,17 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
                               'blog_id' => $blog_id,
                               'need_entry' => 1);
                 list($next_author) = $ctx->mt->db->fetch_authors($args);
-                if ($next_author) $_next_cache[$author_id] = $next_author;
+                if ($next_author) {
+                    $_next_cache[$author_id] = $next_author;
+                    $ctx->stash('author', $next_author);
+                } else
+                    $repeat = false;
             }
-            $ctx->stash('author', $next_author);
+        } else {
+            $repeat = false;
         }
-        $ctx->stash('conditional', isset($next_author));
-        $ctx->stash('else_content', null);
     } else {
-        if (!$ctx->stash('conditional')) {
-            $content = $ctx->stash('else_content');
-        }
-        $ctx->restore(array('author', 'conditional', 'else_content'));
+        $ctx->restore(array('author'));
     }
     return $content;
 }

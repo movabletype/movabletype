@@ -2897,10 +2897,8 @@ sub author_archive_file {
     my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
     return "" unless $this_author;
 
-    my $name = dirify( $this_author->nickname );
-    $name = "author" . $this_author->id if $name !~ /\w/;
     if ( !$file_tmpl ) {
-        $file = sprintf( "%s/index", $name );
+        $file = sprintf( "%s/index", $this_author->basename );
     }
     $file;
 }

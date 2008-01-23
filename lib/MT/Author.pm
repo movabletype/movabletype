@@ -35,6 +35,7 @@ __PACKAGE__->install_properties({
         'can_view_log' => 'boolean',
         'auth_type' => 'string(255)',
         'userpic_asset_id' => 'integer',
+        'basename' => 'string(255)',
     },
     defaults => {
         type => 1,
@@ -209,14 +210,19 @@ sub ban {
 sub save {
     my $auth = shift;
 
-    if ((!$auth->id) && ($auth->type == AUTHOR)) {
-        # New author, undefined API password. Generate one.
-        if (!defined $auth->api_password) {
-            my @pool = ('a'..'z', 0..9);
-            my $pass = '';
-            for (1..8) { $pass .= $pool[ rand @pool ] }
-            $auth->api_password($pass);
+    if ($auth->type == AUTHOR) {
+        if (!$auth->id) {
+            # New author, undefined API password. Generate one.
+            if (!defined $auth->api_password) {
+                my @pool = ('a'..'z', 0..9);
+                my $pass = '';
+                for (1..8) { $pass .= $pool[ rand @pool ] }
+                $auth->api_password($pass);
+            }
         }
+        # Generate basename
+        my $basename = MT::Util::make_unique_author_basename($auth);
+        $auth->basename($basename);
     }
 
     my $privs;

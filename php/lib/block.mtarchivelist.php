@@ -1,8 +1,9 @@
 <?php
 require_once "archive_lib.php";
 function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
-  $localvars = array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category');
+  $localvars = array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category', 'author');
     global $_archivers;
+
     if (!isset($content)) {
         require_once("archive_lib.php");
         $blog = $ctx->stash('blog');

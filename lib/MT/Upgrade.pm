@@ -778,6 +778,23 @@ sub core_upgrade_functions {
                 },
             },
         },
+        'core_set_author_basename' => {
+            version_limit => 4.0037,
+            priority => 3.2,
+            updater => {
+                type => 'author',
+                label => 'Assigning author basename...',
+                condition => sub {
+                    $_[0]->type == 1;
+                },
+                code => sub {
+                    my ($author) = @_;
+                    my $basename = MT::Util::make_unique_author_basename($author);
+                    $author->basename($basename);
+                    $author->save;
+                },
+            },
+        },
     }
 }
 

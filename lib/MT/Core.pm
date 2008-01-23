@@ -495,6 +495,9 @@ BEGIN {
             'UserpicAllowRect' => { default => 0 },
             'UserpicMaxUpload' => { default => 0 },
             'UserpicThumbnailSize' => { default => 100 },
+
+            # Basename settings
+            'AuthorBansenameLimit' => { default => 30 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

@@ -284,6 +284,7 @@ sub core_tags {
             AuthorUserpicURL => \&_hdlr_author_userpic_url,
             AuthorNext => \&_hdlr_author_prev_next,
             AuthorPrevious => \&_hdlr_author_prev_next,
+            AuthorBasename => \&_hdlr_author_basename,
 
             BlogID => \&_hdlr_blog_id,
             BlogName => \&_hdlr_blog_name,
@@ -2365,9 +2366,9 @@ sub _hdlr_file_template {
         $sep = "";
     }
     my %f = (
-        'a' => "<MTAuthorDisplayName $dir>",
-        '-a' => "<MTAuthorDisplayName dirify='-'>",
-        '_a' => "<MTAuthorDisplayName dirify='_'>",
+        'a' => "<MTAuthorBasename $dir>",
+        '-a' => "<MTAuthorBasename dirify='-'>",
+        '_a' => "<MTAuthorBasename dirify='_'>",
         'b' => "<MTEntryBasename $sep>",
         '-b' => "<MTEntryBasename separator='-'>",
         '_b' => "<MTEntryBasename separator='_'>",
@@ -3149,6 +3150,14 @@ sub _hdlr_author_userpic_asset {
 
     local $ctx->{__stash}{asset} = $asset;
     $builder->build($ctx, $tok, { %$cond });
+}
+
+sub _hdlr_author_basename {
+    my $author = $_[0]->stash('author')
+        or return $_[0]->_no_author_error('MTAuthorBasename');
+    my $name = $author->basename;
+    $name = MT::Util::make_unique_author_basename($author) if !$name;
+    return $name;
 }
 
 sub _hdlr_blogs {
