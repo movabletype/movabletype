@@ -7167,7 +7167,8 @@ sub edit_object {
             else {
                 $cwd = $ENV{DOCUMENT_ROOT} || $app->mt_dir;
             }
-            $cwd = File::Spec->canonpath($cwd);
+            $cwd = File::Spec->catdir($cwd, 'BLOG-NAME'); # for including the end of directory separator
+            $cwd =~ s!BLOG-NAME\z!!;                      # canonpath() remove it
             $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
             $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
             $param{suggested_site_path} = $cwd;
