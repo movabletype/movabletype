@@ -60,7 +60,8 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
             ($args['limit'] || $args['lastn']) or $args['lastn'] = -1;
             $archiver->setup_args($ctx, $args);
         }
-        if (($cat = $ctx->stash('category')) && ($args['class'] == 'entry' || $args['class'] == 'page')) {
+        $cat = $ctx->stash('category');
+        if (isset($cat) && (($args['class'] == 'entry' && $cat['category_class'] == 'category') || ($args['class'] == 'page' && $cat['category_class'] == 'folder'))) {
             $args['category'] or $args['categories'] or $args['category_id'] = $cat['category_id'];
             if ($ctx->stash('inside_mt_categories')) {
                 $args['category_id'] = $cat['category_id'];

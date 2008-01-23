@@ -36,6 +36,9 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
 
     $localvars = array('current_timestamp', 'current_timestamp_end', 'current_archive_type');
     $ctx->localize($localvars);
+    foreach ($localvars as $localvar) {
+        $ctx->__stash[$localvar] = null;
+    }
 
     $out = smarty_block_mtentries($args, $content, $ctx, $repeat);
 
