@@ -112,14 +112,8 @@ function setFilterCol(choice) {
     sel.className = "filter-" + choice;
     var fld = getByID('filter-col');
     if (fld) {
-        if (choice == 'newentry')
+        if (choice == 'status')
             fld.selectedIndex = 0;
-        else if (choice == 'oldentry')
-            fld.selectedIndex = 1;
-        else if (choice == 'status')
-            fld.selectedIndex = 2;
-        else if (choice == 'commenter')
-            fld.selectedIndex = 3;
         col_span = getByID("filter-text-col");
         if (fld.selectedIndex > -1 && col_span)
             col_span.innerHTML = '<strong>' +
@@ -178,12 +172,26 @@ TC.attachLoadEvent( init );
                         <mt:if name="filter_oldentry">
                         <__trans phrase="[_1] on entries created more than [_2] days ago" params="<$mt:var name="object_label_plural"$>%%<mt:var name="filter_val">">
                         <mt:else>
-                        <__trans phrase="[_1] where [_2] [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'>
+                        <__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'>
                         </mt:if>
                     </mt:if>
                 </strong>
                 <a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
                 </mt:if>
+        <div id="filter-select" class="page-title" style="display: none">
+            <!-- start filter form -->
+                <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton(this)">
+                    <option value="status"><__trans phrase="status"></option>
+                </select>
+                <__trans phrase="is">
+                <span id="filter-status" style="display: none">
+                    <select id="status-val" name="filter_val" onchange="enableFilterButton()">
+                        <option value="approved"><__trans phrase="approved"></option>
+                        <option value="pending"><__trans phrase="pending"></option>
+                        <option value="junk"><__trans phrase="spam"></option>
+                    </select>
+                </span>
+        </div>
             </mt:unless>
                 </div>
             </div>

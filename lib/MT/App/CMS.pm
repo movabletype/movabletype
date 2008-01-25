@@ -11190,6 +11190,25 @@ sub list_comments {
           $app->model('comment')->count( { parent_id => $obj->id } );
     };
 
+    my %terms;
+    my $filter_col = $app->param('filter');
+    if ( $filter_col && ( my $val = $app->param('filter_val') ) ) {
+        if ( $filter_col eq 'status' ) {
+            if ( $val eq 'approved' ) {
+                $terms{junk_status} = 1;
+            }
+            elsif ( $val eq 'pending' ) {
+                $terms{junk_status} = 0;
+            }
+            elsif ( $val eq 'junk' ) {
+                $terms{junk_status} = -1;
+            }
+            else {
+                $terms{junk_status} = [ 0, 1 ];
+            }
+        }
+    }
+
     my %param;
     my $blog_id = $app->param('blog_id');
     $param{feed_name} = $app->translate("Comments Activity Feed");
@@ -11211,6 +11230,7 @@ sub list_comments {
             code   => $code,
             args   => { sort => 'created_on', direction => 'descend' },
             params => \%param,
+            terms    => \%terms,
         }
     );
 }

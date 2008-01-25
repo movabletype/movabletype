@@ -108,7 +108,7 @@
             </mt:if>
         </mt:if>
         </mt:if>
-        <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">&amp;<mt:if name="is_junk">tab=junk<mt:else>filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if></mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if><mt:if name="is_junk">junk</mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 
         <mt:if name="junk_log_loop">
         <div class="width90 comment-spam-info">
