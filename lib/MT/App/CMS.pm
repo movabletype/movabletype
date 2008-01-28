@@ -15922,10 +15922,11 @@ sub upload_userpic {
 
     ## TODO: should this be layered into _upload_file somehow, so we don't
     ## save the asset twice?
-    $asset->tags('@userpic');
-    $asset->save;
-
     my $user_id = $app->param('user_id');
+
+    $asset->tags('@userpic');
+    $asset->created_by($user_id);
+    $asset->save;
 
     $app->forward( 'asset_userpic', { asset => $asset, user_id => $user_id } );
 }

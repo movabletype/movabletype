@@ -97,6 +97,7 @@ sub handle_sign_in {
 
         if ( my $userpic = $class->get_userpicasset($vident) ) {
             $userpic->tags('@userpic');
+            $userpic->created_by($cmntr->id);
             $userpic->save;
             if (my $userpic = $cmntr->userpic) {
                 # Remove the old userpic thumb so the new userpic's will be generated

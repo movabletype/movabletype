@@ -1270,15 +1270,7 @@ function asset_path($path, $blog) {
 }
 
 function userpic_url($asset, $blog, $author) {
-    $url = $asset['asset_url'];
-    $static_path = static_path($blog['blog_site_url']);
-    $static_path = preg_replace('/\/$/', '', $static_path);
-    $static_path .= '/support';
-
     global $mt;
-    $cache_path = $mt->config('AssetCacheDir');
-    $image_path = $cache_path . '/' . 'userpics';
-
     $format = $mt->translate('userpic-[_1]-%wx%h%x', array($author['author_id']));
     $max_dim = $mt->config('UserpicThumbnailSize');
     $ext = '.' . 'png';
@@ -1290,32 +1282,38 @@ function userpic_url($asset, $blog, $author) {
     $replacement[2] = $ext;
     $filename = preg_replace($patterns, $replacement, $format);
 
+    # generate thumbnail
+    $src_file = asset_path($asset['asset_file_path'], $blog);
+
+    $cache_path = $mt->config('AssetCacheDir');
+    $image_path = $cache_path . DIRECTORY_SEPARATOR . 'userpics';
+    $static_file_path = static_file_path().'support';
+    make_thumbnail_file($src_file, $static_file_path.DIRECTORY_SEPARATOR.$image_path.DIRECTORY_SEPARATOR.$filename, $max_dim, $max_dim, 0, 'png');
+
+    $static_path = $mt->config('StaticWebPath');
+    $static_path = preg_replace('/\/$/', '', $static_path);
+    $static_path .= '/support';
     $url = sprintf("%s/%s/%s", $static_path, $image_path, $filename);
 
     return $url;
 }
 
-function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h%x') {
-    # Get parameter
-    $site_path = $blog['blog_site_path'];
-    $site_path = preg_replace('/\/$/', '', $site_path);
-    $filename = asset_path($asset['asset_file_path'], $blog);
-
+function make_thumbnail_file($src, $dest, $width, $height, $scale = 0, $dest_type = 'auto') {
     # Get source image information
-    list($src_w, $src_h, $src_type, $src_attr) = getimagesize($filename);
+    list($src_w, $src_h, $src_type, $src_attr) = getimagesize($src);
 
     # Load source image
     $src_img;
 
     switch($src_type) {
     case 1: #GIF
-        $src_img = @imagecreatefromgif($filename);
+        $src_img = @imagecreatefromgif($src);
         break;
     case 2: #JPEG
-        $src_img = @imagecreatefromjpeg($filename);
+        $src_img = @imagecreatefromjpeg($src);
         break;
     case 3: #PNG
-        $src_img = @imagecreatefrompng($filename);
+        $src_img = @imagecreatefrompng($src);
         break;
     default: #Unsupported format
         return '';
@@ -1329,12 +1327,6 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     $thumb_w = $src_w;
     $thumb_h = $src_h;
 
-    $name_w = 'auto'; $name_h = 'auto';
-    if ($width > 0)
-        $name_w = $width;
-    if ($height > 0)
-        $name_h = $height;
-
     if ($scale > 0) {
         $thumb_w = $src_w * $scale / 100;
         $thumb_h = $src_h * $scale / 100;
@@ -1345,6 +1337,59 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
         $thumb_w = (int)($thumb_w * $pct);
         $thumb_h = (int)($thumb_h * $pct);
     }
+
+    # Generate
+    if(!file_exists($dest)) {
+        $dir_name = dirname($dest);
+        if (!file_exists($dir_name)) {
+          mkdir($dir_name, 0777, true);
+        }
+        if (!is_writable($dir_name)) {
+            imagedestroy($src_img);
+            return '';
+        }
+
+        # Create thumbnail
+        $dst_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
+        $result = imagecopyresampled ( $dst_img, $src_img, 0, 0, 0, 0,
+                    $thumb_w, $thumb_h, $src_w, $src_h);
+
+        $output = $src_type;
+        if ($dest_type != 'auto') {
+            $output = strtolower($dest_type) == 'gif' ? 1
+              : strtolower($dest_type) == 'jpeg' ? 2
+              : strtolower($dest_type) == 'png' ? 3
+              : $src_type;
+        }
+        switch($output) {
+            case 1: #GIF
+            imagegif($dst_img, $dest);
+            break;
+        case 2: #JPEG
+            imagejpeg($dst_img, $dest);
+            break;
+        case 3: #PNG
+            imagepng($dst_img, $dest);
+            break;
+        }
+        imagedestroy($dst_img);
+    }
+
+    imagedestroy($src_img);
+
+    return array($thumb_w, $thumb_h);
+}
+
+function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h%x') {
+    # Get parameter
+    $site_path = $blog['blog_site_path'];
+    $site_path = preg_replace('/\/$/', '', $site_path);
+    $filename = asset_path($asset['asset_file_path'], $blog);
+    $name_w = 'auto'; $name_h = 'auto';
+    if ($width > 0)
+        $name_w = $width;
+    if ($height > 0)
+        $name_h = $height;
 
     # Generate thumbnail file name
     $basename = basename($asset['asset_file_name'], '.' . $asset['asset_file_ext']);
@@ -1371,32 +1416,9 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     $date_stamp = format_ts('%Y/%m', $ts, $blog);
     $cache_dir = $site_path . DIRECTORY_SEPARATOR . $cache_path . DIRECTORY_SEPARATOR . $date_stamp . DIRECTORY_SEPARATOR;
     $thumb_name = $cache_dir . $thumb_filename;
-    if(!file_exists($thumb_name)) {
-        if (!file_exists($cache_dir)) {
-          mkdir($cache_dir, 0777, true);
-        }
-        if (!is_writable($cache_dir))
-            return '';
-        # Create thumbnail
-        $dst_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
-        $result = imagecopyresampled ( $dst_img, $src_img, 0, 0, 0, 0,
-                    $thumb_w, $thumb_h, $src_w, $src_h);
-
-        switch($src_type) {
-            case 1: #GIF
-            imagegif($dst_img, $thumb_name);
-            break;
-        case 2: #JPEG
-            imagejpeg($dst_img, $thumb_name);
-            break;
-        case 3: #PNG
-            imagepng($dst_img, $thumb_name);
-            break;
-        }
-        imagedestroy($dst_img);
-    }
-
-    imagedestroy($src_img);
+ 
+    # generate thumbnail
+    list ($thumb_w, $thumb_h) = make_thumbnail_file($filename, $thumb_name, $width, $height);
 
     # make url
     $basename = basename($thumb_name);
