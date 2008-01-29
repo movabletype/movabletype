@@ -144,7 +144,7 @@ function setLicense() {
 </div>
 <script type="text/javascript">
     /* <![CDATA[ */
-    var e = getByID(mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
+    var e = getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
     if (e) e.style.display = 'block';
     /* ]]> */
 </script>
