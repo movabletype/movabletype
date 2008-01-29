@@ -23,12 +23,15 @@ sub work {
     # We got triggered to build; lets find coalescing jobs
     # and process them in one pass.
 
-    my @jobs;
-    push @jobs, $job;
+    my @jobs = ($job);
+    my $job_iter;
     if (my $key = $job->coalesce) {
-        while (my $job = MT::TheSchwartz->instance->find_job_with_coalescing_value($class, $key)) {
-            push @jobs, $job;
-        }
+        $job_iter = sub {
+            shift @jobs || MT::TheSchwartz->instance->find_job_with_coalescing_value($class, $key);
+        };
+    }
+    else {
+        $job_iter = sub { shift @jobs };
     }
 
     my $sync = MT->config('SyncTarget');
@@ -39,7 +42,7 @@ sub work {
     my $start = [gettimeofday];
     my $rebuilt = 0;
 
-    foreach $job (@jobs) {
+    while (my $job = $job_iter->()) {
         my $fi_id = $job->uniqkey;
         my $fi = MT::FileInfo->load($fi_id);
 
