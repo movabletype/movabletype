@@ -49,6 +49,7 @@ __PACKAGE__->install_properties({
         status => 1,
         external_id => 1,
         auth_type => 1,
+        basename => 1,
         # is_superuser => 1,
     },
     meta => 1,
