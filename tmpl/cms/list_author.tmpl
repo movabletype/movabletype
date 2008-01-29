@@ -1,9 +1,6 @@
 <$mt:setvar name="list_users" value="1"$>
 <mt:setvarblock name="page_title"><__trans phrase="Users: System-wide"></mt:setvarblock>
 <mt:setvarblock name="system_msg">
-    <mt:if name="external_user_management">
-        <p class="page-desc"><__trans phrase="_USAGE_AUTHORS_LDAP"></p>
-    </mt:if>
     <mt:if name="saved_status_disabled">
         <mtapp:statusmsg
             id="saved-status-disabled"
@@ -51,7 +48,9 @@
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
-    <mt:unless name="external_user_management">
+    <mt:if name="external_user_management">
+        <p class="page-desc"><__trans phrase="_USAGE_AUTHORS_LDAP"></p>
+    <mt:else>
         <mt:if name="can_create_user">
         <ul class="action-link-list">
             <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></li>
