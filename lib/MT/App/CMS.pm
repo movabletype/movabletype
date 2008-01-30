@@ -8425,7 +8425,15 @@ sub CMSPostSave_blog {
     my $screen = $app->param('cfg_screen') || '';
     if ( $screen eq 'cfg_archives' ) {
         if ( my $dcty = $app->param('dynamicity') ) {
-            if ( $dcty ne 'none' ) {
+            if ( $dcty eq 'none' ) {
+                require MT::Template;
+                my @tmpls = MT::Template->load({ build_dynamic => 1});
+                for my $tmpl (@tmpls) {
+                    $tmpl->build_dynamic(0);
+                    $tmpl->save;
+                }
+            }
+            else {
                 $app->update_dynamicity(
                     $obj,
                     $app->param('dynamic_cache')       ? 1 : 0,
@@ -8433,13 +8441,6 @@ sub CMSPostSave_blog {
                 );
                 $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
                     or return $app->publish_error();
-            } else {
-                require MT::Template;
-                my @tmpls = MT::Template->load({ build_dynamic => 1});
-                for my $tmpl (@tmpls) {
-                    $tmpl->build_dynamic(0);
-                    $tmpl->save;
-                }
             }
         }
         $app->cfg_archives_save($obj);
