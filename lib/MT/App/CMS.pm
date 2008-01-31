@@ -8430,7 +8430,10 @@ sub CMSPostSave_blog {
             if ($dcty_changed) {
                 if ( $dcty eq 'none' ) {
                     require MT::Template;
-                    my @tmpls = MT::Template->load({ build_dynamic => 1 });
+                    my @tmpls = MT::Template->load({
+                        blog_id       => $obj->id,
+                        build_dynamic => 1,
+                    });
                     for my $tmpl (@tmpls) {
                         $tmpl->build_dynamic(0);
                         $tmpl->save;
@@ -8444,12 +8447,12 @@ sub CMSPostSave_blog {
             }
 
             # If either of the publishing paths changed, rebuild the fileinfos.
-            my $site_root_changed = $app->param('site_path')
-                && $app->param('site_path') ne $original->site_path;
-            my $archive_root_changed = $app->param('archive_path')
-                && $app->param('archive_path') ne $original->archive_path;
-            if ($dcty ne 'none' && ($dcty_changed || $site_root_changed
-                || $archive_root_changed)) {
+            my $path_changed = 0;
+            for my $path_field (qw( site_path archive_path site_url archive_url )) {
+                $path_changed = 1 && last if $app->param($path_field)
+                    && $app->param($path_field) ne $original->$path_field();
+            }
+            if ($dcty ne 'none' && ($dcty_changed || $path_changed)) {
                 $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
                     or return $app->publish_error();
             }
