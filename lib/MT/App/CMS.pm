@@ -8425,25 +8425,37 @@ sub CMSPostSave_blog {
     my $screen = $app->param('cfg_screen') || '';
     if ( $screen eq 'cfg_archives' ) {
         if ( my $dcty = $app->param('dynamicity') ) {
-            if ( $dcty eq 'none' ) {
-                require MT::Template;
-                my @tmpls = MT::Template->load({ build_dynamic => 1});
-                for my $tmpl (@tmpls) {
-                    $tmpl->build_dynamic(0);
-                    $tmpl->save;
+            my $dcty_changed = $dcty ne $original->custom_dynamic_templates ? 1 : 0;
+
+            if ($dcty_changed) {
+                if ( $dcty eq 'none' ) {
+                    require MT::Template;
+                    my @tmpls = MT::Template->load({ build_dynamic => 1 });
+                    for my $tmpl (@tmpls) {
+                        $tmpl->build_dynamic(0);
+                        $tmpl->save;
+                    }
                 }
-            }
-            else {
                 $app->update_dynamicity(
                     $obj,
                     $app->param('dynamic_cache')       ? 1 : 0,
                     $app->param('dynamic_conditional') ? 1 : 0
                 );
+            }
+
+            # If either of the publishing paths changed, rebuild the fileinfos.
+            my $site_root_changed = $app->param('site_path')
+                && $app->param('site_path') ne $original->site_path;
+            my $archive_root_changed = $app->param('archive_path')
+                && $app->param('archive_path') ne $original->archive_path;
+            if ($dcty ne 'none' && ($dcty_changed || $site_root_changed
+                || $archive_root_changed)) {
                 $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
                     or return $app->publish_error();
             }
         }
-        $app->cfg_archives_save($obj);
+
+        $app->cfg_archives_save($obj) or return;
     }
     if ( $screen eq 'cfg_prefs' ) {
         my $blog_id = $obj->id;
