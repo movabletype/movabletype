@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::es;
 use strict;
@@ -149,8 +149,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit TrackBack' => 'Editar TrackBack',
 
 ## default_templates/comment_detail.mtml
-	'[_1] [_2] said:' => '[_1] [_2] dijo:',
-	'<a href="[_1]" title="Permalink to this comment">[_2]</a>' => '<a href="[_1]" title="Enlace permanente a este comentario">[_2]</a>',
+	'By [_1] on [_2]' => 'Por [_1] el [_2]',
 
 ## default_templates/comment_form.mtml
 	'Leave a comment' => 'Escribir un comentario',
@@ -193,7 +192,6 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/tags.mtml
 
 ## default_templates/entry_metadata.mtml
-	'By [_1] on [_2]' => 'Por [_1] el [_2]',
 	'Permalink' => 'Enlace permanente',
 	'Comments ([_1])' => 'Comentarios ([_1])',
 	'TrackBacks ([_1])' => 'TrackBacks ([_1])',
@@ -203,7 +201,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/recover-password.mtml
 	'_USAGE_FORGOT_PASSWORD_1' => 'Solicitó la recuperación de su contraseña de Movable Type. Su contraseña se ha modificado en el sistema; ésta es su nueva contraseña:',
-	'_USAGE_FORGOT_PASSWORD_2' => 'Debería poder iniciar una sesión en Movable Type con esta nueva contraseña. Después de iniciar la sesión, cambie su contraseña a otra que pueda memorizar y recordar fácilmente.',
+	'_USAGE_FORGOT_PASSWORD_2' => 'Debería poder iniciar una sesión en Movable Type con esta nueva contraseña via la URL abajo. Después de iniciar la sesión, cambie su contraseña a otra que pueda memorizar y recordar fácilmente.',
 	'Mail Footer' => 'Pie del correo',
 
 ## default_templates/javascript.mtml
@@ -230,9 +228,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] TrackBacks' => '[_1] TrackBacks',
 	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'Abajo están listados los blogs que hacen referencia a esta entrada: <a href="[_1]">[_2]</a>.',
 	'TrackBack URL for this entry: <span id="trackbacks-link">[_1]</span>' => 'URL de TrackBack de esta entrada: <span id="trackbacks-link">[_1]</span>',
-	'&raquo; <a href="[_1]">[_2]</a> from [_3]' => '&raquo; <a href="[_1]">[_2]</a> de [_3]',
+	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> desde [_3] en <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Leer más</a>',
-	'Tracked on <a href="[_1]">[_2]</a>' => 'Enviado desde <a href="[_1]">[_2]</a>',
 
 ## default_templates/sidebar.mtml
 	'2-column layout - Sidebar' => 'Disposición a 2 columnas - Barra lateral',
@@ -684,6 +681,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The user' => 'El usuario',
 	'User' => 'Usuario',
 	'Invalid type' => 'Tipo no válido',
+	'Entries' => 'Entradas',
 	'New name of the tag must be specified.' => 'El nuevo nombre de la etiqueta debe ser especificado',
 	'No such tag' => 'No existe dicha etiqueta',
 	'None' => 'Ninguno',
@@ -698,6 +696,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Blogs' => 'Blogs',
 	'Blog Activity Feed' => 'Sindicación de Actividades del blog',
 	'*User deleted*' => '*Usuario borrado*',
+	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.' => '<a href="[_1]">QuickPost en [_2]</a> - Arrastre este enlace a la barra de herramientas de su navegador y haga clic en él cuando desee publicar una entrada sobre la página que visita.',
 	'All Feedback' => 'Todas las opiniones',
 	'Publishing' => 'Publicación',
 	'Activity Log' => 'Actividad',
@@ -712,7 +711,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Permission denied: [_1]' => 'Permiso denegado: [_1]',
 	'Load failed: [_1]' => 'Fallo carga: [_1]',
 	'(no reason given)' => '(ninguna razón ofrecida)',
-	'Entries' => 'Entradas',
 	'Pages' => 'Páginas',
 	'(untitled)' => '(sin título)',
 	'index' => 'índice',
@@ -989,7 +987,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Parent comment was not found.' => 'El comentario padre no se encontró.',
 	'You can\'t reply to unapproved comment.' => 'No puede responder a un comentario no aprobado.',
 	'You can\'t reply to unpublished comment.' => 'No puede contestar a comentarios no publicados.',
-	' (Backup from [_1])' => ' (Copia de [_1])', # Translate - New
+	' (Backup from [_1])' => ' (Copia de [_1])',
 	'Error creating new template: ' => 'Error creando nueva plantilla: ',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Ignorando plantilla \'[_1]\' ya que parecer ser una plantilla personalizada.',
 	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => 'Reactualizar los modelos <strong>[_3]</strong> desde <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">guardar</a>',
@@ -1234,7 +1232,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Adding new feature widget to dashboard...' => 'Añadiendo un nuevo widget al panel de control...',
 	'Moving OpenID usernames to external_id fields...' => 'Moviendo los nombres de usuarios de OpenID a campos external_id...',
 	'Assigning blog template set...' => 'Asignando conjunto de plantillas...',
-	'Assigning blog page layout...' => 'Asignando disposición de las páginas...', # Translate - New
+	'Assigning blog page layout...' => 'Asignando disposición de las páginas...',
 
 ## lib/MT/Core.pm
 	'Create Blogs' => 'Crear blogs',
@@ -1842,7 +1840,7 @@ que la dirección provista es correcta y le pertenece.',
 	'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'Este directorio o se ha renombrado o movido a un lugar fuera del directorio de Movable Type.',
 	'Once the [_1] directory is in a web-accessible location, specify the location below.' => 'Cuando el directorio [_1] esté en un lugar accesible vía web, especifique el lugar debajo.',
 	'This URL path can be in the form of [_1] or simply [_2]' => 'La dirección URL puede estar en la forma de [_1] o simplemente [_2]',
-	'This path must be in the form of [_1]' => 'Esta ruta debe estar en la forma [_1]', # Translate - New
+	'This path must be in the form of [_1]' => 'Esta ruta debe estar en la forma [_1]',
 	'Static web path' => 'Ruta estática del web',
 	'Static file path' => 'Ruta estática de los ficheros',
 	'Begin' => 'Comenzar',
@@ -1852,7 +1850,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog\'s data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the \'Retry\' button.' => 'Los siguientes módulos de Perl son necesarios para la conexión con la base de datos. Movable Type necesita una base de datos para guardar los datos del blog. Por favor, instale los paquetes listados aquí para continuar. Cuando lo haya hecho, haga clic en el botón \'Reintentar\'.',
 	'All required Perl modules were found.' => 'Se encontraron todos los módulos de Perl necesarios.',
 	'You are ready to proceed with the installation of Movable Type.' => 'Está listo para continuar con la instalación de Movable Type.',
-	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'No se encontrarons algunos módulos opcionales de Perl. <a href="javascript:void(0)" onclick="[_1]">Mostrar lista de módulos opcionales</a>',
+	'Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>' => 'No se encontraron algunos módulos opcionales de Perl. <a href="javascript:void(0)" onclick="[_1]">Mostrar lista de módulos opcionales</a>',
 	'One or more Perl modules required by Movable Type could not be found.' => 'No se encontraron uno o varios módulos de Perl necesarios.',
 	'The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the \'Retry\' button to re-test for these packages.' => 'Los siguientes módulos de Perl son necesarios para que Movable Type se ejecute correctamente. Una vez los haya instalado, haga clic en el botón \'Reintentar\' para realizar la comprobación nuevamente.',
 	'Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click \'Retry\' to test for the modules again.' => 'No se encontraron algunos módulos opcionales de Perl. Puede continuar sin instalarlos. Podrá instalarlos cuando le sean necesarios. Haga clic en \'Reintentar\' para comprobar los módulos otra vez.',
@@ -1906,7 +1904,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Users for [_1]' => 'Usuarios de [_1]',
 
 ## tmpl/cms/include/copyright.tmpl
-	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.', # Translate - New
+	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
 
 ## tmpl/cms/include/comment_table.tmpl
 	'comment' => 'comentario',
@@ -2089,8 +2087,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Edit Page' => 'Editar página',
 	'View entry' => 'Ver entrada',
 	'View page' => 'Ver página',
-	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'No se encontró ninguna entrada. <a href="[_1]">Cree una ahora</a>.', # Translate - New
-	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'No se encontró ninguna página. <a href="[_1]">Cree una ahora</a>.', # Translate - New
+	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'No se encontró ninguna entrada. <a href="[_1]">Cree una ahora</a>.',
+	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'No se encontró ninguna página. <a href="[_1]">Cree una ahora</a>.',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -2098,7 +2096,7 @@ que la dirección provista es correcta y le pertenece.',
 	'_USER_DISABLED' => 'Deshabilitado',
 
 ## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '0', # Translate - New
+	'_LOCALE_WEEK_START' => '_LOCALE_WEEK_START', # Translate - New
 	'Sunday' => 'Domingo',
 	'Monday' => 'Lunes',
 	'Tuesday' => 'Martes',
@@ -2311,17 +2309,19 @@ que la dirección provista es correcta y le pertenece.',
 	'No assets could be found.' => 'No se encontraron ficheros multimedia.',
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
-	'Refresh Template Set' => 'Refrescar el conjunto de plantillas', # Translate - New
-	'Refresh [_1] template set' => 'Refrescar el conjunto de plantillas [_1]', # Translate - New
+	'Refresh Template Set' => 'Refrescar el conjunto de plantillas',
+	'Refresh [_1] template set' => 'Refrescar el conjunto de plantillas [_1]',
 	'Updates current templates while retaining any user-created or user-modified templates.' => 'Actualiza las plantillas actuales conservando las modificadas o creadas por el usuario.',
-	'Apply a new template set' => 'Aplicar un nuevo conjunto', # Translate - New
+	'Apply a new template set' => 'Aplicar un nuevo conjunto',
+	'Deletes all existing templates and install the selected template set.' => 'Borra todas las plantillas existentes e instala el conjunto seleccionado.',
+	'Reset to factory defaults' => 'Valores de fábrica',
 	'Deletes all existing templates and installs factory default template set.' => 'Borra todas las plantillas existentes e instala el conjunto de plantillas predefinido.',
 	'Make backups of existing templates first' => 'Primero, haga copias de seguridad de las plantillas',
-	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Ha solicitado <strong>refrescar el actual conjunto de plantillas</strong>. Esta acción:', # Translate - New
+	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Ha solicitado <strong>refrescar el actual conjunto de plantillas</strong>. Esta acción:',
 	'potentially install new templates' => 'instalará potencialmente nuevas plantillas',
 	'overwrite some existing templates with new template code' => 'reescribirá algunas plantillas existentes con el código de las nuevas plantillas',
 	'backups will be made of your templates and can be accessed through your backup filter' => 'se harán copias de seguridad de sus plantillas y estarán disponibles a través de su filtro de copias',
-	'You have requested to <strong>apply a new template set</strong>. This action will:' => 'Ha solicitado <strong>aplicar un nuevo conjunto de plantillas</strong>. Esta acción:', # Translate - New
+	'You have requested to <strong>apply a new template set</strong>. This action will:' => 'Ha solicitado <strong>aplicar un nuevo conjunto de plantillas</strong>. Esta acción:',
 	'delete all of the templates in your blog' => 'borrará todas las plantillas del blog',
 	'install new templates from the selected template set' => 'instalará nuevas plantillas del conjunto seleccionado',
 	'Are you sure you wish to continue?' => '¿Está seguro de que desea continuar?',
@@ -2576,8 +2576,8 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'Eliminó correctamente los weblogs.',
+	'You have successfully refreshed your templates.' => 'Ha refrescado con éxito las plantillas.',
 	'Create Blog' => 'Crear blog',
-	'Are you sure you want to delete this blog?' => '¿Está seguro de que desea borrar este blog?',
 
 ## tmpl/cms/edit_template.tmpl
 	'Create Template' => 'Crear plantilla',
@@ -2790,7 +2790,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Save this page (s)' => 'Guardar esta página (s)',
 	'Preview this page (v)' => 'Vista previa de la página (v)',
 	'Delete this page (x)' => 'Borrar esta página (x)',
-	'View Page' => 'Ver página', # Translate - Case
+	'View Page' => 'Ver página',
 	'Add category' => 'Añadir categoría',
 	'Add category name' => 'Añadir nombre de categoría',
 	'Add new category parent' => 'Añadir categoría raíz',
@@ -2813,7 +2813,7 @@ que la dirección provista es correcta y le pertenece.',
 	'An error occurred while trying to recover your saved page.' => 'Ocurrió un error durante la recuperación de la página guardada.',
 	'You have successfully deleted the checked comment(s).' => 'Eliminó correctamente los comentarios marcados.',
 	'You have successfully deleted the checked TrackBack(s).' => 'Eliminó correctamente los TrackBacks marcados.',
-	'Change Folder' => 'Cambiar carpeta', # Translate - New
+	'Change Folder' => 'Cambiar carpeta',
 	'Stats' => 'Estadísticas',
 	'Share' => 'Compartir',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,comentario,comentarios]</a>',
@@ -2855,7 +2855,6 @@ que la dirección provista es correcta y le pertenece.',
 	'(comma-delimited list)' => '(lista separada por comas)',
 	'(space-delimited list)' => '(lista separada por espacios)',
 	'(delimited by \'[_1]\')' => '(separado por \'[_1]\')',
-	'<a href="<mt:var name="quickpost_js" escape="html">' => '<a href="<mt:var name="quickpost_js" escape="html">', # Translate - New
 	'None selected' => 'Ninguna seleccionada',
 
 ## tmpl/cms/view_log.tmpl
@@ -3070,7 +3069,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Blog Publishing Settings' => 'Configuración de la publicación del blog',
 	'All Templates' => 'Todas las plantillas',
 	'You have successfully deleted the checked template(s).' => 'Se eliminaron correctamente las plantillas marcadas.',
-	'You have successfully refreshed your templates.' => 'Ha refrescado con éxito las plantillas.',
 	'Your templates have been published.' => 'Se han publicado las plantillas.',
 	'Create Archive Template:' => 'Crear plantilla de archivos',
 	'Create [_1] template' => 'Crear nuevo módulo de [_1]',
@@ -3226,7 +3224,7 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/import.tmpl
 	'You must select a blog to import.' => 'Debe seleccionar un blog a importar.',
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => 'Transfiere las entradas de un weblog en Movable Type desde otras instalaciones de Movable Type o incluso otras herramientas de blogs, o exporta sus entradas para crear una copia de seguridad.',
-	'Blog to Import' => 'Blog a importar',
+	'Import data into' => 'Importar datos en',
 	'Select a blog to import.' => 'Seleccione un blog para importar.',
 	'Importing from' => 'Importar desde',
 	'Ownership of imported entries' => 'Autoría de las entradas importadas',
@@ -3410,7 +3408,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Move Folder' => 'Mover carpeta',
 	'Move' => 'Mover',
 	'[quant,_1,page,pages]' => '[quant,_1,página,páginas]',
-	'No folders could be found.' => 'No se encontró ninguna carpeta.', # Translate - New
+	'No folders could be found.' => 'No se encontró ninguna carpeta.',
 
 ## tmpl/cms/list_association.tmpl
 	'permission' => 'permiso',
@@ -3442,9 +3440,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Create Category' => 'Crear categoría',
 	'Collapse' => 'Contraer',
 	'Expand' => 'Ampliar',
+	'Create Subcategory' => 'Crear subcategoría',
 	'Move Category' => 'Mover categoría',
 	'[quant,_1,TrackBack,TrackBacks]' => '[quant,_1,TrackBack,TrackBacks]',
-	'No categories could be found.' => 'No se encontró ninguna categoría.', # Translate - New
+	'No categories could be found.' => 'No se encontró ninguna categoría.',
 
 ## tmpl/cms/cfg_entry.tmpl
 	'Entry Settings' => 'Configuración de las entradas',
@@ -3591,11 +3590,11 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/preview_strip.tmpl
 	'Save this entry' => 'Guardar esta entrada',
-	'Re-Edit this entry' => 'Reeditar esta entrada', # Translate - New
-	'Re-Edit this entry (e)' => 'Reeditar esta entrada (e)', # Translate - New
+	'Re-Edit this entry' => 'Reeditar esta entrada',
+	'Re-Edit this entry (e)' => 'Reeditar esta entrada (e)',
 	'Save this page' => 'Guardar esta página',
-	'Re-Edit this page' => 'Reeditar esta página', # Translate - New
-	'Re-Edit this page (e)' => 'Reeditar esta página (e)', # Translate - New
+	'Re-Edit this page' => 'Reeditar esta página',
+	'Re-Edit this page (e)' => 'Reeditar esta página (e)',
 	'You are previewing the entry titled &ldquo;[_1]&rdquo;' => 'Está previsualizando la entrada titulada &ldquo;[_1]&rdquo;',
 	'You are previewing the page titled &ldquo;[_1]&rdquo;' => 'Está previsualizando la página titulada &ldquo;[_1]&rdquo;',
 
@@ -3695,336 +3694,33 @@ que la dirección provista es correcta y le pertenece.',
 	'CGI Path Configuration Required' => 'Se necesita la configuración de la ruta de CGI',
 	'_ERROR_CGI_PATH' => 'La opción de configuración CGIPath no es válida o no se encuentra en el fichero de configuración de Movable Type. Por favor, consulte la sección <a href="javascript:void(0)">Instalación y configuración</a> del manual de Movable Type manual para más información.',
 
-## addons/Community.pack/lib/MT/App/Community.pm
-	'No login form template defined' => 'No hay ninguna plantilla de formulario definida',
-	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'Antes de que pueda iniciar una sesión, debe autentificar su dirección de correo. <a href="[_1]">Haga clic aquí</a> para reenviar el correo de verificación.',
-	'Your confirmation have expired. Please register again.' => 'Su confirmación ha caducado. Por favor, regístrese de nuevo.',
-	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'El usuario \'[_1]\' (ID:[_2]) se registró con éxito.',
-	'Thanks for the confirmation.  Please sign in.' => 'Gracias por la confirmación. Por favor, inicie la sesión.',
-	'Login required' => 'Requerido inicio de sesión',
-	'System template entry_response not found in blog: [_1]' => 'La plantilla del sistema entry_response no se encontró en el blog: [_1]',
-	'Posting a new entry failed.' => 'Fallo publicando una nueva entrada.',
-	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Añadida una nueva entrada \'[_1]\' al blog \'[_2]\'',
-	'Id or Username is required' => 'Se necesita el Id o el nombre del usuario',
-	'Unknown user' => 'Usuario desconocido',
-	'Cannot edit profile.' => 'No se pudo editar el perfil.',
-	'Recent Entries from [_1]' => 'Entradas recientes de [_1]',
-	'Responses to Comments from [_1]' => 'Respuestas a los comentarios de [_1]',
-
-## addons/Community.pack/lib/MT/Community/Tags.pm
-	'You used an \'[_1]\' tag outside of the block of MTIfEntryRecommended; perhaps you mistakenly placed it outside of an \'MTIfEntryRecommended\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del bloque MTIfEntryRecommended; ¿quizás la situó por error fuera de un contenedor \'MTIfEntryRecommended\'?',
-	'Click here to recommend' => 'Haga clic aquí para hacer una recomendación',
-
-## addons/Community.pack/lib/MT/Community/CMS.pm
-	'Welcome to the Movable Type Community Solution' => 'Bienvenido a la Community Solution de Movable Type',
-	'The Community Solution gives you to the tools to build a successful community with active, engaged conversations. Some key features to explore:' => 'Community Solution le ofrece las herramientas necesarias para construir una comunidad activa y con apasionantes conversaciones. Algunas de las funcionalidades más importantes a explorar son:',
-	'Member Profiles' => 'Perfiles de miembros',
-	'Allow registered members of your community to create and customize profiles, including user pictures' => 'Permite que los usuarios registrados de la comunidad creen y personalicen sus perfiles, incluyendo avatares.',
-	'Favoriting, Recommendations and User Voting' => 'Favoritos, recomendaciones y votaciones',
-	'Your community can vote for its favorite content, making it easy for your readers and authors to see what\'s most popular' => 'La comunidad puede votar por los contenidos favoritos, facilitando que sus lectores y autores vean lo más popular',
-	'User-Contributed Content' => 'Contribuciones de los usuarios',
-	'Registered users can submit content to your site, and administrators have full control over what gets published' => 'Los usuarios registrados pueden enviar contenidos al sitio, ¡pero los administradores tendrán control total sobre lo que se publica!',
-	'Forums and Community Blogs' => 'Foros y blogs comunitarios',
-	'Add forums and group blogs to your site with just a few clicks' => 'Puede añadir foros y blogs para grupos al sitio con solo un par de clics',
-	'Completely Customizable Design' => 'Diseño completamente personalizable',
-	'Every element of your site experience is customizable, including login screens, registration forms, profile editing, and even email messages' => 'Todos los elementos del sitio pueden personalizarse, incluyendo pantallas de inicio de sesión, formularios de registro, edición de perfiles e incluso los mensajes de correo',
-
-## addons/Community.pack/php/function.mtentryrecommendvotelink.php
-
-## addons/Community.pack/tmpl/widget/blog_stats_registration.mtml
-	'Registrations' => 'Registros',
-	'Recent Registrations' => 'Registros recientes',
-	'default userpic' => 'avatar predefinido',
-	'You have [quant,_1,registration,registrations] from [_2]' => 'Tiene [quant,_1,registro,registros] de [_2]',
-
-## addons/Community.pack/tmpl/widget/most_popular_entries.mtml
-	'Most Popular Entries' => 'Entradas más populares',
-	'There are no popular entries.' => 'No hay entradas populares.',
-
-## addons/Community.pack/tmpl/widget/recent_submissions.mtml
-	'Recent Submissions' => 'Envíos recientes',
-
-## addons/Community.pack/tmpl/widget/recent_favorites.mtml
-	'Recent Favorites' => 'Favoritos recientes',
-	'There are no recently favorited entries.' => 'No hay recomendaciones recientes de entradas.',
-
-## addons/Community.pack/tmpl/cfg_community_prefs.tmpl
-	'Community Settings' => 'Configuración de la comunidad',
-	'Anonymous Recommendation' => 'Recomendación anónima',
-	'Check to allow anonymous users (users not logged in) to recommend discussion.  IP address is recorded and used to identify each user.' => 'Active esta opción para permitir que los usuarios anónimos (aquellos que no han iniciado una sesión) puedan recomendar debates. Las direcciones IP se registran y se utilizan para identificar a cada usuario.',
-	'Allow anonymous user to recommend' => 'Permitir que los usuarios anónimos hagan recomendaciones',
-	'Save changes to blog (s)' => 'Guardar cambios del blog (s)',
-
-## addons/Community.pack/templates/global/register_form.mtml
-	'Sign up' => 'Registrarse',
-	'Simple Header' => 'Cabecera simple',
-
-## addons/Community.pack/templates/global/simple_footer.mtml
-
-## addons/Community.pack/templates/global/profile_error.mtml
-	'Profile Error' => 'Error del perfil',
-	'Status Message' => 'Mensaje de estado',
-
-## addons/Community.pack/templates/global/profile_feed_rss.mtml
-
-## addons/Community.pack/templates/global/userpic.mtml
-
-## addons/Community.pack/templates/global/new_entry_email.mtml
-	'A new entry \'[_1]([_2])\' has been posted on your blog [_3].' => 'Se ha publicado una nueva entrada \'[_1]([_2])\' en su blog [_3].',
-	'Author name: [_1]' => 'Nombre del autor: [_1]',
-	'Author nickname: [_1]' => 'Pseudónimo del autor: [_1]',
-	'Title: [_1]' => 'Título: [_1]',
-	'Edit entry:' => 'Editar entrada:',
-
-## addons/Community.pack/templates/global/password_reset_form.mtml
-	'Reset Password' => 'Reiniciar la contraseña',
-	'Back to the original page' => 'Regresar a la página original',
-	'Simple Footer' => 'Pie simple',
-
-## addons/Community.pack/templates/global/profile_edit_form.mtml
-	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => '<a href="[_1]">Regresar a la página anterior</a> o <a href="[_2]">vea su perfil</a>.',
-	'Form Field' => 'Campo del formulario',
-	'User Name' => 'Usuario',
-	'Upload New Userpic' => 'Transferir nuevo avatar',
-
-## addons/Community.pack/templates/global/header.mtml
-	'Blog Description' => 'Descripción del blog',
-	'GlobalJavaScript' => 'GlobalJavaScript',
-	'Navigation' => 'Navegación',
-	'User Navigation' => 'Navegación del usuario',
-
-## addons/Community.pack/templates/global/profile_view.mtml
-	'User Profile' => 'Perfil del usuario',
-	'Website:' => 'Web:',
-	'Recent Comments' => 'Comentarios recientes',
-	'Responses to Comments' => 'Respuestas a comentarios',
-	'Favorites' => 'Favoritos',
-	'No recent entries.' => 'Sin entradas recientes.',
-	'Recents Comments from [_1]' => 'Comentarios recientes de [_1]',
-	'(posted to [_1])' => '(publicado en [_1])',
-	'No recent comments.' => 'Sin comentarios recientes.',
-	'No responses to comments.' => 'Sin respuestas a comentarios.',
-	'Favorites of [_1]' => 'Favoritos de [_1]',
-	'[_1] has not added any favorites yet.' => '[_1] no tiene aún favoritos.',
-
-## addons/Community.pack/templates/global/login_form.mtml
-
-## addons/Community.pack/templates/global/register_confirmation.mtml
-	'Authentication Email Sent' => 'Correo de autentificación enviado.',
-	'Profile Created' => 'Perfil creado',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Regresar a la página original.</a>',
-
-## addons/Community.pack/templates/global/user_navigation.mtml
-	'Logged in as <a href="[_1]">[_2]</a>' => 'Identificado como <a href="[_1]">[_2]</a>',
-	'Sign out' => 'Salir',
-	'Not a member? <a href="[_1]">Register</a>' => '¿No es miembro? <a href="[_1]">Registrarse</a>',
-
-## addons/Community.pack/templates/global/footer.mtml
-
-## addons/Community.pack/templates/global/navigation.mtml
-	'Home' => 'Inicio',
-
-## addons/Community.pack/templates/global/login_form_module.mtml
-	'Hello [_1]' => 'Hola [_1]',
-	'Forgot Password' => 'Recuperar la contraseña',
-
-## addons/Community.pack/templates/global/email_verification_email.mtml
-	'Thank you registering for an account to [_1].' => 'Gracias por registrar una cuenta en [_1].',
-	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to sign in to [_1].' => 'Por su propia seguridad y para prevenir fraudes, le solicitamos que confirme su cuenta y dirección de correo antes de continuar. Una vez confirmados, ya podrá iniciar una sesión en [_1].',
-	'If you did not make this request, or you don\'t want to register for an account to [_1], then no further action is required.' => 'Si no realizó esta petición, o no quiere registrar una cuenta en [_1], no se requiere ninguna otra acción.',
-
-## addons/Community.pack/templates/global/register_notification_email.mtml
-
-## addons/Community.pack/templates/global/search.mtml
-
-## addons/Community.pack/templates/blog/rss.mtml
-
-## addons/Community.pack/templates/blog/archive_index.mtml
-	'Content Navigation' => 'Navegación de contenidos',
-
-## addons/Community.pack/templates/blog/trackbacks.mtml
-
-## addons/Community.pack/templates/blog/main_index.mtml
-
-## addons/Community.pack/templates/blog/page.mtml
-
-## addons/Community.pack/templates/blog/content_nav.mtml
-	'Blog Home' => 'Incio - Blog',
-
-## addons/Community.pack/templates/blog/entry_summary.mtml
-	'A favorite' => 'Un favorito',
-	'Favorite' => 'Favorito',
-
-## addons/Community.pack/templates/blog/entry_response.mtml
-	'Thank you for posting an entry.' => 'Gracias por publicar una entrada.',
-	'Entry Pending' => 'Entrada pendiente',
-	'Your entry has been received and held for approval by the blog owner.' => 'Su entrada ha sido recibida y está pendiente de aprobación por el propietario del blog.',
-	'Entry Posted' => 'Entrada publicada',
-	'Your entry has been posted.' => 'La entrada ha sido publicada.',
-	'Your entry has been received.' => 'La entrada ha sido recibida.',
-	'Return to the <a href="[_1]">blog\'s main index</a>.' => 'Regresar al <a href="[_1]">índice principal del blog</a>.',
-
-## addons/Community.pack/templates/blog/comment_response.mtml
-
-## addons/Community.pack/templates/blog/entry_detail.mtml
-
-## addons/Community.pack/templates/blog/entry_form.mtml
-	'You don\'t have permission to post.' => 'No tiene permisos para publicar.',
-	'<a href="[_1]">Sign in</a> to create an entry.' => '<a href="[_1]">Inicie una sesión</a> para crear una entrada.',
-	'Select Category...' => 'Seleccione una categoría...',
-
-## addons/Community.pack/templates/blog/entry_create.mtml
-	'Entry Form' => 'Formulario de entradas',
-
-## addons/Community.pack/templates/blog/comment_detail.mtml
-
-## addons/Community.pack/templates/blog/comments.mtml
-
-## addons/Community.pack/templates/blog/comment_form.mtml
-
-## addons/Community.pack/templates/blog/categories.mtml
-
-## addons/Community.pack/templates/blog/search_results.mtml
-
-## addons/Community.pack/templates/blog/sidebar_2col.mtml
-	'Subscribe icon' => 'Icono de suscripción',
-	'Subscribe' => 'Suscripción',
-
-## addons/Community.pack/templates/blog/sidebar_3col.mtml
-
-## addons/Community.pack/templates/blog/entry_listing.mtml
-
-## addons/Community.pack/templates/blog/dynamic_error.mtml
-
-## addons/Community.pack/templates/blog/tags.mtml
-
-## addons/Community.pack/templates/blog/entry_metadata.mtml
-
-## addons/Community.pack/templates/blog/entry.mtml
-
-## addons/Community.pack/templates/blog/comment_preview.mtml
-
-## addons/Community.pack/templates/blog/javascript.mtml
-
-## addons/Community.pack/templates/forum/main_index.mtml
-	'Forum Home' => 'Foro - Inicio',
-	'Content Header' => 'Cabecera de contenidos',
-	'Popular Entry' => 'Entrada popular',
-	'Entry Table' => 'Tabla de entradas',
-
-## addons/Community.pack/templates/forum/page.mtml
-
-## addons/Community.pack/templates/forum/entry_summary.mtml
-
-## addons/Community.pack/templates/forum/content_nav.mtml
-	'Start Topic' => 'Comenzar tema',
-
-## addons/Community.pack/templates/forum/entry_response.mtml
-	'Thank you for posting a new topic to the forums.' => 'Gracias por publicar un nuevo tema en los foros.',
-	'Topic Pending' => 'Tema pendiente',
-	'The topic you posted has been received and held for approval by the forum administrators.' => 'El tema que ha publicado se ha recibido y está pendiente de aprobación por parte de los administradores del foro.',
-	'Topic Posted' => 'Tema publicado',
-	'The topic you posted has been received and published. Thank you for your submission.' => 'El tema que envió se ha recibido y ya está publicado. Gracias por su aportación.',
-	'Return to the <a href="[_1]">forum\'s homepage</a>.' => 'Regresar a la página de <a href="[_1]">inicio del foro</a>.',
-
-## addons/Community.pack/templates/forum/comment_response.mtml
-	'Reply Submitted' => 'Respuesta enviada',
-	'Your reply has been accepted' => 'Su respuesta ha sido aceptada',
-	'Thank you for your reply. It has been accepted and should appear momentarily.' => 'Gracias por su respuesta. Ha sido aceptada y aparecerá en breve.',
-	'Reply Pending' => 'Respuesta pendiente',
-	'Your reply has been received' => 'Se ha recibido su respuesta',
-	'Thank you for your reply. However, your reply is currently being held for approval by the forum\'s administrator.' => 'Gracias por su respuesta. Actualmente está pendiente de aprobación por parte del administrador del foro.',
-	'Reply Submission Error' => 'Error en el envío de la respuesta',
-	'Your reply submission failed for the following reasons:' => 'El envío de la respuesta falló por alguna de las siguientes razones:',
-	'Return to the <a href="[_1]">original topic</a>.' => 'Regresar al <a href="[_1]">tema original</a>.',
-
-## addons/Community.pack/templates/forum/content_header.mtml
-
-## addons/Community.pack/templates/forum/entry_detail.mtml
-
-## addons/Community.pack/templates/forum/entry_form.mtml
-	'<a href="[_1]">Sign in</a> to create a topic.' => '<a href="[_1]">Inicie una sesión</a> para crear un tema.',
-	'Topic' => 'Tema',
-	'Select Forum...' => 'Seleccionar foro...',
-	'Forum' => 'Foro',
-
-## addons/Community.pack/templates/forum/comment_detail.mtml
-
-## addons/Community.pack/templates/forum/entry_create.mtml
-	'Start a Topic' => 'Comenzar un tema',
-
-## addons/Community.pack/templates/forum/comment_form.mtml
-
-## addons/Community.pack/templates/forum/entry_listing.mtml
-
-## addons/Community.pack/templates/forum/entry_metadata.mtml
-	'Replies ([_1])' => 'Respuestas ([_1])',
-
-## addons/Community.pack/templates/forum/entry.mtml
-
-## addons/Community.pack/templates/forum/javascript.mtml
-	'. Now you can reply to this topic.' => '. Ahora puede contestar en este tema.',
-	' to comment on this topic.' => ' para comentar en este tema.',
-	' to comment on this topic,' => ' para comentar en este tema.',
-
-## addons/Community.pack/templates/forum/rss.mtml
-
-## addons/Community.pack/templates/forum/entry_table.mtml
-	'Recent Topics' => 'Temas recientes',
-	'Replies' => 'Respuestas',
-	'Last Reply' => 'Última respuesta',
-	'Permalink to this Reply' => 'Enlace permanente de esta respuesta',
-	'By [_1]' => 'Por [_1]',
-	'Closed' => 'Cerrado',
-	'Post the first topic in this forum.' => 'Publica el primer tema en este foro.',
-
-## addons/Community.pack/templates/forum/archive_index.mtml
-
-## addons/Community.pack/templates/forum/sidebar.mtml
-	'Category Groups' => 'Grupos de categorías',
-	'All Forums' => 'Todos los foros',
-	'[_1] Forum' => '[_1] Foro',
-
-## addons/Community.pack/templates/forum/category_groups.mtml
-	'Forum Groups' => 'Grupos de los foros',
-	'Last Topic: [_1] by [_2] on [_3]' => 'Último tema: [_1] by [_2] on [_3]',
-
-## addons/Community.pack/templates/forum/comments.mtml
-	'[_1] Replies' => '[_1] respuestas',
-	'_NUM_FAVORITES' => 'Marcar como favorito',
-	'Favorite This' => 'Marcar como favorito',
-
-## addons/Community.pack/templates/forum/search_results.mtml
-
-## addons/Community.pack/templates/forum/dynamic_error.mtml
-
-## addons/Community.pack/templates/forum/entry_popular.mtml
-	'Popular topics' => 'Temas populares',
-	'No Reply' => 'Sin respuestas',
-
-## addons/Community.pack/templates/forum/comment_preview.mtml
-	'Reply on [_1]' => 'Responder a [_1]',
-	'Previewing your Reply' => 'Vista previa de la respuesta',
-
-## addons/Community.pack/config.yaml
-	'Login Form' => 'Formulario de inicio de sesión',
-	'Password Reset Form' => 'Formulario de reinicio de contraseña',
-	'Registration Form' => 'Formulario de registro',
-	'Registration Confirmation' => 'Confirmación de registro',
-	'Profile View' => 'Ver perfil',
-	'Profile Edit Form' => 'Formulario de edición del perfil',
-	'Profile Feed (Atom)' => 'Sindicación de perfiles (Atom)',
-	'Profile Feed (RSS)' => 'Sindicación de perfiles (RSS)',
-	'Email verification' => 'Verificación del correo',
-	'Registration notification' => 'Notificación de registro',
-	'New entry notification' => 'Notificación de nueva entrada',
-	'Community Blog' => 'Blog de la comunidad',
-	'Entry Response' => 'Respuesta a la entrada',
-	'Displays error, pending or confirmation message when submitting an entry.' => 'Muestra un mensaje de error, de pendiente o de confirmación, al enviar una entrada.',
-	'Community Forum' => 'Foro de la comunidad',
-	'Entry Feed (Atom)' => 'Sindicación de las entradas (Atom)',
-	'Entry Feed (RSS)' => 'Sindicación de las entradas (RSS)',
-	'Displays error, pending or confirmation message when submitting a entry.' => 'Muestra un mensaje de error, de pendiente o de confirmación al enviar una entrada.',
+## addons/Commercial.pack/lib/MT/Commercial/Util.pm
+	'About' => 'Sobre mi',
+	'_UTS_REPLACE_THIS' => '<p><strong>Reemplace el texto de ejemplo con sus propios datos.</strong></p>',
+	'_UTS_SAMPLE_ABOUT' => '<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
+
+<p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies.</p>
+',
+	'_UTS_EDIT_LINK' => '
+<!-- borrar este enlace después de la edición -->
+<p class="admin-edit-link">
+<script type="text/javascript">document.write(\'<a href="\' + adminurl + \'?__mode=view&_type=page&id=\' + page_id + \'&blog_id=\' + blog_id + \'" target="_blank">Editar este contenido</a>\')</script>
+</p>
+',
+	'_UTS_CONTACT' => 'Contacto',
+	'_UTS_SAMPLE_CONTACT' => '<p>Nos encantará tener noticias suyas. Envíenos un mensaje a correo (arroba) dominio.com</p>',
+	'Welcome to our new website!' => '¡Bienvenido a nuestro nuevo sitio!',
+	'_UTS_SAMPLE_WELCOME' => '
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Aliquam erat volutpat. Ut placerat porta nibh. Donec vitae nulla. Pellentesque nisi leo, pretium a, gravida quis, sollicitudin non, eros. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
+
+<p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies. Aliquam sagittis volutpat metus.</p>
+
+<p>Sed enim. Integer hendrerit, arcu ac pretium nonummy, velit turpis faucibus risus, pulvinar egestas enim elit sed ante. Curabitur orci diam, placerat a, faucibus id, condimentum vitae, magna. Etiam enim massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
+',
+	'New design launched using Movable Type' => 'Nuevo diseño lanzado utilizando Movable Type',
+	'_UTS_SAMPLE_NEWDESIGN' => '
+<p>Nuestro sitio tiene un nuevo diseño gracias a <a href="http://www.movabletype.com/">Movable Type</a> y el Conjunto de Plantillas Universal. Este conjunto le permite a cualquier persona poner en marcha un nuevo web con Movable Type. Es realmente fácil, y solo con un par de clics. Seleccione un nombre para su nuevo sitio, seleccione el Conjunto de Plantillas Universal y publique. ¡Voilà! El nuevo sitio. ¡Gracias Movable Type!</p>
+',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => 'Mostrar',
@@ -4037,13 +3733,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Edit Field' => 'Editar campo',
 	'Invalid date \'[_1]\'; dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'; las fechas deben estar en el formato YYYY-MM-DD HH:MM:SS.',
 	'Invalid date \'[_1]\'; dates should be real dates.' => 'Fecha no válida \'[_1]\'; debe ser una fecha real.',
-	'Please enter valid URL for the URL field: [_1]' => 'Por favor, introduzca una URL válida en el campo de la URL: [_1]', # Translate - New
+	'Please enter valid URL for the URL field: [_1]' => 'Por favor, introduzca una URL válida en el campo de la URL: [_1]',
 	'Please enter some value for required \'[_1]\' field.' => 'Por favor, introduzca un valor en el campo obligatorio \'[_1]\'.',
 	'Please ensure all required fields have been filled in.' => 'Por favor, asegúrese de que todos los campos se han introducido.',
 	'The template tag \'[_1]\' is an invalid tag name.' => 'La etiqueta de plantilla \'[_1]\' es un nombre de etiqueta inválido.',
 	'The template tag \'[_1]\' is already in use.' => 'La etiqueta de plantilla \'[_1]\' ya está en uso.',
 	'The basename \'[_1]\' is already in use.' => 'El nombre base \'[_1]\' ya está en uso.',
-	'Default value must be valid URL.' => 'El valor por defecto debe ser una URL válida.', # Translate - New
+	'Default value must be valid URL.' => 'El valor por defecto debe ser una URL válida.',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Personalice los formularios y campos de las entradas, páginas, carpetas, categorías y usuarios, guardando los datos exactos que necesite.',
 	' ' => ' ',
 	'Single-Line Text' => 'Texto - Una sola línea',
@@ -4118,301 +3814,115 @@ que la dirección provista es correcta y le pertenece.',
 	'Choose [_1]' => 'Seleccionar [_1]',
 	'Remove [_1]' => 'Borrar [_1]',
 
+## addons/Commercial.pack/templates/notify-entry.mtml
+
+## addons/Commercial.pack/templates/blog_index.mtml
+
+## addons/Commercial.pack/templates/main_index.mtml
+
+## addons/Commercial.pack/templates/page.mtml
+
+## addons/Commercial.pack/templates/entry_summary.mtml
+
+## addons/Commercial.pack/templates/comment_response.mtml
+
+## addons/Commercial.pack/templates/commenter_notify.mtml
+
+## addons/Commercial.pack/templates/recent_entries_expanded.mtml
+	'By [_1] | Comments ([_2])' => 'Por [_1] | Commentarios ([_2]) ', # Translate - New
+
+## addons/Commercial.pack/templates/footer-email.mtml
+
+## addons/Commercial.pack/templates/entry_detail.mtml
+
+## addons/Commercial.pack/templates/verify-subscribe.mtml
+
+## addons/Commercial.pack/templates/new-ping.mtml
+
+## addons/Commercial.pack/templates/comment_detail.mtml
+	'[_1] [_2] on' => '[_1] [_2] en',
+	'<a href="[_1]" title="Permalink to this comment">[_2]</a>' => '<a href="[_1]" title="Enlace permanente a este comentario">[_2]</a>',
+
+## addons/Commercial.pack/templates/comment_form.mtml
+
+## addons/Commercial.pack/templates/comment_throttle.mtml
+
+## addons/Commercial.pack/templates/new-comment.mtml
+
+## addons/Commercial.pack/templates/entry_listing.mtml
+
+## addons/Commercial.pack/templates/contact.mtml
+
+## addons/Commercial.pack/templates/footer.mtml
+	'Powered By (Footer)' => 'Powered By (Pie)',
+	'Footer Links' => 'Enlaces del pie',
+
+## addons/Commercial.pack/templates/tags.mtml
+
+## addons/Commercial.pack/templates/navigation.mtml
+	'Home' => 'Inicio',
+
+## addons/Commercial.pack/templates/entry_metadata.mtml
+
+## addons/Commercial.pack/templates/entry.mtml
+
+## addons/Commercial.pack/templates/recover-password.mtml
+
+## addons/Commercial.pack/templates/javascript.mtml
+
+## addons/Commercial.pack/templates/rss.mtml
+
+## addons/Commercial.pack/templates/archive_index.mtml
+
+## addons/Commercial.pack/templates/sign_in_top.mtml
+	'You are signed in as' => 'Se ha identificado como',
+	'.  <a href="[_1]">Sign Out</a>' => '.  <a href="[_1]">Salir</a>', # Translate - New
+	'Sign Out' => 'Salir',
+
+## addons/Commercial.pack/templates/trackbacks.mtml
+	'&raquo; <a href="[_1]">[_2]</a> from [_3]' => '&raquo; <a href="[_1]">[_2]</a> de [_3]',
+	'Tracked on <a href="[_1]">[_2]</a>' => 'Enviado desde <a href="[_1]">[_2]</a>',
+
+## addons/Commercial.pack/templates/sidebar.mtml
+	'Recent Entries Expanded' => 'Entradas recientes expandidas',
+	'Recent Assets' => 'Multimedia reciente',
+	'Recent Comments' => 'Comentarios recientes',
+	'Category Archives' => 'Archivos por categoría',
+
+## addons/Commercial.pack/templates/powered_by_footer.mtml
+
+## addons/Commercial.pack/templates/categories.mtml
+
+## addons/Commercial.pack/templates/comments.mtml
+
+## addons/Commercial.pack/templates/search_results.mtml
+
+## addons/Commercial.pack/templates/search_top.mtml
+
+## addons/Commercial.pack/templates/header.mtml
+	'Sign In (In Header)' => 'Identificación (en la cabecera)',
+	'Navigation' => 'Navegación',
+	'Search (In Navigation)' => 'Buscar (en la navegación)',
+	'Homepage Image' => 'Imagen de la página de inicio',
+
+## addons/Commercial.pack/templates/sidebar_2col.mtml
+
+## addons/Commercial.pack/templates/sidebar_3col.mtml
+
+## addons/Commercial.pack/templates/dynamic_error.mtml
+
+## addons/Commercial.pack/templates/footer_links.mtml
+	'Links' => 'Enlaces',
+
+## addons/Commercial.pack/templates/comment_preview.mtml
+
+## addons/Commercial.pack/templates/commenter_confirm.mtml
+
 ## addons/Commercial.pack/config.yaml
-
-## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
-	'Fixing binary data for Microsoft SQL Server storage...' => 'Reparando datos binarios para Microsoft SQL Server...',
-
-## addons/Enterprise.pack/lib/MT/Enterprise/Wizard.pm
-	'PLAIN' => 'PLAIN',
-	'CRAM-MD5' => 'CRAM-MD5',
-	'Digest-MD5' => 'Digest-MD5',
-	'Login' => 'Login',
-	'Found' => 'Encontrado',
-	'Not Found' => 'No encontrado',
-
-## addons/Enterprise.pack/lib/MT/Enterprise/BulkCreation.pm
-	'Format error at line [_1]: [_2]' => 'Error en el formato a la línea [_1]: [_2]',
-	'Invalid command: [_1]' => 'Orden inválida',
-	'Invalid number of columns for [_1]' => 'Número de columnas para [_1] inválido',
-	'Invalid user name: [_1]' => 'Nombre de usuario inválido: [_1]',
-	'Invalid display name: [_1]' => 'Nombre mostrado inválido: [_1]',
-	'Invalid email address: [_1]' => 'Dirección de correo electrónico inválida: [_1]',
-	'Invalid language: [_1]' => 'Idioma inválido: [_1]',
-	'Invalid password: [_1]' => 'Contraseña inválida: [_1]',
-	'Invalid password recovery phrase: [_1]' => 'Frase de recuperación de contraseña: [_1]',
-	'Invalid weblog name: [_1]' => 'Nombre de weblog inválido: [_1]',
-	'Invalid weblog description: [_1]' => 'Descripción de weblog inválida: [_1]',
-	'Invalid site url: [_1]' => 'URL del sitio inválida: [_1]',
-	'Invalid site root: [_1]' => 'Raíz del sitio inválida: [_1]',
-	'Invalid timezone: [_1]' => 'Zona horaria inválida: [_1]',
-	'Invalid new user name: [_1]' => 'Nuevo nombre de usuario inválido: [_1]',
-	'A user with the same name was found.  Register was not processed: [_1]' => 'Un usuario con el mismo nombre ha sido encontrado.  El registro no ha sido procesado: [_1]',
-	'Blog for user \'[_1]\' can not be created.' => 'El blog por el usuario [_1] no puede ser creado.',
-	'Blog \'[_1]\' for user \'[_2]\' has been created.' => 'El blog [_1] por el usuario [_2] ha sido creado.',
-	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Error en la asignación de los derechos de administración al usuario [_1] (ID: [_2]) para el weblog [_3] (ID: [_4]).  Ningún rol de administrador apropiado ha sido encontrado.',
-	'Permission granted to user \'[_1]\'' => 'Los derechos han sido atribuidos al usuario [_1]',
-	'User \'[_1]\' already exists. Update was not processed: [_2]' => 'El usuario [_1] ya existe.  La actualización no ha sido efectuada: [_2]',
-	'User cannot be updated: [_1].' => 'Usuario no puede ser actualizado [_1].',
-	'User \'[_1]\' not found.  Update was not processed.' => 'Usuario [_1] no encontrado.  La actualización no ha sido efectuada.',
-	'User \'[_1]\' has been updated.' => 'Usuario [_1] ha sido actualizado.',
-	'User \'[_1]\' was found, but delete was not processed' => 'Usuario [_1] ha sido encontrado pero la supresión no ha sido efectuada. ',
-	'User \'[_1]\' not found.  Delete was not processed.' => 'El usuario [_1] no ha sido encontrada.  La supresión no ha sido efectuada.',
-	'User \'[_1]\' has been deleted.' => 'El usuario [_1] ha sido borrado.',
-
-## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
-	'Add [_1] to a blog' => 'Añadir [_1] al blog',
-	'You can not create associations for disabled groups.' => 'No puede crear asociaciones con grupos inhabilitados.',
-	'Assign Role to Group' => 'Asignar rol al grupo',
-	'Add a group to this blog' => 'Asignar un grupo a este blog',
-	'Grant permission to a group' => 'Otorgar permiso a un grupo',
-	'Movable Type Enterprise has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Enterprise acaba de intentar deshabilitar su cuenta durante una sincronización con el directorio externo. Algunas de las opciones de configuración de la administración externa de usuarios deben ser incorrectas. Por favor, corrija la configuración antes de continuar.',
-	'Group requires name' => 'El grupo requiere un nombre',
-	'Invalid group' => 'Grupo inválido',
-	'Add Users to Group [_1]' => 'Añadir usuarios al grupo [_1]',
-	'Users & Groups' => 'Usuarios y grupos',
-	'Group Members' => 'Miembros del grupo',
-	'Groups' => 'Grupos',
-	'User Groups' => 'Grupos de usuarios',
-	'Group load failed: [_1]' => 'La carga del grupo ha fallado: [_1]',
-	'User load failed: [_1]' => 'La carga del usuario ha fallado: [_1]',
-	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Usuario [_1] (ID: [_2]) ha sido borrado del grupo [_3] (ID:[_4]) por [_5]',
-	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Usuario[_1] (ID: [_2]) ha sido añadido del grupo [_3] (ID:[_4]) por [_5]',
-	'Group Profile' => 'Perfil de grupo',
-	'Author load failed: [_1]' => 'La carga del autor ha fallado: [_1]',
-	'Invalid user' => 'Usuario inválido',
-	'Assign User [_1] to Groups' => 'Usuario [_1] asignado a los grupos',
-	'Select Groups' => 'Seleccionar grupos',
-	'Group' => 'Grupo',
-	'Groups Selected' => 'Grupos seleccionados',
-	'Type a group name to filter the choices below.' => 'Tapea el nombre de un grupo para filtrar las opciones que se encuentran aquí debajo.',
-	'Group Name' => 'Nombre del grupo',
-	'Search Groups' => 'Buscar grupos',
-	'Bulk import cannot be used under external user management.' => 'La importación masiva no puede ser usuada en la administración de usuarios externos.',
-	'Bulk management' => 'Administración masiva',
-	'The group' => 'El grupo',
-	'User/Group' => 'Usuario/Grupo',
-	'A user can\'t change his/her own username in this environment.' => 'Un usuario no puede cambiar su propio nombre en este contexto.',
-	'An error occurred when enabling this user.' => 'Ocurrió un error cuando se habilitaba este usuario.',
-
-## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
-	'User [_1]([_2]) not found.' => 'Usuario [_1]([_2]) sin resultado.',
-	'User \'[_1]\' cannot be updated.' => 'Usuario [_1] no puede ser modificado.',
-	'User \'[_1]\' updated with LDAP login ID.' => 'Usuario [_1] modificado con el ID de login LDAP.',
-	'LDAP user [_1] not found.' => 'Usuario LDAP [_1] sin resultado.',
-	'User [_1] cannot be updated.' => 'Usuario [_1] no puede ser actualizado.',
-	'Failed login attempt by user \'[_1]\' deleted from LDAP.' => 'Login entrado sin suceso por el usuario [_1] borrado de LDAP.',
-	'User \'[_1]\' updated with LDAP login name \'[_2]\'.' => 'Usuario [_1] actualizado con el nombre de login LDAP [_2]',
-	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => "Intento fallido de inicio de sesión por el usuario \'[_1]\'. Ya existe
-en el sistema un usuario con ese nombre y diferente UUID.",
-	'User \'[_1]\' account is disabled.' => 'La cuenta del usuario [_1] ha sido desactivada.',
-	'LDAP users synchronization interrupted.' => 'La sincronización de los usuarios LDAP ha sido interrumpida.',
-	'Loading MT::LDAP failed: [_1]' => 'El cargamiento de MT::LDAP falló: [_1]',
-	'External user synchronization failed.' => 'La sincronización de los usuarios externos falló.',
-	'An attempt to disable all system administrators in the system was made.  Synchronization of users was interrupted.' => 'Un intento de desactivación de todos los administradores del sistema ha sido efectuada.  La sincronización de los usuarios ha sido interrumpida.',
-	'The following users\' information were modified:' => 'Las informaciones de los siguientes usuarios han sido actualizadas:',
-	'The following users were disabled:' => 'Los siguientes usuarios han sido desactivados:',
-	'LDAP users synchronized.' => 'Los usuarios LDAP han sido sincronizados:',
-	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute is set.' => 'La sincronización de los grupos no puede ser realizada sin que LDAPGroupIdAttribute y/o LDAPGroupNameAttribute sean iniciados.',
-	'LDAP groups synchronized with existing groups.' => 'Grupos LDAP sincronizados con los grupos existentes.',
-	'The following groups\' information were modified:' => 'Las informaciones de los siguientes grupos han sido actualizados.',
-	'No LDAP group was found using given filter.' => 'Ningún grupo LDAP ha sido encontrado con el filtro dado.',
-	"Filter used to search for groups: [_1]\nSearch base: [_2]" => "Filtro usado para buscar grupos: [_1]
-Búsqueda base: [_2]",
-	'(none)' => '(ninguno)',
-	'The following groups were deleted:' => 'Los siguientes grupos han sido borrados:',
-	'Failed to create a new group: [_1]' => 'Falló la creación de un nuevo grupo: [_1]',
-	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Enterprise.' => 'La instrucción [_1] debe ser completada para sincronizar los miembros de los grupos LDAP en MT Enterprise.',
-	'Members removed: ' => 'Miembros borrados:',
-	'Members added: ' => 'Miembros añadidos:',
-	'Memberships of the group \'[_2]\' (#[_3]) has been changed in synchronizing with external directory.' => 'Memberships del grupo [_2] (#[_3]) ha sido cambiado durante la sincroización con el directorio externo.',
-	'LDAPUserGroupMemberAttribute must be set to enable synchronize members of groups.' => 'LDAPUserGroupMemberAttribute debe ser completado para permitir la sincronización de los miembros de los grupos.',
-
-## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
-	'PublishCharset [_1] is not supported in this version of MS SQL Server Driver.' => 'PublishCharset [_1] no es soportada en esta versión del driver MS SQL Server.',
-
-## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/UMSSQLServer.pm
-	'This version of UMSSQLServer driver requires DBD::ODBC version 1.14.' => 'Esta versión del Driver UMSSQLServer requiere DBD::ODBC versión 1.14.',
-	'This version of UMSSQLServer driver requires DBD::ODBC compiled with Unicode support.' => 'Esta versión del Driver UMSSQLServer requiere DBD::ODBC compilado con el soporte Unicode.',
-
-## addons/Enterprise.pack/lib/MT/Group.pm
-
-## addons/Enterprise.pack/lib/MT/LDAP.pm
-	'Invalid LDAPAuthURL scheme: [_1].' => 'Scheme LDAPAuthURL inválido: [_1].',
-	'Error connecting to LDAP server [_1]: [_2]' => 'Error a la conexión al server LDAP [_1]: [_2]',
-	'User not found on LDAP: [_1]' => 'Usuario no encontrado en LDAP: [_1]',
-	'Binding to LDAP server failed: [_1]' => 'La asociación con el server LDAP ha fallado: [_1]',
-	'More than one user with the same name found on LDAP: [_1]' => 'Más de un usuario con el mismo nombre ha sido encontrado en LDAP: [_1]',
-
-## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
-	'You need to create some groups.' => 'Necesita crear algunos grupos.',
-	'Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Click here</a> to create a group.' => 'Antes de poder hacer esto, usted debe crear algunos grupos. <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Haga clic aquí</a> para crear un grupo.',
-
-## addons/Enterprise.pack/tmpl/include/list_associations/page_title.group.tmpl
-	'Users &amp; Groups for [_1]' => 'Usuarios &amp; Grupos de [_1]',
-	'Group Associations for [_1]' => 'Asociaciones de grupos de [_1]',
-
-## addons/Enterprise.pack/tmpl/include/users_content_nav.tmpl
-
-## addons/Enterprise.pack/tmpl/include/group_table.tmpl
-	'group' => 'grupo',
-	'groups' => 'grupos',
-	'Enable selected group (e)' => 'Habilitar grupo seleccionado (e)',
-	'Disable selected group (d)' => 'Deshabilitar grupo seleccionado (d)',
-	'Remove selected group (d)' => 'Borrar grupo seleccionado (d)',
-	'Only show enabled groups' => 'Solo muestra los grupos activados',
-	'Only show disabled groups' => 'Solo muestra los grupos desactivados',
-
-## addons/Enterprise.pack/tmpl/list_group.tmpl
-	'[_1]: User&rsquo;s Groups' => 'Usuarios de los grupos [_1]',
-	'Groups: System Wide' => 'Grupos: Todo el Sistema',
-	'Synchronize groups now' => 'Sincronizar los grupos ahora',
-	'You have successfully disabled the selected group(s).' => 'usted ha desactivado el(los) grupo(s) seleccionado(s) con suceso',
-	'You have successfully enabled the selected group(s).' => 'Usted ha activado el(los) grupo(s) seleccionad(s) con suceso',
-	'You have successfully deleted the groups from the Movable Type system.' => 'Usted ha borrado con suceso los grupos del sistema Movable Type.',
-	'You have successfully synchronized groups\' information with the external directory.' => 'Usted ha sincronizado con suceso la información de los grupos con el directorio externo.',
-	'The user <em>[_1]</em> is currently disabled.' => 'El usuario <em>[_1]</em> está actualmente desactivado.',
-	'You can not add disabled users to groups.' => 'Usted no puede añadir usuarios inactivos a los grupos.',
-	'Add [_1] to another group' => 'Añadir [_1] a otro grupo',
-	'Create Group' => 'Crear Grupo',
-	'You did not select any [_1] to remove.' => 'No ha seleccionado ningún [_1] a borrar.',
-	'Are you sure you want to remove this [_1]?' => '¿Está seguro de querer borrar esto [_1]?',
-	'Are you sure you want to remove the [_1] selected [_2]?' => '¿Está seguro de querer borrar el [_1] seleccionado [_2]?',
-	'to remove' => 'para borrar',
-
-## addons/Enterprise.pack/tmpl/create_author_bulk_end.tmpl
-	'All users updated successfully!' => '¡Todos los usuarios han sido actualizados con suceso!',
-	'An error occurred during the updating process. Please check your CSV file.' => 'Un error se ha producido durante la actualización.  Por favor verifique su fichero CSV.',
-
-## addons/Enterprise.pack/tmpl/list_group_member.tmpl
-	'[_1]: Group Members' => '[_1]: Miembros del grupo',
-	'<em>[_1]</em>: Group Members' => '<em>[_1]</em>: Miembros del grupo',
-	'You have successfully deleted the users.' => 'Usted ha borrado con suceso los usuarios.',
-	'You have successfully added new users to this group.' => 'Usted ha añadido con suceso nuevos usuarios a este grupo.',
-	'You have successfully synchronized users\' information with external directory.' => 'Usted ha sincronizado con suceso las informaciones de los usuarios con el directorio externo.',
-	'Some ([_1]) of the selected users could not be re-enabled because they were no longer found in LDAP.' => 'Algunos ([_1]) de los usuarios seleccionados no han podido ser reactivados porque no han sido encontrados en LDAP.',
-	'You have successfully removed the users from this group.' => 'Usted ha borrado con suceso los usuarios de este grupo.',
-	'Group Disabled' => 'Grupo desactivado',
-	'You can not add users to a disabled group.' => 'Usted no puede añadir usuarios a un grupo desactivado.',
-	'Add user to [_1]' => 'Añadir usuarios a [_1]',
-	'member' => 'miembro',
-	'Show Enabled Members' => 'Mostrar los miembros activados',
-	'Show Disabled Members' => 'Mostrar los miembros desactivados',
-	'Show All Members' => 'Mostrar todos los miembros',
-	'None.' => 'Ninguno.',
-	'(Showing all users.)' => '(Mostrar todos los usuarios.)',
-	'Showing only users whose [_1] is [_2].' => 'Mostrar solo los usuarios que el [_1] es [_2].',
-	'all' => 'todos',
-	'only' => 'solo',
-	'users where' => 'usuarios donde',
-	'No members in group' => 'Ningún miembro en el grupo',
-	'Only show enabled users' => 'Solo mostrar los usuarios activados',
-	'Only show disabled users' => 'Solo mostrar los usuarios desactivados',
-	'Are you sure you want to remove this [_1] from this group?' => '¿Está seguro de querer borrar este [_1] de este grupo?',
-	'Are you sure you want to remove the [_1] selected [_2] from this group?' => '¿Está seguro de querer borrar el [_1] seleccionado [_2] de este grupo?',
-
-## addons/Enterprise.pack/tmpl/author_bulk.tmpl
-	'Manage Users in bulk' => 'Administrar los usuarios por lote',
-	'_USAGE_AUTHORS_2' => '_USAGE_AUTHORS_2',
-	'Upload source file' => 'Suba el fichero fuente',
-	'Specify the CSV-formatted source file for upload' => 'Defina el fichero fuente en formato CSV para subirlo',
-	'Source File Encoding' => 'Codificación del archivo fuente',
-	'Upload (u)' => 'Suba (u)',
-
-## addons/Enterprise.pack/tmpl/cfg_ldap.tmpl
-	'Authentication Configuration' => 'Configuración de la autentificación',
-	'You must set your Authentication URL.' => 'Configure la URL de identificación.',
-	'You must set your Group search base.' => 'Configure la base de búsqueda de Grupos.',
-	'You must set your UserID attribute.' => 'Configure su parámetro UserID.',
-	'You must set your email attribute.' => 'Configure su parámetro de correo electrónico.',
-	'You must set your user fullname attribute.' => 'Configure su parámetro de nombre completo',
-	'You must set your user member attribute.' => 'Configure su parámetro de nombre de usuario.',
-	'You must set your GroupID attribute.' => 'Configure su parámetro de GroupID.',
-	'You must set your group name attribute.' => 'Configure el parámetro de su nombre de grupo.',
-	'You must set your group fullname attribute.' => 'Configure el parámetro del nombre completo del grupo.',
-	'You must set your group member attribute.' => 'Configure el parámetro de su nombre de grupo.',
-	'You can configure your LDAP settings from here if you would like to use LDAP-based authentication.' => 'Ahora puede configurar sus parámetros LDAP desde aquí si desea utilizar una identificaión basada sobre LDAP. ',
-	'Your configuration was successful.' => 'Su configuración se ha producido con suceso.',
-	'Click \'Continue\' below to configure the External User Management settings.' => 'Haga clic en continuar debajo para configurar la administración de usuario externo.',
-	'Click \'Continue\' below to configure your LDAP attribute mappings.' => 'Haga clic en continuar debajo para configurar el mapeado de los atributos LDAP.',
-	'Your LDAP configuration is complete.' => 'Su configuración LDAP ha sido completada.',
-	'To finish with the configuration wizard, press \'Continue\' below.' => 'Para terminar con la configuración, haga clic en el botón continuar debajo.',
-	'An error occurred while attempting to connect to the LDAP server: ' => 'Un error se ha producido durante la conexión LDAP.',
-	'Use LDAP' => 'Utilizar LDAP',
-	'Authentication URL' => 'URL de Identificación',
-	'The URL to access for LDAP authentication.' => 'La URL para acceder a la identificación LDAP',
-	'Authentication DN' => 'DN de la Identificación',
-	'An optional DN used to bind to the LDAP directory when searching for a user.' => 'Un DN opcional utilizado para asociarse con el directorio LDAP cuando se busca un usuario.',
-	'Authentication password' => 'Contraseña de la Identificación',
-	'Used for setting the password of the LDAP DN.' => 'Utilizado para iniciar la contraseña del DN del LDAP.',
-	'SASL Mechanism' => 'Mecanismo SASL',
-	'The name of SASL Mechanism to use for both binding and authentication.' => 'El nombre del mecanismo SASL para la asociación y la identificación.',
-	'Test Username' => 'Verificar el nombre de usuario',
-	'Test Password' => 'Verificar la contraseña',
-	'Enable External User Management' => 'Activar la administración de los usuarios externos',
-	'Synchronization Frequency' => 'Frecuencia de sincronización',
-	'Frequency of synchronization in minutes. (Default is 60 minutes)' => 'Frecuencia de sincronización en minutos. (Por Defecto son 60 minutos)',
-	'15 Minutes' => '15 Minutos',
-	'30 Minutes' => '30 Minutos',
-	'60 Minutes' => '60 Minutos',
-	'90 Minutes' => '90 Minutos',
-	'Group search base attribute' => 'Parámetro de la base de búsqueda de los grupos',
-	'Group filter attribute' => 'Parámetro de filtro de grupos',
-	'Search Results (max 10 entries)' => 'Resultados de la búsqueda (máx. 10 entradas)',
-	'CN' => 'CN',
-	'No groups were found with these settings.' => 'Ningún grupo ha sido encontrado bajo estos parámetros.',
-	'Attribute mapping' => 'Mapeado de los atributos',
-	'LDAP Server' => 'LDAP Server',
-	'Other' => 'Otro',
-	'User ID attribute' => 'Parámetro del Usuario ID',
-	'Email Attribute' => 'Parámetro del correo electrónico',
-	'User fullname attribute' => 'Parámetro del nombre completo',
-	'User member attribute' => 'Parámetro del nombre de usuario',
-	'GroupID attribute' => 'Parámetro del Grupo ID',
-	'Group name attribute' => 'Parámetro del nombre del grupo',
-	'Group fullname attribute' => 'Parámetro del nombre completo del grupo',
-	'Group member attribute' => 'Parámetro del nombre de usuario del grupo',
-	'Search result (max 10 entries)' => 'Resultado de la búsqueda (máx. 10 entradas)',
-	'Group Fullname' => 'Nombre completo del grupo',
-	'Group Member' => 'Nombre de usuario del grupo',
-	'No groups could be found.' => 'Ningún grupo ha sido encontrado',
-	'User Fullname' => 'Nombre completo el usuario',
-	'No users could be found.' => 'Ningún usuario ha sido encontrado',
-	'Test connection to LDAP' => 'Verificación de la conexión LDAP',
-	'Test search' => 'Verificación de la búsqueda',
-
-## addons/Enterprise.pack/tmpl/create_author_bulk_start.tmpl
-	'Bulk Author Import' => 'Importación de autores por lote',
-	'Updating...' => 'Actualizando...',
-
-## addons/Enterprise.pack/tmpl/edit_group.tmpl
-	'Edit Group' => 'Modificar Grupo',
-	'Group profile has been updated.' => 'El perfil del grupo ha sido modificado',
-	'LDAP Group ID' => 'LDAP del Grupo ID',
-	'The LDAP directory ID for this group.' => 'El ID del directorio LDAP para este grupo.',
-	'Status of group in the system. Disabling a group removes its members&rsquo; access to the system but preserves their content and history.' => 'El estatus del grupo en el sistema.  El hecho de desactivar un grupo borra el acceso a sus miembros pero guarda su contenido y el histórico de estos.',
-	'The name used for identifying this group.' => 'El nombre de usuario para identificar este grupo.',
-	'The display name for this group.' => 'El nombre que se muestra para este grupo.',
-	'Enter a description for your group.' => 'Instroduzca una descripción para su grupo.',
-	'Created on' => 'Creado en',
-	'Save changes to this field (s)' => 'Guardar cambios del campo (s)',
-
-## addons/Enterprise.pack/app-wizard.yaml
-	'This module is required in order to use the LDAP Authentication.' => 'Este módulo es requerido para usar la identificación LDAP.',
-	'This module is required in order to use SSL/TLS connection with the LDAP Authentication.' => 'Este módulo es necesario para usar la conexión SSL/TLS con la autentificación LDAP.',
-
-## addons/Enterprise.pack/app-cms.yaml
-	'Are you sure you want to delete the selected group(s)?' => '¿Está seguro de querer borrar el(los) grupo(s) seleccionados?',
-	'Bulk Author Export' => 'Exportación masiva de autores',
-	'Synchronize Users' => 'Sincronización de Usuarios',
-
-## addons/Enterprise.pack/config.yaml
-	'Enterprise Pack' => 'Enterprise Pack',
-	'Oracle Database' => 'Base de Datos Oracle',
-	'Microsoft SQL Server Database' => 'Base de Datos Microsoft SQL Server',
-	'Microsoft SQL Server Database (UTF-8 support)' => 'Base de Datos Microsoft SQL Server (UTF-8 support)',
-	'External Directory Synchronization' => 'Sincronización del Directorio Externo',
-	'Populating author\'s external ID to have lower case user name...' => 'Introduciendo el ID externo del autor para usar minúsculas...',
+	'Universal Website' => 'Sitio universal',
+	'Themes that are compatible with the Universal Website template set.' => 'Temas que son compatibles con el sistema de las plantillas del Sitio Universal', # Translate - New
+	'Blog Index' => 'Índice del blog',
+	'Blog Entry Listing' => 'Lista de entradas',
 
 ## plugins/Cloner/cloner.pl
 	'Clones a blog and all of its contents.' => 'Clona un blog y todos sus contenidos.',
@@ -4467,6 +3977,7 @@ Búsqueda base: [_2]",
 	'3-Columns, Thin, Wide, Thin' => '3 columnas, delgada, ancha, delgada',
 	'2-Columns, Thin, Wide' => '2 columnas, delgada, ancha',
 	'2-Columns, Wide, Thin' => '2 columnas, ancha, delgada',
+	'2-Columns, Wide, Medium' => '2 columnas, ancha, media', # Translate - New
 	'None available' => 'Ninguno disponible',
 	'Applying...' => 'Aplicando...',
 	'Apply Design' => 'Aplicar diseño',
@@ -4664,6 +4175,7 @@ Búsqueda base: [_2]",
 
 ## plugins/WidgetManager/default_widgets/main_index_meta_widget.mtml
 	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Este es un conjunto personalizado de widgets creados para aparecer solo en la página de inicio (o "main_index"). Más información: [_1]',
+	'Recent Comments' => 'Comentarios recientes',
 	'Recent Assets' => 'Multimedia reciente',
 
 ## plugins/WidgetManager/default_widgets/syndication.mtml
@@ -4706,7 +4218,7 @@ Búsqueda base: [_2]",
 	'Creative Commons' => 'Creative Commons',
 	'Home Page Widgets' => 'Widgets de la página de inicio',
 	'Monthly Archives Dropdown' => 'Desplegable de archivos mensuales',
-	'Page Listing' => 'Lista de páginas', # Translate - New
+	'Page Listing' => 'Lista de páginas',
 	'Powered By' => 'Powered By',
 	'Syndication' => 'Sindicación',
 	'Technorati Search' => 'Búsquedas en Technorati',
@@ -4757,8 +4269,58 @@ Búsqueda base: [_2]",
 	'Maintain your blog\'s widget content using a handy drag and drop interface.' => 'Mantenga el contenido widget de su blog usando la interfaz práctica arrastrar y dejar.',
 	'Widgets' => 'Widgets',
 
+## plugins/CustomFields/customfields.pl
+	'Moving Custom Fields storage...' => 'Trasladando el almacenamiento de Custom Fields...',
+	'Moving metadata storage for [lc,_1]...' => 'Trasladando el almacenamiento de metadatos de [lc,_1]...',
+	'Moving metadata storage for users...' => 'Trasladando el almacenamiento de metadatos de los usuarios...',
+	'Moving metadata storage for entries...' => 'Trasladando el almacenamiento de metadatos de las entradas...',
+	'Moving metadata storage for pages...' => 'Trasladando los metadatos de las páginas...',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. Se utilizó la versión previa de la fuente. Se devolvió el estado HTTP [_2].',
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. La versión anterior de la fuente no estaba disponible. Se devolvió el estado HTTP [_2].',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' es un argumento necesario de [_2]',
+	'MT[_1] was not used in the proper context.' => 'MT[_1] no se está utilizando en el contexto adecuado.',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'Feeds.App Lite Widget Creator' => 'Creador de widgets de Feeds.App Lite',
+	'Configure feed widget settings' => 'Configurar widgets de sindicación',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Teclee un título para su widget. Esto también se mostrará como título de la fuente en el blog.',
+	'[_1] Feed Widget' => 'Widget de sindicación [_1]',
+	'Select the maximum number of entries to display.' => 'Seleccione el máximo número de entradas a mostrar.',
+	'3' => '3',
+	'5' => '5',
+	'10' => '10',
+	'All' => 'Todos',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'No feeds could be discovered using [_1]' => 'No se descubrieron fuentes usando [_1]',
+	'An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog(\'http://www.feedvalidator.org/check.cgi?url=[_2]\')">here</a> for more detail and please try again.' => 'Ocurrió un error procesando [_1]. Compruebe <a href="javascript:void(0)" onclick="closeDialog(\'http://www.feedvalidator.org/check.cgi?url=[_2]\')">aquí</a> los detalles e inténtelo de nuevo.',
+	'A widget named <strong>[_1]</strong> has been created.' => 'Se creó un widget titulado <strong>[_1]</strong>.',
+	'You may now <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog(\'[_3]\')">WidgetManager</a> or the following MTInclude tag:' => 'Ahora puede <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget su blog utilizando <a href="javascript:void(0)" onclick="closeDialog(\'[_3]\')">WidgetManager</a> o la siguiente etiqueta MTInclude:',
+	'You may now <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:' => 'Ahora puede <a href="javascript:void(0)" onclick="closeDialog(\'[_2]\')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget en su blog utilizando la siguiente etiqueta MTInclude:',
+	'Create Another' => 'Crear otro',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'You must enter a feed or site URL to proceed' => 'Debe introducir una fuente o una URL de un sitio para proceder.',
+	'Create a widget from a feed' => 'Crear un widget de una fuente',
+	'Feed or Site URL' => 'URL del sitio o fuente',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Introduzca la URL de una fuente de sindicación, o la URL de un sitio que tenga una fuente.',
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => 'Se encontraron múltiples fuentes',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Seleccione la fuente que desea usar. <em>Feeds.App Lite soporta las fuentes con solo texto RSS 1.0, 2.0 y Atom.',
+	'URI' => 'URI',
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?' => 'Feeds.App Lite le ayuda a publicar fuentes de sindicación en los blogs. ¿Desea hacer más cosas con fuentes en Movable Type?',
+	'Upgrade to Feeds.App' => 'Actualícese a Feeds.App',
+	'Create a Feed Widget' => 'Crear un widget de fuente',
+
 );
 
-## New words: 150
+## New words: 28
 
 1;

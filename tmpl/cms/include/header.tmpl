@@ -202,12 +202,10 @@
 </div></div><!-- /header -->
 </mt:setvarblock><mt:unless name="agent_ie"><$mt:var name="header_block"$><mt:else><mt:if name="force_header"><$mt:var name="header_block"$></mt:if></mt:unless>
 
-<div id="system-msg"><div id="system-msg-inner" class="inner pkg">
+<div id="content-header"><div id="content-header-inner" class="inner pkg">
 <mt:if name="system_msg">
     <$mt:var name="system_msg"$>
 </mt:if>
-</div></div>
-<div id="content-header"><div id="content-header-inner" class="inner pkg">
 <mt:if name="show_display_options_link">
     <a href="javascript:void(0)" class="display-options-link" mt:command="open-flyout" mt:flyout="display-options-widget"><__trans phrase="Display Options"></a>
 </mt:if>

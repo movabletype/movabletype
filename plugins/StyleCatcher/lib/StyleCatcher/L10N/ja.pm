@@ -35,6 +35,7 @@ use vars qw( %Lexicon );
 	'3-Columns, Thin, Wide, Thin' => '3カラム、小・大・小',
 	'2-Columns, Thin, Wide' => '2カラム、小・大',
 	'2-Columns, Wide, Thin' => '2カラム、大・小',
+	'2-Columns, Wide, Medium' => '2カラム、大・中',
 	'None available' => '見つかりません',
 	'Applying...' => '適用中...',
 	'Apply Design' => 'デザインを適用',

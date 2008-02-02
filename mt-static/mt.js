@@ -366,7 +366,7 @@ function openDialog(f, mode, params) {
     url += '?__mode=' + mode;
     if (params) url += '&' + params;
     url += '&__type=dialog';
-    if (app) app.closeFlyouts();
+    if (window.app) window.app.closeFlyouts();
     show("dialog-container");
     // handle escape key for closing modal dialog
     DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
@@ -644,6 +644,8 @@ function hide(id, d) {
     } else {
         el.style.display = 'none';
     }
+    if ( window.app )
+        app.reflow();
 }
 
 function showReply(id, d, style) {
@@ -1335,13 +1337,7 @@ MT.App = new Class( App, {
         this.setDelegate( "navMenu", new this.constructor.NavMenu() );
 
         this.initFormElements();
-
-        /* fix a display issue */
-        var navEl = DOM.getElement( "content-nav" );
-        var navConEl = DOM.getElement( "content-header-inner" );
-        if ( navEl && navConEl )
-            navEl.style.top = "-" + DOM.getStyle( navConEl, "height" );
-
+        
         if ( this.constructor.Resizer ) {
             this.setDelegate( "resizer", new this.constructor.Resizer( this.getIndirectMethod( "resizeComplete" ) ) );
             this.setDelegateListener( "eventMouseUp", "resizer" );
@@ -1404,6 +1400,18 @@ MT.App = new Class( App, {
         this.form = null;
         this.cpeList = null;
         arguments.callee.applySuper( this, arguments );
+    },
+
+
+    reflow: function() {
+        arguments.callee.applySuper( this, arguments );
+        /* fix a display issue */
+        var navEl = DOM.getElement( "content-nav" );
+        var navConEl = DOM.getElement( "content-header-inner" );
+        if ( navEl && navConEl ) {
+            var d = DOM.getAbsoluteDimensions( navConEl );
+            navEl.style.top = "-" + (d.clientHeight - 13) + "px";
+        }
     },
 
 

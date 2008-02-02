@@ -1,22 +1,8 @@
 <div class="comment"<MTIfArchiveTypeEnabled archive_type="Individual"> id="comment-<$MTCommentID$>"</MTIfArchiveTypeEnabled>>
     <div class="inner">
         <div class="comment-header">
-<mt:IfImageSupport>
-            <div class="user-pic">
-                <mt:if tag="CommenterUserpic">
-                <img src="<$MTCommenterUserpicURL$>" width="50" height="50" alt="user-pic" />
-                <mt:else>
-                    <mt:if tag="CommenterAuthIconURL">
-                <a href="<$MTCommenterURL$>" class="auth-icon"><img src="<$MTCommenterAuthIconURL size="logo_small"$>" alt="<$mt:CommenterAuthType$>"/></a>
-                <img src="<$MTStaticWebPath$>images/default-userpic-90.jpg" width="50" height="50" alt="<__trans phrase="default userpic">" />
-                    <mt:else>
-                <img src="<$MTStaticWebPath$>images/default-userpic-90.jpg" width="50" height="50" alt="<__trans phrase="default userpic">" />
-                    </mt:if>
-                </mt:if>
-            </div>
-</mt:IfImageSupport>
             <div class="asset-meta">
-                <span class="byline"><__trans phrase="By [_1] on [_2]" params='<span class="vcard author"><MTIfNonEmpty tag="CommenterID"><a href="<$MTCommenterURL$>"><$MTCommenterName$></a><MTElse><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></MTIfNonEmpty></span>%%<a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>'></span>
+                <span class="byline"><__trans phrase="By [_1] on [_2]" params='<span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span><MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>%%<a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>'></span>
             </div>
         </div>
         <div class="comment-content">

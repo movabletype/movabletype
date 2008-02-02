@@ -149,7 +149,6 @@ use vars qw( @ISA %Lexicon );
 	'Edit TrackBack' => 'TrackBack bewerken',
 
 ## default_templates/comment_detail.mtml
-	'default userpic' => 'standaardfoto gebruiker',
 	'By [_1] on [_2]' => 'Door [_1] op [_2]',
 
 ## default_templates/comment_form.mtml
@@ -202,7 +201,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/recover-password.mtml
 	'_USAGE_FORGOT_PASSWORD_1' => 'U hebt een nieuw Movable Type-wachtwoord aangevraagd. Uw wachtwoord is in het systeem gewijzigd; hier is het nieuwe wachtwoord:',
-	'_USAGE_FORGOT_PASSWORD_2' => 'Met dit nieuwe wachtwoord moet u zich op Movable Type kunnen aanmelden. Zodra u zich hebt aangemeld, kunt u uw wachtwoord veranderen in iets dat u makkelijker kunt onthouden.',
+	'_USAGE_FORGOT_PASSWORD_2' => 'Met dit nieuwe wachtwoord moet u zich op Movable Type kunnen aanmelden via de onderstaande URL. Zodra u zich hebt aangemeld, kunt u uw wachtwoord veranderen in iets dat u makkelijker kunt onthouden.',
 	'Mail Footer' => 'Footer voor e-mail',
 
 ## default_templates/javascript.mtml
@@ -2454,7 +2453,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/new_install.tmpl
 	'Thank you for installing Movable Type' => 'Bedankt om Movable Type te installeren!',
-	'Congratulations on installing Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => '\n	Gelukwensen met de installatie van Movable Type, het krachtigste blog-, publicatie- en social mediaplatform ter wereld.  Om u te helpen van start te gaan hebben we enkele links verzameld naar de meest voorkomende dingen die nieuwe gebruikers willen doen:',
+	'Congratulations on installing Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => 'Gelukwensen met de installatie van Movable Type, het krachtigste blog-, publicatie- en social mediaplatform ter wereld.  Om u te helpen van start te gaan hebben we enkele links verzameld naar de meest voorkomende dingen die nieuwe gebruikers willen doen:',
 	'Add more users to your blog' => 'Voeg meer gebruikers toe aan uw weblog',
 	'Start building your network of blogs and your community now. Invite users to join your blog and promote them to authors.' => 'Begin met het opbouwen van uw blognetwerk en uw gemeenschap.  Nodig gebruikers uit om lid te worden van uw blog en promoveer hen tot auteur.',
 
@@ -3832,7 +3831,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/commenter_notify.mtml
 
 ## addons/Commercial.pack/templates/recent_entries_expanded.mtml
-	'By [_1] | Comments ([_2])' => 'Door [_1] | Reacties ([_2])', # Translate - New
+	'By [_1] | Comments ([_2])' => 'Door [_1] | Reacties ([_2])',
 
 ## addons/Commercial.pack/templates/footer-email.mtml
 
@@ -3879,7 +3878,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/templates/sign_in_top.mtml
 	'You are signed in as' => 'U bent aangemeld als',
-	'.  <a href="[_1]">Sign Out</a>' => '.  <a href="[_1]">Afmelden</a>', # Translate - New
+	'.  <a href="[_1]">Sign Out</a>' => '.  <a href="[_1]">Afmelden</a>',
 	'Sign Out' => 'Afmelden',
 
 ## addons/Commercial.pack/templates/trackbacks.mtml
@@ -3923,6 +3922,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/config.yaml
 	'Universal Website' => 'Universele website',
+	'Themes that are compatible with the Universal Website template set.' => 'Designs die compatibel zijn met de Universele Website sjabloonset.', # Translate - New
 	'Blog Index' => 'Blog index',
 	'Blog Entry Listing' => 'Overzicht blogberichten',
 
@@ -3979,6 +3979,7 @@ use vars qw( @ISA %Lexicon );
 	'3-Columns, Thin, Wide, Thin' => '3-kolommen, smal, breed, smal',
 	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed',
 	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal',
+	'2-Columns, Wide, Medium' => '2-kolommen, breed, medium', # Translate - New
 	'None available' => 'Geen beschikbaar',
 	'Applying...' => 'Wordt toegepast...',
 	'Apply Design' => 'Design toepassen',
@@ -4322,6 +4323,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 11
+## New words: 13
 
 1;
