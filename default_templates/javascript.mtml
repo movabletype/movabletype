@@ -1,14 +1,17 @@
 
 function hideDocumentElement(id) {
     var el = document.getElementById(id);
-    if (el) el.style.display = 'none';
+    if (el)
+        el.style.display = 'none';
 }
 
 function showDocumentElement(id) {
     var el = document.getElementById(id);
-    if (el) el.style.display = 'block';
+    if (el)
+        el.style.display = 'block';
 }
 
+var captcha_timer;
 function showAnonymousForm() {
     showDocumentElement('comments-form');
 <MTIfNonEmpty tag="MTCaptchaFields">
@@ -16,13 +19,11 @@ function showAnonymousForm() {
 </MTIfNonEmpty>
 }
 <MTIfNonEmpty tag="MTCaptchaFields">
-var captcha_timer;
 function delayShowCaptcha() {
     clearInterval(captcha_timer);
     var div = document.getElementById('comments-open-captcha');
-    if (div) {
+    if (div)
         div.innerHTML = '<$MTCaptchaFields$>';
-    }
 }
 </MTIfNonEmpty>
 
@@ -75,21 +76,22 @@ function individualArchivesOnLoad(commenter_name) {
     </MTIfRegistrationRequired>
 </MTIfRegistrationAllowed>
 
-    if (document.comments_form) {
-        if (!commenter_name && (document.comments_form.email != undefined) &&
+    var cf = document.comments_form;
+    if (cf) {
+        if (!commenter_name && (cf.email != undefined) &&
             (mtcmtmail = getCookie("mtcmtmail")))
-            document.comments_form.email.value = mtcmtmail;
-        if (!commenter_name && (document.comments_form.author != undefined) &&
+            cf.email.value = mtcmtmail;
+        if (!commenter_name && (cf.author != undefined) &&
             (mtcmtauth = getCookie("mtcmtauth")))
-            document.comments_form.author.value = mtcmtauth;
-        if (document.comments_form.url != undefined &&
+            cf.author.value = mtcmtauth;
+        if (cf.url != undefined &&
             (mtcmthome = getCookie("mtcmthome")))
-            document.comments_form.url.value = mtcmthome;
-        if (document.comments_form["bakecookie"]) {
+            cf.url.value = mtcmthome;
+        if (cf["bakecookie"]) {
             if (mtcmtauth || mtcmthome) {
-                document.comments_form.bakecookie.checked = true;
+                cf.bakecookie.checked = true;
             } else {
-                document.comments_form.bakecookie.checked = false;
+                cf.bakecookie.checked = false;
             }
         }
     }
@@ -135,15 +137,16 @@ function writeCommenterGreeting(commenter_name, entry_id, blog_id, commenter_id,
 }
 
 <MTIfRegistrationAllowed>
-if ('<$MTCGIHost exclude_port="1"$>' != '<$MTBlogHost exclude_port="1"$>') {
-    document.write('<script src="<$MTCGIPath$><$MTCommentScript$>?__mode=cmtr_name_js&blog_id=<$MTBlogID$>"></script>');
-} else {
-    commenter_name = getCookie('commenter_name');
-    ids = getCookie('commenter_id').split(':');
-    commenter_id = ids[0];
-    commenter_blog_ids = ids[1];
-    commenter_url = getCookie('commenter_url');
-}
+<MTsetvarblock name="cgi_host"><$MTCGIHost exclude_port="1"></MTsetvarblock>
+<MTIf tag="MTBlogHost" exclude_port="1" eq="cgi_host">
+commenter_name = getCookie('commenter_name');
+ids = getCookie('commenter_id').split(':');
+commenter_id = ids[0];
+commenter_blog_ids = ids[1];
+commenter_url = getCookie('commenter_url');
+<MTelse>
+document.write('<script src="<$MTCGIPath$><$MTCommentScript$>?__mode=cmtr_name_js&blog_id=<$MTBlogID$>"></script>');
+</MTIf>
 </MTIfRegistrationAllowed>
 
 
