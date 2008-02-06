@@ -192,6 +192,9 @@ fieldset {
 .choice_on,
 .choice_on a {
     color: #fff;
+}
+
+.choice_on {
     background: #a3becc url('../images/comment/signin_on.png') no-repeat right center;
 }
 
