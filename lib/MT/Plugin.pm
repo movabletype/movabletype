@@ -100,6 +100,9 @@ sub config_template {
         $r->{"config_template"} ||
         $plugin->{"${scope}_config_template"} ||
         $plugin->{'config_template'}) {
+        if (ref $tmpl eq 'HASH') {
+            $tmpl = MT->handler_to_coderef($tmpl->{code});
+        }
         return $tmpl->($plugin, @_) if ref $tmpl eq 'CODE';
         if ($tmpl =~ /\s/) {
             return $tmpl;
