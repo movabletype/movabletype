@@ -209,3 +209,58 @@ document.write('<script src="<$MTCGIPath$><$MTCommentScript$>?__mode=cmtr_name_j
         f.url.value = '';
     }
 
+
+// BEGIN: fast browser onload init
+// Modificaitons by David Davis, DWD
+// Dean Edwards/Matthias Miller/John Resig
+// http://dean.edwards.name/weblog/2006/06/again/?full#comment5338
+
+function init() {
+  // quit if this function has already been called
+  if (arguments.callee.done) return;
+
+  // flag this function so we don't do the same thing twice
+  arguments.callee.done = true;
+
+  // kill the timer
+  // DWD - check against window
+  if ( window._timer ) clearInterval(window._timer);
+  
+  // DWD - fire the window onload now, and replace it
+  if ( window.onload && ( window.onload !== window.init ) ) {
+    window.onload();
+    window.onload = function() {};
+  }
+};
+
+/* for Mozilla/Opera9 */
+if (document.addEventListener) {
+  document.addEventListener("DOMContentLoaded", init, false);
+}
+
+/* for Internet Explorer */
+/*@cc_on @*/
+/*@if (@_win32)
+  document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+  var script = document.getElementById("__ie_onload");
+  script.onreadystatechange = function() {
+    if (this.readyState == "complete") {
+      init(); // call the onload handler
+    }
+  };
+/*@end @*/
+
+/* for Safari */
+if (/WebKit/i.test(navigator.userAgent)) { // sniff
+  _timer = setInterval(function() {
+    if (/loaded|complete/.test(document.readyState)) {
+      init(); // call the onload handler
+    }
+  }, 10);
+}
+
+/* for other browsers */
+window.onload = init;
+
+// END: fast browser onload init
+
