@@ -147,27 +147,23 @@
     function server_confirm_edit(id, response) {
         var result = '';
         try {
-            result = response.responseText;
+            result = eval('(' + response.responseText + ')');
         } catch ( e ) {
         }
-        if (result == 'true' || result == 'false') {
-            if (result == 'true') {
-                var tag_name = getByID('tag-name-' + id);
-                var new_tag_name = tag_name.value;
-                if (!confirm(trans(tag_rename_warning, old_tag_name,
-                                   new_tag_name))) {
-                    cancel_edit(id);
-                    return false;
-                } else {
-                    submit_edit_form(id);
-                }
-            } else {
-                submit_edit_form(id);
-            }
-        } else {
+        if (!result || !result.result) {
             alert(trans("An error occurred while testing for the new tag name."));
             return cancel_edit(id);
         }
+        if (result.result.exists) {
+            var tag_name = getByID('tag-name-' + id);
+            var new_tag_name = tag_name.value;
+            if (!confirm(trans(tag_rename_warning, old_tag_name,
+                               new_tag_name))) {
+                cancel_edit(id);
+                return false;
+            }
+        }
+        submit_edit_form(id);
     }
 
     function submit_edit_form(id) {
