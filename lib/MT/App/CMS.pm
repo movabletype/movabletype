@@ -12430,6 +12430,7 @@ sub list_entries {
                     direction => 'descend'
                 }
             ),
+            limit => 51,
         }
     );
     my %seen;
@@ -12609,7 +12610,8 @@ sub build_entry_table {
             {
                 'join' => MT::Permission->join_on(
                     'author_id', { blog_id => $blog_id }
-                )
+                ),
+                limit => 51,
             }
         );
         while ( my $author = $auth_iter->() ) {
