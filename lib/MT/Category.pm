@@ -70,6 +70,8 @@ sub publish_path {
     return $cat->{__path} if exists $cat->{__path};
     my $result = $cat->basename;
     do {
+        # TODO: uh, does this not mean we cache the resulting path on the
+        # root category object instead?
         $cat = $cat->parent ? __PACKAGE__->load($cat->parent) : undef;
         $result = join "/", $cat->basename, $result if $cat;
     } while ($cat);
