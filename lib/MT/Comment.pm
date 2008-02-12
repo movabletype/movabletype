@@ -267,7 +267,9 @@ sub save {
     my $comment = shift;
     $comment->junk_log(join "\n", @{$comment->{__junk_log}})
         if ref $comment->{__junk_log} eq 'ARRAY';
-    $comment->SUPER::save();
+    my $ret = $comment->SUPER::save();
+    delete $comment->{__changed}{visibility} if $ret;
+    return $ret;
 }
 
 sub to_hash {
@@ -322,7 +324,8 @@ sub visible {
     } elsif ($was_visible && !$is_visible) {
         $vis_delta = -1;
     }
-    $comment->{__changed}{visibility} = $vis_delta;
+    $comment->{__changed}{visibility} ||= 0;
+    $comment->{__changed}{visibility} += $vis_delta;
 
     return $comment->SUPER::visible($is_visible);
 }
