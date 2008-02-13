@@ -3387,12 +3387,17 @@ sub generate_dashboard_stats_comment_tab {
     my $cmt_class = $app->model('comment');
     my $terms = { visible => 1 };
     $terms->{blog_id} = $blog_id if $blog_id;
+    my $from =
+      substr( epoch2ts( $app->blog, time - 120 * 24 * 60 * 60 ), 0, 8 )
+      . '000000';
+    $terms->{created_on} = [ $from, undef ];
     my $args = {
         group => [
             "extract(year from created_on)",
             "extract(month from created_on)",
             "extract(day from created_on)"
         ],
+        range => { created_on => 1 },
     };
     if ( !$user->is_superuser && !$blog_id ) {
         $args->{join} = MT::Permission->join_on(
