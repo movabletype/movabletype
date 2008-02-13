@@ -2048,6 +2048,12 @@ sub run {
     my $app = shift;
     my $q = $app->param;
 
+    my $timer;
+    if ($app->config->PerformanceLogging) {
+        $timer = $app->get_timer();
+        $timer->pause_partial();
+    }
+
     my($body);
     eval {
         # line __LINE__ __FILE__
@@ -2250,6 +2256,11 @@ sub run {
             $app->print($body);
         }
     }
+
+    if ($timer) {
+        $timer->mark(ref($app) . '::run');
+    }
+
     $app->takedown();
 }
 
@@ -2312,6 +2323,10 @@ sub takedown {
 
     require MT::Auth;
     MT::Auth->release;
+
+    if ($app->config->PerformanceLogging) {
+        $app->log_times();
+    }
 
     $app->request->finish;
     delete $app->{request};

@@ -90,6 +90,7 @@ sub new_file {
     my $tmpl = $pkg->new;
     $tmpl->{include_path} = $param{path};
     $tmpl->{include_filter} = $param{filter};
+    $tmpl->{__file} = $file;
     my $contents = $tmpl->load_file($file);
     if (defined $contents) {
         if ($tmpl->{include_filter}) {
@@ -210,6 +211,15 @@ sub build {
     my($ctx, $cond) = @_;
     $ctx ||= $tmpl->context;
 
+    my ($timer, $start);
+    if (MT->config->PerformanceLogging) {
+        $timer = MT->get_timer();
+        # $start = Time::HiRes::time();
+    } else {
+        $timer = {};
+    }
+    local $timer->{elapsed} = 0;
+
     local $ctx->{__stash}{template} = $tmpl;
     my $tokens = $tmpl->tokens
         or return;
@@ -242,10 +252,21 @@ sub build {
         }->{$layout};
         $ctx->var( 'page_columns', $columns ) if $columns;
     }
-    defined(my $res = $build->build($ctx, $tokens, $cond)) or
+
+    $timer->pause_partial if $timer;
+
+    my $res = $build->build($ctx, $tokens, $cond);
+
+    if ($timer) {
+        # $timer->{prev} = $start;
+        $timer->mark("MT::Template::build[" . ($tmpl->name || $tmpl->{__file}).']');
+    }
+
+    unless (defined($res)) {
         return $tmpl->error(MT->translate(
             "Publish error in template '[_1]': [_2]",
             $tmpl->name || $tmpl->{__file}, $build->errstr));
+    }
     $res =~ s/^\s*//;
     return $res;
 }

@@ -324,6 +324,9 @@ sub tag_cache_key {
 
 sub __load_tags {
     my $obj = shift;
+    my $t = MT->get_timer;
+    $t->pause_partial if $t;
+
     if (!$obj->id) {
         $obj->{__tags} = [];
         return $obj->{__tag_objects} = [];
@@ -346,6 +349,7 @@ sub __load_tags {
         $cache->set($memkey, [ map { $_->id } @tags ], TAG_CACHE_TIME);
     }
     $obj->{__tags} = [ map { $_->name } @tags ];
+    $t->mark('MT::Tag::__load_tags') if $t;
     $obj->{__tag_objects} = \@tags;
 }
 
@@ -374,6 +378,10 @@ sub save_tags {
     my $clear_cache = 0;
     my @tags = @{ $obj->{__tags} };
     return 1 unless @tags;
+
+    my $t = MT->get_timer;
+    $t->pause_partial if $t;
+
     $obj->{__tag_objects} = [];
     my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id : 0;
     my @existing_tags = MT::ObjectTag->load({object_id => $obj->id,
@@ -426,6 +434,7 @@ sub save_tags {
         require MT::Memcached;
         MT::Memcached->instance->delete( $obj->tag_cache_key );
     }
+    $t->mark('MT::Tag::save_tags') if $t;
     1;
 }
 

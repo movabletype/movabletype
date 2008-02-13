@@ -495,6 +495,10 @@ BEGIN {
             'UserpicAllowRect' => { default => 0 },
             'UserpicMaxUpload' => { default => 0 },
             'UserpicThumbnailSize' => { default => 100 },
+
+            'PerformanceLogging' => { default => 0 },
+            'PerformanceLoggingThreshold' => { default => 0.1 },
+            'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -792,6 +796,26 @@ sub init_registry {
 sub load_archive_types {
     require MT::WeblogPublisher;
     return MT::WeblogPublisher->core_archive_types;
+}
+
+sub ProcessMemoryCommand {
+    my $cfg = shift;
+    $cfg->set_internal( 'ProcessMemoryCommand', @_ ) if @_;
+    my $cmd = $cfg->get_internal('ProcessMemoryCommand');
+    unless ($cmd) {
+        my $os = $^O;
+        if ($os eq 'darwin') {
+            $cmd = '/usr/bin/ps $$ -o rss=';
+        }
+        elsif ($os eq 'linux') {
+            $cmd = '/usr/bin/ps -p $$ -o rss=';
+        }
+        elsif ($os eq 'MSWin32') {
+            $cmd = { command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
+                regex => qr/([\d,]+) K/ };
+        }
+    }
+    return $cmd;
 }
 
 sub SecretToken {
