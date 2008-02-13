@@ -44,7 +44,22 @@ sub new {
 
 sub init_archive_types {
     my $types = MT->registry("archive_types") || {};
-    $ArchiveTypes{$_} = $types->{$_} for keys %$types;
+    my $mt = MT->instance;
+    while (my ($type, $typedata) = each %$types) {
+        if ('HASH' eq ref $typedata) {
+            $typedata = { %$typedata };  # don't edit registry
+            $typedata->{$_} = $mt->handler_to_coderef($typedata->{$_})
+                for qw( archive_label archive_file archive_title date_range
+                        archive_group_iter archive_group_entries
+                        archive_entries_count );
+            $typedata->{default_archive_templates} = [
+                map { ArchiveFileTemplate(%$_) }
+                    @{ $typedata->{default_archive_templates} || [] }
+            ];
+            $typedata = ArchiveType(%$typedata);
+        }
+        $ArchiveTypes{$type} = $typedata;
+    }
 }
 
 sub archive_types {
