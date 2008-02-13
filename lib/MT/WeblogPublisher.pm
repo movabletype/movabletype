@@ -1397,10 +1397,8 @@ sub rebuild_file {
     my $timer = MT->get_timer;
     if ($timer) {
         $timer->pause_partial;
-    } else {
-        $timer = {};
     }
-    local $timer->{elapsed} = 0;
+    local $timer->{elapsed} = 0 if $timer;
 
     if (
         $build_static
@@ -1699,10 +1697,8 @@ sub rebuild_indexes {
         my $timer = MT->get_timer;
         if ($timer) {
             $timer->pause_partial;
-        } else {
-            $timer = {};
         }
-        local $timer->{elapsed} = 0;
+        local $timer->{elapsed} = 0 if $timer;
 
         my $ctx = MT::Template::Context->new;
         next

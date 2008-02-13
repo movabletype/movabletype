@@ -214,11 +214,8 @@ sub build {
     my ($timer, $start);
     if (MT->config->PerformanceLogging) {
         $timer = MT->get_timer();
-        # $start = Time::HiRes::time();
-    } else {
-        $timer = {};
     }
-    local $timer->{elapsed} = 0;
+    local $timer->{elapsed} = 0 if $timer;
 
     local $ctx->{__stash}{template} = $tmpl;
     my $tokens = $tmpl->tokens
@@ -258,7 +255,6 @@ sub build {
     my $res = $build->build($ctx, $tokens, $cond);
 
     if ($timer) {
-        # $timer->{prev} = $start;
         $timer->mark("MT::Template::build[" . ($tmpl->name || $tmpl->{__file}).']');
     }
 
