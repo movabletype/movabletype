@@ -2760,22 +2760,22 @@ sub weekly_group_iter {
         },
         {
             ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
-            group => [ "extract(year from authored_on)", "week_number" ],
+            group => [ "week_number" ],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
-            sort => "extract(year from authored_on) $order,
-                       week_number $order"
+            sort => "week_number $order"
         }
     ) or return $ctx->error("Couldn't get weekly archive list");
 
     return sub {
         while ( my @row = $iter->() ) {
+            my $year = unpack 'A4', $row[1];
             my $date =
-              sprintf( "%04d%02d%02d000000", week2ymd( $row[1], $row[2] ) );
+              sprintf( "%04d%02d%02d000000", week2ymd( $year, $row[1] ) );
             my ( $start, $end ) = start_end_week($date);
             return (
                 $row[0],
-                year  => $row[1],
-                week  => $row[2],
+                year  => $year,
+                week  => $row[1],
                 start => $start,
                 end   => $end
             );
