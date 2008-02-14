@@ -7805,7 +7805,10 @@ sub _hdlr_asset_property {
         } else {
             $ret = $size;
         }
-    } elsif (($prop =~ m/^image_/) && $class !~ m/Image/) {
+    } elsif ($prop =~ m/^image_/ && $class->can($prop)) {
+        # These are numbers, so default to 0.
+        $ret = $a->$prop || 0;
+    } elsif ($prop =~ m/^image_/) {
         $ret = 0;
     } else {
         $ret = $a->$prop || '';
