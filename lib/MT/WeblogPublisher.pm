@@ -1209,6 +1209,7 @@ sub rebuild_file {
     my $mt = shift;
     my ( $blog, $root_path, $map, $at, $ctx, $cond, $build_static, %specifier )
       = @_;
+
     my $finfo;
     my $archiver = $mt->archiver($at);
     my ( $entry, $start, $end, $category, $author );
@@ -1408,6 +1409,12 @@ sub rebuild_file {
     return 1 if ( $tmpl->build_dynamic );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
 
+    my $timer = MT->get_timer;
+    if ($timer) {
+        $timer->pause_partial;
+    }
+    local $timer->{elapsed} = 0 if $timer;
+
     if (
         $build_static
         && MT->run_callbacks(
@@ -1450,8 +1457,9 @@ sub rebuild_file {
         MT::Request->instance->cache('build_template', $tmpl);
 
         $html = $tmpl->build( $ctx, $cond );
-        defined($html)
-          or return $mt->error(
+        unless (defined($html)) {
+            $timer->unpause if $timer;
+            return $mt->error(
             (
                 $category ? MT->translate(
                     "An error occurred publishing [_1] '[_2]': [_3]",
@@ -1472,6 +1480,7 @@ sub rebuild_file {
                 )
             )
           );
+        }
         my $orig_html = $html;
         MT->run_callbacks(
             'build_page',
@@ -1505,7 +1514,10 @@ sub rebuild_file {
         ## First check whether the content is actually
         ## changed. If not, we won't update the published
         ## file, so as not to modify the mtime.
-        return 1 unless $fmgr->content_is_updated( $file, \$html );
+        unless ($fmgr->content_is_updated( $file, \$html )) {
+            $timer->unpause if $timer;
+            return 1;
+        }
 
         ## Determine if we need to build directory structure,
         ## and build it if we do. DirUmask determines
@@ -1515,9 +1527,11 @@ sub rebuild_file {
         $path =~ s!/$!!
           unless $path eq '/'; ## OS X doesn't like / at the end in mkdir().
         unless ( $fmgr->exists($path) ) {
-            $fmgr->mkpath($path)
-              or return $mt->trans_error( "Error making path '[_1]': [_2]",
-                $path, $fmgr->errstr );
+            if (!$fmgr->mkpath($path)) {
+                $timer->unpause if $timer;
+                return $mt->trans_error( "Error making path '[_1]': [_2]",
+                    $path, $fmgr->errstr );
+            }
         }
 
         ## By default we write all data to temp files, then rename
@@ -1527,14 +1541,18 @@ sub rebuild_file {
         ## option to turn it off (NoTempFiles).
         my $use_temp_files = !$mt->{NoTempFiles};
         my $temp_file = $use_temp_files ? "$file.new" : $file;
-        defined( $fmgr->put_data( $html, $temp_file ) )
-          or return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
-            $temp_file, $fmgr->errstr );
-        if ($use_temp_files) {
-            $fmgr->rename( $temp_file, $file )
-              or return $mt->trans_error(
-                "Renaming tempfile '[_1]' failed: [_2]",
+        unless ( defined $fmgr->put_data( $html, $temp_file ) ) {
+            $timer->unpause if $timer;
+            return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
                 $temp_file, $fmgr->errstr );
+        }
+        if ($use_temp_files) {
+            if (!$fmgr->rename( $temp_file, $file )) {
+                $timer->unpause if $timer;
+                return $mt->trans_error(
+                    "Renaming tempfile '[_1]' failed: [_2]",
+                    $temp_file, $fmgr->errstr );
+            }
         }
         MT->run_callbacks(
             'build_file',
@@ -1567,6 +1585,8 @@ sub rebuild_file {
         );
 
     }
+    $timer->mark("total:rebuild_file[template_id:" . $tmpl->id . "]")
+        if $timer;
     1;
 }
 
@@ -1689,6 +1709,12 @@ sub rebuild_indexes {
             $finfo->save();
         }
 
+        my $timer = MT->get_timer;
+        if ($timer) {
+            $timer->pause_partial;
+        }
+        local $timer->{elapsed} = 0 if $timer;
+
         my $ctx = MT::Template::Context->new;
         next
           unless (
@@ -1714,7 +1740,10 @@ sub rebuild_indexes {
         MT::Request->instance->cache('build_template', $tmpl);
 
         my $html = $tmpl->build($ctx);
-        return $mt->error( $tmpl->errstr ) unless defined $html;
+        unless (defined $html) {
+            $timer->unpause if $timer;
+            return $mt->error( $tmpl->errstr );
+        }
 
         my $orig_html = $html;
         MT->run_callbacks(
@@ -1751,22 +1780,27 @@ sub rebuild_indexes {
         $path =~ s!/$!!
           unless $path eq '/';    ## OS X doesn't like / at the end in mkdir().
         unless ( $fmgr->exists($path) ) {
-            $fmgr->mkpath($path)
-              or return $mt->trans_error( "Error making path '[_1]': [_2]",
-                $path, $fmgr->errstr );
+            if (! $fmgr->mkpath($path) ) {
+                $timer->unpause if $timer;
+                return $mt->trans_error( "Error making path '[_1]': [_2]",
+                    $path, $fmgr->errstr );
+            }
         }
 
         ## Update the published file.
         my $use_temp_files = !$mt->{NoTempFiles};
         my $temp_file = $use_temp_files ? "$file.new" : $file;
-        defined( $fmgr->put_data( $html, $temp_file ) )
-          or return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
-            $temp_file, $fmgr->errstr );
-        if ($use_temp_files) {
-            $fmgr->rename( $temp_file, $file )
-              or
-              return $mt->trans_error( "Renaming tempfile '[_1]' failed: [_2]",
+        unless (defined( $fmgr->put_data( $html, $temp_file ) )) {
+            $timer->unpause if $timer;
+            return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
                 $temp_file, $fmgr->errstr );
+        }
+        if ($use_temp_files) {
+            if (!$fmgr->rename( $temp_file, $file )) {
+                $timer->unpause if $timer;
+                return $mt->trans_error( "Renaming tempfile '[_1]' failed: [_2]",
+                    $temp_file, $fmgr->errstr );
+            }
         }
         MT->run_callbacks(
             'build_file',
@@ -1789,6 +1823,9 @@ sub rebuild_indexes {
             File         => $file,
             file         => $file
         );
+
+        $timer->mark("total:rebuild_indexes[template_id:" . $tmpl->id . ";file:$file]")
+            if $timer;
     }
     1;
 }

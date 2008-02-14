@@ -221,6 +221,8 @@ sub author {
 
 sub __load_category_data {
     my $entry = shift;
+    my $t = MT->get_timer;
+    $t->pause_partial if $t;
     my $cache = MT::Memcached->instance;
     my $memkey = $entry->cache_key('categories');
     my $rows;
@@ -230,6 +232,7 @@ sub __load_category_data {
         $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
         $cache->set($memkey, $rows, CATEGORY_CACHE_TIME);
     }
+    $t->mark('MT::Entry::__load_category_data') if $t;
     return $rows;
 }
 

@@ -282,6 +282,11 @@ sub build {
 
     #print STDERR syntree2str($tokens,0) unless $count++ == 1;
 
+    my $timer;
+    if ($MT::DebugMode & 8) {
+        $timer = MT->get_timer();
+    }
+
     if ($cond) {
         my %lcond;
         # lowercase condtional keys since we're storing tags in lowercase now
@@ -330,11 +335,7 @@ sub build {
             }
             my($h, $type) = $ctx->handler_for($t->[0]);
             if ($h) {
-                my $start;
-                if ($MT::DebugMode & 8) {
-                    require Time::HiRes;
-                    $start = [ Time::HiRes::gettimeofday() ];
-                }
+                $timer->pause_partial if $timer;
                 local($ctx->{__stash}{tag}) = $t->[0];
                 local($ctx->{__stash}{tokens}) = ref($tokens) ? bless $tokens, 'MT::Template::Tokens' : undef;
                 local($ctx->{__stash}{tokens_else}) = ref($tokens_else) ? bless $tokens_else, 'MT::Template::Tokens' : undef;
@@ -381,7 +382,7 @@ sub build {
                 unless (defined $out) {
                     my $err = $ctx->errstr;
                     if (defined $err) {
-                        return $build->error(MT->translate("Error in <mt:[_1]> tag: [_2]", $t->[0], $ctx->errstr));
+                        return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->[0], $ctx->errstr));
                     }
                     else {
                         # no error was given, so undef will mean '' in
@@ -401,9 +402,10 @@ sub build {
                     if %args && $ph;
                 $res .= $out
                     if defined $out;
-                if ($MT::DebugMode & 8) {
-                    my $elapsed = Time::HiRes::tv_interval($start);
-                    print STDERR "Builder: Tag [" . $t->[0] . "] - $elapsed seconds\n" if $elapsed > 0.25;
+
+                if ($timer) {
+                    $timer->mark("tag_"
+                        . lc($t->[0]) . args_to_string(\%args));
                 }
             } else {
                 if ($t->[0] !~ m/^_/) { # placeholder tag. just ignore
@@ -416,6 +418,46 @@ sub build {
     return $res;
 }
 
+sub args_to_string {
+    my ($args) = @_;
+    my $str = '';
+    foreach my $a (keys %$args) {
+        next if $a eq '@';
+        next unless defined $args->{$a};
+        next if $args->{$a} eq '';
+        $str .= ';' . $a . ':';
+        if (ref $args->{$a} eq 'ARRAY') {
+            foreach my $aa (@{ $args->{$a} }) {
+                $aa = '...' if $aa =~ m/ /;
+                $str .= $aa . ';';
+            }
+            chop($str);
+        } else {
+            $str .= $args->{$a} =~ m/ / ? '...' : $args->{$a};
+        }
+    }
+    my $more_args = $args->{'@'};
+    if ($more_args && @$more_args) {
+        foreach my $a (@$more_args) {
+            if (ref $a->[1] eq 'ARRAY') {
+                $str .= ' ' . $a->[0] . '=';
+                foreach my $aa (@{ $a->[1] }) {
+                    $aa = '...' if $aa =~ m/ /;
+                    $str .= $aa . ';';
+                }
+                chop($str);
+            } else {
+                next if exists $args->{$a->[0]}
+                    && ($args->{$a->[0]} eq $a->[1]);
+                next unless defined $args->[1];
+                next if $args->[1] eq '';
+                $str .= ';' . $a->[0] . ':';
+                $str .= $a->[1];
+            }
+        }
+    }
+    return $str ne '' ? '[' . substr($str,1) . ']' : '';
+}
 1;
 __END__
 

@@ -855,6 +855,10 @@ sub init_config {
         $Data::Dumper::Indent   = 1;
     }
 
+    if ($cfg->ProcessMemoryCommand) {
+        $mt->log_times();
+    }
+
     $mt->set_language( $cfg->DefaultLanguage );
 
     my $cgi_path = $cfg->CGIPath;
@@ -865,6 +869,140 @@ sub init_config {
     $mt->{cfg} = $cfg;
 
     1;
+}
+
+{
+my ($memory_start);
+sub log_times {
+    my $pkg = shift;
+
+    my $timer = $pkg->get_timer;
+    return unless $timer;
+
+    my $memory;
+    my $cmd = $pkg->config->ProcessMemoryCommand;
+    if ($cmd) {
+        my $re;
+        if (ref($cmd) eq 'HASH') {
+            $re = $cmd->{regex};
+            $cmd = $cmd->{command};
+        }
+        $cmd =~ s/\$\$/$$/g;
+        $memory = `$cmd`;
+        if ($re) {
+            if ($memory =~ m/$re/) {
+                $memory = $1;
+                $memory =~ s/\D//g;
+            }
+        } else {
+            $memory =~ s/\s+//gs;
+        }
+    }
+
+    # Called at the start of the process; so we're only recording
+    # the memory usage at the start of the app right now.
+    unless ($timer->{elapsed}) {
+        $memory_start = $memory;
+        return;
+    }
+
+    my $log_file;
+
+    # Log filename calcluation; changes daily, so we don't cache this
+    require File::Spec;
+    my $dir = File::Spec->catdir( MT->instance->static_file_path,
+        'support', 'logs');
+    if (! -d $dir) {
+        require File::Path;
+        eval { File::Path::mkpath([$dir], 0, 0777) };
+        if ($@) {
+            $log_file = 0;
+            return;
+        }
+    }
+    my @time = localtime(time);
+    my $file = sprintf("pl-%04d%02d%02d.log", $time[5] + 1900, $time[4]+1, $time[3]);
+    $log_file = File::Spec->catfile( $dir, $file );
+
+    my $first_write = ! -f $log_file;
+
+    local *PERFLOG;
+    open PERFLOG, ">>$log_file";
+    require Fcntl;
+    flock(PERFLOG, Fcntl::LOCK_EX());
+
+    if ($first_write) {
+        require Config;
+        my ($osname, $osvers) = ($Config::Config{osname}, $Config::Config{osvers});
+        print PERFLOG "# Operating System: $osname/$osvers\n";
+        print PERFLOG "# Platform: $^O\n";
+        my $ver = ref($^V) eq 'version' ? $^V->normal : ( $^V ? join('.', unpack 'C*', $^V) : $] );
+        print PERFLOG "# Perl Version: $ver\n";
+        print PERFLOG "# Web Server: $ENV{SERVER_SOFTWARE}\n";
+        require MT::Object;
+        my $driver = MT::Object->driver;
+        if ($driver) {
+            my $dbh = $driver->r_handle;
+            if ($dbh) {
+                my $dbname = $dbh->get_info( 17 ); # SQL_DBMS_NAME
+                my $dbver = $dbh->get_info( 18 ); # SQL_DBMS_VER
+                if ($dbname && $dbver) {
+                    print PERFLOG "# Database: $dbname/$dbver\n";
+                }
+            }
+        }
+        my ($drname, $drh) = each %DBI::installed_drh;
+        print PERFLOG "# Database Library: DBI/" . $DBI::VERSION . "; DBD/" . $drh->{Version} . "\n";
+        if ($ENV{MOD_PERL}) {
+            print PERFLOG "# App Mode: mod_perl\n";
+        }
+        elsif ($ENV{FAST_CGI}) {
+            print PERFLOG "# App Mode: FastCGI\n";
+        }
+        else {
+            print PERFLOG "# App Mode: CGI\n";
+        }
+    }
+
+    if ($memory) {
+        print PERFLOG $timer->dump_line("mem_start=$memory_start", "mem_end=$memory");
+    } else {
+        print PERFLOG $timer->dump_line();
+    }
+
+    close PERFLOG;
+}
+}
+
+sub get_timer {
+    my $mt = shift;
+    $mt = MT->instance unless ref $mt;
+    my $timer = $mt->request('timer');
+    unless ($timer) {
+        my $uri;
+        if ($mt->isa('MT::App')) {
+            $uri = $mt->uri( args => { $mt->param_hash } );
+        }
+        require MT::Util::ReqTimer;
+        $timer = MT::Util::ReqTimer->new( $uri );
+        $mt->request('timer', $timer);
+    }
+    return $timer;
+}
+
+sub time_this {
+    my $mt = shift;
+    my ($str, $code) = @_;
+    my $timer = $mt->get_timer();
+    my $ret;
+    if ($timer) {
+        $timer->pause_partial();
+        $ret = $code->();
+        $timer->mark($str);
+    } else {
+        $ret = $code->();
+    }
+    return $ret;
 }
 
 sub init_config_from_db {
@@ -1077,6 +1215,11 @@ sub _init_plugins_core {
     my $mt = shift;
     my ($PluginSwitch, $use_plugins, $PluginPaths) = @_;
 
+    my $timer;
+    if ($mt->config->PerformanceLogging) {
+        $timer = $mt->get_timer();
+    }
+
     foreach my $PluginPath (@$PluginPaths) {
         my $plugin_lastdir = $PluginPath;
         $plugin_lastdir =~ s![\\/]$!!;
@@ -1107,7 +1250,9 @@ sub _init_plugins_core {
                     }
                     return 0 if exists $Plugins{$plugin_sig};
                     $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+                    $timer->pause_partial if $timer;
                     eval { require $plugin };
+                    $timer->mark("Loaded plugin " . $sig) if $timer;
                     if ($@) {
                         $Plugins{$plugin_sig}{error} = $@;
                         # Issue MT log within another eval block in the
@@ -1866,7 +2011,6 @@ sub load_tmpl {
         @p);
     return $mt->error(
         $mt->translate("Loading template '[_1]' failed.", $file)) unless $tmpl;
-    $tmpl->{__file} = $file if $type eq 'filename';
     $mt->set_default_tmpl_params($tmpl);
     $tmpl->param($param) if $param;
     $tmpl;
