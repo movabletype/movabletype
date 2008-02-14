@@ -166,4 +166,5 @@ Makefile
 ^MT.*\.zip
 ^MT.*\.gz
 index\.html\..*
+readme\.html\..*
 build-language-stamp
