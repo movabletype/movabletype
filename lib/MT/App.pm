@@ -544,7 +544,7 @@ sub send_http_header {
             print "Content-Type: $type\n\n";
         }
     } else {
-        $app->{cgi_headers}{-status} = ($app->response_code || 200) . " "
+        $app->{cgi_headers}{-status} = ($app->response_code || 200)
                                      . ($app->{response_message} ? ' ' . $app->{response_message} : '');
         $app->{cgi_headers}{-type} = $type;
         $app->print($app->{query}->header(%{ $app->{cgi_headers} }));
