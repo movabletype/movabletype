@@ -532,7 +532,7 @@ sub send_http_header {
     if ($ENV{MOD_PERL}) {
         if ($app->{response_message}) {
             $app->{apache}->status_line(($app->response_code || 200)
-                                        . ($app->{response_message} ? ' ' . $app->{response_message} : '');
+                                        . ($app->{response_message} ? ' ' . $app->{response_message} : ''));
         } else {
             $app->{apache}->status($app->response_code || 200);
         }
