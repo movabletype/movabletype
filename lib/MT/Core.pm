@@ -520,7 +520,10 @@ BEGIN {
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 list_actions    => sub { MT->app->core_list_actions(@_) },
                 list_filters    => sub { MT->app->core_list_filters(@_) },
-                search_apis     => sub { MT->app->core_search_apis(@_) },
+                search_apis     => sub {
+                    require MT::CMS::Search;
+                    return MT::CMS::Search::core_search_apis(MT->app, @_);
+                },
                 menus           => sub { MT->app->core_menus() },
                 methods         => sub { MT->app->core_methods() },
                 widgets         => sub { MT->app->core_widgets() },

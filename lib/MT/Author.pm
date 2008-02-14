@@ -133,6 +133,7 @@ sub is_valid_password {
 
 sub is_email_hidden {
     my $auth = shift;
+    return 1 unless $auth->email =~ m/@/;
     return ($auth->email =~ /^[0-9a-f]{40}$/i) ? 1 : 0;
 }
 

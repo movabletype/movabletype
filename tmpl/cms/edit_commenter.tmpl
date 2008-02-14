@@ -130,7 +130,7 @@ TC.attachLoadEvent(init);
             label="<__trans phrase="Identity">"
             hint="<__trans phrase="The Identity of the commenter">"
             show_hint="0">
-            <mt:if name="commenter_url"><a href="<mt:var name="commenter_url">"><mt:var name="name" escape="html"> &raquo;</a><mt:else><mt:var name="name" escape="html"></mt:if>
+            <mt:if name="url"><a href="<mt:var name="url">"><mt:var name="name" escape="html"> &raquo;</a><mt:else><mt:var name="name" escape="html"></mt:if>
         </mtapp:setting>
     
         <mtapp:setting

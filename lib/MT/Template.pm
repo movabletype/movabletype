@@ -337,7 +337,7 @@ sub text {
                 ## template, so saving would try to write-lock it).
                 if (!defined $resync_to_db) {
                     $resync_to_db = {};
-                    MT->add_callback('TakeDown', 9, undef, \&_resync_to_db);
+                    MT->add_callback('takedown', 9, undef, \&_resync_to_db);
                 }
                 $resync_to_db->{$tmpl->id} = $tmpl;
                 $tmpl->{needs_db_sync} = 1;

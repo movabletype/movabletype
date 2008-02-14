@@ -531,8 +531,8 @@ sub send_http_header {
     }
     if ($ENV{MOD_PERL}) {
         if ($app->{response_message}) {
-            $app->{apache}->status_line(($app->response_code || 200) . " " 
-                                        . $app->{response_message});
+            $app->{apache}->status_line(($app->response_code || 200)
+                                        . ($app->{response_message} ? ' ' . $app->{response_message} : '');
         } else {
             $app->{apache}->status($app->response_code || 200);
         }
@@ -612,7 +612,7 @@ sub init {
     $app->run_callbacks('init_app', $app, @_);
     if ($MT::DebugMode & 128) {
         MT->add_callback('pre_run', 1, $app, sub { $app->pre_run_debug });
-        MT->add_callback('post_run', 1, $app, sub { $app->post_run_debug });
+        MT->add_callback('takedown', 1, $app, sub { $app->post_run_debug });
     }
     $app->{vtbl} = $app->registry("methods");
     $app->init_request(@_);
@@ -2071,11 +2071,11 @@ sub run {
             }
         }
 
+        my $mode = $app->mode || 'default';
+
         REQUEST:
         {
             my $requires_login = $app->{requires_login};
-
-            my $mode = $app->mode || 'default';
 
             my $code = $app->handlers_for_mode($mode);
 
@@ -2160,6 +2160,7 @@ sub run {
                 if ($code) {
                     my @forward_params = @{ $app->{forward_params} }
                         if $app->{forward_params};
+                    $app->{forward_params} = undef;
                     my $content = $code->($app, @forward_params);
                     $app->response_content($content)
                         if defined $content;
@@ -2169,7 +2170,7 @@ sub run {
             $app->post_run;
 
             if (my $new_mode = $app->{forward}) {
-                $app->mode($new_mode, @{ $app->{forward_params} || [] });
+                $mode = $new_mode;
                 goto REQUEST;
             }
 
