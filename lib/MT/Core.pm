@@ -805,10 +805,10 @@ sub ProcessMemoryCommand {
     unless ($cmd) {
         my $os = $^O;
         if ($os eq 'darwin') {
-            $cmd = '/usr/bin/ps $$ -o rss=';
+            $cmd = 'ps $$ -o rss=';
         }
         elsif ($os eq 'linux') {
-            $cmd = '/usr/bin/ps -p $$ -o rss=';
+            $cmd = 'ps -p $$ -o rss=';
         }
         elsif ($os eq 'MSWin32') {
             $cmd = { command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
