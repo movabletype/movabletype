@@ -220,7 +220,7 @@ sub edit {
                     archive_type            => $at,
                   };
                 @archive_types =
-                  sort { archive_type_sorter( $a, $b ) } @archive_types;
+                  sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @archive_types;
             }
             $param->{archive_types} = \@archive_types;
 
