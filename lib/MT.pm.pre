@@ -981,7 +981,7 @@ sub get_timer {
     unless ($timer) {
         my $uri;
         if ($mt->isa('MT::App')) {
-            $uri = $mt->uri( args => { $mt->param_hash } );
+            $uri = $mt->uri( $mt->request_method eq 'GET' ? ( args => { $mt->param_hash } ) : () );
         }
         require MT::Util::ReqTimer;
         $timer = MT::Util::ReqTimer->new( $uri );
