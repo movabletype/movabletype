@@ -802,7 +802,7 @@ sub ProcessMemoryCommand {
     my $cfg = shift;
     $cfg->set_internal( 'ProcessMemoryCommand', @_ ) if @_;
     my $cmd = $cfg->get_internal('ProcessMemoryCommand');
-    unless ($cmd) {
+    unless (defined $cmd) {
         my $os = $^O;
         if ($os eq 'darwin') {
             $cmd = 'ps $$ -o rss=';
