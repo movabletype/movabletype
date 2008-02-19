@@ -1935,35 +1935,7 @@ sub build_entry_table {
 
     my ( $date_format, $datetime_format );
 
-    ## Load list of users for display in filter pulldown (and selection
-    ## pulldown on power edit page).
-    my ( @a_data, %authors );
     if ($is_power_edit) {
-
-        # FIXME: Scaling issue for lots of authors on one blog
-        my $auth_iter = MT::Author->load_iter(
-            { type => MT::Author::AUTHOR() },
-            {
-                'join' => MT::Permission->join_on(
-                    'author_id', { blog_id => $blog_id }
-                ),
-                limit => 51,
-            }
-        );
-        while ( my $author = $auth_iter->() ) {
-            $authors{ $author->id } = $author->name;
-            push @a_data,
-              {
-                author_id   => $author->id,
-                author_name => encode_js( $author->name )
-              };
-        }
-        @a_data = sort { $a->{author_name} cmp $b->{author_name} } @a_data;
-        my $i = 0;
-        for my $row (@a_data) {
-            $row->{author_index} = $i++;
-        }
-        $param->{author_loop} = \@a_data;
         $date_format          = "%Y.%m.%d";
         $datetime_format      = "%Y-%m-%d %H:%M:%S";
     }
@@ -1972,12 +1944,11 @@ sub build_entry_table {
         $datetime_format = MT::App::CMS::LISTING_DATETIME_FORMAT();
     }
 
-    my ( @cat_list, @auth_list );
+    my @cat_list;
     if ($is_power_edit) {
         @cat_list =
           sort { $cats{$a}->{category_index} <=> $cats{$b}->{category_index} }
           keys %cats;
-        @auth_list = sort { $authors{$a} cmp $authors{$b} } keys %authors;
     }
 
     my @data;
@@ -2079,29 +2050,16 @@ sub build_entry_table {
             }
             $row->{row_category_loop} = \@this_c_data;
 
-            my @this_a_data;
-            my $this_author_id = $obj->author_id;
-            for my $a_id (@auth_list) {
-                push @this_a_data,
-                  {
-                    author_name => $authors{$a_id},
-                    author_id   => $a_id
-                  };
-                $this_a_data[-1]{author_is_selected} = $this_author_id
-                  && $this_author_id == $a_id ? 1 : 0;
-            }
-            unless ( $obj->author ) {
-                push @this_a_data,
-                  {
-                    author_name => $app->translate(
-                        '(user deleted - ID:[_1])',
-                        $obj->author_id
-                    ),
-                    author_id          => $obj->author_id,
-                    author_is_selected => 1,
-                  };
-            }
-            $row->{row_author_loop} = \@this_a_data;
+            if ( $obj->author ) {
+                $row->{row_author_name} = $obj->author->name;
+                $row->{row_author_id}   = $obj->author->id;
+            } else {
+                $row->{row_author_name} = $app->translate(
+                    '(user deleted - ID:[_1])',
+                    $obj->author_id
+                );
+                $row->{row_author_id} = $obj->author_id,
+             }
         }
         if ( my $blog = $blogs{ $obj->blog_id } ||=
             MT::Blog->load( $obj->blog_id ) )

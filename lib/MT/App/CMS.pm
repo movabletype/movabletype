@@ -203,6 +203,7 @@ sub core_methods {
         'dialog_select_weblog'   => "${pkg}Blog::dialog_select_weblog",
         'dialog_select_sysadmin' => "${pkg}User::dialog_select_sysadmin",
         'dialog_grant_role'      => "${pkg}User::dialog_grant_role",
+        'dialog_select_author'   => "${pkg}User::dialog_select_author",
 
         ## AJAX handlers
         'delete_map'        => "${pkg}Template::delete_map",

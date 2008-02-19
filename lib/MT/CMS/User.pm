@@ -1170,6 +1170,59 @@ sub grant_role {
     $app->call_return;
 }
 
+sub dialog_select_author {
+    my $app = shift;
+
+    my $hasher = sub {
+        my ( $obj, $row ) = @_;
+        $row->{label}       = $row->{name};
+        $row->{description} = $row->{nickname};
+    };
+
+    $app->listing(
+        {
+            type  => 'author',
+            terms => {
+                type   => MT::Author::AUTHOR(),
+                status => MT::Author::ACTIVE(),
+            },
+            args => {
+                sort => 'name',
+                join => MT::Permission->join_on(
+                    'author_id',
+                    {
+                        permissions => "\%'create_post'\%",
+                        blog_id     => $app->blog->id,
+                    },
+                    { 'like' => { 'permissions' => 1 } }
+                ),
+            },
+            code     => $hasher,
+            template => 'dialog/select_users.tmpl',
+            params   => {
+                dialog_title =>
+                  $app->translate("Select a entry author"),
+                items_prompt =>
+                  $app->translate("Selected author"),
+                search_prompt => $app->translate(
+                    "Type a username to filter the choices below."),
+                panel_label       => $app->translate("Entry author"),
+                panel_description => $app->translate("Name"),
+                panel_type        => 'author',
+                panel_multi       => defined $app->param('multi')
+                ? $app->param('multi')
+                : 0,
+                panel_searchable => 1,
+                panel_first      => 1,
+                panel_last       => 1,
+                list_noncron     => 1,
+                idfield          => $app->param('idfield'),
+                namefield        => $app->param('namefield'),
+            },
+        }
+    );
+}
+
 sub dialog_select_sysadmin {
     my $app = shift;
     return $app->errtrans("Permission denied.")

@@ -167,14 +167,8 @@
                 </td>
                 <td class="author">
             <mt:if name="is_editable">
-                    <select name="author_id_<$mt:var name="id"$>">
-                <mt:unless name="author_id">
-                        <option value=""><__trans phrase="None"></option>
-                </mt:unless>
-                <mt:loop name="row_author_loop">
-                        <option value="<$mt:var name="author_id"$>"<mt:if name="author_is_selected"> selected="selected"</mt:if>><$mt:var name="author_name"$></option>
-                </mt:loop>
-                    </select>
+                    <input type="hidden" name="author_id_<$mt:var name="id"$>" value="<$mt:var name="row_author_id"$>" id="entry_author_id_<$mt:var name="id"$>">
+                    <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_select_author', 'blog_id=<$mt:var name="blog_id"$>&amp;multi=0&amp;idfield=entry_author_id_<$mt:var name="id"$>&amp;namefield=entry_author_name_<$mt:var name="id"$>')"><span id="entry_author_name_<$mt:var name="id"$>"><$mt:var name="row_author_name"$></span></a>
             <mt:else>
                     <$mt:var name="author_name"$>
             </mt:if>
