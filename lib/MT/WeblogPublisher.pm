@@ -1443,10 +1443,9 @@ sub rebuild_file {
       )
     {
         if ( $archiver->archive_group_entries ) {
-
-            # TBD: Would it help to use MT::Promise here?
-            my $entries = $archiver->archive_group_entries->($ctx);
-            $ctx->stash( 'entries', $entries );
+            require MT::Promise;
+            my $entries = sub { $archiver->archive_group_entries->($ctx) };
+            $ctx->stash( 'entries', MT::Promise::delay($entries) );
         }
 
         my $html = undef;
@@ -2333,8 +2332,12 @@ sub yearly_group_iter {
 
 sub yearly_group_entries {
     my ( $ctx, %param ) = @_;
-    date_based_group_entries( $ctx, 'Yearly',
-        %param ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 ) : undef );
+    my $ts =
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
+        : undef;
+    my $limit = $param{limit};
+    date_based_group_entries( $ctx, 'Yearly', $ts, $limit );
 }
 
 sub yearly_entries_count {
@@ -2430,10 +2433,12 @@ sub monthly_group_iter {
 
 sub monthly_group_entries {
     my ( $ctx, %param ) = @_;
-    date_based_group_entries( $ctx, 'Monthly',
-        %param
-        ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
-        : undef );
+    my $ts =
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+        : undef;
+    my $limit = $param{limit};
+    date_based_group_entries( $ctx, 'Monthly', $ts, $limit );
 }
 
 sub monthly_entries_count {
@@ -2519,7 +2524,11 @@ sub category_group_iter {
 
 sub category_group_entries {
     my ( $ctx, %param ) = @_;
-
+    my $limit = $param{limit};
+    if ( $limit eq 'auto' ) {
+        my $blog = $ctx->stash('blog');
+        $limit = $blog->entries_on_index if $blog;
+    }
     my $c = $ctx->stash('archive_category') || $ctx->stash('category');
     require MT::Entry;
     my @entries = MT::Entry->load(
@@ -2529,8 +2538,9 @@ sub category_group_entries {
                 'MT::Placement', 'entry_id',
                 { category_id => $c->id }, { unqiue => 1 }
             ],
-            'sort' => 'authored_on',
+            'sort'      => 'authored_on',
             'direction' => 'descend',
+            ( $limit ? ( 'limit' => $limit ) : () ),
         }
     );
     \@entries;
@@ -2738,13 +2748,13 @@ sub daily_group_iter {
 
 sub daily_group_entries {
     my ( $ctx, %param ) = @_;
-    date_based_group_entries(
-        $ctx, 'Daily',
-        %param
-        ? sprintf( "%04d%02d%02d000000",
-            $param{year}, $param{month}, $param{day} )
-        : undef
-    );
+    my $ts =
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month},
+               $param{day} )
+        : undef;
+    my $limit = $param{limit};
+    date_based_group_entries( $ctx, 'Daily', $ts, $limit );
 }
 
 sub daily_entries_count {
@@ -2838,13 +2848,12 @@ sub weekly_group_iter {
 
 sub weekly_group_entries {
     my ( $ctx, %param ) = @_;
-    date_based_group_entries(
-        $ctx, 'Weekly',
-        %param
-        ? sprintf( "%04d%02d%02d000000",
-            week2ymd( $param{year}, $param{week} ) )
-        : undef
-    );
+    my $ts =
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
+        : undef;
+    my $limit = $param{limit};
+    date_based_group_entries( $ctx, 'Weekly', $ts, $limit );
 }
 
 sub weekly_entries_count {
@@ -2897,7 +2906,7 @@ sub _archive_entries_count {
 }
 
 sub date_based_group_entries {
-    my ( $ctx, $at, $ts ) = @_;
+    my ( $ctx, $at, $ts, $limit ) = @_;
     my $blog = $ctx->stash('blog');
     my ( $start, $end );
     if ($ts) {
@@ -2924,6 +2933,7 @@ sub date_based_group_entries {
             range_incl  => { authored_on => 1 },
             'sort' => 'authored_on',
             'direction' => 'descend',
+            ( $limit ? ( 'limit' => $limit ) : () ),
         }
     ) or return $ctx->error("Couldn't get $at archive list");
     \@entries;
@@ -3001,6 +3011,11 @@ sub author_group_entries {
     my ( $ctx, %param ) = @_;
     my $blog = $ctx->stash('blog');
     my $a = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    if ( $limit eq 'auto' ) {
+        my $blog = $ctx->stash('blog');
+        $limit = $blog->entries_on_index if $blog;
+    }
     return [] unless $a;
     require MT::Entry;
     my @entries = MT::Entry->load(
@@ -3012,6 +3027,7 @@ sub author_group_entries {
         {
             'sort'      => 'authored_on',
             'direction' => 'descend',
+            ( $limit ? ( 'limit' => $limit ) : () ),
         }
     );
     \@entries;
@@ -3200,11 +3216,12 @@ sub author_yearly_group_iter {
 sub author_yearly_group_entries {
     my ( $ctx, %param ) = @_;
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
-      : $ctx->stash('current_timestamp');
-    my $author = %param ? $param{author} : $ctx->stash('author');
-    date_based_author_entries( $ctx, 'Author-Yearly', $author, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
+        : $ctx->stash('current_timestamp');
+    my $author = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    date_based_author_entries( $ctx, 'Author-Yearly', $author, $ts, $limit );
 }
 
 sub author_yearly_entries_count {
@@ -3383,11 +3400,12 @@ sub author_monthly_group_iter {
 sub author_monthly_group_entries {
     my ( $ctx, %param ) = @_;
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
-      : $ctx->stash('current_timestamp');
-    my $author = %param ? $param{author} : $ctx->stash('author');
-    date_based_author_entries( $ctx, 'Author-Monthly', $author, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+        : $ctx->stash('current_timestamp');
+    my $author = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    date_based_author_entries( $ctx, 'Author-Monthly', $author, $ts, $limit );
 }
 
 sub author_monthly_entries_count {
@@ -3564,11 +3582,12 @@ sub author_weekly_group_iter {
 sub author_weekly_group_entries {
     my ( $ctx, %param ) = @_;
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
-      : $ctx->stash('current_timestamp');
-    my $author = %param ? $param{author} : $ctx->stash('author');
-    date_based_author_entries( $ctx, 'Author-Weekly', $author, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
+        : $ctx->stash('current_timestamp');
+    my $author = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    date_based_author_entries( $ctx, 'Author-Weekly', $author, $ts, $limit );
 }
 
 sub author_weekly_entries_count {
@@ -3753,12 +3772,13 @@ sub author_daily_group_iter {
 sub author_daily_group_entries {
     my ( $ctx, %param ) = @_;
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month},
-        $param{day} )
-      : $ctx->stash('current_timestamp');
-    my $author = %param ? $param{author} : $ctx->stash('author');
-    date_based_author_entries( $ctx, 'Author-Daily', $author, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month},
+               $param{day} )
+        : $ctx->stash('current_timestamp');
+    my $author = $param{author} || $ctx->stash('author');
+    my $limit = $param{limit};
+    date_based_author_entries( $ctx, 'Author-Daily', $author, $ts, $limit );
 }
 
 sub author_daily_entries_count {
@@ -3955,14 +3975,13 @@ sub cat_yearly_group_iter {
 
 sub cat_yearly_group_entries {
     my ( $ctx, %param ) = @_;
-
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
-      : $ctx->stash('current_timestamp');
-    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
-
-    date_based_category_entries( $ctx, 'Category-Yearly', $cat, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
+        : $ctx->stash('current_timestamp');
+    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $limit = $param{limit};
+    date_based_category_entries( $ctx, 'Category-Yearly', $cat, $ts, $limit );
 }
 
 sub cat_yearly_entries_count {
@@ -4123,14 +4142,13 @@ sub cat_monthly_group_iter {
 
 sub cat_monthly_group_entries {
     my ( $ctx, %param ) = @_;
-
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
-      : $ctx->stash('current_timestamp');
-    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
-
-    date_based_category_entries( $ctx, 'Category-Monthly', $cat, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+        : $ctx->stash('current_timestamp');
+    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $limit = $param{limit};
+    date_based_category_entries( $ctx, 'Category-Monthly', $cat, $ts, $limit );
 }
 
 sub cat_monthly_entries_count {
@@ -4296,15 +4314,14 @@ sub cat_daily_group_iter {
 
 sub cat_daily_group_entries {
     my ( $ctx, %param ) = @_;
-
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month},
-        $param{day} )
-      : $ctx->stash('current_timestamp');
-    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
-
-    date_based_category_entries( $ctx, 'Category-Daily', $cat, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month},
+               $param{day} )
+        : $ctx->stash('current_timestamp');
+    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $limit = $param{limit};
+    date_based_category_entries( $ctx, 'Category-Daily', $cat, $ts, $limit );
 }
 
 sub cat_daily_entries_count {
@@ -4463,12 +4480,12 @@ sub cat_weekly_group_iter {
 sub cat_weekly_group_entries {
     my ( $ctx, %param ) = @_;
     my $ts =
-      %param
-      ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
-      : $ctx->stash('current_timestamp');
-    my $cat = %param ? $param{category} : $ctx->stash('archive_category');
-
-    date_based_category_entries( $ctx, 'Category-Weekly', $cat, $ts );
+        $param{year}
+    ? sprintf( "%04d%02d%02d000000", week2ymd( $param{year}, $param{week} ) )
+        : $ctx->stash('current_timestamp');
+    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $limit = $param{limit};
+    date_based_category_entries( $ctx, 'Category-Weekly', $cat, $ts, $limit );
 }
 
 sub cat_weekly_entries_count {

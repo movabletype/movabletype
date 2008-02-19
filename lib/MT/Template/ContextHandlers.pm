@@ -3458,6 +3458,12 @@ sub _hdlr_entries {
         if ((exists $args->{sort_by}) && ('score' eq $args->{sort_by}) && (!exists $args->{namespace}));
     
     my $cfg = $ctx->{config};
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    if ( $archiver && $archiver->archive_group_entries ) {
+        my $entries = $archiver->archive_group_entries->( $ctx, %$args );
+        $ctx->stash( 'entries', $entries );
+    }
     my $entries = $ctx->stash('entries');
     my $blog_id = $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
