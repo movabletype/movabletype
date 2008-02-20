@@ -498,6 +498,7 @@ BEGIN {
 
             'PerformanceLogging' => { default => 0 },
             'PerformanceLoggingThreshold' => { default => 0.1 },
+            'PerformanceLoggingPath' => { handler => \&PerformanceLoggingPath },
             'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
         },
         upgrade_functions => \&load_upgrade_fns,
@@ -796,6 +797,19 @@ sub init_registry {
 sub load_archive_types {
     require MT::WeblogPublisher;
     return MT::WeblogPublisher->core_archive_types;
+}
+
+sub PerformanceLoggingPath {
+    my $cfg = shift;
+    $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
+    my $path = $cfg->get_internal('PerformanceLoggingPath');
+    unless (defined $path) {
+        require File::Spec;
+        $path = File::Spec->catdir( MT->instance->static_file_path,
+            'support', 'logs');
+        $cfg->set_internal('PerformanceLoggingPath', $path);
+    }
+    return $path;
 }
 
 sub ProcessMemoryCommand {

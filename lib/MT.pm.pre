@@ -909,9 +909,7 @@ sub log_times {
     my $log_file;
 
     # Log filename calcluation; changes daily, so we don't cache this
-    require File::Spec;
-    my $dir = File::Spec->catdir( MT->instance->static_file_path,
-        'support', 'logs');
+    my $dir = $pkg->config->PerformanceLoggingPath;
     if (! -d $dir) {
         require File::Path;
         eval { File::Path::mkpath([$dir], 0, 0777) };
