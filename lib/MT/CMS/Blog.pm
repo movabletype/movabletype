@@ -786,7 +786,8 @@ sub rebuild_pages {
             my $entry = MT::Entry->load( scalar $q->param('entry_id') );
             require MT::Blog;
             my $blog = MT::Blog->load( $entry->blog_id );
-            $app->ping_continuation(
+            require MT::CMS::Entry;
+            MT::CMS::Entry::ping_continuation( $app,
                 $entry, $blog,
                 OldStatus => scalar $q->param('old_status'),
                 IsNew     => scalar $q->param('is_new'),
