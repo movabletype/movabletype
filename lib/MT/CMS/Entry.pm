@@ -1424,7 +1424,7 @@ $ao
                 }
             );
             return unless $res;
-            return $app->ping_continuation(
+            return ping_continuation($app,
                 $obj, $blog,
                 OldStatus => $status_old,
                 IsNew     => $is_new,
@@ -1452,7 +1452,7 @@ $ao
             );
         }
     }
-    $app->_finish_rebuild_ping( $obj, !$id );
+    _finish_rebuild_ping( $app, $obj, !$id );
 }
 
 sub save_entries {
