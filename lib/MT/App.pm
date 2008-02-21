@@ -2183,7 +2183,7 @@ sub run {
             $body = $app->response_content();
 
             if (ref($body) && ($body->isa('MT::Template'))) {
-                my $out = $app->build_page($body)
+                defined(my $out = $app->build_page($body))
                     or die $body->errstr;
                 $body = $out;
             }
@@ -2842,7 +2842,7 @@ sub uri_params {
     push @params, '__mode=' . $param{mode} if $param{mode};
     if ($param{args}) {
         foreach my $p (keys %{$param{args}}) {
-            if (ref $param{args}{$p}) {
+            if (ref $param{args}{$p} eq 'ARRAY') {
                 push @params, ($p . '=' . encode_url($_)) foreach @{$param{args}{$p}};
             } else {
                 push @params, ($p . '=' . encode_url($param{args}{$p}))
