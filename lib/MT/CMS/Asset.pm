@@ -355,7 +355,7 @@ sub complete_insert {
         my $html = $asset->insert_options($param);
         if ( $param->{direct_asset_insert} && !$html ) {
             $app->param( 'id', $asset->id );
-            return $app->asset_insert();
+            return insert($app);
         }
         $param->{options_snippet} = $html;
     }
@@ -456,7 +456,7 @@ sub start_upload_entry {
     $q->param( 'id', 0 );
 
     # clear tags value
-    $app->param->param( 'tags', '' );
+    $app->param( 'tags', '' );
     $app->forward("view");
 }
 
