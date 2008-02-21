@@ -2996,26 +2996,6 @@ sub _entry_prefs_from_params {
     $prefs;
 }
 
-sub _generate_map_table {
-    my $app = shift;
-    my ( $blog_id, $template_id ) = @_;
-
-    require MT::Template;
-    require MT::Blog;
-    my $blog     = MT::Blog->load($blog_id);
-    my $template = MT::Template->load($template_id);
-    my $tmpl     = $app->load_tmpl('include/archive_maps.tmpl');
-    my $maps     = $app->_populate_archive_loop( $blog, $template );
-    $tmpl->param( { object_type => 'templatemap' } );
-    $tmpl->param( { object_loop => $maps } ) if @$maps;
-    my $html = $tmpl->output();
-
-    if ( $html =~ m/<__trans / ) {
-        $html = $app->translate_templatized($html);
-    }
-    $html;
-}
-
 # rebuild_set is a hash whose keys are entry IDs
 # the value can be the entry itself, for efficiency,
 # but if the value is not a ref, the entry is loaded from the ID.

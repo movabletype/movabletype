@@ -225,8 +225,7 @@ sub edit {
             $param->{archive_types} = \@archive_types;
 
             # Populate template maps for this template
-            require MT::CMS::Blog;
-            my $maps = MT::CMS::Blog::_populate_archive_loop( $app, $blog, $obj );
+            my $maps = _populate_archive_loop( $app, $blog, $obj );
             $param->{object_loop} = $param->{template_map_loop} = $maps
               if @$maps;
         }
@@ -613,6 +612,103 @@ sub reset_blog_templates {
     );
 }
 
+sub _generate_map_table {
+    my $app = shift;
+    my ( $blog_id, $template_id ) = @_;
+
+    require MT::Template;
+    require MT::Blog;
+    my $blog     = MT::Blog->load($blog_id);
+    my $template = MT::Template->load($template_id);
+    my $tmpl     = $app->load_tmpl('include/archive_maps.tmpl');
+    my $maps     = _populate_archive_loop( $app, $blog, $template );
+    $tmpl->param( { object_type => 'templatemap' } );
+    $tmpl->param( { object_loop => $maps } ) if @$maps;
+    my $html = $tmpl->output();
+
+    if ( $html =~ m/<__trans / ) {
+        $html = $app->translate_templatized($html);
+    }
+    $html;
+}
+
+sub _populate_archive_loop {
+    my $app = shift;
+    my ( $blog, $obj ) = @_;
+
+    my $index = $app->config('IndexBasename');
+    my $ext = $blog->file_extension || '';
+    $ext = '.' . $ext if $ext ne '';
+
+    require MT::TemplateMap;
+    my @tmpl_maps = MT::TemplateMap->load( { template_id => $obj->id } );
+    my @maps;
+    my %types;
+    foreach my $map_obj (@tmpl_maps) {
+        my $map = {};
+        $map->{map_id}           = $map_obj->id;
+        $map->{map_is_preferred} = $map_obj->is_preferred;
+        my $at = $map->{archive_type} = $map_obj->archive_type;
+        $types{$at}++;
+        $map->{ 'archive_type_preferred_' . $blog->archive_type_preferred } = 1
+          if $blog->archive_type_preferred;
+        $map->{file_template} = $map_obj->file_template
+          if $map_obj->file_template;
+
+        my $archiver = $app->publisher->archiver($at);
+        next unless $archiver;
+        $map->{archive_label} = $archiver->archive_label;
+        my $tmpls     = $archiver->default_archive_templates;
+        my $tmpl_loop = [];
+        foreach (@$tmpls) {
+            my $name = $_->{label};
+            $name =~ s/\.html$/$ext/;
+            $name =~ s/index$ext$/$index$ext/;
+            push @$tmpl_loop,
+              {
+                name    => $name,
+                value   => $_->{template},
+                default => ( $_->{default} || 0 )
+              };
+        }
+
+        my $custom = 1;
+
+        foreach (@$tmpl_loop) {
+            if (   ( !$map->{file_template} && $_->{default} )
+                || ( $map->{file_template} eq $_->{value} ) )
+            {
+                $_->{selected}        = 1;
+                $custom               = 0;
+                $map->{file_template} = $_->{value}
+                  if !$map->{file_template};
+            }
+        }
+        if ($custom) {
+            unshift @$tmpl_loop,
+              {
+                name     => $map->{file_template},
+                value    => $map->{file_template},
+                selected => 1,
+              };
+        }
+
+        $map->{archive_tmpl_loop} = $tmpl_loop;
+        if (
+            1 < MT::TemplateMap->count(
+                { archive_type => $at, blog_id => $obj->blog_id }
+            )
+          )
+        {
+            $map->{has_multiple_archives} = 1;
+        }
+
+        push @maps, $map;
+    }
+    @maps = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @maps;
+    return \@maps;
+}
+
 sub delete_map {
     my $app = shift;
     $app->validate_magic() or return;
@@ -624,7 +720,7 @@ sub delete_map {
     require MT::TemplateMap;
     MT::TemplateMap->remove( { id => $id } );
     my $html =
-      $app->_generate_map_table( $q->param('blog_id'),
+      _generate_map_table( $app, $q->param('blog_id'),
         $q->param('template_id') );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
@@ -657,7 +753,7 @@ sub add_map {
       or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
     my $html =
-      $app->_generate_map_table( $blog_id, scalar $q->param('template_id') );
+      _generate_map_table( $app, $blog_id, scalar $q->param('template_id') );
     $app->rebuild(
         BlogID      => $blog_id,
         ArchiveType => $at,
@@ -681,7 +777,7 @@ sub delete_map {
     require MT::TemplateMap;
     MT::TemplateMap->remove( { id => $id } );
     my $html =
-      $app->_generate_map_table( $q->param('blog_id'),
+      _generate_map_table( $app, $q->param('blog_id'),
         $q->param('template_id') );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
@@ -714,7 +810,7 @@ sub add_map {
       or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
     my $html =
-      $app->_generate_map_table( $blog_id, scalar $q->param('template_id') );
+      _generate_map_table( $app, $blog_id, scalar $q->param('template_id') );
     $app->rebuild(
         BlogID      => $blog_id,
         ArchiveType => $at,
