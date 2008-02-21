@@ -22,6 +22,7 @@ $js .= `cat tmpl/cms/include/calendar.tmpl`;
 my $addon_path = File::Spec->catdir( 'addons' );
 local *DH;
 my @files;
+my @addons;
 if ( opendir DH, $addon_path ) {
     my @p = readdir DH;
     foreach my $p (@p) {
@@ -39,6 +40,7 @@ if ( opendir DH, $addon_path ) {
                         push @files, $_;
                     }
                     close $fh;
+                    push @addons, $label;
                 }
             }
         }
@@ -53,6 +55,24 @@ foreach my $lang (qw(ja de nl fr es)) {
         or die "failed to find package MT::L10N::$lang";
 
     my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }';
+
+    foreach my $addon (@addons) {
+        eval {
+            unshift @INC, "addons/$addon.pack/lib";
+            require "addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm";
+        };
+        my $conv;
+        unless ($@) {
+            $conv = eval '\%{MT::' . $addon . '::L10N::' . $lang . '::Lexicon}';
+        }
+        if ( %$conv ) {
+            $lex = {
+                %$lex,
+                %$conv,
+            };
+        }
+    }
+
     $js =~ s/\\'/\t\t/g;
     my %lexicon;
     while ($js =~ m/trans\((["'])([^\1|\\\1]+?)\1/g) {
