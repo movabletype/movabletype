@@ -2314,11 +2314,13 @@ sub _hdlr_include {
         return defined($ret) ? $ret : $ctx->error("error in file $file: " . $builder->errstr);
     } elsif (my $app_file = $arg->{name}) {
         # app template include mode
+        my $mt = MT->instance;
+        local $mt->{component} = $arg->{component} if exists $arg->{component};
         my $stash_id = 'template_file::' . $app_file;
         return $ctx->error(MT->translate("Recursion attempt on file: [_1]", $app_file))
             if $include_stack{$stash_id};
         local $include_stack{$stash_id} = 1;
-        my $tmpl = MT->instance->load_tmpl($app_file);
+        my $tmpl = $mt->load_tmpl($app_file);
         if ($tmpl) {
             $tmpl->name($app_file);
 
@@ -2328,7 +2330,6 @@ sub _hdlr_include {
                 $tmpl_file =~ s/\.tmpl$//;
                 $tmpl_file = '.' . $tmpl_file;
             }
-            my $mt = MT->instance;
             $mt->run_callbacks('template_param' . $tmpl_file, $mt, $tmpl->param, $tmpl);
 
             # propagate our context
