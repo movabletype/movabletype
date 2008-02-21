@@ -2290,7 +2290,7 @@ sub ping_continuation {
         );
     }
     else {
-        $app->_finish_rebuild_ping( $entry, $options{IsNew} );
+        _finish_rebuild_ping( $app, $entry, $options{IsNew} );
     }
 }
 
