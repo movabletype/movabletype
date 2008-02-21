@@ -927,6 +927,222 @@ sub build_template_table {
     \@data;
 }
 
+sub refresh_all_templates {
+    my ($app) = @_;
+
+    my $backup = 0;
+    if ($app->param('backup')) {
+        # refresh templates dialog uses a 'backup' field
+        $backup = 1;
+    }
+
+    my $template_set = $app->param('template_set');
+    my $refresh_type = $app->param('refresh_type') || 'refresh';
+
+    my $t = time;
+
+    my @id;
+    if ($app->param('blog_id')) {
+        @id = ( scalar $app->param('blog_id') );
+    }
+    else {
+        @id = $app->param('id');
+        if (! @id) {
+            # refresh global templates
+            @id = ( 0 );
+        }
+    }
+
+    require MT::Template;
+    require MT::DefaultTemplates;
+    require MT::Blog;
+    require MT::Permission;
+    require MT::Util;
+
+    foreach my $blog_id (@id) {
+        my $blog;
+        if ($blog_id) {
+            $blog = MT::Blog->load($blog_id);
+            next unless $blog;
+        }
+        if ( !$app->user->is_superuser() ) {
+            my $perms = MT::Permission->load(
+                { blog_id => $blog_id, author_id => $app->user->id } );
+            if (
+                !$perms
+                || (   !$perms->can_edit_templates()
+                    && !$perms->can_administer_blog() )
+              )
+            {
+                next;
+            }
+        }
+
+        my $tmpl_list;
+        if ($blog_id) {
+
+            if ($refresh_type eq 'clean') {
+                # the user wants to back up all templates and
+                # install the new ones
+
+                my @ts = MT::Util::offset_time_list( $t, $blog_id );
+                my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d",
+                    $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+
+                my $tmpl_iter = MT::Template->load_iter({
+                    blog_id => $blog_id,
+                    type => { not => 'backup' },
+                });
+
+                while (my $tmpl = $tmpl_iter->()) {
+                    if ($backup) {
+                        # zap all template maps
+                        require MT::TemplateMap;
+                        MT::TemplateMap->remove({
+                            template_id => $tmpl->id,
+                        });
+                        $tmpl->type('backup');
+                        $tmpl->name(
+                            $tmpl->name . ' (Backup from ' . $ts . ')' );
+                        $tmpl->identifier(undef);
+                        $tmpl->rebuild_me(0);
+                        $tmpl->linked_file(undef);
+                        $tmpl->outfile('');
+                        $tmpl->save;
+                    } else {
+                        $tmpl->remove;
+                    }
+                }
+
+                # This also creates our template mappings
+                $blog->create_default_templates( $template_set ||
+                    $blog->template_set || 'mt_blog' );
+
+                if ($template_set) {
+                    $blog->template_set( $template_set );
+                    $blog->save;
+                    $app->run_callbacks( 'blog_template_set_change', { blog => $blog } );
+                }
+
+                next;
+            }
+
+            $tmpl_list = MT::DefaultTemplates->templates($template_set || $blog->template_set) || MT::DefaultTemplates->templates();
+        }
+        else {
+            $tmpl_list = MT::DefaultTemplates->templates();
+        }
+
+        foreach my $val (@$tmpl_list) {
+            if ($blog_id) {
+                # when refreshing blog templates,
+                # skip over global templates which
+                # specify a blog_id of 0...
+                next if $val->{global};
+            }
+            else {
+                next unless exists $val->{global};
+            }
+
+            if ( !$val->{orig_name} ) {
+                $val->{orig_name} = $val->{name};
+                $val->{name}      = $app->translate( $val->{name} );
+                $val->{text}      = $app->translate_templatized( $val->{text} );
+            }
+
+            my $orig_name = $val->{orig_name};
+
+            my @ts = MT::Util::offset_time_list( $t, ( $blog_id ? $blog_id : undef ) );
+            my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
+              $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+
+            my $terms = {};
+            $terms->{blog_id} = $blog_id;
+            $terms->{type} = $val->{type};
+            if ( $val->{type} =~
+                m/^(archive|individual|page|category|index|custom|widget)$/ )
+            {
+                $terms->{name} = $val->{name};
+            }
+            else {
+                $terms->{identifier} = $val->{identifier};
+            }
+
+            # this should only return 1 template; we're searching
+            # within a given blog for a specific type of template (for
+            # "system" templates; or for a type + name, which should be
+            # unique for that blog.
+            my $tmpl = MT::Template->load($terms);
+            if ($tmpl && $backup) {
+
+                # check for default template text...
+                # if it is a default template, then outright replace it
+                my $text = $tmpl->text;
+                $text =~ s/\s+//g;
+
+                my $def_text = $val->{text};
+                $def_text =~ s/\s+//g;
+
+                # if it has been customized, back it up to a new tmpl record
+                if ($def_text ne $text) {
+                    my $backup = $tmpl->clone;
+                    delete $backup->{column_values}
+                      ->{id};    # make sure we don't overwrite original
+                    delete $backup->{changed_cols}->{id};
+                    $backup->name(
+                        $backup->name . $app->translate( ' (Backup from [_1])', $ts ) );
+                    $backup->type('backup');
+                    # if ( $backup->type !~
+                    #         m/^(archive|individual|page|category|index|custom|widget)$/ )
+                    # {
+                    #     $backup->type('custom')
+                    #       ;      # system templates can't be created
+                    # }
+                    $backup->outfile('');
+                    $backup->linked_file( $tmpl->linked_file );
+                    $backup->identifier(undef);
+                    $backup->rebuild_me(0);
+                    $backup->build_dynamic(0);
+                    $backup->save;
+                }
+            }
+            if ($tmpl) {
+                # we found that the previous template had not been
+                # altered, so replace it with new default template...
+                $tmpl->text( $val->{text} );
+                $tmpl->identifier( $val->{identifier} );
+                $tmpl->type( $val->{type} )
+                  ; # fixes mismatch of types for cases like "archive" => "individual"
+                $tmpl->linked_file('');
+                $tmpl->save;
+            }
+            else {
+                # create this one...
+                my $tmpl = new MT::Template;
+                $tmpl->build_dynamic(0);
+                $tmpl->set_values(
+                    {
+                        text       => $val->{text},
+                        name       => $val->{name},
+                        type       => $val->{type},
+                        identifier => $val->{identifier},
+                        outfile    => $val->{outfile},
+                        rebuild_me => $val->{rebuild_me}
+                    }
+                );
+                $tmpl->blog_id($blog_id);
+                $tmpl->save
+                  or return $app->error(
+                        $app->translate("Error creating new template: ")
+                      . $tmpl->errstr );
+            }
+        }
+    }
+
+    $app->add_return_arg( 'refreshed' => 1 );
+    $app->call_return;
+}
+
 sub refresh_individual_templates {
     my ($app) = @_;
 
