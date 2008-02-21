@@ -354,7 +354,8 @@ sub save {
         $q->param( 'type',            'index-' . $obj->id );
         $q->param( 'tmpl_id',         $obj->id );
         $q->param( 'single_template', 1 );
-        return $app->start_rebuild_pages();
+        require MT::CMS::Blog;
+        return MT::CMS::Blog::start_rebuild_pages($app);
     }
     elsif ( $type eq 'blog' ) {
         return $app->redirect(
