@@ -615,7 +615,8 @@ sub core_list_actions {
                 code => sub {
                     my $app = MT->app;
                     $app->param('backup', 1);
-                    $app->refresh_all_templates(@_)
+                    require MT::CMS::Template;
+                    MT::CMS::Template::refresh_all_templates($app, @_)
                 },
             },
         },
@@ -1764,6 +1765,7 @@ sub build_page {
             $param->{blog_name} = $blog->name;
             $param->{blog_id}   = $blog->id;
             $param->{blog_url}  = $blog->site_url;
+            $param->{blog_template_set} = $blog->template_set;
         }
         else {
             $app->error( $app->translate( "No such blog [_1]", $blog_id ) );
