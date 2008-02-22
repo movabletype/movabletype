@@ -1029,12 +1029,13 @@ sub core_list_filters {
             },
         },
         template => {
-            index_templates => {
-                label   => "Index Templates",
+            templates => {
+                label   => "Templates",
                 order   => 100,
                 handler => sub {
                     my ( $terms, $args ) = @_;
-                    $terms->{type} = 'index';
+                    # FIXME: enumeration of types
+                    $terms->{type} = ['index', 'individual', 'page', 'category', 'archive'];
                 },
                 condition => sub {
                     $app->param('blog_id');

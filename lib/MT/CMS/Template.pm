@@ -442,14 +442,15 @@ sub list {
     if ( $perms && !$perms->can_edit_templates ) {
         return $app->return_to_dashboard( permission => 1 );
     }
+    my $blog = $app->blog;
 
     require MT::Template;
     my $blog_id = $app->param('blog_id') || 0;
     my $filter  = $app->param('filter_key');
     if ( !$filter ) {
-        if ($app->blog) {
-            $filter = 'index_templates';
-            $app->param( 'filter_key', 'index_templates' );
+        if ($blog) {
+            $filter = 'templates';
+            $app->param( 'filter_key', 'templates' );
         }
         else {
             $filter = 'module_templates';
@@ -458,7 +459,7 @@ sub list {
     }
     else {
         # global index templates redirect to module templates
-        if ( !$app->blog && $filter eq 'index_templates' ) {
+        if ( !$blog && $filter eq 'templates' ) {
             $filter = 'module_templates';
             $app->param( 'filter_key', 'module_templates' );
         }
@@ -472,6 +473,11 @@ sub list {
         my $type = $row->{type} || '';
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
             $template_type = 'archive';
+            # populate context with templatemap loop
+            my $tblog = $obj->blog_id == $blog->id ? $blog : MT::Blog->load( $obj->blog_id );
+            if ($tblog) {
+                $row->{archive_types} = _populate_archive_loop( $app, $tblog, $obj );
+            }
         }
         elsif ( $type eq 'widget' ) {
             $template_type = 'widget';
@@ -506,9 +512,6 @@ sub list {
     }
     $params->{template_type}       = $template_type;
     $params->{template_type_label} = $template_type_label;
-
-    #@tt_loop = sort { $a->{label} cmp $b->{label} } @tt_loop;
-    #$params->{template_type_loop} = \@tt_loop;
 
     $app->load_list_actions( 'template', $params );
     $params->{page_actions} = $app->page_actions('list_templates');
