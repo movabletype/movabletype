@@ -513,6 +513,8 @@ sub list {
     $params->{template_type}       = $template_type;
     $params->{template_type_label} = $template_type_label;
 
+    $params->{screen_class} = "list-template";
+
     $app->load_list_actions( 'template', $params );
     $params->{page_actions} = $app->page_actions('list_templates');
     $params->{search_label} = $app->translate("Templates");

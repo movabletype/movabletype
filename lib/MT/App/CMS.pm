@@ -1030,7 +1030,7 @@ sub core_list_filters {
         },
         template => {
             templates => {
-                label   => "Templates",
+                label   => "Main Templates",
                 order   => 100,
                 handler => sub {
                     my ( $terms, $args ) = @_;
@@ -1041,21 +1041,21 @@ sub core_list_filters {
                     $app->param('blog_id');
                 },
             },
-            archive_templates => {
-                label   => "Archive Templates",
-                order   => 200,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    $terms->{type} =
-                      [ 'individual', 'page', 'archive', 'category' ];
-                },
-                condition => sub {
-                    $app->param('blog_id');
-                },
-            },
+            # archive_templates => {
+            #     label   => "Archive Templates",
+            #     order   => 200,
+            #     handler => sub {
+            #         my ( $terms, $args ) = @_;
+            #         $terms->{type} =
+            #           [ 'individual', 'page', 'archive', 'category' ];
+            #     },
+            #     condition => sub {
+            #         $app->param('blog_id');
+            #     },
+            # },
             module_templates => {
-                label   => "Template Modules",
-                order   => 300,
+                label   => "Modules",
+                order   => 400,
                 handler => sub {
                     my ($terms) = @_;
                     $terms->{type} = 'custom';
@@ -1063,7 +1063,7 @@ sub core_list_filters {
             },
             email_templates => {
                 label   => "E-mail Templates",
-                order   =>  400,
+                order   =>  300,
                 handler => sub {
                     my ($terms) = @_;
                     $terms->{type} = 'email';
@@ -1082,7 +1082,7 @@ sub core_list_filters {
             },
             system_templates => {
                 label   => "System Templates",
-                order   => 500,
+                order   => 200,
                 handler => sub {
                     my ($terms) = @_;
                     my $scope;

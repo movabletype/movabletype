@@ -2514,6 +2514,23 @@ optgroup option {
 }
 
 
+/* list template */
+
+td.template-mapping {
+    padding-left: 30px;
+}
+
+td.output-file {
+    width: 50%;
+}
+
+td.output-file ul {
+    margin: 0;
+}
+td.output-file ul {
+    whitespace: nowrap;
+}
+
 /* table links */
 
 .listing table tbody a {
