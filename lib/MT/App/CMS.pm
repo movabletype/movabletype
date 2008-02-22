@@ -2296,11 +2296,7 @@ sub load_default_entry_prefs {
         $prefs = $perm->entry_prefs;
     }
     else {
-        my %default = %{ $app->config->DefaultEntryPrefs };
-        if ( lc( $default{type} ) ne 'default' ) {
-            $prefs = 'Advanced';
-        }
-        elsif ( lc( $default{type} ) eq 'custom' ) {
+        if ( lc( $default{type} ) eq 'custom' ) {
             my %map = (
                 Category   => 'category',
                 Excerpt    => 'excerpt',
@@ -2316,6 +2312,9 @@ sub load_default_entry_prefs {
             }
             $prefs = join ',', @p;
             $prefs ||= 'Custom';
+        }
+        elsif ( lc( $default{type} ) ne 'default' ) {
+            $prefs = 'Advanced';
         }
         $default{button} = 'Bottom' if lc( $default{button} ) eq 'below';
         $default{button} = 'Top'    if lc( $default{button} ) eq 'above';
