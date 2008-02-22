@@ -993,7 +993,7 @@ sub post {
         }
         my $ctx = $tmpl->context;
         $tmpl->param(
-            { 'body_class' => 'mt-comment-confirmation', 'comment_link' => $comment_link } );
+            { 'body_class' => 'mt-comment-confirmation', 'comment_link' => $comment_link, 'comment_response_template' => 1, 'system_template' => 1 } );
         $ctx->stash('entry', $entry);
         $ctx->stash('comment', $comment);
         $ctx->stash('commenter', $commenter) if $commenter;
@@ -1586,12 +1586,14 @@ sub do_preview {
         }
         if ( $err eq 'pending' ) {
             $tmpl->context($ctx);
-            $tmpl->param('body_class', 'mt-comment-pending');
+            $tmpl->param(
+                { 'body_class' => 'mt-comment-pending', 'comment_response_template' => 1, 'system_template' => 1 } );
         }
         else {
             $ctx->stash( 'error_message', $err );
             $tmpl->context($ctx);
-            $tmpl->param('body_class', 'mt-comment-error');
+            $tmpl->param(
+                { 'body_class' => 'mt-comment-error', 'comment_response_template' => 1, 'system_template' => 1 } );
         }
     }
     else {
@@ -1607,7 +1609,8 @@ sub do_preview {
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         $tmpl->context($ctx);
-        $tmpl->param('body_class', 'mt-comment-preview');
+        $tmpl->param(
+            { 'body_class' => 'mt-comment-preview', 'comment_preview_template' => 1, 'system_template' => 1 } );
     }
     my %cond;
     my $html = $tmpl->build( $ctx, \%cond );

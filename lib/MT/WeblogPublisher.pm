@@ -233,6 +233,7 @@ sub core_archive_types {
             dynamic_support => 1,
             entry_based     => 1,
             template_params => {
+                entry_archive     => 1,
                 main_template     => 1,
                 archive_template  => 1,
                 entry_template    => 1,
