@@ -171,7 +171,7 @@ the address you provided is correct and belongs to you.',
     'UTC+11' => 'UTC+11 (East Australian Daylight Savings Time)',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
 
-    '_POWERED_BY' => 'Powered by <a href="http://www.movabletype.com/"><$MTProductName$></a>',
+    '_POWERED_BY' => 'Powered by <a href="http://www.movabletype.com/" rel="generator"><$MTProductName$></a>',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
     'Blog Administrator' => 'Blog Administrator',
     'Create Entries' => 'Create Entries',
