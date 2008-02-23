@@ -4517,6 +4517,7 @@ sub date_based_category_entries {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
+    return [] unless $blog && $cat;
     my @entries = MT::Entry->load(
         {
             blog_id     => $blog->id,
