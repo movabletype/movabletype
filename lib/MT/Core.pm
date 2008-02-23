@@ -497,7 +497,7 @@ BEGIN {
             'UserpicThumbnailSize' => { default => 100 },
 
             # Basename settings
-            'AuthorBansenameLimit' => { default => 30 },
+            'AuthorBasenameLimit' => { default => 30 },
             'PerformanceLogging' => { default => 0 },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
