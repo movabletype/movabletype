@@ -1183,7 +1183,7 @@ sub core_upload_file_to_sync {
     my $job = TheSchwartz::Job->new();
     $job->funcname('MT::Worker::Sync');
     $job->uniqkey( $fi->id );
-    $job->coalesce( $$ . ':' . ( time - ( time % 100 ) ) );
+    $job->coalesce( ( $fi->blog_id || 0 ) . ':' . $$ . ':' . ( time - ( time % 10 ) ) );
     MT::TheSchwartz->insert($job);
 }
 
