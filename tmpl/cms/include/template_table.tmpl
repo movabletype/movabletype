@@ -38,7 +38,21 @@
                 <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
                 <td class="template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
 <mt:if name="template_type" like="/(index|archive)/">
-                <td class="output-file"><mt:if name="outfile"><mt:var name="outfile" escape="html"><mt:else><span><__trans phrase="-"></span></mt:if></td>
+                <td class="output-file">
+    <mt:if name="outfile">
+        <mt:var name="outfile" escape="html">
+    <mt:else name="template_type" eq="archive">
+                    <ul>
+        <mt:loop name="archive_types">
+            <mt:loop name="archive_tmpl_loop">
+                        <li><mt:if name="selected"><mt:var name="name" escape="html"></mt:if></li>
+            </mt:loop>
+        </mt:loop>
+                    </ul>
+    <mt:else>
+        <span><__trans phrase="-"></span>
+    </mt:if>
+                </td>
 </mt:if>
         <mt:unless name="filter">
                 <td class="template-type"><$mt:var name="type"$></td>
@@ -55,28 +69,6 @@
                 <td class="view-template si status-view"><mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a><mt:else><__trans phrase="-"></mt:if></td>
 </mt:if>
             </tr>
-<mt:if name="template_type" eq="archive">
-            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type"$> slave">
-                <td>&nbsp;</td>
-                <td class="template-mapping">
-                    <ul>
-                    <mt:loop name="archive_types">
-                        <li><mt:var name="archive_type" escape="html"></li>
-                    </mt:loop>
-                    </ul>
-                </td>
-                <td class="output-file" colspan="<mt:if name="screen_id" eq="search-replace">8<mt:else>5</mt:if>">
-                    <ul>
-    <mt:loop name="archive_types">
-        <mt:loop name="archive_tmpl_loop">
-                        <li><mt:if name="selected"><mt:var name="name" escape="html"></mt:if></li>
-        </mt:loop>
-    </mt:loop>
-                    </ul>
-                </td>
-            </tr>
-</mt:if>
-
     <mt:if __last__>
         </tbody>
     </mt:if>

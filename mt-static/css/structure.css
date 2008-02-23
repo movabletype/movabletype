@@ -2516,9 +2516,6 @@ optgroup option {
 
 /* list template */
 
-td.template-mapping {
-    padding-left: 30px;
-}
 
 td.output-file {
     width: 50%;
@@ -2527,7 +2524,8 @@ td.output-file {
 td.output-file ul {
     margin: 0;
 }
-td.output-file ul {
+td.output-file ul li {
+    font-style: italic;
     whitespace: nowrap;
 }
 
