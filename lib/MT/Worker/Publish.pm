@@ -35,9 +35,7 @@ sub work {
     }
 
     my $sync = MT->config('SyncTarget');
-
     my $throttles = $mt->{throttle} || {};
-    MT::TheSchwartz->debug($mt->translate("Publishing: [quant,_1,file,files]...", scalar(@jobs)));
 
     my $start = [gettimeofday];
     my $rebuilt = 0;
@@ -51,6 +49,9 @@ sub work {
             $job->completed();
             next;
         }
+
+        my $priority = $job->priority ? ", priority " . $job->priority : "";
+        $job->debug("MT::Worker::Publish publishing " . $fi->file_path . "$priority");
 
         # Important: prevents requeuing!
         $fi->{from_queue} = 1;
