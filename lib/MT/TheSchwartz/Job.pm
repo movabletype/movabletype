@@ -28,6 +28,7 @@ __PACKAGE__->install_properties({
         coalesce => 1,
         uniqkey => 1,
         run_after => 1,
+        priority => 1,
         uniqfunc => {
             columns => [ 'funcid', 'uniqkey' ],
             unique => 1,
