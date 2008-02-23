@@ -1649,7 +1649,7 @@ sub send_pings {
             }
           ) unless $res->{good};
     }
-    $app->_finish_rebuild_ping( $entry, scalar $q->param('is_new'),
+    _finish_rebuild_ping( $app, $entry, scalar $q->param('is_new'),
         $has_errors );
 }
 
