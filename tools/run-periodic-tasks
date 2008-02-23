@@ -48,6 +48,7 @@ Getopt::Long::GetOptions(
 my %cfg;
 $cfg{verbose} = $verbose;
 $cfg{scoreboard} = $scoreboard;
+$cfg{prioritize} = 1;
 
 require MT::TheSchwartz;
 my $client = MT::TheSchwartz->new(%cfg);
