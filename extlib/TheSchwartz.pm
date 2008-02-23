@@ -2,9 +2,9 @@
 
 package TheSchwartz;
 use strict;
-use fields qw( databases retry_seconds dead_dsns retry_at funcmap_cache verbose all_abilities current_abilities current_job cached_drivers driver_cache_expiration scoreboard );
+use fields qw( databases retry_seconds dead_dsns retry_at funcmap_cache verbose all_abilities current_abilities current_job cached_drivers driver_cache_expiration scoreboard prioritize );
 
-our $VERSION = "1.06";
+our $VERSION = "1.07";
 
 use Carp qw( croak );
 use Data::ObjectDriver::Errors;
@@ -35,6 +35,7 @@ sub new {
     my $databases = delete $args{databases};
 
     $client->{retry_seconds} = delete $args{retry_seconds} || RETRY_DEFAULT;
+    $client->set_prioritize(delete $args{prioritize});
     $client->set_verbose(delete $args{verbose});
     $client->set_scoreboard(delete $args{scoreboard});
     $client->{driver_cache_expiration} = delete $args{driver_cache_expiration} || 0;
@@ -166,12 +167,19 @@ sub list_jobs {
             } $driver->search('TheSchwartz::Job' => {
                 funcid        => $funcid,
                 @options
-                }, { limit => $limit });
+                }, { limit => $limit,
+                    ( $client->prioritize ? ( sort => 'priority',
+                    direction => 'descend' ) : () )
+                });
         } else {
             push @jobs, $driver->search('TheSchwartz::Job' => {
                 funcid        => $funcid,
                 @options
-                }, { limit => $limit });
+                }, { limit => $limit,
+                    ( $client->prioritize ? ( sort => 'priority',
+                        direction => 'descend' ) : () )
+                }
+            );
         }
     }
     return @jobs;
@@ -214,7 +222,11 @@ sub _find_job_with_coalescing {
                     run_after     => \ "<= $unixtime",
                     grabbed_until => \ "<= $unixtime",
                     coalesce      => { op => $op, value => $coval },
-                }, { limit => $FIND_JOB_BATCH_SIZE });
+                }, { limit => $FIND_JOB_BATCH_SIZE,
+                    ( $client->prioritize ? ( sort => 'priority',
+                        direction => 'descend' ) : () )
+                }
+            );
         };
         if ($@) {
             unless (OK_ERRORS->{ $driver->last_error || 0 }) {
@@ -253,7 +265,11 @@ sub find_job_for_workers {
                     funcid        => \@ids,
                     run_after     => \ "<= $unixtime",
                     grabbed_until => \ "<= $unixtime",
-                }, { limit => $FIND_JOB_BATCH_SIZE });
+                }, { limit => $FIND_JOB_BATCH_SIZE,
+                    ( $client->prioritize ? ( sort => 'priority',
+                    direction => 'descend' ) : () )
+                }
+            );
         };
         if ($@) {
             unless (OK_ERRORS->{ $driver->last_error || 0 }) {
@@ -503,7 +519,8 @@ sub work_once {
 
     my $class = $job ? $job->funcname : undef;
     if ($job) {
-        $job->debug("TheSchwartz::work_once got job of class '$class'");
+        my $priority = $job->priority ? ", priority " . $job->priority : "";
+        $job->debug("TheSchwartz::work_once got job of class '$class'$priority");
     } else {
         $client->debug("TheSchwartz::work_once found no jobs");
     }
@@ -681,6 +698,16 @@ sub clean_scoreboard {
     unlink($scoreboard);
 }
 
+sub prioritize {
+    my TheSchwartz $client = shift;
+    return $client->{prioritize};
+}
+
+sub set_prioritize {
+    my TheSchwartz $client = shift;
+    $client->{prioritize} = shift;
+}
+
 # current job being worked.  so if something dies, work_safely knows which to mark as dead.
 sub current_job {
     my TheSchwartz $client = shift;
@@ -804,6 +831,12 @@ A value indicating whether to log debug messages. If C<verbose> is a coderef,
 it is called to log debug messages. If C<verbose> is not a coderef but is some
 other true value, debug messages will be sent to C<STDERR>. Otherwise, debug
 messages will not be logged.
+
+=item * C<prioritize>
+
+A value indicating whether to utilize the job 'priority' field when selecting
+jobs to be processed. If unspecified, jobs will always be executed in a
+randomized order.
 
 =item * C<driver_cache_expiration>
 
