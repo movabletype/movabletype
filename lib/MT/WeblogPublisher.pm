@@ -2218,36 +2218,37 @@ sub queue_build_file_filter {
     my $job = TheSchwartz::Job->new();
     $job->funcname('MT::Worker::Publish');
     $job->uniqkey( $fi->id );
-    $job->coalesce( $$ . ':' . ( time - ( time % 100 ) ) );
 
-    # my $at = $fi->archive_type || '';
-    #
+    my $priority = 0;
+
+    my $at = $fi->archive_type || '';
     # Default priority assignment....
-    # if ($at eq 'Individual') {
-    #     require MT::TemplateMap;
-    #     my $map = MT::TemplateMap->load($fi->templatemap_id);
-    #     # Individual archive pages that are the 'permalink' pages should
-    #     # have highest build priority.
-    #     if ($map && $map->is_preferred) {
-    #         $rqf->priority(1);
-    #     } else {
-    #         $rqf->priority(9);
-    #     }
-    # } elsif ($at eq 'index') {
-    #     # Index pages are second in priority, if they are named 'index'
-    #     # or 'default'
-    #     if ($fi->file_path =~ m!/(index|default|atom|feed)!i) {
-    #         $rqf->priority(3);
-    #     } else {
-    #         $rqf->priority(9);
-    #     }
-    # } elsif (($at eq 'Monthly') || ($at eq 'Weekly') || ($at eq 'Daily')) {
-    #     $rqf->priority(5);
-    # } elsif ($at eq 'Category') {
-    #     $rqf->priority(7);
-    # }
-    #
-    # $rqf->save;
+    if ($at eq 'Individual') {
+        require MT::TemplateMap;
+        my $map = MT::TemplateMap->load($fi->templatemap_id);
+        # Individual archive pages that are the 'permalink' pages should
+        # have highest build priority.
+        if ($map && $map->is_preferred) {
+            $priority = 10;
+        } else {
+            $priority = 5;
+        }
+    } elsif ($at eq 'index') {
+        # Index pages are second in priority, if they are named 'index'
+        # or 'default'
+        if ($fi->file_path =~ m!/(index|default|atom|feed)!i) {
+            $priority = 9;
+        } else {
+            $priority = 3;
+        }
+    } elsif ($at =~ m/Category/) {
+        $priority = 1;
+    } elsif ($at =~ m/Monthly|Weekly|Daily/) {
+        $priority = 2;
+    }
+
+    $job->priority( $priority );
+    $job->coalesce( ( $fi->blog_id || 0 ) . ':' . $$ . ':' . ( time - ( time % 10 ) ) );
 
     MT::TheSchwartz->insert($job);
 
