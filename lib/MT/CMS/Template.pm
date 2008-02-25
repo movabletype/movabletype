@@ -1028,6 +1028,50 @@ sub build_template_table {
     \@data;
 }
 
+sub dialog_refresh_templates {
+    my $app = shift;
+    $app->validate_magic or return;
+
+    # permission check
+    my $perms = $app->permissions;
+    return $app->errtrans("Permission denied.")
+        unless $app->user->is_superuser ||
+            $perms->can_administer_blog ||
+            $perms->can_edit_templates;
+
+    my $param = {};
+    my $blog = $app->blog;
+    $param->{return_args} = $app->param('return_args');
+
+    if ($blog) {
+        $param->{blog_id} = $blog->id;
+
+        my $sets = $app->registry("template_sets");
+        $sets->{$_}{key} = $_ for keys %$sets;
+        $sets = $app->filter_conditional_list([ values %$sets ]);
+
+        no warnings; # some sets may not define an order
+        @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
+        $param->{'template_set_loop'} = $sets;
+
+        my $existing_set = $blog->template_set || 'mt_blog';
+        foreach (@$sets) {
+            if ($_->{key} eq $existing_set) {
+                $_->{selected} = 1;
+            }
+        }
+        $param->{'template_set_index'} = $#$sets;
+        $param->{'template_set_count'} = scalar @$sets;
+
+        $param->{template_sets} = $sets;
+        $param->{screen_id} = "refresh-templates-dialog";
+    }
+
+    # load template sets
+    $app->build_page('dialog/refresh_templates.tmpl',
+        $param);
+}
+
 sub refresh_all_templates {
     my ($app) = @_;
 
