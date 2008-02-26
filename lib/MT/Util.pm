@@ -1408,7 +1408,6 @@ sub start_background_task {
     eval { require bytes; 1; };
 
     sub addbin {
-        #local $ENV{LANG} = undef;
         my ($a, $b) = @_;
         my $length = (length $a > length $b ? length $a : length $b);
 
@@ -1451,7 +1450,6 @@ sub start_background_task {
     }
 
     sub divbindec {
-        # local $ENV{LANG} = undef;
         my ($a, $b) = @_;
         # $b is decimal-ascii, $b < 256
 
