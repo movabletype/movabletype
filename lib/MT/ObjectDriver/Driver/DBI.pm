@@ -347,12 +347,23 @@ sub prepare_statement {
         ## Set statement's ORDER clause if any.
         if ($args->{sort} || $args->{direction}) {
             my $order = $args->{sort} || 'id';
-            my $dir = $args->{direction} &&
-                      $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
-            $stmt->order({
-                column => $dbd->db_column_name($tbl, $order),
-                desc   => $dir,
-            });
+            if (! ref($order)) {
+                my $dir = $args->{direction} &&
+                          $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
+                $stmt->order({
+                    column => $dbd->db_column_name($tbl, $order),
+                    desc   => $dir,
+                });
+            } else {
+                my @order;
+                foreach my $ord (@$order) {
+                    push @order, {
+                        column => $dbd->db_column_name($tbl, $ord->{column}),
+                        desc => $ord->{desc},
+                    };
+                }
+                $stmt->order(\@order);
+            }
         }
     }
     $stmt->limit($args->{limit}) if $args->{limit};
@@ -432,7 +443,21 @@ sub prepare_statement {
     if ($start_val) {
         ## TODO: support complex primary keys
         my $col = $args->{sort} || $class->primary_key;
-        $col = $driver->_decorate_column_name($class, $col);
+        if (ref $col eq 'ARRAY') {
+            if (ref $col->[0] eq 'HASH') {
+                # complex 'sort' array/hash structure
+                foreach (@$col) {
+                    $_->{column} = $driver->_decorate_column_name($class, $_->{column});
+                }
+            } else {
+                # primary key as array of column names
+                foreach (@$col) {
+                    $_ = $driver->_decorate_column_name($class, $_);
+                }
+            }
+        } else {
+            $col = $driver->_decorate_column_name($class, $col);
+        }
         my $op = $args->{direction} eq 'descend' ? '<' : '>';
         $stmt->add_where($col, { value => $start_val, op => $op });
     }
