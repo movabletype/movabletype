@@ -1393,7 +1393,8 @@ sub post_save {
                         $tmpl->save;
                     }
                 }
-                $app->update_dynamicity(
+                update_dynamicity(
+                    $app,
                     $obj,
                     $app->param('dynamic_cache')       ? 1 : 0,
                     $app->param('dynamic_conditional') ? 1 : 0
@@ -1818,9 +1819,9 @@ sub update_dynamicity {
     }
 
     if ( $dcty ne 'none' ) {
-        $app->prepare_dynamic_publishing(@_, $blog->site_path, $blog->site_url);
+        prepare_dynamic_publishing($app, @_, $blog->site_path, $blog->site_url);
         if ( $blog->archive_path ) {
-            $app->prepare_dynamic_publishing(@_, $blog->archive_path, $blog->archive_url);
+            prepare_dynamic_publishing($app, @_, $blog->archive_path, $blog->archive_url);
         }
         my $compiled_template_path =
           File::Spec->catfile( $blog->site_path(), 'templates_c' );
