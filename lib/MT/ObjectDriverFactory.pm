@@ -59,20 +59,20 @@ sub new {
         ($class ? ( dbd => $class) : ()),
     );
 
-    require Data::ObjectDriver::Driver::Cache::RAM;
+    require MT::ObjectDriver::Driver::Cache::RAM;
     require MT::Memcached;
 
     my $driver;
     if (MT::Memcached->is_available) {
         require Data::ObjectDriver::Driver::Cache::Memcached;
-        $driver = Data::ObjectDriver::Driver::Cache::RAM->new(
+        $driver = MT::ObjectDriver::Driver::Cache::RAM->new(
             fallback => Data::ObjectDriver::Driver::Cache::Memcached->new(
                 cache => MT::Memcached->instance,
                 fallback => $dbi_driver,
             ),
         );
     } else {
-        $driver = Data::ObjectDriver::Driver::Cache::RAM->new(
+        $driver = MT::ObjectDriver::Driver::Cache::RAM->new(
             fallback => $dbi_driver,
         );
     }
