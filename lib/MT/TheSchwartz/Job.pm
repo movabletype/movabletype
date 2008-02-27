@@ -24,19 +24,20 @@ __PACKAGE__->install_properties({
     datasource  => 'ts_job',
     primary_key => 'jobid',
     indexes => {
-        funcid => 1,
-        coalesce => 1,
-        uniqkey => 1,
-        run_after => 1,
-        priority => 1,
+        funccoal => {
+            columns => [ 'funcid', 'coalesce' ],
+        },
+        funcrun => {
+            columns => [ 'funcid', 'run_after' ],
+        },
+        funcpri => {
+            columns => [ 'funcid', 'priority' ],
+        },
         uniqfunc => {
             columns => [ 'funcid', 'uniqkey' ],
             unique => 1,
         },
     },
-    # not captured (but indexed separately)
-    # INDEX (funcid, run_after),
-    # INDEX (funcid, coalesce)
 });
 
 sub class_label {
