@@ -517,13 +517,13 @@ sub nextprev {
             { column => 'id', desc => $next ? 'ASC' : 'DESC' } ],
             { $by_field => 1 });
 
-    my $obj = $class->load({
+    my $sibling = $class->load({
         $by_field => ($next ? [ $ts, undef ] : [ undef, $ts ]),
         'id' => $id,
         %{$terms}
     }, { not => { 'id' => 1 }, limit => 1, %$args });
 
-    return $obj;
+    return $sibling;
 }
 
 ## Drivers.
