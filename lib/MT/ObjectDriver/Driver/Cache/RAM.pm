@@ -33,7 +33,7 @@ sub add_to_cache {
     my $driver = shift;
 
     if (scalar keys %Cache > MAX_CACHE_SIZE) {
-        %Cache = ();
+        $driver->clear_cache();
     }
 
     $driver->start_query('RAMCACHE_ADD ?', \@_);
