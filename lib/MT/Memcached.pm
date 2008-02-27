@@ -41,8 +41,10 @@ sub instance {
 
 sub cleanup {
     undef $Instance;
-    Cache::Memcached->disconnect_all
-        if MT->config->MemcachedDriver eq 'Cache::Memcached';
+    my $driver_class = MT->config->MemcachedDriver;
+    if ($driver_class->can('disconnect_all')) {
+        $driver_class->disconnect_all;
+    }
 }
 
 sub DESTROY { }
