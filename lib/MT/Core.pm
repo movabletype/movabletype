@@ -514,8 +514,18 @@ BEGIN {
             'wizard'   => { handler => 'MT::App::Wizard', },
             'comments' => { handler => 'MT::App::Comments', },
             'search'   => {
-                handler => 'MT::App::Search', 
+                handler => 'MT::App::Search::Legacy', 
                 tags => sub { MT->app->load_core_tags },
+            },
+            'new_search'   => {
+                handler => 'MT::App::Search', 
+                tags    => sub { 
+                    require MT::Template::Context::Search;
+                    return MT::Template::Context::Search->load_core_tags();
+                },
+                methods => sub { MT->app->core_methods() },
+                params  => sub { MT->app->core_query_params() },
+                author => { columns => [ qw( name nickname url email ) ] },
             },
             'cms'      => {
                 handler         => 'MT::App::CMS',
