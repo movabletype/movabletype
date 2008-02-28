@@ -1,44 +1,20 @@
 <MTSetVar name="system_template" value="1">
-
 <MTIf name="body_class" eq="mt-comment-confirmation">
-    <MTSetVarBlock name="page_title"><__trans phrase="Comment Submitted"></MTSetVarBlock>
-
-    <MTSetVar name="heading" value="<__trans phrase="Confirmation...">">
-
-    <MTSetVarBlock name="message">
-    <p><__trans phrase="Your comment has been submitted!"></p>
-    </MTSetVarBlock>
-</MTIf>
-
-<MTIf name="body_class" eq="mt-comment-pending">
-    <MTSetVarBlock name="page_title"><__trans phrase="Comment Pending"></MTSetVarBlock>
-
-    <MTSetVar name="heading" value="<__trans phrase="Thank you for commenting.">">
-
-    <MTSetVarBlock name="message">
-    <p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>
-    </MTSetVarBlock>
-
-</MTIf>
-
-<MTIf name="body_class" eq="mt-comment-error">
+    <MTSetVar name="page_title" value="<__trans phrase="Confirmation...">">
+    <MTSetVar name="page_title" value="<__trans phrase="Confirmation...">">
+    <MTSetVarBlock name="message"><__trans phrase="Your comment has been submitted!"></MTSetVarBlock>
+<MTElse name="body_class" eq="mt-comment-pending">
+    <MTSetVarBlock name="page_title"><__trans phrase="Thank you for commenting."></MTSetVarBlock>
+    <MTSetVarBlock name="message"><__trans phrase="Your comment has been received and held for approval by the blog owner."></MTSetVarBlock>
+<MTElse name="body_class" eq="mt-comment-error">
     <MTSetVarBlock name="page_title"><__trans phrase="Comment Submission Error"></MTSetVarBlock>
-
-    <MTSetVar name="heading" value="$page_title">
-
-    <MTSetVarBlock name="message">
-    <p><__trans phrase="Your comment submission failed for the following reasons:"></p>
-    <blockquote>
-        <$MTErrorMessage$>
-    </blockquote>
-    </MTSetVarBlock>
+    <MTSetVarBlock name="message"><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$MTErrorMessage$>"></MTSetVarBlock>
 </MTIf>
-
 <MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 
-<h1 id="page-title"><$MTGetVar name="heading"$></h1>
+<h1 id="page-title"><$MTGetVar name="page_title"$></h1>
 
 <$MTGetVar name="message"$>
 
