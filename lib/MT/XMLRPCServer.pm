@@ -234,12 +234,14 @@ sub _save_placements {
         }
     }
     elsif (my $cats = $item->{categories}) {
-        my $cat_class = MT->model('category');
-        # The spec says to ignore invalid category names.
-        @categories = grep { defined } $cat_class->search({
-            blog_id => $entry->blog_id,
-            label   => $cats,
-        });
+        if (@$cats) {
+	    my $cat_class = MT->model('category');
+	    # The spec says to ignore invalid category names.
+	    @categories = grep { defined } $cat_class->search({
+		blog_id => $entry->blog_id,
+		label   => $cats,
+	    });
+	}
     }
 
     require MT::Placement;
