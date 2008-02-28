@@ -525,7 +525,6 @@ BEGIN {
                 },
                 methods => sub { MT->app->core_methods() },
                 params  => sub { MT->app->core_query_params() },
-                author => { columns => [ qw( name nickname url email ) ] },
             },
             'cms'      => {
                 handler         => 'MT::App::CMS',
