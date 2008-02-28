@@ -292,7 +292,8 @@ sub build {
     } else {
         $cond = {};
     }
-    $ctx->stash('builder', $build);
+    # Avoids circular reference between MT::Template::Context and MT::Builder.
+    local $ctx->{__stash}{builder} = $build;
     my $res = '';
     my $ph = $ctx->post_process_handler;
 
