@@ -8,7 +8,7 @@ package MT::Component;
 
 use strict;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
-use MT::Util qw(encode_js);
+use MT::Util qw( encode_js weaken );
 
 __PACKAGE__->mk_accessors(qw( id path envelope version schema_version ));
 
@@ -538,7 +538,8 @@ sub registry {
         # deepscan for any label elements since they will need translation
         if ( ref $r eq 'HASH' ) {
             __deep_localize_labels( $c, $r );
-            $_->{plugin} = $c for grep { ref $_ eq 'HASH' } values %$r;
+            weaken($_->{plugin} = $c)
+                for grep { ref $_ eq 'HASH' } values %$r;
         }
 
         # $r should now be the element of the path requested

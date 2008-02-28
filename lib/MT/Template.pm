@@ -8,6 +8,7 @@ package MT::Template;
 
 use strict;
 use base qw( MT::Object );
+use MT::Util qw( weaken );
 
 use constant NODE => 'MT::Template::Node';
 
@@ -142,7 +143,7 @@ sub context {
     return $tmpl->{context} = shift if @_;
     require MT::Template::Context;
     my $ctx = $tmpl->{context} ||= MT::Template::Context->new;
-    $ctx->stash('template', $tmpl);
+    weaken($ctx->{__stash}{'template'} = $tmpl);
     return $ctx;
 }
 
@@ -615,13 +616,17 @@ sub getElementById {
 sub createElement {
     my $tmpl = shift;
     my ($tag, $attr) = @_;
-    return bless [ $tag, $attr, undef, undef, undef, undef, $tmpl ], NODE;
+    my $node = bless [ $tag, $attr, undef, undef, undef, undef, $tmpl ], NODE;
+    weaken($node->[6]);
+    return $node;
 }
 
 sub createTextNode {
     my $tmpl = shift;
     my ($text) = @_;
-    return bless [ 'TEXT', $text, undef, undef, undef, undef, $tmpl ], NODE;
+    my $node = bless [ 'TEXT', $text, undef, undef, undef, undef, $tmpl ], NODE;
+    weaken($node->[6]);
+    return $node;
 }
 
 sub insertAfter {
@@ -739,6 +744,7 @@ sub getElementsByName {
 package MT::Template::Node;
 
 use strict;
+use MT::Util qw( weaken );
 
 sub setAttribute {
     my $node = shift;
@@ -822,6 +828,7 @@ sub previousSibling {
 sub parentNode {
     my $node = shift;
     $node->[5] = shift if @_;
+    weaken($node->[5]);
     $node->[5];
 }
 

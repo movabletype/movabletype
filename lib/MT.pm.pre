@@ -10,6 +10,7 @@ use strict;
 use base qw( MT::ErrorHandler );
 use File::Spec;
 use File::Basename;
+use MT::Util qw( weaken );
 
 our ( $VERSION,      $SCHEMA_VERSION );
 our ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID );
@@ -397,7 +398,7 @@ sub config {
     ref $mt or $mt = MT->instance;
     unless ( $mt->{cfg} ) {
         require MT::ConfigMgr;
-        $mt->{cfg} = MT::ConfigMgr->instance;
+        weaken( $mt->{cfg} = MT::ConfigMgr->instance );
     }
     if (@_) {
         my $setting = shift;

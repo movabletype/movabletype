@@ -8,6 +8,7 @@ package MT::Builder;
 
 use strict;
 use base qw( MT::ErrorHandler );
+use MT::Util qw( weaken );
 
 use constant NODE => 'MT::Template::Node';
 
@@ -207,8 +208,8 @@ sub compile {
                 $rec->[3] = '';
             }
         }
-        $rec->[5] = $opt->{parent} || $tmpl;
-        $rec->[6] = $tmpl;
+        weaken($rec->[5] = $opt->{parent} || $tmpl);
+        weaken($rec->[6] = $tmpl);
         push @{ $state->{tokens} }, $rec;
         $pos = pos $text;
     }
@@ -254,8 +255,13 @@ sub _consume_up_to {
 
 sub _text_block {
     my $text = substr ${ $_[0]->{text} }, $_[1], $_[2] - $_[1];
-    push @{ $_[0]->{tokens} }, bless [ 'TEXT', $text, undef, undef, undef, $_[0]->{tokens}, $_[0]->{tmpl} ], NODE
-        if (defined $text) && ($text ne '');
+    if ((defined $text) && ($text ne '')) {
+        my $rec = bless [ 'TEXT', $text, undef, undef, undef, $_[0]->{tokens}, $_[0]->{tmpl} ], NODE;
+        # Avoids circular reference between NODE and TOKENS, MT::Template.
+        weaken($rec->[5]);
+        weaken($rec->[6]);
+        push @{ $_[0]->{tokens} }, $rec;
+    }
 }
 
 sub syntree2str {

@@ -24,7 +24,17 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  start_background_task launch_background_tasks substr_wref
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
-                 sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter );
+                 sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+                 weaken );
+
+{
+my $Has_Weaken;
+sub weaken {
+    $Has_Weaken = eval 'use Scalar::Util; 1' && Scalar::Util->can('weaken') ? 1 : 0
+        unless defined $Has_Weaken;
+    Scalar::Util::weaken($_[0]) if $Has_Weaken;
+}
+}
 
 sub leap_day {
     my ($y, $m, $d) = @_;
