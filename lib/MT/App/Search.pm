@@ -9,9 +9,7 @@ package MT::App::Search;
 use strict;
 use base qw( MT::App );
 
-use File::Spec;
-use MT::Util qw(encode_html ts2epoch epoch2ts);
-use HTTP::Date qw(str2time time2str);
+use MT::Util qw( encode_html );
 use MT::Entry qw( :constants );
 
 sub id { 'new_search' }
@@ -54,7 +52,7 @@ sub init_request{
         delete $app->{$_} if exists $app->{$_}
     }
 
-    my %no_override;# = map { $_ => 1 } split /\s*,\s*/, $app->config->NoOverride;
+    my %no_override = map { $_ => 1 } split /\s*,\s*/, $app->config->NoOverride;
     my $blog_list = $app->create_blog_list( %no_override );
     $app->{searchparam}{IncludeBlogs} = $blog_list->{IncludeBlogs}
         if $blog_list && %$blog_list
@@ -76,8 +74,8 @@ sub create_blog_list {
     my $q = $app->param;
     my $cfg = $app->config;
 
-    #%no_override = map { $_ => 1 } split /\s*,\s*/, $cfg->NoOverride
-    #    unless %no_override;
+    %no_override = map { $_ => 1 } split /\s*,\s*/, $cfg->NoOverride
+        unless %no_override;
 
     my %blog_list;
     ## Combine user-selected included/excluded blogs
