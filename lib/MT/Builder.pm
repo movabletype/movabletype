@@ -275,12 +275,9 @@ sub syntree2str {
     return $string;
 }
 
-my $count=0;
 sub build {
     my $build = shift;
     my($ctx, $tokens, $cond) = @_;
-
-    #print STDERR syntree2str($tokens,0) unless $count++ == 1;
 
     my $timer;
     if ($MT::DebugMode & 8) {
