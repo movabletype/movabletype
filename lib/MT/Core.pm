@@ -525,6 +525,16 @@ BEGIN {
                 },
                 methods => sub { MT->app->core_methods() },
                 params  => sub { MT->app->core_query_params() },
+                #author => {
+                #    columns => [ qw( name nickname email url ) ],
+                #    'sort' => 'created_on',
+                #    terms   => { status => 1 }, #MT::Author::ACTIVE()
+                #},
+                entry => {
+                    columns => [ qw( title keywords text text_more ) ],
+                    'sort' => 'authored_on',
+                    terms   => { status => 2 }, #MT::Entry::RELEASE()
+                },
             },
             'cms'      => {
                 handler         => 'MT::App::CMS',

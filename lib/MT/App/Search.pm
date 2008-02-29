@@ -10,7 +10,6 @@ use strict;
 use base qw( MT::App );
 
 use MT::Util qw( encode_html );
-use MT::Entry qw( :constants );
 
 sub id { 'new_search' }
 
@@ -26,7 +25,6 @@ sub core_methods {
     my $app = shift;
     return {
         'search' => \&process,
-        'author' => \&process,
     };
 }
 
@@ -65,6 +63,8 @@ sub init_request{
         $app->{searchparam}{$key} = $no_override{$key} ?
             $app->config->$key() : ($q->param($key) || $app->config->$key());
     }
+
+    $app->{searchparam}{Type} = $q->param('type') || 'entry';
 }
 
 sub create_blog_list {
@@ -120,13 +120,13 @@ sub create_blog_list {
 sub process {
     my $app = shift;
 
-    my ( $terms, $args ) = $app->search_terms();
+    my @arguments = $app->search_terms();
     return $app->error($app->errstr) if $app->errstr;
 
     my $count = 0;
     my $iter;
-    if ( $terms && @$terms ) {
-        ( $count, $iter ) = $app->execute( $terms, $args );
+    if ( @arguments ) {
+        ( $count, $iter ) = $app->execute( @arguments );
         return $app->error($app->errstr) unless $iter;
 
         $iter = $app->post_search( $count, $iter );
@@ -146,7 +146,8 @@ sub execute {
     my $app = shift;
     my ( $terms, $args ) = @_;
 
-    my $class = $app->model( $app->mode eq 'search' ? 'entry' : $app->mode );
+    my $class = $app->model( $app->{searchparam}{Type} )
+        or return $app->errtrans('Unsupported type: [_1]', $app->{searchparam}{Type});
     my $count = $app->count( $class, $terms, $args );
     #TODO: cache!
     my $iter = $class->load_iter( $terms, $args )
@@ -166,31 +167,28 @@ sub search_terms {
     my $max = $app->{searchparam}{MaxResults};
     $limit = $max if !$limit || ( $limit - $offset > $max );
 
-    my $type = $q->param('type');
-    my $entry_type = $app->mode eq 'search'
-      ? 1
-      : $type
-        ? ( 'entry' eq lc($type) || 'page' eq lc($type)
-          ? 1
-          : 0 )
-        : 0;
+    my $params = $app->registry( $app->{searchparam}{Type} );
+    my %def_terms = exists( $params->{terms} )
+          ? %{ $params->{terms} }
+          : ();
+    delete $def_terms{'plugin'}; #FIXME: why is this in here?
 
-    my $def_terms = {
-        $entry_type ? ( status => MT::Entry::RELEASE() ) : (),
-        $type ? ( class  => $type ) : (),
-        exists( $app->{searchparam}{IncludeBlogs} )
-          ? ( blog_id => [ keys %{ $app->{searchparam}{IncludeBlogs} } ] )
-          : (),
-    };
+    if ( exists $app->{searchparam}{IncludeBlogs} ) {
+        $def_terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
+    }
+
     my @terms;
-    push @terms, $def_terms if %$def_terms;
+    push @terms, \%def_terms if %def_terms;
 
-    my $columns = $app->mode eq 'search'
-      ? [ [ qw( title keywords text text_more ) ] ]
-      : $app->registry( $app->mode, 'columns' );
-    $columns = $columns->[0]; # FIXME: Why?
-    return $app->errtrans('No columns to search for was specified for [_1]', $app->mode)
+    my $columns = $params->{columns};
+    my $sort = $params->{'sort'};
+    if ( $sort !~ /\w+\!$/  && exists($app->{searchparam}{Sort}) ) {
+        $sort = $app->{searchparam}{Sort};
+    }
+
+    return $app->errtrans('No column was specified to search for [_1].', $app->{searchparam}{Type})
         unless $columns && @$columns;
+
     my $number = scalar @$columns;
     my @and;
     for ( my $i = 0; $i < $number; $i++) {
@@ -207,7 +205,7 @@ sub search_terms {
       $offset ? ( 'offset' => $offset ) : (),
       'sort' => [
         { desc   => 'descend' eq $app->{searchparam}{ResultDisplay} ? 'DESC' : 'ASC',
-          column => $entry_type ? 'authored_on' : 'created_on' }
+          column => $sort }
       ]
     );
 
@@ -295,8 +293,7 @@ sub load_search_tmpl {
     }
     $ctx->stash('results', $iter);
     $ctx->stash('count',   $count);
-    $ctx->stash('stash_key', $app->mode)
-        if 'search' ne $app->mode;
+    $ctx->stash('stash_key', $app->{searchparam}{Type} );
     $ctx->stash('include_blogs',
         join ',', keys %{ $app->{searchparam}{IncludeBlogs} });
     if ( my $str = $app->{search_string} ) {
@@ -312,7 +309,7 @@ sub load_search_tmpl {
 sub pre_render {
     my $app = shift;
     my ( $tmpl ) = @_;
-    $tmpl
+    $tmpl;
 }
 
 sub render {
@@ -321,7 +318,6 @@ sub render {
 
     my $tmpl = $app->load_search_tmpl( $count, $iter );
     $tmpl = $app->pre_render( $tmpl );
-
     $tmpl;
 }
 
