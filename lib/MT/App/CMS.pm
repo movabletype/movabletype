@@ -124,7 +124,7 @@ sub core_methods {
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
         'logout'             => {
-            code           => \&logout,
+            code           => sub { $_[0]->SUPER::logout(@_) },
             requires_login => 0,
         },
         'start_recover' => {
