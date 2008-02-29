@@ -52,14 +52,9 @@ BEGIN {
                 outfile => 'rsd.xml',
                 rebuild_me => 1,
             },
-            'atom' => {
-                label => 'Atom',
+            'feed_recent' => {
+                label => 'Feed - Recent Entries',
                 outfile => 'atom.xml',
-                rebuild_me => 1,
-            },
-            'rss' => {
-                label => 'RSS',
-                outfile => 'rss.xml',
                 rebuild_me => 1,
             },
         },
