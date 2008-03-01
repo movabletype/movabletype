@@ -771,63 +771,6 @@ sub add_map {
     $app->print($html);
 }
 
-sub delete_map {
-    my $app = shift;
-    $app->validate_magic() or return;
-    my $perms = $app->{perms}
-      or return $app->error( $app->translate("No permissions") );
-    my $q  = $app->param;
-    my $id = $q->param('id');
-
-    require MT::TemplateMap;
-    MT::TemplateMap->remove( { id => $id } );
-    my $html =
-      _generate_map_table( $app, $q->param('blog_id'),
-        $q->param('template_id') );
-    $app->{no_print_body} = 1;
-    $app->send_http_header("text/plain");
-    $app->print($html);
-}
-
-sub add_map {
-    my $app = shift;
-    $app->validate_magic() or return;
-    my $perms = $app->{perms}
-      or return $app->error( $app->translate("No permissions") );
-
-    my $q = $app->param;
-
-    require MT::TemplateMap;
-    my $blog_id = $q->param('blog_id');
-    my $at      = $q->param('new_archive_type');
-    my $count   = MT::TemplateMap->count(
-        {
-            blog_id      => $blog_id,
-            archive_type => $at
-        }
-    );
-    my $map = MT::TemplateMap->new;
-    $map->is_preferred( $count ? 0 : 1 );
-    $map->template_id( scalar $q->param('template_id') );
-    $map->blog_id($blog_id);
-    $map->archive_type($at);
-    $map->save
-      or return $app->error(
-        $app->translate( "Saving map failed: [_1]", $map->errstr ) );
-    my $html =
-      _generate_map_table( $app, $blog_id, scalar $q->param('template_id') );
-    $app->rebuild(
-        BlogID      => $blog_id,
-        ArchiveType => $at,
-        TemplateMap => $map,
-        TemplateID  => scalar $q->param('template_id'),
-        NoStatic    => 1
-    ) or return $app->publish_error();
-    $app->{no_print_body} = 1;
-    $app->send_http_header("text/plain");
-    $app->print($html);
-}
-
 sub can_view {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
