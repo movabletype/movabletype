@@ -196,12 +196,12 @@ sub search_terms {
     }
 
     my %args = (
-      $limit ? ( 'limit' => $limit ) : (),
+      $limit  ? ( 'limit' => $limit ) : (),
       $offset ? ( 'offset' => $offset ) : (),
-      'sort' => [
-        { desc   => 'descend' eq $app->{searchparam}{ResultDisplay} ? 'DESC' : 'ASC',
-          column => $sort }
-      ]
+      $sort   ? ( 'sort' => [
+            { desc   => 'descend' eq $app->{searchparam}{ResultDisplay} ? 'DESC' : 'ASC',
+              column => $sort }
+        ] ) : (),
     );
 
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
@@ -216,6 +216,21 @@ sub search_terms {
 sub post_search {
     my $app = shift;
     my ( $count, $iter ) = @_;
+
+    #FIXME: template name may not be 'feed' for search feed
+    unless ( 'feed' eq $app->param('template') ) {
+        my $blog_id = $app->first_blog_id();
+        require MT::Log;
+        $app->log({
+            message => $app->translate("Search: query for '[_1]'",
+                  $app->{search_string}),
+            level => MT::Log::INFO(),
+            class => 'search',
+            category => 'straight_search',
+            $blog_id ? (blog_id => $blog_id) : ()
+        });
+    }
+
     # TODO: cache here?
     $iter;
 }
@@ -226,10 +241,9 @@ sub template_paths {
     ( $app->config->SearchTemplatePath, @paths );
 }
 
-sub load_search_tmpl {
+sub first_blog_id {
     my $app = shift;
     my $q = $app->param;
-    my ( $count, $iter ) = @_;
 
     my $blog_id;
     if ( $q->param('IncludeBlogs') ) {
@@ -239,7 +253,15 @@ sub load_search_tmpl {
     elsif ( exists $app->{searchparam}{IncludeBlogs} ) {
         $blog_id = @{ keys %{ $app->{searchparam}{IncludeBlogs} } }[0];
     }
+    $blog_id;
+}
 
+sub load_search_tmpl {
+    my $app = shift;
+    my $q = $app->param;
+    my ( $count, $iter ) = @_;
+
+    my $blog_id = $app->first_blog_id();
     my $tmpl;
     if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
         # load specified template

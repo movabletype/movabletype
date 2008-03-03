@@ -532,7 +532,7 @@ BEGIN {
                 #},
                 entry => {
                     columns => [ qw( title keywords text text_more ) ],
-                    'sort' => 'authored_on',
+                    'sort'  => 'authored_on',
                     terms   => { status => 2 }, #MT::Entry::RELEASE()
                 },
             },
