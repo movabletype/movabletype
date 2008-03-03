@@ -311,7 +311,7 @@ sub create_default_widgetsets {
         my @ids;
         foreach my $widget ( @{ $widgetset->{widgets} } ) {
             my $name = plugin()->translate($widget);
-            push @ids, $widgets{$name};
+            push @ids, $widgets{$name} if $widgets{$name};
         }
         $modulesets->{$label} = join ',', @ids;
     }
