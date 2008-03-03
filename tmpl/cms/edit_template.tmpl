@@ -543,14 +543,23 @@ TC.attachLoadEvent( init );
         <mt:if name="custom_dynamic"><mt:if name="build_dynamic"><input type="hidden" name="current_build_dynamic" value="1" /></mt:if></mt:if>
         <mt:unless name="build_dynamic"><mt:if name="has_rebuild"><mt:if name="rebuild_me"><input type="hidden" name="current_rebuild_me" value="1" /></mt:if></mt:if></mt:unless>
         <ul>
+            <li><label><input type="radio" name="build_type" value="1"<mt:if name="build_type_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On Demand"></label></li>
         <mt:if name="custom_dynamic">
-            <li><input type="checkbox" id="build_dynamic" name="build_dynamic" tabindex="6" value="1" <mt:if name="build_dynamic">checked="checked" </mt:if> mt:watch-change="1" /> <label for="build_dynamic"><__trans phrase="Enable dynamic publishing for this template"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'enable_dynamic_publishing')" class="help-link">?</a></li>
+            <li><label><input type="radio" name="build_type" value="3"<mt:if name="build_type_3"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Dynamically"></label></li>
         </mt:if>
-        <mt:unless name="build_dynamic">
-            <mt:if name="has_rebuild">
-            <li><input type="checkbox" id="rebuild_me" name="rebuild_me" tabindex="7" value="1" <mt:if name="rebuild_me">checked="checked" </mt:if> mt:watch-change="1" /> <label for="rebuild_me"><__trans phrase="Publish this template automatically when rebuilding index templates"></label> <a href="javascript:void(0)" onclick="return openManual('templates', 'rebuild_with_indexes')" class="help-link">?</a></li>
-            </mt:if>
-        </mt:unless>
+        <mt:if name="publish_queue">
+            <li><label><input type="radio" name="build_type" value="4"<mt:if name="build_type_4"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Asynchronously"></label></li>
+            <li><label><input type="radio" name="build_type" value="5"<mt:if name="build_type_5"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On a schedule"></label>
+            <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
+            <select name="schedule_period" id="schedule_period">
+                <option value="minutes"<mt:if name="schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
+                <option value="hours"<mt:if name="schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
+                <option value="days"<mt:if name="schedule_period_days"> selected="selected"</mt:if>><__trans phrase="days"></option>
+            </select>
+            </li>
+        </mt:if>
+            <li><label><input type="radio" name="build_type" value="2"<mt:if name="build_type_2"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Manually only"></label></li>
+            <li><label><input type="radio" name="build_type" value="0"<mt:if name="build_type_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Disable"></label></li>
         </ul>
     </mtapp:setting>
 </mt:if>

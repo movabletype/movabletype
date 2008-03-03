@@ -32,6 +32,8 @@ __PACKAGE__->install_properties({
         'rebuild_me' => 'boolean',
         'build_dynamic' => 'boolean',
         'identifier' => 'string(50)',
+        'build_type' => 'smallint',
+        'build_interval' => 'integer',
     },
     indexes => {
         blog_id => 1,
@@ -44,6 +46,7 @@ __PACKAGE__->install_properties({
     defaults => {
         'rebuild_me' => 1,
         'build_dynamic' => 0,
+        'build_type' => 1,
     },
     meta => 1,
     child_of => 'MT::Blog',

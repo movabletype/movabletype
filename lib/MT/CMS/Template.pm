@@ -229,6 +229,13 @@ sub edit {
             $param->{object_loop} = $param->{template_map_loop} = $maps
               if @$maps;
         }
+        # publish options
+        $param->{publish_queue} = $blog->publish_queue;
+        $param->{build_type} = $obj->build_type;
+        $param->{ 'build_type_' . ( $obj->build_type || 0 ) } = 1;
+        my ( $period, $interval ) = _get_schedule( $obj->build_interval );
+        $param->{ 'schedule_period_' . $period } = 1;
+        $param->{schedule_interval} = $interval;
     } else {
         my $new_tmpl = $q->param('create_new_template');
         my $template_type;
@@ -653,6 +660,13 @@ sub _populate_archive_loop {
         my $map = {};
         $map->{map_id}           = $map_obj->id;
         $map->{map_is_preferred} = $map_obj->is_preferred;
+        # publish options
+        $map->{map_build_type} = $map_obj->build_type;
+        $map->{ 'map_build_type_' . ( $map_obj->build_type || 0 ) } = 1;
+        my ( $period, $interval ) = _get_schedule( $map_obj->build_interval );
+        $map->{ 'map_schedule_period_' . $period } = 1;
+        $map->{map_schedule_interval} = $interval;
+
         my $at = $map->{archive_type} = $map_obj->archive_type;
         $types{$at}++;
         $map->{ 'archive_type_preferred_' . $blog->archive_type_preferred } = 1
@@ -832,6 +846,17 @@ sub pre_save {
             $perms->save;
         }
     }
+
+    my $build_type = $app->param('build_type');
+    if ( $build_type == 5 ) {    # schedule build
+        my $period   = $app->param('schedule_period');
+        my $interval = $app->param('schedule_interval');
+        my $sec      = _get_build_interval( $period, $interval );
+        $obj->build_interval($sec);
+    }
+    $obj->rebuild_me( $build_type == 1 ? 1 : 0 );
+    $obj->build_dynamic( $build_type == 3 ? 1 : 0 );
+
     1;
 }
 
@@ -856,6 +881,19 @@ sub post_save {
             my $map_id = $1;
             my $map    = MT::TemplateMap->load($map_id);
             $map->file_template( $q->param($p) );
+            $map->save;
+        }
+        elsif ( $p =~ /^map_build_type_(\d+)$/ ) {
+            my $map_id = $1;
+            my $map    = MT::TemplateMap->load($map_id);
+            my $build_type = $q->param($p);
+            $map->build_type( $build_type );
+            if ( $build_type == 5 ) {    # schedule_build
+                my $period   = $q->param( 'map_schedule_period_' . $map_id );
+                my $interval = $q->param( 'map_schedule_interval_' . $map_id );
+                my $sec      = _get_build_interval( $period, $interval );
+                $map->build_interval($sec);
+            }
             $map->save;
         }
     }
@@ -1370,6 +1408,46 @@ sub publish_index_templates {
     }
 
     $app->call_return( published => 1 );
+}
+
+{
+    my @period_options = (
+        {
+            name => 'minutes',
+            expr => 60,
+        },
+        {
+            name => 'hours',
+            expr => 60 * 60,
+        },
+        {
+            name => 'days',
+            expr => 24 * 60 * 60,
+        },
+    );
+
+    sub _get_schedule {
+        my ($sec) = @_;
+        my ( $period, $interval );
+        for (@period_options) {
+            last if $sec % $_->{expr};
+            $period   = $_->{name};
+            $interval = $sec / $_->{expr};
+        }
+        ( $period, $interval );
+    }
+
+    sub _get_build_interval {
+        my ( $period, $interval ) = @_;
+        my $sec = 0;
+        for (@period_options) {
+            if ( $_->{name} eq $period ) {
+                $sec = $interval * $_->{expr};
+                last;
+            }
+        }
+        $sec;
+    }
 }
 
 1;

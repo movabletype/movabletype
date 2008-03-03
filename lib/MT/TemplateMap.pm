@@ -17,12 +17,17 @@ __PACKAGE__->install_properties({
         'archive_type' => 'string(25) not null',
         'file_template' => 'string(255)',
         'is_preferred' => 'boolean',
+        'build_type' => 'smallint',
+        'build_interval' => 'integer',
     },
     indexes => {
         blog_id => 1,
         template_id => 1,
         archive_type => 1,
         is_preferred => 1,
+    },
+    defaults => {
+        'build_type' => 1,
     },
     child_classes => ['MT::FileInfo'],
     datasource => 'templatemap',

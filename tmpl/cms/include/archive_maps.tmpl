@@ -25,6 +25,25 @@
                     <option value=""><__trans phrase="Custom..."></option>
                 </select>
                 <input id="archive_file_tmpl_<mt:var name="map_id">" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">" />
+<ul>
+    <li><label><input type="radio" name="map_build_type_<mt:var name="map_id">" value="1"<mt:if name="map_build_type_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On Demand"></label></li>
+<mt:if name="custom_dynamic">
+    <li><label><input type="radio" name="map_build_type_<mt:var name="map_id">" value="3"<mt:if name="map_build_type_3"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Dynamically"></label></li>
+</mt:if>
+<mt:if name="publish_queue">
+    <li><label><input type="radio" name="map_build_type_<mt:var name="map_id">" value="4"<mt:if name="map_build_type_4"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Asynchronously"></label></li>
+    <li><label><input type="radio" name="map_build_type_<mt:var name="map_id">" value="5"<mt:if name="map_build_type_5"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On a schedule"></label>
+    <__trans phrase=": every "><input name="map_schedule_interval_<mt:var name="map_id">" id="schedule_interval" value="<mt:var name="map_schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
+    <select name="map_schedule_period_<mt:var name="map_id">" id="schedule_period">
+        <option value="minutes"<mt:if name="map_schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
+        <option value="hours"<mt:if name="map_schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
+        <option value="days"<mt:if name="map_schedule_period_days"> selected="selected"</mt:if>><__trans phrase="days"></option>
+    </select>
+    </li>
+</mt:if>
+    <li><label><input type="radio" name="map_build_type_<mt:var name="map_id">" value="2"<mt:if name="map_build_type_2"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Manually only"></label></li>
+    <li><label><input type="radio" name="map_build_type_<mt:var name="map_id">" value="0"<mt:if name="map_build_type_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Disable"></label></li>
+</ul>
             </td>
             <td class="archive-delete si"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')" class="delete-archive-link"><span><__trans phrase="Delete"></span></a></td>
         </tr>
