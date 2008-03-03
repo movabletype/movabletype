@@ -233,6 +233,10 @@ sub core_tags {
             BlogResultHeader => sub { '' },
             BlogResultFooter => sub { '' },
             IfMaxResultsCutoff => sub { '' },
+            SearchIfMoreResults => sub { '' },
+            SearchIfPreviousResults => sub { '' },
+            SearchPages => sub { '' },
+            SearchIfCurrentPage => sub { '' },
         },
         function => {
             'App:PageActions' => \&_hdlr_app_page_actions,
@@ -491,6 +495,7 @@ sub core_tags {
             MaxResults => sub { '' },
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
+            SearchPageLink => sub { '' },
 
             BuildTemplateID => \&_hdlr_build_template_id,
 

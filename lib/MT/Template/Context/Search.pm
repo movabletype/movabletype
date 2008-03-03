@@ -18,6 +18,7 @@ sub load_core_tags {
             MaxResults => \&_hdlr_max_results,
             SearchIncludeBlogs => \&_hdlr_include_blogs,
             SearchTemplateID => \&_hdlr_template_id,
+            SearchPageLink => \&_hdlr_search_page_link,
         },
         block => {
             SearchResults => \&_hdlr_results,
@@ -28,7 +29,16 @@ sub load_core_tags {
                                    $_[0]->stash('search_string') =~ /\S/ ) ? 0 : 1 },
             BlogResultHeader => \&MT::Template::Context::_hdlr_pass_tokens,
             BlogResultFooter => \&MT::Template::Context::_hdlr_pass_tokens,
-            IfMaxResultsCutoff => \&MT::Template::Context::_hdlr_pass_tokens,
+            'IfMaxResultsCutoff?' => \&MT::Template::Context::_hdlr_pass_tokens,
+            'SearchIfMoreResults?' => sub {
+                my $limit = $_[0]->stash('limit');
+                my $offset = $_[0]->stash('offset');
+                my $count = $_[0]->stash('count');
+                return $limit + $offset >= $count ? 0 : 1;
+            },
+            'SearchIfPreviousResults?' => sub { $_[0]->stash('offset') ? 1 : 0 },
+            SearchPages => \&_hdlr_search_pages,
+            'SearchIfCurrentPage?' => \&MT::Template::Context::_hdlr_pass_tokens,
         },
     };
 }
@@ -39,8 +49,8 @@ sub _hdlr_template_id { $_[0]->stash('template_id') || '' }
 sub _hdlr_max_results { $_[0]->stash('maxresults') || '' }
 
 sub _hdlr_result_count {
-    my $results = $_[0]->stash('results');
-    $results && ref($results) eq 'ARRAY' ? scalar @$results : 0;
+    my $results = $_[0]->stash('count');
+    $results ? $results : 0;
 }
 
 sub _hdlr_results {
@@ -125,6 +135,63 @@ sub _hdlr_results {
         $blog_header = $blog_footer ? 1 : 0;
     }
     $output;
+}
+
+sub _hdlr_search_pages {
+    my ($ctx, $args, $cond) = @_;
+
+    my $build = $ctx->stash('builder');
+    my $tokens = $ctx->stash('tokens');
+
+    my $limit = $_[0]->stash('limit');
+    my $offset = $_[0]->stash('offset');
+    my $count = $_[0]->stash('count');
+
+    my $glue = $args->{glue};
+    $glue = q() unless defined $glue;
+
+    my $output = q();
+    my $pages = int( $count / $limit );
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    for ( my $i = 1; $i <= $pages; $i++ ) {
+        local $vars->{__first__} = $i == 1;
+        local $vars->{__last__} = $i == $pages;
+        local $vars->{__odd__} = ($i % 2 ) == 1;
+        local $vars->{__even__} = ($i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        local $vars->{__value__} = $i;
+        defined(my $out = $build->build($ctx, $tokens,
+            { %$cond, 
+              SearchIfCurrentPage => $i == ( $limit ? $offset / $limit + 1 : 1 ),
+            }
+            )) or return $ctx->error( $build->errstr );
+        $output .= $glue if $i > 1;
+        $output .= $out;
+    }
+    $output;
+}
+
+sub _hdlr_search_page_link {
+    my ($ctx, $args) = @_;
+
+    my $page = $ctx->var('__value__');
+    return q() unless $page;
+
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    my $search_string = MT::Util::encode_url($ctx->stash('search_string'));
+    $offset = ( $page - 1 ) * $limit;
+
+    my $cgipath = $ctx->_hdlr_cgi_path($args);
+    my $script = $ctx->{config}->SearchScript;
+    my $link = $cgipath.$script . '?search=' . $search_string;
+    if ( my $mode = $_[0]->stash('mode') ) {
+        $mode = MT::Util::encode_url($mode);
+        $link .= "&__mode=$mode";
+    }
+    $link .= "&limit=$limit";
+    $link .= "&offset=$offset" if $offset;
+    $link;
 }
 
 1;

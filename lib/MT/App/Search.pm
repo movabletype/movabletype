@@ -304,12 +304,13 @@ sub load_search_tmpl {
     ## Initialize and set up the context object.
     require MT::Template::Context::Search;
     my $ctx = MT::Template::Context::Search->new;
+    $ctx->stash('mode', $app->mode);
     if ( $blog_id ) {
         $ctx->stash('blog_id', $blog_id);
         $ctx->stash('blog',    $app->model('blog')->load($blog_id));
     }
     $ctx->stash('results', $iter);
-    $ctx->stash('count',   $count);
+    $ctx->stash('count', $count);
     $ctx->stash('stash_key', $app->{searchparam}{Type} );
     $ctx->stash('include_blogs',
         join ',', keys %{ $app->{searchparam}{IncludeBlogs} });
@@ -318,6 +319,8 @@ sub load_search_tmpl {
     }
     $ctx->stash('template_id', $q->param('Template'));
     $ctx->stash('maxresults' , $app->{searchparam}{MaxResults});
+    $ctx->stash('offset', $q->param('startIndex') || $q->param('offset') || 0);
+    $ctx->stash('limit', $q->param('count') || $q->param('limit'));
 
     $tmpl->context($ctx);
     $tmpl;
