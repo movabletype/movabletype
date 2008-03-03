@@ -181,24 +181,19 @@ sub search_terms {
     push @terms, \%def_terms if %def_terms;
 
     my $columns = $params->{columns};
+    return $app->errtrans('No column was specified to search for [_1].', $app->{searchparam}{Type})
+        unless $columns && @$columns;
+
+    my $parsed = $app->query_parse( $columns );
+    return $app->errtrans('Parse error: [1]', $app->errstr)
+        unless $parsed && @$parsed;
+
+    push @terms, $parsed;
+
     my $sort = $params->{'sort'};
     if ( $sort !~ /\w+\!$/  && exists($app->{searchparam}{Sort}) ) {
         $sort = $app->{searchparam}{Sort};
     }
-
-    return $app->errtrans('No column was specified to search for [_1].', $app->{searchparam}{Type})
-        unless $columns && @$columns;
-
-    my $number = scalar @$columns;
-    my @and;
-    for ( my $i = 0; $i < $number; $i++) {
-        push @and, { $columns->[$i] => { like => '%'.$search_string.'%' } };
-        unless ( $i == $number - 1 ) {
-            push @and, '-or';
-        }
-    }
-    push @terms, '-and' if @terms;
-    push @terms, \@and;
 
     my %args = (
       $limit ? ( 'limit' => $limit ) : (),
@@ -323,90 +318,75 @@ sub render {
 
 sub query_parse {
     my $app = shift;
-    return unless $app->{search_string};
-    use utf8;
-    #local $_ = MT::I18N::decode_utf8($app->{search_string});
-    local $_ = $app->{search_string_decoded};
+    my ( $columns ) = @_;
 
-    s/^\s//;            # Remove leading whitespace
-    s/\s$//;            # Remove trailing whitespace
-    s/\s+AND\s+/ /g;    # Remove AND because it's implied
-    s/\s{2,}/ /g;       # Remove contiguous spaces
+    my $search_string = $app->param('searchTerms') || $app->param('search');
+    $app->{search_string} = $search_string;
 
-    my @search_keys;
-    my @tokens = split;
-    while (my $atom = shift @tokens) {
-        my($type);
-        if ($atom eq 'NOT' || $atom eq 'AND') {
-            $type = $atom;
-            $atom = shift @tokens;
-            $atom = find_phrase($atom, \@tokens) if $atom =~ /^\"/;
-        } elsif ($atom eq 'OR') {
-            $atom = shift @tokens;
-            $atom = find_phrase($atom, \@tokens) if $atom =~ /^\"/;
-            ## OR new atom with last atom
-            $search_keys[-1]{atom} =
-                '(?:' . $search_keys[-1]{atom} .'|' . quotemeta($atom) . ')';
-            next;
-        } elsif ($atom =~ /^-(.*)/) {
-            $type = 'NOT';
-            $atom = $1;
-            $atom = find_phrase($atom, \@tokens) if $atom =~ /^\"/;
-        } else {
-            $type = 'AND';
-            $atom = find_phrase($atom, \@tokens) if $atom =~ /^\"/;
-        }
-        push @search_keys, { atom => quotemeta($atom),
-                             type => $type };
-    }
-
-    $app->{searchparam}{search_keys} = \@search_keys;
-    $app->query_optimize;
+    require Lucene::QueryParser;
+    my $lucene_struct = Lucene::QueryParser::parse_query( $app->{search_string} );
+    my %columns = map { $_ => 1 } @$columns;
+    my $structure = $app->_query_parse_core( $lucene_struct, \%columns );
+    $structure;
 }
 
-sub find_phrase {
-    my($atom, $tokenref) = @_;
-    while (my $next = shift @$tokenref) {
-        $atom = $atom . ' ' . $next;
-        last if $atom =~ /\"$/;
-    }
-    $atom =~ s/^"(.*)"$/$1/;
-    $atom;
-}
-
-sub query_optimize {
+sub _query_parse_core {
     my $app = shift;
+    my ( $lucene_struct, $columns ) = @_;
 
-    ## Sort keys longest to shortest for search efficiency.
-    $app->{searchparam}{search_keys} = [
-        reverse sort { length($a->{atom}) <=> length($b->{atom}) }
-        @{ $app->{searchparam}{search_keys} }
-    ];
-    
-    ## Sort keys by contents. Any ORs immediately get a lower priority.
-    my %terms;
-    for my $key (@{ $app->{searchparam}{search_keys} }) {
-        if ($key->{atom} =~ /\(.*\|.*\)/) {
-            push(@{ $terms{$key->{type}}{low} }, $key);
-        } else {
-            push(@{ $terms{$key->{type}}{high} }, $key);
-        }
-    }
+    my @structure;
+    for my $term ( @$lucene_struct ) {
+        next if exists( $term->{field} )
+            && !exists( $columns->{ $term->{field} } );
 
-    ## Final priority: AND long, AND short, AND with OR (long/short),
-    ## NOT long/short
-    ##  This should give us the most efficient search in that it is
-    ##  searching for the harder-to-match keys first.
-    my %regex;
-    for my $type (qw( AND NOT )) {
-        for my $pri (qw( high low )) {
-            for my $obj (@{ $terms{$type}{$pri} }) {
-                push(@{ $regex{$type} }, $obj->{atom});
+        my $test;
+        if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) ){
+            if ( 'PROHIBITED' eq $term->{type} ) {
+                $test = { not_like => '%'.$term->{term}.'%' };
+            }
+            else {
+                $test = { like => '%'.$term->{term}.'%' };
             }
         }
-    }
+        elsif ( 'SUBQUERY' eq $term->{query} ) {
+            $test = $app->_query_parse_core( $term->{subquery}, $columns );
+            next unless $test && @$test;
+            if ( @structure ) {
+                push @structure, 'PROHIBITED' eq $term->{type}
+                  ? '-and_not'
+                  : '-and';
+            }
+            push @structure, $test->[0];
+            next;
+        }
 
-    $app->{searchparam}{search_keys} = \%regex;
+        my @tmp;
+        if ( exists( $term->{field} ) ) {
+            push @tmp, { $term->{field} => $test };
+        }
+        else {
+            my @columns = keys %$columns;
+            my $number = scalar @columns;
+            for ( my $i = 0; $i < $number; $i++) {
+                push @tmp, { $columns[$i] => $test };
+                unless ( $i == $number - 1 ) {
+                    push @tmp, '-or';
+                }
+            }
+        }
+        if ( 'OR' eq $term->{conj} ) {
+            if ( my $prev = pop @structure ) {
+                push @structure, [ $prev, -or => \@tmp ];
+            }
+        }
+        else {
+            if ( @structure ) {
+                push @structure, '-and';
+            }
+            push @structure, \@tmp;
+        }
+    }
+    \@structure;
 }
 
 1;

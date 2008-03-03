@@ -147,6 +147,9 @@ sub _mk_term {
             if (exists $val->{like}) {
                 $val = { op => 'LIKE', value => $val->{like} };
             }
+            if (exists $val->{not_like}) {
+                $val = { op => 'NOT LIKE', value => $val->{not_like} };
+            }
             elsif (exists $val->{not_null}) {
                 $val = \'is not null';
             }
