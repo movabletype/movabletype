@@ -6371,7 +6371,7 @@ sub _hdlr_if_category {
         $cat = $e->category;
     }
     my $cats;
-    if ($cat && ($primary || !$e)) {
+    if ($cat && ($primary || !$entry_context)) {
         $cats = [ $cat ];
     } elsif ($e) { 
         $cats = $e->categories;
