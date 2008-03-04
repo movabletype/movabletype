@@ -17,27 +17,48 @@ sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->set_no_cache;
-    $app->{default_mode} = 'search';
+    $app->{default_mode} = 'default';
+
+    $app->mode('tag') if $app->param('tag');
+    ## process pathinfo
+    #if ( my $pi = $app->path_info ) {
+    #    $pi =~ s!^/!!;
+    #    my ($mode, $tag, @args) = split /\//, $pi;
+    #    $app->mode($mode);
+    #    $app->param($mode, $tag);
+    #    for my $arg (@args) {
+    #        my ($k, $v) = split /=/, $arg, 2;
+    #        $app->param($k, $v);
+    #    }
+    #}
     $app;
 }
 
 sub core_methods {
     my $app = shift;
     return {
-        'search' => \&process,
+        'default' => \&process,
+        'tag'            => '$Core::MT::App::Search::TagSearch::process',
     };
 }
 
-sub core_query_params {
+sub core_parameters {
     my $app = shift;
-    return [
-        'searchTerms',
-        'search',
-        'count',
-        'limit',
-        'startIndex',
-        'offset',
-    ];
+    return {
+        params  => [ qw( searchTerms search count limit startIndex offset ) ],
+        types   => {
+            #author => {
+            #    columns => [ qw( name nickname email url ) ],
+            #    'sort' => 'created_on',
+            #    terms   => { status => 1 }, #MT::Author::ACTIVE()
+            #},
+            entry => {
+                columns => [ qw( title keywords text text_more ) ],
+                'sort'  => 'authored_on',
+                terms   => { status => 2 }, #MT::Entry::RELEASE()
+            },
+        },
+    };
 }
 
 sub init_request{
@@ -45,7 +66,7 @@ sub init_request{
     $app->SUPER::init_request(@_);
     my $q = $app->param;
 
-    my $params = $app->registry('params');
+    my $params = $app->registry( $app->mode, 'params' );
     foreach ( @$params ) {
         delete $app->{$_} if exists $app->{$_}
     }
@@ -167,7 +188,7 @@ sub search_terms {
     my $max = $app->{searchparam}{MaxResults};
     $limit = $max if !$limit || ( $limit - $offset > $max );
 
-    my $params = $app->registry( $app->{searchparam}{Type} );
+    my $params = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
     my %def_terms = exists( $params->{terms} )
           ? %{ $params->{terms} }
           : ();
@@ -304,31 +325,32 @@ sub load_search_tmpl {
     ## Initialize and set up the context object.
     require MT::Template::Context::Search;
     my $ctx = MT::Template::Context::Search->new;
-    $ctx->stash('mode', $app->mode);
+    if ( my $str = $app->{search_string} ) {
+        $ctx->stash('search_string', encode_html($str));
+    }
+    if ( my $type = $q->param('type') ) {
+        $ctx->stash('type', $type);
+    }
+    if ( my $mode = $q->param('__mode') ) {
+        $ctx->stash('__mode', $mode);
+    }
+    if ( my $template = $q->param('Template') ) {
+        $ctx->stash('template_id', $template);
+    }
+    $ctx->stash('stash_key'  , $app->{searchparam}{Type} );
+    $ctx->stash('maxresults' , $app->{searchparam}{MaxResults});
+    $ctx->stash('include_blogs',
+        join ',', keys %{ $app->{searchparam}{IncludeBlogs} });
+    $ctx->stash('results'    , $iter);
+    $ctx->stash('count'      , $count);
+    $ctx->stash('offset'     , $q->param('startIndex') || $q->param('offset') || 0);
+    $ctx->stash('limit'      , $q->param('count') || $q->param('limit'));
     if ( $blog_id ) {
         $ctx->stash('blog_id', $blog_id);
         $ctx->stash('blog',    $app->model('blog')->load($blog_id));
     }
-    $ctx->stash('results', $iter);
-    $ctx->stash('count', $count);
-    $ctx->stash('stash_key', $app->{searchparam}{Type} );
-    $ctx->stash('include_blogs',
-        join ',', keys %{ $app->{searchparam}{IncludeBlogs} });
-    if ( my $str = $app->{search_string} ) {
-        $ctx->stash('search_string', encode_html($str));
-    }
-    $ctx->stash('template_id', $q->param('Template'));
-    $ctx->stash('maxresults' , $app->{searchparam}{MaxResults});
-    $ctx->stash('offset', $q->param('startIndex') || $q->param('offset') || 0);
-    $ctx->stash('limit', $q->param('count') || $q->param('limit'));
 
     $tmpl->context($ctx);
-    $tmpl;
-}
-
-sub pre_render {
-    my $app = shift;
-    my ( $tmpl ) = @_;
     $tmpl;
 }
 
@@ -337,7 +359,6 @@ sub render {
     my ( $count, $iter ) = @_;
 
     my $tmpl = $app->load_search_tmpl( $count, $iter );
-    $tmpl = $app->pre_render( $tmpl );
     $tmpl;
 }
 
