@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 3;
+use Test::More tests => 8;
 use CGI;
 use DB_File;
 
@@ -37,14 +37,17 @@ my $plugin = MT::Plugin->new({name => "21-callbacks.t"});
 
 ### Test object callbacks
 
+my ($pre_save_called, $post_load_called);
 MT->add_callback('MT::Entry::pre_save', 1, $plugin, 
-		 sub { my ($eh, $obj, $app_obj) = @_; 
-		       $obj->text(rot13($obj->text));
-		       $app_obj->text($app_obj->text . '(rot13d)')} )
+                 sub { my ($eh, $obj, $app_obj) = @_;
+                       $pre_save_called = 1;
+                       $obj->text(rot13($obj->text));
+                       $app_obj->text($app_obj->text . '(rot13d)')} )
     || die "Couldn't add pre_save cb: " . MT->errstr;
 MT->add_callback('MT::Entry::post_load', 1, $plugin,
-		 sub { my ($eh, $args, $obj) = @_;
-		       $obj->text(rot13($obj->text)) } )
+                 sub { my ($eh, $obj) = @_;
+                       $post_load_called = 1;
+                       $obj->text(rot13($obj->text)) } )
     || die "Couldn't add post_load cb: " . MT->errstr;
 
 my $entry = MT::Entry->new();
@@ -57,11 +60,19 @@ $entry->text_more($TEST_TEXT_MORE);
 $entry->title("Cantaloop");
 $entry->blog_id(1);
 $entry->save() or die $entry->errstr();
-my $id = $entry->id();
+
+ok($pre_save_called, 'pre-save callback was called');
+
 is($entry->text, $TEST_TEXT . '(rot13d)', 'in-mem object altered');
 
+my $id = $entry->id();
+ok($id, 'new entry has an id');
+
 my $entry2 = MT::Entry->load($id);
+ok($post_load_called, 'post-load callback was called');
 is($entry2->text, $TEST_TEXT, 'on-disk obj altered');
+
+=pod
 
 # TBD: generalize this
 my $driver = MT::ObjectDriver->new('DBI::SQLite');
@@ -77,25 +88,29 @@ my $driver = MT::ObjectDriver->new('DBI::SQLite');
 #is($entry2->text_more, $TEST_TEXT_MORE, '$entry2->text_more()');
 #is($$rec->{text_more}, $TEST_TEXT_MORE, '$$rec->{text_more}');
 
+=cut
+
 ### Test app callbacks
 
 my @result_cats = ();
 
 my $cms = MT::App::CMS->new(Config => $T_CFG);
 
+my $app_post_save_called;
 MT->add_callback('AppPostEntrySave', 1, $plugin, 
                  sub { 
+                       $app_post_save_called = 1;
                        my @plcmts = MT::Placement->load({entry_id => $_[2]->id});
-		       for my $plcmt (@plcmts) {
-			   push @result_cats, $plcmt->category_id;
-		       }
-		   } );
+                       for my $plcmt (@plcmts) {
+                           push @result_cats, $plcmt->category_id;
+                       }
+                   } );
 
 MT::unplug();
 my $q = CGI->new();
 #$q->param(id => $entry2->id);
 $q->param(blog_id => $entry2->blog_id);
-$q->param(category_id => 17);
+$q->param(category_ids => 17);
 # $q->param(username => 'Chuck D');
 # $q->param(password => 'bass');
 $q->param(text => "Buddha blessed and boo-ya blasted; 
@@ -106,9 +121,17 @@ $cms->{perms}->can_post(1);
 $cms->{author} = MT::Author->new();
 $cms->{author}->name("Mel E. Mel");
 $cms->{author}->id(1);
+
 # fake out the magic; we're not testing that right now
 no warnings qw(once redefine);
 *MT::App::CMS::validate_magic = sub { 1; };
 use warnings qw(once redefine);
-print STDERR $cms->save_entry();
+
+my $handler = $cms->handler_to_coderef( $cms->handlers_for_mode('save_entry') );
+my $ret = $handler->($cms);
+ok(!defined $ret && $cms->{redirect}, 'entry save was successful');
+diag('Error: ' . $cms->errstr) if !defined $ret && !$cms->{redirect};
+
+ok($app_post_save_called, 'AppPostEntrySave callback was called');
 is($result_cats[0], 17, 'result_cats = 17');
+
