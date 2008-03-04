@@ -68,9 +68,7 @@ function toggleConfig() {
 </mt:unless>
 
 <p id="config_settings" style="display: none;">
-    <textarea style="width: 100%; height: 300px; font-family: monospace" onclick="this.select()">
-    <mt:include name="mt-config.tmpl">
-    </textarea>
+    <textarea style="width: 100%; height: 300px; font-family: monospace" onclick="this.select()"><mt:include name="mt-config.tmpl"></textarea>
 </p>
 
 <mt:unless name="config_created">
