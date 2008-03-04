@@ -24,10 +24,10 @@ our $drivers = [
 
 our @drivers;
 
-sub init {
-    @drivers = ();
-    __PACKAGE__->new();
-}
+#sub init {
+#    @drivers = ();
+#    __PACKAGE__->new();
+#}
 
 sub new {
     my $pkg = shift;
@@ -84,6 +84,16 @@ sub new {
 sub configure {
     my $pkg = shift;
     $_->configure(@_) for @drivers;
+}
+
+sub cleanup {
+    @drivers = ();
+    if ( my $driver = $MT::Object::DRIVER ) {
+        if ( my $dbh = $driver->dbh ) {
+            $dbh->disconnect;
+        }
+        $MT::Object::DRIVER = undef;
+    }
 }
 
 1;

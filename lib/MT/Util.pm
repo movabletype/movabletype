@@ -1400,6 +1400,7 @@ sub start_background_task {
     my ($func) = @_;
     if (!launch_background_tasks()) { $func->(); }
     else {
+        MT::ObjectDriverFactory->cleanup();
         $| = 1;            # Flush open filehandles
         my $pid = fork();
         if (!$pid) {
@@ -1408,12 +1409,12 @@ sub start_background_task {
             close STDOUT; open STDOUT, ">/dev/null"; 
             close STDERR; open STDERR, ">/dev/null"; 
 
-            MT::ObjectDriverFactory->init();
+            MT::Object->driver; # This inititalizes driver
             MT::ObjectDriverFactory->configure();
             $func->();
             CORE::exit(0) if defined($pid) && !$pid;
         } else {
-            MT::ObjectDriverFactory->init();
+            MT::Object->driver; # This inititalizes driver
             MT::ObjectDriverFactory->configure();
             return 1;
         }
