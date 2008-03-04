@@ -235,7 +235,7 @@ sub core_tags {
             IfMaxResultsCutoff => sub { '' },
             SearchIfMoreResults => sub { '' },
             SearchIfPreviousResults => sub { '' },
-            SearchPages => sub { '' },
+            SearchResultPages => sub { '' },
             SearchIfCurrentPage => sub { '' },
         },
         function => {
@@ -496,6 +496,10 @@ sub core_tags {
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
             SearchPageLink => sub { '' },
+            SearchNextLink => sub { '' },
+            SearchPreviousLink => sub { '' },
+            SearchCurrentPage => sub { '' },
+            SearchTotalPages => sub { '' },
 
             BuildTemplateID => \&_hdlr_build_template_id,
 

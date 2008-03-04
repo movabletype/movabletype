@@ -331,8 +331,8 @@ sub load_search_tmpl {
     if ( my $type = $q->param('type') ) {
         $ctx->stash('type', $type);
     }
-    if ( my $mode = $q->param('__mode') ) {
-        $ctx->stash('__mode', $mode);
+    if ( $app->{default_mode} ne $app->mode ) {
+        $ctx->stash('mode', $app->mode);
     }
     if ( my $template = $q->param('Template') ) {
         $ctx->stash('template_id', $template);
