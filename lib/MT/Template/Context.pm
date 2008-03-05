@@ -14,6 +14,7 @@ use Exporter;
 *import = \&Exporter::import;
 use vars qw( @EXPORT );
 @EXPORT = qw( FALSE );
+use MT::Util qw( weaken );
 use MT::I18N qw( substr_text length_text );
 
 our (%Handlers, %Filters);
@@ -27,7 +28,7 @@ sub new {
 
 sub init {
     my $ctx = shift;
-    $ctx->{config} = MT->config;
+    weaken($ctx->{config} = MT->config);
     $ctx->init_handlers();
     $ctx;
 }
