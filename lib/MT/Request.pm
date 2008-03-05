@@ -7,8 +7,7 @@
 package MT::Request;
 use strict;
 
-use MT::ErrorHandler;
-@MT::Request::ISA = qw( MT::ErrorHandler );
+use base qw( MT::ErrorHandler );
 
 use vars qw( $r );
 sub instance {
