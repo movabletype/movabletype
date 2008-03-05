@@ -5,10 +5,10 @@
 # $Id$
 
 package MT::TemplateMap;
-use strict;
 
-use MT::Object;
-@MT::TemplateMap::ISA = qw( MT::Object );
+use strict;
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
