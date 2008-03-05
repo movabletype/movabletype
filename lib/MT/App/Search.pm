@@ -209,16 +209,17 @@ sub search_terms {
 
     my $parsed = $app->query_parse( $columns );
     return $app->errtrans('Parse error: [1]', $app->errstr)
-        unless $parsed && @$parsed;
+        unless $parsed && %$parsed;
 
-    push @terms, $parsed;
+    push @terms, $parsed->{terms} if exists $parsed->{terms};
 
     my $sort = $params->{'sort'};
-    if ( $sort !~ /\w+\!$/  && exists($app->{searchparam}{SearchSortBy}) ) {
+    if ( $sort !~ /\w+\!$/ && $app->{searchparam}{SearchSortBy} ) {
         $sort = $app->{searchparam}{SearchSortBy};
     }
 
     my %args = (
+      exists( $parsed->{args} ) ? %{ $parsed->{args} } : (),
       $limit  ? ( 'limit' => $limit ) : (),
       $offset ? ( 'offset' => $offset ) : (),
       $sort   ? ( 'sort' => [
@@ -241,7 +242,7 @@ sub post_search {
     my ( $count, $iter ) = @_;
 
     #FIXME: template name may not be 'feed' for search feed
-    unless ( 'feed' eq $app->param('template') ) {
+    unless ( $app->param('template') && ( 'feed' eq $app->param('template') ) ) {
         my $blog_id = $app->first_blog_id();
         require MT::Log;
         $app->log({
@@ -404,14 +405,11 @@ sub query_parse {
     my $app = shift;
     my ( $columns ) = @_;
 
-    my $search_string = $app->param('searchTerms') || $app->param('search');
-    $app->{search_string} = $search_string;
-
     require Lucene::QueryParser;
     my $lucene_struct = Lucene::QueryParser::parse_query( $app->{search_string} );
     my %columns = map { $_ => 1 } @$columns;
     my $structure = $app->_query_parse_core( $lucene_struct, \%columns );
-    $structure;
+    { terms => $structure };
 }
 
 sub _query_parse_core {
@@ -458,7 +456,7 @@ sub _query_parse_core {
                 }
             }
         }
-        if ( 'OR' eq $term->{conj} ) {
+        if ( exists($term->{conj}) && ( 'OR' eq $term->{conj} ) ) {
             if ( my $prev = pop @structure ) {
                 push @structure, [ $prev, -or => \@tmp ];
             }
