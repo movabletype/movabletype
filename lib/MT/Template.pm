@@ -830,8 +830,7 @@ sub previousSibling {
 
 sub parentNode {
     my $node = shift;
-    $node->[5] = shift if @_;
-    weaken($node->[5]);
+    weaken($node->[5] = shift) if @_;
     $node->[5];
 }
 
