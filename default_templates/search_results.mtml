@@ -79,15 +79,13 @@ function getResults(page) {
     xh.onreadystatechange = function() {
         if ( xh.readyState == 4 ) {
             if ( xh.status && ( xh.status != 200 ) ) {
-                // error
-                window.location.href = url;
+                // error - ignore
             } else {
                 try {
                     var page_results = eval("(" + xh.responseText + ")");
                     if ( page_results['error'] == null )
                         results[page + 1] = page_results['result'];
                 } catch (e) {
-                    window.location.href = url;
                 }
             }
         }
