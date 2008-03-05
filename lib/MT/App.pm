@@ -610,6 +610,12 @@ sub init {
     $app->{user_class} = 'MT::Author';
     $app->{plugin_template_path} = 'tmpl';
     $app->run_callbacks('init_app', $app, @_);
+    if ($MT::DebugMode & 4) {
+        # SQL profiling
+        my $dbh = MT::Object->driver->r_handle;
+        require DBI::Profile;
+        $dbh->{Profile} = DBI::Profile->new();
+    }
     if ($MT::DebugMode & 128) {
         MT->add_callback('pre_run', 1, $app, sub { $app->pre_run_debug });
         MT->add_callback('takedown', 1, $app, sub { $app->post_run_debug });
@@ -2238,13 +2244,21 @@ sub run {
             $app->send_http_header;
             if ($MT::DebugMode && !($MT::DebugMode & 128)) { # no need to emit twice
                 if ($body =~ m!</body>!i) {
-                    if ($app->{trace} &&
-                        (!defined $app->{warning_trace} || $app->{warning_trace})) {
-                        my $trace = '';
+                    my $trace = '';
+                    if ($app->{trace}) {
                         foreach (@{$app->{trace}}) {
                             my $msg = encode_html($_);
-                            $trace .= '<li>' . $msg . '</li>';
+                            $trace .= '<li>' . $msg . '</li>' . "\n";
                         }
+                    }
+                    if ($MT::DebugMode & 4) {
+                        my $h = MT::Object->driver->r_handle;
+                        my @msg = $h->{Profile}->as_text();
+                        foreach my $m (@msg) {
+                            $trace .= '<li>' . $m . '</li>' . "\n";
+                        }
+                    }
+                    if ($trace ne '') {
                         $trace = '<ul>' . $trace . '</ul>';
                         my $panel = "<div class=\"debug-panel\">"
                             . "<h3>" . $app->translate("Warnings and Log Messages") . "</h3>"
@@ -2320,7 +2334,7 @@ sub takedown {
     $sess->save if $sess && $sess->is_dirty;
 
     my $driver = $MT::Object::DRIVER;
-    $driver->clear_cache if $driver;
+    $driver->clear_cache if $driver && $driver->can('clear_cache');
 
     require MT::Auth;
     MT::Auth->release;
