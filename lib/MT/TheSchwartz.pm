@@ -139,12 +139,14 @@ sub get_server_time {
 
 sub work_periodically {
     my TheSchwartz $client = shift;
-    my($delay) = @_;
+    my ($delay) = @_;
     $delay ||= 5;
     my $last_task_run = 0;
     while (1) {
         unless ($client->work_once) {
-            $client->driver_for()->clear_cache;
+            my $driver = $client->driver_for();
+            $driver->clear_cache
+                if $driver->can('clear_cache');
             MT->request->reset();
             sleep $delay;
 
