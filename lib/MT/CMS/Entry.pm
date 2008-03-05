@@ -69,13 +69,8 @@ sub edit {
         $param->{'authored_on_time'} = $q->param('authored_on_time')
           || format_ts( "%H:%M:%S", $obj->authored_on, $blog, $app->user ? $app->user->preferred_language : undef );
 
-        require MT::Comment;
-        $param->{num_comments} = MT::Comment->count({ entry_id => $id, visible => 1 });
-
-        require MT::Trackback;
-        my $tb = MT::Trackback->load( { entry_id => $obj->id } );
-        require MT::TBPing;
-        $param->{num_pings} = $tb ? MT::TBPing->count({ tb_id => $tb->id, visible => 1 }) : 0;
+        $param->{num_comments} = $id ? $obj->comment_count : 0;
+        $param->{num_pings} = $id ? $obj->ping_count : 0;
 
         # Check permission to send notifications and if the
         # blog has notification list subscribers
