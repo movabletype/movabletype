@@ -19,5 +19,11 @@ mt-static/mt_fr.js
 mt-static/mt_ja.js
 mt-static/mt_nl.js
 mt-static/support/dashboard
+mt-static/support/logs
+mt-static/support/themes
+mt-static/support/assets_c
+mt-static/support/uploads
 php/mt.php
 readme.html
+addons
+mt-static/addons
