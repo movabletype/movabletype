@@ -54,7 +54,7 @@ foreach my $lang (qw(ja de nl fr es)) {
     eval 'require MT::L10N::' . $lang
         or die "failed to find package MT::L10N::$lang";
 
-    my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }';
+    my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }' || {};
 
     foreach my $addon (@addons) {
         eval {
