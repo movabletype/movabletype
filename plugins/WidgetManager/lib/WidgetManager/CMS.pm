@@ -287,19 +287,31 @@ sub create_default_widgetsets {
         {
             label   => '2-column layout - Sidebar',
             widgets => [
-                'Search',            'About This Page',
-                'Home Page Widgets', 'Archives',
-                'Page Listing',             'Syndication',
+                'Search',
+                'About This Page',
+                'Home Page Widgets Group',
+                'Archive Widgets Group',
+                'Page Listing',
+                'Syndication',
                 'Powered By',
             ],
         },
         {
             label   => '3-column layout - Primary Sidebar',
-            widgets => [ 'Archives', 'Page Listing', 'Syndication', 'Powered By', ],
+            widgets => [
+                'Archive Widgets Group',
+                'Page Listing',
+                'Syndication',
+                'Powered By',
+            ],
         },
         {
             label   => '3-column layout - Secondary Sidebar',
-            widgets => [ 'Search', 'Home Page Widgets', 'About This Page', ],
+            widgets => [
+                'Search',
+                'Home Page Widgets Group',
+                'About This Page',
+            ],
         },
     ];
 

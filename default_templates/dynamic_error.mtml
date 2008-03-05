@@ -1,12 +1,10 @@
-<MTSetVar name="body_class" value="mt-dynamic-error">
-<MTSetVar name="system_template" value="1">
 <MTSetVar name="dynamic_error_template" value="1">
 <MTSetVarBlock name="page_title"><__trans phrase="Page Not Found"></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
+<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTVar name="page_title"$></MTSetVarBlock>
 
-<$MTInclude module="<__trans phrase="Header">"$>
+<$MTInclude module="<__trans phrase="Header">" body_class="mt-dynamic-error"$>
 
-<h1 id="page-title"><$MTGetVar name="page_title"$></h1>
+<h1 id="page-title"><$MTVar name="page_title"$></h1>
 <blockquote>
     <strong><$MTErrorMessage$></strong>
 </blockquote>

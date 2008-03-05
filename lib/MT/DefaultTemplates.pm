@@ -88,9 +88,6 @@ BEGIN {
                     category_monthly => {
                         archive_type => 'Category-Monthly',
                     },
-                    author_monthly => {
-                        archive_type => 'Author-Monthly',
-                    },
                     category => {
                         archive_type => 'Category',
                     },

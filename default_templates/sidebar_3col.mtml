@@ -163,7 +163,7 @@
         <div class="widget-syndicate widget">
             <div class="widget-content">
                 <ul class="blog-feeds">
-                    <li class="blog feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTLink template="atom"$>"><__trans phrase="Subscribe to this blog's feed"></a></li>
+                    <li class="blog feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTLink template="feed_recent"$>"><__trans phrase="Subscribe to this blog's feed"></a></li>
     <MTIf name="search_results_template">
         <mt:ifnonempty tag="MTSearchString">
                     <li class="search-results-feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<MTIfTagSearch>tag<MTElse>search</MTIfTagSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<__trans phrase="Subscribe to feed">"><__trans phrase="Search results matching &ldquo;<$MTSearchString$>&rdquo;"></a></li>
