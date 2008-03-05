@@ -9,8 +9,8 @@
     <MTSetVar name="search_type" value="tag">
 </MTIfStraightSearch>
 
-<$MTInclude module="<__trans phrase="Header">"$>
-
+<MTSetVarTemplate id="search_results" name="search_results">
+<div id="search-results"><span id="current-page" class="hidden"><MTSearchCurrentPage></span>
 <MTSearchResults>
     <MTBlogResultHeader>
 <h1 id="page-title" class="search-results-header">
@@ -28,6 +28,98 @@
 </div>
     </MTBlogResultFooter>
 </MTSearchResults>
+<MTIgnore>
+<!-- Used with the ajax search capability of the new search class -->
+<MTSearchIfPreviousResults><a href="<MTSearchPreviousLink>" onclick="return swapContent(-1);">&laquo;</a></MTSearchIfPreviousResults> M<MTSearchResultPages><MTSearchIfCurrentPage>o<MTElse><a href="<MTSearchPageLink>">o</a></MTSearchIfCurrentPage></MTSearchResultPages>vable Type <MTSearchIfMoreResults><a href="<MTSearchNextLink>" onclick="return swapContent();">&raquo;</a></MTSearchIfMoreResults>
+</MTIgnore>
+</div>
+</MTSetVarTemplate>
+
+<MTIgnore>
+<!-- Used with the ajax search capability of the new search class -->
+<MTSearchIfMoreResults>
+<MTSetVarBlock name="html_head" append="1">
+<script type="text/javascript">
+<!--
+function getXmlHttp() {
+    if ( !window.XMLHttpRequest ) {
+        window.XMLHttpRequest = function() {
+            var types = [
+                "Microsoft.XMLHTTP",
+                "MSXML2.XMLHTTP.5.0",
+                "MSXML2.XMLHTTP.4.0",
+                "MSXML2.XMLHTTP.3.0",
+                "MSXML2.XMLHTTP"
+            ];
+
+            for ( var i = 0; i < types.length; i++ ) {
+                try {
+                    return new ActiveXObject( types[ i ] );
+                } catch( e ) {}
+            }
+
+            return undefined;
+        };
+    }
+    if ( window.XMLHttpRequest )
+        return new XMLHttpRequest();
+}
+
+function getResults(page) {
+    page = parseInt(page);
+    if (timer) window.clearTimeout(timer);
+    var xh = getXmlHttp();
+    if (!xh) return false;
+    var res = results[page];
+    if (!res) return;
+    var url = res['next_url'];
+    if (!url) return;
+
+    xh.open('GET', url + '&format=js', true);
+    xh.onreadystatechange = function() {
+        if ( xh.readyState == 4 ) {
+            if ( xh.status && ( xh.status != 200 ) ) {
+                // error
+                window.location.href = url;
+            } else {
+                try {
+                    var page_results = eval("(" + xh.responseText + ")");
+                    if ( page_results['error'] == null )
+                        results[page + 1] = page_results['result'];
+                } catch (e) {
+                    window.location.href = url;
+                }
+            }
+        }
+    };
+    xh.send(null);
+}
+
+function swapContent(direction) {
+    if ( direction == undefined ) direction = 1;
+    var page_span = document.getElementById('current-page');
+    if (!page_span) return true;
+    var next_page = direction + parseInt(page_span.innerHTML);
+    var res = results[next_page];
+    if (!res) return true;
+    var content = res['content'];
+    if (!content) return true;
+    var div = document.getElementById('search-results');
+    if (!div) return true;
+    div.innerHTML = content;
+    timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
+    window.scroll(0, 0);
+    return false;
+}
+//-->
+</script>
+</MTSetVarBlock>
+</MTSearchIfMoreResults>
+</MTIgnore>
+
+<$MTInclude module="<__trans phrase="Header">"$>
+
+<$MTVar name="search_results"$>
 
 <MTNoSearchResults>
 <h1 id="page-title" class="search-results-header">
@@ -54,4 +146,21 @@
 </blockquote>
 </MTNoSearch>
 
+<MTIgnore>
+<!-- Used with the ajax search capability of the new search class -->
+<MTSearchIfMoreResults>
+<script type="text/javascript">
+<!--
+var div = document.getElementById('search-results');
+var results = {
+    '<MTSearchCurrentPage>': {
+        'content': div.innerHTML,
+        'next_url': '<MTSearchNextLink>'
+    }
+};
+var timer = window.setTimeout("getResults(" + <MTSearchCurrentPage> + ")", 1*1000);
+//-->
+</script>
+</MTSearchIfMoreResults>
+</MTIgnore>
 <$MTInclude module="<__trans phrase="Footer">"$>
