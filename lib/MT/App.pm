@@ -684,7 +684,6 @@ sub init_request {
         author cgi_headers breadcrumbs goback cache_templates warning_trace
         cookies _errstr request_method requires_login );
     delete $app->{$_} foreach @req_vars;
-    $app->{trace} = undef;
     $app->user(undef);
     if ($ENV{MOD_PERL}) {
         require Apache::Request;
@@ -2325,6 +2324,9 @@ sub assert {
 
 sub takedown {
     my $app = shift;
+
+    $app->{trace} = undef;
+    $app->{response_content} = undef;
 
     MT->run_callbacks(ref($app) . '::take_down', $app);   # arg is the app object
 
