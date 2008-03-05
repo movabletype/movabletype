@@ -664,8 +664,10 @@ sub _populate_archive_loop {
         $map->{map_build_type} = $map_obj->build_type;
         $map->{ 'map_build_type_' . ( $map_obj->build_type || 0 ) } = 1;
         my ( $period, $interval ) = _get_schedule( $map_obj->build_interval );
-        $map->{ 'map_schedule_period_' . $period } = 1;
-        $map->{map_schedule_interval} = $interval;
+        $map->{ 'map_schedule_period_' . $period } = 1
+            if defined $period;
+        $map->{map_schedule_interval} = $interval
+            if defined $interval;
 
         my $at = $map->{archive_type} = $map_obj->archive_type;
         $types{$at}++;
@@ -1428,6 +1430,7 @@ sub publish_index_templates {
 
     sub _get_schedule {
         my ($sec) = @_;
+        return unless defined $sec;
         my ( $period, $interval );
         for (@period_options) {
             last if $sec % $_->{expr};
@@ -1439,6 +1442,7 @@ sub publish_index_templates {
 
     sub _get_build_interval {
         my ( $period, $interval ) = @_;
+        return unless defined $period;
         my $sec = 0;
         for (@period_options) {
             if ( $_->{name} eq $period ) {
