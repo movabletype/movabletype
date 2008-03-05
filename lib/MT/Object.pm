@@ -925,14 +925,32 @@ sub cache_property {
     }
     $key ||= (caller(1))[3];
 
+    my $r = MT->request;
+    my $oc = $r->cache('object_cache');
+    unless ($oc) {
+        $oc = {};
+        $r->cache('object_cache', $oc);
+    }
+    $oc = $oc->{"$obj"};
     if (@_) {
-        $obj->{__cache}{$key} = $_[0];
+        $oc->{$key} = $_[0];
     } else {
-        if ((!exists $obj->{__cache}{$key}) && $code) {
-            $obj->{__cache}{$key} = $code->($obj, @_);
+        if ((!exists $oc->{$key}) && $code) {
+            $oc->{$key} = $code->($obj, @_);
         }
     }
-    return exists $obj->{__cache}{$key} ? $obj->{__cache}{$key} : undef;
+    return exists $oc->{$key} ? $oc->{$key} : undef;
+}
+
+sub clear_cache {
+    my $obj = shift;
+    my $oc = MT->request('object_cache') or return;
+    if (@_) {
+        $oc = $oc->{"$obj"};
+        delete $oc->{shift} if $oc;
+    } else {
+        delete $oc->{"$obj"};
+    }
 }
 
 sub to_hash {

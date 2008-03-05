@@ -174,7 +174,11 @@ sub _nextprev {
     my $label = '__' . $direction;
     $label .= ':author='. $terms->{author_id} if exists $terms->{author_id};
     $label .= ':category='. $terms->{category_id} if exists $terms->{category_id};
-    return $obj->{$label} if $obj->{$label};
+    if ($obj->{$label}) {
+        my $o = $obj->load($obj->{$label});
+        return if $o;
+        delete $obj->{label}; # FAIL
+    }
 
     my $args = {};
     if (my $cat_id = delete $terms->{category_id}) {
@@ -184,12 +188,14 @@ sub _nextprev {
         $args->{join} = $join;
     }
 
-    return $obj->{$label} = $obj->nextprev(
+    my $o = $obj->nextprev(
         direction => $direction,
         terms     => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args      => $args,
         by        => 'authored_on',
     );
+    $o->{label} = $o->id if $o;
+    return $o;
 }
 
 sub trackback {
@@ -714,10 +720,8 @@ sub save {
         }
     }
 
-    delete $entry->{__next} if exists $entry->{__next};
-    delete $entry->{__previous} if exists $entry->{__previous};
-    delete $entry->{__cache}{category}
-        if $is_new && exists $entry->{__cache}{category};
+    $entry->clear_cache() if $is_new;
+
     1;
 }
 
