@@ -8,6 +8,7 @@ package MT::Template::Context::Search;
 
 use strict;
 use base qw( MT::Template::Context );
+use MT::Util qw( encode_url );
 
 sub load_core_tags {
     require MT::Template::Context;
@@ -156,9 +157,9 @@ sub _hdlr_search_pages {
     my $build = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
 
-    my $limit = $_[0]->stash('limit');
-    my $offset = $_[0]->stash('offset');
-    my $count = $_[0]->stash('count');
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    my $count = $ctx->stash('count');
 
     my $glue = $args->{glue};
     $glue = q() unless defined $glue;
@@ -195,26 +196,29 @@ sub _hdlr_search_page_link {
     my $offset = $ctx->stash('offset');
     $offset = ( $page - 1 ) * $limit;
 
-    my $search_string = MT::Util::encode_url($ctx->stash('search_string'));
+    my $search_string = encode_url($ctx->stash('search_string'));
     my $cgipath = $ctx->_hdlr_cgi_path($args);
     my $script = $ctx->{config}->SearchScript;
     my $link = $cgipath.$script . '?search=' . $search_string;
-    if ( my $mode = $_[0]->stash('mode') ) {
-        $mode = MT::Util::encode_url($mode);
+    if ( my $mode = $ctx->stash('mode') ) {
+        $mode = encode_url($mode);
         $link .= "&__mode=$mode";
     }
-    if ( my $type = $_[0]->stash('type') ) {
-        $type = MT::Util::encode_url($type);
+    if ( my $type = $ctx->stash('type') ) {
+        $type = encode_url($type);
         $link .= "&type=$type";
     }
-    if ( my $include_blogs = $_[0]->stash('include_blogs') ) {
+    if ( my $include_blogs = $ctx->stash('include_blogs') ) {
         $link .= "&IncludeBlogs=$include_blogs";
     }
-    elsif ( my $blog_id = $_[0]->stash('blog_id') ) {
+    elsif ( my $blog_id = $ctx->stash('blog_id') ) {
         $link .= "&blog_id=$blog_id";
     }
     $link .= "&limit=$limit";
     $link .= "&offset=$offset" if $offset;
+    if ( my $format = $ctx->stash('format') ) {
+        $link .= '&format=' . encode_url($format);
+    }
     $link;
 }
 

@@ -38,15 +38,15 @@ sub core_methods {
     my $app = shift;
     return {
         'default' => \&process,
-        'tag'            => '$Core::MT::App::Search::TagSearch::process',
+        'tag'     => '$Core::MT::App::Search::TagSearch::process',
     };
 }
 
 sub core_parameters {
     my $app = shift;
     return {
-        params  => [ qw( searchTerms search count limit startIndex offset ) ],
-        types   => {
+        params => [ qw( searchTerms search count limit startIndex offset ) ],
+        types  => {
             #author => {
             #    columns => [ qw( name nickname email url ) ],
             #    'sort' => 'created_on',
@@ -153,7 +153,9 @@ sub process {
         $iter = $app->post_search( $count, $iter );
     }
 
-    return $app->render( $count, $iter );
+    my $format = $app->param('format') || q();
+    my $method = "render$format";
+    return $app->$method( $count, $iter );
 }
 
 sub count {
@@ -212,8 +214,8 @@ sub search_terms {
     push @terms, $parsed;
 
     my $sort = $params->{'sort'};
-    if ( $sort !~ /\w+\!$/  && exists($app->{searchparam}{Sort}) ) {
-        $sort = $app->{searchparam}{Sort};
+    if ( $sort !~ /\w+\!$/  && exists($app->{searchparam}{SearchSortBy}) ) {
+        $sort = $app->{searchparam}{SearchSortBy};
     }
 
     my %args = (
@@ -271,56 +273,17 @@ sub first_blog_id {
         my @ids = split ',', $q->param('IncludeBlogs');
         $blog_id = $ids[0];
     }
-    elsif ( exists $app->{searchparam}{IncludeBlogs} ) {
+    elsif ( exists($app->{searchparam}{IncludeBlogs})
+      && keys(%{ $app->{searchparam}{IncludeBlogs} }) ) {
         $blog_id = @{ keys %{ $app->{searchparam}{IncludeBlogs} } }[0];
     }
     $blog_id;
 }
 
-sub load_search_tmpl {
+sub prepare_context {
     my $app = shift;
     my $q = $app->param;
     my ( $count, $iter ) = @_;
-
-    my $blog_id = $app->first_blog_id();
-    my $tmpl;
-    if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
-        # load specified template
-        my $filename;
-        if (my @tmpls = ($app->config->default('AltTemplate'), $app->config->AltTemplate)) {
-            for my $tmpl (@tmpls) {
-                next unless defined $tmpl;
-                my ( $nickname, $file ) = split /\s+/, $tmpl;
-                if ( $nickname eq $q->param('Template') ) {
-                    $filename = $file;
-                    last;
-                }
-            }
-        }
-        return $app->errtrans("No alternate template is specified for the Template '[_1]'", $q->param('Template'))
-            unless $filename;
-        # template_paths method does the magic
-        $tmpl = $app->load_tmpl( $filename )
-            or return $app->errtrans( "Opening local file '[_1]' failed: [_2]", $filename, "$!" );
-    }
-    else {
-        # load default template
-        # first look for appropriate blog_id
-        if ( $blog_id ) {
-            # look for 'search_results'
-            my $tmpl_class = $app->model('template');
-            $tmpl = $tmpl_class->load(
-                { blog_id => $blog_id, type => 'search_results' }
-            );
-        }
-        unless ( $tmpl ) {
-            # load template from search_template path
-            # template_paths method does the magic
-            $tmpl = $app->load_tmpl( $app->config->DefaultTemplate );
-        }
-    }
-    return $app->error($app->errstr)
-        unless $tmpl;
 
     ## Initialize and set up the context object.
     require MT::Template::Context::Search;
@@ -345,10 +308,59 @@ sub load_search_tmpl {
     $ctx->stash('count'      , $count);
     $ctx->stash('offset'     , $q->param('startIndex') || $q->param('offset') || 0);
     $ctx->stash('limit'      , $q->param('count') || $q->param('limit'));
+    $ctx->stash('format'     , $q->param('format')) if $q->param('format');
+
+    my $blog_id = $app->first_blog_id();
     if ( $blog_id ) {
         $ctx->stash('blog_id', $blog_id);
         $ctx->stash('blog',    $app->model('blog')->load($blog_id));
     }
+    $ctx;
+}
+
+sub load_search_tmpl {
+    my $app = shift;
+    my $q = $app->param;
+    my ( $ctx ) = @_;
+
+    my $tmpl;
+    if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
+        # load specified template
+        my $filename;
+        if (my @tmpls = ($app->config->default('AltTemplate'), $app->config->AltTemplate)) {
+            for my $tmpl (@tmpls) {
+                next unless defined $tmpl;
+                my ( $nickname, $file ) = split /\s+/, $tmpl;
+                if ( $nickname eq $q->param('Template') ) {
+                    $filename = $file;
+                    last;
+                }
+            }
+        }
+        return $app->errtrans("No alternate template is specified for the Template '[_1]'", $q->param('Template'))
+            unless $filename;
+        # template_paths method does the magic
+        $tmpl = $app->load_tmpl( $filename )
+            or return $app->errtrans( "Opening local file '[_1]' failed: [_2]", $filename, "$!" );
+    }
+    else {
+        # load default template
+        # first look for appropriate blog_id
+        if ( my $blog_id = $ctx->stash('blog_id') ) {
+            # look for 'search_results'
+            my $tmpl_class = $app->model('template');
+            $tmpl = $tmpl_class->load(
+                { blog_id => $blog_id, type => 'search_results' }
+            );
+        }
+        unless ( $tmpl ) {
+            # load template from search_template path
+            # template_paths method does the magic
+            $tmpl = $app->load_tmpl( $app->config->DefaultTemplate );
+        }
+    }
+    return $app->error($app->errstr)
+        unless $tmpl;
 
     $tmpl->context($ctx);
     $tmpl;
@@ -358,8 +370,34 @@ sub render {
     my $app = shift;
     my ( $count, $iter ) = @_;
 
-    my $tmpl = $app->load_search_tmpl( $count, $iter );
+    my @arguments = $app->prepare_context( $count, $iter )
+        or return $app->error($app->errstr);
+    my $tmpl = $app->load_search_tmpl( @arguments )
+        or return $app->error($app->errstr);
     $tmpl;
+}
+
+sub renderjs {
+    my $app = shift;
+    my ( $count, $iter ) = @_;
+
+    my ( $ctx ) = $app->prepare_context( $count, $iter )
+        or return $app->json_error($app->errstr);
+    my $search_tmpl = $app->load_search_tmpl( $ctx )
+        or return $app->json_error($app->errstr);
+    my $result_node = $search_tmpl->getElementById('search_results')
+        or return $app->json_error('Search template does not have markup for search results.');
+    my $t = $result_node->innerHTML();
+
+    require MT::Template;
+    my $tmpl = MT::Template->new( type => 'scalarref', source => \$t );
+    $ctx->stash('format', q()); # don't propagate "js" format
+    $tmpl->context( $ctx );
+    my $content = $tmpl->output
+        or return $app->json_error($tmpl->errstr);
+
+    my $next_link = $ctx->_hdlr_search_next_link();
+    return $app->json_result({ content => $content, next_url => $next_link });
 }
 
 sub query_parse {

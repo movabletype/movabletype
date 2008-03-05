@@ -27,7 +27,9 @@ sub process {
         $iter = $app->post_search( $count, $iter );
     }
 
-    return $app->render( $count, $iter );
+    my $format = $app->param('format') || q();
+    my $method = "render$format";
+    return $app->$method( $count, $iter );
 }
 
 sub _process_lucene_query {
