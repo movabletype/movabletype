@@ -2527,7 +2527,7 @@ sub category_group_iter {
 sub category_group_entries {
     my ( $ctx, %param ) = @_;
     my $limit = $param{limit};
-    if ( $limit eq 'auto' ) {
+    if ( $limit && ($limit eq 'auto') ) {
         my $blog = $ctx->stash('blog');
         $limit = $blog->entries_on_index if $blog;
     }
