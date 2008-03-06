@@ -195,9 +195,11 @@ sub search_terms {
         or return ( undef, undef );
     $app->{search_string} = $search_string;
     my $offset = $q->param('startIndex') || $q->param('offset') || 0;
-    $offset =~ s/\D//g;
+    return $app->errtrans('Invalid value: [_1]', encode_html($offset))
+        if $offset && $offset !~ /^\d+$/;
     my $limit = $q->param('count') || $q->param('limit');
-    $limit =~ s/\D//g if defined $limit;
+    return $app->errtrans('Invalid value: [_1]', encode_html($limit))
+        if $limit && $limit !~ /^\d+$/;
     my $max = $app->{searchparam}{MaxResults};
     $max =~ s/\D//g if defined $max;
     $limit = $max if !$limit || ( $limit - $offset > $max );
