@@ -17,7 +17,7 @@ use MT::Util qw( start_end_day start_end_week
                  decode_xml relative_date asset_cleanup );
 use MT::Request;
 use Time::Local qw( timegm timelocal );
-use MT::Promise qw(lazy delay force);
+use MT::Promise qw( delay );
 use MT::Category;
 use MT::Entry;
 use MT::I18N qw( first_n_text const uppercase lowercase substr_text length_text wrap_text );
@@ -3469,12 +3469,14 @@ sub _hdlr_entries {
     
     my $cfg = $ctx->{config};
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $archiver = MT->publisher->archiver($at);
-    if ( $archiver && $archiver->archive_group_entries ) {
-        my $entries = $archiver->archive_group_entries->( $ctx, %$args );
-        $ctx->stash( 'entries', $entries );
-    }
     my $entries = $ctx->stash('entries');
+    if ($at && !$entries) {
+        my $archiver = MT->publisher->archiver($at);
+        if ( $archiver && $archiver->group_based ) {
+            $entries = $archiver->archive_group_entries( $ctx, %$args );
+            # $ctx->stash( 'entries', $entries );
+        }
+    }
     my $blog_id = $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
     my (@filters, %blog_terms, %blog_args, %terms, %args);
@@ -4387,16 +4389,18 @@ sub _hdlr_entry_tb_data {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
-    my $tb = $e->trackback
-        or return '';
-    return '' if $tb->is_disabled;
+    return '' unless $e->allow_pings;
+    my $blog = $ctx->stash('blog');
     my $cfg = $ctx->{config};
+    return '' unless $blog->allow_pings && $cfg->AllowPings;
+    my $tb = $e->trackback or return '';
+    return '' if $tb->is_disabled;
     my $path = _hdlr_cgi_path($ctx);
     $path .= $cfg->TrackbackScript . '/' . $tb->id;
     my $url;
     if (my $at = $_[0]->{current_archive_type} || $_[0]->{archive_type}) {
         $url = $e->archive_url($at);
-        $url .= '#' . sprintf("%06d", $e->id)
+        $url .= '#entry-' . sprintf("%06d", $e->id)
             unless $at eq 'Individual';
     } else {
         $url = $e->permalink;
@@ -5573,9 +5577,7 @@ sub _hdlr_archive_prev_next {
     if ($entry) {
         my $builder = $ctx->stash('builder');
         local $ctx->{__stash}->{entries} = [ $entry ];
-        my $helper = $arctype->date_range;
-        if ($helper) {
-            my($start, $end) = $helper->($entry->authored_on);
+        if (my($start, $end) = $arctype->date_range($entry->authored_on)) {
             local $ctx->{current_timestamp} = $start;
             local $ctx->{current_timestamp_end} = $end;
             defined(my $out = $builder->build($ctx, $ctx->stash('tokens'),
@@ -5708,11 +5710,9 @@ sub _hdlr_archives {
     }
 
     my $order = $sort_order eq 'ascend' ? 'asc' : 'desc';
-    my $group_iter = $archiver->archive_group_iter->($ctx, $args);
+    my $group_iter = $archiver->archive_group_iter($ctx, $args);
     return $ctx->error(MT->translate("Group iterator failed."))
         unless defined($group_iter);
-    my $group_entries = $archiver->archive_group_entries;
-    my $helper = $archiver->date_range;
 
     my ($cnt, %curr) = $group_iter->();
     my %save = map { $_ => $ctx->{__stash}{$_} } keys %curr;
@@ -5739,8 +5739,8 @@ sub _hdlr_archives {
         local $vars->{__odd__} = $i % 2 == 1;
         local $vars->{__counter__} = $i;
         local $ctx->{__stash}{entries} = delay(sub{ 
-            $group_entries->($ctx, %curr)
-        }) if $group_entries;
+            $archiver->archive_group_entries($ctx, %curr)
+        }) if $archiver->group_based;
         $ctx->{__stash}{$_} = $curr{$_} for keys %curr;
         local $ctx->{inside_archive_list} = 1;
 
@@ -5766,7 +5766,7 @@ sub _hdlr_archive_title {
     my $archiver = MT->publisher->archiver($at);
     my @entries;
     if ($archiver->entry_based) {
-        my $entries = force($ctx->stash('entries'));
+        my $entries = $ctx->stash('entries');
         if (!$entries && (my $e = $ctx->stash('entry'))) {
             push @$entries, $e;
         }
@@ -5799,9 +5799,8 @@ sub _hdlr_archive_title {
             }
         }
     }
-    my $st = $archiver->archive_title;
-    my $title = (@entries && $entries[0]) ? $st->($ctx, $entries[0])
-        : $st->($ctx, $ctx->{current_timestamp});
+    my $title = (@entries && $entries[0]) ? $archiver->archive_title($ctx, $entries[0])
+        : $archiver->archive_title($ctx, $ctx->{current_timestamp});
     defined $title ? $title : '';
 }
 
@@ -5915,7 +5914,7 @@ sub _hdlr_archive_count {
     } elsif (my $count = $ctx->stash('archive_count')) {
         return $count;
     } else {
-        my $e = force($_[0]->stash('entries'));
+        my $e = $_[0]->stash('entries');
         my @entries = @$e if ref($e) eq 'ARRAY';
         return scalar @entries;
     }
@@ -6781,22 +6780,20 @@ sub _hdlr_sub_cats_recurse {
     # Loop through each immediate child, incrementing the depth by 1
     while (my $c = shift @$cats) {
         next if (!defined $c);
-        local $ctx->{__stash}->{'category'} = $c;
-        local $ctx->{__stash}->{'subCatIsFirst'} = !$count;
-        local $ctx->{__stash}->{'subCatIsLast'} = !scalar @$cats;
-        local $ctx->{__stash}->{'subCatsDepth'} = $depth + 1;
+        local $ctx->{__stash}{'category'} = $c;
+        local $ctx->{__stash}{'subCatIsFirst'} = !$count;
+        local $ctx->{__stash}{'subCatIsLast'} = !scalar @$cats;
+        local $ctx->{__stash}{'subCatsDepth'} = $depth + 1;
         local $ctx->{__stash}{vars}->{'__depth__'} = $depth + 1;
         local $ctx->{__stash}{'folder_header'} = !$count
             if $class_type ne 'category';
         local $ctx->{__stash}{'folder_footer'} = !scalar @$cats
             if $class_type ne 'category';
 
-        local $ctx->{__stash}->{'entries'};
-        local $ctx->{__stash}->{'category_count'};
+        local $ctx->{__stash}{'category_count'};
 
-
-        $ctx->{__stash}->{'entries'} = 
-            lazy { my @args = ({ blog_id => $ctx->stash('blog_id'),
+        local $ctx->{__stash}{'entries'} = 
+            delay(sub { my @args = ({ blog_id => $ctx->stash('blog_id'),
                                  status => MT::Entry::RELEASE() },
                                { 'join' => [ 'MT::Placement', 'entry_id',
                                              { category_id => $c->id } ],
@@ -6804,11 +6801,11 @@ sub _hdlr_sub_cats_recurse {
                                  direction => 'descend', });
 
                    my @entries = $entry_class->load(@args); 
-                   \@entries };
-   
+                   \@entries });
+
         defined (my $out = $builder->build($ctx, $tokens))
             or return $ctx->error($ctx->errstr);
-   
+
         $res .= $out;
         $count++;
     }
@@ -6904,20 +6901,19 @@ sub _hdlr_sub_categories {
         local $ctx->{__stash}{'folder_footer'} = !scalar @$cats
             if $class_type ne 'category';
 
-        local $ctx->{__stash}{'entries'};
         local $ctx->{__stash}{'category_count'};
 
-        $ctx->{__stash}->{'entries'} =
-            lazy { my @args = ({ blog_id => $ctx->stash('blog_id'),
+        local $ctx->{__stash}{'entries'} =
+            delay(sub { my @args = ({ blog_id => $ctx->stash('blog_id'),
                                  status => MT::Entry::RELEASE() },
                                { 'join' => [ 'MT::Placement', 'entry_id',
                                              { category_id => $cat->id } ],
                                  'sort' => 'authored_on',
                                  direction => 'descend' });
-               
+
                    my @entries = $entry_class->load(@args); 
-                   \@entries };
-    
+                   \@entries } );
+
         defined (my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error($ctx->errstr);
 
