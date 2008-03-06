@@ -7,19 +7,29 @@
 
 function smarty_function_mtentrytrackbackdata($args, &$ctx) {
     $e = $ctx->stash('entry');
-    if (!$e['trackback_id']) {
+    if (!$e['trackback_id'])
         return '';
-    }
-    if ($e['trackback_is_disabled']) {
+    if ($e['trackback_is_disabled'])
         return '';
+
+    $blog = $ctx->stash('blog');
+    $entry = $ctx->stash('entry');
+    $blog_accepted = $blog['blog_allow_pings'] && $ctx->mt->config('AllowPings');
+    if ($entry) {
+        $accepted = $blog_accepted && $entry['entry_allow_pings'];
+    } else {
+        $accepted = $blog_accepted;
     }
+    if (!$accepted)
+        return '';
+
     require_once "function.mtcgipath.php";
     $path = smarty_function_mtcgipath($args, $ctx);
     $path .= $ctx->mt->config('TrackbackScript') . '/' . $e['trackback_id'];
     if ($at = $ctx->stash('current_archive_type')) {
         $url = $ctx->tag('ArchiveLink');
         if ($at != 'Individual') {
-            $url .= '#' . sprintf("%06d", $e['entry_id']);
+            $url .= '#entry-' . sprintf("%06d", $e['entry_id']);
         }
     } else {
         $url = $ctx->tag('EntryPermalink');
