@@ -250,6 +250,7 @@ sub list {
 
     my $iter = $class->load_iter( \%terms, \%arg );
     my $data = build_ping_table( $app, iter => $iter, param => \%param );
+    delete $_->{object} for @$data;
 
     ## We tried to load $limit + 1 entries above; if we actually got
     ## $limit + 1 back, we know we have another page of entries.

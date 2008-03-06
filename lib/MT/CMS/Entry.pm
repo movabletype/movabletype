@@ -603,6 +603,7 @@ sub list {
         param         => \%param,
         type          => $type
     );
+    delete $_->{object} foreach @$data;
     delete $param{entry_table} unless @$data;
 
     ## We tried to load $limit + 1 entries above; if we actually got
@@ -651,40 +652,40 @@ sub list {
     }
     $param{entry_author_loop} = \@authors;
 
-    $iter = $app->model('asset')->load_iter(
-        { class => '*', blog_id => $blog_id },
-        {
-            'join' => MT->model('objectasset')->join_on(
-                'asset_id',
-                {},
-                { unique => 1 }
-            ),
-            'sort'    => 'created_on',
-            direction => 'descend',
-        }
-    );
-    %seen = ();
-    my @assets;
-    while ( my $asset = $iter->() ) {
-        next if $seen{ $asset->id };
-        $seen{ $asset->id } = 1;
-        my $row = {
-            asset_label => $asset->label,
-            asset_id    => $asset->id,
-        };
-        push @assets, $row;
-        if ( @assets == 50 ) {
-            $iter->('finish');
-            last;
-        }
-    }
-    if ($filter_col eq 'asset_id' && !$seen{$filter_val}) {
-        push @assets, {
-            asset_label => $param{asset_label},
-            asset_id    => $filter_val,
-        };
-    }
-    $param{entry_asset_loop} = \@assets;
+    # $iter = $app->model('asset')->load_iter(
+    #     { class => '*', blog_id => $blog_id },
+    #     {
+    #         'join' => MT->model('objectasset')->join_on(
+    #             'asset_id',
+    #             {},
+    #             { unique => 1 }
+    #         ),
+    #         'sort'    => 'created_on',
+    #         direction => 'descend',
+    #     }
+    # );
+    # %seen = ();
+    # my @assets;
+    # while ( my $asset = $iter->() ) {
+    #     next if $seen{ $asset->id };
+    #     $seen{ $asset->id } = 1;
+    #     my $row = {
+    #         asset_label => $asset->label,
+    #         asset_id    => $asset->id,
+    #     };
+    #     push @assets, $row;
+    #     if ( @assets == 50 ) {
+    #         $iter->('finish');
+    #         last;
+    #     }
+    # }
+    # if ($filter_col eq 'asset_id' && !$seen{$filter_val}) {
+    #     push @assets, {
+    #         asset_label => $param{asset_label},
+    #         asset_id    => $filter_val,
+    #     };
+    # }
+    # $param{entry_asset_loop} = \@assets;
 
     $param{page_actions}        = $app->page_actions( $app->mode );
     $param{list_filters}        = $app->list_filters('entry');
