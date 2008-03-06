@@ -164,6 +164,7 @@ sub process {
             if $format !~ /\w+/;
     }
     my $method = "render$format";
+    $method = 'render' unless $app->can($method);
     return $app->$method( $count, $iter );
 }
 
