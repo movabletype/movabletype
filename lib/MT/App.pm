@@ -2325,15 +2325,16 @@ sub assert {
 sub takedown {
     my $app = shift;
 
-    $app->{trace} = undef;
-    $app->{response_content} = undef;
-
     MT->run_callbacks(ref($app) . '::take_down', $app);   # arg is the app object
 
     $app->touch_blogs;
 
     my $sess = $app->session;
     $sess->save if $sess && $sess->is_dirty;
+
+    $app->user( undef );
+    delete $app->{$_}
+        for qw( cookies perms session trace response_content _blog );
 
     my $driver = $MT::Object::DRIVER;
     $driver->clear_cache if $driver && $driver->can('clear_cache');
@@ -2347,7 +2348,7 @@ sub takedown {
 
     $app->request->finish;
     delete $app->{request};
-    delete $app->{cookies};
+
     $app->{request_read_config} = 1;
 }
 
