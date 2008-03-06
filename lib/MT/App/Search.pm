@@ -85,7 +85,12 @@ sub init_request{
             $app->config->$key() : ($q->param($key) || $app->config->$key());
     }
 
-    $app->{searchparam}{Type} = $q->param('type') || 'entry';
+    $app->{searchparam}{Type} = 'entry';
+    if ( my $type = $q->param('type') ) {
+        return $app->errtrans('Invalid type: [_1]', encode_html($type) )
+            if $type !~ /[\w\.]+/;
+        $app->{searchparam}{Type} = $type;
+    }
 }
 
 sub create_blog_list {
@@ -153,7 +158,11 @@ sub process {
         $iter = $app->post_search( $count, $iter );
     }
 
-    my $format = $app->param('format') || q();
+    my $format = q();
+    if ( $format = $app->param('format') ) {
+        return $app->errtrans('Invalid format: [_1]', encode_html($format))
+            if $format !~ /\w+/;
+    }
     my $method = "render$format";
     return $app->$method( $count, $iter );
 }
@@ -170,7 +179,7 @@ sub execute {
     my ( $terms, $args ) = @_;
 
     my $class = $app->model( $app->{searchparam}{Type} )
-        or return $app->errtrans('Unsupported type: [_1]', $app->{searchparam}{Type});
+        or return $app->errtrans('Unsupported type: [_1]', encode_html($app->{searchparam}{Type}));
     my $count = $app->count( $class, $terms, $args );
     #TODO: cache!
     my $iter = $class->load_iter( $terms, $args )
@@ -186,8 +195,11 @@ sub search_terms {
         or return ( undef, undef );
     $app->{search_string} = $search_string;
     my $offset = $q->param('startIndex') || $q->param('offset') || 0;
+    $offset =~ s/\D//g;
     my $limit = $q->param('count') || $q->param('limit');
+    $limit =~ s/\D//g if defined $limit;
     my $max = $app->{searchparam}{MaxResults};
+    $max =~ s/\D//g if defined $max;
     $limit = $max if !$limit || ( $limit - $offset > $max );
 
     my $params = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
@@ -215,7 +227,9 @@ sub search_terms {
 
     my $sort = $params->{'sort'};
     if ( $sort !~ /\w+\!$/ && $app->{searchparam}{SearchSortBy} ) {
-        $sort = $app->{searchparam}{SearchSortBy};
+        my $sort_by = $app->{searchparam}{SearchSortBy};
+        $sort_by =~ s/[\w\-\.]+//g;
+        $sort = $sort_by;
     }
 
     my %args = (
@@ -292,13 +306,14 @@ sub prepare_context {
     if ( my $str = $app->{search_string} ) {
         $ctx->stash('search_string', encode_html($str));
     }
-    if ( my $type = $q->param('type') ) {
-        $ctx->stash('type', $type);
+    if ( $q->param('type') ) {
+        $ctx->stash('type', $app->{searchparam}{Type});
     }
     if ( $app->{default_mode} ne $app->mode ) {
         $ctx->stash('mode', $app->mode);
     }
     if ( my $template = $q->param('Template') ) {
+        $template =~ s/[\w\-\.]//g;
         $ctx->stash('template_id', $template);
     }
     $ctx->stash('stash_key'  , $app->{searchparam}{Type} );
@@ -338,7 +353,8 @@ sub load_search_tmpl {
                 }
             }
         }
-        return $app->errtrans("No alternate template is specified for the Template '[_1]'", $q->param('Template'))
+        return $app->errtrans( "No alternate template is specified for the Template '[_1]'",
+          encode_html( $q->param('Template') ) )
             unless $filename;
         # template_paths method does the magic
         $tmpl = $app->load_tmpl( $filename )
