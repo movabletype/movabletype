@@ -137,13 +137,13 @@ sub search_terms {
         or return $app->error($app->errstr);
 
     my $params = $app->registry( 'default', 'types', $app->{searchparam}{Type} );
-    my %def_terms = exists( $params->{terms} )
+    my %terms = exists( $params->{terms} )
           ? %{ $params->{terms} }
           : ();
-    delete $def_terms{'plugin'}; #FIXME: why is this in here?
+    delete $terms{'plugin'}; #FIXME: why is this in here?
 
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
-        $def_terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
+        $terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
     }
 
     my $depth = 1;
@@ -168,19 +168,8 @@ sub search_terms {
           object_id => \"= $pk"
         },
         { alias => $alias,
-          @$join_on_arg ? ( 'join' => $join_on_arg ) : ()
+          $join_on_arg && @$join_on_arg ? ( 'join' => $join_on_arg ) : ()
         }
-    );
-    my @object_ids = $class->load( \%def_terms, {
-        'fetchonly' => [ qw( id ) ],
-        'join' => $join_on
-    });
-    my @ids = map { $_->id } @object_ids;
-
-    return ( undef, undef ) unless @ids;
-
-    my %terms = (
-        id => \@ids
     );
 
     my $sort = $params->{'sort'};
@@ -191,6 +180,7 @@ sub search_terms {
     }
 
     my %args = (
+      'join' => $join_on,
       $limit  ? ( 'limit' => $limit ) : (),
       $offset ? ( 'offset' => $offset ) : (),
       $sort   ? ( 'sort' => [
