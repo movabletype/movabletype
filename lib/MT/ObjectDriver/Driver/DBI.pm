@@ -326,12 +326,21 @@ sub prepare_statement {
             $stmt->add_select($dbcol => $col);
         }
 
-        $stmt->from([ $tbl ]);
+        if ( my $alias = $orig_args->{alias} ) {
+            $stmt->from([ "$tbl $alias" ]);
+        }
+        else {
+            $stmt->from([ $tbl ]);
+        }
 
         if (defined($terms)) {
             $stmt->column_mutator(sub {
                 my ($col) = @_;
-                return $dbd->db_column_name($tbl, $col);
+                my $db_col = $dbd->db_column_name($tbl, $col);
+                if ( my $alias = $orig_args->{alias} ) {
+                    $db_col = "$alias.$db_col";
+                }
+                return $db_col;
             });
             if (ref $terms eq 'ARRAY') {
                 $stmt->add_complex_where($terms);

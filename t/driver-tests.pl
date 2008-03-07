@@ -23,7 +23,7 @@ BEGIN {
     $ENV{MT_CONFIG} = "$driver-test.cfg";
 }
 
-use Test::More tests => 230;
+use Test::More tests => 233;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:testdb);
 
@@ -758,5 +758,59 @@ $count = Foo->count( [
 # ==> select count(*) from mt_foo where (foo_status = 10) or (foo_name = 'Apple') or (foo_name like '%nux')
 # (selects Apple+MacBook, Apple+iBook, Microsoft+XP, Linux+Ubuntu)
 is($count, 4, '-or count, 3 clauses');
+
+# alias support
+my $vista = Foo->load({name=>'Microsoft', status=>13});
+my $newbar = Bar->new;
+$newbar->foo_id($vista->id);
+$newbar->name('Silverlight');
+$newbar->status(2);
+$newbar->save;
+sleep(3);
+$newbar = Bar->new;
+$newbar->foo_id($vista->id);
+$newbar->name('IronPython');
+$newbar->status(3);
+$newbar->save;
+sleep(3);
+my $mb = Foo->load({name=>'Apple', status=>11});
+$newbar = Bar->new;
+$newbar->foo_id($mb->id);
+$newbar->name('IronRuby');
+$newbar->status(0);
+$newbar->save;
+
+# select * from foo, bar bar1, bar bar2
+# where bar1.bar_foo_id = foo_id
+# and bar2.bar_foo_id = bar1.bar_foo_id
+# and bar1.status = 2
+# and bar2.status = 3
+my @a_foos = Foo->load(
+    undef,
+    { join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 },
+        { join => [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 3 },
+            { alias => 'bar2' } ],
+          alias => 'bar1'
+        }
+      ],
+      sort => 'created_on', direction => 'descend',
+    }
+);
+is(scalar(@a_foos), 1, 'join the same table using alias 1');
+is($a_foos[0]->id, $vista->id, 'join the same table using alias 2');
+
+@a_foos = Foo->load(
+    undef,
+    { join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 },
+        { join => [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 0 },
+            { alias => 'bar2' } ],
+          alias => 'bar1'
+        }
+      ],
+      sort => 'created_on', direction => 'descend',
+    }
+);
+is(scalar(@a_foos), 0, 'join the same table using alias 3');
+ 
 
 1;

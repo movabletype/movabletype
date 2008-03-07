@@ -56,6 +56,35 @@ sub _process_lucene_query {
     @or_tags;
 }
 
+sub add_join {
+    my ( $class, $terms, $def_args, $depth, $tag_ids ) = @_;
+
+    my $alias = $class->datasource . '_' . $depth;
+    my $j_term = "= $alias.objecttag_object_id";
+    $depth++;
+    my $this_alias = $class->datasource . '_' . $depth;
+    my %args;
+    my $tag_id = shift @$tag_ids;
+    if ( $tag_id ) {
+        my $j_arg = &add_join( $class, $terms, $def_args, $depth, $tag_ids );
+        $args{'join'} = $j_arg if $j_arg && @$j_arg;
+    }
+    if ( $tag_id ) {
+        return $class->join_on( undef,
+          {
+            object_id => \$j_term,
+            tag_id => $tag_id,
+            %$terms
+          },
+          {
+            %args,
+            %$def_args,
+            'alias' => $this_alias
+          }
+        );
+    }
+    undef;
+}
 
 sub search_terms {
     my $app = shift;
@@ -101,6 +130,7 @@ sub search_terms {
         }
         push @or_tags, \@tmp if @tmp;
     }
+    return ( undef, undef ) unless @or_tags;
 
     my $ot_class = $app->model('objecttag');
     my $class = $app->model( $app->{searchparam}{Type} )
@@ -112,45 +142,53 @@ sub search_terms {
           : ();
     delete $def_terms{'plugin'}; #FIXME: why is this in here?
 
-    my $sort = $params->{'sort'};
-    if ( $sort !~ /\w+\!$/  && exists($app->{searchparam}{Sort}) ) {
-        $sort = $app->{searchparam}{Sort};
-    }
-
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
         $def_terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
     }
 
+    my $depth = 1;
+    my $alias = $ot_class->datasource . '_' . $depth;
+
     my $or_tag = shift @or_tags;
+    my $join_on_arg;
+    if ( @or_tags ) {
+        $join_on_arg = &add_join(
+            $ot_class,
+            { object_datasource => $class->datasource },
+            { },
+            $depth,
+            \@or_tags
+        );
+    }
+    #TODO: what if pk is from multiple cols?
+    my $pk = $class->datasource . '_' . $class->properties->{primary_key};
+    my $join_on = $ot_class->join_on( undef,
+        { tag_id => $or_tag,
+          object_datasource => $class->datasource,
+          object_id => \"= $pk"
+        },
+        { alias => $alias,
+          @$join_on_arg ? ( 'join' => $join_on_arg ) : ()
+        }
+    );
     my @object_ids = $class->load( \%def_terms, {
         'fetchonly' => [ qw( id ) ],
-        'join' => $ot_class->join_on( 'object_id',
-            { tag_id => $or_tag, object_datasource => $class->datasource }
-        )}
-    );
+        'join' => $join_on
+    });
     my @ids = map { $_->id } @object_ids;
-    while ( @ids && @or_tags ) {
-        $or_tag = shift @or_tags;
-        @object_ids = $class->load(
-          {
-            %def_terms,
-            id => \@ids
-          },
-          {
-            'fetchonly' => [ qw( id ) ],
-            'join' => $ot_class->join_on( 'object_id',
-                { tag_id => $or_tag, object_datasource => $class->datasource }
-            )
-          }
-        );
-        @ids = map { $_->id } @object_ids;
-    }
 
     return ( undef, undef ) unless @ids;
 
     my %terms = (
         id => \@ids
     );
+
+    my $sort = $params->{'sort'};
+    if ( $sort !~ /\w+\!$/ && $app->{searchparam}{SearchSortBy} ) {
+        my $sort_by = $app->{searchparam}{SearchSortBy};
+        $sort_by =~ s/[\w\-\.]+//g;
+        $sort = $sort_by;
+    }
 
     my %args = (
       $limit  ? ( 'limit' => $limit ) : (),
