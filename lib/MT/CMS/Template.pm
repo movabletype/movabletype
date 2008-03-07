@@ -849,15 +849,22 @@ sub pre_save {
         }
     }
 
+    require MT::PublishOption;
     my $build_type = $app->param('build_type');
-    if ( $build_type == 5 ) {    # schedule build
+    if ( $build_type == MT::PublishOption::SCHEDULED() ) {
         my $period   = $app->param('schedule_period');
         my $interval = $app->param('schedule_interval');
         my $sec      = _get_build_interval( $period, $interval );
         $obj->build_interval($sec);
     }
-    $obj->rebuild_me( $build_type == 1 ? 1 : 0 );
-    $obj->build_dynamic( $build_type == 3 ? 1 : 0 );
+    my $rebuild_me = 1;
+    if (   $build_type == MT::PublishOption::DISABLED()
+        || $build_type == MT::PublishOption::MANUALLY() )
+    {
+        $rebuild_me = 0;
+    }
+    $obj->rebuild_me($rebuild_me);
+    $obj->build_dynamic( $build_type == MT::PublishOption::DYNAMIC() ? 1 : 0 );
 
     1;
 }
@@ -886,11 +893,12 @@ sub post_save {
             $map->save;
         }
         elsif ( $p =~ /^map_build_type_(\d+)$/ ) {
-            my $map_id = $1;
-            my $map    = MT::TemplateMap->load($map_id);
+            my $map_id     = $1;
+            my $map        = MT::TemplateMap->load($map_id);
             my $build_type = $q->param($p);
-            $map->build_type( $build_type );
-            if ( $build_type == 5 ) {    # schedule_build
+            require MT::PublishOption;
+            $map->build_type($build_type);
+            if ( $build_type == MT::PublishOption::SCHEDULED() ) {
                 my $period   = $q->param( 'map_schedule_period_' . $map_id );
                 my $interval = $q->param( 'map_schedule_interval_' . $map_id );
                 my $sec      = _get_build_interval( $period, $interval );

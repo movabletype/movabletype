@@ -1659,6 +1659,11 @@ sub queue_build_file_filter {
     my $fi = $args{file_info};
     return 1 if $fi->{from_queue};
 
+    require MT::PublishOption;
+    my $throttle = MT::PublishOption::get_throttle($fi);
+    return 1 if $throttle->{type} == MT::PublishOption::ONDEMAND();
+    return 0 if $throttle->{type} == MT::PublishOption::DISABLED();
+
     require MT::TheSchwartz;
     require TheSchwartz::Job;
     my $job = TheSchwartz::Job->new();

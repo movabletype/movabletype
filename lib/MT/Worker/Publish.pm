@@ -12,6 +12,9 @@ use base qw( TheSchwartz::Worker );
 use TheSchwartz::Job;
 use Time::HiRes qw(gettimeofday tv_interval);
 use MT::FileInfo;
+use MT::PublishOption;
+
+sub keep_exit_status_for { 1 }
 
 sub work {
     my $class = shift;
@@ -35,7 +38,6 @@ sub work {
     }
 
     my $sync = MT->config('SyncTarget');
-    my $throttles = $mt->{throttle} || {};
 
     my $start = [gettimeofday];
     my $rebuilt = 0;
@@ -58,17 +60,17 @@ sub work {
 
         my $mtime = (stat($fi->file_path))[9];
 
-        my $throttle = $throttles->{$fi->template_id}
-                    || $throttles->{lc $fi->archive_type};
+        my $throttle = MT::PublishOption::get_throttle($fi);
 
         # think about-- throttle by archive type or by template
-        if ($throttle) {
+        if ($throttle->{type} == MT::PublishOption::SCHEDULED() ) {
             if (-f $fi->file_path) {
                 my $time = time;
-                if ($time - $mtime < $throttle) {
+                if ($time - $mtime < $throttle->{interval}) {
                     # ignore rebuilding this file now; not enough
                     # time has elapsed for rebuilding this file...
-                    $job->failed("Not ready to publish file " . $fi->file_path . " based on throttle rules.");
+                    $job->grabbed_until(0);
+                    $job->driver->update($job);
                     next;
                 }
             }

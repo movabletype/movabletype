@@ -947,9 +947,11 @@ sub rebuild_confirm {
 
     if ( $at && $at ne 'None' ) {
         @blog_at = split /,/, $at;
+        require MT::PublishOption;
         foreach my $t (@blog_at) {
             $archiver = $app->publisher->archiver($t);
             next unless $archiver;    # ignore unknown archive types
+            next if MT::PublishOption::archive_build_type($t) == MT::PublishOption::DISABLED();
             push @at, $t;
             $archive_label = $archiver->archive_label;
             $archive_label = $at unless $archive_label;
