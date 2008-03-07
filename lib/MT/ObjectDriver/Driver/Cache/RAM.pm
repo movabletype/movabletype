@@ -5,7 +5,7 @@ package MT::ObjectDriver::Driver::Cache::RAM;
 use strict;
 use warnings;
 
-use base qw( Data::ObjectDriver::Driver::BaseCache );
+use base qw( MT::Object::BaseCache );
 
 use constant MAX_CACHE_SIZE => 1000;
 
@@ -32,6 +32,8 @@ sub get_from_cache {
 sub add_to_cache {
     my $driver = shift;
 
+    return if !$driver->is_cacheable($_[1]);
+
     if (scalar keys %Cache > MAX_CACHE_SIZE) {
         $driver->clear_cache();
     }
@@ -46,6 +48,8 @@ sub add_to_cache {
 
 sub update_cache {
     my $driver = shift;
+
+    return if !$driver->is_cacheable($_[1]);
 
     $driver->start_query('RAMCACHE_SET ?', \@_);
     my $ret = $Cache{$_[0]} = $_[1];

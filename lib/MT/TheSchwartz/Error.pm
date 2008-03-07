@@ -24,7 +24,8 @@ __PACKAGE__->install_properties({
     },
     defaults => {
         funcid => 0,
-    }
+    },
+    cacheable => 0,
     # not captured:
     # index (funcid, error_time)
 });
