@@ -28,15 +28,12 @@
 </div>
     </MTBlogResultFooter>
 </MTSearchResults>
-<MTIgnore>
-<!-- Used with the ajax search capability of the new search class -->
+<MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
 <MTSearchIfPreviousResults><a href="<MTSearchPreviousLink>" onclick="return swapContent(-1);">&laquo;</a></MTSearchIfPreviousResults> M<MTSearchResultPages><MTSearchIfCurrentPage>o<MTElse><a href="<MTSearchPageLink>">o</a></MTSearchIfCurrentPage></MTSearchResultPages>vable Type <MTSearchIfMoreResults><a href="<MTSearchNextLink>" onclick="return swapContent();">&raquo;</a></MTSearchIfMoreResults>
-</MTIgnore>
 </div>
 </MTSetVarTemplate>
 
-<MTIgnore>
-<!-- Used with the ajax search capability of the new search class -->
+<MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
 <MTSearchIfMoreResults>
 <MTSetVarBlock name="html_head" append="1">
 <script type="text/javascript">
@@ -113,7 +110,6 @@ function swapContent(direction) {
 </script>
 </MTSetVarBlock>
 </MTSearchIfMoreResults>
-</MTIgnore>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 
@@ -144,8 +140,7 @@ function swapContent(direction) {
 </blockquote>
 </MTNoSearch>
 
-<MTIgnore>
-<!-- Used with the ajax search capability of the new search class -->
+<MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
 <MTSearchIfMoreResults>
 <script type="text/javascript">
 <!--
@@ -160,5 +155,4 @@ var timer = window.setTimeout("getResults(" + <MTSearchCurrentPage> + ")", 1*100
 //-->
 </script>
 </MTSearchIfMoreResults>
-</MTIgnore>
 <$MTInclude module="<__trans phrase="Footer">"$>

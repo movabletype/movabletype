@@ -5,14 +5,19 @@
             <div class="widget-content">
                 <form method="get" action="<$MTCGIPath$><$MTSearchScript$>">
                     <input id="search" name="search" size="20" value="<$MTSearchString$>" />
+                    <input type="hidden" name="limit" value="<MTCfgMaxResults>" />
         <MTIf name="search_results_template">
                     <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
+                    <MTIgnore>
+                    <!-- use these options only with MT::App::Search::Legacy -->
                     <ul class="search-options">
                         <li><input type="checkbox" name="CaseSearch" /> <__trans phrase="Case sensitive"></li>
                         <li><input type="checkbox" name="RegexSearch" /> <__trans phrase="Regex search"></li>
                     </ul>
+                    </MTIgnore>
         <mt:else>
                     <input type="hidden" name="IncludeBlogs" value="<$MTBlogID$>" />
+                    <input type="hidden" name="limit" value="<MTCfgMaxResults>" />
         </mt:if>
                     <input type="submit" value="<__trans phrase="Search">" />
                 </form>
@@ -250,7 +255,7 @@
                     <li class="blog feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTLink template="feed_recent"$>"><__trans phrase="Subscribe to this blog's feed"></a></li>
     <MTIf name="search_results_template">
         <mt:ifnonempty tag="MTSearchString">
-                    <li class="search-results-feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<MTIfTagSearch>tag<MTElse>search</MTIfTagSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<__trans phrase="Subscribe to feed">"><__trans phrase="Search results matching &ldquo;<$MTSearchString$>&rdquo;"></a></li>
+                    <li class="search-results-feed"><img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<MTIfTagSearch>tag<MTElse>search</MTIfTagSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;limit=<MTCfgMaxResults>" title="<__trans phrase="Subscribe to feed">"><__trans phrase="Search results matching &ldquo;<$MTSearchString$>&rdquo;"></a></li>
         </mt:ifnonempty>
     </MTIf>
                 </ul>

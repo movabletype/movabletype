@@ -8,4 +8,4 @@
 
 use strict;
 use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';
-use MT::Bootstrap App => 'MT::App::Search::Legacy';
+use MT::Bootstrap App => 'MT::App::Search';

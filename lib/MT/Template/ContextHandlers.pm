@@ -493,6 +493,7 @@ sub core_tags {
             SearchString => sub { '' },
             SearchResultCount => sub { 0 }, 
             MaxResults => sub { '' },
+            CfgMaxResults => sub { $_[0]->{config}->MaxResults },
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
             SearchPageLink => sub { '' },
@@ -1959,6 +1960,7 @@ sub _hdlr_tag_search_link {
         $param .= '&amp;';
     }
     $param .= 'tag=' . encode_url($tag->name);
+    $param .= '&amp;limit=' . $ctx->{config}->MaxResults;
     my $path = _hdlr_cgi_path($ctx);
     $path . $ctx->{config}->SearchScript . '?' . $param;
 }

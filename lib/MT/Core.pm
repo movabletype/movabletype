@@ -365,7 +365,7 @@ BEGIN {
             'IncludeBlogs'        => undef,
             'DefaultTemplate'     => { default => 'default.tmpl', },
             'Type'                => { default => 'straight', },
-            'MaxResults'          => { default => '100', },
+            'MaxResults'          => { default => '20', },
             'SearchCutoff'        => { default => '9999999', },
             'CommentSearchCutoff' => { default => '30', },
             'AltTemplate'         => {
