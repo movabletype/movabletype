@@ -77,6 +77,12 @@ sub init_request{
         if $blog_list && %$blog_list
         && $blog_list->{IncludeBlogs}
         && %{ $blog_list->{IncludeBlogs} };
+    if ( !exists($app->{searchparam}{IncludeBlogs})
+      && ( my $blog_id = $q->param('blog_id') ) ) {
+        $blog_id =~ s/\D//g;
+        $app->{searchparam}{IncludeBlogs}{$blog_id} = 1
+            if $blog_id;
+    }
 
     ## Set other search params--prefer per-query setting, default to
     ## config file.
@@ -293,7 +299,8 @@ sub first_blog_id {
     }
     elsif ( exists($app->{searchparam}{IncludeBlogs})
       && keys(%{ $app->{searchparam}{IncludeBlogs} }) ) {
-        $blog_id = @{ keys %{ $app->{searchparam}{IncludeBlogs} } }[0];
+        my @blog_ids = keys %{ $app->{searchparam}{IncludeBlogs} };
+        $blog_id = $blog_ids[0] if @blog_ids;
     }
     $blog_id;
 }
