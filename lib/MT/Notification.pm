@@ -20,6 +20,7 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         blog_id => 1,
+        email => 1,
     },
     child_of => 'MT::Blog',
     datasource => 'notification',

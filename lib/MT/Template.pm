@@ -39,7 +39,6 @@ __PACKAGE__->install_properties({
         blog_id => 1,
         name => 1,
         type => 1,
-        build_dynamic => 1,
         outfile => 1,
         identifier => 1,
     },

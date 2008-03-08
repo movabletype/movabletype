@@ -484,7 +484,7 @@ sub sql {
         $sql = [ $sql ];
     }
     foreach (@$sql) {
-        $dbh->do($_) or return $driver->error($dbh->errstr);
+        $dbh->do($_) or return $driver->last_error;
     }
     1;
 }   

@@ -795,6 +795,11 @@ sub core_upgrade_functions {
                 },
             },
         },
+        'core_remove_indexes' => {
+            version_limit => 4.0041,
+            priority => 3.2,
+            code => \&remove_indexes,
+        }
     }
 }
 
@@ -1757,6 +1762,41 @@ sub remove_unused_templatemap {
     }
 }
 
+sub remove_indexes {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Removing unnecessary indexes...'));
+
+    my $driver = MT::Object->driver;
+
+    if ($driver->dbd =~ m/::Pg$|::Oracle$/) {
+        $driver->sql([
+            'drop index mt_asset_url',
+            'drop index mt_asset_file_path',
+            'drop index mt_blocklist_name',
+            'drop index mt_entry_blog_id',
+            'drop index mt_template_build_dynamic'
+        ]);
+    } elsif ($driver->dbd =~ m/::mysql$/) {
+        $driver->sql([
+            'drop index mt_asset_url on mt_asset',
+            'drop index mt_asset_file_path on mt_asset',
+            'drop index mt_blocklist_name on mt_blocklist',
+            'drop index mt_entry_blog_id on mt_entry',
+            'drop index mt_template_build_dynamic on mt_tempalte'
+        ]);
+    } elsif ($driver->dbd =~ m/::mssqlserver$/) {
+        $driver->sql([
+            'drop index mt_asset.mt_asset_url',
+            'drop index mt_asset.mt_asset_file_path',
+            'drop index mt_blocklist.mt_blocklist_name',
+            'drop index mt_entry.mt_entry_blog_id',
+            'drop index mt_tempalte.mt_template_build_dynamic'
+        ]);
+    }
+    1;
+}
+
 ###  Upgrade triggers
 
 # we don't need these yet, but it makes me feel good to have them around
@@ -2430,7 +2470,7 @@ sub core_update_records {
                 next unless $cond->($obj, %param);
             }
             $code->($obj);
-use Data::Dumper;
+            use Data::Dumper;
             $obj->save()
                 or return $self->error($self->translate_escape("Error saving [_1] record # [_3]: [_2]... [_4].", $class_label, $obj->errstr, $obj->id, Dumper($obj)));
             $continue = 1, last if time > $start + $MAX_TIME;

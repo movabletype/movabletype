@@ -49,7 +49,6 @@ __PACKAGE__->install_properties({
         'category_id' => 'integer',
     },
     indexes => {
-        blog_id => 1,
         status => 1,
         author_id => 1,
         created_on => 1,

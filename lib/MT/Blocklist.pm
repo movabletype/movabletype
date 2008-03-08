@@ -14,7 +14,6 @@ __PACKAGE__->install_properties({
        'id', 'blog_id', 'text', 'action'
     ],
     indexes => {
-        name => 1,
         blog_id => 1,
         text => 1,
     },

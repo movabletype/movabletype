@@ -20,6 +20,9 @@ __PACKAGE__->install_properties({
         name => 1,
         is_private => 1,
         n8d_id => 1,
+        name_id => {
+            columns => ['name', 'id'],
+        },
     },
     defaults => {
         n8d_id => 0,

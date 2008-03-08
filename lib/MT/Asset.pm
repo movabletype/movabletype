@@ -25,9 +25,8 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         blog_id => 1,
-        url => 1,
         label => 1,
-        file_path => 1,
+        file_ext => 1,
         parent => 1,
         created_by => 1,
         created_on => 1,
