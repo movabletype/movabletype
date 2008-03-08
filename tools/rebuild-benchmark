@@ -166,7 +166,7 @@ sub run_rebuild {
                 my $res = $scraper->scrape( $resp->content() );
                 if ( $res->{status_publishing} ) {
                     ( undef, $url ) =
-                      $resp->content() =~ /window.location='(.*)'?(.*)/;
+                      $resp->content() =~ /window.location='(.*)\?(.*)'/;
                     $url = $mt_url . "?" . $url;
                 }
                 elsif ( $res->{status_success} ) {
