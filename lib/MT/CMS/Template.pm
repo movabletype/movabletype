@@ -230,7 +230,7 @@ sub edit {
               if @$maps;
         }
         # publish options
-        $param->{publish_queue} = $blog->publish_queue;
+        $param->{publish_queue} = $blog->publish_queue if $blog;
         $param->{build_type} = $obj->build_type;
         $param->{ 'build_type_' . ( $obj->build_type || 0 ) } = 1;
         my ( $period, $interval ) = _get_schedule( $obj->build_interval );
