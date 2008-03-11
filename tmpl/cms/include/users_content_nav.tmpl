@@ -1,4 +1,4 @@
-<ul>
+<mt:setvartemplate name="line_items" function="unshift">
 <mt:if name="USER_VIEW">
     <mt:unless name="EDIT_AUTHOR_ID" eq="PSEUDO">
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID">"><b><__trans phrase="Profile"></b></a></li>
@@ -46,5 +46,8 @@
         <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID">"><b><__trans phrase="Permissions"></b></a></li>
     </mt:if>
 </mt:if>
+</mt:setvartemplate>
 
+<ul>
+<mt:loop name="line_items"><mt:var name="__value__"></mt:loop>
 </ul>

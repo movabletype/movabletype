@@ -21,7 +21,7 @@
                 <th id="at-name"><__trans phrase="Name"></th>
                 <mt:if name="filter_key" ne="commenter">
                 <th id="at-roles"><__trans phrase="Roles"></th>
-                </mt:if>
+                </mt:if><mt:loop name="more_column_headers"><mt:var name="__value__"></mt:loop>
             </tr>
         </thead>
         <tbody>
@@ -43,7 +43,7 @@
                 <mt:if name="filter_key" ne="commenter">
                 <td>
                 <mt:loop name="role_loop" glue=", "><span title="<mt:var name="role_perms" escape="html">" onmouseover="DOM.addClassName(this, 'focus')" onmouseout="DOM.removeClassName(this, 'focus')"><mt:var name="role_name"><mt:if name="can_administer_blog"> <a href="javascript:void(0)" onclick="removeMemberRole(<mt:var name="id">,<mt:var name="role_id">)" class="delete" title="<__trans phrase="Remove this role">">&nbsp;</a></mt:if></span></mt:loop></td>
-                </mt:if>
+                </mt:if><mt:loop name="more_columns"><mt:var name="__value__"></mt:loop>
             </tr>
     <mt:if name="__last__">
         </tbody>
