@@ -229,10 +229,7 @@ sub app {
     my $class = shift;
     $mt_inst ||= $mt_inst{$class} ||= $class->construct(@_);
 }
-
-sub instance {
-    &app;
-}
+*instance = *app;
 
 sub set_instance {
     my $class = shift;
@@ -411,7 +408,7 @@ sub config {
 
 sub request {
     my $pkg  = shift;
-    my $inst = $pkg->instance;
+    my $inst = ref($pkg) ? $pkg : $pkg->instance;
     unless ( $inst->{request} ) {
         require MT::Request;
         $inst->{request} = MT::Request->instance;
@@ -856,7 +853,7 @@ sub init_config {
         $Data::Dumper::Indent   = 1;
     }
 
-    if ($cfg->ProcessMemoryCommand) {
+    if ($cfg->PerformanceLogging && $cfg->ProcessMemoryCommand) {
         $mt->log_times();
     }
 
