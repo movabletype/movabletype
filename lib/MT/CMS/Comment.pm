@@ -1,7 +1,7 @@
 package MT::CMS::Comment;
 
 use strict;
-use MT::Util qw( remove_html format_ts relative_date );
+use MT::Util qw( remove_html format_ts relative_date encode_html );
 use MT::I18N qw( const break_up_text substr_text length_text );
 
 sub edit {
