@@ -9,11 +9,12 @@ package MT::Log;
 use strict;
 use base qw( MT::Object );
 
-use constant INFO     => 1;
-use constant WARNING  => 2;
-use constant ERROR    => 4;
-use constant SECURITY => 8;
-use constant DEBUG    => 16;
+# use constant is slow
+sub INFO     { 1 }
+sub WARNING  { 2 }
+sub ERROR    { 4 }
+sub SECURITY { 8 }
+sub DEBUG    { 16 }
 
 use MT::Blog;
 
