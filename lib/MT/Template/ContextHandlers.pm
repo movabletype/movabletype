@@ -493,7 +493,7 @@ sub core_tags {
             SearchString => sub { '' },
             SearchResultCount => sub { 0 }, 
             MaxResults => sub { '' },
-            CfgMaxResults => sub { $_[0]->{config}->MaxResults },
+            SearchMaxResults => sub { $_[0]->{config}->MaxResults },
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
             SearchPageLink => sub { '' },

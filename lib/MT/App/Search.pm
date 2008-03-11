@@ -71,7 +71,12 @@ sub init_request{
         delete $app->{$_} if exists $app->{$_}
     }
 
-    my %no_override = map { $_ => 1 } split /\s*,\s*/, $app->config->NoOverride;
+    my %no_override;
+    foreach my $no ( split /\s*,\s*/, $app->config->SearchNoOverride ) {
+        $no_override{ $no } = 1;
+        $no_override{ "Search$no" } = 1
+            if $no !~ /^Search.+/;
+    }
     my $blog_list = $app->create_blog_list( %no_override );
     $app->{searchparam}{IncludeBlogs} = $blog_list->{IncludeBlogs}
         if $blog_list && %$blog_list
@@ -86,7 +91,7 @@ sub init_request{
 
     ## Set other search params--prefer per-query setting, default to
     ## config file.
-    for my $key (qw( ResultDisplay MaxResults SearchSortBy )) {
+    for my $key (qw( SearchResultDisplay SearchMaxResults SearchSortBy )) {
         $app->{searchparam}{$key} = $no_override{$key} ?
             $app->config->$key() : ($q->param($key) || $app->config->$key());
     }
@@ -106,8 +111,14 @@ sub create_blog_list {
     my $q = $app->param;
     my $cfg = $app->config;
 
-    %no_override = map { $_ => 1 } split /\s*,\s*/, $cfg->NoOverride
-        unless %no_override;
+    unless ( %no_override ) {
+        my %no_override;
+        foreach my $no ( split /\s*,\s*/, $app->config->SearchNoOverride ) {
+            $no_override{ $no } = 1;
+            $no_override{ "Search$no" } = 1
+                if $no !~ /^Search.+/;
+        }
+    }
 
     my %blog_list;
     ## Combine user-selected included/excluded blogs
@@ -207,7 +218,7 @@ sub search_terms {
     my $limit = $q->param('count') || $q->param('limit');
     return $app->errtrans('Invalid value: [_1]', encode_html($limit))
         if $limit && $limit !~ /^\d+$/;
-    my $max = $app->{searchparam}{MaxResults};
+    my $max = $app->{searchparam}{SearchMaxResults};
     $max =~ s/\D//g if defined $max;
     $limit = $max if !$limit || ( $limit - $offset > $max );
 
@@ -246,7 +257,7 @@ sub search_terms {
       $limit  ? ( 'limit' => $limit ) : (),
       $offset ? ( 'offset' => $offset ) : (),
       $sort   ? ( 'sort' => [
-            { desc   => 'descend' eq $app->{searchparam}{ResultDisplay} ? 'DESC' : 'ASC',
+            { desc   => 'descend' eq $app->{searchparam}{SearchResultDisplay} ? 'DESC' : 'ASC',
               column => $sort }
         ] ) : (),
     );
@@ -327,7 +338,7 @@ sub prepare_context {
         $ctx->stash('template_id', $template);
     }
     $ctx->stash('stash_key'  , $app->{searchparam}{Type} );
-    $ctx->stash('maxresults' , $app->{searchparam}{MaxResults});
+    $ctx->stash('maxresults' , $app->{searchparam}{SearchMaxResults});
     $ctx->stash('include_blogs',
         join ',', keys %{ $app->{searchparam}{IncludeBlogs} });
     $ctx->stash('results'    , $iter);
@@ -353,7 +364,7 @@ sub load_search_tmpl {
     if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
         # load specified template
         my $filename;
-        if (my @tmpls = ($app->config->default('AltTemplate'), $app->config->AltTemplate)) {
+        if (my @tmpls = ($app->config->default('SearchAltTemplate'), $app->config->SearchAltTemplate)) {
             for my $tmpl (@tmpls) {
                 next unless defined $tmpl;
                 my ( $nickname, $file ) = split /\s+/, $tmpl;
@@ -383,7 +394,7 @@ sub load_search_tmpl {
         unless ( $tmpl ) {
             # load template from search_template path
             # template_paths method does the magic
-            $tmpl = $app->load_tmpl( $app->config->DefaultTemplate );
+            $tmpl = $app->load_tmpl( $app->config->SearchDefaultTemplate );
         }
     }
     return $app->error($app->errstr)

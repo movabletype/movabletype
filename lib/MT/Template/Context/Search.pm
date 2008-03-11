@@ -90,15 +90,16 @@ sub _hdlr_results {
     for ( my $i = 0; $i < $count; $i++) {
         $count_per_blog++;
         $ctx->stash($stash_key, $this_object);
-        if ( $this_object->can('blog') ) {
-            local $ctx->{__stash}{blog} = $this_object->blog;
-        }
+        local $ctx->{__stash}{blog} = $this_object->blog
+            if $this_object->can('blog');
+        my $ts;
         if ( $this_object->isa('MT::Entry') ) {
-            local $ctx->{current_timestamp} = $this_object->authored_on;
+            $ts = $this_object->authored_on;
         }
         elsif ( $this_object->properties->{audit} ) {
-            local $ctx->{current_timestamp} = $this_object->created_on;
+            $ts = $this_object->created_on;
         }
+        local $ctx->{current_timestamp} = $ts;
 
         # TODO: per blog max objects?
         #if ( $count_per_blog >= $max ) {
@@ -166,7 +167,7 @@ sub _hdlr_search_pages {
 
     my $output = q();
     require POSIX;
-    my $pages = POSIX::ceil( $count / $limit );
+    my $pages = $limit ? POSIX::ceil( $count / $limit ) : 1;
     my $vars = $ctx->{__stash}{vars} ||= {};
     for ( my $i = 1; $i <= $pages; $i++ ) {
         local $vars->{__first__} = $i == 1;

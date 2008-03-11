@@ -374,6 +374,12 @@ BEGIN {
             },
             'SearchSortBy'    => undef,
             'SearchSortOrder' => { default => 'ascend', },
+            'SearchNoOverride'      => { alias => 'NoOverride', },
+            'SearchResultDisplay'   => { alias => 'ResultDisplay', },
+            'SearchExcerptWords'    => { alias => 'ExcerptWords', },
+            'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
+            'SearchMaxResults'      => { alias => 'MaxResults', },
+            'SearchAltTemplate'     => { alias => 'AltTemplate' },
             'RegKeyURL' =>
               { default => 'http://www.typekey.com/extras/regkeys.txt', },
             'IdentitySystem' =>
