@@ -2212,60 +2212,36 @@ sub _hdlr_include_block {
 }
 
 sub _hdlr_include {
-    my ( $ctx, $arg, $cond ) = @_;
+    my ($ctx, $arg, $cond) = @_;
 
     # If option provided, read from cache
-    my $cache_key     = $arg->{key};
-    my $ttl           = $arg->{ttl} || 0;
-    my $cache_require = 0;
-    my $cache;
+    my $cache_key = $arg->{key};
+    my $ttl       = $arg->{ttl} || 0;
     if ($cache_key) {
         require MT::Session;
-        if ($ttl) {
-            $cache = MT::Session::get_unexpired_value(
-                $ttl,
-                {
-                    id   => $cache_key,
-                    kind => 'CO',
-                }
-            );
-        }
-        else {
-            $cache = MT::Session->load(
-                {
-                    id   => $cache_key,
-                    kind => 'CO',
-                }
-            );
-        }
-        if ($cache) {
-            return $cache->data();
-        }
-        else {
-            $cache_require = 1;
-        }
+        my $terms = { id => $cache_key, kind => 'CO' };
+        my $cache = $ttl ? MT::Session::get_unexpired_value($ttl, $terms)
+                  :        MT::Session->load($terms)
+                  ;
+        return $cache->data() if $cache;
     }
 
     # Run include process
     my $out = _include_process(@_);
 
-    if ($cache_require) {
-        $cache = MT::Session->load(
-            {
-                id   => $cache_key,
-                kind => 'CO',
-            }
-        );
+    if ($cache_key) {
+        my $cache = MT::Session->load({
+            id   => $cache_key,
+            kind => 'CO',
+        });
         $cache->remove() if $cache;
         $cache = MT::Session->new;
-        $cache->set_values(
-            {
-                id    => $cache_key,
-                kind  => 'CO',
-                start => time,
-                data  => $out,
-            }
-        );
+        $cache->set_values({
+            id    => $cache_key,
+            kind  => 'CO',
+            start => time,
+            data  => $out,
+        });
         $cache->save();
     }
 
