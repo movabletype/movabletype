@@ -2212,6 +2212,67 @@ sub _hdlr_include_block {
 }
 
 sub _hdlr_include {
+    my ( $ctx, $arg, $cond ) = @_;
+
+    # If option provided, read from cache
+    my $cache_key     = $arg->{key};
+    my $ttl           = $arg->{ttl} || 0;
+    my $cache_require = 0;
+    my $cache;
+    if ($cache_key) {
+        require MT::Session;
+        if ($ttl) {
+            $cache = MT::Session::get_unexpired_value(
+                $ttl,
+                {
+                    id   => $cache_key,
+                    kind => 'CO',
+                }
+            );
+        }
+        else {
+            $cache = MT::Session->load(
+                {
+                    id   => $cache_key,
+                    kind => 'CO',
+                }
+            );
+        }
+        if ($cache) {
+            return $cache->data();
+        }
+        else {
+            $cache_require = 1;
+        }
+    }
+
+    # Run include process
+    my $out = _include_process(@_);
+
+    if ($cache_require) {
+        $cache = MT::Session->load(
+            {
+                id   => $cache_key,
+                kind => 'CO',
+            }
+        );
+        $cache->remove() if $cache;
+        $cache = MT::Session->new;
+        $cache->set_values(
+            {
+                id    => $cache_key,
+                kind  => 'CO',
+                start => time,
+                data  => $out,
+            }
+        );
+        $cache->save();
+    }
+
+    return $out;
+}
+
+sub _include_process {
     my($ctx, $arg, $cond) = @_;
     my $req = MT::Request->instance;
     my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
