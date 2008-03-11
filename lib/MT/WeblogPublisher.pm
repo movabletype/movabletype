@@ -462,7 +462,7 @@ sub rebuild_entry {
         ## adding a new entry could cause changes to the intra-archive
         ## navigation.
         my %at = map { $_ => 1 } split /,/, $blog->archive_type;
-        my @db_at = grep { $ArchiveTypes{$_} && $ArchiveTypes{$_}->date_based } $mt->archive_types;
+        my @db_at = grep { my $archiver = $mt->archiver($_); $archiver && $archiver->date_based } $mt->archive_types;
         for my $at (@db_at) {
             if ( $at{$at} ) {
                 my @arg = ( $entry->authored_on, $entry->blog_id, $at );
