@@ -374,6 +374,11 @@ sub prepare_statement {
                 $stmt->order(\@order);
             }
         }
+
+        if ( my $ft_arg = delete $args->{'freetext'} ) {
+            my @columns = map { $dbd->db_column_name($tbl, $_) } @{ $ft_arg->{'columns'} };
+            $stmt->add_freetext_where( \@columns, $ft_arg->{'search_string'} );
+        }
     }
     $stmt->limit($args->{limit}) if $args->{limit};
     $stmt->offset($args->{offset}) if $args->{offset};

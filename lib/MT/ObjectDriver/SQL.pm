@@ -350,6 +350,8 @@ sub as_limit {
            ($o ? " OFFSET " . int($o) : "");
 }
 
+sub add_freetext_where { 0 }
+
 1;
 __END__
 
