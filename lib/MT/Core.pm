@@ -380,6 +380,7 @@ BEGIN {
             'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
             'SearchMaxResults'      => { alias => 'MaxResults', },
             'SearchAltTemplate'     => { alias => 'AltTemplate' },
+            'SearchPrivateTags'     => { default => 0 },
             'RegKeyURL' =>
               { default => 'http://www.typekey.com/extras/regkeys.txt', },
             'IdentitySystem' =>
