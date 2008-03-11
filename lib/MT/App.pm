@@ -672,6 +672,11 @@ sub init_request {
 
     return if $app->{init_request};
 
+    if ($MT::DebugMode) {
+        require Time::HiRes;
+        $app->{start_request_time} = Time::HiRes::time();
+    }
+
     if ($app->{request_read_config}) {
         $app->init_config(\%param) or return;
         $app->{request_read_config} = 0;
@@ -2257,6 +2262,7 @@ sub run {
                             $trace .= '<li>' . $m . '</li>' . "\n";
                         }
                     }
+                    $trace = "<li>" . sprintf("Request completed in %.3f seconds.", Time::HiRes::time() - $app->{start_request_time}) . "</li>\n" . $trace;
                     if ($trace ne '') {
                         $trace = '<ul>' . $trace . '</ul>';
                         my $panel = "<div class=\"debug-panel\">"
@@ -2334,7 +2340,8 @@ sub takedown {
 
     $app->user( undef );
     delete $app->{$_}
-        for qw( cookies perms session trace response_content _blog );
+        for qw( cookies perms session trace response_content _blog
+            WeblogPublisher );
 
     my $driver = $MT::Object::DRIVER;
     $driver->clear_cache if $driver && $driver->can('clear_cache');
