@@ -40,7 +40,7 @@ sub _driver {
 
 sub _handle {
     my $method = shift;
-    my $mod = $auth_module || _driver();
+    my $mod = $auth_module ||= _driver();
     return undef unless $mod->can($method);
     $mod->$method(@_);
 }
