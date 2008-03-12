@@ -87,6 +87,7 @@ sub _hdlr_results {
     my $max_reached = 0;
     my ( $this_object, $next_object );
     $this_object = $iter->();
+    return '' unless $this_object;
     for ( my $i = 0; $i < $count; $i++) {
         $count_per_blog++;
         $ctx->stash($stash_key, $this_object);
