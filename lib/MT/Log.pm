@@ -10,11 +10,11 @@ use strict;
 use base qw( MT::Object );
 
 # use constant is slow
-sub INFO     { 1 }
-sub WARNING  { 2 }
-sub ERROR    { 4 }
-sub SECURITY { 8 }
-sub DEBUG    { 16 }
+sub INFO ()     { 1 }
+sub WARNING ()  { 2 }
+sub ERROR ()    { 4 }
+sub SECURITY () { 8 }
+sub DEBUG ()    { 16 }
 
 use MT::Blog;
 
