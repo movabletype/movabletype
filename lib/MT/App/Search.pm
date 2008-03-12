@@ -9,7 +9,7 @@ package MT::App::Search;
 use strict;
 use base qw( MT::App );
 
-use MT::Util qw( encode_html );
+use MT::Util qw( encode_html encode_url );
 
 sub id { 'new_search' }
 
@@ -31,6 +31,10 @@ sub init {
     #        $app->param($k, $v);
     #    }
     #}
+    $app->_register_core_callbacks({
+        'search_post_execute' => \&log_search,
+        'search_post_render'  => \&cache_out,
+    });
     $app;
 }
 
@@ -57,6 +61,9 @@ sub core_parameters {
                 'sort'  => 'authored_on',
                 terms   => { status => 2 }, #MT::Entry::RELEASE()
             },
+        },
+        cache_driver => {
+            'package' => 'MT::Cache::Negotiate',
         },
     };
 }
@@ -102,6 +109,42 @@ sub init_request{
             if $type !~ /[\w\.]+/;
         $app->{searchparam}{Type} = $type;
     }
+
+    $app->generate_cache_keys();
+    $app->init_cache_driver();
+}
+
+sub generate_cache_keys {
+    my $app = shift;
+
+    my $q = $app->param;
+    my @p = sort { $a cmp $b } $q->param;
+    my ( $key, $count_key );
+    $key .= lc($_) . encode_url($q->param($_))
+        foreach @p;
+    $count_key .= lc($_) . encode_url($q->param($_))
+        foreach grep { ('limit' ne lc($_)) && ('offset' ne lc($_)) } @p;
+    $app->{cache_keys} = { result => $key, count => $count_key };
+}
+
+sub init_cache_driver {
+    my $app = shift;
+
+    my $registry = $app->registry( $app->mode, 'cache_driver' );
+    my $cache_driver = $registry->{'package'} || 'MT::Cache::Negotiate';
+    eval "require $cache_driver;";
+    if ( my $e = $@ ) {
+        require MT::Log;
+        $app->log({
+            message =>
+                $app->translate("Search: failed storing results in cache.  [_1] is not available: [_2]",
+                    $cache_driver, $e ),
+            level => MT::Log::INFO(),
+            class => 'search',
+        });
+        return;
+    }
+    $app->{cache_driver} = $cache_driver->new( ttl => $app->config->ThrottleSeconds );
 }
 
 sub create_blog_list {
@@ -160,19 +203,39 @@ sub create_blog_list {
     \%blog_list;
 }
 
+sub check_cache {
+    my $app = shift;
+
+    my $cache = $app->{cache_driver}->get_multi(
+        values %{ $app->{cache_keys} } );
+
+    my $count = $cache->{ $app->{cache_keys}{count} }
+        if exists $cache->{ $app->{cache_keys}{count} };
+    my $result = $cache->{ $app->{cache_keys}{result} }
+        if exists $cache->{ $app->{cache_keys}{result} };
+
+    ( $count, $result );
+}
+
 sub process {
     my $app = shift;
+
+    my ( $count, $out ) = $app->check_cache();
+    if ( defined $out ) {
+        $app->run_callbacks( 'search_cache_hit', $count, $out );
+        return $out;
+    }
 
     my @arguments = $app->search_terms();
     return $app->error($app->errstr) if $app->errstr;
 
-    my $count = 0;
+    $count = 0;
     my $iter;
     if ( @arguments ) {
         ( $count, $iter ) = $app->execute( @arguments );
         return $app->error($app->errstr) unless $iter;
 
-        $iter = $app->post_search( $count, $iter );
+        $app->run_callbacks( 'search_post_execute', $app, \$count, \$iter );
     }
 
     my $format = q();
@@ -182,14 +245,33 @@ sub process {
     }
     my $method = "render$format";
     $method = 'render' unless $app->can($method);
-    return $app->$method( $count, $iter );
+    $out = $app->$method( $count, $iter );
+
+    my $result;
+    if (ref($out) && ($out->isa('MT::Template'))) {
+        defined( $result = $app->build_page($out) )
+            or return $app->error($out->errstr);
+    }
+    else {
+        $result = $out;
+    }
+
+    $app->run_callbacks( 'search_post_render', $app, $count, $result );
+    $result;
 }
 
 sub count {
     my $app = shift;
     my ( $class, $terms, $args ) = @_;
-    #TODO: cache!
-    $class->count( $terms, $args );
+    my $count = $app->{cache_driver}->get($app->{cache_keys}{count});
+    return $count if defined $count;
+
+    $count = $class->count( $terms, $args );
+
+    my $cache_driver = $app->{cache_driver};
+    $cache_driver->set( $app->{cache_keys}{count}, $count, $app->config->ThrottleSeconds );
+
+    $count;
 }
 
 sub execute {
@@ -198,8 +280,10 @@ sub execute {
 
     my $class = $app->model( $app->{searchparam}{Type} )
         or return $app->errtrans('Unsupported type: [_1]', encode_html($app->{searchparam}{Type}));
+
     my $count = $app->count( $class, $terms, $args );
-    #TODO: cache!
+    return $app->error($class->errstr) unless defined $count;
+
     my $iter = $class->load_iter( $terms, $args )
         or $app->error($class->errstr);
     ( $count, $iter );
@@ -271,9 +355,24 @@ sub search_terms {
     ( \@terms, \%args );
 }
 
-sub post_search {
-    my $app = shift;
-    my ( $count, $iter ) = @_;
+sub cache_out {
+    my ( $cb, $app, $count, $out ) = @_;
+
+    my $result;
+    if (ref($out) && ($out->isa('MT::Template'))) {
+        defined($result = $app->build_page($out))
+            or die $out->errstr;
+    }
+    else {
+        $result = $out;
+    }
+
+    my $cache_driver = $app->{cache_driver};
+    $cache_driver->set( $app->{cache_keys}{result}, $out, $app->config->ThrottleSeconds );
+}
+
+sub log_search {
+    my ( $cb, $app, $count_ref, $iter_ref ) = @_;
 
     #FIXME: template name may not be 'feed' for search feed
     unless ( $app->param('template') && ( 'feed' eq $app->param('template') ) ) {
@@ -288,9 +387,6 @@ sub post_search {
             $blog_id ? (blog_id => $blog_id) : ()
         });
     }
-
-    # TODO: cache here?
-    $iter;
 }
 
 sub template_paths {
@@ -514,6 +610,32 @@ __END__
 =head1 NAME
 
 MT::App::Search
+
+=head1 Callbacks
+
+Callbacks called by the package are as follows:
+
+=over 4
+
+=item search_post_execute
+
+    callback($cb, $app, \$count, \$iter)
+
+Called immediately after the search from the database (or however
+search executed depending on the algorithm).
+
+=item search_post_render
+
+    callback($cb, $app, $count, $out_html)
+
+Called immediately after the search template was loaded and its
+context populated.
+
+=item search_cache_hit
+
+    callback($cb, $app, $count, $out_html)
+
+Called immediately after cached results was retrieved.
 
 =head1 AUTHOR & COPYRIGHT
 

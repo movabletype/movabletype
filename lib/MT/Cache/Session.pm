@@ -23,7 +23,8 @@ sub get {
 
     my $record;
     if ( $self->{ttl} ) {
-        $record = MT::Session->get_unexpired_value( { id => $key, kind => 'CO' } );
+        $record = MT::Session::get_unexpired_value(
+            $self->{ttl}, { id => $key, kind => 'CO' } );
     }
     else {
         $record = MT::Session->load( { id => $key, kind => 'CO' } );
