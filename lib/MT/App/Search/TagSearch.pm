@@ -15,21 +15,39 @@ sub process {
     return $app->errtrans('TagSearch works with MT::App::Search.')
         unless $app->isa('MT::App::Search');
 
+    my ( $count, $out ) = $app->check_cache();
+    if ( defined $out ) {
+        $app->run_callbacks( 'search_cache_hit', $count, $out );
+        return $out;
+    }
+
     my ( $terms, $args ) = &search_terms( $app );
     return $app->error($app->errstr) if $app->errstr;
 
-    my $count = 0;
+    $count = 0;
     my $iter;
     if ( $terms && $args ) {
         ( $count, $iter ) = $app->execute( $terms, $args );
         return $app->error($app->errstr) unless $iter;
 
-        $iter = $app->post_search( $count, $iter );
+        $app->run_callbacks( 'search_post_execute', $app, \$count, \$iter );
     }
 
     my $format = $app->param('format') || q();
     my $method = "render$format";
-    return $app->$method( $count, $iter );
+    $out = $app->$method( $count, $iter );
+
+    my $result;
+    if (ref($out) && ($out->isa('MT::Template'))) {
+        defined( $result = $app->build_page($out) )
+            or return $app->error($out->errstr);
+    }
+    else {
+        $result = $out;
+    }
+
+    $app->run_callbacks( 'search_post_render', $app, $count, $result );
+    $result;
 }
 
 sub _process_lucene_query {
@@ -92,7 +110,7 @@ sub search_terms {
 
     my $offset = $q->param('startIndex') || $q->param('offset') || 0;
     my $limit = $q->param('count') || $q->param('limit');
-    my $max = $app->{searchparam}{MaxResults};
+    my $max = $app->{searchparam}{SearchMaxResults};
     $limit = $max if !$limit || ( $limit - $offset > $max );
 
     my $tag_class = $app->model('tag');
@@ -188,7 +206,7 @@ sub search_terms {
       $limit  ? ( 'limit' => $limit ) : (),
       $offset ? ( 'offset' => $offset ) : (),
       $sort   ? ( 'sort' => [
-            { desc   => 'descend' eq $app->{searchparam}{ResultDisplay} ? 'DESC' : 'ASC',
+            { desc   => 'descend' eq $app->{searchparam}{SearchResultDisplay} ? 'DESC' : 'ASC',
               column => $sort }
         ] ) : (),
     );
