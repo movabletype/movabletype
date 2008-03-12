@@ -142,7 +142,7 @@ is held in the I<single> record of kind 'NW'.
 
 =head1 METHODS
 
-=head2 $sess = MT::Session->get_unexpired_value($timeout[, $terms[, $args, ...]]);
+=head2 $sess = MT::Session::get_unexpired_value($timeout[, $terms[, $args, ...]]);
 
 Fetches the specified session record, if it is current (its C<start>
 field falls within last $timeout seconds). Arguments following the
