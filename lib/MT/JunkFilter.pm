@@ -10,11 +10,11 @@ use strict;
 use MT;
 
 # constants that force an action or determination. these are all non-numeric
-use constant ABSTAIN => 'ABSTAIN';
-use constant HAM     => 'HAM';
-use constant SPAM    => 'SPAM';
-use constant APPROVE => 'APPROVE';
-use constant JUNK    => 'JUNK';
+sub ABSTAIN () { 'ABSTAIN' }
+sub HAM ()     { 'HAM' }
+sub SPAM ()    { 'SPAM' }
+sub APPROVE () { 'APPROVE' }
+sub JUNK ()    { 'JUNK' }
 
 use Exporter;
 *import = \&Exporter::import;

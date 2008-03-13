@@ -12,10 +12,10 @@ use base qw( MT::App );
 use MT::Util qw( format_ts epoch2ts perl_sha1_digest_hex perl_sha1_digest
     remove_html );
 
-use constant LISTING_DATE_FORMAT      => '%b %e, %Y';
-use constant LISTING_DATETIME_FORMAT  => '%b %e, %Y';
-use constant LISTING_TIMESTAMP_FORMAT => "%Y-%m-%d %I:%M:%S%p";
-use constant NEW_PHASE => 1;
+sub LISTING_DATE_FORMAT ()      { '%b %e, %Y' }
+sub LISTING_DATETIME_FORMAT ()  { '%b %e, %Y' }
+sub LISTING_TIMESTAMP_FORMAT () { "%Y-%m-%d %I:%M:%S%p" }
+sub NEW_PHASE () { 1 }
 
 sub id { 'cms' }
 
@@ -1748,7 +1748,6 @@ sub set_default_tmpl_params {
 
     $param->{show_ip_info} ||= $app->config('ShowIPInformation');
     my $type = $app->param('_type') || '';
-    $param->{page_actions} ||= $app->page_actions($mode);
 
     $param->{ "mode_$mode" . ( $type ? "_$type" : '' ) } = 1;
     $param->{return_args} ||= $app->make_return_args;
@@ -1787,6 +1786,8 @@ sub build_page {
 
     $app->build_blog_selector($param);
     $app->build_menus($param);
+    $param->{page_actions} ||= $app->page_actions( $app->mode );
+
     $app->SUPER::build_page( $page, $param );
 }
 

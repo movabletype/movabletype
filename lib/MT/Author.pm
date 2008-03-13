@@ -74,18 +74,18 @@ sub class_label_plural {
 }
 
 # Valid "type" codes:
-use constant AUTHOR => 1;
-use constant COMMENTER => 2;
+sub AUTHOR ()    { 1 }
+sub COMMENTER () { 2 }
 
 # Commenter statuses
-use constant APPROVED => 1;
-use constant BANNED => 2;
-use constant BLOCKED => 2; # alias for BANNED for backward compatibility
-use constant PENDING => 3;
+sub APPROVED () { 1 }
+sub BANNED ()   { 2 }
+sub BLOCKED ()  { 2 }  # alias for BANNED for backward compatibility
+sub PENDING ()  { 3 }
 
 # Author statuses
-use constant ACTIVE   => 1;
-use constant INACTIVE => 2;
+sub ACTIVE ()   { 1 }
+sub INACTIVE () { 2 }
 #use constant PENDING => 3; # there *is* PENDING status for authors but it's the same name and value.
 
 use Exporter;

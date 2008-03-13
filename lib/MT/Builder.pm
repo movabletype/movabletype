@@ -10,7 +10,7 @@ use strict;
 use base qw( MT::ErrorHandler );
 use MT::Util qw( weaken );
 
-use constant NODE => 'MT::Template::Node';
+sub NODE () { 'MT::Template::Node' }
 
 sub new { bless { }, $_[0] }
 

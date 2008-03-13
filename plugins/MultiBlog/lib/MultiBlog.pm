@@ -12,8 +12,8 @@ use strict;
 use warnings;
 
 # Blog-level Access override statuses
-use constant DENIED     => 1;
-use constant ALLOWED    => 2;
+sub DENIED  () { 1 }
+sub ALLOWED () { 2 }
 
 sub preprocess_native_tags {
     my ( $ctx, $args, $cond ) = @_;

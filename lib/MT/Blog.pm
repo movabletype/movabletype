@@ -117,8 +117,8 @@ __PACKAGE__->install_meta({
 });
 
 # Image upload defaults.
-use constant ALIGN => 'none';
-use constant UNITS => 'pixels';
+sub ALIGN () { 'none' }
+sub UNITS () { 'pixels' }
 
 sub class_label {
     MT->translate("Blog");
@@ -355,10 +355,10 @@ sub email_attn_reqd_pings {
     return $_[0]->email_new_pings == 2;
 }
 
-use constant MODERATE_NONE => 0;
-use constant MODERATE_UNAUTHD => 3;
-use constant MODERATE_UNTRSTD => 2;
-use constant MODERATE_ALL => 1;
+sub MODERATE_NONE ()    { 0 }
+sub MODERATE_ALL ()     { 1 }
+sub MODERATE_UNTRSTD () { 2 }
+sub MODERATE_UNAUTHD () { 3 }
 
 sub publish_trusted_commenters {
     !($_[0]->moderate_unreg_comments == MODERATE_ALL);

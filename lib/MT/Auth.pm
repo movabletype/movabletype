@@ -7,18 +7,17 @@
 package MT::Auth;
 
 use strict;
-
 use base 'MT::ErrorHandler';
 
-use constant SUCCESS          => 1;
-use constant UNKNOWN          => 2;
-use constant INACTIVE         => 3;
-use constant INVALID_PASSWORD => 4;
-use constant DELETED          => 5;
-use constant REDIRECT_NEEDED  => 6;
-use constant NEW_LOGIN        => 7;
-use constant NEW_USER         => 8;
-use constant PENDING          => 9;
+sub SUCCESS ()          { 1 }
+sub UNKNOWN ()          { 2 }
+sub INACTIVE ()         { 3 }
+sub INVALID_PASSWORD () { 4 }
+sub DELETED ()          { 5 }
+sub REDIRECT_NEEDED ()  { 6 }
+sub NEW_LOGIN ()        { 7 }
+sub NEW_USER ()         { 8 }
+sub PENDING ()          { 9 }
 
 {
 my $auth_module;

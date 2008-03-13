@@ -15,7 +15,7 @@ use MT::Util qw( encode_html offset_time_list decode_html encode_url is_valid_em
 use MT::I18N qw( encode_text wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
-use constant COMMENTER_COOKIE_NAME => "mt_commenter";
+sub COMMENTER_COOKIE_NAME () { "mt_commenter" }
 use vars qw( %Global_actions );
 
 sub core_menus {

@@ -37,11 +37,11 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
-use constant USER_BLOG_ROLE  => 1;
-use constant GROUP_BLOG_ROLE => 2;
-use constant USER_GROUP      => 3;
-use constant USER_ROLE       => 4;
-use constant GROUP_ROLE      => 5;
+sub USER_BLOG_ROLE ()  { 1 }
+sub GROUP_BLOG_ROLE () { 2 }
+sub USER_GROUP ()      { 3 }
+sub USER_ROLE ()       { 4 }
+sub GROUP_ROLE ()      { 5 }
 
 sub class_label {
     MT->translate("Association");

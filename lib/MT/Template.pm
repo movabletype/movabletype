@@ -10,11 +10,11 @@ use strict;
 use base qw( MT::Object );
 use MT::Util qw( weaken );
 
-use constant NODE => 'MT::Template::Node';
+sub NODE () { 'MT::Template::Node' }
 
-use constant NODE_TEXT => 1;
-use constant NODE_BLOCK => 2;
-use constant NODE_FUNCTION => 3;
+sub NODE_TEXT ()     { 1 }
+sub NODE_BLOCK ()    { 2 }
+sub NODE_FUNCTION () { 3 }
 
 my $resync_to_db;
 
@@ -130,7 +130,7 @@ sub load_file {
             $file = $test_file, last if -f $test_file;
         }
     }
-    return $tmpl->trans_error(Carp::longmess("File not found: [_1]"), $file) unless -e $file;
+    return $tmpl->trans_error("File not found: [_1]", $file) unless -e $file;
     local *FH;
     open FH, $file
         or return $tmpl->trans_error("Error reading file '[_1]': [_2]", $file, $!);
@@ -707,9 +707,9 @@ sub appendChild {
 package MT::Template::Tokens;
 
 use strict;
-use constant NODE_TEXT => 1;
-use constant NODE_BLOCK => 2;
-use constant NODE_FUNCTION => 3;
+sub NODE_TEXT ()     { 1 }
+sub NODE_BLOCK ()    { 2 }
+sub NODE_FUNCTION () { 3 }
 
 sub getElementsByTagName {
     my ($tokens, $name) = @_;
