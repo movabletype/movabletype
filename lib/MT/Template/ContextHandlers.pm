@@ -2226,8 +2226,23 @@ sub _hdlr_include {
         return $cache->data() if $cache;
     }
 
+    # Pass through include arguments as variables to included template
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    my @names = keys %$arg;
+    my @var_names;
+    push @var_names, lc $_ for @names;
+    local @{$vars}{@var_names};
+    $vars->{lc($_)} = $arg->{$_} for @names;
+
     # Run include process
-    my $out = _include_process(@_);
+    my $out = $arg->{module}     ? _include_module(@_)
+            : $arg->{widget}     ? _include_module(@_)
+            : $arg->{identifier} ? _include_module(@_)
+            : $arg->{file}       ? _include_file(@_)
+            : $arg->{name}       ? _include_name(@_)
+            :                      $ctx->error(MT->translate(
+                                       'No template to include specified'))
+            ;
 
     if ($cache_key) {
         my $cache = MT::Session->load({
@@ -2246,26 +2261,6 @@ sub _hdlr_include {
     }
 
     return $out;
-}
-
-sub _include_process {
-    my($ctx, $arg, $cond) = @_;
-
-    # Pass through include arguments as variables to included template
-    my $vars = $ctx->{__stash}{vars} ||= {};
-    my @names = keys %$arg;
-    my @var_names;
-    push @var_names, lc $_ for @names;
-    local @{$vars}{@var_names};
-    $vars->{lc($_)} = $arg->{$_} for @names;
-
-    if (my $tmpl_name = $arg->{module} || $arg->{widget} || $arg->{identifier}) {
-        _include_module(@_);
-    } elsif (my $file = $arg->{file}) {
-        _include_file(@_);
-    } elsif (my $app_file = $arg->{name}) {
-        _include_name(@_);
-    }
 }
 
 sub _include_module {
