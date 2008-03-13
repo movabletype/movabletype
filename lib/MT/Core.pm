@@ -464,6 +464,7 @@ BEGIN {
                 },
             },
             'DeleteFilesAtRebuild'      => { default => 1, },
+            'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 10000, },
             'NewUserAutoProvisioning' =>
               { handler => \&NewUserAutoProvisioning, },

@@ -693,6 +693,7 @@ sub list {
     $param{can_republish}       = $blog_id ? $perms->can_rebuild : 1;
     $param{is_power_edit}       = $is_power_edit;
     $param{saved_deleted}       = $q->param('saved_deleted');
+    $param{no_rebuild}          = $q->param('no_rebuild');
     $param{saved}               = $q->param('saved');
     $param{limit}               = $limit;
     $param{offset}              = $offset;
@@ -2288,6 +2289,106 @@ sub ping_continuation {
     else {
         _finish_rebuild_ping( $app, $entry, $options{IsNew} );
     }
+}
+
+sub delete {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    require MT::Blog;
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    my $blog    = MT::Blog->load($blog_id);
+
+    for my $id ( $q->param('id') ) {
+        my $can_background =
+          ( $blog->count_static_templates('Individual') == 0
+              || MT::Util->launch_background_tasks() ) ? 1 : 0;
+
+        my $class = $app->model("entry");
+        my $obj   = $class->load($id);
+        return $app->call_return unless $obj;
+
+        $app->run_callbacks( 'cms_delete_permission_filter.entry', $app, $obj )
+          || return $app->error(
+            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+
+        if ( $app->config('DeleteFilesAtRebuild') ) {
+
+            # Remove related archive file if that include this entry only.
+            my $at = $blog->archive_type;
+            if ( $at && $at ne 'None' ) {
+                my @at = split( /,/, $at );
+                for my $target (@at) {
+                    my $archiver = $app->publisher->archiver($target);
+                    next unless $archiver;
+                    my $count =
+                        $archiver->can('archive_entries_count')
+                      ? $archiver->archive_entries_count( $blog, $target, $obj )
+                      : 0;
+                    if ( $count == 1 || $target eq 'Individual' ) {
+                        $app->publisher->remove_entry_archive_file(
+                            Entry       => $obj,
+                            ArchiveType => $target
+                        );
+                    }
+                }
+            }
+        }
+
+        # Remove object from database
+        $obj->remove()
+          or return $app->errtrans(
+            'Removing [_1] failed: [_2]',
+            $app->translate('entry'),
+            $obj->errstr
+          );
+        $app->run_callbacks( 'cms_post_delete.entry', $app, $obj );
+
+        if ( $app->config('RebuildAtDelete') ) {
+            if ($can_background) {
+                my $res = MT::Util::start_background_task(
+                    sub {
+                        $app->rebuild_entry(
+                            Entry             => $obj,
+                            BuildDependencies => 1,
+                            BuildIndexes      => 1,
+                            BuildArchives     => 1,
+                        ) or return $app->publish_error();
+                        $app->run_callbacks( 'rebuild', $blog );
+                        1;
+                    }
+                );
+            }
+            else {
+                $app->rebuild_entry(
+                    Entry             => $obj,
+                    BuildDependencies => 1,
+                    BuildIndexes      => 1,
+                    BuildArchives     => 1,
+                ) or return $app->publish_error();
+                $app->run_callbacks( 'rebuild', $blog );
+            }
+        }
+    }
+
+    $app->add_return_arg( saved_deleted => 1 );
+    if ( $q->param('is_power_edit') ) {
+        $app->add_return_arg( is_power_edit => 1 );
+    }
+
+    if ( $app->config('RebuildAtDelete') ) {
+        $app->add_return_arg( no_rebuild => 1 );
+        my %params = (
+            is_full_screen  => 1,
+            redirect_target => $app->app_path
+              . $app->script . '?'
+              . $app->return_args,
+        );
+        return $app->load_tmpl( 'rebuilding.tmpl', \%params );
+    }
+
+    return $app->call_return();
 }
 
 1;

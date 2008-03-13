@@ -983,35 +983,6 @@ sub delete {
                 }
             }
         }
-        elsif ( $type eq 'entry' ) {
-            if ( $app->config('DeleteFilesAtRebuild') ) {
-                $app->publisher->remove_entry_archive_file(
-                    Entry       => $obj,
-                    ArchiveType => 'Individual'
-                );
-                require MT::Blog;
-                my $blog = MT::Blog->load($blog_id);
-                my $at   = $blog->archive_type;
-                if ( $at && $at ne 'None' ) {
-                    my @at = split (/,/, $at);
-                    for my $target (@at) {
-                        my $archiver = $app->publisher->archiver($target);
-                        next unless $archiver;
-                        my $entries_count = $archiver->archive_entries_count;
-                        if ($entries_count){
-                            my $count = $entries_count->($blog, $target, $obj);
-                            if ( $count == 1 ) {
-                                $app->publisher->remove_entry_archive_file(
-                                    Entry       => $obj,
-                                    ArchiveType => $target
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
         elsif ( $type eq 'page' ) {
             if ( $app->config('DeleteFilesAtRebuild') ) {
                 $app->publisher->remove_entry_archive_file(

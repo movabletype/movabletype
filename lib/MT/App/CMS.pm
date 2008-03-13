@@ -101,6 +101,9 @@ sub core_methods {
         'save_entry'   => "${pkg}Entry::save",
         'save_role'    => "${pkg}User::save_role",
 
+        ## Delete
+        'delete_entry' => "${pkg}Entry::delete",
+
         ## List actions
         'enable_object'  => "${pkg}User::enable",
         'disable_object' => "${pkg}User::disable",
@@ -3288,6 +3291,21 @@ sub _build_category_list {
         push @data, $row;
     }
     \@data;
+}
+
+sub publish_error {
+    my $app = shift;
+    my ($msg) = @_;
+    if (defined $app->errstr) {
+        require MT::Log;
+        $app->log({
+            message => $app->translate("Error during publishing: [_1]", (defined $msg ? $msg : $app->errstr)),
+            class => "system",
+            level => MT::Log::ERROR(),
+            category => "publish",
+        })
+    }
+    return undef;
 }
 
 1;
