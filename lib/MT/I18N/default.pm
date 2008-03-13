@@ -10,29 +10,32 @@ use strict;
 use base qw( MT::ErrorHandler );
 our $PKG;
 
-use constant DEFAULT_LENGTH_ENTRY_EXCERPT => 40;
-use constant LENGTH_ENTRY_TITLE_FROM_TEXT => 5;
-use constant LENGTH_ENTRY_PING_EXCERPT => 255;
-use constant LENGTH_ENTRY_PING_TITLE_FROM_TEXT => 5;
-use constant DISPLAY_LENGTH_MENU_TITLE => 22;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TITLE => 25;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_AUTHOR => 25;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT => 45;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG => 90;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT => 30;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG => 80;
-use constant DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT => 12;
-use constant DISPLAY_LENGTH_EDIT_PING_BREAK_UP => 30;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TITLE => 25;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT => 50;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP => 30;
+sub DEFAULT_LENGTH_ENTRY_EXCERPT ()                    { 40 }
+sub LENGTH_ENTRY_TITLE_FROM_TEXT ()                    { 5 }
+sub LENGTH_ENTRY_PING_EXCERPT ()                       { 255 }
+sub LENGTH_ENTRY_PING_TITLE_FROM_TEXT ()               { 5 }
+sub DISPLAY_LENGTH_MENU_TITLE ()                       { 22 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TITLE ()               { 25 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_AUTHOR ()              { 25 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT ()          { 45 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG ()           { 90 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT () { 30 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG ()  { 80 }
+sub DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT ()     { 12 }
+sub DISPLAY_LENGTH_EDIT_PING_BREAK_UP ()               { 30 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TITLE ()                 { 25 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT ()     { 50 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         { 30 }
 
-use constant ENCODING_NAMES => [
+my $ENCODING_NAMES = [
     { 'name' => 'guess', 'display_name' => 'AUTO DETECT' },
     { 'name' => 'utf8', 'display_name' => 'UTF-8' },
     { 'name' => 'ascii', 'display_name' => 'ISO-8859-1' },
     { 'name' => 'WinLatin1', 'display_name' => 'Windows Latin1' },
 ];
+sub ENCODING_NAMES () {
+    return $ENCODING_NAMES;
+}
 
 my @ENCODINGS_ENCODE =
     qw( cp1252 utf-8 euc-jp shiftjis 7bit-jis iso-2022-jp

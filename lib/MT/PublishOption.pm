@@ -9,12 +9,12 @@ package MT::PublishOption;
 use strict;
 
 # build type
-use constant DISABLED  => 0;
-use constant ONDEMAND  => 1;
-use constant MANUALLY  => 2;
-use constant DYNAMIC   => 3;
-use constant ASYNC     => 4;
-use constant SCHEDULED => 5;
+sub DISABLED ()  { 0 }
+sub ONDEMAND ()  { 1 }
+sub MANUALLY ()  { 2 }
+sub DYNAMIC ()   { 3 }
+sub ASYNC ()     { 4 }
+sub SCHEDULED () { 5 }
 
 sub get_throttle {
     my $finfo = shift;

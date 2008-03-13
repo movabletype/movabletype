@@ -7,7 +7,7 @@ use warnings;
 
 use base qw( MT::Object::BaseCache );
 
-use constant MAX_CACHE_SIZE => 1000;
+sub MAX_CACHE_SIZE () { 1000 }
 
 my %Cache;
 
