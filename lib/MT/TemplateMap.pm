@@ -32,6 +32,7 @@ __PACKAGE__->install_properties({
     child_classes => ['MT::FileInfo'],
     datasource => 'templatemap',
     primary_key => 'id',
+    cacheable => 0,
 });
 
 sub class_label {

@@ -31,7 +31,12 @@ __PACKAGE__->install_properties({
         ip => 1,
         created_on => 1,
         entry_id => 1,
-        blog_id => 1,
+        blog_stat => {
+            columns => [ 'blog_id', 'junk_status', 'created_on' ],
+        },
+        blog_visible => {
+            columns => [ 'blog_id', 'visible', 'created_on' ],
+        },
         email => 1,
         commenter_id => 1,
         visible => 1,
@@ -49,8 +54,8 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
-use constant JUNK => -1;
-use constant NOT_JUNK => 1;
+sub JUNK ()     { -1 }
+sub NOT_JUNK () { 1 }
 
 my %blocklists = ();
 
@@ -112,77 +117,24 @@ sub previous {
 sub _nextprev {
     my $obj = shift;
     my $class = ref($obj);
-    my ($direction, $publish_only) = @_;
+    my ($direction, $terms) = @_;
     return undef unless ($direction eq 'next' || $direction eq 'previous');
     my $next = $direction eq 'next';
 
     my $label = '__' . $direction;
-    return $obj->{$label} if $obj->{$label};
-
-    # Selecting the adjacent object can be tricky since timestamps
-    # are not necessarily unique for entries. If we find that the
-    # next/previous object has a matching timestamp, keep selecting entries
-    # to select all entries with the same timestamp, then compare them using
-    # id as a secondary sort column.
-
-    my ($id, $ts) = ($obj->id, $obj->created_on);
-    my $iter = $class->load_iter({
-        blog_id => $obj->blog_id,
-        created_on => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        %{$publish_only}
-    }, {
-        'sort' => 'created_on',
-        'direction' => $next ? 'ascend' : 'descend',
-        'range_incl' => { 'created_on' => 1 },
-    });
-
-    # This selection should always succeed, but handle situation if
-    # it fails by returning undef.
-    return unless $iter;
-
-    # The 'same' array will hold any entries that have matching
-    # timestamps; we will then sort those by id to find the correct
-    # adjacent object.
-    my @same;
-    while (my $e = $iter->()) {
-        # Don't consider the object that is 'current'
-        next if $e->id == $id;
-        my $e_ts = $e->created_on;
-        if ($e_ts eq $ts) {
-            # An object with the same timestamp should only be
-            # considered if the id is in the scope we're looking for
-            # (greater than for the 'next' object; less than for
-            # the 'previous' object).
-            push @same, $e
-                if $next && $e->id > $id or !$next && $e->id < $id;
-        } else {
-            # We found an object with a timestamp different than
-            # the 'current' object.
-            if (!@same) {
-                push @same, $e;
-                # We should check to see if this new timestamped object also
-                # has entries adjacent to _it_ that have the same timestamp.
-                while (my $e = $iter->()) {
-                    push(@same, $e), next if $e->created_on eq $e_ts;
-                    $iter->('finish'), last;
-                }
-            } else {
-                $iter->('finish');
-            }
-            return $obj->{$label} = $e unless @same;
-            last;
-        }
+    if ($obj->{$label}) {
+        my $o = $obj->load($obj->{$label});
+        return $o if $o;
+        delete $obj->{label}; # FAIL
     }
-    if (@same) {
-        # If we only have 1 element in @same, return that.
-        return $obj->{$label} = $same[0] if @same == 1;
-        # Sort remaining elements in @same by id.
-        @same = sort { $a->id <=> $b->id } @same;
-        # Return front of list (smallest id) if selecting 'next'
-        # object. Return tail of list (largest id) if selection 'previous'.
-        return $obj->{$label} = $same[$next ? 0 : $#same];
-    }
-    return;
+
+    my $o = $obj->nextprev(
+        direction => $direction,
+        terms     => { blog_id => $obj->blog_id, %$terms },
+        by        => 'created_on',
+    );
+    $o->{label} = $o->id if $o;
+    return $o;
 }
 
 sub entry {

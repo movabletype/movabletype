@@ -28,6 +28,9 @@ __PACKAGE__->install_properties({
         label => 1,
         parent => 1,
         basename => 1,
+        blog_class => {
+            columns => [ 'blog_id', 'class' ],
+        },
     },
     defaults => {
         parent => 0,

@@ -27,6 +27,7 @@ __PACKAGE__->install_properties({
     child_of => 'MT::Blog',
     datasource => 'objectasset',
     primary_key => 'id',
+    cacheable => 0,
 });
 
 sub class_label {

@@ -30,7 +30,12 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         created_on => 1,
-        blog_id => 1,
+        blog_stat => {
+            columns => ['blog_id', 'junk_status', 'created_on'],
+        },
+        blog_visible => {
+            columns => ['blog_id', 'visible', 'created_on'],
+        },
         tb_id => 1,
         ip => 1,
         visible => 1,

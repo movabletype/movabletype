@@ -5,10 +5,11 @@
 # $Id$
 
 package MT::Placement;
+
 use strict;
 
-use MT::Object;
-@MT::Placement::ISA = qw( MT::Object );
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -22,9 +23,13 @@ __PACKAGE__->install_properties({
         entry_id => 1,
         category_id => 1,
         is_primary => 1,
+        blog_cat => {
+            columns => [ 'blog_id', 'category_id' ],
+        },
     },
     datasource => 'placement',
     primary_key => 'id',
+    cacheable => 0,
 });
 
 sub class_label {

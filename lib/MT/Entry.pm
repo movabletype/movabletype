@@ -21,7 +21,7 @@ use MT::TBPing;
 use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
                  extract_domains );
 
-use constant CATEGORY_CACHE_TIME => 7 * 24 * 60 * 60;  ## 1 week
+sub CATEGORY_CACHE_TIME () { 604800 } ## 7 * 24 * 60 * 60 == 1 week
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -56,8 +56,14 @@ __PACKAGE__->install_properties({
         authored_on => 1,
         week_number => 1,
         basename => 1,
+        class_authored => {
+            columns => [ 'class', 'authored_on' ],
+        },
         blog_authored => {
-            columns => ['blog_id', 'authored_on'],
+            columns => [ 'blog_id', 'authored_on' ],
+        },
+        blog_class => {
+            columns => [ 'blog_id', 'class', 'status', 'authored_on' ],
         },
     },
     child_of => 'MT::Blog',
@@ -69,10 +75,10 @@ __PACKAGE__->install_properties({
     class_type => 'entry',
 });
 
-use constant HOLD    => 1;
-use constant RELEASE => 2;
-use constant REVIEW  => 3;
-use constant FUTURE  => 4;
+sub HOLD ()    { 1 }
+sub RELEASE () { 2 }
+sub REVIEW ()  { 3 }
+sub FUTURE ()  { 4 }
 
 use Exporter;
 *import = \&Exporter::import;
@@ -175,7 +181,7 @@ sub _nextprev {
     $label .= ':category='. $terms->{category_id} if exists $terms->{category_id};
     if ($obj->{$label}) {
         my $o = $obj->load($obj->{$label});
-        return if $o;
+        return $o if $o;
         delete $obj->{label}; # FAIL
     }
 
