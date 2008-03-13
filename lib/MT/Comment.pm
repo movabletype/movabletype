@@ -31,19 +31,22 @@ __PACKAGE__->install_properties({
         ip => 1,
         created_on => 1,
         entry_id => 1,
+        email => 1,
+        commenter_id => 1,
+        parent_id => 1,
+        last_moved_on => 1, # used for junk expiration
         blog_stat => {
             columns => [ 'blog_id', 'junk_status', 'created_on' ],
         },
         blog_visible => {
             columns => [ 'blog_id', 'visible', 'created_on' ],
         },
-        email => 1,
-        commenter_id => 1,
-        visible => 1,
-        junk_status => 1,
-        last_moved_on => 1,
-        junk_score => 1,
-        parent_id => 1,
+        visible_date => {
+            columns => [ 'visible', 'created_on' ],
+        },
+        junk_date => {
+            columns => [ 'junk_status', 'created_on' ],
+        },
     },
     defaults => {
         junk_status => 0,
