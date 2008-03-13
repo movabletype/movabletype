@@ -2250,8 +2250,6 @@ sub _hdlr_include {
 
 sub _include_process {
     my($ctx, $arg, $cond) = @_;
-    my $req = MT::Request->instance;
-    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
 
     # Pass through include arguments as variables to included template
     my $vars = $ctx->{__stash}{vars} ||= {};
@@ -2260,136 +2258,160 @@ sub _include_process {
     push @var_names, lc $_ for @names;
     local @{$vars}{@var_names};
     $vars->{lc($_)} = $arg->{$_} for @names;
-    my $cur_tmpl = $ctx->stash('template');
 
     if (my $tmpl_name = $arg->{module} || $arg->{widget} || $arg->{identifier}) {
-        my $name = $arg->{widget} ? 'widget' : $arg->{identifier} ? 'identifier' : 'module';
-        my $type = $arg->{widget} ? 'widget' : 'custom';
-        if (($type eq 'custom') && ($tmpl_name =~ m/^Widget:/)) {
-            # handle old-style widget include references
-            $type = 'widget';
-            $tmpl_name =~ s/^Widget: ?//;
-        }
-        my $stash_id = 'template_' . $type . '::' . $blog_id . '::' . $tmpl_name;
-        return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
-            if $include_stack{$stash_id};
-        local $include_stack{$stash_id} = 1;
-        my $builder = $ctx->{__stash}{builder};
-        my $tokens = $req->stash($stash_id);
-        my $tmpl;
-        unless ($tokens) {
-            my $blog_id_param;
-            if (exists $arg->{global}) {
-                if ($arg->{global}) {
-                    $blog_id_param = 0;
-                }
-                else {
-                    $blog_id_param = $blog_id;
-                }
+        _include_module(@_);
+    } elsif (my $file = $arg->{file}) {
+        _include_file(@_);
+    } elsif (my $app_file = $arg->{name}) {
+        _include_name(@_);
+    }
+}
+
+sub _include_module {
+    my ($ctx, $arg, $cond) = @_;
+    my $tmpl_name = $arg->{module} || $arg->{widget} || $arg->{identifier}
+        or return;
+    my $name = $arg->{widget} ? 'widget' : $arg->{identifier} ? 'identifier' : 'module';
+    my $type = $arg->{widget} ? 'widget' : 'custom';
+    if (($type eq 'custom') && ($tmpl_name =~ m/^Widget:/)) {
+        # handle old-style widget include references
+        $type = 'widget';
+        $tmpl_name =~ s/^Widget: ?//;
+    }
+    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+    my $stash_id = 'template_' . $type . '::' . $blog_id . '::' . $tmpl_name;
+    return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
+        if $include_stack{$stash_id};
+    local $include_stack{$stash_id} = 1;
+    my $builder = $ctx->{__stash}{builder};
+    my $req = MT::Request->instance;
+    my $tokens = $req->stash($stash_id);
+    my $tmpl;
+    unless ($tokens) {
+        my $blog_id_param;
+        if (exists $arg->{global}) {
+            if ($arg->{global}) {
+                $blog_id_param = 0;
             }
             else {
-                $blog_id_param = [ $blog_id, 0 ];
+                $blog_id_param = $blog_id;
             }
-            require MT::Template;
-            my @tmpl = MT::Template->load({ ($arg->{identifier} ? ( identifier => $tmpl_name) : ( name => $tmpl_name,
-                                            type => $type )),
-                                            blog_id => $blog_id_param }, {
-                                            sort      => 'blog_id',
-                                            direction => 'descend',
-                                        })
+        }
+        else {
+            $blog_id_param = [ $blog_id, 0 ];
+        }
+        require MT::Template;
+        my @tmpl = MT::Template->load({ ($arg->{identifier} ? ( identifier => $tmpl_name) : ( name => $tmpl_name,
+                                        type => $type )),
+                                        blog_id => $blog_id_param }, {
+                                        sort      => 'blog_id',
+                                        direction => 'descend',
+                                    })
+            or return $ctx->error(MT->translate(
+                "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
+        $tmpl = $tmpl[0];
+        my $cur_tmpl = $ctx->stash('template');
+        return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
+            if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
+        $tokens = $builder->compile($ctx, $tmpl->text);
+        unless (defined $tokens) {
+            $req->cache('build_template', $tmpl);
+            return $ctx->error($builder->errstr);
+        }
+        $req->stash($stash_id, $tokens);
+    }
+    my $ret = $builder->build($ctx, $tokens, $cond);
+    if (defined $ret) {
+        return $ret;
+    } else {
+        $req->cache('build_template', $tmpl) if $tmpl;
+        return $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
+    }
+}
+
+sub _include_file {
+    my ($ctx, $arg, $cond) = @_;
+    my $file = $arg->{file} or return;
+    require File::Basename;
+    my $base_filename = File::Basename::basename($file);
+    if (exists $restricted_include_filenames{lc $base_filename}) {
+        return $ctx->error("You cannot include a file with this name: $base_filename");
+    }
+
+    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+    my $stash_id = 'template_file::' . $blog_id . '::' . $file;
+    return $ctx->error("Recursion attempt on file: [_1]", $file)
+        if $include_stack{$stash_id};
+    local $include_stack{$stash_id} = 1;
+    my $req = MT::Request->instance;
+    my $cref = $req->stash($stash_id);
+    my $tokens;
+    my $builder = $ctx->{__stash}{builder};
+    if ($cref) {
+        $tokens = $cref;
+    } else {
+        my $blog = $ctx->stash('blog');
+        if ($blog->id != $blog_id) {
+            $blog = MT::Blog->load($blog_id)
                 or return $ctx->error(MT->translate(
-                    "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
-            $tmpl = $tmpl[0];
-            return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
-                if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
-            $tokens = $builder->compile($ctx, $tmpl->text);
-            unless (defined $tokens) {
-                $req->cache('build_template', $tmpl);
-                return $ctx->error($builder->errstr);
-            }
-            $req->stash($stash_id, $tokens);
+                    "Can't find blog for id '[_1]", $blog_id));
         }
-        my $ret = $builder->build($ctx, $tokens, $cond);
-        if (defined $ret) {
-            return $ret;
-        } else {
-            $req->cache('build_template', $tmpl) if $tmpl;
-            return $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
+        my @paths = ($file, map File::Spec->catfile($_, $file),
+                            $blog->site_path, $blog->archive_path);
+        my $path;
+        for my $p (@paths) {
+            $path = $p, last if -e $p && -r _;
         }
-    } elsif (my $file = $arg->{file}) {
-        require File::Basename;
-        my $base_filename = File::Basename::basename($file);
-        if (exists $restricted_include_filenames{lc $base_filename}) {
-            return $ctx->error("You cannot include a file with this name: $base_filename");
-        }
+        return $ctx->error(MT->translate(
+            "Can't find included file '[_1]'", $file )) unless $path;
+        local *FH;
+        open FH, $path
+            or return $ctx->error(MT->translate(
+                "Error opening included file '[_1]': [_2]", $path, $! ));
+        my $c;
+        local $/; $c = <FH>;
+        close FH;
+        $tokens = $builder->compile($ctx, $c);
+        return $ctx->error($builder->errstr) unless defined $tokens;
+        $req->stash($stash_id, $tokens);
+    }
+    my $ret = $builder->build($ctx, $tokens, $cond);
+    return defined($ret) ? $ret : $ctx->error("error in file $file: " . $builder->errstr);
+}
 
-        my $stash_id = 'template_file::' . $blog_id . '::' . $file;
-        return $ctx->error("Recursion attempt on file: [_1]", $file)
-            if $include_stack{$stash_id};
-        local $include_stack{$stash_id} = 1;
-        my $cref = $req->stash($stash_id);
-        my $tokens;
-        my $builder = $ctx->{__stash}{builder};
-        if ($cref) {
-            $tokens = $cref;
-        } else {
-            my $blog = $ctx->stash('blog');
-            if ($blog->id != $blog_id) {
-                $blog = MT::Blog->load($blog_id)
-                    or return $ctx->error(MT->translate(
-                        "Can't find blog for id '[_1]", $blog_id));
-            }
-            my @paths = ($file, map File::Spec->catfile($_, $file),
-                                $blog->site_path, $blog->archive_path);
-            my $path;
-            for my $p (@paths) {
-                $path = $p, last if -e $p && -r _;
-            }
-            return $ctx->error(MT->translate(
-                "Can't find included file '[_1]'", $file )) unless $path;
-            local *FH;
-            open FH, $path
-                or return $ctx->error(MT->translate(
-                    "Error opening included file '[_1]': [_2]", $path, $! ));
-            my $c;
-            local $/; $c = <FH>;
-            close FH;
-            $tokens = $builder->compile($ctx, $c);
-            return $ctx->error($builder->errstr) unless defined $tokens;
-            $req->stash($stash_id, $tokens);
+sub _include_name {
+    my ($ctx, $arg, $cond) = @_;
+    my $app_file = $arg->{name};
+
+    # app template include mode
+    my $mt = MT->instance;
+    local $mt->{component} = $arg->{component} if exists $arg->{component};
+    my $stash_id = 'template_file::' . $app_file;
+    return $ctx->error(MT->translate("Recursion attempt on file: [_1]", $app_file))
+        if $include_stack{$stash_id};
+    local $include_stack{$stash_id} = 1;
+    my $tmpl = $mt->load_tmpl($app_file);
+    if ($tmpl) {
+        $tmpl->name($app_file);
+
+        my $tmpl_file = $app_file;
+        if ($tmpl_file) {
+            $tmpl_file = File::Basename::basename($tmpl_file);
+            $tmpl_file =~ s/\.tmpl$//;
+            $tmpl_file = '.' . $tmpl_file;
         }
-        my $ret = $builder->build($ctx, $tokens, $cond);
-        return defined($ret) ? $ret : $ctx->error("error in file $file: " . $builder->errstr);
-    } elsif (my $app_file = $arg->{name}) {
-        # app template include mode
-        my $mt = MT->instance;
-        local $mt->{component} = $arg->{component} if exists $arg->{component};
-        my $stash_id = 'template_file::' . $app_file;
-        return $ctx->error(MT->translate("Recursion attempt on file: [_1]", $app_file))
-            if $include_stack{$stash_id};
-        local $include_stack{$stash_id} = 1;
-        my $tmpl = $mt->load_tmpl($app_file);
-        if ($tmpl) {
-            $tmpl->name($app_file);
+        $mt->run_callbacks('template_param' . $tmpl_file, $mt, $tmpl->param, $tmpl);
 
-            my $tmpl_file = $app_file;
-            if ($tmpl_file) {
-                $tmpl_file = File::Basename::basename($tmpl_file);
-                $tmpl_file =~ s/\.tmpl$//;
-                $tmpl_file = '.' . $tmpl_file;
-            }
-            $mt->run_callbacks('template_param' . $tmpl_file, $mt, $tmpl->param, $tmpl);
+        # propagate our context
+        local $tmpl->{context} = $ctx;
+        my $out = $tmpl->output();
+        return $ctx->error($tmpl->errstr) unless defined $out;
 
-            # propagate our context
-            local $tmpl->{context} = $ctx;
-            my $out = $tmpl->output();
-            return $ctx->error($tmpl->errstr) unless defined $out;
-
-            $mt->run_callbacks('template_output' . $tmpl_file, $mt, \$out, $tmpl->param, $tmpl);
-            return $out;
-        } else {
-            return defined $arg->{default} ? $arg->{default} : '';
-        }
+        $mt->run_callbacks('template_output' . $tmpl_file, $mt, \$out, $tmpl->param, $tmpl);
+        return $out;
+    } else {
+        return defined $arg->{default} ? $arg->{default} : '';
     }
 }
 }
