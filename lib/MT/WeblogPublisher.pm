@@ -532,15 +532,130 @@ sub rebuild_entry {
     1;
 }
 
+### Recip hash
+### {ArchiveType - {Category-id} - {Date key} - {Start}
+###                                           - {End}
+###                                           - {File}
+###                              - {File}
+###              - {Author-id}   - {Date key} - {Start}
+###                                           - {End}
+###                                           - {File}
+###                              - {File}
+###              - {Date key}    - {Start}
+###                              - {End}
+###                              - {File}
+###
+sub rebuild_archives {
+    my $mt = shift;
+    my %param = @_;
+    my $blog = $param{Blog}
+      or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
+    return 1 if $blog->is_dynamic;
+
+    my $recip = $param{Recip}
+        or return $mt->error(
+            MT->translate( "Parameter '[_1]' is required", 'Recip' ) );
+
+    for my $at (keys %$recip){
+        my $archiver = $mt->archiver($at);
+        next unless $archiver;
+
+        if ($archiver->category_based()) {
+            require MT::Category;
+            for my $cat_id (keys %{$recip->{$at}}) {
+                my $cat = MT::Category->load($cat_id)
+                    or next;
+                if ($archiver->date_based()) {
+                    for my $key (keys %{$recip->{$at}->{$cat_id}}) {
+                        $mt->_rebuild_entry_archive_type(
+                            NoStatic    => 0,
+                            Blog        => $blog,
+                            Category    => $cat,
+                            ArchiveType => $at,
+                            Start       => $recip->{$at}->{$cat_id}->{$key}->{Start},
+                            End         => $recip->{$at}->{$cat_id}->{$key}->{End},
+                            File        => $recip->{$at}->{$cat_id}->{$key}->{File}
+                        ) or return;
+                    }
+                } else {
+                    $mt->_rebuild_entry_archive_type(
+                        NoStatic    => 0,
+                        Blog        => $blog,
+                        Category    => $cat,
+                        ArchiveType => $at,
+                        File        => $recip->{$at}->{$cat_id}->{File}
+                    ) or return;
+                }
+            }
+        } elsif ($archiver->author_based()) {
+            require MT::Author;
+            for my $auth_id (keys %{$recip->{$at}}) {
+                my $author = MT::Author->load($auth_id)
+                    or next;
+                if ($archiver->date_based()) {
+                    for my $key (keys %{$recip->{$at}->{$auth_id}}) {
+                        $mt->_rebuild_entry_archive_type(
+                            NoStatic    => 0,
+                            Blog        => $blog,
+                            Author      => $author,
+                            ArchiveType => $at,
+                            Start       => $recip->{$at}->{$auth_id}->{$key}->{Start},
+                            End         => $recip->{$at}->{$auth_id}->{$key}->{End},
+                            File        => $recip->{$at}->{$auth_id}->{$key}->{File}
+                        ) or return;
+                    }
+                } else {
+                    $mt->_rebuild_entry_archive_type(
+                        NoStatic    => 0,
+                        Blog        => $blog,
+                        Author      => $author,
+                        ArchiveType => $at,
+                        File        => $recip->{$at}->{$auth_id}->{File}
+                    ) or return;
+                }
+            }
+        } elsif ($archiver->date_based()) {
+            for my $key (keys %{$recip->{$at}}) {
+                $mt->_rebuild_entry_archive_type(
+                    NoStatic    => 0,
+                    Blog        => $blog,
+                    ArchiveType => $at,
+                    Start       => $recip->{$at}->{$key}->{Start},
+                    End         => $recip->{$at}->{$key}->{End},
+                    File        => $recip->{$at}->{$key}->{File}
+                ) or return;
+            }
+        } else {
+            require MT::Entry;
+            for my $entry_id (keys %{$recip->{$at}}) {
+                my $entry = MT::Entry->load($entry_id)
+                    or next;
+                $mt->_rebuild_entry_archive_type(
+                    NoStatic    => 0,
+                    Entry       => $entry,
+                    Blog        => $blog,
+                    ArchiveType => $at,
+                    File        => $recip->{$at}->{$entry_id}->{File}
+                ) or return;
+            }
+        }
+    }
+
+    1;
+}
+
 sub _rebuild_entry_archive_type {
     my $mt    = shift;
     my %param = @_;
+
     my $at    = $param{ArchiveType}
       or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
     return 1 if $at eq 'None';
     my $entry =
-      ( $param{ArchiveType} ne 'Category' && $param{ArchiveType} ne 'Author' )
+      ( $param{ArchiveType} ne 'Category' && $param{ArchiveType} ne 'Author' &&
+        !exists $param{Start} && !exists $param{End} )
       ? (
         $param{Entry}
           or return $mt->error(
@@ -596,8 +711,9 @@ sub _rebuild_entry_archive_type {
     my $done = MT->instance->request('__published')
       || MT->instance->request( '__published', {} );
     for my $map (@map) {
-        my $file =
-          $mt->archive_file_for( $entry, $blog, $at, $param{Category}, $map,
+        my $file = exists $param{File}
+            ? $param{File}
+            : $mt->archive_file_for( $entry, $blog, $at, $param{Category}, $map,
             undef, $param{Author} );
         if ( $file eq '' ) {
 
@@ -635,8 +751,13 @@ sub _rebuild_entry_archive_type {
       unless $arch_root;
 
     my ($start, $end);
-    if ($archiver->can('date_range')) {
-        ( $start, $end ) = $archiver->date_range( $entry->authored_on );
+    if (exists $param{Start} && exists $param{End}) {
+        $start = $param{Start};
+        $end   = $param{End};
+    } else {
+        if ($archiver->can('date_range')) {
+            ( $start, $end ) = $archiver->date_range( $entry->authored_on );
+        }
     }
 
     ## For each mapping, we need to rebuild the entries we loaded above in
@@ -1033,7 +1154,6 @@ sub rebuild_file {
             File         => $file,
             file         => $file
         );
-
     }
     $timer->mark("total:rebuild_file[template_id:" . $tmpl->id . "]")
         if $timer;
@@ -1534,7 +1654,6 @@ sub remove_entry_archive_file {
 ##
 sub archive_file_for {
     my $mt = shift;
-
     init_archive_types() unless %ArchiveTypes;
 
     my ( $entry, $blog, $at, $cat, $map, $timestamp, $author ) = @_;

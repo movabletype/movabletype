@@ -2300,11 +2300,19 @@ sub delete {
     my $blog_id = $q->param('blog_id');
     my $blog    = MT::Blog->load($blog_id);
 
-    for my $id ( $q->param('id') ) {
-        my $can_background =
-          ( $blog->count_static_templates('Individual') == 0
-              || MT::Util->launch_background_tasks() ) ? 1 : 0;
+    my $can_background =
+        ( $blog->count_static_templates('Individual') == 0
+            || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
+    my %rebuild_recip;
+    my $at = $blog->archive_type;
+    my @at;
+    if ( $at && $at ne 'None' ) {
+        my @at_orig = split( /,/, $at );
+        @at = grep { $_ ne 'Individual' && $_ ne 'Page' } @at_orig;
+    }
+
+    for my $id ( $q->param('id') ) {
         my $class = $app->model("entry");
         my $obj   = $class->load($id);
         return $app->call_return unless $obj;
@@ -2313,24 +2321,99 @@ sub delete {
           || return $app->error(
             $app->translate( "Permission denied: [_1]", $app->errstr() ) );
 
-        if ( $app->config('DeleteFilesAtRebuild') ) {
+        if (   $app->config('RebuildAtDelete')
+            || $app->config('DeleteFilesAtRebuild') )
+        {
+            # Remove Induvidual archive file.
+            if ( $app->config('DeleteFilesAtRebuild') ) {
+                $app->publisher->remove_entry_archive_file( Entry => $obj, );
+            }
 
-            # Remove related archive file if that include this entry only.
-            my $at = $blog->archive_type;
-            if ( $at && $at ne 'None' ) {
-                my @at = split( /,/, $at );
-                for my $target (@at) {
-                    my $archiver = $app->publisher->archiver($target);
-                    next unless $archiver;
+            for my $at (@at) {
+                my $archiver = $app->publisher->archiver($at);
+                next unless $archiver;
+
+                # Remove archive file if archive file has not entries.
+                my $deleted = 0;
+                if ( $app->config('DeleteFilesAtRebuild') ) {
                     my $count =
                         $archiver->can('archive_entries_count')
-                      ? $archiver->archive_entries_count( $blog, $target, $obj )
+                      ? $archiver->archive_entries_count( $blog, $at, $obj )
                       : 0;
-                    if ( $count == 1 || $target eq 'Individual' ) {
+                    if ( $count == 1 ) {
                         $app->publisher->remove_entry_archive_file(
                             Entry       => $obj,
-                            ArchiveType => $target
+                            ArchiveType => $at
                         );
+                        $deleted = 1;
+                    }
+                }
+
+                # Make rebuild recip
+                if ( $app->config('DeleteFilesAtRebuild') ) {
+                    next if $deleted;
+
+                    my ( $start, $end ) = $archiver->date_range( $obj->authored_on )
+                        if $archiver->date_based() && $archiver->can('date_range');
+
+                    if ( $archiver->category_based() ) {
+                        my $categories = $obj->categories();
+                        for my $cat (@$categories) {
+                            if ( $archiver->date_based() ) {
+                                $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                                  {'Start'} = $start;
+                                $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                                  {'End'} = $end;
+                                $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                                  {'File'} =
+                                  MT::Util::archive_file_for( $obj, $blog, $at,
+                                    $cat, undef, undef, undef );
+                            }
+                            else {
+                                $rebuild_recip{$at}{ $cat->id }{id} = $cat->id;
+                                $rebuild_recip{$at}{ $cat->id }{'File'} =
+                                  MT::Util::archive_file_for( $obj, $blog, $at,
+                                    $cat, undef, undef, undef );
+                            }
+                        }
+                    }
+                    elsif ( $archiver->author_based() ) {
+                        if ( $archiver->date_based() ) {
+                            $rebuild_recip{$at}{ $obj->author->id }{ $start . $end }
+                              {'Start'} = $start;
+                            $rebuild_recip{$at}{ $obj->author->id }{ $start . $end }
+                              {'End'} = $end;
+                            $rebuild_recip{$at}{ $obj->author->id }{ $start . $end }
+                              {'File'} =
+                              MT::Util::archive_file_for( $obj, $blog, $at, undef,
+                                undef, undef, $obj->author );
+                        }
+                        else {
+                            $rebuild_recip{$at}{ $obj->author->id }{id} =
+                              $obj->author->id;
+                            $rebuild_recip{$at}{ $obj->author->id }{'File'} =
+                              MT::Util::archive_file_for( $obj, $blog, $at, undef,
+                                undef, undef, $obj->author );
+                        }
+                    }
+                    elsif ( $archiver->date_based() ) {
+                        $rebuild_recip{$at}{ $start . $end }{'Start'} = $start;
+                        $rebuild_recip{$at}{ $start . $end }{'End'}   = $end;
+                        $rebuild_recip{$at}{ $start . $end }{'File'} =
+                          MT::Util::archive_file_for( $obj, $blog, $at, undef,
+                            undef, undef, undef );
+                    }
+                    if ( my $prev = $obj->previous(1) ) {
+                        $rebuild_recip{Individual}{ $prev->id }{id} = $prev->id;
+                        $rebuild_recip{Individual}{ $prev->id }{'File'} =
+                          MT::Util::archive_file_for( $prev, $blog, 'Individual',
+                            undef, undef, undef, undef );
+                    }
+                    if ( my $next = $obj->next(1) ) {
+                        $rebuild_recip{Individual}{ $next->id }{id} = $next->id;
+                        $rebuild_recip{Individual}{ $next->id }{'File'} =
+                          MT::Util::archive_file_for( $next, $blog, 'Individual',
+                            undef, undef, undef, undef );
                     }
                 }
             }
@@ -2338,38 +2421,12 @@ sub delete {
 
         # Remove object from database
         $obj->remove()
-          or return $app->errtrans(
-            'Removing [_1] failed: [_2]',
-            $app->translate('entry'),
-            $obj->errstr
-          );
+            or return $app->errtrans(
+                'Removing [_1] failed: [_2]',
+                $app->translate('entry'),
+                $obj->errstr
+            );
         $app->run_callbacks( 'cms_post_delete.entry', $app, $obj );
-
-        if ( $app->config('RebuildAtDelete') ) {
-            if ($can_background) {
-                my $res = MT::Util::start_background_task(
-                    sub {
-                        $app->rebuild_entry(
-                            Entry             => $obj,
-                            BuildDependencies => 1,
-                            BuildIndexes      => 1,
-                            BuildArchives     => 1,
-                        ) or return $app->publish_error();
-                        $app->run_callbacks( 'rebuild', $blog );
-                        1;
-                    }
-                );
-            }
-            else {
-                $app->rebuild_entry(
-                    Entry             => $obj,
-                    BuildDependencies => 1,
-                    BuildIndexes      => 1,
-                    BuildArchives     => 1,
-                ) or return $app->publish_error();
-                $app->run_callbacks( 'rebuild', $blog );
-            }
-        }
     }
 
     $app->add_return_arg( saved_deleted => 1 );
@@ -2378,6 +2435,31 @@ sub delete {
     }
 
     if ( $app->config('RebuildAtDelete') ) {
+        if ($can_background) {
+            my $res = MT::Util::start_background_task(
+                sub {
+                    my $res = $app->rebuild_archives(
+                        Blog             => $blog,
+                        Recip            => \%rebuild_recip,
+                    ) or return $app->publish_error();
+                    $app->rebuild_indexes( Blog => $blog )
+                        or return $app->publish_error();
+                    $app->run_callbacks( 'rebuild', $blog );
+                    1;
+                }
+            );
+        }
+        else {
+            $app->rebuild_archives(
+                Blog             => $blog,
+                Recip            => \%rebuild_recip,
+            ) or return $app->publish_error();
+            $app->rebuild_indexes( Blog => $blog )
+                or return $app->publish_error();
+
+            $app->run_callbacks( 'rebuild', $blog );
+        }
+
         $app->add_return_arg( no_rebuild => 1 );
         my %params = (
             is_full_screen  => 1,
