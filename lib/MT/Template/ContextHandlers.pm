@@ -2252,28 +2252,6 @@ sub _include_module {
         if $include_stack{$stash_id};
     local $include_stack{$stash_id} = 1;
 
-    my $blog_id_param;
-    if (exists $arg->{global}) {
-        if ($arg->{global}) {
-            $blog_id_param = 0;
-        }
-        else {
-            $blog_id_param = $blog_id;
-        }
-    }
-    else {
-        $blog_id_param = [ $blog_id, 0 ];
-    }
-    require MT::Template;
-    my ($tmpl) = MT::Template->load({ ($arg->{identifier} ? ( identifier => $tmpl_name) : ( name => $tmpl_name,
-                                      type => $type )),
-                                      blog_id => $blog_id_param }, {
-                                      sort      => 'blog_id',
-                                      direction => 'descend',
-                                  })
-        or return $ctx->error(MT->translate(
-            "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
-
     # If option provided, read from cache
     my $cache_key = $arg->{key};
     my $ttl       = $arg->{ttl} || 0;
@@ -2289,7 +2267,30 @@ sub _include_module {
     my $builder = $ctx->{__stash}{builder};
     my $req = MT::Request->instance;
     my $tokens = $req->stash($stash_id);
+    my $tmpl;
     unless ($tokens) {
+        my $blog_id_param;
+        if (exists $arg->{global}) {
+            if ($arg->{global}) {
+                $blog_id_param = 0;
+            }
+            else {
+                $blog_id_param = $blog_id;
+            }
+        }
+        else {
+            $blog_id_param = [ $blog_id, 0 ];
+        }
+        require MT::Template;
+        my @tmpl = MT::Template->load({ ($arg->{identifier} ? ( identifier => $tmpl_name) : ( name => $tmpl_name,
+                                        type => $type )),
+                                        blog_id => $blog_id_param }, {
+                                        sort      => 'blog_id',
+                                        direction => 'descend',
+                                    })
+            or return $ctx->error(MT->translate(
+                "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
+        $tmpl = $tmpl[0];
         my $cur_tmpl = $ctx->stash('template');
         return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
             if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
