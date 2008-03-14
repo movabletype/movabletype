@@ -1457,6 +1457,12 @@ sub rebuild_indexes {
       or return $mt->error( $mt->publisher->errstr );
 }
 
+sub rebuild_archives {
+    my $mt = shift;
+    $mt->publisher->rebuild_archives(@_)
+      or return $mt->error( $mt->publisher->errstr );
+}
+
 sub ping {
     my $mt    = shift;
     my %param = @_;
