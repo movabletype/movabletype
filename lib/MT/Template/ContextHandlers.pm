@@ -2271,28 +2271,19 @@ sub _include_module {
         ($tmpl, $tokens) = @$tmpl_data;
     }
     else {
-        my $blog_id_param;
-        if (exists $arg->{global}) {
-            if ($arg->{global}) {
-                $blog_id_param = 0;
-            }
-            else {
-                $blog_id_param = $blog_id;
-            }
-        }
-        else {
-            $blog_id_param = [ $blog_id, 0 ];
-        }
-        require MT::Template;
-        my @tmpl = MT::Template->load({ ($arg->{identifier} ? ( identifier => $tmpl_name) : ( name => $tmpl_name,
-                                        type => $type )),
-                                        blog_id => $blog_id_param }, {
-                                        sort      => 'blog_id',
-                                        direction => 'descend',
-                                    })
-            or return $ctx->error(MT->translate(
-                "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
-        $tmpl = $tmpl[0];
+        my %terms = $arg->{identifier} ? ( identifier => $tmpl_name )
+                  :                      ( name => $tmpl_name,
+                                           type => $type )
+                  ;
+        $terms{blog_id} = !exists $arg->{global} ? [ $blog_id, 0 ]
+                        : $arg->{global}         ? 0
+                        :                          $blog_id
+                        ;
+        my ($tmpl) = MT->model('template')->load(\%terms, {
+            sort      => 'blog_id',
+            direction => 'descend',
+        }) or return $ctx->error(MT->translate(
+            "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
 
         my $cur_tmpl = $ctx->stash('template');
         return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
