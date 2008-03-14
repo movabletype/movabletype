@@ -2266,9 +2266,11 @@ sub _include_module {
 
     my $builder = $ctx->{__stash}{builder};
     my $req = MT::Request->instance;
-    my $tokens = $req->stash($stash_id);
-    my $tmpl;
-    unless ($tokens) {
+    my ($tmpl, $tokens);
+    if (my $tmpl_data = $req->stash($stash_id)) {
+        ($tmpl, $tokens) = @$tmpl_data;
+    }
+    else {
         my $blog_id_param;
         if (exists $arg->{global}) {
             if ($arg->{global}) {
@@ -2291,16 +2293,23 @@ sub _include_module {
             or return $ctx->error(MT->translate(
                 "Can't find included template [_1] '[_2]'", MT->translate($name), $tmpl_name ));
         $tmpl = $tmpl[0];
+
         my $cur_tmpl = $ctx->stash('template');
         return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
             if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
+
+        # Compile the included template against the includ*ing* template's
+        # context.
         $tokens = $builder->compile($ctx, $tmpl->text);
         unless (defined $tokens) {
             $req->cache('build_template', $tmpl);
             return $ctx->error($builder->errstr);
         }
-        $req->stash($stash_id, $tokens);
+
+        $req->stash($stash_id, [ $tmpl, $tokens ]);
     }
+
+    # Build the included template against the includ*ing* template's context.
     my $ret = $builder->build($ctx, $tokens, $cond);
     if (!defined $ret) {
         $req->cache('build_template', $tmpl) if $tmpl;
