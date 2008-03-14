@@ -2252,19 +2252,7 @@ sub _include_module {
         if $include_stack{$stash_id};
     local $include_stack{$stash_id} = 1;
 
-    # If option provided, read from cache
-    my $cache_key = $arg->{key};
-    my $ttl       = $arg->{ttl} || 0;
-    if ($cache_key) {
-        require MT::Session;
-        my $terms = { id => $cache_key, kind => 'CO' };
-        my $cache = $ttl ? MT::Session::get_unexpired_value($ttl, $terms)
-                  :        MT::Session->load($terms)
-                  ;
-        return $cache->data() if $cache;
-    }
-
-    my $builder = $ctx->{__stash}{builder};
+    my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
     my $req = MT::Request->instance;
     my ($tmpl, $tokens);
     if (my $tmpl_data = $req->stash($stash_id)) {
@@ -2279,7 +2267,7 @@ sub _include_module {
                         : $arg->{global}         ? 0
                         :                          $blog_id
                         ;
-        my ($tmpl) = MT->model('template')->load(\%terms, {
+        ($tmpl) = MT->model('template')->load(\%terms, {
             sort      => 'blog_id',
             direction => 'descend',
         }) or return $ctx->error(MT->translate(
@@ -2289,6 +2277,35 @@ sub _include_module {
         return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
             if $cur_tmpl && $cur_tmpl->id && ($cur_tmpl->id == $tmpl->id);
 
+        $req->stash($stash_id, [ $tmpl, undef ]);
+    }
+
+    my $use_ssi = $blog && $blog->include_system
+        && ($arg->{ssi} || $tmpl->include_with_ssi) ? 1 : 0;
+
+    # If option provided, read from cache
+    my $cache_key = $arg->{key};
+    my $ttl       = $arg->{ttl} || 0;
+    if ($cache_key) {
+        require MT::Session;
+        my $terms = { id => $cache_key, kind => 'CO' };
+        my $cache = $ttl ? MT::Session::get_unexpired_value($ttl, $terms)
+                  :        MT::Session->load($terms)
+                  ;
+        if ($cache) {
+            return $cache->data() if !$use_ssi;
+
+            my $include_name = $cache_key || $tmpl_name;
+            # The template may still be cached from before we were using SSI
+            # for this template, so check that it's also on disk.
+            if ($blog->file_mgr->exists($blog->include_path($include_name))) {
+                return $blog->include_statement($include_name);
+            }
+        }
+    }
+
+    my $builder = $ctx->{__stash}{builder};
+    if (!$tokens) {
         # Compile the included template against the includ*ing* template's
         # context.
         $tokens = $builder->compile($ctx, $tmpl->text);
@@ -2321,6 +2338,23 @@ sub _include_module {
             data  => $ret,
         });
         $cache->save();
+    }
+
+    if ($use_ssi) {
+        my $include_name = $cache_key || $tmpl_name;
+        my $fmgr = $blog->file_mgr;
+        my ($path, $file_path) = $blog->include_path($include_name);
+        if (!$fmgr->exists($path)) {
+            if (!$fmgr->mkpath($path)) {
+                return $ctx->error(MT->translate("Error making path '[_1]': [_2]",
+                    $path, $fmgr->errstr));
+            }
+        }
+        $fmgr->put_data($ret, $file_path)
+            or return $ctx->error(MT->translate("Writing to '[_1]' failed: [_2]",
+                $file_path, $fmgr->errstr));
+
+        return $blog->include_statement($include_name);
     }
 
     return $ret;

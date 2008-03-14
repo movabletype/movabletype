@@ -55,7 +55,11 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 __PACKAGE__->install_meta({
-    columns => ['last_rebuild_time', 'page_layout'],
+    columns => [
+        'last_rebuild_time',
+        'page_layout',
+        'include_with_ssi',
+    ],
 });
 __PACKAGE__->add_trigger('pre_remove' => \&pre_remove_children);
 

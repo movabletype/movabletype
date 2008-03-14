@@ -481,6 +481,7 @@ BEGIN {
             'AutoSaveFrequency'         => { default => 5 },
             'FuturePostFrequency'       => { default => 1 },
             'AssetCacheDir'             => { default => 'assets_c', },
+            'IncludesDir'               => { default => 'includes_c', },
             'MemcachedServers'          => { type    => 'ARRAY', },
             'MemcachedNamespace'        => undef,
             'MemcachedDriver'           => { default => 'Cache::Memcached' },

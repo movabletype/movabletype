@@ -113,6 +113,7 @@ __PACKAGE__->install_meta({
         'nwc_replace_field',
         'template_set',
         'page_layout',
+        'include_system',
     ],
 });
 
@@ -371,6 +372,32 @@ sub publish_authd_untrusted_commenters {
 
 sub publish_unauthd_commenters {
     $_[0]->moderate_unreg_comments == MODERATE_NONE;
+}
+
+sub include_path {
+    my $blog = shift;
+    my ($name) = @_;
+
+    my $filename = join q{.}, MT::Util::dirify($name), $blog->file_extension;
+    my $path = File::Spec->catdir($blog->site_path, MT->config('IncludesDir'),
+        substr($filename, 0, 2));
+    my $file_path = File::Spec->catfile($path, $filename);
+    return wantarray ? ($path, $file_path) : $file_path;
+}
+
+sub include_statement {
+    my $blog = shift;
+    my ($name) = @_;
+
+    my $system = $blog->include_system || '';
+    my $include = $blog->include_path($name);
+
+    my $statement = $system eq 'shtml' ? '<!--#include file="%s" -->'
+                  : $system eq 'php'   ? q{<?php include("%s") ?>}
+                  : $system eq 'jsp'   ? q{<%@ include file="%s" %>}
+                  :                      return
+                  ;
+    return sprintf $statement, MT::Util::encode_php($include, q{qq});
 }
 
 sub file_mgr {
