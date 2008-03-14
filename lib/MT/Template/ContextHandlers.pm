@@ -2214,18 +2214,6 @@ sub _hdlr_include_block {
 sub _hdlr_include {
     my ($ctx, $arg, $cond) = @_;
 
-    # If option provided, read from cache
-    my $cache_key = $arg->{key};
-    my $ttl       = $arg->{ttl} || 0;
-    if ($cache_key) {
-        require MT::Session;
-        my $terms = { id => $cache_key, kind => 'CO' };
-        my $cache = $ttl ? MT::Session::get_unexpired_value($ttl, $terms)
-                  :        MT::Session->load($terms)
-                  ;
-        return $cache->data() if $cache;
-    }
-
     # Pass through include arguments as variables to included template
     my $vars = $ctx->{__stash}{vars} ||= {};
     my @names = keys %$arg;
@@ -2243,22 +2231,6 @@ sub _hdlr_include {
             :                      $ctx->error(MT->translate(
                                        'No template to include specified'))
             ;
-
-    if ($cache_key) {
-        my $cache = MT::Session->load({
-            id   => $cache_key,
-            kind => 'CO',
-        });
-        $cache->remove() if $cache;
-        $cache = MT::Session->new;
-        $cache->set_values({
-            id    => $cache_key,
-            kind  => 'CO',
-            start => time,
-            data  => $out,
-        });
-        $cache->save();
-    }
 
     return $out;
 }
@@ -2279,6 +2251,19 @@ sub _include_module {
     return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
         if $include_stack{$stash_id};
     local $include_stack{$stash_id} = 1;
+
+    # If option provided, read from cache
+    my $cache_key = $arg->{key};
+    my $ttl       = $arg->{ttl} || 0;
+    if ($cache_key) {
+        require MT::Session;
+        my $terms = { id => $cache_key, kind => 'CO' };
+        my $cache = $ttl ? MT::Session::get_unexpired_value($ttl, $terms)
+                  :        MT::Session->load($terms)
+                  ;
+        return $cache->data() if $cache;
+    }
+
     my $builder = $ctx->{__stash}{builder};
     my $req = MT::Request->instance;
     my $tokens = $req->stash($stash_id);
@@ -2317,12 +2302,28 @@ sub _include_module {
         $req->stash($stash_id, $tokens);
     }
     my $ret = $builder->build($ctx, $tokens, $cond);
-    if (defined $ret) {
-        return $ret;
-    } else {
+    if (!defined $ret) {
         $req->cache('build_template', $tmpl) if $tmpl;
         return $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
     }
+
+    if ($cache_key) {
+        my $cache = MT::Session->load({
+            id   => $cache_key,
+            kind => 'CO',
+        });
+        $cache->remove() if $cache;
+        $cache = MT::Session->new;
+        $cache->set_values({
+            id    => $cache_key,
+            kind  => 'CO',
+            start => time,
+            data  => $ret,
+        });
+        $cache->save();
+    }
+
+    return $ret;
 }
 
 sub _include_file {
