@@ -378,9 +378,10 @@ sub include_path {
     my $blog = shift;
     my ($name) = @_;
 
-    my $filename = join q{.}, MT::Util::dirify($name), $blog->file_extension;
+    my $filestem = MT::Util::dirify($name);
+    my $filename = join q{.}, $filestem, $blog->file_extension;
     my $path = File::Spec->catdir($blog->site_path, MT->config('IncludesDir'),
-        substr($filename, 0, 2));
+        substr($filestem, 0, 3));
     my $file_path = File::Spec->catfile($path, $filename);
     return wantarray ? ($path, $file_path) : $file_path;
 }
