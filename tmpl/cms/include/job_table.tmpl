@@ -1,0 +1,67 @@
+<mt:setvarblock name="action_buttons">
+<mt:if name="is_power_edit">
+    <a href="javascript:void(0)" mt:command="submit" mt:mode="save_jobs" accesskey="s"
+        title="<__trans phrase="Save these job(s)">"
+        ><__trans phrase="Save"></a>
+<mt:else>
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
+        accesskey="x"
+        title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+        ><__trans phrase="Delete"></a>
+</mt:if>
+</mt:setvarblock>
+<mt:if name="is_power_edit">
+    <$mt:setvar name="hide_pager" value="1"$>
+</mt:if>
+<mtapp:listing hide_pager="$hide_pager">
+    <mt:if __first__>
+        <thead>
+            <tr>
+        <mt:unless name="is_power_edit">
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+        </mt:unless>
+                <th class="job-name"><__trans phrase="Job Name"></th>
+                <th class="job-priority"><__trans phrase="Priority"></th>
+                <th class="date"><__trans phrase="Inserted"></th>
+                <th class="job-describe"><__trans phrase="Describe"></th>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> job-<$mt:var name="jobid"$>">
+        <mt:unless name="is_power_edit">
+                <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="jobid">" /></td>
+        </mt:unless>
+                <td class="job-name"><$mt:var name="name"$></td>
+                <td class="job-priority">
+        <mt:unless name="is_power_edit">
+                <$mt:var name="priority"$>
+        <mt:else>
+                <input name="priority_<$mt:var name="jobid"$>" value="<$mt:var name="priority" escape="html"$>" />
+        </mt:unless>
+                </td>
+                <td class="date"><span title="<mt:var name="insert_time_formatted">"><mt:if name="insert_time_relative"><mt:if name="dates_relative"><$mt:var name="insert_time_relative"$><mt:else><$mt:var name="insert_time_formatted"$></mt:if><mt:else><$mt:var name="insert_time_formatted"$></mt:if></span></td>
+                <td class="job-describe"><$mt:var name="describe"$></td>
+            </tr>
+        <mt:unless name="is_power_edit">
+            <mt:if name="error_loop">
+            <tr class="job-error <mt:if name="__odd__">odd<mt:else>even</mt:if>" id="job-detail-<$mt:var name="jobid"$>">
+                <td>&nbsp;</td>
+                <td colspan="4">
+                <ul>
+                <mt:loop name="error_loop">
+                    <li>
+                    <div class="detail-time"><$mt:var name="error_time_formatted" escape="html"$></div>
+                    <div class="detail-message"><$mt:var name="error_message" escape="html"$></div>
+                    </li>
+                </mt:loop>
+                </ul>
+                </td>
+            </tr>
+            </mt:if>
+        </mt:unless>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+</mtapp:listing>
