@@ -392,9 +392,10 @@ sub include_statement {
     my $system = $blog->include_system || '';
     my $include = $blog->include_path($name);
 
-    my $statement = $system eq 'shtml' ? '<!--#include file="%s" -->'
-                  : $system eq 'php'   ? q{<?php include("%s") ?>}
+    my $statement = $system eq 'php'   ? q{<?php include("%s") ?>}
                   : $system eq 'jsp'   ? q{<%@ include file="%s" %>}
+                  : $system eq 'shtml' ? '<!--#include file="%s" -->'
+                  : $system eq 'asp'   ? '<!--#include file="%s" -->'
                   :                      return
                   ;
     return sprintf $statement, MT::Util::encode_php($include, q{qq});
