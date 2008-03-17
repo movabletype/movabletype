@@ -94,6 +94,8 @@ sub core_tags {
             'AuthorHasEntry?' => \&_hdlr_author_has_entry,
             'AuthorHasPage?' => \&_hdlr_author_has_page,
             Authors => \&_hdlr_authors,
+            AuthorNext => \&_hdlr_author_next_prev,
+            AuthorPrevious => \&_hdlr_author_next_prev,
 
             Blogs => \&_hdlr_blogs,
             'BlogIfCCLicense?' => \&_hdlr_blog_if_cc_license,
@@ -286,8 +288,6 @@ sub core_tags {
             AuthorAuthIconURL => \&_hdlr_author_auth_icon_url,
             AuthorUserpic => \&_hdlr_author_userpic,
             AuthorUserpicURL => \&_hdlr_author_userpic_url,
-            AuthorNext => \&_hdlr_author_prev_next,
-            AuthorPrevious => \&_hdlr_author_prev_next,
             AuthorBasename => \&_hdlr_author_basename,
 
             BlogID => \&_hdlr_blog_id,
