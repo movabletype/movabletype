@@ -1564,16 +1564,32 @@ sub make_blog_list {
     my $app = shift;
     my ($blogs) = @_;
 
-    my $tbp_class     = $app->model('ping');
-    my $entry_class   = $app->model('entry');
-    my $comment_class = $app->model('comment');
-    my $author        = $app->user;
+    my $author = $app->user;
     my $data;
-    my $i;
-    my @blog_ids;
-    push @blog_ids, $_->id for @$blogs;
-    my ( $entry_count, $ping_count, $comment_count );
     my $can_edit_authors = 1 if $author->is_superuser;
+    my @blog_ids = map { $_->id } @$blogs; 
+    my %counts;
+    my $e_iter = $app->model('entry')->count_group_by(
+        { blog_id => \@blog_ids },
+        { group => [ 'blog_id' ] }
+    );
+    while ( my ($e_count, $e_blog_id) = $e_iter->() ) {
+        $counts{$e_blog_id}{'entry'} = $e_count;
+    }
+    my $c_iter = $app->model('comment')->count_group_by(
+        { blog_id => \@blog_ids },
+        { group => [ 'blog_id' ] }
+    );
+    while ( my ($c_count, $c_blog_id) = $c_iter->() ) {
+        $counts{$c_blog_id}{'comment'} = $c_count;
+    }
+    my $p_iter = $app->model('tbping')->count_group_by(
+        { blog_id => \@blog_ids },
+        { group => [ 'blog_id' ] }
+    );
+    while ( my ($p_count, $p_blog_id) = $p_iter->() ) {
+        $counts{$p_blog_id}{'ping'} = $p_count;
+    }
 
     for my $blog (@$blogs) {
         my $blog_id = $blog->id;
@@ -1584,44 +1600,9 @@ sub make_blog_list {
             description => $blog->description,
             site_url    => $blog->site_url
         };
-
-        # we should use count by group here...
-        $row->{num_entries} =
-          ( $entry_count ? $entry_count->{$blog_id} : $entry_count->{$blog_id} =
-              MT::Entry->count( { blog_id => $blog_id } ) )
-          || 0;
-        $row->{num_comments} = (
-              $comment_count
-            ? $comment_count->{$blog_id}
-            : $comment_count->{$blog_id} = MT::Comment->count(
-                { blog_id => $blog_id, junk_status => [ 0, 1 ] }
-            )
-          )
-          || 0;
-        $row->{num_pings} = (
-            $ping_count ? $ping_count->{$blog_id} : $ping_count->{$blog_id} =
-              MT::TBPing->count(
-                { blog_id => $blog_id, junk_status => [ 0, 1 ] }
-              )
-        ) || 0;
-        $row->{num_authors} = 0;
-
-        # FIXME: this isn't efficient
-        my $iter = MT::Permission->load_iter(
-            {
-                blog_id => [ 0, $blog_id ],
-
-                #    role_mask => [ 2, undef ]
-                #}, {
-                #    range_incl => { 'role_mask' => 1 }
-            }
-        );
-        my %a;
-        while ( my $p = $iter->() ) {
-            next if exists $a{ $p->author_id };
-            $a{ $p->author_id } = 1;
-            $row->{num_authors}++ if $p->can_create_post;
-        }
+        $row->{num_entries}  = $counts{$blog_id}{'entry'};
+        $row->{num_comments} = $counts{$blog_id}{'comment'};
+        $row->{num_pings}    = $counts{$blog_id}{'ping'};
         $row->{can_create_post}  = $perms->can_create_post;
         $row->{can_edit_entries} = $perms->can_create_post
           || $perms->can_edit_all_posts

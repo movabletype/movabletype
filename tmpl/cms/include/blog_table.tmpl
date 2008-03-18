@@ -16,7 +16,6 @@
             <th id="bt-entries"><__trans phrase="Entries"></th>
             <th id="bt-comments"><__trans phrase="Comments"></th>
             <th id="bt-trackbacks"><__trans phrase="TrackBacks"></th>
-            <th id="bt-authors"><__trans phrase="Users"></th>
             <th id="bt-settings"><__trans phrase="Settings"></th>
         </tr>
     </thead>
@@ -28,7 +27,6 @@
             <td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entries&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
             <td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="id">"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
             <td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
-            <td align="right"><mt:var name="num_authors"></td>
             <td><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
         </tr>
     <mt:if name="__last__">
