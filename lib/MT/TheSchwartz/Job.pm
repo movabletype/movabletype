@@ -44,8 +44,4 @@ sub class_label {
     MT->translate("Job");
 }
 
-sub class_label_plural {
-    MT->translate("Jobs");
-}
-
 1;

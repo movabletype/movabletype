@@ -73,7 +73,6 @@ sub core_methods {
         'list_tag'         => "${pkg}Tag::list",
         'list_association' => "${pkg}User::list_association",
         'list_role'        => "${pkg}User::list_role",
-        'list_job'         => "${pkg}Job::list",
 
         'asset_insert'        => "${pkg}Asset::insert",
         'asset_userpic'       => "${pkg}User::asset_userpic",
@@ -101,7 +100,6 @@ sub core_methods {
         'save_pages'   => "${pkg}Page::save",
         'save_entry'   => "${pkg}Entry::save",
         'save_role'    => "${pkg}User::save_role",
-        'save_jobs'     => "${pkg}Job::save_jobs",
 
         ## Delete
         'delete_entry' => "${pkg}Entry::delete",
@@ -644,16 +642,6 @@ sub core_list_actions {
                          : $tmpl_type eq 'index_templates' ? 1
                          :                                   0
                          ;
-                },
-            },
-        },
-        'ts_job' => {
-            'change_priority' => {
-                label => "Change Priority",
-                order => 100,
-                code  => "${pkg}Job::change_priority",
-                condition => sub {
-                    $app->user->is_superuser();
                 },
             },
         },
@@ -1459,12 +1447,6 @@ sub core_menus {
             permission => "administer_blog",
             view       => "system",
         },
-        'tools:job' => {
-            label      => "Job Queue",
-            order      => 700,
-            mode       => 'list_job',
-            permission => 'administer',
-        },
 
         # System menu which is actually separate
         # in the CMS navigation
@@ -1513,12 +1495,6 @@ sub core_menus {
             label             => "Tools",
             mode              => 'tools',
             order             => 600,
-            system_permission => 'administer',
-        },
-        'system:job' => {
-            label             => "Job Queue",
-            mode              => 'list_job',
-            order             => 700,
             system_permission => 'administer',
         },
     };
@@ -1650,9 +1626,6 @@ sub init_core_callbacks {
             $pkg . 'post_save.asset'   => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset' => "${pfx}Asset::post_delete",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
-
-            # ts_job callbacks
-            $pkg . 'post_delete.ts_job' => "${pfx}Job::post_delete",
         }
     );
 }

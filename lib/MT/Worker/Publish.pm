@@ -117,11 +117,4 @@ sub grab_for { 60 }
 sub max_retries { 0 }
 sub retry_delay { 60 }
 
-sub describe_job {
-    my $class = shift;
-    my ( $job ) = @_;
-    my $fi = MT::FileInfo->load( $job->uniqkey ) or return "";
-    $fi->url;
-}
-
 1;

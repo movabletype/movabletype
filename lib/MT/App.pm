@@ -2657,8 +2657,7 @@ sub load_list_actions {
         $param->{more_list_actions} = \@plugin_actions;
         $param->{list_actions}      = \@core_actions;
         $param->{has_list_actions} =
-          ( @plugin_actions || @core_actions ) ? 1 : 0
-          if !defined $param->{has_list_actions};
+          ( @plugin_actions || @core_actions ) ? 1 : 0;
     }
     my $filters = $app->list_filters( $type, @p );
     $param->{list_filters} = $filters if $filters;
