@@ -1735,6 +1735,29 @@ sub cfg_blog {
     $_[0]->forward( "view", { output => 'cfg_prefs.tmpl' } );
 }
 
+sub _switch_publish_options {
+    my ( $blog, $current, $new ) = @_;
+    require MT::Template;
+    require MT::TemplateMap;
+    my @tmpl = MT::Template->load( { blog_id => $blog->id } );
+    for my $tmpl (@tmpl) {
+        next
+          if !( $tmpl->type =~ m/^(individual|page|category|archive|index)$/ );
+        if ( $tmpl->build_type == $current ) {
+            $tmpl->build_type($new);
+            $tmpl->save;
+        }
+        my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl->id } );
+        foreach my $tmpl_map (@tmpl_maps) {
+            if ( $tmpl_map->build_type == $current ) {
+                $tmpl_map->build_type($new);
+                $tmpl_map->save;
+            }
+        }
+    }
+    1;
+}
+
 sub cfg_archives_save {
     my $app = shift;
     my ($blog) = @_;
@@ -1746,6 +1769,22 @@ sub cfg_archives_save {
     $blog->save
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );
+
+    require MT::PublishOption;
+    if ($pq) {
+        _switch_publish_options(
+            $blog,
+            MT::PublishOption::ONDEMAND(),
+            MT::PublishOption::ASYNC()
+        );
+    }
+    else {
+        _switch_publish_options(
+            $blog,
+            MT::PublishOption::ASYNC(),
+            MT::PublishOption::ONDEMAND()
+        );
+    }
 }
 
 sub RegistrationAffectsArchives {
