@@ -2,11 +2,17 @@
 
 use strict;
 use lib 'extlib', 'lib';
+
 use Data::Dumper;
 use Test::More tests => 11;
+
+use MT;
 use MT::Object;
 
-package MT::Asset;
+my $mt = MT->instance;  # plugins are go!
+
+
+package MT::Awesome;
 
 our @ISA = qw( MT::Object );
 
@@ -23,9 +29,9 @@ __PACKAGE__->install_meta({
     columns => [ 'mime_type' ]
 });
 
-package MT::Asset::Image;
+package MT::Awesome::Image;
 
-our @ISA = qw( MT::Asset );
+our @ISA = qw( MT::Awesome );
 
 __PACKAGE__->install_properties({
     class_type => 'image',
@@ -36,8 +42,8 @@ __PACKAGE__->install_meta({
 
 package main;
 
-my $file = new MT::Asset;
-my $image = new MT::Asset::Image;
+my $file = new MT::Awesome;
+my $image = new MT::Awesome::Image;
 
 ok($file->has_column('meta'));
 ok($file->meta('mime_type', 'archive/zip'));
