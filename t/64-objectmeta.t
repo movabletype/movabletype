@@ -4,7 +4,7 @@ use strict;
 use lib 'extlib', 'lib';
 
 use Data::Dumper;
-use Test::More tests => 11;
+use Test::More tests => 13;
 
 use MT;
 use MT::Object;
@@ -46,12 +46,14 @@ my $file = new MT::Awesome;
 my $image = new MT::Awesome::Image;
 
 ok($file->has_column('meta'), 'having meta auto-adds meta column');
+ok(!defined $file->meta('mime_type'), 'unset metadata field is undefined');
 ok($file->meta('mime_type', 'archive/zip'), 'metadata field could be set');
 is($file->meta('mime_type'), 'archive/zip', 'new metadata value could be retrieved');
 ok($file->{changed_cols}{meta}, 'setting metadata field marked meta column as changed');
 is($file->mime_type, 'archive/zip', 'auto-installed metadata field method retrieved new value');
 ok(!$file->has_meta('width'), 'metadata field on subclass did not install on superclass');
 
+ok(!defined $image->width, 'auto-installed metadata field method returned undef for unset field');
 ok($image->width(300), 'metadata field on subclass could be set with auto-installed method');
 is($image->width, 300, 'auto-installed metadata field method retrieved new value for subclass');
 ok($image->{changed_cols}{meta}, 'setting metadata field on subclass with auto-installed method marked meta column as changed');
