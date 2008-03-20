@@ -45,14 +45,16 @@ package main;
 my $file = new MT::Awesome;
 my $image = new MT::Awesome::Image;
 
-ok($file->has_column('meta'));
-ok($file->meta('mime_type', 'archive/zip'));
-ok($file->meta('mime_type') eq 'archive/zip');
-ok($file->{changed_cols}{meta});
-ok($file->mime_type eq 'archive/zip');
-ok(!$file->has_meta('width'));
-ok($image->width(300));
-ok($image->width == 300);
-ok($image->{changed_cols}{meta});
-ok($image->has_meta('width'));
-ok($image->has_meta('mime_type'));
+ok($file->has_column('meta'), 'having meta auto-adds meta column');
+ok($file->meta('mime_type', 'archive/zip'), 'metadata field could be set');
+is($file->meta('mime_type'), 'archive/zip', 'new metadata value could be retrieved');
+ok($file->{changed_cols}{meta}, 'setting metadata field marked meta column as changed');
+is($file->mime_type, 'archive/zip', 'auto-installed metadata field method retrieved new value');
+ok(!$file->has_meta('width'), 'metadata field on subclass did not install on superclass');
+
+ok($image->width(300), 'metadata field on subclass could be set with auto-installed method');
+is($image->width, 300, 'auto-installed metadata field method retrieved new value for subclass');
+ok($image->{changed_cols}{meta}, 'setting metadata field on subclass with auto-installed method marked meta column as changed');
+ok($image->has_meta('width'), 'subclass has metadata field that was declared for subclass');
+ok($image->has_meta('mime_type'), 'subclass has metadata field that was declared for superclass');
+
