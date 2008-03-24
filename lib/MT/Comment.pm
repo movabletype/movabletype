@@ -8,6 +8,7 @@ package MT::Comment;
 
 use strict;
 use base qw( MT::Object MT::Scorable );
+use MT::Util qw( weaken );
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -35,6 +36,10 @@ __PACKAGE__->install_properties({
         commenter_id => 1,
         parent_id => 1,
         last_moved_on => 1, # used for junk expiration
+        # For URL lookups to aid spam filtering
+        blog_url => {
+            columns => [ 'blog_id', 'visible', 'url' ],
+        },
         blog_stat => {
             columns => [ 'blog_id', 'junk_status', 'created_on' ],
         },
@@ -125,18 +130,14 @@ sub _nextprev {
     my $next = $direction eq 'next';
 
     my $label = '__' . $direction;
-    if ($obj->{$label}) {
-        my $o = $obj->load($obj->{$label});
-        return $o if $o;
-        delete $obj->{label}; # FAIL
-    }
+    return $obj->{$label} if $obj->{$label};
 
     my $o = $obj->nextprev(
         direction => $direction,
         terms     => { blog_id => $obj->blog_id, %$terms },
         by        => 'created_on',
     );
-    $o->{label} = $o->id if $o;
+    weaken($o->{$label} = $o) if $o;
     return $o;
 }
 

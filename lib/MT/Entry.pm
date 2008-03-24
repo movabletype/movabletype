@@ -19,7 +19,7 @@ use MT::Placement;
 use MT::Comment;
 use MT::TBPing;
 use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
-                 extract_domains );
+                 extract_domains weaken );
 
 sub CATEGORY_CACHE_TIME () { 604800 } ## 7 * 24 * 60 * 60 == 1 week
 
@@ -54,16 +54,35 @@ __PACKAGE__->install_properties({
         created_on => 1,
         modified_on => 1,
         authored_on => 1,
-        week_number => 1,
+        # For lookups 
         basename => 1,
+        # Page listings are published in order by title
+        title => 1,
+        blog_author => {
+            columns => [ 'blog_id', 'class', 'author_id', 'authored_on' ],
+        },
+        class_author => {
+            columns => [ 'class', 'author_id', 'authored_on' ],
+        },
+        # For optimizing weekly archives, selected by blog, class,
+        # status.
+        blog_week => {
+            columns => [ 'blog_id', 'class', 'status', 'week_number' ],
+        },
+        # For system-overview listings where we list all entries of
+        # a particular class by authored on date
         class_authored => {
             columns => [ 'class', 'authored_on' ],
         },
+        # For most blog-level listings, where we list all entries
+        # in a blog with a particular class by authored on date.
         blog_authored => {
-            columns => [ 'blog_id', 'authored_on' ],
+            columns => ['blog_id', 'class', 'authored_on'],
         },
-        blog_class => {
-            columns => [ 'blog_id', 'class', 'status', 'authored_on' ],
+        # For most publishing listings, where we list entries in a blog
+        # with a particular class, publish status (2) and authored on date
+        blog_stat_authored => {
+            columns => ['blog_id', 'class', 'status', 'authored_on'],
         },
     },
     child_of => 'MT::Blog',
@@ -179,11 +198,7 @@ sub _nextprev {
     my $label = '__' . $direction;
     $label .= ':author='. $terms->{author_id} if exists $terms->{author_id};
     $label .= ':category='. $terms->{category_id} if exists $terms->{category_id};
-    if ($obj->{$label}) {
-        my $o = $obj->load($obj->{$label});
-        return $o if $o;
-        delete $obj->{label}; # FAIL
-    }
+    return $obj->{$label} if $obj->{$label};
 
     my $args = {};
     if (my $cat_id = delete $terms->{category_id}) {
@@ -199,7 +214,7 @@ sub _nextprev {
         args      => $args,
         by        => 'authored_on',
     );
-    $o->{label} = $o->id if $o;
+    weaken($o->{$label} = $o) if $o;
     return $o;
 }
 

@@ -20,10 +20,12 @@ __PACKAGE__->install_properties({
         'tag_id' => 'integer not null',
     },
     indexes => {
-        blog_id => 1,
         object_id => 1,
         tag_id => 1,
         object_datasource => 1,
+        blog_ds => {
+            columns => ['blog_id', 'object_datasouce'],
+        },
     },
     child_of => 'MT::Blog',
     datasource => 'objecttag',

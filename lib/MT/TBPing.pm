@@ -33,6 +33,10 @@ __PACKAGE__->install_properties({
         tb_id => 1,
         ip => 1,
         last_moved_on => 1, # used for junk expiration
+        # For URL lookups to aid spam filtering
+        blog_url => {
+            columns => [ 'blog_id', 'visible', 'source_url' ],
+        },
         blog_stat => {
             columns => ['blog_id', 'junk_status', 'created_on'],
         },

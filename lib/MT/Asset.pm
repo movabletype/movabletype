@@ -24,12 +24,14 @@ __PACKAGE__->install_properties({
         'parent' => 'integer',
     },
     indexes => {
-        blog_id => 1,
         label => 1,
         file_ext => 1,
         parent => 1,
         created_by => 1,
         created_on => 1,
+        blog_class_date => {
+            columns => ['blog_id','class','created_on'],
+        },
     },
     class_type => 'file',
     audit => 1,
