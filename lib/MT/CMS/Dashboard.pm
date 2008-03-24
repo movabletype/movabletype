@@ -102,7 +102,7 @@ sub this_is_you_widget {
     if ( $param->{publish_count} ) {
         require MT::Comment;
         $param->{comment_count} = MT::Comment->count(
-            { junk_status => [ 0, 1 ], },
+            { visible => 1, },
             {
                 join => MT::Entry->join_on(
                     undef,
@@ -358,6 +358,14 @@ sub generate_dashboard_stats_entry_tab {
             "extract(day from authored_on)"
         ],
     };
+
+    require MT::Util;
+    my @ts = MT::Util::offset_time_list(time - (121 * 24 * 60 * 60), $blog_id);
+    my $earliest = sprintf('%04d%02d%02d%02d%02d%02d',
+        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+    $terms->{authored_on} = [ $earliest, undef ];
+    $args->{range_incl}{authored_on} = 1;
+
     $terms->{blog_id} = $blog_id if $blog_id;
     if ( !$user->is_superuser && !$blog_id ) {
         $args->{join} = MT::Permission->join_on(
@@ -410,7 +418,7 @@ sub mt_blog_stats_widget_comment_tab {
         my @c = MT::Comment->load(
             {
                 ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                junk_status => [ 0, 1 ],
+                visible => 1,
             },
             $args
         );
@@ -440,6 +448,14 @@ sub generate_dashboard_stats_comment_tab {
             "extract(day from created_on)"
         ],
     };
+
+    require MT::Util;
+    my @ts = MT::Util::offset_time_list(time - (121 * 24 * 60 * 60), $blog_id);
+    my $earliest = sprintf('%04d%02d%02d%02d%02d%02d',
+        $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+    $terms->{created_on} = [ $earliest, undef ];
+    $args->{range_incl}{created_on} = 1;
+
     if ( !$user->is_superuser && !$blog_id ) {
         $args->{join} = MT::Permission->join_on(
             undef,
