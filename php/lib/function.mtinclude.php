@@ -27,6 +27,40 @@ function smarty_function_mtinclude($args, &$ctx) {
     $blog_id = $args['blog_id'];
     $blog_id or $blog_id = $ctx->stash('blog_id');
     $cache_id = '';
+
+    # Try to read from cache
+    global $mt;
+
+    $cache_enable = false;
+    $cacje_key = '';
+    $cache_ttl = 0;
+    $blog = $ctx->mt->db->fetch_blog($blog_id);
+
+    if ((isset($args['module']) || isset($args['widget']) || isset($args['identifier']))
+        && $blog['blog_include_cache'] == 1
+        && ((isset($args['cache']) && $args['cache'] == '1') || isset($args['key']) || isset($args['ttl'])) )
+    {
+        $tmpl_name = $args['module'];
+        $tmpl_name or $tmpl_name = $args['widget'];
+        $tmpl_name or $tmpl_name = $args['identifier'];
+        $type = $args['Widget'] ? 'widget' : 'custom';
+        if ($type == 'custom' && preg_match('/^Widget:/', $tmpl_name))
+            $type = 'widget';
+
+
+        $cache_enable = true;
+        $cache_key = isset($args['key'])
+            ? $args['key']
+            : 'blog::' . $blog_id . '::template_' . $type  . '::' . $tmpl_name;
+        $cache_ttl = isset($args['ttl']) ? $args['ttl'] : 60 * 60; # default 60 min.
+
+
+        $cache_driver = $mt->cache_driver($cache_ttl);
+        $cached_val = $cache_driver->get($cache_key, $cache_ttl);
+        if (!empty($cached_val))
+            return $cached_val;
+    }
+
     if (isset($args['module']) && ($args['module'])) {
         $module = $args['module'];
         if (preg_match('/^Widget:/', $module)) {
@@ -147,6 +181,11 @@ function smarty_function_mtinclude($args, &$ctx) {
     ob_end_clean();
 
     _clear_vars($ctx, $ext_args);
+
+    if ($cache_enable) {
+        $cache_driver = $mt->cache_driver($cache_ttl);
+        $cache_driver->set($cache_key, $_contents, $cache_ttl);
+    }
 
     return $_contents;
 }

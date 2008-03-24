@@ -325,6 +325,15 @@ TC.attachLoadEvent( init );
     <input id="publish_queue" type="checkbox" name="publish_queue" value="1"<mt:if name="publish_queue"> checked="checked"</mt:if>> <label for="publish_queue"><__trans phrase="Use background publishing queue for publishing static pages for this blog"></label>
 </mtapp:setting>
 
+<mtapp:setting
+    id="include_cache"
+    label="<__trans phrase="Enable Include Cache">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="include_cache">
+    <input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>> <label for="include_cache"><__trans phrase="Enable include caching"></label>
+</mtapp:setting>
+
 <mt:unless name="hide_build_option">
 <div id="dynamic_options_area"<mt:if name="dynamic_none"> style="display:none;"</mt:if>>
 

@@ -235,6 +235,9 @@ sub edit {
             if ( $blog->publish_queue ) {
                 $param->{publish_queue} = 1;
             }
+            if ( $blog->include_cache ) {
+                $param->{include_cache} = 1;
+            }
         }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );
@@ -1766,6 +1769,7 @@ sub cfg_archives_save {
     $blog->archive_type_preferred($at);
     my $pq = $app->param('publish_queue');
     $blog->publish_queue( $pq ? 1 : 0 );
+    $blog->include_cache( $app->param('include_cache') ? 1 : 0 );
     $blog->save
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );

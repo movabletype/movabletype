@@ -128,5 +128,13 @@ class MTDatabase_postgres extends MTDatabaseBase {
     function apply_extract_date($part, $column) {
         return "extract('" .strtolower($part) . "' from $column)";
     }
+
+    function &fetch_unexpired_session($ids, $ttl = 0) {
+        $result = parent::fetch_unexpired_session($ids, $ttl);
+        for ($i = 0; $i < count($result); $i++) {
+            $result[$i]['session_data'] = pg_unescape_bytea($result[$i]['session_data']);
+        }
+        return $result;
+    }
 }
 ?>

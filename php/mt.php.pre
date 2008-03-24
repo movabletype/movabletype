@@ -33,6 +33,7 @@ class MT {
     var $request;
     var $http_error;
     var $cfg_file;
+    var $cache_driver;
 
     /***
      * Constructor for MT class. Also declares a global variable
@@ -154,6 +155,26 @@ class MT {
             $this->config('DBPassword'), $this->config('Database'),
             $this->config('DBHost'), $this->config('DBPort'), $this->config('DBSocket'));
         return $this->db;
+    }
+
+    /***
+     * Retreives a handle to the cache driver.
+     */
+    function &cache_driver() {
+        if (isset($this->cache_driver)) return $this->cache_driver;
+    
+        # Check for memcached enabled
+        $servers  = $this->config['MemcachedServers'];
+        if (isset($servers)) {
+            if (extension_loaded('memcache')) {
+                require_once("MTCache_memcached.php");
+                $this->cache_driver = new MTCache_memcached($servers);
+            }
+        } else {
+            require_once("MTCache_session.php");
+            $this->cache_driver = new MTCache_session();
+        }
+        return $this->cache_driver;
     }
 
     function config($id, $value = null) {

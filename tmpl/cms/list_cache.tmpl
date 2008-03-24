@@ -1,0 +1,31 @@
+<mt:setvarblock name="page_title"><__trans phrase="Manage Caches"></mt:setvarblock>
+<mt:setvarblock name="system_msg">
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="The cache has been deleted from the database.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+var tableSelect;
+function init()
+{
+    // setup
+    tableSelect = new TC.TableSelect( "session-listing-table" );
+    tableSelect.rowSelect = true;
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+<$mt:include name="include/cache_table.tmpl"$>
+<mt:include name="include/footer.tmpl">

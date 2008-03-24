@@ -155,7 +155,9 @@
 		{
 		
 				$this->last_oid = pg_last_oid($this->result);
-							
+                if (empty($this->last_oid))
+                  return '';
+
 				// try to find table name
 				
 				eregi ("insert *into *([^ ]+).*", $query, $regs);

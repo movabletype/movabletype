@@ -2656,6 +2656,26 @@ sub help_url {
     $url;
 }
 
+sub register_refresh_cache_event {
+    my $pkg = shift;
+    my ($callback) = @_;
+    return unless $callback;
+
+    MT->_register_core_callbacks({
+        "$callback" => \&refresh_cache,
+    });
+}
+
+sub refresh_cache {
+    my ($cb, %args) = @_;
+
+    require MT::Cache::Negotiate;
+    my $cache_driver = MT::Cache::Negotiate->new();
+    return unless $cache_driver;
+
+    $cache_driver->flush_all();
+}
+
 1;
 
 __END__

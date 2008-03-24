@@ -114,6 +114,7 @@ __PACKAGE__->install_meta({
         'template_set',
         'page_layout',
         'include_system',
+        'include_cache',
     ],
 });
 

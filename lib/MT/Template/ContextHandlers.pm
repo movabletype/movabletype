@@ -2283,19 +2283,22 @@ sub _include_module {
     my $use_ssi = $blog && $blog->include_system
         && ($arg->{ssi} || $tmpl->include_with_ssi) ? 1 : 0;
 
-    # If option provided, read from cache
-    my $cache_key = $arg->{key};
-    my $ttl       = $arg->{ttl} || 0;
-    if ($cache_key) {
-        require MT::Session;
-        my $terms = { id => $cache_key, kind => 'CO' };
-        my $cache = $ttl ? MT::Session::get_unexpired_value($ttl, $terms)
-                  :        MT::Session->load($terms)
-                  ;
-        if ($cache) {
-            return $cache->data() if !$use_ssi;
+    # Try to read from cache
+    my $cache_enabled = $blog && $blog->include_cache
+        && ($arg->{cache} || $arg->{key} || (exists $arg->{ttl})) ? 1 : 0;
+    my $cache_key = $arg->{key} ? $arg->{key}
+        : 'blog::' . $blog_id . '::template_' . $type  . '::' . $tmpl_name;
+    my $ttl       = exists $arg->{ttl} ? $arg->{ttl} : 60 * 60; # default 60 min.
+    my $cache_driver;
+    if ($cache_enabled) {
+        require MT::Cache::Negotiate;
+        $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl );
+        my $cache_value = $cache_driver->get($cache_key);
 
-            my $include_name = $cache_key || $tmpl_name;
+       if ($cache_value) {
+            return $cache_value if !$use_ssi;
+
+            my $include_name = $arg->{key} || $tmpl_name;
             # The template may still be cached from before we were using SSI
             # for this template, so check that it's also on disk.
             if ($blog->file_mgr->exists($blog->include_path($include_name))) {
@@ -2324,20 +2327,8 @@ sub _include_module {
         return $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
     }
 
-    if ($cache_key) {
-        my $cache = MT::Session->load({
-            id   => $cache_key,
-            kind => 'CO',
-        });
-        $cache->remove() if $cache;
-        $cache = MT::Session->new;
-        $cache->set_values({
-            id    => $cache_key,
-            kind  => 'CO',
-            start => time,
-            data  => $ret,
-        });
-        $cache->save();
+    if ($cache_enabled) {
+        $cache_driver->replace($cache_key, $ret, $ttl);
     }
 
     if ($use_ssi) {

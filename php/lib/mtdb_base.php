@@ -2930,5 +2930,69 @@ class MTDatabaseBase extends ezsql {
     function apply_extract_date($part, $column) {
         return "extract($part from $column)";
     }
+
+    function &fetch_session($id) {
+        return $this->fetch_unexpired_session($id);
+    }
+
+    function &fetch_unexpired_session($ids, $ttl = 0) {
+        $expire_sql = '';
+        if (!empty($ttl) && $ttl > 0)
+            $expire_sql = "and session_start >= " . (time() - $ttl);
+        $key_sql = '';
+        if (is_array($ids))
+            $key_sql = 'and session_id in (' . join(",", $ids) . ')';
+        else
+            $key_sql = "and session_id = '$ids'";
+
+        $sql = "
+            select session_data
+            from mt_session
+            where
+             session_kind = 'CO'
+             $key_sql
+             $expire_sql";
+        $result = $this->get_results($sql, ARRAY_A);
+        return $result;
+    }
+
+    function update_session($id, $val) {
+        $session = $this->fetch_session($id);
+        $sql = '';
+        $now = time();
+        if (empty($session)) {
+            # add new item
+            $sql = "
+                insert into mt_session
+                 (session_id, session_data, session_kind, session_start)
+                 values ('$id', '$val', 'CO', $now)";
+        } else {
+            # update existing item
+            $sql = "
+                update mt_session set
+                  session_data = '$val',
+                  session_start = $now
+                where
+                  session_kind='CO'
+                  and session_id = '$id'";
+        }
+        $this->query($sql);
+    }
+
+    function remove_session($id) {
+        $sql = "
+            delete from mt_session
+            where
+              session_kind='CO'
+              and session_id = '$id'";
+        $this->query($sql);
+    }
+
+    function flush_session() {
+        $sql = "
+            delete from mt_session
+            where session_kind = 'CO'";
+        $this->query($sql);
+    }
 }
 ?>
