@@ -376,6 +376,8 @@ sub core_tags {
             CommentBody => \&_hdlr_comment_body,
             CommentOrderNumber => \&_hdlr_comment_order_num,
             CommentDate => \&_hdlr_comment_date,
+            CommentParentID => \&_hdlr_comment_parent_id,
+            CommentReplyLink => \&_hdlr_comment_reply_link,
             CommentPreviewAuthor => \&_hdlr_comment_author,
             CommentPreviewIP => \&_hdlr_comment_ip,
             CommentPreviewAuthorLink => \&_hdlr_comment_author_link,
@@ -5277,6 +5279,26 @@ sub _hdlr_comment_parent {
         or return '';
     local $ctx->{__stash}{comment} = $parent;
     $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
+}
+
+sub _hdlr_comment_reply_link {
+    my($ctx, $args) = @_;
+    my $comment = $ctx->stash('comment') or
+        return  $ctx->_no_comment_error('MTCommentReplyLink');
+
+    my $label = $args->{label} || $args->{text} || MT->translate('Reply');
+    my $comment_author = MT::Util::encode_js($comment->author);
+
+    return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="replyComment(%d, '%s')">%s</a>),
+                   $label, $comment->id, $comment_author, $label);
+}
+
+sub _hdlr_comment_parent_id {
+    my $args = $_[1];
+    my $c = $_[0]->stash('comment')
+        or return $_[0]->_no_comment_error('MTCommentParentID');
+    my $id = $c->parent_id || 0;
+    $args && $args->{pad} ? (sprintf "%06d", $id) : $id;
 }
 
 sub _hdlr_comment_replies {

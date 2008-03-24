@@ -35,6 +35,7 @@ var mtcmtauth;
 var mtcmthome;
 
 function individualArchivesOnLoad(commenter_name) {
+    hideDocumentElement('comment-form-reply');
 <MTIfCommentsAccepted>
 <MTElse>
     hideDocumentElement('comments-open');
@@ -148,6 +149,44 @@ commenter_url = getCookie('commenter_url');
 document.write('<script src="<$MTCGIPath$><$MTCommentScript$>?__mode=cmtr_name_js&blog_id=<$MTBlogID$>"></script>');
 </MTIf>
 </MTIfRegistrationAllowed>
+
+function replyComment(parent_id, author) {
+    showDocumentElement('comment-form-reply');
+    
+    var checkbox = document.getElementById('comment-reply');
+
+    // Clear the current label but NOT our checkbox!
+    var label = document.getElementById('comment-reply-label');
+    for(var i = 1; i < label.childNodes.length; i++) {
+        label.removeChild(label.childNodes[i]);
+    }
+    
+    // Populate label with new values
+    var reply_text = document.createTextNode(' <__trans phrase="Replying to"> ');
+    label.appendChild(reply_text);
+
+    var anchor = document.createElement('a');
+    anchor.setAttribute('href', '#comment-' + parent_id);
+    anchor.innerHTML = author;
+    label.appendChild(anchor);
+    
+    checkbox.value = parent_id; 
+    checkbox.setAttribute('checked', true);
+    checkbox.focus();
+    
+    setCommentParentID();
+}
+
+function setCommentParentID() {
+    var checkbox = document.getElementById('comment-reply');
+    var parent_id_field = document.getElementById('comment-parent-id');
+    var pid = 0;
+    
+    if(checkbox.checked == true)
+        pid = checkbox.value;
+    
+    parent_id_field.value = pid;
+}
 
 
 // Copyright (c) 1996-1997 Athenia Associates.

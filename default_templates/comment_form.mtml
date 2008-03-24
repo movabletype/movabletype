@@ -16,6 +16,7 @@
             <input type="hidden" name="static" value="1" />
             <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
             <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
+            <input type="hidden" name="parent_id" value="<MTIf name="comment_preview_template"><$MTCommentParentID$></MTIf>" id="comment-parent-id" />
             <div id="comments-open-data">
                 <div id="comment-form-name">
                     <label for="comment-author"><__trans phrase="Name"></label>
@@ -32,6 +33,10 @@
                 <div id="comment-form-remember-me">
                     <label for="comment-bake-cookie"><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />
                         <__trans phrase="Remember personal info?"></label>
+                </div>
+                <div id="comment-form-reply">
+                    <label for="comment-reply" id="comment-reply-label"><input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="setCommentParentID();" />
+                        <__trans phrase="Replying to"></label>
                 </div>
             </div>
             <div id="comments-open-text">
