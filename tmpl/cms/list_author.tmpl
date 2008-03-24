@@ -48,9 +48,7 @@
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
-    <mt:if name="external_user_management">
-        <p class="page-desc"><__trans phrase="_USAGE_AUTHORS_LDAP"></p>
-    <mt:else>
+    <mt:unless name="external_user_management">
         <mt:if name="can_create_user">
         <ul class="action-link-list">
             <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></li>
@@ -58,9 +56,11 @@
         </mt:if>
     </mt:unless>
 </mt:setvarblock>
+
 <mtsetvarblock name="content_nav">
     <mt:include name="include/users_content_nav.tmpl">
 </mtsetvarblock>
+
 <mt:setvarblock name="related_content">
     <mtapp:widget
         id="quickfilters"
@@ -69,6 +69,7 @@
     </mtapp:widget>
     <$mtapp:pageactions from="list_authors"$>
 </mt:setvarblock>
+
 <mt:setvarblock name="html_body_footer">
     <$mt:include name="include/display_options.tmpl"$>
 </mt:setvarblock>
