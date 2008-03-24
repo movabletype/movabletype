@@ -422,7 +422,7 @@ sub __meta_column {
             return $obj->column($meta_col, $var);
         }
         my $meta = $obj->column($meta_col);
-        if (!ref $meta) {
+        if (!ref $meta && defined($meta)) {
             $meta = __thaw_meta(\$meta);
             $obj->{column_values}{$meta_col} = $meta;
         }
@@ -931,7 +931,7 @@ sub cache_property {
         $oc = {};
         $r->cache('object_cache', $oc);
     }
-    $oc = $oc->{"$obj"};
+    $oc = $oc->{"$obj"} ||= {};
     if (@_) {
         $oc->{$key} = $_[0];
     } else {
