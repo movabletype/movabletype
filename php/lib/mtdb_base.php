@@ -24,10 +24,10 @@ class MTDatabaseBase extends ezsql {
     var $serializer;
     var $id;
 
-    function MTDatabaseBase($dbuser, $dbpassword = '', $dbname = '', $dbhost = '', $dbport = '') {
+    function MTDatabaseBase($dbuser, $dbpassword = '', $dbname = '', $dbhost = '', $dbport = '', $dbsocket = '') {
         $this->id = md5(uniqid('MTDatabaseBase',true));
         $this->hide_errors();
-        $this->db($dbuser, $dbpassword, $dbname, $dbhost, $dbport);
+        $this->db($dbuser, $dbpassword, $dbname, $dbhost, $dbport, $dbsocket);
     }
 
     function unserialize($data) {
