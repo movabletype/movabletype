@@ -24,7 +24,7 @@ __PACKAGE__->install_properties({
         tag_id => 1,
         object_datasource => 1,
         blog_ds => {
-            columns => ['blog_id', 'object_datasouce'],
+            columns => ['blog_id', 'object_datasource'],
         },
     },
     child_of => 'MT::Blog',
