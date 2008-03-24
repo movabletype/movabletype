@@ -10,21 +10,21 @@ mt-static/themes/cityscape-london
 mt-static/themes/cityscape-miami
 mt-static/themes/cityscape-nashville
 mt-static/themes/cityscape-nyc
-#mt-static/themes/cityscape-paris
+mt-static/themes/cityscape-paris
 mt-static/themes/cityscape-philadelphia
 mt-static/themes/cityscape-seattle
 #mt-static/themes/cityscape-sf
 mt-static/themes/cityscape-sydney
-#mt-static/themes/cityscape-tokyo
+mt-static/themes/cityscape-tokyo
 mt-static/themes/cityscape-toronto
 mt-static/themes/cityscape-vegas
 mt-static/themes/hills-dusk
-#mt-static/themes/hills-green
+mt-static/themes/hills-green
 mt-static/themes/hills-midnight
-#mt-static/themes/hills-pink
+mt-static/themes/hills-pink
 mt-static/themes/minimalist-blue
 mt-static/themes/minimalist-brown
-#mt-static/themes/minimalist-green
+mt-static/themes/minimalist-green
 mt-static/themes/minimalist-grey
 mt-static/themes/minimalist-light-blue
 mt-static/themes/minimalist-light-green
@@ -36,7 +36,7 @@ mt-static/themes/mt-static/themes/cityscape-portland
 #mt-static/themes/unity-blue
 mt-static/themes/unity-green
 mt-static/themes/unity-purple
-#mt-static/themes/unity-tricolor
+mt-static/themes/unity-tricolor
 
 # Conditional SKIP rule; format: #?(var=value) RULE
 #?package=MT ^COPYING
