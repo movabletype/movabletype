@@ -41,7 +41,7 @@ __PACKAGE__->install_properties({
             columns => ['blog_id', 'junk_status', 'created_on'],
         },
         blog_visible => {
-            columns => ['blog_id', 'visible', 'created_on'],
+            columns => ['blog_id', 'visible', 'created_on', 'id'],
         },
         visible_date => {
             columns => [ 'visible', 'created_on' ],

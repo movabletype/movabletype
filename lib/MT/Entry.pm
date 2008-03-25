@@ -83,8 +83,8 @@ __PACKAGE__->install_properties({
         },
         # For most publishing listings, where we list entries in a blog
         # with a particular class, publish status (2) and authored on date
-        blog_stat_authored => {
-            columns => ['blog_id', 'class', 'status', 'authored_on'],
+        blog_stat_date => {
+            columns => ['blog_id', 'class', 'status', 'authored_on', 'id'],
         },
     },
     defaults => {
