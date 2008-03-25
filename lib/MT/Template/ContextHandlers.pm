@@ -6347,12 +6347,9 @@ sub _hdlr_category_archive {
             '<$MTCategoryArchiveLink$>' )) unless $cat_arc;
     }
 
-    my @entries = MT::Entry->load({ status => MT::Entry::RELEASE() },
-        { join => [ 'MT::Placement', 'entry_id', { category_id => $cat->id }, { unqiue => 1 } ] } );
-    my $entry = $entries[0] if @entries;
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
-    $arch = $arch . archive_file_for($entry, $blog, 'Category', $cat);
+    $arch = $arch . archive_file_for(undef, $blog, 'Category', $cat);
     $arch = MT::Util::strip_index($arch, $blog) unless $_[1]->{with_index};
     $arch;
 }
