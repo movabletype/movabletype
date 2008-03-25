@@ -1358,7 +1358,7 @@ sub core_menus {
             label         => "Templates",
             mode          => 'list',
             args          => { _type => 'template' },
-            order         => 500,
+            order         => 100,
             permission    => 'edit_templates',
             system_permission    => 'edit_templates',
         },

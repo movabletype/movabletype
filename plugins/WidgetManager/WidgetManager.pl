@@ -63,7 +63,7 @@ sub init_registry {
                     'design:widgets' => {
                         label => 'Sidebars',
                         mode => 'list_widget',
-                        order => 201,
+                        order => 200,
                         permission => 'edit_templates',
                         view => "blog",
                     },
