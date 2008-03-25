@@ -1268,7 +1268,7 @@ sub _make_comment {
         # verify that parent_id is for a comment that is
         # published for this entry
         my $parent_comment = MT::Comment->load( $parent_id );
-        if ($parent_comment && $parent->is_published() && $parent_comment->entry_id == $entry->id) {
+        if ($parent_comment && $parent_comment->is_published() && $parent_comment->entry_id == $entry->id) {
             $comment->parent_id( $parent_id );
         }
         else {
