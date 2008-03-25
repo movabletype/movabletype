@@ -2086,7 +2086,8 @@ optgroup option {
     text-shadow: #fff 2px 2px 0;
     white-space: nowrap;
 }
-.listing th.cb { border-left: none; }
+.listing th.cb,
+.listing th:first-child { border-left: none; }
 
 .system .listing th {
     border-color: #c1c1c1;
@@ -2967,14 +2968,65 @@ body.preview-screen {
     display: none;
 }
 
-.edit-template .archive-path input,
-.edit-template .archive-path select {
+.templatemap-listing-table .archive-path {
+    width: 70%;
+}
+.templatemap-listing-table .publish-options {
+    width: 30%;
+}
+
+.templatemap-listing-table .tmpl-path,
+.templatemap-listing-table .tmpl-path-custom,
+.templatemap-listing-table #build-type {
+    font-size: 12px;
     width: 100%;
 }
 
-.edit-template .archive-path input {
+#template-options {
+    background: #E7F0F6;
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+
+#template-options-header {
+    position: relative;
+    padding: 10px 0;
+}
+
+#template-options.active #template-options-header {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+#template-options #template-options-header h3 {
+    background: url('../images/arrow-right-blue.gif') no-repeat left center;
+    margin: 0;
+    padding-left: 11px;
+}
+
+#template-options.active #template-options-header h3 {
+    background-image: url('../images/arrow-down-blue.gif');
+}
+
+#template-options .template-options-summary {
+    position: absolute;
+    top: 12px;
+    right: 0;
+    color: #888;
+}
+
+#template-options.active .template-options-summary {
     display: none;
 }
+
+#template-options #template-options-content {
+    display: none;
+}
+
+#template-options.active #template-options-content {
+    display: block;
+}
+
 
 /* Edit Asset ---------------------------------------------------------------------------------- */
 
@@ -4195,6 +4247,11 @@ body.dialog {
 .content-nav .msg {
     margin-left: 160px;
 }
+
+.content-nav #zero-state.msg {
+    margin-left: 0;
+}
+
 
 /* Plugin Settings ---------------------------------------------------------------------------------- */
 

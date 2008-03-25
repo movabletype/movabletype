@@ -55,7 +55,7 @@
                 </td>
 </mt:if>
         <mt:unless name="filter">
-                <td class="template-type"><$mt:var name="type"$></td>
+                <td class="template-type"><mt:if name="type" eq="custom"><__trans phrase="module"><mt:else><$mt:var name="type"$></mt:if></td>
         </mt:unless>
         <mt:unless name="blog_view">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>

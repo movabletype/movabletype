@@ -583,24 +583,38 @@ function toggleEntryDisplayOptions() {
 }
 
 function toggleActive( id ) {
-    var div = DOM.getElement( id );
-    if ( !div )
+    var id = DOM.getElement( id );
+    if ( !id )
         return false;
-    if ( DOM.hasClassName( div, 'active' ) )
-        DOM.removeClassName( div, 'active' );
+    if ( DOM.hasClassName( id, 'active' ) )
+        DOM.removeClassName( id, 'active' );
     else
-        DOM.addClassName( div, 'active' );
+        DOM.addClassName( id, 'active' );
     return false;
 }
 
 function toggleHidden( id ) {
-    var div = DOM.getElement( id );
-    if ( !div )
+    var id = DOM.getElement( id );
+    if ( !id )
         return false;
-    if ( DOM.hasClassName( div, 'hidden' ) )
-        DOM.removeClassName( div, 'hidden' );
+    if ( DOM.hasClassName( id, 'hidden' ) )
+        DOM.removeClassName( id, 'hidden' );
     else
-        DOM.addClassName( div, 'hidden' );
+        DOM.addClassName( id, 'hidden' );
+    return false;
+}
+
+function toggle( id ) {
+    var id = DOM.getElement( id );
+    if ( !id )
+        return false;
+    if ( DOM.hasClassName( id, 'hidden' ) ) {
+        DOM.removeClassName( id, 'hidden' );
+        DOM.addClassName( id, 'active' );
+    } else {
+        DOM.removeClassName( id, 'active' );
+        DOM.addClassName( id, 'hidden' );
+    }
     return false;
 }
 

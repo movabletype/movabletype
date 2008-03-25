@@ -282,8 +282,8 @@ function archiveFileSelect(sel) {
     var edit = getByID(fld);
     var map = sel.options[sel.selectedIndex].value;
     if (map == '') {
-        edit.style.display = 'block';
-        sel.style.display = 'none';
+        DOM.addClassName(sel, "hidden");
+        DOM.removeClassName(edit, "hidden");
         edit.focus();
     } else {
         edit.value = map;
@@ -330,7 +330,7 @@ function validate (f, rebuild) {
     return true;
 }
 function saveArchiveMapChange(param) {
-    showMsg('<__trans phrase="Please wait..." escape="js">', 'map-message', 'success')
+    showMsg('<__trans phrase="Processing request..." escape="js">', 'map-message', 'success')
 
     // TBD: we need to get the blog id from the selector control
     // itself
@@ -510,61 +510,40 @@ TC.attachLoadEvent( init );
     </div>
 </mtapp:setting>
 
-<mt:if name="type" eq="index">
-<mtapp:setting
-    label="<__trans phrase="Template Type">"
-    id="identifier"
-    help_page="templates"
-    help_section="template_type">
-
-<select name="identifier" id="identifier" tabindex="4" class="full-width">
-<option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
-<mt:loop name="index_identifiers">
-<option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
-</mt:loop>
-</select>
-</mtapp:setting>
-</mt:if>
-
+<div id="template-options">
+    <div id="template-options-header" class="pkg">
+        <h3><a href="javascript:void(0)" onclick="toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
+        <div class="template-options-summary">
 <mt:if name="has_outfile">
-<mtapp:setting
-    id="outfile"
-    label="<__trans phrase="Output File">"
-    help_page="templates"
-    help_section="output_file">
-    <div class="textarea-wrapper">
-        <input name="outfile" id="outfile" tabindex="5" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
+            <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html">">
+</mt:if>
+        </div>
     </div>
-</mtapp:setting>
+    <div id="template-options-content" class="pkg">
+<mt:if name="has_outfile">
+    <mtapp:setting
+        id="outfile"
+        label="<__trans phrase="Output File">"
+        help_page="templates"
+        help_section="output_file">
+        <div class="textarea-wrapper">
+            <input name="outfile" id="outfile" tabindex="5" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
+        </div>
+    </mtapp:setting>
 </mt:if>
 
-<mt:if name="has_build_options">
+<mt:if name="type" eq="index">
     <mtapp:setting
-        id="build_dynamic"
-        label="<__trans phrase="Publish Options">"
+        label="<__trans phrase="Template Type">"
+        id="identifier"
         help_page="templates"
-        help_section="enable_dynamic_publishing">
-        <mt:if name="custom_dynamic"><mt:if name="build_dynamic"><input type="hidden" name="current_build_dynamic" value="1" /></mt:if></mt:if>
-        <mt:unless name="build_dynamic"><mt:if name="has_rebuild"><mt:if name="rebuild_me"><input type="hidden" name="current_rebuild_me" value="1" /></mt:if></mt:if></mt:unless>
-        <ul>
-            <li><label><input type="radio" name="build_type" value="1"<mt:if name="build_type_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On Demand"></label></li>
-        <mt:if name="custom_dynamic">
-            <li><label><input type="radio" name="build_type" value="3"<mt:if name="build_type_3"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Dynamically"></label></li>
-        </mt:if>
-        <mt:if name="publish_queue">
-            <li><label><input type="radio" name="build_type" value="4"<mt:if name="build_type_4"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Asynchronously"></label></li>
-            <li><label><input type="radio" name="build_type" value="5"<mt:if name="build_type_5"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On a schedule"></label>
-            <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
-            <select name="schedule_period" id="schedule_period">
-                <option value="minutes"<mt:if name="schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
-                <option value="hours"<mt:if name="schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
-                <option value="days"<mt:if name="schedule_period_days"> selected="selected"</mt:if>><__trans phrase="days"></option>
-            </select>
-            </li>
-        </mt:if>
-            <li><label><input type="radio" name="build_type" value="2"<mt:if name="build_type_2"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Manually only"></label></li>
-            <li><label><input type="radio" name="build_type" value="0"<mt:if name="build_type_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Disable"></label></li>
-        </ul>
+        help_section="template_type">
+        <select name="identifier" id="identifier" tabindex="4" class="full-width">
+            <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
+        <mt:loop name="index_identifiers">
+            <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
+        </mt:loop>
+        </select>
     </mtapp:setting>
 </mt:if>
 
@@ -573,9 +552,9 @@ TC.attachLoadEvent( init );
     id="linked_file"
     help_page="templates"
     help_section="linked_templates">
-    <div class="textarea-wrapper">
-        <input name="linked_file" id="linked_file" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
-    </div>
+        <div class="textarea-wrapper">
+            <input name="linked_file" id="linked_file" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
+        </div>
 </mtapp:setting>
 
 <mt:if name="archive_types">
@@ -588,27 +567,64 @@ TC.attachLoadEvent( init );
         <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Archive Mapping"></a></p>
         <div id="msg-block"></div>
         <div class="create-inline" id="create-inline-mapping">
-                <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
-                <select name="new_archive_type" id="new_archive_type" tabindex="9">
+            <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
+            <select name="new_archive_type" id="new_archive_type" tabindex="9">
     <mt:loop name="archive_types">
-                    <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
+                <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
     </mt:loop>
-                </select>
-                &nbsp;
-                <span class="buttons">
-                    <a href="javascript:void(0)"
-                        onclick="addMap(); return false;"
-                        ><__trans phrase="Add"></a>
-                    <a href="javascript:void(0)"
-                        onclick="cancelCreateMode(); return false"
-                        ><__trans phrase="Cancel"></a>
-                </span>
+            </select>
+            &nbsp;
+            <span class="buttons">
+                <a href="javascript:void(0)"
+                    onclick="addMap(); return false;"
+                    ><__trans phrase="Add"></a>
+                <a href="javascript:void(0)"
+                    onclick="cancelCreateMode(); return false"
+                    ><__trans phrase="Cancel"></a>
+            </span>
         </div>
         <div id="template-maps">
             <mt:include name="include/archive_maps.tmpl">
         </div>
     </mtapp:setting>
+<mt:else>
+    <mt:if name="has_build_options">
+        <mtapp:setting
+            id="build_dynamic"
+            label="<__trans phrase="Publish Options">"
+            help_page="templates"
+            help_section="enable_dynamic_publishing">
+            <mt:if name="custom_dynamic"><mt:if name="build_dynamic"><input type="hidden" name="current_build_dynamic" value="1" /></mt:if></mt:if>
+            <mt:unless name="build_dynamic"><mt:if name="has_rebuild"><mt:if name="rebuild_me"><input type="hidden" name="current_rebuild_me" value="1" /></mt:if></mt:if></mt:unless>
+        <select name="build_type" id="build-type" class="full-width">
+            <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="On Demand (default)"></option>
+            <mt:if name="custom_dynamic">
+            <option value="3"<mt:if name="build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
+            </mt:if>
+            <mt:if name="publish_queue">
+            <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Asynchronously"></option>
+    <mt:ignore>
+        <!-- untested features -->
+                <option value="5"<mt:if name="build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
+                <mt:ignore>
+                    <!-- This code needs to be shown if the "On a schedule" has been selected -->
+                <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
+                <select name="schedule_period" id="schedule_period">
+                    <option value="minutes"<mt:if name="schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
+                    <option value="hours"<mt:if name="schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
+                    <option value="days"<mt:if name="schedule_period_days"> selected="selected"</mt:if>><__trans phrase="days"></option>
+                </select>
+                </mt:ignore>
+    </mt:ignore>
+            </mt:if>
+            <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually only"></option>
+            <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disable"></option>
+        </select>
+        </mtapp:setting>
+    </mt:if>
 </mt:if>
+    </div>
+</div>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 </form>
