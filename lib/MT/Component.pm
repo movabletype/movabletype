@@ -459,7 +459,7 @@ sub translate_templatized {
             my $translation = $c->translate($args{phrase}, @p);
             if (exists $args{escape}) {
                 if (lc($args{escape}) eq 'html') {
-                    $translation = encode_html($translation);
+                    $translation = MT::Util::encode_html($translation);
                 } elsif (lc($args{escape}) eq 'url') {
                     $translation = MT::Util::encode_url($translation);
                 } else {
