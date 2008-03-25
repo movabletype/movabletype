@@ -1749,11 +1749,9 @@ class MTDatabaseBase extends ezsql {
             return;
         $id_list = substr($id_list, 1);
         $query = "
-            select comment_entry_id, count(*)
-              from mt_comment
-             where comment_entry_id in ($id_list)
-               and comment_visible = 1
-             group by comment_entry_id
+            select entry_id, entry_comment_count
+              from mt_entry
+             where entry_id in ($id_list)
         ";
         $results = $this->get_results($query, ARRAY_N);
         if ($results) {
@@ -1868,12 +1866,8 @@ class MTDatabaseBase extends ezsql {
         if (isset($this->_comment_count_cache[$entry_id])) {
             return $this->_comment_count_cache[$entry_id];
         }
-        $count = $this->get_var("
-            select count(*)
-              from mt_comment
-             where comment_entry_id = " . intval($entry_id) . "
-               and comment_visible = 1
-        ");
+        $entry = $this->fetch_entry($entry_id);
+        $count = $entry['entry_comment_count'];
         $this->_comment_count_cache[$entry_id] = $count;
         return $count;
     }
@@ -2225,12 +2219,9 @@ class MTDatabaseBase extends ezsql {
         if (empty($id_list))
             return;
         $query = "
-            select trackback_entry_id, count(*)
-              from mt_trackback, mt_tbping
-             where trackback_entry_id in ($id_list)
-               and tbping_tb_id = trackback_id
-               and tbping_visible = 1
-             group by trackback_entry_id
+            select entry_id, entry_tbping_count
+              from mt_entry
+             where entry_id in ($id_list)
         ";
         $results = $this->get_results($query, ARRAY_N);
         if ($results) {
@@ -2244,13 +2235,8 @@ class MTDatabaseBase extends ezsql {
         if (isset($this->_ping_count_cache[$entry_id])) {
             return $this->_ping_count_cache[$entry_id];
         }
-        $count = $this->get_var("
-            select count(*)
-              from mt_trackback, mt_tbping
-             where trackback_entry_id = " . intval($entry_id) . "
-               and tbping_visible = 1
-               and tbping_tb_id = trackback_id 
-        ");
+        $entry = $this->fetch_entry($entry_id);
+        $count = $entry['entry_tbping_count'];
         $this->_ping_count_cache[$entry_id] = $count;
         return $count;
     }

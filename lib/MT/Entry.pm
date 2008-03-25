@@ -45,6 +45,8 @@ __PACKAGE__->install_properties({
         'authored_on' => 'datetime',
         'week_number' => 'integer',
         'template_id' => 'integer',
+        'comment_count' => 'integer',
+        'tbping_count' => 'integer',
 ## Have to keep this around for use in mt-upgrade.cgi.
         'category_id' => 'integer',
     },
@@ -84,6 +86,10 @@ __PACKAGE__->install_properties({
         blog_stat_authored => {
             columns => ['blog_id', 'class', 'status', 'authored_on'],
         },
+    },
+    defaults => {
+        comment_count => 0,
+        tbping_count => 0,
     },
     child_of => 'MT::Blog',
     child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
@@ -334,50 +340,29 @@ sub comment_latest {
     });
 }
 
-MT::Comment->add_trigger( post_save => sub {
-    my($clone, $comment) = @_;
-
-    ## Note: This flag is set in MT::Comment::visible().
-    if (my $delta = $comment->{__changed}{visibility}) {
-        my $memkey = MT::Entry->cache_key($comment->entry_id, 'commentcount');
-        my $cache = MT::Memcached->instance;
-        if ($delta > 0) {
-            $cache->incr($memkey, $delta);
-        } elsif ($delta < 0) {
-            $cache->decr($memkey, abs $delta);
-        }
+MT::Comment->add_trigger(
+    post_save => sub {
+        my $comment = shift;
+        my $entry   = MT::Entry->load( $comment->entry_id );
+        my $count   = MT::Comment->count(
+            {
+                entry_id => $comment->entry_id,
+                visible  => 1,
+            }
+        );
+        $entry->comment_count($count);
+        $entry->save;
     }
-} );
+);
 
-MT::Comment->add_trigger( post_remove => sub {
-    my($comment) = @_;
-
-    ## If this comment was published, decrement the cached count of
-    ## visible comments on the entry.
-    if ($comment->visible && !$comment->is_changed('visible')) {
-        my $memkey = MT::Entry->cache_key($comment->entry_id, 'commentcount');
-        MT::Memcached->instance->decr($memkey, 1);
+MT::Comment->add_trigger(
+    post_remove => sub {
+        my $comment = shift;
+        my $entry   = MT::Entry->load( $comment->entry_id );
+        $entry->comment_count( $entry->comment_count - 1 );
+        $entry->save;
     }
-} );
-
-sub comment_count {
-    my $entry = shift;
-    $entry->cache_property('comment_count', sub {
-        my $cache = MT::Memcached->instance;
-        my $memkey = $entry->cache_key('commentcount');
-        if (defined( my $count = $cache->get($memkey) )) {
-            return $count;
-        } else { 
-            require MT::Comment;
-            my $count = MT::Comment->count({
-                entry_id => $entry->id,
-                visible => 1
-            });
-            $cache->add($memkey, $count, 7 * 24 * 60 * 60);  ## 1 week.
-            return $count;
-        }
-    });
-}
+);
 
 sub pings {
     my $entry = shift;
@@ -393,53 +378,39 @@ sub pings {
     }
 }
 
-MT::TBPing->add_trigger( post_save => sub {
-    my($clone, $ping) = @_;
-
-    ## Note: This flag is set in MT::TBPing::visible().
-    if (my $delta = $ping->{__changed}{visibility}) {
-        my($class, $entry_id) = $ping->parent_id;
-        return unless $entry_id;
-        my $memkey = MT::Entry->cache_key($entry_id, 'pingcount');
-        my $cache = MT::Memcached->instance;
-        if ($delta > 0) {
-            $cache->incr($memkey, $delta);
-        } elsif ($delta < 0) {
-            $cache->decr($memkey, abs $delta);
+MT::TBPing->add_trigger(
+    post_save => sub {
+        my $ping = shift;
+        require MT::Trackback;
+        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
+            if ( $tb->entry_id ) {
+                my $entry = MT::Entry->load( $tb->entry_id );
+                my $count = MT::TBPing->count(
+                    {
+                        tb_id   => $tb->id,
+                        visible => 1,
+                    }
+                );
+                $entry->tbping_count($count);
+                $entry->save;
+            }
         }
     }
-} );
+);
 
-MT::TBPing->add_trigger( post_remove => sub {
-    my($ping) = @_;
-
-    ## If this ping was published, decrement the cached count of
-    ## visible pings on the entry.
-    if ($ping->visible && !$ping->is_changed('visible')) {
-        my($class, $entry_id) = $ping->parent_id;
-        return unless $entry_id;
-        my $memkey = MT::Entry->cache_key($entry_id, 'pingcount');
-        MT::Memcached->instance->decr($memkey, 1);
-    }
-} );
-
-sub ping_count {
-    my $entry = shift;
-    $entry->cache_property('ping_count', sub {
-        my $cache = MT::Memcached->instance;
-        my $memkey = 'entrypingcount-' . $entry->id;
-        if (defined( my $count = $cache->get($memkey) )) {
-            return $count;
-        } else { 
-            require MT::TBPing;
-            my $tb = $entry->trackback;
-            my $count =
-                $tb ? MT::TBPing->count({ tb_id => $tb->id, visible => 1 }) : 0;
-            $cache->add($memkey, $count, 7 * 24 * 60 * 60);  ## 1 week.
-            return $count;
+MT::TBPing->add_trigger(
+    post_remove => sub {
+        my $ping = shift;
+        require MT::Trackback;
+        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
+            if ( $tb->entry_id ) {
+                my $entry = MT::Entry->load( $tb->entry_id );
+                $entry->tbping_count( $entry->tbping_count - 1 );
+                $entry->save;
+            }
         }
-    });
-}
+    }
+);
 
 sub archive_file {
     my $entry = shift;
@@ -893,20 +864,6 @@ otherwise.
 Returns a reference to an array of I<MT::Comment> objects representing the
 comments made on the entry I<$entry>. If no comments have been made on the
 entry, returns a reference to an empty array.
-
-Caches the return value internally so that subsequent calls will not have to
-re-query the database.
-
-=head2 $entry->comment_count
-
-Returns the number of comments made on this entry.
-
-Caches the return value internally so that subsequent calls will not have to
-re-query the database.
-
-=head2 $entry->ping_count
-
-Returns the number of TrackBack pings made on this entry.
 
 Caches the return value internally so that subsequent calls will not have to
 re-query the database.

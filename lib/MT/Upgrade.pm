@@ -799,7 +799,42 @@ sub core_upgrade_functions {
             version_limit => 4.0041,
             priority => 3.2,
             code => \&remove_indexes,
-        }
+        },
+        'core_set_count_columns' => {
+            version_limit => 4.0045,
+            priority      => 3.2,
+            updater       => {
+                type      => 'entry',
+                label     => 'Assigning entry comment and trackback count...',
+                condition => sub {
+                    require MT::Comment;
+                    my $comment_count = MT::Comment->count(
+                        {
+                            entry_id => $_[0]->id,
+                            visible  => 1,
+                        }
+                    );
+                    $_[0]->comment_count($comment_count);
+                    require MT::Trackback;
+                    require MT::TBPing;
+                    my $tb = MT::Trackback->load( { entry_id => $_[0]->id } );
+                    my $tbping_count;
+                    if ($tb) {
+                        my $tbping_count = MT::TBPing->count(
+                            {
+                                tb_id   => $tb->id,
+                                visible => 1,
+                            }
+                        );
+                        $_[0]->tbping_count($tbping_count);
+                    }
+                    ( $comment_count || $tbping_count );
+                },
+                # only count once and set it, so code do nothing.
+                # it doesn't have the unnecessary save.
+                code => sub { 1; },
+            },
+        },
     }
 }
 
