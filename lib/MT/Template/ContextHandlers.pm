@@ -2662,9 +2662,16 @@ sub _hdlr_set_hashvar {
     return $ctx->error(MT->translate( "[_1] is not a hash.", $name ))
         unless 'HASH' eq ref($hash);
 
-    local $ctx->{__inside_set_hashvar} = $hash;
-    _hdlr_pass_tokens(@_);
-    $ctx->var($name, $hash);
+    {
+        local $ctx->{__inside_set_hashvar} = $hash;
+        _hdlr_pass_tokens(@_);
+    }
+    if ( my $parent_hash = $ctx->{__inside_set_hashvar} ) {
+        $parent_hash->{$name} = $hash;
+    }
+    else {
+        $ctx->var($name, $hash);
+    }
     return q();
 }
 
