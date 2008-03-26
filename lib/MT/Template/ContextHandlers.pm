@@ -5842,6 +5842,7 @@ sub _hdlr_archives {
         local $vars->{__even__} = $i % 2 == 0;
         local $vars->{__odd__} = $i % 2 == 1;
         local $vars->{__counter__} = $i;
+        local $ctx->{__stash}{archive_count} = $cnt;
         local $ctx->{__stash}{entries} = delay(sub{ 
             $archiver->archive_group_entries($ctx, %curr)
         }) if $archiver->group_based;
