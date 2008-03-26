@@ -683,7 +683,7 @@ sub preview {
     my @data;
     $app->run_callbacks( 'cms_pre_preview.template', $app, $preview_tmpl, \@data );
 
-    my $has_hires = 0; #eval 'require Time::HiRes; 1' ? 1 : 0;
+    my $has_hires = eval 'require Time::HiRes; 1' ? 1 : 0;
     my $start_time = $has_hires ? Time::HiRes::time() : time;
 
     my $ctx = $preview_tmpl->context;
