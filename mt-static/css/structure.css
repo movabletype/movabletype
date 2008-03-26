@@ -3027,6 +3027,34 @@ body.preview-screen {
     display: block;
 }
 
+.edit-template-cache #caching-field ul {
+    margin-left: 1.5em;
+}
+
+.edit-template-cache #caching-field ul ul {
+    margin-left: 1.5em;
+}
+
+.edit-template-cache #caching-field li {
+    margin-bottom: .5em;
+}
+
+.edit-template-cache #caching-field li li {
+    margin: .5em 0 0;
+    float: left;
+    width: 24%;
+}
+
+.edit-template-cache #cache-time-value,
+.edit-template-cache #cache-time-unit {
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.edit-template-cache #cache-time-value {
+    text-align: center;
+}
+
 
 /* Edit Asset ---------------------------------------------------------------------------------- */
 

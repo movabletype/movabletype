@@ -422,6 +422,11 @@ sub edit {
     $param->{tag_docs} = $tag_docs;
     $param->{link_doc} = $app->help_url('appendices/tags/');
 
+    $param->{screen_id} = "edit-template-" . $param->{type};
+    if (("custom" == $param->{type}) || ("custom" == $param->{type})) {
+        $param->{screen_class} .= "edit-template-cache";
+    }
+
     # template language
     $param->{template_lang} = 'html';
     if ( $obj && $obj->outfile ) {

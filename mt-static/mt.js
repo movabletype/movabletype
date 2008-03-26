@@ -574,6 +574,17 @@ function setFilterVal(value) {
     }
 }
 
+
+function toggleDisable(id, state) {
+    var id = DOM.getElement( id );
+    if ((id.disabled==0 && state == 0) || !id)
+        return false;
+    if (state == 1)
+        id.disabled=1;
+    else
+        id.disabled=0;
+}
+
 function toggleDisplayOptions() {
     return toggleActive('display-options');
 }
