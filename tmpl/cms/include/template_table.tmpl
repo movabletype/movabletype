@@ -13,23 +13,23 @@
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
                 <th class="template-name"><__trans phrase="Template Name"></th>
-<mt:if name="template_type" like="/(index|archive)/">
+        <mt:if name="template_type" like="/(index|archive)/">
                 <th class="output-file"><__trans phrase="Output File"></th>
-</mt:if>
+        </mt:if>
         <mt:unless name="filter">
                 <th class="template-type"><__trans phrase="Type"></th>
         </mt:unless>
         <mt:unless name="blog_view">
                 <th class="blog"><__trans phrase="Blog"></th>
         </mt:unless>
-<mt:unless name="screen_id" eq="search-replace">
+        <mt:unless name="screen_id" eq="search-replace">
                 <th class="linked-template si"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-</mt:unless>
-<mt:if name="template_type" like="/(index|archive)/">
+        </mt:unless>
+        <mt:if name="template_type" like="/(index|archive)/">
                 <th class="dynamic-template si"><!-- <span><__trans phrase="Dynamic"></span> --><img src="<mt:var name="static_uri">images/status_icons/dynamic.gif" alt="<__trans phrase="Dynamic Template">" title="<__trans phrase="Dynamic Template">" width="11" height="9" /></th>
                 <th class="rebuild-template si"><!-- <span><__trans phrase="Published w/Indexes"></span> --><img src="<mt:var name="static_uri">images/status_icons/rebuild.gif" alt="<__trans phrase="Published Template w/Indexes">" title="<__trans phrase="Published Template w/Indexes">" width="9" height="9" /></th>
                 <th class="view-template si"><span><__trans phrase="View"></span></th>
-</mt:if>
+        </mt:if>
             </tr>
         </thead>
         <tbody>
@@ -37,37 +37,37 @@
             <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type"$>">
                 <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
                 <td class="template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
-<mt:if name="template_type" like="/(index|archive)/">
+    <mt:if name="template_type" like="/(index|archive)/">
                 <td class="output-file">
-    <mt:if name="outfile">
-        <mt:var name="outfile" escape="html">
-    <mt:else name="template_type" eq="archive">
+        <mt:if name="outfile">
+            <mt:var name="outfile" escape="html">
+        <mt:else name="template_type" eq="archive">
                     <ul>
-        <mt:loop name="archive_types">
-            <mt:loop name="archive_tmpl_loop">
+            <mt:loop name="archive_types">
+                <mt:loop name="archive_tmpl_loop">
                         <li><mt:if name="selected"><mt:var name="name" escape="html"></mt:if></li>
+                </mt:loop>
             </mt:loop>
-        </mt:loop>
                     </ul>
-    <mt:else>
-        <span><__trans phrase="-"></span>
-    </mt:if>
+        <mt:else>
+                    <span><__trans phrase="-"></span>
+        </mt:if>
                 </td>
-</mt:if>
-        <mt:unless name="filter">
+    </mt:if>
+    <mt:unless name="filter">
                 <td class="template-type"><mt:if name="type" eq="custom"><__trans phrase="module"><mt:else><$mt:var name="type"$></mt:if></td>
-        </mt:unless>
-        <mt:unless name="blog_view">
+    </mt:unless>
+    <mt:unless name="blog_view">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
-        </mt:unless>
-<mt:unless name="screen_id" eq="search-replace">
+    </mt:unless>
+    <mt:unless name="screen_id" eq="search-replace">
                 <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
-</mt:unless>
-<mt:if name="template_type" like="/(index|archive)/">
+    </mt:unless>
+    <mt:if name="template_type" like="/(index|archive)/">
                 <td class="dynamic-template si status-<mt:if name="build_dynamic">dynamic<mt:else>static</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="build_dynamic"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
                 <td class="rebuild-template si status-<mt:if name="rebuild_me">rebuild<mt:else>norebuild</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="rebuild_me"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
                 <td class="view-template si status-view"><mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a><mt:else><__trans phrase="-"></mt:if></td>
-</mt:if>
+    </mt:if>
             </tr>
     <mt:if __last__>
         </tbody>
