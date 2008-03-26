@@ -593,8 +593,13 @@ sub do_search_replace {
                 );
                 $args{blog_id} = $obj->blog_id
                     if $obj->has_column('blog_id');
+                my $mode = 'view';
+                if ($type eq 'blog') {
+                    $args{blog_id} = delete $args{id};
+                    $mode = 'cfg_prefs';
+                }
                 return $app->redirect($app->uri(
-                    mode => 'view',
+                    mode => $mode,
                     args => \%args,
                 ));
             }
