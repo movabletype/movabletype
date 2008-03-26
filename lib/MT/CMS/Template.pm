@@ -12,6 +12,7 @@ sub edit {
     my $blog = $app->blog;
     my $cfg = $app->config;
     my $perms = $app->permissions;
+    my $can_preview = 0;
 
     if ($id) {
         # FIXME: Template types should not be enumerated here
@@ -441,6 +442,11 @@ sub edit {
             }->{$1};
         }
     }
+    $param->{dirty} = 1
+        if $app->param('dirty');
+
+    $param->{can_preview} = 1
+        if (!$param->{is_special}) && (!$obj || ($obj && $obj->outfile !~ m/\.(css|xml|rss|js)$/));
 
     1;
 }
@@ -544,6 +550,226 @@ sub list {
             code     => $hasher,
         }
     );
+}
+
+sub preview {
+    my $app         = shift;
+    my $q           = $app->param;
+    my $type        = $q->param('_type') || 'entry';
+    my $blog_id     = $q->param('blog_id');
+    my $blog        = $app->blog;
+    my $id          = $q->param('id');
+    my $tmpl;
+    my $user_id = $app->user->id;
+
+    # We can only do previews on blog templates. Have to publish
+    # the preview file somewhere!
+    return $app->errtrans("Invalid request.") unless $blog;
+
+    require MT::Template;
+    if ($id) {
+        $tmpl = MT::Template->load( { id => $id, blog_id => $blog_id } )
+            or return $app->errtrans( "Invalid request." );
+    }
+    else {
+        $tmpl = MT::Template->new;
+        $tmpl->id(-1);
+        $tmpl->blog_id($blog_id);
+    }
+
+    my $names = $tmpl->column_names;
+    my %values = map { $_ => scalar $app->param($_) } @$names;
+    delete $values{'id'} unless $q->param('id');
+
+    ## Strip linefeed characters.
+    for my $col (qw( text )) {
+        $values{$col} =~ tr/\r//d if $values{$col};
+    }
+    $tmpl->set_values( \%values );
+
+    my $preview_basename = $app->preview_object_basename;
+
+    my $type = $tmpl->type;
+    my $preview_tmpl = $tmpl;
+    my $archive_file;
+    my $archive_url;
+    my %param;
+    my $blog_path = $blog->site_path;
+    my $blog_url = $blog->site_url;
+
+    if (($type eq 'custom') || ($type eq 'widget')) {
+        # determine 'host' template
+        $preview_tmpl = MT::Template->load({ blog_id => $blog_id, identifier => 'main_index' });
+        if (!$preview_tmpl) {
+            return $app->errtrans("Can't locate host template to preview module/widget.");
+        }
+        my $req = $app->request;
+        # stash this module so that it is selected through a
+        # MTInclude tag instead of the one in the database:
+        my $tmpl_name = $tmpl->name;
+        $tmpl_name =~ s/^Widget: // if $type eq 'widget';
+        my $stash_id = 'template_' . $type . '::' . $blog_id . '::' . $tmpl_name;
+        $req->stash($stash_id, [ $tmpl, $tmpl->tokens ]);
+    } elsif (($type eq 'individual') || ($type eq 'page')) {
+        my $ctx = $preview_tmpl->context;
+        my $entry_type = $type eq 'individual' ? 'entry' : 'page';
+        my $entry_class = $app->model($entry_type);
+        my $obj = $entry_class->load({
+            blog_id => $blog_id,
+            status => MT::Entry::RELEASE()
+        }, {
+            limit => 1,
+            direction => 'descend',
+            'sort' => 'authored_on'
+        });
+        unless ( $obj ) {
+            # create a dummy object
+            $obj = $entry_class->new;
+            $obj->blog_id($blog_id);
+            $obj->id(-1);
+            $obj->author_id( $app->user->id );
+            $obj->authored_on( $blog->current_timestamp );
+            $obj->status( MT::Entry::RELEASE() );
+            $obj->basename( $preview_basename );
+            $obj->title($app->translate("Lorem ipsum"));
+            $obj->text(q{Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut diam quam, accumsan eu, aliquam vel, ultrices a, augue. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce hendrerit, lacus eget bibendum sollicitudin, mi tellus interdum neque, sit amet pretium tortor tellus id erat. Duis placerat justo ac erat. Duis posuere, risus eu elementum viverra, nisl lacus sagittis lorem, ac fermentum neque pede vitae arcu. Phasellus arcu elit, placerat eu, luctus posuere, tristique non, augue. In hac habitasse platea dictumst. Nunc non dolor et ipsum mattis malesuada. Praesent porta orci eu ligula. Ut dui augue, dapibus vitae, sodales in, lobortis non, felis. Aliquam feugiat mollis ipsum.});
+            $obj->text_more(q{Integer nunc nulla, vulputate sit amet, varius ac, faucibus ac, lectus. Nulla semper bibendum justo. In hac habitasse platea dictumst. Aliquam auctor pretium ante. Etiam porta consectetuer erat. Phasellus consequat, nisi eu suscipit elementum, metus leo malesuada pede, vel scelerisque lorem ligula in augue. Sed aliquet. Donec malesuada metus sit amet sapien. Integer non libero. Morbi egestas, mauris posuere consequat sodales, augue lectus suscipit velit, eu commodo lacus dolor congue justo. Suspendisse justo. Curabitur sagittis, lorem tincidunt elementum rhoncus, odio dolor mattis odio, quis ultrices ligula ipsum ac lacus. Nam et sapien ac lacus ultrices sollicitudin. Vestibulum ut dolor nec dui malesuada imperdiet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
+
+            Quisque pharetra libero quis nibh. Cras lacus orci, commodo et, fringilla non, lobortis non, mauris. Curabitur dui sapien, tristique imperdiet, ultrices vitae, gravida varius, ante. Maecenas ac arcu nec nibh euismod feugiat. Pellentesque sed orci eget enim egestas faucibus. Aenean laoreet leo ornare velit. Nunc fermentum dolor eget massa. Fusce fringilla, tellus in pellentesque sodales, urna mi hendrerit leo, vel adipiscing ligula odio sit amet risus. Cras rhoncus, mi et posuere gravida, purus sem porttitor nisl, auctor laoreet nisl turpis quis ligula. Aliquam in nisi tristique augue egestas lacinia. Aenean ante magna, facilisis a, faucibus at, aliquam laoreet, dui. Ut tellus leo, tristique a, pellentesque ac, bibendum non, ipsum. Curabitur eu neque pretium arcu accumsan tincidunt. Ut ipsum. Quisque congue accumsan elit. Nulla ligula felis, aliquam ultricies, vestibulum vestibulum, semper vel, sapien. Aenean sodales ligula venenatis tellus. Vestibulum leo. Morbi viverra convallis eros.
+
+            Phasellus rhoncus pulvinar enim. Ut gravida ante nec lectus. Nam luctus gravida odio. Morbi vitae lorem vitae justo fermentum porttitor. Suspendisse vestibulum magna at purus. Cras nec sem. Duis id felis. Mauris hendrerit dapibus est. Donec semper. Praesent vehicula interdum velit. Ut sed tellus et diam venenatis pulvinar.});
+            $obj->keywords("sample, entry, preview");
+            $obj->tags(qw( lorem ipsum sample preview ));
+        }
+        $ctx->stash('entry', $obj);
+        $ctx->{current_archive_type} = $type eq 'individual' ? 'Individual' : 'Page';
+        if (($type eq 'individual') && $blog->archive_path) {
+            $blog_path = $blog->archive_path;
+            $blog_url = $blog->archive_url;
+        }
+        $archive_file = File::Spec->catfile( $blog_path, $obj->archive_file );
+        $archive_url = $obj->archive_url;
+    } elsif ($type eq 'archive') {
+        # some variety of archive template
+    } elsif ($type eq 'index') {
+    } else {
+        # for now, only index templates can be previewed
+        return $app->errtrans("Invalid request.");
+    }
+
+    my $orig_file;
+    my $path;
+
+    # Default case; works for index templates (other template types should
+    # have defined $archive_file by now).
+    $archive_file = File::Spec->catfile( $blog_path, $preview_tmpl->outfile )
+        unless defined $archive_file;
+
+    ( $orig_file, $path ) = File::Basename::fileparse( $archive_file );
+
+    $archive_url = MT::Util::caturl( $blog_url, $orig_file )
+        unless defined $archive_url;
+
+    my $file_ext;
+    require File::Basename;
+    $file_ext = $archive_file;
+    if ($file_ext =~ m/\.[a-z]+$/) {
+        $file_ext =~ s!.+\.!.!;
+    } else {
+        $file_ext = '';
+    }
+    $archive_file = File::Spec->catfile( $path, $preview_basename . $file_ext );
+
+    my @data;
+    $app->run_callbacks( 'cms_pre_preview.template', $app, $preview_tmpl, \@data );
+
+    my $has_hires = 0; #eval 'require Time::HiRes; 1' ? 1 : 0;
+    my $start_time = $has_hires ? Time::HiRes::time() : time;
+
+    my $ctx = $preview_tmpl->context;
+    my $html = $preview_tmpl->output;
+
+    $param{build_time} = $has_hires ? sprintf("%.3f", Time::HiRes::time() - $start_time ) : "~" . ( time - $start_time );
+
+    unless ( defined($html) ) {
+        return $app->error( $app->translate( "Publish error: [_1]",
+            MT::Util::encode_html( $preview_tmpl->errstr ) ) );
+    }
+
+    # If MT is configured to do 'local' previews, convert all
+    # the normal blog URLs into the domain used by MT itself (ie,
+    # blog is published to www.example.com, which is a different
+    # server from where MT runs, mt.example.com; previews therefore
+    # should occur locally, so replace all http://www.example.com/
+    # with http://mt.example.com/).
+    my ($old_url, $new_url);
+    if ($app->config('LocalPreviews')) {
+        $old_url = $blog_url;
+        $old_url =~ s!^(https?://[^/]+?/)(.*)?!$1!;
+        $new_url = $app->base . '/';
+        $html =~ s!\Q$old_url\E!$new_url!g;
+    }
+
+    my $fmgr = $blog->file_mgr;
+
+    ## Determine if we need to build directory structure,
+    ## and build it if we do. DirUmask determines
+    ## directory permissions.
+    require File::Basename;
+    $path =~ s!/$!!
+      unless $path eq '/';    ## OS X doesn't like / at the end in mkdir().
+    unless ( $fmgr->exists($path) ) {
+        $fmgr->mkpath($path);
+    }
+
+    if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
+        $param{preview_file} = $preview_basename;
+        my $preview_url = $archive_url;
+        $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
+
+        # We also have to translate the URL used for the
+        # published file to be on the MT app domain.
+        if (defined $new_url) {
+            $preview_url =~ s!^\Q$old_url\E!$new_url!;
+        }
+
+        $param{preview_url}  = $preview_url;
+
+        $fmgr->put_data( $html, $archive_file );
+
+        # we have to make a record of this preview just in case it
+        # isn't cleaned up by re-editing, saving or cancelling on
+        # by the user.
+        require MT::Session;
+        my $sess_obj = MT::Session->get_by_key(
+            {
+                id   => $preview_basename,
+                kind => 'TF',                # TF = Temporary File
+                name => $archive_file,
+            }
+        );
+        $sess_obj->start(time);
+        $sess_obj->save;
+    }
+    else {
+        return $app->error( $app->translate(
+            "Unable to create preview file in this location: [_1]", $path ) );
+    }
+
+    $param{id} = $id if $id;
+    $param{new_object} = $param{id} ? 0 : 1;
+    $param{name} = $tmpl->name;
+    my $cols = $tmpl->column_names;
+    for my $col (@$cols) {
+        push @data,
+          {
+            data_name  => $col,
+            data_value => scalar $q->param($col)
+          };
+    }
+    $param{template_loop} = \@data;
+    $param{object_type}  = $type;
+    return $app->load_tmpl( 'preview_template_strip.tmpl', \%param );
 }
 
 sub reset_blog_templates {
