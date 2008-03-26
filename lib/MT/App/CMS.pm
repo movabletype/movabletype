@@ -198,6 +198,7 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'dialog_refresh_templates' => "${pkg}Template::dialog_refresh_templates",
         'refresh_all_templates'    => "${pkg}Template::refresh_all_templates",
+        'preview_template'         => "${pkg}Template::preview",
 
         ## Comment Replies
         reply         => "${pkg}Comment::reply",
