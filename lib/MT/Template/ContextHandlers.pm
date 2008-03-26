@@ -4706,7 +4706,7 @@ sub _hdlr_entry_comments {
 sub _hdlr_entry_ping_count {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    $e->tbping_count;
+    $e->ping_count;
 }
 sub _hdlr_entry_previous {
     _hdlr_entry_nextprev('previous', @_);
@@ -6717,7 +6717,7 @@ sub _hdlr_if_pings_active {
     my $active;
     $active = 1 if $cfg->AllowPings && $blog->allow_pings;
     $active = 0 if $entry && !$entry->allow_pings;
-    $active = 1 if !$active && $entry && $entry->tbping_count;
+    $active = 1 if !$active && $entry && $entry->ping_count;
     if ($active) {
         return _hdlr_pass_tokens(@_);
     } else {

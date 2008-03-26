@@ -801,7 +801,7 @@ sub core_upgrade_functions {
             code => \&remove_indexes,
         },
         'core_set_count_columns' => {
-            version_limit => 4.0045,
+            version_limit => 4.0047,
             priority      => 3.2,
             updater       => {
                 type      => 'entry',
@@ -818,17 +818,17 @@ sub core_upgrade_functions {
                     require MT::Trackback;
                     require MT::TBPing;
                     my $tb = MT::Trackback->load( { entry_id => $_[0]->id } );
-                    my $tbping_count;
+                    my $ping_count;
                     if ($tb) {
-                        my $tbping_count = MT::TBPing->count(
+                        my $ping_count = MT::TBPing->count(
                             {
                                 tb_id   => $tb->id,
                                 visible => 1,
                             }
                         );
-                        $_[0]->tbping_count($tbping_count);
+                        $_[0]->ping_count($ping_count);
                     }
-                    ( $comment_count || $tbping_count );
+                    ( $comment_count || $ping_count );
                 },
                 # only count once and set it, so code do nothing.
                 # it doesn't have the unnecessary save.

@@ -70,7 +70,7 @@ sub edit {
           || format_ts( "%H:%M:%S", $obj->authored_on, $blog, $app->user ? $app->user->preferred_language : undef );
 
         $param->{num_comments} = $id ? $obj->comment_count : 0;
-        $param->{num_pings} = $id ? $obj->tbping_count : 0;
+        $param->{num_pings} = $id ? $obj->ping_count : 0;
 
         # Check permission to send notifications and if the
         # blog has notification list subscribers

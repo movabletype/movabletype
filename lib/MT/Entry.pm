@@ -46,7 +46,7 @@ __PACKAGE__->install_properties({
         'week_number' => 'integer',
         'template_id' => 'integer',
         'comment_count' => 'integer',
-        'tbping_count' => 'integer',
+        'ping_count' => 'integer',
 ## Have to keep this around for use in mt-upgrade.cgi.
         'category_id' => 'integer',
     },
@@ -89,7 +89,7 @@ __PACKAGE__->install_properties({
     },
     defaults => {
         comment_count => 0,
-        tbping_count => 0,
+        ping_count => 0,
     },
     child_of => 'MT::Blog',
     child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
@@ -391,7 +391,7 @@ MT::TBPing->add_trigger(
                         visible => 1,
                     }
                 );
-                $entry->tbping_count($count);
+                $entry->ping_count($count);
                 $entry->save;
             }
         }
@@ -405,7 +405,7 @@ MT::TBPing->add_trigger(
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id ) {
                 my $entry = MT::Entry->load( $tb->entry_id );
-                $entry->tbping_count( $entry->tbping_count - 1 );
+                $entry->ping_count( $entry->ping_count - 1 );
                 $entry->save;
             }
         }

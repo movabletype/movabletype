@@ -2219,7 +2219,7 @@ class MTDatabaseBase extends ezsql {
         if (empty($id_list))
             return;
         $query = "
-            select entry_id, entry_tbping_count
+            select entry_id, entry_ping_count
               from mt_entry
              where entry_id in ($id_list)
         ";
@@ -2236,7 +2236,7 @@ class MTDatabaseBase extends ezsql {
             return $this->_ping_count_cache[$entry_id];
         }
         $entry = $this->fetch_entry($entry_id);
-        $count = $entry['entry_tbping_count'];
+        $count = $entry['entry_ping_count'];
         $this->_ping_count_cache[$entry_id] = $count;
         return $count;
     }
