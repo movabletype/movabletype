@@ -160,7 +160,7 @@ function smarty_function_mtvar($args, &$ctx) {
 
     if ($return_val == '') {
         if (isset($args['default'])) {
-            $value = $args['default'];
+            $return_val = $args['default'];
         }
     }
     if (isset($args['escape'])) {
