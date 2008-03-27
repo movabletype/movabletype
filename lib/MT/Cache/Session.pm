@@ -103,6 +103,8 @@ sub flush_all {
     MT::Session->remove({ kind => 'CO' });
 }
 
+sub DESTROY {}
+
 1;
 __END__
 
