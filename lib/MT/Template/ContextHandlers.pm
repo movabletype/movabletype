@@ -4943,6 +4943,7 @@ sub _hdlr_comments {
     }
 
     my $so = lc ($args->{sort_order} || ($blog ? $blog->sort_order_comments : undef) || 'ascend');
+    my $no_resort;
     if ($comments) {
         my $n = $args->{lastn};
         if (@filters) {
@@ -4993,66 +4994,81 @@ sub _hdlr_comments {
                 @comments = @$comments;
             }
         } else {
-            $args{'sort'} = 'created_on';
-            $args{'direction'} = 'descend';
+            $args{'sort'} = lc $args->{sort_by} || 'created_on';
+            $args{'direction'} = $so;
+            $no_resort = 1;
             require MT::Comment;
-            my $iter = MT::Comment->load_iter(\%terms, \%args);
-            my %entries;
-            COMMENT: while (my $c = $iter->()) {
-                my $e = $entries{$c->entry_id} ||= $c->entry;
-                next unless $e;
-                next if $e->status != MT::Entry::RELEASE();
-                for (@filters) {
-                    next COMMENT unless $_->($c);
-                }
-                push @comments, $c;
-                if ($n && (scalar @comments == $n)) {
-                    $iter->('finish');
-                    last;
+            if (!@filters) {
+                $args{limit} = $n if $n;
+                $args{join} = MT->model('entry')->join_on(
+                    undef,
+                    {
+                        id => \'=comment_entry_id',
+                        status => MT::Entry::RELEASE(),
+                    }, {unique => 1});
+
+                @comments = MT::Comment->load(\%terms, \%args);
+            } else {
+                my $iter = MT::Comment->load_iter(\%terms, \%args);
+                my %entries;
+                COMMENT: while (my $c = $iter->()) {
+                    my $e = $entries{$c->entry_id} ||= $c->entry;
+                    next unless $e;
+                    next if $e->status != MT::Entry::RELEASE();
+                    for (@filters) {
+                        next COMMENT unless $_->($c);
+                    }
+                    push @comments, $c;
+                    if ($n && (scalar @comments == $n)) {
+                        $iter->('finish');
+                        last;
+                    }
                 }
             }
         }
     }
 
-    my $col = lc ($args->{sort_by} || 'created_on');
-    if (@comments) {
-        if ('created_on' eq $col) {
-            my @comm;
-            @comm = $so eq 'ascend' ?
-                sort { $a->created_on <=> $b->created_on } @comments :
-                sort { $b->created_on <=> $a->created_on } @comments;
-            # filter out comments from unapproved commenters
-            @comments = grep { $_->visible() } @comm;
-        } elsif ('score' eq $col) {
-            my %m = map { $_->id => $_ } @comments;
-            my @cid = keys %m;
-            require MT::ObjectScore;
-            my $scores = MT::ObjectScore->sum_group_by(
-                { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
-                { 'sum' => 'score', group => ['object_id'],
-                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                });
-            my @tmp;
-            while (my ($score, $object_id) = $scores->()) {
-                push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
-                $scores->('finish'), last unless %m;
+    if (!$no_resort) {
+        my $col = lc ($args->{sort_by} || 'created_on');
+        if (@comments) {
+            if ('created_on' eq $col) {
+                my @comm;
+                @comm = $so eq 'ascend' ?
+                    sort { $a->created_on <=> $b->created_on } @comments :
+                    sort { $b->created_on <=> $a->created_on } @comments;
+                # filter out comments from unapproved commenters
+                @comments = grep { $_->visible() } @comm;
+            } elsif ('score' eq $col) {
+                my %m = map { $_->id => $_ } @comments;
+                my @cid = keys %m;
+                require MT::ObjectScore;
+                my $scores = MT::ObjectScore->sum_group_by(
+                    { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
+                    { 'sum' => 'score', group => ['object_id'],
+                      $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                    });
+                my @tmp;
+                while (my ($score, $object_id) = $scores->()) {
+                    push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
+                    $scores->('finish'), last unless %m;
+                }
+                @comments = @tmp;
+            } elsif ('rate' eq $col) {
+                my %m = map { $_->id => $_ } @comments;
+                my @cid = keys %m;
+                require MT::ObjectScore;
+                my $scores = MT::ObjectScore->avg_group_by(
+                    { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
+                    { 'avg' => 'score', group => ['object_id'],
+                      $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
+                    });
+                my @tmp;
+                while (my ($score, $object_id) = $scores->()) {
+                    push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
+                    $scores->('finish'), last unless %m;
+                }
+                @comments = @tmp;
             }
-            @comments = @tmp;
-        } elsif ('rate' eq $col) {
-            my %m = map { $_->id => $_ } @comments;
-            my @cid = keys %m;
-            require MT::ObjectScore;
-            my $scores = MT::ObjectScore->avg_group_by(
-                { 'object_ds' => 'comment', 'namespace' => $namespace, object_id => \@cid },
-                { 'avg' => 'score', group => ['object_id'],
-                  $so eq 'ascend' ? (direction => 'ascend') : (direction => 'descend'),
-                });
-            my @tmp;
-            while (my ($score, $object_id) = $scores->()) {
-                push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
-                $scores->('finish'), last unless %m;
-            }
-            @comments = @tmp;
         }
     }
 
