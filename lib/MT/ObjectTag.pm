@@ -26,6 +26,14 @@ __PACKAGE__->install_properties({
         blog_ds => {
             columns => ['blog_id', 'object_datasource'],
         },
+        # For MTTags
+        blog_ds_tag => {
+            columns => ['blog_id', 'object_datasource', 'tag_id'],
+        },
+        # For tag count
+        blog_ds_object_tag => {
+            Columns => ['blog_id', 'object_datasource', 'object_id', 'tag_id'],
+        },
     },
     child_of => 'MT::Blog',
     datasource => 'objecttag',

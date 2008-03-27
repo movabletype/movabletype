@@ -86,6 +86,10 @@ __PACKAGE__->install_properties({
         blog_stat_date => {
             columns => ['blog_id', 'class', 'status', 'authored_on', 'id'],
         },
+        # for tag count
+        tag_count => {
+            columns => ['status', 'class', 'blog_id', 'id'],
+        },
     },
     defaults => {
         comment_count => 0,

@@ -23,6 +23,10 @@ __PACKAGE__->install_properties({
         name_id => {
             columns => ['name', 'id'],
         },
+        # for MTTags
+        private_id_name => {
+            columns => ['is_private', 'id', 'name'],
+        },
     },
     defaults => {
         n8d_id => 0,
