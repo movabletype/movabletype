@@ -3001,12 +3001,15 @@ body.preview-screen {
 }
 
 #template-options #template-options-header h3 {
-    background: url('../images/arrow-right-blue.gif') no-repeat left center;
     margin: 0;
+}
+
+#template-options #template-options-header h3 a {
+    background: url('../images/arrow-right-blue.gif') no-repeat left center;
     padding-left: 11px;
 }
 
-#template-options.active #template-options-header h3 {
+#template-options.active #template-options-header h3 a {
     background-image: url('../images/arrow-down-blue.gif');
 }
 
