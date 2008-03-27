@@ -325,28 +325,19 @@ TC.attachLoadEvent( init );
     <input id="publish_queue" type="checkbox" name="publish_queue" value="1"<mt:if name="publish_queue"> checked="checked"</mt:if>> <label for="publish_queue"><__trans phrase="Use background publishing queue for publishing static pages for this blog"></label>
 </mtapp:setting>
 
-<mtapp:setting
-    id="include_cache"
-    label="<__trans phrase="Enable Include Cache">"
-    content_class="field-content-text"
-    help_page="blog_settings_publishing"
-    help_section="include_cache">
-    <input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>> <label for="include_cache"><__trans phrase="Enable include caching"></label>
-</mtapp:setting>
-
 <mt:unless name="hide_build_option">
 <div id="dynamic_options_area"<mt:if name="dynamic_none"> style="display:none;"</mt:if>>
 
     <mtapp:setting
         id="dynamic_cache"
-        label="<__trans phrase="Enable Dynamic Cache">"
+        label="<__trans phrase="Dynamic Cache">"
         hint="<__trans phrase="Turn on caching.">">
             <input type="checkbox" id="dynamic_cache" name="dynamic_cache" <mt:if name="dynamic_caching">checked="checked"</mt:if>/>
                 <label for="dynamic_cache"><__trans phrase="Enable caching"></label>
     </mtapp:setting>
     <mtapp:setting
         id="dynamic_conditional"
-        label="<__trans phrase="Enable Conditional Retrieval">"
+        label="<__trans phrase="Conditional Retrieval">"
         hint="<__trans phrase="Turn on conditional retrieval of cached content.">">
             <input type="checkbox" id="dynamic_conditional" name="dynamic_conditional" <mt:if name="dynamic_conditional">checked="checked"</mt:if>/>
                 <label for="dynamic_conditional"><__trans phrase="Enable conditional retrieval"></label>
@@ -354,14 +345,23 @@ TC.attachLoadEvent( init );
 
 </div>
 </mt:unless>
-    <mtapp:setting
-        id="file_extension"
-        label="<__trans phrase="File Extension for Archive Files">"
-        hint="<__trans phrase="Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').">"
-        help_page="blog_setting_publishing"
-        help_section="archive_file_extension">
-<input name="file_extension" id="file_extension" size="5" value="<mt:var name="file_extension" escape="html">" />
-    </mtapp:setting>
+
+<mtapp:setting
+    id="include_cache"
+    label="<__trans phrase="Server Side Include">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="include_cache">
+    <input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>> <label for="include_cache"><__trans phrase="Enable include caching"></label>
+</mtapp:setting>
+<mtapp:setting
+    id="file_extension"
+    label="<__trans phrase="Archive File Extension">"
+    hint="<__trans phrase="Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').">"
+    help_page="blog_setting_publishing"
+    help_section="archive_file_extension">
+    <input name="file_extension" id="file_extension" size="5" value="<mt:var name="file_extension" escape="html">" />
+</mtapp:setting>
 
 </fieldset>
 

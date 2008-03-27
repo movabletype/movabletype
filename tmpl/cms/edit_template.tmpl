@@ -640,39 +640,70 @@ TC.attachLoadEvent( init );
     </mt:if>
 </mt:if>
 <mt:if name="template_group" like="(module|widget)">
+<mt:ignore>
+
+VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+The below code has been implemented without any backend functionality.
+All variables are simply suggested and should be changed as necessary to jive with backend naming conventions.
+VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+</mt:ignore>
+
+<$mt:setvar name="ssi_enabled" value="1"$>
+<$mt:setvar name="ssi_type" value="php"$>
+
     <mtapp:setting
         id="server_side_include"
         label="<__trans phrase="Server Side Include">"
         content_class="field-content-text">
-        <input type="checkbox" id="server-side-include" name="" value="" onclick=""<mt:if name="enabled"> checked="checked"</mt:if> />
-        <label for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="PHP"></label>
+        <input type="checkbox" id="server-side-include" name="" value="" onclick=""<mt:if name="ssi_enabled"> checked</mt:if> />
+        <label for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
     </mtapp:setting>
+
+<$mt:setvar name="cache_enabled" value="1"$>
+<$mt:setvar name="cache_expire_by" value="2"$><mt:ignore>time = 1, event = 2</mt:ignore>
+
+<$mt:setvar name="cache_expire_time_value" value="30"$>
+<$mt:setvar name="cache_expire_time_unit" value="minutes"$>
+
+<$mt:setvar name="cache_expire_event_entry" value="1"$>
+<$mt:setvar name="cache_expire_event_comment" value="1"$>
+<$mt:setvar name="cache_expire_event_trackback" value="0"$>
+<$mt:setvar name="cache_expire_event_page" value="1"$>
+<$mt:setvar name="cache_expire_event_user" value="0"$>
+<$mt:setvar name="cache_expire_event_category" value="0"$>
+<$mt:setvar name="cache_expire_event_asset" value="0"$>
+
     <mtapp:setting
         id="caching"
         label="<__trans phrase="Module Caching">"
         content_class="field-content-text">
-        <p><input type="checkbox" id="enable-caching" name="" value="" onclick="toggle('cache-options');"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enable-caching"><__trans phrase="Enable caching for this module"></label></p>
-        <ul id="cache-options" class="<mt:unless name="has_caching">hidden</mt:unless>">
-            <li><input type="radio" value="" name="" id="expire-time" onclick="DOM.addClassName('cache-events','hidden');toggleDisable('cache-time-value', 0);toggleDisable('cache-time-unit', 0);"<mt:if name="foo"> checked="checked"</mt:if>> <label for="expire-time"><__trans phrase="Expire after"></label>
-                <input type="text" id="cache-time-value" name="cache_time_value" value="<$mt:var name="cache_time_value">" size="4" maxlength="3" <mt:if name="disabled"> disabled="disabled"</mt:if> />
-                <select id="cache-time-unit" name="cache_time_unit" <mt:if name="disabled"> disabled="disabled"</mt:if>>
-                    <option value="minutes"><__trans phrase="minutes"></option>
-                    <option value="hours"><__trans phrase="hours"></option>
-                    <option value="days"><__trans phrase="days"></option>
+        <mt:if name="caching_disabled">
+        <__trans phrase="Disabled (<a href="[_1]">change publishing settings</a>)" params="<mt:var name="SCRIPT_URL">?__mode=cfg_archives&amp;blog_id=<mt:var name="BLOG_ID">">
+        <mt:else>
+        <p><input type="checkbox" id="enable-caching" name="" value=""<mt:if name="cache_enabled"> checked</mt:if> /> <label for="enable-caching"><__trans phrase="Enable caching for this module"></label></p>
+        <ul id="cache-options">
+            <li><input type="radio" value="" name="" id="expire-time" onclick="DOM.addClassName('cache-events','hidden');toggleDisable('cache-time-value', 0);toggleDisable('cache-time-unit', 0);"<mt:if name="cache_expire_by" eq="1"> checked</mt:if>> <label for="expire-time"><__trans phrase="Expire after"></label>
+                <input type="text" id="cache-time-value" name="cache_expire_time_value" value="<$mt:var name="cache_expire_time_value">" size="4" maxlength="3" <mt:unless name="cache_expire_by" eq="1"> disabled</mt:unless> />
+                <select id="cache-time-unit" name="cache_time_unit"<mt:unless name="cache_expire_by" eq="1"> disabled</mt:unless>>
+                    <option value="minutes"<mt:if name="cache_expire_time_unit" eq="minutes"> selected</mt:if>><__trans phrase="minutes"></option>
+                    <option value="hours"<mt:if name="cache_expire_time_unit" eq="hours"> selected</mt:if>><__trans phrase="hours"></option>
+                    <option value="days"<mt:if name="cache_expire_time_unit" eq="days"> selected</mt:if>><__trans phrase="days"></option>
                 </select>
             </li>
-            <li><input type="radio" value="" name="" id="expire-event" onclick="DOM.removeClassName('cache-events','hidden');toggleDisable('cache-time-value', 1);toggleDisable('cache-time-unit', 1);"<mt:if name="bar"> checked="checked"</mt:if>> <label for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
-                <ul id="cache-events" class="<mt:unless name="has_caching_event">hidden</mt:unless>">
-                    <li><input type="checkbox" value="" name="" id="cache-event-entry" onclick=""<mt:if name="foo"> checked="checked"</mt:if>> <label for="cache-event-entry"><__trans phrase="Entry"></label></li>
-                    <li><input type="checkbox" value="" name="" id="cache-event-comment" onclick=""<mt:if name="foo"> checked="checked"</mt:if>> <label for="cache-event-comment"><__trans phrase="Comment"></label></li>
-                    <li><input type="checkbox" value="" name="" id="cache-event-trackback" onclick=""<mt:if name="foo"> checked="checked"</mt:if>> <label for="cache-event-trackback"><__trans phrase="TrackBack"></label></li>
-                    <li><input type="checkbox" value="" name="" id="cache-event-page" onclick=""<mt:if name="foo"> checked="checked"</mt:if>> <label for="cache-event-page"><__trans phrase="Page"></label></li>
-                    <li><input type="checkbox" value="" name="" id="cache-event-user" onclick=""<mt:if name="foo"> checked="checked"</mt:if>> <label for="cache-event-user"><__trans phrase="User"></label></li>
-                    <li><input type="checkbox" value="" name="" id="cache-event-category" onclick=""<mt:if name="foo"> checked="checked"</mt:if>> <label for="cache-event-category"><__trans phrase="Category"></label></li>
-                    <li><input type="checkbox" value="" name="" id="cache-event-asset" onclick=""<mt:if name="foo"> checked="checked"</mt:if>> <label for="cache-event-asset"><__trans phrase="Asset"></label></li>
+            <li><input type="radio" value="" name="" id="expire-event" onclick="DOM.removeClassName('cache-events','hidden');toggleDisable('cache-time-value', 1);toggleDisable('cache-time-unit', 1);"<mt:if name="cache_expire_by" eq="2"> checked</mt:if>> <label for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
+                <ul id="cache-events" class="<mt:unless name="cache_expire_by" eq="2">hidden</mt:unless>">
+                    <li><input type="checkbox" value="" name="" id="cache-event-entry" onclick=""<mt:if name="cache_expire_event_entry"> checked</mt:if>> <label for="cache-event-entry"><__trans phrase="Entry"></label></li>
+                    <li><input type="checkbox" value="" name="" id="cache-event-comment" onclick=""<mt:if name="cache_expire_event_comment"> checked</mt:if>> <label for="cache-event-comment"><__trans phrase="Comment"></label></li>
+                    <li><input type="checkbox" value="" name="" id="cache-event-trackback" onclick=""<mt:if name="cache_expire_event_trackback"> checked</mt:if>> <label for="cache-event-trackback"><__trans phrase="TrackBack"></label></li>
+                    <li><input type="checkbox" value="" name="" id="cache-event-page" onclick=""<mt:if name="cache_expire_event_page"> checked</mt:if>> <label for="cache-event-page"><__trans phrase="Page"></label></li>
+                    <li><input type="checkbox" value="" name="" id="cache-event-user" onclick=""<mt:if name="cache_expire_event_user"> checked</mt:if>> <label for="cache-event-user"><__trans phrase="User"></label></li>
+                    <li><input type="checkbox" value="" name="" id="cache-event-category" onclick=""<mt:if name="cache_expire_event_category"> checked</mt:if>> <label for="cache-event-category"><__trans phrase="Category"></label></li>
+                    <li><input type="checkbox" value="" name="" id="cache-event-asset" onclick=""<mt:if name="cache_expire_event_asset"> checked</mt:if>> <label for="cache-event-asset"><__trans phrase="Asset"></label></li>
                 </ul>
             </li>
         </ul>
+        </mt:if>
     </mtapp:setting>
 </mt:if>
     </div>
