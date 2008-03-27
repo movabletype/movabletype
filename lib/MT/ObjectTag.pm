@@ -32,7 +32,7 @@ __PACKAGE__->install_properties({
         },
         # For tag count
         blog_ds_object_tag => {
-            Columns => ['blog_id', 'object_datasource', 'object_id', 'tag_id'],
+            columns => ['blog_id', 'object_datasource', 'object_id', 'tag_id'],
         },
     },
     child_of => 'MT::Blog',
