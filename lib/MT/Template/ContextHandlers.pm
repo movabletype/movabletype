@@ -2287,7 +2287,7 @@ sub _include_module {
 
     # Try to read from cache
     my $cache_enabled = $blog && $blog->include_cache
-        && ($arg->{cache} || $arg->{key} || (exists $arg->{ttl})) ? 1 : 0;
+        && (($arg->{cache} && $arg->{cache} > 0) || $arg->{key} || (exists $arg->{ttl})) ? 1 : 0;
     my $cache_key = $arg->{key} ? $arg->{key}
         : 'blog::' . $blog_id . '::template_' . $type  . '::' . $tmpl_name;
     my $ttl       = exists $arg->{ttl} ? $arg->{ttl} : 60 * 60; # default 60 min.
