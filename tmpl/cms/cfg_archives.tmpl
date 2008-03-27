@@ -274,45 +274,8 @@ TC.attachLoadEvent( init );
 </fieldset>
 </mt:if>
 
-<h3><__trans phrase="Publishing Options"></h3>
+<h3><__trans phrase="Asynchronous Job Queue"></h3>
 <fieldset>
-
-<mtapp:setting
-    id="preferred_archive_type"
-    label="<__trans phrase="Preferred Archive Type">"
-    hint="<__trans phrase="Used for creating links to an archived entry (permalink). Select from the archive types used in this blogs archive templates.">"
-    show_hint="1"
-    help_page="blog_settings_publishing"
-    help_section="preferred_archive_type">
-
-    <mt:loop name="entry_archive_types">
-        <mt:if name="__first__">
-<select name="preferred_archive_type" id="preferred_archive_type">
-        </mt:if>
-    <option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred">selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option>
-        <mt:if name="__last__">
-</select>
-        </mt:if>
-    </mt:loop>
-    <mt:unless name="entry_archive_types">
-<p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
-    </mt:unless>
-</mtapp:setting>
-<mt:unless name="hide_build_option">
-<mtapp:setting
-    id="dynamicity"
-    label="<__trans phrase="Publishing Method">"
-    help_page="blog_settings_publishing"
-    help_section="dynamic_publishing">
-<select name="dynamicity" id="dynamicity" onchange="return toggleDynamicOptions(this)">
-    <option value="none"<mt:if name="dynamic_none"> selected="selected"</mt:if>><__trans phrase="Publish all templates statically"></option>
-    <option value="archives"<mt:if name="dynamic_archives"> selected="selected"</mt:if>><__trans phrase="Publish only Archive Templates dynamically"></option>
-    <option value="custom"<mt:if name="dynamic_custom"> selected="selected"</mt:if>><__trans phrase="Set each template's Publish Options separately"></option>
-    <option value="all"<mt:if name="dynamic_all"> selected="selected"</mt:if>><__trans phrase="Publish all templates dynamically"></option>
-</select>
-
-</mtapp:setting>
-</mt:unless>
 
 <mtapp:setting
     id="publish_queue"
@@ -320,13 +283,48 @@ TC.attachLoadEvent( init );
     content_class="field-content-text"
     help_page="blog_settings_publishing"
     help_section="publish_queue"
+    show_label="0"
     show_hint="1"
     hint="<__trans phrase="Requires the use of a cron job to publish pages in the background.">">
     <input id="publish_queue" type="checkbox" name="publish_queue" value="1"<mt:if name="publish_queue"> checked="checked"</mt:if>> <label for="publish_queue"><__trans phrase="Use background publishing queue for publishing static pages for this blog"></label>
 </mtapp:setting>
 
+</fieldset>
+
+<h3><__trans phrase="Publishing Profile"></h3>
+<fieldset>
+
+<mtapp:setting
+    id="dynamicity"
+    label="<__trans phrase="Publishing Method">"
+    help_page="blog_settings_publishing"
+    help_section="dynamic_publishing">
+
+    <ul>
+ 
+    <li><input type="radio" id="dynamicity-sync" value="all"<mt:if name="synchronous_all"> selected="selected"</mt:if>> <label for="dynamicity-sync"><__trans phrase="Static Publishing"></label>
+    <p>Publish all files statically.</p></li>
+
+    <li><input type="radio" id="dynamicity-async" value="all"<mt:if name="asynchronous_all"> selected="selected"</mt:if>> <label for="dynamicity-async"><__trans phrase="Asynchronous Publishing"></label>
+    <p>Publish all files via the asynchronous job queue.</p></li>
+
+    <li><input type="radio" id="dynamicity-dynamic" name="dynamicity" value="dynamic"<mt:if name="dynamic"> selected="selected"</mt:if>> <label for="dynamicity-dynamic"><__trans phrase="Dynamic Publishing"></label>
+    <p>Publish all files dynamically.</p></li>
+
+    <li><input type="radio" id="dynamicity-archives" name="dynamicity" value="archives"<mt:if name="dynamic_archives"> selected="selected"</mt:if>> <label for="dynamicity-archives"><__trans phrase="Dynamic Archives Only"></label>
+    <p>Publish all archives dynamically. Publish all other files statically.</li>
+
+    <li><input type="radio" id="dynamicity-partialasync" name="dynamicity" value="partialasync"<mt:if name="partial_async"> selected="selected"</mt:if>> <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"></label>
+    <p>Publish main index template and all individual archive templates statically, and publish all other files asynchronously.</p></li>
+
+    <li><input type="radio" id="dynamicity-custom" value="custom"<mt:if name="dynamic_custom"> selected="selected"</mt:if>> <label for="dynamicity-custom"><__trans phrase="Custom"></label></li>
+    </ul>
+
+</mtapp:setting>
+
 <mt:unless name="hide_build_option">
 <div id="dynamic_options_area"<mt:if name="dynamic_none"> style="display:none;"</mt:if>>
+<h4><__trans phrase="Dynamic Publishing Options"></h4>
 
     <mtapp:setting
         id="dynamic_cache"
@@ -346,21 +344,68 @@ TC.attachLoadEvent( init );
 </div>
 </mt:unless>
 
-<mtapp:setting
-    id="include_cache"
-    label="<__trans phrase="Server Side Include">"
-    content_class="field-content-text"
-    help_page="blog_settings_publishing"
-    help_section="include_cache">
-    <input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>> <label for="include_cache"><__trans phrase="Enable include caching"></label>
-</mtapp:setting>
+</fieldset>
+
+<h3><__trans phrase="Archive Options"></h3>
+<fieldset>
+
 <mtapp:setting
     id="file_extension"
-    label="<__trans phrase="Archive File Extension">"
+    label="<__trans phrase="File Extension">"
     hint="<__trans phrase="Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').">"
     help_page="blog_setting_publishing"
     help_section="archive_file_extension">
     <input name="file_extension" id="file_extension" size="5" value="<mt:var name="file_extension" escape="html">" />
+</mtapp:setting>
+
+<mtapp:setting
+    id="preferred_archive_type"
+    label="<__trans phrase="Preferred Archive">"
+    hint="<__trans phrase="Used for creating links to an archived entry (permalink). Select from the archive types used in this blogs archive templates.">"
+    show_hint="1"
+    help_page="blog_settings_publishing"
+    help_section="preferred_archive_type">
+
+    <mt:loop name="entry_archive_types">
+        <mt:if name="__first__">
+<select name="preferred_archive_type" id="preferred_archive_type">
+        </mt:if>
+    <option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred">selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option>
+        <mt:if name="__last__">
+</select>
+        </mt:if>
+    </mt:loop>
+    <mt:unless name="entry_archive_types">
+<p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
+    </mt:unless>
+</mtapp:setting>
+
+</fieldset>
+
+<h3><__trans phrase="Module Options"></h3>
+<fieldset>
+
+<mtapp:setting
+    id="include_cache"
+    label="<__trans phrase="Module Caching">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="include_cache">
+    <input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>> <label for="include_cache"><__trans phrase="Enable template module caching"></label>
+</mtapp:setting>
+
+<mtapp:setting
+    id="ssi"
+    label="<__trans phrase="Server Side Includes">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="ssi">
+    <select>
+      <option>php</option>
+      <option>shtml</option>
+      <option>asp</option>
+      <option>jsp</option>
+    </select>
 </mtapp:setting>
 
 </fieldset>
