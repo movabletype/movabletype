@@ -71,7 +71,11 @@ sub init_handlers {
                         next if ($block->{plugin}{id}||'') eq 'core';
                         $prev_hdlr = $h->{$tag};
                     }
-                    $h->{$tag} = [ $block->{$orig_tag}, $type, $prev_hdlr ];
+		    if (ref($block->{$orig_tag}) eq 'HASH') {
+			$h->{$tag} = [ $block->{$orig_tag}{handler}, $type, $prev_hdlr ];
+                    } else {
+			$h->{$tag} = [ $block->{$orig_tag}, $type, $prev_hdlr ];
+		    }
                 }
             }
             if (my $func = $tag_set->{function}) {
@@ -85,7 +89,11 @@ sub init_handlers {
                         next if ($func->{plugin}{id}||'') eq 'core';
                         $prev_hdlr = $h->{$tag};
                     }
-                    $h->{$tag} = [ $func->{$orig_tag}, 0, $prev_hdlr ];
+		    if (ref($func->{$orig_tag}) eq 'HASH') {
+			$h->{$tag} = [ $func->{$orig_tag}{handler}, 0, $prev_hdlr ];
+		    } else {
+			$h->{$tag} = [ $func->{$orig_tag}, 0, $prev_hdlr ];
+		    }
                 }
             }
             if (my $mod = $tag_set->{modifier}) {
@@ -171,6 +179,9 @@ sub handler_for {
     my $ctx = shift;
     my $tag = lc $_[0];
     my $v = $ctx->{__handlers}{$tag};
+    if (ref($v) eq 'HASH') { 
+	$v = $ctx->{__handlers}{$tag} = $v->{handler};
+    }
     my @h = ref($v) eq 'ARRAY' ? @$v : $v;
     if (!ref($h[0])) {
         $h[0] = MT->handler_to_coderef($h[0]);
