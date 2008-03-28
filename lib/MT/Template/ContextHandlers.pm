@@ -925,6 +925,7 @@ sub _hdlr_app_listing {
         defined($insides = _hdlr_loop($ctx, $args, $cond))
             or return;
     }
+    my $listing_header = $ctx->var('listing_header') || '';
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
@@ -936,6 +937,9 @@ TABLE
     if ($show_actions) {
         return $ctx->build(<<EOT);
 <div id="$id" class="listing $listing_class">
+    <div class="listing-header">
+        $listing_header
+    </div>
     <form id="$id-form" class="listing-form"
         action="$action" method="post"
         onsubmit="return this['__mode'] ? true : false">

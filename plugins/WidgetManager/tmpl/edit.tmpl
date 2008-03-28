@@ -1,4 +1,5 @@
-<mt:setvarblock name="page_title"><__trans phrase="Edit Widget Set"></mt:setvarblock>
+<mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Widget Set"><mt:else><__trans phrase="Create Widget Set"></mt:if>
+</mt:setvarblock>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">plugins/WidgetManager/styles/app.css" type="text/css" />

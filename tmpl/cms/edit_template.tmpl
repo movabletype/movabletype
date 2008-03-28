@@ -1,4 +1,18 @@
-<mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
+<mt:setvarblock name="page_title">
+    <mt:if name="template_group" eq="widget">
+        <mt:if name="id">
+    <__trans phrase="Edit Widget">
+        <mt:else>
+    <__trans phrase="Create Widget">
+        </mt:if>
+    <mt:else>
+        <mt:if name="id">
+    <__trans phrase="Edit Template">
+        <mt:else>
+    <__trans phrase="Create Template">
+        </mt:if>
+    </mt:if>
+</mt:setvarblock>
 <mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="has_name"><mt:var name="name"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="system_msg">
@@ -79,18 +93,22 @@
         id="useful-links"
         label="<__trans phrase="Useful Links">">
         <ul>
+        <mt:if name="template_group" eq="widget">
+            <li><a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Widgets"></a></li>
+        <mt:else>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=<$mt:var name="template_group"$>_templates" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
+        </mt:if>
         <mt:if name="published_url">
             <li><a href="<mt:var name="published_url">" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
         </mt:if>
-            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=<$mt:var name="template_group"$>_templates" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
-            <li><a href="javascript:void(0)" onclick="return openManual('templates', 'tags')" class="icon-left icon-related help-link"><__trans phrase="Template tag reference"></a></li>
         </ul>
     </mtapp:widget>
 
     <mt:if name="have_includes">
         <mtapp:widget
             id="template-includes"
-            label="<__trans phrase="Includes and Widgets">">
+            label="<__trans phrase="Included Templates">">
         <ul>
         <mt:loop name="include_loop">
             <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
@@ -107,7 +125,7 @@
     <mtapp:widget
         id="tag-list"
         class="hidden"
-        label="<__trans phrase="Tag Documentation">"
+        label="<__trans phrase="Template Tag Docs">"
         label_link="$link_doc">
         <div id="tag-list-inner">
         </div>
@@ -633,8 +651,8 @@ TC.attachLoadEvent( init );
                 </mt:ignore>
     </mt:ignore>
             </mt:if>
-            <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually only"></option>
-            <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disable"></option>
+            <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
+            <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
         </select>
         </mtapp:setting>
     </mt:if>

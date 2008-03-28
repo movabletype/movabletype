@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Widget Sets"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Widgets"></mt:setvarblock>
 
 <mt:var name="position_actions_top" value="1">
 <mt:setvarblock name="html_head" append="1">
@@ -47,14 +47,13 @@ TC.attachLoadEvent( init );
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="content_header">
-    <ul>
-        <li><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">&amp;widgetmanager=<__trans phrase="New Widget Set" escape="url">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></li>
-    </ul>
-</mt:setvarblock>
 
 <mt:include name="include/header.tmpl">
 
+<mt:setvarblock name="listing_header">
+    <h3><__trans phrase="Widget Sets"></h3>
+    <p><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">&amp;widgetmanager=<__trans phrase="New Widget Set" escape="url">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></p>
+</mt:setvarblock>
 <mtapp:listing
     hide_pager="1"
     empty_message="<__trans phrase="No Widget Sets could be found.">">

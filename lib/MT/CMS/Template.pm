@@ -534,6 +534,7 @@ sub list {
     $template_type =~ s/_templates//;
 
     $params->{screen_class} = "list-template";
+    $params->{listing_screen} = 1;
 
     $app->load_list_actions( 'template', $params );
     $params->{page_actions} = $app->page_actions('list_templates');

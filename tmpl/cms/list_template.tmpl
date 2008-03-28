@@ -95,7 +95,9 @@ TC.attachLoadEvent(init);
 <mt:include name="include/header.tmpl">
 
 <mt:loop name="template_type_loop">
+<mt:if name="__first__">
 <$mt:var name="list_filter_form"$>
+</mt:if>
 <$mt:include name="include/template_table.tmpl"$>
 </mt:loop>
 

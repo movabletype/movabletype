@@ -1,32 +1,33 @@
-<h3><mt:var name="template_type_label"></h3>
+<mt:setvarblock name="listing_header">
+    <h3><mt:var name="template_type_label"></h3>
 
-<mt:unless name="template_type" like="/system|email|backup/">
-    <mt:if name="template_type" eq="archive">
-<p><__trans phrase="Create Archive Template:">
-    &nbsp;
-    <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a>
-    &nbsp;
-    <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a>
-    &nbsp;
-    <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a>
-</p>
-    <mt:elseif name="template_type" eq="module">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></p>
-    <mt:elseif name="template_type" eq="index">
-<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create index template"></a></p>
-    <mt:elseif name="create_link">
-    <mt:var name="create_link">
-    </mt:if>
-</mt:unless>
-
+    <mt:unless name="template_type" like="/system|email|backup/">
+        <mt:if name="template_type" eq="archive">
+    <p><__trans phrase="Create Archive Template:">
+        &nbsp;
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a>
+        &nbsp;
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a>
+        &nbsp;
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a>
+    </p>
+        <mt:elseif name="template_type" eq="module">
+    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></p>
+        <mt:elseif name="template_type" eq="index">
+    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create index template"></a></p>
+        <mt:elseif name="create_link">
+        <mt:var name="create_link">
+        </mt:if>
+    </mt:unless>
+</mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-<mt:unless name="template_type" eq="system"><mt:unless name="template_type" eq="email">
+    <mt:unless name="template_type" eq="system"><mt:unless name="template_type" eq="email">
     <a href="javascript:void(0)"
         onclick="doRemoveItems(getByID('<$mt:var name="template_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
         ><__trans phrase="Delete"></a>
-</mt:unless></mt:unless>
+    </mt:unless></mt:unless>
 </mt:setvarblock>
 <mt:setvarblock name="table_id"><mt:var name="template_type">-listing</mt:setvarblock>
 <mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="show-actions-bar-top">
@@ -35,20 +36,21 @@
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
                 <th class="template-name"><__trans phrase="Template Name"></th>
-        <mt:if name="template_type" like="/(index|archive)/">
+        <mt:if name="template_type" eq="index">
                 <th class="output-file"><__trans phrase="Output File"></th>
+        </mt:if>
+        <mt:if name="template_type" eq="archive">
+                <th class="output-file"><__trans phrase="Archive Path"></th>
         </mt:if>
         <mt:unless name="blog_view">
                 <th class="blog"><__trans phrase="Blog"></th>
         </mt:unless>
-        <mt:unless name="screen_id" eq="search-replace">
-                <th class="linked-template si"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
-        </mt:unless>
         <mt:if name="template_type" like="/(index|archive)/">
-                <th class="dynamic-template si"><!-- <span><__trans phrase="Dynamic"></span> --><img src="<mt:var name="static_uri">images/status_icons/dynamic.gif" alt="<__trans phrase="Dynamic Template">" title="<__trans phrase="Dynamic Template">" width="11" height="9" /></th>
-                <th class="rebuild-template si"><!-- <span><__trans phrase="Published w/Indexes"></span> --><img src="<mt:var name="static_uri">images/status_icons/rebuild.gif" alt="<__trans phrase="Published Template w/Indexes">" title="<__trans phrase="Published Template w/Indexes">" width="9" height="9" /></th>
-                <th class="view-template si"><span><__trans phrase="View"></span></th>
+                <th class="publishing-method"><!-- <img src="<mt:var name="static_uri">images/status_icons/dynamic.gif" alt="<__trans phrase="Dynamic Template">" title="<__trans phrase="Publishing Method">" width="11" height="9" /> --><__trans phrase="Publishing"></th>
         </mt:if>
+        <mt:unless name="screen_id" eq="search-replace">
+                <th class="linked-template si"><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
+        </mt:unless>
             </tr>
         </thead>
         <tbody>
@@ -59,7 +61,7 @@
     <mt:if name="template_type" like="/(index|archive)/">
                 <td class="output-file">
         <mt:if name="outfile">
-            <mt:var name="outfile" escape="html">
+            <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a></mt:if>
         <mt:else name="template_type" eq="archive">
                     <ul>
             <mt:loop name="archive_types">
@@ -76,14 +78,20 @@
     <mt:unless name="blog_view">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
     </mt:unless>
-    <mt:unless name="screen_id" eq="search-replace">
-                <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><!-- <span><__trans phrase="Linked"></span> --><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
-    </mt:unless>
     <mt:if name="template_type" like="/(index|archive)/">
-                <td class="dynamic-template si status-<mt:if name="build_dynamic">dynamic<mt:else>static</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="build_dynamic"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
-                <td class="rebuild-template si status-<mt:if name="rebuild_me">rebuild<mt:else>norebuild</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="rebuild_me"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" /></td>
-                <td class="view-template si status-view"><mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a><mt:else><__trans phrase="-"></mt:if></td>
+                <td class="publishing-method">
+                    <mt:if name="build_type" eq="0"><__trans phrase="Disabled">
+                    <mt:else name="build_type" eq="2"><__trans phrase="Manual">
+                    <mt:else name="build_type" eq="3"><__trans phrase="Dynamic">
+                    <mt:else name="build_type" eq="4"><__trans phrase="Asynchronous">
+                    <mt:else name="build_type" eq="5"><__trans phrase="Scheduled">
+                    <mt:else><__trans phrase="Static">
+                    </mt:if>
+                </td>
     </mt:if>
+    <mt:unless name="screen_id" eq="search-replace">
+                <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
+    </mt:unless>
             </tr>
     <mt:if __last__>
         </tbody>

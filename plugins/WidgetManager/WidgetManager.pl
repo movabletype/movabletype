@@ -61,7 +61,7 @@ sub init_registry {
                 },
                 menus => {
                     'design:widgets' => {
-                        label => 'Sidebars',
+                        label => 'Widgets',
                         mode => 'list_widget',
                         order => 200,
                         permission => 'edit_templates',

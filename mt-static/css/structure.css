@@ -2035,6 +2035,24 @@ optgroup option {
 
 /* Listing ---------------------------------------------------------------------------------- */
 
+.listing-header {
+    background: #fff;
+    padding: 10px 8px 6px;
+    border-bottom: 1px solid #CDDEE7;
+}
+
+.listing-form {
+    border-bottom: 1px solid #CDDEE7;
+}
+
+.listing-header h3 {
+    margin: 6px 0 0;
+}
+
+.listing-header p {
+    margin: .25em 0 0;
+}
+
 .listing table {
     width: 100%;
     margin: 0;
@@ -2135,6 +2153,11 @@ optgroup option {
 .listing tr a { color: #036; }
 .listing tr.selected a { color: #fff; }
 .listing tr.selected .buttons a { border-color: #fff; }
+
+.publishing-method {
+    width: 1%;
+    white-space: nowrap;
+}
 
 /* checkboxes and status icons */
 
@@ -2520,6 +2543,7 @@ optgroup option {
 
 td.output-file {
     width: 50%;
+    white-space: nowrap;
 }
 
 td.output-file ul {
