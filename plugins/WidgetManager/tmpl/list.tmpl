@@ -1,15 +1,19 @@
 <mt:setvarblock name="page_title"><__trans phrase="Widget Sets"></mt:setvarblock>
+
 <mt:var name="position_actions_top" value="1">
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">plugins/WidgetManager/styles/app.css" type="text/css" />
 <script type="text/javascript" src="<mt:var name="static_uri">plugins/WidgetManager/js/app.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
-var tableSelect;
+var widgetSetTableSelect;
+var widgetTableSelect;
 function init() {
     // setup
-    tableSelect = new TC.TableSelect( "widgetset-listing-table" );
-    tableSelect.rowSelect = true;
+    widgetSetTableSelect = new TC.TableSelect( "widgetset-listing-table" );
+    widgetSetTableSelect.rowSelect = true;
+    widgetTableSelect = new TC.TableSelect( "widget-listing-table" );
+    widgetTableSelect.rowSelect = true;
 }
 
 TC.attachLoadEvent( init );
@@ -30,15 +34,6 @@ TC.attachLoadEvent( init );
             <p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
         </mtapp:widget>
     </mt:if>
-    <mtapp:widget
-        id="useful-links"
-        label="<__trans phrase="Useful links">">
-        <ul>
-            <li>
-                <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">&amp;type=template&filter_key=widget_templates" class=""><__trans phrase="Edit Widget Templates"></a></li>
-            </li>
-        </ul>
-    </mtapp:widget>
 </mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="rebuild">
@@ -57,8 +52,9 @@ TC.attachLoadEvent( init );
         <li><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">&amp;widgetmanager=<__trans phrase="New Widget Set" escape="url">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></li>
     </ul>
 </mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
-    
+
 <mtapp:listing
     hide_pager="1"
     empty_message="<__trans phrase="No Widget Sets could be found.">">
@@ -66,8 +62,8 @@ TC.attachLoadEvent( init );
     <thead>
         <tr>
             <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-            <th class="widgetmanager-name"><__trans phrase="Name"></th>
-            <th class="widgetmanager-widgets"><__trans phrase="Installed Widgets"></th>
+            <th width="40%" class="widgetmanager-name"><__trans phrase="Name"></th>
+            <th width="59%" class="widgetmanager-widgets"><__trans phrase="Installed Widgets"></th>
         </tr>
     </thead>
     <tbody>
@@ -81,5 +77,14 @@ TC.attachLoadEvent( init );
     </tbody>
     </mt:if>
 </mtapp:listing>
+
+<mt:setvarblock name="create_link">
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create widget template"></a></p>
+</mt:setvarblock>
+
+<mt:include name="include/template_table.tmpl"
+    object_loop="$widget_table"
+    template_type="widget"
+    template_type_label="<__trans phrase="Widget Templates">">
 
 <mt:include name="include/footer.tmpl">

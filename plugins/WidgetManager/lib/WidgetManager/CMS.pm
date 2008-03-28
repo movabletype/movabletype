@@ -167,8 +167,8 @@ sub list {
     return $app->return_to_dashboard(permission => 1)
         unless _permission_check();
 
-      my $q = $app->{query};
-      my $blog_id = scalar $q->param('blog_id');
+      my $q = $app->param;
+      my $blog_id = int(scalar $q->param('blog_id'));
 
       my $tmpl = $app->load_tmpl('list.tmpl');
       $tmpl->param('blog_id'  => $blog_id);
@@ -212,13 +212,21 @@ sub list {
           }
           push @widgetmanagers,{
             widgetmanager => $key,
-            names   => join(',', @w),
+            names   => join(', ', @w),
             widgets => $modulesets->{$key}
           };
     }
     if ($widgetmanager eq 'New Widget Manager') {
         $widgetmanager = $q->param('name');
     }
+
+    require MT::CMS::Template;
+    my $widget_loop = MT::CMS::Template::build_template_table( $app,
+        load_args => [ { type => 'widget', blog_id => $blog_id },
+        { sort => 'name', direction => 'ascend' } ],
+    );
+    $tmpl->param('widget_table', $widget_loop);
+    $tmpl->param('blog_view', 1) if $blog_id;
 
     $tmpl->param(object_loop => \@widgetmanagers);
     $tmpl->param(object_type => "widgetset");
@@ -230,6 +238,7 @@ sub list {
     $tmpl->param(deleted           => $app->param('deleted') || 0);
     $tmpl->param(listing_screen => 1);
     $tmpl->param(screen_id => "list-widget-set");
+
     return $app->build_page($tmpl);
 }
 

@@ -557,47 +557,58 @@ sub list {
 
     my @tmpl_loop;
     my %types;
-    if ($blog) {
-        # blog template listings
-        %types = ( 
-            'index' => {
-                label => $app->translate("Index Templates"),
-                type => 'index',
-                order => 100,
-            },
-            'archive' => {
-                label => $app->translate("Archive Templates"),
-                type => ['archive', 'individual', 'page', 'category'],
-                order => 200,
-            },
-            'module' => {
-                label => $app->translate("Template Modules"),
-                type => 'custom',
-                order => 300,
-            },
-            'system' => {
-                label => $app->translate("System Templates"),
-                type => [ keys %$sys_tmpl ],
-                order => 400,
-            },
-        );
+    if ($template_type ne 'backup') {
+        if ($blog) {
+            # blog template listings
+            %types = ( 
+                'index' => {
+                    label => $app->translate("Index Templates"),
+                    type => 'index',
+                    order => 100,
+                },
+                'archive' => {
+                    label => $app->translate("Archive Templates"),
+                    type => ['archive', 'individual', 'page', 'category'],
+                    order => 200,
+                },
+                'module' => {
+                    label => $app->translate("Template Modules"),
+                    type => 'custom',
+                    order => 300,
+                },
+                'system' => {
+                    label => $app->translate("System Templates"),
+                    type => [ keys %$sys_tmpl ],
+                    order => 400,
+                },
+            );
+        } else {
+            # global template listings
+            %types = ( 
+                'module' => {
+                    label => $app->translate("Template Modules"),
+                    type => 'custom',
+                    order => 100,
+                },
+                'email' => {
+                    label => $app->translate("Email Templates"),
+                    type => 'email',
+                    order => 200,
+                },
+                'system' => {
+                    label => $app->translate("System Templates"),
+                    type => [ keys %$sys_tmpl ],
+                    order => 300,
+                },
+            );
+        }
     } else {
         # global template listings
         %types = ( 
-            'module' => {
-                label => $app->translate("Template Modules"),
-                type => 'custom',
+            'backup' => {
+                label => $app->translate("Template Backups"),
+                type => 'backup',
                 order => 100,
-            },
-            'email' => {
-                label => $app->translate("Email Templates"),
-                type => 'email',
-                order => 200,
-            },
-            'system' => {
-                label => $app->translate("System Templates"),
-                type => [ keys %$sys_tmpl ],
-                order => 300,
             },
         );
     }
@@ -632,7 +643,6 @@ sub list {
 sub preview {
     my $app         = shift;
     my $q           = $app->param;
-    my $type        = $q->param('_type') || 'entry';
     my $blog_id     = $q->param('blog_id');
     my $blog        = $app->blog;
     my $id          = $q->param('id');
@@ -1303,7 +1313,7 @@ sub build_template_table {
 
         # FIXME: enumeration of types
         $row->{can_delete} = 1
-          if $tmpl->type =~ m/(custom|index|archive|page|individual|category)/;
+          if $tmpl->type =~ m/(custom|index|archive|page|individual|category|widget)/;
         if ($blog) {
             $row->{weblog_name} = $blog->name;
         }
@@ -1315,7 +1325,7 @@ sub build_template_table {
         }
         $row->{object} = $tmpl;
         push @data, $row;
-        last if @data > $limit;
+        last if defined($limit) && (@data > $limit);
     }
     return [] unless @data;
 

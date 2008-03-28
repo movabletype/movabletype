@@ -75,18 +75,6 @@ sub init_registry {
                         trigger => 'widget',
                     },
                 },
-                list_filters => {
-                    template => {
-                        widget_templates => {
-                            label => "Widgets",
-                            order => 500,
-                            handler => sub {
-                                my ($terms) = @_;
-                                $terms->{type} = 'widget';
-                            },
-                        },
-                    },
-                },
             },
         },
     });
