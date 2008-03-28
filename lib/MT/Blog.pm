@@ -391,15 +391,27 @@ sub include_statement {
     my $blog = shift;
     my ($name) = @_;
 
-    my $system = $blog->include_system || '';
-    my $include = $blog->include_path($name);
+    my $system = $blog->include_system or return;
 
-    my $statement = $system eq 'php'   ? q{<?php include("%s") ?>}
-                  : $system eq 'jsp'   ? q{<%@ include file="%s" %>}
-                  : $system eq 'shtml' ? '<!--#include file="%s" -->'
-                  : $system eq 'asp'   ? '<!--#include file="%s" -->'
-                  :                      return
-                  ;
+    my ($statement, $include);
+    if ($system eq 'shtml') {
+        $statement = q{<!--#include virtual="%s" -->};
+
+        my $filestem = MT::Util::dirify($name);
+        my $filename = join q{.}, $filestem, $blog->file_extension;
+        $include = join q{/}, $blog->site_url . MT->config('IncludesDir'),
+            substr($filestem, 0, 3), $filename;
+
+        $include =~ s{ \A \w+ :// [^/]+ }{}xms;
+    }
+    else {
+        $include = $blog->include_path($name);
+        $statement = $system eq 'php'   ? q{<?php include("%s") ?>}
+                   : $system eq 'jsp'   ? q{<%@ include file="%s" %>}
+                   : $system eq 'asp'   ? '<!--#include file="%s" -->'
+                   :                      return
+                   ;
+    }
     return sprintf $statement, MT::Util::encode_php($include, q{qq});
 }
 
