@@ -375,14 +375,22 @@ sub publish_unauthd_commenters {
     $_[0]->moderate_unreg_comments == MODERATE_NONE;
 }
 
-sub include_path {
+sub include_path_parts {
     my $blog = shift;
     my ($name) = @_;
 
     my $filestem = MT::Util::dirify($name);
     my $filename = join q{.}, $filestem, $blog->file_extension;
-    my $path = File::Spec->catdir($blog->site_path, MT->config('IncludesDir'),
-        substr($filestem, 0, 3));
+    return (MT->config('IncludesDir'), substr($filestem, 0, 3), $filename);
+}
+
+sub include_path {
+    my $blog = shift;
+    my ($name) = @_;
+
+    my @parts = $blog->include_path_parts($name);
+    my $filename = pop @parts;
+    my $path = File::Spec->catdir($blog->site_path, @parts);
     my $file_path = File::Spec->catfile($path, $filename);
     return wantarray ? ($path, $file_path) : $file_path;
 }
@@ -397,12 +405,10 @@ sub include_statement {
     if ($system eq 'shtml') {
         $statement = q{<!--#include virtual="%s" -->};
 
-        my $filestem = MT::Util::dirify($name);
-        my $filename = join q{.}, $filestem, $blog->file_extension;
-        $include = join q{/}, $blog->site_url . MT->config('IncludesDir'),
-            substr($filestem, 0, 3), $filename;
-
-        $include =~ s{ \A \w+ :// [^/]+ }{}xms;
+        my $site_url = $blog->site_url;
+        $site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
+        $site_url =~ s{ / \z }{}xms;
+        $include = join q{/}, $site_url, $blog->include_path_parts($name);
     }
     else {
         $include = $blog->include_path($name);
