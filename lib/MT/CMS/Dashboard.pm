@@ -100,20 +100,11 @@ sub this_is_you_widget {
         }
     );
     if ( $param->{publish_count} ) {
-        require MT::Comment;
-        $param->{comment_count} = MT::Comment->count(
-            { visible => 1, },
-            {
-                join => MT::Entry->join_on(
-                    undef,
-                    {
-                        author_id => $user->id,
-                        'id'      => \'= comment_entry_id',
-                    },
-                    {},
-                ),
-            }
-        );
+        my $iter = MT::Entry->sum_group_by({
+            author_id => $user->id,
+        }, { sum => 'comment_count', group => ['author_id'] });
+        my ($count, $author_id) = $iter->();
+        $param->{comment_count} = $count;
     }
 
     my $last_post = MT::Entry->load(
