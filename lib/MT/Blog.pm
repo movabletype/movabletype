@@ -242,6 +242,9 @@ sub create_default_templates {
             $obj->column($v, $val->{$v}) if $obj->has_column($v);
         }
         $obj->blog_id($blog->id);
+        if (my $pub_opts = $val->{publishing}) {
+            $obj->include_with_ssi(1) if $pub_opts->{include_with_ssi};
+        }
         $obj->save;
         if ($val->{mappings}) {
             push @arch_tmpl, {
