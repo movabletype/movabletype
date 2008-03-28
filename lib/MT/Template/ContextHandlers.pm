@@ -4956,6 +4956,8 @@ sub _hdlr_comments {
         }
         else {
             @comments = @$comments;
+            $no_resort = 1
+                unless $args->{sort_order} || $args->{sort_by};
         }
         if ($n) {
             my $max = $n - 1 > $#comments ? $#comments : $n - 1;
