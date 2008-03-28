@@ -53,8 +53,6 @@ sub core_methods {
 
         ## Edit methods
         'edit_role'  => "${pkg}User::edit_role",
-        'edit_cache' => "${pkg}Cache::edit",
-        'view_cache' => "${pkg}Cache::edit",
 
         ## Listing methods
         'list_ping'     => "${pkg}TrackBack::list",
@@ -75,7 +73,6 @@ sub core_methods {
         'list_tag'         => "${pkg}Tag::list",
         'list_association' => "${pkg}User::list_association",
         'list_role'        => "${pkg}User::list_role",
-        'list_cache'       => "${pkg}Cache::list",
 
         'asset_insert'        => "${pkg}Asset::insert",
         'asset_userpic'       => "${pkg}User::asset_userpic",
@@ -103,11 +100,9 @@ sub core_methods {
         'save_pages'   => "${pkg}Page::save",
         'save_entry'   => "${pkg}Entry::save",
         'save_role'    => "${pkg}User::save_role",
-        'save_cache'   => "${pkg}Cache::save",
 
         ## Delete
         'delete_entry'   => "${pkg}Entry::delete",
-        'delete_session' => "${pkg}Cache::delete",
 
         ## List actions
         'enable_object'  => "${pkg}User::enable",
@@ -1445,12 +1440,6 @@ sub core_menus {
             permission => "administer_blog",
             view       => "system",
         },
-        'tools:job' => {
-            label      => "Module Cache",
-            order      => 800,
-            mode       => 'list_cache',
-            permission => 'administer',
-        },
 
         # System menu which is actually separate
         # in the CMS navigation
@@ -1499,12 +1488,6 @@ sub core_menus {
             label             => "Tools",
             mode              => 'tools',
             order             => 600,
-            system_permission => 'administer',
-        },
-        'system:cache' => {
-            label             => "Module Caehe",
-            mode              => 'list_cache',
-            order             => 800,
             system_permission => 'administer',
         },
     };
@@ -1636,9 +1619,6 @@ sub init_core_callbacks {
             $pkg . 'post_save.asset'   => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset' => "${pfx}Asset::post_delete",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
-
-            # Caches (Sessions)
-            $pkg . 'edit_session' => "${pfx}Cache::edit",
         }
     );
 }
