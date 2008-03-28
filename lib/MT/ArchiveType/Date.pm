@@ -79,7 +79,7 @@ sub dated_author_entries {
     my $archiver = MT->publisher->archiver($at);
     my ( $start, $end );
     if ($ts) {
-        ( $start, $end ) = $archiver->date_range->($ts);
+        ( $start, $end ) = $archiver->date_range($ts);
     }
     else {
         $start = $ctx->{current_timestamp};
@@ -126,6 +126,45 @@ sub get_entry {
             start_val => $ts
         }
     );
+    $entry;
+}
+
+# get an entry in the next or previous archive for dated-based ArchiveType
+sub next_archive_entry     { $_[0]->adjacent_archive_entry({ %{$_[1]}, order => 'next'     }) }
+sub previous_archive_entry { $_[0]->adjacent_archive_entry({ %{$_[1]}, order => 'previous' }) }
+
+sub adjacent_archive_entry {
+    my $obj = shift;
+    my ( $param ) = @_;
+
+    my $order   = ( $param->{order} eq 'previous' ) ? 'descend' : 'ascend';
+    my $cat     = $param->{category} if $obj->category_based;
+    my $author  = $param->{author}   if $obj->author_based;
+
+    my $ts      = $param->{ts};
+    my $blog_id = $param->{blog_id} || ($param->{blog} ? $param->{blog}->id : undef);
+
+    # if $param->{entry} given, override $ts and $blog_id.
+    if (my $e = $param->{entry}) {
+        $ts      = $e->authored_on;
+        $blog_id = $e->blog_id;
+    }
+    my ( $start, $end ) = $obj->date_range($ts);
+    $ts = ( $order eq 'descend' ) ? $start : $end;
+
+    require MT::Entry;
+    require MT::Placement;
+    my $entry = MT::Entry->load({
+        status  => MT::Entry::RELEASE(),
+        $blog_id ? ( blog_id   => $blog_id    ) : (),
+        $author  ? ( author_id => $author->id ) : (),
+    }, {
+        limit     => 1,
+        'sort'    => 'authored_on',
+        direction => $order,
+        start_val => $ts,
+        $cat     ? ( 'join'    => [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ] ) : (),
+    });
     $entry;
 }
 

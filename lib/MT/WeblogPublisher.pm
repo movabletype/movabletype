@@ -377,7 +377,7 @@ sub rebuild_entry {
     }
     return 1 if $blog->is_dynamic;
 
-    my $at = $blog->archive_type;
+    my $at = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred : $blog->archive_type;
     if ( $at && $at ne 'None' ) {
         my @at = split /,/, $at;
         for my $at (@at) {
@@ -430,22 +430,23 @@ sub rebuild_entry {
     if ( $param{BuildDependencies} ) {
         ## Rebuild previous and next entry archive pages.
         if ( my $prev = $entry->previous(1) ) {
-            $mt->rebuild_entry( Entry => $prev ) or return;
-
+            $mt->rebuild_entry( Entry => $prev, PreferredArchiveOnly => 1 ) or return;
             ## Rebuild the old previous and next entries, if we have some.
             if ( $param{OldPrevious}
+                && ( $param{OldPrevious} != $prev->id )
                 && ( my $old_prev = MT::Entry->load( $param{OldPrevious} ) ) )
             {
-                $mt->rebuild_entry( Entry => $old_prev ) or return;
+                $mt->rebuild_entry( Entry => $old_prev, PreferredArchiveOnly => 1 ) or return;
             }
         }
         if ( my $next = $entry->next(1) ) {
-            $mt->rebuild_entry( Entry => $next ) or return;
+            $mt->rebuild_entry( Entry => $next, PreferredArchiveOnly => 1 ) or return;
 
             if ( $param{OldNext}
+                && ( $param{OldNext} != $next->id )
                 && ( my $old_next = MT::Entry->load( $param{OldNext} ) ) )
             {
-                $mt->rebuild_entry( Entry => $old_next ) or return;
+                $mt->rebuild_entry( Entry => $old_next, PreferredArchiveOnly => 1 ) or return;
             }
         }
     }
@@ -465,12 +466,14 @@ sub rebuild_entry {
         my @db_at = grep { my $archiver = $mt->archiver($_); $archiver && $archiver->date_based } $mt->archive_types;
         for my $at (@db_at) {
             if ( $at{$at} ) {
-                my @arg = ( $entry->authored_on, $entry->blog_id );
                 my $archiver = $mt->archiver($at);
-                if ( my $prev_arch = $archiver->get_entry( @arg, 'previous' ) ) {
-                    if ( $archiver->category_based ) {
-                        my $cats = $prev_arch->categories;
-                        for my $cat (@$cats) {
+                if ( $archiver->category_based ) {
+                    my $cats = $entry->categories;
+                    for my $cat (@$cats) {
+                        if ( my $prev_arch = $archiver->previous_archive_entry({
+                            entry    => $entry,
+                            category => $cat,
+                        }) ) {
                             $mt->_rebuild_entry_archive_type(
                                 NoStatic => $param{NoStatic},
                                 Entry    => $prev_arch,
@@ -482,24 +485,10 @@ sub rebuild_entry {
                                 ArchiveType => $at
                             ) or return;
                         }
-                    }
-                    else {
-                        $mt->_rebuild_entry_archive_type(
-                            NoStatic    => $param{NoStatic},
-                            Entry       => $prev_arch,
-                            Blog        => $blog,
-                            ArchiveType => $at,
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            Author => $prev_arch->author
-                        ) or return;
-                    }
-                }
-                if ( my $next_arch = $archiver->get_entry( @arg, 'next' ) ) {
-                    if ( $archiver->category_based ) {
-                        my $cats = $next_arch->categories;
-                        for my $cat (@$cats) {
+                        if ( my $next_arch = $archiver->next_archive_entry({
+                            entry    => $entry,
+                            category => $cat,
+                        }) ) {
                             $mt->_rebuild_entry_archive_type(
                                 NoStatic => $param{NoStatic},
                                 Entry    => $next_arch,
@@ -512,7 +501,26 @@ sub rebuild_entry {
                             ) or return;
                         }
                     }
-                    else {
+                } else {
+                    if ( my $prev_arch = $archiver->previous_archive_entry({
+                        entry => $entry,
+                        $archiver->author_based ? (author => $entry->author) : (),
+                    }) ) {
+                        $mt->_rebuild_entry_archive_type(
+                            NoStatic    => $param{NoStatic},
+                            Entry       => $prev_arch,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                            $archiver->author_based ? (Author => $entry->author) : (),
+                        ) or return;
+                    }
+                    if ( my $next_arch = $archiver->next_archive_entry({
+                        entry => $entry,
+                        $archiver->author_based ? (author => $entry->author) : (),
+                    }) ) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => $param{NoStatic},
                             Entry       => $next_arch,
@@ -521,7 +529,7 @@ sub rebuild_entry {
                             $param{TemplateMap}
                             ? ( TemplateMap => $param{TemplateMap} )
                             : (),
-                            Author => $next_arch->author
+                            $archiver->author_based ? (Author => $entry->author) : (),
                         ) or return;
                     }
                 }
@@ -739,8 +747,6 @@ sub _rebuild_entry_archive_type {
 
     my $archiver = $mt->archiver($at);
     return unless $archiver;
-
-    my $fmgr = $blog->file_mgr;
 
     # Special handling for pages-- they are always published to the
     # 'site' path instead of the 'archive' path, which is reserved for blog

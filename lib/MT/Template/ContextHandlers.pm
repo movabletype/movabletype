@@ -5614,26 +5614,20 @@ sub _hdlr_archive_prev_next {
     my $arctype = MT->publisher->archiver($at);
     return '' unless $arctype;
 
-    my ($start, $end, $entry);
+    my $entry;
     if ($arctype->date_based && $arctype->category_based) {
-        my $cat = $ctx->stash('archive_category');
-        $start = $ctx->{current_timestamp};
-        $end = $ctx->{current_timestamp_end};
-        if ($is_prev) {
-            $entry = $arctype->get_adjacent_category_entry( $start, $cat, 'previous' );
-        } else {
-            $entry = $arctype->get_adjacent_category_entry( $end, $cat, 'next' );
-        }
+        my $param = {
+            ts       => $ctx->{current_timestamp},
+            blog_id  => $ctx->stash('blog_id'),
+            category => $ctx->stash('archive_category'),
+        };
+        $entry = $is_prev ? $arctype->previous_archive_entry($param) : $arctype->next_archive_entry($param);
     } elsif ($arctype->date_based && $arctype->author_based) {
-        my $author = $ctx->stash('author');
-        my $blog = $ctx->stash('blog');
-        $start = $ctx->{current_timestamp};
-        $end = $ctx->{current_timestamp_end};
-        if ($is_prev) {
-            $entry = $arctype->get_adjacent_author_entry( $start, $blog->id, $author, 'previous' );
-        } else {
-            $entry = $arctype->get_adjacent_author_entry( $end, $blog->id, $author, 'next' );
-        }
+        my $param = {
+            ts       => $ctx->{current_timestamp},
+            blog_id  => $ctx->stash('blog_id'),
+            author   => $ctx->stash('author'),
+        };
     } elsif ($arctype->category_based) {
         return _hdlr_category_prevnext(@_);
     } elsif ($arctype->author_based) {
@@ -5658,9 +5652,11 @@ sub _hdlr_archive_prev_next {
             "[_1] can be used only with Daily, Weekly, or Monthly archives.",
             "<MT$tag>" ))
             unless $arctype->date_based;
-        my @arg = ($ts, $ctx->stash('blog_id'), $at);
-        push @arg, $is_prev ? 'previous' : 'next';
-        $entry = get_entry(@arg);
+        my $param = {
+            ts => $ctx->{current_timestamp},
+            blog_id => $ctx->stash('blog_id'),
+        };
+        $entry = $is_prev ? $arctype->previous_archive_entry($param) : $arctype->next_archive_entry($param);
     }
     if ($entry) {
         my $builder = $ctx->stash('builder');

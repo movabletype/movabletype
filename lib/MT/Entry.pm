@@ -224,7 +224,7 @@ sub _nextprev {
         args      => $args,
         by        => 'authored_on',
     );
-    weaken($o->{$label} = $o) if $o;
+    weaken($obj->{$label} = $o) if $o;
     return $o;
 }
 

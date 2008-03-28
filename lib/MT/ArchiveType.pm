@@ -9,11 +9,6 @@ package MT::ArchiveType;
 use strict;
 use MT::WeblogPublisher;
 
-our %ArchiveTypes;
-BEGIN {
-    *ArchiveTypes = *MT::WeblogPublisher::ArchiveTypes;
-}
-
 sub new {
     my $pkg  = shift;
     my $self = {@_};
@@ -138,8 +133,7 @@ sub archive_entries_count {
     my $auth     = $params->{Author};
     my ( $start, $end );
     if ($ts) {
-        MT::WeblogPublisher::init_archive_types() unless %ArchiveTypes;
-        my $archiver = $ArchiveTypes{$at};
+        my $archiver = MT->publisher->archiver($at);
         ( $start, $end ) = $archiver->date_range($ts) if $archiver;
     }
 

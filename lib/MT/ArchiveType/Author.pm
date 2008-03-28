@@ -209,30 +209,4 @@ sub date_based_author_entries {
     \@entries;
 }
 
-sub get_adjacent_author_entry {
-    my $self = shift;
-    my ( $ts, $blog_id, $author, $order ) = @_;
-    if ( $order eq 'previous' ) {
-        $order = 'descend';
-    }
-    else {
-        $order = 'ascend';
-    }
-    require MT::Entry;
-    my $entry = MT::Entry->load(
-        {
-            status    => MT::Entry::RELEASE(),
-            author_id => $author->id,
-            blog_id   => $blog_id
-        },
-        {
-            limit     => 1,
-            'sort'    => 'authored_on',
-            direction => $order,
-            start_val => $ts
-        }
-    );
-    $entry;
-}
-
 1;
