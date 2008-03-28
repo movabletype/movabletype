@@ -258,6 +258,7 @@ sub cache {
                     ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     object_datasource => $ds,
                 }, {
+                    unique => 1,
                     join => $class->join_on( undef, {
                         'id' => \'= objecttag_object_id',
                         ( $blog_id ? ( blog_id => $blog_id ) : () ),
@@ -267,7 +268,6 @@ sub cache {
                         direction => 'descend'
                     })
                 }),
-                unique => 1,
                 limit => $limit,
                 fetchonly => [ 'name' ]
             }
