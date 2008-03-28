@@ -2334,7 +2334,7 @@ sub _include_module {
     }
 
     if ($use_ssi) {
-        my $include_name = $cache_key || $tmpl_name;
+        my $include_name = $arg->{key} || $tmpl_name;
         my $fmgr = $blog->file_mgr;
         my ($path, $file_path) = $blog->include_path($include_name);
         if (!$fmgr->exists($path)) {
