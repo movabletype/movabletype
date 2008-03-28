@@ -23,9 +23,6 @@ __PACKAGE__->install_properties({
         object_id => 1,
         tag_id => 1,
         object_datasource => 1,
-        blog_ds => {
-            columns => ['blog_id', 'object_datasource'],
-        },
         # For MTTags
         blog_ds_tag => {
             columns => ['blog_id', 'object_datasource', 'tag_id'],
