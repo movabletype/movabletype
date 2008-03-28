@@ -1,4 +1,4 @@
-<h3><mt:var name="template_type_label" escape="html"></h3>
+<h3><mt:var name="template_type_label"></h3>
 
 <mt:unless name="template_type" like="/system|email|backup/">
     <mt:if name="template_type" eq="archive">
@@ -14,6 +14,8 @@
 <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></p>
     <mt:elseif name="template_type" eq="index">
 <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create index template"></a></p>
+    <mt:elseif name="create_link">
+    <mt:var name="create_link">
     </mt:if>
 </mt:unless>
 
