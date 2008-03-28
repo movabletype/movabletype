@@ -383,27 +383,11 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        my $count   = MT::Tag->count(
-            undef,
-            {
-                'join' => MT::ObjectTag->join_on(
-                    'tag_id',
-                    {
-                        blog_id           => $blog_id,
-                        object_datasource => MT::Asset->datasource
-                    },
-                    { unique => 1 }
-                )
-            }
-        );
-        if ( $count > 1000 ) {    # FIXME: Configurable limit?
-            $param->{defer_tag_load} = 1;
-        }
-        else {
-            require JSON;
-            $param->{tags_js} = JSON::objToJson(
-                MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
-        }
+        require JSON;
+        my $json = JSON->new( autoconv => 0 ); # stringifies numbers this way
+        $param->{tags_js} =
+          $json->objToJson(
+            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
     }
 
     $app->load_tmpl( 'dialog/asset_options.tmpl', $param );

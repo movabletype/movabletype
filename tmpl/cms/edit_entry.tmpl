@@ -813,7 +813,7 @@ var tbTableSelect;
 var cmtTableSelect;
 var autoTag;
 <mt:if name="tags_js">
-tagsList = <$mt:var name="tags_js"$>;
+tagList = <$mt:var name="tags_js"$>;
 </mt:if>
 function init() {
     // setup
@@ -837,37 +837,9 @@ function init() {
         }
 </mt:if>
     }
-    <mt:if name="defer_tag_load">window.setTimeout("deferredTagLoad()", 500);<mt:else>
-    <mt:if name="tags_js">initTags();</mt:if></mt:if>
+    <mt:if name="tags_js">initTags();</mt:if>
     <mt:unless name="id">title.focus();</mt:unless>
 }
-
-<mt:if name="defer_tag_load">
-function deferredTagLoad() {
-    /* http://del.icio.us/feeds/json/tags/username */
-    TC.Client.call({
-        'load': tagsLoaded,
-        'method': 'POST',
-        'uri': '<$mt:var name="mt_url"$>',
-        'arguments': { '__mode': 'js_tag_list',
-            'blog_id': '<$mt:var name="blog_id"$>',
-            'magic_token': '<$mt:var name="magic_token"$>'}
-    });
-}
-
-function tagsLoaded(c, result) {
-    try {
-        var x = eval('(' + result + ')');
-        if (x.error) {
-            // suppress error. tag completion isn't critical
-            return;
-        }
-        tags = x.result.tags;
-    } catch (e) {
-    }
-    initTags();
-}
-</mt:if>
 
 var tagPos = 0;
 function initTags() {

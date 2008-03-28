@@ -140,7 +140,7 @@ sub js_tag_list {
         $result = { tags => $tag_list };
     }
     else {
-        $result = { tags => {} };
+        $result = { tags => [] };
     }
     $app->json_result($result);
 }

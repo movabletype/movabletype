@@ -231,30 +231,12 @@ sub edit {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
-        require MT::ObjectTag;
-        my $count = MT::Tag->count(
-            undef,
-            {
-                'join' => MT::ObjectTag->join_on(
-                    'tag_id',
-                    {
-                        blog_id           => $blog_id,
-                        object_datasource => MT::Entry->datasource
-                    },
-                    { unique => 1 }
-                )
-            }
-        );
-        if ( $count > 1000 ) {    # FIXME: Configurable limit?
-            $param->{defer_tag_load} = 1;
-        }
-        else {
-            require JSON;
-            $param->{tags_js} =
-              JSON::objToJson(
-                MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry', private => 1 )
-              );
-        }
+        require JSON;
+        my $json = JSON->new( autoconv => 0 ); # stringifies numbers this way
+        $param->{tags_js} =
+          $json->objToJson(
+            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry', private => 1 )
+          );
 
         $param->{can_edit_categories} = $perms->can_edit_categories;
     }
