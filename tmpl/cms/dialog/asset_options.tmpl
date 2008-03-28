@@ -10,8 +10,6 @@
 
     // array of tag names
     var tagList;
-    // raw structure of tags (hash of tag -> count)
-    var tags;
 
     function tagSplit(str) {
         var delim = RegExp.escape(tag_delim);
@@ -30,7 +28,7 @@
 
     var autoTag;
     <mt:if name="tags_js">
-    tags = <mt:var name="tags_js">;
+    tagList = <mt:var name="tags_js">;
     </mt:if>
 
     function init()
@@ -38,44 +36,14 @@
         <mt:if name="tags_js">initTags();</mt:if>
     }
 
-    <mt:if name="defer_tag_load">
-    function deferredTagLoad() {
-        // http://del.icio.us/feeds/json/tags/username
-        TC.Client.call({
-            'load': tagsLoaded,
-            'method': 'POST',
-            'uri': '<mt:var name="mt_url">',
-            'arguments': { '__mode': 'js_tag_list',
-                'blog_id': '<mt:var name="blog_id">',
-                'magic_token': '<mt:var name="magic_token">'}
-        });
-    }
-
-    function tagsLoaded(c, result) {
-        try {
-            tags = eval('(' + result + ')');
-            if (tags)
-                initTags();
-        } catch (e) {
-        }
-    }
-    </mt:if>
-
     var tagPos = 0;
     function initTags() {
-        if (!tags || tags.length == 0) return;
-
-        tagList = [];
-        for (var tag in tags)
-            tagList[tagList.length] = tag;
+        if (!tagLast || tagList.length == 0) return;
         autoTag = new TC.TagComplete("tags", tagList);
         autoTag.delimiter = tag_delim;
     }
 
     TC.attachLoadEvent( init );
-
-
-
 
     function presubmit(f) {
         var mode = 'complete_upload';

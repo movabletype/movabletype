@@ -184,12 +184,13 @@ sub load_by_datasource {
 sub cache_obj {
     my $pkg = shift;
     my (%param) = @_;
+    my $user_id = $param{user_id};
     my $blog_id = $param{blog_id};
     my $ds = $param{datasource};
 
     require MT::Session;
     # Clear any tag cache if tags were modified upon saving
-    my $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ($param{private} ? ';private' : '');
+    my $sess_id = ($user_id ? 'user:' . $user_id . ';' : '') . ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ($param{private} ? ';private' : '');
     my $tag_cache = MT::Session::get_unexpired_value(60 * 60, {
         kind => 'TC',  # tag cache
         id => $sess_id
@@ -207,10 +208,11 @@ sub clear_cache {
     my $pkg = shift;
     my (%param) = @_;
     my $blog_id = $param{blog_id};
+    my $user_id = $param{user_id};
     my $ds = $param{datasource};
 
     my $tag_cache;
-    my $sess_id = ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds;
+    my $sess_id = ($user_id ? 'user:' . $user_id . ';' : '') . ($blog_id ? 'blog:' . $blog_id . ';' : '') . 'datasource:' . $ds . ($param{private} ? ';private' : '');
     require MT::Session;
     $tag_cache = MT::Session->load({
         kind => 'TC',
@@ -227,6 +229,7 @@ sub clear_cache {
 sub cache {
     my $pkg = shift;
     my (%param) = @_;
+    my $user_id = $param{user_id};
     my $blog_id = $param{blog_id};
     my $class = $param{class};
     if (ref($class) eq 'SCALAR') {
@@ -240,59 +243,42 @@ sub cache {
 
     my $tag_cache = $pkg->cache_obj(%param);
     my $data = $tag_cache->get('tag_cache');
-    if (!$data) {
-        my $tag_count;
-        require MT::ObjectTag;
-        $tag_count = {};
-        my $tag_count_iter =
-            MT::ObjectTag->count_group_by({
-                ($blog_id ? (blog_id => $blog_id) : ()),
-                object_datasource => $ds
-            }, { group => ['tag_id']});
-        while (my ($count, $tag_id) = $tag_count_iter->()) {
-            $tag_count->{$tag_id} = $count;
-        }
-        my $iter = $class->load_iter(undef,
-            { 'join' => ['MT::ObjectTag', 'object_id',
-            { ($blog_id ? (blog_id => $blog_id) : ()), object_datasource => $ds },
-            { unique => 1 } ],
-              sort => 'modified_on', direction => 'descend' 
-        });
-        my @tags;
-        my %tags_seen;
+
+    if (ref($data) ne 'ARRAY') {
+        my $private = $param{private};
+        my $class_column = $class->properties->{class_column};
         my $limit = MT->config->MaxTagAutoCompletionItems;
-        while (my $entry = $iter->()) {
-            my @etags = $entry->tags;
-            @etags = grep /^[^@]/, @etags unless $param{private};
-            @etags = grep { !exists($tags_seen{$_}) } @etags;
-            next if 0 == scalar(@etags);
-
-            $tags_seen{$_} = 1 for @etags;
-
-            my @ttags = MT::Tag->load({ 'name' => \@etags },
-                { 'join' => ['MT::ObjectTag', 'tag_id',
-                { ($blog_id ? (blog_id => $blog_id) : ()), object_datasource => $ds },
-                { unique => 1 } ]
-            });
-            if (scalar(@tags) + scalar(@ttags) <= $limit) {
-                push @tags, @ttags;
-            } else {
-                for (0..($limit - scalar(@tags)) - 1) {
-                    push @tags, $ttags[$_];
-                }
+        require MT::ObjectTag;
+        my @tags = map { $_->name } MT::Tag->load(
+            undef,
+            {
+                ( $private ? () : ( 'name' => { not_like => '@%' } ) ),
+                join => MT::ObjectTag->join_on( undef, {
+                    tag_id => \'= tag_id',
+                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                    object_datasource => $ds,
+                }, {
+                    join => $class->join_on( undef, {
+                        'id' => \'= objecttag_object_id',
+                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                        ( $class_column ? ( $class_column => $class->class_type ) : () ),
+                    }, {
+                        sort => ($class eq 'MT::Entry' ? 'authored_on' : 'modified_on'),
+                        direction => 'descend'
+                    })
+                }),
+                unique => 1,
+                limit => $limit,
+                fetchonly => [ 'name' ]
             }
-            last if ($limit <= scalar(@tags));
-        }
-        $data = {};
+        );
         if (@tags) {
-            foreach my $tag (@tags) {
-                $data->{$tag->name} = $tag_count->{$tag->id} || 1;
-            }
-            $tag_cache->set('tag_cache', $data);
+            $data = \@tags;
+            $tag_cache->set('tag_cache', \@tags);
             $tag_cache->save;
         }
     }
-    $data || {};
+    $data || [];
 }
 
 # An interface for any MT::Object that wishes to utilize tags themselves
