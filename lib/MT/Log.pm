@@ -16,6 +16,11 @@ sub ERROR ()    { 4 }
 sub SECURITY () { 8 }
 sub DEBUG ()    { 16 }
 
+use Exporter;
+*import = \&Exporter::import;
+our @EXPORT_OK = qw( INFO WARNING ERROR SECURITY DEBUG );
+our %EXPORT_TAGS = (constants => [ @EXPORT_OK ]);
+
 use MT::Blog;
 
 __PACKAGE__->install_properties({
