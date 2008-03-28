@@ -8,11 +8,12 @@
     <mtapp:widget
         id="useful-links"
         label="<__trans phrase="Useful links">">
-        <mt:if name="can_edit_config">
         <ul>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Template Backups"></a></li>
+        <mt:if name="can_edit_config">
             <li><a href="<mt:var name="script_url">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Blog Publishing Settings"></a></li>
-        </ul>
         </mt:if>
+        </ul>
     </mtapp:widget>
     <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
