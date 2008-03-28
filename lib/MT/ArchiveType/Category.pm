@@ -176,4 +176,29 @@ sub group_based {
     return 1;
 }
 
+sub get_adjacent_category_entry {
+    my $self = shift;
+    my ( $ts, $cat, $order ) = @_;
+    if ( $order eq 'previous' ) {
+        $order = 'descend';
+    }
+    else {
+        $order = 'ascend';
+    }
+    require MT::Entry;
+    require MT::Placement;
+    my $entry = MT::Entry->load(
+        { status => MT::Entry::RELEASE() },
+        {
+            limit     => 1,
+            'sort'    => 'authored_on',
+            direction => $order,
+            start_val => $ts,
+            'join' =>
+              [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ]
+        }
+    );
+    $entry;
+}
+
 1;

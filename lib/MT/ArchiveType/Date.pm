@@ -101,4 +101,32 @@ sub dated_author_entries {
     \@entries;
 }
 
+sub get_entry {
+    my $archiver = shift;
+    my ( $ts, $blog_id, $order ) = @_;
+    my ( $start, $end ) = $archiver->date_range($ts);
+    if ( $order eq 'previous' ) {
+        $order = 'descend';
+        $ts    = $start;
+    }
+    else {
+        $order = 'ascend';
+        $ts    = $end;
+    }
+
+    my $entry = MT->model('entry')->load(
+        {
+            blog_id => $blog_id,
+            status  => MT::Entry::RELEASE()
+        },
+        {
+            limit     => 1,
+            'sort'    => 'authored_on',
+            direction => $order,
+            start_val => $ts
+        }
+    );
+    $entry;
+}
+
 1;

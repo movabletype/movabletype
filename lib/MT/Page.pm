@@ -64,10 +64,4 @@ sub all_permalinks {
     return ($page->permalink(@_));
 }
 
-# This routine is declared to avoid building 'previous'/'next' pages
-# by MT's rebuild process.
-sub get_entry {
-    return undef;
-}
-
 1;

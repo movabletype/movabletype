@@ -961,7 +961,15 @@ sub strip_index {
 }
 
 sub get_entry {
-    MT->instance->publisher->get_entry(@_);
+    my ( $ts, $blog_id, $at, $order ) = @_;
+    my $archiver = MT->instance->publisher->archiver($at)
+        or return;
+
+    if ($archiver->can('get_entry')) {
+        return $archiver->get_entry($ts, $blog_id, $order);
+    }
+
+    return;
 }
 
 sub is_valid_date {

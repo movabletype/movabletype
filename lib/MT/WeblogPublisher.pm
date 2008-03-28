@@ -465,9 +465,9 @@ sub rebuild_entry {
         my @db_at = grep { my $archiver = $mt->archiver($_); $archiver && $archiver->date_based } $mt->archive_types;
         for my $at (@db_at) {
             if ( $at{$at} ) {
-                my @arg = ( $entry->authored_on, $entry->blog_id, $at );
+                my @arg = ( $entry->authored_on, $entry->blog_id );
                 my $archiver = $mt->archiver($at);
-                if ( my $prev_arch = $mt->get_entry( @arg, 'previous' ) ) {
+                if ( my $prev_arch = $archiver->get_entry( @arg, 'previous' ) ) {
                     if ( $archiver->category_based ) {
                         my $cats = $prev_arch->categories;
                         for my $cat (@$cats) {
@@ -496,7 +496,7 @@ sub rebuild_entry {
                         ) or return;
                     }
                 }
-                if ( my $next_arch = $mt->get_entry( @arg, 'next' ) ) {
+                if ( my $next_arch = $archiver->get_entry( @arg, 'next' ) ) {
                     if ( $archiver->category_based ) {
                         my $cats = $next_arch->categories;
                         for my $cat (@$cats) {
@@ -1736,35 +1736,6 @@ s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '"
         $file .= '.' . $ext if $ext;
     }
     $file;
-}
-
-sub get_entry {
-    my $mt = shift;
-    my ( $ts, $blog_id, $at, $order ) = @_;
-    my $archiver = $mt->archiver($at);
-    my ( $start, $end ) = $archiver->date_range($ts);
-    if ( $order eq 'previous' ) {
-        $order = 'descend';
-        $ts    = $start;
-    }
-    else {
-        $order = 'ascend';
-        $ts    = $end;
-    }
-    require MT::Entry;
-    my $entry = MT::Entry->load(
-        {
-            blog_id => $blog_id,
-            status  => MT::Entry::RELEASE()
-        },
-        {
-            limit     => 1,
-            'sort'    => 'authored_on',
-            direction => $order,
-            start_val => $ts
-        }
-    );
-    $entry;
 }
 
 # Adds an element to the rebuild queue when the plugin is enabled.

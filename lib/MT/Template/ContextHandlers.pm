@@ -5605,45 +5605,6 @@ sub _hdlr_feedback_score {
 }
 
 ## Archives
-sub _get_adjacent_category_entry {
-    my($ts, $cat, $order) = @_;
-    if ($order eq 'previous') {
-        $order = 'descend';
-    } else {
-        $order = 'ascend';
-    }
-    require MT::Entry;
-    require MT::Placement;
-    my $entry = MT::Entry->load(
-        { status => MT::Entry::RELEASE() },
-        { limit => 1,
-          'sort' => 'authored_on',
-          direction => $order,
-          start_val => $ts,
-          'join' => [ 'MT::Placement', 'entry_id',
-            { category_id => $cat->id } ] });
-    $entry;
-}
-
-sub _get_adjacent_author_entry {
-    my($ts, $blog_id, $author, $order) = @_;
-    if ($order eq 'previous') {
-        $order = 'descend';
-    } else {
-        $order = 'ascend';
-    }
-    require MT::Entry;
-    my $entry = MT::Entry->load(
-        { status => MT::Entry::RELEASE(),
-          author_id => $author->id,
-          blog_id => $blog_id },
-        { limit => 1,
-          'sort' => 'authored_on',
-          direction => $order,
-          start_val => $ts});
-    $entry;
-}
-
 sub _hdlr_archive_prev_next {
     my($ctx, $args, $cond) = @_;
     my $tag = lc $ctx->stash('tag');
@@ -5659,9 +5620,9 @@ sub _hdlr_archive_prev_next {
         $start = $ctx->{current_timestamp};
         $end = $ctx->{current_timestamp_end};
         if ($is_prev) {
-            $entry = _get_adjacent_category_entry( $start, $cat, 'previous' );
+            $entry = $arctype->get_adjacent_category_entry( $start, $cat, 'previous' );
         } else {
-            $entry = _get_adjacent_category_entry( $end, $cat, 'next' );
+            $entry = $arctype->get_adjacent_category_entry( $end, $cat, 'next' );
         }
     } elsif ($arctype->date_based && $arctype->author_based) {
         my $author = $ctx->stash('author');
@@ -5669,9 +5630,9 @@ sub _hdlr_archive_prev_next {
         $start = $ctx->{current_timestamp};
         $end = $ctx->{current_timestamp_end};
         if ($is_prev) {
-            $entry = _get_adjacent_author_entry( $start, $blog->id, $author, 'previous' );
+            $entry = $arctype->get_adjacent_author_entry( $start, $blog->id, $author, 'previous' );
         } else {
-            $entry = _get_adjacent_author_entry( $end, $blog->id, $author, 'next' );
+            $entry = $arctype->get_adjacent_author_entry( $end, $blog->id, $author, 'next' );
         }
     } elsif ($arctype->category_based) {
         return _hdlr_category_prevnext(@_);
