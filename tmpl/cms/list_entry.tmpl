@@ -231,19 +231,6 @@ TC.attachLoadEvent( init );
                     </select>
                 </span>
     </mt:if>
-    <mt:if name="entry_asset_loop">
-                <span id="filter-asset_id" style="display: none">
-                    <select id="asset_id-val" name="filter_val" onchange="enableFilterButton(this)">
-                        <option value=""><__trans phrase='Select An Asset:'></option>
-                        <option id="filter-asset-search" value=""><__trans phrase='Asset Search...'></option>
-                        <optgroup label="<__trans phrase='Recent Assets...'>" value="">
-    <mt:loop name="entry_asset_loop">
-                            <option value="<mt:var name="asset_id">"><mt:var name="asset_label" escape="html"></option>
-    </mt:loop>
-                        </optgroup>
-                    </select>
-                </span>
-    </mt:if>
                 <span id="filter-author_id" style="display: none">
                     <select id="author_id-val" name="filter_val" onchange="enableFilterButton(this)">
                         <option value=""><__trans phrase='Select A User:'></option>
