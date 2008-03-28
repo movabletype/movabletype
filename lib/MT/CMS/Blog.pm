@@ -642,6 +642,7 @@ sub rebuild_pages {
                 ArchiveType    => $type,
                 NoIndexes      => 1,
                 Offset         => $offset,
+                Limit          => $app->config->EntriesPerRebuild,
                 FilterCallback => $cb,
             ) or return $app->publish_error();
             $offset += $count;
@@ -681,6 +682,7 @@ sub rebuild_pages {
                     ArchiveType    => $type,
                     NoIndexes      => 1,
                     Offset         => $offset,
+                    Limit          => $app->config->EntriesPerRebuild,
                     FilterCallback => $cb,
                 ) or return $app->publish_error();
                 $offset += $count;
