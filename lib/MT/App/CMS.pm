@@ -1779,7 +1779,9 @@ sub build_page {
 
     $app->build_blog_selector($param);
     $app->build_menus($param);
-    $param->{page_actions} ||= $app->page_actions( $app->mode );
+    if (!ref($page) || ($page->isa('MT::Template') && !$page->param('page_actions'))) {
+        $param->{page_actions} ||= $app->page_actions( $app->mode );
+    }
 
     $app->SUPER::build_page( $page, $param );
 }
