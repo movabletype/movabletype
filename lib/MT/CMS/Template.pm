@@ -442,6 +442,12 @@ sub edit {
             }->{$1};
         }
     }
+
+    if (($param->{type} eq 'custom') || ($param->{type} eq 'widget')) {
+        $param->{ssi_type} = 'PHP';
+        $param->{include_with_ssi} = 1 if $obj && $obj->include_with_ssi;
+    }
+
     $param->{dirty} = 1
         if $app->param('dirty');
 
@@ -464,24 +470,24 @@ sub list {
 
     require MT::Template;
     my $blog_id = $app->param('blog_id') || 0;
-    my $filter  = $app->param('filter_key');
-    if ( !$filter ) {
-        if ($blog) {
-            $filter = 'templates';
-            $app->param( 'filter_key', 'templates' );
-        }
-        else {
-            $filter = 'module_templates';
-            $app->param( 'filter_key', 'module_templates' );
-        }
-    }
-    else {
-        # global index templates redirect to module templates
-        if ( !$blog && $filter eq 'templates' ) {
-            $filter = 'module_templates';
-            $app->param( 'filter_key', 'module_templates' );
-        }
-    }
+    # my $filter  = $app->param('filter_key');
+    # if ( !$filter ) {
+    #     if ($blog) {
+    #         $filter = 'templates';
+    #         $app->param( 'filter_key', 'templates' );
+    #     }
+    #     else {
+    #         $filter = 'module_templates';
+    #         $app->param( 'filter_key', 'module_templates' );
+    #     }
+    # }
+    # else {
+    #     # global index templates redirect to module templates
+    #     if ( !$blog && $filter eq 'templates' ) {
+    #         $filter = 'module_templates';
+    #         $app->param( 'filter_key', 'module_templates' );
+    #     }
+    # }
     my $terms = { blog_id => $blog_id };
     my $args  = { sort    => 'name' };
 
@@ -522,14 +528,10 @@ sub list {
     };
 
     my $params        = {};
-    my $template_type = $filter;
+    my $filter = $app->param('filter_key');
+    $app->delete_param('filter_key') if $filter;
+    my $template_type = $filter || '';
     $template_type =~ s/_templates//;
-    my $template_type_label = $app->translate($template_type);
-    if ( $template_type_label eq $template_type ) {
-        $template_type_label = "\u$template_type";
-    }
-    $params->{template_type}       = $template_type;
-    $params->{template_type_label} = $template_type_label;
 
     $params->{screen_class} = "list-template";
 
@@ -540,16 +542,91 @@ sub list {
     $params->{refreshed} = $app->param('refreshed');
     $params->{published} = $app->param('published');
 
-    return $app->listing(
-        {
-            type     => 'template',
-            terms    => $terms,
-            args     => $args,
-            params   => $params,
-            no_limit => 1,
-            code     => $hasher,
-        }
-    );
+    # determine list of system template types:
+    my $scope;
+    my $set;
+    if ( $blog ) {
+        $set   = $blog->template_set;
+        $scope = 'system';
+    }
+    else {
+        $scope = 'global:system';
+    }
+    my @tmpl_path = ( $set && ($set ne 'mt_blog')) ? ("template_sets", $set, 'templates', $scope) : ("default_templates", $scope);
+    my $sys_tmpl = MT->registry(@tmpl_path) || {};
+
+    my @tmpl_loop;
+    my %types;
+    if ($blog) {
+        # blog template listings
+        %types = ( 
+            'index' => {
+                label => $app->translate("Index Templates"),
+                type => 'index',
+                order => 100,
+            },
+            'archive' => {
+                label => $app->translate("Archive Templates"),
+                type => ['archive', 'individual', 'page', 'category'],
+                order => 200,
+            },
+            'module' => {
+                label => $app->translate("Template Modules"),
+                type => 'custom',
+                order => 300,
+            },
+            'system' => {
+                label => $app->translate("System Templates"),
+                type => [ keys %$sys_tmpl ],
+                order => 400,
+            },
+        );
+    } else {
+        # global template listings
+        %types = ( 
+            'module' => {
+                label => $app->translate("Template Modules"),
+                type => 'custom',
+                order => 100,
+            },
+            'email' => {
+                label => $app->translate("Email Templates"),
+                type => 'email',
+                order => 200,
+            },
+            'system' => {
+                label => $app->translate("System Templates"),
+                type => [ keys %$sys_tmpl ],
+                order => 300,
+            },
+        );
+    }
+    my @types = sort { $types{$a}->{order} <=> $types{$b}->{order} } keys %types;
+    if ($template_type) {
+        @types = ( $template_type );
+    }
+    foreach my $tmpl_type (@types) {
+        $terms->{type} = $types{$tmpl_type}->{type};
+        my $tmpl_param = $app->listing(
+            {
+                type     => 'template',
+                terms    => $terms,
+                args     => $args,
+                no_limit => 1,
+                no_html  => 1,
+                code     => $hasher,
+            }
+        );
+
+        my $template_type_label = $types{$tmpl_type}->{label};
+        $tmpl_param->{template_type} = $tmpl_type;
+        $tmpl_param->{template_type_label} = $template_type_label;
+        push @tmpl_loop, $tmpl_param;
+    }
+
+    $params->{template_type_loop} = \@tmpl_loop;
+
+    return $app->load_tmpl('list_template.tmpl', $params);
 }
 
 sub preview {

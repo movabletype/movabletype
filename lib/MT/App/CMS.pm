@@ -1038,32 +1038,32 @@ sub core_list_filters {
             },
         },
         template => {
-            templates => {
-                label   => "Main Templates",
+            index_templates => {
+                label   => "Index Templates",
                 order   => 100,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     # FIXME: enumeration of types
-                    $terms->{type} = ['index', 'individual', 'page', 'category', 'archive'];
+                    $terms->{type} = 'index';
                 },
                 condition => sub {
                     $app->param('blog_id');
                 },
             },
-            # archive_templates => {
-            #     label   => "Archive Templates",
-            #     order   => 200,
-            #     handler => sub {
-            #         my ( $terms, $args ) = @_;
-            #         $terms->{type} =
-            #           [ 'individual', 'page', 'archive', 'category' ];
-            #     },
-            #     condition => sub {
-            #         $app->param('blog_id');
-            #     },
-            # },
+            archive_templates => {
+                label   => "Archive Templates",
+                order   => 200,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    $terms->{type} =
+                      [ 'individual', 'page', 'archive', 'category' ];
+                },
+                condition => sub {
+                    $app->param('blog_id');
+                },
+            },
             module_templates => {
-                label   => "Modules",
+                label   => "Template Modules",
                 order   => 400,
                 handler => sub {
                     my ($terms) = @_;
@@ -1079,14 +1079,6 @@ sub core_list_filters {
                 },
                 condition => sub {
                     !$app->param('blog_id');
-                },
-            },
-            backup_templates => {
-                label   => "Backup Templates",
-                order   =>  10000,
-                handler => sub {
-                    my ($terms) = @_;
-                    $terms->{type} = 'backup';
                 },
             },
             system_templates => {

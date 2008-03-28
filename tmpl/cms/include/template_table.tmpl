@@ -1,13 +1,33 @@
+<h3><mt:var name="template_type_label" escape="html"></h3>
+
+<mt:unless name="template_type" like="/system|email|backup/">
+    <mt:if name="template_type" eq="archive">
+<p><__trans phrase="Create Archive Template:">
+    &nbsp;
+    <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a>
+    &nbsp;
+    <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a>
+    &nbsp;
+    <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a>
+</p>
+    <mt:elseif name="template_type" eq="module">
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></p>
+    <mt:elseif name="template_type" eq="index">
+<p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create index template"></a></p>
+    </mt:if>
+</mt:unless>
+
 <mt:setvarblock name="action_buttons">
 <mt:unless name="template_type" eq="system"><mt:unless name="template_type" eq="email">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
+        onclick="doRemoveItems(getByID('<$mt:var name="template_type"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
         ><__trans phrase="Delete"></a>
 </mt:unless></mt:unless>
 </mt:setvarblock>
-<mtapp:listing hide_pager="1" class="show-all">
+<mt:setvarblock name="table_id"><mt:var name="template_type">-listing</mt:setvarblock>
+<mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="show-actions-bar-top">
     <mt:if __first__>
         <thead>
             <tr>
@@ -16,9 +36,6 @@
         <mt:if name="template_type" like="/(index|archive)/">
                 <th class="output-file"><__trans phrase="Output File"></th>
         </mt:if>
-        <mt:unless name="filter">
-                <th class="template-type"><__trans phrase="Type"></th>
-        </mt:unless>
         <mt:unless name="blog_view">
                 <th class="blog"><__trans phrase="Blog"></th>
         </mt:unless>
@@ -54,9 +71,6 @@
         </mt:if>
                 </td>
     </mt:if>
-    <mt:unless name="filter">
-                <td class="template-type"><mt:if name="type" eq="custom"><__trans phrase="module"><mt:else><$mt:var name="type"$></mt:if></td>
-    </mt:unless>
     <mt:unless name="blog_view">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
     </mt:unless>

@@ -19,38 +19,14 @@
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
-var tableSelect;
+var tableSelect = [];
 function init() {
-    tableSelect = new TC.TableSelect( 'template-listing-table' );
-    tableSelect.rowSelect = true;
-    <mt:if name="template_group">
-    sectionToggle('<mt:var name="template_group" escape="js">');
-    </mt:if>
+<mt:loop name="template_type_loop">
+    tableSelect.push(new TC.TableSelect( '<mt:var name="template_type">-listing-table' ));
+    tableSelect[tableSelect.length-1].rowSelect = true;
+</mt:loop>
 }
 TC.attachLoadEvent(init);
-
-function doEditTemplate (type, id) {
-    var url = '<mt:var name="script_url">?__mode=view&_type=template&blog_id=<mt:var name="blog_id">';
-    if (id)
-        url += '&id=' + id;
-    else if (type)
-        url += '&type=' + type;
-    window.location = url;
-}
-
-function sectionToggle(selectedTab) {
-    var tabs = new Array('index','archive','system','module', 'widget');
-
-    var t = getByID("template-listing-table");
-    for (var i = 0; i < tabs.length; i++) {
-        if (tabs[i] == selectedTab) {
-            TC.addClassName(t, "show-" + tabs[i]);
-        } else {
-            TC.removeClassName(t, "show-" + tabs[i]);
-        }
-    }
-    TC.removeClassName(t, "show-all");
-}
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -114,25 +90,12 @@ function sectionToggle(selectedTab) {
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="content_header">
-    <mt:unless name="template_type" like="/system|email|backup/">
-        <mt:if name="template_type" eq="archive">
-    <p><__trans phrase="Create Archive Template:">
-        &nbsp;
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a>
-        &nbsp;
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a>
-        &nbsp;
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a>
-    </p>
-        <mt:else>
-            <mt:unless name="template_type" eq="email">
-    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=<mt:var name="template_type" escape="url">&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create [_1] template" params="<mt:var name="template_type_label">"></a></p>
-            </mt:unless>
-        </mt:if>
-    </mt:unless>
-</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
+
+<mt:loop name="template_type_loop">
 <$mt:var name="list_filter_form"$>
 <$mt:include name="include/template_table.tmpl"$>
+</mt:loop>
+
 <mt:include name="include/footer.tmpl">
