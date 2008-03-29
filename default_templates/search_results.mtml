@@ -10,7 +10,7 @@
 </MTIfStraightSearch>
 
 <MTSetVarTemplate id="search_results" name="search_results">
-<div id="search-results"><span id="current-page" class="hidden"><MTSearchCurrentPage></span>
+<div id="search-results"><span id="current-page" class="hidden"><MTCurrentPage></span>
 <MTSearchResults>
     <MTBlogResultHeader>
 <h1 id="page-title" class="search-results-header">
@@ -30,16 +30,16 @@
 </MTSearchResults>
 <MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
     <div class="content-nav">
-<MTSearchIfPreviousResults><a href="<MTSearchPreviousLink>" onclick="return swapContent(-1);">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</MTSearchIfPreviousResults><MTSearchResultPages><MTSearchIfCurrentPage><mt:var name="__value__"><MTElse><a href="<MTSearchPageLink>"><mt:var name="__value__"></a></MTSearchIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTSearchResultPages><MTSearchIfMoreResults>&nbsp;&nbsp;<a href="<MTSearchNextLink>" onclick="return swapContent();"><__trans phrase="Next"> &gt;</a></MTSearchIfMoreResults>
+<MTIfPreviousResults><a href="<MTPreviousLink>" onclick="return swapContent(-1);">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</MTIfPreviousResults><MTPagerBlock><MTIfCurrentPage><mt:var name="__value__"><MTElse><a href="<MTPagerLink>"><mt:var name="__value__"></a></MTIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTPagerBlock><MTIfMoreResults>&nbsp;&nbsp;<a href="<MTNextLink>" onclick="return swapContent();"><__trans phrase="Next"> &gt;</a></MTIfMoreResults>
     </div>
 </div>
 </MTSetVarTemplate>
 
 <MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
-<MTSearchIfMoreResults>
 <MTSetVarBlock name="html_head" append="1">
 <script type="text/javascript">
 <!--
+<MTIfMoreResults>
 function getXmlHttp() {
     if ( !window.XMLHttpRequest ) {
         window.XMLHttpRequest = function() {
@@ -108,10 +108,14 @@ function swapContent(direction) {
     window.scroll(0, 0);
     return false;
 }
+<MTElse><MTIfPreviousResults>
+function swapContent(direction) {
+	return true;
+}</MTIfPreviousResults>
+</MTIfMoreResults>
 //-->
 </script>
 </MTSetVarBlock>
-</MTSearchIfMoreResults>
 
 <$MTInclude module="<__trans phrase="Header">"$>
 
@@ -143,18 +147,18 @@ function swapContent(direction) {
 </MTNoSearch>
 
 <MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
-<MTSearchIfMoreResults>
+<MTIfMoreResults>
 <script type="text/javascript">
 <!--
 var div = document.getElementById('search-results');
 var results = {
-    '<MTSearchCurrentPage>': {
+    '<MTCurrentPage>': {
         'content': div.innerHTML,
-        'next_url': '<MTSearchNextLink>'
+        'next_url': '<MTNextLink>'
     }
 };
-var timer = window.setTimeout("getResults(" + <MTSearchCurrentPage> + ")", 1*1000);
+var timer = window.setTimeout("getResults(" + <MTCurrentPage> + ")", 1*1000);
 //-->
 </script>
-</MTSearchIfMoreResults>
+</MTIfMoreResults>
 <$MTInclude module="<__trans phrase="Footer">"$>

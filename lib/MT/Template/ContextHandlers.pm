@@ -225,6 +225,17 @@ sub core_tags {
             TopLevelFolders => \&_hdlr_top_level_folders,
             TopLevelFolder => \&_hdlr_top_level_folder,
 
+			# Pager handlers
+            'IfMoreResults?' => sub {
+                my $limit = $_[0]->stash('limit');
+                my $offset = $_[0]->stash('offset');
+                my $count = $_[0]->stash('count');
+                return $limit + $offset >= $count ? 0 : 1;
+            },
+            'IfPreviousResults?' => sub { $_[0]->stash('offset') ? 1 : 0 },
+            PagerBlock => \&_hdlr_pager_block,
+            IfCurrentPage => \&_hdlr_pass_tokens,
+
             # stubs for mt-search tags used in template includes
             IfTagSearch => sub { '' },
             SearchResults => sub { '' },
@@ -235,10 +246,6 @@ sub core_tags {
             BlogResultHeader => sub { '' },
             BlogResultFooter => sub { '' },
             IfMaxResultsCutoff => sub { '' },
-            SearchIfMoreResults => sub { '' },
-            SearchIfPreviousResults => sub { '' },
-            SearchResultPages => sub { '' },
-            SearchIfCurrentPage => sub { '' },
         },
         function => {
             'App:PageActions' => \&_hdlr_app_page_actions,
@@ -498,11 +505,6 @@ sub core_tags {
             SearchMaxResults => sub { $_[0]->{config}->MaxResults },
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
-            SearchPageLink => sub { '' },
-            SearchNextLink => sub { '' },
-            SearchPreviousLink => sub { '' },
-            SearchCurrentPage => sub { '' },
-            SearchTotalPages => sub { '' },
 
             BuildTemplateID => \&_hdlr_build_template_id,
 
@@ -544,6 +546,22 @@ sub core_tags {
             PingRank => \&_hdlr_ping_rank,
             AssetRank => \&_hdlr_asset_rank,
             AuthorRank => \&_hdlr_author_rank,
+
+			# Pager related handlers
+            PagerLink => \&_hdlr_pager_link,
+            NextLink => \&_hdlr_next_link,
+            PreviousLink => \&_hdlr_previous_link,
+            CurrentPage => sub {
+                my $limit = $_[0]->stash('limit');
+                my $offset = $_[0]->stash('offset');
+                $limit ? $offset / $limit + 1 : 1
+            },
+            TotalPages => sub {
+                my $limit = $_[0]->stash('limit');
+                my $count = $_[0]->stash('count');
+                require POSIX;
+                POSIX::ceil( $count / $limit );
+            },
         },
         modifier => {
             'filters' => \&_fltr_filters,
@@ -8686,6 +8704,98 @@ sub _math_operation {
         return $lvalue % $rvalue;
     }
     return $lvalue;
+}
+
+sub _hdlr_pager_block {
+    my ($ctx, $args, $cond) = @_;
+
+    my $build = $ctx->stash('builder');
+    my $tokens = $ctx->stash('tokens');
+
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    my $count = $ctx->stash('count');
+
+    my $glue = $args->{glue};
+    $glue = q() unless defined $glue;
+
+    my $output = q();
+    require POSIX;
+    my $pages = $limit ? POSIX::ceil( $count / $limit ) : 1;
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    for ( my $i = 1; $i <= $pages; $i++ ) {
+        local $vars->{__first__} = $i == 1;
+        local $vars->{__last__} = $i == $pages;
+        local $vars->{__odd__} = ($i % 2 ) == 1;
+        local $vars->{__even__} = ($i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        local $vars->{__value__} = $i;
+        defined(my $out = $build->build($ctx, $tokens,
+            { %$cond, 
+              IfCurrentPage => $i == ( $limit ? $offset / $limit + 1 : 1 ),
+            }
+            )) or return $ctx->error( $build->errstr );
+        $output .= $glue if $i > 1;
+        $output .= $out;
+    }
+    $output;
+}
+
+# overridden in other contexts
+sub context_script { '' }
+
+sub _hdlr_pager_link {
+    my ($ctx, $args) = @_;
+
+    my $page = $ctx->var('__value__');
+    return q() unless $page;
+
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    $offset = ( $page - 1 ) * $limit;
+
+	my $link = $ctx->context_script($args);
+
+	if ( $link ) {
+		if ( index($link, '?') > 0 ) {
+			$link .= '&';
+		}
+		else {
+			$link .= '?';
+		}
+	}
+    $link .= "limit=$limit";
+    $link .= "&offset=$offset" if $offset;
+    $link;
+}
+
+sub _hdlr_previous_link {
+    my ($ctx, $args) = @_;
+
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    my $count = $ctx->stash('count');
+
+    return q() unless $offset;
+    my $current_page = $limit ? $offset / $limit + 1 : 1;
+    return q() unless $current_page > 1;
+
+    local $ctx->{__stash}{vars}{__value__} = $current_page - 1;
+    _hdlr_pager_link(@_);
+}
+
+sub _hdlr_next_link {
+    my ($ctx, $args) = @_;
+
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    my $count = $ctx->stash('count');
+
+    return q() if ( $limit + $offset ) >= $count;
+    my $current_page = $limit ? $offset / $limit + 1 : 1;
+
+    local $ctx->{__stash}{vars}{__value__} = $current_page + 1;
+    _hdlr_pager_link(@_);
 }
 
 1;

@@ -19,20 +19,6 @@ sub load_core_tags {
             MaxResults => \&_hdlr_max_results,
             SearchIncludeBlogs => \&_hdlr_include_blogs,
             SearchTemplateID => \&_hdlr_template_id,
-            SearchPageLink => \&_hdlr_search_page_link,
-            SearchNextLink => \&_hdlr_search_next_link,
-            SearchPreviousLink => \&_hdlr_search_previous_link,
-            SearchCurrentPage => sub {
-                my $limit = $_[0]->stash('limit');
-                my $offset = $_[0]->stash('offset');
-                $limit ? $offset / $limit + 1 : 1
-            },
-            SearchTotalPages => sub {
-                my $limit = $_[0]->stash('limit');
-                my $count = $_[0]->stash('count');
-                require POSIX;
-                POSIX::ceil( $count / $limit );
-            },
         },
         block => {
             SearchResults => \&_hdlr_results,
@@ -44,15 +30,6 @@ sub load_core_tags {
             BlogResultHeader => \&MT::Template::Context::_hdlr_pass_tokens,
             BlogResultFooter => \&MT::Template::Context::_hdlr_pass_tokens,
             'IfMaxResultsCutoff?' => \&MT::Template::Context::_hdlr_pass_tokens,
-            'SearchIfMoreResults?' => sub {
-                my $limit = $_[0]->stash('limit');
-                my $offset = $_[0]->stash('offset');
-                my $count = $_[0]->stash('count');
-                return $limit + $offset >= $count ? 0 : 1;
-            },
-            'SearchIfPreviousResults?' => sub { $_[0]->stash('offset') ? 1 : 0 },
-            SearchResultPages => \&_hdlr_search_pages,
-            'SearchIfCurrentPage?' => \&MT::Template::Context::_hdlr_pass_tokens,
         },
     };
 }
@@ -153,50 +130,8 @@ sub _hdlr_results {
     $output;
 }
 
-sub _hdlr_search_pages {
-    my ($ctx, $args, $cond) = @_;
-
-    my $build = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-
-    my $limit = $ctx->stash('limit');
-    my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
-
-    my $glue = $args->{glue};
-    $glue = q() unless defined $glue;
-
-    my $output = q();
-    require POSIX;
-    my $pages = $limit ? POSIX::ceil( $count / $limit ) : 1;
-    my $vars = $ctx->{__stash}{vars} ||= {};
-    for ( my $i = 1; $i <= $pages; $i++ ) {
-        local $vars->{__first__} = $i == 1;
-        local $vars->{__last__} = $i == $pages;
-        local $vars->{__odd__} = ($i % 2 ) == 1;
-        local $vars->{__even__} = ($i % 2 ) == 0;
-        local $vars->{__counter__} = $i;
-        local $vars->{__value__} = $i;
-        defined(my $out = $build->build($ctx, $tokens,
-            { %$cond, 
-              SearchIfCurrentPage => $i == ( $limit ? $offset / $limit + 1 : 1 ),
-            }
-            )) or return $ctx->error( $build->errstr );
-        $output .= $glue if $i > 1;
-        $output .= $out;
-    }
-    $output;
-}
-
-sub _hdlr_search_page_link {
-    my ($ctx, $args) = @_;
-
-    my $page = $ctx->var('__value__');
-    return q() unless $page;
-
-    my $limit = $ctx->stash('limit');
-    my $offset = $ctx->stash('offset');
-    $offset = ( $page - 1 ) * $limit;
+sub context_script {
+	my ( $ctx, $args, $cond ) = @_;
 
     my $search_string = encode_url($ctx->stash('search_string'));
     my $cgipath = $ctx->_hdlr_cgi_path($args);
@@ -216,41 +151,10 @@ sub _hdlr_search_page_link {
     elsif ( my $blog_id = $ctx->stash('blog_id') ) {
         $link .= "&blog_id=$blog_id";
     }
-    $link .= "&limit=$limit";
-    $link .= "&offset=$offset" if $offset;
     if ( my $format = $ctx->stash('format') ) {
         $link .= '&format=' . encode_url($format);
     }
-    $link;
-}
-
-sub _hdlr_search_previous_link {
-    my ($ctx, $args) = @_;
-
-    my $limit = $ctx->stash('limit');
-    my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
-
-    return q() unless $offset;
-    my $current_page = $limit ? $offset / $limit + 1 : 1;
-    return q() unless $current_page > 1;
-
-    local $ctx->{__stash}{vars}{__value__} = $current_page - 1;
-    $ctx->_hdlr_search_page_link(@_);
-}
-
-sub _hdlr_search_next_link {
-    my ($ctx, $args) = @_;
-
-    my $limit = $ctx->stash('limit');
-    my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
-
-    return q() if ( $limit + $offset ) >= $count;
-    my $current_page = $limit ? $offset / $limit + 1 : 1;
-
-    local $ctx->{__stash}{vars}{__value__} = $current_page + 1;
-    $ctx->_hdlr_search_page_link(@_);
+	$link;
 }
 
 1;

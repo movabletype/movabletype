@@ -530,7 +530,7 @@ sub renderjs {
     my $content = $tmpl->output
         or return $app->json_error($tmpl->errstr);
 
-    my $next_link = $ctx->_hdlr_search_next_link();
+    my $next_link = $ctx->_hdlr_next_link();
     return $app->json_result({ content => $content, next_url => $next_link });
 }
 
