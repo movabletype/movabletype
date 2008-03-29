@@ -1805,7 +1805,8 @@ sub build_blog_selector {
 
     my %args;
     $args{join} =
-      MT::Permission->join_on( 'blog_id', { author_id => $auth->id, } );
+      MT::Permission->join_on( 'blog_id',
+		  { author_id => $auth->id, permissions => { not => "'comment'" } } );
     $args{limit} = 11;    # don't load more than 11
     my @blogs = $blog_class->load( undef, \%args );
 
