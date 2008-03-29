@@ -34,6 +34,7 @@ sub init {
         post             => \&post,
         handle_sign_in   => \&handle_sign_in,
         cmtr_name_js     => \&commenter_name_js,
+        cmtr_status_js   => \&commenter_status_js,
         edit_profile     => \&edit_commenter_profile,
         save_profile     => \&save_commenter_profile,
         red              => \&do_red,
@@ -1365,6 +1366,11 @@ sub handle_sign_in {
 
         my %cookies = $app->cookies();
         $app->_invalidate_commenter_session( \%cookies );
+        if ( $commenter && ( 'TypeKey' ne $commenter->auth_type ) ) {
+            # Remove logout parameter so MT does not go to TypeKey
+            # when unnecessary.
+            $app->param( 'logout', 0 );
+        }
         $result = 1;
     }
     else {
@@ -1423,13 +1429,72 @@ sub redirect_to_target {
     }
 }
 
+sub _commenter_status {
+    my $app = shift;
+    my ( $commenter_id ) = @_;
+    my $blog_id          = $app->param('blog_id') || 0;
+    my $commenter_status = '0';
+    my $user = $app->model('author')->load($commenter_id);
+    if ($user && $user->is_superuser) {
+        $commenter_status = 'AUTHOR';
+    }
+    else {
+        # FIXME: this may be incomplete since the user
+        # may in fact be able to comment on other blogs;
+        # they just haven't signed into them yet
+        my $perm = MT::Permission->load(
+              {
+                blog_id     => $blog_id,
+                permissions => { like => "\%'comment'\%" },
+                author_id   => $commenter_id
+              }
+            );
+        if ( $perm ) {
+            if ( $perm->is_restricted('comment')
+              && !$perm->can_administer_blog() ) {
+                $commenter_status = '0';
+            }
+            else {
+                $commenter_status = 'AUTHOR';
+            }
+        }
+        elsif ( MT::Author::COMMENTER() == $user->type ) {
+            $commenter_status = 'COMMENTER';
+        }
+        elsif ( $app->_check_commenter_author($user, $blog_id) ) {
+            $commenter_status = 'AUTHOR';
+        }
+    }
+    $commenter_status;
+}
+
+sub commenter_status_js {
+    local $SIG{__WARN__} = sub { };
+    my $app     = shift;
+    my $ids     = $app->cookie_val('commenter_id') || q();
+
+    my $commenter_id;
+    if ($ids) {
+        my @ids = split ':', $ids;
+        $commenter_id    = $ids[0];
+    }
+
+    my $commenter_status = '0';
+    if ($commenter_id) {
+        $commenter_status = $app->_commenter_status( $commenter_id );
+    }
+    $commenter_status = encode_js( $commenter_status );
+    return <<JS;
+commenter_status = $commenter_status;
+JS
+}
+
 sub commenter_name_js {
     local $SIG{__WARN__} = sub { };
     my $app            = shift;
     my $commenter_name = $app->cookie_val('commenter_name');
     my $ids            = $app->cookie_val('commenter_id') || q();
     my $commenter_url  = $app->cookie_val('commenter_url') || q();
-    my $blog_id        = $app->param('blog_id') || 0;
 
     my $commenter_id;
     if ($ids) {
@@ -1443,71 +1508,22 @@ sub commenter_name_js {
     $app->set_header( 'Cache-Control' => 'no-cache' );
     $app->set_header( 'Expires'       => '-1' );
 
-    my $blog_ids = q();
+    my $commenter_status = '0';
     if ($commenter_id) {
-        my @blogs;
-        my $user = $app->model('author')->load($commenter_id);
-        if ($user && $user->is_superuser) {
-            @blogs = $app->model('blog')->load( undef, { fetchonly => [ 'id' ] } );
-        }
-        else {
-            # FIXME: this may be incomplete since the user
-            # may in fact be able to comment on other blogs;
-            # they just haven't signed into them yet
-            @blogs = $app->model('blog')->load(undef,
-              { fetchonly => [ 'id' ],
-                join => MT::Permission->join_on('blog_id',
-                  {
-                    permissions => { like => "\%'comment'\%" },
-                    author_id   => $commenter_id
-                  }
-                )
-              }
-            );
-        }
-        $blog_ids = @blogs ? "'" . join("','", map { $_->id } @blogs) . "'" : '';
-
-        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $commenter_id });
-        if ($perm) {
-            # double-check to see if this user hasn't been denied commenting
-            # permission. user has 'comment' permission through a role,
-            # but check for a restriction to comment on this blog
-            if ($perm->is_restricted('comment')) {
-                $blog_ids =~ s/(,|^)'$blog_id'(,|$)//;
-            }
-
-            # But if the permission carries a 'can administer' permission
-            # they should be allowed
-            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
-                if ($perm->can_administer_blog()) {
-                    # user is a blog administrator, so yes, they can comment too
-                    $blog_ids .= ($blog_ids ne '' ? ',' : '')
-                        . "'" . $blog_id . "'";
-                }
-            }
-        }
-        else {
-            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
-                # extra check to see if this user can comment on requested
-                # blog
-                if ( $app->_check_commenter_author($user, $blog_id) ) {
-                    # is this blog open to commenting from registered users?
-                    # if so, this user really can comment, even though they
-                    # don't have explicit permissions for it
-                    $blog_ids .= ($blog_ids ne '' ? ',' : '')
-                        . "'" . $blog_id . "'";
-                }
-            }
-        }
+        $commenter_status = $app->_commenter_status( $commenter_id );
     }
-    $commenter_name = encode_js( $commenter_name );
-    $commenter_url  = encode_js( $commenter_url );
-    $commenter_id   = encode_js( $commenter_id );
+    elsif ($commenter_name) {
+        $commenter_status = 'COMMENTER';
+    }
+    $commenter_name   = encode_js( $commenter_name );
+    $commenter_url    = encode_js( $commenter_url );
+    $commenter_id     = encode_js( $commenter_id );
+    $commenter_status = encode_js( $commenter_status );
     return <<JS;
 commenter_name = '$commenter_name';
 commenter_id = '$commenter_id';
 commenter_url = '$commenter_url';
-commenter_blog_ids = "$blog_ids";
+commenter_status = $commenter_status;
 JS
 }
 

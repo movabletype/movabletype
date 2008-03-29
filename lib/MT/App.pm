@@ -1010,14 +1010,13 @@ sub _make_commenter_session {
                        ($timeout ? (-expires => $timeout) : ()));
     $app->bake_cookie(%name_kookee);
     if (defined $id) {
-        my @blogs;
+        my $blog_ids;
         if ($app->user && $app->user->is_superuser) {
-            @blogs = $app->model('blog')->load( undef, {
-                fetchonly => [ 'id' ],
-            });
+            # Do not send blog ids in cookie because it may become huge.
+            $blog_ids = 'S';
         }
         else {
-            @blogs = $app->model('blog')->load(undef,
+            my @blogs = $app->model('blog')->load(undef,
               {
                 fetchonly => [ 'id' ],
                 join => MT::Permission->join_on('blog_id',
@@ -1029,40 +1028,48 @@ sub _make_commenter_session {
                 )
               }
             );
+
+            # Has permissions to 20+ blogs - do not send these ids in cookie.
+            $blog_ids = 20 < scalar(@blogs)
+              ? 'N'
+              : @blogs
+                ? "'" . join("','", map { $_->id } @blogs) . "'" 
+                : '';
         }
-        my $blog_ids = @blogs ? "'" . join("','", map { $_->id } @blogs) . "'" : '';
 
-        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
-        if ($perm) {
-            # double-check to see if this user hasn't been denied commenting
-            # permission. user has 'comment' permission through a role,
-            # but check for a restriction to comment on this blog
-            if ($perm->is_restricted('comment')) {
-                $blog_ids =~ s/(,|^)'$blog_id'(,|$)//;
-            }
-
-            # But if the permission carries a 'can administer' permission
-            # they should be allowed
-            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
-                if ($perm->can_administer_blog()) {
-                    # user is a blog administrator, so yes, they can comment too
-                    $blog_ids .= ($blog_ids ne '' ? ',' : '')
-                        . "'" . $blog_id . "'";
+        if ( $blog_ids ne 'S' && $blog_ids ne 'N' ) {
+            my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
+            if ($perm) {
+                # double-check to see if this user hasn't been denied commenting
+                # permission. user has 'comment' permission through a role,
+                # but check for a restriction to comment on this blog
+                if ($perm->is_restricted('comment')) {
+                    $blog_ids =~ s/(,|^)'$blog_id'(,|$)//;
                 }
-            }
-        }
-        else {
-            if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
-                # extra check to see if this user can comment on requested
-                # blog; this is specific to the Comment application, so
-                # only do this if we're running the comments app.
-                if ( $app->isa( 'MT::App::Comments' )) {
-                    if ( $app->_check_commenter_author($app->user, $blog_id) ) {
-                        # is this blog open to commenting from registered users?
-                        # if so, this user really can comment, even though they
-                        # don't have explicit permissions for it
+
+                # But if the permission carries a 'can administer' permission
+                # they should be allowed
+                if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
+                    if ($perm->can_administer_blog()) {
+                        # user is a blog administrator, so yes, they can comment too
                         $blog_ids .= ($blog_ids ne '' ? ',' : '')
                             . "'" . $blog_id . "'";
+                    }
+                }
+            }
+            else {
+                if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
+                    # extra check to see if this user can comment on requested
+                    # blog; this is specific to the Comment application, so
+                    # only do this if we're running the comments app.
+                    if ( $app->isa( 'MT::App::Comments' )) {
+                        if ( $app->_check_commenter_author($app->user, $blog_id) ) {
+                            # is this blog open to commenting from registered users?
+                            # if so, this user really can comment, even though they
+                            # don't have explicit permissions for it
+                            $blog_ids .= ($blog_ids ne '' ? ',' : '')
+                                . "'" . $blog_id . "'";
+                        }
                     }
                 }
             }
@@ -1113,6 +1120,11 @@ sub _invalidate_commenter_session {
                   -path => '/',
                   -expires => "+${timeout}s");
     $app->bake_cookie(%kookee);
+    my %url_kookee = (-name => 'commenter_url',
+                       -value => '',
+                       -path => '/',
+                       -expires => "+${timeout}s");
+    $app->bake_cookie(%url_kookee);
     my %name_kookee = (-name => 'commenter_name',
                        -value => '',
                        -path => '/',
