@@ -5634,6 +5634,7 @@ sub _hdlr_archive_prev_next {
             blog_id  => $ctx->stash('blog_id'),
             author   => $ctx->stash('author'),
         };
+        $entry = $is_prev ? $arctype->previous_archive_entry($param) : $arctype->next_archive_entry($param);
     } elsif ($arctype->category_based) {
         return _hdlr_category_prevnext(@_);
     } elsif ($arctype->author_based) {
