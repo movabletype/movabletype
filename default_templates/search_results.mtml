@@ -29,7 +29,9 @@
     </MTBlogResultFooter>
 </MTSearchResults>
 <MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
-<MTSearchIfPreviousResults><a href="<MTSearchPreviousLink>" onclick="return swapContent(-1);">&laquo;</a></MTSearchIfPreviousResults> M<MTSearchResultPages><MTSearchIfCurrentPage>o<MTElse><a href="<MTSearchPageLink>">o</a></MTSearchIfCurrentPage></MTSearchResultPages>vable Type <MTSearchIfMoreResults><a href="<MTSearchNextLink>" onclick="return swapContent();">&raquo;</a></MTSearchIfMoreResults>
+    <div class="content-nav">
+<MTSearchIfPreviousResults><a href="<MTSearchPreviousLink>" onclick="return swapContent(-1);">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</MTSearchIfPreviousResults><MTSearchResultPages><MTSearchIfCurrentPage><mt:var name="__value__"><MTElse><a href="<MTSearchPageLink>"><mt:var name="__value__"></a></MTSearchIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTSearchResultPages><MTSearchIfMoreResults>&nbsp;&nbsp;<a href="<MTSearchNextLink>" onclick="return swapContent();"><__trans phrase="Next"> &gt;</a></MTSearchIfMoreResults>
+    </div>
 </div>
 </MTSetVarTemplate>
 
