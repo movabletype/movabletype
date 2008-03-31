@@ -1202,7 +1202,7 @@ sub do_reply {
         blog_id     => $q->param('blog_id'),
     };
 
-    my ( $comment, $parent, $entry ) = $app->_prepare_reply;
+    my ( $comment, $parent, $entry ) = _prepare_reply($app);
 
     $param->{commenter_name} = $parent->author;
     $param->{entry_title}    = $entry->title;
@@ -1242,7 +1242,7 @@ sub reply_preview {
         magic_token => $q->param('magic_token'),
         blog_id     => $q->param('blog_id'),
     };
-    my ( $comment, $parent, $entry ) = $app->_prepare_reply;
+    my ( $comment, $parent, $entry ) = _prepare_reply($app);
 
     my $blog = $parent->blog
             || $app->model('blog')->load($q->param('blog_id'));
@@ -1752,6 +1752,9 @@ sub _prepare_reply {
     $comment->author( remove_html($nick) );
     $comment->email( remove_html( $app->user->email ) );
     $comment->text($text);
+    if (my $url = $app->user->url ) {
+        $comment->url($url);
+    }
 
     $comment->visible(1);    # leave as undefined
     $comment->is_junk(0);
