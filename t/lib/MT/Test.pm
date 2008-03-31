@@ -410,7 +410,12 @@ It\'s a hard rain\'s a-gonna fall',
                 status => MT::Entry::RELEASE(),
             });
             $entry->id($i+3);
-            $entry->tags('verse');
+            if ( $i == 1 || $i == 3 || $i == 5 ) {
+                $entry->tags('verse', 'rain');
+            }
+            else {
+                $entry->tags('verse', 'anemones');
+            }
             $entry->save()
                 or die "Couldn't save entry record ".($entry->id).": ". $entry->errstr;
             if ($i == 3) {

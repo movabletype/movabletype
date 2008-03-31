@@ -226,13 +226,13 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTSetVar name=\"x\" value=\"abc\"><MTGetVar name=\"x\" filters=\"__default__\">", "e" : "<p>abc</p>"}, #174
 { "r" : "1", "t" : "<MTIfStatic>1</MTIfStatic>", "e" : "STATIC_CONSTANT"}, #175
 { "r" : "1", "t" : "<MTIfDynamic>1</MTIfDynamic>", "e" : "DYNAMIC_CONSTANT"}, #176
-{ "r" : "1", "t" : "<MTTags glue=\",\"><MTTagName></MTTags>", "e" : "grandpa,rain,strolling,verse"}, #177
+{ "r" : "1", "t" : "<MTTags glue=\",\"><MTTagName></MTTags>", "e" : "anemones,grandpa,rain,strolling,verse"}, #177
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagName></MTEntryTags></MTEntries>", "e" : "grandpa,rain,strolling"}, #178
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagID></MTEntryTags></MTEntries>", "e" : "1,2,3"}, #179
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged>has tags</MTEntryIfTagged></MTEntries>", "e" : "has tags"}, #180
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged tag=\"grandpa\">tagged</MTEntryIfTagged></MTEntries>", "e" : "tagged"}, #181
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\" \"><MTTagSearchLink></MTEntryTags></MTEntries>", "e" : "http://localhost/cgi-bin/mt-search.cgi?tag=grandpa&amp;blog_id=1 http://localhost/cgi-bin/mt-search.cgi?tag=rain&amp;blog_id=1 http://localhost/cgi-bin/mt-search.cgi?tag=strolling&amp;blog_id=1"}, #182
-{ "r" : "1", "t" : "<MTTags><MTTagCount></MTTags>", "e" : "1115"}, #183
+{ "r" : "1", "t" : "<MTTags glue=':'><MTTagCount></MTTags>", "e" : "2:1:4:1:5"}, #183
 { "r" : "1", "t" : "<MTIfTypeKeyToken>tokened</MTIfTypeKeyToken>", "e" : "tokened"}, #184
 { "r" : "1", "t" : "<MTIfCommentsModerated>moderated</MTIfCommentsModerated>", "e" : "moderated"}, #185
 { "r" : "1", "t" : "<MTIfRegistrationAllowed>allowed</MTIfRegistrationAllowed>", "e" : "allowed"}, #186
@@ -274,9 +274,9 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
 { "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "0,1.5,0,"}, #223
 { "r" : "1", "t" : "<MTComments lastn='3'><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted></MTIfNonEmpty></MTComments>", "e" : "John Doe: trusted"}, #224
-{ "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "grandpa 6,rain 6,strolling 6,verse 1"}, #225
-{ "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,6,6"}, #226
-{ "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "1"}, #227
+{ "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "anemones 4,grandpa 6,rain 2,strolling 6,verse 1"}, #225
+{ "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,2,6"}, #226
+{ "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "2,1"}, #227
 { "r" : "1", "t" : "<MTEntries tags='grandpa' lastn='1'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #228
 { "r" : "1", "t" : "<MTEntries category='subfoo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 4"}, #229
 { "r" : "1", "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #230
@@ -354,9 +354,9 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetRank namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 1; 2 6; "}, #302
 { "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetRank max=\"10\" namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 1; 2 10; "}, #303
 { "r" : "1", "t" : "<MTAssets sort_by=\"score\" namespace=\"unit test\"><MTAssetID>; </MTAssets>", "e" : "1; 2; "}, #304
-{ "r" : "1", "t" : "<MTTags glue=\",\"><MTTagLabel></MTTags>", "e" : "grandpa,rain,strolling,verse"}, #305
+{ "r" : "1", "t" : "<MTTags glue=\",\"><MTTagLabel></MTTags>", "e" : "anemones,grandpa,rain,strolling,verse"}, #305
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagLabel></MTEntryTags></MTEntries>", "e" : "grandpa,rain,strolling"}, #306
-{ "r" : "1", "t" : "<MTTags glue=','><MTTagLabel> <MTTagRank></MTTags>", "e" : "grandpa 6,rain 6,strolling 6,verse 1"}, #307
+{ "r" : "1", "t" : "<MTTags glue=','><MTTagLabel> <MTTagRank></MTTags>", "e" : "anemones 4,grandpa 6,rain 2,strolling 6,verse 1"}, #307
 { "r" : "1", "t" : "<MTAssets lastn='1'><MTAssetTags><$MTTagLabel$>; </MTAssetTags></MTAssets>", "e" : "alpha; beta; gamma; "}, #308
 { "r" : "1", "t" : "<MTComments><MTIfCommentParent><p><MTCommentParent><MTCommentAuthor></MTCommentParent></p></MTIfCommentParent></MTComments>", "e" : "<p>Comment 11</p><p>v14GrUH 4 cheep</p>"}, #309
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTIfCommentReplies><MTCommentReplies><MTCommentsHeader><ul></MTCommentsHeader><li><MTCommentID></li><MTCommentsFooter></ul></MTCommentsFooter></MTCommentReplies></MTIfCommentReplies></MTComments>", "e" : "<ul><li>11</li></ul>"}, #310
@@ -451,5 +451,6 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<mt:setvar name='foo' value='moge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='__value__'></mt:if>", "e" : "value is moge."}, #399
 { "r" : "1", "t" : "<mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='__value__'></mt:if>", "e" : "value is poge"}, #400
 { "r" : "1", "t" : "<mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'><mt:else>value is <mt:var name='foo'></mt:if>", "e" : "value is poge"}, #401
-{ "r" : "1", "t" : "<mt:setvar name='foo' value='1'><mt:if name='bar'>true<mt:else>false</mt:if>", "e" : "false"} #402
+{ "r" : "1", "t" : "<mt:setvar name='foo' value='1'><mt:if name='bar'>true<mt:else>false</mt:if>", "e" : "false"}, #402
+{ "r" : "1", "t" : "<MTTags glue=',' sort_by='rank'><MTTagLabel> <MTTagRank></MTTags>", "e" : "verse 1,rain 2,anemones 4,grandpa 6,strolling 6"} #403
 ]

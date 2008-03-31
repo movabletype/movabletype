@@ -1909,22 +1909,19 @@ sub _hdlr_tags {
         }
     }
 
-    my $column = lc( $args->{sort_by} || 'name' );
-    $args->{sort_order} ||= '';
-    my $tags_length = @$tags;
+    my $column = lc( $args->{sort_by} ) || 'name';
+    my $top    = $args->{top}           || 0;
+    my $limit  = $args->{limit}         || 0;
     my @slice_tags;
-    if (defined $args->{top} && $args->{top} > 0 && $tags_length > $args->{top}){
+    if ($top > 0 && scalar @$tags > $top) {
         _tag_sort($tags, 'rank');
-        @slice_tags = @$tags[ 0 .. $args->{top} - 1 ];
+        @slice_tags = @$tags[ 0 .. $top - 1 ];
     } else {
         @slice_tags = @$tags;
     }
-    $tags_length = scalar @slice_tags;
-    if ($column ne 'rank') {
-        _tag_sort(\@slice_tags, $column, $args->{sort_order});
-    }
-    if (defined $args->{limit} && $args->{limit} > 0 && $tags_length > $args->{limit}){
-        @slice_tags = @slice_tags[ 0 .. $args->{limit} - 1 ];
+    _tag_sort(\@slice_tags, $column, $args->{sort_order} || '');
+    if ($limit > 0 && scalar @slice_tags > $limit) {
+        @slice_tags = @slice_tags[ 0 .. $limit - 1 ];
     }
 
     local $ctx->{__stash}{include_blogs} = $args->{include_blogs};
