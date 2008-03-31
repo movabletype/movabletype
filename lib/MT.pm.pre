@@ -1150,6 +1150,12 @@ sub init_callbacks {
 
 sub core_upload_file_to_sync {
     my ($cb, %args) = @_;
+    MT->upload_file_to_sync(%args);
+}
+
+sub upload_file_to_sync {
+    my $class = shift;
+    my (%args) = @_;
 
     # no need to do this unless we're syncing stuff.
     return unless MT->config('SyncTarget');

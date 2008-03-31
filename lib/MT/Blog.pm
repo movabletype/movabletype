@@ -404,6 +404,15 @@ sub include_path {
     return wantarray ? ($path, $file_path) : $file_path;
 }
 
+sub include_url {
+    my $blog = shift;
+    my ($name) = @_;
+
+    my @parts = $blog->include_path_parts();
+    my $url = join q{/}, $blog->site_url, @parts;
+    return $url;
+}
+
 sub include_statement {
     my $blog = shift;
     my ($name) = @_;

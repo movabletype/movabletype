@@ -2377,6 +2377,12 @@ sub _include_module {
             or return $ctx->error(MT->translate("Writing to '[_1]' failed: [_2]",
                 $file_path, $fmgr->errstr));
 
+        MT->upload_file_to_sync(
+            url  => $blog->include_url($include_name),
+            file => $file_path,
+            blog => $blog,
+        );
+
         return $blog->include_statement($include_name);
     }
 
