@@ -21,16 +21,16 @@
     <__trans phrase="Results tagged &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName encode_html="1"$>">
         </MTIfTagSearch>
 </h1>
-<div class="search-results-container">
+<div class="search-results-container autopagerize_page_element">
     </MTBlogResultHeader>
     <$MTInclude module="<__trans phrase="Entry Summary">" hide_counts="1"$>
     <MTBlogResultFooter>
-</div>
+</div><div class="autopagerize_insert_before"></div>
     </MTBlogResultFooter>
 </MTSearchResults>
 <MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
     <div class="content-nav">
-<MTIfPreviousResults><a href="<MTPreviousLink>" onclick="return swapContent(-1);">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</MTIfPreviousResults><MTPagerBlock><MTIfCurrentPage><mt:var name="__value__"><MTElse><a href="<MTPagerLink>"><mt:var name="__value__"></a></MTIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTPagerBlock><MTIfMoreResults>&nbsp;&nbsp;<a href="<MTNextLink>" onclick="return swapContent();"><__trans phrase="Next"> &gt;</a></MTIfMoreResults>
+<MTIfPreviousResults><a href="<MTPreviousLink>" rel="prev" onclick="return swapContent(-1);">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</MTIfPreviousResults><MTPagerBlock><MTIfCurrentPage><mt:var name="__value__"><MTElse><a href="<MTPagerLink>"><mt:var name="__value__"></a></MTIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTPagerBlock><MTIfMoreResults>&nbsp;&nbsp;<a href="<MTNextLink>" rel="next" onclick="return swapContent();"><__trans phrase="Next"> &gt;</a></MTIfMoreResults>
     </div>
 </div>
 </MTSetVarTemplate>
