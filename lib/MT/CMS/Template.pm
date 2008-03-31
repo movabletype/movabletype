@@ -445,25 +445,26 @@ sub edit {
 
     if (($param->{type} eq 'custom') || ($param->{type} eq 'widget')) {
         $param->{ssi_type} = 'php';    # TO DO: to handle ssi_type
+        $param->{include_with_ssi} = $blog->include_cache;
+        $param->{cache_enabled}    = $blog->include_cache;
+        $param->{cache_expire_type}     = 1;          # default is based on time
+        $param->{cache_expire_period}   = 'minutes';
+        $param->{cache_expire_interval} = 30;
         if ($obj) {
-            $param->{include_with_ssi}  = $obj->include_with_ssi;
-            $param->{cache_enabled}     = $obj->use_cache;
-            $param->{cache_expire_type} = $obj->cache_expire_type;
+            $param->{include_with_ssi} = $obj->include_with_ssi
+              if defined $obj->include_with_ssi;
+            $param->{cache_enabled} = $obj->use_cache
+              if defined $obj->use_cache;
+            $param->{cache_expire_type} = $obj->cache_expire_type
+              if defined $obj->cache_expire_type;
             my ( $period, $interval ) =
               _get_schedule( $obj->cache_expire_interval );
-            $param->{cache_expire_period}   = $period;
-            $param->{cache_expire_interval} = $interval;
+            $param->{cache_expire_period}   = $period   if defined $period;
+            $param->{cache_expire_interval} = $interval if defined $interval;
             my @events = split ',', $obj->cache_expire_event;
             foreach my $name (@events) {
                 $param->{ 'cache_expire_event_' . $name } = 1;
             }
-        }
-        else {
-            $param->{include_with_ssi} = $blog->include_cache;
-            $param->{cache_enabled}    = $blog->include_cache;
-            $param->{cache_expire_type}     = 1;           # default is based on time
-            $param->{cache_expire_period}   = 'minutes';
-            $param->{cache_expire_interval} = 30;
         }
     }
 
