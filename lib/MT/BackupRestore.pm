@@ -181,6 +181,7 @@ sub _loop_through_objects {
         my $records = 0;
         my $state = MT->translate('Backing up [_1] records:', $class);
         $progress->($state, $class->class_type || $class->datasource);
+        my $limit = 50;
         my $offset = 0;
         my $terms = $term_arg->{terms} || {};
         my $args = $term_arg->{args};
@@ -190,17 +191,25 @@ sub _loop_through_objects {
         }
         while (1) {
             $args->{offset} = $offset;
-            $args->{limit} = 50;
-            my @objects;
+            $args->{limit} = $limit + 1;
+            my $iter;
             eval {
-                @objects = $class->load($terms, $args);
+                $iter = $class->load_iter($terms, $args);
             };
             if (my $err = $@) {
                 $progress->("$class:$err\n", 'Error');
             }
-            last unless @objects;
-            $offset += scalar @objects;
-            for my $object (@objects) {
+            last unless $iter;
+            my $count = 0;
+            my $next  = 0;
+            while ( my $object = $iter->() ) {
+                if ( $count == $limit ) {
+                    $iter->('finish');
+                    $next = 1;
+                    $offset += $count;
+                    last;
+                }
+                $count++;
                 if ( ( $class eq MT->model('author') )
                   && ( exists $author_ids_seen{$object->id} ) ) {
                     next;
@@ -218,6 +227,7 @@ sub _loop_through_objects {
                     $files->{$object->id} = [$object->url, $object->file_path, $object->file_name];
                 }
             }
+            last unless $next;
             $progress->($state . " " . MT->translate("[_1] records backed up...", $records), $class->datasource)
                 if $records && ($records % 100 == 0);
         }
