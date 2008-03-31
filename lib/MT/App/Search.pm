@@ -84,17 +84,6 @@ sub init_request{
         $no_override{ "Search$no" } = 1
             if $no !~ /^Search.+/;
     }
-    my $blog_list = $app->create_blog_list( %no_override );
-    $app->{searchparam}{IncludeBlogs} = $blog_list->{IncludeBlogs}
-        if $blog_list && %$blog_list
-        && $blog_list->{IncludeBlogs}
-        && %{ $blog_list->{IncludeBlogs} };
-    if ( !exists($app->{searchparam}{IncludeBlogs})
-      && ( my $blog_id = $q->param('blog_id') ) ) {
-        $blog_id =~ s/\D//g;
-        $app->{searchparam}{IncludeBlogs}{$blog_id} = 1
-            if $blog_id;
-    }
 
     ## Set other search params--prefer per-query setting, default to
     ## config file.
@@ -112,6 +101,30 @@ sub init_request{
 
     $app->generate_cache_keys();
     $app->init_cache_driver();
+
+    my $processed = 0;
+    my $list      = {};
+    if ( MT->run_callbacks( 'search_blog_list', $app, $list, \$processed ) ) {
+        if ( $processed ) {
+            $app->{searchparam}{IncludeBlogs} = $list;
+        }
+        else {
+            my $blog_list = $app->create_blog_list( %no_override );
+            $app->{searchparam}{IncludeBlogs} = $blog_list->{IncludeBlogs}
+                if $blog_list && %$blog_list
+                && $blog_list->{IncludeBlogs}
+                && %{ $blog_list->{IncludeBlogs} };
+            if ( !exists($app->{searchparam}{IncludeBlogs})
+              && ( my $blog_id = $q->param('blog_id') ) ) {
+                $blog_id =~ s/\D//g;
+                $app->{searchparam}{IncludeBlogs}{$blog_id} = 1
+                    if $blog_id;
+            }
+        }
+    }
+    else {
+        return $app->error( $app->translate('Invalid request.') );
+    }
 }
 
 sub generate_cache_keys {
@@ -636,6 +649,20 @@ context populated.
     callback($cb, $app, $count, $out_html)
 
 Called immediately after cached results was retrieved.
+
+=item search_blog_list
+
+    callback($cb, $app, \%list, \$processed)
+
+Called during init_request in which a plugin can fill %list.
+The list must has the following data structure.
+
+    %list = ( 1 => 1, 2 => 1, 3 => 1 );
+
+where the hash keys (1, 2, and 3) are the IDs of the blogs to search for.
+
+Plugins must also set $processed = 1 in order to specify the app that
+the app must not overwrite the blog list created by the plugin.
 
 =head1 AUTHOR & COPYRIGHT
 
