@@ -29,13 +29,21 @@ function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
     else {
         $hash = $ctx->stash('__inside_set_hashvar');
         $name = $ctx->stash('__name_set_hashvar');
-        if (is_array($vars)) {
-            $vars[$name] = $hash;
-        } else {
-            $vars = array($name => $hash);
-            $ctx->__stash['vars'] =& $vars;
-        }
         $ctx->restore(array('__inside_set_hashvar', '__name_set_hashvar'));
+        $parent_hash = $ctx->stash('__inside_set_hashvar');
+        if (isset($parent_hash)) {
+            $parent_hash[$name] = $hash;
+            $ctx->stash('__inside_set_hashvar', $parent_hash);
+        }
+        else {
+            if (is_array($vars)) {
+                $vars[$name] = $hash;
+            } else {
+                $vars = array($name => $hash);
+                $ctx->__stash['vars'] =& $vars;
+            }
+        }
+        return $content;
     }
     return '';
 }
