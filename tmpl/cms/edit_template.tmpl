@@ -544,7 +544,7 @@ TC.attachLoadEvent( init );
     </div>
 </mtapp:setting>
 
-<div id="template-options">
+<div id="template-options"<mt:unless name="id"> class="active"</mt:unless>>
     <div id="template-options-header" class="pkg">
         <h3><a href="javascript:void(0)" onclick="toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
         <div class="template-options-summary">
