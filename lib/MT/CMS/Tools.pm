@@ -3,6 +3,7 @@ package MT::CMS::Tools;
 use strict;
 
 use MT::I18N qw( encode_text );
+use MT::Util qw( encode_url encode_html decode_html encode_js );
 
 sub system_check {
     my $app = shift;
@@ -406,7 +407,7 @@ sub backup {
 
     my $size = $q->param('size_limit') || 0;
     return $app->errtrans( '[_1] is not a number.',
-        MT::Util::encode_html($size) )
+        encode_html($size) )
       if $size !~ /^\d+$/;
 
     my @blog_ids = split ',', $blog_ids;
@@ -447,7 +448,7 @@ sub backup {
     my $printer;
     my $splitter;
     my $finisher;
-    my $progress = sub { $app->_progress(@_); };
+    my $progress = sub { _progress($app, @_); };
     my $fh;
     my $fname;
     my $arc_buf;
@@ -464,7 +465,7 @@ sub backup {
             $finisher = sub {
                 my ($asset_files) = @_;
                 close $fh;
-                $app->_backup_finisher( $fname, $param );
+                _backup_finisher( $app, $fname, $param );
             };
         }
         else {  # archive/compress files
@@ -486,7 +487,7 @@ sub backup {
                       . "'><file type='backup' name='$file.xml' /></manifest>",
                       "$file.manifest");
                 $arc->close;
-                $app->_backup_finisher( $fname, $param );
+                _backup_finisher( $app, $fname, $param );
             };
         }
     }
@@ -594,7 +595,7 @@ sub backup {
                 $param->{files_loop} = \@files;
                 $param->{tempdir}    = $temp_dir;
                 my @fnames = map { $_->{filename} } @files;
-                $app->_backup_finisher( \@fnames, $param );
+                _backup_finisher( $app, \@fnames, $param );
             }
             else {
                 my ( $fh_arc, $filepath ) =
@@ -612,7 +613,7 @@ sub backup {
                 for my $f (@files) {
                     unlink File::Spec->catfile( $temp_dir, $f->{filename} );
                 }
-                $app->_backup_finisher( $fname, $param );
+                _backup_finisher( $app, $fname, $param );
             }
         };
     }
@@ -742,7 +743,7 @@ sub restore {
     if ( defined($uploaded_filename)
         && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
     {
-        return $app->restore_upload_manifest($fh);
+        return restore_upload_manifest( $app, $fh );
     }
 
     my $param = { return_args => '__mode=dashboard' };
@@ -769,7 +770,7 @@ sub restore {
     if (!$fh) {
         $param->{restore_upload} = 0;
         my $dir = $app->config('ImportPath');
-        my ( $blog_ids, $asset_ids ) = $app->restore_directory( $dir, \$error );
+        my ( $blog_ids, $asset_ids ) = restore_directory( $app, $dir, \$error );
         if ( defined $blog_ids ) {
             $param->{open_dialog} = 1;
             $param->{blog_ids}    = join( ',', @$blog_ids );
@@ -781,7 +782,7 @@ sub restore {
     else {
         $param->{restore_upload} = 1;
         if ( $uploaded_filename =~ /^.+\.xml$/i ) {
-            my $blog_ids = $app->restore_file( $fh, \$error );
+            my $blog_ids = restore_file( $app, $fh, \$error );
             if ( defined $blog_ids ) {
                 $param->{open_dialog} = 1;
                 $param->{blog_ids} = join( ',', @$blog_ids );
@@ -834,7 +835,7 @@ sub restore {
             $arc->extract($tmp);
             $arc->close;
             my ( $blog_ids, $asset_ids ) =
-              $app->restore_directory( $tmp, \$error );
+              restore_directory( $app, $tmp, \$error );
             if (defined $blog_ids) {
                 $param->{open_dialog} = 1;
                 $param->{blog_ids} = join( ',', @$blog_ids )
@@ -883,7 +884,7 @@ sub restore_premature_cancel {
       if $app->param('deferred_json');
     my $param = { restore_success => 1 };
     if ( defined $deferred && ( scalar( keys %$deferred ) ) ) {
-        $app->_log_dirty_restore($deferred);
+        _log_dirty_restore( $app, $deferred );
         my $log_url = $app->uri( mode => 'view_log', args => {} );
         $param->{restore_success} = 0;
         my $message =
@@ -1074,7 +1075,6 @@ sub adjust_sitepath {
     if ( scalar $q->param('redirect') ) {
         $param->{restore_end} = 0;  # redirect=1 means we are from multi-uploads
         require JSON;
-        require MT::Util;
         $param->{blogs_meta} = JSON::objToJson( \%blogs_meta );
         $param->{next_mode}  = 'dialog_restore_upload';
     }
@@ -1091,7 +1091,7 @@ sub adjust_sitepath {
         $param->{$key} = scalar $q->param($key);
     }
     $param->{name}   = $q->param('current_file');
-    $param->{assets} = MT::Util::encode_html( $q->param('assets') );
+    $param->{assets} = encode_html( $q->param('assets') );
     $app->print( $app->build_page( 'dialog/restore_end.tmpl', $param ) );
 }
 
@@ -1198,7 +1198,7 @@ sub dialog_restore_upload {
         }
     }
 
-    my $assets = JSON::jsonToObj( MT::Util::decode_html($assets_json) )
+    my $assets = JSON::jsonToObj( decode_html($assets_json) )
       if ( defined($assets_json) && $assets_json );
     $assets = [] if !defined($assets);
     my $asset;
@@ -1230,7 +1230,7 @@ sub dialog_restore_upload {
         ( $blog_ids, $asset_ids ) = eval {
             MT::BackupRestore->restore_process_single_file( $fh, $objects,
                 $deferred, \@errors, $schema_version, $overwrite_template,
-                sub { $app->_progress(@_) } );
+                sub { _progress($app, @_) } );
         };
         if ($@) {
             $last = 1;
@@ -1247,7 +1247,7 @@ sub dialog_restore_upload {
         }
     }
     $param->{files}  = join( ',', @files );
-    $param->{assets} = MT::Util::encode_html( JSON::objToJson($assets) );
+    $param->{assets} = encode_html( JSON::objToJson($assets) );
     $param->{name}   = $file_next;
     if ( 0 < scalar(@files) ) {
         $param->{last} = 0;
@@ -1262,7 +1262,7 @@ sub dialog_restore_upload {
     if ($last) {
         $param->{restore_end} = 1;
         if ( $param->{is_dirty} ) {
-            $app->_log_dirty_restore($deferred);
+            _log_dirty_restore( $app, $deferred );
             my $log_url = $app->uri( mode => 'view_log', args => {} );
             $param->{error} =
               $app->translate(
@@ -1313,7 +1313,7 @@ sub dialog_restore_upload {
             $param->{next_mode} = 'dialog_restore_upload';
         }
     }
-    MT->run_callbacks('restore', $objects, $deferred, \@errors, sub { $app->_progress(@_) });
+    MT->run_callbacks('restore', $objects, $deferred, \@errors, sub { _progress( $app, @_ ) });
 
     $app->print( $app->build_page( 'dialog/restore_end.tmpl', $param ) );
     close $fh if $fh;
@@ -1534,10 +1534,10 @@ sub restore_file {
     require MT::BackupRestore;
     my ( $deferred, $blogs ) =
       MT::BackupRestore->restore_file( $fh, $errormsg, $schema_version, $overwrite_template,
-        sub { $app->_progress(@_); } );
+        sub { _progress( $app, @_ ); } );
 
     if ( !defined($deferred) || scalar( keys %$deferred ) ) {
-        $app->_log_dirty_restore($deferred);
+        _log_dirty_restore( $app, $deferred );
         my $log_url = $app->uri( mode => 'view_log', args => {} );
         $$errormsg .= '; ' if $$errormsg;
         $$errormsg .= $app->translate(
@@ -1595,7 +1595,7 @@ sub restore_directory {
     require MT::BackupRestore;
     my ( $deferred, $blogs, $assets ) =
       MT::BackupRestore->restore_directory( $dir, \@errors, \%error_assets,
-        $schema_version, $overwrite_template, sub { $app->_progress(@_); } );
+        $schema_version, $overwrite_template, sub { _progress( $app, @_ ); } );
 
     if ( scalar @errors ) {
         $$error = $app->translate('Error occured during restore process.');
@@ -1631,7 +1631,7 @@ sub restore_directory {
     }
 
     if ( scalar( keys %$deferred ) ) {
-        $app->_log_dirty_restore($deferred);
+        _log_dirty_restore( $app, $deferred );
         my $log_url = $app->uri( mode => 'view_log', args => {} );
         $$error = $app->translate(
 'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
@@ -1685,8 +1685,7 @@ sub restore_upload_manifest {
         }
     }
     require JSON;
-    require MT::Util;
-    $assets_json = MT::Util::encode_url( JSON::objToJson($assets) )
+    $assets_json = encode_url( JSON::objToJson($assets) )
       if scalar(@$assets) > 0;
     $param->{files}       = join( ',', @$files );
     $param->{assets}      = $assets_json;
@@ -1770,8 +1769,7 @@ sub _progress {
 
     my ( $str, $id ) = @_;
     if ( $id && $ids->{$id} ) {
-        require MT::Util;
-        my $str_js = MT::Util::encode_js($str);
+        my $str_js = encode_js($str);
         $app->print(
 qq{<script type="text/javascript">progress('$str_js', '$id');</script>}
         );
