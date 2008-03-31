@@ -1206,7 +1206,7 @@ sub pre_save {
     $obj->cache_expire_event( join ',', @events );
     if ( $cache_expire_type == 1 ) {
         return $eh->error(
-            $app->translate("You cannot be able to enter 0 as the time.") )
+            $app->translate("You should not be able to enter 0 as the time.") )
           if $interval == 0;
     }
     elsif ( $cache_expire_type == 2 ) {
