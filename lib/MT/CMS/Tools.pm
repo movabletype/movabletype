@@ -139,43 +139,6 @@ sub recover_password {
     }
 }
 
-sub reg_file {
-    my $app = shift;
-    my $q   = $app->param;
-    my $uri = $app->base
-      . $app->uri(
-        'mode' => 'reg_bm_js',
-        args   => {
-            bm_show   => $q->param('bm_show'),
-            bm_height => $q->param('bm_height')
-        }
-      );
-    $app->{no_print_body} = 1;
-    $app->set_header( 'Content-Disposition' => 'attachment; filename=mt.reg' );
-    $app->send_http_header('text/plain; name=mt.reg');
-    $app->print( qq(REGEDIT4\r\n)
-          . qq([HKEY_CURRENT_USER\\Software\\Microsoft\\Internet Explorer\\MenuExt\\QuickPost]\r\n)
-          . qq(@="$uri"\r\n)
-          . qq("contexts"=hex:31) );
-    1;
-}
-
-sub reg_bm_js {
-    my $app = shift;
-    my $q   = $app->param;
-    my $js =
-      $app->_bm_js( scalar $q->param('bm_show'),
-        scalar $q->param('bm_height') );
-    $js =~ s!d=document!d=external.menuArguments.document!;
-    $js =~ s!d\.location\.href!external.menuArguments.location.href!;
-    $js =~ s!^javascript:!!;
-    $js =~ s!\%20! !g;
-    $app->{no_print_body} = 1;
-    $app->send_http_header('text/plain');
-    $app->print( '<script language="javascript">' . $js . '</script>' );
-    1;
-}
-
 sub do_list_action {
     my $app = shift;
     $app->validate_magic or return;

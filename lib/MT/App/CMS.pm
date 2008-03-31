@@ -151,11 +151,6 @@ sub core_methods {
         'pinged_urls'         => "${pkg}Entry::pinged_urls",
         'save_entry_prefs'    => "${pkg}Entry::save_entry_prefs",
         'save_favorite_blogs' => "${pkg}Blog::save_favorite_blogs",
-        'reg_file'            => "${pkg}Tools::reg_file",
-        'reg_bm_js'           => {
-            code           => "${pkg}Tools::reg_bm_js",
-            requires_login => 0,
-        },
         'folder_add'               => "${pkg}Category::category_add",
         'category_add'             => "${pkg}Category::category_add",
         'category_do_add'          => "${pkg}Category::category_do_add",
