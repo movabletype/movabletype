@@ -444,8 +444,27 @@ sub edit {
     }
 
     if (($param->{type} eq 'custom') || ($param->{type} eq 'widget')) {
-        $param->{ssi_type} = 'PHP';
-        $param->{include_with_ssi} = 1 if $obj && $obj->include_with_ssi;
+        $param->{ssi_type} = 'php';    # TO DO: to handle ssi_type
+        if ($obj) {
+            $param->{include_with_ssi}  = $obj->include_with_ssi;
+            $param->{cache_enabled}     = $obj->use_cache;
+            $param->{cache_expire_type} = $obj->cache_expire_type;
+            my ( $period, $interval ) =
+              _get_schedule( $obj->cache_expire_interval );
+            $param->{cache_expire_period}   = $period;
+            $param->{cache_expire_interval} = $interval;
+            my @events = split ',', $obj->cache_expire_event;
+            foreach my $name (@events) {
+                $param->{ 'cache_expire_event_' . $name } = 1;
+            }
+        }
+        else {
+            $param->{include_with_ssi} = $blog->include_cache;
+            $param->{cache_enabled}    = $blog->include_cache;
+            $param->{cache_expire_type}     = 1;           # default is based on time
+            $param->{cache_expire_period}   = 'minutes';
+            $param->{cache_expire_interval} = 30;
+        }
     }
 
     $param->{dirty} = 1
@@ -1168,12 +1187,39 @@ sub pre_save {
         }
     }
 
+    # module caching
+    $obj->include_with_ssi( $app->param('include_with_ssi') ? 1 : 0 );
+    $obj->use_cache( $app->param('cache_enabled')           ? 1 : 0 );
+    my $cache_expire_type = $app->param('cache_expire_type');
+    $obj->cache_expire_type($cache_expire_type);
+    my $period   = $app->param('cache_expire_period');
+    my $interval = $app->param('cache_expire_interval');
+    my $sec      = _get_interval( $period, $interval );
+    $obj->cache_expire_interval($sec);
+    my $q = $app->param;
+    my @events;
+
+    foreach my $name ( $q->param('cache_expire_event') ) {
+        push @events, $name;
+    }
+    $obj->cache_expire_event( join ',', @events );
+    if ( $cache_expire_type == 1 ) {
+        return $eh->error(
+            $app->translate("You cannot be able to enter 0 as the time.") )
+          if $interval == 0;
+    }
+    elsif ( $cache_expire_type == 2 ) {
+        return $eh->error(
+            $app->translate("You must select at least one event checkbox.") )
+          if !@events;
+    }
+
     require MT::PublishOption;
     my $build_type = $app->param('build_type');
     if ( $build_type == MT::PublishOption::SCHEDULED() ) {
         my $period   = $app->param('schedule_period');
         my $interval = $app->param('schedule_interval');
-        my $sec      = _get_build_interval( $period, $interval );
+        my $sec      = _get_interval( $period, $interval );
         $obj->build_interval($sec);
     }
     my $rebuild_me = 1;
@@ -1220,7 +1266,7 @@ sub post_save {
             if ( $build_type == MT::PublishOption::SCHEDULED() ) {
                 my $period   = $q->param( 'map_schedule_period_' . $map_id );
                 my $interval = $q->param( 'map_schedule_interval_' . $map_id );
-                my $sec      = _get_build_interval( $period, $interval );
+                my $sec      = _get_interval( $period, $interval );
                 $map->build_interval($sec);
             }
             $map->save;
@@ -1767,7 +1813,7 @@ sub publish_index_templates {
         ( $period, $interval );
     }
 
-    sub _get_build_interval {
+    sub _get_interval {
         my ( $period, $interval ) = @_;
         return unless defined $period;
         my $sec = 0;

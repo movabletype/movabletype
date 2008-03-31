@@ -59,6 +59,10 @@ __PACKAGE__->install_meta({
         'last_rebuild_time',
         'page_layout',
         'include_with_ssi',
+        'use_cache',
+        'cache_expire_type',
+        'cache_expire_interval',
+        'cache_expire_event',
     ],
 });
 __PACKAGE__->add_trigger('pre_remove' => \&pre_remove_children);
