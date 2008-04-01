@@ -304,8 +304,11 @@ sub save {
                     ('category' eq $tmpl->type)) {
                 $tmpl->build_dynamic(1);
             }
-        } elsif (($dcty eq 'archives') && ('archive' eq $tmpl->type)) {
-            $tmpl->build_dynamic(1);
+        } elsif ($dcty eq 'archives') {
+            if (('archive' eq $tmpl->type) || ('page' eq $tmpl->type) ||
+                ('individual' eq $tmpl->type) || ('category' eq $tmpl->type)) {
+                $tmpl->build_dynamic(1);
+            }
         }
     }
     $tmpl->SUPER::save;
