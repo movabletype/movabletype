@@ -2329,9 +2329,17 @@ sub _include_module {
         my @types = split /,/, ($tmpl->cache_expire_event || '');
         if (@types) {
             require MT::Touch;
-            my $latest = MT::Touch->latest_touch($blog_id, @types);
-            if ($latest && (time - MT::Util::ts2epoch(undef, $latest) > $ttl ) ) {
-                $ttl = 1; # bound to force an update
+            if (my $latest = MT::Touch->latest_touch($blog_id, @types)) {
+                if ($use_ssi) {
+                    # base cache expiration on physical file timestamp
+                    my $include_name = $arg->{key} || $tmpl_name;
+                    my $mtime = (stat($blog->include_path($include_name)))[9];
+                    if ($mtime && (MT::Util::ts2epoch(undef, $latest) > $mtime ) ) {
+                        $ttl = 1; # bound to force an update
+                    }
+                } else {
+                    $ttl = time - MT::Util::ts2epoch(undef, $latest);
+                }
             }
         }
     }
