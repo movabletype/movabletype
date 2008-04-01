@@ -1720,6 +1720,14 @@ fieldset h3 {
     border: 0;
 }
 
+#dynamicity-field li {
+    margin-bottom: 1em;
+}
+
+#dynamicity-field span.hint {
+    display: block;
+    margin-left: 1.5em;
+}
 
 /* Action Bars ---------------------------------------------------------------------------------- */
 
