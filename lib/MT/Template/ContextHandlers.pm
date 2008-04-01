@@ -3267,7 +3267,8 @@ sub _hdlr_author_email {
     my $author = $_[0]->stash('author')
         or return $_[0]->_no_author_error('MTAuthorEmail');
     my $email = $author->email;
-    defined $email ? $email : '';
+    return '' unless defined $email;
+    $_[1] && $_[1]->{'spam_protect'} ? spam_protect($email) : $email;
 }
 
 sub _hdlr_author_url {
