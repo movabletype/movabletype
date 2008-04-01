@@ -661,7 +661,7 @@ sub run_callbacks {
 sub init_callbacks {
     my $app = shift;
     $app->SUPER::init_callbacks(@_);
-    MT->add_callback('*::post_save', 0, $app, \&_cb_mark_blog );
+    MT->add_callback('post_save', 0, $app, \&_cb_mark_blog );
     MT->add_callback('MT::Blog::post_remove', 0, $app, \&_cb_unmark_blog );
     MT->add_callback('new_user_provisioning', 5, $app, \&_cb_user_provisioning);
 }
@@ -770,15 +770,34 @@ sub _cb_unmark_blog {
 sub _cb_mark_blog {
     my ($eh, $obj) = @_;
     my $obj_type = ref $obj;
-    return if ($obj_type eq 'MT::Author' ||
-               $obj_type eq 'MT::Log' || $obj_type eq 'MT::Session' ||
+
+    if ($obj_type eq 'MT::Author') {
+        require MT::Touch;
+        MT::Touch->touch(0, 'author');
+        return;
+    }
+
+    return if ($obj_type eq 'MT::Log' || $obj_type eq 'MT::Session' ||
                (($obj_type ne 'MT::Blog') && !$obj->has_column('blog_id')));
     my $mt_req = MT->instance->request;
     my $blogs_touched = $mt_req->stash('blogs_touched') || {};
+
+    # Issue MT::Touch touches for specific types we track
+    my $type = $obj->datasource;
+    if ($obj->properties->{class_column}) {
+        $type = $obj->class_type;
+    }
+    if ($type !~ m/^(entry|comment|page|folder|category|tbping|asset|author|template)$/) {
+        undef $type;
+    }
+
     if ($obj_type eq 'MT::Blog') {
-        $blogs_touched->{$obj->id} = 0;
+        delete $blogs_touched->{$obj->id};
     } else {
-        $blogs_touched->{$obj->blog_id} = 1 if $obj->blog_id;
+        if ($obj->blog_id) {
+            my $th = $blogs_touched->{$obj->blog_id} ||= {};
+            $th->{$type} = 1 if $type;
+        }
     }
     $mt_req->stash('blogs_touched', $blogs_touched);
 }
@@ -898,10 +917,10 @@ sub touch_blogs {
         next unless $blog_id;
         my $blog = MT::Blog->load($blog_id);
         next unless ( $blog );
-        if (($blog->custom_dynamic_templates || '') ne 'none') {
-            $blog->touch();
-            $blog->save() or die $blog->errstr;
-        }
+        my $th = $blogs_touched->{$blog_id} || {};
+        my @types = keys %$th;
+        $blog->touch( @types );
+        $blog->save() or die $blog->errstr;
     }
 }
 

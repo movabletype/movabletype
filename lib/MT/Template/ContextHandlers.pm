@@ -1342,7 +1342,10 @@ sub _hdlr_else {
         $name = ($ctx->var('__name__') || undef) unless $name;
         $args->{name} = $name if $name;
     }
-    return _hdlr_if(@_) ? $ctx->slurp(@_) : $ctx->else() if %$args;
+    if (%$args) {
+        defined(my $res = _hdlr_if(@_)) or return;
+        return $res ? $ctx->slurp(@_) : $ctx->else();
+    }
     return $ctx->slurp(@_);
 }
 
@@ -2321,13 +2324,30 @@ sub _include_module {
           : ( $tmpl->use_cache && $tmpl->cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
               : ( $tmpl->use_cache && $tmpl->cache_expire_type == 2 ) ? 0
                   :   60 * 60;    # default 60 min.
+
+    if ($tmpl->use_cache && $tmpl->cache_expire_type == 2) {
+        my @types = split /,/, ($tmpl->cache_expire_event || '');
+        if (@types) {
+            require MT::Touch;
+            my $latest = MT::Touch->latest_touch($blog_id, @types);
+            if ($latest && (time - MT::Util::ts2epoch(undef, $latest) > $ttl ) ) {
+                $ttl = 1; # bound to force an update
+            }
+        }
+    }
+
     my $cache_driver;
     if ($cache_enabled) {
+        my $tmpl_mod = $tmpl->modified_on;
+        my $tmpl_ts = MT::Util::ts2epoch($blog, $tmpl_mod);
+        if (($ttl == 0) || (time - $tmpl_ts < $ttl)) {
+            $ttl = time - $tmpl_ts;
+        }
         require MT::Cache::Negotiate;
         $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl );
         my $cache_value = $cache_driver->get($cache_key);
 
-       if ($cache_value) {
+        if ($cache_value) {
             return $cache_value if !$use_ssi;
 
             my $include_name = $arg->{key} || $tmpl_name;

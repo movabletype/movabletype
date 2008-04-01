@@ -93,6 +93,7 @@ BEGIN {
             'objecttag'       => 'MT::ObjectTag',
             'objectscore'     => 'MT::ObjectScore',
             'objectasset'     => 'MT::ObjectAsset',
+            'touch'           => 'MT::Touch',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',

@@ -67,7 +67,7 @@ __PACKAGE__->install_properties({
         'basename_limit' => 'smallint',
         'use_comment_confirmation' => 'boolean',
         'allow_commenter_regist' => 'boolean',
-## Have to keep these around for use in mt-upgrade.cgi.
+        ## Have to keep these around for use in mt-upgrade.cgi.
         'archive_url' => 'string(255)',
         'archive_path' => 'string(255)',
         'old_style_archive_links' => 'boolean',
@@ -81,7 +81,6 @@ __PACKAGE__->install_properties({
     audit => 1,
     indexes => {
         name => 1,
-        children_modified_on => 1,
     },
     defaults => {
         'custom_dynamic_templates' => 'none',
@@ -89,7 +88,8 @@ __PACKAGE__->install_properties({
     child_classes => ['MT::Entry', 'MT::Page', 'MT::Template', 'MT::Asset',
                       'MT::Category', 'MT::Folder', 'MT::Notification', 'MT::Log',
                       'MT::ObjectTag', 'MT::Association', 'MT::Comment',
-                      'MT::TBPing', 'MT::Trackback', 'MT::TemplateMap'],
+                      'MT::TBPing', 'MT::Trackback', 'MT::TemplateMap',
+                      'MT::Touch'],
     datasource => 'blog',
     primary_key => 'id',
 });
@@ -507,9 +507,12 @@ sub count_static_templates {
 
 sub touch {
     my $blog = shift;
+    my ( @types ) = @_;
     my ($s,$m,$h,$d,$mo,$y) = localtime(time);
     my $mod_time = sprintf("%04d%02d%02d%02d%02d%02d",
                            1900+$y, $mo+1, $d, $h, $m, $s);
+    require MT::Touch;
+    MT::Touch->touch( $blog->id, @types );
     $blog->children_modified_on($mod_time);
     $mod_time;
 }
