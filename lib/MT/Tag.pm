@@ -18,7 +18,6 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         name => 1,
-        is_private => 1,
         n8d_id => 1,
         name_id => {
             columns => ['name', 'id'],
