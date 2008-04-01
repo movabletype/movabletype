@@ -143,7 +143,7 @@ sub setup {
 
     # Do we have SSL support?
     $prereq = 'Crypt::SSLeay';
-    eval { require $prereq };
+    eval "require $prereq;";
     warn( "WARNING: $prereq not found. Can't use SSL.\n" ) if $@;
 
     # Replace the current language if given one as an argument.
