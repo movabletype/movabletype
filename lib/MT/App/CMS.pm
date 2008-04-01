@@ -2469,7 +2469,7 @@ sub _convert_word_chars {
 
     # While we're fixing Word, remove processing instructions with
     # colons, as they can break PHP.
-    $s =~ s{ <\? xml:namespace [^>]*> }{}xmsg;
+    $s =~ s{ <\? xml:namespace [^>]*> }{}ximsg;
 
     $s;
 }
