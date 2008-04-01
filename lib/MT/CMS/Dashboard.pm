@@ -67,19 +67,19 @@ sub new_version_widget {
 
     push @{ $param->{feature_loop} ||= [] },
       {
-        feature_label => MT->translate('Shared Template Modules'),
-        feature_url  => $app->help_url('designer/shared-templates.html'),
-        feature_description => MT->translate('Reuse elements of your site design or layout across all the blogs and sites managed within Movable Type.')
+        feature_label => MT->translate('Better, Stronger, Faster'),
+        feature_url  => $app->help_url('mt415/known-issues.html'),
+        feature_description => MT->translate('A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching');
       },
       {
-        feature_label => MT->translate('Userpics'),
-        feature_url  => $app->help_url('author/userpics.html'),
-        feature_description => MT->translate('Allow authors and commenters to upload a photo of themselves to be displayed alongside their comments.')
+        feature_label => MT->translate('Improved Template Management'),
+        feature_url  => $app->help_url('mt415/whats-new.html#design-changes'),
+        feature_description => MT->translate('The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.');
       },
       {
-        feature_label => MT->translate('Template Sets'),
-        feature_url  => $app->help_url('designer/template-sets.html'),
-        feature_description => MT->translate('Template sets provide an easy way to bundle an entire design and install it into Movable Type.')
+        feature_label => MT->translate('Threaded Comments'),
+        feature_url  => $app->help_url('mt415/threaded-comments.html'),
+        feature_description => MT->translate('Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.');
       };
 }
 
