@@ -368,9 +368,6 @@ sub ping {
     }
 
     if ( !$ping->is_junk ) {
-        $blog->touch;
-        $blog->save;
-
         if ( !$ping->visible ) {
             $app->_send_ping_notification( $blog, $entry, $cat, $ping );
         }
