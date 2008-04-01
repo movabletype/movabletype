@@ -444,12 +444,14 @@ sub edit {
     }
 
     if (($param->{type} eq 'custom') || ($param->{type} eq 'widget')) {
-        $param->{ssi_type} = 'php';    # TO DO: to handle ssi_type
-        $param->{include_with_ssi} = $blog->include_cache;
-        $param->{cache_enabled}    = $blog->include_cache;
-        $param->{cache_expire_type}     = 1;          # default is based on time
-        $param->{cache_expire_period}   = 'minutes';
-        $param->{cache_expire_interval} = 30;
+        if ($blog) {
+            $param->{include_with_ssi} = $blog->include_cache;
+            $param->{cache_enabled}    = $blog->include_cache;
+            $param->{cache_expire_type}     = 1;          # default is based on time
+            $param->{cache_expire_period}   = 'minutes';
+            $param->{cache_expire_interval} = 30;
+            $param->{ssi_type} = uc $blog->include_system;
+        }
         if ($obj) {
             $param->{include_with_ssi} = $obj->include_with_ssi
               if defined $obj->include_with_ssi;
