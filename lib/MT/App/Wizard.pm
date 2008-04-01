@@ -647,8 +647,8 @@ sub optional {
         if ($param{test_mail_address}){
             my $cfg = $app->config;
             $cfg->MailTransfer($param{mail_transfer}) if $param{mail_transfer};
-            $cfg->SMTPServer($param{smtp_server}) if $param{smtp_server};
-            $cfg->SendMailPath($param{sendmail_path}) if $param{sendmail_path};
+            $cfg->SMTPServer($param{smtp_server}) if $param{mail_transfer} && ($param{mail_transfer} eq 'smtp') && $param{smtp_server};
+            $cfg->SendMailPath($param{sendmail_path}) if $param{mail_transfer} && ($param{mail_transfer} eq 'sendmail') && $param{sendmail_path};
             my %head = (id => 'wizard_test',
                         To => $param{test_mail_address},
                         From => $cfg->EmailAddressMain || $param{test_mail_address},
