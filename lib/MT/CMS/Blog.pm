@@ -439,10 +439,8 @@ sub cfg_archives {
     $param{no_writedir}         = $q->param('no_writedir');
     $param{no_cachedir}         = $q->param('no_cachedir');
     $param{no_writecache}       = $q->param('no_writecache');
-    $param{dynamic_none}        = $blog->custom_dynamic_templates eq 'none';
-    $param{dynamic_archives}    = $blog->custom_dynamic_templates eq 'archives';
-    $param{dynamic_custom}      = $blog->custom_dynamic_templates eq 'custom';
-    $param{dynamic_all}         = $blog->custom_dynamic_templates eq 'all';
+    $param{dynamicity}          = $blog->custom_dynamic_templates || 'none';
+    $param{include_system}      = $blog->include_system || '';
 
     if ( $app->config->ObjectDriver =~ qr/(db[id]::)?sqlite/i ) {
         $param{hide_build_option} = 1
@@ -1168,7 +1166,7 @@ sub pre_save {
         if ( $screen eq 'cfg_web_services' ) {
         }
         elsif ( $screen eq 'cfg_archives' ) {
-            @fields = qw(file_extension);
+            @fields = qw( file_extension );
         }
         elsif ( $screen eq 'cfg_templatemaps' ) {
         }
@@ -1325,8 +1323,8 @@ sub pre_save {
                     $obj->junk_folder_expiry(0);
                 }
                 else {
-                    delete $obj->{column_values}->{junk_folder_expiry};
-                    delete $obj->{changed_cols}->{junk_folder_expiry};
+                    delete $obj->{column_values}{junk_folder_expiry};
+                    delete $obj->{changed_cols}{junk_folder_expiry};
                 }
             }
         }
@@ -1355,6 +1353,7 @@ sub pre_save {
             if ( my $dcty = $app->param('dynamicity') ) {
                 $obj->custom_dynamic_templates($dcty);
             }
+            $obj->include_system( $app->param('include_system') || '' );
             if ( !$app->param('enable_archive_paths') ) {
                 $obj->archive_url('');
                 $obj->archive_path('');
@@ -1389,6 +1388,16 @@ sub post_save {
             my $dcty_changed = $dcty ne $original->custom_dynamic_templates ? 1 : 0;
 
             if ($dcty_changed) {
+
+                # Apply publishing rules for templates based on
+                # publishing method selected:
+                #     none (0% publish queue, all static)
+                #     async_all (100% publish queue)
+                #     async_partial (high-priority templates publish synchronously (main index, preferred indiv. archives, feed templates))
+                #     all (100% dynamic)
+                #     archives (archives dynamic, static indexes)
+                #     custom (custom configuration)
+
                 if ( $dcty eq 'none' ) {
                     require MT::Template;
                     my @tmpls = MT::Template->load({
@@ -1811,6 +1820,12 @@ sub update_dynamicity {
     my $app = shift;
     my ( $blog, $cache, $conditional ) = @_;
     my $dcty = $blog->custom_dynamic_templates;
+
+    if ( ($dcty eq 'async_partial') || ($dcty eq 'async_all') ) {
+        # these behave like static publishing
+        $dcty = 'none';
+    }
+
     if ( $dcty eq 'none' ) {
         require MT::Template;
         my @templates = MT::Template->load( { blog_id => $blog->id } );
@@ -1823,7 +1838,7 @@ sub update_dynamicity {
         require MT::Template;
         my @templates = MT::Template->load( { blog_id => $blog->id } );
         for my $tmpl (@templates) {
-            $tmpl->build_dynamic( $tmpl->type ne 'index' || 0 );
+            $tmpl->build_dynamic( $tmpl->type ne 'index' ? 1 : 0 );
             $tmpl->save();
         }
     }
