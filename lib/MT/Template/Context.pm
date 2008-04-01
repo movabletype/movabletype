@@ -257,13 +257,21 @@ sub post_process_handler {
 sub slurp {
     my ($ctx, $args, $cond) = @_;
     my $tokens  = $ctx->stash('tokens');
-    $tokens ? $ctx->stash('builder')->build($ctx, $tokens, $cond) : '';
+    return '' unless $tokens;
+    my $result = $ctx->stash('builder')->build($ctx, $tokens, $cond);
+    return $ctx->error($ctx->stash('builder')->errstr)
+        unless defined $result;
+    return $result;
 }
 
 sub else {
     my ($ctx, $args, $cond) = @_;
-    my $else = $ctx->stash('tokens_else');
-    $else ? $ctx->stash('builder')->build($ctx, $else, $cond) : '';
+    my $tokens = $ctx->stash('tokens_else');
+    return '' unless $tokens;
+    my $result = $ctx->stash('builder')->build($ctx, $tokens, $cond);
+    return $ctx->error($ctx->stash('builder')->errstr)
+        unless defined $result;
+    return $result;
 }
 
 sub build {
