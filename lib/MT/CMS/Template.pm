@@ -445,11 +445,11 @@ sub edit {
 
     if (($param->{type} eq 'custom') || ($param->{type} eq 'widget')) {
         if ($blog) {
-            $param->{include_with_ssi} = $blog->include_cache;
-            $param->{cache_enabled}    = $blog->include_cache;
-            $param->{cache_expire_type}     = 1;          # default is based on time
-            $param->{cache_expire_period}   = 'minutes';
-            $param->{cache_expire_interval} = 30;
+            $param->{include_with_ssi}      = 0;
+            $param->{cache_enabled}         = 0;
+            $param->{cache_expire_type}     = 0;
+            $param->{cache_expire_period}   = '';
+            $param->{cache_expire_interval} = 0;
             $param->{ssi_type} = uc $blog->include_system;
         }
         if ($obj) {
