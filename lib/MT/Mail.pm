@@ -15,7 +15,9 @@ use MT::I18N qw(encode_text);
 sub send {
     my $class = shift;
     my($hdrs_arg, $body) = @_;
-    my $id = delete $hdrs_arg->{id} if exists $hdrs_arg->{id};
+
+    local $hdrs_arg->{id} = $hdrs_arg->{id};
+    my $id = delete $hdrs_arg->{id};
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     foreach my $h (keys %hdrs) {
@@ -78,7 +80,7 @@ sub send {
 
     return 1 unless
         MT->run_callbacks('mail_filter', args => $hdrs_arg, headers => \%hdrs,
-            body => \$body, transfer => \$xfer, id => $id );
+            body => \$body, transfer => \$xfer, ( $id ? ( id => $id ) : () ) );
 
     if ($xfer eq 'sendmail') {
         return $class->_send_mt_sendmail(\%hdrs, $body, $mgr);
