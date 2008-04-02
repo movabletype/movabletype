@@ -2376,12 +2376,13 @@ sub _include_module {
             $req->cache('build_template', $tmpl);
             return $ctx->error($builder->errstr);
         }
+        $tmpl->tokens( $tokens );
 
         $req->stash($stash_id, [ $tmpl, $tokens ]);
     }
 
     # Build the included template against the includ*ing* template's context.
-    my $ret = $builder->build($ctx, $tokens, $cond);
+    my $ret = $tmpl->build( $ctx, $cond );
     if (!defined $ret) {
         $req->cache('build_template', $tmpl) if $tmpl;
         return $ctx->error("error in $name $tmpl_name: " . $builder->errstr);

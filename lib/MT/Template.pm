@@ -260,6 +260,7 @@ sub build {
         }->{$layout};
         $ctx->var( 'page_columns', $columns ) if $columns;
     }
+    $ctx->var( $tmpl->identifier, 1 ) if defined $tmpl->identifier;
 
     $timer->pause_partial if $timer;
 
