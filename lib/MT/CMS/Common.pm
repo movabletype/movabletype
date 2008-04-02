@@ -76,7 +76,7 @@ sub save {
             return $app->cfg_archives( \%param );
         }
         else {
-            return $app->forward( 'edit', \%param );
+            return $app->forward( 'view', \%param );
         }
     }
 
