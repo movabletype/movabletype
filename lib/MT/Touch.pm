@@ -23,6 +23,7 @@ __PACKAGE__->install_properties({
     },
     primary_key => 'id',
     datasource => 'touch',
+    cacheable => 0,
 });
 
 sub latest_touch {
