@@ -75,8 +75,9 @@ sub handle_sign_in {
     } else {
         # If there's no signature, then we trust the cookie.
         my %cookies = $app->cookies();
-        if ($cookies{$app->COMMENTER_COOKIE_NAME()}
-            && ($session = $cookies{$app->COMMENTER_COOKIE_NAME()}->value())) 
+        my $cookie_name = MT::App::COMMENTER_COOKIE_NAME();
+        if ($cookies{$cookie_name}
+            && ($session = $cookies{$cookie_name}->value())) 
         {
             require MT::Session;
             require MT::Author;
