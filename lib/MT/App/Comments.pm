@@ -43,6 +43,8 @@ sub init {
     $app->{template_dir} = 'comment';
     $app->init_commenter_authenticators;
     $app->init_captcha_providers();
+    MT->add_callback( 'CommentThrottleFilter', 1, undef,
+        \&MT::App::Comments::_builtin_throttle );
     $app;
 }
 
@@ -101,10 +103,11 @@ sub _get_commenter_session {
     my $session_key;
 
     my %cookies = $app->cookies();
-    if ( !$cookies{ $app->COMMENTER_COOKIE_NAME() } ) {
+    my $cookie_name = MT::App::COMMENTER_COOKIE_NAME();
+    if ( !$cookies{$cookie_name} ) {
         return ( undef, undef );
     }
-    $session_key = $cookies{ $app->COMMENTER_COOKIE_NAME() }->value() || "";
+    $session_key = $cookies{$cookie_name}->value() || "";
     $session_key =~ y/+/ /;
     my $cfg = $app->config;
     require MT::Session;
@@ -779,9 +782,6 @@ sub post {
         }
     }
 
-    MT->add_callback( 'CommentThrottleFilter', 1, undef,
-        \&MT::App::Comments::_builtin_throttle );
-
     # Run all the Comment-throttling callbacks
     my $passed_filter =
       MT->run_callbacks( 'CommentThrottleFilter', $app, $entry );
@@ -1085,7 +1085,8 @@ sub _extend_commenter_session {
     my $app         = shift;
     my %param       = @_;
     my %cookies     = $app->cookies();
-    my $session_key = $cookies{ $app->COMMENTER_COOKIE_NAME() }->value() || "";
+    my $cookie_name = MT::App::COMMENTER_COOKIE_NAME();
+    my $session_key = $cookies{$cookie_name}->value() || "";
     $session_key =~ y/+/ /;
     my $sessobj = MT::Session->load($session_key);
     return
@@ -1100,7 +1101,7 @@ sub _extend_commenter_session {
     $sessobj->start( $sessobj->start + $number );
     $sessobj->save();
     my %sess_cookie = (
-        -name    => $app->COMMENTER_COOKIE_NAME(),
+        -name    => $cookie_name,
         -value   => $session_key,
         -path    => '/',
         -expires => "+${number}s"
