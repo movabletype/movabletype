@@ -13,7 +13,7 @@ sub name {
     return 'Individual';
 }
 
-sub label {
+sub archive_label {
     return MT->translate("INDIVIDUAL_ADV");
 }
 
