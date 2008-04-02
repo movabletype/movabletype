@@ -659,6 +659,7 @@ sub list {
     }
 
     $params->{template_type_loop} = \@tmpl_loop;
+    $params->{screen_id} = "list-template";
 
     return $app->load_tmpl('list_template.tmpl', $params);
 }

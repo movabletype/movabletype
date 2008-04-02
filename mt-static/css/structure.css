@@ -2049,6 +2049,7 @@ optgroup option {
     border-bottom: 1px solid #CDDEE7;
 }
 
+#list-template .zero-state-listing,
 .listing-form {
     border-bottom: 1px solid #CDDEE7;
 }
