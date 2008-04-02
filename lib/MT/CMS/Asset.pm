@@ -42,7 +42,7 @@ sub edit {
 
         my @appears_in;
         my $place_class = $app->model('objectasset');
-        my $place_iter = $place_class->load_iter({ asset_id => $obj->id });
+        my $place_iter = $place_class->load_iter({ blog_id => $obj->blog_id || 0, asset_id => $obj->id });
         while (my $place = $place_iter->()) {
             my $entry_class = $app->model($place->object_ds);
             my $entry = $entry_class->load($place->object_id);
@@ -137,9 +137,6 @@ sub list {
     $app->add_breadcrumb( $app->translate("Files") );
     if ($blog_id) {
         $terms{blog_id} = $blog_id;
-    }
-    elsif ((defined $blog_id) && ($blog_id ne '')) {
-        $terms{blog_id} = '0';
     }
     else {
         unless ( $app->user->is_superuser ) {
