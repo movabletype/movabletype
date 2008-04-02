@@ -778,6 +778,7 @@ sub _cb_mark_blog {
     }
 
     return if ($obj_type eq 'MT::Log' || $obj_type eq 'MT::Session' ||
+            $obj_type eq 'MT::Touch' ||
                (($obj_type ne 'MT::Blog') && !$obj->has_column('blog_id')));
     my $mt_req = MT->instance->request;
     my $blogs_touched = $mt_req->stash('blogs_touched') || {};
@@ -922,6 +923,7 @@ sub touch_blogs {
         $blog->touch( @types );
         $blog->save() or die $blog->errstr;
     }
+    MT->instance->request('blogs_touched', undef);
 }
 
 sub add_breadcrumb {
