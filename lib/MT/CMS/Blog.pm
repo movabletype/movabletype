@@ -630,9 +630,8 @@ sub rebuild_pages {
         my $start = time;
         my $count = 0;
         my $cb    = sub {
-            return 0 if time - $start > 20;    # 10 seconds
             $count++;
-            return 1;
+            return time - $start > 20 ? 0 : 1;
         };
         if ( $offset < $total ) {
             $app->rebuild(
@@ -671,9 +670,8 @@ sub rebuild_pages {
                 my $start = time;
                 my $count = 0;
                 my $cb    = sub {
-                    return 0 if time - $start > 20;    # 10 seconds
                     $count++;
-                    return 1;
+                    return time - $start > 20 ? 0 : 1;
                 };
                 $app->rebuild(
                     BlogID         => $blog_id,

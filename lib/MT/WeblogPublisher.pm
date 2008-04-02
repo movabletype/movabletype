@@ -138,7 +138,7 @@ sub rebuild {
 
         @at = ($set_at);
         my $archiver = $mt->archiver($set_at);
-        $entry_class = $archiver->{entry_class} || "entry";
+        $entry_class = $archiver->entry_class || "entry";
     }
     else {
         $entry_class = '*';
