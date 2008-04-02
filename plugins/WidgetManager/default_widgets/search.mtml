@@ -3,7 +3,7 @@
     <div class="widget-content">
         <form method="get" action="<$mt:CGIPath$><$mt:SearchScript$>">
             <input type="text" id="search" class="ti" name="search" value="<$mt:SearchString$>" />
-<mt:If name="search_results_template">
+<mt:If name="search_results">
             <input type="hidden" name="IncludeBlogs" value="<$mt:SearchIncludeBlogs$>" />
             <input type="hidden" name="limit" value="<MTSearchMaxResults>" />
             <MTIgnore>
@@ -21,7 +21,7 @@
         </form>
     </div>
 </div>
-<mt:If name="search_results_template">
+<mt:If name="search_results">
     <mt:IfTagSearch>
 <div class="widget-tags widget">
     <h3 class="widget-header"><__trans phrase="Tags"></h3>
