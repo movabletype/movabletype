@@ -114,6 +114,7 @@ php/mt.php: %: %.pre build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	    -e 's!__PRODUCT_VERSION__!$(PRODUCT_VERSION)!g' \
 	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
         -e 's!__API_VERSION__!$(API_VERSION)!g' \
+        -e 's!__DEFAULT_TIMEZONE__!$(DEFAULT_TIMEZONE)!g' \
 	$< > $@
 
 mt-config.cgi-original: mt-config.cgi-original.pre build-language-stamp

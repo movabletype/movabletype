@@ -348,6 +348,8 @@ class MT {
             $cfg['userpicthumbnailsize'] = '100';
         isset($cfg['pluginpath']) or
             $cfg['pluginpath'] = array($this->config('MTDir') . DIRECTORY_SEPARATOR . 'plugins');
+        isset($cfg['timeoffset']) or
+            $cfg['timeoffset'] = '__DEFAULT_TIMEZONE__';
     }
 
     function configure_paths($blog_site_path) {
