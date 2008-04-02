@@ -50,6 +50,7 @@ sub init_registry {
             },
             'DefaultTemplateFilter' => '$WidgetManager::MT::Plugin::WidgetManager::default_templates',
             'MT::Blog::post_create_default_templates' => '$WidgetManager::WidgetManager::Plugin::create_default_widgetsets',
+            'restore' => '$WidgetManager::WidgetManager::Plugin::restore_widgetmanagers',
         },
         applications => {
             cms => {

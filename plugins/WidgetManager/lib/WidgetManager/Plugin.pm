@@ -117,4 +117,35 @@ sub create_default_widgetsets {
     1;
 }
 
+sub restore_widgetmanagers {
+    my ($cb, $objects, $deferred, $errors, $callback) = @_;
+    my $plugin  = $cb->plugin;
+    my @keys = grep { $_ =~ /^MT::PluginData#/ } keys( %$objects );
+    foreach my $key ( @keys ) {
+        my $pd = $objects->{$key};
+        next unless $plugin->key eq $pd->plugin;
+        my $config = $pd->data;
+        next unless $config;
+        my $modulesets = $config->{modulesets};
+        next unless $modulesets;
+
+        foreach my $mod_key ( keys %$modulesets ) {
+            $callback->( $plugin->translate( 'Restoring widgetmanager [_1]... ', $mod_key ) );
+            my $tmpl_ids = $modulesets->{$mod_key};
+            my @tmpl_ids = split ',', $tmpl_ids;
+            my @new_ids;
+            foreach my $id ( @tmpl_ids ) {
+                my $tmpl = $objects->{"MT::Template#$id"};
+                next unless $tmpl;
+                push @new_ids, $tmpl->id;
+            }
+            $modulesets->{$mod_key} = join(',', @new_ids);
+            $callback->( $plugin->translate("Done.") . "\n" );
+        }
+        $pd->data({ modulesets => $modulesets });
+        $pd->save;
+    }
+    1;
+}
+
 1;
