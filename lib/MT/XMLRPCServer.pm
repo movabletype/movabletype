@@ -203,6 +203,7 @@ sub _save_placements {
     my ($entry, $item, $param) = @_;
 
     my @categories;
+    my $changed = 0;
 
     if ($param->{page}) {
         if (my $folders = $param->{__permaLink_folders}) {
@@ -223,6 +224,7 @@ sub _save_placements {
                     $folder->parent($parent_id);
                     $folder->basename($basename);
                     $folder->label($basename);
+                    $changed = 1;
                     $folder->save
                       or die _fault(MT->translate("Saving folder failed: [_1]",
                         $folder->errstr));
@@ -235,13 +237,13 @@ sub _save_placements {
     }
     elsif (my $cats = $item->{categories}) {
         if (@$cats) {
-	    my $cat_class = MT->model('category');
-	    # The spec says to ignore invalid category names.
-	    @categories = grep { defined } $cat_class->search({
-		blog_id => $entry->blog_id,
-		label   => $cats,
-	    });
-	}
+            my $cat_class = MT->model('category');
+            # The spec says to ignore invalid category names.
+            @categories = grep { defined } $cat_class->search({
+                blog_id => $entry->blog_id,
+                label   => $cats,
+            });
+        }
     }
 
     require MT::Placement;
@@ -280,7 +282,7 @@ sub _save_placements {
         $is_primary_placement = 0;
     }
 
-    1;
+    $changed;
 }
 
 sub _new_entry {
@@ -371,7 +373,15 @@ sub _new_entry {
 
     $entry->save;
 
-    $class->_save_placements($entry, $item, \%param);
+    my $changed = $class->_save_placements($entry, $item, \%param);
+
+    my @types = ( $obj_type );
+    if ($changed) {
+        push @types, 'folder'; # folders are the only type that can be
+                               # created in _save_placements
+    }
+    $blog->touch( @types );
+    $blog->save;
 
     MT->run_callbacks("api_post_save.$obj_type", $mt, $entry, $orig_entry);
 
@@ -435,6 +445,9 @@ sub _edit_entry {
     if ($blog_id && $blog_id != $entry->blog_id) {
         die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
     }
+    require MT::Blog;
+    my $blog = MT::Blog->load($blog_id)
+        or die _fault(MT->translate("Invalid blog ID '[_1]'", $blog_id));
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to edit entry"))
@@ -482,7 +495,13 @@ sub _edit_entry {
 
     $entry->save;
 
-    $class->_save_placements($entry, $item, \%param);
+    my $changed = $class->_save_placements($entry, $item, \%param);
+    my @types = ( $obj_type );
+    if ($changed) {
+        push @types, 'folder'; # folders are the only type that can be
+                               # created in _save_placements
+    }
+    $blog->touch( @types );
 
     MT->run_callbacks("api_post_save.$obj_type", $mt, $entry,
         $orig_entry);
@@ -1000,6 +1019,7 @@ sub publishScheduledFuturePosts {
 
     my $iter = MT::Entry->load_iter({
         blog_id => $blog->id,
+        class => '*',
         status => MT::Entry::FUTURE()},
         {'sort' => 'authored_on',
          direction => 'descend'
@@ -1012,6 +1032,7 @@ sub publishScheduledFuturePosts {
     my $changed = 0;
     my $total_changed = 0;
     my @results;
+    my %types;
     foreach my $entry_id (@queue) {
         my $entry = MT::Entry->load($entry_id);
         if ($entry->authored_on <= $now) {
@@ -1020,6 +1041,7 @@ sub publishScheduledFuturePosts {
             $entry->save
                 or die $entry->errstr;
 
+            $types{$entry->class} = 1;
             start_background_task(sub {
                 $mt->rebuild_entry( Entry => $entry, Blog => $blog )
                     or die $mt->errstr;
@@ -1028,6 +1050,9 @@ sub publishScheduledFuturePosts {
             $total_changed++;
         }
     }
+    $blog->touch( keys %types ) if $changed;
+    $blog->save if $changed && (keys %types);
+
     if ($changed) {
         $mt->rebuild_indexes( Blog => $blog )
             or die $mt->errstr;
@@ -1124,6 +1149,9 @@ sub newMediaObject {
     }
     $asset->mime_type($file->{type});
     $asset->save;
+
+    $blog->touch('asset');
+    $blog->save;
 
     MT->run_callbacks(
         'api_upload_file.' . $asset->class,
