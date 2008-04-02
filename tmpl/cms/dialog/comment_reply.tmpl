@@ -30,7 +30,7 @@ closeDialog('<mt:var name="return_url">');
     <div id="comment-preview">
         <div class="intro"><__trans phrase="Preview of your comment"></div>
         <div id="reply-body">
-            <$mt:var name="preview_html"$>
+<$mt:include name="include/comment_detail.tmpl"$>
         </div>
     </div>
 </mt:if>

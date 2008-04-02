@@ -1260,42 +1260,28 @@ sub reply_preview {
         { %$param, error => $app->errstr } )
       unless $comment;
 
-    my $cmt_tmpl =
-      $app->model('template')->load( { identifier => 'comment_detail' } );
-    my $tmpl_name = $cmt_tmpl->name;
-    require MT::Template;
-    my $tmpl = MT::Template->new(
-        type   => 'scalarref',
-        source => \"<\$MTInclude module=\"$tmpl_name\"\$>",
-    );
-    my $ctx = $tmpl->context;
     ## Set timestamp as we would usually do in ObjectDriver.
     my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
     my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900, $ts[4] + 1,
       @ts[ 3, 2, 1, 0 ];
     $comment->created_on($ts);
     $comment->commenter_id( $app->user->id );
-    $ctx->stash( 'comment', $comment );
+    $param->{'comment'} = $comment;
 
     require MT::Serialize;
     my $ser   = MT::Serialize->new( $cfg->Serializer );
     my $state = $comment->column_values;
     $state->{static} = $q->param('static');
-    $ctx->stash( 'comment_state', unpack 'H*', $ser->serialize( \$state ) );
-    $ctx->stash( 'comment_is_static', 1 );
-    $ctx->stash( 'entry',             $entry );
-    $ctx->{current_timestamp} = $ts;
-    $ctx->stash( 'commenter', $app->user );
-    $ctx->stash( 'blog_id',   $parent->blog_id );
-    $ctx->stash( 'blog',      $parent->blog );
-    my %cond;
-    my $html = $tmpl->build( $ctx, \%cond );
-    return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, error => $tmpl->errstr } )
-      unless defined $html;
+    $param->{'comment_state'} = unpack 'H*', $ser->serialize( \$state );
+    $param->{'comment_is_static'} = 1;
+    $param->{'entry'} = $entry;
+    $param->{'current_timestamp'} = $ts;
+    $param->{'commenter'} = $app->user;
+    $param->{'blog_id'} = $parent->blog_id;
+    $param->{'blog'} = $parent->blog;
 
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, text => $q->param('text'), preview_html => $html } );
+        { %$param, text => $q->param('text') } );
 }
 
 sub dialog_post_comment {

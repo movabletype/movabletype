@@ -1,0 +1,19 @@
+<div class="comment" id="comment-<$MTCommentID$>">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+               <span class="byline">
+                   <__trans phrase="By"> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span><MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>
+                   <MTCommentParent>
+                   <__trans phrase="replied to"> <a href="#comment-<$MTCommentID$>"><MTCommentAuthor></a>
+                   </MTCommentParent>
+                   <__trans phrase="on"> <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
+                   <MTIfCommentsAccepted> | <$MTCommentReplyLink$></MTIfCommentsAccepted>
+               </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <$MTCommentBody$>
+        </div>
+    </div>
+</div>
