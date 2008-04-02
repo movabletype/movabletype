@@ -139,10 +139,10 @@ sub start_element {
                             if ($self->{overwrite_template}) {
                                 $obj->set_values(\%column_data);
                                 $self->{current} = $obj;
+                                $self->{loaded} = 1;
                             } else {
                                 $self->{skip} += 1;
                             }
-                            $self->{loaded} = 1;
                         }
                     }
                 }
