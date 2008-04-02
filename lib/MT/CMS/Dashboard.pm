@@ -69,17 +69,17 @@ sub new_version_widget {
       {
         feature_label => MT->translate('Better, Stronger, Faster'),
         feature_url  => $app->help_url('mt415/known-issues.html'),
-        feature_description => MT->translate('A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching');
+        feature_description => MT->translate('A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching'),
       },
       {
         feature_label => MT->translate('Improved Template Management'),
         feature_url  => $app->help_url('mt415/whats-new.html#design-changes'),
-        feature_description => MT->translate('The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.');
+        feature_description => MT->translate('The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.'),
       },
       {
         feature_label => MT->translate('Threaded Comments'),
         feature_url  => $app->help_url('mt415/threaded-comments.html'),
-        feature_description => MT->translate('Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.');
+        feature_description => MT->translate('Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.'),
       };
 }
 
