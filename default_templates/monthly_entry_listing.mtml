@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <title><$MTBlogName encode_html="1"$>: <__trans phrase="[_1] Archives" params="<$MTArchiveTitle$>"></title>
+    <$mt:include module="<__trans phrase="HTML Head">"$>
+<mt:ignore>
+    <!-- Include Next and Previous links if publishing a date-based archive -->
+</mt:ignore>
+<MTIf name="datebased_archive">
+    <MTArchivePrevious><link rel="prev" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchivePrevious>
+    <MTArchiveNext><link rel="next" href="<$MTArchiveLink$>" title="<$MTArchiveTitle encode_html="1"$>" /></MTArchiveNext>
+</MTIf>
+</head>
+<body class="mt-archive-listing mt-<MTVar name="archive_class"> <$MTVar name="page_layout"$>">
+    <div id="container">
+        <div id="container-inner">
+
+
+            <$mt:include module="<__trans phrase="Banner Header">"$>
+
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <h1 id="page-title" class="archive-title"><__trans phrase="[_1] Archives" params="<$MTArchiveTitle$>"></h1>
+
+
+<mt:ignore><!-- Limit number of entries to the number set in Blog Entry Settings --></mt:ignore>
+<MTUnless name="datebased_archive"><$mt:setvar name="limit" value="auto"$></MTUnless>
+<MTEntries limit="$limit">
+                            <mt:ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:ignore>
+                            <$mt:include module="Entry Summary"$>
+</MTEntries>
+
+
+                            <div class="content-nav">
+                                <MTArchivePrevious><a href="<$MTArchiveLink$>">&laquo; <$MTArchiveTitle$></a> |</MTArchivePrevious>
+                                <a href="<$MTLink template="main_index"$>"><__trans phrase="Main Index"></a> |
+                                <a href="<$MTLink template="archive_index"$>"><__trans phrase="Archives"></a>
+                                <MTArchiveNext>| <a href="<$MTArchiveLink$>"><$MTArchiveTitle$> &raquo;</a></MTArchiveNext>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

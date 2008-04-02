@@ -1,0 +1,14 @@
+<div id="header">
+    <div id="header-inner">
+        <div id="header-content">
+<mt:ignore><!-- Use h1 and h2 html tags on the main index of the blog as the title, use divs on all other pages where there are page titles. --></mt:ignore>
+<MTIf name="main_index">
+            <h1 id="header-name"><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></h1>
+            <h2 id="header-description"><$MTBlogDescription$></h2>
+<MTElse>
+            <div id="header-name"><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></div>
+            <div id="header-description"><$MTBlogDescription$></div>
+</MTIf>
+        </div>
+    </div>
+</div>

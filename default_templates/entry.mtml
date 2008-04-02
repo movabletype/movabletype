@@ -1,21 +1,102 @@
-<MTSetVar name="body_class" value="mt-archive-listing mt-entry-archive">
-<MTSetVar name="module_about_context" value="1">
-<MTIfCommentsAccepted><$MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)"$></MTIfCommentsAccepted>
-<MTSetVarBlock name="page_title"><$MTEntryTitle$></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTGetVar name="page_title"$> - <$MTBlogName encode_html="1"$></MTSetVarBlock>
-<MTSetVarBlock name="html_head">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <title><$MTEntryTitle encode_html="1"$> - <$MTBlogName encode_html="1"$></title>
+    <$mt:include module="<__trans phrase="HTML Head">"$>
     <MTEntryPrevious><link rel="prev" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryPrevious>
     <MTEntryNext><link rel="next" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryNext>
-    <MTIfPingsAccepted><$MTEntryTrackbackData$></MTIfPingsAccepted>
+    <$MTEntryTrackbackData$>
     <MTIfCommentsAccepted><script type="text/javascript" src="<$MTLink template="javascript"$>"></script></MTIfCommentsAccepted>
-</MTSetVarBlock>
+</head>
+<body class="mt-entry-archive <$MTVar name="page_layout"$>" onload="individualArchivesOnLoad(commenter_name)">
+    <div id="container">
+        <div id="container-inner">
 
-<$MTInclude module="<__trans phrase="Header">"$>
 
-<$MTInclude module="<__trans phrase="Entry Detail">"$>
+            <$mt:include module="<__trans phrase="Banner Header">"$>
 
-<$MTInclude module="<__trans phrase="TrackBacks">"$>
 
-<$MTInclude module="<__trans phrase="Comments">"$>
+            <div id="content">
+                <div id="content-inner">
 
-<$MTInclude module="<__trans phrase="Footer">"$>
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <div id="entry-<$MTEntryID$>" class="entry-asset asset hentry">
+                                <div class="asset-header">
+                                    <h1 id="page-title" class="asset-name entry-title"><$MTEntryTitle$></h1>
+                                    <div class="asset-meta">
+                                        <span class="byline">
+<MTIfNonEmpty tag="EntryAuthorDisplayName">
+                                            <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$MTEntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>">
+<MTElse>
+                                            <abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>
+</MTIfNonEmpty>
+                                        </span>
+                                        <span class="separator">|</span> <a class="permalink" rel="bookmark" href="<$MTEntryPermalink$>"><__trans phrase="Permalink"></a>
+<MTIfCommentsActive>
+                                        <span class="separator">|</span> <a href="<$MTEntryPermalink$>#comments"><__trans phrase="Comments ([_1])" params="<$MTEntryCommentCount$>"></a>
+</MTIfCommentsActive>
+<MTIfPingsActive>
+                                        <span class="separator">|</span> <a href="<$MTEntryPermalink$>#trackback"><__trans phrase="TrackBacks ([_1])" params="<$MTEntryTrackbackCount$>"></a>
+</MTIfPingsActive>
+                                    </div>
+                                </div>
+                                <div class="asset-content entry-content">
+<MTIfNonEmpty tag="EntryBody">
+                                    <div class="asset-body">
+                                        <$MTEntryBody$>
+                                    </div>
+</MTIfNonEmpty>
+<MTIfNonEmpty tag="EntryMore" convert_breaks="0">
+                                    <div id="more" class="asset-more">
+                                        <$MTEntryMore$>
+                                    </div>
+</MTIfNonEmpty>
+                                </div>
+                                <div class="asset-footer">
+<MTIfNonEmpty tag="EntryCategory">
+                                    <div class="entry-categories">
+                                        <h4 class="entry-categories-header"><__trans phrase="Categories"><span class="delimiter">:</span></h4>
+                                        <ul class="entry-categories-list">
+                                            <li class="entry-category"><MTEntryCategories glue='<span class="delimiter">,</span></li> <li class="entry-category">'><a href="<$MTCategoryArchiveLink$>" rel="tag"><$MTCategoryLabel$></a></MTEntryCategories></li>
+                                        </ul>
+                                    </div>
+</MTIfNonEmpty>
+<MTEntryIfTagged>
+                                    <div class="entry-tags">
+                                        <h4 class="entry-tags-header"><__trans phrase="Tags"><span class="delimiter">:</span></h4>
+                                        <ul class="entry-tags-list">
+                                            <li class="entry-tag"><MTEntryTags glue='<span class="delimiter">,</span></li> <li class="entry-tag">'><a href="<$MTTagSearchLink$>" rel="tag"><$MTTagName$></a></MTEntryTags></li>
+                                        </ul>
+                                    </div>
+</MTEntryIfTagged>
+                                </div>
+                            </div>
+
+
+                    <$MTInclude module="<__trans phrase="Trackbacks">"$>
+                    <$MTInclude module="<__trans phrase="Comments">"$>
+
+
+                        </div>
+                    </div>
+
+
+                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,152 +1,163 @@
-<MTSetVar name="body_class" value="mt-search-results">
-<MTSetVar name="system_template" value="1">
 <MTSetVar name="search_results_template" value="1">
-<MTSetVarBlock name="page_title"><__trans phrase="Search Results"></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
-<MTIfStraightSearch>
-    <MTSetVar name="search_type" value="search">
-<MTElse>
-    <MTSetVar name="search_type" value="tag">
-</MTIfStraightSearch>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <title><$MTBlogName encode_html="1"$>: <__trans phrase="Search Results"></title>
+    <$mt:include module="<__trans phrase="HTML Head">"$>
+    <MTIgnore>Below Javascript adds ajax search capability</MTIgnore>
+    <script type="text/javascript">
+    <!--
+    <MTIfMoreResults>
+    function getXmlHttp() {
+        if ( !window.XMLHttpRequest ) {
+            window.XMLHttpRequest = function() {
+                var types = [
+                    "Microsoft.XMLHTTP",
+                    "MSXML2.XMLHTTP.5.0",
+                    "MSXML2.XMLHTTP.4.0",
+                    "MSXML2.XMLHTTP.3.0",
+                    "MSXML2.XMLHTTP"
+                ];
 
-<MTSetVarTemplate id="search_results" name="search_results">
-<div id="search-results"><span id="current-page" class="hidden"><MTCurrentPage></span>
-<MTSearchResults>
-    <MTBlogResultHeader>
-<h1 id="page-title" class="search-results-header">
-        <MTIfStraightSearch>
-    <__trans phrase="Results matching &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName encode_html="1"$>">
-        </MTIfStraightSearch>
-        <MTIfTagSearch>
-    <__trans phrase="Results tagged &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName encode_html="1"$>">
-        </MTIfTagSearch>
-</h1>
-<div class="search-results-container autopagerize_page_element">
-    </MTBlogResultHeader>
-    <$MTInclude module="<__trans phrase="Entry Summary">" hide_counts="1"$>
-    <MTBlogResultFooter>
-</div><div class="autopagerize_insert_before"></div>
-    </MTBlogResultFooter>
-</MTSearchResults>
-<MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
-    <div class="content-nav">
-<MTIfPreviousResults><a href="<MTPreviousLink>" rel="prev" onclick="return swapContent(-1);">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</MTIfPreviousResults><MTPagerBlock><MTIfCurrentPage><mt:var name="__value__"><MTElse><a href="<MTPagerLink>"><mt:var name="__value__"></a></MTIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTPagerBlock><MTIfMoreResults>&nbsp;&nbsp;<a href="<MTNextLink>" rel="next" onclick="return swapContent();"><__trans phrase="Next"> &gt;</a></MTIfMoreResults>
-    </div>
-</div>
-</MTSetVarTemplate>
+                for ( var i = 0; i < types.length; i++ ) {
+                    try {
+                        return new ActiveXObject( types[ i ] );
+                    } catch( e ) {}
+                }
 
-<MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
-<MTSetVarBlock name="html_head" append="1">
-<script type="text/javascript">
-<!--
-<MTIfMoreResults>
-function getXmlHttp() {
-    if ( !window.XMLHttpRequest ) {
-        window.XMLHttpRequest = function() {
-            var types = [
-                "Microsoft.XMLHTTP",
-                "MSXML2.XMLHTTP.5.0",
-                "MSXML2.XMLHTTP.4.0",
-                "MSXML2.XMLHTTP.3.0",
-                "MSXML2.XMLHTTP"
-            ];
-
-            for ( var i = 0; i < types.length; i++ ) {
-                try {
-                    return new ActiveXObject( types[ i ] );
-                } catch( e ) {}
-            }
-
-            return undefined;
-        };
+                return undefined;
+            };
+        }
+        if ( window.XMLHttpRequest )
+            return new XMLHttpRequest();
     }
-    if ( window.XMLHttpRequest )
-        return new XMLHttpRequest();
-}
 
-function getResults(page) {
-    page = parseInt(page);
-    if (timer) window.clearTimeout(timer);
-    var xh = getXmlHttp();
-    if (!xh) return false;
-    var res = results[page];
-    if (!res) return;
-    var url = res['next_url'];
-    if (!url) return;
+    function getResults(page) {
+        page = parseInt(page);
+        if (timer) window.clearTimeout(timer);
+        var xh = getXmlHttp();
+        if (!xh) return false;
+        var res = results[page];
+        if (!res) return;
+        var url = res['next_url'];
+        if (!url) return;
 
-    xh.open('GET', url + '&format=js', true);
-    xh.onreadystatechange = function() {
-        if ( xh.readyState == 4 ) {
-            if ( xh.status && ( xh.status != 200 ) ) {
-                // error - ignore
-            } else {
-                try {
-                    var page_results = eval("(" + xh.responseText + ")");
-                    if ( page_results['error'] == null )
-                        results[page + 1] = page_results['result'];
-                } catch (e) {
+        xh.open('GET', url + '&format=js', true);
+        xh.onreadystatechange = function() {
+            if ( xh.readyState == 4 ) {
+                if ( xh.status && ( xh.status != 200 ) ) {
+                    // error - ignore
+                } else {
+                    try {
+                        var page_results = eval("(" + xh.responseText + ")");
+                        if ( page_results['error'] == null )
+                            results[page + 1] = page_results['result'];
+                    } catch (e) {
+                    }
                 }
             }
-        }
-    };
-    xh.send(null);
-}
+        };
+        xh.send(null);
+    }
 
-function swapContent(direction) {
-    if ( direction == undefined ) direction = 1;
-    var page_span = document.getElementById('current-page');
-    if (!page_span) return true;
-    var next_page = direction + parseInt(page_span.innerHTML);
-    var res = results[next_page];
-    if (!res) return true;
-    var content = res['content'];
-    if (!content) return true;
-    var div = document.getElementById('search-results');
-    if (!div) return true;
-    div.innerHTML = content;
-    timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
-    window.scroll(0, 0);
-    return false;
-}
-<MTElse><MTIfPreviousResults>
-function swapContent(direction) {
-	return true;
-}</MTIfPreviousResults>
-</MTIfMoreResults>
-//-->
-</script>
-</MTSetVarBlock>
+    function swapContent(direction) {
+        if ( direction == undefined ) direction = 1;
+        var page_span = document.getElementById('current-page');
+        if (!page_span) return true;
+        var next_page = direction + parseInt(page_span.innerHTML);
+        var res = results[next_page];
+        if (!res) return true;
+        var content = res['content'];
+        if (!content) return true;
+        var div = document.getElementById('search-results');
+        if (!div) return true;
+        div.innerHTML = content;
+        timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
+        window.scroll(0, 0);
+        return false;
+    }
+    <MTElse><MTIfPreviousResults>
+    function swapContent(direction) {
+    	return true;
+    }</MTIfPreviousResults>
+    </MTIfMoreResults>
+    //-->
+    </script>
+</head>
+<body class="mt-search-results <$MTVar name="page_layout"$>">
+    <div id="container">
+        <div id="container-inner">
 
-<$MTInclude module="<__trans phrase="Header">"$>
 
-<$MTVar name="search_results"$>
+            <$mt:include module="<__trans phrase="Banner Header">"$>
 
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+<mt:ignore><!-- Display search results --></mt:ignore>
+<MTSearchResults>
+    <MTBlogResultHeader>
+                            <div id="search-results">
+                                <span id="current-page" class="hidden"><MTCurrentPage></span>
+                                <h1 id="page-title" class="search-results-header">
+        <MTIfStraightSearch>
+                                    <__trans phrase="Results matching &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName encode_html="1"$>">
+        </MTIfStraightSearch>
+        <MTIfTagSearch>
+                                    <__trans phrase="Results tagged &ldquo;[_1]&rdquo; from [_2]" params="<$MTSearchString$>%%<$MTBlogName encode_html="1"$>">
+        </MTIfTagSearch>
+                                </h1>
+                                <div class="search-results-container autopagerize_page_element">
+    </MTBlogResultHeader>
+                                    <$MTInclude module="<__trans phrase="Entry Summary">" hide_counts="1"$>
+    <MTBlogResultFooter>
+                                </div><div class="autopagerize_insert_before"></div>
+
+    <MTIgnore><!-- Used with the ajax search capability of the new search class --></MTIgnore>
+                                <div class="content-nav">
+                                    <MTIfPreviousResults><a href="<MTPreviousLink>" rel="prev" onclick="return swapContent(-1);">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</MTIfPreviousResults><MTPagerBlock><MTIfCurrentPage><MTVar name="__value__"><MTElse><a href="<MTPagerLink>"><MTVar name="__value__"></a></MTIfCurrentPage><mt:unless name="__last__">&nbsp;</mt:unless></MTPagerBlock><MTIfMoreResults>&nbsp;&nbsp;<a href="<MTNextLink>" rel="next" onclick="return swapContent();"><__trans phrase="Next"> &gt;</a></MTIfMoreResults>
+                                </div>
+                            </div>
+    </MTBlogResultFooter>
+</MTSearchResults>
+
+
+<mt:ignore><!-- Display no results message --></mt:ignore>
 <MTNoSearchResults>
-<h1 id="page-title" class="search-results-header">
+                            <h1 id="page-title" class="search-results-header">
     <MTIfStraightSearch>
-    <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$MTSearchString$>">
+                                <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$MTSearchString$>">
     </MTIfStraightSearch>
     <MTIfTagSearch>
-    <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$MTSearchString$>">
+                                <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$MTSearchString$>">
     </MTIfTagSearch>
-</h1>
-<p><__trans phrase="No results found for &ldquo;[_1]&rdquo;." params="<$MTSearchString$>"></p>
+                            </h1>
+                            <p><__trans phrase="No results found for &ldquo;[_1]&rdquo;." params="<$MTSearchString$>"></p>
 </MTNoSearchResults>
 
+
+<mt:ignore><!-- Display instructions for searching if search script was accessed without a query --></mt:ignore>
 <MTNoSearch>
-<h1 id="page-title" class="search-results-header"><__trans phrase="Instructions"></h1>
-<p><__trans phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
-<blockquote>
-    <p><code>"<__trans phrase="movable type">"</code></p>
-</blockquote>
-<p><__trans phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
-<blockquote>
-    <p><code><__trans phrase="personal OR publishing"></code></p>
-    <p><code><__trans phrase="publishing NOT personal"></code></p>
-</blockquote>
+                            <h1 id="page-title" class="search-results-header"><__trans phrase="Instructions"></h1>
+                            <p><__trans phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
+                            <blockquote>
+                                <p><code>"<__trans phrase="movable type">"</code></p>
+                            </blockquote>
+                            <p><__trans phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
+                            <blockquote>
+                                <p><code><__trans phrase="personal OR publishing"></code></p>
+                                <p><code><__trans phrase="publishing NOT personal"></code></p>
+                            </blockquote>
 </MTNoSearch>
 
-<MTIgnore>Used with the ajax search capability of the new search class</MTIgnore>
+<MTIgnore><!-- Used with the ajax search capability of the new search class --></MTIgnore>
 <MTIfMoreResults>
 <script type="text/javascript">
 <!--
@@ -161,4 +172,22 @@ var timer = window.setTimeout("getResults(" + <MTCurrentPage> + ")", 1*1000);
 //-->
 </script>
 </MTIfMoreResults>
-<$MTInclude module="<__trans phrase="Footer">"$>
+
+
+                        </div>
+                    </div>
+
+                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

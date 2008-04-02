@@ -1,12 +1,43 @@
-<MTSetVar name="dynamic_error_template" value="1">
-<MTSetVarBlock name="page_title"><__trans phrase="Page Not Found"></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTVar name="page_title"$></MTSetVarBlock>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <title><$MTBlogName encode_html="1"$>: <__trans phrase="Page Not Found"></title>
+    <$mt:include module="<__trans phrase="HTML Head">"$>
+</head>
+<body class="mt-dynamic-error <$MTVar name="page_layout"$>">
+    <div id="container">
+        <div id="container-inner">
 
-<$MTInclude module="<__trans phrase="Header">" body_class="mt-dynamic-error"$>
 
-<h1 id="page-title"><$MTVar name="page_title"$></h1>
-<blockquote>
-    <strong><$MTErrorMessage$></strong>
-</blockquote>
+            <$mt:include module="<__trans phrase="Banner Header">"$>
 
-<$MTInclude module="<__trans phrase="Footer">"$>
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+                            <h1 id="page-title"><__trans phrase="Page Not Found"></h1>
+                            <blockquote>
+                                <strong><$MTErrorMessage$></strong>
+                            </blockquote>
+                        </div>
+                    </div>
+
+
+                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

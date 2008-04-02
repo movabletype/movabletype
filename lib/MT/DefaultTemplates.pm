@@ -46,15 +46,16 @@ BEGIN {
             'javascript' => {
                 label => 'JavaScript',
                 outfile => 'mt.js',
-            },
-            'rsd' => {
-                label => 'RSD',
-                outfile => 'rsd.xml',
                 rebuild_me => 1,
             },
             'feed_recent' => {
                 label => 'Feed - Recent Entries',
                 outfile => 'atom.xml',
+                rebuild_me => 1,
+            },
+            'rsd' => {
+                label => 'RSD',
+                outfile => 'rsd.xml',
                 rebuild_me => 1,
             },
         },
@@ -79,15 +80,17 @@ BEGIN {
             },
         },
         'archive' => {
-            'entry_listing' => {
-                label => 'Entry Listing',
+            'monthly_entry_listing' => {
+                label => 'Monthly Entry Listing',
                 mappings => {
                     monthly => {
                         archive_type => 'Monthly',
                     },
-                    category_monthly => {
-                        archive_type => 'Category-Monthly',
-                    },
+                },
+            },
+            'category_entry_listing' => {
+                label => 'Category Entry Listing',
+                mappings => {
                     category => {
                         archive_type => 'Category',
                     },
@@ -117,50 +120,26 @@ BEGIN {
             },
         },
         'module' => {
-            'categories' => {
-                label => 'Categories',
+            'banner_header' => {
+                label => 'Banner Header',
             },
-            'comment_detail' => {
-                label => 'Comment Detail',
-            },
-            'comment_form' => {
-                label => 'Comment Form',
-            },
-            'comments' => {
-                label => 'Comments',
-            },
-            'entry_detail' => {
-                label => 'Entry Detail',
+            'banner_footer' => {
+                label => 'Banner Footer',
             },
             'entry_summary' => {
                 label => 'Entry Summary',
             },
-            'entry_metadata' => {
-                label => 'Entry Metadata',
-            },
-            'tags' => {
-                label => 'Tags',
-            },
-            'footer' => {
-                label => 'Footer',
-            },
-            'header' => {
-                label => 'Header',
-            },
-            'sidebar_2col' => {
-                label => 'Sidebar - 2 Column Layout',
-            },
-            'sidebar_3col' => {
-                label => 'Sidebar - 3 Column Layout',
+            'html_head' => {
+                label => 'HTML Head',
             },
             'sidebar' => {
                 label => 'Sidebar',
             },
-            'trackbacks' => {
-                label => 'TrackBacks',
+            'comments' => {
+                label => 'Comments',
             },
-            'page_detail' => {
-                label => 'Page Detail',
+            'trackbacks' => {
+                label => 'Trackbacks',
             },
         },
         'global:module' => {

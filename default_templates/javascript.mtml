@@ -125,9 +125,9 @@ function writeCommenterGreeting(commenter_name, entry_id, blog_id, commenter_id,
         document.write('<__trans phrase="You do not have permission to comment on this blog. ([_1]sign out[_2])" params="<a href="<$MTRemoteSignOutLink static="1"$>&entry_id=' + entry_id + '">%%</a>">');
     } else {
 <MTIfRegistrationRequired>
-        var phrase = '<__trans phrase="[_1]Sign in[_2] to comment on this entry." params="<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&entry_id=' + entry_id + '&blog_id=' + blog_id + '&static=1">%%</a>">';
+        var phrase = '<__trans phrase="[_1]Sign in[_2] to comment on this entry." params="<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&entry_id=' + entry_id + '&blog_id=' + blog_id + '&static=1&return_to=' + encodeURIComponent(document.URL) + '">%%</a>">';
 <MTElse>
-        var phrase = '<__trans phrase="[_1]Sign in[_2] to comment on this entry, or [_3]comment anonymously[_2]." params="<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&entry_id=' + entry_id + '&blog_id=' + blog_id + '&static=1">%%</a>%%<a href="javascript:void(0);" onclick="showAnonymousForm();">">';
+        var phrase = '<__trans phrase="[_1]Sign in[_2] to comment on this entry, or [_3]comment anonymously[_2]." params="<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=login&entry_id=' + entry_id + '&blog_id=' + blog_id + '&static=1&return_to=' + encodeURIComponent(document.URL) + '">%%</a>%%<a href="javascript:void(0);" onclick="showAnonymousForm();">">';
 </MTIfRegistrationRequired>
         document.write(phrase);
     }

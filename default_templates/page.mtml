@@ -1,18 +1,67 @@
-<MTSetVar name="body_class" value="mt-archive-listing mt-page-archive">
-<MTIfCommentsAccepted><$MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)"$></MTIfCommentsAccepted>
-<MTSetVarBlock name="page_title"><$MTPageTitle$></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTGetVar name="page_title"$> - <$MTBlogName encode_html="1"$></MTSetVarBlock>
-<MTSetVarBlock name="html_head">
-    <MTIfPingsAccepted><$MTEntryTrackbackData$></MTIfPingsAccepted>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <title><$MTPageTitle encode_html="1"$> - <$MTBlogName encode_html="1"$></title>
+    <$mt:include module="<__trans phrase="HTML Head">"$>
+    <$MTEntryTrackbackData$>
     <MTIfCommentsAccepted><script type="text/javascript" src="<$MTLink template="javascript"$>"></script></MTIfCommentsAccepted>
-</MTSetVarBlock>
+</head>
+<body class="mt-page-archive <$MTVar name="page_layout"$>" onload="individualArchivesOnLoad(commenter_name)">
+    <div id="container">
+        <div id="container-inner">
 
-<$MTInclude module="<__trans phrase="Header">"$>
 
-<$MTInclude module="<__trans phrase="Page Detail">"$>
+            <$mt:include module="<__trans phrase="Banner Header">"$>
 
-<$MTInclude module="<__trans phrase="TrackBacks">"$>
 
-<$MTInclude module="<__trans phrase="Comments">"$>
+            <div id="content">
+                <div id="content-inner">
 
-<$MTInclude module="<__trans phrase="Footer">"$>
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <div id="page-<$MTPageID$>" class="page-asset asset">
+                                <div class="asset-header">
+                                    <h1 id="page-title" class="asset-name"><$MTPageTitle$></h1>
+                                </div>
+                                <div class="asset-content">
+<MTIfNonEmpty tag="PageBody">
+                                    <div class="asset-body">
+                                        <$MTPageBody$>
+                                    </div>
+</MTIfNonEmpty>
+<MTIfNonEmpty tag="PageMore">
+                                    <div id="more" class="asset-more">
+                                        <$MTPageMore$>
+                                    </div>
+</MTIfNonEmpty>
+                                </div>
+                                <div class="asset-footer"></div>
+                            </div>
+
+
+                    <$MTInclude module="<__trans phrase="Trackbacks">"$>
+                    <$MTInclude module="<__trans phrase="Comments">"$>
+
+
+                        </div>
+                    </div>
+
+
+                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

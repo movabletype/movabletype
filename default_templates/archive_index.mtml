@@ -1,118 +1,174 @@
-<MTSetVar name="body_class" value="mt-archive-index">
 <MTSetVar name="archive_index" value="1">
-<MTSetVar name="module_about_context" value="1">
-<MTSetVarBlock name="page_title"><__trans phrase="Archives"></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTGetVar name="page_title"$></MTSetVarBlock>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <title><$MTBlogName encode_html="1"$>: <__trans phrase="Archives"></title>
+    <$mt:include module="<__trans phrase="HTML Head">"$>
+</head>
+<body class="mt-archive-index <$MTVar name="page_layout"$>">
+    <div id="container">
+        <div id="container-inner">
 
-<$MTInclude module="<__trans phrase="Header">"$>
 
-<h1 id="page-title" class="archive-title"><$MTGetVar name="page_title"$></h1>
+            <$mt:include module="<__trans phrase="Banner Header">"$>
 
-<MTIfArchiveTypeEnabled archive_type="Individual">
-<div class="archive-individual archive-date-based archive">
-    <MTArchiveList archive_type="Individual">
-        <MTArchiveListHeader>
-    <div class="archive-content">
-        <ul class="archive-list">
-        </MTArchiveListHeader>
-            <li class="archive-list-item"><$MTArchiveDate format="%Y.%m.%d"$>: <a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
-        <MTArchiveListFooter>
-        </ul>
-    </div>
-        </MTArchiveListFooter>
-    </MTArchiveList>
-</div>
-</MTIfArchiveTypeEnabled>
 
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+                            <h1 id="page-title" class="archive-title"><__trans phrase="Archives"></h1>
+
+<mt:ignore>
+    <!-- List of monthly archives, if monthly archives are enabled -->
+</mt:ignore>
 <MTIfArchiveTypeEnabled archive_type="Monthly">
-<div class="archive-monthly archive-date-based archive">
+                            <div class="archive-monthly archive-date-based archive">
     <MTArchiveList archive_type="Monthly">
         <MTArchiveListHeader>
-    <h2 class="archive-header"><__trans phrase="Monthly Archives"></h2>
-    <div class="archive-content">
-        <ul class="archive-list">
+                                <h2 class="archive-header"><__trans phrase="Monthly Archives"></h2>
+                                <div class="archive-content">
+                                    <ul class="archive-list">
         </MTArchiveListHeader>
-            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+                                        <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
         <MTArchiveListFooter>
-        </ul>
-    </div>
+                                    </ul>
+                                </div>
         </MTArchiveListFooter>
     </MTArchiveList>
-</div>
+                            </div>
 </MTIfArchiveTypeEnabled>
 
+
+<mt:ignore>
+    <!-- List of category archives, if category archives are enabled -->
+</mt:ignore>
 <MTIfArchiveTypeEnabled archive_type="Category">
-<div class="archive-category archive">
-    <h2 class="archive-header"><__trans phrase="Categories"></h2>
-    <div class="archive-content">
+                            <div class="archive-category archive">
+                                <h2 class="archive-header"><__trans phrase="Categories"></h2>
+                                <div class="archive-content">
     <MTTopLevelCategories>
         <MTSubCatIsFirst>
-        <ul class="archive-list">
+                                    <ul class="archive-list">
         </MTSubCatIsFirst>
         <MTIfNonZero tag="MTCategoryCount">
-            <li class="archive-list-item"><a href="<$MTCategoryArchiveLink$>" title="<$MTCategoryDescription$>"><$MTCategoryLabel$></a>
+                                        <li class="archive-list-item"><a href="<$MTCategoryArchiveLink$>" title="<$MTCategoryDescription$>"><$MTCategoryLabel$></a>
         <MTElse>
-            <li class="archive-list-item"><$MTCategoryLabel$>
+                                        <li class="archive-list-item"><$MTCategoryLabel$>
         </MTIfNonZero>
         <MTSubCatsRecurse>
-            </li>
+                                        </li>
         <MTSubCatIsLast>
-        </ul>
+                                    </ul>
         </MTSubCatIsLast>
     </MTTopLevelCategories>
-    </div>
-</div>
+                                </div>
+                            </div>
 </MTIfArchiveTypeEnabled>
 
-<MTIfArchiveTypeEnabled archive_type="Author">
-<div class="archive-author archive">
-    <MTArchiveList archive_type="Author">
+
+<mt:ignore>
+    <!-- List of author archives, if category author are enabled -->
+    <MTIfArchiveTypeEnabled archive_type="Author">
+                                <div class="archive-author archive">
+        <MTArchiveList archive_type="Author">
+            <MTArchiveListHeader>
+                                    <h2 class="archive-header"><__trans phrase="Author Archives"></h2>
+                                    <div class="archive-content">
+                                        <ul class="archive-list">
+            </MTArchiveListHeader>
+                                            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+            <MTArchiveListFooter>
+                                        </ul>
+                                    </div>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+                                </div>
+    </MTIfArchiveTypeEnabled>
+</mt:ignore>
+
+
+<mt:ignore>
+    <!-- List of category archives by month, if category archives are enabled -->
+    <MTIfArchiveTypeEnabled archive_type="Category-Monthly">
+                                <div class="archive-category-monthly archive">
+        <MTArchiveList archive_type="Category-Monthly">
+            <MTArchiveListHeader>
+                                    <h2 class="archive-header"><__trans phrase="Category Monthly Archives"></h2>
+                                    <div class="archive-content">
+                                        <ul class="archive-list">
+            </MTArchiveListHeader>
+                                            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+            <MTArchiveListFooter>
+                                        </ul>
+                                    </div>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+                                </div>
+    </MTIfArchiveTypeEnabled>
+</mt:ignore>
+
+
+<mt:ignore>
+    <!-- List of author archives, if category archives are enabled -->
+    <MTIfArchiveTypeEnabled archive_type="Author-Monthly">
+                                <div class="archive-author-monthly archive">
+        <MTArchiveList archive_type="Author-Monthly">
+            <MTArchiveListHeader>
+                                    <h2 class="archive-header"><__trans phrase="Author Monthly Archives"></h2>
+                                    <div class="archive-content">
+                                        <ul class="archive-list">
+            </MTArchiveListHeader>
+                                            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+            <MTArchiveListFooter>
+                                        </ul>
+                                    </div>
+            </MTArchiveListFooter>
+        </MTArchiveList>
+                                </div>
+    </MTIfArchiveTypeEnabled>
+</mt:ignore>
+
+
+<mt:ignore>
+    <!-- List of entry archives, if entry archives are enabled -->
+<MTIfArchiveTypeEnabled archive_type="Individual">
+                            <div class="archive-individual archive-date-based archive">
+    <MTArchiveList archive_type="Individual">
         <MTArchiveListHeader>
-    <h2 class="archive-header"><__trans phrase="Author Archives"></h2>
-    <div class="archive-content">
-        <ul class="archive-list">
+                                <div class="archive-content">
+                                    <ul class="archive-list">
         </MTArchiveListHeader>
-            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
+                                        <li class="archive-list-item"><$MTArchiveDate format="%Y.%m.%d"$>: <a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
         <MTArchiveListFooter>
-        </ul>
-    </div>
+                                    </ul>
+                                </div>
         </MTArchiveListFooter>
     </MTArchiveList>
-</div>
+                            </div>
 </MTIfArchiveTypeEnabled>
+</mt:ignore>
 
-<MTIfArchiveTypeEnabled archive_type="Category-Monthly">
-<div class="archive-category-monthly archive">
-    <MTArchiveList archive_type="Category-Monthly">
-        <MTArchiveListHeader>
-    <h2 class="archive-header"><__trans phrase="Category Monthly Archives"></h2>
-    <div class="archive-content">
-        <ul class="archive-list">
-        </MTArchiveListHeader>
-            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
-        <MTArchiveListFooter>
-        </ul>
+
+                        </div>
+                    </div>
+
+
+                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
     </div>
-        </MTArchiveListFooter>
-    </MTArchiveList>
-</div>
-</MTIfArchiveTypeEnabled>
-
-<MTIfArchiveTypeEnabled archive_type="Author-Monthly">
-<div class="archive-author-monthly archive">
-    <MTArchiveList archive_type="Author-Monthly">
-        <MTArchiveListHeader>
-    <h2 class="archive-header"><__trans phrase="Author Monthly Archives"></h2>
-    <div class="archive-content">
-        <ul class="archive-list">
-        </MTArchiveListHeader>
-            <li class="archive-list-item"><a href="<$MTArchiveLink$>"><$MTArchiveTitle$></a></li>
-        <MTArchiveListFooter>
-        </ul>
-    </div>
-        </MTArchiveListFooter>
-    </MTArchiveList>
-</div>
-</MTIfArchiveTypeEnabled>
-
-<$MTInclude module="<__trans phrase="Footer">"$>
+</body>
+</html>

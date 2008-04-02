@@ -1,17 +1,122 @@
-<MTSetVar name="body_onload" value="individualArchivesOnLoad(commenter_name)">
-<MTSetVar name="feedback_template" value="1">
-<MTSetVarBlock name="page_title"><__trans phrase="Previewing your Comment"></MTSetVarBlock>
-<MTSetVarBlock name="title"><$MTBlogName encode_html="1"$>: <$MTVar name="page_title"$></MTSetVarBlock>
-<MTSetVarBlock name="html_head">
-<script type="text/javascript" src="<$MTLink template="javascript"$>"></script>
-</MTSetVarBlock>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <title><$MTBlogName encode_html="1"$>: <__trans phrase="Previewing your Comment"></title>
+    <$mt:include module="<__trans phrase="HTML Head">"$>
+    <script type="text/javascript" src="<$MTLink template="javascript"$>"></script>
+</head>
+<body class="mt-comment-preview <$MTVar name="page_layout"$>" onload="individualArchivesOnLoad(commenter_name)">
+    <div id="container">
+        <div id="container-inner">
 
-<$MTInclude module="<__trans phrase="Header">" body_class="mt-comment-preview"$>
 
-<h1 id="page-title"><$MTVar name="page_title"$></h1>
+            <$mt:include module="<__trans phrase="Banner Header">"$>
 
-<$MTInclude module="<__trans phrase="Comment Detail">"$>
 
-<$MTInclude module="<__trans phrase="Comments">"$>
+            <div id="content">
+                <div id="content-inner">
 
-<$MTInclude module="<__trans phrase="Footer">"$>
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <h1 id="page-title"><$MTVar name="page_title"$></h1>
+
+
+<mt:ignore><!-- Comment Preview --></mt:ignore>
+                            <div class="comment"<MTIfArchiveTypeEnabled archive_type="Individual"> id="comment-<$MTCommentID$>"</MTIfArchiveTypeEnabled>>
+                                <div class="inner">
+                                    <div class="comment-header">
+                                        <div class="asset-meta">
+                                            <span class="byline">
+                                                <__trans phrase="By"> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span><MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>
+                                                <MTCommentParent>
+                                                <__trans phrase="replied to"> <a href="#comment-<$MTCommentID$>"><$MTCommentAuthor$></a>
+                                                </MTCommentParent>
+                                                <__trans phrase="on"> <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
+                                                <MTIfCommentsAccepted> | <$MTCommentReplyLink$></MTIfCommentsAccepted>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="comment-content">
+                                        <$MTCommentBody$>
+                                    </div>
+                                </div>
+                            </div>
+
+
+<mt:ignore><!-- Comment Form --></mt:ignore>
+<MTIfCommentsAccepted>
+                            <div class="comments-open" id="comments-open">
+                                <h2 class="comments-open-header"><__trans phrase="Leave a comment"></h2>
+                                <div class="comments-open-content">
+    <MTIfRegistrationAllowed>
+                                        <div id="comment-form-external-auth">
+                                            <script type="text/javascript">
+                                            /* <![CDATA[ */
+                                            is_preview = true;
+                                            writeCommenterGreeting(commenter_name, <$MTEntryID$>, <$MTEntryBlogID$>, commenter_id, commenter_url);
+                                            /* ]]> */
+                                            </script>
+                                        </div>
+    </MTIfRegistrationAllowed>
+                                    <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
+                                        <input type="hidden" name="static" value="1" />
+                                        <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
+                                        <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
+                                        <div id="comments-open-data">
+                                            <div id="comment-form-name">
+                                                <label for="comment-author"><__trans phrase="Name"></label>
+                                                <input id="comment-author" name="author" size="30" value="<$MTCommentAuthor encode_html="1"$>" />
+                                            </div>
+                                            <div id="comment-form-email">
+                                                <label for="comment-email"><__trans phrase="Email Address"></label>
+                                                <input id="comment-email" name="email" size="30" value="<$MTCommentEmail encode_html="1"$>" />
+                                            </div>
+                                            <div id="comment-form-url">
+                                                <label for="comment-url"><__trans phrase="URL"></label>
+                                                <input id="comment-url" name="url" size="30" value="<$MTCommentURL encode_html="1"$>" />
+                                            </div>
+                                            <div id="comment-form-remember-me">
+                                                <label for="comment-bake-cookie"><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />
+                                                    <__trans phrase="Remember personal info?"></label>
+                                            </div>
+                                        </div>
+                                        <div id="comments-open-text">
+                                            <label for="comment-text"><__trans phrase="Comments"> <MTIfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
+                                            <textarea id="comment-text" name="text" rows="15" cols="50"><$MTCommentBody autolink="0" sanitize="0" convert_breaks="0" encode_html="1"$></textarea>
+                                        </div>
+    <MTIfNonEmpty tag="MTCaptchaFields">
+                                        <MTIfCommentsAccepted><MTIfRegistrationAllowed><MTElse><$MTCaptchaFields$></MTIfRegistrationAllowed></MTIfCommentsAccepted>
+                                        <div id="comments-open-captcha">
+                                        </div>
+    </MTIfNonEmpty>
+                                        <div id="comments-open-footer">
+                                            <input type="submit" accesskey="v" name="preview" id="comment-preview" value="<__trans phrase="Preview">" />
+                                            <input type="submit" accesskey="s" name="post" id="comment-submit" value="<__trans phrase="Submit">" />
+                                            <input type="button" name="cancel" id="comment-cancel" value="<__trans phrase="Cancel">" onclick="window.location='<$MTEntryPermalink$>'" />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+</MTIfCommentsAccepted>
+                        </div>
+                    </div>
+
+
+                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>
