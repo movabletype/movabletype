@@ -1102,6 +1102,7 @@ sub init_core {
     $defaults->{NewsURL}{default} = '__NEWS_URL__';
     #$defaults->{HelpURL}{default} = '__HELP_URL__';
     $defaults->{DefaultTimezone}{default} = '__DEFAULT_TIMEZONE__';
+    $defaults->{TimeOffset}{default} = '__DEFAULT_TIMEZONE__';
     $defaults->{MailEncoding}{default} = '__MAIL_ENCODING__';
     $defaults->{ExportEncoding}{default} = '__EXPORT_ENCODING__';
     $defaults->{LogExportEncoding}{default} = '__LOG_EXPORT_ENCODING__';
