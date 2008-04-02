@@ -18,16 +18,15 @@ __PACKAGE__->install_properties({
     },
     datasource  => 'ts_error',
     indexes => {
-        error_time => 1,
         jobid => 1,
-        funcid => 1,
+        funcid_time => {
+            columns => ['funcid', 'error_time'],
+        },
     },
     defaults => {
         funcid => 0,
     },
     cacheable => 0,
-    # not captured:
-    # index (funcid, error_time)
 });
 
 sub class_label {
