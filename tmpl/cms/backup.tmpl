@@ -46,7 +46,7 @@
     <mt:loop name="archive_formats">
         <input type="radio" id="<mt:var name="key">" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
         <label for="<mt:var name="key">"><mt:var name="label"></label>
-        <mt:if name="__last__"><mt:servar name="format_available"></mt:if>
+        <mt:if name="__last__"><mt:setvar name="format_available"></mt:if>
     </mt:loop>
         <input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
         <label for="no_archive"><__trans phrase="Don't compress"></label>
