@@ -97,7 +97,7 @@ sub core_methods {
         ## Save
         'save_cat'     => "${pkg}Category::save",
         'save_entries' => "${pkg}Entry::save_entries",
-        'save_pages'   => "${pkg}Page::save",
+        'save_pages'   => "${pkg}Page::save_pages",
         'save_entry'   => "${pkg}Entry::save",
         'save_role'    => "${pkg}User::save_role",
 

@@ -1463,9 +1463,14 @@ sub save_entries {
         my $id    = $1;
         my $entry = MT::Entry->load($id);
         return $app->error( $app->translate("Permission denied.") )
-          unless ( $perms->can_publish_post
-            || $perms->can_create_post
-            || $perms->can_edit_all_posts );
+            unless $perms
+              && (
+                $type eq 'page'
+                ? ( $perms->can_manage_pages )
+                : (      $perms->can_publish_post
+                      || $perms->can_create_post
+                      || $perms->can_edit_all_posts )
+              );
         my $orig_obj = $entry->clone;
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
