@@ -49,7 +49,8 @@ sub core_methods {
 sub core_parameters {
     my $app = shift;
     return {
-        params => [ qw( searchTerms search count limit startIndex offset ) ],
+        params => [ qw( searchTerms search count limit startIndex offset
+            category author )],
         types  => {
             #author => {
             #    columns => [ qw( name nickname email url ) ],
@@ -57,9 +58,18 @@ sub core_parameters {
             #    terms   => { status => 1 }, #MT::Author::ACTIVE()
             #},
             entry => {
-                columns => [ qw( title keywords text text_more ) ],
+                columns => {
+                    title     => 'like',
+                    keywords  => 'like',
+                    text      => 'like',
+                    text_more => 'like'
+                },
                 'sort'  => 'authored_on',
                 terms   => { status => 2 }, #MT::Entry::RELEASE()
+                filter_types => {
+                    author   => \&_join_author,
+                    category => \&_join_category,
+                },
             },
         },
         cache_driver => {
@@ -280,6 +290,7 @@ sub count {
     return $count if defined $count;
 
     $count = $class->count( $terms, $args );
+    return $app->error($class->errstr) unless defined $count;
 
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{count}, $count, $app->config->ThrottleSeconds );
@@ -295,7 +306,7 @@ sub execute {
         or return $app->errtrans('Unsupported type: [_1]', encode_html($app->{searchparam}{Type}));
 
     my $count = $app->count( $class, $terms, $args );
-    return $app->error($class->errstr) unless defined $count;
+    return $app->errtrans("Invalid query.  [_1]", $app->errstr) unless defined $count;
 
     my $iter = $class->load_iter( $terms, $args )
         or $app->error($class->errstr);
@@ -333,10 +344,11 @@ sub search_terms {
     push @terms, \%def_terms if %def_terms;
 
     my $columns = $params->{columns};
+    delete $columns->{'plugin'}; #FIXME: why is this in here?
     return $app->errtrans('No column was specified to search for [_1].', $app->{searchparam}{Type})
-        unless $columns && @$columns;
+        unless $columns && %$columns;
 
-    my $parsed = $app->query_parse( $columns );
+    my $parsed = $app->query_parse( %$columns );
     return $app->errtrans('Parse error: [1]', $app->errstr)
         unless $parsed && %$parsed;
 
@@ -473,7 +485,9 @@ sub load_search_tmpl {
     if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
         # load specified template
         my $filename;
-        if (my @tmpls = ($app->config->default('SearchAltTemplate'), $app->config->SearchAltTemplate)) {
+        if (my @tmpls = (
+          $app->config->default('SearchAltTemplate'),
+          $app->config->SearchAltTemplate) ) {
             for my $tmpl (@tmpls) {
                 next unless defined $tmpl;
                 my ( $nickname, $file ) = split /\s+/, $tmpl;
@@ -549,35 +563,114 @@ sub renderjs {
 
 sub query_parse {
     my $app = shift;
-    my ( $columns ) = @_;
+    my ( %columns ) = @_;
+
+    my $search = $app->{search_string};
+
+    my $reg = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
+    my $filter_types = $reg->{ 'filter_types' };
+    foreach my $type ( keys %$filter_types ) {
+        if ( my $filter = $app->param($type) ) {
+            $search .= " $type:$filter";
+        }
+    }
 
     require Lucene::QueryParser;
-    my $lucene_struct = Lucene::QueryParser::parse_query( $app->{search_string} );
-    my %columns = map { $_ => 1 } @$columns;
-    my $structure = $app->_query_parse_core( $lucene_struct, \%columns );
-    { terms => $structure };
+    my $lucene_struct = Lucene::QueryParser::parse_query( $search );
+    my ( $terms, $joins ) = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
+    my $return = {
+        $terms && @$terms ? (terms => $terms) : ()
+    };
+    if ( $joins && @$joins ) {
+        my $args = {};
+        _create_join_arg( $args, $joins );
+        if ( $args && %$args ) {
+            $return->{args} = $args;
+        }
+    }
+    $return;
+}
+
+sub _create_join_arg {
+    my ( $args, $joins ) = @_;
+    my $join = shift @$joins;
+    return unless $join && @$join;
+    my $next = $join->[3];
+    if ( defined $next ) {
+        if ( exists $next->{'join'} ) {
+            $next = $next->{'join'}->[3];
+        }
+    }
+    else {
+        $next = {};
+        $join->[3] = $next;
+    }
+    _create_join_arg($next, $joins);
+    $args->{'join'} = $join;
 }
 
 sub _query_parse_core {
     my $app = shift;
-    my ( $lucene_struct, $columns ) = @_;
+    my ( $lucene_struct, $columns, $filter_types ) = @_;
 
-    my @structure;
+    my $rvalue = sub {
+        my %rvalues = (
+            NORMALlike => { like => '%' . $_[1] . '%' },
+            NORMAL1    => $_[1],
+            PROHIBITEDlike => { not_like => '%' . $_[1] . '%' },
+            PROHIBITED1    => { not => $_[1] }
+        );
+        $rvalues{$_[0]};
+    };
+
+    my ( @structure, @joins );
     for my $term ( @$lucene_struct ) {
-        next if exists( $term->{field} )
-            && !exists( $columns->{ $term->{field} } );
+        if ( exists $term->{field} ) {
+            unless ( exists $columns->{ $term->{field} } ) {
+                next if $filter_types && %$filter_types
+                    && !exists( $filter_types->{ $term->{field} } );
+            }
+        }
 
-        my $test;
+        my @tmp;
         if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) ){
-            if ( 'PROHIBITED' eq $term->{type} ) {
-                $test = { not_like => '%'.$term->{term}.'%' };
+            my $test;
+            if ( exists( $term->{field} ) ) {
+                if ( $filter_types && %$filter_types
+                  && exists( $filter_types->{ $term->{field} } ) ) {
+                    my $code = $app->handler_to_coderef($filter_types->{ $term->{field} });
+                    if ( $code ) {
+                        my $join_args = $code->( $app, $term );
+                        push @joins, $join_args;
+                        next;
+                    }
+                }
+                elsif ( exists $columns->{ $term->{field} } ) {
+                    my $test = $rvalue->(
+                        ( $term->{type} || '' ) . $columns->{ $term->{field} },
+                        $term->{term}
+                    );
+                    push @tmp, { $term->{field} => $test };
+                }
             }
             else {
-                $test = { like => '%'.$term->{term}.'%' };
+                my @cols = keys %$columns;
+                my $number = scalar @cols;
+                for ( my $i = 0; $i < $number; $i++ ) {
+                    my $test = $rvalue->(
+                        ( $term->{type} || '' ) . $columns->{ $cols[$i] },
+                        $term->{term}
+                    );
+                    push @tmp, { $cols[$i] => $test };
+                    unless ( $i == $number - 1 ) {
+                        push @tmp, '-or';
+                    }
+                }
             }
         }
         elsif ( 'SUBQUERY' eq $term->{query} ) {
-            $test = $app->_query_parse_core( $term->{subquery}, $columns );
+            my ( $test, $more_joins ) = $app->_query_parse_core(
+                $term->{subquery}, $columns, $filter_types );
             next unless $test && @$test;
             if ( @structure ) {
                 push @structure, 'PROHIBITED' eq $term->{type}
@@ -585,23 +678,10 @@ sub _query_parse_core {
                   : '-and';
             }
             push @structure, $test->[0];
+            push @joins, @$more_joins;
             next;
         }
 
-        my @tmp;
-        if ( exists( $term->{field} ) ) {
-            push @tmp, { $term->{field} => $test };
-        }
-        else {
-            my @columns = keys %$columns;
-            my $number = scalar @columns;
-            for ( my $i = 0; $i < $number; $i++) {
-                push @tmp, { $columns[$i] => $test };
-                unless ( $i == $number - 1 ) {
-                    push @tmp, '-or';
-                }
-            }
-        }
         if ( exists($term->{conj}) && ( 'OR' eq $term->{conj} ) ) {
             if ( my $prev = pop @structure ) {
                 push @structure, [ $prev, -or => \@tmp ];
@@ -614,7 +694,62 @@ sub _query_parse_core {
             push @structure, \@tmp;
         }
     }
-    \@structure;
+    ( \@structure, \@joins );
+}
+
+# add category filter to entry search
+sub _join_category {
+    my ( $app, $term ) = @_;
+
+    my $query = $term->{term};
+    if ( 'PHRASE' eq $term->{query} ) {
+        $query =~ s/'/"/g;
+    }
+
+    my $lucene_struct = Lucene::QueryParser::parse_query( $query );
+    if ( 'PROHIBITED' eq $term->{type} ) {
+        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
+    }
+    # search for exact match
+    my ( $terms ) = $app->_query_parse_core( $lucene_struct, { label => 1 }, {} );
+    return unless $terms && @$terms;
+    push @$terms, '-and', {
+        id => \'= placement_category_id',
+        blog_id => \'= entry_blog_id',
+    };
+
+    require MT::Placement;
+    require MT::Category;
+    return MT::Placement->join_on( undef,
+        { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
+        { join => MT::Category->join_on( undef, $terms, {} ),
+          unique => 1 }
+    );
+}
+
+# add author filter to entry search
+sub _join_author {
+    my ( $app, $term ) = @_;
+
+    my $query = $term->{term};
+    if ( 'PHRASE' eq $term->{query} ) {
+        $query =~ s/'/"/g;
+    }
+
+    my $lucene_struct = Lucene::QueryParser::parse_query( $query );
+    if ( 'PROHIBITED' eq $term->{type} ) {
+        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
+    }
+    my ( $terms ) = $app->_query_parse_core( $lucene_struct, { nickname => 'like' }, {} );
+    return unless $terms && @$terms;
+    push @$terms, '-and', {
+        id => \'= entry_author_id',
+    };
+    require MT::Author;
+    return MT::Author->join_on( undef,
+        $terms,
+        { unique => 1 }
+    );
 }
 
 1;

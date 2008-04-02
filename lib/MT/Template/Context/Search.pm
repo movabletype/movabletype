@@ -8,7 +8,7 @@ package MT::Template::Context::Search;
 
 use strict;
 use base qw( MT::Template::Context );
-use MT::Util qw( encode_url );
+use MT::Util qw( encode_url decode_html );
 
 sub load_core_tags {
     require MT::Template::Context;
@@ -133,10 +133,10 @@ sub _hdlr_results {
 sub context_script {
 	my ( $ctx, $args, $cond ) = @_;
 
-    my $search_string = encode_url($ctx->stash('search_string'));
+    my $search_string = decode_html( $ctx->stash('search_string') ) ;
     my $cgipath = $ctx->_hdlr_cgi_path($args);
     my $script = $ctx->{config}->SearchScript;
-    my $link = $cgipath.$script . '?search=' . $search_string;
+    my $link = $cgipath.$script . '?search=' . encode_url( $search_string );
     if ( my $mode = $ctx->stash('mode') ) {
         $mode = encode_url($mode);
         $link .= "&__mode=$mode";
