@@ -523,6 +523,9 @@ sub load_search_tmpl {
     return $app->error($app->errstr)
         unless $tmpl;
 
+    $ctx->var('system_template', '1');
+    $ctx->var('search_results', '1');
+
     $tmpl->context($ctx);
     $tmpl;
 }

@@ -703,7 +703,7 @@ class MT {
             $ctx->stash('StaticWebPath', $this->config('StaticWebPath'));
             $ctx->stash('PublishCharset', $this->config('PublishCharset'));
             $charset = $this->config('PublishCharset');
-            $out = $ctx->tag('Include', array('type' => 'dynamic_error'));
+            $out = $ctx->tag('Include', array('type' => 'dynamic_error', 'dynamic_error' => 1, 'system_template' => 1));
             if (isset($out)) {
                 header("Content-type: text/html; charset=".$charset);
                 echo $out;
@@ -717,7 +717,7 @@ class MT {
     }
 
     /***
-     * Retreives a context and rendering object.
+     * Retrieves a context and rendering object.
      */
     function &context() {
         static $ctx;
