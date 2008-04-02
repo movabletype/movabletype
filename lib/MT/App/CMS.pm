@@ -1336,6 +1336,17 @@ sub core_menus {
             permission        => 'administer_blog',
             system_permission => 'administer',
         },
+        'manage:notification' => {
+            label             => "Address Book",
+            mode              => 'list',
+            args              => { _type => 'notification' },
+            order             => 10000,
+            permission        => 'edit_notifications',
+            view              => "blog",
+            condition         => sub {
+                return $app->config->EnableAddressBook;
+            },
+        },
 
         'design:template' => {
             label         => "Templates",
@@ -1478,14 +1489,6 @@ sub core_menus {
             order             => 700,
             mode              => "tools",
             view              => "system",
-        },
-        'tools:notification' => {
-            label             => "Address Book",
-            mode              => 'list',
-            args              => { _type => 'notification' },
-            order             => 800,
-            permission        => 'edit_notifications',
-            view              => "blog",
         },
         'tools:ip_info' => {
             label             => "IP Banning",
