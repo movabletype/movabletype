@@ -138,7 +138,7 @@ sub link_memory {
             if (UNIVERSAL::isa($obj, 'MT::Comment')) {
                 my @textdomains = extract_domains($obj->text);
                 if (!@textdomains) {
-                    my $url = $obj->url;
+                    my $url = $obj->url || '';
                     $url =~ s/^\s+|\s+$//gs;
                     if ($url =~ m!https?://\w+!) { # valid url requirement...
                         require MT::Comment;
@@ -162,7 +162,7 @@ sub link_memory {
                     }
                 }
             } elsif (UNIVERSAL::isa($obj, 'MT::TBPing')) {
-                my $url = $obj->source_url;
+                my $url = $obj->source_url || '';
                 $url =~ s/^\s+|\s+$//gs;
                 my $terms = { source_url => $url,
                     blog_id => $obj->blog_id,
