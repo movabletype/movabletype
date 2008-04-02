@@ -547,6 +547,11 @@ sub core_upgrade_functions {
             version_limit => 3.3101,
             priority => 5.1,
         },
+        'core_migrate_commenter_auth' => {
+            code => \&migrate_commenter_auth,
+            version_limit => 3.3101,
+            priority => 3.1,
+        },
         'core_deprecate_bitmask_permissions' => {
             code => \&deprecate_bitmask_permissions,
             version_limit => 4.0002,
@@ -556,11 +561,6 @@ sub core_upgrade_functions {
             code => \&migrate_system_privileges,
             version_limit => 4.0002,
             priority => 3.3,
-        },
-        'core_migrate_commenter_auth' => {
-            code => \&migrate_commenter_auth,
-            version_limit => 3.3101,
-            priority => 3.1,
         },
         'core_populate_authored_on' => {
             version_limit => 4.0014,
@@ -688,6 +688,10 @@ sub core_upgrade_functions {
             updater => {
                 type => 'author',
                 label => 'Adding new feature widget to dashboard...',
+                condition => sub {
+                    my ($user) = @_;
+                    $user->type == MT::Author::AUTHOR(); # AUTHOR records only
+                },
                 code => sub {
                     my ($user) = @_;
                     my $widget_store = $user->widgets();
@@ -702,7 +706,6 @@ sub core_upgrade_functions {
                         }
                     }
                     $user->widgets($widget_store);
-                    $user->save;
                 },
             },
         },
@@ -774,7 +777,6 @@ sub core_upgrade_functions {
                         }
                     }
                     $blog->page_layout($layout);
-                    $blog->save;
                 },
             },
         },
@@ -791,7 +793,6 @@ sub core_upgrade_functions {
                     my ($author) = @_;
                     my $basename = MT::Util::make_unique_author_basename($author);
                     $author->basename($basename);
-                    $author->save;
                 },
             },
         },
@@ -805,7 +806,7 @@ sub core_upgrade_functions {
             priority      => 3.2,
             updater       => {
                 type      => 'entry',
-                label     => 'Assigning entry comment and trackback count...',
+                label     => 'Assigning entry comment and TrackBack counts...',
                 condition => sub {
                     require MT::Comment;
                     my $comment_count = MT::Comment->count(
@@ -833,6 +834,18 @@ sub core_upgrade_functions {
                 # only count once and set it, so code do nothing.
                 # it doesn't have the unnecessary save.
                 code => sub { 1; },
+            },
+        },
+        'core_assign_object_embedded' => {
+            version_limit => 4.0052,
+            priority => 3.2,
+            updater => {
+                type => 'objectasset',
+                label => 'Assigning embedded flag to asset placements...',
+                code => sub {
+                    $_[0]->embedded(1);
+                },
+                sql => 'update mt_objectasset set objectasset_embedded=1',
             },
         },
     }

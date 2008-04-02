@@ -621,32 +621,35 @@ sub sync_assets {
     my @assets = MT::ObjectAsset->load({
         object_id => $entry->id,
         blog_id => $entry->blog_id,
-        object_ds => $entry->datasource
+        object_ds => $entry->datasource,
+        embedded => 1,
     });
     my %assets = map { $_->asset_id => $_->id } @assets;
     while ($text =~ m!<form[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</form>!gis) {
         my $id = $1;
         my $innards = $2;
 
-        # is asset exists?
-        my $asset = MT->model('asset')->load({ id => $id }) or next;
-
         # reference to an existing asset...
         if (exists $assets{$id}) {
             $assets{$id} = 0;
         } else {
+            # is asset exists?
+            my $asset = MT->model('asset')->load({ id => $id }) or next;
+
             my $map = new MT::ObjectAsset;
             $map->blog_id($entry->blog_id);
             $map->asset_id($id);
             $map->object_ds($entry->datasource);
             $map->object_id($entry->id);
+            $map->embedded(1);
             $map->save;
             $assets{$id} = 0;
         }
     }
     if (my @old_maps = grep { $assets{$_->asset_id} } @assets) {
-        my @old_ids = map { $_->id } @old_maps;
-        MT::ObjectAsset->remove( { id => \@old_ids });
+        my @old_ids = map { $_->id } grep { $_->embedded } @old_maps;
+        MT::ObjectAsset->remove( { id => \@old_ids })
+            if @old_ids;
     }
     return 1;
 }

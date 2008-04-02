@@ -17,12 +17,16 @@ __PACKAGE__->install_properties({
         object_id => 'integer not null',
         object_ds => 'string(50) not null',
         asset_id => 'integer not null',
+        embedded => 'boolean',
     },
     indexes => {
-        blog_id => 1,
-        object_id => 1,
+        blog_obj => {
+            columns => ['blog_id', 'object_ds', 'object_id'],
+        },
         asset_id => 1,
-        object_ds => 1,
+    },
+    defaults => {
+        embedded => 0,
     },
     child_of => 'MT::Blog',
     datasource => 'objectasset',
