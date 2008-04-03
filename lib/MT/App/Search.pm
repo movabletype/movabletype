@@ -65,7 +65,7 @@ sub core_parameters {
                     text_more => 'like'
                 },
                 'sort'  => 'authored_on',
-                terms   => { status => 2 }, #MT::Entry::RELEASE()
+                terms   => { status => 2, class => '*' }, #MT::Entry::RELEASE()
                 filter_types => {
                     author   => \&_join_author,
                     category => \&_join_category,
@@ -341,7 +341,19 @@ sub search_terms {
     }
 
     my @terms;
-    push @terms, \%def_terms if %def_terms;
+    if (%def_terms) {
+        # If we have a term for the model's class column, add it separately, so
+        # array search() doesn't add the default class column term.
+        my $type = $app->{searchparam}{Type};
+        my $model_class = MT->model($type);
+        if (my $class_col = $model_class->properties->{class_column}) {
+            if ($def_terms{$class_col}) {
+                push @terms, { $class_col => delete $def_terms{$class_col} };
+            }
+        }
+
+        push @terms, \%def_terms;
+    }
 
     my $columns = $params->{columns};
     delete $columns->{'plugin'}; #FIXME: why is this in here?

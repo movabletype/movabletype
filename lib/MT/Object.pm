@@ -276,8 +276,15 @@ sub pre_search_scope_terms_to_class {
         $terms->{$col} = $props->{class_type};
     }
     elsif (ref $terms eq 'ARRAY') {
-        @$terms = ( { $col => $props->{class_type} } => 'AND' => [ @$terms ] );
+        if (my @class_terms = grep { ref $_ eq 'HASH' && 1 == scalar keys %$_ && $_->{$col} } @$terms) {
+            # Filter out any unlimiting class terms (class = *).
+            @$terms = grep { ref $_ ne 'HASH' || 1 != scalar keys %$_ || !$_->{$col} || $_->{$col} ne '*' } @$terms;
 
+            # The class column has been explicitly given or removed, so don't
+            # add one.
+            return;
+        }
+        @$terms = ( { $col => $props->{class_type} } => 'AND' => [ @$terms ] );
     }
 }
 
