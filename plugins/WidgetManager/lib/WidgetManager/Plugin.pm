@@ -29,9 +29,9 @@ sub _hdlr_widget_manager {
                                         blog_id => $blog_id })
             or return $ctx->error(MT->translate(
                 "Can't find included template widget '[_1]'", $mid ));
-        my $out = $ctx->tag('include', { widget => $tmpl->name })
+        defined(my $out = $ctx->tag('include', { widget => $tmpl->name }))
             or return $ctx->error($ctx->errstr);
-        $res .= $out if defined $out;
+        $res .= $out;
     }
     return $res;
 }
