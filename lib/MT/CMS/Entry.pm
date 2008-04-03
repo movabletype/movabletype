@@ -149,19 +149,19 @@ sub edit {
                     $param->{ "status_"
                           . MT::Entry::status_text($def_status) } = 1;
                 }
-                $param->{
-                    'allow_comments_'
-                      . (
-                        defined $q->param('allow_comments')
-                        ? $q->param('allow_comments')
-                        : $blog->allow_comments_default
-                      )
-                  }
-                  = 1;
-                $param->{allow_comments} = $blog->allow_comments_default
-                  unless defined $q->param('allow_comments');
-                $param->{allow_pings} = $blog->allow_pings_default
-                  unless defined $q->param('allow_pings');
+                if ( $param->{status} ) {
+                    $param->{ 'allow_comments_'
+                          . $q->param('allow_comments') } = 1;
+                    $param->{allow_comments} = $q->param('allow_comments');
+                    $param->{allow_pings}    = $q->param('allow_pings');
+                }
+                else {
+                    # new edit
+                    $param->{ 'allow_comments_'
+                          . $blog->allow_comments_default } = 1;
+                    $param->{allow_comments} = $blog->allow_comments_default;
+                    $param->{allow_pings}    = $blog->allow_pings_default;
+                }
             }
         }
 
@@ -1215,23 +1215,20 @@ sub save {
     if (   ( $perms->can_publish_post || $perms->can_edit_all_posts )
         && ($ao_d) )
     {
+        my %param = ();
         my $ao = $ao_d . ' ' . $ao_t;
         unless (
-            $ao =~ m!^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?$! )
+            $ao =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$! )
         {
-            return $app->error(
-                $app->translate(
+            $param{error} = $app->translate(
 "Invalid date '[_1]'; authored on dates must be in the format YYYY-MM-DD HH:MM:SS.",
 $ao
-                )
             );
         }
         my $s = $6 || 0;
-        return $app->error(
-            $app->translate(
+            $param{error} = $app->translate(
                 "Invalid date '[_1]'; authored on dates should be real dates.",
                 $ao
-            )
           )
           if (
                $s > 59
@@ -1246,6 +1243,8 @@ $ao
             || ( MT::Util::days_in( $2, $1 ) < $3
                 && !MT::Util::leap_day( $0, $1, $2 ) )
           );
+        $param{return_args} = $app->param('return_args');
+        return $app->forward( "view", \%param ) if $param{error};
         if ($obj->authored_on) {
             $previous_old = $obj->previous(1);
             $next_old     = $obj->next(1);
