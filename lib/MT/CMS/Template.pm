@@ -14,6 +14,9 @@ sub edit {
     my $perms = $app->permissions;
     my $can_preview = 0;
 
+    $param->{include_system} = $blog->include_system;
+    $param->{include_cache} = $blog->include_cache;
+
     if ($id) {
         # FIXME: Template types should not be enumerated here
         $param->{nav_templates} = 1;
