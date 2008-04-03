@@ -246,6 +246,22 @@ __END__
 
 MT::DateTime
 
+=head1 METHODS
+
+=head2 compare( a => $a, b => $b, blog => $blog )
+
+Compares two timestamp strings and returns negative valye, 0, or positive value
+depending on whether the "a" argument is less than, equal to, or greater than
+the "b" argument.
+
+You can specify scalar value to "a" and "b".  They are treated as timestamp values
+(e.g. 20080405123456).  You can also specify either epoch string (e.g the string
+returned from time method), or MT::DateTime object.  In those cases, you must
+specify both value and type in a hash, for example:
+
+MT::DateTime->compare( blog => $blog,
+    a => '20041231123456', b => { value => time(), type => 'epoch' } );
+
 =head1 AUTHOR & COPYRIGHT
 
 Please see L<MT/AUTHOR & COPYRIGHT>.
