@@ -149,7 +149,7 @@ sub edit_role {
     for my $ref (@$all_perm_flags) {
         $param{ 'have_access-' . $ref->[0] } =
           ( $role && $role->has( $ref->[0] ) ) ? 1 : 0;
-        $param{ 'prompt-' . $ref->[0] } = $app->translate( $ref->[1] );
+        $param{ 'prompt-' . $ref->[0] } = $ref->[1];
     }
     $param{saved}          = $q->param('saved');
     $param{nav_privileges} = 1;
@@ -333,13 +333,6 @@ sub list_member {
     $param->{search_label} = $app->translate('Users');
     $param->{object_type} = 'author';
 
-    my $all_perms;
-    my @all_perms = @{ MT::Permission->perms() };
-    $all_perms = [@all_perms];
-    foreach (@$all_perms) {
-        $_->[1] = $app->translate( $_->[1] );
-    }
-
     require MT::Association;
     require MT::Role;
     my @all_roles = MT::Role->load( undef, { sort => 'name' });
@@ -399,9 +392,10 @@ sub list_member {
         my @role_loop;
         foreach my $role (@roles) {
             my @perms;
-            foreach (@$all_perms) {
+            my @all_perms = @{ MT::Permission->perms() };
+            foreach (@all_perms) {
                 next unless length( $_->[1] || '' );
-                push @perms, $app->translate( $_->[1] )
+                push @perms, $_->[1]
                   if $role->has( $_->[0] );
             }
             my $role_perms = join(", ", @perms);
@@ -493,14 +487,6 @@ sub list_association {
     }
 
     my $pref = $app->list_pref('association');
-    my $all_perms;
-    if ( $pref->{view_expanded} ) {
-        my @all_perms = @{ MT::Permission->perms() };
-        $all_perms = [@all_perms];
-        foreach (@$all_perms) {
-            $_->[1] = $app->translate( $_->[1] );
-        }
-    }
 
     # Supplies additional parameters for the row being listed
     my %users;
@@ -517,9 +503,10 @@ sub list_association {
             # populate permissions for the expanded view
             if ( $pref->{view_expanded} ) {
                 my @perms;
-                foreach (@$all_perms) {
+                my @all_perms = @{ MT::Permission->perms() };
+                foreach (@all_perms) {
                     next unless length( $_->[1] || '' );
-                    push @perms, { name => $app->translate( $_->[1] ) }
+                    push @perms, { name => $_->[1] }
                       if $role->has( $_->[0] );
                 }
                 $row->{perm_loop} = \@perms;
@@ -654,14 +641,6 @@ sub list_role {
     $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
 
     my $pref = $app->list_pref('role');
-    my $all_perms;
-    if ( $pref->{view_expanded} ) {
-        my @all_perms = @{ MT::Permission->perms() };
-        $all_perms = [@all_perms];
-        foreach (@$all_perms) {
-            $_->[1] = $app->translate( $_->[1] );
-        }
-    }
 
     my $author_class = $app->model('author');
     my $assoc_class  = $app->model('association');
@@ -699,9 +678,10 @@ sub list_role {
         # populate permissions for the expanded view
         if ( $pref->{view_expanded} ) {
             my @perms;
-            foreach (@$all_perms) {
+            my @all_perms = @{ MT::Permission->perms() };
+            foreach (@all_perms) {
                 next unless length( $_->[1] || '' );
-                push @perms, { name => $app->translate( $_->[1] ) }
+                push @perms, { name => $_->[1] }
                   if $obj->has( $_->[0] );
             }
             $row->{perm_loop} = \@perms;
