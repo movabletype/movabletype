@@ -360,11 +360,12 @@ sub _new_entry {
     if (my $iso = $item->{dateCreated}) {
         $entry->authored_on(MT::XMLRPCServer::Util::iso2ts($blog, $iso))
             || die MT::XMLRPCServer::_fault(MT->translate("Invalid timestamp format"));
-        my @ts = MT::Util::offset_time_list(time, $blog_id);
-        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
-            $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+        require MT::DateTime;
         $entry->status(MT::Entry::FUTURE())
-            if ($entry->authored_on > $ts);
+            if MT::DateTime->compare(
+                blog => $blog,
+                a => $entry->authored_on,
+                b => { value => time(), type => 'epoch' } ) > 0;
     }
     $entry->discover_tb_from_entry();
 
@@ -486,6 +487,11 @@ sub _edit_entry {
     if (my $iso = $item->{dateCreated}) {
         $entry->authored_on(MT::XMLRPCServer::Util::iso2ts($entry->blog_id, $iso))
            || die MT::XMLRPCServer::_fault(MT->translate("Invalid timestamp format"));
+        require MT::DateTime;
+        $entry->status(MT::Entry::FUTURE())
+            if MT::DateTime->compare(
+                a => $entry->authored_on,
+                b => { value => time(), type => 'epoch' } ) > 0;
     }
     $entry->discover_tb_from_entry();
 

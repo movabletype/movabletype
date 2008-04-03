@@ -556,11 +556,12 @@ sub new_post {
     $entry->excerpt(encode_text($atom->summary,'utf-8',$enc));
     if (my $iso = $atom->issued) {
         my $pub_ts = MT::Util::iso2ts($blog, $iso);
-        my @ts = MT::Util::offset_time_list(time, $blog->id);
-        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
-            $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
         $entry->authored_on($pub_ts);
-        if ($pub_ts > $ts) {
+        if ( 0 < MT::DateTime->compare( blog => $blog,
+                a => $pub_ts,
+                b => { value => time(), type => 'epoch' } )
+           )
+        {
             $entry->status(MT::Entry::FUTURE())
         }
     }
@@ -646,11 +647,12 @@ sub edit_post {
     $entry->modified_by($app->{user}->id);
     if (my $iso = $atom->issued) {
         my $pub_ts = MT::Util::iso2ts($blog, $iso);
-        my @ts = MT::Util::offset_time_list(time, $blog->id);
-        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
-            $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
         $entry->authored_on($pub_ts);
-        if ($pub_ts > $ts) {
+        if ( 0 < MT::DateTime->compare( blog => $blog,
+                a => $pub_ts,
+                b => { value => time(), type => 'epoch' } )
+           )
+        {
             $entry->status(MT::Entry::FUTURE())
         }
     }

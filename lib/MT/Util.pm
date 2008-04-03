@@ -118,7 +118,7 @@ sub ts2epoch {
 }
 sub epoch2ts {
     my ($blog, $epoch) = @_;
-    $epoch = offset_time($epoch, $blog) if ref $blog;
+    $epoch = offset_time($epoch, $blog) if defined $blog;
     my ($s, $m, $h, $d, $mo, $y) = gmtime($epoch);
     sprintf("%04d%02d%02d%02d%02d%02d",
                      $y+1900, $mo+1, $d, $h, $m, $s);

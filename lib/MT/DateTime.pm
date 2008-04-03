@@ -13,6 +13,8 @@ use Exporter;
 use vars qw( @EXPORT_OK );
 @EXPORT_OK = qw( ymd2rd tz_offset_as_seconds );
 
+use MT::Util qw( epoch2ts );
+
 sub new {
     my $class = shift;
     my (%param) = @_;
@@ -167,6 +169,74 @@ sub tz_offset_as_seconds {
     $total *= -1 if $sign eq '-';
 
     return $total;
+}
+
+sub _param2ts {
+    my ( $param, $blog ) = @_;
+
+    my ( $type, $value );
+    if ( 'HASH' eq ref($param) ) {
+        $type = $param->{type};
+        $value = $param->{value};
+    }
+    else {
+        $type = 'ts';
+        $value = $param;
+    }
+    if ( 'CODE' eq ref($value) ) {
+        $value = $value->();
+    }
+
+    my $ts;
+    if ( 'epoch' eq $type ) {
+        $ts = epoch2ts( $blog, $value );
+    }
+    elsif ( 'datetime' eq $type ) {
+        $ts = sprintf "%04d%02d%02d%02d%02d%02d",
+            $value->year,
+            $value->month,
+            $value->day,
+            $value->hour,
+            $value->minute,
+            $value->second;
+    }
+    else {
+        $ts = $value;
+    }
+    $ts;
+}
+
+sub compare {
+    my $self = shift;
+    my %param = @_;
+    # a => $ts | CODE | { value => CODE|$v, type => ts|epoch|datetime }
+    # b => $ts | CODE | { value => CODE|$v, type => ts|epoch|datetime }
+    # blog => ref|N|undef
+    # comparer => CODE|undef
+
+    my $blog = $param{blog};
+    if ( defined($blog) && !ref($blog) ) {
+        $blog = MT->model('blog')->load( $blog );
+        $blog = undef unless ref($blog);
+    }
+
+    if ( !exists($param{a}) && ref($self) ) {
+        $param{a} = { value => $self, type => 'datetime' };
+    }
+    my $ts_a = _param2ts( $param{a}, $blog );
+
+    if ( !exists($param{b}) && ref($self) ) {
+        $param{b} = { value => $self, type => 'datetime' };
+    }
+    my $ts_b = _param2ts( $param{b}, $blog );
+
+    my $comparer = $param{code};
+    if ( 'CODE' eq ref($comparer) ) {
+        return $comparer->( $ts_a, $ts_b );
+    }
+    else {
+        return $ts_a - $ts_b;
+    }
 }
 
 1;
