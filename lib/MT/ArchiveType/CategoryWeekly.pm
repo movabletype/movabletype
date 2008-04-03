@@ -42,7 +42,6 @@ sub template_params {
     return {
         archive_class           => "category-weekly-archive",
         category_weekly_archive => 1,
-        main_template           => 1,
         archive_template        => 1,
         archive_listing         => 1,
     };

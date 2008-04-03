@@ -30,7 +30,6 @@ sub template_params {
     return {
         archive_class     => "page-archive",
         page_archive      => 1,
-        main_template     => 1,
         archive_template  => 1,
         page_template     => 1,
         feedback_template => 1,

@@ -850,7 +850,6 @@ sub preview {
     $ctx->stash( 'category', $cat ) if $cat;
     $ctx->{current_timestamp} = $ts;
     $ctx->var('entry_template',    1);
-    $ctx->var('main_template',     1);
     $ctx->var('archive_template',  1);
     $ctx->var('entry_template',    1);
     $ctx->var('feedback_template', 1);

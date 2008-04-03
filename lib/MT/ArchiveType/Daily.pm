@@ -37,7 +37,6 @@ sub template_params {
         archive_class           => "datebased-daily-archive",
         datebased_only_archive  => 1,
         datebased_daily_archive => 1,
-        main_template           => 1,
         archive_template        => 1,
         archive_listing         => 1,
     };

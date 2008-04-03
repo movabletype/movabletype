@@ -20,7 +20,6 @@ sub archive_label {
 sub template_params {
     return {
         entry_archive     => 1,
-        main_template     => 1,
         archive_template  => 1,
         entry_template    => 1,
         feedback_template => 1,

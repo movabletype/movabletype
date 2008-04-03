@@ -41,7 +41,6 @@ sub template_params {
         archive_class            => "category-monthly-archive",
         category_monthly_archive => 1,
         'module_category-monthly_archives' => 1,
-        main_template                      => 1,
         archive_template                   => 1,
         archive_listing                    => 1,
     };

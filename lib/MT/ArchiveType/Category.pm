@@ -39,7 +39,6 @@ sub template_params {
     return {
         archive_class                      => "category-archive",
         category_archive                   => 1,
-        main_template                      => 1,
         archive_template                   => 1,
         archive_listing                    => 1,
         'module_category-monthly_archives' => 1,

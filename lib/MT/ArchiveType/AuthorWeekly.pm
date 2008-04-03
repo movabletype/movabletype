@@ -40,7 +40,6 @@ sub template_params {
     return {
         archive_class         => "author-weekly-archive",
         author_weekly_archive => 1,
-        main_template         => 1,
         archive_template      => 1,
         archive_listing       => 1,
     },

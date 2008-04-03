@@ -37,7 +37,6 @@ sub template_params {
         datebased_only_archive   => 1,
         datebased_yearly_archive => 1,
         module_yearly_archives   => 1,
-        main_template            => 1,
         archive_template         => 1,
         archive_listing          => 1,
         archive_class            => "datebased-yearly-archive",

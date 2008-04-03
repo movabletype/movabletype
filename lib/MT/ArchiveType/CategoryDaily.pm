@@ -40,7 +40,6 @@ sub template_params {
     return {
         archive_class          => "category-daily-archive",
         category_daily_archive => 1,
-        main_template          => 1,
         archive_template       => 1,
         archive_listing        => 1,
     };

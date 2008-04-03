@@ -39,7 +39,6 @@ sub template_params {
     return {
         archive_class                    => "author-archive",
         'module_author-monthly_archives' => 1,
-        main_template                    => 1,
         author_archive                   => 1,
         archive_template                 => 1,
         archive_listing                  => 1,
