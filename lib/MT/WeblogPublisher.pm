@@ -716,8 +716,8 @@ sub _rebuild_entry_archive_type {
     return 1 unless @map;
     my @map_build;
 
-    my $done = MT->instance->request('__published')
-      || MT->instance->request( '__published', {} );
+    my $done = MT->instance->request('__published:'.$blog->id)
+      || MT->instance->request( '__published:'.$blog->id, {} );
     for my $map (@map) {
         my $file = exists $param{File}
             ? $param{File}
