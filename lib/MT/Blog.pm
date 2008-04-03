@@ -384,13 +384,7 @@ sub include_path_parts {
 
     my $filestem = MT::Util::dirify($name);
     my $filename = join q{.}, $filestem, $blog->file_extension;
-    my $folder = $filestem;
-    if (eval { require Digest::MD5; 1 }) {
-        $folder = Digest::MD5::md5_base64($name);
-        $folder =~ s{ \W }{_}xmsg;
-    }
-    $folder = substr $folder, 0, 3;
-    return (MT->config('IncludesDir'), $folder, $filename);
+    return (MT->config('IncludesDir'), substr($filestem, 0, 3), $filename);
 }
 
 sub include_path {
