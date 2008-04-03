@@ -1478,6 +1478,24 @@ sub post_save {
         $perms->set_full_permissions;
         $perms->save;
 
+        # permission granted - need to update commenting cookie
+        my %cookies = $app->cookies();
+        $app->cookie_val();
+        my ($x, $y, $remember) = split(/::/, $cookies{$app->user_cookie()}->value);
+        my $cookie  = $cookies{'commenter_id'};
+        my $cookie_value = $cookie ? $cookie->value : '';
+        my ($id, $blog_ids) = split(':', $cookie_value);
+        if ( $blog_ids ne 'S' && $blog_ids ne 'N' ) {
+            $blog_ids .= ",'" . $obj->id . "'";
+        }
+        my $timeout = $remember ? '+10y' : 0;
+        $timeout = '+' . $app->config->CommentSessionTimeout . 's' unless $timeout;
+        my %id_kookee = (-name => "commenter_id",
+                           -value => $auth->id . ':' . $blog_ids,
+                           -path => '/',
+                           ($timeout ? (-expires => $timeout) : ()));
+        $app->bake_cookie(%id_kookee);
+
         require MT::Log;
         $app->log(
             {
