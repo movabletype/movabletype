@@ -2385,7 +2385,7 @@ sub _include_module {
     my $ret = $tmpl->build( $ctx, $cond );
     if (!defined $ret) {
         $req->cache('build_template', $tmpl) if $tmpl;
-        return $ctx->error("error in $name $tmpl_name: " . $builder->errstr);
+        return $ctx->error("error in $name $tmpl_name: " . $tmpl->errstr);
     }
 
     if ($cache_enabled) {
