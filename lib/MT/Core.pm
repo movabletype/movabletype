@@ -375,7 +375,7 @@ BEGIN {
             },
             'SearchSortBy'    => undef,
             'SearchSortOrder' => { default => 'ascend', },
-            'SearchNoOverride'      => { alias => 'NoOverride', },
+            'SearchNoOverride'      => { default => 'SearchMaxResults', },
             'SearchResultDisplay'   => { alias => 'ResultDisplay', },
             'SearchExcerptWords'    => { alias => 'ExcerptWords', },
             'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
