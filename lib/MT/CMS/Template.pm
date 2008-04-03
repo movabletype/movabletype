@@ -240,6 +240,7 @@ sub edit {
         my ( $period, $interval ) = _get_schedule( $obj->build_interval );
         $param->{ 'schedule_period_' . $period } = 1;
         $param->{schedule_interval} = $interval;
+        $param->{type} = 'custom' if $param->{type} eq 'module';
     } else {
         my $new_tmpl = $q->param('create_new_template');
         my $template_type;
