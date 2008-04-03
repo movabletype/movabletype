@@ -80,7 +80,6 @@ class PageArchiver extends BaseArchiver {
 
     function template_params(&$ctx) {
         $vars =& $ctx->__stash['vars'];
-        $vars['main_template'] = 1;
         $vars['archive_template'] = 1;
         $vars['page_template'] = 1;
         $vars['feedback_template'] = 1;
@@ -135,7 +134,6 @@ class IndividualArchiver extends BaseArchiver {
 
     function template_params(&$ctx) {
         $vars =& $ctx->__stash['vars'];
-        $vars['main_template'] = 1;
         $vars['archive_template'] = 1;
         $vars['entry_template'] = 1;
         $vars['feedback_template'] = 1;
@@ -315,7 +313,6 @@ class YearlyArchiver extends DateBasedArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['archive_template'] = 1;
-        $vars['main_template'] = 1;
         $vars['datebased_only_archive'] = 1;
         $vars['datebased_yearly_archive'] = 1;
         $vars['archive_class'] = 'datebased-yearly-archive';
@@ -371,7 +368,6 @@ class MonthlyArchiver extends DateBasedArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['archive_template'] = 1;
-        $vars['main_template'] = 1;
         $vars['datebased_only_archive'] = 1;
         $vars['datebased_monthly_archive'] = 1;
         $vars['archive_class'] = 'datebased-monthly-archive';
@@ -426,7 +422,6 @@ class DailyArchiver extends DateBasedArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['archive_template'] = 1;
-        $vars['main_template'] = 1;
         $vars['datebased_only_archive'] = 1;
         $vars['datebased_daily_archive'] = 1;
         $vars['archive_class'] = 'datebased-daily-archive';
@@ -486,7 +481,6 @@ class WeeklyArchiver extends DateBasedArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['archive_template'] = 1;
-        $vars['main_template'] = 1;
         $vars['datebased_only_archive'] = 1;
         $vars['datebased_weekly_archive'] = 1;
         $vars['archive_class'] = 'datebased-weekly-archive';
@@ -628,7 +622,6 @@ class AuthorBasedArchiver extends BaseArchiver {
     function template_params(&$ctx) {
         $vars =& $ctx->__stash['vars'];
         $vars['archive_template'] = 1;
-        $vars['main_template'] = 1;
         $vars['author_archive'] = 1;
         $vars['archive_class'] = 'author-archive';
         $vars['module_author-monthly_archives'] = 1;
@@ -770,7 +763,6 @@ class DateBasedAuthorArchiver extends DateBasedArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['archive_template'] = 1;
-        $vars['main_template'] = 1;
         $vars['author_archive'] = 1;
     }
 
@@ -1353,7 +1345,6 @@ class DateBasedCategoryArchiver extends DateBasedArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['archive_template'] = 1;
-        $vars['main_template'] = 1;
         $vars['category_archive'] = 1;
     }
 
