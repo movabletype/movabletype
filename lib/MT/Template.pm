@@ -231,7 +231,7 @@ sub build {
     local $ctx->{__stash}{template} = $tmpl;
     my $tokens = $tmpl->tokens
         or return;
-    my $build = MT::Builder->new;
+    my $build = $ctx->{__stash}{builder} || MT::Builder->new;
     if (my $blog_id = $tmpl->blog_id) {
         $ctx->stash('blog_id', $blog_id);
         my $blog = $ctx->stash('blog');
