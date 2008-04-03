@@ -69,7 +69,7 @@ sub new_version_widget {
       {
         feature_label => MT->translate('Better, Stronger, Faster'),
         feature_url  => $app->help_url('mt415/known-issues.html'),
-        feature_description => MT->translate('A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching'),
+        feature_description => MT->translate('A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching.'),
       },
       {
         feature_label => MT->translate('Improved Template Management'),
