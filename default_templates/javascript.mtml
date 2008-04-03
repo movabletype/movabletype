@@ -243,7 +243,6 @@ function setCommentParentID() {
         var now = new Date();
         fixDate(now);
         now.setTime(now.getTime() + 365 * 24 * 60 * 60 * 1000);
-        now = now.toGMTString();
         if (f.author != undefined)
            setCookie('mtcmtauth', f.author.value, now, '/', '', '');
         if (f.email != undefined)
