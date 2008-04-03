@@ -473,6 +473,10 @@ sub edit {
         }
     }
 
+    # if unset, default to 30 so if they choose to enable caching,
+    # it will be preset to something sane.
+    $param->{cache_expire_interval} ||= 30;
+
     $param->{dirty} = 1
         if $app->param('dirty');
 
