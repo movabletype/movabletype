@@ -6063,7 +6063,9 @@ sub _hdlr_archive_link {
 
 sub _hdlr_archive_count {
     my $ctx = $_[0];
-    if ($ctx->{inside_mt_categories}) {
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    if ($ctx->{inside_mt_categories} && !$archiver->date_based) {
         return _hdlr_category_count($ctx);
     } elsif (my $count = $ctx->stash('archive_count')) {
         return $count;

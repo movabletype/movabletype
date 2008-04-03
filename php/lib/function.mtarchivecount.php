@@ -6,7 +6,14 @@
 # $Id$
 
 function smarty_function_mtarchivecount($args, &$ctx) {
-    if ($ctx->stash('inside_mt_categories')) {
+    $at = '';
+    $archiver = null;
+    if ($at = $ctx->stash('current_archive_type')) {
+        require_once("archive_lib.php");
+        global $_archivers;
+        $archiver = $_archivers[$at];
+    }
+    if ($ctx->stash('inside_mt_categories') && !$archiver->is_date_based()) {
         return $ctx->tag('MTCategoryCount', $args);
     } elseif ($count = $ctx->stash('archive_count')) {
         return $count;
@@ -15,12 +22,9 @@ function smarty_function_mtarchivecount($args, &$ctx) {
     } else {
         $eargs = array();
         $eargs['blog_id'] = $ctx->stash('blog_id');
-        if ($at = $ctx->stash('current_archive_type')) {
-            require_once("archive_lib.php");
+        if ($at) {
             $ts = $ctx->stash('current_timestamp');
             $tse = $ctx->stash('current_timestamp_end');
-            global $_archivers;
-            $archiver = $_archivers[$at];
             if (isset($archiver)) {
                 if ($ts && $tse) {
                     # assign date range if we have both

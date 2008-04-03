@@ -67,6 +67,7 @@ class BaseArchiver {
     function prepare_list(&$ctx, &$row) { }
     function setup_args($ctx, &$args) { }
     function template_params(&$ctx) { }
+    function is_date_based() { return false; }
 }
 
 class PageArchiver extends BaseArchiver {
@@ -144,6 +145,8 @@ class IndividualArchiver extends BaseArchiver {
 class DateBasedArchiver extends BaseArchiver {
 
     // Override Method
+  function is_date_based() { return true; }
+
     function archive_prev_next($args, $content, &$ctx, &$repeat, $tag, $at) {
         $localvars = array('current_timestamp', 'current_timestamp_end', 'entries');
         if (!isset($content)) {
