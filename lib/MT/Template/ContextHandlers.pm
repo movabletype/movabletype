@@ -2402,7 +2402,7 @@ sub _include_module {
                     $path, $fmgr->errstr));
             }
         }
-        $fmgr->put_data($ret, $file_path)
+        defined($fmgr->put_data($ret, $file_path))
             or return $ctx->error(MT->translate("Writing to '[_1]' failed: [_2]",
                 $file_path, $fmgr->errstr));
 
