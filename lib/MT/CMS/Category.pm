@@ -141,7 +141,7 @@ sub save {
     my $cat;
     if ( my $moved_cat_id = $q->param('move_cat_id') ) {
         $cat = $class->load( $q->param('move_cat_id') );
-        $app->move_category() or return;
+        move_category($app) or return;
     }
     else {
         for my $p ( $q->param ) {
