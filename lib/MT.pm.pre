@@ -2683,6 +2683,12 @@ sub refresh_cache {
     $cache_driver->flush_all();
 }
 
+sub DESTROY {
+    # save_config here so not to miss any dirty config change to persist
+    # particulary for those which does not construct MT::App.
+    $_[0]->config->save_config();
+}
+
 1;
 
 __END__

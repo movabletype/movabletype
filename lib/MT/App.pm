@@ -2386,6 +2386,9 @@ sub takedown {
         $app->log_times();
     }
 
+    # save_config here so not to miss any dirty config change to persist
+    $app->config->save_config();
+
     $app->request->finish;
     delete $app->{request};
 
@@ -3065,6 +3068,7 @@ sub DESTROY {
     ## Same with the ConfigMgr object and ObjectDriver.
     MT::Request->finish();
     undef $MT::Object::DRIVER;
+    undef $MT::Object::DBI_DRIVER;
     undef $MT::ConfigMgr::cfg;
 }
 

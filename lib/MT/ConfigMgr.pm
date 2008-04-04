@@ -16,7 +16,7 @@ sub instance {
 }
 
 sub new {
-    my $mgr = bless { __var => { }, __dbvar => { }, __paths => [] }, $_[0];
+    my $mgr = bless { __var => { }, __dbvar => { }, __paths => [], __dirty => 0 }, $_[0];
     $mgr->init;
     $mgr;
 }
@@ -161,6 +161,7 @@ sub set_internal {
     } else {
         $mgr->{$set}{$var} = $val;
     }
+    $mgr->set_dirty() if defined($_[2]) && $_[2];
 }
 
 sub set {
@@ -185,9 +186,28 @@ sub read_config {
     $class->read_config_file(@_);
 }
 
+sub set_dirty {
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref($mgr);
+    $mgr->{__dirty} = 1;
+}
+
+sub clear_dirty {
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref($mgr);
+    $mgr->{__dirty} = 0;
+}
+
+sub is_dirty {
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref($mgr);
+    $mgr->{__dirty};
+}
+
 sub save_config {
     my $class = shift;
     my $mgr = $class->instance;
+    return 0 unless $mgr->is_dirty();
     my $data = '';
     my $settings = $mgr->{__dbvar};
     foreach (sort keys %$settings) {
@@ -219,6 +239,8 @@ sub save_config {
 
     $config->data($data);
     $config->save or die $config->errstr;
+    $mgr->clear_dirty;
+    1;
 }
 
 sub read_config_file {
