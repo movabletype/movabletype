@@ -930,9 +930,10 @@ sub _hdlr_app_listing {
 
     my $actions_top = "";
     my $actions_bottom = "";
+    my $form_id = "$id-form";
     if ($show_actions) {
-        $actions_top = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager"\$>};
-        $actions_bottom = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager"\$>};
+        $actions_top = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager" form_id="$form_id"\$>};
+        $actions_bottom = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager" form_id="$form_id"\$>};
     } else {
         $listing_class .= " hide_actions";
     }
@@ -958,7 +959,7 @@ TABLE
     <div class="listing-header">
         $listing_header
     </div>
-    <form id="$id-form" class="listing-form"
+    <form id="$form_id" class="listing-form"
         action="$action" method="post"
         onsubmit="return this['__mode'] ? true : false">
         <input type="hidden" name="__mode" value="" />
@@ -1005,6 +1006,7 @@ sub _hdlr_app_link {
 sub _hdlr_app_action_bar {
     my ($ctx, $args, $cond) = @_;
     my $pos = $args->{bar_position} || 'top';
+    my $form_id = $args->{form_id} ? qq{ form_id="$args->{form_id}"} : "";
     my $pager = $args->{hide_pager} ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
     my $buttons = $ctx->var('action_buttons') || '';
@@ -1013,7 +1015,7 @@ sub _hdlr_app_action_bar {
     <div class="actions-bar-inner pkg">$pager
         <span class="button-actions actions">$buttons</span>
         <span class="plugin-actions actions">
-    <mt:include name="include/itemset_action_widget.tmpl">
+    <mt:include name="include/itemset_action_widget.tmpl"$form_id>
         </span>
     </div>
 </div>
@@ -1328,9 +1330,11 @@ sub _hdlr_for {
         local $vars->{$var} = $i if defined $var;
         my $res = $builder->build($ctx, $tokens, $cond);
         return $ctx->error($builder->errstr) unless defined $res;
-        $out .= $glue if $cnt > 1;
-        $out .= $res;
-        $cnt++;
+        if ($res ne '') {
+            $out .= $glue if $cnt > 1;
+            $out .= $res;
+            $cnt++;
+        }
     }
     return $out;
 }
@@ -1602,9 +1606,11 @@ sub _hdlr_loop {
         }
         my $res = $builder->build($ctx, $tokens, $cond);
         return $ctx->error($builder->errstr) unless defined $res;
-        $out .= $glue if $i > 1;
-        $out .= $res;
-        $i++;
+        if ($res ne '') {
+            $out .= $glue if $i > 1;
+            $out .= $res;
+            $i++;
+        }
     }
     return $out;
 }
@@ -4705,7 +4711,7 @@ sub _hdlr_entry_categories {
         local $ctx->{__stash}->{category} = $cat;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
-        push @res, $out;
+        push @res, $out if $out ne '';
     }
     my $sep = $args->{glue} || '';
     join $sep, @res;
