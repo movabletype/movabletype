@@ -2314,6 +2314,12 @@ sub _include_module {
 
     my $use_ssi = $blog && $blog->include_system
         && ($arg->{ssi} || $tmpl->include_with_ssi) ? 1 : 0;
+    if ($use_ssi) {
+        # disable SSI for templates that are system templates;
+        # easiest way to determine this is from the variable
+        # space setting.
+        $use_ssi = 0 if $ctx->var('system_template');
+    }
 
     # Try to read from cache
     my $cache_enabled =
