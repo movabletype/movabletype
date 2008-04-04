@@ -3698,7 +3698,7 @@ sub _hdlr_entries {
 
     $terms{status} = MT::Entry::RELEASE();
 
-    if (!$entries && $class_type eq 'entry') {
+    if (!$entries && ($class_type eq 'entry' || $class_type eq 'page')) {
         if ($ctx->{inside_mt_categories}) {
             if (my $cat = $ctx->stash('category')) {
                 $args->{category} ||= [ 'OR', [ $cat ] ];
