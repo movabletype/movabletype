@@ -221,6 +221,12 @@ sub install_properties {
         $class->add_trigger( post_load => get_date_translator(\&db2ts, 0) );
     }
 
+    if ( exists($props->{cacheable}) && !$props->{cacheable} ) {
+        no warnings 'redefine';
+        no strict 'refs'; ## no critic
+        *{$class . '::driver'} = sub { $_[0]->dbi_driver(@_) };
+    }
+
     return $props;
 }
 
@@ -724,6 +730,19 @@ our $DRIVER;
 sub driver {
     require MT::ObjectDriverFactory;
     return $DRIVER ||= MT::ObjectDriverFactory->new;
+}
+
+# ref to the fallback driver for non-cacheable classes
+our $DBI_DRIVER;
+sub dbi_driver {
+    unless ($DBI_DRIVER) {
+        my $driver = driver(@_);
+        if ( my $fb_driver = $driver->fallback ) {
+            $driver = $fb_driver;
+        }
+        $DBI_DRIVER = $driver;
+    }
+    return $DBI_DRIVER;
 }
 
 sub table_name {

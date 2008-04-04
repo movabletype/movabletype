@@ -93,6 +93,7 @@ sub cleanup {
             $dbh->disconnect;
         }
         $MT::Object::DRIVER = undef;
+        $MT::Object::DBI_DRIVER = undef;
     }
 }
 
