@@ -572,6 +572,7 @@ sub list {
     $params->{blog_view} = 1;
     $params->{refreshed} = $app->param('refreshed');
     $params->{published} = $app->param('published');
+    $params->{saved_copied} = $app->param('saved_copied');
 
     # determine list of system template types:
     my $scope;
@@ -1770,6 +1771,50 @@ sub refresh_individual_templates {
 
     $app->build_page( 'refresh_results.tmpl',
         { message_loop => \@msg_loop, return_url => $app->return_uri } );
+}
+
+sub clone_templates {
+    my ($app) = @_;
+
+    my $user = $app->user;
+    my $perms = $app->permissions;
+    return $app->error(
+        $app->translate(
+            "Permission denied.")
+      )
+      #TODO: system level-designer permission
+      unless $user->is_superuser() || $user->can_edit_templates()
+      || ( $perms
+        && ( $perms->can_edit_templates()
+          || $perms->can_administer_blog ) );
+
+    my @id = $app->param('id');
+    require MT::Template;
+    foreach my $tmpl_id (@id) {
+        my $tmpl = MT::Template->load($tmpl_id);
+        next unless $tmpl;
+
+        my $new_tmpl = $tmpl->clone({
+            Except => {
+                id => 1,
+                name => 1,
+                identifier => 1,
+            },
+        });
+
+        my $new_basename = $app->translate("Copy of [_1]", $tmpl->name);
+        my $new_name = $new_basename;
+        my $i = 0;
+        while (MT::Template->count({ name => $new_name, blog_id => $tmpl->blog_id })) {
+            $new_name = $new_basename . ' (' . ++$i . ')';
+        }
+
+        $new_tmpl->name($new_name);
+        $new_tmpl->save;
+    }
+
+    $app->add_return_arg( 'saved_copied' => 1 );
+    $app->call_return;
 }
 
 sub publish_index_templates {

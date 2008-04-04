@@ -90,6 +90,13 @@ TC.attachLoadEvent(init);
             <__trans phrase="Your templates have been published.">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="saved_copied">
+        <mtapp:statusmsg
+            id="saved-copied"
+            class="success">
+            <__trans phrase="Selected template(s) has been copied.">
+        </mtapp:statusmsg>
+    </mt:if>
 </mt:setvarblock>
 
 <mt:include name="include/header.tmpl">

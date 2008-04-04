@@ -622,12 +622,12 @@ sub core_list_actions {
         'template' => {
             refresh_tmpl_templates => {
                 label => "Refresh Template(s)",
-                handler => '$Core::MT::CMS::Template::refresh_individual_templates',
+                code => "${pkg}Template::refresh_individual_templateE",
                 permission => 'edit_templates',
             },
             publish_index_templates => {
                 label => "Publish Template(s)",
-                handler => '$Core::MT::CMS::Blog::publish_index_templates',
+                code => "${pkg}Blog::publish_index_templates",
                 permission => 'rebuild',
                 condition => sub {
                     my $app = MT->app;
@@ -639,6 +639,11 @@ sub core_list_actions {
                          :                                   0
                          ;
                 },
+            },
+            copy_templates => {
+                label => "Clone Template(s)",
+                code => "${pkg}Template::clone_templates",
+                permission => 'edit_templates',
             },
         },
     };
