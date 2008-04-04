@@ -37,6 +37,7 @@ __PACKAGE__->install_properties({
     },
     datasource => 'fileinfo',
     primary_key => 'id',
+    cacheable => 0,
 });
 
 =pod

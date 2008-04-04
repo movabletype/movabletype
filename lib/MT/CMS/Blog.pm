@@ -1370,6 +1370,34 @@ sub pre_save {
     1;
 }
 
+sub _update_finfos {
+    my ($app, $new_virtual, $where) = @_;
+    my $finfo_class = MT->model('fileinfo');
+    my $driver = $finfo_class->driver;
+    my $dbd = $driver->dbd;
+
+    my $stmt = MT::ObjectDriver::SQL->new;
+
+    if ($where) {
+        my $new_where = {};
+        while (my ($key, $val) = each %$where) {
+            my $new_key = $dbd->db_column_name($finfo_class->datasource, $key);
+            $new_where->{$new_key} = $val;
+        }
+        $stmt->add_complex_where([ $new_where ]);
+    }
+    my $virtual_col = $dbd->db_column_name($finfo_class->datasource, 'virtual');
+    $stmt->add_complex_where([ { $virtual_col => { op => '!=', value => $new_virtual } } ]);
+
+    my $sql = join q{ }, 'UPDATE', $driver->table_for($finfo_class), 'SET',
+        $virtual_col, '= ?', $stmt->as_sql_where();
+
+    my $dbh = $driver->rw_handle;
+    $dbh->do($sql, {}, $new_virtual, @{ $stmt->{bind} })
+        or return $app->error($dbh->errstr || $DBI::errstr);
+    1;
+}
+
 sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
@@ -1415,13 +1443,29 @@ sub post_save {
                 );
             }
 
+            if (!$dcty_changed || $dcty eq 'custom') {
+                # do nothing
+            }
+            elsif ($dcty eq 'none') {
+                _update_finfos($app, 0);
+            }
+            elsif ($dcty eq 'all') {
+                _update_finfos($app, 1);
+            }
+            elsif ($dcty eq 'archives') {
+                # Only archives have template maps.
+                _update_finfos($app, 1, { templatemap_id => \'is not null' });
+                _update_finfos($app, 0, { templatemap_id => \'is null' });
+            }
+
             # If either of the publishing paths changed, rebuild the fileinfos.
             my $path_changed = 0;
             for my $path_field (qw( site_path archive_path site_url archive_url )) {
                 $path_changed = 1 && last if $app->param($path_field)
                     && $app->param($path_field) ne $original->$path_field();
             }
-            if ($dcty ne 'none' && ($dcty_changed || $path_changed)) {
+
+            if ($path_changed) {
                 $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
                     or return $app->publish_error();
             }
