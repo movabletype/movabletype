@@ -2375,7 +2375,8 @@ sub _include_module {
             my $include_name = $arg->{key} || $tmpl_name;
             # The template may still be cached from before we were using SSI
             # for this template, so check that it's also on disk.
-            if ($blog->file_mgr->exists($blog->include_path($include_name))) {
+            my ($path, $file_path) = $blog->include_path($include_name);
+            if ($blog->file_mgr->exists($file_path)) {
                 return $blog->include_statement($include_name);
             }
         }
