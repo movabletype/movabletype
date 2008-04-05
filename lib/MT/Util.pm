@@ -210,6 +210,49 @@ sub relative_date {
             }
             return $result;
         }
+    } elsif ($style == 3) {
+        if ($delta < 60) {
+            return $future ? MT->translate("[quant,_1,second,seconds] from now", $delta) : MT->translate("[quant,_1,second,seconds]", $delta);
+        } elsif ($delta <= 3600) {
+            # less than 1 hour
+            my $min = int(($delta % 3600) / 60);
+            my $sec = $delta % 60;
+            my $result;
+            if ($sec && $min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes], [quant,_2,second,seconds] from now", $min, $sec) : MT->translate("[quant,_1,minute,minutes], [quant,_2,second,seconds]", $min, $sec);
+            } elsif ($min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes]", $min);
+            } elsif ($sec) {
+                $result = $future ? MT->translate("[quant,_1,second,seconds] from now", $sec) : MT->translate("[quant,_1,second,seconds]", $sec);
+            }
+            return $result;
+        } elsif ($delta <= 86400) {
+            # less than 1 day
+            my $hours = int($delta / 3600);
+            my $min = int(($delta % 3600) / 60);
+            my $result;
+            if ($hours && $min) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", $hours, $min) : MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes]", $hours, $min);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours]", $hours);
+            } elsif ($min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes]", $min);
+            }
+            return $result;
+        } elsif ($delta <= 604800) {
+            # less than 1 week
+            my $days = int($delta / 86400);
+            my $hours = int(($delta % 86400) / 3600);
+            my $result;
+            if ($days && $hours) {
+                $result = $future ? MT->translate("[quant,_1,day,days], [quant,_2,hour,hours] from now", $days, $hours) : MT->translate("[quant,_1,day,days], [quant,_2,hour,hours]", $days, $hours);
+            } elsif ($days) {
+                $result = $future ? MT->translate("[quant,_1,day,days] from now", $days) : MT->translate("[quant,_1,day,days]", $days);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours]", $hours);
+            }
+            return $result;
+        }
     }
     my $mt = MT->instance;
     my $user = $mt->user if $mt;

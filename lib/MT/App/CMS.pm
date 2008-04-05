@@ -3075,21 +3075,29 @@ sub rebuild_these {
 
         # now, rebuild indexes for affected blogs
         my @blogs = $app->param('blog_ids');
-        foreach my $blog_id (@blogs) {
-            my $blog = MT::Blog->load($blog_id) or next;
-            $app->rebuild_indexes( Blog => $blog )
-                or return $app->publish_error();
+        if (@blogs) {
+            $app->run_callbacks( 'pre_build' ) if @blogs;
+            foreach my $blog_id (@blogs) {
+                my $blog = MT::Blog->load($blog_id) or next;
+                $app->rebuild_indexes( Blog => $blog )
+                    or return $app->publish_error();
+            }
+            my $blog_id = int($app->param('blog_id'));
+            my $this_blog = MT::Blog->load( $blog_id ) if $blog_id;
+            $app->run_callbacks( 'rebuild', $this_blog );
+            $app->run_callbacks( 'post_build' );
         }
-        my $this_blog = MT::Blog->load( $app->param('blog_id') );
-        $app->run_callbacks( 'rebuild', $this_blog );
         return $app->call_return;
     }
 
     if ( exists $options{how} && ( $options{how} eq NEW_PHASE ) ) {
+        my $start_time = time;
+        $app->run_callbacks( 'pre_build' );
         my $params = {
             return_args => $app->return_args,
             blog_id     => $app->param('blog_id') || 0,
-            id          => [ keys %$rebuild_set ]
+            id          => [ keys %$rebuild_set ],
+            start_time  => $start_time,
         };
         my %param = (
             is_full_screen  => 1,
@@ -3102,6 +3110,7 @@ sub rebuild_these {
     }
     else {
         my @blogs = $app->param('blog_ids');
+        my $start_time = $app->param('start_time');
         my %blogs = map { $_ => () } @blogs;
         my @set   = keys %$rebuild_set;
         my @rest;
@@ -3117,6 +3126,7 @@ sub rebuild_these {
 
             # Rebuilding something that isn't an entry, rebless as required
             if ( $type ne MT::Entry->class_type ) {
+                die "had to rebless? $e";
                 my $pkg = MT->model($type) or next;
                 bless $e, $pkg;
             }
@@ -3138,6 +3148,7 @@ sub rebuild_these {
             blog_id         => $app->param('blog_id') || 0,
             blog_ids        => [ keys %blogs ],
             id              => \@rest,
+            start_time      => $start_time,
         };
         my %param = (
             is_full_screen  => 1,

@@ -530,6 +530,7 @@ sub rebuild_phase {
             ) or return;
         }
     }
+    $app->run_callbacks('post_build');
     $app->call_return;
 }
 
@@ -540,7 +541,17 @@ sub rebuild_pages {
     require MT::Entry;
     require MT::Blog;
     my $q             = $app->param;
-    my $blog_id       = $q->param('blog_id');
+    my $start_time    = $q->param('start_time');
+
+    if ( ! $start_time ) {
+        # start of build; invoke callback
+        $app->run_callbacks('pre_build');
+        $start_time = time;
+    }
+
+    my $blog_id       = int($q->param('blog_id'));
+    return $app->errtrans("Invalid request.") unless $blog_id;
+
     my $blog          = MT::Blog->load($blog_id);
     my $order         = $q->param('type');
     my @order         = split /,/, $order;
@@ -549,16 +560,13 @@ sub rebuild_pages {
     my $type          = $order[$next];
     my $archiver      = $app->publisher->archiver($type);
     my $archive_label = $archiver ? $archiver->archive_label : '';
+
     $archive_label = $app->translate($type) unless $archive_label;
     $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
     $next++;
     $done++ if $next >= @order;
     my $offset = 0;
     my ($total) = $q->param('total');
-
-    ## Tells MT::_rebuild_entry_archive_type to cache loaded templates so
-    ## that each template is only loaded once.
-    $app->{cache_templates} = 1;
 
     my ($tmpl_saved);
 
@@ -773,6 +781,7 @@ sub rebuild_pages {
             total           => $total,
             offset          => $offset,
             complete        => $complete,
+            start_time      => $start_time,
             incomplete      => 100 - $complete,
             entry_id        => scalar $q->param('entry_id'),
             dynamic         => $dynamic,
@@ -782,6 +791,7 @@ sub rebuild_pages {
         $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
     else {
+        $app->run_callbacks( 'post_build' );
         if ( $q->param('entry_id') ) {
             require MT::Entry;
             my $entry = MT::Entry->load( scalar $q->param('entry_id') );
@@ -808,11 +818,13 @@ sub rebuild_pages {
                 $built_type = $app->translate($type);
             }
             my %param = (
-                all          => $all,
-                type         => $archive_label,
-                is_one_index => $is_one_index,
-                is_entry     => $is_entry,
-                archives     => $type ne 'index',
+                all             => $all,
+                type            => $archive_label,
+                is_one_index    => $is_one_index,
+                is_entry        => $is_entry,
+                archives        => $type ne 'index',
+                start_timestamp => MT::Util::epoch2ts($blog, $start_time),
+                total_time      => time - $start_time,
             );
             if ($is_one_index) {
                 $param{tmpl_url} = $blog->site_url;
@@ -837,7 +849,6 @@ sub rebuild_pages {
                 );
             }
             else {    # popup--just go to cnfrmn. page
-                $app->run_callbacks( 'rebuild', $blog );
                 return $app->load_tmpl( 'popup/rebuilt.tmpl', \%param );
             }
         }
@@ -853,6 +864,14 @@ sub rebuild_new_phase {
 sub start_rebuild_pages {
     my $app           = shift;
     my $q             = $app->param;
+    my $start_time    = $q->param('start_time');
+
+    if ( ! $start_time ) {
+        # start of build; invoke callback
+        $app->run_callbacks('pre_build');
+        $start_time = time;
+    }
+
     my $type          = $q->param('type');
     my $next          = $q->param('next') || 0;
     my @order         = split /,/, $type;
@@ -905,6 +924,7 @@ sub start_rebuild_pages {
         build_type      => $type,
         build_next      => $next,
         total           => $total,
+        start_time      => $start_time,
         complete        => 0,
         incomplete      => 100,
         build_type_name => $archive_label

@@ -1387,6 +1387,7 @@ $ao
         {
             my $res = MT::Util::start_background_task(
                 sub {
+                    $app->run_callbacks('pre_build');
                     $app->rebuild_entry(
                         Entry             => $obj,
                         BuildDependencies => 1,
@@ -1397,6 +1398,7 @@ $ao
                         OldNext => ($next_old) ? $next_old->id : undef
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
+                    $app->run_callbacks( 'post_build' );
                     1;
                 }
             );
