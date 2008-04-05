@@ -718,6 +718,8 @@ class MTDatabaseBase extends ezsql {
                     $post_sort_limit = $limit;
                     $post_sort_offset = $offset;
                     $limit = 0; $offset = 0;
+                } elseif ($args['sort_by'] == 'trackback_count') {
+                    $sort_field = 'entry_ping_count';  
                 } else {  
                     $sort_field = 'entry_' . $args['sort_by'];  
                 }  
@@ -830,6 +832,8 @@ class MTDatabaseBase extends ezsql {
                     $sort_field = $args['sort_by'];
                 } elseif ($args['sort_by'] == 'rate') {
                     $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'trackback_count') {
+                    $sort_field = 'entry_ping_count';  
                 } else {
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
@@ -904,7 +908,8 @@ class MTDatabaseBase extends ezsql {
                     }
                     $entries = $entries_sorted;
                 } else {
-                    if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')) {
+                    if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
+                          || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
                         $sort_fn = "if (\$a['$sort_field'] == \$b['$sort_field']) return 0; return \$a['$sort_field'] < \$b['$sort_field'] ? -1 : 1;";
                     } else {
                         $sort_fn = "return strcmp(\$a['$sort_field'],\$b['$sort_field']);";
