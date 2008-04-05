@@ -558,7 +558,11 @@ sub rebuild_pages {
     my $next          = $q->param('next');
     my $done          = 0;
     my $type          = $order[$next];
-    my $archiver      = $app->publisher->archiver($type);
+
+    my $pub           = $app->publisher;
+    $pub->start_time( $start_time );  # force start time to parameter start_time
+
+    my $archiver      = $pub->archiver($type);
     my $archive_label = $archiver ? $archiver->archive_label : '';
 
     $archive_label = $app->translate($type) unless $archive_label;

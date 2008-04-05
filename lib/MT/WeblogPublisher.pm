@@ -28,6 +28,9 @@ sub new {
     my $class = shift;
     my $this  = {@_};
     my $cfg   = MT->config;
+    if ( !exists $this->{start_time} ) {
+        $this->{start_time} = time;
+    }
     if ( !exists $this->{NoTempFiles} ) {
         $this->{NoTempFiles} = $cfg->NoTempFiles;
     }
@@ -108,6 +111,12 @@ sub core_archive_types {
         'Category-Weekly' => 'MT::ArchiveType::CategoryWeekly',
     };
 
+}
+
+sub start_time {
+    my $pub = shift;
+    $pub->{start_time} = shift if @_;
+    return $pub->{start_time};
 }
 
 sub rebuild {
@@ -808,6 +817,21 @@ sub rebuild_file {
         }
     }
 
+    # Calculate file path and URL for the new entry.
+    my $file = File::Spec->catfile( $root_path, $map->{__saved_output_file} );
+
+    ## Untaint. We have to assume that we can trust the user's setting of
+    ## the archive_path, and nothing else is based on user input.
+    ($file) = $file =~ /(.+)/s;
+
+    # compare file modification time to start of build process. if it
+    # is greater than the start_time, then we shouldn't need to build this
+    # file again
+    my $fmgr = $blog->file_mgr;
+    if (my $mod_time = $fmgr->file_mod_time($file)) {
+        return 1 if $mod_time >= $mt->start_time;
+    }
+
     if ( $archiver->category_based ) {
         $category = $specifier{Category};
         die "Category archive type requires Category parameter"
@@ -849,11 +873,8 @@ sub rebuild_file {
     local $ctx->{current_timestamp}     = $start if $start;
     local $ctx->{current_timestamp_end} = $end   if $end;
 
-    my $fmgr = $blog->file_mgr;
     $ctx->{__stash}{blog} = $blog;
 
-    # Calculate file path and URL for the new entry.
-    my $file = File::Spec->catfile( $root_path, $map->{__saved_output_file} );
     require MT::FileInfo;
 
 # This kind of testing should be done at the time we save a post,
@@ -906,10 +927,6 @@ sub rebuild_file {
 
     my ($rel_url) = ( $url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
     $rel_url =~ s|//+|/|g;
-
-    ## Untaint. We have to assume that we can trust the user's setting of
-    ## the archive_path, and nothing else is based on user input.
-    ($file) = $file =~ /(.+)/s;
 
     # Clear out all the FileInfo records that might point at the page
     # we're about to create

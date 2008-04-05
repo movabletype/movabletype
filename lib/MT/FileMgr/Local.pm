@@ -119,6 +119,15 @@ sub rename {
     1;
 }
 
+sub file_mod_time {
+    my $fmgr = shift;
+    my ($file) = @_;
+    if (-e $file) {
+        return (stat($file))[9]; # modification timestamp
+    }
+    return undef;
+}
+
 sub content_is_updated {
     my $fmgr = shift;
     my($file, $content) = @_;
