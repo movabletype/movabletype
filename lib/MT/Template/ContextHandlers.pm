@@ -3638,7 +3638,7 @@ sub _hdlr_entries {
     my($ctx, $args, $cond) = @_;
     return $ctx->error(MT->translate('sort_by="score" must be used in combination with namespace.'))
         if ((exists $args->{sort_by}) && ('score' eq $args->{sort_by}) && (!exists $args->{namespace}));
-    
+
     my $cfg = $ctx->{config};
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $entries = $ctx->stash('entries');
@@ -3965,6 +3965,7 @@ sub _hdlr_entries {
 
         $args{'sort'} = 'authored_on';
         if ($args->{sort_by}) {
+            $args->{sort_by} = 'ping_count' if $args->{sort_by} eq 'trackback_count';
             if ($class->has_column($args->{sort_by})) {
                 $args{sort} = $args->{sort_by};
                 $no_resort = 1;
