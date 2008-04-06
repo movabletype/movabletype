@@ -1,6 +1,7 @@
 package MT::CMS::Export;
 
 use strict;
+use MT::Util qw( dirify );
 
 sub start_export {
     my $app = shift;
@@ -17,8 +18,6 @@ sub start_export {
 
 sub export {
     my $app = shift;
-    $app->{no_print_body} = 1;
-    local $| = 1;
     my $charset = $app->charset;
     require MT::Blog;
     my $blog_id = $app->param('blog_id')
@@ -41,6 +40,9 @@ sub export {
         $file = sprintf "export-%06d-%04d%02d%02d%02d%02d%02d.txt",
           $app->param('blog_id'), $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
     }
+
+    $app->{no_print_body} = 1;
+    local $| = 1;
 
     $app->set_header( "Content-Disposition" => "attachment; filename=$file" );
     $app->send_http_header(
