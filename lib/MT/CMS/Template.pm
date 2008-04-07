@@ -504,24 +504,6 @@ sub list {
 
     require MT::Template;
     my $blog_id = $app->param('blog_id') || 0;
-    # my $filter  = $app->param('filter_key');
-    # if ( !$filter ) {
-    #     if ($blog) {
-    #         $filter = 'templates';
-    #         $app->param( 'filter_key', 'templates' );
-    #     }
-    #     else {
-    #         $filter = 'module_templates';
-    #         $app->param( 'filter_key', 'module_templates' );
-    #     }
-    # }
-    # else {
-    #     # global index templates redirect to module templates
-    #     if ( !$blog && $filter eq 'templates' ) {
-    #         $filter = 'module_templates';
-    #         $app->param( 'filter_key', 'module_templates' );
-    #     }
-    # }
     my $terms = { blog_id => $blog_id };
     my $args  = { sort    => 'name' };
 
@@ -563,7 +545,6 @@ sub list {
 
     my $params        = {};
     my $filter = $app->param('filter_key');
-    $app->delete_param('filter_key') if $filter;
     my $template_type = $filter || '';
     $template_type =~ s/_templates//;
 
@@ -653,6 +634,15 @@ sub list {
         @types = ( $template_type );
     }
     foreach my $tmpl_type (@types) {
+        $app->delete_param('filter_key') if $filter;
+        if ( $tmpl_type eq 'index' ) {
+            $filter = 'index_templates';
+            $app->param( 'filter_key', 'index_templates' );
+        }
+        elsif ( $tmpl_type eq 'archive' ) {
+            $filter = 'archive_templates';
+            $app->param( 'filter_key', 'archive_templates' );
+        }
         $terms->{type} = $types{$tmpl_type}->{type};
         my $tmpl_param = $app->listing(
             {
@@ -1841,6 +1831,37 @@ sub publish_index_templates {
             Blog     => $blog,
             Template => $tmpl,
         );
+    }
+
+    $app->call_return( published => 1 );
+}
+
+sub publish_archive_templates {
+    my $app = shift;
+    $app->validate_magic or return;
+
+    # permission check
+    my $perms = $app->permissions;
+    return $app->errtrans("Permission denied.")
+      unless $app->user->is_superuser
+      || $perms->can_administer_blog
+      || $perms->can_rebuild;
+
+    my $blog = $app->blog;
+    my $templates =
+      MT->model('template')->lookup_multi( [ $app->param('id') ] );
+    use MT::TemplateMap;
+    TEMPLATE: for my $tmpl (@$templates) {
+        next TEMPLATE if !defined $tmpl;
+        next TEMPLATE if $tmpl->blog_id != $blog->id;
+        my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl->id } );
+        foreach my $map (@tmpl_maps) {
+            $app->rebuild(
+                BlogID      => $blog->id,
+                ArchiveType => $map->archive_type,
+                NoIndexes   => 1,
+            );
+        }
     }
 
     $app->call_return( published => 1 );

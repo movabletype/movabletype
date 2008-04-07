@@ -189,6 +189,8 @@ sub core_methods {
         'dialog_refresh_templates' => "${pkg}Template::dialog_refresh_templates",
         'refresh_all_templates'    => "${pkg}Template::refresh_all_templates",
         'preview_template'         => "${pkg}Template::preview",
+        'publish_index_templates'  => "${pkg}Template::publish_index_templates",
+        'publish_archive_templates'=> "${pkg}Template::publish_archive_templates",
 
         ## Comment Replies
         reply         => "${pkg}Comment::reply",
@@ -622,12 +624,13 @@ sub core_list_actions {
         'template' => {
             refresh_tmpl_templates => {
                 label => "Refresh Template(s)",
-                code => "${pkg}Template::refresh_individual_templateE",
+                code => "${pkg}Template::refresh_individual_templates",
                 permission => 'edit_templates',
+                order => 100,
             },
             publish_index_templates => {
                 label => "Publish Template(s)",
-                code => "${pkg}Blog::publish_index_templates",
+                code => "${pkg}Template::publish_index_templates",
                 permission => 'rebuild',
                 condition => sub {
                     my $app = MT->app;
@@ -639,11 +642,28 @@ sub core_list_actions {
                          :                                   0
                          ;
                 },
+                order => 200,
+            },
+            publish_archive_templates => {
+                label      => "Publish Template(s)",
+                code       => "${pkg}Template::publish_archive_templates",
+                permission => 'rebuild',
+                condition  => sub {
+                    my $app       = MT->app;
+                    my $tmpl_type = $app->param('filter_key');
+                    return $app->mode eq 'itemset_action' ? 1
+                      : !$app->blog ? 0
+                      : !$tmpl_type ? 0
+                      : $tmpl_type eq 'archive_templates' ? 1
+                      :                                     0;
+                },
+                order => 300,
             },
             copy_templates => {
                 label => "Clone Template(s)",
                 code => "${pkg}Template::clone_templates",
                 permission => 'edit_templates',
+                order => 400,
             },
         },
     };
