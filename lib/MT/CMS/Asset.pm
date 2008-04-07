@@ -42,7 +42,12 @@ sub edit {
 
         my @appears_in;
         my $place_class = $app->model('objectasset');
-        my $place_iter = $place_class->load_iter({ blog_id => $obj->blog_id || 0, asset_id => $obj->id });
+        my $place_iter = $place_class->load_iter(
+                                                 {
+                blog_id => $obj->blog_id || 0,
+                asset_id => $obj->parent ? $obj->parent : $obj->id
+            }
+        );
         while (my $place = $place_iter->()) {
             my $entry_class = $app->model($place->object_ds);
             my $entry = $entry_class->load($place->object_id);
