@@ -2127,6 +2127,7 @@ sub build_page {
         $tmpl_file = (exists $file->{__file}) ? $file->{__file} : '';
     } else {
         $tmpl = $mt->load_tmpl($file) or return;
+        $tmpl_file = $file unless ref($file);
     }
 
     if (($mode && ($mode !~ m/delete/)) && ($mt->{login_again} ||
