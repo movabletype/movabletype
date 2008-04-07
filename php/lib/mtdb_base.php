@@ -808,6 +808,8 @@ class MTDatabaseBase extends ezsql {
             $e['entry_modified_on'] = $this->db2ts($e['entry_modified_on']);
             $id_list[] = $e['entry_id'];
             $entries[] = $e;
+            $this->_comment_count_cache[$e['entry_id']] = $e['entry_comment_count'];
+            $this->_ping_count_cache[$e['entry_id']] = $e['entry_ping_count'];
             if (($limit > 0) && (count($entries) >= $limit)) break;
         }
 
@@ -924,8 +926,6 @@ class MTDatabaseBase extends ezsql {
 
         if (count($id_list) <= 30) { # TODO: find a good upper limit
             # pre-cache comment counts and categories for these entries
-            $this->cache_comment_counts($id_list);
-            $this->cache_ping_counts($id_list);
             $this->cache_categories($id_list);
             $this->cache_permalinks($id_list);
         }
