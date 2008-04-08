@@ -668,7 +668,19 @@ sub core_upgrade_functions {
         'core_remove_unused_templatemap' => {
             version_limit => 4.0023,
             priority => 3.0,
-            code => \&remove_unused_templatemap,
+            updater => {
+                type => 'blog',
+                label => 'Removing unused template maps...',
+                condition => sub {
+                    my $blog = shift;
+                    my @blog_at = map { "'$_'" } split ',', $blog->archive_type;
+                    MT::TemplateMap->remove(
+                      { blog_id => $blog->id, archive_type => \@blog_at },
+                      { not => { archive_type => 1 } }
+                    ) if @blog_at;
+                    return 0;
+                },
+            },
         },
         'core_set_author_auth_type' => {
             version_limit => 4.0024,
@@ -955,19 +967,11 @@ sub update_3x_system_search_templates {
             not => { id => 1 } });
         $tmpl->remove if $tmpl;
     }
-
-    my %terms;
-    my %args;
     if (my @blog_ids = keys %blogs) {
-        $terms{id} = \@blog_ids;
-        $args{not} = { id => 1 };
-    }
-    my $blog_iter = MT::Blog->load_iter(\%terms, \%args);
-    # These blogs does not have search results - upgrades from 3.2 or before.
-    while (my $blog = $blog_iter->()) {
-        my $tmpl = MT::Template->load(
-          { type => 'search_results', blog_id => $blog->id,});
-        $tmpl->remove if $tmpl;
+        MT::Template->remove(
+            { type => 'search_results', blog_id => \@blog_ids },
+            { not => { blog_id => 1 } }
+        );
     }
     0;
 }
@@ -1119,7 +1123,9 @@ sub deprecate_bitmask_permissions {
     $self->progress($self->translate_escape('Migrating role records to new structure...'));
     while (my $role = $role_iter->()) {
         if ($self->_process_masks($role)) {
-            $role->save;
+            # do not have to rebuild permissions here.
+            # "save" here causes segfault in sqlite.
+            $role->update;
         }
     }
 }
@@ -1794,23 +1800,6 @@ sub update_widget_templates {
         }
     }
     1;
-}
-
-sub remove_unused_templatemap {
-    my $self = shift;
-
-    $self->progress($self->translate_escape('Removing unused template maps...'));
-
-    require MT::Blog;
-    require MT::TemplateMap;
-    my $iter = MT::Blog->load_iter();
-    while (my $blog = $iter->()) {
-        my @blog_at = map { "'$_'" } split ',', $blog->archive_type;
-        MT::TemplateMap->remove(
-            { blog_id => $blog->id, archive_type => \@blog_at },
-            { not => { archive_type => 1 } }
-        );
-    }
 }
 
 sub remove_indexes {
