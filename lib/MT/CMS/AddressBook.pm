@@ -1,6 +1,7 @@
 package MT::CMS::AddressBook;
 
 use strict;
+use MT::Util qw( is_valid_email );
 
 sub export {
     my $app   = shift;
