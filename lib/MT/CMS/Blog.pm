@@ -619,7 +619,7 @@ sub rebuild_pages {
             Template => $tmpl_saved,
             Force    => 1
         ) or return $app->publish_error();
-        $order = $app->translate( "index template '[_1]'", $tmpl_saved->name );
+        $order = "index template '". $tmpl_saved->name . "'";
     }
     elsif ( $type =~ /^entry-(\d+)$/ ) {
         my $entry_id = $1;
