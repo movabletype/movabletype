@@ -99,8 +99,12 @@
                     <div id="alpha">
                         <div id="alpha-inner">
 
-
-<mt:ignore><!-- Display search results --></mt:ignore>
+<mt:ignore><!--
+    Below is the block to show search results.
+    This makes an independent block to support
+    Ajax-based background retrieval of the next search results.
+--></mt:ignore>
+<MTSetVarTemplate id="search_results" name="search_results">  
 <MTSearchResults>
     <MTBlogResultHeader>
                             <div id="search-results">
@@ -126,6 +130,9 @@
                             </div>
     </MTBlogResultFooter>
 </MTSearchResults>
+</MTSetVarTemplate>
+<mt:ignore><!-- Display search results constructed in the block above --></mt:ignore>
+<mt:var name="search_results">
 
 
 <mt:ignore><!-- Display no results message --></mt:ignore>
