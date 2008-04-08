@@ -1686,6 +1686,9 @@ sub upgrade_templates {
     };
 
     for my $val (@$tmpl_list) {
+        if (!$Installing) {
+            next if $val->{type} eq 'search_results';
+        }
         if (!$install) {
             if (!$val->{global}) {
                 next if $val->{set} ne 'system';
