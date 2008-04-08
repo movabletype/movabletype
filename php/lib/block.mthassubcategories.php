@@ -19,8 +19,9 @@ function smarty_block_mthassubcategories($args, $content, &$ctx, &$repeat) {
 }
 
 function _has_sub_categories(&$ctx, $class = 'category') {
+    $class = isset($args) && isset($args['class']) ? $args['class'] : 'category';
     require_once("MTUtil.php");
-    $cat = get_category_context($ctx);
+    $cat = get_category_context($ctx, $class);
     $has_sub_cats = 0;
     if (isset($cat['_children'])) {
         $has_sub_cats = count($cat['_children']) > 0;

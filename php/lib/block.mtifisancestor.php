@@ -9,7 +9,7 @@ function smarty_block_mtifisancestor($args, $content, &$ctx, &$repeat) {
     $localvars = array('conditional', 'else_content');
     if (!isset($content)) {
        require_once("MTUtil.php");
-       $cat = get_category_context($ctx);
+       $cat = get_category_context($ctx, $class);
        $ctx->localize($localvars);
        $children = $ctx->mt->db->fetch_categories(array('label' => $args['child'], 'blog_id' => $ctx->stash('blog_id'), 'show_empty' => 1));
        $ret = false;

@@ -2325,6 +2325,20 @@ class MTDatabaseBase extends ezsql {
         }
     }
 
+    function &fetch_folder($cat_id) {
+        if (isset($this->_cat_id_cache['c'.$cat_id])) {
+            return $this->_cat_id_cache['c'.$cat_id];
+        }
+
+        $cats =& $this->fetch_categories(array('category_id' => $cat_id, 'show_empty' => 1, 'class' => 'folder'));
+        if ($cats && (count($cats) > 0)) {
+            $this->_cat_id_cache['c'.$cat_id] = $cats[0];
+            return $cats[0];
+        } else {
+            return null;
+        }
+    }
+
     function &fetch_category($cat_id) {
         if (isset($this->_cat_id_cache['c'.$cat_id])) {
             return $this->_cat_id_cache['c'.$cat_id];
@@ -2839,7 +2853,6 @@ class MTDatabaseBase extends ezsql {
     }
 
     function include_exclude_blogs(&$args) {
-
         if (isset($args['blog_ids']) || isset($args['include_blogs'])) {
             // The following are aliased
             $args['blog_ids'] and $args['include_blogs'] = $args['blog_ids'];

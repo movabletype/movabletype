@@ -880,18 +880,20 @@ function decode_html($str, $quote_style = ENT_COMPAT) {
     return (strtr($str, array_flip($trans_table)));
 }
 
-function get_category_context(&$ctx) {
+function get_category_context(&$ctx, $class = 'category') {
     # Get our hands on the category for the current context
     # Either in MTCategories, a Category Archive Template
     # Or the category for the current entry
     $cat = $ctx->stash('category') or
            $ctx->stash('archive_category');
-
     if (!isset($cat)) {
         # No category found so far, test the entry
         if ($ctx->stash('entry')) {
             $entry = $ctx->stash('entry');
-            $cat = $ctx->mt->db->fetch_category($entry['placement_category_id']);
+            if ($class == 'folder')
+                $cat = $ctx->mt->db->fetch_folder($entry['placement_category_id']);
+            else
+                $cat = $ctx->mt->db->fetch_category($entry['placement_category_id']);
   
             # Return empty string if entry has no category
             # as the tag has been used in the correct context

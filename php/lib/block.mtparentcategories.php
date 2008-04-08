@@ -5,9 +5,12 @@
 #
 # $Id$
 
-function get_parent_categories(&$cat, &$ctx, &$list) {
+function get_parent_categories(&$cat, &$ctx, &$list, $class = 'category') {
     if ($cat['category_parent']) {
-        $parent = $ctx->mt->db->fetch_category($cat['category_parent']);
+        if ($class == 'folder')
+            $parent = $ctx->mt->db->fetch_folder($cat['category_parent']);
+        else
+            $parent = $ctx->mt->db->fetch_category($cat['category_parent']);
         if ($parent) {
             $cat['_parent'] =& $parent;
             array_unshift($list, 0); $list[0] =& $parent;
@@ -21,9 +24,10 @@ function smarty_block_mtparentcategories($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         require_once("MTUtil.php");
-        $cat = get_category_context($ctx);
+        $class = isset($args) && isset($args['class']) ? $args['class'] : 'category';
+        $cat = get_category_context($ctx, $class);
         $parents = array();
-        get_parent_categories($cat, $ctx, $parents);
+        get_parent_categories($cat, $ctx, $parents, $class);
         if (!isset($args['exclude_current'])) {
             $parents[] = $cat;
         }
