@@ -1121,6 +1121,8 @@ sub _check_commenter_author {
     my $app = shift;
     my ( $commenter, $blog_id ) = @_;
 
+    return 0 unless $blog_id;
+
     # Using MT::Author::commenter_status here, since it also
     # takes the permission "restrictions" into account.
     my $status = $commenter->commenter_status($blog_id);
