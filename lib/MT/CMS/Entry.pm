@@ -2308,38 +2308,31 @@ sub delete {
           || return $app->error(
             $app->translate( "Permission denied: [_1]", $app->errstr() ) );
 
+        # Remove Individual archive file.
+        if ( $app->config('DeleteFilesAtRebuild') ) {
+            $app->publisher->remove_entry_archive_file( Entry => $obj, );
+        }
         if (   $app->config('RebuildAtDelete')
             || $app->config('DeleteFilesAtRebuild') )
         {
-            # Remove Induvidual archive file.
-            if ( $app->config('DeleteFilesAtRebuild') ) {
-                $app->publisher->remove_entry_archive_file( Entry => $obj, );
-            }
-
             for my $at (@at) {
                 my $archiver = $app->publisher->archiver($at);
                 next unless $archiver;
 
                 # Remove archive file if archive file has not entries.
-                my $deleted = 0;
-                if ( $app->config('DeleteFilesAtRebuild') ) {
-                    my $count =
-                        $archiver->can('archive_entries_count')
-                      ? $archiver->archive_entries_count( $blog, $at, $obj )
-                      : 0;
-                    if ( $count == 1 ) {
-                        $app->publisher->remove_entry_archive_file(
-                            Entry       => $obj,
-                            ArchiveType => $at
-                        );
-                        $deleted = 1;
-                    }
+                my $to_delete =
+                    ( $archiver->archive_entries_count( $blog, $at, $obj ) == 1 ) ? 1 : 0
+                    if $archiver->can('archive_entries_count');
+                if ( $to_delete && $app->config('DeleteFilesAtRebuild') ) {
+                     $app->publisher->remove_entry_archive_file(
+                         Entry       => $obj,
+                         ArchiveType => $at
+                     );
                 }
+                next if $to_delete;
 
                 # Make rebuild recip
-                if ( $app->config('DeleteFilesAtRebuild') ) {
-                    next if $deleted;
-
+                if ( $app->config('RebuildAtDelete') ) {
                     my ( $start, $end ) = $archiver->date_range( $obj->authored_on )
                         if $archiver->date_based() && $archiver->can('date_range');
 
