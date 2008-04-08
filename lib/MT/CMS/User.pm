@@ -1366,7 +1366,19 @@ sub dialog_grant_role {
             push @panels, 'role';
         }
         if ( !$blog_id ) {
-            push @panels, 'blog';
+            my @blogs;
+            my $iter = MT::Blog->load_iter();
+            while ( my $blog = $iter->() ) {
+                push @blogs, $blog->id;
+            }
+
+            # if only one blog exists, skip the blog selection step.
+            if ( @blogs == 1 ) {
+                $blog_id = $blogs[0];
+            }
+            else {
+                push @panels, 'blog';
+            }
         }
         if ( !$author_id ) {
             if ( $type eq 'user' ) {
