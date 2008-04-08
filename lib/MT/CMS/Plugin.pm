@@ -39,14 +39,17 @@ sub cfg_plugins {
 sub save_config {
     my $app = shift;
 
-    $app->validate_magic or return;
-    return $app->errtrans("Permission denied.")
-        unless $app->user->can_manage_plugins;
-
     my $q          = $app->param;
     my $plugin_sig = $q->param('plugin_sig');
     my $profile    = $MT::Plugins{$plugin_sig};
     my $blog_id    = $q->param('blog_id');
+
+    $app->validate_magic or return;
+    return $app->errtrans("Permission denied.")
+        unless $app->user->can_manage_plugins
+            or ($blog_id
+            and $app->user->permissions($blog_id)->can_administer_blog);
+
     my %param;
     my @params = $q->param;
     foreach (@params) {
@@ -65,14 +68,17 @@ sub save_config {
 sub reset_config {
     my $app = shift;
 
-    $app->validate_magic or return;
-    return $app->errtrans("Permission denied.")
-        unless $app->user->can_manage_plugins;
-
     my $q          = $app->param;
     my $plugin_sig = $q->param('plugin_sig');
     my $profile    = $MT::Plugins{$plugin_sig};
     my $blog_id    = $q->param('blog_id');
+
+    $app->validate_magic or return;
+    return $app->errtrans("Permission denied.")
+        unless $app->user->can_manage_plugins
+            or ($blog_id
+            and $app->user->permissions($blog_id)->can_administer_blog);
+
     my %param;
     if ( $profile && $profile->{object} ) {
         $profile->{object}
