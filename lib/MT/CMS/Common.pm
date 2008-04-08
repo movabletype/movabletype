@@ -70,10 +70,10 @@ sub save {
         $param{return_args} = $app->param('return_args');
 
         if ( ( $type eq 'notification' ) || ( $type eq 'banlist' ) ) {
-            return $app->list_objects( \%param );
+            return list( $app, \%param );
         }
         elsif ( ( $app->param('cfg_screen') || '' ) eq 'cfg_archives' ) {
-            return $app->cfg_archives( \%param );
+            return edit( $app, \%param );
         }
         else {
             return $app->forward( 'view', \%param );
@@ -114,7 +114,7 @@ sub save {
                 for my $f (qw( name nickname email url state )) {
                     $param{ $qual . $f } = $q->param($f);
                 }
-                return $app->edit_object( \%param );
+                return edit( $app, \%param );
             }
         }
     }
@@ -264,13 +264,13 @@ sub save {
     {
         if ( 'blog' eq $type ) {
             my $meth = $q->param('cfg_screen');
-            if ( $meth && $app->can($meth) ) {
+            if ( $meth && $app->handlers_for_mode($meth) ) {
                 $app->error(
                     $app->translate( "Save failed: [_1]", $app->errstr ) );
                 return $app->$meth;
             }
         }
-        return $app->edit_object(
+        return edit( $app,
             {
                 %$param,
                 error => $app->translate( "Save failed: [_1]", $app->errstr )
