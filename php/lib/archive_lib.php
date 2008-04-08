@@ -62,7 +62,7 @@ class BaseArchiver {
     function get_range(&$ctx, &$row) { }
     function get_archive_name() { }
     function &get_archive_list($ctx, $args) { }
-    function get_archive_link_sql($ctx, $ts, $at, $args) { }
+    function get_archive_link_sql($ctx, $ts, $at, $args) { return ''; }
     function archive_prev_next($args, $content, &$ctx, &$repeat, $tag) { }
     function prepare_list(&$ctx, &$row) { }
     function setup_args($ctx, &$args) { }
@@ -115,10 +115,6 @@ class IndividualArchiver extends BaseArchiver {
     
     function &get_archive_list($ctx, $args) {
         return $ctx->mt->db->get_archive_list($args);
-    }
-
-    function get_archive_link_sql($ctx, $ts, $at, $args) {
-        return '';
     }
 
     function archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
@@ -307,10 +303,6 @@ class YearlyArchiver extends DateBasedArchiver {
     function &get_archive_list($ctx, $args) {
         return $ctx->mt->db->get_archive_list($args);
     }
-    
-    function get_archive_link_sql($ctx, $ts, $at, $args) {
-        return '';
-    }
 
     function template_params(&$ctx) {
         parent::template_params($ctx);
@@ -355,16 +347,12 @@ class MonthlyArchiver extends DateBasedArchiver {
     function &get_archive_list($ctx, $args) {
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         $args['inside_archive_list'] = $inside;
         $args['current_timestamp'] = $ctx->stash('current_timestamp');
         $args['current_timestamp_end'] = $ctx->stash('current_timestamp_end');
         return $ctx->mt->db->get_archive_list($args);
-    }
-    
-    function get_archive_link_sql($ctx, $ts, $at, $args) {
-        return '';
     }
 
     function template_params(&$ctx) {
@@ -415,10 +403,6 @@ class DailyArchiver extends DateBasedArchiver {
         $args['current_timestamp'] = $ctx->stash('current_timestamp');
         $args['current_timestamp_end'] = $ctx->stash('current_timestamp_end');
         return $ctx->mt->db->get_archive_list($args);
-    }
-    
-    function get_archive_link_sql($ctx, $ts, $at, $args) {
-        return '';
     }
 
     function template_params(&$ctx) {
@@ -474,10 +458,6 @@ class WeeklyArchiver extends DateBasedArchiver {
         $args['current_timestamp'] = $ctx->stash('current_timestamp');
         $args['current_timestamp_end'] = $ctx->stash('current_timestamp_end');
         return $ctx->mt->db->get_archive_list($args);
-    }
-    
-    function get_archive_link_sql($ctx, $ts, $at, $args) {
-        return '';
     }
 
     function template_params(&$ctx) {
@@ -1792,4 +1772,3 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         $vars['archive_class'] = 'category-weekly-archive';
     }
 }
-?>
