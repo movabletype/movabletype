@@ -87,8 +87,11 @@ sub error {
     my($code, $msg) = @_;
     return unless ref($app);
     if ($code && $msg) {
+        chomp($msg = encode_xml($msg)); 
         $app->response_code($code);
         $app->response_message($msg);
+        $app->response_content_type('text/xml'); 
+        $app->response_content("<error>$msg</error>"); 
     }
     elsif ($code) {
         return $app->SUPER::error($code);
@@ -466,7 +469,7 @@ sub get_weblogs {
         $entries->appendChild($e_title);
 
         my $cats = XML::XPath::Node::Element->new('categories');
-        $cats->appendAttribute(XML::XPath::Node::Attribute->new('href', $uri . '?svc=categories'));
+        $cats->appendAttribute(XML::XPath::Node::Attribute->new('href', $uri . '/svc=categories'));
         $entries->appendChild($cats);
     }
     $app->response_code(200);
