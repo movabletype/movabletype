@@ -232,6 +232,10 @@ sub edit {
                     $param->{ 'archive_type_' . $at } = 1;
                 }
             }
+            eval "require List::Util; require Scalar::Util;";
+            unless ($@) {
+                $param->{can_use_publish_queue} = 1;
+            }
             if ( $blog->publish_queue ) {
                 $param->{publish_queue} = 1;
             }

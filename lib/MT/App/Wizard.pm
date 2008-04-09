@@ -135,6 +135,10 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Scalar-List-Utils',
                 label => 'List::Util is optional; It is needed if you want to use the Publish Queue feature.',
             },
+            'Scalar::Util' => {
+                link => 'http://search.cpan.org/dist/Scalar-List-Utils',
+                label => 'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.',
+            },
             'Image::Magick' => {
                 link => 'http://www.imagemagick.org/script/perl-magick.php',
                 label => 'This module is needed if you would like to be able to create thumbnails of uploaded images.',

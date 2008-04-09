@@ -308,6 +308,8 @@ my @CORE_OPT = (
 
     [ 'File::Temp', 0, 0, translate('File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.') ],
 
+    [ 'Scalar::Util', 0, 1, translate('Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.')],
+
     [ 'List::Util', 0, 1, translate('List::Util is optional; It is needed if you want to use the Publish Queue feature.')],
 
     [ 'Image::Magick', 0, 0, translate('Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.') ],
