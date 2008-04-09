@@ -36,7 +36,10 @@ sub new_with_entry {
     # Old Atom API gets application/xhtml+xml for compatibility -- but why
     # do we say it's that when all we're guaranteed is it's an opaque blob
     # of text? So use 'html' for new RFC compatible output.
-    $atom->content->type($rfc_compat ? 'html' : 'application/xhtml+xml');
+    # XML::Atom::Content intelligently determines content-type for rfc compat.
+    unless ( $rfc_compat ) {
+        $atom->content->type('application/xhtml+xml');
+    }
 
     my $mt_author = MT::Author->load($entry->author_id);
     my $atom_author = new XML::Atom::Person(%param);
@@ -55,6 +58,13 @@ sub new_with_entry {
     my $blog = MT::Blog->load($entry->blog_id);
     my $co = _create_issued($entry->authored_on, $blog);
     $atom->issued($co);
+    my $upd = $entry->modified_on;
+    if ( $upd ) {
+        $atom->updated( _create_issued( $upd, $blog ) );
+    }
+    else {
+        $atom->updated( $co );
+    }
     $atom->add_link({ rel => 'alternate', type => 'text/html',
                       href => $entry->permalink });
     my ($host) = $blog->site_url =~ m!^https?://([^/:]+)(:\d+)?/!;

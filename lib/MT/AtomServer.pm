@@ -709,13 +709,23 @@ sub get_posts {
         my $id = 'tag:'.$site_uri->host.','.$blog_created.':'.$site_uri->path.'/'.$blog->id;
         $feed->id($id);
     }
+    my $latest_date = 0;
     $uri .= '/entry_id=';
+    my @entries;
     while (my $entry = $iter->()) {
         my $e = $app->new_with_entry($entry);
         $e->add_link({ rel => $app->edit_link_rel, type => $app->atom_x_content_type,
                        href => ($uri . $entry->id), title => encode_text($entry->title, undef,'utf-8') });
-        $feed->add_entry($e);
+        # feed/updated should be added before entries
+        # so we postpone adding them until later
+        push @entries, $e;
+        my $date = $entry->modified_on || $entry->authored_on;
+        if ( $latest_date < $date ) {
+            $latest_date = $date;
+            $feed->updated( $e->updated );
+        }
     }
+    $feed->add_entry($_) foreach @entries;
     ## xxx add next/prev links
     $app->response_content_type($app->atom_content_type);
     $feed->as_xml;
