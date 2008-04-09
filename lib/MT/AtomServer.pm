@@ -299,7 +299,7 @@ use XML::Atom::Feed;
 use base qw( MT::AtomServer );
 use MT::Blog;
 use MT::Entry;
-use MT::Util qw( encode_xml );
+use MT::Util qw( encode_xml format_ts );
 use MT::Permission;
 use File::Spec;
 use File::Basename;
@@ -702,6 +702,13 @@ sub get_posts {
     $feed->title($blogname);
     $feed->add_link({ rel => 'service.post', type => 'application/x.atom+xml',
                       href => $uri, title => $blogname });
+    require URI;
+    my $site_uri = URI->new($blog->site_url);
+    if ( $site_uri ) {
+        my $blog_created = format_ts('%Y-%m-%d', $blog->created_on, $blog, 'en', 0);
+        my $id = 'tag:'.$site_uri->host.','.$blog_created.':'.$site_uri->path.'/'.$blog->id;
+        $feed->id($id);
+    }
     $uri .= '/entry_id=';
     while (my $entry = $iter->()) {
         my $e = $app->new_with_entry($entry);
@@ -911,6 +918,13 @@ sub get_weblogs {
         : MT::Permission->load_iter({ author_id => $user->id });
     my $feed = $app->new_feed();
     my $base = $app->base . $app->uri;
+    require URI;
+    my $uri = URI->new($base);
+    if ( $uri ) {
+        my $created = MT::Util::format_ts('%Y-%m-%d', $user->created_on, undef, 'en', 0);
+        my $id = 'tag:'.$uri->host.','.$created.':'.$uri->path.'/weblogs-'.$user->id;
+        $feed->id($id);
+    }
     while (my $thing = $iter->()) {
         if ($thing->isa('MT::Permission')) {
             next unless $thing->can_create_post;
