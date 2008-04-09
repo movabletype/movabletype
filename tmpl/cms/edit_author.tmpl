@@ -192,6 +192,7 @@ TC.attachLoadEvent(init);
 <mt:unless name="new_user_external_auth">
     <mtapp:setting
         id="nickname"
+        required="1"
         label="<__trans phrase="Display Name">"
         hint="<__trans phrase="The name used when published.">">
         <input name="nickname" id="nickname" class="half-width" value="<mt:var name="nickname" escape="html">" />

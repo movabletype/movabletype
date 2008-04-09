@@ -1549,7 +1549,8 @@ sub save_filter {
     my $auth_mode = $app->config('AuthenticationModule');
     my ($pref) = split /\s+/, $auth_mode;
 
-    my $name = $app->param('name');
+    my $name     = $app->param('name');
+    my $nickname = $app->param('nickname');
     if ( $pref eq 'MT' ) {
         if ( defined $name ) {
             $name =~ s/(^\s+|\s+$)//g;
@@ -1557,6 +1558,13 @@ sub save_filter {
         }
         return $eh->error( $app->translate("User requires username") )
           if ( !$name );
+
+        if ( defined $nickname ) {
+            $nickname =~ s/(^\s+|\s+$)//g;
+            $app->param( 'nickname', $nickname );
+        }
+        return $eh->error( $app->translate("User requires display name") )
+          if ( !$nickname );
     }
 
     require MT::Author;
