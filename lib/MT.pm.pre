@@ -11,6 +11,7 @@ use base qw( MT::ErrorHandler );
 use File::Spec;
 use File::Basename;
 use MT::Util qw( weaken );
+use MT::I18N qw( encode_text );
 
 our ( $VERSION,      $SCHEMA_VERSION );
 our ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID );
@@ -2137,7 +2138,7 @@ sub build_page {
         ## logging out, or deleting something.
         my $q = $mt->{query};
         if ($mode) {
-            my @query = map { {name => $_, value => scalar $q->param($_)}; }
+            my @query = map { { name => $_, value => scalar encode_text( $q->param($_) ) }; }
                 grep { ($_ ne 'username') && ($_ ne 'password') && ($_ ne 'submit') && ($mode eq 'logout' ? ($_ ne '__mode') : 1) } $q->param;
             $param->{query_params} = \@query;
         }
