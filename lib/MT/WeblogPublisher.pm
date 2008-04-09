@@ -373,7 +373,7 @@ sub rebuild_entry {
         MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
     require MT::Entry;
     $entry = MT::Entry->load($entry) unless ref $entry;
-    return unlessd $entry;
+    return unless $entry;
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $entry->blog_id;
