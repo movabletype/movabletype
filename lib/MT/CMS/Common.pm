@@ -131,7 +131,8 @@ sub save {
       or return $app->errtrans( "Invalid type [_1]", $type );
     my ($obj);
     if ($id) {
-        $obj = $class->load($id);
+        $obj = $class->load($id)
+            or return $app->error($app->translate("Invalid ID [_1]", $id));
     }
     else {
         $obj = $class->new;
@@ -738,7 +739,8 @@ sub list {
             require MT::Trackback;
             require MT::Entry;
             my $tb_center = MT::Trackback->load( $obj->tb_id );
-            my $entry     = MT::Entry->load( $tb_center->entry_id );
+            my $entry     = MT::Entry->load( $tb_center->entry_id )
+                or return $app->error($app->translate('Can\'t load entry #[_1].', $tb_center->entry_id));
             if ( my $ts = $obj->created_on ) {
                 $row->{created_on_time_formatted} =
                   format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $ts, $blog, $app->user ? $app->user->preferred_language : undef );
@@ -759,7 +761,6 @@ sub list {
         $param{search_type} = 'entry';
     }
     if ( $type eq 'template' ) {
-        my $blog = $blog_class->load( scalar $q->param('blog_id') );
         $app->add_breadcrumb( $app->translate('Templates') );
         $param{nav_templates} = 1;
         for my $ref ( \@index_data, \@custom_data, \@archive_data ) {
@@ -781,7 +782,6 @@ sub list {
 
     # add any breadcrumbs
     if ( $type eq 'banlist' ) {
-        my $blog = $blog_class->load($blog_id);
         $app->add_breadcrumb( $app->translate('IP Banning') );
         $param{nav_config}                       = 1;
         $param{object_type}                      = 'banlist';
@@ -925,6 +925,7 @@ sub delete {
                     }
                     foreach (@ot) {
                         my $obj = $ot_class->load($_);
+                        next unless $obj;
                         $obj->remove
                           or return $app->errtrans( 'Removing tag failed: [_1]',
                             $obj->errstr );
@@ -945,7 +946,8 @@ sub delete {
                 require MT::Blog;
                 require MT::Entry;
                 require MT::Placement;
-                my $blog = MT::Blog->load($blog_id);
+                my $blog = MT::Blog->load($blog_id)
+                    or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
                 my $at   = $blog->archive_type;
                 if ( $at && $at ne 'None' ) {
                     my @at = split /,/, $at;

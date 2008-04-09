@@ -2279,7 +2279,8 @@ sub get_next_sched_post_for_user {
     my $next_sched_utc = undef;
     require MT::Entry;
     for my $blog_id (@blogs) {
-        my $blog           = MT::Blog->load($blog_id);
+        my $blog           = MT::Blog->load($blog_id)
+            or next;
         my $earliest_entry = MT::Entry->load(
             {
                 status  => MT::Entry::FUTURE(),

@@ -226,7 +226,8 @@ sub add_tags_to_entries {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
         next
-          unless $user->is_superuser
+          unless $entry
+          || $user->is_superuser
           || $perms->can_edit_entry( $entry, $user );
 
         $entry->add_tags(@tags);
@@ -258,7 +259,8 @@ sub remove_tags_from_entries {
         next unless $id;
         my $entry = MT::Entry->load($id) or next;
         next
-          unless $user->is_superuser
+          unless $entry
+          || $user->is_superuser
           || $perms->can_edit_entry( $entry, $user );
         $entry->remove_tags(@tags);
         $entry->save
@@ -289,7 +291,8 @@ sub add_tags_to_assets {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
         next
-          unless $user->is_superuser
+          unless $asset
+          || $user->is_superuser
           || $perms->can_edit_assets;
 
         $asset->add_tags(@tags);
@@ -321,7 +324,8 @@ sub remove_tags_from_assets {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
         next
-          unless $user->is_superuser
+          unless $asset
+          || $user->is_superuser
           || $perms->can_edit_assets;
         $asset->remove_tags(@tags);
         $asset->save

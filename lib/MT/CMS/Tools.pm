@@ -939,7 +939,8 @@ sub adjust_sitepath {
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id            = $1;
-        my $blog          = $app->model('blog')->load($id);
+        my $blog          = $app->model('blog')->load($id)
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $id));
         my $old_site_path = scalar $q->param("old_site_path_$id");
         my $old_site_url  = scalar $q->param("old_site_url_$id");
         my $site_path     = scalar $q->param("site_path_$id") || q();
@@ -1407,7 +1408,8 @@ sub recover_passwords {
 
     my @msg_loop;
     foreach (@id) {
-        my $author = $class->load($_);
+        my $author = $class->load($_)
+            or next;
         my ( $rc, $res ) = reset_password( $app, $author, $author->hint );
         push @msg_loop, { message => $res };
     }

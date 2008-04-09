@@ -47,7 +47,8 @@ sub save {
     my $map = shift;
     $map->SUPER::save();
     my $at   = $map->archive_type;
-    my $blog = MT->model('blog')->load($map->blog_id);
+    my $blog = MT->model('blog')->load($map->blog_id)
+        or return;
     my $blog_at   = $blog->archive_type;
     my @ats = map { $_ } 
         grep { $map->archive_type ne $_ }
@@ -80,7 +81,8 @@ sub remove {
             $remaining->save;
         }
         else {
-            my $blog = MT->model('blog')->load($map->blog_id);
+            my $blog = MT->model('blog')->load($map->blog_id)
+                or return;
             my $at   = $blog->archive_type;
             if ( $at && $at ne 'None' ) {
                 my @newat = map { $_ } grep { $map->archive_type ne $_ } split /,/, $at;
@@ -139,7 +141,7 @@ sub prefer {
                 blog_id => $map->blog_id,
                 archive_type => $map->archive_type,
                 is_preferred => 1,
-            });
+            }) or return;
         $preferred->is_preferred(0);
         $preferred->save or return $map->error($preferred->errstr);
         $map->is_preferred(1);

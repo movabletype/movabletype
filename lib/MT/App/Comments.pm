@@ -233,7 +233,8 @@ sub do_login {
     my $q       = $app->param;
     my $name    = $q->param('username');
     my $blog_id = $q->param('blog_id');
-    my $blog    = MT::Blog->load($blog_id);
+    my $blog    = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     my $auths   = $blog->commenter_authenticators;
     if ( $auths !~ /MovableType/ ) {
         $app->log(
@@ -325,7 +326,8 @@ sub signup {
     my %opt   = @_;
     my $param = {};
     $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static username);
-    my $blog = $app->model('blog')->load( $param->{blog_id} );
+    my $blog = $app->model('blog')->load( $param->{blog_id} )
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $param->{blog_id}));
     my $cfg  = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
         return $app->handle_error(
@@ -352,7 +354,8 @@ sub do_signup {
 
     my $user = $app->create_user_pending($param);
     unless ($user) {
-        my $blog = $app->model('blog')->load( $param->{blog_id} );
+        my $blog = $app->model('blog')->load( $param->{blog_id} )
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $param->{blog_id}));
         if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
             $param->{captcha_fields} = $provider->form_fields( $blog->id );
         }
@@ -386,7 +389,8 @@ sub _send_signup_confirmation {
     my ( $id, $email, $entry_id, $blog_id, $static ) = @_;
     my $cfg = $app->config;
 
-    my $blog   = MT::Blog->load($blog_id);
+    my $blog   = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     my $entry  = MT::Entry->load($entry_id);
     my $author = $entry ? $entry->author : q();
 
@@ -483,7 +487,8 @@ sub do_register {
     my $param = {};
     $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static);
 
-    my $blog = $app->model('blog')->load($blog_id);
+    my $blog = $app->model('blog')->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     ## Token expiration check
     require MT::Session;
     my $commenter;
@@ -492,7 +497,7 @@ sub do_register {
     if ($sess) {
         $commenter = MT::Author->load( $sess->name );
         if ( $sess->start() < ( time - 60 * 60 * 24 ) ) {
-            $commenter->remove;
+            $commenter->remove if $commenter;
             $sess->remove;
             $sess = $commenter = undef;
         }
@@ -569,7 +574,8 @@ sub _send_registration_notification {
     my $app = shift;
     my ( $user, $entry_id, $blog_id, $ids ) = @_;
 
-    my $blog    = MT::Blog->load($blog_id);
+    my $blog    = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     my $subject = $app->translate( "[_1] registered to the blog '[_2]'",
         $user->name, $blog->name );
 
@@ -609,7 +615,8 @@ sub generate_captcha {
         $app->error('Required parameter was missing.');
         return undef;
     }
-    my $blog = $app->model('blog')->load($blog_id);
+    my $blog = $app->model('blog')->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     if ( my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
         my $image_data = $provider->generate_captcha($app, $blog_id, $token);
         if ($image_data) {
@@ -725,7 +732,8 @@ sub _builtin_throttle {
         $app->set_language( $author->preferred_language )
           if $author && $author->preferred_language;
 
-        my $blog = MT::Blog->load( $entry->blog_id );
+        my $blog = MT::Blog->load( $entry->blog_id )
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $entry->blog_id));
         if ( $author && $author->email ) {
             my %head = (
                 id      => 'comment_throttle',
@@ -805,7 +813,8 @@ sub post {
             $app->translate("Comments are not allowed on this entry.") );
     }
 
-    my $blog = $app->model('blog')->load( $entry->blog_id );
+    my $blog = $app->model('blog')->load( $entry->blog_id )
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $entry->blog_id));
 
     my $text = $q->param('text') || '';
     $text =~ s/^\s+|\s+$//g;
@@ -989,7 +998,8 @@ sub post {
             { type => 'comment_response', blog_id => $entry->blog_id } );
         unless ($tmpl) {
             require MT::DefaultTemplates;
-            $tmpl = MT::DefaultTemplates->load({ type => 'comment_response' });
+            $tmpl = MT::DefaultTemplates->load({ type => 'comment_response' })
+                or return $app->error($app->translate("Can\'t load template"));
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         my $ctx = $tmpl->context;
@@ -1153,7 +1163,8 @@ sub _check_commenter_author {
         # commenting. If it is, auto-assign commenting permissions
         # for this blog only.
         if ( my $registration = $app->config->CommenterRegistration ) {
-            my $blog = MT::Blog->load($blog_id);
+            my $blog = MT::Blog->load($blog_id)
+                or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
             if ( $registration->{Allow} && $blog->allow_commenter_regist ) {
                 my $perm = $commenter->blog_perm($blog_id);
                 return 0 unless $perm->is_empty;
@@ -1405,7 +1416,8 @@ sub redirect_to_target {
     if ( $q->param('static') ) {
         if ( $q->param('static') eq 1 ) {
             require MT::Entry;
-            my $entry = MT::Entry->load( $q->param('entry_id') );
+            my $entry = MT::Entry->load( $q->param('entry_id') )
+                or return $app->error($app->translate('Can\'t load entry #[_1].', $q->param('entry_id')));
             $target = $entry->archive_url;
             my $blog = MT::Blog->load( $entry->blog_id );
             $target = MT::Util::strip_index( $target, $blog );
@@ -1600,7 +1612,8 @@ sub do_preview {
           );
         unless ($tmpl) {
             require MT::DefaultTemplates;
-            $tmpl = MT::DefaultTemplates->load({ type => 'comment_response' });
+            $tmpl = MT::DefaultTemplates->load({ type => 'comment_response' })
+                or return $app->error($app->translate("Can\'t load template"));
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         if ( $err eq 'pending' ) {
@@ -1624,7 +1637,8 @@ sub do_preview {
           );
         unless ($tmpl) {
             require MT::DefaultTemplates;
-            $tmpl = MT::DefaultTemplates->load({ type => 'comment_preview' });
+            $tmpl = MT::DefaultTemplates->load({ type => 'comment_preview' })
+                or return $app->error($app->translate("Can\'t load template"));
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
         $tmpl->context($ctx);

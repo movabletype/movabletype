@@ -2285,6 +2285,7 @@ sub _include_module {
     local $include_stack{$stash_id} = 1;
 
     my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
+    return unless $blog;
     my $req = MT::Request->instance;
     my ($tmpl, $tokens);
     if (my $tmpl_data = $req->stash($stash_id)) {
@@ -4729,7 +4730,8 @@ sub _hdlr_typekey_token {
     my ($ctx, $args, $cond) = @_;
 
     my $blog_id = $ctx->stash('blog_id');
-    my $blog = MT::Blog->load($blog_id);
+    my $blog = MT::Blog->load($blog_id)
+        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $blog_id));
     my $tp_token = $blog->effective_remote_auth_token();
     return $tp_token;
 }
@@ -4740,6 +4742,7 @@ sub _hdlr_remote_sign_in_link {
     my $blog = $ctx->stash('blog_id');
     $blog = MT::Blog->load($blog)
         if defined $blog && !(ref $blog);
+    return $ctx->error(MT->translate('Can\'t load blog #[_1].', $ctx->stash('blog_id'))) unless $blog;
     my $auths = $blog->commenter_authenticators;
     return $ctx->error(MT->translate("TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."))
         if $auths !~ /TypeKey/;
@@ -4864,6 +4867,7 @@ sub _hdlr_date {
         my $blog_id = $blog || $args->{offset_blog_id};
         $blog = MT->model('blog')->load($blog_id)
           if $blog_id;
+        return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $blog_id)) unless $blog;
     }
     my $lang = $args->{language} || $_[0]->var('local_lang_id')
         || ($blog && $blog->language);
@@ -5572,6 +5576,7 @@ sub _hdlr_commenter_name_thunk {
     my $ctx = shift;
     my $cfg = $ctx->{config};
     my $blog = $ctx->stash('blog') || MT::Blog->load($ctx->stash('blog_id'));
+    return $ctx->error(MT->translate('Can\'t load blog #[_1].', $ctx->stash('blog_id'))) unless $blog;
     my ($blog_domain) = $blog->archive_url =~ m|://([^/]*)|;
     my $cgi_path = _hdlr_cgi_path($ctx);
     my ($mt_domain) = $cgi_path =~ m|://([^/]*)|;
@@ -7419,7 +7424,8 @@ sub _hdlr_entry_blog_name {
     my $args = $_[1];
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    my $b = MT::Blog->load($e->blog_id);
+    my $b = MT::Blog->load($e->blog_id)
+        or return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
     $b->name;
 }
 
@@ -7427,7 +7433,8 @@ sub _hdlr_entry_blog_description {
     my $args = $_[1];
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    my $b = MT::Blog->load($e->blog_id);
+    my $b = MT::Blog->load($e->blog_id)
+        or return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
     my $d = $b->description;
     defined $d ? $d : '';
 }
@@ -7436,7 +7443,8 @@ sub _hdlr_entry_blog_url {
     my $args = $_[1];
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    my $b = MT::Blog->load($e->blog_id);
+    my $b = MT::Blog->load($e->blog_id)
+        or return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
     $b->site_url;
 }
 
@@ -8097,6 +8105,7 @@ sub _hdlr_captcha_fields {
     my ($ctx, $args, $cond) = @_;
     my $blog_id = $ctx->stash('blog_id');
     my $blog = MT->model('blog')->load($blog_id);
+        return $ctx->error(MT->translate('Can\'t load blog #[_1].', $blog_id)) unless $blog;
     if (my $provider = MT->effective_captcha_provider( $blog->captcha_provider ) ) {
         my $fields = $provider->form_fields($blog_id);
         $fields =~ s/[\r\n]//g;

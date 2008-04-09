@@ -185,20 +185,24 @@ sub list {
             if ( $filter_col eq 'entry_id' ) {
                 my $pkg   = $app->model('entry');
                 my $entry = $pkg->load($val);
-                $param{filter_phrase} = $app->translate(
-"TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
-                    $entry->class_label,
-                    encode_html( $entry->title )
-                );
+                if ($entry) {
+                    $param{filter_phrase} = $app->translate(
+    "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
+                        $entry->class_label,
+                        encode_html( $entry->title )
+                    );
+                }
             }
             elsif ( $filter_col eq 'category_id' ) {
                 my $pkg = $app->model('category');
                 my $cat = $pkg->load($val);
-                $param{filter_phrase} = $app->translate(
-"TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
-                    $cat->class_label,
-                    encode_html( $cat->label )
-                );
+                if ($cat) {
+                    $param{filter_phrase} = $app->translate(
+    "TrackBacks where <strong>[_1]</strong> is &quot;[_2]&quot;.",
+                        $cat->class_label,
+                        encode_html( $cat->label )
+                    );
+                }
             }
             $param{filter_special} = 1;
         }
@@ -342,7 +346,8 @@ sub can_view {
         if ( $tb->entry_id ) {
             require MT::Entry;
             my $entry = MT::Entry->load( $tb->entry_id );
-            return ( $entry->author_id == $app->user->id
+            return ( !$entry
+                  || $entry->author_id == $app->user->id
                   || $perms->can_manage_feedback
                   || $perms->can_edit_all_posts );
         }
@@ -367,7 +372,8 @@ sub can_save {
       if $perms
       && ( $perms->can_edit_all_posts
         || $perms->can_manage_feedback );
-    my $p      = MT::TBPing->load($id);
+    my $p      = MT::TBPing->load($id)
+        or return 0;
     my $tbitem = $p->parent;
     if ( $tbitem->isa('MT::Entry') ) {
         if ( $perms && $perms->can_publish_post && $perms->can_create_post ) {
@@ -403,7 +409,8 @@ sub can_delete {
     return 1 if $author->is_superuser();
     my $perms = $app->permissions;
     require MT::Trackback;
-    my $tb = MT::Trackback->load( $obj->tb_id );
+    my $tb = MT::Trackback->load( $obj->tb_id )
+        or return 0;
     if ( my $entry = $tb->entry ) {
         if ( !$perms || $perms->blog_id != $entry->blog_id ) {
             $perms ||= $author->permissions( $entry->blog_id );
@@ -438,13 +445,14 @@ sub pre_save {
     unless ( $perms->can_edit_all_posts || $perms->can_manage_feedback ) {
         return 1 unless $perms->can_publish_post || $perms->can_edit_categories;
         require MT::Trackback;
-        my $tb = MT::Trackback->load( $obj->tb_id );
+        my $tb = MT::Trackback->load( $obj->tb_id )
+            or return 0;
         if ($tb) {
             if ( $tb->entry_id ) {
                 require MT::Entry;
                 my $entry = MT::Entry->load( $tb->entry_id );
                 return 1
-                  unless ( $entry->author_id == $app->user->id )
+                  if ( !$entry || $entry->author_id != $app->user->id )
                   && $perms->can_publish_post;
             }
         }

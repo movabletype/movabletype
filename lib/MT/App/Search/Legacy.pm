@@ -302,7 +302,7 @@ sub execute {
         if (!$blog) {
             $blog = MT::Blog->load($app->param('blog_id'));
         }
-        $include = $blog->id;
+        $include = $blog->id if $blog;
     }
 
     ## Initialize and set up the context object.
@@ -498,7 +498,8 @@ sub _tag_search {
     while (my $entry = $iter->()) {
         my $blog_id = $entry->blog_id;
         if ($hits{$blog_id} && $hits{$blog_id} >= $max) {
-            my $blog = $blogs{$blog_id} || MT::Blog->load($blog_id);
+            my $blog = $blogs{$blog_id} || MT::Blog->load($blog_id)
+                or next;
             my @res = @{ $app->{results}{$blog->name} };
             my $count = $#res;
             $res[$count]{maxresults} = $max;
@@ -506,7 +507,7 @@ sub _tag_search {
         }
         if ($app->_search_hit($entry)) {
             my $blog = $blogs{$blog_id} || MT::Blog->load($blog_id);
-            $app->_store_hit_data($blog, $entry, $hits{$blog_id}++);
+            $app->_store_hit_data($blog, $entry, $hits{$blog_id}++) if $blog;
         }
     }
     1;

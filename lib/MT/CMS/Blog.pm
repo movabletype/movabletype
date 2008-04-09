@@ -418,7 +418,8 @@ sub cfg_archives {
 
     return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
-    my $blog = $app->model('blog')->load($blog_id);
+    my $blog = $app->model('blog')->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     my @data;
     for my $at ( split /\s*,\s*/, $blog->archive_type ) {
         my $archiver = $app->publisher->archiver($at);
@@ -556,7 +557,8 @@ sub rebuild_pages {
     my $blog_id       = int($q->param('blog_id'));
     return $app->errtrans("Invalid request.") unless $blog_id;
 
-    my $blog          = MT::Blog->load($blog_id);
+    my $blog          = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     my $order         = $q->param('type');
     my @order         = split /,/, $order;
     my $next          = $q->param('next');
@@ -588,7 +590,7 @@ sub rebuild_pages {
             if ($type eq 'entry') {
                 require MT::Entry;
                 my $entry = MT::Entry->load($obj_id);
-                $edit_type = $entry->class;
+                $edit_type = $entry ? $entry->class : 'entry';
             }
             $app->{goback} =
               "window.location='"
@@ -802,9 +804,11 @@ sub rebuild_pages {
         $app->run_callbacks( 'post_build' );
         if ( $q->param('entry_id') ) {
             require MT::Entry;
-            my $entry = MT::Entry->load( scalar $q->param('entry_id') );
+            my $entry = MT::Entry->load( scalar $q->param('entry_id') )
+                or return $app->error($app->translate('Can\'t load entry #[_1].', $q->param('entry_id')));
             require MT::Blog;
-            my $blog = MT::Blog->load( $entry->blog_id );
+            my $blog = MT::Blog->load( $entry->blog_id )
+                or return $app->error($app->translate('Can\'t load blog #[_1].', $entry->blog_id));
             require MT::CMS::Entry;
             MT::CMS::Entry::ping_continuation( $app,
                 $entry, $blog,
@@ -941,7 +945,8 @@ sub start_rebuild_pages {
     if ( $type_name =~ /^index-(\d+)$/ ) {
         my $tmpl_id = $1;
         require MT::Template;
-        my $tmpl = MT::Template->load($tmpl_id);
+        my $tmpl = MT::Template->load($tmpl_id)
+            or return $app->error($app->translate('Can\'t load template #[_1].', $tmpl_id));
         $param{build_type_name} =
           $app->translate( "index template '[_1]'", $tmpl->name );
         $param{is_one_index} = 1;
@@ -949,7 +954,8 @@ sub start_rebuild_pages {
     elsif ( $type_name =~ /^entry-(\d+)$/ ) {
         my $entry_id = $1;
         require MT::Entry;
-        my $entry = MT::Entry->load($entry_id);
+        my $entry = MT::Entry->load($entry_id)
+            or return $app->error($app->translate('Can\'t load entry #[_1].', $entry_id));
         $param{build_type_name} =
           $app->translate( "[_1] '[_2]'", $entry->class_label, $entry->title );
         $param{is_entry} = 1;
@@ -968,7 +974,8 @@ sub rebuild_confirm {
     my $app     = shift;
     my $blog_id = $app->param('blog_id');
     require MT::Blog;
-    my $blog = MT::Blog->load($blog_id);
+    my $blog = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     my $at = $blog->archive_type || '';
     my ( @blog_at, @at, @data );
     my $archiver;
@@ -1006,7 +1013,8 @@ sub rebuild_confirm {
 
     if ( my $tmpl_id = $app->param('tmpl_id') ) {
         require MT::Template;
-        my $tmpl = MT::Template->load($tmpl_id);
+        my $tmpl = MT::Template->load($tmpl_id)
+            or return $app->error($app->translate('Can\'t load template #[_1].', $tmpl_id));
         $param{index_tmpl_id}   = $tmpl->id;
         $param{index_tmpl_name} = $tmpl->name;
     }

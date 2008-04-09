@@ -43,14 +43,15 @@ sub edit {
         my @appears_in;
         my $place_class = $app->model('objectasset');
         my $place_iter = $place_class->load_iter(
-                                                 {
+            {
                 blog_id => $obj->blog_id || 0,
                 asset_id => $obj->parent ? $obj->parent : $obj->id
             }
         );
         while (my $place = $place_iter->()) {
             my $entry_class = $app->model($place->object_ds);
-            my $entry = $entry_class->load($place->object_id);
+            my $entry = $entry_class->load($place->object_id)
+                or next;
             my %entry_data = (
                 id    => $place->object_id,
                 class => $entry->class_type,
@@ -739,6 +740,7 @@ sub save {
     my $blog_id = $q->param('blog_id');
     my $id = $q->param('id');
     my $obj = $id ? $class->load($id) : $class->new;
+    return unless $obj;
     my $original = $obj->clone();
 
     $obj->set_values_from_query($q);
@@ -779,7 +781,8 @@ sub _set_start_upload_params {
           unless $perms->can_upload;
         my $blog_id = $app->param('blog_id');
         require MT::Blog;
-        my $blog = MT::Blog->load($blog_id);
+        my $blog = MT::Blog->load($blog_id)
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
 
         $param->{enable_archive_paths} = $blog->column('archive_path');
         $param->{local_site_path}      = $blog->site_path;
@@ -928,7 +931,8 @@ sub _upload_file {
     if ($blog_id = $q->param('blog_id')) {
         $param{blog_id} = $blog_id;
         require MT::Blog;
-        $blog = MT::Blog->load($blog_id);
+        $blog = MT::Blog->load($blog_id)
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
         $fmgr = $blog->file_mgr;
 
         ## Set up the full path to the local file; this path could start

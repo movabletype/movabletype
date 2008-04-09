@@ -172,7 +172,8 @@ sub get_options_html {
     my $importer = $self->importer($key);
 
     my $blog_class = MT->model('blog');
-    my $blog = $blog_class->load($blog_id);
+    my $blog = $blog_class->load($blog_id)
+        or return q();
 
     my $snip_tmpl = $self->_get_options_tmpl($key);
     return q() unless $snip_tmpl;

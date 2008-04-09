@@ -247,7 +247,8 @@ sub author {
         my $author = $author_cache->{$entry->author_id};
         unless ($author) {
             require MT::Author;
-            $author = MT::Author->load($entry->author_id);
+            $author = MT::Author->load($entry->author_id)
+                or return undef;
             $author_cache->{$entry->author_id} = $author;
             $req->stash('author_cache', $author_cache);
         }
@@ -347,7 +348,8 @@ sub comment_latest {
 MT::Comment->add_trigger(
     post_save => sub {
         my $comment = shift;
-        my $entry   = MT::Entry->load( $comment->entry_id );
+        my $entry   = MT::Entry->load( $comment->entry_id )
+            or return;
         my $count   = MT::Comment->count(
             {
                 entry_id => $comment->entry_id,
@@ -362,7 +364,8 @@ MT::Comment->add_trigger(
 MT::Comment->add_trigger(
     post_remove => sub {
         my $comment = shift;
-        my $entry   = MT::Entry->load( $comment->entry_id );
+        my $entry   = MT::Entry->load( $comment->entry_id )
+            or return;
         $entry->comment_count( $entry->comment_count - 1 );
         $entry->save;
     }
@@ -388,7 +391,8 @@ MT::TBPing->add_trigger(
         require MT::Trackback;
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id ) {
-                my $entry = MT::Entry->load( $tb->entry_id );
+                my $entry = MT::Entry->load( $tb->entry_id )
+                    or return;
                 my $count = MT::TBPing->count(
                     {
                         tb_id   => $tb->id,
@@ -408,7 +412,8 @@ MT::TBPing->add_trigger(
         require MT::Trackback;
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id ) {
-                my $entry = MT::Entry->load( $tb->entry_id );
+                my $entry = MT::Entry->load( $tb->entry_id )
+                    or return;
                 $entry->ping_count( $entry->ping_count - 1 );
                 $entry->save;
             }

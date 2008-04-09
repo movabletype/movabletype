@@ -156,7 +156,8 @@ sub _view_date_archive {
     require MT::TemplateMap;
     my $map = MT::TemplateMap->load({ archive_type => $at,
                                       blog_id => $app->{__blog_id},
-                                      is_preferred => 1 });
+                                      is_preferred => 1 })
+        or return $app->error($app->translate("Can't load templatemap"));
     my $tmpl = MT::Template->load($map->template_id)
         or return $app->error($app->translate("Can't load template [_1]", $map->template_id));
     my $out = $tmpl->build($ctx)
@@ -190,7 +191,8 @@ sub _view_entry {
     } else {
         my $map = MT::TemplateMap->load({ archive_type => 'Individual',
                                           blog_id => $app->{__blog_id},
-                                          is_preferred => 1 });
+                                          is_preferred => 1 })
+            or return $app->error($app->translate("Can't load templatemap"));
         $tmpl = MT::Template->load($map->template_id)
             or return $app->error($app->translate("Can't load template [_1]", $map->template_id));
     }

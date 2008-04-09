@@ -408,7 +408,8 @@ sub authenticate {
 sub publish {
     my $app = shift;
     my($entry, $no_ping) = @_;
-    my $blog = MT::Blog->load($entry->blog_id);
+    my $blog = MT::Blog->load($entry->blog_id)
+        or return;
     $app->rebuild_entry( Entry => $entry, Blog => $blog,
                          BuildDependencies => 1 ) or return;
     unless ($no_ping) {
@@ -446,6 +447,7 @@ sub get_weblogs {
 
         my $blog = $thing->isa('MT::Blog') ? $thing
             : MT::Blog->load($thing->blog_id);
+        next unless $blog;
         my $uri = $base . '/blog_id=' . $blog->id;
 
         my $workspace = XML::XPath::Node::Element->new('workspace');
@@ -941,6 +943,7 @@ sub get_weblogs {
         }
         my $blog = $thing->isa('MT::Blog') ? $thing
             : MT::Blog->load($thing->blog_id);
+        next unless $blog;
         my $uri = $base . '/blog_id=' . $blog->id;
         my $blogname = encode_text($blog->name . ' #' . $blog->id, undef, 'utf-8');
         $feed->add_link({ rel => 'service.post', title => $blogname,

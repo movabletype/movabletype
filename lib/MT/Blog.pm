@@ -492,7 +492,8 @@ sub count_static_templates {
     return 0 unless @maps;
     require MT::Template;
     foreach my $map (@maps) {  
-        my $tmpl = MT::Template->load($map->template_id);
+        my $tmpl = MT::Template->load($map->template_id)
+            or return 0;
         $result++ if !$tmpl->build_dynamic;
     }
     #$result ||= 1 if ($blog->custom_dynamic_templates || '') ne 'custom';

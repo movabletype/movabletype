@@ -894,7 +894,8 @@ sub reset_blog_templates {
     return $app->error( $app->translate("Permission denied.") )
       unless $perms->can_edit_templates;
     $app->validate_magic() or return;
-    my $blog = MT::Blog->load( $perms->blog_id );
+    my $blog = MT::Blog->load( $perms->blog_id )
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $perms->blog_id));
     require MT::Template;
     my @tmpl = MT::Template->load( { blog_id => $blog->id } );
 
@@ -1255,18 +1256,21 @@ sub post_save {
         if ( $p =~ /^archive_tmpl_preferred_(\w+)_(\d+)$/ ) {
             my $at     = $1;
             my $map_id = $2;
-            my $map    = MT::TemplateMap->load($map_id);
+            my $map    = MT::TemplateMap->load($map_id)
+                or next;
             $map->prefer( $q->param($p) );    # prefer method saves in itself
         }
         elsif ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
             my $map_id = $1;
-            my $map    = MT::TemplateMap->load($map_id);
+            my $map    = MT::TemplateMap->load($map_id)
+                or next;
             $map->file_template( $q->param($p) );
             $map->save;
         }
         elsif ( $p =~ /^map_build_type_(\d+)$/ ) {
             my $map_id     = $1;
-            my $map        = MT::TemplateMap->load($map_id);
+            my $map        = MT::TemplateMap->load($map_id)
+                or next;
             my $build_type = $q->param($p);
             require MT::PublishOption;
             $map->build_type($build_type);
@@ -1357,6 +1361,8 @@ sub build_template_table {
     while ( my $tmpl = $iter->() ) {
         my $blog = $blogs{ $tmpl->blog_id } ||=
           MT::Blog->load( $tmpl->blog_id );
+        return $app->error($app->translate('Can\'t load blog #[_1].', $tmpl->blog_id)) unless $blog;
+
         my $row = $tmpl->column_values;
         $row->{name} = '' if !defined $row->{name};
         $row->{name} =~ s/^\s+|\s+$//g;
@@ -1670,7 +1676,8 @@ sub refresh_individual_templates {
 
     my $set;
     if ( my $blog_id = $app->param('blog_id') ) {
-        my $blog = $app->model('blog')->load($blog_id);
+        my $blog = $app->model('blog')->load($blog_id)
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
         $set = $blog->template_set()
             if $blog;
     }

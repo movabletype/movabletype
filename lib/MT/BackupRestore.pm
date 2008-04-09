@@ -613,6 +613,9 @@ sub _restore_asset_multi {
 
     my $fmgr;
     if (exists $blogs_meta->{$asset->blog_id}) {
+        my $blog = MT->model('blog')->load($asset->blog_id)
+            or return 0;
+
         my $meta = $blogs_meta->{$asset->blog_id};
         my $path = $asset->file_path;
         my $url = $asset->url;
@@ -640,7 +643,6 @@ sub _restore_asset_multi {
         $asset->save or $callback->(MT->translate("failed") . "\n");
         $callback->(MT->translate("ok") . "\n");
 
-        my $blog = MT->model('blog')->load($asset->blog_id);
         $fmgr = $blog->file_mgr;
     }
     my $file = $asset_element->{fh};
@@ -858,7 +860,8 @@ sub to_xml {
     return $xml if exists $assets_seen->{$obj->id};
 
     if ($obj->parent) {
-        my $parent = MT->model('asset')->load($obj->parent);
+        my $parent = MT->model('asset')->load($obj->parent)
+            or return $xml;
         $xml .= $parent->to_xml(@_);
         $xml .= "\n";
     }

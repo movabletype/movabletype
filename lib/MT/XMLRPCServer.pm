@@ -606,8 +606,6 @@ sub _get_entries {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_create_post;
-    require MT::Blog;
-    my $blog = MT::Blog->load($blog_id);
     my $iter = MT->model($obj_type)->load_iter({ blog_id => $blog_id },
         { 'sort' => 'authored_on',
           direction => 'descend',
@@ -739,8 +737,6 @@ sub _get_entry {
         unless $perms && $perms->can_edit_entry($entry, $author);
     my $co = sprintf "%04d%02d%02dT%02d:%02d:%02d",
         unpack 'A4A2A2A2A2A2', $entry->authored_on;
-    require MT::Blog;
-    my $blog = MT::Blog->load($entry->blog_id);
     my $link = $entry->permalink;
     require MT::Tag;
     my $delim = chr($author->entry_prefs->{tag_delim});
@@ -1015,7 +1011,8 @@ sub publishScheduledFuturePosts {
     my $mt = MT::XMLRPCServer::Util::mt_new();
     my $author = $class->_login($user, $pass);
     die _fault(MT->translate("Invalid login")) unless $author;
-    my $blog = MT::Blog->load($blog_id);
+    my $blog = MT::Blog->load($blog_id)
+        or die _fault(MT->translate('Can\'t load blog #[_1].', $blog_id));
 
     my $now = time;
     # Convert $now to user's timezone, which is how future post dates
@@ -1041,7 +1038,7 @@ sub publishScheduledFuturePosts {
     my %types;
     foreach my $entry_id (@queue) {
         my $entry = MT::Entry->load($entry_id);
-        if ($entry->authored_on <= $now) {
+        if ($entry && $entry->authored_on <= $now) {
             $entry->status(MT::Entry::RELEASE());
             $entry->discover_tb_from_entry();
             $entry->save
@@ -1103,7 +1100,9 @@ sub newMediaObject {
         unless $perms && $perms->can_upload;
     require MT::Blog;
     require File::Spec;
-    my $blog = MT::Blog->load($blog_id);
+    my $blog = MT::Blog->load($blog_id)
+        or die _fault(MT->translate('Can\'t load blog #[_1].', $blog_id));
+
     my $fname = $file->{name} or die _fault(MT->translate("No filename provided"));
     if ($fname =~ m!\.\.|\0|\|!) {
         die _fault(MT->translate("Invalid filename '[_1]'", $fname));

@@ -271,7 +271,7 @@ sub ping {
 
     return $app->_response(
         Error => $app->translate("This TrackBack item is disabled.") )
-      if $tb->is_disabled || !$cfg->AllowPings || !$blog->allow_pings;
+      if $tb->is_disabled || !$cfg->AllowPings || !$blog || !$blog->allow_pings;
 
     if ( $tb->passphrase && ( !$pass || $pass ne $tb->passphrase ) ) {
         return $app->_response(

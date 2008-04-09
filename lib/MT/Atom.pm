@@ -41,7 +41,8 @@ sub new_with_entry {
         $atom->content->type('application/xhtml+xml');
     }
 
-    my $mt_author = MT::Author->load($entry->author_id);
+    my $mt_author = MT::Author->load($entry->author_id)
+        or return undef;
     my $atom_author = new XML::Atom::Person(%param);
     $atom_author->name(encode_text($mt_author->nickname, undef, 'utf-8'));
     $atom_author->email($mt_author->email) if $mt_author->email;
@@ -55,7 +56,8 @@ sub new_with_entry {
         $atom->add_category($atom_cat);
     }
 
-    my $blog = MT::Blog->load($entry->blog_id);
+    my $blog = MT::Blog->load($entry->blog_id)
+        or return undef;
     my $co = _create_issued($entry->authored_on, $blog);
     $atom->issued($co);
     my $upd = $entry->modified_on;
@@ -81,7 +83,8 @@ sub new_with_asset {
     my $atom = $class->new(%param); 
     $atom->title($asset->label); 
     $atom->summary($asset->description);
-    my $blog = MT::Blog->load($asset->blog_id);
+    my $blog = MT::Blog->load($asset->blog_id)
+        or return undef;
     $atom->issued(_create_issued($asset->created_on, $blog)); 
     $atom->add_link({ rel => 'alternate', type => $asset->mime_type, 
                       href => $asset->url, title => $asset->label }); 

@@ -952,7 +952,7 @@ sub make_unique_category_basename {
 
     my $name = MT::Util::dirify($label) || ($cat->basename_prefix(1) . $cat->id);
 
-    my $limit = $blog->basename_limit || 30;
+    my $limit = ($blog && $blog->basename_limit) ? $blog->basename_limit : 30;
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
     my $base = substr($name, 0, $limit);
     $base =~ s/_+$//;

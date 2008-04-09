@@ -30,7 +30,8 @@ sub mt_ping {
             "No MTPingURL defined in the configuration file" ));
     if (!ref($blog)) {
         require MT::Blog;
-        $blog = MT::Blog->load($blog);
+        $blog = MT::Blog->load($blog)
+            or return $class->error(MT->translate('Can\'t load blog #[_1].', $blog));
     }
     $class->ping_update('mtUpdates.ping', $blog, $url, $blog->mt_update_key);
 }
@@ -40,7 +41,8 @@ sub ping_update {
     my($method, $blog, $url, $mt_key) = @_;
     if (!ref($blog)) {
         require MT::Blog;
-        $blog = MT::Blog->load($blog);
+        $blog = MT::Blog->load($blog)
+            or return $class->error(MT->translate('Can\'t load blog #[_1].', $blog));
     }
     my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
     my $req = HTTP::Request->new('POST', $url);

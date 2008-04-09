@@ -108,7 +108,8 @@ sub edit_role {
     my $role;
     require MT::Role;
     if ($id) {
-        $role = MT::Role->load($id);
+        $role = MT::Role->load($id)
+            or return $app->error($app->translate('Can\'t load role #[_1].', $id));
 
         # $param{is_enabled} = $role->is_active;
         $param{is_enabled}  = 1;

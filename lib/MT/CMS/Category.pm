@@ -140,7 +140,8 @@ sub save {
     my $blog_id = $q->param('blog_id');
     my $cat;
     if ( my $moved_cat_id = $q->param('move_cat_id') ) {
-        $cat = $class->load( $q->param('move_cat_id') );
+        $cat = $class->load( $q->param('move_cat_id') )
+            or return;
         move_category($app) or return;
     }
     else {
@@ -439,7 +440,8 @@ sub move_category {
       or return $app->errtrans("Invalid request.");
     $app->validate_magic() or return;
 
-    my $cat        = $class->load( $app->param('move_cat_id') );
+    my $cat        = $class->load( $app->param('move_cat_id') )
+        or return;
     my $new_parent = $app->param('move-radio');
 
     return 1 if ( $new_parent == $cat->parent );

@@ -68,7 +68,8 @@ sub core_search_apis {
             'handler' => '$Core::MT::CMS::TrackBack::build_ping_table',
             'perm_check' => sub {
                 my $ping = shift;
-                my $tb   = MT::Trackback->load( $ping->tb_id );
+                my $tb   = MT::Trackback->load( $ping->tb_id )
+                    or return undef;
                 if ( $tb->entry_id ) {
                     require MT::Entry;
                     my $entry = MT::Entry->load( $tb->entry_id );

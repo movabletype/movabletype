@@ -1351,7 +1351,8 @@ sub login_pending { q() }
 sub commenter_loggedin {
     my $app = shift;
     my ($commenter, $commenter_blog_id) = @_;
-    my $blog = $app->model('blog')->load($commenter_blog_id);
+    my $blog = $app->model('blog')->load($commenter_blog_id)
+        or return $app->error($app->translate("Can\'t load blog #[_1].", $commenter_blog_id));
     my $url = $app->config('CGIPath') . $app->config('CommentScript');
     $url .= '?__mode=edit_profile';
     $url .= '&commenter=' . $commenter->id;
@@ -1613,7 +1614,8 @@ sub create_user_pending {
     my $cfg   = $app->config;
     $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
 
-    my $blog  = $app->model('blog')->load( $param->{blog_id} );
+    my $blog  = $app->model('blog')->load( $param->{blog_id} )
+        or return $app->error($app->translate("Can\'t load blog #[_1].", $param->{blog_id}));
 
     my ( $password, $hint, $url );
     unless ( $q->param('external_auth') ) {

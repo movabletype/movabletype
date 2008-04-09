@@ -396,7 +396,8 @@ sub _sync_from_disk {
     my $lfile = $tmpl->linked_file;
     unless (File::Spec->file_name_is_absolute($lfile)) {
         if ($tmpl->blog_id) {
-            my $blog = MT::Blog->load($tmpl->blog_id);
+            my $blog = MT::Blog->load($tmpl->blog_id)
+                or return;
             $lfile = File::Spec->catfile($blog->site_path, $lfile);
         }
         else {
@@ -434,7 +435,8 @@ sub _sync_to_disk {
     }
     unless (File::Spec->file_name_is_absolute($lfile)) {
         if ($tmpl->blog_id) {
-            my $blog = MT::Blog->load($tmpl->blog_id);
+            my $blog = MT::Blog->load($tmpl->blog_id)
+                or return;
             $lfile = File::Spec->catfile($blog->site_path, $lfile);
         } else {
             $lfile = File::Spec->catfile(MT->instance->server_path, $lfile);

@@ -22,8 +22,10 @@ sub handle_sign_in {
     }
 
     my $entry_id = $q->param('entry_id');
-    my $entry = MT::Entry->load($entry_id);
-    my $blog = MT::Blog->load($q->param('blog_id') || $entry->blog_id);
+    my $entry = MT::Entry->load($entry_id)
+        or return 0;
+    my $blog = MT::Blog->load($q->param('blog_id') || $entry->blog_id)
+        or return 0;
 
     my $ts = $q->param('ts') || "";
     my $email = $q->param('email') || "";
@@ -81,10 +83,12 @@ sub handle_sign_in {
         {
             require MT::Session;
             require MT::Author;
-            my $sess = MT::Session->load({id => $session});
+            my $sess = MT::Session->load({id => $session})
+                or return 0;
             $cmntr = MT::Author->load({name => $sess->name,
                                        type => MT::Author::COMMENTER(),
-                                       auth_type => $auth_type});
+                                       auth_type => $auth_type})
+                or return 0;
             if ($blog->require_typekey_emails
                 && !is_valid_email($cmntr->email))
             {

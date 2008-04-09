@@ -367,7 +367,8 @@ sub can_edit_entry {
     return 1 if $author->is_superuser();
     unless ( ref $entry ) {
         require MT::Entry;
-        $entry = MT::Entry->load($entry);
+        $entry = MT::Entry->load($entry)
+            or die;
     }
     die unless $entry->isa('MT::Entry');
     if ( 'page' eq $entry->class ) {

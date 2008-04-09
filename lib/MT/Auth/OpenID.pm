@@ -123,9 +123,11 @@ sub handle_sign_in {
             require MT::Session;
             require MT::Author;
             my $sess = MT::Session->load({id => $session});
-            $cmntr = MT::Author->load({name => $sess->name,
-                                       type => MT::Author::COMMENTER(),
-                                       auth_type => $auth_type});
+            if ($sess) {
+                $cmntr = MT::Author->load({name => $sess->name,
+                                           type => MT::Author::COMMENTER(),
+                                           auth_type => $auth_type});
+            }
         }
     }
     unless ($cmntr) {

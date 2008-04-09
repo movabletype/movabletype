@@ -28,6 +28,7 @@ sub get_throttle {
     else {
         $obj = MT::Template->load( $finfo->template_id );
     }
+    return $throttle unless $obj;
     $throttle->{type}     = $obj->build_type;
     $throttle->{interval} = $obj->build_interval;
     $throttle;

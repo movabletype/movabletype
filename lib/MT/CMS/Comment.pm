@@ -1057,7 +1057,8 @@ sub not_junk {
 
     foreach my $id (@ids) {
         next unless $id;
-        my $obj = $class->load($id);
+        my $obj = $class->load($id)
+            or next;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
                 next if $obj->parent->author_id != $app->user->id;
@@ -1246,6 +1247,7 @@ sub reply_preview {
 
     my $blog = $parent->blog
             || $app->model('blog')->load($q->param('blog_id'));
+    return $app->error($app->translate('Can\'t load blog #[_1].', $q->param('blog_id'))) unless $blog;
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
@@ -1317,6 +1319,7 @@ sub dialog_post_comment {
 
     my $blog = $parent->blog
             || $app->model('blog')->load($app->param('blog_id'));
+    return $app->error($app->translate('Can\'t load blog #[_1].', $app->param('blog_id'))) unless $blog;
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
@@ -1371,7 +1374,8 @@ sub can_save {
       && ( $perms->can_edit_all_posts
         || $perms->can_manage_feedback );
 
-    my $c = MT::Comment->load($id);
+    my $c = MT::Comment->load($id)
+        or return 0;
     if ( $perms && $perms->can_create_post && $perms->can_publish_post ) {
         return $c->entry->author_id == $app->user->id;
     }
@@ -1400,7 +1404,8 @@ sub can_delete {
     return 1 if $author->is_superuser();
     my $perms = $app->permissions;
     require MT::Entry;
-    my $entry = MT::Entry->load( $obj->entry_id );
+    my $entry = MT::Entry->load( $obj->entry_id )
+        or return 0;
     if ( !$perms || $perms->blog_id != $entry->blog_id ) {
         $perms ||= $author->permissions( $entry->blog_id );
     }
@@ -1608,7 +1613,8 @@ sub set_item_visible {
     my %rebuild_set = ();
     require MT::Entry;
     foreach my $id (@obj_ids) {
-        my $obj = $class->load($id);
+        my $obj = $class->load($id)
+            or next;
         my $old_visible = $obj->visible || 0;
         if ( $old_visible != $new_visible ) {
             if ( $obj->isa('MT::TBPing') ) {
@@ -1691,7 +1697,7 @@ sub map_comment_to_commenter {
     require MT::Comment;
     for my $id (@$comments) {
         my $cmt = MT::Comment->load($id);
-        if ( $cmt->commenter_id ) {
+        if ( $cmt && $cmt->commenter_id ) {
             $commenters{ $cmt->commenter_id . ':' . $cmt->blog_id } =
               [ $cmt->commenter_id, $cmt->blog_id ];
         }
@@ -1710,7 +1716,7 @@ sub _prepare_reply {
     my $parent        = $comment_class->load( $q->param('reply_to') );
     my $entry         = $app->model('entry')->load( $parent->entry_id );
 
-    unless ( $parent->is_published ) {
+    if ( !$parent || $parent->is_published ) {
         $app->error(
             $app->translate("You can't reply to unpublished comment.") );
         return ( undef, $parent, $entry );
@@ -1720,8 +1726,6 @@ sub _prepare_reply {
         $app->error( $app->translate("Invalid request.") );
         return ( undef, $parent, $entry );
     }
-
-    my $blog = $app->model('blog')->load( $entry->blog_id );
 
     my $nick = $app->user->nickname || $app->translate('Registered User');
 

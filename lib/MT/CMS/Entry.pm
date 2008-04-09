@@ -138,7 +138,8 @@ sub edit {
         delete $param->{'pinged_urls'};
         my $blog_timezone = 0;
         if ($blog_id) {
-            my $blog = $blog_class->load($blog_id);
+            my $blog = $blog_class->load($blog_id)
+                or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
             $blog_timezone = $blog->server_offset();
             if ( $type eq 'entry' ) {
 
@@ -835,6 +836,7 @@ sub preview {
         $tmpl       = $app->load_tmpl('preview_entry_content.tmpl');
         $fullscreen = 1;
     }
+    return $app->error($app->translate('Can\'t load template.')) unless $tmpl;
 
     # translates naughty words when PublishCharset is NOT UTF-8
     $app->_translate_naughty_words($entry);
@@ -1078,8 +1080,9 @@ sub save {
 
     require MT::Blog;
     my $blog_id = $app->param('blog_id');
-    my $blog    = MT::Blog->load($blog_id);
-
+    my $blog    = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
+    
     my $archive_type;
 
     my ( $obj, $orig_obj, $orig_file );
@@ -1348,7 +1351,7 @@ $ao
         my $cat = $cat_class->load($cat_id);
 
         # blog_id sanity check
-        next if $cat->blog_id != $obj->blog_id;
+        next if !$cat || $cat->blog_id != $obj->blog_id;
 
         my $place = MT::Placement->new;
         $place->entry_id( $obj->id );
@@ -1461,7 +1464,8 @@ sub save_entries {
     for my $p (@p) {
         next unless $p =~ /^category_id_(\d+)/;
         my $id    = $1;
-        my $entry = MT::Entry->load($id);
+        my $entry = MT::Entry->load($id)
+            or next;
         return $app->error( $app->translate("Permission denied.") )
             unless $perms
               && (
@@ -1821,7 +1825,8 @@ sub pinged_urls {
     my %param;
     my $entry_id = $app->param('entry_id');
     require MT::Entry;
-    my $entry = MT::Entry->load($entry_id);
+    my $entry = MT::Entry->load($entry_id)
+        or return $app->error($app->translate('Can\'t load entry #[_1].', $entry_id));
     $param{url_loop} = [ map { { url => $_ } } @{ $entry->pinged_url_list } ];
     $param{failed_url_loop} =
       [ map { { url => $_ } }
@@ -2070,7 +2075,8 @@ sub quickpost_js {
     my $app     = shift;
     my ($type)  = @_;
     my $blog_id = $app->blog->id;
-    my $blog    = $app->model('blog')->load($blog_id);
+    my $blog    = $app->model('blog')->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
     my %args    = ( '_type' => $type, blog_id => $blog_id, qp => 1 );
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
     my $script = qq!javascript:d=document;w=window;t='';if(d.selection)t=d.selection.createRange().text;else{if(d.getSelection)t=d.getSelection();else{if(w.getSelection)t=w.getSelection()}}void(w.open('$uri&title='+encodeURIComponent(d.title)+'&text='+encodeURIComponent(d.location.href)+encodeURIComponent('<br/><br/>')+encodeURIComponent(t),'_blank','scrollbars=yes,status=yes,resizable=yes,location=yes'))!;
@@ -2285,7 +2291,8 @@ sub delete {
     require MT::Blog;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-    my $blog    = MT::Blog->load($blog_id);
+    my $blog    = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
 
     my $can_background =
         ( $blog->count_static_templates('Individual') == 0

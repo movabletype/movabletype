@@ -373,6 +373,7 @@ sub rebuild_entry {
         MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
     require MT::Entry;
     $entry = MT::Entry->load($entry) unless ref $entry;
+    return unlessd $entry;
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $entry->blog_id;
@@ -1556,7 +1557,8 @@ sub publish_future_posts {
         my %rebuild_queue;
         my %ping_queue;
         foreach my $entry_id (@queue) {
-            my $entry = MT::Entry->load($entry_id);
+            my $entry = MT::Entry->load($entry_id)
+                or next;
             $entry->status( MT::Entry::RELEASE() );
             $entry->save
               or die $entry->errstr;
@@ -1634,7 +1636,8 @@ sub remove_entry_archive_file {
         }
         elsif ($cat) {
             require MT::Blog;
-            $blog = MT::Blog->load( $cat->blog_id );
+            $blog = MT::Blog->load( $cat->blog_id )
+                or return;
         }
     }
     my @map = MT::TemplateMap->load(

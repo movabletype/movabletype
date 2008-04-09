@@ -73,7 +73,8 @@ sub start_import {
 
     if ($blog_id) {
         $param{blog_id} = $blog_id;
-        my $blog = $app->model('blog')->load($blog_id);
+        my $blog = $app->model('blog')->load($blog_id)
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
         $param{text_filters} = $app->load_text_filters( $blog->convert_paras );
     }
 

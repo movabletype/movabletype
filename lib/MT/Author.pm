@@ -258,7 +258,7 @@ sub can_edit_entry {
         require MT::Entry;
         $entry = MT::Entry->load($entry);
     }
-    die unless $entry->isa('MT::Entry');
+    die if !$entry || $entry->isa('MT::Entry');
     my $perms = $author->permissions($entry->blog_id);
     die unless $perms->isa('MT::Permission');
     $perms->can_edit_all_posts ||
