@@ -3104,11 +3104,14 @@ sub _hdlr_authors {
     if (defined $args->{need_entry} ? $args->{need_entry} : 1) {
         $blog_args{'unique'} = 1;
         $blog_terms{'status'} = MT::Entry::RELEASE();
-        $args{'join'} = MT::Entry->join_on('author_id', \%blog_terms, \%blog_args);
+        $args{'join'} = MT::Entry->join_on('author_id',
+            \%blog_terms, \%blog_args);
     } else {
         $terms{'type'} = 1;
+        $blog_args{'unique'} = 1;
         require MT::Association;
-        $args{'join'} = MT::Association->join_on('author_id', { blog_id => $blog_id }, { unique => 1 });
+        $args{'join'} = MT::Association->join_on('author_id',
+            \%blog_terms, \%blog_args);
     }
 
     if ($args->{namespace}) {
