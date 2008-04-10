@@ -663,6 +663,13 @@ sub core_list_actions {
                 label => "Clone Template(s)",
                 code => "${pkg}Template::clone_templates",
                 permission => 'edit_templates',
+                condition => sub {
+                    my $app       = MT->app;
+                    my $tmpl_type = $app->param('filter_key');
+                    return $tmpl_type eq 'system_templates' ? 0
+                      : $tmpl_type    eq 'email_templates'  ? 0
+                      :                                       1;
+                },
                 order => 400,
             },
         },

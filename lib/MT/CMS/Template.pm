@@ -643,6 +643,14 @@ sub list {
             $filter = 'archive_templates';
             $app->param( 'filter_key', 'archive_templates' );
         }
+        elsif ( $tmpl_type eq 'system' ) {
+            $filter = 'system_templates';
+            $app->param( 'filter_key', 'system_templates' );
+        }
+        elsif ( $tmpl_type eq 'email' ) {
+            $filter = 'email_templates';
+            $app->param( 'filter_key', 'email_templates' );
+        }
         $terms->{type} = $types{$tmpl_type}->{type};
         my $tmpl_param = $app->listing(
             {
