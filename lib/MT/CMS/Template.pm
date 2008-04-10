@@ -234,8 +234,12 @@ sub edit {
 
             # Populate template maps for this template
             my $maps = _populate_archive_loop( $app, $blog, $obj );
-            $param->{object_loop} = $param->{template_map_loop} = $maps
-              if @$maps;
+            if (@$maps) {
+                $param->{object_loop} = $param->{template_map_loop} = $maps
+                  if @$maps;
+                my %archive_types = map { $_->{archive_label} => () } @$maps;
+                $param->{enabled_archive_types} = join(", ", sort keys %archive_types);
+            }
         }
         # publish options
         $param->{publish_queue} = $blog->publish_queue if $blog;
