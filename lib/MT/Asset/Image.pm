@@ -100,6 +100,12 @@ sub thumbnail_file {
         my %square = MT::Image->inscribe_square(
             Width => $i_w, Height => $i_h );
         ($i_h, $i_w) = @square{qw( Size Size )};
+        if ( $param{Width} && !$param{Height} ) {
+            $param{Height} = $param{Width};
+        }
+        elsif ( !$param{Width} && $param{Height} ) {
+            $param{Width} = $param{Height};
+        }
     }
 
     if ( my $scale = $param{Scale} ) {
@@ -115,7 +121,7 @@ sub thumbnail_file {
     my ( $n_h, $n_w ) =
       _get_dimension( $i_h, $i_w, $param{Height}, $param{Width} );
 
-    my $file = $asset->thumbnail_filename(@_) or return;
+    my $file = $asset->thumbnail_filename(%param) or return;
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
     my @thumbinfo = stat($thumbnail);
 
