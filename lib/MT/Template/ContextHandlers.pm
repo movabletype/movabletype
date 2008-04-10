@@ -225,7 +225,7 @@ sub core_tags {
             TopLevelFolders => \&_hdlr_top_level_folders,
             TopLevelFolder => \&_hdlr_top_level_folder,
 
-			# Pager handlers
+            # Pager handlers
             'IfMoreResults?' => sub {
                 my $limit = $_[0]->stash('limit');
                 my $offset = $_[0]->stash('offset');
@@ -547,7 +547,7 @@ sub core_tags {
             AssetRank => \&_hdlr_asset_rank,
             AuthorRank => \&_hdlr_author_rank,
 
-			# Pager related handlers
+            # Pager related handlers
             PagerLink => \&_hdlr_pager_link,
             NextLink => \&_hdlr_next_link,
             PreviousLink => \&_hdlr_previous_link,
@@ -8023,7 +8023,7 @@ sub _hdlr_asset_thumbnail_url {
 
     my %arg;
     foreach (keys %$args) {
-	$arg{$_} = $args->{$_};
+    $arg{$_} = $args->{$_};
     }
     $arg{Width} = $args->{width} if $args->{width};
     $arg{Height} = $args->{height} if $args->{height};
@@ -8828,16 +8828,16 @@ sub _hdlr_pager_link {
     my $offset = $ctx->stash('offset');
     $offset = ( $page - 1 ) * $limit;
 
-	my $link = $ctx->context_script($args);
+    my $link = $ctx->context_script($args);
 
-	if ( $link ) {
-		if ( index($link, '?') > 0 ) {
-			$link .= '&';
-		}
-		else {
-			$link .= '?';
-		}
-	}
+    if ( $link ) {
+        if ( index($link, '?') > 0 ) {
+            $link .= '&';
+        }
+        else {
+            $link .= '?';
+        }
+    }
     $link .= "limit=$limit";
     $link .= "&offset=$offset" if $offset;
     $link;
