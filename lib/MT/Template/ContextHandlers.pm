@@ -1109,7 +1109,10 @@ sub _hdlr_app_statusmsg {
     my $msg = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
     my $blog_id = $ctx->var('blog_id');
-    my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
+    my $blog = $ctx->stash('blog');
+    if (!$blog && $blog_id) {
+        $blog = MT->model('blog')->load($blog_id);
+    }
     $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
     $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id');">%%</a>">} if $rebuild eq 'all';
     $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id', 'prompt=index');">%%</a>">} if $rebuild eq 'index';

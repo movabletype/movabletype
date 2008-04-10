@@ -86,7 +86,7 @@ sub import {
                 $app->{cfg}->read_config($c);
                 $charset = $app->{cfg}->PublishCharset;
             };
-            if ($app && UNIVERSAL::isa($app, 'MT::App')) {
+            if ($app && UNIVERSAL::isa($app, 'MT::App') && !UNIVERSAL::isa($app, 'MT::App::Wizard')) {
                 eval {
                     # line __LINE__ __FILE__
                     my %param = ( error => $err );
