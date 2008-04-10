@@ -551,9 +551,11 @@ TC.attachLoadEvent( init );
 <mt:if name="has_outfile">
             <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html">">
 </mt:if>
+<mt:ignore>
     <mt:if name="type" eq="archive">
         <__trans phrase="Enabled Mappings: [_1]" params="Monthly, Author-Monthly, Yearly">
     </mt:if>
+</mt:ignore>
         </div>
     </div>
     <div id="template-options-content" class="pkg">
