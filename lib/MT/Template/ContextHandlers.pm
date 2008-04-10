@@ -4865,9 +4865,11 @@ sub _hdlr_date {
     my $blog = $_[0]->stash('blog');
     unless (ref $blog) {
         my $blog_id = $blog || $args->{offset_blog_id};
-        $blog = MT->model('blog')->load($blog_id)
-          if $blog_id;
-        return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $blog_id)) unless $blog;
+        if ($blog) {
+            $blog = MT->model('blog')->load($blog_id);
+            return $_[0]->error( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
+              unless $blog;
+        }
     }
     my $lang = $args->{language} || $_[0]->var('local_lang_id')
         || ($blog && $blog->language);
