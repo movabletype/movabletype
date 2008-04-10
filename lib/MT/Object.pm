@@ -737,8 +737,12 @@ our $DBI_DRIVER;
 sub dbi_driver {
     unless ($DBI_DRIVER) {
         my $driver = driver(@_);
-        if ( my $fb_driver = $driver->fallback ) {
-            $driver = $fb_driver;
+        while ( $driver->can('fallback') ) {
+            if ($driver->fallback) {
+                $driver = $driver->fallback;
+            } else {
+                last;
+            }
         }
         $DBI_DRIVER = $driver;
     }
