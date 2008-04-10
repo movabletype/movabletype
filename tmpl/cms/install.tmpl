@@ -71,6 +71,11 @@ function validate(f) {
     }
 
 <mt:if name="auth_mode_mt">
+    if (!f.admin_nickname.value) {
+        alert('<__trans phrase="The display name is required." escape="singlequotes">');
+        f.admin_nickname.focus();
+        return false;
+    }
     if (!f.admin_email.value) {
         alert('<__trans phrase="The e-mail address is required." escape="singlequotes">');
         f.admin_email.focus();
