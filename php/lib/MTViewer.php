@@ -247,7 +247,7 @@ class MTViewer extends Smarty {
             $repeat = false;
             return '';
         }
-        if (!isset($args['name']) && !isset($args['var']) && !isset($args['tag'])) {
+        if ((count($args) > 0) && (!isset($args['name']) && !isset($args['var']) && !isset($args['tag']))) {
             require_once("function.mtgetvar.php");
             $var = smarty_function_mtgetvar(array('name' => '__name__'), $ctx);
             if (isset($var) && $var != '')
