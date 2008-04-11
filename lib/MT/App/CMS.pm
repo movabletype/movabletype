@@ -307,6 +307,7 @@ sub core_blog_stats_tabs {
         },
         tag_cloud => {
             label    => 'Tag Cloud',
+            handler  => "${pkg}Dashboard::mt_blog_stats_tag_cloud_tab",
             template => 'widget/blog_stats_tag_cloud.tmpl',
         },
     };

@@ -378,6 +378,60 @@ sub generate_dashboard_stats_entry_tab {
     %counts;
 }
 
+sub mt_blog_stats_tag_cloud_tab {
+    my ($app, $tmpl, $param) = @_;
+
+    my $blog = $app->blog;
+    my $blog_id = $blog->id if $blog;
+
+    my $terms = {};
+    $terms->{blog_id} = $blog_id if $blog_id;
+    $terms->{object_datasource} = 'entry';
+    my $args = {};
+    $args->{group} = [ 'tag_id' ];
+    $args->{sort} = 'count(*)';
+    $args->{direction} = 'descend';
+    $args->{limit} = 100;
+
+    my $iter = MT::ObjectTag->count_group_by($terms, $args);
+    my @tag_loop;
+    my $ntags = 0;
+    my $min = undef;
+    my $max = undef;
+    while (my ($count, $tag_id) = $iter->()) {
+        my $tag = MT::Tag->load($tag_id) or next;
+        next if $tag->is_private; # weed these from the dashboard
+        $ntags += $count;
+        $min = defined $min ? ($count < $min ? $count : $min) : $count;
+        $max = defined $max ? ($count > $max ? $count : $max) : $count;
+        push @tag_loop, { name => $tag->name, count => $count };
+    }
+
+    my $factor;
+    if ($max - $min == 0) {
+        $min -= 6;
+        $factor = 1;
+    } else {
+        $factor = 5 / log($max - $min + 1);
+    }
+    $factor *= ($ntags / 6) if $ntags < 6;
+
+    foreach my $tag (@tag_loop) {
+        # now calc rank
+        my $rank;
+        my $count = $tag->{count};
+        if ($count - $min + 1 == 0) {
+            $rank = 0;
+        } else {
+            $rank = 6 - int(log($count - $min + 1) * $factor);
+        }
+        $tag->{rank} = $rank;
+    }
+
+    @tag_loop = sort { $a->{name} cmp $b->{name} } @tag_loop;
+    $param->{tag_loop} = \@tag_loop;
+}
+
 sub mt_blog_stats_widget_comment_tab {
     my ($app, $tmpl, $param) = @_;
 

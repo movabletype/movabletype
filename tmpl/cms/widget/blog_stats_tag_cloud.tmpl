@@ -1,6 +1,4 @@
-<mt:if name="blog_id"><mt:setvar name="blog_scope" value="$blog_id"><mt:else><mt:setvar name="blog_scope" value="all"></mt:if>
-<mt:setvar name="tag_cloud" value="0"><MTTags blog_ids="$blog_scope" limit="1"><mt:setvar name="tag_cloud" value="1"></MTTags>
-<mt:if name="tag_cloud">
+<mt:if name="tag_loop">
     <mt:setvarblock name="tabs" append="1">
         <li id="tag-tab" class="tab <mt:if name="tab" eq="tag">selected-tab</mt:if>" mt:tab="tag" mt:command="select-tab" onclick="return blogStatsTabSelect('tag');"><a href="javascript:void(0);"><span><__trans phrase="Tags"></span></a></li>
     </mt:setvarblock>
@@ -8,9 +6,9 @@
     <div id="tag-panel" class="<mt:unless name="tab" eq="tag">hidden</mt:unless>" mt:tab-content="tag">
         <div id="tag-cloud">
             <ul id="tag-cloud-list">
-            <MTTags blog_ids="$blog_scope" top="100" sort_by="name">
-                <li class="tag-<$MTTagRank$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<MTTagName escape="js">', 'tag-cloud-recent-entries'); return false"><$MTTagName$></a></li>
-            </MTTags>
+            <mt:loop name="tag_loop">
+                <li class="tag-<$mt:var name="rank"$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<mt:var name="name" escape="js">', 'tag-cloud-recent-entries'); return false"><$mt:var name="name"$></a></li>
+            </mt:loop>
             </ul>
         </div>
         <div id="tag-cloud-recent-entries"></div>
