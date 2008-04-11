@@ -187,6 +187,7 @@ sub core_methods {
         'adjust_sitepath'          => "${pkg}Tools::adjust_sitepath",
         'system_check'             => "${pkg}Tools::system_check",
         'dialog_refresh_templates' => "${pkg}Template::dialog_refresh_templates",
+        'dialog_publishing_profile' => "${pkg}Template::dialog_publishing_profile",
         'refresh_all_templates'    => "${pkg}Template::refresh_all_templates",
         'preview_template'         => "${pkg}Template::preview",
         'publish_index_templates'  => "${pkg}Template::publish_index_templates",
@@ -330,6 +331,14 @@ sub core_page_actions {
                 },
                 order => 1000,
                 continue_prompt => MT->translate('This action will restore your global templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.'),
+            },
+            publishing_profile => {
+                label => "Use Publishing Profile",
+                dialog => 'dialog_publishing_profile',
+                condition => sub {
+                    MT->app->blog,
+                },
+                order => 1100,
             },
         },
     };

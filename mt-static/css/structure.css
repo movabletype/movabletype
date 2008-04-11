@@ -4172,6 +4172,21 @@ body.dialog {
     margin-left: 30px;
 }
 
+/* Publishing Profiles Dialog ---------------------------------------------------------------------------------- */
+
+#publishing-profile-dialog #profile-panel ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+#publishing-profile-dialog #profile-panel label {
+    font-weight: bold;
+}
+
+#publishing-profile-dialog #profile-panel .hint {
+    font-weight: normal;
+}
+
 /* Edit Comment & Trackback ---------------------------------------------------------------------------------- */
 
 .edit-comment .button-actions,

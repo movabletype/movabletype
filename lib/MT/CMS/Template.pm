@@ -1409,6 +1409,17 @@ sub build_template_table {
     \@data;
 }
 
+sub dialog_publishing_profile {
+    my $app = shift;
+    $app->validate_magic or return;
+
+    my $param = {};
+    $param->{screen_id} = "publishing-profile-dialog";
+
+    $app->build_page('dialog/publishing_profile.tmpl',
+        $param);
+}
+
 sub dialog_refresh_templates {
     my $app = shift;
     $app->validate_magic or return;
