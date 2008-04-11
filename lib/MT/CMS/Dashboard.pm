@@ -389,7 +389,7 @@ sub mt_blog_stats_tag_cloud_tab {
     $terms->{object_datasource} = 'entry';
     my $args = {};
     $args->{group} = [ 'tag_id' ];
-    $args->{sort} = 'count(*)';
+    $args->{sort} = '1'; # sort by count(*)
     $args->{direction} = 'descend';
     $args->{limit} = 100;
 
