@@ -238,7 +238,6 @@ class MTViewer extends Smarty {
     }
 
     function smarty_block_elseif($args, $content, &$ctx, &$repeat) {
-        $args['elseif'] = 1;
         return $this->smarty_block_else($args, $content, $ctx, $repeat);
     }
 
@@ -254,8 +253,9 @@ class MTViewer extends Smarty {
             if (isset($var) && $var != '')
                 $args['name'] = $var;
         }
-        if ( (count($args) > 1) || $args['elseif']) {
+        if (count($args) >= 1) { # else-if case
             require_once("block.mtif.php");
+            $args['elseif'] = 1;
             if (!isset($content)) {
                 $out = smarty_block_mtif($args, $content, $ctx, $repeat);
                 if ($ctx->_tpl_vars['conditional']) {
