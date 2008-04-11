@@ -4,11 +4,19 @@
         <h2 class="asset-name entry-title"><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h2>
         <div class="asset-meta">
             <span class="byline">
-<MTIfNonEmpty tag="EntryAuthorDisplayName">
-                <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$MTEntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>">
+<MTIf name="show_blog">
+    <MTIfNonEmpty tag="EntryAuthorDisplayName">
+                <__trans phrase="From [_1] by [_2] on [_3]" params="<$MTEntryBlogName$>%%<span class="vcard author"><$MTEntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>">
+    <MTElse>
+                <__trans phrase="From [_1] on [_2]" params="<$MTEntryBlogName$>%%<abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>">
+    </MTIfNonEmpty>
 <MTElse>
+    <MTIfNonEmpty tag="EntryAuthorDisplayName">
+                <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$MTEntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>">
+    <MTElse>
                 <abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>
-</MTIfNonEmpty>
+    </MTIfNonEmpty>
+</MTIf>
             </span>
             <span class="separator">|</span> <a class="permalink" rel="bookmark" href="<$MTEntryPermalink$>"><__trans phrase="Permalink"></a>
 <MTUnless name="hide_counts" eq="1">

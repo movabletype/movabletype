@@ -243,6 +243,8 @@ sub core_tags {
             IfStraightSearch => sub { '' },
             NoSearchResults => \&_hdlr_pass_tokens,
             NoSearch => \&_hdlr_pass_tokens,
+            SearchResultsHeader => sub { '' },
+            SearchResultsFooter => sub { '' },
             BlogResultHeader => sub { '' },
             BlogResultFooter => sub { '' },
             IfMaxResultsCutoff => sub { '' },

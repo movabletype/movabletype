@@ -34,7 +34,8 @@ sub process {
     }
 
     my $format = $app->param('format') || q();
-    my $method = "render$format";
+    my $method = "render";
+    $method .= $format if $format && $app->can($method . $format);
     $out = $app->$method( $count, $iter );
 
     my $result;
@@ -194,28 +195,33 @@ sub search_terms {
         }
     );
 
+    my $desc = 'descend' eq $app->{searchparam}{SearchResultDisplay} ? 'DESC' : 'ASC';
+    my @sort;
     my $sort = $params->{'sort'};
     if ( $sort !~ /\w+\!$/ && $app->{searchparam}{SearchSortBy} ) {
         my $sort_by = $app->{searchparam}{SearchSortBy};
-        $sort_by =~ s/[\w\-\.]+//g;
-        $sort = $sort_by;
+        $sort_by =~ s/[^\w\-\.\,]+//g;
+        if ( $sort_by ) {
+            my @sort_bys = split ',', $sort_by;
+            foreach my $key ( @sort_bys ) {
+                push @sort, {
+                    desc   => $desc,
+                    column => $key
+                };
+            }
+        }
     }
+    push @sort, {
+        desc   => $desc,
+        column => $sort
+    };
 
     my %args = (
       'join' => $join_on,
       $limit  ? ( 'limit' => $limit ) : (),
       $offset ? ( 'offset' => $offset ) : (),
-      $sort   ? ( 'sort' => [
-            { desc   => 'descend' eq $app->{searchparam}{SearchResultDisplay} ? 'DESC' : 'ASC',
-              column => $sort }
-        ] ) : (),
+      @sort   ? ( 'sort' => \@sort ) : (),
     );
-
-    if ( exists $app->{searchparam}{IncludeBlogs} ) {
-        unshift @{ $args{'sort'} },
-          { desc => 'ASC',
-            column    => 'blog_id' };
-    }
 
     my $blog_class = $app->model('blog');
     # Override SearchCutoff if If-Modified-Since header is present

@@ -27,6 +27,8 @@ sub load_core_tags {
             'NoSearchResults?' => sub { $_[0]->stash('count') ? 0 : 1; },
             'NoSearch?' => sub { ( $_[0]->stash('search_string') &&
                                    $_[0]->stash('search_string') =~ /\S/ ) ? 0 : 1 },
+            SearchResultsHeader => \&MT::Template::Context::_hdlr_pass_tokens,
+            SearchResultsFooter => \&MT::Template::Context::_hdlr_pass_tokens,
             BlogResultHeader => \&MT::Template::Context::_hdlr_pass_tokens,
             BlogResultFooter => \&MT::Template::Context::_hdlr_pass_tokens,
             'IfMaxResultsCutoff?' => \&MT::Template::Context::_hdlr_pass_tokens,
@@ -60,6 +62,7 @@ sub _hdlr_results {
     my $tokens = $ctx->stash('tokens');
     my $blog_header = 1;
     my $blog_footer = 0;
+    my $footer = 0;
     my $count_per_blog = 0;
     my $max_reached = 0;
     my ( $this_object, $next_object );
@@ -112,10 +115,13 @@ sub _hdlr_results {
         }
         else {
             $blog_footer = 1;
+            $footer      = 1;
         }
 
         defined(my $out = $build->build($ctx, $tokens,
             { %$cond, 
+                SearchResultsHeader => $i == 0,
+                SearchResultsFooter => $footer,
                 BlogResultHeader => $blog_header,
                 BlogResultFooter => $blog_footer,
                 IfMaxResultsCutoff => $max_reached,
