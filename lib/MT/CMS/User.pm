@@ -754,12 +754,12 @@ sub save_role {
     $app->redirect($url);
 }
 
-sub enable_object {
+sub enable {
     my $app = shift;
     set_object_status( $app, MT::Author::ACTIVE() );
 }
 
-sub disable_object {
+sub disable {
     my $app = shift;
     set_object_status( $app, MT::Author::INACTIVE() );
 }
