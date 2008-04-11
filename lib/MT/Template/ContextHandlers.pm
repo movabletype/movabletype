@@ -3107,11 +3107,14 @@ sub _hdlr_authors {
         $args{'join'} = MT::Entry->join_on('author_id',
             \%blog_terms, \%blog_args);
     } else {
-        $terms{'type'} = 1;
         $blog_args{'unique'} = 1;
-        require MT::Association;
-        $args{'join'} = MT::Association->join_on('author_id',
-            \%blog_terms, \%blog_args);
+        require MT::Permission;
+        $args{'join'} =
+          MT::Permission->join_on( 'author_id', undef, \%blog_args );
+        push @filters, sub {
+            $_[0]->permissions($blog_id)->can_administer_blog
+              || $_[0]->permissions($blog_id)->can_post;
+        };
     }
 
     if ($args->{namespace}) {
