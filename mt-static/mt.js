@@ -577,12 +577,14 @@ function setFilterVal(value) {
 
 function toggleDisable(id, state) {
     var id = DOM.getElement( id );
-    if ((id.disabled==0 && state == 0) || !id)
+    if ((id.disabled && state == 1) || !id)
         return false;
-    if (state == 1)
-        id.disabled=1;
+    else if (!id.disabled && state == 0)
+        return false;
+    if ( !id.disabled )
+        id.disabled="disabled";
     else
-        id.disabled=0;
+        id.disabled="";
 }
 
 function toggleDisplayOptions() {
@@ -625,6 +627,17 @@ function toggle( id ) {
     } else {
         DOM.removeClassName( id, 'active' );
         DOM.addClassName( id, 'hidden' );
+    }
+    return false;
+}
+
+function toggleClass( id, c ) {
+    if ( !id )
+        return false;
+    if ( DOM.hasClassName( id, c ) ) {
+        DOM.removeClassName( id, c );
+    } else {
+        DOM.addClassName( id, c );
     }
     return false;
 }

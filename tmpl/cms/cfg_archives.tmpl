@@ -165,18 +165,6 @@ function toggleFile(path) {
     return false;
 }
 
-function toggleDynamicOptions(selection) {
-    var fld = getByID('dynamic_options_area');
-    if (fld) {
-        if (selection.value == 'none') {
-            fld.style.display = 'none';
-        } else {
-            fld.style.display = 'block';
-        }
-    }
-    return false;
-}
-
 function init() {
     // conditionally disables
     disableFields('site_url','site_path');
@@ -274,7 +262,11 @@ TC.attachLoadEvent( init );
 </fieldset>
 </mt:if>
 
+<mt:ignore>
+    <!-- to be enabled at a later date -->
+
 <mt:if name="can_use_publish_queue">
+
 <fieldset>
     <h3><__trans phrase="Asynchronous Job Queue"></h3>
 
@@ -292,68 +284,34 @@ TC.attachLoadEvent( init );
 </mtapp:setting>
 
 </fieldset>
+
 </mt:if>
 
-<fieldset>
-    <h3><__trans phrase="Publishing Profile"></h3>
+</mt:ignore>
 
-<mtapp:setting
-    id="dynamicity"
-    label="<__trans phrase="Publishing Method">"
-    help_page="blog_settings_publishing"
-    help_section="dynamic_publishing">
-    <ul>
-        <li>
-            <input type="radio" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
-            <label for="dynamicity-sync"><__trans phrase="Static Publishing"> <span class="hint"><__trans phrase="Publish all files statically."></span></label>
-        </li>
-    <mt:if name="publish_queue"> 
-        <li>
-            <input type="radio" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
-            <label for="dynamicity-async"><__trans phrase="Asynchronous Publishing"> <span class="hint"><__trans phrase="Publish all files via the asynchronous job queue."></span></label>
-        </li>
-        <li>
-            <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
-            <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"> <span class="hint"><__trans phrase="Publish main index template and all individual archive templates statically, and publish all other files asynchronously."></span></label>
-        </li>
-    </mt:if>
-        <li>
-            <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
-            <label for="dynamicity-dynamic"><__trans phrase="Dynamic Publishing"> <span class="hint"><__trans phrase="Publish all files dynamically."></span></label>
-        </li>
-        <li>
-            <input type="radio" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
-            <label for="dynamicity-archives"><__trans phrase="Dynamic Archives Only"> <span class="hint"><__trans phrase="Publish all archives dynamically. Publish all other files statically."></span></label>
-        </li>
-        <li>
-            <input type="radio" id="dynamicity-custom" name="dynamicity" value="custom" <mt:if name="dynamicity" eq="custom"> checked="checked"</mt:if>/>
-            <label for="dynamicity-custom"><__trans phrase="Custom"> <span class="hint"><__trans phrase="Publishing options are configured on a template-by-template basis."></span></label>
-        </li>
-    </ul>
-</mtapp:setting>
 
 <mt:unless name="hide_build_option">
-<div id="dynamic_options_area"<mt:if name="dynamic_none"> style="display:none;"</mt:if>>
+<fieldset>
+    <h3><__trans phrase="Dynamic Publishing Options"></h3>
 
     <mtapp:setting
         id="dynamic_publishing_options"
-        label="<__trans phrase="Dynamic Publishing Options">">
-        <ul>
-            <li>
-                <input type="checkbox" id="dynamic_cache" name="dynamic_cache" <mt:if name="dynamic_caching">checked="checked"</mt:if>/>
-                <label for="dynamic_cache"><__trans phrase="Enable dynamic cache"></label>
-            </li>
-            <li>
-                <input type="checkbox" id="dynamic_conditional" name="dynamic_conditional" <mt:if name="dynamic_conditional">checked="checked"</mt:if>/>
-                <label for="dynamic_conditional"><__trans phrase="Enable conditional retrieval"></label>
-            </li>
-        </ul>
+        label="<__trans phrase="Dynamic Publishing Options">"
+        show_label="0">
+    <ul>
+        <li>
+            <input type="checkbox" id="dynamic_cache" name="dynamic_cache" <mt:if name="dynamic_caching">checked="checked"</mt:if>/>
+            <label for="dynamic_cache"><__trans phrase="Enable dynamic cache"></label>
+        </li>
+        <li>
+            <input type="checkbox" id="dynamic_conditional" name="dynamic_conditional" <mt:if name="dynamic_conditional">checked="checked"</mt:if>/>
+            <label for="dynamic_conditional"><__trans phrase="Enable conditional retrieval"></label>
+        </li>
+    </ul>
     </mtapp:setting>
 
-</div>
-</mt:unless>
-
 </fieldset>
+</mt:unless>
 
 <fieldset>
     <h3><__trans phrase="Archive Options"></h3>

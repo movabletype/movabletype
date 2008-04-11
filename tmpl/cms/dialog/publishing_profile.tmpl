@@ -1,0 +1,43 @@
+<mt:var name="page_title" value="<__trans phrase="Publishing Profile">">
+
+<mt:include name="dialog/header.tmpl">
+
+<form action="#">
+
+<mtapp:setting
+    id="dynamicity"
+    label="<__trans phrase="Publishing Profile">"
+    show_label="0"
+    help_page="blog_settings_publishing"
+    help_section="dynamic_publishing">
+    <ul>
+        <li>
+            <input type="radio" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
+            <label for="dynamicity-sync"><__trans phrase="Static Publishing"> <span class="hint"><__trans phrase="Publish all files statically."></span></label>
+        </li>
+        <li>
+            <input type="radio" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
+            <label for="dynamicity-async"><__trans phrase="Asynchronous Publishing"> <span class="hint"><__trans phrase="Publish all files via the asynchronous job queue."></span></label>
+        </li>
+        <li>
+            <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
+            <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"> <span class="hint"><__trans phrase="Publish main index template and all individual archive templates statically, and publish all other files asynchronously."></span></label>
+        </li>
+        <li>
+            <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
+            <label for="dynamicity-dynamic"><__trans phrase="Dynamic Publishing"> <span class="hint"><__trans phrase="Publish all files dynamically."></span></label>
+        </li>
+        <li>
+            <input type="radio" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
+            <label for="dynamicity-archives"><__trans phrase="Dynamic Archives Only"> <span class="hint"><__trans phrase="Publish all archives dynamically. Publish all other files statically."></span></label>
+        </li>
+        <li>
+            <input type="radio" id="dynamicity-custom" name="dynamicity" value="custom" <mt:if name="dynamicity" eq="custom"> checked="checked"</mt:if>/>
+            <label for="dynamicity-custom"><__trans phrase="Custom"> <span class="hint"><__trans phrase="Publishing options are configured on a template-by-template basis."></span></label>
+        </li>
+    </ul>
+</mtapp:setting>
+
+</form>
+
+<mt:include name="dialog/footer.tmpl">
