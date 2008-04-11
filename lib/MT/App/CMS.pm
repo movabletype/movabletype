@@ -764,7 +764,7 @@ sub core_list_filters {
                     # sort column as a reference and a full field name,
                     # to prevent MT from adding a 'entry_' prefix to
                     # the column name.
-                    $args->{sort}      = \'comment_created_on';
+                    $args->{sort}      = [ { column => \'comment_created_on' } ];
                     $args->{direction} = 'descend';
                 },
             },
