@@ -462,15 +462,16 @@ sub core_upgrade_functions {
             }
         },
         'core_init_comment_junk_status' => {
-            on_field => 'MT::Comment->junk_status',
+            version_limit => 4.0053,
             priority => 3.1,
             updater => {
                 type => 'comment',
-                condition => sub { !defined $_[0]->junk_status },
+                condition => sub { !$_[0]->junk_status },
                 code => sub { $_[0]->junk_status(1) },
                 label => 'Assigning junk status for comments...',
                 sql => 'update mt_comment set comment_junk_status = 1
-                        where comment_junk_status is null',
+                        where comment_junk_status is null
+                           or comment_junk_status=0',
             }
         },
         'core_init_tbping_visible' => {
@@ -486,15 +487,16 @@ sub core_upgrade_functions {
             }
         },
         'core_init_tbping_junk_status' => {
-            on_field => 'MT::TBPing->junk_status',
+            version_limit => 4.0053,
             priority => 3.1,
             updater => {
                 type => 'tbping',
-                condition => sub { !defined $_[0]->junk_status },
+                condition => sub { !$_[0]->junk_status },
                 code => sub { $_[0]->junk_status(1) },
                 label => 'Assigning junk status for TrackBacks...',
                 sql => 'update mt_tbping set tbping_junk_status = 1
-                        where tbping_junk_status is null',
+                        where tbping_junk_status is null
+                          or tbping_junk_status=0',
             }
         },
         'core_init_category_basename' => {

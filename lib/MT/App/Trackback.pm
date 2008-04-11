@@ -305,7 +305,6 @@ sub ping {
         $ping->tb_id($tb_id);
         $ping->source_url($url);
         $ping->ip( $app->remote_ip || '' );
-        $ping->junk_status(0);
         $ping->visible(1);
     }
     my $excerpt_max_len = const('LENGTH_ENTRY_PING_EXCERPT');
@@ -593,11 +592,10 @@ RSS
             limit     => $lastn
         );
     }
-    $arg{not} = { junk_status => 1 };
     my $iter = MT::TBPing->load_iter(
       {
         tb_id       => $tb->id,
-        junk_status => -1,
+        junk_status => MT::TBPing::NOT_JUNK(),
         visible     => 1
       },
       \%arg

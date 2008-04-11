@@ -151,14 +151,15 @@ sub list {
     ## page of next entries to link to. Obviously we only display $limit
     ## entries.
     my %arg;
+    require MT::TBPing;
     if ( ( $app->param('tab') || '' ) eq 'junk' ) {
         $app->param( 'filter',     'junk_status' );
-        $app->param( 'filter_val', '-1' );
+        $app->param( 'filter_val', MT::TBPing::JUNK() );
         $param{filter_special} = 1;
         $param{filter_phrase}  = $app->translate('Junk TrackBacks');
     }
     else {
-        $terms{'junk_status'} = [ 0, 1 ];
+        $terms{'junk_status'} = MT::TBPing::NOT_JUNK();
     }
 
     my $filter_key = $q->param('filter_key');
@@ -472,7 +473,6 @@ sub pre_save {
     }
     elsif ( $status eq 'moderate' ) {
         $obj->moderate;
-        $obj->junk_status(0);
     }
     elsif ( $status eq 'junk' ) {
         $obj->junk;

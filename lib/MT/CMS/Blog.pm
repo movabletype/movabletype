@@ -1776,14 +1776,14 @@ sub build_blog_table {
               $comment_count
             ? $comment_count->{$blog_id}
             : $comment_count->{$blog_id} = MT::Comment->count(
-                { blog_id => $blog_id, junk_status => [ 0, 1 ] }
+                { blog_id => $blog_id, junk_status => MT::Comment::NOT_JUNK() }
             )
           )
           || 0;
         $row->{num_pings} = (
             $ping_count ? $ping_count->{$blog_id} : $ping_count->{$blog_id} =
               MT::TBPing->count(
-                { blog_id => $blog_id, junk_status => [ 0, 1 ] }
+                { blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() }
               )
         ) || 0;
         $row->{num_authors} = 0;

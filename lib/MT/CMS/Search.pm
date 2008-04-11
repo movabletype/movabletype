@@ -411,11 +411,12 @@ sub do_search_replace {
             }
         }
         if ( $class->has_column('junk_status') ) {
+            require MT::Comment;
             if ($is_junk) {
-                $terms{junk_status} = -1;
+                $terms{junk_status} = MT::Comment::JUNK();
             }
             else {
-                $terms{junk_status} = [ 0, 1 ];
+                $terms{junk_status} = MT::Comment::NOT_JUNK();
             }
         }
         if ($is_dateranged) {

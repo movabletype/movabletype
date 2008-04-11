@@ -272,16 +272,16 @@ sub list {
     if ( $filter_col && ( my $val = $app->param('filter_val') ) ) {
         if ( $filter_col eq 'status' ) {
             if ( $val eq 'approved' ) {
-                $terms{junk_status} = 1;
+                $terms{visible} = 1;
             }
             elsif ( $val eq 'pending' ) {
-                $terms{junk_status} = 0;
+                $terms{visible} = 0;
             }
             elsif ( $val eq 'junk' ) {
-                $terms{junk_status} = -1;
+                $terms{junk_status} = MT::Comment::JUNK();
             }
             else {
-                $terms{junk_status} = [ 0, 1 ];
+                $terms{junk_status} = MT::Comment::NOT_JUNK();
             }
         }
     }
@@ -933,7 +933,8 @@ sub empty_junk {
     my $type  = $app->param('_type');
     my $class = $app->model($type);
     my $arg   = {};
-    $arg->{junk_status} = -1;
+    require MT::Comment;
+    $arg->{junk_status} = MT::Comment::JUNK();
     $arg->{blog_id} = $blog_id if $blog_id;
     $class->remove($arg);
     $app->add_return_arg( 'emptied' => 1 );
@@ -1445,7 +1446,6 @@ sub pre_save {
     }
     elsif ( $status eq 'moderate' ) {
         $obj->moderate;
-        $obj->junk_status(0);
     }
     elsif ( $status eq 'junk' ) {
         $obj->junk;

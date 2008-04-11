@@ -9,8 +9,8 @@ package MT::TBPing;
 use strict;
 use base qw( MT::Object MT::Scorable );
 
-use constant JUNK => -1;
-use constant NOT_JUNK => 1;
+sub JUNK()      { -1 }
+sub NOT_JUNK () {  1 }
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -51,7 +51,7 @@ __PACKAGE__->install_properties({
         },
     },
     defaults => {
-        junk_status => 0,
+        junk_status => NOT_JUNK,
         last_moved_on => '20000101000000',
     },
     audit => 1,

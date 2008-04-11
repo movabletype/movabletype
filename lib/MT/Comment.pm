@@ -10,6 +10,9 @@ use strict;
 use base qw( MT::Object MT::Scorable );
 use MT::Util qw( weaken );
 
+sub JUNK ()     { -1 }
+sub NOT_JUNK () { 1 }
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -54,16 +57,13 @@ __PACKAGE__->install_properties({
         },
     },
     defaults => {
-        junk_status => 0,
+        junk_status => NOT_JUNK,
         last_moved_on => '20000101000000',
     },
     audit => 1,
     datasource => 'comment',
     primary_key => 'id',
 });
-
-sub JUNK ()     { -1 }
-sub NOT_JUNK () { 1 }
 
 my %blocklists = ();
 
