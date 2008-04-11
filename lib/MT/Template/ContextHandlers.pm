@@ -1417,8 +1417,8 @@ sub _hdlr_if {
         }
     }
 
-    $ctx->{__stash}{vars}->{__value__} = $value;
-    $ctx->{__stash}{vars}->{__name__} = $var;
+    local $ctx->{__stash}{vars}{__cond_value__} = $value;
+    local $ctx->{__stash}{vars}{__cond_name__} = $var;
 
     if ( my $op = $args->{op} ) {
         my $rvalue = $args->{'value'};

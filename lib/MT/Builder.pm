@@ -397,9 +397,10 @@ sub build {
 
                 if ((defined $type) && ($type == 2)) {
                     # conditional; process result
+                    my $vars = $ctx->{__stash}{vars};
+                    local $vars->{__value__} = delete $vars->{__cond_value__};
+                    local $vars->{__name__}  = delete $vars->{__cond_name__};
                     $out = $out ? $ctx->slurp(\%args, $cond) : $ctx->else(\%args, $cond);
-                    delete $ctx->{__stash}{vars}{__value__};
-                    delete $ctx->{__stash}{vars}{__name__};
                     return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->[0], $ctx->errstr))
                         unless defined $out;
                 }
