@@ -1348,10 +1348,15 @@ sub _hdlr_else {
     my ($ctx, $args, $cond) = @_;
     local $args->{'@'};
     delete $args->{'@'};
-    if  ((keys %$args) == 1) {
-        my $name = $args->{name} || $args->{var} || $args->{tag} || undef;
-        $name = ($ctx->var('__name__') || undef) unless $name;
-        $args->{name} = $name if $name;
+    if  ((keys %$args) >= 1) {
+        unless ($args->{name} || $args->{var} || $args->{tag}) {
+            if ( my $t = $ctx->var('__cond_tag__') ) {
+                $args->{tag} = $t;
+            }
+            elsif ( my $n = $ctx->var('__cond_name__') ) {
+                $args->{name} = $n;
+            }
+        }
     }
     if (%$args) {
         defined(my $res = _hdlr_if(@_)) or return;
@@ -1362,8 +1367,14 @@ sub _hdlr_else {
 
 sub _hdlr_elseif {
     my ($ctx, $args, $cond) = @_;
-    $args->{name} = $ctx->var('__name__')
-        unless ($args->{name} || $args->{var} || $args->{tag} || undef);
+    unless ($args->{name} || $args->{var} || $args->{tag}) {
+        if ( my $t = $ctx->var('__cond_tag__') ) {
+            $args->{tag} = $t;
+        }
+        elsif ( my $n = $ctx->var('__cond_name__') ) {
+            $args->{name} = $n;
+        }
+    }
     return _hdlr_else($ctx, $args, $cond);
 }
 
@@ -1411,14 +1422,15 @@ sub _hdlr_if {
             if (my $ph = $ctx->post_process_handler) {
                 $value = $ph->($ctx, $args, $value);
             }
+            $ctx->{__stash}{vars}{__cond_tag__} = $args->{tag};
         }
         else {
             return $ctx->error(MT->translate("Invalid tag [_1] specified.", $tag));
         }
     }
 
-    local $ctx->{__stash}{vars}{__cond_value__} = $value;
-    local $ctx->{__stash}{vars}{__cond_name__} = $var;
+    $ctx->{__stash}{vars}{__cond_value__} = $value;
+    $ctx->{__stash}{vars}{__cond_name__} = $var;
 
     if ( my $op = $args->{op} ) {
         my $rvalue = $args->{'value'};
