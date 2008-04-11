@@ -186,7 +186,7 @@ sub set_defaults {
         junk_folder_expiry => 14, # 14 days
         custom_dynamic_templates => 'none',
         internal_autodiscovery => 0,
-        basename_limit => 30,
+        basename_limit => 100,
         server_offset => MT->config('DefaultTimezone') || 0,
         # something far in the future to force dynamic side to read it.
         children_modified_on => '20101231120000',
