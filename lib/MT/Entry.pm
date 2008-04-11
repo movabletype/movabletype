@@ -63,9 +63,6 @@ __PACKAGE__->install_properties({
         blog_author => {
             columns => [ 'blog_id', 'class', 'author_id', 'authored_on' ],
         },
-        class_author => {
-            columns => [ 'class', 'author_id', 'authored_on' ],
-        },
         # For optimizing weekly archives, selected by blog, class,
         # status.
         blog_week => {
