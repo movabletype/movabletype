@@ -1708,7 +1708,6 @@ sub refresh_individual_templates {
     require MT::DefaultTemplates;
     my $tmpl_list = MT::DefaultTemplates->templates($set) or return;
 
-    my $trnames    = {};
     my $tmpl_types = {};
     my $tmpl_ids   = {};
     my $tmpls      = {};
@@ -1716,7 +1715,6 @@ sub refresh_individual_templates {
         $tmpl->{text} = $app->translate_templatized( $tmpl->{text} );
         $tmpl_ids->{ $tmpl->{identifier} } = $tmpl
             if $tmpl->{identifier};
-        $trnames->{ $app->translate( $tmpl->{name} ) } = $tmpl->{name};
         if ( $tmpl->{type} !~ m/^(archive|individual|page|category|index|custom|widget)$/ )
         {
             $tmpl_types->{ $tmpl->{type} } = $tmpl;
@@ -1742,10 +1740,9 @@ sub refresh_individual_templates {
         my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
           $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
-        my $orig_name = $trnames->{ $tmpl->name } || $tmpl->name;
         my $val = ( $tmpl->identifier ? $tmpl_ids->{ $tmpl->identifier() } : undef )
           || $tmpl_types->{ $tmpl->type() }
-          || $tmpls->{ $tmpl->type() }{$orig_name};
+          || $tmpls->{ $tmpl->type() }{ $tmpl->name };
         if ( !$val ) {
             push @msg,
               $app->translate(
