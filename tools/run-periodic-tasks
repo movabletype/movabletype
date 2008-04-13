@@ -25,8 +25,6 @@ require Getopt::Long;
 my $daemonize = 0;
 my $sleep     = 5;
 my $help      = 0;
-# my $sync      = 0;
-# my $rsync_opt = '';
 my $load      = 10;
 my $verbose   = 0;
 my $scoreboard;
@@ -34,12 +32,6 @@ my $scoreboard;
 Getopt::Long::GetOptions(
     "daemon"      => \$daemonize,
     "sleep=i"     => \$sleep,
-    # "help|?"      => \$help,
-    # "throttle=i"  => \%throttle,
-    # "worker=s"    => \$worker,
-    # "sync"        => \$sync,
-    # "to|target=s" => \@target,
-    # "rsync=s"     => \$rsync_opt,
     "load=i"      => \$load,
     "scoreboard=s"=> \$scoreboard,
     "verbose"     => \$verbose,
@@ -50,17 +42,23 @@ $cfg{verbose} = $verbose;
 $cfg{scoreboard} = $scoreboard;
 $cfg{prioritize} = 1;
 
-require MT::TheSchwartz;
-my $client = MT::TheSchwartz->new(%cfg);
-no warnings 'once';
-$TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
+my $client = eval {
+    require MT::TheSchwartz;
+    my $c = MT::TheSchwartz->new(%cfg);
+    no warnings 'once';
+    $TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
+    $c;
+};
+if ((my $error = $@) && $verbose) {
+    print STDERR "Error initializing TheSchwartz: $error\n";
+}
 
-if ($daemonize) {
+if ($daemonize && $client) {
     $client->work_periodically($sleep);
 } else {
     # First, run periodic tasks
     $mt->run_tasks();
-    $client->work_until_done;
+    $client->work_until_done if $client;
 }
 
 1;
