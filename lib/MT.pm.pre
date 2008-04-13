@@ -977,13 +977,17 @@ sub get_timer {
     my $mt = shift;
     $mt = MT->instance unless ref $mt;
     my $timer = $mt->request('timer');
-    unless ($timer) {
-        my $uri;
-        if ($mt->isa('MT::App')) {
-            $uri = $mt->uri( args => { $mt->param_hash } );
+    unless (defined $timer) {
+        if (MT->config('PerformanceLogging')) {
+            my $uri;
+            if ($mt->isa('MT::App')) {
+                $uri = $mt->uri( args => { $mt->param_hash } );
+            }
+            require MT::Util::ReqTimer;
+            $timer = MT::Util::ReqTimer->new( $uri );
+        } else {
+            $timer = 0;
         }
-        require MT::Util::ReqTimer;
-        $timer = MT::Util::ReqTimer->new( $uri );
         $mt->request('timer', $timer);
     }
     return $timer;
