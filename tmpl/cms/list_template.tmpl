@@ -45,15 +45,9 @@ TC.attachLoadEvent(init);
         <div id="filter-title">
         <mt:if name="filter_key">
             <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
-            <!-- <a class="filter-link" href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">">[ <__trans phrase="Remove filter"> ]</a> -->
+            <a class="filter-link" href="<mt:var name="script_url">?__mode=list&amp;_type=template<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
         <mt:else>
-            <mt:unless name="filter">
             <strong><__trans phrase="All Templates"></strong>
-            <!-- <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a> -->
-            <mt:else>
-            <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
-            <a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>"><__trans phrase="Remove filter"></a>
-            </mt:unless>
         </mt:if>
         </div>
     </div>

@@ -637,22 +637,18 @@ sub list {
     if ($template_type) {
         @types = ( $template_type );
     }
+    $app->delete_param('filter_key') if $filter;
     foreach my $tmpl_type (@types) {
-        $app->delete_param('filter_key') if $filter;
         if ( $tmpl_type eq 'index' ) {
-            $filter = 'index_templates';
             $app->param( 'filter_key', 'index_templates' );
         }
         elsif ( $tmpl_type eq 'archive' ) {
-            $filter = 'archive_templates';
             $app->param( 'filter_key', 'archive_templates' );
         }
         elsif ( $tmpl_type eq 'system' ) {
-            $filter = 'system_templates';
             $app->param( 'filter_key', 'system_templates' );
         }
         elsif ( $tmpl_type eq 'email' ) {
-            $filter = 'email_templates';
             $app->param( 'filter_key', 'email_templates' );
         }
         $terms->{type} = $types{$tmpl_type}->{type};
@@ -671,6 +667,16 @@ sub list {
         $tmpl_param->{template_type} = $tmpl_type;
         $tmpl_param->{template_type_label} = $template_type_label;
         push @tmpl_loop, $tmpl_param;
+    }
+    if ($filter) {
+        $params->{filter_key} = $filter;
+        $params->{filter_label} = $types{$template_type}{label}
+            if exists $types{$template_type};
+        $app->param('filter_key', $filter);
+    } else {
+        # restore filter_key param (we modified it for the
+        # sake of the individual table listings)
+        $app->delete_param('filter_key');
     }
 
     $params->{template_type_loop} = \@tmpl_loop;
