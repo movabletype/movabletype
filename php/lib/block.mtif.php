@@ -77,15 +77,18 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        if (isset($args['name']))
-            $var_key = $args['name'];
-        else if(isset($args['var']))
-            $var_key = $args['var'];
-        else if(isset($args['tag']))
-            $var_key = $args['tag'];
         require_once("function.mtsetvar.php");
-        smarty_function_mtsetvar(array('name' => '__name__', 'value' => $var_key), $ctx);
-        smarty_function_mtsetvar(array('name' => '__value__', 'value' => $val), $ctx);
+        if(isset($args['tag'])) {
+            smarty_function_mtsetvar(array('name' => '__cond_tag__', 'value' => $args['tag']), $ctx);
+        }
+        else {
+            if (isset($args['name']))
+                $var_key = $args['name'];
+            else if(isset($args['var']))
+                $var_key = $args['var'];
+            smarty_function_mtsetvar(array('name' => '__cond_name__', 'value' => $var_key), $ctx);
+        }
+        smarty_function_mtsetvar(array('name' => '__cond_value__', 'value' => $val), $ctx);
 
         if ( array_key_exists('op', $args) ) {
             $op = $args['op'];
@@ -139,8 +142,6 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $result);
     } else {
         $vars =& $ctx->__stash['vars'];
-        unset($vars['__name__']);
-        unset($vars['__value__']);
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }

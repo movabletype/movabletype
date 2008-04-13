@@ -248,10 +248,26 @@ class MTViewer extends Smarty {
             return '';
         }
         if ((count($args) > 0) && (!isset($args['name']) && !isset($args['var']) && !isset($args['tag']))) {
-            require_once("function.mtgetvar.php");
-            $var = smarty_function_mtgetvar(array('name' => '__name__'), $ctx);
-            if (isset($var) && $var != '')
-                $args['name'] = $var;
+            $vars =& $ctx->__stash['vars'];
+            if ( array_key_exists('__cond_tag__', $vars) ) {
+                $tag = $vars['__cond_tag__'];
+                unset($vars['__cond_tag__']);
+                if ( isset($tag) && $tag )
+                    $args['tag'] = $tag;
+            }
+            else if ( array_key_exists('__cond_name__', $vars) ) {
+                $name = $vars['__cond_name__'];
+                unset($vars['__cond_name__']);
+                if ( isset($name) && $name )
+                    $args['name'] = $name;
+            }
+            if ( array_key_exists('__cond_value__', $vars) ) {
+                $value = $vars['__cond_value__'];
+                unset($vars['__cond_value__']);
+                if ( isset($value) && $value )
+                    $args['value'] = $value;
+            }
+            $ctx->__stash['vars'] =& $vars;
         }
         if (count($args) >= 1) { # else-if case
             require_once("block.mtif.php");
