@@ -1125,14 +1125,14 @@ sub add_map {
     require MT::TemplateMap;
     my $blog_id = $q->param('blog_id');
     my $at      = $q->param('new_archive_type');
-    my $count   = MT::TemplateMap->count(
+    my $exist   = MT::TemplateMap->exist(
         {
             blog_id      => $blog_id,
             archive_type => $at
         }
     );
     my $map = MT::TemplateMap->new;
-    $map->is_preferred( $count ? 0 : 1 );
+    $map->is_preferred( $exist ? 0 : 1 );
     $map->template_id( scalar $q->param('template_id') );
     $map->blog_id($blog_id);
     $map->archive_type($at);
@@ -1834,7 +1834,7 @@ sub clone_templates {
         my $new_basename = $app->translate("Copy of [_1]", $tmpl->name);
         my $new_name = $new_basename;
         my $i = 0;
-        while (MT::Template->count({ name => $new_name, blog_id => $tmpl->blog_id })) {
+        while (MT::Template->exist({ name => $new_name, blog_id => $tmpl->blog_id })) {
             $new_name = $new_basename . ' (' . ++$i . ')';
         }
 

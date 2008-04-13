@@ -559,7 +559,7 @@ sub rss {
           unless $entry && ( MT::Entry::RELEASE() == $entry->status );
     }
     elsif ( my $cid = $tb->category_id ) {
-        my $count = $app->model('entry')->count(
+        my $exist = $app->model('entry')->exist(
             { status => MT::Entry::RELEASE() },
             {
                 join =>
@@ -568,7 +568,7 @@ sub rss {
         );
         return $app->_response(
             Error => $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id ) )
-          if $count <= 0;
+          unless $exist;
     }
     my $rss = _generate_rss($tb);
     $app->_response( RSS => $rss );

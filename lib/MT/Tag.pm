@@ -94,7 +94,7 @@ sub remove {
     if (ref $tag) {
         if (!$tag->n8d_id) {
             # normalized tag! we can't delete if others reference us
-            my $child_tags = MT::Tag->count({n8d_id => $tag->id});
+            my $child_tags = MT::Tag->exist({n8d_id => $tag->id});
             return $tag->error(MT->translate("This tag is referenced by others."))
                 if $child_tags;
         } else {
@@ -107,10 +107,10 @@ sub remove {
     # check for an orphaned normalized tag and delete if necessary
     if ($n8d_tag) {
         # Normalized tag, no longer referenced by other tags...
-        if (!MT::Tag->count({n8d_id => $n8d_tag->id})) {
+        if (!MT::Tag->exist({n8d_id => $n8d_tag->id})) {
             # Noramlized tag that no longer has any object tag associations
             require MT::ObjectTag;
-            if (!MT::ObjectTag->count({tag_id => $n8d_tag->id})) {
+            if (!MT::ObjectTag->exist({tag_id => $n8d_tag->id})) {
                 $n8d_tag->remove
                     or return $tag->error($n8d_tag->errstr);
             }
@@ -411,7 +411,7 @@ sub save_tags {
         next unless ref $otag;
         my $this_tag_id = $otag->tag_id;
         $otag->remove;
-        if (! MT::ObjectTag->count({tag_id => $this_tag_id})) {
+        if (! MT::ObjectTag->exist({tag_id => $this_tag_id})) {
             # no more references to this tag... just delete it now
             if (my $tag = MT::Tag->load($this_tag_id)) {
                 $tag->remove;

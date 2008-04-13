@@ -341,7 +341,7 @@ sub apply_basename {
 
     if (my $basename = $app->get_header('Slug')) {
         my $entry_class = ref $entry;
-        my $basename_uses = $entry_class->count({
+        my $basename_uses = $entry_class->exist({
             blog_id  => $entry->blog_id,
             basename => $basename,
             ($entry->id ? ( id => { op => '!=', value => $entry->id } ) : ()),

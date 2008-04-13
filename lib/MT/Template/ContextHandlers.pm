@@ -3042,7 +3042,7 @@ sub _hdlr_author_has_entry {
     $terms{status}    = MT::Entry::RELEASE();
 
     my $class = MT->model('entry');
-    $class->count( \%terms );
+    $class->exist( \%terms );
 }
 
 sub _hdlr_author_has_page {
@@ -3057,7 +3057,7 @@ sub _hdlr_author_has_page {
     $terms{status}    = MT::Entry::RELEASE();
 
     my $class = MT->model('page');
-    $class->count( \%terms );
+    $class->exist( \%terms );
 }
 
 sub _hdlr_authors {

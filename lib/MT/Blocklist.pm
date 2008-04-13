@@ -31,7 +31,7 @@ sub block_these {
     my $class = shift;
     my ($blog_id, $action, @urls) = @_;
     foreach my $url (@urls) {
-        next if $class->count({blog_id => $blog_id, text => $url});
+        next if $class->exist({blog_id => $blog_id, text => $url});
         my $this = $class->new();
         $this->set_values({blog_id => $blog_id, text => $url,
                            action => $action});

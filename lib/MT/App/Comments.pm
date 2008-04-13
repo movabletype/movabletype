@@ -679,7 +679,7 @@ sub _builtin_throttle {
     );
 
     if (
-        MT::Comment->count(
+        MT::Comment->exist(
             {
                 ip         => $user_ip,
                 created_on => [$from],

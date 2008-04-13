@@ -367,7 +367,7 @@ sub core_upgrade_functions {
             priority => 9.3,
             updater => {
                 type => 'blog',
-                condition => sub { !(MT::Permission->count({
+                condition => sub { !(MT::Permission->exist({
                     blog_id => $_[0]->id, author_id => 0 })) },
                 code => sub {
                     my $perm = new MT::Permission;
@@ -1479,7 +1479,7 @@ sub seed_database {
     my (%param) = @_;
 
     require MT::Author;
-    return undef if MT::Author->count;
+    return undef if MT::Author->exist;
 
     $self->progress($self->translate_escape("Creating initial blog and user records..."));
 
@@ -1605,7 +1605,7 @@ sub create_default_roles {
     );
 
     require MT::Role;
-    return if MT::Role->count();
+    return if MT::Role->exist();
 
     foreach my $r (@default_roles) {
         my $role = MT::Role->new();
@@ -1672,7 +1672,7 @@ sub upgrade_templates {
             if $val->{set} ne 'system';
         $terms->{blog_id} = $blog_id;
 
-        return 1 if MT::Template->count( $terms );
+        return 1 if MT::Template->exist( $terms );
 
         $self->progress($self->translate_escape("Creating new template: '[_1]'.", $val->{name}));
 
@@ -1983,13 +1983,13 @@ sub detect_schema_version {
 
     require MT::Template;
     my $dyn_error_template = 
-        MT::Template->count({type => 'dynamic_error'});
+        MT::Template->exist({type => 'dynamic_error'});
     if ($dyn_error_template) {
         return 3.1;
     }
 
     my $comment_pending_template =
-        MT::Template->count({type => 'comment_pending'});
+        MT::Template->exist({type => 'comment_pending'});
     if ($comment_pending_template) {
         return 3.0;
     }

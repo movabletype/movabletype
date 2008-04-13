@@ -109,14 +109,14 @@ sub js_tag_check {
       or $app->json_error( $app->translate("Invalid request.") );
     if ( $tag && $blog_id ) {
         my $ot_class = $app->model('objecttag');
-        my $count    = $ot_class->count(
+        my $exist    = $ot_class->exist(
             {
                 object_datasource => $class->datasource,
                 blog_id           => $blog_id,
                 tag_id            => $tag->id
             }
         );
-        undef $tag unless $count;
+        undef $tag unless $exist;
     }
     return $app->json_result( { exists => $tag ? 'true' : 'false' } );
 }

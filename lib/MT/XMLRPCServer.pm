@@ -183,7 +183,7 @@ sub _apply_basename {
     if (defined $basename) {
         # Ensure this basename is unique.
         my $entry_class = ref $entry;
-        my $basename_uses = $entry_class->count({
+        my $basename_uses = $entry_class->exist({
             blog_id  => $entry->blog_id,
             basename => $basename,
             ($entry->id ? ( id => { op => '!=', value => $entry->id } ) : ()),

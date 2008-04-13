@@ -63,6 +63,23 @@ sub count {
     );
 }
 
+sub exist {
+    my $driver = shift;
+    my($class, $terms, $args) = @_;
+
+    return $driver->_select_aggregate(
+        select   => '1',
+        class    => $class,
+        terms    => $terms,
+        args     => $args,
+        override => {
+                     order  => '',
+                     limit  => 1,
+                     offset => undef,
+                    },
+    );
+}
+
 sub remove_all {
     my $driver = shift;
     my ($class) = @_;

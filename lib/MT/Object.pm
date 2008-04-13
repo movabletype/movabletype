@@ -542,9 +542,8 @@ sub nextprev {
 
 ## Drivers.
 
-# Note: Removed methods: set_driver
-
 sub count          { shift->_proxy('count',          @_) }
+sub exist          { shift->_proxy('exist',          @_) }
 sub count_group_by { shift->_proxy('count_group_by', @_) }
 sub sum_group_by   { shift->_proxy('sum_group_by',   @_) }
 sub avg_group_by   { shift->_proxy('avg_group_by',   @_) }

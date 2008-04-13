@@ -255,7 +255,7 @@ sub end_element {
                 }
             }
             elsif ('permission' eq $name) {
-                my $perm = $class->count( {
+                my $perm = $class->exist( {
                     author_id => $obj->author_id,
                     blog_id   => $obj->blog_id
                 });

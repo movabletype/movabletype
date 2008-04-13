@@ -935,7 +935,7 @@ sub make_unique_basename {
     my $base_copy = $base;
 
     my $class = ref $entry; 
-    while ($class->count({ blog_id => $blog->id,
+    while ($class->exist({ blog_id => $blog->id,
                            basename => $base })) {
         $base = $base_copy . '_' . $i++;
     }
@@ -961,7 +961,7 @@ sub make_unique_category_basename {
     my $base_copy = $base;
 
     my $cat_class = ref $cat;
-    while ($cat_class->count({ blog_id => $cat->blog_id,
+    while ($cat_class->exist({ blog_id => $cat->blog_id,
                                basename => $base })) {
         $base = $base_copy . '_' . $i++;
     }
@@ -981,7 +981,7 @@ sub make_unique_author_basename {
     my $base_copy = $base;
 
     my $author_class = ref $author;
-    while ($author_class->count({ basename => $base })) {
+    while ($author_class->exist({ basename => $base })) {
         $base = $base_copy . '_' . $i++;
     }
     $base;

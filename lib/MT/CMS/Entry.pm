@@ -80,7 +80,7 @@ sub edit {
             my $not_class = $app->model('notification');
             $param->{can_send_notifications} = 1;
             $param->{has_subscribers} =
-              $not_class->count( { blog_id => $blog_id } );
+              $not_class->exist( { blog_id => $blog_id } );
         }
 
         ## Load next and previous entries for next/previous links
@@ -1150,9 +1150,9 @@ sub save {
             && !$app->param('basename_manual')
             && $type eq 'entry' )
         {
-            my $cnt =
-              $class->count( { blog_id => $blog_id, basename => $basename } );
-            if ($cnt) {
+            my $exist =
+              $class->exist( { blog_id => $blog_id, basename => $basename } );
+            if ($exist) {
                 $obj->basename( MT::Util::make_unique_basename($obj) );
             }
         }

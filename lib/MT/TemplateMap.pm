@@ -107,7 +107,7 @@ sub remove {
             $blog->archive_type( $ats{ $blog->id } ? join ',', @{ $ats{ $blog->id } } : '' );
             $blog->save;
             for my $at ( @{ $ats{ $blog->id } } ) {
-                unless ( __PACKAGE__->count({
+                unless ( __PACKAGE__->exist({
                     blog_id => $blog->id, archive_type => $at, is_preferred => 1 
                 }) ) {
                     my $remaining = __PACKAGE__->load(

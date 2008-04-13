@@ -1648,7 +1648,7 @@ sub create_user_pending {
         return $app->error($app->translate("User requires username."));
     }
 
-    my $existing = MT::Author->count( { name => $name } );
+    my $existing = MT::Author->exist( { name => $name } );
     return $app->error($app->translate("A user with the same name already exists."))
         if $existing;
 
