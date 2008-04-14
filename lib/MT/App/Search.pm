@@ -170,7 +170,7 @@ sub init_cache_driver {
         });
         return;
     }
-    $app->{cache_driver} = $cache_driver->new( ttl => $app->config->ThrottleSeconds );
+    $app->{cache_driver} = $cache_driver->new( ttl => $app->config->SearchCacheTTL );
 }
 
 sub create_blog_list {
@@ -299,7 +299,7 @@ sub count {
     return $app->error($class->errstr) unless defined $count;
 
     my $cache_driver = $app->{cache_driver};
-    $cache_driver->set( $app->{cache_keys}{count}, $count, $app->config->ThrottleSeconds );
+    $cache_driver->set( $app->{cache_keys}{count}, $count, $app->config->SearchCacheTTL );
 
     $count;
 }
@@ -416,7 +416,7 @@ sub cache_out {
     }
 
     my $cache_driver = $app->{cache_driver};
-    $cache_driver->set( $app->{cache_keys}{result}, $out, $app->config->ThrottleSeconds );
+    $cache_driver->set( $app->{cache_keys}{result}, $out, $app->config->SearchCacheTTL );
 }
 
 sub log_search {
@@ -793,7 +793,7 @@ sub throttle_response {
     my $tmpl = $app->param('Template') || '';
     if ($tmpl eq 'feed') {
         $app->response_code(503);
-        $app->set_header('Retry-After' => $app->config('ThrottleSeconds'));
+        $app->set_header('Retry-After' => $app->config->SearchThrottleSeconds);
         $app->send_http_header("text/plain");
         $app->{no_print_body} = 1;
     }

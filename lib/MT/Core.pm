@@ -394,6 +394,7 @@ BEGIN {
             'DynamicComments' => { default => 0, },
             'SignOnPublicKey' => { default => '', },
             'ThrottleSeconds' => { default => 20, },
+            'SearchCacheTTL'        => { default => 20, },
             'SearchThrottleSeconds' => { default => 5 },
             'SearchThrottleIPWhitelist' => undef,
             'OneHourMaxPings'           => { default => 10, },
