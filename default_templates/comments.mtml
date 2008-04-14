@@ -14,11 +14,12 @@
                 <div class="comment-header">
                     <div class="asset-meta">
                         <span class="byline">
-                            <__trans phrase="By"> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span><MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>
-                            <MTCommentParent>
-                            <__trans phrase="replied to"> <a href="#comment-<$MTCommentID$>"><$MTCommentAuthor$></a>
-                            </MTCommentParent>
-                            <__trans phrase="on"> <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
+                            <mt:IfCommentParent>
+                                <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span>%%<mt:CommentParent>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
+                            <mt:else>
+                                <MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span>
+                            </mt:IfCommentParent>
+                            | <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
                             <MTIfCommentsAccepted> | <$MTCommentReplyLink$></MTIfCommentsAccepted>
                         </span>
                     </div>
@@ -72,12 +73,12 @@
                         <input id="comment-url" name="url" size="30" value="" />
                     </div>
                     <div id="comment-form-remember-me">
-                        <label for="comment-bake-cookie"><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />
-                            <__trans phrase="Remember personal info?"></label>
+                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />
+                        <label for="comment-bake-cookie"><__trans phrase="Remember personal info?"></label>
                     </div>
                     <div id="comment-form-reply">
-                        <label for="comment-reply" id="comment-reply-label"><input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="setCommentParentID();" />
-                            <__trans phrase="Replying to"></label>
+                        <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="setCommentParentID();" />
+                        <label for="comment-reply" id="comment-reply-label"></label>
                     </div>
                 </div>
                 <div id="comments-open-text">

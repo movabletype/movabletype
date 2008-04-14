@@ -299,6 +299,7 @@ ul { list-style: disc outside; }
 #comment-form-email,
 #comment-form-url,
 #comment-form-remember-me,
+#comment-form-reply,
 #comments-open-text,
 .trackbacks-header,
 .trackbacks-info,
@@ -308,6 +309,11 @@ ul { list-style: disc outside; }
 .search-form-header,
 .search-results-header {
     margin-bottom: .75em;
+}
+
+#comment-form-remember-me label,
+#comment-form-reply label {
+    display: inline;
 }
 
 .entry-categories,

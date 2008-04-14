@@ -174,26 +174,17 @@ function replyComment(parent_id, author) {
     showDocumentElement('comment-form-reply');
     
     var checkbox = document.getElementById('comment-reply');
-
-    // Clear the current label but NOT our checkbox!
     var label = document.getElementById('comment-reply-label');
-    for(var i = 1; i < label.childNodes.length; i++) {
-        label.removeChild(label.childNodes[i]);
-    }
-    
-    // Populate label with new values
-    var reply_text = document.createTextNode(' <__trans phrase="Replying to"> ');
-    label.appendChild(reply_text);
+    var text = document.getElementById('comment-text');
 
-    var anchor = document.createElement('a');
-    anchor.setAttribute('href', '#comment-' + parent_id);
-    anchor.innerHTML = author;
-    label.appendChild(anchor);
-    
+    // Populate label with new values
+    var reply_text = '<__trans phrase="Replying to <a href="#comment-[_1]">comment from [_2]</a>" params="'+ parent_id +'%%'+ author +'">';
+    label.innerHTML = reply_text;
+
     checkbox.value = parent_id; 
-    checkbox.setAttribute('checked', true);
-    checkbox.focus();
-    
+    checkbox.checked = true;
+    text.focus();
+
     setCommentParentID();
 }
 
