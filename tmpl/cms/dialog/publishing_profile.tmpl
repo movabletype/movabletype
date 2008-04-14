@@ -63,7 +63,7 @@ TC.attachLoadEvent(init);
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
-                    <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"> <span class="hint"><__trans phrase="Publish main index template and all individual archive templates statically, and publish all other files asynchronously."></span></label>
+                    <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"> <span class="hint"><__trans phrase="Publish main index template and all entry/page archives statically. Publish all other files in the background."></span></label>
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>

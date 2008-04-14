@@ -1852,8 +1852,8 @@ sub _switch_publish_options {
         my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl->id } );
         foreach my $tmpl_map (@tmpl_maps) {
             if ($dcty eq 'async_partial') {
-                # build the preferred archive type synchronously
-                if (($tmpl_map->archive_type eq $pref_at) &&
+                # build the preferred individual/page archives synchronously
+                if (($tmpl_map->archive_type =~ m/^(Individual|Page)$/) &&
                     ($tmpl_map->is_preferred)) {
                     $tmpl_map->build_type(MT::PublishOption::ONDEMAND());
                     $tmpl_map->save;
