@@ -91,16 +91,30 @@
     <mt:unless name="blog_view">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
     </mt:unless>
-    <mt:if name="template_type" like="/(index|archive)/">
+    <mt:if name="template_type" eq="index">
                 <td class="publishing-method">
-                    <mt:if name="build_dynamic"><__trans phrase="Dynamic"><mt:else>
                     <mt:if name="build_type" eq="0"><__trans phrase="Manual">
                     <mt:elseif name="build_type" eq="2"><__trans phrase="Manual">
                     <mt:elseif name="build_type" eq="3"><__trans phrase="Dynamic">
                     <mt:elseif name="build_type" eq="4"><__trans phrase="Background">
                     <mt:elseif name="build_type" eq="5"><__trans phrase="Scheduled">
-                    <mt:else><__trans phrase="Static">
-                    </mt:if></mt:if>
+                    <mt:else><__trans phrase="Static"></mt:if>
+                </td>
+    <mt:elseif name="template_type" eq="archive">
+                <td class="publishing-method">
+                    <ul>
+            <mt:loop name="archive_types">
+                <mt:loop name="archive_tmpl_loop">
+                        <li><mt:if name="selected">
+                    <mt:if name="map_build_type" eq="0"><__trans phrase="Manual">
+                    <mt:elseif name="map_build_type" eq="2"><__trans phrase="Manual">
+                    <mt:elseif name="map_build_type" eq="3"><__trans phrase="Dynamic">
+                    <mt:elseif name="map_build_type" eq="4"><__trans phrase="Background">
+                    <mt:elseif name="map_build_type" eq="5"><__trans phrase="Scheduled">
+                    <mt:else><__trans phrase="Static"></mt:if></mt:if></li>
+                </mt:loop>
+            </mt:loop>
+                    </ul>
                 </td>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
