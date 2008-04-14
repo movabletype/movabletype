@@ -7,11 +7,11 @@
 <MTIf name="body_class" eq="mt-comment-confirmation">
 <mt:ignore><!-- Success message when comment has been submitted --></mt:ignore>
     <MTSetVar name="page_title" value="<__trans phrase="Confirmation...">">
-    <MTSetVar name="message" value="<__trans phrase="Your comment has been submitted!">">
+    <MTSetVar name="message" value="<p><__trans phrase="Your comment has been submitted!"></p>">
 <MTElse name="body_class" eq="mt-comment-pending">
 <mt:ignore><!-- Pending message when comment is being held for review --></mt:ignore>
     <MTSetVar name="page_title" value="<__trans phrase="Thank you for commenting.">">
-    <MTSetVar name="message" value="<__trans phrase="Your comment has been received and held for approval by the blog owner.">">
+    <MTSetVar name="message" value="<p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>">
 <MTElse name="body_class" eq="mt-comment-error">
 <mt:ignore><!-- Error message when comment submission fails --></mt:ignore>
     <MTSetVar name="page_title" value="<__trans phrase="Comment Submission Error">">
@@ -38,6 +38,7 @@
                         <div id="alpha-inner">
                             <h1 id="page-title"><$MTVar name="page_title"$></h1>
                             <$MTVar name="message"$>
+                            <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
                         </div>
                     </div>
 
