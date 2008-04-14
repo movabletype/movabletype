@@ -32,8 +32,10 @@ sub init {
     #    }
     #}
     $app->_register_core_callbacks({
-        'search_post_execute' => \&log_search,
-        'search_post_render'  => \&cache_out,
+        'MT::App::Search::search_post_execute' => \&log_search,
+        'MT::App::Search::search_post_render'  => \&cache_out,
+        'MT::App::Search::prepare_throttle'    => \&_default_throttle,
+        'MT::App::Search::take_down'           => \&_default_takedown,
     });
     $app;
 }
@@ -87,6 +89,7 @@ sub init_request{
     foreach ( @$params ) {
         delete $app->{$_} if exists $app->{$_}
     }
+    delete $app->{__have_throttle} if exists $app->{__have_throttle};
 
     my %no_override;
     foreach my $no ( split /\s*,\s*/, $app->config->SearchNoOverride ) {
@@ -114,7 +117,7 @@ sub init_request{
 
     my $processed = 0;
     my $list      = {};
-    if ( MT->run_callbacks( 'search_blog_list', $app, $list, \$processed ) ) {
+    if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) ) {
         if ( $processed ) {
             $app->{searchparam}{IncludeBlogs} = $list;
         }
@@ -242,6 +245,9 @@ sub check_cache {
 
 sub process {
     my $app = shift;
+
+    my @messages;
+    return $app->throttle_response(\@messages) unless $app->throttle_control(\@messages);
 
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
@@ -772,6 +778,78 @@ sub _join_author {
     );
 }
 
+# throttling related methods
+sub throttle_control {
+    my $app = shift;
+    my ( $messages ) = @_;
+    my $result;
+    $app->run_callbacks( 'prepare_throttle', $app, \$result, $messages );
+    $result;
+}
+
+sub throttle_response {
+    my $app = shift;
+    my ( $messages ) = @_;
+    my $tmpl = $app->param('Template') || '';
+    if ($tmpl eq 'feed') {
+        $app->response_code(503);
+        $app->set_header('Retry-After' => $app->config('ThrottleSeconds'));
+        $app->send_http_header("text/plain");
+        $app->{no_print_body} = 1;
+    }
+    my $msg = $messages && @$messages
+      ? join '; ', @$messages
+      : $app->translate('Throttled');
+    return $app->error($msg);
+}
+
+sub _default_throttle {
+    my ( $cb, $app, $result, $messages ) = @_;
+
+    # Don't bother if a callback proiritized higher
+    # set up its throttle already
+    return $$result if defined $$result;
+
+    ## Get login information if user is logged in (via cookie).
+    ## If no login cookie, this fails silently, and that's fine.
+    ($app->{user}) = $app->login;
+
+    ## Don't throttle MT registered users
+    if ( $app->{user} && $app->{user}->type == MT::Author::AUTHOR() ) {
+        $$result = 1;
+        return 1;
+    }
+
+    my $ip = $app->remote_ip;
+    my $whitelist = $app->config->SearchThrottleIPWhitelist;
+    if ($whitelist) {
+        # check for $ip in $whitelist
+        my @list = split /(\s*[,;]\s*|\s+)/, $whitelist;
+        foreach (@list) {
+            next unless $_ =~ m/^\d{1,3}(\.\d{0,3}){0,3}$/;
+            if (($ip eq $_) || ($ip =~ m/^\Q$_\E/)) {
+                $$result = 1;
+                return 1;
+            }
+        }
+    }
+
+    unless ( $^O eq 'Win32' ) {
+        # Use SIGALRM to stop processing in 5 seconds for each request
+        $SIG{ALRM} = sub { $app->errtrans('Throttled'); die; };
+        $app->{__have_throttle} = 1;
+        alarm($app->config->SearchThrottleSeconds);
+        $$result = 1;
+    }
+    1;
+}
+
+sub _default_takedown {
+    my ( $cb, $app ) = @_;
+    alarm(0) if $app->{__have_throttle};
+    1;
+}
+
 1;
 __END__
 
@@ -818,6 +896,22 @@ where the hash keys (1, 2, and 3) are the IDs of the blogs to search for.
 
 Plugins must also set $processed = 1 in order to specify the app that
 the app must not overwrite the blog list created by the plugin.
+
+=item prepare_throttle
+
+    callback($cb, $app, \$result, \@messages);
+
+Called right before the beginning of the search processing.
+Each callback should see if certain condition is met, and
+set 0 to $$result if the request should be throttled.
+
+There can be more than one throttling method set up.
+Callbacks are called in order of priority set up when add_callback
+was called.  Each callback should start its own code by something like
+below, to prevent itself overwriting throttle set up in the callback
+whose priority is higher than itself.
+
+    return $$result if defined $$result;
 
 =head1 AUTHOR & COPYRIGHT
 
