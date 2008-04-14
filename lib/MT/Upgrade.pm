@@ -862,6 +862,21 @@ sub core_upgrade_functions {
                 sql => 'update mt_objectasset set objectasset_embedded=1',
             },
         },
+        'core_enable_address_book' => {
+            version_limit => 4.0054,
+            priority => 3.2,
+            code => sub {
+                require MT::Notification;
+                if (MT::Notification->exist()) {
+                    my $cfg = MT->config;
+                    if (! $cfg->EnableAddressBook) {
+                        $cfg->EnableAddressBook(1, 1);
+                        $cfg->save;
+                    }
+                }
+                return 0;
+            },
+        },
     }
 }
 
