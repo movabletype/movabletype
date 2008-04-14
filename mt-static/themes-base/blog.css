@@ -75,7 +75,7 @@ address {
     font-size: 0.1em;
     line-height: 0;
 }
-.pkg, #content-inner { display: inline-block; }
+.pkg, #content-inner { display: block; }
 /* no ie mac \*/
 * html .pkg, * html #content-inner { height: 1%; }
 .pkg, #content-inner { display: block; }
