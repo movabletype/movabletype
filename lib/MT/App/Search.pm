@@ -641,6 +641,8 @@ sub _query_parse_core {
 
     my $rvalue = sub {
         my %rvalues = (
+            REQUIREDlike => { like => '%' . $_[1] . '%' },
+            REQUIRED1    => $_[1],
             NORMALlike => { like => '%' . $_[1] . '%' },
             NORMAL1    => $_[1],
             PROHIBITEDlike => { not_like => '%' . $_[1] . '%' },
@@ -687,9 +689,21 @@ sub _query_parse_core {
                         ( $term->{type} || '' ) . $columns->{ $cols[$i] },
                         $term->{term}
                     );
-                    push @tmp, { $cols[$i] => $test };
-                    unless ( $i == $number - 1 ) {
-                        push @tmp, '-or';
+                    if ( 'PROHIBITED' eq $term->{type} ) {
+                        my @this_term; 
+                        push @this_term, { $cols[$i] => $test };
+                        push @this_term, '-or';
+                        push @this_term, { $cols[$i] => \' IS NULL' };
+                        push @tmp, \@this_term;
+                        unless ( $i == $number - 1 ) {
+                            push @tmp, '-and';
+                        }
+                    }
+                    else {
+                        push @tmp, { $cols[$i] => $test };
+                        unless ( $i == $number - 1 ) {
+                            push @tmp, '-or';
+                        }
                     }
                 }
             }
