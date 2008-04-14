@@ -367,7 +367,7 @@ sub search_terms {
         unless $columns && %$columns;
 
     my $parsed = $app->query_parse( %$columns );
-    return $app->errtrans('Parse error: [1]', $app->errstr)
+    return $app->errtrans('Invalid query: [_1]', encode_html($search_string))
         unless $parsed && %$parsed;
 
     push @terms, $parsed->{terms} if exists $parsed->{terms};
