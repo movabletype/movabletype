@@ -20,13 +20,13 @@ sub archive_label {
 sub default_archive_templates {
     return [
         {
-            label    => 'author-display-name/index.html',
-            template => '%-a/%f',
+            label    => 'author/author-display-name/index.html',
+            template => 'author/%-a/%f',
             default  => 1
         },
         {
-            label    => 'author_display_name/index.html',
-            template => '%a/%f'
+            label    => 'author/author_display_name/index.html',
+            template => 'author/%a/%f'
         },
     ];
 }

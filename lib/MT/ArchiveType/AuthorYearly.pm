@@ -21,12 +21,12 @@ sub archive_label {
 sub default_archive_templates {
     return [
         {
-            label    => 'author-display-name/yyyy/index.html',
+            label    => 'author/author-display-name/yyyy/index.html',
             template => '%-a/%y/%f',
             default  => 1
         },
         {
-            label    => 'author_display_name/yyyy/index.html',
+            label    => 'author/author_display_name/yyyy/index.html',
             template => '%a/%y/%f'
         },
     ];
