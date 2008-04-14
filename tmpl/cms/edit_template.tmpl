@@ -160,7 +160,7 @@
     <mt:unless name="new_object">
         <mt:unless name="build_dynamic">
             <mt:if name="can_rebuild">
-                <mt:unless name="archive_types">
+                <mt:if name="type_index">
     <button
         type="submit"
         accesskey="r"
@@ -168,7 +168,7 @@
         title="<__trans phrase="Save and Publish this template (r)">"
         onclick="return validate(this.form, 1);"
         ><__trans phrase="Save &amp; Publish"></button>
-                </mt:unless>
+                </mt:if>
             </mt:if>
         </mt:unless>
     </mt:unless>
