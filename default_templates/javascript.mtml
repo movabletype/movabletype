@@ -50,12 +50,7 @@ function individualArchivesOnLoad(commenter_name) {
 </MTIfPingsAccepted>
 <MTIfRegistrationAllowed>
     <MTIfRegistrationRequired>
-    if ( commenter_status == AUTHOR  ) {
-        hideDocumentElement('comment-form-name');
-        hideDocumentElement('comment-form-email');
-        showDocumentElement('comments-open-text');
-        showDocumentElement('comments-open-footer');
-    } else if ( commenter_status == COMMENTER ) {
+    if ( commenter_status > 0 ) {
         hideDocumentElement('comment-form-name');
         hideDocumentElement('comment-form-email');
         hideDocumentElement('comment-form-url');
