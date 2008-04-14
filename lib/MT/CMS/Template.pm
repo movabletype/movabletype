@@ -247,9 +247,9 @@ sub edit {
         $param->{publish_queue_available} = eval 'require List::Util; require Scalar::Util; 1;';
         $param->{build_type} = $obj->build_type;
         $param->{ 'build_type_' . ( $obj->build_type || 0 ) } = 1;
-        my ( $period, $interval ) = _get_schedule( $obj->build_interval );
-        $param->{ 'schedule_period_' . $period } = 1;
-        $param->{schedule_interval} = $interval;
+        #my ( $period, $interval ) = _get_schedule( $obj->build_interval );
+        #$param->{ 'schedule_period_' . $period } = 1;
+        #$param->{schedule_interval} = $interval;
         $param->{type} = 'custom' if $param->{type} eq 'module';
     } else {
         my $new_tmpl = $q->param('create_new_template');
@@ -438,7 +438,7 @@ sub edit {
     $param->{link_doc} = $app->help_url('appendices/tags/');
 
     $param->{screen_id} = "edit-template-" . $param->{type};
-    if (("custom" == $param->{type}) || ("custom" == $param->{type})) {
+    if (("custom" eq $param->{type}) || ("custom" eq $param->{type})) {
         $param->{screen_class} .= "edit-template-cache";
     }
 
