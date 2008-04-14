@@ -1178,6 +1178,7 @@ li#config-menu {
 
 #quickfilters .current-filter {
     background: url('../images/current-filter.gif') no-repeat 3px center;
+    font-weight: bold;
 }
 
 .system #quickfilters .current-filter {

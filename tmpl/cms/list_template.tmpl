@@ -3,7 +3,13 @@
     <mtapp:widget
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
-        <$mtapp:ListFilters$>
+        <ul>
+            <li id="all-tab"><a href="#all" onclick="showTable('all-listing');">Show All</a></li>
+            <li id="index-tab"><a href="#index" onclick="showTable('index-listing');">Index Templates</a></li>
+            <li id="system-tab"><a href="#system"  onclick="showTable('system-listing');">System Templates</a></li>
+            <li id="archive-tab"><a href="#archive" onclick="showTable('archive-listing');">Archive Templates</a></li>
+            <li id="module-tab"><a href="#module"  onclick="showTable('module-listing');">Template Modules</a></li>
+        </ul>
     </mtapp:widget>
     <mtapp:widget
         id="useful-links"
@@ -20,12 +26,36 @@
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
+var tableList = ["index", "archive", "module", "system"];
 var tableSelect = [];
+function showTable(name) {
+    for (var i=0, len=tableList.length; i<len; i++) {
+        var el = tableList[i] + "-listing"
+        var elTab = tableList[i] + "-tab"
+        if (name == "all-listing") {
+            DOM.removeClassName ( el, "hidden");
+            DOM.removeClassName ( elTab, "current-filter");
+            DOM.addClassName( "all-tab", "current-filter" );
+        }
+        else if (name == el) {
+            DOM.removeClassName ( el, "hidden");
+            DOM.addClassName( elTab, "current-filter" );
+            DOM.removeClassName( "all-tab", "current-filter" );
+        }
+        else {
+            DOM.addClassName( el, "hidden" );
+            DOM.removeClassName( elTab, "current-filter" );
+            DOM.removeClassName( "all-tab", "current-filter" );
+        }
+    }
+}
 function init() {
 <mt:loop name="template_type_loop">
     tableSelect.push(new TC.TableSelect( '<mt:var name="template_type">-listing-table' ));
     tableSelect[tableSelect.length-1].rowSelect = true;
 </mt:loop>
+    var name = (window.location.hash && window.location.hash.match( /^#/ ) ) ? window.location.hash.substr(1) : "all";
+    showTable(name + "-listing");
 }
 TC.attachLoadEvent(init);
 /* ]]> */
