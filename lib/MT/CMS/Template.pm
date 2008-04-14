@@ -1,3 +1,9 @@
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::CMS::Template;
 
 use strict;
@@ -75,10 +81,6 @@ sub edit {
         $param->{has_rebuild} =
           (      ( $obj->type eq 'index' )
               && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
-        $param->{custom_dynamic} =
-          $blog && ( $blog->custom_dynamic_templates || "" ) eq 'custom';
-        $param->{has_build_options} =
-          ( $param->{custom_dynamic} || $param->{has_rebuild} );
 
         # FIXME: enumeration of types
              $param->{is_special} = $param->{type} ne 'index'
@@ -242,7 +244,7 @@ sub edit {
             }
         }
         # publish options
-        $param->{publish_queue} = $blog->publish_queue if $blog;
+        $param->{publish_queue_available} = eval 'require List::Util; require Scalar::Util; 1;';
         $param->{build_type} = $obj->build_type;
         $param->{ 'build_type_' . ( $obj->build_type || 0 ) } = 1;
         my ( $period, $interval ) = _get_schedule( $obj->build_interval );
@@ -562,6 +564,8 @@ sub list {
     $params->{refreshed} = $app->param('refreshed');
     $params->{published} = $app->param('published');
     $params->{saved_copied} = $app->param('saved_copied');
+    $params->{saved_deleted} = $app->param('saved_deleted');
+    $params->{saved} = $app->param('saved');
 
     # determine list of system template types:
     my $scope;
@@ -650,6 +654,9 @@ sub list {
         }
         elsif ( $tmpl_type eq 'email' ) {
             $app->param( 'filter_key', 'email_templates' );
+        }
+        elsif ( $tmpl_type eq 'module' ) {
+            $app->param( 'filter_key', 'module_templates' );
         }
         $terms->{type} = $types{$tmpl_type}->{type};
         my $tmpl_param = $app->listing(
@@ -1061,7 +1068,7 @@ sub _populate_archive_loop {
               {
                 name    => $name,
                 value   => $_->{template},
-                default => ( $_->{default} || 0 )
+                default => ( $_->{default} || 0 ),
               };
         }
 
@@ -1181,13 +1188,6 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
-
-    $obj->rebuild_me(0) 
-      if $app->param('current_rebuild_me')
-      && !$app->param('rebuild_me');
-    $obj->build_dynamic(0)
-      if $app->param('current_build_dynamic')
-      && !$app->param('build_dynamic');
 
     ## Strip linefeed characters.
     ( my $text = $obj->text ) =~ tr/\r//d;
@@ -1428,7 +1428,10 @@ sub dialog_publishing_profile {
     $app->validate_magic or return;
 
     my $param = {};
+    my $blog = $app->blog;
+    $param->{dynamicity} = $blog->custom_dynamic_templates || 'none';
     $param->{screen_id} = "publishing-profile-dialog";
+    $param->{return_args} = $app->param('return_args');
 
     $app->build_page('dialog/publishing_profile.tmpl',
         $param);

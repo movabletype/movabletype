@@ -33,11 +33,18 @@ TC.attachLoadEvent(init);
 
 <mt:include name="dialog/header.tmpl">
 <form name="publishing_profiles_form" id="publishing_profiles_form" method="post" action="<mt:var name="script_url">" target="_top" onsubmit="return false">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="cfg_screen" value="cfg_publish_profile" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
     <div id="profile-panel" class="hidden panel">
-        
+
         <p><__trans phrase="Choose the profile that best matches the requirements for this blog."></p>
-        
+
         <mtapp:setting
             id="dynamicity"
             label="<__trans phrase="Publishing Profile">"
@@ -86,7 +93,7 @@ TC.attachLoadEvent(init);
         </div>
     </div>
     <div id="confirm-panel" class="hidden panel">
-        <p><__trans phrase="This new publishing profile will update all of you templates."></p>
+        <p><__trans phrase="This new publishing profile will update all of your templates."></p>
 
         <p><strong><__trans phrase="Are you sure you wish to continue?"></strong></p>
 

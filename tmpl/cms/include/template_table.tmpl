@@ -79,7 +79,7 @@
                     <ul>
             <mt:loop name="archive_types">
                 <mt:loop name="archive_tmpl_loop">
-                        <li><mt:if name="selected"><mt:var name="name" escape="html"></mt:if></li>
+                        <li><mt:if name="selected"><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></mt:if></li>
                 </mt:loop>
             </mt:loop>
                     </ul>
@@ -93,13 +93,14 @@
     </mt:unless>
     <mt:if name="template_type" like="/(index|archive)/">
                 <td class="publishing-method">
-                    <mt:if name="build_type" eq="0"><__trans phrase="Disabled">
-                    <mt:else name="build_type" eq="2"><__trans phrase="Manual">
-                    <mt:else name="build_type" eq="3"><__trans phrase="Dynamic">
-                    <mt:else name="build_type" eq="4"><__trans phrase="Asynchronous">
-                    <mt:else name="build_type" eq="5"><__trans phrase="Scheduled">
+                    <mt:if name="build_dynamic"><__trans phrase="Dynamic"><mt:else>
+                    <mt:if name="build_type" eq="0"><__trans phrase="Manual">
+                    <mt:elseif name="build_type" eq="2"><__trans phrase="Manual">
+                    <mt:elseif name="build_type" eq="3"><__trans phrase="Dynamic">
+                    <mt:elseif name="build_type" eq="4"><__trans phrase="Background">
+                    <mt:elseif name="build_type" eq="5"><__trans phrase="Scheduled">
                     <mt:else><__trans phrase="Static">
-                    </mt:if>
+                    </mt:if></mt:if>
                 </td>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">

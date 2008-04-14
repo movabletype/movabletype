@@ -27,17 +27,14 @@
                 </select><input type="text" id="archive_file_tmpl_<mt:var name="map_id">" class="tmpl-path tmpl-path-custom hidden" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">" />
             </td>
             <td class="publish-options">
-                <select name="build_type" id="build-type" class="half-width">
-                    <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically"></option>
-
-                <mt:if name="custom_dynamic">
-                    <option value="3"<mt:if name="build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
-                </mt:if>
-                <mt:if name="publish_queue">
-                    <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Asynchronously"></option>
+                <select name="map_build_type_<mt:var name="map_id">" id="build-type" class="half-width">
+                    <option value="1"<mt:if name="map_build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically"></option>
+                    <option value="3"<mt:if name="map_build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
+    <mt:if name="publish_queue_available">
+                    <option value="4"<mt:if name="map_build_type_4"> selected="selected"</mt:if>><__trans phrase="Background"></option>
         <mt:ignore>
             <!-- untested features -->
-                    <option value="5"<mt:if name="build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
+                    <option value="5"<mt:if name="map_build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
                     <mt:ignore>
                         <!-- This code needs to be shown if the "On a schedule" has been selected -->
                     <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
@@ -48,9 +45,8 @@
                     </select>
                     </mt:ignore>
         </mt:ignore>
-                </mt:if>
-                    <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
-                    <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
+    </mt:if>
+                    <option value="2"<mt:if name="map_build_type_2"> selected="selected"</mt:if><mt:if name="map_build_type_0"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
                 </select>
             </td>
             <td class="archive-delete si"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')" class="delete-archive-link"><span><__trans phrase="Delete"></span></a></td>

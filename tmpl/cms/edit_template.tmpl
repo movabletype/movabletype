@@ -159,9 +159,8 @@
     </mt:if>
     <mt:unless name="new_object">
         <mt:unless name="build_dynamic">
-        <mt:unless name="build_type_0">
-            <mt:if name="has_rebuild">
-                <mt:if name="can_rebuild">
+            <mt:if name="can_rebuild">
+                <mt:unless name="archive_types">
     <button
         type="submit"
         accesskey="r"
@@ -169,9 +168,8 @@
         title="<__trans phrase="Save and Publish this template (r)">"
         onclick="return validate(this.form, 1);"
         ><__trans phrase="Save &amp; Publish"></button>
-                </mt:if>
+                </mt:unless>
             </mt:if>
-        </mt:unless>
         </mt:unless>
     </mt:unless>
     <div id="autosave-notification-<$mt:var name="bar_position" default="top"$>" class="autosave-notification"></div>
@@ -625,21 +623,16 @@ TC.attachLoadEvent( init );
         </div>
     </mtapp:setting>
 <mt:else>
-    <mt:if name="has_build_options">
-        <mtapp:setting
-            id="build_dynamic"
-            label="<__trans phrase="Publish Options">"
-            help_page="templates"
-            help_section="enable_dynamic_publishing">
-            <mt:if name="custom_dynamic"><mt:if name="build_dynamic"><input type="hidden" name="current_build_dynamic" value="1" /></mt:if></mt:if>
-            <mt:unless name="build_dynamic"><mt:if name="has_rebuild"><mt:if name="rebuild_me"><input type="hidden" name="current_rebuild_me" value="1" /></mt:if></mt:if></mt:unless>
+    <mtapp:setting
+        id="build_dynamic"
+        label="<__trans phrase="Publish Options">"
+        help_page="templates"
+        help_section="enable_dynamic_publishing">
         <select name="build_type" id="build-type" class="full-width">
             <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically"></option>
-            <mt:if name="custom_dynamic">
             <option value="3"<mt:if name="build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
-            </mt:if>
-            <mt:if name="publish_queue">
-            <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Asynchronously"></option>
+            <mt:if name="publish_queue_available">
+            <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Background"></option>
     <mt:ignore>
         <!-- untested features -->
                 <option value="5"<mt:if name="build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
@@ -654,11 +647,9 @@ TC.attachLoadEvent( init );
                 </mt:ignore>
     </mt:ignore>
             </mt:if>
-            <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
-            <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
+            <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if><mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
         </select>
-        </mtapp:setting>
-    </mt:if>
+    </mtapp:setting>
 </mt:if>
 <mt:if name="template_group" like="(module|widget)">
 
@@ -728,7 +719,6 @@ MT.App = new Class( MT.App, {
        arguments.callee.applySuper( this, arguments );
        documentTags( true );
     },
-
 
     autoSave: function() {
         arguments.callee.applySuper( this, arguments );

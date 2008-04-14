@@ -291,6 +291,7 @@ TC.attachLoadEvent( init );
 
 
 <mt:unless name="hide_build_option">
+<mt:if name="dynamic_enabled">
 <fieldset>
     <h3><__trans phrase="Dynamic Publishing Options"></h3>
 
@@ -311,6 +312,7 @@ TC.attachLoadEvent( init );
     </mtapp:setting>
 
 </fieldset>
+</mt:if>
 </mt:unless>
 
 <fieldset>

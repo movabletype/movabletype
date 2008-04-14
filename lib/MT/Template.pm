@@ -567,7 +567,7 @@ sub published_url {
 
     return undef unless $tmpl->outfile;
     return undef unless ($tmpl->type eq 'index');
-    
+
     my $blog = $tmpl->blog;
     return undef unless $blog;
     my $site_url = $blog->site_url || '';
