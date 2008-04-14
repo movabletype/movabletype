@@ -393,7 +393,7 @@ sub mt_blog_stats_tag_cloud_tab {
     $args->{direction} = 'descend';
     $args->{limit} = 100;
 
-    my $iter = MT::ObjectTag->count_group_by($terms, $args);
+    my $iter = $app->model('objecttag')->count_group_by($terms, $args);
     my @tag_loop;
     my $ntags = 0;
     my $min = undef;
