@@ -121,15 +121,12 @@ sub _do_group_by {
     my $driver = shift;
     my ($agg_func, $class, $terms, $args) = @_;
     my $props = $class->properties;
-    if ($props->{class_type}) {
-        my $class_col = $props->{class_column};
-        unless ($terms->{$class_col}) {
-            $terms->{$class_col} = $class->class_type;
-        }
-    }
     if ($args->{no_class}) {
         delete $terms->{$props->{class_column}};
         delete $args->{no_class};
+    }
+    else {
+        $class->pre_search_scope_terms_to_class( $terms, $args );
     }
     my $order = delete $args->{sort};
     my $direction = delete $args->{direction};
@@ -158,17 +155,31 @@ sub _do_group_by {
 
     ## Ugly.
     my $sql = $stmt->as_sql;
+
+    ## Set statement's ORDER clause if any.
     if ($order) {
-        $sql .= "\nORDER BY " . $decorate->($order);
-        if ($direction) {
-            $sql .= $direction eq 'descend' ? ' DESC' : ' ASC';
+        if (! ref($order)) {
+            $sql .= "\nORDER BY " . $decorate->($order);
+            if ($direction) {
+                $sql .= $direction eq 'descend' ? ' DESC' : ' ASC';
+            }
+        } else {
+            my @order;
+            foreach my $ord (@$order) {
+                push @order, {
+                    column => $decorate->($ord->{column}),
+                    desc => $ord->{desc},
+                };
+            }
+            $stmt->order(\@order);
+            $sql .= "\n" . $stmt->as_aggregate('order');
         }
     }
 
     my $dbh = $driver->r_handle;
     $driver->start_query($sql, $stmt->bind);
-    my $sth = $dbh->prepare_cached($sql) or die $sql;
-    $sth->execute(@{ $stmt->bind }) or die $sql;
+    my $sth = $dbh->prepare_cached($sql);
+    $sth->execute(@{ $stmt->bind });
 
     my @bindvars;
     for (@{ $args->{group} }) {
