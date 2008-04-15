@@ -7,7 +7,7 @@
 package MT::Auth::OpenID;
 use strict;
 
-use MT::Util qw( decode_url is_valid_email escape_unicode );
+use MT::Util qw( decode_url is_valid_email escape_unicode ts2epoch );
 use MT::I18N qw( encode_text );
 
 sub login {
@@ -59,6 +59,7 @@ sub handle_sign_in {
     my $class = shift;
     my ($app, $auth_type) = @_;
     my $q = $app->{query};
+    my $INTERVAL = 60 * 60 * 24 * 7;
 
     $auth_type ||= 'OpenID';
 
@@ -74,7 +75,42 @@ sub handle_sign_in {
         return $app->redirect($setup_url);
     } elsif(my $vident = $csr->verified_identity) {
         my $name = $vident->url;
-        my $nick = $class->get_nickname($vident);
+        $cmntr = $app->model('author')->load(
+            {
+                name => $name,
+                type => MT::Author::COMMENTER(),
+                auth_type => $auth_type,
+            }
+        );
+        my $nick;
+        if ( $cmntr ) {
+            if ( ( $cmntr->modified_on
+                && ( ts2epoch($blog, $cmntr->modified_on) > time - $INTERVAL ) )
+              || ( $cmntr->created_on
+                && ( ts2epoch($blog, $cmntr->created_on) > time - $INTERVAL ) ) )
+            {
+                $nick = $cmntr->nickname;
+            }
+            else {
+                $nick = $class->get_nickname($vident);
+                $cmntr->nickname($nick);
+                $cmntr->save or return 0;
+            }
+        }
+        else {
+            $nick = $class->get_nickname($vident);
+            $cmntr = $app->_make_commenter(
+                email       => q(),
+                nickname    => $nick,
+                name        => $name,
+                url         => $vident->url,
+                auth_type   => $auth_type,
+                external_id => _url_hash($vident->url),
+            );
+        }
+        return 0 unless $cmntr;
+
+        $nick = $name unless $nick;
 
         # Signature was valid, so create a session, etc.
         my $enc = $app->{cfg}->PublishCharset || '';
@@ -86,14 +122,15 @@ sub handle_sign_in {
             $app->error($app->errstr() || $app->translate("Couldn't save the session"));
             return 0;
         }
-        $cmntr = $app->_make_commenter(
-            email       => q(),
-            nickname    => $nick,
-            name        => $name,
-            url         => $vident->url,
-            auth_type   => $auth_type,
-            external_id => _url_hash($vident->url),
-        );
+
+        if (my $userpic = $cmntr->userpic) {
+            my @stat = stat($userpic->file_path());
+            my $mtime = $stat[9];
+            if ( $mtime > time - $INTERVAL ) {
+                # newer than 7 days ago, don't download the userpic
+                return $cmntr;
+            }
+        }
 
         if ( my $userpic = $class->get_userpicasset($vident) ) {
             $userpic->tags('@userpic');
