@@ -468,6 +468,15 @@ sub cb_restore_objects {
                 object => $all_objects->{$key},
                 old_id => $old_id,
             };
+        } elsif ( $key =~ /^MT::Author#(\d+)$/ ) {
+            # restore userpic association now
+            my $new_author = $all_objects->{$key};
+            if ( my $userpic_id = $new_author->userpic_asset_id ) {
+                if ( my $new_asset = $all_objects->{'MT::Asset#' . $userpic_id} ) {
+                    $new_author->userpic_asset_id( $new_asset->id );
+                    $new_author->update;
+                }
+            }
         }
     }
 
