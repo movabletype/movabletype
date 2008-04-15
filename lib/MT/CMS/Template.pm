@@ -146,6 +146,19 @@ sub edit {
                             id      => $other->id
                         }
                     );
+                    # Try to compile template module if using MTInclude in this template.
+                    $other->compile;
+                    if ( $other->{errors} && @{ $other->{errors} } ) {
+                        $param->{error} = $app->translate(
+                            "One or more errors were found in included template module (".$other->name.").");
+                        $param->{error} .= "<ul>\n";
+                        foreach my $err ( @{ $other->{errors} } ) {
+                            $param->{error} .= "<li>"
+                              . MT::Util::encode_html( $err->{message} )
+                              . "</li>\n";
+                        }
+                        $param->{error} .= "</ul>\n";
+                    }
                 }
                 else {
                     $include->{create_link} = $app->mt_uri(
