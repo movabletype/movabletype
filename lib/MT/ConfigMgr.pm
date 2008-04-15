@@ -130,6 +130,7 @@ sub set_internal {
     my($var, $val, $db_flag) = @_;
     $var = lc $var;
     $db_flag ||= exists $mgr->{__dbvar}{$var};
+    $mgr->set_dirty() if defined($_[2]) && $_[2];
     my $set = $db_flag ? '__dbvar' : '__var';
     if (defined(my $alias = $mgr->{__settings}{$var}{alias})) {
         if ($max_depth < $depth) {
@@ -161,7 +162,6 @@ sub set_internal {
     } else {
         $mgr->{$set}{$var} = $val;
     }
-    $mgr->set_dirty() if defined($_[2]) && $_[2];
 }
 
 sub set {
