@@ -11,6 +11,7 @@ use base qw( TheSchwartz::Worker );
 use Time::HiRes qw(gettimeofday tv_interval);
 use TheSchwartz::Job;
 use MT::FileInfo;
+use MT::Util qw( log_time );
 
 sub work {
     my $class = shift;
@@ -87,7 +88,7 @@ sub work {
                 require MT::Log;
                 $mt->log({
                     message => $errmsg,
-                    metadata => $errmsg . "\nFiles affected:\n\t" . join("\n\t", @files),
+                    metadata => log_time() . ' ' . $errmsg . "\nFiles affected:\n\t" . join("\n\t", @files),
                     category => "sync",
                     level => MT::Log::ERROR(),
                 });
@@ -95,7 +96,15 @@ sub work {
                 $_->failed("Error during rsync") foreach @jobs;
                 return;
             } else {
-                MT::TheSchwartz->debug(sprintf("done! (%0.02fs)", tv_interval($start)));
+                my $elapsed = sprintf("done! (%0.02fs)", tv_interval($start));
+                $mt->log({
+                    message => $mt->translate('Synchrnizing Files Done'),
+                    metadata => log_time() . ' '
+                        . $mt->translate('Done syncing files to [_1] ([_2])', $target, $elapsed),
+                    category => "sync",
+                    level => MT::Log::INFO(),
+                });
+                MT::TheSchwartz->debug($elapsed);
             }
         }
         unlink $file;

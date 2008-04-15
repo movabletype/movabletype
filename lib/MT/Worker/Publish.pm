@@ -13,6 +13,7 @@ use TheSchwartz::Job;
 use Time::HiRes qw(gettimeofday tv_interval);
 use MT::FileInfo;
 use MT::PublishOption;
+use MT::Util qw( log_time );
 
 sub keep_exit_status_for { 1 }
 
@@ -90,6 +91,14 @@ sub work {
             } else {
                 $job->completed();
             }
+            $mt->log({
+                ($fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
+                message => $mt->translate('Background Publishing Done'),
+                metadata => log_time() . ' '
+                    . $mt->translate('Published: [_1]', $fi->file_path),
+                category => "publish",
+                level => MT::Log::INFO(),
+            });
             $rebuilt++;
         } else {
             my $error = $mt->publisher->errstr;
@@ -100,7 +109,7 @@ sub work {
             $mt->log({
                 ($fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
                 message => $errmsg,
-                metadata => $errmsg . ":\n" . $error,
+                metadata => log_time() . ' ' . $errmsg . ":\n" . $error,
                 category => "publish",
                 level => MT::Log::ERROR(),
             });

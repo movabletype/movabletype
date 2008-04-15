@@ -25,7 +25,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-                 weaken );
+                 weaken log_time );
 
 {
 my $Has_Weaken;
@@ -1936,6 +1936,16 @@ sub get_newsbox_html {
     return $result;
 }
 
+sub log_time {
+    return format_ts(
+        '[%Y-%m-%d %H:%M:%S]',
+        epoch2ts(undef, time),
+        undef,
+        MT->config->DefaultLanguage,
+        0
+    );
+}
+
 ## FIXME
 # This method is to supplement CGI.pm's lack of read method.
 # Some XML parsers (XML::SAX::ExpatXS and XML::LibXML to name a few) 
@@ -2123,6 +2133,10 @@ Math::BigInt but doesn't call for any non-perl libraries.
 Retrieves newsbox content from the specified URL.  Content retrieved is
 cached in MT::Session for 24 hours under the key specified in I<$kind>.
 Content will be sanitized based on pre-defined rules.
+
+=head2 log_time
+
+Returns the current server time in log specific format.
 
 =head1 AUTHOR & COPYRIGHTS
 

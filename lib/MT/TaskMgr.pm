@@ -102,7 +102,9 @@ sub run_tasks {
                     class => 'system',
                     category => 'tasks',
                     level => MT::Log::ERROR(),
-                    message => $app->translate("Error during task '[_1]': [_2]", $name, $err)
+                    message => $app->translate("Error during task '[_1]': [_2]", $name, $err),
+                    metadata => MT::Util::log_time() . ' '
+                        . $app->translate("Error during task '[_1]': [_2]", $name, $err)
                 });
             } else {
                 push @completed, $name if (defined $status) && ($status ne '') && ($status > 0);
@@ -118,7 +120,7 @@ sub run_tasks {
                 category => 'tasks',
                 level => MT::Log::INFO(),
                 message => $app->translate("Scheduled Tasks Update"),
-                metadata => $app->translate("The following tasks were run:") . ' ' .
+                metadata => MT::Util::log_time() . ' ' . $app->translate("The following tasks were run:") . ' ' .
                     join ", ", @completed
             });
         }
