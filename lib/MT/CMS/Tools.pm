@@ -779,6 +779,30 @@ sub restore {
               if defined $asset_ids;
             $param->{tmp_dir} = $dir;
         }
+        elsif ( defined $asset_ids ) {
+            my %asset_ids = @$asset_ids;
+            my %error_assets;
+            _restore_non_blog_asset( $app, $dir, $asset_ids, \%error_assets );
+            if (%error_assets) {
+                my $data;
+                while ( my ( $key, $value ) = each %error_assets ) {
+                    $data .=
+                      $app->translate( 'MT::Asset#[_1]: ', $key ) . $value . "\n";
+                }
+                my $message = $app->translate(
+                    'Some of the actual files for assets could not be restored.');
+                $app->log(
+                    {
+                        message  => $message,
+                        level    => MT::Log::WARNING(),
+                        class    => 'system',
+                        category => 'restore',
+                        metadata => $data,
+                    }
+                );
+                $error .= $message;
+            }
+        }
     }
     else {
         $param->{restore_upload} = 1;
@@ -844,6 +868,30 @@ sub restore {
                 $param->{asset_ids} = join( ',', @$asset_ids )
                   if defined $asset_ids;
                 $param->{tmp_dir} = $tmp;
+            }
+            elsif ( defined $asset_ids ) {
+                my %asset_ids = @$asset_ids;
+                my %error_assets;
+                _restore_non_blog_asset( $app, $tmp, \%asset_ids, \%error_assets );
+                if (%error_assets) {
+                    my $data;
+                    while ( my ( $key, $value ) = each %error_assets ) {
+                        $data .=
+                          $app->translate( 'MT::Asset#[_1]: ', $key ) . $value . "\n";
+                    }
+                    my $message = $app->translate(
+                        'Some of the actual files for assets could not be restored.');
+                    $app->log(
+                        {
+                            message  => $message,
+                            level    => MT::Log::WARNING(),
+                            class    => 'system',
+                            category => 'restore',
+                            metadata => $data,
+                        }
+                    );
+                    $error .= $message;
+                }
             }
         }
     }
@@ -914,6 +962,21 @@ sub restore_premature_cancel {
     $app->redirect( $app->uri( mode => 'view_log', args => {} ) );
 }
 
+sub _restore_non_blog_asset {
+    my ( $app, $tmp_dir, $asset_ids, $error_assets ) = @_;
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    foreach my $new_id ( keys %$asset_ids ) {
+        my $asset = $app->model('asset')->load($new_id);
+        next unless $asset;
+        my $old_id = $asset_ids->{$new_id};
+        my $filename = $old_id . '-' . $asset->file_name;
+        my $file    = File::Spec->catfile( $tmp_dir, $filename );
+        MT::BackupRestore->restore_asset( $file, $asset, $old_id, $fmgr,
+            $error_assets, sub { $app->print(@_); } );
+    }
+}
+
 sub adjust_sitepath {
     my $app  = shift;
     my $user = $app->user;
@@ -934,6 +997,7 @@ sub adjust_sitepath {
 
     $app->print( $app->build_page( 'dialog/restore_start.tmpl', {} ) );
 
+    my $asset_class = $app->model('asset');
     my %error_assets;
     my %blogs_meta;
     my @p = $q->param;
@@ -1010,7 +1074,7 @@ sub adjust_sitepath {
         next unless defined $fmgr;
 
         my @assets =
-          $app->model('asset')->load( { blog_id => $id, class => '*' } );
+          $asset_class->load( { blog_id => $id, class => '*' } );
         foreach my $asset (@assets) {
             my $path = $asset->column('file_path');
             my $url  = $asset->column('url');
@@ -1040,13 +1104,16 @@ sub adjust_sitepath {
               or $app->print( $app->translate("failed") . "\n" ), next;
             $app->print( $app->translate("ok") . "\n" );
             unless ( $q->param('redirect') ) {
-                my $old_id   = $asset_ids{ $asset->id };
+                my $old_id   = delete $asset_ids{ $asset->id };
                 my $filename = "$old_id-" . $asset->file_name;
                 my $file     = File::Spec->catfile( $tmp_dir, $filename );
                 MT::BackupRestore->restore_asset( $file, $asset, $old_id, $fmgr,
                     \%error_assets, sub { $app->print(@_); } );
             }
         }
+    }
+    unless ( $q->param('redirect') ) {
+        _restore_non_blog_asset( $app, $tmp_dir, \%asset_ids, \%error_assets );
     }
     if (%error_assets) {
         my $data;
