@@ -78,6 +78,8 @@ sub send {
     $hdrs{'Content-Transfer-Encoding'} = ((lc $mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
     $hdrs{'MIME-Version'} ||= "1.0";
 
+    $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
+
     return 1 unless
         MT->run_callbacks('mail_filter', args => $hdrs_arg, headers => \%hdrs,
             body => \$body, transfer => \$xfer, ( $id ? ( id => $id ) : () ) );
