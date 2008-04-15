@@ -3,7 +3,7 @@ package MT::CMS::Tools;
 use strict;
 use Symbol;
 
-use MT::I18N qw( encode_text );
+use MT::I18N qw( encode_text wrap_text );
 use MT::Util qw( encode_url encode_html decode_html encode_js );
 
 sub system_check {

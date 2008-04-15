@@ -2301,8 +2301,6 @@ sub _include_module {
         if $include_stack{$stash_id};
     local $include_stack{$stash_id} = 1;
 
-    my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
-    return unless $blog;
     my $req = MT::Request->instance;
     my ($tmpl, $tokens);
     if (my $tmpl_data = $req->stash($stash_id)) {
@@ -2329,6 +2327,8 @@ sub _include_module {
 
         $req->stash($stash_id, [ $tmpl, undef ]);
     }
+
+    my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
 
     my $use_ssi = $blog && $blog->include_system
         && ($arg->{ssi} || $tmpl->include_with_ssi) ? 1 : 0;
