@@ -827,7 +827,9 @@ sub set_object_status {
 sub upload_userpic {
     my $app = shift;
 
-    my ($asset, $bytes) = $app->_upload_file(
+    require MT::CMS::Asset;
+    my ($asset, $bytes) = MT::CMS::Asset::_upload_file(
+        $app,
         @_,
         require_type => 'image',
     );

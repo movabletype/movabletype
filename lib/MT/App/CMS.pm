@@ -75,7 +75,7 @@ sub core_methods {
         'list_role'        => "${pkg}User::list_role",
 
         'asset_insert'        => "${pkg}Asset::insert",
-        'asset_userpic'       => "${pkg}User::asset_userpic",
+        'asset_userpic'       => "${pkg}Asset::asset_userpic",
         'save_commenter_perm' => "${pkg}Comment::save_commenter_perm",
         'trust_commenter'     => "${pkg}Comment::trust_commenter",
         'ban_commenter'       => "${pkg}Comment::ban_commenter",
