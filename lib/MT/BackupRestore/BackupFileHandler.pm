@@ -261,6 +261,14 @@ sub end_element {
                 });
                 $exists = 1 if $perm;
             }
+            elsif ('objectscore' eq $name) {
+                my $score = $class->exist( {
+                    author_id => $obj->author_id,
+                    object_id => $obj->object_id,
+                    object_ds => $obj->object_ds,
+                });
+                $exists = 1 if $score;
+            }
             unless ($exists) {
                 my $result;
                 if ( $obj->id ) {
