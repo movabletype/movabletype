@@ -704,9 +704,14 @@ sub get_posts {
     my $blogname = encode_text($blog->name, undef, 'utf-8');
     $feed->add_link({ rel => 'alternate', type => 'text/html',
                       href => $blog->site_url });
+    $feed->add_link({ rel => 'self', type => $app->atom_x_content_type,
+                      href => $uri });
     $feed->title($blogname);
-    $feed->add_link({ rel => 'service.post', type => 'application/x.atom+xml',
-                      href => $uri, title => $blogname });
+    # FIXME: move the line to the Legacy class
+    if ( !$feed->version || ( $feed->version < 1.0 ) ) {
+        $feed->add_link({ rel => 'service.post', type => $app->atom_x_content_type,
+                          href => $uri, title => $blogname });
+    }
     require URI;
     my $site_uri = URI->new($blog->site_url);
     if ( $site_uri ) {
