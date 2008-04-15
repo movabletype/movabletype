@@ -5057,16 +5057,33 @@ sub _hdlr_comments {
     my $no_resort;
     if ($comments) {
         my $n = $args->{lastn};
+        my $col = lc($args->{sort_by} || 'created_on');
+        @$comments = $so eq 'ascend' ?
+            sort { $a->$col() cmp $b->$col() } @$comments :
+            sort { $b->$col() cmp $a->$col() } @$comments;
+        $no_resort = 1;
         if (@filters) {
+            my $offset = $args->{offset} || 0;
+            my $j      = 0;
             COMMENTS: for my $c (@$comments) {
                 for (@filters) {
                     next COMMENTS unless $_->($c);
                 }
+                next if $offset && $j++ < $offset;
                 push @comments, $c;
             }
         }
         else {
-            @comments = @$comments;
+            my $offset;
+            if ($offset = $args->{offset}) {
+                if ($offset < scalar @comments) {
+                    @comments = @$comments[$offset..$#comments];
+                } else {
+                    @comments = ();
+                }
+            } else {
+                @comments = @$comments;
+            }
             $no_resort = 1
                 unless $args->{sort_order} || $args->{sort_by};
         }
@@ -5090,21 +5107,35 @@ sub _hdlr_comments {
             ## recent) comments.
             $args{'sort'} = 'created_on';
             $args{'direction'} = 'descend';
-            my $comments = $e->comments(\%terms, \%args);
-            my $i = 0;
+            my $cmts = $e->comments(\%terms, \%args);
+            my $offset = $args->{offset} || 0;
             if (@filters) {
-                COMMENTS: for my $c (@$comments) {
+                my $i = 0;
+                my $j = 0;
+                my $offset = $args->{offset} || 0;
+                COMMENTS: for my $c (@$cmts) {
                     for (@filters) {
                         next COMMENTS unless $_->($c);
                     }
+                    next if $offset && $j++ < $offset;
                     push @comments, $c;
                     last if $n && ( $n <= ++$i );
                 }
-            } elsif ($n) {
-                my $max = $n - 1 > $#$comments ? $#$comments : $n - 1;
-                @comments = @$comments[0..$max];
+            } elsif ($offset || $n) {
+                if ($offset) {
+                    if ($offset < scalar @$cmts - 1) {
+                        @$cmts = @$cmts[$offset..(scalar @$cmts - 1)];
+                     } else {
+                        @$cmts = ();
+                    }
+                }
+                if ($n) {
+                    my $max = $n - 1 > scalar @$cmts - 1 ? scalar @$cmts - 1 : $n - 1;
+                    @$cmts = @$cmts[0..$max];
+                }
+                @comments = @$cmts;
             } else {
-                @comments = @$comments;
+                @comments = @$cmts;
             }
         } else {
             $args{'sort'} = lc $args->{sort_by} || 'created_on';
@@ -5113,6 +5144,7 @@ sub _hdlr_comments {
             require MT::Comment;
             if (!@filters) {
                 $args{limit} = $n if $n;
+                $args{offset} = $args->{offset} if $args->{offset};
                 $args{join} = MT->model('entry')->join_on(
                     undef,
                     {
@@ -5124,6 +5156,8 @@ sub _hdlr_comments {
             } else {
                 my $iter = MT::Comment->load_iter(\%terms, \%args);
                 my %entries;
+                my $j = 0;
+                my $offset = $args->{offset} || 0;
                 COMMENT: while (my $c = $iter->()) {
                     my $e = $entries{$c->entry_id} ||= $c->entry;
                     next unless $e;
@@ -5131,6 +5165,7 @@ sub _hdlr_comments {
                     for (@filters) {
                         next COMMENT unless $_->($c);
                     }
+                    next if $offset && $j++ < $offset;
                     push @comments, $c;
                     if ($n && (scalar @comments == $n)) {
                         $iter->('finish');

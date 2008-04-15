@@ -2003,19 +2003,19 @@ class MTDatabaseBase extends ezsql {
             }
         }
 
-        $order = 'desc';
+        $order = $query_order = 'desc';
         if (isset($args['sort_order'])) {
             if ($args['sort_order'] == 'ascend') {
-                $order = 'asc';
+                $order = $query_order = 'asc';
             }
         } elseif (isset($blog) && isset($blog['blog_sort_order_comments'])) {
             if ($blog['blog_sort_order_comments'] == 'ascend') {
-                $order = 'asc';
+                $order = $query_order = 'asc';
             }
         }
-        if ($order == 'asc' && $args['lastn']) {
+        if ($order == 'asc' && (isset($args['lastn']) || isset($args['offset']))) {
             $reorder = 1;
-            $order = 'desc';
+            $query_order = 'desc';
         }
 
         if ($entry_id) {
@@ -2040,7 +2040,7 @@ class MTDatabaseBase extends ezsql {
         if (isset($args['limit']))
             $limit = $args['limit'];
         if (isset($args['offset']))
-            $limit = $args['offset'];
+            $offset = $args['offset'];
         if (count($filters)) {
             $post_select_limit = $limit;
             $post_select_offset = $offset;
@@ -2057,25 +2057,27 @@ class MTDatabaseBase extends ezsql {
              where comment_visible = 1
                    $entry_filter
                    $blog_filter
-             order by comment_created_on $order
+             order by comment_created_on $query_order
                    <LIMIT>";
         $sql = $this->apply_limit_sql($sql, $limit, $offset);
+
         # Fetch resultset
         $result = $this->query_start($sql);
         if (!$result) return null;
 
         $comments = array();
+        $j = 0;
         while (true) {
             $e = $this->query_fetch(ARRAY_A);
-            if ($offset && ($j++ < $offset)) continue;
             if (!isset($e)) break;
             if (count($filters)) {
                 foreach ($filters as $f) {
                     if (!$f($e, $ctx)) continue 2;
                 }
+                if ($post_select_offset && ($j++ < $post_select_offset)) continue;
+                if (($post_select_limit > 0) && (count($comments) >= $post_select_limit)) break;
             }
             $comments[] = $e;
-            if (($limit > 0) && (count($comments) >= $limit)) break;
         }
 
         if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
@@ -2123,7 +2125,7 @@ class MTDatabaseBase extends ezsql {
         if (!is_array($comments))
             return array();
 
-        if ($reorder) {  // lastn and ascending sort
+        if ($reorder && !isset($args['sort_by'])) {  // lastn and ascending sort
             $asc_created_on = create_function('$a,$b', 'return strcmp($a["comment_created_on"], $b["comment_created_on"]);');
             usort($comments, $asc_created_on);
         }
