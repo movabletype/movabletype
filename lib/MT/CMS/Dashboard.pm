@@ -463,7 +463,7 @@ sub mt_blog_stats_widget_comment_tab {
         my @c = MT::Comment->load(
             {
                 ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                visible => 1,
+                junk_status => 1,
             },
             $args
         );
