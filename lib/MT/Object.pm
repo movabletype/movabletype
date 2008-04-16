@@ -52,14 +52,25 @@ sub install_properties {
         return;
     }
 
+    my %meta;
+
     my $super_props = $class->SUPER::properties();
+    $props->{meta} = 1 if $super_props && $super_props->{meta};
+
+    if ($props->{meta}) {
+        # yank out any meta columns before we start working on column_defs
+        $meta{$_} = delete $props->{column_defs}{$_}
+            for grep { $props->{column_defs}{$_} =~ m/\bmeta\b/ }
+            keys %{ $props->{column_defs} };
+    }
+
     if ($super_props) {
         # subclass; merge hash
-        for (qw(primary_key meta_column class_column datasource driver audit meta)) {
+        for (qw(primary_key class_column datasource driver audit)) {
             $props->{$_} = $super_props->{$_}
                 if exists $super_props->{$_} && !(exists $props->{$_});
         }
-        for my $p (qw(column_defs defaults indexes meta_columns)) {
+        for my $p (qw(column_defs defaults indexes)) {
             if (exists $super_props->{$p}) {
                 foreach my $k (keys %{ $super_props->{$p} }) {
                     if (!exists $props->{$p}{$k}) {
@@ -80,11 +91,10 @@ sub install_properties {
 
     # Legacy MT::Object types only define 'columns'; we still support that
     # but they aren't handled properly with the upgrade system as a result.
-    if (exists $props->{column_defs}) {
-        $props->{columns} = [ keys %{ $props->{column_defs} } ];
-    } else {
+    if (! exists $props->{column_defs}) {
         map { $props->{column_defs}{$_} = () } @{ $props->{columns} };
     }
+    $props->{columns} = [ keys %{ $props->{column_defs} } ];
 
     # Support audit flags
     if ($props->{audit}) {
@@ -95,18 +105,6 @@ sub install_properties {
             $props->{column_defs}{modified_by} = 'integer';
             push @{ $props->{columns} }, qw( created_on created_by modified_on modified_by );
         }
-    }
-
-    # Metadata column
-    $props->{meta_column} ||= 'meta' if exists $props->{meta};
-    if (my $col = $props->{meta_column}) {
-        if (!$props->{column_defs}{$col}) {
-            $props->{column_defs}{$col} = 'blob';
-            push @{ $props->{columns} }, $col;
-        }
-        no strict 'refs'; ## no critic
-        *{$class . '::' . $col} = \&__meta_column;
-        $class->add_trigger( pre_save => \&pre_save_serialize_metadata );
     }
 
     # Classed object types
@@ -150,7 +148,7 @@ sub install_properties {
         my @classes = grep { !ref($_) } @$more_props;
         foreach my $isa_class (@classes) {
             next if UNIVERSAL::isa($class, $isa_class);
-            eval "require $isa_class;" or die;
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $isa_class;" or die;
             no strict 'refs'; ## no critic
             push @{$class . '::ISA'}, $isa_class;
         }
@@ -159,6 +157,11 @@ sub install_properties {
             delete $cols->{plugin} if exists $cols->{plugin};
             for my $name (keys %$cols) {
                 next if exists $props->{column_defs}{$name};
+                if ($cols->{$name} =~ m/\bmeta\b/) {
+                    $meta{$name} = $cols->{$name};
+                    next;
+                }
+
                 $class->install_column($name, $cols->{$name});
                 $props->{indexes}{$name} = 1
                     if $cols->{$name} =~ m/\bindexed\b/;
@@ -225,6 +228,12 @@ sub install_properties {
         no warnings 'redefine';
         no strict 'refs'; ## no critic
         *{$class . '::driver'} = sub { $_[0]->dbi_driver(@_) };
+    }
+
+    # inherit parent's metadata setup
+    if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
+        $class->install_meta({ ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) });
+        $class->add_trigger( post_remove => \&remove_meta );
     }
 
     return $props;
@@ -346,9 +355,9 @@ sub class_handler {
         if (defined *{$package.'::new'}) {
             return $package;
         } else {
-            eval "use $package;";
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nuse $package;";
             return $package unless $@;
-            eval "use $pkg; $package->new;";
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nuse $pkg; $package->new;";
             return $package unless $@;
         }
     }
@@ -372,90 +381,217 @@ sub add_class {
 
 # 'meta' metadata column support
 
+sub new {
+    my $class = shift;
+    my $obj = $class->SUPER::new(@_);
+    if ($obj->properties->{meta_installed}) {
+        $obj->init_meta();
+    }
+    return $obj;
+}
+
+sub init_meta {
+    my $obj = shift;
+    require MT::Meta::Proxy;
+    $obj->{__meta} = MT::Meta::Proxy->new($obj);
+}
+
 sub install_meta {
     my $class = shift;
-    my ($props) = @_;
+    my ($params) = @_;
     if ( ( $class ne 'MT::Config' ) && (!$MT::plugins_installed) ) {
-        push @PRE_INIT_META, [$class, $props];
+        push @PRE_INIT_META, [$class, $params];
         return;
     }
-    my $cprops = $class->properties;
-    my $fields = $cprops->{meta_columns} ||= {};
-    my $meta_col = $cprops->{meta_column};
-    foreach my $name (@{ $props->{columns} }) {
-        $fields->{$name} = ();
-        # Skip adding this method if the class overloads it.
-        # this lets the SUPER::columnname magic do it's thing
-        unless ($class->can($name)) {
-            no strict 'refs'; ## no critic
-            *{"${class}::$name"} = sub { shift->$meta_col($name, @_) };
+
+    require MT::Meta;
+    my $pkg = ref $class || $class;
+    if (!$pkg->SUPER::properties->{meta_installed}) {
+        $pkg->add_trigger( post_save => \&post_save_save_metadata );
+        $pkg->add_trigger( post_load => \&post_load_initialize_metadata );
+    }
+
+    my $props = $class->properties;
+
+    if (!$params->{columns} && !$params->{fields} && !$params->{column_defs}) {
+        return $class->error('No meta fields specified to install_meta');
+    }
+
+    $params->{fields} ||= [];
+    if (my $cols = delete $params->{columns}) {
+        foreach my $col (@$cols) {
+            push @{ $params->{fields} }, {
+                name => $col,
+                type => 'vblob',
+            };
+            # $props->{fields}{$col} = 'vblob';
         }
     }
+    if (my $cols = delete $params->{column_defs}) {
+        foreach my $col ( keys %$cols ) {
+            my $type = $cols->{$col};
+            $type =~ s/\s.*//; # take first keyword, ignoring anything after
+            $type .= '_indexed'
+                if $cols->{$col} =~ m/\bindexed\b/;
+            $type = MT::Meta->normalize_type($type);
+
+            push @{ $params->{fields} }, {
+                name => $col,
+                type => $type,
+            };
+            # $props->{fields}{$col} = $type;
+        }
+    }
+
+    $params->{datasource} ||= $class->datasource . '_meta';
+
+    if ($props->{meta_installed} && !@{ $params->{fields} }) {
+        return 1;
+    }
+
+    if (my $fields = MT::Meta->install($pkg, $params)) {
+        # we may have inherited meta fields so lets update with
+        # the fields returned by MT::Meta
+        $props->{fields} = $fields;
+    }
+
+    return $props->{meta_installed} = 1;
+}
+
+sub meta_args {
+    my $class = shift;
+    my $id_field = $class->datasource . '_id';
+    return {
+        key         => $class->datasource,
+        column_defs => {
+            $id_field         => 'integer not null',
+            type              => 'string(255) not null',
+            vchar             => 'string(255)',
+            vchar_indexed     => 'string(255)',
+            vdatetime         => 'datetime',
+            vdatetime_indexed => 'datetime',
+            vinteger          => 'integer',
+            vinteger_indexed  => 'integer',
+            vfloat            => 'float',
+            vfloat_indexed    => 'float',
+            vblob             => 'blob',
+            vclob             => 'text',
+        },
+        columns => [ $id_field, qw(
+            type
+            vchar
+            vchar_indexed
+            vdatetime
+            vdatetime_indexed
+            vinteger
+            vinteger_indexed
+            vfloat
+            vfloat_indexed
+            vblob
+            vclob
+        ) ],
+        indexes => {
+            $id_field => 1,
+            id_type   => { columns => [ $id_field, 'type' ] },
+            id_type_vchar => { columns => [ $id_field, 'type', 'vchar_indexed' ] },
+            id_type_vdatetime => { columns => [ $id_field, 'type',
+                'vdatetime_indexed' ] },
+            id_type_vinteger => { columns => [ $id_field, 'type',
+                'vinteger_indexed' ] },
+            id_type_vfloat => { columns => [ $id_field, 'type',
+                'vfloat_indexed' ] },
+        },
+        primary_key => [ $class->datasource . '_id', 'type' ],
+    };
 }
 
 sub has_meta {
-    my $props = $_[0]->properties;
-    return $props->{meta} && (@_ > 1 ? exists $props->{meta_columns}{$_[1]} : 1);
-}
-
-sub pre_save_serialize_metadata {
-    my ($obj) = shift;
-    my $meta_col = $obj->properties->{meta_column};
-    if ($obj->{changed_cols}{$meta_col}) {
-        require MT::Serialize;
-        my $meta = $obj->$meta_col;
-        $obj->$meta_col(MT::Serialize->serialize(\$meta));
-    }
-}
-
-sub __thaw_meta {
-    my ($meta) = @_;
-    $$meta = '' unless defined $$meta;
-    require MT::Serialize;
-    my $out = MT::Serialize->unserialize($$meta);
-    if (ref $out eq 'REF') {
-        return $$out;
-    } else {
-        return {};
-    }
-}
-
-# $obj->meta returns a hashref of metadata information
-# $obj->meta($scalar) allows assignment of a serialized value
-# $obj->meta('name', 'value') assigns an individual metadata element
-# $obj->meta('name') returns an individual metadata value
-# $obj->save will automatically serialize the metadata back to the database
-sub __meta_column {
     my $obj = shift;
-    my $meta_col = $obj->properties->{meta_column} or return;
+    return $obj->is_meta_column(@_) if @_;
+    return $obj->properties->{meta_installed} ? 1 : 0;
+}
 
-    if (@_) {
-        my $var = shift;
-        if ((defined $var) && ($var =~ m/^SERG\0\0\0\0/)) {
-            return $obj->column($meta_col, $var);
-        }
-        my $meta = $obj->column($meta_col);
-        if (!defined($meta)) {
-            $obj->{column_values}{$meta_col} = $meta = {};
-        } elsif (!ref $meta) {
-            $obj->{column_values}{$meta_col} = $meta = __thaw_meta(\$meta);
-        }
-        if (@_) {
-            $meta->{$var} = shift if @_;
-            $obj->{changed_cols}{$meta_col}++;
-        }
-        return $meta->{$var};
-    } else {
-        my $meta = $obj->column($meta_col);
-        if (!ref $meta) {
-            $meta = __thaw_meta(\$meta);
-            $obj->{column_values}{$meta_col} = $meta;
-        }
-        # we should assume changes are going to be made, since
-        # we can't really monitor the hash once it has left us
-        $obj->{changed_cols}{$meta_col}++;
-        return $meta;
+sub post_load_initialize_metadata {
+    my $obj = shift;
+    if (defined $obj && $obj->properties->{meta_installed}) {
+        $obj->init_meta();
+        $obj->{__meta}->set_primary_keys($obj);
     }
+}
+
+sub is_meta_column {
+    my $obj = shift;
+    my ($field) = @_;
+
+    my $props = $obj->properties;
+    return unless $props->{meta_installed};
+
+    my $meta = $obj->meta_pkg;
+    return 1 if $props->{fields}{$field};
+
+    return;
+}
+
+sub meta_pkg {
+    my $class = shift;
+    my $props = $class->properties;
+    return unless $props->{meta}; # this only works for meta-enabled classes
+
+    return $props->{meta_pkg} if $props->{meta_pkg};
+
+    my $meta = ref $class || $class;
+    $meta .= '::Meta';
+    return $props->{meta_pkg} = $meta;
+}
+
+sub has_column {
+    my $obj = shift;
+    return 1 if $obj->SUPER::has_column(@_);
+    return 1 if $obj->is_meta_column(@_);
+    return;
+}
+
+sub post_save_save_metadata {
+    my $obj = shift;
+    if (defined $obj && exists $obj->{__meta}) {
+        $obj->{__meta}->set_primary_keys($obj);
+        $obj->{__meta}->save;
+    }
+}
+
+sub meta {
+    my $obj = shift;
+    my ($name, $value) = @_;
+
+    return !$obj->{__meta} ? undef
+         : 2 == scalar @_  ? $obj->{__meta}->set($name, $value)
+         : 1 == scalar @_  ? $obj->{__meta}->get($name)
+         :                   $obj->{__meta}->get_hash
+         ;
+}
+
+sub meta_obj {
+    my $obj = shift;
+    return $obj->{__meta};
+}
+
+sub column_func {
+    my $obj = shift;
+    my ($col) = @_;
+    return if !$col;
+
+    return $obj->SUPER::column_func(@_)
+        if !$obj->is_meta_column($col);
+
+    return sub {
+        my $obj = shift;
+        if (@_) {
+            $obj->{__meta}->set($col, @_);
+        }
+        else {
+            $obj->{__meta}->get($col);
+        }
+    };
 }
 
 sub ts2db {  
@@ -465,7 +601,7 @@ sub ts2db {
     }  
     my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d', unpack 'A4A2A2A2A2A2', $_[0];  
     return $ret;  
-}  
+}
   
 sub db2ts {  
     my $ts = $_[0];  
@@ -753,10 +889,17 @@ sub table_name {
     return $obj->driver->table_for($obj);
 }
 
+sub clone_all {
+    my $obj = shift;
+    my $clone = $obj->SUPER::clone_all();
+    $clone->{__meta} = $obj->{__meta};  # TODO: clone this too
+    return $clone;
+}
+
 sub clone {
     my $obj = shift;
     my($param) = @_;
-    my $clone = $obj->SUPER::clone_all;
+    my $clone = $obj->clone_all();
 
     ## If the caller has listed a set of columns not to copy to the clone,
     ## delete them from the clone.
@@ -820,6 +963,14 @@ sub join_on {
     return [ @_ ];
 }
 
+sub remove_meta {
+    my $obj = shift;
+    return 1 unless ref $obj;
+    my $mpkg = $obj->meta_pkg or return;
+    my $id_field = $obj->datasource . '_id';
+    return $mpkg->remove({ $id_field => $obj->id });
+}
+
 sub remove_children {
     my $obj = shift;
     return 1 unless ref $obj;
@@ -833,7 +984,7 @@ sub remove_children {
     my $key = $param->{key} || $obj->datasource . '_id';
     my $obj_id = $obj->id;
     for my $class (@classes) {
-        eval "use $class;";
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nuse $class;";
         $class->remove({ $key => $obj_id });
     }
     1;
@@ -942,7 +1093,8 @@ sub __parse_def {
     $def{key} = 1 if $def =~ m/\bprimary key\b/i;
     $def{key} = 1 if ($props->{primary_key}) && ($props->{primary_key} eq $col);
     $def{auto} = 1 if $def =~ m/\bauto[_ ]increment\b/i;
-    $def{default} = $props->{defaults}{$col} if exists $props->{defaults}{$col};
+    $def{default} = $props->{defaults}{$col}
+        if exists $props->{defaults}{$col};
     \%def;
 }
 
@@ -1007,6 +1159,34 @@ sub to_hash {
     }
     $hash;
 }
+
+package MT::Object::Meta;
+
+use base qw( Data::ObjectDriver::BaseObject );
+
+sub driver { $MT::Object::DRIVER ||= MT::ObjectDriverFactory->new }
+
+sub install_properties {
+    my $class = shift;
+    my ($props) = @_;
+    $props->{column_defs}->{$_} ||= 'string'
+        for @{ $props->{columns} };
+    $class->SUPER::install_properties(@_);
+}
+
+sub meta_pkg { undef }
+
+*table_name = \&MT::Object::table_name;
+*column_defs = \&MT::Object::column_defs;
+*column_def = \&MT::Object::column_def;
+*index_defs = \&MT::Object::index_defs;
+*__parse_defs = \&MT::Object::__parse_defs;
+*__parse_def = \&MT::Object::__parse_def;
+*count = \&MT::Object::count;
+*columns_of_type = \&MT::Object::columns_of_type;
+
+# TODO: copy this too
+sub blob_requires_zip {}
 
 1;
 __END__

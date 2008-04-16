@@ -507,17 +507,23 @@ sub registry {
                 my $v = $r->{$p};
 
                 # check for a yaml file reference...
-                if ( !ref($v) && ( $v =~ m/^[-\w]+\.yaml$/ ) ) {
-                    my $f = File::Spec->catfile( $c->path, $v );
-                    if ( -f $f ) {
-                        require YAML::Tiny;
-                        my $y = eval { YAML::Tiny->read($f) }
-                            or die "Error reading $f: " . $YAML::Tiny::errstr;
-
-                        # skip over non-hash elements
-                        shift @$y while @$y && ( ref( $y->[0] ) ne 'HASH' );
-                        if (@$y) {
-                            $r->{$p} = $y->[0];
+                if ( !ref($v) ) {
+                    if ( $v =~ m/^[-\w]+\.yaml$/ ) {
+                        my $f = File::Spec->catfile( $c->path, $v );
+                        if ( -f $f ) {
+                            require YAML::Tiny;
+                            my $y = eval { YAML::Tiny->read($f) }
+                                or die "Error reading $f: "
+                                    . $YAML::Tiny::errstr;
+                            # skip over non-hash elements
+                            shift @$y
+                                while @$y && ( ref( $y->[0] ) ne 'HASH' );
+                            $r->{$p} = $y->[0] if @$y;
+                        }
+                    } elsif ($v =~ m/^\$\w+::/) {
+                        my $code = MT->handler_to_coderef($v);
+                        if (ref $code eq 'CODE') {
+                            $r->{$p} = $code->($c);
                         }
                     }
                 }

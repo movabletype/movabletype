@@ -21,6 +21,7 @@ sub index_defs {
     my $dbh = $driver->r_handle;
     my $field_prefix = $class->datasource;
     my $table_name = $class->table_name;
+    local $dbh->{RaiseError} = 0;
     my $sth = $dbh->prepare('SHOW INDEX FROM ' . $table_name)
         or return undef;
     $sth->execute or return undef;

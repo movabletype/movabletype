@@ -57,7 +57,7 @@ sub VERSION {
         if ( ( $1 > 2 ) && ( $1 < int($VERSION) ) ) {
             no strict 'refs';
             unless ( defined *{ $compat . '::' } ) {
-                eval "require $compat;";
+                eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $compat;";
             }
         }
     }
@@ -266,6 +266,12 @@ sub construct {
         $object_types{$k} = $_[1] if scalar @_ > 1;
         return $object_types{$k} if exists $object_types{$k};
 
+        if ($k =~ m/^(.+):meta$/) {
+            my $ppkg = $pkg->model($1);
+            my $mpkg = $ppkg->meta_pkg;
+            return $mpkg ? $object_types{$k} = $mpkg : undef;
+        }
+
         my $model = $pkg->registry( 'object_types', $k );
         if ( ref($model) eq 'ARRAY' ) {
 
@@ -286,7 +292,7 @@ sub construct {
         no strict 'refs';
         unless ( defined *{ $model . '::__properties' } ) {
             use strict 'refs';
-            eval "require $model;";
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $model;";
             if ( $@ && ( $k =~ m/^(.+)\./ ) ) {
 
                 # x.foo can't be found, so try loading x
@@ -611,7 +617,10 @@ sub run_callback {
     my ( $cb, @args ) = @_;
 
     $cb->error();    # reset the error string
-    my $result = eval { $cb->invoke(@args) };
+    my $result = eval {
+        # line __LINE__ __FILE__
+        $cb->invoke(@args);
+    };
     if ( my $err = $@ ) {
         $cb->error($err);
         my $plugin = $cb->{plugin};
@@ -1261,7 +1270,7 @@ sub _init_plugins_core {
                     return 0 if exists $Plugins{$plugin_sig};
                     $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
                     $timer->pause_partial if $timer;
-                    eval { require $plugin };
+                    eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
                     $timer->mark("Loaded plugin " . $sig) if $timer;
                     if ($@) {
                         $Plugins{$plugin_sig}{error} = $@;
@@ -1269,6 +1278,7 @@ sub _init_plugins_core {
                         # event that the plugin error is happening before
                         # the database has been initialized...
                         eval {
+                            # line __LINE__ __FILE__
                             require MT::Log;
                             $mt->log(
                                 {
@@ -2587,7 +2597,7 @@ sub handler_to_coderef {
         if ($delayed) {
             if ($method) {
                 return sub {
-                    eval "require $hdlr_pkg;"
+                    eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $hdlr_pkg;"
                       or Carp::confess(
                         "failed loading package $hdlr_pkg for routine $name: $@");
                     my $mt_inst = MT->instance;
@@ -2598,7 +2608,7 @@ sub handler_to_coderef {
             }
             else {
                 return sub {
-                    eval "require $hdlr_pkg;"
+                    eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $hdlr_pkg;"
                       or Carp::confess(
                         "failed loading package $hdlr_pkg for routine $name: $@");
                     my $mt_inst = MT->instance;
@@ -2612,7 +2622,7 @@ sub handler_to_coderef {
             }
         }
         else {
-            eval "require $hdlr_pkg;"
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $hdlr_pkg;"
               or Carp::confess(
                 "failed loading package $hdlr_pkg for routine $name: $@");
         }

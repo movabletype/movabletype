@@ -1,0 +1,8 @@
+name: Awesome
+key:  awesome
+id:   awesome
+
+object_types:
+    awesome:       MT::Awesome
+    awesome_image: MT::Awesome::Image
+

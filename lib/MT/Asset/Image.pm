@@ -9,8 +9,13 @@ package MT::Asset::Image;
 use strict;
 use base qw( MT::Asset );
 
-__PACKAGE__->install_properties( { class_type => 'image', } );
-__PACKAGE__->install_meta( { columns => [ 'image_width', 'image_height', ], } );
+__PACKAGE__->install_properties( {
+    class_type => 'image',
+    column_defs => {
+        'image_width' => 'integer meta',
+        'image_height' => 'integer meta',
+    },
+} );
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions { [ qr/gif/i, qr/jpe?g/i, qr/png/i, ] }

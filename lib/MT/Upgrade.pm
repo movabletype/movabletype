@@ -1351,6 +1351,12 @@ sub check_type {
                 if $result->{index};
         }
     }
+
+    # handle schema updates for meta table
+    if ($class->meta_pkg) {
+        $self->check_type($type . ':meta');
+    }
+
     1;
 }
 
