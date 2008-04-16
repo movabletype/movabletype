@@ -4,8 +4,8 @@
 <head>
     <title><$MTEntryTitle encode_html="1"$> - <$MTBlogName encode_html="1"$></title>
     <$mt:include module="<__trans phrase="HTML Head">"$>
-    <MTEntryPrevious><link rel="prev" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryPrevious>
-    <MTEntryNext><link rel="next" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" /></MTEntryNext>
+    <MTEntryPrevious><link rel="prev" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" rel="bookmark" /></MTEntryPrevious>
+    <MTEntryNext><link rel="next" href="<$MTEntryPermalink$>" title="<$MTEntryTitle encode_html="1"$>" rel="bookmark" /></MTEntryNext>
     <$MTEntryTrackbackData$>
     <MTIfCommentsAccepted><script type="text/javascript" src="<$MTLink template="javascript"$>"></script></MTIfCommentsAccepted>
 </head>
@@ -36,7 +36,6 @@
                                             <abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>
 </MTIfNonEmpty>
                                         </span>
-                                        <span class="separator">|</span> <a class="permalink" rel="bookmark" href="<$MTEntryPermalink$>"><__trans phrase="Permalink"></a>
 <MTIfCommentsActive>
                                         <span class="separator">|</span> <a href="<$MTEntryPermalink$>#comments"><mt:if tag="EntryCommentCount" eq="1"><__trans phrase="1 Comment"><mt:else><__trans phrase="[_1] Comments" params="<$MTEntryCommentCount$>"></mt:if></a>
 </MTIfCommentsActive>

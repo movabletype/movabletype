@@ -1,7 +1,7 @@
 <$MTEntryTrackbackData$>
 <div id="entry-<$MTEntryID$>" class="entry-asset asset hentry">
     <div class="asset-header">
-        <h2 class="asset-name entry-title"><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h2>
+        <h2 class="asset-name entry-title" rel="bookmark"><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h2>
         <div class="asset-meta">
             <span class="byline">
 <MTIf name="show_blog">
@@ -18,7 +18,6 @@
     </MTIfNonEmpty>
 </MTIf>
             </span>
-            <span class="separator">|</span> <a class="permalink" rel="bookmark" href="<$MTEntryPermalink$>"><__trans phrase="Permalink"></a>
 <MTUnless name="hide_counts" eq="1">
             <MTIfCommentsActive><span class="separator">|</span> <a href="<$MTEntryPermalink$>#comments"><mt:if tag="EntryCommentCount" eq="1"><__trans phrase="1 Comment"><mt:else><__trans phrase="[_1] Comments" params="<$MTEntryCommentCount$>"></mt:if></a></MTIfCommentsActive>
             <MTIfPingsActive><span class="separator">|</span> <a href="<$MTEntryPermalink$>#trackback"><mt:if tag="EntryTrackbackCount" eq="1"><__trans phrase="1 TrackBack"><mt:else><__trans phrase="[_1] TrackBacks" params="<$MTEntryTrackbackCount$>"></mt:if></a></MTIfPingsActive>
@@ -44,7 +43,7 @@
 </mt:if>
 <MTIfNonEmpty tag="EntryMore" convert_breaks="0">
         <div class="asset-more-link">
-            <__trans phrase="Continue reading <a rel="bookmark" href="[_1]">[_2]</a>." params="<$MTEntryPermalink$>#more%%<$MTEntryTitle$>">
+            <__trans phrase="Continue reading <a href="[_1]" rel="bookmark">[_2]</a>." params="<$MTEntryPermalink$>#more%%<$MTEntryTitle$>">
         </div>
 </MTIfNonEmpty>
     </div>
