@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
-    $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count');
+    $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out');
     if (!isset($content)) {
         $class = 'entry';
         if (isset($args['class'])) {
@@ -36,21 +36,28 @@ function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
         $tags = $ctx->mt->db->fetch_entry_tags(array('entry_id' => $entry['entry_id'], 'blog_id' => $blog_id, 'class' => $class));
         if (!is_array($tags)) $tags = array();
         $ctx->stash('_tags', $tags);
+        $ctx->stash('__out', false);
         
         $counter = 0;
     } else {
         $tags = $ctx->stash('_tags');
         $counter = $ctx->stash('_tags_counter');
+        $out = $ctx->stash('__out');
     }
     if ($counter < count($tags)) {
         $tag = $tags[$counter];
         $ctx->stash('Tag', $tag);
         $ctx->stash('_tags_counter', $counter + 1);
         $repeat = true;
-        if (($counter > 0) && isset($args['glue'])) {
-            $content = $content . $args['glue'];
+        if (isset($args['glue']) && !empty($content)) {
+            if ($out)
+                $content = $args['glue']. $content;
+            else
+                $ctx->stash('__out', true);
         }
     } else {
+        if (isset($args['glue']) && $out && !empty($content))
+            $content = $args['glue']. $content;
         $ctx->restore($localvars);
         $repeat = false;
     }

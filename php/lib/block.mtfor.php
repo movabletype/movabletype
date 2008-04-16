@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
-    $localvars = array('__for_end', '__for_var');
+    $localvars = array('__for_end', '__for_var', '__out');
 
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -29,11 +29,13 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
         $counter = 1;
         $ctx->stash('__for_end', $end);
         $ctx->stash('__for_var', $var);
+        $ctx->stash('__out', false);
     } else {
         $index = $ctx->__stash['vars']['__index__'] + 1;
         $counter = $ctx->__stash['vars']['__counter__'] + 1;
         $end = $ctx->stash('__for_end');
         $var = $ctx->stash('__for_var');
+        $out = $ctx->stash('__out');
     }
 
     if ($index <= $end) {
@@ -45,12 +47,16 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__last__'] = $index == $end;
         if ($var)
             $ctx->__stash['vars'][$var] = $index;
-        if (array_key_exists('glue', $args)) {
-            if ($index < $end)
-                $content = $content . $args['glue'];
+        if (isset($args['glue']) && !empty($content)) {
+            if ($out)
+                $content = $args['glue'] . $content;
+            else
+                $ctx->stash('__out', true);
         }
         $repeat = true;
     } else {
+        if (isset($args['glue']) && $out && !empty($content))
+            $content = $args['glue'] . $content;
         $ctx->restore($localvars);
         $repeat = false;
     }

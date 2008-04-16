@@ -890,6 +890,8 @@ function get_category_context(&$ctx, $class = 'category') {
         # No category found so far, test the entry
         if ($ctx->stash('entry')) {
             $entry = $ctx->stash('entry');
+            if (empty($entry['placement_category_id']))
+                return null;
             if ($class == 'folder')
                 $cat = $ctx->mt->db->fetch_folder($entry['placement_category_id']);
             else

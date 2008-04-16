@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repeat) {
-    $localvars = array('_categories', 'category', '_categories_counter');
+    $localvars = array('_categories', 'category', '_categories_counter', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
@@ -22,20 +22,27 @@ function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repe
             $categories = $list;
         }
         $ctx->stash('_categories', $categories);
+        $ctx->stash('__out', false);
         $counter = 0;
     } else {
         $categories = $ctx->stash('_categories');
         $counter = $ctx->stash('_categories_counter');
+        $out = $ctx->stash('__out');
     }
     if ($counter < count($categories)) {
         $category = $categories[$counter];
         $ctx->stash('category', $category);
         $ctx->stash('_categories_counter', $counter + 1);
         $repeat = true;
-        if (($counter > 0) && isset($args['glue'])) {
-            $content = $content . $args['glue'];
+        if (isset($args['glue']) && !empty($content)) {
+            if ($out)
+                $content = $args['glue'] . $content;
+            else
+                $ctx->stash('__out', true);
         }
     } else {
+        if (isset($args['glue']) && $out && !empty($content))
+            $content = $args['glue'] . $content;
         $ctx->restore($localvars);
         $repeat = false;
     }

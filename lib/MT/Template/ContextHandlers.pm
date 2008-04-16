@@ -1323,7 +1323,6 @@ sub _hdlr_for {
     my $out = '';
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $glue = $args->{glue};
-    $glue = '' unless defined $glue;
     my $var = $args->{var};
     for (my $i = $start; $i <= $end; $i += $incr) {
         local $vars->{__first__} = $i == $start;
@@ -1335,11 +1334,10 @@ sub _hdlr_for {
         local $vars->{$var} = $i if defined $var;
         my $res = $builder->build($ctx, $tokens, $cond);
         return $ctx->error($builder->errstr) unless defined $res;
-        if ($res ne '') {
-            $out .= $glue if $cnt > 1;
-            $out .= $res;
-            $cnt++;
-        }
+        $out .= $glue
+            if defined $glue && $cnt > 1 && length($out) && length($res);
+        $out .= $res;
+        $cnt++;
     }
     return $out;
 }
@@ -1589,7 +1587,6 @@ sub _hdlr_loop {
     my $i = 1;
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $glue = $args->{glue};
-    $glue = '' unless defined $glue;
     foreach my $item (@$var) {
         local $vars->{__first__} = $i == 1;
         local $vars->{__last__} = $i == scalar @$var;
@@ -1624,7 +1621,7 @@ sub _hdlr_loop {
         my $res = $builder->build($ctx, $tokens, $cond);
         return $ctx->error($builder->errstr) unless defined $res;
         if ($res ne '') {
-            $out .= $glue if $i > 1;
+            $out .= $glue if defined $glue && $i > 1 && length($out) && length($res);
             $out .= $res;
             $i++;
         }
@@ -1915,7 +1912,7 @@ sub _hdlr_tags {
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
     my $needs_entries = (($ctx->stash('uncompiled') || '') =~ /<MT:?Entries/i) ? 1 : 0;
-    my $glue = $args->{glue} || '';
+    my $glue = $args->{glue};
     my $res = '';
     local $ctx->{__stash}{all_tag_count} = undef;
     local $ctx->{inside_mt_tags} = 1;
@@ -1973,7 +1970,7 @@ sub _hdlr_tags {
         local $ctx->{__stash}{all_tag_count} = $all_count;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
-        $res .= $glue if $res ne '';
+        $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
     }
     $res;
@@ -2096,7 +2093,7 @@ sub _hdlr_entry_tags {
     require MT::Entry;
     my $entry = $ctx->stash('entry');
     return '' unless $entry;
-    my $glue = $args->{glue} || '';
+    my $glue = $args->{glue};
 
     local $ctx->{__stash}{tag_max_count} = undef;
     local $ctx->{__stash}{tag_min_count} = undef;
@@ -2112,7 +2109,7 @@ sub _hdlr_entry_tags {
         local $ctx->{__stash}{tag_entry_count} = undef;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
-        $res .= $glue if $res ne '';
+        $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
     }
     $res;
@@ -4228,7 +4225,7 @@ sub _hdlr_entries {
         });
         return $ctx->error( $builder->errstr ) unless defined $out;
         $last_day = $this_day;
-        $res .= $glue if defined $glue && $i;
+        $res .= $glue if defined $glue && $i && length($res) && length($out);
         $res .= $out;
         $i++;
     }
@@ -4738,15 +4735,16 @@ sub _hdlr_entry_categories {
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
-    my @res;
+    my $res;
+    my $glue = $args->{glue};
     for my $cat (@$cats) {
         local $ctx->{__stash}->{category} = $cat;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
-        push @res, $out if $out ne '';
+        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $out;
     }
-    my $sep = $args->{glue} || '';
-    join $sep, @res;
+    $res;
 }
 
 sub _hdlr_typekey_token {
@@ -6313,7 +6311,7 @@ sub _hdlr_categories {
     my $res = '';
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
-    my $glue = exists $args->{glue} ? $args->{glue} : '';
+    my $glue = $args->{glue};
     ## In order for this handler to double as the handler for
     ## <MTArchiveList archive_type="Category">, it needs to support
     ## the <$MTArchiveLink$> and <$MTArchiveTitle$> tags
@@ -6355,7 +6353,7 @@ sub _hdlr_categories {
               ArchiveListHeader => $i == 1,
               ArchiveListFooter => $last }))
             or return $ctx->error( $builder->errstr );
-        $res .= $glue if $res ne '';
+        $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
         $cat = $next_cat;
     }
@@ -6636,16 +6634,17 @@ sub _hdlr_entry_additional_categories {
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
-    my @res;
+    my $res;
+    my $glue = $args->{glue};
     for my $cat (@$cats) {
         next if $e->category && ($cat->label eq $e->category->label);
         local $ctx->{__stash}->{category} = $cat;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
-        push @res, $out;
+        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $out if length($out);
     }
-    my $sep = $args->{glue} || '';
-    join $sep, @res; 
+    $res;
 }
 
 sub _hdlr_pings {
@@ -7188,14 +7187,14 @@ sub _hdlr_parent_categories {
 
     # Get the arguments
     my $exclude_current = $args->{'exclude_current'};
-    my $glue = $args->{'glue'} || '';
+    my $glue = $args->{'glue'};
 
     # Get the current category
     defined (my $cat = _get_category_context($ctx))
         or return $ctx->error($ctx->errstr);
     return '' if ($cat eq '');
 
-    my @res;
+    my $res;
 
     # Put together the list of parent categories
     # including the current one unless instructed otherwise
@@ -7210,11 +7209,10 @@ sub _hdlr_parent_categories {
         if ($args->{sub_cats_path_hack} && $out !~ /\w/) {
             $out = 'cat-' . $c->id;
         }
-        push @res, $out;
+        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $out if length($out);
     }
-
-    # Slap them all together with some glue
-    return join $glue, @res;
+    $res;
 }
 
 sub _hdlr_top_level_parent {
@@ -7921,7 +7919,7 @@ sub _hdlr_asset_tags {
     require MT::Asset;
     my $asset = $ctx->stash('asset');
     return '' unless $asset;
-    my $glue = $args->{glue} || '';
+    my $glue = $args->{glue};
 
     local $ctx->{__stash}{tag_max_count} = undef;
     local $ctx->{__stash}{tag_min_count} = undef;
@@ -7942,7 +7940,7 @@ sub _hdlr_asset_tags {
         local $ctx->{__stash}{tag_asset_count} = undef;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
             or return $ctx->error( $builder->errstr );
-        $res .= $glue if $res ne '';
+        $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
     }
 
@@ -8849,7 +8847,6 @@ sub _hdlr_pager_block {
     my $count = $ctx->stash('count');
 
     my $glue = $args->{glue};
-    $glue = q() unless defined $glue;
 
     my $output = q();
     require POSIX;
@@ -8867,7 +8864,7 @@ sub _hdlr_pager_block {
               IfCurrentPage => $i == ( $limit ? $offset / $limit + 1 : 1 ),
             }
             )) or return $ctx->error( $build->errstr );
-        $output .= $glue if $i > 1;
+        $output .= $glue if defined $glue && $i > 1 && length($output) && length($out);
         $output .= $out;
     }
     $output;

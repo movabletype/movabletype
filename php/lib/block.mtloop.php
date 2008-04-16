@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
-    $localvars = array('__loop_keys', '__loop_values');
+    $localvars = array('__loop_keys', '__loop_values', '__out');
 
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -66,14 +66,18 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
         }
         $counter = 1;
         $ctx->stash('__loop_values', $value);
+        $ctx->stash('__out', false);
     }
     else {
         $counter = $ctx->__stash['vars']['__counter__'] + 1;
         $keys = $ctx->stash('__loop_keys');
         $value = $ctx->stash('__loop_values');
+        $out = $ctx->stash('__out');
         if (!isset($keys) || $keys == 0) {
             $ctx->restore($localvars);
             $repeat = false;
+            if (isset($args['glue']) && $out && !empty($content))
+                $content = $args['glue'] . $content;
             return $content;
         }
     }
@@ -96,9 +100,11 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
             }
         }
     }
-    if (array_key_exists('glue', $args)) {
-        if (1 < $counter)
-            $content = $content . $args['glue'];
+    if (isset($args['glue']) && !empty($content)) {
+        if ($out)
+            $content = $args['glue'] . $content;
+        else
+            $ctx->stash('__out', true);
     }
     if ( 0 === count($keys) )
         $ctx->stash('__loop_keys', 0);

@@ -8,7 +8,7 @@
 function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
-    $localvars = array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog');
+    $localvars = array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $args['blog_id'] = $ctx->stash('blog_id');
@@ -18,11 +18,13 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_categories', $categories);
         $ctx->stash('inside_mt_categories', 1);
         $ctx->stash('show_empty', isset($args['show_empty']) ? $args['show_empty'] : '0');
+        $ctx->stash('__out', false);
         $counter = 0;
     } else {
         $categories = $ctx->stash('_categories');
         $counter = $ctx->stash('_categories_counter');
         $glue = $ctx->stash('_categories_glue');
+        $out =$ctx->stash('__out');
     }
     if ($counter < count($categories)) {
         $category = $categories[$counter];
@@ -34,9 +36,16 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $ctx->stash('ArchiveListFooter', $counter+1 == count($categories));
         $ctx->stash('blog',
             $ctx->mt->db->fetch_blog($category['category_blog_id']));
-        if ($counter > 0) $content = $content . $glue;
+        if (!empty($glue) && !empty($content)) {
+            if ($out)
+                $content = $glue . $content;
+            else
+                $ctx->stash('__out', true);
+        }
         $repeat = true;
     } else {
+        if (!empty($glue) && $out && !empty($content))
+            $content = $glue . $content;
         $ctx->restore($localvars);
         $repeat = false;
     }

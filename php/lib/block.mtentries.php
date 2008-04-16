@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
-    $localvars = array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id', 'conditional', 'else_content');
+    $localvars = array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out');
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
         return $ctx->error($ctx->mt->translate('sort_by="score" must be used in combination with namespace.'));
     }
@@ -28,9 +28,11 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $counter = 0;
         $lastn = $args['lastn'];
         $ctx->stash('_entries_lastn', $lastn);
+        $ctx->stash('__out', false);
     } else {
         $lastn = $ctx->stash('_entries_lastn');
         $counter = $ctx->stash('_entries_counter');
+        $out = $ctx->stash('__out');
     }
     if (!isset($args['class'])) {
         $args['class'] = 'entry';
@@ -118,9 +120,17 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_entries_counter', $counter + 1);
         $_REQUEST['entry_ids_published'][$entry['entry_id']] = 1;
         $glue = $ctx->stash('_entries_glue');
-        if ($glue != '') $content = $content . $glue;
+        if (isset($glue) && !empty($content)) {
+            if ($out)
+                $content = $glue . $content;
+            else
+                $ctx->stash('__out', true);
+        }
         $repeat = true;
     } else {
+        $glue = $ctx->stash('_entries_glue');
+        if (isset($glue) && $out && !empty($content))
+            $content = $glue . $content;
         $ctx->restore($localvars);
         $repeat = false;
     }
