@@ -1,6 +1,7 @@
 package MT::CMS::Category;
 
 use strict;
+use MT::Util qw( encode_url encode_js );
 
 sub edit {
     my $cb = shift;
