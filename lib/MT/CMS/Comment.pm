@@ -726,7 +726,7 @@ sub trust_commenter_by_comment {
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'trust' );
-    save_commenter_perm( \@commenters );
+    save_commenter_perm( $app, \@commenters );
 }
 
 sub untrust_commenter_by_comment {
@@ -734,7 +734,7 @@ sub untrust_commenter_by_comment {
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'untrust' );
-    save_commenter_perm( \@commenters );
+    save_commenter_perm( $app, \@commenters );
 }
 
 sub ban_commenter_by_comment {
@@ -742,7 +742,7 @@ sub ban_commenter_by_comment {
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'ban' );
-    save_commenter_perm( \@commenters );
+    save_commenter_perm( $app, \@commenters );
 }
 
 sub unban_commenter_by_comment {
@@ -750,7 +750,7 @@ sub unban_commenter_by_comment {
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'unban' );
-    save_commenter_perm( \@commenters );
+    save_commenter_perm( $app, \@commenters );
 }
 
 sub trust_commenter {
