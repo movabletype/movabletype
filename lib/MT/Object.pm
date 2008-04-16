@@ -1012,16 +1012,23 @@ sub set_by_key {
     return $obj;
 }
 
-# This method is overridden since D::OD uses column_values to retrieve
-# the content to cache if caching is enabled. Thus, we must ensure any
-# metadata is serialized prior to caching.
-sub column_values {
-    my $props = $_[0]->properties;
-    if ($props->{meta_column}
-        && $_[0]->{changed_cols}{$props->{meta_column}}) {
-        $_[0]->pre_save_serialize_metadata;
+sub deflate {
+    my $obj = shift;
+    my $data = $obj->SUPER::deflate();
+    if ($obj->has_meta()) {
+        $data->{meta} = $obj->{__meta}->deflate_meta();
     }
-    return $_[0]->SUPER::column_values(@_);
+    return $data;
+}
+
+sub inflate {
+    my $class = shift;
+    my ($data) = @_;
+    my $obj = $class->SUPER::inflate(@_);
+    if ($class->has_meta()) {
+        $obj->{__meta}->inflate_meta($data->{meta});
+    }
+    return $obj;
 }
 
 # We override D::OD's set_values method here only allowing the
@@ -1164,8 +1171,6 @@ package MT::Object::Meta;
 
 use base qw( Data::ObjectDriver::BaseObject );
 
-sub driver { $MT::Object::DRIVER ||= MT::ObjectDriverFactory->new }
-
 sub install_properties {
     my $class = shift;
     my ($props) = @_;
@@ -1184,6 +1189,8 @@ sub meta_pkg { undef }
 *__parse_def = \&MT::Object::__parse_def;
 *count = \&MT::Object::count;
 *columns_of_type = \&MT::Object::columns_of_type;
+
+*driver = \&MT::Object::dbi_driver;
 
 # TODO: copy this too
 sub blob_requires_zip {}
