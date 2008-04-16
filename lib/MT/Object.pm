@@ -452,7 +452,7 @@ sub install_meta {
     if (my $fields = MT::Meta->install($pkg, $params)) {
         # we may have inherited meta fields so lets update with
         # the fields returned by MT::Meta
-        $props->{fields} = $fields;
+        $props->{fields}->{$_} = $fields->{$_} for keys %$fields;
     }
 
     return $props->{meta_installed} = 1;
