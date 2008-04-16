@@ -220,16 +220,14 @@ sub build {
     my($ctx, $cond) = @_;
     $ctx ||= $tmpl->context;
 
-    my ($timer, $start);
-    if (MT->config->PerformanceLogging) {
-        $timer = MT->get_timer();
-    }
+    my $timer = MT->get_timer();
     local $timer->{elapsed} = 0 if $timer;
 
     local $ctx->{__stash}{template} = $tmpl;
     my $tokens = $tmpl->tokens
         or return;
     my $build = $ctx->{__stash}{builder} || MT::Builder->new;
+    my $page_layout;
     if (my $blog_id = $tmpl->blog_id) {
         $ctx->stash('blog_id', $blog_id);
         my $blog = $ctx->stash('blog');
@@ -242,11 +240,11 @@ sub build {
             $ctx->stash('blog_id', $blog->id);
         }
         MT->config->TimeOffset($blog->server_offset);
-        $ctx->var( 'page_layout', $blog->page_layout )
-            if $blog->page_layout;
+        $page_layout = $blog->page_layout;
     }
-    $ctx->var( 'page_layout', $tmpl->page_layout )
-        if $tmpl->page_layout;
+    $page_layout = $tmpl->page_layout if $tmpl->page_layout;
+    $ctx->var( 'page_layout', $page_layout )
+        unless $ctx->var('page_layout');
     if (my $layout = $ctx->var('page_layout')) {
         my $columns = {
             'layout-wt'  => 2,
