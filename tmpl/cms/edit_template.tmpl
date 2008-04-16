@@ -636,9 +636,14 @@ TC.attachLoadEvent( init );
     </mtapp:setting>
 <mt:else>
     <mt:unless name="template_group" eq="module">
+        <mt:setvarblock name="build_dynamic_hint">
+            <__trans phrase="Learn more about <a href="[_1]">publishing options</a>" params="http://www.movabletype.org/documentation/">
+        </mt:setvarblock>
         <mtapp:setting
             id="build_dynamic"
             label="<__trans phrase="Publish Options">"
+            hint="$build_dynamic_hint"
+            show_hint="1"
             help_page="templates"
             help_section="enable_dynamic_publishing">
             <select name="build_type" id="build-type" class="full-width">
