@@ -365,6 +365,8 @@ function saveArchiveMapChange(param) {
 
 }
 function savedArchiveMapChange(c) {
+    TC.removeClassName(TC.elementOrId("create-map"), "hidden");
+    TC.addClassName(TC.elementOrId("loading-styles"), "hidden");
     var res = c.responseText;
     if (res == '') 
         message = '<__trans phrase="Error occurred while updating archive maps." escape="js">';
@@ -406,6 +408,8 @@ function cancelCreateMode () {
 }
 function addMap() {
     getByID('create-inline-mapping').style.display = 'none';
+    TC.addClassName(TC.elementOrId("create-map"), "hidden");
+    TC.removeClassName(TC.elementOrId("loading-styles"), "hidden");
     var f = document.forms['template-listing-form'];
     var frm = document.forms['archive_map_form'];
     if (!frm) return false;
@@ -414,7 +418,12 @@ function addMap() {
         + '&template_id=<mt:var name="id">'
         + '&new_archive_type=' + f['new_archive_type'].value
         + '&magic_token=<mt:var name="magic_token">';
-    saveArchiveMapChange(param);
+    var client = TC.Client.call({
+        'load': savedArchiveMapChange,
+        'uri': '<mt:var name="script_url">',
+        'method': 'POST',
+        'arguments': param
+    });
 }
 
 function togglePreferred(checkbox, mapid) {
@@ -599,7 +608,10 @@ TC.attachLoadEvent( init );
         content_class="field-content-text"
         hint=""
         show_hint="0">
-        <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Archive Mapping"></a></p>
+        <span class="hidden" id="loading-styles">
+            <img src="/mt-static/images/indicator.white.gif" height="16" width="16" alt="" />
+        </span>
+        <div id="create-map"><p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Archive Mapping"></a></p></div>
         <div id="msg-block"></div>
         <div class="create-inline" id="create-inline-mapping">
             <label for="new_archive_type"><strong><__trans phrase="Type"></strong></label>
