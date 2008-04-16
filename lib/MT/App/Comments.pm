@@ -923,7 +923,8 @@ sub post {
         );
     }
     if ($commenter) {
-        $commenter->url( $comment->url ) if $comment->url;
+        $commenter->url( $comment->url )
+          if $comment->url && $commenter->type != MT::Author::COMMENTER();
         $commenter->save
           or $app->log(
             {
