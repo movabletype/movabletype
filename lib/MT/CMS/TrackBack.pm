@@ -1,7 +1,7 @@
 package MT::CMS::TrackBack;
 
 use strict;
-use MT::Util qw( format_ts relative_date );
+use MT::Util qw( format_ts relative_date encode_url );
 use MT::I18N qw( const break_up_text );
 
 sub edit {
