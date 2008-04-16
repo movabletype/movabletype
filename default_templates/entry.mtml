@@ -38,10 +38,10 @@
                                         </span>
                                         <span class="separator">|</span> <a class="permalink" rel="bookmark" href="<$MTEntryPermalink$>"><__trans phrase="Permalink"></a>
 <MTIfCommentsActive>
-                                        <span class="separator">|</span> <a href="<$MTEntryPermalink$>#comments"><__trans phrase="Comments ([_1])" params="<$MTEntryCommentCount$>"></a>
+                                        <span class="separator">|</span> <a href="<$MTEntryPermalink$>#comments"><mt:if tag="EntryCommentCount" eq="1"><__trans phrase="1 Comment"><mt:else><__trans phrase="[_1] Comments" params="<$MTEntryCommentCount$>"></mt:if></a>
 </MTIfCommentsActive>
 <MTIfPingsActive>
-                                        <span class="separator">|</span> <a href="<$MTEntryPermalink$>#trackback"><__trans phrase="TrackBacks ([_1])" params="<$MTEntryTrackbackCount$>"></a>
+                                        <span class="separator">|</span> <a href="<$MTEntryPermalink$>#trackback"><mt:if tag="EntryTrackbackCount" eq="1"><__trans phrase="1 TrackBack"><mt:else><__trans phrase="[_1] TrackBacks" params="<$MTEntryTrackbackCount$>"></mt:if></a>
 </MTIfPingsActive>
                                     </div>
                                 </div>
