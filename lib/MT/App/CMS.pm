@@ -3153,11 +3153,11 @@ sub rebuild_these {
             my $type = $e->class;
 
             # Rebuilding something that isn't an entry, rebless as required
-            if ( $type ne MT::Entry->class_type ) {
-                die "had to rebless? $e";
-                my $pkg = MT->model($type) or next;
-                bless $e, $pkg;
-            }
+            #if ( $type ne MT::Entry->class_type ) {
+            #    die "had to rebless? $e";
+            #    my $pkg = MT->model($type) or next;
+            #    bless $e, $pkg;
+            #}
             $blogs{ $e->blog_id } = ();
             $app->rebuild_entry(
                 Entry             => $e,
