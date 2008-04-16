@@ -155,12 +155,12 @@
                 </ul>
             </div>
             <mt:if name="top_nav_loop">
-            <div id="blog-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0">
+            <div id="blog-nav">
                 <div id="blog-nav-inner">
                     <ul id="blog-nav-list" class="blog-nav-list pkg">
                         <li id="blog-dashboard"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="blog_id" _default="0"$>" title="<__trans phrase="Blog Dashboard">"><span><__trans phrase="Blog Dashboard"></span></a></li>
                 <mt:loop name="top_nav_loop">
-                        <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
+                        <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu" onmouseover="DOM.addClassName( this, 'show-nav' );" onmouseout="DOM.removeClassName( this, 'show-nav' );">
                     <mt:if name="allowed"><a href="<$mt:var name="link" escape="html"$>"><span><$mt:var name="label"$><span mt:command="open-menu">&nbsp;</span></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
                     <mt:if name="sub_nav_loop">
                             <ul>
