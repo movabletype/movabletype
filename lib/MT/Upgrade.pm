@@ -877,7 +877,173 @@ sub core_upgrade_functions {
                 return 0;
             },
         },
+        'core_upgrade_meta' => {
+            version_limit => 4.0057,
+            priority => 3.2,
+            code => \&core_upgrade_meta,
+        },
+
+        # Helper upgrade routine for core_upgrade_meta
+        # and possibly other object types that require
+        # this migration; version_limit is unspecified, so
+        # this can only be invoked if another upgrade
+        # operation utilizes it.
+        'core_upgrade_meta_for_table' => {
+            priority => 3.3,
+            code => \&core_upgrade_meta_for_table,
+        },
+    };
+}
+
+sub core_upgrade_meta {
+    my $self = shift;
+    # we could possibly determine the list of types to process
+    # programmatically, but this will do...
+    $self->add_step('core_upgrade_meta_for_table', type => 'entry');
+    $self->add_step('core_upgrade_meta_for_table', type => 'author');
+    $self->add_step('core_upgrade_meta_for_table', type => 'blog');
+    $self->add_step('core_upgrade_meta_for_table', type => 'template');
+    $self->add_step('core_upgrade_meta_for_table', type => 'asset');
+    $self->add_step('core_upgrade_meta_for_table', type => 'category',
+        plugindata => 1);
+    return 0;
+}
+
+sub core_upgrade_meta_for_table {
+    my $self = shift;
+    my (%param) = @_;
+    my $type = $param{type};
+    return 0 unless $type;
+    my $class = MT->model($type);
+    return 0 unless $class;
+    my $cfclass = MT->model('field');
+    my $plugindata = $param{plugindata} || 0;
+
+    if ($cfclass) {
+        # this looks weird, but it winds up invoking
+        # the loading of custom field types and the
+        # installation of their meta properties
+        MT->registry('tags');
     }
+
+    # special case for types that use CustomField plugindata
+    # for storing their custom field metadata instead of a 'meta'
+    # column.
+    if ($cfclass && $plugindata) {
+        require CustomFields::Upgrade;
+        $self->progress($self->translate_escape('Moving metadata storage for categories...'));
+        CustomFields::Upgrade::customfields_move_meta($self, $type);
+        return 0;
+    }
+
+    my $offset = int($param{offset} || 0);
+    my $count = int($param{count} || 0);
+
+    my $pid = $param{step} . "_type";
+
+    my $msg = MT->translate("Upgrading metadata storage for [_1]", $class->class_label_plural);
+
+    if (!$offset) {
+        $self->progress($msg, $pid);
+    } else {
+        my $count = $class->count();
+        return 0 unless $count;
+        $self->progress(sprintf($msg . " (%d%%)", ($offset/$count*100)), $pid);
+    }
+
+    my $driver = $class->dbi_driver;
+    my $dbh = $driver->rw_handle;
+    my $dbd = $driver->dbd;
+    my $stmt = $dbd->sql_class->new;
+
+    # assumes 'meta' is the meta column name; should be for all core types
+    # we are processing
+    my $meta_col = $dbd->db_column_name($class->datasource,
+        $param{meta_column} || 'meta');
+    my $id_col = $dbd->db_column_name($class->datasource, 'id');
+    $stmt->add_where( $meta_col => { not_null => 1 } );
+    $stmt->limit( 101 );
+    $stmt->offset( $offset ) if $offset;
+
+    my $sql = join ' ', 'SELECT', $meta_col, ',', $id_col, 'FROM',
+        $driver->table_for($class),
+        $stmt->as_sql_where(),
+        $stmt->as_limit;
+
+    my $sth = $dbh->prepare($sql)
+        or return $self->error($dbh->errstr || $DBI::errstr);
+    $sth->execute
+        or return $self->error($dbh->errstr || $DBI::errstr);
+
+    my $rows = 0;
+
+    require MT::Serialize;
+    my $ser = MT::Serialize->new('MT');
+    my %fields;
+
+    my @ids;
+    while (my $row = $sth->fetchrow_arrayref) {
+        $rows++;
+        my ($rawmeta, $id) = @$row;
+        if ($rawmeta =~ m/^SERG/) {
+            # deserialize
+            my $metadataref = $ser->unserialize($rawmeta);
+            if ($metadataref) {
+                my $metadata = $$metadataref;
+                my $obj = $class->load($id);
+                if ($obj) {
+                    my $changed = 0;
+                    foreach my $metaname (keys %$metadata) {
+                        my $metavalue = $metadata->{$metaname};
+                        if ($metaname eq 'customfields') {
+                            next unless $cfclass;
+
+                            # extra work for custom fields; a hash into itself
+                            my $cfdata = $metavalue;
+                            next unless ref $cfdata eq 'HASH';
+
+                            foreach my $cfname (keys %$cfdata) {
+                                my $cfvalue = $cfdata->{$cfname};
+                                # make sure CustomFields::Field exists
+                                my $fld = $fields{$cfname} ||= $cfclass->load({ basename => $cfname, obj_type => $type });
+                                next unless $fld;
+
+                                $changed++;
+                                $obj->meta('field.' . $cfname, $cfvalue);
+                            }
+                        } else {
+                            $changed++;
+                            $obj->meta($metaname, $metavalue);
+                        }
+                    }
+                    if ($changed) {
+                        $obj->save if $changed;
+                        push @ids, $obj->id;
+                    }
+                }
+            }
+        }
+        last if $rows == 100;
+    }
+    $sth->finish;
+
+    # now, clear the meta column for each of the objects touched
+    if (@ids) {
+        my $list = join ",", @ids;
+        my $sql = join " ", "UPDATE", $driver->table_for($class),
+            "SET", $meta_col, "=NULL WHERE", $id_col, " IN ($list)";
+        $dbh->do($sql);
+    }
+
+    if ($rows == 101) {
+        $offset += 100;
+    } else {
+        # done, so lets drop that meta column, what say you?
+        $sql = $dbd->ddl_class->drop_column_sql($class, $param{meta_column} || 'meta');
+        $dbh->do($sql);
+        $offset = 0;  # done!
+    }
+    return $offset;
 }
 
 sub core_populate_author_auth_type {
