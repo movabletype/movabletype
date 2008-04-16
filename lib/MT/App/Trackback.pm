@@ -286,16 +286,7 @@ sub ping {
     my @pings = MT::TBPing->load( { tb_id => $tb->id } );
     foreach (@pings) {
         if ( $_->source_url eq $url ) {
-            return $app->_response() if $_->is_junk;
-            if ( $app->remote_ip eq $_->ip ) {
-                $ping = $_;
-                last;
-            }
-            else {
-
-                # return success to quiet this pinger
-                return $app->_response();
-            }
+            return $app->_response();
         }
     }
 
