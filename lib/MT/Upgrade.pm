@@ -935,6 +935,9 @@ sub core_upgrade_meta_for_table {
         CustomFields::Upgrade::customfields_move_meta($self, $type);
         return 0;
     }
+    if ($plugindata) {
+        return 0;
+    }
 
     my $offset = int($param{offset} || 0);
     my $count = int($param{count} || 0);
@@ -971,7 +974,7 @@ sub core_upgrade_meta_for_table {
         $stmt->as_limit;
 
     my $sth = $dbh->prepare($sql)
-        or return $self->error($dbh->errstr || $DBI::errstr);
+        or return 0; # ignore this operation if _meta column doesn't exist
     $sth->execute
         or return $self->error($dbh->errstr || $DBI::errstr);
 
