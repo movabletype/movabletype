@@ -576,6 +576,7 @@ sub core_tags {
             'remove_html' => \&_fltr_remove_html,
             'dirify' => \&_fltr_dirify,
             'sanitize' => \&_fltr_sanitize,
+            'encode_sha1' => \&_fltr_sha1,
             'encode_html' => \&_fltr_encode_html,
             'encode_xml' => \&_fltr_encode_xml,
             'encode_js' => \&_fltr_encode_js,
@@ -607,6 +608,12 @@ sub core_tags {
             'setvar' => \&_fltr_setvar,
         },
     };
+}
+
+sub _fltr_sha1 {
+    my ($str) = @_;
+    require MT::Util;
+    return MT::Util::perl_sha1_digest_hex($str);
 }
 
 sub _fltr_setvar {
