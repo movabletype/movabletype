@@ -1414,7 +1414,7 @@ sub _update_finfos {
     my $driver = $finfo_class->driver;
     my $dbd = $driver->dbd;
 
-    my $stmt = MT::ObjectDriver::SQL->new;
+    my $stmt = $dbd->sql_class->new;
 
     if ($where) {
         my $new_where = {};
