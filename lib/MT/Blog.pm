@@ -96,7 +96,7 @@ __PACKAGE__->install_properties({
         'nwc_replace_field' => 'string meta',
         'template_set' => 'string meta',
         'page_layout' => 'string meta',
-        'include_system' => 'integer meta',
+        'include_system' => 'string meta',
         'include_cache' => 'integer meta',
     },
     meta => 1,
