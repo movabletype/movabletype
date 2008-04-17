@@ -49,6 +49,7 @@ sub form_fields {
 
     my $cfg = MT->config;
     my $cgipath = $cfg->CGIPath;
+    $cgipath .= '/' if $cgipath !~ m!/$!;
     my $commentscript = $cfg->CommentScript;
 
     my $caption = MT->translate('Captcha');
