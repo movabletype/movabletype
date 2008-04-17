@@ -6,75 +6,103 @@
 #
 # $Id$
 
+package MT::Tool::ReportSlowRequest;
 use strict;
 
 use lib "./lib";
+use base qw( MT::Tool );
 
-use Getopt::Long qw/:config no_ignore_case/;
 use List::Util qw( min );
 use Time::HiRes qw( time );
 use MT;
 use MT::Util::LogProcessor;
 use Data::Dumper;
 
-GetOptions(
-    'day=s'    => \my ($arg_day),
-    'logdir=s' => \my ($arg_logdir),
-    'sample=i' => \my ($arg_sample),
-    'slow=i'   => \my ($arg_slow),
-    'debug'    => \my ($arg_debug),
-    'dump'     => \my ($arg_dump),
-);
+my ($arg_day, $arg_logdir, $arg_sample, $arg_slow, $arg_debug, $arg_dump);
 
-$arg_slow ||= 2;
-
-my $proc = MT::Util::LogProcessor->new(
-    {
-        debug        => $arg_debug,
-        logdir       => $arg_logdir || '.',
-        sample       => $arg_sample,
-        day          => $arg_day || 'yesterday',
-        file_pattern => 'pl-\d{8}.log',
-    }
-);
-
-my %stash = ( today => $proc->day );
-my ( $total_records, $elapsed ) = $proc->process_log_files(
-    sub {
-        my ($rec) = @_;
-
-        my $secs = int $rec->{time_total};
-
-        my $bucket = $secs > 10 ? 10 : $secs;
-        $stash{by_seconds}[$bucket]++;
-
-        $stash{total_requests}++;
-
-        if ( $secs > $arg_slow - 1 ) {
-            push @{ $stash{slow} }, $rec;
-        }
-    }
-);
-
-printf "Processed %d records in %.02f seconds; speed: %.02f recs/sec\n",
-  $total_records, $elapsed, $total_records / ( $elapsed || 1 )
-  if $arg_debug;
-
-for my $bucket ( 0 .. $#{ $stash{by_seconds} } ) {
-    my $count = $stash{by_seconds}[$bucket] || 0;
-    $stash{restime_histogram}[$bucket] = {
-        count => $count,
-        range => $bucket == 10
-        ? '10+ sec'
-        : $bucket . '-' . ( $bucket + 1 ) . 's',
-        percent => int( $count / $stash{total_requests} * 100 ) || 1,
+sub help {
+    return q{
+        --logdir <dir>    Look for logs in directory <dir>. By default, logs
+                          in the current directory are analyzed.
+        --sample <num>    ?
+        --slow <secs>     Number of seconds after which a request is listed
+                          as one of the slowest. By default, requests over 2
+                          seconds are considered the slowest.
+        --day <name>      The name of the day to examine; either 'today',
+                         'yesterday', or a date in the format YYYY-MM-DD.
+        --debug           Enable debugging output.
+        --dump            ?
     };
 }
 
-$stash{slow} =
-  [ sort { $b->{time_total} <=> $a->{time_total} } @{ $stash{slow} || [] } ];
+sub usage {
+}
 
-report( \%stash );
+sub options {
+    return (
+        'logdir=s' => \$arg_logdir,
+        'sample=i' => \$arg_sample,
+        'slow=i'   => \$arg_slow,
+        'day=s'    => \$arg_day,
+        'debug'    => \$arg_debug,
+        'dump'     => \$arg_dump,
+    );
+}
+
+sub main {
+    my $class = shift;
+    my ($verbose) = $class->SUPER::main(@_);
+
+    $arg_slow ||= 2;
+
+    my $proc = MT::Util::LogProcessor->new(
+        {
+            debug        => $arg_debug,
+            logdir       => $arg_logdir || '.',
+            sample       => $arg_sample,
+            day          => $arg_day || 'yesterday',
+            file_pattern => 'pl-\d{8}.log',
+        }
+    );
+
+    my %stash = ( today => $proc->day );
+    my ( $total_records, $elapsed ) = $proc->process_log_files(
+        sub {
+            my ($rec) = @_;
+
+            my $secs = int $rec->{time_total};
+
+            my $bucket = $secs > 10 ? 10 : $secs;
+            $stash{by_seconds}[$bucket]++;
+
+            $stash{total_requests}++;
+
+            if ( $secs > $arg_slow - 1 ) {
+                push @{ $stash{slow} }, $rec;
+            }
+        }
+    );
+
+    printf "Processed %d records in %.02f seconds; speed: %.02f recs/sec\n",
+      $total_records, $elapsed, $total_records / ( $elapsed || 1 )
+      if $arg_debug;
+
+    for my $bucket ( 0 .. $#{ $stash{by_seconds} } ) {
+        my $count = $stash{by_seconds}[$bucket] || 0;
+        $stash{restime_histogram}[$bucket] = {
+            count => $count,
+            range => $bucket == 10
+            ? '10+ sec'
+            : $bucket . '-' . ( $bucket + 1 ) . 's',
+            percent => int( $count / $stash{total_requests} * 100 ) || 1,
+        };
+    }
+
+    $stash{slow} =
+      [ sort { $b->{time_total} <=> $a->{time_total} } @{ $stash{slow} || [] } ];
+
+    report( \%stash );
+}
 
 sub report {
     my ($stash) = @_;
@@ -99,3 +127,8 @@ sub report {
         }
     }
 }
+
+__PACKAGE__->main() unless caller;
+
+1;
+
