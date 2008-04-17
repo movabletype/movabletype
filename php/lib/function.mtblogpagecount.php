@@ -12,4 +12,3 @@ function smarty_function_mtblogpagecount($args, &$ctx) {
     $args['class'] = 'page';
     return smarty_function_mtblogentrycount($args, $ctx);
 }
-?>

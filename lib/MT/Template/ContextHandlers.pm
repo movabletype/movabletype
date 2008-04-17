@@ -2142,17 +2142,42 @@ sub _hdlr_tag_id {
     $tag->id;
 }
 
+sub _count_format {
+    my ($count, $args) = @_;
+    my $phrase;
+    $count ||= 0;
+    if ($count == 0) {
+        $phrase = exists $args->{none}
+            ? $args->{none}   : (exists $args->{plural}
+            ? $args->{plural} : '');
+    } elsif ($count == 1) {
+        $phrase = exists $args->{singular} ? $args->{singular} : '';
+    } elsif ($count > 1) {
+        $phrase = exists $args->{plural} ? $args->{plural} : '';
+    }
+    return $count if $phrase eq '';
+    return $phrase unless $phrase =~ m/#/;
+
+    $phrase =~ s/(?<!\\)#/$count/g;
+    $phrase =~ s/\\#/#/g;
+    return $phrase;
+}
+
 sub _hdlr_tag_count {
     my ($ctx, $args, $cond) = @_;
     my $count = $ctx->stash('tag_entry_count');
     my $tag = $ctx->stash('Tag');
     my $blog_id = $ctx->stash('blog_id');
-    return 0 unless $tag;
-    unless (defined $count) {
-        $count = MT::Entry->tagged_count($tag->id, { status => MT::Entry::RELEASE(),
-                                                     blog_id => $blog_id });
+    if ($tag) {
+        unless (defined $count) {
+            $count = MT::Entry->tagged_count($tag->id, {
+                status => MT::Entry::RELEASE(),
+                blog_id => $blog_id
+            });
+        }
     }
-    $count || 0;
+    $count ||= 0;
+    return _count_format($count, $args);
 }
 
 sub _hdlr_if_typekey_token {
@@ -3556,7 +3581,8 @@ sub _hdlr_blog_category_count {
     my (%terms, %args);
     $ctx->set_blog_load_context($args, \%terms, \%args)
         or return $ctx->error($ctx->errstr);
-    MT::Category->count(\%terms, \%args);
+    my $count = MT::Category->count(\%terms, \%args);
+    return _count_format($count, $args);
 }
                 
 sub _hdlr_blog_entry_count {
@@ -3567,7 +3593,8 @@ sub _hdlr_blog_entry_count {
     $ctx->set_blog_load_context($args, \%terms, \%args)
         or return $ctx->error($ctx->errstr);
     $terms{status} = MT::Entry::RELEASE();
-    $class->count(\%terms, \%args);
+    my $count = $class->count(\%terms, \%args);
+    return _count_format($count, $args);
 }
 
 sub _hdlr_blog_comment_count {
@@ -3577,7 +3604,8 @@ sub _hdlr_blog_comment_count {
         or return $ctx->error($ctx->errstr);
     $terms{visible} = 1;
     require MT::Comment;
-    MT::Comment->count(\%terms, \%args);
+    my $count = MT::Comment->count(\%terms, \%args);
+    return _count_format($count, $args);
 }
 
 sub _hdlr_blog_ping_count {
@@ -3588,8 +3616,9 @@ sub _hdlr_blog_ping_count {
     $terms{visible} = 1;
     require MT::Trackback;
     require MT::TBPing;
-    MT::Trackback->count(undef,
+    my $count = MT::Trackback->count(undef,
         { 'join' => MT::TBPing->join_on('tb_id', \%terms, \%args) });
+    return _count_format($count, $args);
 }
 
 sub _hdlr_blog_cc_license_url {
@@ -4259,7 +4288,10 @@ sub _hdlr_entries_count {
     my ($ctx, $args, $cond) = @_;   
     my $e = $ctx->stash('entries');   
 
-    unless ($e) {
+    my $count;
+    if ($e) {
+        $count = scalar @$e;
+    } else {
         my $class_type = $args->{class_type} || 'entry';
         my $class = MT->model($class_type);
         my $cat_class = MT->model(
@@ -4295,11 +4327,9 @@ sub _hdlr_entries_count {
             }
             $i++;
         }
-        return $i;
+        $count = $i;
     }
-
-    return 0 unless $e;
-    scalar @$e;
+    return _count_format($count, $args);
 }  
 
 sub _no_entry_error {
@@ -4831,15 +4861,21 @@ sub _hdlr_comment_fields {
 }
 
 sub _hdlr_entry_comments {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    $e->comment_count;
+    my ($ctx, $args, $cond) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error($ctx->stash('tag'));
+    my $count = $e->comment_count;
+    return _count_format($count, $args);
 }
+
 sub _hdlr_entry_ping_count {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    $e->ping_count;
+    my ($ctx, $args, $cond) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error($ctx->stash('tag'));
+    my $count = $e->ping_count;
+    return _count_format($count, $args);
 }
+
 sub _hdlr_entry_previous {
     _hdlr_entry_nextprev('previous', @_);
 }
@@ -5337,7 +5373,7 @@ sub _hdlr_comment_author_link {
     my $name = $c->author;
     $name = '' unless defined $name;
     $name ||= $_[1]{default_name};
-    $name ||= '';
+    $name ||= MT->translate("Anonymous");
     my $show_email = $args->{show_email} ? 1 : 0;
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
     # Open the link in a new window if requested (with new_window="1").
@@ -5486,7 +5522,7 @@ sub _hdlr_comment_parent_id {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MTCommentParentID');
     my $id = $c->parent_id || 0;
-    $args && $args->{pad} ? (sprintf "%06d", $id) : $id;
+    $args && $args->{pad} ? (sprintf "%06d", $id) : ($id ? $id : '');
 }
 
 sub _hdlr_comment_replies {
@@ -6160,18 +6196,19 @@ sub _hdlr_archive_link {
 }
 
 sub _hdlr_archive_count {
-    my $ctx = $_[0];
+    my ($ctx, $args, $cond) = @_;
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $archiver = MT->publisher->archiver($at);
     if ($ctx->{inside_mt_categories} && !$archiver->date_based) {
         return _hdlr_category_count($ctx);
     } elsif (my $count = $ctx->stash('archive_count')) {
-        return $count;
-    } else {
-        my $e = $_[0]->stash('entries');
-        my @entries = @$e if ref($e) eq 'ARRAY';
-        return scalar @entries;
+        return _count_format($count, $args);
     }
+
+    my $e = $_[0]->stash('entries');
+    my @entries = @$e if ref($e) eq 'ARRAY';
+    my $count = scalar @entries;
+    return _count_format($count, $args);
 }
 
 sub _hdlr_archive_category {
@@ -6432,7 +6469,7 @@ sub _hdlr_category_desc {
 }
 
 sub _hdlr_category_count {
-    my($ctx) = @_;
+    my ($ctx, $args, $cond) = @_;
     my $cat = ($ctx->stash('category') || $_[0]->stash('archive_category'))
         or return $_[0]->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
@@ -6448,11 +6485,11 @@ sub _hdlr_category_count {
         require MT::Placement;
         $count = scalar $class->count(@args);
     }
-    $count;
+    return _count_format($count, $args);
 }
 
 sub _hdlr_category_comment_count {
-    my($ctx) = @_;
+    my ($ctx, $args, $cond) = @_;
     my $cat = ($ctx->stash('category') || $_[0]->stash('archive_category'))
         or return $_[0]->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
@@ -6469,7 +6506,7 @@ sub _hdlr_category_comment_count {
                               { 'join' => MT::Placement->join_on('entry_id', { category_id => $cat->id, blog_id => $blog_id } ) } ) } );
     require MT::Comment;
     $count = scalar MT::Comment->count(@args);
-    $count;
+    return _count_format($count, $args);
 }
 
 sub _hdlr_category_archive {
@@ -6540,7 +6577,7 @@ sub _hdlr_category_tb_count {
     return 0 unless $tb;
     require MT::TBPing;
     my $count = MT::TBPing->count( { tb_id => $tb->id, visible => 1 } );
-    $count || 0;
+    return _count_format($count || 0, $args);
 }
 
 sub _load_sibling_categories {
@@ -8152,7 +8189,8 @@ sub _hdlr_asset_count {
     my (%terms, %args);
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
     $terms{class} = $args->{type} || '*';
-    MT::Asset->count(\%terms, \%args);
+    my $count = MT::Asset->count(\%terms, \%args);
+    return _count_format($count, $args);
 }
  
 sub _hdlr_asset_if_tagged {
@@ -8347,7 +8385,7 @@ sub _hdlr_blog_page_count {
     
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
-    &_hdlr_blog_entry_count(@_);
+    return _hdlr_blog_entry_count(@_);
 }
 
 sub _hdlr_page_author_display_name {
@@ -8416,42 +8454,42 @@ sub _hdlr_top_level_folder {
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    _hdlr_top_level_parent($ctx, $args, $cond);
+    return _hdlr_top_level_parent($ctx, $args, $cond);
 }
 
 sub _hdlr_folder_basename {
     return $_ unless &_check_folder(@_);
-    &_hdlr_category_basename(@_);
+    return _hdlr_category_basename(@_);
 }
 
 sub _hdlr_folder_description {
     return $_ unless &_check_folder(@_);
-    &_hdlr_category_desc(@_);
+    return _hdlr_category_desc(@_);
 }
 
 sub _hdlr_folder_id {
     return $_ unless &_check_folder(@_);
-    &_hdlr_category_id(@_);
+    return _hdlr_category_id(@_);
 }
 
 sub _hdlr_folder_label {
     return $_ unless &_check_folder(@_);
-    &_hdlr_category_label(@_);
+    return _hdlr_category_label(@_);
 }
 
 sub _hdlr_folder_count {
     return $_ unless &_check_folder(@_);
-    &_hdlr_category_count(@_);
+    return _hdlr_category_count(@_);
 }
 
 sub _hdlr_folder_path {
     return $_ unless &_check_folder(@_);
-    &_hdlr_sub_category_path(@_);
+    return _hdlr_sub_category_path(@_);
 }
 
 sub _hdlr_if_folder {
     return $_ unless &_check_folder(@_);
-    &_hdlr_if_category(@_);
+    return _hdlr_if_category(@_);
 }
 
 sub _hdlr_folder_header {
@@ -8613,13 +8651,15 @@ sub _hdlr_author_score_avg {
     return _object_score_avg('author', @_);
 }
 
+# FIXME: should this routine return an empty string?
 sub _object_score_count {
     my ($stash_key, $ctx, $args, $cond) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
-    return $object->vote_for($key);
+    my $count = $object->vote_for($key);
+    return _count_format($count, $args);
 }
 
 sub _hdlr_entry_score_count {

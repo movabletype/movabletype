@@ -9,7 +9,7 @@ function smarty_function_mtentriescount($args, &$ctx) {
     if ($ctx->stash('inside_mt_categories')) {
         return $ctx->tag('MTCategoryCount', $args);
     } elseif ($count = $ctx->stash('archive_count')) {
-        return $count;
+        # $count is set
     } else {
         $entries = $ctx->stash('entries');
         if (!is_array($entries)){
@@ -20,9 +20,9 @@ function smarty_function_mtentriescount($args, &$ctx) {
     
         $lastn = $ctx->stash('_entries_lastn');
         if ($lastn && $lastn <= count($entries))
-            return $lastn;
+            $count = $lastn;
         else
-            return count($entries);
+            $count = count($entries);
     }
+    return $ctx->count_format($count, $args);
 }
-?>

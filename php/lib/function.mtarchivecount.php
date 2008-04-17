@@ -13,13 +13,14 @@ function smarty_function_mtarchivecount($args, &$ctx) {
         global $_archivers;
         $archiver = $_archivers[$at];
     }
+    $count = 0;
     if ((!isset($archiver) && $ctx->stash('inside_mt_categories')) ||
         ($ctx->stash('inside_mt_categories') && !$archiver->is_date_based())) {
         return $ctx->tag('MTCategoryCount', $args);
     } elseif ($count = $ctx->stash('archive_count')) {
-        return $count;
+        # $count is set
     } elseif ($entries = $ctx->stash('entries')) {
-        return count($entries);
+        $count = count($entries);
     } else {
         $eargs = array();
         $eargs['blog_id'] = $ctx->stash('blog_id');
@@ -37,9 +38,8 @@ function smarty_function_mtarchivecount($args, &$ctx) {
             }
             $eargs['lastn'] = -1;
             $entries =& $ctx->mt->db->fetch_entries($eargs);
-            return count($entries);
+            $count = count($entries);
         }
     }
-    return 0;
+    $ctx->count_format($count, $args);
 }
-?>
