@@ -465,7 +465,7 @@ sub meta_args {
         key         => $class->datasource,
         column_defs => {
             $id_field         => 'integer not null',
-            type              => 'string(100) not null',
+            type              => 'string(75) not null',
             vchar             => 'string(255)',
             vchar_indexed     => 'string(255)',
             vdatetime         => 'datetime',
