@@ -290,26 +290,49 @@ sub save {
         && ($existing->type eq $tmpl->type)) {
         return $tmpl->error(MT->translate('Template with the same name already exists in this blog.'));
     }
+
+    if ($tmpl->id && ($tmpl->is_changed('build_type'))) {
+        # check for templatemaps, and update them appropriately
+        require MT::TemplateMap;
+        require MT::PublishOption;
+        my @maps = MT::TemplateMap->load({ template_id => $tmpl->id });
+        foreach my $map (@maps) {
+            $map->build_type($tmpl->build_type);
+            $map->save or die $map->errstr;
+        }
+    }
+
     if ($tmpl->linked_file) {
         $tmpl->_sync_to_disk($tmpl->SUPER::text) or return;
     }
     $tmpl->{needs_db_sync} = 0;
-    if ((!$tmpl->id) && (my $blog = $tmpl->blog)) {
-        my $dcty = $blog->custom_dynamic_templates;
-        if ($dcty eq 'all') {
-            if (('index' eq $tmpl->type) || ('archive' eq $tmpl->type) ||
-                ('individual' eq $tmpl->type) || ('page' eq $tmpl->type) ||
-                    ('category' eq $tmpl->type)) {
-                $tmpl->build_dynamic(1);
-            }
-        } elsif ($dcty eq 'archives') {
-            if (('archive' eq $tmpl->type) || ('page' eq $tmpl->type) ||
-                ('individual' eq $tmpl->type) || ('category' eq $tmpl->type)) {
-                $tmpl->build_dynamic(1);
-            }
-        }
-    }
+
+    # if ((!$tmpl->id) && (my $blog = $tmpl->blog)) {
+    #     my $dcty = $blog->custom_dynamic_templates;
+    #     if ($dcty eq 'all') {
+    #         if (('index' eq $tmpl->type) || ('archive' eq $tmpl->type) ||
+    #             ('individual' eq $tmpl->type) || ('page' eq $tmpl->type) ||
+    #                 ('category' eq $tmpl->type)) {
+    #             $tmpl->build_dynamic(1);
+    #         }
+    #     } elsif ($dcty eq 'archives') {
+    #         if (('archive' eq $tmpl->type) || ('page' eq $tmpl->type) ||
+    #             ('individual' eq $tmpl->type) || ('category' eq $tmpl->type)) {
+    #             $tmpl->build_dynamic(1);
+    #         }
+    #     }
+    # }
+
     $tmpl->SUPER::save;
+}
+
+sub build_dynamic {
+    my $tmpl = shift;
+    require MT::PublishOption;
+    if (@_) {
+        $tmpl->build_type($_[0] ? MT::PublishOption::DYNAMIC() : MT::PublishOption::ONDEMAND());
+    }
+    return 1 if $tmpl->build_type == MT::PublishOption::DYNAMIC();
 }
 
 sub blog {

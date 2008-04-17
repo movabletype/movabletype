@@ -1835,40 +1835,6 @@ sub cfg_blog {
     $_[0]->forward( "view", { output => 'cfg_prefs.tmpl' } );
 }
 
-sub _switch_publish_options {
-    my ( $blog, $current, $new, $dcty ) = @_;
-    require MT::Template;
-    require MT::TemplateMap;
-    my @tmpl = MT::Template->load( { blog_id => $blog->id } );
-    my $pref_at = $blog->archive_type_preferred || '';
-    for my $tmpl (@tmpl) {
-        # FIXME: enumeration of types
-        next
-          if !( $tmpl->type =~ m/^(individual|page|category|archive)$/ );
-        # if ( $tmpl->build_type == $current ) {
-        #     $tmpl->build_type($new);
-        #     $tmpl->save;
-        # }
-        my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl->id } );
-        foreach my $tmpl_map (@tmpl_maps) {
-            if ($dcty eq 'async_partial') {
-                # build the preferred individual/page archives synchronously
-                if (($tmpl_map->archive_type =~ m/^(Individual|Page)$/) &&
-                    ($tmpl_map->is_preferred)) {
-                    $tmpl_map->build_type(MT::PublishOption::ONDEMAND());
-                    $tmpl_map->save;
-                    next;
-                }
-            }
-            if ( $tmpl_map->build_type != $new ) {
-                $tmpl_map->build_type($new);
-                $tmpl_map->save;
-            }
-        }
-    }
-    1;
-}
-
 sub cfg_archives_save {
     my $app = shift;
     my ($blog) = @_;
@@ -1894,27 +1860,10 @@ sub cfg_publish_profile_save {
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );
 
-    require MT::PublishOption;
-    if ($pq) {
-        _switch_publish_options(
-            $blog,
-            MT::PublishOption::ONDEMAND(),
-            MT::PublishOption::ASYNC(),
-            $dcty,
-        );
-    }
-    else {
-        _switch_publish_options(
-            $blog,
-            MT::PublishOption::ASYNC(),
-            MT::PublishOption::ONDEMAND(),
-            $dcty,
-        );
-    }
-
     1;
 }
 
+# FIXME: Faulty, since it doesn't take into account module includes
 sub RegistrationAffectsArchives {
     my ( $blog_id, $archive_type ) = @_;
     require MT::TemplateMap;
@@ -1965,7 +1914,6 @@ sub update_publishing_profile {
             } else {
                 $tmpl->build_type(MT::PublishOption::ONDEMAND());
             }
-            $tmpl->build_dynamic(0);
             $tmpl->save();
         }
     }
@@ -1978,7 +1926,6 @@ sub update_publishing_profile {
           } );
         for my $tmpl (@templates) {
             $tmpl->build_type( $tmpl->type ne 'index' ? MT::PublishOption::DYNAMIC() : MT::PublishOption::ONDEMAND() );
-            $tmpl->build_dynamic( $tmpl->type ne 'index' ? 1 : 0 );
             $tmpl->save();
         }
     }
@@ -1994,7 +1941,6 @@ sub update_publishing_profile {
         );
         for my $tmpl (@templates) {
             $tmpl->build_type( MT::PublishOption::DYNAMIC() );
-            $tmpl->build_dynamic(1);
             $tmpl->save();
         }
     }

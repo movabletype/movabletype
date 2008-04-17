@@ -45,7 +45,9 @@ sub class_label_plural {
 
 sub save {
     my $map = shift;
-    $map->SUPER::save();
+    my $res = $map->SUPER::save();
+    return $res unless $res;
+
     my $at   = $map->archive_type;
     my $blog = MT->model('blog')->load($map->blog_id)
         or return;
@@ -55,8 +57,12 @@ sub save {
             split /,/, $blog_at
                 if $blog_at ne 'None';
     push @ats, $map->archive_type;
-    $blog->archive_type(join ',', @ats);
-    $blog->save;
+    my $new_at = join ',', @ats;
+    if ($new_at ne $blog_at) {
+        $blog->archive_type($new_at);
+        $blog->save;
+    }
+    return 1;
 }
 
 sub remove {
