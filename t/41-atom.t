@@ -10,7 +10,7 @@ use XML::Atom;
 use XML::Atom::Feed;
 use XML::Atom::Entry;
 
-use Test::More tests => 37;
+use Test::More tests => 97;
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
@@ -117,8 +117,8 @@ foreach my $base_uri ( qw{/mt-atom.cgi/weblog /mt-atom.cgi/1.0 } ) {
     my $resp = $ua->request($req);
     if (ok($resp->is_success)) {
         my $blog_feed_url = $feed_link{$base_uri}->($resp);
-        my $uri = new URI($blog_feed_url);
-        is($uri->path, $base_uri . '/blog_id=1', 'blog feed url is correct');
+        my $blog_feed_uri = new URI($blog_feed_url);
+        is($blog_feed_uri->path, $base_uri . '/blog_id=1', 'blog feed url is correct');
     }
     else {
         die 'failed to retrieve blog feed';
@@ -151,6 +151,24 @@ foreach my $base_uri ( qw{/mt-atom.cgi/weblog /mt-atom.cgi/1.0 } ) {
         );
         my @entries = $feed->entries;
         is($entry_count, scalar(@entries), 'number of entries is correct');
+
+        # check if entries have replies link relation
+        my $failed = 0;
+        foreach my $entry (@entries) {
+            next if !$entry->id && $entry->title =~ /^I just finished installing Movable Type/;
+            my $mt_entry = MT::Entry->load({
+                atom_id => $entry->id,
+                blog_id => 1,
+            });
+            $failed = 1, last unless $mt_entry;
+            my ($replies) = grep {
+                $_->rel eq 'replies'
+            } $entry->links;
+            $failed = 1, last unless $replies;
+            my $replies_uri = new URI($replies->href);
+            $failed = 1, last unless $replies_uri->path eq '/mt-atom.cgi/comments/blog_id=1/entry_id='.$mt_entry->id;
+        }
+        is($failed, 0, 'all the entries have replies link rel');
     }
     else {
         die 'failed to retrieve blog feed';
@@ -341,6 +359,147 @@ unless (USE_DIGEST)
 
 } #end foreach
 
+COMMENT:
+# comments retrieval
+{
+    my $wsse_header = make_wsse($chuck_token);
+    my $uri = new URI;
+    $uri->path('/mt-atom.cgi/comments/blog_id=1');
+    my $req = new HTTP::Request(GET => $uri);
+    $req->header('Authorization' => 'Atom');
+    $req->header('X-WSSE' => $wsse_header);
+
+    my $resp = $ua->request($req);
+    if (ok($resp->is_success)) {
+        my $thr_ns = XML::Atom::Namespace->new(prefix => undef, uri => 'http://purl.org/syndication/thread/1.0');
+        my $comments = XML::Atom::Feed->new(\$resp->content());
+        my $count = MT::Comment->count({
+            blog_id => 1, visible => 1
+        });
+        is( $count, scalar($comments->entries), 'comment count' );
+        foreach my $c ( $comments->entries ) {
+            my $id = $c->id;
+            my ( $cmt_id ) = $id =~ m{/([0-9]+)$};
+            die unless $cmt_id;
+            my $mt_comment = MT::Comment->load($cmt_id);
+            die unless $mt_comment;
+            my $mt_entry = $mt_comment->entry;
+            is($c->title, $mt_entry->title, 'comment title == entry title');
+            is( $c->author->name, $mt_comment->author, 'comment author' );
+            is( $c->author->email || '', $mt_comment->email || '', 'commenter email' );
+            is( $c->author->uri || '', $mt_comment->url || '', 'commenter url'  );
+            if ( $XML::Atom::LIBXML ) {
+                my $nodelist = $c->elem->getElementsByTagNameNS('http://purl.org/syndication/thread/1.0', 'in-reply-to');    
+                my $irt = $nodelist->shift;
+                ok($irt, 'in-reply-to');
+                is( $irt->ref, $mt_entry->atom_id, 'in-reply-to/ref' );
+                is( $irt->href, $mt_entry->permalink, 'in-reply-to/href' );
+            }
+        }
+    }
+    else {
+        die $resp->content();
+    }
+}
+
+{
+    my $iter = MT::Comment->count_group_by(
+        { blog_id => 1, visible => 1 },
+        { group => ['entry_id'], sort => [ { desc => 'DESC', column => '1' } ]
+        }
+    );
+    #$Data::ObjectDriver::PROFILE = 1;
+    #my $p = Data::ObjectDriver->profiler;
+    #$p->reset;
+    #print "$_\n" foreach @{$p->query_log};
+    my ( $count, $eid ) = $iter->();
+    $iter->('finish');
+    my $entry = MT::Entry->load($eid);
+
+    my $wsse_header = make_wsse($chuck_token);
+    my $uri = new URI;
+    $uri->path('/mt-atom.cgi/1.0/blog_id=1/entry_id=' . $entry->id);
+    my $req = new HTTP::Request(GET => $uri);
+    $req->header('Authorization' => 'Atom');
+    $req->header('X-WSSE' => $wsse_header);
+
+    my $resp = $ua->request($req);
+    if (ok($resp->is_success)) {
+        my $feed = XML::Atom::Entry->new(\$resp->content());
+        my ($replies) = grep {
+            $_->rel eq 'replies'
+        } $feed->links;
+
+        # retrieve comments from replies url
+        my $replies_uri = new URI($replies->href);
+        my $wsse_header = make_wsse($chuck_token);
+        my $uri = new URI;
+        $uri->path($replies_uri->path);
+        my $req = new HTTP::Request(GET => $uri);
+        $req->header('Authorization' => 'Atom');
+        $req->header('X-WSSE' => $wsse_header);
+
+        my $resp = $ua->request($req);
+        my $thr_ns = XML::Atom::Namespace->new(prefix => undef, uri => 'http://purl.org/syndication/thread/1.0');
+        if (ok($resp->is_success)) {
+            my $comments = XML::Atom::Feed->new(\$resp->content());
+            is( $count, scalar($comments->entries), 'comment count' );
+            foreach my $e ( $comments->entries ) {
+                is($e->title, $entry->title, 'comment title == entry title');
+                my $id = $e->id;
+                my ( $cmt_id ) = $id =~ m{/([0-9]+)$};
+                die unless $cmt_id;
+                my $mt_comment = MT::Comment->load($cmt_id);
+                die unless $mt_comment;
+                is( $e->author->name, $mt_comment->author, 'comment author' );
+                is( $e->author->email || '', $mt_comment->email || '', 'commenter email' );
+                is( $e->author->uri || '', $mt_comment->url || '', 'commenter url'  );
+                if ( $XML::Atom::LIBXML ) {
+                    my $nodelist = $e->elem->getElementsByTagNameNS('http://purl.org/syndication/thread/1.0', 'in-reply-to');    
+                    my $irt = $nodelist->shift;
+                    ok($irt, 'in-reply-to');
+                    is( $irt->ref, $entry->atom_id, 'in-reply-to/ref' );
+                    is( $irt->href, $entry->permalink, 'in-reply-to/href' );
+                }
+            }
+        }
+        else {
+            die $resp->content();
+        }
+    }
+}
+
+{
+    my $thr_ns = XML::Atom::Namespace->new(prefix => undef, uri => 'http://purl.org/syndication/thread/1.0');
+    my $wsse_header = make_wsse($chuck_token);
+    my $uri = new URI;
+    $uri->path('/mt-atom.cgi/comments/blog_id=1/comment_id=1');
+    my $req = new HTTP::Request(GET => $uri);
+    $req->header('Authorization' => 'Atom');
+    $req->header('X-WSSE' => $wsse_header);
+
+    my $resp = $ua->request($req);
+    if (ok($resp->is_success)) {
+        my $c = XML::Atom::Entry->new(\$resp->content());
+        my $mt_comment = MT::Comment->load(1);
+        die unless $mt_comment;
+        my $entry = $mt_comment->entry;
+        is( $c->title, $entry->title, 'comment title == entry title' );
+        is( $c->author->name, $mt_comment->author, 'comment author' );
+        is( $c->author->email || '', $mt_comment->email || '', 'commenter email' );
+        is( $c->author->uri || '', $mt_comment->url || '', 'commenter url'  );
+        if ( $XML::Atom::LIBXML ) {
+            my $nodelist = $c->elem->getElementsByTagNameNS('http://purl.org/syndication/thread/1.0', 'in-reply-to');    
+            my $irt = $nodelist->shift;
+            ok($irt, 'in-reply-to');
+            is( $irt->ref, $entry->atom_id, 'in-reply-to/ref' );
+            is( $irt->href, $entry->permalink, 'in-reply-to/href' );
+        }
+    }
+    else {
+        die $resp->content();
+    }
+}
 
 END {
     #my $melody = MT::Author->load({ name => $username });

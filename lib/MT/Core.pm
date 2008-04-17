@@ -234,6 +234,7 @@ BEGIN {
                 default => {
                     weblog => 'MT::AtomServer::Weblog::Legacy',
                     '1.0'  => 'MT::AtomServer::Weblog',
+                    comments => 'MT::AtomServer::Comments',
                 },
             },
             'SchemaVersion'   => undef,
