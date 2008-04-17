@@ -1267,6 +1267,7 @@ sub pre_save {
 
     require MT::PublishOption;
     my $build_type = $app->param('build_type');
+
     if ( $build_type == MT::PublishOption::SCHEDULED() ) {
         my $period   = $app->param('schedule_period');
         my $interval = $app->param('schedule_interval');
@@ -1280,8 +1281,6 @@ sub pre_save {
         $rebuild_me = 0;
     }
     $obj->rebuild_me($rebuild_me);
-    $obj->build_dynamic( $build_type == MT::PublishOption::DYNAMIC() ? 1 : 0 );
-
     1;
 }
 

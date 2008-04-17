@@ -328,10 +328,8 @@ sub save {
 
 sub build_dynamic {
     my $tmpl = shift;
+    return $tmpl->SUPER::build_dynamic($_[0]) if @_;
     require MT::PublishOption;
-    if (@_) {
-        $tmpl->build_type($_[0] ? MT::PublishOption::DYNAMIC() : MT::PublishOption::ONDEMAND());
-    }
     return 1 if $tmpl->build_type == MT::PublishOption::DYNAMIC();
 }
 
