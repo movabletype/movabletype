@@ -7220,10 +7220,10 @@ sub _hdlr_parent_category {
     my $tokens  = $ctx->stash('tokens');
 
     # Get the current category
-    defined (my $cat = _get_category_context($ctx))
-        or return $ctx->error($ctx->errstr);
+    my $cat = _get_category_context($ctx);
+    return if !defined($cat) && defined($ctx->errstr);
     return '' if ($cat eq '');
-  
+
     # The category must have a parent, otherwise return empty string
     my $parent = $cat->parent_category or return '';
 
@@ -7250,7 +7250,7 @@ sub _hdlr_parent_categories {
         or return $ctx->error($ctx->errstr);
     return '' if ($cat eq '');
 
-    my $res;
+    my $res = '';
 
     # Put together the list of parent categories
     # including the current one unless instructed otherwise
