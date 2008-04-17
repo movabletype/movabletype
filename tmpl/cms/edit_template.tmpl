@@ -635,7 +635,7 @@ TC.attachLoadEvent( init );
         </div>
     </mtapp:setting>
 <mt:else>
-    <mt:unless name="template_group" eq="module">
+    <mt:if name="template_group" eq="index">
         <mt:setvarblock name="build_dynamic_hint">
             <__trans phrase="Learn more about <a href="[_1]">publishing options</a>" params="http://www.movabletype.org/documentation/">
         </mt:setvarblock>
@@ -668,7 +668,7 @@ TC.attachLoadEvent( init );
                 <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if><mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
             </select>
         </mtapp:setting>
-    </mt:unless>
+    </mt:if>
 </mt:if>
 <mt:if name="template_group" like="(module|widget)">
 
