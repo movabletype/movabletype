@@ -2260,6 +2260,7 @@ sub build_email {
     return unless $tmpl;
 
     my $ctx = $tmpl->context;
+    $ctx->stash( 'blog_id', $blog->id ) if $blog;
     $ctx->stash( 'blog',   delete $param->{'blog'} )   if $param->{'blog'};
     $ctx->stash( 'entry',  delete $param->{'entry'} )  if $param->{'entry'};
     $ctx->stash( 'author', delete $param->{'author'} ) if $param->{'author'};
