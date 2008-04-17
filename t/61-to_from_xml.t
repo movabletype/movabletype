@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More tests => 3598;
+use Test::More qw(no_plan);#tests => 3598;
 
 use MT;
 use MT::Tag;
@@ -48,11 +48,18 @@ my %oldies;
 my $types = MT->registry('object_types');
 foreach my $key (keys %$types) {
     next if exists $skip{$key};
-    my @data = MT->model($key)->load;
+    my $iter = MT->model($key)->load_iter;
+    my @data;
+    while ( my $obj = $iter->() ) {
+        push @data, $obj;
+    }
     $oldies{$key} = \@data;
 }
 
 MT::BackupRestore->backup(undef, $printer, sub {}, sub {}, sub { print $_[0], "\n"; }, 0, 'UTF-8');
+open my $fh, '>', 'c:\\temp\\hoge.txt';
+print $fh $backup_data;
+close $fh;
 
 use IO::String;
 my $h = IO::String->new(\$backup_data);
@@ -60,9 +67,8 @@ my (%objects, %deferred, @errors);
 MT::BackupRestore->restore_process_single_file($h, \%objects, \%deferred, \@errors, "4.0", 0, sub { print $_[0], "\n"; });
 
 is(scalar(keys %deferred), 0);
-print join "\n", @errors;
+warn join "\n", @errors if @errors;
 is(scalar(@errors), 0, 'no error during backup');
-
 &checkthemout(\%oldies, \%objects);
 
 &finish;
@@ -72,6 +78,7 @@ sub checkthemout {
     my ($oldies, $objects) = @_;
     foreach my $name (keys %$oldies) {
         my $old_objects = $oldies->{$name};
+        my %meta;
         for my $old (@$old_objects) {
             my $class = MT->model($name);
             isnt($class, undef, "$name must be valid");
@@ -111,10 +118,16 @@ sub checkthemout {
                         (!defined($obj->column($col)))
                     );
                     next if ($ds eq 'category' && ($col eq 'parent'));
-                    # MT::Trackback will always be created upon MT::Entry->save,
-                    # and restore will just skip to restore <trackback> data,
-                    # meaning trackback_created_on will not be restored but newly created.
-                    next if ($name eq 'trackback' && ($col eq 'created_on'));
+                    if ( ($name eq 'trackback') && ($col eq 'is_disabled') ) {
+                        if ( defined($obj->is_disabled) && $obj->is_disabled
+                          && (!defined($obj->entry->allow_pings) || ($obj->entry->allow_pings == 0)) )
+                        {
+                            # is_disabled will be changed upon $entry->save
+                            # and save may occur $comment's post_save trigger
+                            # no harm for the testing purpose, ignore the case.
+                            next;
+                        }
+                    }
                     if ('HASH' eq ref($old->$col)) {
                         is(Dumper($old->$col), Dumper($old->$col), $col);
                     } elsif ('blob' eq $obj->column_defs->{$col}->{type}) {
@@ -124,6 +137,27 @@ sub checkthemout {
                             "blob - $col");
                     } else {
                         is($old->$col, $obj->$col, "$class<$col>" . $obj->id);
+                    }
+                }
+            }
+            unless ( exists($meta{ref($obj)}) ) {
+                my @metacolumns = MT::Meta->metadata_by_class( ref($obj) );
+                my %metacolumns = map { $_->{name} => $_->{type} } @metacolumns;
+                $meta{ref($obj)} = \%metacolumns
+            }
+            my $metacolumns = $meta{ref($obj)};
+            foreach my $metacol (keys %$metacolumns) {
+                if ( my $type = $metacolumns->{$metacol} ) {
+                    if ( 'vblob' eq $type ) {
+                        if ( defined($old->$metacol) && defined($obj->$metacol) ) {
+                            is(
+                                MIME::Base64::encode_base64($old->$metacol, ''),
+                                MIME::Base64::encode_base64($obj->$metacol, ''),
+                                "vblob - $metacol");
+                        }
+                    }
+                    else {
+                        is($old->$metacol, $obj->$metacol, "$class<meta:$metacol>" . $obj->id);
                     }
                 }
             }

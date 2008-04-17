@@ -8,6 +8,7 @@ package MT::BackupRestore::BackupFileHandler;
 
 use strict;
 use XML::SAX::Base;
+use MIME::Base64;
 
 @MT::BackupRestore::BackupFileHandler::ISA = qw(XML::SAX::Base);
 
@@ -90,7 +91,8 @@ sub start_element {
                 if ( 'author' eq $name ) {
                     $obj = $class->load({ name => $column_data{name} });
                     if ($obj) {
-                        if ( $obj->id == MT->instance->user->id ) {
+                        if ( UNIVERSAL::isa('MT::App', MT->instance)
+                          && ( $obj->id == MT->instance->user->id ) ) {
                             MT->log({ message => MT->translate(
                                 "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.", $obj->name),
                                 level => MT::Log::INFO(),
@@ -152,7 +154,19 @@ sub start_element {
                 unless ($obj->id) {
                     my $success = $obj->restore_parent_ids(\%column_data, $objects);
                     if ($success) {
-                        $obj->set_values(\%column_data);
+                        require MT::Meta;
+                        my @metacolumns = MT::Meta->metadata_by_class( ref($obj) );
+                        my %metacolumns = map { $_->{name} => $_->{type} } @metacolumns;
+                        $self->{metacolumns}{ref($obj)} = \%metacolumns;
+                        my %realcolumn_data = map { $_ => $column_data{$_} }
+                            grep { !exists($metacolumns{$_}) }
+                                keys %column_data;
+                        $obj->set_values(\%realcolumn_data);
+                        foreach my $metacol ( keys %metacolumns ) {
+                            next if ( 'vclob' eq $metacolumns{$metacol} )
+                                 || ( 'vblob' eq $metacolumns{$metacol} );
+                            $obj->$metacol( $column_data{$metacol} );
+                        }
                         $self->{current} = $obj;
                     } else {
                         $deferred->{$class . '#' . $column_data{id}} = 1;
@@ -201,12 +215,27 @@ sub end_element {
             $text .= $_ foreach @$text_data;
             
             my $defs = $obj->column_defs;
-            if ('blob' eq $defs->{$column_name}->{type}) {
-                require MIME::Base64;
-                $obj->column($column_name, MIME::Base64::decode_base64($text));
-            } else {
-                $text = MT::I18N::encode_text($text, 'utf-8');
-                $obj->column($column_name, $text);
+            if ( exists( $defs->{$column_name} ) ) {
+                if ('blob' eq $defs->{$column_name}->{type}) {
+                    $obj->column($column_name, MIME::Base64::decode_base64($text));
+                } else {
+                    $text = MT::I18N::encode_text($text, 'utf-8');
+                    $obj->column($column_name, $text);
+                }
+            }
+            elsif ( my $metacolumns = $self->{metacolumns}{ref($obj)} ) {
+                if ( my $type = $metacolumns->{$column_name} ) {
+                    if ( 'vblob' eq $type ) {
+                        $self->{callback}->($text);
+                        $text = MIME::Base64::decode_base64($text);
+                        $self->{callback}->($text);
+                        $obj->$column_name( $text );
+                    }
+                    else {
+                        $text = MT::I18N::encode_text($text, 'utf-8');
+                        $obj->$column_name( $text );
+                    }
+                }
             }
         } else {
             my $old_id = $obj->id;

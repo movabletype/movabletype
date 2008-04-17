@@ -178,6 +178,12 @@ sub _loop_through_objects {
             $progress->("$err\n", 'Error');
             next;
         }
+        my @metacolumns;
+        if ( exists( $class->properties->{meta} )
+          && $class->properties->{meta} ) {
+            require MT::Meta;
+            @metacolumns = MT::Meta->metadata_by_class( $class );
+        }
         my $records = 0;
         my $state = MT->translate('Backing up [_1] records:', $class);
         $progress->($state, $class->class_type || $class->datasource);
@@ -214,7 +220,7 @@ sub _loop_through_objects {
                   && ( exists $author_ids_seen{$object->id} ) ) {
                     next;
                 }
-                $bytes += $printer->($object->to_xml(undef, $args) . "\n");
+                $bytes += $printer->($object->to_xml(undef, \@metacolumns) . "\n");
                 $records++;
                 if ($size && ($bytes >= $size)) {
                     $splitter->(++$counter);
@@ -668,7 +674,7 @@ sub _is_element {
 
 sub to_xml {
     my $obj = shift;
-    my ($namespace, $args) = @_;
+    my ($namespace, $metacolumns) = @_;
 
     my $coldefs = $obj->column_defs;
     my $colnames = $obj->column_names;
@@ -695,6 +701,23 @@ sub to_xml {
             $xml .= " $name='" . MT::Util::encode_xml($obj->column($name), 1) . "'";
         }
     }
+    my ( @meta_elements, @meta_blobs );
+    if ( defined( $metacolumns ) && @$metacolumns ) {
+        foreach my $metacolumn ( @$metacolumns ) {
+            my $name = $metacolumn->{name};
+            if ($obj->$name || (defined($obj->$name) && ('0' eq $obj->$name))) {
+                if ( 'vclob' eq $metacolumn->{type} ) {
+                    push @meta_elements, $name;
+                }
+                elsif ( 'vblob' eq $metacolumn->{type} ) {
+                    push @meta_blobs, $name;
+                }
+                else {
+                    $xml .= " $name='" . MT::Util::encode_xml($obj->$name, 1) . "'";
+                }
+            }
+        }
+    }
     $xml .= '>';
     $xml .= "<$_>" . MT::Util::encode_xml($obj->column($_), 1) . "</$_>" foreach @elements;
     require MIME::Base64;
@@ -705,6 +728,8 @@ sub to_xml {
                 MIME::Base64::encode_base64(MT::Serialize->serialize(\$hashref), '') .
                 "</$meta_col>";
     }
+    $xml .= "<$_>" . MT::Util::encode_xml($obj->$_, 1) . "</$_>" foreach @meta_elements;
+    $xml .= "<$_>" . MIME::Base64::encode_base64($obj->$_, '') . "</$_>" foreach @meta_blobs;
     $xml .= '</' . $elem . '>';
     $xml;
 }
