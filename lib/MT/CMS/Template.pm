@@ -473,6 +473,7 @@ sub edit {
     if (($param->{type} eq 'custom') || ($param->{type} eq 'widget')) {
         if ($blog) {
             $param->{include_with_ssi}      = 0;
+            $param->{cache_path}            = '';
             $param->{cache_enabled}         = 0;
             $param->{cache_expire_type}     = 0;
             $param->{cache_expire_period}   = '';
@@ -482,6 +483,8 @@ sub edit {
         if ($obj) {
             $param->{include_with_ssi} = $obj->include_with_ssi
               if defined $obj->include_with_ssi;
+            $param->{cache_path}       = $obj->cache_path
+              if defined $obj->cache_path;
             $param->{cache_enabled} = $obj->use_cache
               if defined $obj->use_cache;
             $param->{cache_expire_type} = $obj->cache_expire_type
@@ -1236,6 +1239,7 @@ sub pre_save {
 
     # module caching
     $obj->include_with_ssi( $app->param('include_with_ssi') ? 1 : 0 );
+    $obj->cache_path( $app->param('cache_path'));
     $obj->use_cache( $app->param('cache_enabled')           ? 1 : 0 );
     my $cache_expire_type = $app->param('cache_expire_type');
     $obj->cache_expire_type($cache_expire_type);

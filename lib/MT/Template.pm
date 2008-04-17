@@ -43,6 +43,7 @@ __PACKAGE__->install_properties({
         'cache_expire_type' => 'integer meta',
         'cache_expire_interval' => 'integer meta',
         'cache_expire_event' => 'string meta',
+        'cache_path' => 'string meta',
     },
     indexes => {
         blog_id => 1,

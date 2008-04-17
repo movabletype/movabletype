@@ -378,36 +378,43 @@ sub publish_unauthd_commenters {
 
 sub include_path_parts {
     my $blog = shift;
-    my ($name) = @_;
+    my ($param) = @_;
 
-    my $filestem = MT::Util::dirify($name);
+    my $filestem = MT::Util::dirify($param->{name}) || 'template_'.$param->{id};
     my $filename = join q{.}, $filestem, $blog->file_extension;
-    return (MT->config('IncludesDir'), substr($filestem, 0, 3), $filename);
+    my $path = $param->{path} || '';
+    my @path;
+    if ($path =~ m!^/!) {
+        # absolute
+        @path = split /\//, $path;
+    } else {
+        # relative
+        push @path, MT->config('IncludesDir');
+        push @path, split /\//, $path;
+    }
+    return ($filename, @path);
 }
 
 sub include_path {
     my $blog = shift;
-    my ($name) = @_;
 
-    my @parts = $blog->include_path_parts($name);
-    my $filename = pop @parts;
-    my $path = File::Spec->catdir($blog->site_path, @parts);
-    my $file_path = File::Spec->catfile($path, $filename);
-    return wantarray ? ($path, $file_path) : $file_path;
+    my ($filename, @path) = $blog->include_path_parts(@_);
+    my $extra_path = File::Spec->catdir(@path);
+    my $full_path = File::Spec->catdir($blog->site_path, $extra_path);
+    my $file_path = File::Spec->catfile($full_path, $filename);
+    return wantarray ? ($file_path, $full_path, $filename) : $file_path;
 }
 
 sub include_url {
     my $blog = shift;
-    my ($name) = @_;
 
-    my @parts = $blog->include_path_parts();
-    my $url = join q{/}, $blog->site_url, @parts;
+    my ($filename, @path) = $blog->include_path_parts(@_);
+    my $url = join q{/}, $blog->site_url, @path, $filename;
     return $url;
 }
 
 sub include_statement {
     my $blog = shift;
-    my ($name) = @_;
 
     my $system = $blog->include_system or return;
 
@@ -415,13 +422,14 @@ sub include_statement {
     if ($system eq 'shtml') {
         $statement = q{<!--#include virtual="%s" -->};
 
+        my ($filename, @path) = $blog->include_path_parts(@_);
         my $site_url = $blog->site_url;
         $site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
         $site_url =~ s{ / \z }{}xms;
-        $include = join q{/}, $site_url, $blog->include_path_parts($name);
+        $include = join q{/}, $site_url, @path, $filename;
     }
     else {
-        $include = $blog->include_path($name);
+        $include = $blog->include_path(@_);
         $statement = $system eq 'php'   ? q{<?php include("%s") ?>}
                    : $system eq 'jsp'   ? q{<%@ include file="%s" %>}
                    : $system eq 'asp'   ? '<!--#include file="%s" -->'

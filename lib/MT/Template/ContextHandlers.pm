@@ -2327,13 +2327,25 @@ sub _include_module {
 
     my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
 
+    my %include_recipe;
     my $use_ssi = $blog && $blog->include_system
         && ($arg->{ssi} || $tmpl->include_with_ssi) ? 1 : 0;
     if ($use_ssi) {
         # disable SSI for templates that are system templates;
         # easiest way to determine this is from the variable
         # space setting.
-        $use_ssi = 0 if $ctx->var('system_template');
+        if ($ctx->var('system_template')) {
+            $use_ssi = 0;
+        } else {
+            my $extra_path = $arg->{cache_key} ? $arg->{cache_key}
+                : $tmpl->cache_path ? $tmpl->cache_path
+                    : '';
+           %include_recipe = (
+                name => $tmpl_name,
+                id   => $tmpl->id,
+                path => $extra_path,
+            );
+        }
     }
 
     # Try to read from cache
@@ -2341,12 +2353,12 @@ sub _include_module {
          $blog
       && $blog->include_cache
       && ( ( $arg->{cache} && $arg->{cache} > 0 )
-        || $arg->{key}
+        || $arg->{cache_key}
         || ( exists $arg->{ttl} )
         || $tmpl->use_cache ) ? 1 : 0;
     my $cache_key =
-        $arg->{key}
-      ? $arg->{key}
+        $arg->{cache_key}
+      ? $arg->{cache_key}
       : 'blog::' . $blog_id . '::template_' . $type . '::' . $tmpl_name;
     my $ttl =
       exists $arg->{ttl} ? $arg->{ttl}
@@ -2361,8 +2373,8 @@ sub _include_module {
             if (my $latest = MT::Touch->latest_touch($blog_id, @types)) {
                 if ($use_ssi) {
                     # base cache expiration on physical file timestamp
-                    my $include_name = $arg->{key} || $tmpl_name;
-                    my $mtime = (stat($blog->include_path($include_name)))[9];
+                    my $include_file = $blog->include_path(\%include_recipe);
+                    my $mtime = (stat($include_file))[9];
                     if ($mtime && (MT::Util::ts2epoch(undef, $latest) > $mtime ) ) {
                         $ttl = 1; # bound to force an update
                     }
@@ -2387,12 +2399,11 @@ sub _include_module {
         if ($cache_value) {
             return $cache_value if !$use_ssi;
 
-            my $include_name = $arg->{key} || $tmpl_name;
             # The template may still be cached from before we were using SSI
             # for this template, so check that it's also on disk.
-            my ($path, $file_path) = $blog->include_path($include_name);
-            if ($blog->file_mgr->exists($file_path)) {
-                return $blog->include_statement($include_name);
+            my $include_file = $blog->include_path(\%include_recipe);
+            if ($blog->file_mgr->exists($include_file)) {
+                return $blog->include_statement(\%include_recipe);
             }
         }
     }
@@ -2423,26 +2434,27 @@ sub _include_module {
     }
 
     if ($use_ssi) {
-        my $include_name = $arg->{key} || $tmpl_name;
+        my ($include_file, $path, $filename) =
+            $blog->include_path(\%include_recipe);
         my $fmgr = $blog->file_mgr;
-        my ($path, $file_path) = $blog->include_path($include_name);
         if (!$fmgr->exists($path)) {
             if (!$fmgr->mkpath($path)) {
                 return $ctx->error(MT->translate("Error making path '[_1]': [_2]",
                     $path, $fmgr->errstr));
             }
         }
-        defined($fmgr->put_data($ret, $file_path))
+        defined($fmgr->put_data($ret, $include_file))
             or return $ctx->error(MT->translate("Writing to '[_1]' failed: [_2]",
-                $file_path, $fmgr->errstr));
+                $include_file, $fmgr->errstr));
 
         MT->upload_file_to_sync(
-            url  => $blog->include_url($include_name),
-            file => $file_path,
+            url  => $blog->include_url(\%include_recipe),
+            file => $include_file,
             blog => $blog,
         );
 
-        return $blog->include_statement($include_name);
+        my $stat = $blog->include_statement(\%include_recipe);
+        return $stat;
     }
 
     return $ret;

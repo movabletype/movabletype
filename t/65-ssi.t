@@ -19,6 +19,7 @@ isa_ok($mt, 'MT');
 
 
 my $blog = MT->model('blog')->load(1);
+$blog->include_cache(1);
 
 my $include = MT->model('template')->new;
 $include->blog_id($blog->id);
@@ -42,7 +43,7 @@ like($out, qr{ template \s was \s included }xms, 'test template included include
 
 $tmpl = MT->model('template')->new;
 $tmpl->blog_id($blog->id);
-$tmpl->text(q(hi <mt:include module="Included Template" key="woot" ttl="1000"> bye));
+$tmpl->text(q(hi <mt:include module="Included Template" cache_key="woot" ttl="1000"> bye));
 
 $ctx = MT::Template::Context->new;
 $ctx->{__stash}{vars}{woot} = 'awesome';
@@ -58,7 +59,7 @@ my $first_text = $out;
 
 $tmpl = MT->model('template')->new;
 $tmpl->blog_id($blog->id);
-$tmpl->text(q(hi <mt:include module="Included Template" key="woot" ttl="1000"> bye));
+$tmpl->text(q(hi <mt:include module="Included Template" cache_key="woot" ttl="1000"> bye));
 
 $ctx = MT::Template::Context->new;
 $ctx->{__stash}{vars}{woot} = 'terrible';
@@ -74,28 +75,32 @@ $blog->save;
 
 $tmpl = MT->model('template')->new;
 $tmpl->blog_id($blog->id);
-$tmpl->text(q(hi <mt:include module="Included Template" key="woot" ttl="1000" ssi="1"> bye));
+$tmpl->text(q(hi <mt:include module="Included Template" cache_key="woot" ttl="1000" ssi="1"> bye));
 
 $ctx = MT::Template::Context->new;
 $ctx->{__stash}{vars}{woot} = 'terrible';
 $out = $tmpl->build($ctx, {});
 
 ok(defined $out, 'test template built');
-my $sitepath = $blog->site_path;
-like($out, qr(\Ahi <!--#include file="${sitepath}includes_c/woo/woot.html" --> bye\z)ms,
+my $site_url = $blog->site_url;
+$site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
+$site_url =~ s{ / \z }{}xms;
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/woot/included_template.html" --> bye\z)ms,
     'test template included template by ssi');
 
 
 $tmpl = MT->model('template')->new;
 $tmpl->blog_id($blog->id);
-$tmpl->text(q(hi <mt:include module="Included Template" key="w" ttl="1000" ssi="1"> bye));
+$tmpl->text(q(hi <mt:include module="Included Template" cache_key="w" ttl="1000" ssi="1"> bye));
 
 $ctx = MT::Template::Context->new;
 $ctx->{__stash}{vars}{woot} = 'terrible';
 $out = $tmpl->build($ctx, {});
 
 ok(defined $out, 'test template built');
-$sitepath = $blog->site_path;
-like($out, qr(\Ahi <!--#include file="${sitepath}includes_c/w/w.html" --> bye\z)ms,
+$site_url = $blog->site_url;
+$site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
+$site_url =~ s{ / \z }{}xms;
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/w/included_template.html" --> bye\z)ms,
     'test template included template by ssi');
 
