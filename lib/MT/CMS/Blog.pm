@@ -1925,6 +1925,11 @@ sub update_publishing_profile {
               [ 'index', 'archive', 'individual', 'page', 'category' ],
           } );
         for my $tmpl (@templates) {
+            my $bt = $tmpl->build_type || 0;
+            next if $bt == MT::PublishOption::DISABLED();
+            next if $bt == MT::PublishOption::MANUALLY();
+            next if $bt == MT::PublishOption::SCHEDULED();
+
             $tmpl->build_type( $tmpl->type ne 'index' ? MT::PublishOption::DYNAMIC() : MT::PublishOption::ONDEMAND() );
             $tmpl->save();
         }
@@ -1940,6 +1945,11 @@ sub update_publishing_profile {
             }
         );
         for my $tmpl (@templates) {
+            my $bt = $tmpl->build_type || 0;
+            next if $bt == MT::PublishOption::DISABLED();
+            next if $bt == MT::PublishOption::MANUALLY();
+            next if $bt == MT::PublishOption::SCHEDULED();
+
             $tmpl->build_type( MT::PublishOption::DYNAMIC() );
             $tmpl->save();
         }
