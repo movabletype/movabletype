@@ -264,7 +264,6 @@ sub edit {
             }
         }
         # publish options
-        $param->{publish_queue_available} = eval 'require List::Util; require Scalar::Util; 1;';
         $param->{build_type} = $obj->build_type;
         $param->{ 'build_type_' . ( $obj->build_type || 0 ) } = 1;
         #my ( $period, $interval ) = _get_schedule( $obj->build_interval );
@@ -377,6 +376,8 @@ sub edit {
         $param->{name}       = MT::Util::decode_url( $app->param('name') )
           if $app->param('name');
     }
+    $param->{publish_queue_available} = eval 'require List::Util; require Scalar::Util; 1;';
+
     my $set = $blog ? $blog->template_set : undef;
     require MT::DefaultTemplates;
     my $tmpls = MT::DefaultTemplates->templates($set);
