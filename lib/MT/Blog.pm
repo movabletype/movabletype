@@ -384,13 +384,13 @@ sub include_path_parts {
     my $filename = join q{.}, $filestem, $blog->file_extension;
     my $path = $param->{path} || '';
     my @path;
-    if ($path =~ m!^/!) {
+    if ($path =~ s!^/!!) {
         # absolute
-        @path = split /\//, $path;
+        @path = split q{/}, $path;
     } else {
         # relative
         push @path, MT->config('IncludesDir');
-        push @path, split /\//, $path;
+        push @path, split q{/}, $path;
     }
     return ($filename, @path);
 }

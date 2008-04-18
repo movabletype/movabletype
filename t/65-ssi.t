@@ -104,3 +104,50 @@ $site_url =~ s{ / \z }{}xms;
 like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/w/included_template.html" --> bye\z)ms,
     'test template included template by ssi');
 
+$tmpl = MT->model('template')->new;
+$tmpl->blog_id($blog->id);
+$tmpl->text(q(hi <mt:include module="Included Template" key="w" ttl="1000" ssi="1"> bye));
+
+$ctx = MT::Template::Context->new;
+$ctx->{__stash}{vars}{woot} = 'terrible';
+$out = $tmpl->build($ctx, {});
+
+ok(defined $out, 'test template built');
+$site_url = $blog->site_url;
+$site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
+$site_url =~ s{ / \z }{}xms;
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/w/included_template.html" --> bye\z)ms,
+    'test template included template by ssi using \'key\' with relative path');
+
+
+$tmpl = MT->model('template')->new;
+$tmpl->blog_id($blog->id);
+$tmpl->text(q(hi <mt:include module="Included Template" ttl="1000" ssi="1"> bye));
+
+$ctx = MT::Template::Context->new;
+$ctx->{__stash}{vars}{woot} = 'terrible';
+$out = $tmpl->build($ctx, {});
+
+ok(defined $out, 'test template built');
+$site_url = $blog->site_url;
+$site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
+$site_url =~ s{ / \z }{}xms;
+like($out, qr(\Ahi <!--#include virtual="${site_url}/includes_c/included_template.html" --> bye\z)ms,
+    'test template included template by ssi without \'key\'');
+
+
+$tmpl = MT->model('template')->new;
+$tmpl->blog_id($blog->id);
+$tmpl->text(q(hi <mt:include module="Included Template" cache_key="/w" ttl="1000" ssi="1"> bye));
+
+$ctx = MT::Template::Context->new;
+$ctx->{__stash}{vars}{woot} = 'terrible';
+$out = $tmpl->build($ctx, {});
+
+ok(defined $out, 'test template built');
+$site_url = $blog->site_url;
+$site_url =~ s{ \A \w+ :// [^/]+ }{}xms;
+$site_url =~ s{ / \z }{}xms;
+like($out, qr(\Ahi <!--#include virtual="${site_url}/w/included_template.html" --> bye\z)ms,
+    'test template included template by ssi with \'key\' absolute path');
+

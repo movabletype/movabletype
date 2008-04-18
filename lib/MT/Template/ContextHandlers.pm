@@ -2369,7 +2369,7 @@ sub _include_module {
         if ($ctx->var('system_template')) {
             $use_ssi = 0;
         } else {
-            my $extra_path = $arg->{cache_key} ? $arg->{cache_key}
+            my $extra_path = ($arg->{cache_key} || $arg->{key}) ? $arg->{cache_key} || $arg->{key}
                 : $tmpl->cache_path ? $tmpl->cache_path
                     : '';
            %include_recipe = (
@@ -2386,11 +2386,12 @@ sub _include_module {
       && $blog->include_cache
       && ( ( $arg->{cache} && $arg->{cache} > 0 )
         || $arg->{cache_key}
+        || $arg->{key}
         || ( exists $arg->{ttl} )
         || $tmpl->use_cache ) ? 1 : 0;
     my $cache_key =
-        $arg->{cache_key}
-      ? $arg->{cache_key}
+        ($arg->{cache_key} || $arg->{key})
+      ? $arg->{cache_key} || $arg->{key}
       : 'blog::' . $blog_id . '::template_' . $type . '::' . $tmpl_name;
     my $ttl =
       exists $arg->{ttl} ? $arg->{ttl}
