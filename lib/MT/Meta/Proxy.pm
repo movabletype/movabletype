@@ -11,10 +11,6 @@ use warnings;
 use MT::Meta;
 use MT::Serialize;
 
-our $HAS_ZLIB = 0;
-eval "require Compress::Zlib;";
-$HAS_ZLIB = 1 unless $@;
-
 my $serializer = MT::Serialize->new('MT');
 
 sub new {
@@ -276,33 +272,13 @@ sub do_unserialization {
     my $dataref = shift;
 
     return $dataref unless defined $$dataref;
-    $$dataref =~ s/^([ABCINPSZ]{3})://;
+    $$dataref =~ s/^([ABCINS]{3})://;
     my $prefix = $1;
     unless (defined $prefix) {
         return $dataref;
     }
 
-    if ($prefix eq 'ZIP') {
-        unless ($HAS_ZLIB) {
-            Carp::croak("FATAL: cannot deal with this zipped data, Zlib is missing");
-        }
-        my $deflated = Compress::Zlib::uncompress($dataref);
-        unless ($deflated =~ s/^(BIN|ASC)://) {
-            Carp::croak("Cannot find subprefix in 'ZIP:' blob $deflated");
-        }
-        my $subprefix = $1;
-        if ($subprefix eq 'BIN') {
-            my $val = $serializer->unserialize($deflated);
-            if (defined $val) {
-                return $val; # it's a ref already.
-            } else {
-                return \$val;
-            }
-        } 
-        else {
-            return \$deflated;
-        }
-    } elsif ($prefix eq 'BIN') {
+    if ($prefix eq 'BIN') {
         my $val = $serializer->unserialize($$dataref);
         if (defined $val) {
             return $val; # it's a ref already.
@@ -342,11 +318,6 @@ sub serialize_blob {
             $val = 'ASC:' . $data;
         } else {
             $val = undef;
-        }
-        
-        if ($HAS_ZLIB && defined $val && $meta_obj->blob_requires_zip($field, \$val)) {
-            my $zipped = Compress::Zlib::compress($val);
-            $val = 'ZIP:' . $zipped;
         }
 
         # set it back the serialized data
