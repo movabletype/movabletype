@@ -680,14 +680,16 @@ TC.attachLoadEvent( init );
             <input type="checkbox" id="server-side-include" name="include_with_ssi" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
             <label for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
         </mtapp:setting>
-        <mtapp:setting
-            id="include_cache_path"
-            label="<__trans phrase="Include cache path">"
-            shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
-            <div class="textarea-wrapper">
-                <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path">" maxlength="255" class="full-width" mt:watch-change="1" />
-            </div>
-        </mtapp:setting>
+        <mt:ignore>
+            <mtapp:setting
+                id="include_cache_path"
+                label="<__trans phrase="Include cache path">"
+                shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
+                <div class="textarea-wrapper">
+                    <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path">" maxlength="255" class="full-width" mt:watch-change="1" />
+                </div>
+            </mtapp:setting>
+        </mt:ignore>
     </mt:if>
 
     <mt:if name="include_cache">
