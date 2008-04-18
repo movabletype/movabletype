@@ -6,7 +6,7 @@
     <mt:ignore><!-- Display comments --></mt:ignore>
     <MTComments>
         <MTCommentsHeader>
-    <h2 class="comments-header"><mt:if tag="EntryCommentCount" eq="1"><__trans phrase="1 Comment"><mt:else><__trans phrase="[_1] Comments" params="<$MTEntryCommentCount$>"></mt:if></h2>
+    <h2 class="comments-header"><$MTEntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">"$></h2>
     <div class="comments-content">
         </MTCommentsHeader>
         <div class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent>"<MTIfArchiveTypeEnabled archive_type="Individual"> id="comment-<$MTCommentID$>"</MTIfArchiveTypeEnabled>>
