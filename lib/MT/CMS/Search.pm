@@ -18,7 +18,7 @@ sub core_search_apis {
         @perms = ( $app->permissions )
           or return $app->error( $app->translate("No permissions") );
     }
-    return {
+    my $types = {
         'entry' => {
             'order' => 100,
             'permission' => 'create_post,publish_post,edit_all_posts',
@@ -254,7 +254,7 @@ sub core_search_apis {
             }
         }
     };
-
+    return $types;
 }
 
 sub search_replace {
@@ -292,11 +292,13 @@ sub do_search_replace {
       = map scalar $q->param($_),
       qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch );
 
-
     if ( !$type || ( 'category' eq $type ) || ( 'folder' eq $type ) ) {
         $type = 'entry';
     }
-    
+    if ( ( 'user' eq $type ) ) {
+        $type = 'author';
+    }
+
     foreach my $obj_type (qw( role association )) {
         if ( $type eq $obj_type ) {
             $type = 'author';

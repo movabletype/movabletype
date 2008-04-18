@@ -332,7 +332,7 @@ sub list_member {
 
     $param->{saved} = 1 if $app->param('saved');
     $param->{search_label} = $app->translate('Users');
-    $param->{object_type} = 'author';
+    $param->{object_type} = 'user';
 
     require MT::Association;
     require MT::Role;
