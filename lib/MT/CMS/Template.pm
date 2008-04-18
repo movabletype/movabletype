@@ -566,6 +566,7 @@ sub list {
         else {
             $template_type = 'system';
         }
+        $row->{use_cache} = $obj->use_cache ? 1 : 0;
         $row->{template_type} = $template_type;
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
