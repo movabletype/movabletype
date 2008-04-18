@@ -166,7 +166,8 @@ sub _loop_through_objects {
 
     my $counter = 1;
     my $bytes = 0;
-    my %author_ids_seen;
+    my %authors_seen;
+    my $author_pkg = MT->model('author');
     for my $class_hash (@$obj_to_backup) {
         my ($class, $term_arg) = each(%$class_hash);
         eval "require $class;";
@@ -216,8 +217,8 @@ sub _loop_through_objects {
                     last;
                 }
                 $count++;
-                if ( ( $class eq MT->model('author') )
-                  && ( exists $author_ids_seen{$object->id} ) ) {
+                if ( ( $class eq $author_pkg )
+                  && ( exists $authors_seen{$object->id} ) ) {
                     next;
                 }
                 $bytes += $printer->($object->to_xml(undef, \@metacolumns) . "\n");
@@ -226,9 +227,9 @@ sub _loop_through_objects {
                     $splitter->(++$counter);
                     $bytes = 0;
                 }
-                if ( $class eq MT->model('author') ) {
+                if ( $class eq $author_pkg ) {
                     # Authors may be duplicated because of how terms and args are created.
-                    $author_ids_seen{$object->id} = 1;
+                    $authors_seen{$object->id} = 1;
                 } elsif ( $class->datasource eq 'asset' ) {
                     $files->{$object->id} = [$object->url, $object->file_path, $object->file_name];
                 }
@@ -237,7 +238,10 @@ sub _loop_through_objects {
             $progress->($state . " " . MT->translate("[_1] records backed up...", $records), $class->datasource)
                 if $records && ($records % 100 == 0);
         }
-        if ($records) {
+        if ( $class eq $author_pkg && %authors_seen ) {
+            my $count = scalar(keys %authors_seen);
+            $progress->($state . " " . MT->translate("[_1] records backed up.", $count), $class->class_type || $class->datasource);
+        } elsif ($records) {
             $progress->($state . " " . MT->translate("[_1] records backed up.", $records), $class->class_type || $class->datasource);
         } else {
             $progress->($state . " " . MT->translate("There were no [_1] records to be backed up.", $class), $class->class_type || $class->datasource);
