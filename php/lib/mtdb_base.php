@@ -2873,10 +2873,9 @@ class MTDatabaseBase extends ezsql {
                                 $expanded[$type . '_' . $col] = $data[$col];
                             }
                         }
-                    } else {
-                        $expanded[$key] = $value;
-                    }
-                }
+                    } 
+                    $expanded[$key] = $value;
+               }
             }
         }
         return $expanded;
