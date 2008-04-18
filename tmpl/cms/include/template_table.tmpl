@@ -123,7 +123,7 @@
                     </ul>
                 </td>
     <mt:else name="template_type" eq="module">
-                <td class="cache-method si status-<mt:if name="cache_enabled">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /><mt:if name="cache_enabled">cached<mt:else>uncached</mt:if></td>
+                <td class="cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /><mt:if name="use_cache">cached<mt:else>uncached</mt:if></td>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
                 <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
