@@ -875,7 +875,7 @@ sub core_list_filters {
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     require MT::TBPing;
-                    $terms->{junk_status} = MT::TBPing::NOT_JUNK();
+                    $terms->{junk_status} = MT::TBPing::JUNK();
                 },
             },
             last_7_days => {
