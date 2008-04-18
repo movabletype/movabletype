@@ -24,7 +24,31 @@ class MTDatabaseBase extends ezsql {
     var $serializer;
     var $id;
 
-    function MTDatabaseBase($dbuser, $dbpassword = '', $dbname = '', $dbhost = '', $dbport = '', $dbsocket = '') {
+    ## temporary until we class our objects properly
+    var $object_meta = array(
+        'blog' => array(
+            'commenter_authenticators',
+            'nofollow_urls',
+            'follow_auth_links',
+            'captcha_provider',
+            'template_set',
+            'page_layout',
+            'include_system',
+            'include_cache'),
+        'template' => array(
+            'page_layout',
+            'include_with_ssi',
+            'use_cache',
+            'cache_expire_type',
+            'cache_expire_interval',
+            'cache_expire_event'),
+        'asset' => array('image_width',
+            'image_height')
+    );
+    var $_meta_cache = array();
+
+    function MTDatabaseBase($dbuser, $dbpassword = '', $dbname = '',
+        $dbhost = '', $dbport = '', $dbsocket = '') {
         $this->id = md5(uniqid('MTDatabaseBase',true));
         $this->hide_errors();
         $this->db($dbuser, $dbpassword, $dbname, $dbhost, $dbport, $dbsocket);
@@ -104,7 +128,6 @@ class MTDatabaseBase extends ezsql {
     }
 
     function fetch_blogs($args) {
-
         if ($blog_ids = $this->include_exclude_blogs($args)) {
             $where = ' where blog_id ' . $blog_ids;
         }
@@ -2838,11 +2861,16 @@ class MTDatabaseBase extends ezsql {
                 if (is_array($value)) {
                     $expanded[$key] = $this->expand_meta($value);
                 } else {
-                    if (preg_match('/(\w+)_meta$/', $key, $prefix)) {
-                        $data = $this->unserialize($value);
+                    if (preg_match('/^(\w+)_id$/', $key, $prefix)) {
+                        $type = $prefix[1];
+                        unset($data);
+                        if (array_key_exists($type, $this->object_meta)) {
+                            $data = $this->get_meta($type, $value);
+                        }
                         if (isset($data)) {
-                            foreach ($data as $k => $v) {
-                                $expanded[$prefix[1] . '_' . $k] = $v;
+                            $cols = $this->object_meta[$type];
+                            foreach ($cols as $col) {
+                                $expanded[$type . '_' . $col] = $data[$col];
                             }
                         }
                     } else {
@@ -2852,6 +2880,53 @@ class MTDatabaseBase extends ezsql {
             }
         }
         return $expanded;
+    }
+
+    function get_meta($obj_type, $obj_id) {
+        $real_type = $obj_type;
+        if ('page' == strtolower($obj_type))
+            $real_type = 'entry';
+        elseif ('folder' == strtolower($obj_type))
+            $real_type = 'category';
+
+        $meta = $this->_meta_cache["${obj_type}_meta_${obj_id}"];
+        if (!$meta) {
+            $datasource = $real_type;
+            $datasource = preg_replace("/^mt_/", "", $datasource);
+            $result = $this->get_results("select * from mt_${datasource}_meta  where ${datasource}_meta_${datasource}_id = $obj_id", ARRAY_A);
+            $field_prefix = "${datasource}_meta_";
+            $meta = array();
+            foreach ($result as $cfrow) {
+                unset($value);
+                unset($field);
+                // need to test for each v* column to see which is populated
+                // take that value and store for meta row
+                foreach ($cfrow as $cffield => $cfvalue) {
+                    if (preg_match("/^${field_prefix}v/", $cffield)) {
+                        if (isset($cfvalue)) {
+                            $value = $cfvalue;
+                            $field = $cffield;
+                            break;
+                        }
+                    }
+                }
+                if (isset($value)) {
+                    if (preg_match("/_vblob$/", $field)) {
+                        # unserialize blob if value is serialized
+                        if (preg_match("/^BIN:SERG/", $value)) {
+                            $value = $this->unserialize($value);
+                        }
+                        elseif (preg_match("/^ASC:/", $value)) {
+                            $value = preg_replace("/^ASC:/", "", $value);
+                        }
+                    }
+                    $meta[$cfrow["${datasource}_meta_type"]] = $value;
+                }
+            }
+            $this->_meta_cache["${obj_type}_meta_${obj_id}"] = $meta;
+        }
+
+        return $meta;
     }
 
     function include_exclude_blogs(&$args) {
@@ -3001,4 +3076,3 @@ class MTDatabaseBase extends ezsql {
         $this->query($sql);
     }
 }
-?>
