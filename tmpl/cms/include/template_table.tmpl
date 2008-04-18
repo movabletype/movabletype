@@ -59,7 +59,10 @@
                 <th class="blog"><__trans phrase="Blog"></th>
         </mt:unless>
         <mt:if name="template_type" like="/(index|archive)/">
-                <th class="publishing-method"><!-- <img src="<mt:var name="static_uri">images/status_icons/dynamic.gif" alt="<__trans phrase="Dynamic Template">" title="<__trans phrase="Publishing Method">" width="11" height="9" /> --><__trans phrase="Publishing"></th>
+                <th class="publishing-method"><__trans phrase="Publishing"></th>
+        </mt:if>
+        <mt:if name="template_type" eq="module">
+                <th class="cache-method"><__trans phrase="Cached"></th>
         </mt:if>
         <mt:unless name="screen_id" eq="search-replace">
                 <th class="linked-template si"><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
@@ -79,7 +82,7 @@
                     <ul>
             <mt:loop name="archive_types">
                 <mt:loop name="archive_tmpl_loop">
-                        <li><mt:if name="selected"><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></mt:if></li>
+                        <mt:if name="selected"><li><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></li></mt:if>
                 </mt:loop>
             </mt:loop>
                     </ul>
@@ -100,22 +103,27 @@
                     <mt:elseif name="build_type" eq="5"><__trans phrase="Scheduled">
                     <mt:else><__trans phrase="Static"></mt:if>
                 </td>
-    <mt:elseif name="template_type" eq="archive">
+    <mt:else name="template_type" eq="archive">
                 <td class="publishing-method">
                     <ul>
             <mt:loop name="archive_types">
                 <mt:loop name="archive_tmpl_loop">
-                        <li><mt:if name="selected">
+                    <mt:if name="selected">
+                        <li>
                     <mt:if name="map_build_type" eq="0"><__trans phrase="Manual">
                     <mt:elseif name="map_build_type" eq="2"><__trans phrase="Manual">
                     <mt:elseif name="map_build_type" eq="3"><__trans phrase="Dynamic">
                     <mt:elseif name="map_build_type" eq="4"><__trans phrase="Background">
                     <mt:elseif name="map_build_type" eq="5"><__trans phrase="Scheduled">
-                    <mt:else><__trans phrase="Static"></mt:if></mt:if></li>
+                    <mt:else><__trans phrase="Static"></mt:if>
+                        </li>
+                    </mt:if>
                 </mt:loop>
             </mt:loop>
                     </ul>
                 </td>
+    <mt:else name="template_type" eq="module">
+                <td class="cache-method si status-<mt:if name="cache_enabled">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /><mt:if name="cache_enabled">cached<mt:else>uncached</mt:if></td>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
                 <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>

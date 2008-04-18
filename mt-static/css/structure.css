@@ -2050,7 +2050,8 @@ optgroup option {
     border-bottom: 1px solid #CDDEE7;
 }
 
-#list-template .listing-header {
+#list-template .listing-header,
+#list-widget-set .listing-header {
     padding: 10px 8px 6px;
 }
 
@@ -2221,6 +2222,8 @@ optgroup option {
 .listing .status-view img { background-image: url(../images/status_icons/view.gif); }
 .listing .status-unlinked img { background-image: url(../images/status_icons/neutral.gif); }
 .listing .status-linked img { background-image: url(../images/status_icons/success.gif); }
+.listing .status-uncached img { background-image: url(../images/status_icons/neutral.gif); }
+.listing .status-cached img { background-image: url(../images/status_icons/success.gif); }
 .listing .status-dynamic img { background-image: url(../images/status_icons/success.gif); }
 .listing .status-static img { background-image: url(../images/status_icons/neutral.gif); }
 .listing .status-rebuild img { background-image: url(../images/status_icons/success.gif); }
