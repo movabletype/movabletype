@@ -2058,7 +2058,11 @@ sub show_error {
         $param->{value} ||= $app->{value} || $app->translate("Go Back");
     }
     $tmpl->param( $param );
-    $app->l10n_filter($tmpl->output);
+    my $out = $tmpl->output;
+    if (!defined $out) {
+        return $tmpl->errstr;
+    }
+    return $app->l10n_filter($out);
 }
 
 sub pre_run {
