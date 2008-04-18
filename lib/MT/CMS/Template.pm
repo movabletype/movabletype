@@ -100,7 +100,14 @@ sub edit {
         $param->{published_url} = $published_url if $published_url;
         $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
 
+        my $filter = $app->param('filter_key');
+        if ($param->{template_group} eq 'email') {
+            $app->param( 'filter_key', 'email_templates' );
+        }elsif  ($param->{template_group} eq 'system') {
+            $app->param( 'filter_key', 'system_templates' );
+        }
         $app->load_list_actions( 'template', $param );
+        $app->param( 'filter_key', $filter );
 
         $obj->compile;
         if ( $obj->{errors} && @{ $obj->{errors} } ) {
