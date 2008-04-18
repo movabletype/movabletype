@@ -2002,7 +2002,7 @@ sub find_file {
 
 sub load_tmpl {
     my $mt = shift;
-    if ($mt->{component}) {
+    if ( exists($mt->{component}) && ( $mt->{component} ne 'Core' ) ) {
         if (my $c = $mt->component($mt->{component})) {
             return $c->load_tmpl(@_);
         }
