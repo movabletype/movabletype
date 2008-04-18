@@ -1769,15 +1769,12 @@ sub queue_build_file_filter {
     my $mt = shift;
     my ( $cb, %args ) = @_;
 
-    my $blog = $args{blog};
-    return 1 unless $blog && $blog->publish_queue;
-
     my $fi = $args{file_info};
     return 1 if $fi->{from_queue};
 
     require MT::PublishOption;
     my $throttle = MT::PublishOption::get_throttle($fi);
-    return 1 if $throttle->{type} == MT::PublishOption::ONDEMAND();
+    return 1 if $throttle->{type} != MT::PublishOption::ASYNC();
     return 0 if $throttle->{type} == MT::PublishOption::DISABLED();
 
     require MT::TheSchwartz;
