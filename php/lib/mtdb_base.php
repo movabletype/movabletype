@@ -2843,11 +2843,14 @@ class MTDatabaseBase extends ezsql {
     }
 
     function get_results($query = null, $output = ARRAY_A) {
+        $old_result = $this->result;
         $rows = parent::get_results($query, $output);
         if (is_array($rows)) {
             $rows = array_map(array($this,"convert_fieldname"), $rows);
         }
-        return $this->expand_meta($rows);
+        $result = $this->expand_meta($rows);
+        $this->result = $old_result;
+        return $result;
     }
 
     function &convert_fieldname($array) {
