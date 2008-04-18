@@ -75,30 +75,6 @@ TC.attachLoadEvent(init);
 /* ]]> */
 </script>
 </mt:setvarblock>
-<mt:setvarblock name="list_filter_form">
-<form id="filter-form" method="get" action="<mt:var name="mt_url">">
-    <input type="hidden" name="__mode" value="<mt:var name="mode">" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input id="filter" type="hidden" name="filter" value="" />
-    <input id="filter_val" type="hidden" name="filter_val" value="" />
-</form>
-    <div class="listing-filter">
-        <div class="listing-filter-inner inner pkg">
-<form id="filter-select-form" method="get" onsubmit="return execFilter(this)">
-    <div class="filter">
-        <div id="filter-title">
-        <mt:if name="filter_key">
-            <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
-            <a class="filter-link" href="<mt:var name="script_url">?__mode=list&amp;_type=template<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
-        <mt:else>
-            <strong><__trans phrase="All Templates"></strong>
-        </mt:if>
-        </div>
-    </div>
-</form>
-    </div>
-</div>
-</mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg

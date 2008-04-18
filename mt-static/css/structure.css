@@ -833,6 +833,7 @@ li#config-menu {
     background-image: url('../images/content-inner-wm.gif');
 }
 
+#list-template #main-content,
 #list-blog #main-content,
 #list-group #main-content,
 #list-widget-set #main-content,
@@ -2046,8 +2047,11 @@ optgroup option {
 
 .listing-header {
     background: #fff;
-    padding: 10px 8px 6px;
     border-bottom: 1px solid #CDDEE7;
+}
+
+#list-template .listing-header {
+    padding: 10px 8px 6px;
 }
 
 #list-template .zero-state-listing,
@@ -2556,7 +2560,8 @@ td.output-file {
     white-space: nowrap;
 }
 
-td.output-file ul {
+td.output-file ul,
+td.publishing-method ul {
     margin: 0;
 }
 td.output-file ul li {
