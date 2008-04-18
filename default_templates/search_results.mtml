@@ -85,7 +85,6 @@
     </script>
 </head>
 <body id="<$mt:BlogTemplateSetID$>" class="mt-search-results <$MTVar name="page_layout"$>">
-<$MTBlogID setvar="blog_id">
     <div id="container">
         <div id="container-inner">
 
@@ -120,7 +119,7 @@
                                 </h1>
                                 <div class="search-results-container autopagerize_page_element">
     </MTSearchResultsHeader>
-                                    <$MTInclude module="<__trans phrase="Entry Summary">" show_blog="1" hide_counts="1" blog_id="$blog_id"$>
+                                    <$MTInclude module="<__trans phrase="Entry Summary">" hide_counts="1"$>
     <MTSearchResultsFooter>
                                 </div><div class="autopagerize_insert_before"></div>
 
