@@ -1907,7 +1907,25 @@ sub update_publishing_profile {
                 if (($tmpl->identifier || '') =~ m/^(main_index|feed_recent)$/) {
                     $tmpl->build_type(MT::PublishOption::ONDEMAND());
                 } else {
-                    $tmpl->build_type(MT::PublishOption::ASYNC());
+                    if (($tmpl->type eq 'individual') || ($tmpl->type eq 'page')) {
+                        my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl->id } );
+                        foreach my $tmpl_map (@tmpl_maps) {
+                            if (($tmpl_map->archive_type =~ m/^(Individual|Page)$/) &&
+                                ($tmpl_map->is_preferred)) {
+                                    $tmpl_map->build_type(MT::PublishOption::ONDEMAND());
+                                $tmpl_map->save;
+                                next;
+                            }
+                            if ( $tmpl_map->build_type != MT::PublishOption::ASYNC() ) {
+                                $tmpl_map->build_type(MT::PublishOption::ASYNC());
+                                $tmpl_map->save;
+                            }
+                        }
+                    }
+                    else {
+                        # updates all template maps too
+                        $tmpl->build_type(MT::PublishOption::ASYNC());
+                    }
                 }
             } elsif ($dcty eq 'async_all') {
                 $tmpl->build_type(MT::PublishOption::ASYNC());
