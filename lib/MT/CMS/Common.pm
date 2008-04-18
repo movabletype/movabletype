@@ -328,6 +328,23 @@ sub save {
         );
     }
     elsif ( my $cfg_screen = $q->param('cfg_screen') ) {
+        if ( $cfg_screen eq 'cfg_publish_profile' ) {
+            my $dcty = $obj->custom_dynamic_templates || 'none';
+            if ( ( $dcty eq 'all' ) || ( $dcty eq 'archives' ) ) {
+                require MT::CMS::Blog;
+                my %param = ();
+                MT::CMS::Blog::_create_build_order( $app, $obj, \%param );
+                $q->param( 'single_template', 1 ); # to show tmpl full-screen
+                if ( $dcty eq 'all' ) {
+                    $q->param( 'type', $param{build_order} );
+                }
+                elsif ( $dcty eq 'archives' ) {
+                    my @ats = map { $_->{archive_type} } @{ $param{archive_type_loop} };
+                    $q->param( 'type', join( ',', @ats ) );
+                }
+                return MT::CMS::Blog::start_rebuild_pages($app);
+            }
+        }
         if ( $cfg_screen eq 'cfg_templatemaps' ) {
             $cfg_screen = 'cfg_archives';
         }

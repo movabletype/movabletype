@@ -231,8 +231,14 @@ sub edit {
                     $param->{ 'archive_type_' . $at } = 1;
                 }
             }
-            require MT::Template;
-            $param->{dynamic_enabled} = MT::Template->exist( { blog_id => $obj->id, build_dynamic => 1 });
+            require MT::PublishOption;
+            if ( $app->model('template')->exist(
+                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
+              || $app->model('templatemap')->exist(
+                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) )
+            {
+                $param->{dynamic_enabled} = 1;
+            }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {
                 $param->{can_use_publish_queue} = 1;
@@ -445,7 +451,6 @@ sub cfg_archives {
     $param{no_writedir}         = $q->param('no_writedir');
     $param{no_cachedir}         = $q->param('no_cachedir');
     $param{no_writecache}       = $q->param('no_writecache');
-    $param{dynamicity}          = $blog->custom_dynamic_templates || 'none';
     $param{include_system}      = $blog->include_system || '';
 
     if ( $app->config->ObjectDriver =~ qr/(db[id]::)?sqlite/i ) {
@@ -797,7 +802,9 @@ sub rebuild_pages {
             entry_id        => scalar $q->param('entry_id'),
             dynamic         => $dynamic,
             is_new          => scalar $q->param('is_new'),
-            old_status      => scalar $q->param('old_status')
+            old_status      => scalar $q->param('old_status'),
+            is_full_screen  => scalar $q->param('fs'),
+            return_args     => scalar $q->param('return_args')
         );
         $app->load_tmpl( 'rebuilding.tmpl', \%param );
     }
@@ -845,21 +852,26 @@ sub rebuild_pages {
                 $param{tmpl_url} .= $tmpl_saved->outfile;
             }
             if ( $q->param('fs') ) {    # full screen--go to a useful app page
-                my $type = $q->param('type');
-                $type =~ /index-(\d+)/;
-                my $tmpl_id = $1;
-                $app->run_callbacks( 'rebuild', $blog );
-                return $app->redirect(
-                    $app->uri(
-                        'mode' => 'view',
-                        args   => {
-                            '_type'       => 'template',
-                            id            => $tmpl_id,
-                            blog_id       => $blog->id,
-                            saved_rebuild => 1
-                        }
-                    )
-                );
+                if ( my $return_args = $q->param('return_args') ) {
+                    $app->call_return;
+                }
+                else {
+                    my $type = $q->param('type');
+                    $type =~ /index-(\d+)/;
+                    my $tmpl_id = $1;
+                    $app->run_callbacks( 'rebuild', $blog );
+                    return $app->redirect(
+                        $app->uri(
+                            'mode' => 'view',
+                            args   => {
+                                '_type'       => 'template',
+                                id            => $tmpl_id,
+                                blog_id       => $blog->id,
+                                saved_rebuild => 1
+                            }
+                        )
+                    );
+                }
             }
             else {    # popup--just go to cnfrmn. page
                 return $app->load_tmpl( 'popup/rebuilt.tmpl', \%param );
@@ -940,7 +952,8 @@ sub start_rebuild_pages {
         start_time      => $start_time,
         complete        => 0,
         incomplete      => 100,
-        build_type_name => $archive_label
+        build_type_name => $archive_label,
+        return_args     => $app->return_args
     );
 
     if ( $type_name =~ /^index-(\d+)$/ ) {
@@ -971,12 +984,9 @@ sub start_rebuild_pages {
     $app->load_tmpl( 'rebuilding.tmpl', \%param );
 }
 
-sub rebuild_confirm {
-    my $app     = shift;
-    my $blog_id = $app->param('blog_id');
-    require MT::Blog;
-    my $blog = MT::Blog->load($blog_id)
-        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
+sub _create_build_order {
+    my ( $app, $blog, $param ) = @_;
+
     my $at = $blog->archive_type || '';
     my ( @blog_at, @at, @data );
     my $archiver;
@@ -1003,13 +1013,23 @@ sub rebuild_confirm {
             );
         }
     }
-    my $order     = join ',', @at, 'index';
-    my $entry_pkg = $app->model('entry');
+    $param->{archive_type_loop} = \@data;
+    $param->{build_order} = join ',', @at, 'index';
+    1;
+}
+
+sub rebuild_confirm {
+    my $app     = shift;
+    my $blog_id = $app->param('blog_id');
+    require MT::Blog;
+    my $blog = MT::Blog->load($blog_id)
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
+
     my %param     = (
-        archive_type_loop => \@data,
-        build_order       => $order,
         build_next        => 0,
     );
+    _create_build_order( $app, $blog, \%param );
+
     $param{index_selected} = ( $app->param('prompt') || "" ) eq 'index';
 
     if ( my $tmpl_id = $app->param('tmpl_id') ) {
@@ -1479,12 +1499,6 @@ sub post_save {
         cfg_publish_profile_save($app, $obj) or return;
     }
     if ( $screen eq 'cfg_archives' ) {
-        # update the dynamic publishing options if they changed
-        update_dynamicity(
-            $app,
-            $obj
-        );
-
         # If either of the publishing paths changed, rebuild the fileinfos.
         my $path_changed = 0;
         for my $path_field (qw( site_path archive_path site_url archive_url )) {
@@ -1842,6 +1856,24 @@ sub cfg_archives_save {
     my $at = $app->param('preferred_archive_type');
     $blog->archive_type_preferred($at);
     $blog->include_cache( $app->param('include_cache') ? 1 : 0 );
+    require MT::PublishOption;
+    if ( ( $blog->custom_dynamic_templates eq 'all'
+        || $blog->custom_dynamic_templates eq 'archives' )
+      && ( $app->model('template')->exist(
+            { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
+        || $app->model('templatemap')->exist(
+            { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) ) )
+    {
+        # dynamic enabled and caching option may have changed - update mtview
+        my $cache       = $app->param('dynamic_cache')       ? 1 : 0;
+        my $conditional = $app->param('dynamic_conditional') ? 1 : 0;
+        _create_mtview( $blog, $blog->site_path, $cache, $conditional );
+        _create_dynamiccache_dir( $blog, $blog->site_path ) if $cache;
+        if ( $blog->archive_path ) {
+            _create_mtview( $blog, $blog->archive_path, $cache, $conditional );
+            _create_dynamiccache_dir( $blog, $blog->archive_path ) if $cache;
+        }
+    }
     $blog->save
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );
@@ -1856,6 +1888,13 @@ sub cfg_publish_profile_save {
     my $dcty = $app->param('dynamicity') || 'none';
     my $pq = $dcty =~ m/^async/ ? 1 : 0;
     $blog->publish_queue( $pq );
+    if ( $dcty eq 'all' || $dcty eq 'archives' ) {
+        # update the dynamic publishing options if they changed
+        update_dynamicity(
+            $app,
+            $blog
+        );
+    }
     $blog->save
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );
@@ -1982,12 +2021,13 @@ sub update_dynamicity {
     my $cache       = $app->param('dynamic_cache')       ? 1 : 0;
     my $conditional = $app->param('dynamic_conditional') ? 1 : 0;
 
-    require MT::Template;
-    my $dynamic_enabled = MT::Template->exist( { blog_id => $blog->id,
-        build_dynamic => 1 });
-
-    # dynamic publishing enabled
-    if ( $dynamic_enabled ) {
+    require MT::PublishOption;
+    if ( $app->model('template')->exist(
+            { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
+      || $app->model('templatemap')->exist(
+            { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) )
+    {
+        # dynamic publishing enabled
         prepare_dynamic_publishing($app, $blog, $cache, $conditional, $blog->site_path, $blog->site_url);
         if ( $blog->archive_path ) {
             prepare_dynamic_publishing($app, $blog, $cache, $conditional, $blog->archive_path, $blog->archive_url);
@@ -2018,6 +2058,87 @@ sub update_dynamicity {
     }
 }
 
+sub _create_mtview {
+    my ( $blog, $site_path, $cache, $conditional ) = @_;
+
+    my $mtview_path = File::Spec->catfile( $site_path, "mtview.php" );
+    eval {
+        my $mv_contents = '';
+        if ( -f $mtview_path ) {
+            open( my $mv, "<$mtview_path" );
+            while ( my $line = <$mv> ) {
+                $mv_contents .= $line if ( $line !~ m!^//|<\?(?:php)?|\?>! );
+            }
+            close $mv;
+        }
+        my $cgi_path = MT->instance->server_path() || "";
+        $cgi_path =~ s!/*$!!;
+        my $mtphp_path = File::Spec->canonpath("$cgi_path/php/mt.php");
+        my $blog_id    = $blog->id;
+        my $config     = MT->instance->{cfg_file};
+        my $cache_code = $cache ? "\n    \$mt->caching = true;" : '';
+        my $conditional_code =
+          $conditional ? "\n    \$mt->conditional = true;" : '';
+        my $new_mtview = <<NEW_MTVIEW;
+
+    include('$mtphp_path');
+    \$mt = new MT($blog_id, '$config');$cache_code$conditional_code
+    \$mt->view();
+NEW_MTVIEW
+
+        if ( $new_mtview ne substr( $mv_contents, 0, length($new_mtview) ) ) {
+            $mv_contents =~ s!\n!\n//!gs;
+            my $mtview = <<MTVIEW;
+<?php
+$new_mtview
+$mv_contents
+?>
+MTVIEW
+
+            $blog->file_mgr->mkpath( $site_path );
+            open( my $mv, ">$mtview_path" )
+              || die "Couldn't open $mtview_path for appending";
+            print $mv $mtview || die "Couldn't write to $mtview_path";
+            close $mv;
+        }
+    };
+    if ($@) { print STDERR $@; }
+}
+
+sub _create_dynamiccache_dir {
+    my ( $blog, $site_path ) = @_;
+
+    # FIXME: use FileMgr
+    my $cache_path = File::Spec->catfile( $site_path, 'cache' );
+    my $fmgr = $blog->file_mgr;
+    my $saved_umask = MT->config->DirUmask;
+    MT->config->DirUmask('0000');
+    $fmgr->mkpath($cache_path);
+    MT->config->DirUmask($saved_umask);
+    my $message;
+    if ( -d $cache_path ) {
+        $message = MT->translate(
+'ErrMovable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.',
+            'cache'
+        ) unless ( -w $cache_path );
+    }
+    else {
+        $message = MT->translate(
+'ErrMovable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.',
+            'cache'
+        ) unless ( -d $cache_path );
+    }
+    if ( $message ) {
+        MT->log(
+            {
+                message => $message,
+                level   => MT::Log::ERROR(),
+                class   => 'system',
+            }
+        );
+    }
+}
+
 sub prepare_dynamic_publishing {
     my ( $cb, $blog, $cache, $conditional, $site_path, $site_url ) = @_;
 
@@ -2031,7 +2152,9 @@ sub prepare_dynamic_publishing {
       && ( 'MT::Callback' eq ref($cb) )
       && ( -f $htaccess_path )
       && ( -f $mtview_path );
-    return 1 if ( 'none' eq $blog->custom_dynamic_templates );
+    return 1 
+        if 'all' ne $blog->custom_dynamic_templates
+        && 'archives' ne $blog->custom_dynamic_templates;
 
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
@@ -2106,47 +2229,7 @@ HTACCESS
         if ($@) { print STDERR $@; }
     }
 
-    eval {
-        my $mv_contents = '';
-        if ( -f $mtview_path ) {
-            open( my $mv, "<$mtview_path" );
-            while ( my $line = <$mv> ) {
-                $mv_contents .= $line if ( $line !~ m!^//|<\?(?:php)?|\?>! );
-            }
-            close $mv;
-        }
-        my $cgi_path = MT->instance->server_path() || "";
-        $cgi_path =~ s!/*$!!;
-        my $mtphp_path = File::Spec->canonpath("$cgi_path/php/mt.php");
-        my $blog_id    = $blog->id;
-        my $config     = MT->instance->{cfg_file};
-        my $cache_code = $cache ? "\n    \$mt->caching = true;" : '';
-        my $conditional_code =
-          $conditional ? "\n    \$mt->conditional = true;" : '';
-        my $new_mtview = <<NEW_MTVIEW;
-
-    include('$mtphp_path');
-    \$mt = new MT($blog_id, '$config');$cache_code$conditional_code
-    \$mt->view();
-NEW_MTVIEW
-
-        if ( $new_mtview ne substr( $mv_contents, 0, length($new_mtview) ) ) {
-            $mv_contents =~ s!\n!\n//!gs;
-            my $mtview = <<MTVIEW;
-<?php
-$new_mtview
-$mv_contents
-?>
-MTVIEW
-
-            $blog->file_mgr->mkpath( $site_path );
-            open( my $mv, ">$mtview_path" )
-              || die "Couldn't open $mtview_path for appending";
-            print $mv $mtview || die "Couldn't write to $mtview_path";
-            close $mv;
-        }
-    };
-    if ($@) { print STDERR $@; }
+    _create_mtview( $blog, $site_path, $cache, $conditional );
 
     my $compiled_template_path =
       File::Spec->catfile( $site_path, 'templates_c' );
@@ -2171,32 +2254,9 @@ MTVIEW
         ) unless ( -d $compiled_template_path );
     }
 
-    # FIXME: use FileMgr
     if ($cache) {
-        my $cache_path = File::Spec->catfile( $blog->site_path(), 'cache' );
-        $cfg->DirUmask('0000');
-        $fmgr->mkpath($cache_path);
-        $cfg->DirUmask($saved_umask);
-        if ( -d $cache_path ) {
-            $message = MT->translate(
-'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.',
-                'cache'
-            ) unless ( -w $cache_path );
-        }
-        else {
-            $message = MT->translate(
-'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.',
-                'cache'
-            ) unless ( -d $cache_path );
-        }
+        _create_dynamiccache_dir( $blog, $site_path );
     }
-    MT->log(
-        {
-            message => $message,
-            level   => MT::Log::ERROR(),
-            class   => 'system',
-        }
-    );
 }
 
 1;
