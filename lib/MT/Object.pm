@@ -501,7 +501,7 @@ sub meta_args {
             id_type_vfloat => { columns => [ $id_field, 'type',
                 'vfloat_indexed' ] },
         },
-        primary_key => [ $class->datasource . '_id', 'type' ],
+        primary_key => [ $id_field, 'type' ],
     };
 }
 
@@ -1165,6 +1165,38 @@ sub to_hash {
         }
     }
     $hash;
+}
+
+sub search_by_meta {
+    my $class = shift;
+    my($key, $value, $terms, $args) = @_;
+    $terms ||= {}; $args ||= {};
+    return unless $class->properties->{meta_installed};
+    return $class->error("Unknown meta '$key' on $class")
+        unless $class->is_meta_column($key);
+
+    my $meta_rec = MT::Meta->metadata_by_name($class, $key);
+    my $type_col = $meta_rec->{type};
+    my $type_id  = $meta_rec->{name};
+    my $meta_terms = {
+        $type_col => $value,
+        type      => $type_id,
+        %$terms,
+    };
+    my $meta_class = $class->meta_pkg;
+    my $meta_pk = $meta_class->primary_key_tuple;
+    my @metaobjs = $meta_class->search(
+        $meta_terms, { %$args, fetchonly => $meta_pk }
+    );
+
+    my $pk = $class->primary_key_tuple;
+    my $get_pk = sub { 
+        my $meta = shift;
+        [ map { $meta->$_ } @$meta_pk ];
+    };
+
+    return unless @metaobjs;
+    return grep defined, @{ $class->lookup_multi([ map { $get_pk->($_) } @metaobjs ]) };
 }
 
 package MT::Object::Meta;
