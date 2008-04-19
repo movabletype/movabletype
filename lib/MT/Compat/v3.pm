@@ -15,6 +15,8 @@ use MT::Blog;
 
 our %app_ids;
 our %api_map;
+our %cms_map;
+our %cms_rename_map;
 BEGIN {
     %app_ids = (
         'MT::App::CMS' => 'cms',
@@ -31,6 +33,71 @@ BEGIN {
         'MT::add_itemset_action' => "Registry (path: application, [app_id], list_actions)",
         'MT::add_plugin_action' => "Registry (path: application, [app_id], page_actions)",
         'MT::register_junk_filter' => "Registry (path: junk_filters)",
+    );
+    %cms_map = (
+        AddressBook => [ qw( send_notify entry_notify ) ],
+        Asset => [ qw( asset_userpic _write_upload upload_file build_asset_hasher start_upload complete_upload start_upload_entry build_asset_table _upload_file _set_start_upload_params complete_insert asset_list_filters _process_post_upload asset_insert_text ) ],
+        Blog => [ qw( update_welcome_message rebuild_pages start_rebuild_pages rebuild_confirm prepare_dynamic_publishing rebuild_phase cfg_archives dialog_select_weblog update_dynamicity rebuild_new_phase build_blog_table cfg_web_services make_blog_list cc_return RegistrationAffectsArchives cfg_blog cfg_archives_save handshake cfg_prefs save_favorite_blogs ) ],
+        Category => [ qw( category_add js_add_category move_category category_do_add ) ],
+        Comment => [ qw( trust_commenter_by_comment unapprove_item set_item_visible not_junk reply_preview do_reply map_comment_to_commenter handle_junk cfg_spam untrust_commenter build_comment_table trust_commenter cfg_system_feedback cfg_comments approve_item list_commenter unban_commenter empty_junk _prepare_reply build_junk_table cfg_registration dialog_post_comment untrust_commenter_by_comment build_commenter_table ban_commenter_by_comment save_commenter_perm ban_commenter save_cfg_system_feedback unban_commenter_by_comment reply ) ],
+        Common => [ qw( delete ) ],
+        Dashboard => [ qw( mt_blog_stats_widget mt_blog_stats_widget_entry_tab new_version_widget get_lmt_content mt_blog_stats_widget_comment_tab generate_dashboard_stats get_newsbox_content dashboard mt_news_widget generate_dashboard_stats_comment_tab this_is_you_widget create_dashboard_stats_file generate_dashboard_stats_entry_tab ) ],
+        Entry => [ qw( _finish_rebuild_ping cfg_entry draft_entries save_entries build_entry_table send_pings ping_continuation pinged_urls quickpost_js save_entry_prefs open_batch_editor update_entry_status publish_entries ) ],
+        Export => [ qw( start_export ) ],
+        Import => [ qw( do_import start_import ) ],
+        Log => [ qw( apply_log_filter build_log_table ) ],
+        Page => [ qw( CMSPostSave_page save_pages ) ],
+        Plugin => [ qw( cfg_plugins plugin_control build_plugin_table ) ],
+        Search => [ qw( do_search_replace _default_results_table_template search_replace ) ],
+        Tag => [ qw( js_tag_list add_tags_to_entries js_recent_entries_for_tag add_tags_to_assets js_tag_check build_tag_table remove_tags_from_assets remove_tags_from_entries list_tag_for rename_tag ) ],
+        Template => [ qw( refresh_all_templates add_map _generate_map_table build_template_table refresh_individual_templates _populate_archive_loop publish_index_templates reset_blog_templates delete_map dialog_refresh_templates ) ],
+        Tools => [ qw( save_cfg_system_general _backup_finisher convert_to_html do_page_action restore copy recover_profile_password cfg_system_general do_list_action restore_directory dialog_restore_upload system_check backup recover_password get_syscheck_content start_recover upgrade start_restore restore_file restore_upload_manifest adjust_sitepath move update_list_prefs recover_passwords restore_premature_cancel _log_dirty_restore backup_download start_backup _progress reset_password dialog_adjust_sitepath ) ],
+        TrackBack => [ qw( cfg_trackbacks build_ping_table ) ],
+        User => [ qw( _merge_default_assignments upload_userpic set_object_status save_cfg_system_users save_role grant_role dialog_select_sysadmin remove_user_assoc revoke_role remove_userpic build_author_table _delete_pseudo_association cfg_system_users dialog_grant_role edit_role list_member ) ],
+    );
+    %cms_rename_map = (
+        CMSViewPermissionFilter_asset     => 'Asset::can_view',
+        CMSViewPermissionFilter_author    => 'User::can_view',
+        CMSViewPermissionFilter_blog      => 'Blog::can_view',
+        CMSViewPermissionFilter_category  => 'Category::can_view',
+        CMSViewPermissionFilter_comment   => 'Comment::can_view',
+        CMSViewPermissionFilter_commenter => 'Comment::can_view_commenter',
+        CMSViewPermissionFilter_entry     => 'Entry::can_view',
+        CMSViewPermissionFilter_folder    => 'Folder::can_view',
+        CMSViewPermissionFilter_page      => 'Page::can_view',
+        CMSViewPermissionFilter_ping      => 'Ping::can_view',
+        CMSViewPermissionFilter_template  => 'Template::can_view',
+        #disable_object                    => '',
+        edit_object                       => 'Common::edit',
+        #enable_object                     => '',
+        export_log                        => 'Log::export',
+        export_notification               => 'AddressBook::export',
+        list_assets                       => 'Asset::list',
+        #list_associations                 => '',
+        list_authors                      => 'User::list',
+        list_blogs                        => 'Blog::list',
+        list_category                     => 'Category::list',
+        list_comments                     => 'Comment::list',
+        list_entries                      => 'Entry::list',
+        list_objects                      => 'Common::list',
+        list_pages                        => 'Page::list',
+        list_pings                        => 'Ping::list',
+        #list_roles                        => '',
+        #list_tag                          => '',
+        list_template                     => 'Template::list',
+        preview_entry                     => 'Entry::preview',
+        #reg_bm_js                         => '',
+        #reg_file                          => '',
+        reset_log                         => 'Log::reset',
+        #reset_plugin_config               => '',
+        save_asset                        => 'Asset::save',
+        save_category                     => 'Category::save',
+        save_entry                        => 'Entry::save',
+        save_object                       => 'Common::save',
+        #save_plugin_config                => '',
+        tools                             => 'Tools::system_check',
+        view_log                          => 'Log::view',
+        _cb_notjunktest_filter            => 'Common::not_junk_test',
     );
 
     $MT::CallbackAlias{'BuildFileFilter'}     = 'build_file_filter';
@@ -420,6 +487,28 @@ sub add_rebuild_option {
 *core_itemset_actions   = \&core_list_actions;
 *plugin_itemset_actions = \&plugin_list_actions;
 #*itemset_actions        = \&list_actions;
+
+while (my ($module, $methods) = each %cms_map) {
+    for my $method (@$methods) {
+        my $shim = sub {
+            my $h = MT->handler_to_coderef(join q{::}, '$Core::MT::CMS', $module, $method);
+            return $h->(@_);
+        };
+
+        no strict 'refs';
+        *{$method} = $shim;
+    }
+}
+
+while (my ($method, $new_method) = each %cms_rename_map) {
+    my $shim = sub {
+        my $h = MT->handler_to_coderef(join q{::}, '$Core::MT::CMS', $new_method);
+        return $h->(@_);
+    };
+
+    no strict 'refs';
+    *{$method} = $shim;
+}
 
 package MT::Author;
 
