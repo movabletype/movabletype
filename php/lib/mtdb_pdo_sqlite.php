@@ -5,49 +5,13 @@
 #
 # $Id$
 
-if (!class_exists("ezsql"))
-    require_once("ezsql".DIRECTORY_SEPARATOR."ezsql_sqlite.php");
-require_once("mtdb_base.php");
+require_once("ezsql".DIRECTORY_SEPARATOR."ezsql_pdo_sqlite.php");
+require_once("mtdb_sqlite.php");
 
-class MTDatabase_sqlite extends MTDatabaseBase {
-    var $vendor = 'sqlite';
-    function MTDatabase_sqlite($dbuser, $dbpassword, $dbname, $dbhost, $dbport) {
+class MTDatabase_pdo_sqlite extends MTDatabase_sqlite {
+    var $vendor = 'pdo_sqlite';
+    function MTDatabase_pdo_sqlite($dbuser, $dbpassword, $dbname, $dbhost, $dbport) {
         parent::MTDatabaseBase($dbname);
-    }
-
-    function unserialize($data) {
-        $data = stripslashes($data);  #SQLite uses addslashes for binary data
-        return parent::unserialize($data);
-    }
-
-    function &convert_fieldname($array) {
-        $converted = array();
-        foreach ($array as $key => $value) {
-            list ($t,$c) = explode('.', $key);
-            $converted[$c?$c:$t] = $value;
-        }
-        return $converted;
-    }
-
-    function apply_limit_sql($sql, $limit, $offset = 0) {
-        $limit = intval($limit);
-        $offset = intval($offset);
-        $limitStr = '';
-        if ($limit == -1) $limit = 0;
-        if ($limit)
-            $limitStr = 'limit ' . $limit;
-        if ($offset) {
-            $limitStr .= ' offset ' . $offset;
-            if (!$limit)
-                $limitStr = 'limit 2147483647' . $limitStr;
-        }
-        $sql = preg_replace('/<LIMIT>/', $limitStr, $sql);
-        return $sql;
-    }
-
-    function limit_by_day_sql($column, $days) {
-        return 'datetime(' . $column . ', \'+' .
-            $days . ' days\') >= date(\'now\', \'localtime\')';
     }
 
     function query_start($query)
@@ -72,7 +36,7 @@ class MTDatabase_sqlite extends MTDatabaseBase {
         // Keep track of the last query for debug..
         $this->last_query = $query;
 
-        $this->result = @sqlite_query($query,$this->dbh);
+        $this->result = $this->dbh->query($query);
         $this->num_queries++;
 
         // If there is an error then take note of it..
@@ -101,7 +65,7 @@ class MTDatabase_sqlite extends MTDatabaseBase {
     }
 
     function query_fetch($output=OBJECT) {
-        if ( $row = sqlite_fetch_array($this->result, SQLITE_ASSOC) )
+        if ( $row = $this->result->fetch(PDO::FETCH_ASSOC) )
         {
             $row = (Object) $row;
             $this->num_rows++;
@@ -123,27 +87,5 @@ class MTDatabase_sqlite extends MTDatabaseBase {
         }
         return null;
     }
-
-    function query_finish() {
-        if (isset($this->result)) {
-            unset($this->result);
-        }
-    }
-
-    function apply_extract_date($part, $column) {
-        $lowPart = strtolower($part);
-        if ($lowPart == 'year') {
-            $part = "'%Y'";
-        } elseif ($lowPart == 'month') {
-            $part = "'%m'";
-        } elseif ($lowPart == 'day') {
-            $part = "'%d'";
-        } else {
-            return null;
-        }
-
-        return "strftime($part, $column)";
-    }
-
 }
 ?>

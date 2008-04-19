@@ -235,6 +235,18 @@ class MT {
             }
         }
 
+        // Changes dbdriver from native to PDO, if we can.
+        // * PHP Version >= 5.0
+        // * DBDriver == sqlite / with out UseSQLite2
+        // * PDO and PDO_SQLITE extensions loaded
+        if (version_compare(PHP_VERSION, '5.0') > 0
+            && $cfg['dbdriver'] == 'sqlite'
+            && !isset($cfg['usesqlite2'])
+            && extension_loaded('pdo')
+            && extension_loaded('pdo_sqlite'))
+        {
+            $cfg['dbdriver'] = 'pdo_sqlite';
+        }
         $this->config =& $cfg;
         $this->config_defaults();
 
