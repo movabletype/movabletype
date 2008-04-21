@@ -36,6 +36,11 @@
     </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js"></script>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
