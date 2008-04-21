@@ -449,7 +449,7 @@ sub run_actions {
         local $MT::Upgrade::MAX_TIME = $MAX_TIME;
 
         while ($step = shift @steps) {
-            MT::Upgrade->run_step($step) or last;
+            my $result = MT::Upgrade->run_step($step);
             my $new_steps = $app->response->{steps};
             if (@$new_steps) {
                 push @steps, @$new_steps;
@@ -457,6 +457,7 @@ sub run_actions {
                                  $fn->{$b->[0]}->{priority} } @steps;
                 $app->response->{steps} = [];
             }
+            last unless $result;
             # don't run for more than our time limit
             last if time > $start + $MAX_TIME; 
         }
