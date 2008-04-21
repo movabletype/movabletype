@@ -61,7 +61,7 @@
         <mt:if name="template_type" like="/(index|archive)/">
                 <th class="publishing-method"><__trans phrase="Publishing"></th>
         </mt:if>
-        <mt:if name="template_type" eq="module">
+        <mt:if name="template_type" like="(module|widget)">
                 <th class="cache-method"><__trans phrase="Cached"></th>
         </mt:if>
         <mt:unless name="screen_id" eq="search-replace">
@@ -122,7 +122,7 @@
             </mt:loop>
                     </ul>
                 </td>
-    <mt:else name="template_type" eq="module">
+    <mt:else name="template_type" like="(module|widget)">
                 <td class="cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
