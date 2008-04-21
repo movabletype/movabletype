@@ -491,6 +491,9 @@ class MT {
         $vars['page_columns'] = $columns;
         $vars['page_layout'] = $page_layout;
 
+        if (isset($data['template']['template_identifier']))
+            $vars[$data['template']['template_identifier']] = 1;
+
         $this->configure_paths($blog['blog_site_path']);
 
         // start populating our stash
