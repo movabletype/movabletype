@@ -5192,8 +5192,14 @@ sub _hdlr_comments {
             }
         } else {
             $args{'sort'} = lc $args->{sort_by} || 'created_on';
-            $args{'direction'} = $so;
-            $no_resort = 1;
+            if ($args->{lastn} || $args->{offset}) {
+                $args{'direction'} =  'descend';
+            } else {
+                $args{'direction'} =  'ascend';
+                $no_resort = 1
+                    unless $args->{sort_order} || $args->{sort_by};
+            }
+
             require MT::Comment;
             if (!@filters) {
                 $args{limit} = $n if $n;
