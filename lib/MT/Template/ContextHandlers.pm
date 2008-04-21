@@ -5400,6 +5400,13 @@ sub _hdlr_comment_author_link {
         $str = spam_protect($str) if $args->{'spam_protect'};
         return sprintf qq(<a href="%s">%s</a>), $str, $name;
     } else {
+        my $cmntr = $ctx->stash('commenter');
+        if ( !$cmntr ) {
+            $cmntr = MT::Author->load( $c->commenter_id ) if $c->commenter_id;
+        }
+        if ($cmntr && $cmntr->url) {
+            return sprintf(qq(<a title="%s" href="%s">%s</a>), $cmntr->url, $cmntr->url, $name );
+        }
         return $name;
     }
 }

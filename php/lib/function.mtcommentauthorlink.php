@@ -41,6 +41,16 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
         }
         return sprintf('<a href="%s">%s</a>', $str, $name);
     } else {
+        $cmntr = $ctx->stash('commenter');
+        if (isset($cmntr)) {
+            if (isset($comment['comment_commenter_id'])) {
+                $cmntr = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+            }
+            if ($cmntr && $cmntr['author_url']) {
+                return sprintf('<a title="%s" href="%s">%s</a>', $cmntr['author_url'], $cmntr['author_url'], $name);
+            }
+        }
+        
         return $name;
     }
 }
