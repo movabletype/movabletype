@@ -1716,7 +1716,7 @@ sub _prepare_reply {
     my $parent        = $comment_class->load( $q->param('reply_to') );
     my $entry         = $app->model('entry')->load( $parent->entry_id );
 
-    if ( !$parent || $parent->is_published ) {
+    if ( !$parent || !$parent->is_published ) {
         $app->error(
             $app->translate("You can't reply to unpublished comment.") );
         return ( undef, $parent, $entry );
