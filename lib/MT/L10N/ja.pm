@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -3312,7 +3312,7 @@ use vars qw( @ISA %Lexicon );
 	'No archives are active' => '有効なアーカイブがありません。',
 	'Module Options' => 'モジュールオプション',
 	'Module Caching' => 'モジュールのキャッシュ',
-	'Enable template module caching' => 'テンプレートのモジュールをキャッシュする',
+	'Enable template module caching' => 'テンプレートモジュールをキャッシュする',
 	'Server Side Includes' => 'サーバーサイドインクルード',
 	'None (disabled)' => '無効',
 	'PHP Includes' => 'PHPのインクルード',
