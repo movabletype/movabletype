@@ -5113,9 +5113,10 @@ sub _hdlr_comments {
         my $n = $args->{lastn};
         my $col = lc($args->{sort_by} || 'created_on');
         @$comments = $so eq 'ascend' ?
-            sort { $a->$col() cmp $b->$col() } @$comments :
-            sort { $b->$col() cmp $a->$col() } @$comments;
-        $no_resort = 1;
+            sort { $a->created_on cmp $b->created_on } @$comments :
+            sort { $b->created_on cmp $a->created_on } @$comments;
+        $no_resort = 1
+            unless $args->{sort_order} || $args->{sort_by};
         if (@filters) {
             my $offset = $args->{offset} || 0;
             my $j      = 0;
@@ -5138,8 +5139,6 @@ sub _hdlr_comments {
             } else {
                 @comments = @$comments;
             }
-            $no_resort = 1
-                unless $args->{sort_order} || $args->{sort_by};
         }
         if ($n) {
             my $max = $n - 1 > $#comments ? $#comments : $n - 1;
