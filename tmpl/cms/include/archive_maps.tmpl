@@ -28,6 +28,7 @@
             </td>
             <td class="publish-options">
                 <select name="map_build_type_<mt:var name="map_id">" id="build-type" class="half-width">
+                    <option value="0"<mt:if name="map_build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
                     <option value="1"<mt:if name="map_build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically"></option>
                     <option value="3"<mt:if name="map_build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
     <mt:if name="publish_queue_available">
