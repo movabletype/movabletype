@@ -553,7 +553,7 @@ TC.attachLoadEvent( init );
 
 <div id="template-options"<mt:unless name="id"> class="active"</mt:unless>>
     <div id="template-options-header" class="pkg">
-        <h3><a href="javascript:void(0)" onclick="toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
+        <h3><a href="javascript:void(0);" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
         <div class="template-options-summary">
 <mt:if name="has_outfile">
             <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html">">
