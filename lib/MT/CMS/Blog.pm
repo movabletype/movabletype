@@ -2118,13 +2118,13 @@ sub _create_dynamiccache_dir {
     my $message;
     if ( -d $cache_path ) {
         $message = MT->translate(
-'ErrMovable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.',
+'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.',
             'cache'
         ) unless ( -w $cache_path );
     }
     else {
         $message = MT->translate(
-'ErrMovable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.',
+'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.',
             'cache'
         ) unless ( -d $cache_path );
     }

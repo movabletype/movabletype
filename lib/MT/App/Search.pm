@@ -312,7 +312,7 @@ sub execute {
         or return $app->errtrans('Unsupported type: [_1]', encode_html($app->{searchparam}{Type}));
 
     my $count = $app->count( $class, $terms, $args );
-    return $app->errtrans("Invalid query.  [_1]", $app->errstr) unless defined $count;
+    return $app->errtrans("Invalid query: [_1]", $app->errstr) unless defined $count;
 
     my $iter = $class->load_iter( $terms, $args )
         or $app->error($class->errstr);
