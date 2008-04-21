@@ -602,7 +602,8 @@ sub query_parse {
     }
 
     require Lucene::QueryParser;
-    my $lucene_struct = Lucene::QueryParser::parse_query( $search );
+    my $lucene_struct = eval { Lucene::QueryParser::parse_query( $search ); };
+    return if $@;
     my ( $terms, $joins ) = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
     my $return = {
         $terms && @$terms ? (terms => $terms) : ()
