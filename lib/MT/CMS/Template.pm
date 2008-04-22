@@ -456,9 +456,6 @@ sub edit {
     $param->{link_doc} = $app->help_url('appendices/tags/');
 
     $param->{screen_id} = "edit-template-" . $param->{type};
-    if (("custom" eq $param->{type}) || ("custom" eq $param->{type})) {
-        $param->{screen_class} .= "edit-template-cache";
-    }
 
     # template language
     $param->{template_lang} = 'html';

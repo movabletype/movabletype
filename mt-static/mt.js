@@ -577,9 +577,9 @@ function setFilterVal(value) {
 
 function toggleDisable(id, state) {
     var id = DOM.getElement( id );
-    if ((id.disabled && state == 1) || !id)
+    if ((id.disabled && state) || !id)
         return false;
-    else if (!id.disabled && state == 0)
+    else if (!id.disabled && !state)
         return false;
     if ( !id.disabled )
         id.disabled="disabled";
