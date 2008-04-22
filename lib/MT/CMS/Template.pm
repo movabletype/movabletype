@@ -1177,13 +1177,6 @@ sub add_map {
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
     my $html =
       _generate_map_table( $app, $blog_id, scalar $q->param('template_id') );
-    $app->rebuild(
-        BlogID      => $blog_id,
-        ArchiveType => $at,
-        TemplateMap => $map,
-        TemplateID  => scalar $q->param('template_id'),
-        NoStatic    => 1
-    ) or return $app->publish_error();
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print($html);

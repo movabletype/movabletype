@@ -5,7 +5,7 @@ function doRedirect () {
 <mt:if name="redirect_target">
     window.location='<mt:var name="redirect_target">';
 <mt:else>
-    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id">&type=<mt:var name="build_type">&next=<mt:var name="build_next">&offset=<mt:var name="offset">&limit=<mt:var name="limit">&total=<mt:var name="total">&start_time=<mt:var name="start_time">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&old_previous=<mt:var name="old_previous">&old_next=<mt:var name="old_next"><mt:if name="is_full_screen">&fs=1</mt:if><mt:if name="return_args">&return_args=<mt:var name="return_args" escape="url"></mt:if>';
+    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id">&type=<mt:var name="build_type">&next=<mt:var name="build_next">&offset=<mt:var name="offset">&limit=<mt:var name="limit">&total=<mt:var name="total">&start_time=<mt:var name="start_time">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&old_previous=<mt:var name="old_previous">&old_next=<mt:var name="old_next"><mt:if name="is_full_screen">&fs=1</mt:if><mt:if name="with_indexes">&with_indexes=1</mt:if><mt:if name="no_static">&no_static=1</mt:if><mt:if name="template_id">&template_id=<mt:var name="template_id"></mt:if><mt:if name="return_args">&return_args=<mt:var name="return_args" escape="url"></mt:if>';
 </mt:if>
 }
 setTimeout('doRedirect()', 200);

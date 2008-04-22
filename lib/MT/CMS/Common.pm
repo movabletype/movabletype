@@ -375,6 +375,31 @@ sub save {
         require MT::CMS::Blog;
         return MT::CMS::Blog::start_rebuild_pages($app);
     }
+    elsif ( $type eq 'template' ) {
+        if (   $obj->type eq 'archive'
+            || $obj->type eq 'category'
+            || $obj->type eq 'page'
+            || $obj->type eq 'individual' )
+        {
+            require MT::TemplateMap;
+            my @maps = MT::TemplateMap->load(
+                {
+                    template_id => $obj->id,
+                    build_type  => MT::PublishOption::DYNAMIC()
+                }
+            );
+            my @ats = map { $_->archive_type } @maps;
+            if ($#ats >= 0) {
+                $q->param( 'type', join( ',', @ats ) );
+                $q->param( 'with_indexes', 1 );
+                $q->param( 'no_static', 1 );
+                $q->param( 'template_id', $obj->id );
+                $q->param( 'single_template', 1 );
+                require MT::CMS::Blog;
+                return MT::CMS::Blog::start_rebuild_pages($app);
+            }
+        }
+    }
     elsif ( $type eq 'blog' ) {
         return $app->redirect(
             $app->uri(

@@ -584,6 +584,10 @@ sub rebuild_pages {
     my $offset = 0;
     my ($total) = $q->param('total');
 
+    my $with_indexes = $q->param('with_indexes');
+    my $no_static = $q->param('no_static');
+    my $template_id = $q->param('template_id');
+
     my ($tmpl_saved);
 
     # Make sure errors go to a sensible place when in fs mode
@@ -697,12 +701,14 @@ sub rebuild_pages {
                     return time - $start > 20 ? 0 : 1;
                 };
                 $app->rebuild(
-                    BlogID         => $blog_id,
-                    ArchiveType    => $type,
-                    NoIndexes      => 1,
+                    BlogID      => $blog_id,
+                    ArchiveType => $type,
+                    !$with_indexes ? ( NoIndexes => 1 ) : (),
                     Offset         => $offset,
                     Limit          => $app->config->EntriesPerRebuild,
                     FilterCallback => $cb,
+                    $no_static ? ( NoStatic   => 1 )            : (),
+                    $template_id ? ( TemplateID => $template_id ) : (),
                 ) or return $app->publish_error();
                 $offset += $count;
             }
@@ -803,6 +809,9 @@ sub rebuild_pages {
             is_new          => scalar $q->param('is_new'),
             old_status      => scalar $q->param('old_status'),
             is_full_screen  => scalar $q->param('fs'),
+            with_indexes    => scalar $q->param('with_indexes'),
+            no_static       => scalar $q->param('no_static'),
+            template_id     => scalar $q->param('template_id'),
             return_args     => scalar $q->param('return_args')
         );
         $app->load_tmpl( 'rebuilding.tmpl', \%param );
@@ -907,6 +916,10 @@ sub start_rebuild_pages {
     $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
     my $blog_id = $q->param('blog_id');
 
+    my $with_indexes   = $q->param('with_indexes');
+    my $no_static      = $q->param('no_static');
+    my $template_id    = $q->param('template_id');
+
     if ($archiver) {
         if ( $archiver->entry_based || $archiver->date_based ) {
             my $entry_class = $archiver->entry_class || 'entry';
@@ -952,6 +965,9 @@ sub start_rebuild_pages {
         complete        => 0,
         incomplete      => 100,
         build_type_name => $archive_label,
+        with_indexes    => $with_indexes,
+        no_static       => $no_static,
+        template_id     => $template_id,
         return_args     => $app->return_args
     );
 
