@@ -449,7 +449,7 @@ class MT {
             // 404!
             $this->http_error = 404;
             header("HTTP/1.1 404 Not found");
-            return $ctx->error("Page not found - $path", E_USER_ERROR);
+            return $ctx->error($this->translate("Page not found - [_1]", $path), E_USER_ERROR);
         }
 
         $info =& $data['fileinfo'];
@@ -521,7 +521,7 @@ class MT {
                     // 404
                     $this->http_errr = 404;
                     header("HTTP/1.1 404 Not Found");
-                    return $ctx->error("Page not found - $at", E_USER_ERROR);
+                    return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
                 }
                 $archiver = $_archivers[$at];
                 $archiver->template_params($ctx);
@@ -697,8 +697,14 @@ class MT {
 
     function error_handler($errno, $errstr, $errfile, $errline) {
         if ($errno & (E_ALL ^ E_NOTICE)) {
-            $errstr = htmlentities($errstr);
-            $errfile = htmlentities($errfile);
+            if (version_compare(phpversion(), '4.3.0', '>=')) {
+                $charset = $this->config('PublishCharset');
+                $errstr = htmlentities($errstr, ENT_COMPAT, $charset);
+                $errfile = htmlentities($errfile, ENT_COMPAT, $charset);
+            } else {
+                $errstr = htmlentities($errstr, ENT_COMPAT);
+                $errfile = htmlentities($errfile, ENT_COMPAT);
+            }
             $mtphpdir = $this->config('PHPDir');
             $ctx =& $this->context();
             $ctx->stash('blog_id', $this->blog_id);
