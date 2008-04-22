@@ -1412,7 +1412,7 @@ sub build_template_table {
           if $row->{name} eq '';
         my $published_url = $tmpl->published_url;
         $row->{published_url} = $published_url if $published_url;
-        $row->{use_cache} = $obj->use_cache ? 1 : 0;
+        $row->{use_cache} = $tmpl->use_cache ? 1 : 0;
 
         # FIXME: enumeration of types
         $row->{can_delete} = 1
