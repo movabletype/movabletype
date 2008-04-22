@@ -18,6 +18,7 @@ $js .= `cat tmpl/cms/edit_entry.tmpl`;
 $js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
 $js .= `cat tmpl/cms/list_tag.tmpl`;
 $js .= `cat tmpl/cms/include/calendar.tmpl`;
+$js .= `cat tmpl/cms/include/category_selector.tmpl`;
 
 my $addon_path = File::Spec->catdir( 'addons' );
 local *DH;
@@ -75,7 +76,7 @@ foreach my $lang (qw(ja de nl fr es)) {
 
     $js =~ s/\\'/\t\t/g;
     my %lexicon;
-    while ($js =~ m/trans\((["'])([^\1|\\\1]+?)\1/g) {
+    while ($js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g) {
         my $str = $2;
         $str =~ s/\t\t/'/g;
         my $local = $lex->{$str} || $str;
