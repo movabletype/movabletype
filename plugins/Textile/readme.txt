@@ -1,13 +1,13 @@
 Textile Text Formatter
 A plugin for Movable Type
 
-Release 2.0.3
-February 17, 2004
+Release 2.05
+April 22, 2008
 
 
 Brad Choate
 http://www.bradchoate.com/
-Copyright (c) 2003-2007, Brad Choate
+Copyright (c) 2003-2008, Brad Choate
 
 
 ===========================================================================

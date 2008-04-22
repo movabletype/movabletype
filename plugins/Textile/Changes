@@ -1,3 +1,5 @@
+2.05 - Changed help URLs to point to new home for docs at movabletype.org.
+
 2.0.3 - Updated for bundling with MT.
 
 2.0.2 - Removed Encode package usage altogether until compatability

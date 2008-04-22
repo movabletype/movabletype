@@ -2,7 +2,7 @@
 # MT-Textile Text Formatter
 # A plugin for Movable Type
 #
-# Release 2.0.2
+# Release 2.05
 #
 # Brad Choate
 # http://www.bradchoate.com/
@@ -11,7 +11,7 @@
 # You may use it for commercial or personal use.
 # If you distribute it, please keep this notice intact.
 #
-# Copyright (c) 2003-2004 Brad Choate
+# Copyright (c) 2003-2008 Brad Choate
 # ---------------------------------------------------------------------------
 # $Id$
 # ---------------------------------------------------------------------------
@@ -22,7 +22,7 @@ use strict;
 use MT;
 use base qw( MT::Plugin );
 
-our $VERSION = 2.04;
+our $VERSION = 2.05;
 our ($_initialized, $Have_SmartyPants);
 
 MT->add_plugin(__PACKAGE__->new({
@@ -36,7 +36,7 @@ MT->add_plugin(__PACKAGE__->new({
             textile_2 => {
                 label => "Textile 2",
                 code => \&textile_2,
-                docs => "http://www.bradchoate.com/mt/docs/mtmanual_textile2.html",
+                docs => "http://www.movabletype.org/documentation/author/textile-2-syntax.html",
             },
         },
         tags => {
@@ -55,7 +55,6 @@ MT->add_plugin(__PACKAGE__->new({
 sub _init {
     require Text::Textile;
     @MT::Textile::ISA = qw(Text::Textile);
-    #$Have_Encode = eval 'use Encode; 1;' ? 1 : 0;
     $Have_SmartyPants = defined &SmartyPants::SmartyPants ? 1 : 0;
     $_initialized = 1;
 }
@@ -88,9 +87,6 @@ sub textile_2 {
 
     require MT::I18N;
     $str = MT::I18N::encode_text( $str, MT->instance->config->PublishCharset, 'utf-8' );
-    #if (my $charset = $textile->charset) {
-    #    $str = Encode::decode($charset, $str) if $Have_Encode;
-    #}
 
     $str = $textile->process($str);
 
@@ -111,11 +107,6 @@ sub textile_2 {
     }
 
     $str = MT::I18N::encode_text( $str, 'utf-8', MT->instance->config->PublishCharset );
-    # translate from utf8 characters back to 
-    # bytes, as MT expects...
-    #if (my $charset = $textile->charset) {
-    #    $str = Encode::encode($charset, $str) if $Have_Encode;
-    #}
 
     $str;
 }
@@ -139,10 +130,7 @@ sub _new_textile {
         $textile->char_encoding(0);
     }
 
-#    if ($cfg->PublishCharset) {
-#        $textile->charset($cfg->PublishCharset);
-#    }
-        $textile->charset('utf-8');
+    $textile->charset('utf-8');
 
     $textile;
 }
