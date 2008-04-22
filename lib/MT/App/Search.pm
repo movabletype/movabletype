@@ -156,6 +156,12 @@ sub generate_cache_keys {
 sub init_cache_driver {
     my $app = shift;
 
+    unless ( $app->config->SearchCacheTTL ) {
+        require MT::Cache::Null;
+        $app->{cache_driver} = MT::Cache::Null->new;
+        return;
+    }
+
     my $registry = $app->registry( $app->mode, 'cache_driver' );
     my $cache_driver = $registry->{'package'} || 'MT::Cache::Negotiate';
     eval "require $cache_driver;";
