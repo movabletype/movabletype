@@ -329,17 +329,6 @@ function setRebuild(f) {
     f['rebuild'].value = 'Y';
 }
 
-function toggleAutoRebuild (t) {
-    o = getByID('rebuild_me');
-    if (o) {
-        if (t.checked) {
-            o.disabled = true;
-        } else {
-            o.disabled = false;
-        }
-    }
-}
-
 function validate (f, rebuild) {
     if (f.name && !f.name.value) {
         alert('<__trans phrase="You must set the Template Name." escape="js">');
@@ -663,7 +652,7 @@ TC.attachLoadEvent( init );
                     </select>
         </mt:ignore>
                 </mt:if>
-                <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if><mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
+                <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
                 <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
             </select>
         </mtapp:setting>
