@@ -647,7 +647,6 @@ TC.attachLoadEvent( init );
             help_page="templates"
             help_section="enable_dynamic_publishing">
             <select name="build_type" id="build-type" class="full-width">
-                <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
                 <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically"></option>
                 <option value="3"<mt:if name="build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
                 <mt:if name="publish_queue_available">
@@ -665,6 +664,7 @@ TC.attachLoadEvent( init );
         </mt:ignore>
                 </mt:if>
                 <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if><mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
+                <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
             </select>
         </mtapp:setting>
     </mt:if>
