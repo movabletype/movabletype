@@ -605,7 +605,6 @@ sub rebuild_pages {
         }
     }
 
-    # FIXME: Wrap the entire rebuild operation with begin/end callbacks
     if ( $type eq 'all' ) {
         return $app->error( $app->translate("Permission denied.") )
           unless $perms->can_rebuild;
