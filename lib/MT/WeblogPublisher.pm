@@ -217,6 +217,7 @@ sub rebuild {
                             Category    => $cat,
                             ArchiveType => $at,
                             NoStatic    => $param{NoStatic},
+                            Force       => ($param{Force} ? 1 : 0),
                             $param{TemplateMap}
                             ? ( TemplateMap => $param{TemplateMap} )
                             : (),
@@ -241,7 +242,8 @@ sub rebuild {
                                   $param{TemplateID} )
                             : (),
                             NoStatic => $param{NoStatic},
-                            Author   => $entry->author
+                            Force    => ($param{Force} ? 1 : 0),
+                            Author   => $entry->author,
                         ) or return;
                     }
                 }
@@ -257,7 +259,8 @@ sub rebuild {
                         ? ( TemplateID =>
                               $param{TemplateID} )
                         : (),
-                        NoStatic => $param{NoStatic}
+                        NoStatic => $param{NoStatic},
+                        Force    => ($param{Force} ? 1 : 0),
                     ) or return;
                 }
             }
@@ -303,6 +306,7 @@ sub rebuild_categories {
             ? ( TemplateMap => $param{TemplateMap} )
             : (),
             NoStatic => $param{NoStatic},
+            Force    => ($param{Force} ? 1 : 0),
         ) or return;
     }
     1;
@@ -351,6 +355,7 @@ sub rebuild_authors {
             ? ( TemplateMap => $param{TemplateMap} )
             : (),
             NoStatic => $param{NoStatic},
+            Force    => ($param{Force} ? 1 : 0),
         ) or return;
     }
     1;
@@ -403,6 +408,7 @@ sub rebuild_entry {
                         ArchiveType => $at,
                         Category    => $cat,
                         NoStatic    => $param{NoStatic},
+                        # Force       => ($param{Force} ? 1 : 0),
                         $param{TemplateMap}
                         ? ( TemplateMap => $param{TemplateMap} )
                         : (),
@@ -418,6 +424,7 @@ sub rebuild_entry {
                     ? ( TemplateMap => $param{TemplateMap} )
                     : (),
                     NoStatic => $param{NoStatic},
+                    # Force    => ($param{Force} ? 1 : 0),
                     Author   => $entry->author,
                 ) or return;
             }
@@ -486,6 +493,7 @@ sub rebuild_entry {
                         }) ) {
                             $mt->_rebuild_entry_archive_type(
                                 NoStatic => $param{NoStatic},
+                                # Force    => ($param{Force} ? 1 : 0),
                                 Entry    => $prev_arch,
                                 Blog     => $blog,
                                 Category => $cat,
@@ -501,6 +509,7 @@ sub rebuild_entry {
                         }) ) {
                             $mt->_rebuild_entry_archive_type(
                                 NoStatic => $param{NoStatic},
+                                # Force    => ($param{Force} ? 1 : 0),
                                 Entry    => $next_arch,
                                 Blog     => $blog,
                                 Category => $cat,
@@ -518,6 +527,7 @@ sub rebuild_entry {
                     }) ) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => $param{NoStatic},
+                            # Force       => ($param{Force} ? 1 : 0),
                             Entry       => $prev_arch,
                             Blog        => $blog,
                             ArchiveType => $at,
@@ -533,6 +543,7 @@ sub rebuild_entry {
                     }) ) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => $param{NoStatic},
+                            # Force       => ($param{Force} ? 1 : 0),
                             Entry       => $next_arch,
                             Blog        => $blog,
                             ArchiveType => $at,
@@ -588,6 +599,7 @@ sub rebuild_archives {
                     for my $key (keys %{$recip->{$at}->{$cat_id}}) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
+                            Force       => ($param{Force} ? 1 : 0),
                             Blog        => $blog,
                             Category    => $cat,
                             ArchiveType => $at,
@@ -599,6 +611,7 @@ sub rebuild_archives {
                 } else {
                     $mt->_rebuild_entry_archive_type(
                         NoStatic    => 0,
+                        Force       => ($param{Force} ? 1 : 0),
                         Blog        => $blog,
                         Category    => $cat,
                         ArchiveType => $at,
@@ -615,6 +628,7 @@ sub rebuild_archives {
                     for my $key (keys %{$recip->{$at}->{$auth_id}}) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
+                            Force       => ($param{Force} ? 1 : 0),
                             Blog        => $blog,
                             Author      => $author,
                             ArchiveType => $at,
@@ -626,6 +640,7 @@ sub rebuild_archives {
                 } else {
                     $mt->_rebuild_entry_archive_type(
                         NoStatic    => 0,
+                        Force       => ($param{Force} ? 1 : 0),
                         Blog        => $blog,
                         Author      => $author,
                         ArchiveType => $at,
@@ -637,6 +652,7 @@ sub rebuild_archives {
             for my $key (keys %{$recip->{$at}}) {
                 $mt->_rebuild_entry_archive_type(
                     NoStatic    => 0,
+                    Force       => ($param{Force} ? 1 : 0),
                     Blog        => $blog,
                     ArchiveType => $at,
                     Start       => $recip->{$at}->{$key}->{Start},
@@ -651,6 +667,7 @@ sub rebuild_archives {
                     or next;
                 $mt->_rebuild_entry_archive_type(
                     NoStatic    => 0,
+                    Force       => ($param{Force} ? 1 : 0),
                     Entry       => $entry,
                     Blog        => $blog,
                     ArchiveType => $at,
@@ -781,6 +798,8 @@ sub _rebuild_entry_archive_type {
     ## file template.
     require MT::Template;
     for my $map (@map) {
+        next unless $map->build_type; # ignore disabled template maps
+
         $mt->rebuild_file(
             $blog, $arch_root, $map, $at, $ctx, \%cond,
             !$param{NoStatic},
@@ -789,6 +808,7 @@ sub _rebuild_entry_archive_type {
             Author    => $param{Author},
             StartDate => $start,
             EndDate   => $end,
+            Force     => $param{Force} ? 1 : 0,
         ) or return;
         $done->{ $map->{__saved_output_file} }++;
     }
@@ -797,23 +817,23 @@ sub _rebuild_entry_archive_type {
 
 sub rebuild_file {
     my $mt = shift;
-    my ( $blog, $root_path, $map, $at, $ctx, $cond, $build_static, %specifier )
+    my ( $blog, $root_path, $map, $at, $ctx, $cond, $build_static, %args )
       = @_;
 
     my $finfo;
     my $archiver = $mt->archiver($at);
     my ( $entry, $start, $end, $category, $author );
 
-    if ( $finfo = $specifier{FileInfo} ) {
-        $specifier{Author}   = $finfo->author_id   if $finfo->author_id;
-        $specifier{Category} = $finfo->category_id if $finfo->category_id;
-        $specifier{Entry}    = $finfo->entry_id    if $finfo->entry_id;
+    if ( $finfo = $args{FileInfo} ) {
+        $args{Author}   = $finfo->author_id   if $finfo->author_id;
+        $args{Category} = $finfo->category_id if $finfo->category_id;
+        $args{Entry}    = $finfo->entry_id    if $finfo->entry_id;
         $map ||= MT::TemplateMap->load( $finfo->templatemap_id );
         $at  ||= $finfo->archive_type;
         if ( $finfo->startdate ) {
             if ( my ( $start, $end ) = $archiver->date_range($finfo->startdate) ) {
-                $specifier{StartDate} = $start;
-                $specifier{EndDate}   = $end;
+                $args{StartDate} = $start;
+                $args{EndDate}   = $end;
             }
         }
     }
@@ -834,16 +854,16 @@ sub rebuild_file {
     }
 
     if ( $archiver->category_based ) {
-        $category = $specifier{Category};
+        $category = $args{Category};
         die "Category archive type requires Category parameter"
-          unless $specifier{Category};
+          unless $args{Category};
         $category = MT::Category->load($category)
           unless ref $category;
         $ctx->var( 'category_archive', 1 );
         $ctx->{__stash}{archive_category} = $category;
     }
     if ( $archiver->entry_based ) {
-        $entry = $specifier{Entry};
+        $entry = $args{Entry};
         die "$at archive type requires Entry parameter"
           unless $entry;
         require MT::Entry;
@@ -853,18 +873,18 @@ sub rebuild_file {
     }
     if ( $archiver->date_based ) {
         # Date-based archive type
-        $start = $specifier{StartDate};
-        $end   = $specifier{EndDate};
+        $start = $args{StartDate};
+        $end   = $args{EndDate};
         Carp::confess("Date-based archive types require StartDate parameter")
-          unless $specifier{StartDate};
+          unless $args{StartDate};
         $ctx->var( 'datebased_archive', 1 );
     }
     if ( $archiver->author_based ) {
 
         # author based archive type
-        $author = $specifier{Author};
+        $author = $args{Author};
         die "Author-based archive type requires Author parameter"
-          unless $specifier{Author};
+          unless $args{Author};
         require MT::Author;
         $author = MT::Author->load($author)
           unless ref $author;
@@ -1003,6 +1023,7 @@ sub rebuild_file {
 
     return 1 if ( $tmpl->build_dynamic );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
+    return 1 unless ( $tmpl->build_type );
 
     my $timer = MT->get_timer;
     if ($timer) {
@@ -1034,9 +1055,11 @@ sub rebuild_file {
             period_start => $start,
             Category     => $category,
             category     => $category,
+            force        => ($args{Force} ? 1 : 0),
         )
       )
     {
+
         if ( $archiver->group_based ) {
             require MT::Promise;
             my $entries = sub { $archiver->archive_group_entries($ctx) };
@@ -1219,6 +1242,8 @@ sub rebuild_indexes {
             }
         );
     }
+    my $force = $param{Force};
+
     local *FH;
     my $site_root = $blog->site_path;
     return $mt->error(
@@ -1234,9 +1259,11 @@ sub rebuild_indexes {
         ## was the previous behavior.
         ## Note that dynamic templates do need to be "rebuilt"--the
         ## FileInfo table needs to be maintained.
-        if ( !$tmpl->build_dynamic && !$param{Force} ) {
+        if ( !$tmpl->build_dynamic && !$force ) {
             next if ( defined $tmpl->rebuild_me && !$tmpl->rebuild_me );
         }
+        next if ( defined $tmpl->build_type && !$tmpl->build_type );
+
         my $file = $tmpl->outfile;
         $file = '' unless defined $file;
         if ( $tmpl->build_dynamic && ( $file eq '' ) ) {
@@ -1297,6 +1324,7 @@ sub rebuild_indexes {
         }
 
         next if ( $tmpl->build_dynamic );
+        next unless ( $tmpl->build_type );
 
         ## We're not building dynamically, so if the FileInfo is currently
         ## set as dynamic (virtual), change it to static.
@@ -1327,7 +1355,8 @@ sub rebuild_indexes {
                 Template     => $tmpl,
                 template     => $tmpl,
                 File         => $file,
-                file         => $file
+                file         => $file,
+                force        => $force,
             )
           );
         $ctx->stash( 'blog', $blog );
@@ -1777,7 +1806,18 @@ sub queue_build_file_filter {
 
     require MT::PublishOption;
     my $throttle = MT::PublishOption::get_throttle($fi);
+
+    # Prevent building of disabled templates if they get this far
     return 0 if $throttle->{type} == MT::PublishOption::DISABLED();
+
+    # Check for 'force' flag for 'manual' publish option, which
+    # forces the template to build; used for 'rebuild' list actions
+    # and publish site operations
+    if ($throttle->{type} == MT::PublishOption::MANUALLY()) {
+        return $args{force} ? 1 : 0;
+    }
+
+    # From here on, we're committed to publishing this file via TheSchwartz
     return 1 if $throttle->{type} != MT::PublishOption::ASYNC();
 
     require MT::TheSchwartz;
@@ -1984,7 +2024,7 @@ is just to update the bookkeeping that supports dynamic rebuilds.
 
 =back
 
-=head2 $mt->rebuild_file($blog, $archive_root, $map, $archive_type, $ctx, \%cond, $build_static, %specifier)
+=head2 $mt->rebuild_file($blog, $archive_root, $map, $archive_type, $ctx, \%cond, $build_static, %args)
 
 Method responsible for building a single archive page from a template and
 writing it to the file management layer.
@@ -1999,11 +2039,11 @@ I<$build_static> is a boolean flag that controls whether static files are
 created (otherwise, the records necessary for serving dynamic pages are
 created and that is all).
 
-I<%specifier> is a hash that uniquely identifies the specific instance
+I<%args> is a hash that uniquely identifies the specific instance
 of the given archive type. That is, for a category archive page it
 identifies the category; for a date-based archive page it identifies
 which time period is covered by the page; for an individual archive it
-identifies the entry. I<%specifier> should contain just one of these
+identifies the entry. I<%args> should contain just one of these
 keys:
 
 =over 4

@@ -92,8 +92,6 @@ sub edit {
           && $param->{type} ne 'custom'
           && $param->{type} ne 'widget'
           && !$param->{is_special};
-        $param->{rebuild_me} =
-          defined $obj->rebuild_me ? $obj->rebuild_me : 1;
         $param->{search_label} = $app->translate('Templates');
         $param->{object_type}  = 'template';
         my $published_url = $obj->published_url;
@@ -372,7 +370,6 @@ sub edit {
           && $param->{type} ne 'widget'
           && !$param->{is_special};
 
-        $param->{rebuild_me} = 1;
         $param->{name}       = MT::Util::decode_url( $app->param('name') )
           if $app->param('name');
     }
@@ -1453,8 +1450,17 @@ sub dialog_publishing_profile {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $param = {};
     my $blog = $app->blog;
+    $app->assert( $blog ) or return;
+
+    # permission check
+    my $perms = $app->permissions;
+    return $app->errtrans("Permission denied.")
+        unless $app->user->is_superuser ||
+            $perms->can_administer_blog ||
+            $perms->can_edit_templates;
+
+    my $param = {};
     $param->{dynamicity} = $blog->custom_dynamic_templates || 'none';
     $param->{screen_id} = "publishing-profile-dialog";
     $param->{return_args} = $app->param('return_args');
@@ -1707,7 +1713,7 @@ sub refresh_all_templates {
                         type       => $val->{type},
                         identifier => $val->{identifier},
                         outfile    => $val->{outfile},
-                        rebuild_me => $val->{rebuild_me}
+                        rebuild_me => $val->{rebuild_me},
                     }
                 );
                 $tmpl->blog_id($blog_id);
@@ -1897,9 +1903,12 @@ sub publish_index_templates {
     TEMPLATE: for my $tmpl (@$templates) {
         next TEMPLATE if !defined $tmpl;
         next TEMPLATE if $tmpl->blog_id != $blog->id;
+        next TEMPLATE unless $tmpl->build_type;
+
         $app->rebuild_indexes(
             Blog     => $blog,
             Template => $tmpl,
+            Force    => 1,
         );
     }
 
@@ -1920,16 +1929,20 @@ sub publish_archive_templates {
     my $blog = $app->blog;
     my $templates =
       MT->model('template')->lookup_multi( [ $app->param('id') ] );
-    use MT::TemplateMap;
+    require MT::TemplateMap;
+    # FIXME: Need multi-request support!
     TEMPLATE: for my $tmpl (@$templates) {
         next TEMPLATE if !defined $tmpl;
         next TEMPLATE if $tmpl->blog_id != $blog->id;
         my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl->id } );
         foreach my $map (@tmpl_maps) {
+            next unless $map->build_type;
             $app->rebuild(
-                BlogID      => $blog->id,
+                Blog        => $blog,
                 ArchiveType => $map->archive_type,
+                TemplateMap => $map,
                 NoIndexes   => 1,
+                Force       => 1,
             );
         }
     }
