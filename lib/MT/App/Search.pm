@@ -724,7 +724,7 @@ sub _query_parse_core {
                   ? '-and_not'
                   : '-and';
             }
-            push @structure, $test->[0];
+            push @structure, @$test;
             push @joins, @$more_joins;
             next;
         }
