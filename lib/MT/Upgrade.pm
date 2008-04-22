@@ -892,6 +892,21 @@ sub core_upgrade_functions {
             priority => 3.3,
             code => \&core_upgrade_meta_for_table,
         },
+        'core_replace_file_template_format' => {
+            version_limit => 4.0058,
+            priority => 3.2,
+            updater => {
+                type => 'templatemap',
+                label => 'Replacing %C format to MTCategoryLabel...',
+                code => sub {
+                    my ($map) = shift;
+                    my $file_template = $map->file_template();
+                    $file_template =~ s/%C/<MTCategoryLabel dirify="1">/g;
+                    $file_template =~ s/%-C/<MTCategoryLabel dirify="-">/g;
+                    $map->file_template($file_template);
+                },
+            },
+        },
     };
 }
 
