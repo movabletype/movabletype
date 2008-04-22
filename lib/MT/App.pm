@@ -2394,7 +2394,15 @@ sub takedown {
     }
 
     # save_config here so not to miss any dirty config change to persist
-    $app->config->save_config();
+    if ( UNIVERSAL::isa( $app, 'MT::App::Upgrader' ) ) {
+        # mt_config table doesn't exist during installation
+        if ( $driver->table_exists('MT::Config') ) {
+            $app->config->save_config();
+        }
+    }
+    else {
+        $app->config->save_config();
+    }
 
     $app->request->finish;
     delete $app->{request};
