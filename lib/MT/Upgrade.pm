@@ -912,16 +912,69 @@ sub core_upgrade_functions {
 
 sub core_upgrade_meta {
     my $self = shift;
-    # we could possibly determine the list of types to process
-    # programmatically, but this will do...
-    $self->add_step('core_upgrade_meta_for_table', type => 'entry');
-    $self->add_step('core_upgrade_meta_for_table', type => 'author');
-    $self->add_step('core_upgrade_meta_for_table', type => 'blog');
-    $self->add_step('core_upgrade_meta_for_table', type => 'template');
-    $self->add_step('core_upgrade_meta_for_table', type => 'asset');
-    $self->add_step('core_upgrade_meta_for_table', type => 'category',
-        plugindata => 1);
+    my $types = MT->registry('object_types');
+    my %added_step;
+    TYPE: while (my ($type, $reg_class) = each %$types) {
+        next TYPE if $type eq 'plugin' && ref $reg_class;  # plugin reference
+
+        my $class = MT->model($type);
+        next TYPE if !$class->has_meta();  # nothing to upgrade
+
+        next TYPE if $added_step{$class->datasource};  # already got that one
+
+        my $class_type = $class->properties->{class_type};
+        if ($class_type && $class_type ne $class->datasource) {
+            if (my $super_class = MT->model($class->datasource)) {
+                $class = $super_class
+                    if $super_class->datasource eq $class->datasource;
+            }
+            # If there's no appropriate superclass, go to update with the class
+            # we have, not the class we want.
+        }
+
+        my %step_param = ( type => $type );
+        $step_param{plugindata} = 1 if $type eq 'category';
+        $step_param{meta_column} = $class->properties->{meta_column}
+            if $class->properties->{meta_column};
+        $self->add_step('core_upgrade_meta_for_table', %step_param);
+        $added_step{$class->datasource} = 1;
+    }
     return 0;
+}
+
+sub _save_meta {
+    my $self = shift;
+    my ($obj, $type, $value) = @_;
+
+    my $meta_obj = $obj->meta_pkg->new;
+
+    my @class_keys = @{ $obj->primary_key_tuple };
+    my @meta_keys  = @{ $meta_obj->primary_key_tuple };
+    for my $i (0..$#class_keys) {
+        my $class_field = $class_keys[$i];
+        my $meta_field  = $meta_keys[$i];
+        $meta_obj->$meta_field($obj->$class_field());
+    }
+
+    # Set the type without checking if it's defined, unlike real meta().
+    $meta_obj->type($type);
+
+    # Does this meta type have a data type defined?
+    my $datatype;
+    if (my $field = MT::Meta->metadata_by_name(ref $obj || $obj, $type)) {
+        if (my $type_id = $field->{type_id}) {
+            $datatype = $MT::Meta::Types{$type_id};
+        }
+    }
+    $datatype ||= 'vblob';
+
+    $meta_obj->$datatype($value);
+
+    my $meta_col_def = $meta_obj->column_def($datatype);
+    my $meta_is_blob = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
+    MT::Meta::Proxy::serialize_blob(undef, $meta_obj) if $meta_is_blob;
+    $meta_obj->save();
+    MT::Meta::Proxy::unserialize_blob($meta_obj) if $meta_is_blob;
 }
 
 sub core_upgrade_meta_for_table {
@@ -957,7 +1010,7 @@ sub core_upgrade_meta_for_table {
     my $offset = int($param{offset} || 0);
     my $count = int($param{count} || 0);
 
-    my $pid = $param{step} . "_type";
+    my $pid = join q{:}, $param{step} . "_type", $class;
 
     my $msg = MT->translate("Upgrading metadata storage for [_1]", $class->class_label_plural);
 
@@ -981,15 +1034,14 @@ sub core_upgrade_meta_for_table {
     my $id_col = $dbd->db_column_name($class->datasource, 'id');
     $stmt->add_where( $meta_col => { not_null => 1 } );
     $stmt->limit( 101 );
-    $stmt->offset( $offset ) if $offset;
 
     my $sql = join ' ', 'SELECT', $meta_col, ',', $id_col, 'FROM',
         $driver->table_for($class),
         $stmt->as_sql_where(),
         $stmt->as_limit;
 
-    my $sth = $dbh->prepare($sql)
-        or return 0; # ignore this operation if _meta column doesn't exist
+    my $sth = $dbh->prepare($sql);
+    return 0 if !$sth; # ignore this operation if _meta column doesn't exist
     $sth->execute
         or return $self->error($dbh->errstr || $DBI::errstr);
 
@@ -1027,21 +1079,23 @@ sub core_upgrade_meta_for_table {
                                 next unless $fld;
 
                                 $changed++;
-                                $obj->meta('field.' . $cfname, $cfvalue);
+                                $self->_save_meta($obj, 'field.' . $cfname, $cfvalue);
                             }
                         } else {
                             $changed++;
-                            $obj->meta($metaname, $metavalue);
+                            $self->_save_meta($obj, $metaname, $metavalue);
                         }
                     }
                     if ($changed) {
-                        $obj->save if $changed;
                         push @ids, $obj->id;
                     }
                 }
             }
         }
         last if $rows == 100;
+    }
+    if ($rows == 100 && $sth->fetchrow_arrayref) {
+        $rows++;
     }
     $sth->finish;
 
@@ -1059,6 +1113,7 @@ sub core_upgrade_meta_for_table {
         # done, so lets drop that meta column, what say you?
         $sql = $dbd->ddl_class->drop_column_sql($class, $param{meta_column} || 'meta');
         $dbh->do($sql);
+        $self->progress($msg . ' (100%)', $pid);
         $offset = 0;  # done!
     }
     return $offset;
