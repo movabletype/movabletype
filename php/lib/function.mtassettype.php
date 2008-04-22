@@ -12,4 +12,14 @@ function smarty_function_mtassettype($args, &$ctx) {
     global $mt;
     return $mt->translate($asset['asset_class']);
 }
+/*
+ * translate('image')
+ * translate('Image')
+ * translate('file')
+ * translate('File')
+ * translate('audio')
+ * translate('Audio')
+ * translate('video')
+ * translate('Video')
+ * /
 ?>
