@@ -1259,30 +1259,32 @@ sub rebuild_indexes {
         ## Untaint. We have to assume that we can trust the user's setting of
         ## the site_path and the template outfile.
         ($file) = $file =~ /(.+)/s;
-        my $finfo;
-        require MT::FileInfo;
-        my @finfos = MT::FileInfo->load(
-            {
-                blog_id     => $tmpl->blog_id,
-                template_id => $tmpl->id
-            }
-        );
-        if (   ( scalar @finfos == 1 )
-            && ( $finfos[0]->file_path eq $file )
-            && ( ( $finfos[0]->url || '' ) eq $rel_url ) )
-        {
-            $finfo = $finfos[0];
-        }
-        else {
-            foreach (@finfos) { $_->remove(); }
-            $finfo = MT::FileInfo->set_info_for_url(
-                $rel_url, $file, 'index',
+        my $finfo = $param{FileInfo};  # available for single template calls
+        unless ( $finfo ) {
+            require MT::FileInfo;
+            my @finfos = MT::FileInfo->load(
                 {
-                    Blog     => $tmpl->blog_id,
-                    Template => $tmpl->id,
+                    blog_id     => $tmpl->blog_id,
+                    template_id => $tmpl->id
                 }
-              )
-              || die "Couldn't create FileInfo because " . MT::FileInfo->errstr;
+            );
+            if (   ( scalar @finfos == 1 )
+                && ( $finfos[0]->file_path eq $file )
+                && ( ( $finfos[0]->url || '' ) eq $rel_url ) )
+            {
+                $finfo = $finfos[0];
+            }
+            else {
+                foreach (@finfos) { $_->remove(); }
+                $finfo = MT::FileInfo->set_info_for_url(
+                    $rel_url, $file, 'index',
+                    {
+                        Blog     => $tmpl->blog_id,
+                        Template => $tmpl->id,
+                    }
+                  )
+                  || die "Couldn't create FileInfo because " . MT::FileInfo->errstr;
+            }
         }
         if ( $tmpl->build_dynamic ) {
             rename( $file, $file . ".static" );
@@ -1451,6 +1453,7 @@ sub rebuild_from_fileinfo {
         $pub->rebuild_indexes(
             BlogID   => $fi->blog_id,
             Template => MT::Template->load( $fi->template_id ),
+            FileInfo => $fi,
             Force    => 1,
         ) or return;
         return 1;
@@ -1774,8 +1777,8 @@ sub queue_build_file_filter {
 
     require MT::PublishOption;
     my $throttle = MT::PublishOption::get_throttle($fi);
-    return 1 if $throttle->{type} != MT::PublishOption::ASYNC();
     return 0 if $throttle->{type} == MT::PublishOption::DISABLED();
+    return 1 if $throttle->{type} != MT::PublishOption::ASYNC();
 
     require MT::TheSchwartz;
     require TheSchwartz::Job;
