@@ -1,6 +1,7 @@
 package MT::CMS::Search;
 
 use strict;
+use MT::Util qw( is_valid_date );
 
 sub core_search_apis {
     my $app = shift;
