@@ -1,10 +1,8 @@
 package URI::Heuristic;
 
-# $Id: Heuristic.pm,v 4.13 2002/01/16 23:26:09 gisle Exp $
-
 =head1 NAME
 
-uf_uristr - Expand URI using heuristics
+URI::Heuristic - Expand URI using heuristics
 
 =head1 SYNOPSIS
 
@@ -18,9 +16,9 @@ uf_uristr - Expand URI using heuristics
 =head1 DESCRIPTION
 
 This module provides functions that expand strings into real absolute
-URIs using some builtin heuristics.  Strings that already represent
-absolute URIs (i.e. start with a C<scheme:> part) are never modified
-and are returned unchanged.  The main use of these functions are to
+URIs using some built-in heuristics.  Strings that already represent
+absolute URIs (i.e. that start with a C<scheme:> part) are never modified
+and are returned unchanged.  The main use of these functions is to
 allow abbreviated URIs similar to what many web browsers allow for URIs
 typed in by the user.
 
@@ -30,7 +28,7 @@ The following functions are provided:
 
 =item uf_uristr($str)
 
-The uf_uristr() function will try to make the string passed as argument 
+Tries to make the argument string
 into a proper absolute URI string.  The "uf_" prefix stands for "User 
 Friendly".  Under MacOS, it assumes that any string with a common URL 
 scheme (http, ftp, etc.) is a URL rather than a local path.  So don't name 
@@ -39,28 +37,28 @@ valid file: URL's on those volumes for you, because it won't.
 
 =item uf_uri($str)
 
-This functions work the same way as uf_uristr() but it will
-return a C<URI> object.
+Works the same way as uf_uristr() but
+returns a C<URI> object.
 
 =back
 
 =head1 ENVIRONMENT
 
 If the hostname portion of a URI does not contain any dots, then
-certain qualified guesses will be made.  These guesses are governed be
-the following two environment variables.
+certain qualified guesses are made.  These guesses are governed by
+the following two environment variables:
 
 =over 10
 
 =item COUNTRY
 
-This is the two letter country code (ISO 3166) for your location.  If
+The two-letter country code (ISO 3166) for your location.  If
 the domain name of your host ends with two letters, then it is taken
 to be the default country. See also L<Locale::Country>.
 
 =item URL_GUESS_PATTERN
 
-Contain a space separated list of URL patterns to try.  The string
+Contains a space-separated list of URL patterns to try.  The string
 "ACME" is for some reason used as a placeholder for the host name in
 the URL provided.  Example:
 
@@ -89,17 +87,30 @@ use vars qw(@EXPORT_OK $VERSION $MY_COUNTRY %LOCAL_GUESSING $DEBUG);
 require Exporter;
 *import = \&Exporter::import;
 @EXPORT_OK = qw(uf_uri uf_uristr uf_url uf_urlstr);
-$VERSION = sprintf("%d.%02d", q$Revision: 4.13 $ =~ /(\d+)\.(\d+)/);
+$VERSION = "4.18";
 
-eval {
-    require Net::Domain;
-    my $fqdn = Net::Domain::hostfqdn();
-    $MY_COUNTRY = lc($1) if $fqdn =~ /\.([a-zA-Z]{2})$/;
+sub MY_COUNTRY() {
+    for ($MY_COUNTRY) {
+	return $_ if defined;
 
-    # Some other heuristics to guess country?  Perhaps looking
-    # at some environment variable (LANG, LC_ALL, ???)
-    $MY_COUNTRY = $ENV{COUNTRY} if exists $ENV{COUNTRY};
-};
+	# First try the environment.
+	$_ = $ENV{COUNTRY};
+	return $_ if defined;
+
+	# Could use LANG, LC_ALL, etc at this point, but probably too
+	# much of a wild guess.  (Catalan != Canada, etc.)
+	#
+
+	# Last bit of domain name.  This may access the network.
+	require Net::Domain;
+	my $fqdn = Net::Domain::hostfqdn();
+	$_ = lc($1) if $fqdn =~ /\.([a-zA-Z]{2})$/;
+	return $_ if defined;
+
+	# Give up.  Defined but false.
+	return ($_ = 0);
+    }
+}
 
 %LOCAL_GUESSING =
 (
@@ -154,14 +165,14 @@ sub uf_uristr ($)
 		    @guess = map { s/\bACME\b/$host/; $_ }
 		             split(' ', $ENV{URL_GUESS_PATTERN});
 		} else {
-		    if ($MY_COUNTRY) {
-			my $special = $LOCAL_GUESSING{$MY_COUNTRY};
+		    if (MY_COUNTRY()) {
+			my $special = $LOCAL_GUESSING{MY_COUNTRY()};
 			if ($special) {
 			    my @special = @$special;
 			    push(@guess, map { s/\bACME\b/$host/; $_ }
                                                @special);
 			} else {
-			    push(@guess, "www.$host.$MY_COUNTRY");
+			    push(@guess, 'www.$host.' . MY_COUNTRY());
 			}
 		    }
 		    push(@guess, map "www.$host.$_",
@@ -171,9 +182,9 @@ sub uf_uristr ($)
 
 		my $guess;
 		for $guess (@guess) {
-		    print STDERR "uf_uristr: gethostbyname('$guess')..."
+		    print STDERR "uf_uristr: gethostbyname('$guess.')..."
 		      if $DEBUG;
-		    if (gethostbyname($guess)) {
+		    if (gethostbyname("$guess.")) {
 			print STDERR "yes\n" if $DEBUG;
 			$host = $guess;
 			last;

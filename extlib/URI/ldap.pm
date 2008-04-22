@@ -7,140 +7,17 @@ package URI::ldap;
 use strict;
 
 use vars qw(@ISA $VERSION);
-$VERSION = "1.10";
+$VERSION = "1.11";
 
 require URI::_server;
-@ISA=qw(URI::_server);
-
-use URI::Escape qw(uri_unescape);
-
+require URI::_ldap;
+@ISA=qw(URI::_ldap URI::_server);
 
 sub default_port { 389 }
 
-sub _ldap_elem {
-  my $self  = shift;
-  my $elem  = shift;
-  my $query = $self->query;
-  my @bits  = (split(/\?/,defined($query) ? $query : ""),("")x4);
-  my $old   = $bits[$elem];
-
-  if (@_) {
-    my $new = shift;
-    $new =~ s/\?/%3F/g;
-    $bits[$elem] = $new;
-    $query = join("?",@bits);
-    $query =~ s/\?+$//;
-    $query = undef unless length($query);
-    $self->query($query);
-  }
-
-  $old;
-}
-
-sub dn {
-  my $old = shift->path(@_);
-  $old =~ s:^/::;
-  uri_unescape($old);
-}
-
-sub attributes {
-  my $self = shift;
-  my $old = _ldap_elem($self,0, @_ ? join(",", map { my $tmp = $_; $tmp =~ s/,/%2C/g; $tmp } @_) : ());
-  return $old unless wantarray;
-  map { uri_unescape($_) } split(/,/,$old);
-}
-
-sub _scope {
-  my $self = shift;
-  my $old = _ldap_elem($self,1, @_);
-  return unless defined wantarray && defined $old;
-  uri_unescape($old);
-}
-
-sub scope {
-  my $old = &_scope;
-  $old = "base" unless length $old;
-  $old;
-}
-
-sub _filter {
-  my $self = shift;
-  my $old = _ldap_elem($self,2, @_);
-  return unless defined wantarray && defined $old;
-  uri_unescape($old); # || "(objectClass=*)";
-}
-
-sub filter {
-  my $old = &_filter;
-  $old = "(objectClass=*)" unless length $old;
-  $old;
-}
-
-sub extensions {
-  my $self = shift;
-  my @ext;
-  while (@_) {
-    my $key = shift;
-    my $value = shift;
-    push(@ext, join("=", map { $_="" unless defined; s/,/%2C/g; $_ } $key, $value));
-  }
-  @ext = join(",", @ext) if @ext;
-  my $old = _ldap_elem($self,3, @ext);
-  return $old unless wantarray;
-  map { uri_unescape($_) } map { /^([^=]+)=(.*)$/ } split(/,/,$old);
-}
-
-sub canonical
-{
+sub _nonldap_canonical {
     my $self = shift;
-    my $other = $self->SUPER::canonical;
-
-    # The stuff below is not as efficient as one might hope...
-
-    $other = $other->clone if $other == $self;
-
-    $other->dn(_normalize_dn($other->dn));
-
-    # Should really know about mixed case "postalAddress", etc...
-    $other->attributes(map lc, $other->attributes);
-
-    # Lowecase scope, remove default
-    my $old_scope = $other->scope;
-    my $new_scope = lc($old_scope);
-    $new_scope = "" if $new_scope eq "base";
-    $other->scope($new_scope) if $new_scope ne $old_scope;
-
-    # Remove filter if default
-    my $old_filter = $other->filter;
-    $other->filter("") if lc($old_filter) eq "(objectclass=*)" ||
-	                  lc($old_filter) eq "objectclass=*";
-
-    # Lowercase extensions types and deal with known extension values
-    my @ext = $other->extensions;
-    for (my $i = 0; $i < @ext; $i += 2) {
-	my $etype = $ext[$i] = lc($ext[$i]);
-	if ($etype =~ /^!?bindname$/) {
-	    $ext[$i+1] = _normalize_dn($ext[$i+1]);
-	}
-    }
-    $other->extensions(@ext) if @ext;
-    
-    $other;
-}
-
-sub _normalize_dn  # RFC 2253
-{
-    my $dn = shift;
-
-    return $dn;
-    # The code below will fail if the "+" or "," is embedding in a quoted
-    # string or simply escaped...
-
-    my @dn = split(/([+,])/, $dn);
-    for (@dn) {
-	s/^([a-zA-Z]+=)/lc($1)/e;
-    }
-    join("", @dn);
+    $self->URI::_server::canonical(@_);
 }
 
 1;
@@ -172,38 +49,38 @@ URI::ldap - LDAP Uniform Resource Locators
 
 =head1 DESCRIPTION
 
-C<URI::ldap> provides an interface to parse an LDAP URI in its
-constituent parts and also build a URI as described in
+C<URI::ldap> provides an interface to parse an LDAP URI into its
+constituent parts and also to build a URI as described in
 RFC 2255.
 
 =head1 METHODS
 
-C<URI::ldap> support all the generic and server methods defined by
+C<URI::ldap> supports all the generic and server methods defined by
 L<URI>, plus the following.
 
 Each of the following methods can be used to set or get the value in
-the URI. The values are passed in unescaped form.  None of these will
+the URI. The values are passed in unescaped form.  None of these
 return undefined values, but elements without a default can be empty.
-If arguments are given then a new value will be set for the given part
+If arguments are given, then a new value is set for the given part
 of the URI.
 
 =over 4
 
 =item $uri->dn( [$new_dn] )
 
-Set or get the I<Distinguised Name> part of the URI.  The DN
+Sets or gets the I<Distinguished Name> part of the URI.  The DN
 identifies the base object of the LDAP search.
 
 =item $uri->attributes( [@new_attrs] )
 
-Set or get the list of attribute names which will be
+Sets or gets the list of attribute names which are
 returned by the search.
 
 =item $uri->scope( [$new_scope] )
 
-Set or get the scope that the search will use. The value can be one of
+Sets or gets the scope to be used by the search. The value can be one of
 C<"base">, C<"one"> or C<"sub">. If none is given in the URI then the
-return value will default to C<"base">.
+return value defaults to C<"base">.
 
 =item $uri->_scope( [$new_scope] )
 
@@ -211,8 +88,8 @@ Same as scope(), but does not default to anything.
 
 =item $uri->filter( [$new_filter] )
 
-Set or get the filter that the search will use. If none is given in
-the URI then the return value will default to C<"(objectClass=*)">.
+Sets or gets the filter to be used by the search. If none is given in
+the URI then the return value defaults to C<"(objectClass=*)">.
 
 =item $uri->_filter( [$new_filter] )
 
@@ -220,9 +97,9 @@ Same as filter(), but does not default to anything.
 
 =item $uri->extensions( [$etype => $evalue,...] )
 
-Set or get the extensions used for the search. The list passed should
+Sets or gets the extensions used for the search. The list passed should
 be in the form etype1 => evalue1, etype2 => evalue2,... This is also
-the form of list that will be returned.
+the form of list that is returned.
 
 =back
 

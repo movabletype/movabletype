@@ -55,7 +55,8 @@ sub data
 	$self->opaque("$enc,$new");
     }
     return unless defined wantarray;
-    return $base64 ? decode_base64($data) : uri_unescape($data);
+    $data = uri_unescape($data);
+    return $base64 ? decode_base64($data) : $data;
 }
 
 # I could not find a better way to interpolate the tr/// chars from
@@ -76,7 +77,7 @@ __END__
 
 =head1 NAME
 
-URI::data - URI that contain immediate data
+URI::data - URI that contains immediate data
 
 =head1 SYNOPSIS
 
@@ -106,22 +107,22 @@ been included externally.  Examples:
 
 
 C<URI> objects belonging to the data scheme support the common methods
-(described in L<URI>) and the following two scheme specific methods:
+(described in L<URI>) and the following two scheme-specific methods:
 
 =over 4
 
 =item $uri->media_type( [$new_media_type] )
 
-This method can be used to get or set the media type specified in the
+Can be used to get or set the media type specified in the
 URI.  If no media type is specified, then the default
 C<"text/plain;charset=US-ASCII"> is returned.
 
 =item $uri->data( [$new_data] )
 
-This method can be used to get or set the data contained in the URI.
+Can be used to get or set the data contained in the URI.
 The data is passed unescaped (in binary form).  The decision about
-whether to base64 encode the data in the URI is taken automatically
-based on what encoding produces the shortest URI string.
+whether to base64 encode the data in the URI is taken automatically,
+based on the encoding that produces the shorter URI string.
 
 =back
 

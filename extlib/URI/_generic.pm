@@ -22,7 +22,7 @@ sub authority
 	$$self = $1;
 	my $rest = $3;
 	if (defined $auth) {
-	    $auth =~ s/([^$ACHAR])/$URI::Escape::escapes{$1}/go;
+	    $auth =~ s/([^$ACHAR])/ URI::Escape::escape_char($1)/ego;
 	    $$self .= "//$auth";
 	}
 	_check_path($rest, $$self);
@@ -41,7 +41,7 @@ sub path
 	my $rest = $3;
 	my $new_path = shift;
 	$new_path = "" unless defined $new_path;
-	$new_path =~ s/([^$PCHAR])/$URI::Escape::escapes{$1}/go;
+	$new_path =~ s/([^$PCHAR])/ URI::Escape::escape_char($1)/ego;
 	_check_path($new_path, $$self);
 	$$self .= $new_path . $rest;
     }
@@ -58,7 +58,7 @@ sub path_query
 	my $rest = $3;
 	my $new_path = shift;
 	$new_path = "" unless defined $new_path;
-	$new_path =~ s/([^$URI::uric])/$URI::Escape::escapes{$1}/go;
+	$new_path =~ s/([^$URI::uric])/ URI::Escape::escape_char($1)/ego;
 	_check_path($new_path, $$self);
 	$$self .= $new_path . $rest;
     }
@@ -71,11 +71,13 @@ sub _check_path
     my $prefix;
     if ($pre =~ m,/,) {  # authority present
 	$prefix = "/" if length($path) && $path !~ m,^[/?\#],;
-    } else {
+    }
+    else {
 	if ($path =~ m,^//,) {
 	    Carp::carp("Path starting with double slash is confusing")
 		if $^W;
-	} elsif (!length($pre) && $path =~ m,^[^:/?\#]+:,) {
+	}
+	elsif (!length($pre) && $path =~ m,^[^:/?\#]+:,) {
 	    Carp::carp("Path might look like scheme, './' prepended")
 		if $^W;
 	    $prefix = "./";
@@ -96,7 +98,8 @@ sub path_segments
 		$seg[0] =~ s/%/%25/g;
 		for (@seg) { s/;/%3B/g; }
 		$_ = join(";", @seg);
-	    } else {
+	    }
+	    else {
 		 s/%/%25/g; s/;/%3B/g;
 	    }
 	    s,/,%2F,g;
@@ -138,8 +141,10 @@ sub abs
     my $path = $self->path;
     return $abs if $path =~ m,^/,;
 
-    if (!length($path) && !defined($self->query)) {
+    if (!length($path)) {
 	my $abs = $base->clone;
+	my $query = $self->query;
+	$abs->query($query) if defined $query;
 	$abs->fragment($self->fragment);
 	return $abs;
     }
@@ -155,13 +160,15 @@ sub abs
 	if ($p[$i-1] eq ".") {
 	    splice(@p, $i-1, 1);
 	    $i-- if $i > 1;
-	} elsif ($p[$i] eq ".." && $p[$i-1] ne "..") {
+	}
+	elsif ($p[$i] eq ".." && $p[$i-1] ne "..") {
 	    splice(@p, $i-1, 2);
 	    if ($i > 1) {
 		$i--;
 		push(@p, "") if $i == @p;
 	    }
-	} else {
+	}
+	else {
 	    $i++;
 	}
     }
@@ -182,7 +189,7 @@ sub rel {
 
     #my($scheme, $auth, $path) = @{$rel}{qw(scheme authority path)};
     my $scheme = $rel->scheme;
-    my $auth   = $rel->authority;
+    my $auth   = $rel->canonical->authority;
     my $path   = $rel->path;
 
     if (!defined($scheme) && !defined($auth)) {
@@ -192,7 +199,7 @@ sub rel {
 
     #my($bscheme, $bauth, $bpath) = @{$base}{qw(scheme authority path)};
     my $bscheme = $base->scheme;
-    my $bauth   = $base->authority;
+    my $bauth   = $base->canonical->authority;
     my $bpath   = $base->path;
 
     for ($bscheme, $bauth, $auth) {
@@ -228,7 +235,8 @@ sub rel {
         defined($rel->fragment) &&
         !defined($rel->query)) {
         $rel->path("");
-    } else {
+    }
+    else {
         # Add one "../" for each path component left in the base path
         $path = ('../' x $bpath =~ tr|/|/|) . $path;
 	$path = "./" if $path eq "";

@@ -14,7 +14,7 @@ sub to
 	my @new = @old;
 	# get rid of any other to: fields
 	for (my $i = 0; $i < @new; $i += 2) {
-	    if (lc($new[$i]) eq "to") {
+	    if (lc($new[$i] || '') eq "to") {
 		splice(@new, $i, 2);
 		redo;
 	    }
@@ -51,7 +51,7 @@ sub headers
 	# strip out any "to" fields
 	my @to;
 	for (my $i=0; $i < @new; $i += 2) {
-	    if (lc($new[$i]) eq "to") {
+	    if (lc($new[$i] || '') eq "to") {
 		push(@to, (splice(@new, $i, 2))[1]);  # remove header
 		redo;
 	    }
