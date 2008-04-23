@@ -103,7 +103,7 @@ TC.attachLoadEvent(init);
 
 
         <div>
-        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" />
+        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" />
         <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
         </div>
 
@@ -133,7 +133,7 @@ TC.attachLoadEvent(init);
             <ul>
                 <li><__trans phrase="potentially install new templates"></li>
                 <li><__trans phrase="overwrite some existing templates with new template code"></li>
-                <li><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
+                <li id="backups-message-refresh"><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
             </ul>
         </div>
 
@@ -143,7 +143,7 @@ TC.attachLoadEvent(init);
             <ul>
                 <li><__trans phrase="delete all of the templates in your blog"></li>
                 <li><__trans phrase="install new templates from the selected template set"></li>
-                <li><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
+                <li id="backups-message-clean"><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
             </ul>
         </div>
 
