@@ -75,6 +75,17 @@ TC.attachLoadEvent( init );
     <mt:if name="__last__">
     </tbody>
     </mt:if>
+<mt:else>
+    <div id="<$mt:var name="template_type"$>-listing" class="listing zero-state-listing zero-state">
+        <div class="listing-header">
+            <$mt:var name="listing_header"$>
+        </div>
+        <mtapp:statusmsg
+            id="zero-state"
+            class="info zero-state">
+            <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label"$>">
+        </mtapp:statusmsg>
+    </div>
 </mtapp:listing>
 
 <mt:setvarblock name="create_link">
