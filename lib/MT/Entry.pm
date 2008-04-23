@@ -363,8 +363,9 @@ MT::Comment->add_trigger(
         my $comment = shift;
         my $entry   = MT::Entry->load( $comment->entry_id )
             or return;
-        if ($comment->visible) {
-            $entry->comment_count( $entry->comment_count - 1 );
+        if ( $comment->visible ) {
+            my $count = $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
+            $entry->comment_count($count);
             $entry->save;
         }
     }
@@ -413,7 +414,8 @@ MT::TBPing->add_trigger(
             if ( $tb->entry_id && $ping->visible ) {
                 my $entry = MT::Entry->load( $tb->entry_id )
                     or return;
-                $entry->ping_count( $entry->ping_count - 1 );
+                my $count = $entry->ping_count > 0 ? $entry->ping_count - 1 : 0;
+                $entry->ping_count($count);
                 $entry->save;
             }
         }
