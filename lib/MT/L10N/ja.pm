@@ -3307,7 +3307,7 @@ use vars qw( @ISA %Lexicon );
 	'Archive Options' => 'アーカイブオプション',
 	'File Extension' => 'ファイルの拡張子',
 	'Enter the archive file extension. This can take the form of \'html\', \'shtml\', \'php\', etc. Note: Do not enter the leading period (\'.\').' => 'アーカイブファイルの拡張子を指定してください。html、shtml、phpなどを指定できます。ピリオドは入力しないでください。',
-	'Preferred Archive' => '有線アーカイブタイプ',
+	'Preferred Archive' => '優先アーカイブタイプ',
 	'Used for creating links to an archived entry (permalink). Select from the archive types used in this blogs archive templates.' => 'ブログ記事にリンクするときのURLとして使われます。このブログで使われているアーカイブテンプレートの中から選択してください。',
 	'No archives are active' => '有効なアーカイブがありません。',
 	'Module Options' => 'モジュールオプション',
