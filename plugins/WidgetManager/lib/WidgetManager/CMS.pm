@@ -145,6 +145,8 @@ sub edit {
 
       my @widgetmanagers = map { { widgetmanager => $_ } } keys %$modulesets;
       $tmpl->param(object_loop => \@widgetmanagers);
+      $tmpl->param(search_type  => "template");
+      $tmpl->param(search_label => MT::Template->class_label_plural);
 
       $tmpl->param(available => \@avail_modules);
       $tmpl->param(installed => \@inst_modules);
@@ -228,8 +230,10 @@ sub list {
     $tmpl->param('widget_table', $widget_loop);
     $tmpl->param('blog_view', 1) if $blog_id;
 
-    $tmpl->param(object_loop => \@widgetmanagers);
-    $tmpl->param(object_type => "widgetset");
+    $tmpl->param(object_loop  => \@widgetmanagers);
+    $tmpl->param(object_type  => "widgetset");
+    $tmpl->param(search_type  => "template");
+    $tmpl->param(search_label => MT::Template->class_label_plural);
 
     $app->{breadcrumbs}[-1]{is_last} = 1;
     $tmpl->param(breadcrumbs       => $app->{breadcrumbs});

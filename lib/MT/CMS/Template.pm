@@ -579,6 +579,7 @@ sub list {
     $app->load_list_actions( 'template', $params );
     $params->{page_actions} = $app->page_actions('list_templates');
     $params->{search_label} = $app->translate("Templates");
+    $params->{object_type} = 'template';
     $params->{blog_view} = 1;
     $params->{refreshed} = $app->param('refreshed');
     $params->{published} = $app->param('published');
