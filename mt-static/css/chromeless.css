@@ -151,6 +151,7 @@ fieldset {
 
 .field-content select,
 .field-content input.ti,
+.field-content textarea.ta,
 .field-content input.pw {
     margin: 0;
     width: 318px;
