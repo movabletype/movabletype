@@ -476,7 +476,6 @@ sub edit {
         if ($blog) {
             $param->{include_with_ssi}      = 0;
             $param->{cache_path}            = '';
-            $param->{cache_enabled}         = 0;
             $param->{cache_expire_type}     = 0;
             $param->{cache_expire_period}   = '';
             $param->{cache_expire_interval} = 0;
@@ -487,8 +486,6 @@ sub edit {
               if defined $obj->include_with_ssi;
             $param->{cache_path}       = $obj->cache_path
               if defined $obj->cache_path;
-            $param->{cache_enabled} = $obj->use_cache
-              if defined $obj->use_cache;
             $param->{cache_expire_type} = $obj->cache_expire_type
               if defined $obj->cache_expire_type;
             my ( $period, $interval ) =
@@ -561,7 +558,7 @@ sub list {
         else {
             $template_type = 'system';
         }
-        $row->{use_cache} = $obj->use_cache ? 1 : 0;
+        $row->{use_cache} = ( $obj->cache_expire_type != 0 ) ? 1 : 0;
         $row->{template_type} = $template_type;
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
@@ -1238,7 +1235,6 @@ sub pre_save {
     # module caching
     $obj->include_with_ssi( $app->param('include_with_ssi') ? 1 : 0 );
     $obj->cache_path( $app->param('cache_path'));
-    $obj->use_cache( $app->param('cache_enabled')           ? 1 : 0 );
     my $cache_expire_type = $app->param('cache_expire_type');
     $obj->cache_expire_type($cache_expire_type);
     my $period   = $app->param('cache_expire_period');
@@ -1410,7 +1406,7 @@ sub build_template_table {
           if $row->{name} eq '';
         my $published_url = $tmpl->published_url;
         $row->{published_url} = $published_url if $published_url;
-        $row->{use_cache} = $tmpl->use_cache ? 1 : 0;
+        $row->{use_cache} = ( $tmpl->cache_expire_type != 0 )  ? 1 : 0;
 
         # FIXME: enumeration of types
         $row->{can_delete} = 1

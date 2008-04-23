@@ -38,7 +38,6 @@ class MTDatabaseBase extends ezsql {
         'template' => array(
             'page_layout',
             'include_with_ssi',
-            'use_cache',
             'cache_expire_type',
             'cache_expire_interval',
             'cache_expire_event'),

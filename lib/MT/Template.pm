@@ -39,7 +39,6 @@ __PACKAGE__->install_properties({
         'last_rebuild_time' => 'integer meta',
         'page_layout' => 'string meta',
         'include_with_ssi' => 'integer meta',
-        'use_cache' => 'integer meta',
         'cache_expire_type' => 'integer meta',
         'cache_expire_interval' => 'integer meta',
         'cache_expire_event' => 'string meta',

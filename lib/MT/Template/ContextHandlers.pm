@@ -2388,18 +2388,18 @@ sub _include_module {
         || $arg->{cache_key}
         || $arg->{key}
         || ( exists $arg->{ttl} )
-        || $tmpl->use_cache ) ? 1 : 0;
+        || ( $tmpl->cache_expire_type != 0 ) ) ? 1 : 0;
     my $cache_key =
         ($arg->{cache_key} || $arg->{key})
       ? $arg->{cache_key} || $arg->{key}
       : 'blog::' . $blog_id . '::template_' . $type . '::' . $tmpl_name;
     my $ttl =
       exists $arg->{ttl} ? $arg->{ttl}
-          : ( $tmpl->use_cache && $tmpl->cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
-              : ( $tmpl->use_cache && $tmpl->cache_expire_type == 2 ) ? 0
+          : ( $tmpl->cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
+              : ( $tmpl->cache_expire_type == 2 ) ? 0
                   :   60 * 60;    # default 60 min.
 
-    if ($tmpl->use_cache && $tmpl->cache_expire_type == 2) {
+    if ( $tmpl->cache_expire_type == 2 ) {
         my @types = split /,/, ($tmpl->cache_expire_event || '');
         if (@types) {
             require MT::Touch;
