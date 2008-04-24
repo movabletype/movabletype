@@ -88,7 +88,7 @@ function clearNotifyUsers() {
         label="<__trans phrase="Allow Registration">"
         content_class="field-content-text"
         hint="<__trans phrase="Select a system administrator you wish to notify when commenters successfully registered themselves.">">
-        <p><input type="checkbox" id="registration" name="registration"<mt:if name="registration"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Allow commenters to register to Movable Type"></p>
+        <p><input type="checkbox" id="registration" name="registration"<mt:if name="registration"> checked="checked"</mt:if> class="cb" /> <label for="registration"><__trans phrase="Allow commenters to register to Movable Type"></label></p>
         <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
         <p><__trans phrase="Notify the following administrators upon registration:"><br />
             <strong id="notify_user_name">
@@ -119,7 +119,7 @@ function clearNotifyUsers() {
         label="<__trans phrase="Personal blog">"
         content_class="field-content-text"
         hint="<__trans phrase="Check to have the system automatically create a new personal blog when a user is created in the system. The user will be granted a blog administrator role on the blog.">">
-        <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if> class="cb" <mt:if name="personal_weblog_readonly">disabled="disabled"</mt:if> /> <__trans phrase="Automatically create a new blog for each new user">
+        <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if> class="cb" <mt:if name="personal_weblog_readonly">disabled="disabled"</mt:if> /> <label for="personal_weblog"><__trans phrase="Automatically create a new blog for each new user"></label>
     </mtapp:setting>
     
     <mtapp:setting
