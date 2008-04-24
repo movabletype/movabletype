@@ -89,7 +89,7 @@
         content_class="field-content-text"
         help_page="blog_settings_feedback"
         help_section="accept_comments_from">
-        <input type="checkbox" name="allow_comments" value="1" id="allow_comments" onclick="toggleHidden('commenting-policy'); toggleHidden('commenting-display-options'); return true"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <__trans phrase="If enabled, comments will be accepted.">
+        <input type="checkbox" name="allow_comments" value="1" id="allow_comments" onclick="toggleHidden('commenting-policy'); toggleHidden('commenting-display-options'); return true"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="If enabled, comments will be accepted."></label>
     </mtapp:setting>
 
 </fieldset>
@@ -119,7 +119,7 @@
         content_class="field-content-text"
         help_page="blog_settings_feedback"
         help_section="allow_html">
-<input type="checkbox" name="allow_comment_html" id="allow_comment_html" onclick="toggleSubPrefs(this);" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" /> <__trans phrase="If enabled, users will be able to enter a limited set of HTML in their comments. If not, all HTML will be stripped out.">
+<input type="checkbox" name="allow_comment_html" id="allow_comment_html" onclick="toggleSubPrefs(this);" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" /> <label for="allow_comment_html"><__trans phrase="If enabled, users will be able to enter a limited set of HTML in their comments. If not, all HTML will be stripped out."></label>
     </mtapp:setting>
 
     <div id="allow_comment_html_prefs"<mt:unless name="allow_comment_html"> class="hidden"</mt:unless>>
@@ -199,7 +199,7 @@
         content_class="field-content-text"
         help_page="blog_settings_feedback"
         help_section="autolink_urls">
-<input type="checkbox" value="1" name="autolink_urls" id="autolink_urls"<mt:if name="autolink_urls"> checked="checked"</mt:if> class="cb" /> <__trans phrase="If enabled, all non-linked URLs will be transformed into links to that URL."> 
+<input type="checkbox" value="1" name="autolink_urls" id="autolink_urls"<mt:if name="autolink_urls"> checked="checked"</mt:if> class="cb" /> <label for="autolink_urls"><__trans phrase="If enabled, all non-linked URLs will be transformed into links to that URL."></label>
     </mtapp:setting>
 
     <mtapp:setting
@@ -216,10 +216,10 @@
     </mtapp:setting>
 
     <mtapp:setting
-        id="capthca_provider"
+        id="captcha_provider"
         label="<__trans phrase="CAPTCHA Provider">">
         <mt:if name="captcha_loop">
-            <select name="captcha_provider">
+            <select name="captcha_provider" id="captcha_provider">
             <option value="none"><__trans phrase="none"></option>
             <mt:loop name="captcha_loop">
             <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
