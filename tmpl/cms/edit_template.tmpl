@@ -157,10 +157,9 @@
         onclick="return validate(this.form);"
         ><__trans phrase="Preview"></button>
     </mt:if>
-    <mt:unless name="new_object">
-        <mt:unless name="build_dynamic">
-            <mt:if name="can_rebuild">
-                <mt:if name="type_index">
+    <mt:unless name="build_dynamic">
+        <mt:if name="can_rebuild">
+            <mt:if name="type_index">
     <button
         type="submit"
         accesskey="r"
@@ -168,9 +167,8 @@
         title="<__trans phrase="Save and Publish this template (r)">"
         onclick="return validate(this.form, 1);"
         ><__trans phrase="Save &amp; Publish"></button>
-                </mt:if>
             </mt:if>
-        </mt:unless>
+        </mt:if>
     </mt:unless>
     <div id="autosave-notification-<$mt:var name="bar_position" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>
