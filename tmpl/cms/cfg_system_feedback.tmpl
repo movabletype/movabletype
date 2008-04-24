@@ -32,7 +32,7 @@
         label="<__trans phrase="Comments">"
         content_class="field-content-text"
         hint="<__trans phrase="This will override all individual blog settings.">">
-            <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disable comments for all blogs">
+            <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <label for="comment_disable"><__trans phrase="Disable comments for all blogs"></label>
     </mtapp:setting>
 
     <mtapp:setting
@@ -40,7 +40,7 @@
         label="<__trans phrase="TrackBacks">"
         content_class="field-content-text"
         hint="<__trans phrase="This will override all individual blog settings.">">
-            <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disable TrackBacks for all blogs">
+            <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable TrackBacks for all blogs"></label>
     </mtapp:setting>
 
 </div>
@@ -68,10 +68,10 @@
         hint="<__trans phrase="Limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.">"
         show_hint="1">
         <ul>
-            <li><input type="radio" name="trackback_send" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Allow to any site"></li>
-            <li><input type="radio" name="trackback_send" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Disabled"> <span class="hint"><__trans phrase="(No outbound TrackBacks)"></span></li>
-            <li><input type="radio" name="trackback_send" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only allow to blogs on this installation"></li>
-            <li><input type="radio" name="trackback_send" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Only allow the sites on the following domains:"><br />
+            <li><input type="radio" name="trackback_send" id="trackback_send_any" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_any"><__trans phrase="Allow to any site"></label></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_off"><__trans phrase="Disabled"> <span class="hint"><__trans phrase="(No outbound TrackBacks)"></span></label></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_local"><__trans phrase="Only allow to blogs on this installation"></label></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_custom" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_custom"><__trans phrase="Only allow the sites on the following domains:"></label><br />
             <textarea rows="" cols="" name="trackback_send_domains" class="full-width short"><mt:var name="trackback_send_domains" escape="html"></textarea></li>
         </ul>
     </mtapp:setting>
