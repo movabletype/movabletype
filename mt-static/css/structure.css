@@ -4334,6 +4334,7 @@ body.dialog {
     margin-left: 160px;
 }
 
+.content-nav #main-content .msg,
 .content-nav #zero-state.msg {
     margin-left: 0;
 }
