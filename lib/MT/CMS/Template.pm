@@ -1441,8 +1441,7 @@ sub build_template_table {
     my %blogs;
     while ( my $tmpl = $iter->() ) {
         my $blog = $blogs{ $tmpl->blog_id } ||=
-          MT::Blog->load( $tmpl->blog_id );
-        return $app->error($app->translate('Can\'t load blog #[_1].', $tmpl->blog_id)) unless $blog;
+          MT::Blog->load( $tmpl->blog_id ) if $tmpl->blog_id;
 
         my $row = $tmpl->column_values;
         $row->{name} = '' if !defined $row->{name};
@@ -1451,7 +1450,7 @@ sub build_template_table {
           if $row->{name} eq '';
         my $published_url = $tmpl->published_url;
         $row->{published_url} = $published_url if $published_url;
-        $row->{use_cache} = ( $tmpl->cache_expire_type != 0 )  ? 1 : 0;
+        $row->{use_cache} = ( ($tmpl->cache_expire_type || 0) != 0 )  ? 1 : 0;
 
         # FIXME: enumeration of types
         $row->{can_delete} = 1
