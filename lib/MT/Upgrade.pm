@@ -907,15 +907,6 @@ sub core_upgrade_functions {
                 },
             },
         },
-        'core_delete_template_meta_use_cache' => {
-            version_limit => 4.0059,
-            priority      => 3.2,
-            updater       => {
-                type      => 'template',
-                label     => 'Deleting use_cache record...',
-                sql => 'delete from mt_template_meta where template_meta_type="use_cache"',
-            },
-        },
     };
 }
 
