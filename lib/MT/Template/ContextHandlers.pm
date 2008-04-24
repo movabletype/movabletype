@@ -81,13 +81,13 @@ sub core_tags {
 
             Loop => \&_hdlr_loop,
             Section => \&_hdlr_section,
-            IfNonEmpty => \&_hdlr_if_nonempty,
-            IfNonZero => \&_hdlr_if_nonzero,
+            'IfNonEmpty?' => \&_hdlr_if_nonempty,
+            'IfNonZero?' => \&_hdlr_if_nonzero,
 
-            IfCommenterTrusted => \&_hdlr_commenter_trusted,
-            CommenterIfTrusted => \&_hdlr_commenter_trusted,
-            IfCommenterIsAuthor => \&_hdlr_commenter_isauthor,
-            IfCommenterIsEntryAuthor => \&_hdlr_commenter_isauthor,
+            'IfCommenterTrusted?' => \&_hdlr_commenter_trusted,
+            'CommenterIfTrusted?' => \&_hdlr_commenter_trusted,
+            'IfCommenterIsAuthor?' => \&_hdlr_commenter_isauthor,
+            'IfCommenterIsEntryAuthor?' => \&_hdlr_commenter_isauthor,
 
             'IfBlog?' => \&_hdlr_blog_id,
             'IfAuthor?' => \&_hdlr_if_author,
@@ -104,7 +104,7 @@ sub core_tags {
             EntriesFooter => \&_hdlr_pass_tokens,
             EntryCategories => \&_hdlr_entry_categories,
             EntryAdditionalCategories => \&_hdlr_entry_additional_categories,
-            BlogIfCommentsOpen => \&_hdlr_blog_if_comments_open,
+            'BlogIfCommentsOpen?' => \&_hdlr_blog_if_comments_open,
             EntryPrevious => \&_hdlr_entry_previous,
             EntryNext => \&_hdlr_entry_next,
             EntryTags => \&_hdlr_entry_tags,
@@ -123,18 +123,18 @@ sub core_tags {
             SetVars => \&_hdlr_set_vars,
             SetHashVar => \&_hdlr_set_hashvar,
 
-            IfCommentsModerated => \&_hdlr_comments_moderated,
-            IfRegistrationRequired => \&_hdlr_reg_required,
-            IfRegistrationNotRequired => \&_hdlr_reg_not_required,
-            IfRegistrationAllowed => \&_hdlr_reg_allowed,
+            'IfCommentsModerated?' => \&_hdlr_comments_moderated,
+            'IfRegistrationRequired?' => \&_hdlr_reg_required,
+            'IfRegistrationNotRequired?' => \&_hdlr_reg_not_required,
+            'IfRegistrationAllowed?' => \&_hdlr_reg_allowed,
 
-            IfTypeKeyToken => \&_hdlr_if_typekey_token,
+            'IfTypeKeyToken?' => \&_hdlr_if_typekey_token,
 
             Comments => \&_hdlr_comments,
             CommentsHeader => \&_hdlr_pass_tokens,
             CommentsFooter => \&_hdlr_pass_tokens,
             CommentEntry => \&_hdlr_comment_entry,
-            CommentIfModerated => \&_hdlr_comment_if_moderated,
+            'CommentIfModerated?' => \&_hdlr_comment_if_moderated,
 
             CommentParent => \&_hdlr_comment_parent,
             CommentReplies => \&_hdlr_comment_replies,
@@ -158,7 +158,7 @@ sub core_tags {
             CalendarIfNoEntries => \&_hdlr_pass_tokens,
 
             Categories => \&_hdlr_categories,
-            CategoryIfAllowPings => \&_hdlr_category_allow_pings,
+            'CategoryIfAllowPings?' => \&_hdlr_category_allow_pings,
             CategoryPrevious => \&_hdlr_category_prevnext,
             CategoryNext => \&_hdlr_category_prevnext,
 
@@ -166,20 +166,20 @@ sub core_tags {
             PingsSent => \&_hdlr_pings_sent,
             PingEntry => \&_hdlr_ping_entry,
 
-            IfAllowCommentHTML => \&_hdlr_if_allow_comment_html,
-            IfCommentsAllowed => \&_hdlr_if_comments_allowed,
-            IfCommentsAccepted => \&_hdlr_if_comments_accepted,
-            IfCommentsActive => \&_hdlr_if_comments_active,
-            IfPingsAllowed => \&_hdlr_if_pings_allowed,
-            IfPingsAccepted => \&_hdlr_if_pings_accepted,
-            IfPingsActive => \&_hdlr_if_pings_active,
-            IfPingsModerated => \&_hdlr_if_pings_moderated,
-            IfNeedEmail => \&_hdlr_if_need_email,
-            IfRequireCommentEmails => \&_hdlr_if_need_email,
-            EntryIfAllowComments => \&_hdlr_if_comments_active,
-            EntryIfCommentsOpen => \&_hdlr_entry_if_comments_open,
-            EntryIfAllowPings => \&_hdlr_entry_if_allow_pings,
-            EntryIfExtended => \&_hdlr_entry_if_extended,
+            'IfAllowCommentHTML?' => \&_hdlr_if_allow_comment_html,
+            'IfCommentsAllowed?' => \&_hdlr_if_comments_allowed,
+            'IfCommentsAccepted?' => \&_hdlr_if_comments_accepted,
+            'IfCommentsActive?' => \&_hdlr_if_comments_active,
+            'IfPingsAllowed?' => \&_hdlr_if_pings_allowed,
+            'IfPingsAccepted?' => \&_hdlr_if_pings_accepted,
+            'IfPingsActive?' => \&_hdlr_if_pings_active,
+            'IfPingsModerated?' => \&_hdlr_if_pings_moderated,
+            'IfNeedEmail?' => \&_hdlr_if_need_email,
+            'IfRequireCommentEmails?' => \&_hdlr_if_need_email,
+            'EntryIfAllowComments?' => \&_hdlr_entry_if_allow_comments,
+            'EntryIfCommentsOpen?' => \&_hdlr_entry_if_comments_open,
+            'EntryIfAllowPings?' => \&_hdlr_entry_if_allow_pings,
+            'EntryIfExtended?' => \&_hdlr_entry_if_extended,
 
             SubCategories => \&_hdlr_sub_categories,
             TopLevelCategories => \&_hdlr_top_level_categories,
@@ -372,6 +372,8 @@ sub core_tags {
             CommentFields => \&_hdlr_comment_fields,
             RemoteSignOutLink => \&_hdlr_remote_sign_out_link,
             RemoteSignInLink => \&_hdlr_remote_sign_in_link,
+            SignOutLink => \&_hdlr_sign_out_link,
+            SignInLink => \&_hdlr_sign_in_link,
 
             CommentID => \&_hdlr_comment_id,
             CommentBlogID => \&_hdlr_comment_blog_id,
@@ -1422,12 +1424,16 @@ sub _hdlr_if {
     }
     elsif (defined(my $tag = $args->{tag})) {
         $tag =~ s/^MT:?//i;
-        my ($handler) = $ctx->handler_for($tag);
+        my ($handler, $type) = $ctx->handler_for($tag);
         if (defined($handler)) {
             local $ctx->{__stash}{tag} = $args->{tag};
             $value = $handler->($ctx, { %$args });
-            if (my $ph = $ctx->post_process_handler) {
-                $value = $ph->($ctx, $args, $value);
+            if ($type == 2) { # conditional tag; just use boolean
+                $value = $value ? 1 : 0;
+            } else {
+                if (my $ph = $ctx->post_process_handler) {
+                    $value = $ph->($ctx, $args, $value);
+                }
             }
             $ctx->{__stash}{vars}{__cond_tag__} = $args->{tag};
         }
@@ -2185,27 +2191,27 @@ sub _hdlr_tag_count {
 sub _hdlr_if_typekey_token {
     my $blog = $_[0]->stash('blog');
     if ($blog->remote_auth_token) {
-        _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
 sub _hdlr_comments_moderated {
     my $blog = $_[0]->stash('blog');
     if ($blog->moderate_unreg_comments || $blog->manual_approve_commenters) {
-        _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
 sub _hdlr_reg_allowed {
     my $blog = $_[0]->stash('blog');
     if ($blog->allow_reg_comments && $blog->commenter_authenticators) {
-        _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -2213,9 +2219,9 @@ sub _hdlr_reg_required {
     my $blog = $_[0]->stash('blog');
     if ( $blog->allow_reg_comments && $blog->commenter_authenticators
         && ! $blog->allow_unreg_comments ) {
-        _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -2223,9 +2229,9 @@ sub _hdlr_reg_not_required {
     my $blog = $_[0]->stash('blog');
     if ($blog->allow_reg_comments && $blog->commenter_authenticators
         && $blog->allow_unreg_comments) {
-        _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 #FIXME: rethink the above tags.
@@ -2240,9 +2246,9 @@ sub _hdlr_blog_if_comments_open {
     if ($ctx->{config}->AllowComments &&
         (($blog->allow_reg_comments && $blog->effective_remote_auth_token)
          || $blog->allow_unreg_comments)) {
-        _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -2383,6 +2389,7 @@ sub _include_module {
     }
 
     # Try to read from cache
+    my $cache_expire_type = $tmpl->cache_expire_type || 0;
     my $cache_enabled =
          $blog
       && $blog->include_cache
@@ -2390,18 +2397,18 @@ sub _include_module {
         || $arg->{cache_key}
         || $arg->{key}
         || ( exists $arg->{ttl} )
-        || ( $tmpl->cache_expire_type != 0 ) ) ? 1 : 0;
+        || ( $cache_expire_type != 0 ) ) ? 1 : 0;
     my $cache_key =
         ($arg->{cache_key} || $arg->{key})
       ? $arg->{cache_key} || $arg->{key}
       : 'blog::' . $blog_id . '::template_' . $type . '::' . $tmpl_name;
     my $ttl =
       exists $arg->{ttl} ? $arg->{ttl}
-          : ( $tmpl->cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
-              : ( $tmpl->cache_expire_type == 2 ) ? 0
+          : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
+              : ( $cache_expire_type == 2 ) ? 0
                   :   60 * 60;    # default 60 min.
 
-    if ( $tmpl->cache_expire_type == 2 ) {
+    if ( $cache_expire_type == 2 ) {
         my @types = split /,/, ($tmpl->cache_expire_event || '');
         if (@types) {
             require MT::Touch;
@@ -2735,9 +2742,9 @@ sub _hdlr_if_nonempty {
         $value = $ctx->var($args->{var});
     }
     if (defined($value) && $value ne '') { # want to include "0" here
-        _hdlr_pass_tokens($ctx, $args, $cond);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else($ctx, undef, $cond);
+        return 0;
     }
 }
 
@@ -2760,9 +2767,9 @@ sub _hdlr_if_nonzero {
         $value = $ctx->var($args->{var});
     }
     if (defined($value) && $value) {
-        _hdlr_pass_tokens($ctx, $args, $cond);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else($ctx, undef, $cond);
+        return 0;
     }
 }
 
@@ -4048,6 +4055,8 @@ sub _hdlr_entries {
                     delete $args->{lastn};
                 }
                 $no_resort = 0;
+            } elsif ($class->is_meta_column($args->{sort_by})) {
+                $no_resort = 0;
             }
         }
 
@@ -4106,6 +4115,19 @@ sub _hdlr_entries {
             if ( $col ne 'score' ) {
                 if (my $def = $class->column_def($col)) {
                     if ($def->{type} =~ m/^integer|float$/) {
+                        @$entries = $so eq 'ascend' ?
+                            sort { $a->$col() <=> $b->$col() } @$entries :
+                            sort { $b->$col() <=> $a->$col() } @$entries;
+                    } else {
+                        @$entries = $so eq 'ascend' ?
+                            sort { $a->$col() cmp $b->$col() } @$entries :
+                            sort { $b->$col() cmp $a->$col() } @$entries;
+                    }
+                    $no_resort = 1;
+                } elsif ($class->is_meta_column($col)) {
+                    my $type = MT::Meta->metadata_by_name($class, $col);
+                    no warnings;
+                    if ($type->{type} =~ m/integer|float/) {
                         @$entries = $so eq 'ascend' ?
                             sort { $a->$col() <=> $b->$col() } @$entries :
                             sort { $b->$col() <=> $a->$col() } @$entries;
@@ -4225,6 +4247,18 @@ sub _hdlr_entries {
             my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : 'descend') || '';
             if (my $def = $class->column_def($col)) {
                 if ($def->{type} =~ m/^integer|float$/) {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() <=> $b->$col() } @entries :
+                        sort { $b->$col() <=> $a->$col() } @entries;
+                } else {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() cmp $b->$col() } @entries :
+                        sort { $b->$col() cmp $a->$col() } @entries;
+                }
+            } elsif ($class->is_meta_column($col)) {
+                my $type = MT::Meta->metadata_by_name($class, $col);
+                no warnings;
+                if ($type->{type} =~ m/integer|float/) {
                     @entries = $so eq 'ascend' ?
                         sort { $a->$col() <=> $b->$col() } @entries :
                         sort { $b->$col() <=> $a->$col() } @entries;
@@ -4787,7 +4821,7 @@ sub _hdlr_entry_categories {
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
-    my $res;
+    my $res = '';
     my $glue = $args->{glue};
     for my $cat (@$cats) {
         local $ctx->{__stash}->{category} = $cat;
@@ -4807,6 +4841,44 @@ sub _hdlr_typekey_token {
         or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $blog_id));
     my $tp_token = $blog->effective_remote_auth_token();
     return $tp_token;
+}
+
+sub _hdlr_sign_in_link {
+    my ($ctx, $args) = @_;    
+    my $cfg = $ctx->{config};
+    my $blog = $ctx->stash('blog');
+    my $path = _hdlr_cgi_path($ctx);
+    $path .= '/' unless $path =~ m!/$!;
+    my $comment_script = $cfg->CommentScript;
+    my $static_arg = $args->{static} ? "&static=" . $args->{static} : "&static=0";
+    my $e = $ctx->stash('entry');
+    return "$path$comment_script?__mode=login$static_arg" .
+        ($blog ? '&blog_id=' . $blog->id : '') .
+        ($e ? '&entry_id=' . $e->id : '');
+}
+
+sub _hdlr_sign_out_link {
+    my ($ctx, $args) = @_;
+    my $cfg = $ctx->{config};
+    my $path = _hdlr_cgi_path($ctx);
+    $path .= '/' unless $path =~ m!/$!;
+    my $comment_script = $cfg->CommentScript;
+    my $static_arg;
+    if ($args->{no_static}) {
+        $static_arg = q();
+    } else {
+        my $url = $args->{static};
+        if ($url && ($url ne '1')) {
+            $static_arg = "&static=" . MT::Util::encode_url($url);
+        } elsif ($url) {
+            $static_arg = "&static=1";
+        } else {
+            $static_arg = "&static=0";
+        }
+    }
+    my $e = $_[0]->stash('entry');
+    return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1" .
+        ($e ? "&amp;entry_id=" . $e->id : '');
 }
 
 sub _hdlr_remote_sign_in_link {
@@ -4996,6 +5068,17 @@ sub _hdlr_date {
     if (my $r = $args->{relative}) {
         if ($r eq 'js') {
             # output javascript here to render relative date
+            my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
+            $mo--;
+            my $fds = format_ts($args->{'format'}, $ts, $blog, $lang);
+            my $js = <<EOT;
+<script type="text/javascript">
+/* <![CDATA[ */
+document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
+/* ]]> */
+</script><noscript>$fds</noscript>
+EOT
+            return $js;
         } else {
             my $old_lang = MT->current_language;
             MT->set_language($lang) if $lang && ($lang ne $old_lang);
@@ -5345,9 +5428,9 @@ sub _hdlr_comment_if_moderated {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MTCommentIfModerated');
     if ($c->visible) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -5527,15 +5610,15 @@ sub _hdlr_comment_reply_link {
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
     my $comment_author = MT::Util::encode_js($comment->author);
+    my $onclick = $args->{onclick} || 'mtReplyCommentOnClick';
 
-    return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="replyComment(%d, '%s')">%s</a>),
+    return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="$onclick(%d, '%s')">%s</a>),
                    $label, $comment->id, $comment_author, $label);
 }
 
 sub _hdlr_comment_parent_id {
     my $args = $_[1];
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MTCommentParentID');
+    my $c = $_[0]->stash('comment') or return '';
     my $id = $c->parent_id || 0;
     $args && $args->{pad} ? (sprintf "%06d", $id) : ($id ? $id : '');
 }
@@ -5744,17 +5827,16 @@ sub _hdlr_commenter_trusted {
     my $a = $ctx->stash('commenter');
     return '' unless $a;
     if ($a->is_trusted($ctx->stash('blog_id'))) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
 sub _hdlr_commenter_isauthor {
     my ($ctx, $args, $cond) = @_;
     my $a = $ctx->stash('commenter');
-    return _hdlr_pass_tokens_else(@_)
-      unless $a;
+    return 0 unless $a;
     if ($a->type == MT::Author::AUTHOR()) {
         my $tag = lc $ctx->stash('tag');
         if ($tag eq 'ifcommenterisentryauthor') {
@@ -5762,14 +5844,14 @@ sub _hdlr_commenter_isauthor {
             my $e = $c ? $c->entry : $ctx->stash('entry');
             if ($e) {
                 if ($e->author_id == $a->id) {
-                    return _hdlr_pass_tokens(@_);
+                    return 1;
                 }
             }
         } else {
-            return _hdlr_pass_tokens(@_);
+            return 1;
         }
     }
-    return _hdlr_pass_tokens_else(@_);
+    return 0;
 }
 
 sub _hdlr_commenter_id {
@@ -6377,7 +6459,7 @@ sub _hdlr_categories {
     my $class = MT->model($class_type);
     my $entry_class = MT->model(
         $class_type eq 'category' ? 'entry' : 'page');
-    
+
     my $iter = $class->load_iter(\%terms, \%args);
     my $res = '';
     my $builder = $ctx->stash('builder');
@@ -6577,10 +6659,10 @@ sub _hdlr_category_tb_link {
 sub _hdlr_category_allow_pings {
     my $cat = $_[0]->stash('category') || $_[0]->stash('archive_category');
     if ($cat->allow_pings) {
-        _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        _hdlr_pass_tokens_else(@_);
-    }                                 
+        return 0;
+    }
 }
 
 sub _hdlr_category_tb_count {
@@ -6705,7 +6787,7 @@ sub _hdlr_entry_additional_categories {
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
-    my $res;
+    my $res = '';
     my $glue = $args->{glue};
     for my $cat (@$cats) {
         next if $e->category && ($cat->label eq $e->category->label);
@@ -6857,9 +6939,9 @@ sub _hdlr_if_allow_comment_html {
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     if ($blog->allow_comment_html) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6871,9 +6953,9 @@ sub _hdlr_if_comments_allowed {
                               || ($blog->allow_reg_comments
                                   && $blog->effective_remote_auth_token))))
         && $cfg->AllowComments) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6891,9 +6973,9 @@ sub _hdlr_if_comments_active {
         $active = 1 if ($blog->accepts_comments && $cfg->AllowComments);
     }
     if ($active) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6906,9 +6988,9 @@ sub _hdlr_if_comments_accepted {
     my $accepted = $blog_comments_accepted;
     $accepted = 0 if $entry && !$entry->allow_comments;
     if ($accepted) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6922,9 +7004,9 @@ sub _hdlr_if_pings_active {
     $active = 0 if $entry && !$entry->allow_pings;
     $active = 1 if !$active && $entry && $entry->ping_count;
     if ($active) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6932,9 +7014,9 @@ sub _hdlr_if_pings_moderated {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
     if ($blog->moderate_pings) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6947,9 +7029,9 @@ sub _hdlr_if_pings_accepted {
     $accepted = 1 if $blog->allow_pings && $cfg->AllowPings;
     $accepted = 0 if $entry && !$entry->allow_pings;
     if ($accepted) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6958,9 +7040,9 @@ sub _hdlr_if_pings_allowed {
     my $blog = $ctx->stash('blog');
     my $cfg = $ctx->{config};
     if ($blog->allow_pings && $cfg->AllowPings) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -6969,41 +7051,48 @@ sub _hdlr_if_need_email {
     my $blog = $ctx->stash('blog');
     my $cfg = $ctx->{config};
     if ($blog->require_comment_emails) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
 sub _hdlr_entry_if_allow_comments {
     my ($ctx, $args, $cond) = @_;
+    my $blog = $ctx->stash('blog');
+    my $cfg = $ctx->{config};
+    my $blog_comments_accepted = $blog->accepts_comments && $cfg->AllowComments;
     my $entry = $ctx->stash('entry');
-    if ($entry->allow_comments) {
-        return _hdlr_pass_tokens(@_);
+    if ($blog_comments_accepted && $entry->allow_comments) {
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
 sub _hdlr_entry_if_comments_open {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
-    my $entry = $ctx->stash('entry');
     my $cfg = $ctx->{config};
-    if ($entry && $entry->allow_comments && $entry->allow_comments eq '1') {
-        return _hdlr_pass_tokens(@_);
+    my $blog_comments_accepted = $blog->accepts_comments && $cfg->AllowComments;
+    my $entry = $ctx->stash('entry');
+    if ($entry && $blog_comments_accepted && $entry->allow_comments && $entry->allow_comments eq '1') {
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
 sub _hdlr_entry_if_allow_pings {
     my ($ctx, $args, $cond) = @_;
     my $entry = $ctx->stash('entry');
-    if ($entry->allow_pings) {
-        return _hdlr_pass_tokens(@_);
+    my $blog = $ctx->stash('blog');
+    my $cfg = $ctx->{config};
+    my $blog_pings_accepted = 1 if $cfg->AllowPings && $blog->allow_pings;
+    if ($blog_pings_accepted && $entry->allow_pings) {
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -7017,20 +7106,21 @@ sub _hdlr_entry_if_extended {
         $more =~ s!(^\s+|\s+$)!!g;
     }
     if ($more ne '') {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
+# FIXME: Unused?
 sub _hdlr_if_commenter_pending {
     my ($ctx, $args, $cond) = @_;
     my $cmtr = $ctx->stash('commenter');
     my $blog = $ctx->stash('blog');
     if ($cmtr && $blog && $cmtr->commenter_status($blog->id) == MT::Author::PENDING()) {
-        return _hdlr_pass_tokens(@_);
+        return 1;
     } else {
-        return _hdlr_pass_tokens_else(@_);
+        return 0;
     }
 }
 
@@ -7271,7 +7361,7 @@ sub _hdlr_parent_categories {
     # including the current one unless instructed otherwise
     my @cats = $cat->parent_categories;
     @cats = ($cat, @cats) unless ($exclude_current);
-  
+
     # Start from the top and work our way down
     while (my $c = pop @cats) {
         local $ctx->{__stash}->{category} = $c;

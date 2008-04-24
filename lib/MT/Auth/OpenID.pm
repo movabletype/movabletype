@@ -116,7 +116,7 @@ sub handle_sign_in {
         my $enc = $app->{cfg}->PublishCharset || '';
         my $nick_escaped = escape_unicode($nick);
         $nick = encode_text($nick, 'utf-8', undef);
-        $session = $app->_make_commenter_session($app->make_magic_token, q(),
+        $session = $app->make_commenter_session($app->make_magic_token, q(),
                                                  $name, $nick_escaped, undef, $name);
         unless ($session) {
             $app->error($app->errstr() || $app->translate("Couldn't save the session"));

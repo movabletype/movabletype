@@ -6,36 +6,12 @@
     <$mt:include module="<__trans phrase="HTML Head">"$>
     <MTIgnore>Below Javascript adds ajax search capability</MTIgnore>
     <script type="text/javascript">
-    <!--
+    /* <![CDATA[ */
     <MTIfMoreResults>
-    function getXmlHttp() {
-        if ( !window.XMLHttpRequest ) {
-            window.XMLHttpRequest = function() {
-                var types = [
-                    "Microsoft.XMLHTTP",
-                    "MSXML2.XMLHTTP.5.0",
-                    "MSXML2.XMLHTTP.4.0",
-                    "MSXML2.XMLHTTP.3.0",
-                    "MSXML2.XMLHTTP"
-                ];
-
-                for ( var i = 0; i < types.length; i++ ) {
-                    try {
-                        return new ActiveXObject( types[ i ] );
-                    } catch( e ) {}
-                }
-
-                return undefined;
-            };
-        }
-        if ( window.XMLHttpRequest )
-            return new XMLHttpRequest();
-    }
-
     function getResults(page) {
         page = parseInt(page);
         if (timer) window.clearTimeout(timer);
-        var xh = getXmlHttp();
+        var xh = mtGetXmlHttp();
         if (!xh) return false;
         var res = results[page];
         if (!res) return;
@@ -81,8 +57,9 @@
     	return true;
     }</MTIfPreviousResults>
     </MTIfMoreResults>
-    //-->
+    /* ]]> */
     </script>
+    <script type="text/javascript" src="<$MTLink template="javascript"$>"></script>
 </head>
 <body id="<$mt:BlogTemplateSetID$>" class="mt-search-results <$MTVar name="page_layout"$>">
     <div id="container">

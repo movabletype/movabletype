@@ -65,7 +65,7 @@ sub login_credentials {
         $user = $app->param('username');
         $pass = $app->param('password');
         $remember = $app->param('remember') ? 1 : 0;
-        return { %$ctx, username => $user, password => $pass, permanent => $remember };
+        return { %$ctx, username => $user, password => $pass, permanent => $remember, auth_type => 'MT' };
     }
     return undef;
 }
@@ -78,7 +78,7 @@ sub session_credentials {
     my $cookies = $app->cookies;
     if ($cookies->{$app->user_cookie}) {
         my ($user, $session_id, $remember) = split /::/, $cookies->{$app->user_cookie}->value;
-        return { %$ctx, username => $user, session_id => $session_id, permanent => $remember };
+        return { %$ctx, username => $user, session_id => $session_id, permanent => $remember, auth_type => 'MT' };
     }
     return undef;
 }
@@ -107,7 +107,7 @@ sub validate_credentials {
     if ((defined $username) && ($username ne '')) {
         # load author from db
         my $user_class = $app->user_class;
-        my ($author) = $user_class->search({ name => $username, type => AUTHOR });
+        my ($author) = $user_class->search({ name => $username, type => AUTHOR, auth_type => 'MT' });
 
         if ($author) {
             # password validation

@@ -1,25 +1,30 @@
-<mt:ignore><!-- Display comments for the entry/page or commenting form if entry/page is accepting comments --></mt:ignore>
+<mt:ignore>
+<!-- Display comments for the entry/page or commenting form if entry/page is accepting comments -->
+</mt:ignore>
 <MTIfCommentsActive>
 <div id="comments" class="comments">
 
 
-    <mt:ignore><!-- Display comments --></mt:ignore>
+    <mt:ignore>
+    <!-- Display comments -->
+    </mt:ignore>
     <MTComments>
         <MTCommentsHeader>
-    <h2 class="comments-header"><$MTEntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">"$></h2>
+    <h2 class="comments-header"><$MTEntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></h2>
     <div class="comments-content">
         </MTCommentsHeader>
-        <div class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent>"<MTIfArchiveTypeEnabled archive_type="Individual"> id="comment-<$MTCommentID$>"</MTIfArchiveTypeEnabled>>
+        <div class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent>" id="comment-<$MTCommentID$>">
             <div class="inner">
                 <div class="comment-header">
                     <div class="asset-meta">
                         <span class="byline">
                             <mt:IfCommentParent>
-                                <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span>%%<mt:CommentParent>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
+                                <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<MTIf tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIf> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
                             <mt:else>
-                                <MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span>
+                                <$MTCommentAuthorIdentity$>
+                                <span class="vcard author"><$MTCommentAuthorLink$></span>
                             </mt:IfCommentParent>
-                            | <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
+                            | <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate relative="js"$></abbr></a>
                             <MTIfCommentsAccepted> | <$MTCommentReplyLink$></MTIfCommentsAccepted>
                         </span>
                     </div>
@@ -35,30 +40,26 @@
     </MTComments>
 
 
-    <mt:ignore><!-- Display commenting form if entry/page is accepting comments --></mt:ignore>
+    <mt:ignore>
+    <!-- Display commenting form if entry/page is accepting comments -->
+    </mt:ignore>
     <MTIfCommentsAccepted>
     <div class="comments-open" id="comments-open">
         <h2 class="comments-open-header"><__trans phrase="Leave a comment"></h2>
         <div class="comments-open-content">
 
+        <mt:ignore>
+        <!-- Display greeting for users if blog allows users to register locally -->
+        </mt:ignore>
+            <div id="comment-greeting"></div>
 
-        <mt:ignore><!-- Display greeting for users if blog allows users to register locally --></mt:ignore>
-        <MTIfRegistrationAllowed>
-            <div id="comment-form-external-auth">
-                <script type="text/javascript">
-                /* <![CDATA[ */
-                writeCommenterGreeting(commenter_name, <$MTEntryID$>, <$MTEntryBlogID$>, commenter_id, commenter_url);
-                /* ]]> */
-                </script>
-            </div>
-        </MTIfRegistrationAllowed>
-
-
-            <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
+            <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
                 <input type="hidden" name="static" value="1" />
                 <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
                 <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
-                <input type="hidden" name="parent_id" value="<MTIf name="comment_preview_template"><$MTCommentParentID$></MTIf>" id="comment-parent-id" />
+                <input type="hidden" name="parent_id" value="<$MTCommentParentID$>" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
                 <div id="comments-open-data">
                     <div id="comment-form-name">
                         <label for="comment-author"><__trans phrase="Name"></label>
@@ -73,25 +74,22 @@
                         <input id="comment-url" name="url" size="30" value="" />
                     </div>
                     <div id="comment-form-remember-me">
-                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />
+                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
                         <label for="comment-bake-cookie"><__trans phrase="Remember personal info?"></label>
                     </div>
-                    <div id="comment-form-reply">
-                        <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="setCommentParentID();" />
-                        <label for="comment-reply" id="comment-reply-label"></label>
-                    </div>
+                </div>
+                <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
                 </div>
                 <div id="comments-open-text">
-                    <label for="comment-text"><__trans phrase="Comments"> <MTIfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
+                    <label for="comment-text"><__trans phrase="Comments">
+                    <MTIfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
                     <textarea id="comment-text" name="text" rows="15" cols="50"></textarea>
                 </div>
-                <MTIfNonEmpty tag="MTCaptchaFields">
-                <MTIfCommentsAccepted><MTIfRegistrationAllowed><MTElse><$MTCaptchaFields$></MTIfRegistrationAllowed></MTIfCommentsAccepted>
-                <div id="comments-open-captcha">
-                </div>
-                </MTIfNonEmpty>
+                <div id="comments-open-captcha"></div>
                 <div id="comments-open-footer">
-                    <input type="submit" accesskey="v" name="preview" id="comment-preview" value="<__trans phrase="Preview">" />
+                    <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="<__trans phrase="Preview">" onclick="this.form.preview.value='1';" />
                     <input type="submit" accesskey="s" name="post" id="comment-submit" value="<__trans phrase="Submit">" />
                 </div>
             </form>

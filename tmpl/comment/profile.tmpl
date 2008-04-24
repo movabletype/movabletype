@@ -93,9 +93,9 @@
 </form>
 
 <mt:if name="entry_url">
-<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url">"></p>
+<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url">#_login"></p>
 <mt:else>
-<p><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url">"></p>
+<p><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url">#_login"></p>
 </mt:else></mt:if>
 
 <mt:include name="../cms/include/chromeless_footer.tmpl">

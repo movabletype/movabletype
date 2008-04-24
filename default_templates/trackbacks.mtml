@@ -1,7 +1,7 @@
 <mt:ignore><!-- Display TrackBacks for the entry/page or TrackBack details if TrackBacks are being accepted --></mt:ignore>
 <MTIfPingsActive>
 <div id="trackbacks" class="trackbacks">
-    <h2 class="trackbacks-header"><$MTEntryTrackbackCount singular="<__trans phrase="1 TrackBack">" plural="<__trans phrase="# TrackBacks">"$></h2>
+    <h2 class="trackbacks-header"><$MTEntryTrackbackCount singular="<__trans phrase="1 TrackBack">" plural="<__trans phrase="# TrackBacks">" none="<__trans phrase="No TrackBacks">"$></h2>
 
     <mt:ignore><!-- Display TrackBack details if TrackBacks are being accepted --></mt:ignore>
     <MTIfPingsAccepted>
@@ -20,7 +20,7 @@
             <div class="inner">
                 <div class="trackback-header">
                     <div class="asset-meta">
-                        <__trans phrase="<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>" params="<$MTPingURL$>%%<$MTPingTitle$>%%<$MTPingBlogName$>%%#ping-<$MTPingID$>%%<$MTPingDate$>">
+                        <__trans phrase="<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>" params="<$MTPingURL$>%%<$MTPingTitle$>%%<$MTPingBlogName$>%%#ping-<$MTPingID$>%%<$MTPingDate relative="js"$>">
                     </div>
                 </div>
                 <div class="trackback-content">

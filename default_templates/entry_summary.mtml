@@ -5,9 +5,9 @@
         <div class="asset-meta">
             <span class="byline">
     <MTIfNonEmpty tag="EntryAuthorDisplayName">
-                <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$MTEntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>">
+                <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$MTEntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X" relative="js"$></abbr>">
     <MTElse>
-                <abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X"$></abbr>
+                <abbr class="published" title="<$MTEntryDate format_name="iso8601"$>"><$MTEntryDate format="%x %X" relative="js"$></abbr>
     </MTIfNonEmpty>
             </span>
 <MTUnless name="hide_counts" eq="1">

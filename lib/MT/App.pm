@@ -276,7 +276,7 @@ sub listing {
     $param->{json} = 1 if $json;
 
     my $class = $app->model($type) or return;
-    my $list_pref = $app->list_pref($type);
+    my $list_pref = $app->list_pref($type) if $app->can('list_pref');
     $param->{$_} = $list_pref->{$_} for keys %$list_pref;
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
@@ -937,11 +937,13 @@ sub add_breadcrumb {
 
 sub is_authorized { 1 }
 
+sub commenter_cookie { COMMENTER_COOKIE_NAME() }
+
 sub user_cookie { $COOKIE_NAME }
 
 sub user {
     my $app = shift;
-    $app->{author} = $app->{$COOKIE_NAME} = $_[0] if @_;
+    $app->{author} = $app->{ $app->user_cookie } = $_[0] if @_;
     return $app->{author};
 }
 
@@ -1012,7 +1014,7 @@ sub session_user {
     }
 }
 
-sub _make_commenter_session {
+sub make_commenter_session {
     my $app = shift;
     my ($session_key, $email, $name, $nick, $id, $url, $timeout, $blog_id) = @_;
 
@@ -1020,7 +1022,7 @@ sub _make_commenter_session {
     $nick = encode_text($nick, $enc, 'utf-8');
     my $nick_escaped = MT::Util::escape_unicode( $nick );
 
-    $timeout = '+' . $app->{cfg}->CommentSessionTimeout . 's' unless defined $timeout;
+    $timeout = '+' . $app->config->CommentSessionTimeout . 's' unless defined $timeout;
     my %kookee = (-name => COMMENTER_COOKIE_NAME(),
                   -value => $session_key,
                   -path => '/',
@@ -1032,84 +1034,27 @@ sub _make_commenter_session {
                        ($timeout ? (-expires => $timeout) : ()));
     $app->bake_cookie(%name_kookee);
     if (defined $id) {
-        my $blog_ids;
-        if ($app->user && $app->user->is_superuser) {
-            # Do not send blog ids in cookie because it may become huge.
-            $blog_ids = 'S';
-        }
-        else {
-            my @blogs = $app->model('blog')->load(undef,
-              {
-                fetchonly => [ 'id' ],
-                join => MT::Permission->join_on('blog_id',
-                  {
-                    permissions => "\%'comment'\%",
-                    author_id   => $id
-                  },
-                  { 'like' => { 'permissions' => 1 } }
-                )
-              }
-            );
-
-            # Has permissions to 20+ blogs - do not send these ids in cookie.
-            $blog_ids = 20 < scalar(@blogs)
-              ? 'N'
-              : @blogs
-                ? "'" . join("','", map { $_->id } @blogs) . "'" 
-                : '';
-        }
-
-        if ( $blog_ids ne 'S' && $blog_ids ne 'N' ) {
-            my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
-            if ($perm) {
-                # double-check to see if this user hasn't been denied commenting
-                # permission. user has 'comment' permission through a role,
-                # but check for a restriction to comment on this blog
-                if ($perm->is_restricted('comment')) {
-                    $blog_ids =~ s/(,|^)'$blog_id'(,|$)//;
-                }
-
-                # But if the permission carries a 'can administer' permission
-                # they should be allowed
-                if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
-                    if ($perm->can_administer_blog()) {
-                        # user is a blog administrator, so yes, they can comment too
-                        $blog_ids .= ($blog_ids ne '' ? ',' : '')
-                            . "'" . $blog_id . "'";
-                    }
-                }
-            }
-            else {
-                if ($blog_id && ($blog_ids !~ m/(,|^)'$blog_id'(,|$)/)) {
-                    # extra check to see if this user can comment on requested
-                    # blog; this is specific to the Comment application, so
-                    # only do this if we're running the comments app.
-                    if ( $app->isa( 'MT::App::Comments' )) {
-                        if ( $app->_check_commenter_author($app->user, $blog_id) ) {
-                            # is this blog open to commenting from registered users?
-                            # if so, this user really can comment, even though they
-                            # don't have explicit permissions for it
-                            $blog_ids .= ($blog_ids ne '' ? ',' : '')
-                                . "'" . $blog_id . "'";
-                        }
-                    }
-                }
+        my $banned = 0;
+        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
+        if ($perm) {
+            if (!$perm->can_administer_blog && $perm->is_restricted('comment')) {
+                $banned = 1;
             }
         }
 
-        my %id_kookee = (-name => "commenter_id",
-                           -value => $id . ':' . $blog_ids,
-                           -path => '/',
-                           ($timeout ? (-expires => $timeout) : ()));
-        $app->bake_cookie(%id_kookee);
+        # my %id_kookee = (-name => "commenter_id",
+        #                    -value => $id . ':' . $blog_ids,
+        #                    -path => '/',
+        #                    ($timeout ? (-expires => $timeout) : ()));
+        # $app->bake_cookie(%id_kookee);
     }
-    if (defined($url) && $url) {
-        my %id_kookee = (-name => "commenter_url",
-                           -value => $url,
-                           -path => '/',
-                           ($timeout ? (-expires => $timeout) : ()));
-        $app->bake_cookie(%id_kookee);
-    }
+    # if (defined($url) && $url) {
+    #     my %id_kookee = (-name => "commenter_url",
+    #                        -value => $url,
+    #                        -path => '/',
+    #                        ($timeout ? (-expires => $timeout) : ()));
+    #     $app->bake_cookie(%id_kookee);
+    # }
 
     require MT::Session;
     my $sess_obj = MT::Session->new();
@@ -1134,29 +1079,30 @@ sub _invalidate_commenter_session {
     require MT::Session;
     my $sess_obj = MT::Session->load({id => $session });
     $sess_obj->remove() if ($sess_obj);
-    
-    my $timeout = $app->{cfg}->CommentSessionTimeout;
 
-    my %kookee = (-name => COMMENTER_COOKIE_NAME(),
-                  -value => '',
-                  -path => '/',
-                  -expires => "+${timeout}s");
-    $app->bake_cookie(%kookee);
-    my %url_kookee = (-name => 'commenter_url',
-                       -value => '',
-                       -path => '/',
-                       -expires => "+${timeout}s");
-    $app->bake_cookie(%url_kookee);
-    my %name_kookee = (-name => 'commenter_name',
-                       -value => '',
-                       -path => '/',
-                       -expires => "+${timeout}s");
-    $app->bake_cookie(%name_kookee);
-    my %id_kookee = (-name => 'commenter_id',
-                       -value => '',
-                       -path => '/',
-                       -expires => "+${timeout}s");
-    $app->bake_cookie(%id_kookee);
+    $app->logout();
+
+    # my $timeout = $app->config->CommentSessionTimeout;
+    # my %kookee = (-name => COMMENTER_COOKIE_NAME(),
+    #               -value => '',
+    #               -path => '/',
+    #               -expires => "+${timeout}s");
+    # $app->bake_cookie(%kookee);
+    # my %url_kookee = (-name => 'commenter_url',
+    #                    -value => '',
+    #                    -path => '/',
+    #                    -expires => "+${timeout}s");
+    # $app->bake_cookie(%url_kookee);
+    # my %name_kookee = (-name => 'commenter_name',
+    #                    -value => '',
+    #                    -path => '/',
+    #                    -expires => "+${timeout}s");
+    # $app->bake_cookie(%name_kookee);
+    # my %id_kookee = (-name => 'commenter_id',
+    #                    -value => '',
+    #                    -path => '/',
+    #                    -expires => "+${timeout}s");
+    # $app->bake_cookie(%id_kookee);
 }
 
 sub start_session {
@@ -1168,7 +1114,7 @@ sub start_session {
         ($x, $y, $remember) = split(/::/, $app->cookie_val($app->user_cookie));
     }
     my $session = make_session($author, $remember);
-    my %arg = (-name => $COOKIE_NAME,
+    my %arg = (-name => $app->user_cookie,
                -value => join('::',
                               $author->name,
                               $session->id,
@@ -1500,7 +1446,7 @@ sub login {
             if ( $commenter_blog_id >= 0 ) {
                 # Presence of 'password' indicates this is a login request;
                 # do session/cookie management.
-                $app->_make_commenter_session(
+                $app->make_commenter_session(
                     $app->make_magic_token, 
                     $author->email, 
                     $author->name, 
@@ -1578,8 +1524,8 @@ sub logout {
     }
 
     MT::Auth->invalidate_credentials({ app => $app });
-    my %cookies = $app->cookies();
-    $app->_invalidate_commenter_session(\%cookies);
+    # my %cookies = $app->cookies();
+    # $app->_invalidate_commenter_session(\%cookies);
 
     # The login box should only be displayed in the event of non-delegated auth
     # right?
@@ -1883,7 +1829,7 @@ sub _send_sysadmins_email {
 
 sub clear_login_cookie {
     my $app = shift;
-    $app->bake_cookie(-name => $COOKIE_NAME, -value => '', -expires => '-1y',
+    $app->bake_cookie(-name => $app->user_cookie, -value => '', -expires => '-1y',
         -path => $app->config->CookiePath || $app->mt_path);
 }
 

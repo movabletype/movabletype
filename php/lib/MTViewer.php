@@ -362,7 +362,23 @@ class MTViewer extends Smarty {
         }
         if (!isset($args['format'])) $args['format'] = null;
         require_once("MTUtil.php");
-        return format_ts($args['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
+        $fds = format_ts($args['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
+        if (isset($args['relative'])) {
+            if ($args['relative'] == 'js') {
+                preg_match('/(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/', $ts, $match);
+                list($xx, $y, $mo, $d, $h, $m, $s) = $match;
+                $mo--;
+                $js = <<<EOT
+<script type="text/javascript">
+/* <![CDATA[ */
+document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
+/* ]]> */
+</script><noscript>$fds</noscript>
+EOT;
+                return $js;
+            }
+        }
+        return $fds;
     }
 
     function tag($tag, $args = array()) {

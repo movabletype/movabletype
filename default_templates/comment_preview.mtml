@@ -4,9 +4,14 @@
 <head>
     <title><$MTBlogName encode_html="1"$>: <__trans phrase="Previewing your Comment"></title>
     <$mt:include module="<__trans phrase="HTML Head">"$>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var is_preview = true;
+    /* ]]> */
+    </script>
     <script type="text/javascript" src="<$MTLink template="javascript"$>"></script>
 </head>
-<body id="<$mt:BlogTemplateSetID$>" class="mt-comment-preview <$MTVar name="page_layout"$>" onload="individualArchivesOnLoad(commenter_name)">
+<body id="<$mt:BlogTemplateSetID$>" class="mt-comment-preview <$MTVar name="page_layout"$>" onload="mtEntryOnLoad()">
     <div id="container">
         <div id="container-inner">
 
@@ -26,18 +31,18 @@
 
 
 <mt:ignore><!-- Comment Preview --></mt:ignore>
-                            <div class="comment"<MTIfArchiveTypeEnabled archive_type="Individual"> id="comment-<$MTCommentID$>"</MTIfArchiveTypeEnabled>>
+                            <div class="comment" id="comment-<$MTCommentID$>">
                                 <div class="inner">
                                     <div class="comment-header">
                                         <div class="asset-meta">
                                             <span class="byline">
                                                 <mt:IfCommentParent>
-                                                    <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span>%%<mt:CommentParent>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
+                                                    <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
                                                 <mt:else>
-                                                    <MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty> <span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span>
+                                                    <$MTCommentAuthorIdentity$>
+                                                    <span class="vcard author"><$MTCommentAuthorLink$></span>
                                                 </mt:IfCommentParent>
                                                 | <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
-                                                <MTIfCommentsAccepted> | <$MTCommentReplyLink$></MTIfCommentsAccepted>
                                             </span>
                                         </div>
                                     </div>
@@ -49,22 +54,14 @@
 
 
 <mt:ignore><!-- Comment Form --></mt:ignore>
-<MTIfCommentsAccepted>
                             <div class="comments-open" id="comments-open">
                                 <h2 class="comments-open-header"><__trans phrase="Leave a comment"></h2>
                                 <div class="comments-open-content">
-    <MTIfRegistrationAllowed>
-                                        <div id="comment-form-external-auth">
-                                            <script type="text/javascript">
-                                            /* <![CDATA[ */
-                                            is_preview = true;
-                                            writeCommenterGreeting(commenter_name, <$MTEntryID$>, <$MTEntryBlogID$>, commenter_id, commenter_url);
-                                            /* ]]> */
-                                            </script>
-                                        </div>
-    </MTIfRegistrationAllowed>
-                                    <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="if (this.bakecookie.checked) rememberMe(this)">
+                                    <div id="comment-greeting"></div>
+                                    <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="mtCommentOnSubmit(this)">
                                         <input type="hidden" name="static" value="1" />
+                                        <input type="hidden" name="armor" value="1" />
+                                        <input type="hidden" name="preview" value="" />
                                         <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
                                         <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
                                         <div id="comments-open-data">
@@ -80,29 +77,20 @@
                                                 <label for="comment-url"><__trans phrase="URL"></label>
                                                 <input id="comment-url" name="url" size="30" value="<$MTCommentURL encode_html="1"$>" />
                                             </div>
-                                            <div id="comment-form-remember-me">
-                                                <label for="comment-bake-cookie"><input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="if (!this.checked) forgetMe(document.comments_form)" value="1" />
-                                                    <__trans phrase="Remember personal info?"></label>
-                                            </div>
                                         </div>
                                         <div id="comments-open-text">
                                             <label for="comment-text"><__trans phrase="Comments"> <MTIfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
                                             <textarea id="comment-text" name="text" rows="15" cols="50"><$MTCommentBody autolink="0" sanitize="0" convert_breaks="0" encode_html="1"$></textarea>
                                         </div>
-    <MTIfNonEmpty tag="MTCaptchaFields">
-                                        <MTIfCommentsAccepted><MTIfRegistrationAllowed><MTElse><$MTCaptchaFields$></MTIfRegistrationAllowed></MTIfCommentsAccepted>
-                                        <div id="comments-open-captcha">
-                                        </div>
-    </MTIfNonEmpty>
+                                        <div id="comments-open-captcha"></div>
                                         <div id="comments-open-footer">
-                                            <input type="submit" accesskey="v" name="preview" id="comment-preview" value="<__trans phrase="Preview">" />
+                                            <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="<__trans phrase="Preview">" onclick="this.form.preview.value='1';" />
                                             <input type="submit" accesskey="s" name="post" id="comment-submit" value="<__trans phrase="Submit">" />
                                             <input type="button" name="cancel" id="comment-cancel" value="<__trans phrase="Cancel">" onclick="window.location='<$MTEntryPermalink$>'" />
                                         </div>
                                     </form>
                                 </div>
                             </div>
-</MTIfCommentsAccepted>
                         </div>
                     </div>
 
