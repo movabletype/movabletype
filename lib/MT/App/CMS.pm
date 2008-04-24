@@ -52,12 +52,14 @@ sub core_methods {
         'search_replace' => "${pkg}Search::search_replace",
 
         ## Edit methods
-        'edit_role'  => "${pkg}User::edit_role",
+        'edit_role'   => "${pkg}User::edit_role",
+        'edit_widget' => "${pkg}Template::edit_widget",
 
         ## Listing methods
         'list_ping'     => "${pkg}TrackBack::list",
         'list_entry'    => "${pkg}Entry::list",
         'list_template' => "${pkg}Template::list",
+        'list_widget'   => "${pkg}Template::list_widget",
         'list_page'     => "${pkg}Page::list",
         'list_comment'  => {
             handler    => "${pkg}Comment::list",
@@ -95,14 +97,16 @@ sub core_methods {
         'cfg_web_services' => "${pkg}Blog::cfg_web_services",
 
         ## Save
-        'save_cat'     => "${pkg}Category::save",
-        'save_entries' => "${pkg}Entry::save_entries",
-        'save_pages'   => "${pkg}Page::save_pages",
-        'save_entry'   => "${pkg}Entry::save",
-        'save_role'    => "${pkg}User::save_role",
+        'save_cat'       => "${pkg}Category::save",
+        'save_entries'   => "${pkg}Entry::save_entries",
+        'save_pages'     => "${pkg}Page::save_pages",
+        'save_entry'     => "${pkg}Entry::save",
+        'save_role'      => "${pkg}User::save_role",
+        'save_widget'    => "${pkg}Template::save_widget",
 
         ## Delete
         'delete_entry'   => "${pkg}Entry::delete",
+        'delete_widget'   => "${pkg}Template::delete_widget",
 
         ## List actions
         'enable_object'  => "${pkg}User::enable",
@@ -1389,6 +1393,13 @@ sub core_menus {
             permission    => 'edit_templates',
             system_permission    => 'edit_templates',
         },
+        'design:widgets'  => {
+            label         => 'Widgets',
+            mode          => 'list_widget',
+            order         => 200,
+            permission    => 'edit_templates',
+            view          => "blog",
+        },
 
         'prefs:general' => {
             label      => "General",
@@ -1695,6 +1706,7 @@ sub init_core_callbacks {
             $pkg . 'pre_save.template'    => "${pfx}Template::pre_save",
             $pkg . 'post_save.template'   => "${pfx}Template::post_save",
             $pkg . 'post_delete.template' => "${pfx}Template::post_delete",
+            'restore' => "${pfx}Template::restore_widgetmanagers",
 
             # tags
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",

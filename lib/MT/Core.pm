@@ -712,6 +712,11 @@ BEGIN {
                 label => 'Set Variable Block',
                 content => qq{<mt:SetVarBlock name="variable">\n    \$0\n</mt:SetVarBlock>\n},
             },
+            'widget_manager' => {
+                trigger => 'widget',
+                label => 'Widget Set',
+                content => '<$mt:WidgetSet name="$0"$>',
+            },
         },
     };
 }

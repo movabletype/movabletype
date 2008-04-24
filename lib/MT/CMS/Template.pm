@@ -960,6 +960,11 @@ sub reset_blog_templates {
         $val->{name} = $app->translate( $val->{name} );
         $val->{text} = $app->translate_templatized( $val->{text} );
         my $tmpl = MT::Template->new;
+        if ( ( 'widgetset' eq $val->{type} )
+          && ( exists $val->{modulesets} ) ) {
+            my $modulesets = delete $val->{modulesets};
+            $tmpl->modulesets( join ',', @$modulesets );
+        }
         $tmpl->set_values($val);
         $tmpl->build_dynamic(0);
         $tmpl->blog_id( $blog->id );
@@ -1723,6 +1728,11 @@ sub refresh_all_templates {
             if ($tmpl) {
                 # we found that the previous template had not been
                 # altered, so replace it with new default template...
+                if ( ( 'widgetset' eq $val->{type} )
+                  && ( exists $val->{widgets} ) ) {
+                    my $modulesets = delete $val->{widgets};
+                    $tmpl->modulesets( MT::Template->widgets_to_modulesets($modulesets, $blog_id) );
+                }
                 $tmpl->text( $val->{text} );
                 $tmpl->identifier( $val->{identifier} );
                 $tmpl->type( $val->{type} )
@@ -1733,6 +1743,11 @@ sub refresh_all_templates {
             else {
                 # create this one...
                 my $tmpl = new MT::Template;
+                if ( ( 'widgetset' eq $val->{type} )
+                  && ( exists $val->{widgets} ) ) {
+                    my $modulesets = delete $val->{widgets};
+                    $tmpl->modulesets( MT::Template->widgets_to_modulesets($modulesets, $blog_id) );
+                }
                 $tmpl->build_dynamic(0);
                 $tmpl->set_values(
                     {
@@ -1976,6 +1991,295 @@ sub publish_archive_templates {
     }
 
     $app->call_return( published => 1 );
+}
+
+sub save_widget {
+    my $app = shift;
+    my $q   = $app->param;
+
+    $app->validate_magic() or return;
+    my $author = $app->user;
+
+    my $id = $q->param('id');
+
+    if ( !$author->is_superuser ) {
+        $app->run_callbacks( 'cms_save_permission_filter.template', $app, $id )
+          || return $app->error(
+            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+    }
+
+    my $filter_result = $app->run_callbacks( 'cms_save_filter.widgetset', $app );
+
+    if ( !$filter_result ) {
+        return edit_widget( $app, { error => $app->translate( "Save failed: [_1]", $app->errstr ) } );
+    }
+
+    my $class = $app->model('template');
+    my $obj;
+    if ( $id ) {
+        $obj = $class->load($id)
+            or return $app->error($app->translate("Invalid ID [_1]", $id));
+    }
+    else {
+        $obj = $class->new;
+    }
+
+    my $original = $obj->clone();
+    $obj->name($q->param('name'));
+    $obj->type('widgetset');
+    $obj->blog_id( $q->param('blog_id') || 0 );
+    $obj->modulesets($q->param('modules'));
+
+    unless (
+        $app->run_callbacks( 'cms_pre_save.template', $app, $obj, $original ) )
+    {
+        return edit_widget( $app, { error => $app->translate( "Save failed: [_1]", $app->errstr ) } );
+    }
+
+    $obj->save
+      or return $app->error(
+        $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
+
+    $app->run_callbacks( 'cms_post_save.template', $app, $obj, $original )
+      or return $app->error( $app->errstr() );
+
+    $app->redirect(
+        $app->uri(
+            'mode' => 'edit_widget',
+            args =>
+              { blog_id => $obj->blog_id, 'saved' => 1, rebuild => 1, id => $obj->id }
+        )
+    );
+}
+
+sub edit_widget {
+    my $app = shift;
+    my (%opt) = @_;
+
+    my $q       = $app->param();
+    my $id      = scalar($q->param('id')) || $opt{id};
+    my $blog_id = scalar $q->param('blog_id') || 0;
+
+    my $tmpl_class = $app->model('template');
+    require MT::Promise;
+    my $obj_promise = MT::Promise::delay(
+        sub {
+            return $tmpl_class->load($id) || undef;
+        }
+    );
+
+    if ( !$app->user->is_superuser ) {
+        $app->run_callbacks( 'cms_view_permission_filter.template',
+            $app, $id, $obj_promise )
+          || return $app->error(
+            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+    }
+
+    my $param = {
+        blog_id      => $blog_id,
+        search_type  => "template",
+        search_label => MT::Template->class_label_plural,
+        $id ? ( id => $id ) : (), 
+        exists($opt{rebuild}) ? ( rebuild => $opt{rebuild} ) : (),
+        exists($opt{error}) ? ( error => $opt{error} ) : (),
+        exists($opt{saved}) ? ( saved => $opt{saved} ) : ()
+    };
+    if ($blog_id) {
+        my $blog = $app->blog;
+        # include_system/include_cache are only applicable
+        # to blog-level templates
+        $param->{include_system} = $blog->include_system;
+        $param->{include_cache} = $blog->include_cache;
+        $param->{include_with_ssi}      = 0;
+        $param->{cache_path}            = '';
+        $param->{cache_enabled}         = 0;
+        $param->{cache_expire_type}     = 0;
+        $param->{cache_expire_period}   = '';
+        $param->{cache_expire_interval} = 0;
+        $param->{ssi_type} = uc $blog->include_system;
+    }
+    
+    my $iter = $tmpl_class->load_iter(
+        { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
+        { sort => 'name', direction => 'ascend' }
+    );
+
+    my %all_widgets;
+    while (my $m = $iter->()) {
+        next unless $m;
+        $all_widgets{ $m->id } = $m->name;
+    }
+
+    my @inst_modules;
+    my $wtmpl;
+    if ( $id ) {
+        $wtmpl = $obj_promise->force()
+          or return $app->error(
+            $app->translate(
+                "Load failed: [_1]",
+                $tmpl_class->errstr || $app->translate("(no reason given)")
+            )
+          );
+        $param->{name} = $wtmpl->name;
+        $param->{include_with_ssi} = $wtmpl->include_with_ssi
+          if defined $wtmpl->include_with_ssi;
+        $param->{cache_path}       = $wtmpl->cache_path
+          if defined $wtmpl->cache_path;
+        $param->{cache_expire_type} = $wtmpl->cache_expire_type
+          if defined $wtmpl->cache_expire_type;
+        my ( $period, $interval ) =
+          _get_schedule( $wtmpl->cache_expire_interval );
+        $param->{cache_expire_period}   = $period   if defined $period;
+        $param->{cache_expire_interval} = $interval if defined $interval;
+        my @events = split ',', $wtmpl->cache_expire_event;
+        foreach my $name (@events) {
+            $param->{ 'cache_expire_event_' . $name } = 1;
+        }
+        my $modulesets = $wtmpl->modulesets;
+        if ( $modulesets ) {
+            my @modules = split ',', $modulesets;
+            foreach my $mid ( @modules ) {
+                push @inst_modules, { id => $mid, name => $all_widgets{$mid} };
+                delete $all_widgets{$mid};
+            }
+        }
+    }
+    $param->{installed} = \@inst_modules if @inst_modules;
+    my @avail_modules = map { { id => $_, name => $all_widgets{$_} } }
+        keys %all_widgets;
+    $param->{available} = \@avail_modules;
+
+    my $res = $app->run_callbacks('cms_edit.widgetset', $app, $id, $wtmpl, $param);
+    if (!$res) {
+        return $app->error($app->callback_errstr());
+    }
+
+    $app->load_tmpl('edit_widget.tmpl', $param);
+}
+
+sub list_widget {
+    my $app = shift;
+    my (%opt) = @_;
+    my $q = $app->param;
+
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    return $app->return_to_dashboard( redirect => 1 )
+      unless $perms || $app->user->is_superuser;
+    if ( $perms && !$perms->can_edit_templates ) {
+        return $app->return_to_dashboard( permission => 1 );
+    }
+    my $blog_id = $q->param('blog_id') || 0;
+
+    my $widget_loop = &build_template_table( $app,
+        load_args => [ 
+            { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
+            { sort => 'name', direction => 'ascend' }
+        ],
+    );
+    
+    my $param = {
+        widget_table   => $widget_loop,
+        object_type    => "widgetset",
+        search_type    => "template",
+        search_label   => MT::Template->class_label_plural,
+        listing_screen => 1,
+        screen_id      => "list-widget-set",
+        $blog_id ? ( blog_view => 1, blog_id => $blog_id ) : (),
+        exists($opt{rebuild}) ? ( rebuild => $opt{rebuild} ) : (),
+        exists($opt{error}) ? ( error => $opt{error} ) : (),
+        exists($opt{deleted}) ? ( saved => $opt{deleted} ) : ()
+    };
+
+    my $iter = $app->model('template')->load_iter(
+        { type => 'widgetset', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
+        { sort => 'name', direction => 'ascend' }
+    );
+    my @widgetmanagers;
+    while ( my $widgetset = $iter->() ) {
+        next unless $widgetset;
+        my $ws = { 
+            id => $widgetset->id,
+            widgetmanager => $widgetset->name,
+        };
+        if ( my $modulesets = $widgetset->modulesets ) {
+            $ws->{widgets} = $modulesets;
+            my @names;
+            foreach my $module ( split ',', $modulesets ) { 
+                my ( $widget ) = grep { $_->{id} eq $module } @$widget_loop;
+                push @names, $widget->{name} if $widget;
+            }
+            $ws->{names} = join(', ', @names) if @names;
+        }
+        push @widgetmanagers, $ws;
+    }
+    $param->{object_loop} = \@widgetmanagers if @widgetmanagers;
+
+    $app->load_tmpl('list_widget.tmpl', $param);
+}
+
+sub delete_widget {
+    my $app  = shift;
+    my $q    = $app->param;
+    my $type = $q->param('_type');
+
+    return $app->errtrans("Invalid request.")
+      unless $type;
+
+    return $app->error( $app->translate("Invalid request.") )
+      if $app->request_method() ne 'POST';
+
+    $app->validate_magic() or return;
+
+    my $tmpl_class = $app->model('template');
+
+    for my $id ( $q->param('id') ) {
+        next unless $id;    # avoid 'empty' ids
+
+        my $obj = $tmpl_class->load($id);
+        next unless $obj;
+        $app->run_callbacks( 'cms_delete_permission_filter.template',
+            $app, $obj )
+          || return $app->error(
+            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+
+        $obj->remove
+          or return $app->errtrans(
+            'Removing [_1] failed: [_2]',
+            $app->translate('template'),
+            $obj->errstr
+          );
+        $app->run_callbacks( 'cms_post_delete.template', $app, $obj );
+    }
+    $app->call_return;
+}
+
+sub restore_widgetmanagers {
+    my ($cb, $objects, $deferred, $errors, $callback) = @_;
+    my @keys = grep { $_ =~ /^MT::Template#/ } keys( %$objects );
+    foreach my $key ( @keys ) {
+        my $tmpl = $objects->{$key};
+        next unless 'widgetset' eq $tmpl->type;
+        my $modulesets = $tmpl->modulesets;
+        next unless $modulesets;
+        $callback->( MT->translate( 'Restoring widget set [_1]... ', $tmpl->name ) );
+
+        my @tmpl_ids = split ',', $modulesets;
+        my @new_ids;
+        foreach my $id ( @tmpl_ids ) {
+            my $new_tmpl = $objects->{"MT::Template#$id"};
+            next unless $new_tmpl;
+            push @new_ids, $new_tmpl->id;
+        }
+        if ( @new_ids ) {
+            $tmpl->modulesets( join(',', @new_ids) );
+            $tmpl->save;
+            $callback->( MT->translate("Done.") . "\n" );
+        }
+        else {
+            $callback->( MT->translate("Failed.") . "\n" );
+        }
+    }
+    1;
 }
 
 {

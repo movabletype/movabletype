@@ -2,8 +2,8 @@
 
 <mt:var name="position_actions_top" value="1">
 <mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">plugins/WidgetManager/styles/app.css" type="text/css" />
-<script type="text/javascript" src="<mt:var name="static_uri">plugins/WidgetManager/js/app.js"></script>
+<link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css" type="text/css" />
+<script type="text/javascript" src="<mt:var name="static_uri">/js/widget.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var widgetSetTableSelect;
@@ -52,11 +52,10 @@ TC.attachLoadEvent( init );
 
 <mt:setvarblock name="listing_header">
     <h3><__trans phrase="Widget Sets"></h3>
-    <p><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">&amp;widgetmanager=<__trans phrase="New Widget Set" escape="url">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></p>
+    <p><a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Widget Set"></a></p>
 </mt:setvarblock>
 <mtapp:listing
-    hide_pager="1"
-    empty_message="<__trans phrase="No Widget Sets could be found.">">
+    hide_pager="1">
     <mt:if name="__first__">
     <thead>
         <tr>
@@ -68,8 +67,8 @@ TC.attachLoadEvent( init );
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="widgetmanager">" class="select" /></td>
-            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&widgetmanager=<mt:var name="widgetmanager" escape="url">"><mt:var name="widgetmanager"></a></td>
+            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id">"><mt:var name="widgetmanager"></a></td>
             <td class="widgetmanager-widgets"><mt:var name="names"></td>
         </tr>
     <mt:if name="__last__">
@@ -83,7 +82,7 @@ TC.attachLoadEvent( init );
         <mtapp:statusmsg
             id="zero-state"
             class="info zero-state">
-            <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label"$>">
+            <__trans phrase="No Widget Sets could be found.">
         </mtapp:statusmsg>
     </div>
 </mtapp:listing>

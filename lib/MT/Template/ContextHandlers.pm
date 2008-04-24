@@ -360,6 +360,8 @@ sub core_tags {
 
             Include => \&_hdlr_include,
             Link => \&_hdlr_link,
+            WidgetManager => \&_hdlr_widget_manager,
+            WidgetSet => \&_hdlr_widget_manager,
 
             ErrorMessage => \&_hdlr_error_message,
 
@@ -8997,6 +8999,35 @@ sub _hdlr_next_link {
 
     local $ctx->{__stash}{vars}{__value__} = $current_page + 1;
     _hdlr_pager_link(@_);
+}
+
+sub _hdlr_widget_manager {
+    my ( $ctx, $args ) = @_;
+    my $tmpl_name = $args->{name}
+        or return $ctx->error(MT->translate("name is required."));
+    my $blog_id = $args->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+
+    require MT::Template;
+    my $tmpl = MT::Template->load({ name => $tmpl_name,
+                                    blog_id => $blog_id ? [ 0, $blog_id ] : 0,
+                                    type => 'widgetset' })
+        or return $ctx->error(MT->translate("Specified WidgetSet not found."));
+    my $text = $tmpl->text;
+    return $ctx->build($text) if $text;
+
+    my $modulesets = $tmpl->modulesets;
+    return ''; # empty widgetset is not an error
+
+    my $string_tmpl = '<mt:include widget="%s">';
+    my @selected = split ','. $modulesets;
+    foreach my $mid (@selected) {
+        my $wtmpl = MT::Template->load($mid)
+            or return $ctx->error(MT->translate(
+                "Can't find included template widget '[_1]'", $mid ));
+        $text .= sprintf( $string_tmpl, $wtmpl->name );
+    }
+    return '' unless $text;
+    return $ctx->build($text);
 }
 
 1;

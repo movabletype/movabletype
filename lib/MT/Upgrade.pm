@@ -1947,6 +1947,11 @@ sub upgrade_templates {
 
         my $obj = MT::Template->new;
         $obj->build_dynamic(0);
+        if ( ( 'widgetset' eq $val->{type} )
+          && ( exists $val->{widgets} ) ) {
+            my $modulesets = delete $val->{widgets};
+            $obj->modulesets( MT::Template->widgets_to_modulesets($modulesets, $blog_id) );
+        }
         foreach my $v (keys %$val) {
             $obj->column($v, $val->{$v}) if $obj->has_column($v);
         }

@@ -142,6 +142,134 @@ BEGIN {
                 label => 'Trackbacks',
             },
         },
+        'widget' => {
+            'about_this_page' => {
+                fielname => 'about_this_page.mtml',
+                label => 'About This Page',
+            },
+            'archive_widgets_group' => {
+                fielname => 'archive_widgets_group.mtml',
+                label => 'Archive Widgets Group',
+            },
+            'author_archive_list' => {
+                fielname => 'author_archive_list.mtml',
+                label => 'Author Archives',
+            },
+            'current_author_monthly_archive_list' => {
+                fielname => 'current_author_monthly_archive_list.mtml',
+                label => 'Current Author Monthly Archives',
+            },
+            'calendar' => {
+                fielname => 'calendar.mtml',
+                label => 'Calendar',
+            },
+            'category_archive_list' => {
+                fielname => 'category_archive_list.mtml',
+                label => 'Category Archives',
+            },
+            'current_category_monthly_archive_list' => {
+                fielname => 'current_category_monthly_archive_list.mtml',
+                label => 'Current Category Monthly Archives',
+            },
+            'creative_commons' => {
+                fielname => 'creative_commons.mtml',
+                label => 'Creative Commons',
+            },
+            'main_index_widgets_group' => {
+                fielname => 'main_index_widgets_group.mtml',
+                label => 'Home Page Widgets Group',
+            },
+            'monthly_archive_dropdown' => {
+                fielname => 'monthly_archive_dropdown.mtml',
+                label => 'Monthly Archives Dropdown',
+            },
+            'monthly_archive_list' => {
+                fielname => 'monthly_archive_list.mtml',
+                label => 'Monthly Archives',
+            },
+            'pages_list' => {
+                fielname => 'pages_list.mtml',
+                label => 'Page Listing',
+            },
+            'recent_assets' => {
+                fielname => 'recent_assets.mtml',
+                label => 'Recent Assets',
+            },
+            'powered_by' => {
+                fielname => 'powered_by.mtml',
+                label => 'Powered By',
+            },
+            'recent_comments' => {
+                fielname => 'recent_comments.mtml',
+                label => 'Recent Comments',
+            },
+            'recent_entries' => {
+                fielname => 'recent_entries.mtml',
+                label => 'Recent Entries',
+            },
+            'search' => {
+                fielname => 'search.mtml',
+                label => 'Search',
+            },
+            'signin' => {
+                fielname => 'signin.mtml',
+                label => 'Sign In',
+            },
+            'syndication' => {
+                fielname => 'syndication.mtml',
+                label => 'Syndication',
+            },
+            'tag_cloud' => {
+                fielname => 'tag_cloud.mtml',
+                label => 'Tag Cloud',
+            },
+            'technorati_search' => {
+                fielname => 'technorati_search.mtml',
+                label => 'Technorati Search',
+            },
+            'date_based_author_archives' => {
+                fielname => 'date_based_author_archives.mtml',
+                label => 'Date-Based Author Archives',
+            },
+            'date_based_category_archives' => {
+                fielname => 'date_based_category_archives.mtml',
+                label => 'Date-Based Category Archives',
+            }
+        },
+        'widgetset' => {
+            '2column_layout_sidebar' => {
+                order => 1000,
+                label   => '2-column layout - Sidebar',
+                widgets => [
+                    'Search',
+                    'About This Page',
+                    'Home Page Widgets Group',
+                    'Archive Widgets Group',
+                    'Page Listing',
+                    'Syndication',
+                    'Powered By',
+                ],
+            },
+            '3column_layout_primary_sidebar' => {
+                order => 1000,
+                label   => '3-column layout - Primary Sidebar',
+                widgets => [
+                    'Archive Widgets Group',
+                    'Page Listing',
+                    'Syndication',
+                    'Powered By',
+                ],
+            },
+            '3column_layout_secondary_sidebar' => {
+                order => 1000,
+                label   => '3-column layout - Secondary Sidebar',
+                widgets => [
+                    'Search',
+                    'Home Page Widgets Group',
+                    'About This Page',
+                ],
+            },
+        },
         'global:module' => {
             'footer-email' => {
                 label => 'Mail Footer',
@@ -237,6 +365,7 @@ sub templates {
                     $tmpl->{global} = 1;
                 }
                 $tmpl->{set} = $type; # system, index, archive, etc.
+                $tmpl->{order} = 0 unless exists $tmpl->{order};
 
                 $type = 'custom' if $type eq 'module';
                 $type = $tmpl_id if $type eq 'system';
@@ -273,6 +402,7 @@ sub templates {
         }
     }
     my @tmpls = (values(%tmpls), values(%global_tmpls));
+    @tmpls = sort { $a->{order} <=> $b->{order} } @tmpls;
     MT->run_callbacks('DefaultTemplateFilter' . ($set ? '.' . $set : ''), \@tmpls);
     return \@tmpls;
 }

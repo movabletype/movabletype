@@ -243,6 +243,11 @@ sub create_default_templates {
         if (my $pub_opts = $val->{publishing}) {
             $obj->include_with_ssi(1) if $pub_opts->{include_with_ssi};
         }
+        if ( ( 'widgetset' eq $val->{type} )
+          && ( exists $val->{widgets} ) ) {
+            my $modulesets = delete $val->{widgets};
+            $obj->modulesets( MT::Template->widgets_to_modulesets($modulesets, $blog->id) );
+        }
         $obj->save;
         if ($val->{mappings}) {
             push @arch_tmpl, {

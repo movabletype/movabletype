@@ -2,8 +2,8 @@
 </mt:setvarblock>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">plugins/WidgetManager/styles/app.css" type="text/css" />
-<script type="text/javascript" src="<mt:var name="static_uri">plugins/WidgetManager/js/app.js"></script>
+<link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css" type="text/css" />
+<script type="text/javascript" src="<mt:var name="static_uri">/js/widget.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var colWidth = 350;
@@ -19,23 +19,11 @@ var dragStartX, dragStartY;
 var topZIndex = 10;
 
 function checkName() {
-        widgetname = getByID('name').value;
-        if (!widgetname) {
-            alert('<__trans phrase="Please use a unique name for this widget set." escape="js">');
-            return false;
-        }
-
-        oldname = getByID('old_name').value;
-
-        var1 = "<mt:loop name="widgetmanagers"><mt:var name="widgetmanager">,</mt:loop>";
-        var2 = var1.split(",");
-
-        for (var i=0; i < var2.length; i++) {
-            if (var2[i] == widgetname && (widgetname != oldname)) {
-                alert('<__trans phrase="You already have a widget set named '[_1].' Please use a unique name for this widget set." params="$name" escape="js">'.replace(/\$name/, widgetname));
-                return false;
-            }
-        }
+    widgetname = getByID('name').value;
+    if (!widgetname) {
+        alert('<__trans phrase="Please use a unique name for this widget set." escape="js">');
+        return false;
+    }
 }
 
 
@@ -284,6 +272,20 @@ function calculateHeight () {
     return true;
 }
 
+function toggleCache(id) {
+    if ("expire-time" == id) {
+        toggleDisable('cache-time-value', 0);
+        toggleDisable('cache-time-unit', 0);
+    } else {
+        toggleDisable('cache-time-value', 1);
+        toggleDisable('cache-time-unit', 1);
+    }
+    var es = DOM.getElement('cache-events').getElementsByTagName('input');
+    for (var i=0, len=es.length; i<len; i++)
+        toggleDisable( es[i].id, "expire-event" != id )
+    return false;
+}
+
 TC.attachLoadEvent( init );
 /* ]]> */
 </script>
@@ -292,10 +294,19 @@ TC.attachLoadEvent( init );
 <mt:include name="include/header.tmpl">
 
 <div id="msg-block">
-<mt:if name="rebuild">
-<mtapp:statusmsg id="saved-msg" class="success" rebuild="all">
-    <__trans phrase="Your changes to the Widget Set have been saved.">
-</mtapp:statusmsg>
+<mt:if name="saved">
+    <mtapp:statusmsg
+        id="saved"
+        class="success">
+        <__trans phrase="Your template changes have been saved.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
 </mt:if>
 </div>
 
@@ -303,8 +314,9 @@ TC.attachLoadEvent( init );
 
     <form onsubmit="this.modules.value = moduleListStr(); return checkName();" id="manager" name="manager" method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="save_widget" />
+      <mt:if name="id"><input type="hidden" name="id" value="<mt:var name="id">" /></mt:if>
       <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-      <input type="hidden" name="old_name" id="old_name" value="<mt:var name="name">" />
+      <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
       <input type="hidden" name="modules" value="" />
 
       <fieldset>

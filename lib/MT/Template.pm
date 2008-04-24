@@ -43,6 +43,7 @@ __PACKAGE__->install_properties({
         'cache_expire_interval' => 'integer meta',
         'cache_expire_event' => 'string meta',
         'cache_path' => 'string meta',
+        'modulesets' => 'string meta',
     },
     indexes => {
         blog_id => 1,
@@ -282,12 +283,71 @@ sub output {
     return $tmpl->build();
 }
 
+sub widgets_to_modulesets {
+    my $pkg = shift;
+    my ( $widgets, $blog_id ) = @_;
+    return unless $widgets && @$widgets;
+
+    my @widgets = map { MT->translate( $_ ) } @$widgets;
+
+    my @wtmpls = $pkg->load(
+        { name => \@widgets, blog_id => $blog_id ? [ $blog_id, 0 ] : 0, type => 'widget' }
+    );
+    my @wids;
+    foreach my $name ( @widgets ) {
+        my ( $widget ) = grep { $_->name eq $name } @wtmpls;
+        next unless $widget;
+        push @wids, $widget->id;
+    }
+    return join ',', @wids;
+}
+
+sub save_widgetset {
+    my $obj = shift;
+
+    my $ms = $obj->modulesets;
+    # build module list
+    my @inst;
+    if ( $ms && $ms =~ /;/ ) {
+        my @mods = split /;/, $ms;
+        for (@mods) {
+            # tmpl_id = column index . order in column ;
+            my ($id, $col) = /(\d+)=(\d+)\.(\d+)/;
+            push @inst, $id if $col && ( $col == 1 );
+        }
+        $obj->modulesets( join ',', @inst );
+    }
+    else {
+        @inst = split /,/, $obj->modulesets;
+    }
+
+    my @widgets = MT::Template->load(
+        { id => \@inst, type => 'widget',
+          blog_id => $obj->blog_id ? [ 0, $obj->blog_id ] : '0' },
+        { fetchonly => [ 'id', 'name' ] }
+    );
+
+    my $string_tmpl = '<mt:include widget="%s">';
+    my $text = q();
+    foreach my $wid (@inst) {
+        my ( $tmpl ) = grep { $_->id eq $wid } @widgets;
+        next unless $tmpl;
+        $text .= sprintf( $string_tmpl, $tmpl->name );
+    }
+    $obj->text($text) if $text;
+    return $obj->SUPER::save;
+}
+
 sub save {
     my $tmpl = shift;
     my $existing = MT::Template->load({ name => $tmpl->name, blog_id => $tmpl->blog_id });
     if ($existing && (!$tmpl->id || ($tmpl->id && ($existing->id ne $tmpl->id)))
         && ($existing->type eq $tmpl->type)) {
         return $tmpl->error(MT->translate('Template with the same name already exists in this blog.'));
+    }
+
+    if ( 'widgetset' eq $tmpl->type ) {
+        return $tmpl->save_widgetset();
     }
 
     if ($tmpl->id && ($tmpl->is_changed('build_type'))) {
