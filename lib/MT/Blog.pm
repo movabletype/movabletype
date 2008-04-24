@@ -617,7 +617,7 @@ sub clone_with_children {
 
     if ((!exists $classes->{'MT::Entry'}) || $classes->{'MT::Entry'}) {
         # Cloning ENTRY records
-        my $state = MT->translate("Cloning entries for blog...");
+        my $state = MT->translate("Cloning entries and pages for blog...");
         $callback->($state, "entries");
         $counter = 0;
         require MT::Entry;
