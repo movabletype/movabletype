@@ -13,9 +13,9 @@
         </mt:if>
         <mt:if name="publish_count">
             <mt:if name="comment_count">
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=list_comment&amp;filter_key=my_posts%%<mt:var name="comment_count">">
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=list_comment&amp;filter_key=my_posts%%<mt:var name="comment_count">"></li>
             <mt:else>
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>." params="<mt:var name="script_url">?__mode=list_entry%%<mt:var name="publish_count">">
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>." params="<mt:var name="script_url">?__mode=list_entry%%<mt:var name="publish_count">"></li>
             </mt:if>
         </mt:if>
         </ul>
