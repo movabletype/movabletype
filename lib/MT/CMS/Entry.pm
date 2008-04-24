@@ -141,28 +141,26 @@ sub edit {
             my $blog = $blog_class->load($blog_id)
                 or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
             $blog_timezone = $blog->server_offset();
-            if ( $type eq 'entry' ) {
 
-                # We only use new entry defaults on new entries.
-                my $def_status = $q->param('status')
-                  || $blog->status_default;
-                if ($def_status) {
-                    $param->{ "status_"
-                          . MT::Entry::status_text($def_status) } = 1;
-                }
-                if ( $param->{status} ) {
-                    $param->{ 'allow_comments_'
-                          . $q->param('allow_comments') } = 1;
-                    $param->{allow_comments} = $q->param('allow_comments');
-                    $param->{allow_pings}    = $q->param('allow_pings');
-                }
-                else {
-                    # new edit
-                    $param->{ 'allow_comments_'
-                          . $blog->allow_comments_default } = 1;
-                    $param->{allow_comments} = $blog->allow_comments_default;
-                    $param->{allow_pings}    = $blog->allow_pings_default;
-                }
+            # new entry defaults used for new entries AND new pages.
+            my $def_status = $q->param('status')
+              || $blog->status_default;
+            if ($def_status) {
+                $param->{ "status_"
+                      . MT::Entry::status_text($def_status) } = 1;
+            }
+            if ( $param->{status} ) {
+                $param->{ 'allow_comments_'
+                      . $q->param('allow_comments') } = 1;
+                $param->{allow_comments} = $q->param('allow_comments');
+                $param->{allow_pings}    = $q->param('allow_pings');
+            }
+            else {
+                # new edit
+                $param->{ 'allow_comments_'
+                      . $blog->allow_comments_default } = 1;
+                $param->{allow_comments} = $blog->allow_comments_default;
+                $param->{allow_pings}    = $blog->allow_pings_default;
             }
         }
 
