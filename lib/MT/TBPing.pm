@@ -30,7 +30,9 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         created_on => 1,
-        tb_id => 1,
+        tb_visible => {
+            columns => [ 'tb_id', 'visible' ],
+        },
         ip => 1,
         last_moved_on => 1, # used for junk expiration
         # For URL lookups to aid spam filtering
@@ -55,6 +57,7 @@ __PACKAGE__->install_properties({
         last_moved_on => '20000101000000',
     },
     audit => 1,
+    meta => 1,
     datasource => 'tbping',
     primary_key => 'id',
 });

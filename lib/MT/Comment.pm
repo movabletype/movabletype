@@ -34,7 +34,9 @@ __PACKAGE__->install_properties({
     indexes => {
         ip => 1,
         created_on => 1,
-        entry_id => 1,
+        entry_visible => {
+            columns => [ 'entry_id', 'visible' ],
+        },
         email => 1,
         commenter_id => 1,
         parent_id => 1,
@@ -56,6 +58,7 @@ __PACKAGE__->install_properties({
             columns => [ 'junk_status', 'created_on' ],
         },
     },
+    meta => 1,
     defaults => {
         junk_status => NOT_JUNK,
         last_moved_on => '20000101000000',
@@ -195,6 +198,17 @@ sub approve {
 }
 
 *publish = \&approve;
+
+sub author {
+    my $comment = shift;
+    if (!@_ && $comment->commenter_id) {
+        require MT::Author;
+        if (my $auth = MT::Author->load($comment->commenter_id)) {
+            return $auth->nickname;
+        }
+    }
+    return $comment->column('author', @_);
+}
 
 sub all_text {
     my $this = shift;
