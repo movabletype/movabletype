@@ -1285,38 +1285,58 @@ sub post_save {
     my $sess_obj = $app->autosave_session_obj;
     $sess_obj->remove if $sess_obj;
 
-    require MT::TemplateMap;
+    my $dynamic = 0;
     my $q = $app->param;
-    my @p = $q->param;
-    for my $p (@p) {
-        if ( $p =~ /^archive_tmpl_preferred_(\w+)_(\d+)$/ ) {
-            my $at     = $1;
-            my $map_id = $2;
-            my $map    = MT::TemplateMap->load($map_id)
-                or next;
-            $map->prefer( $q->param($p) );    # prefer method saves in itself
-        }
-        elsif ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
-            my $map_id = $1;
-            my $map    = MT::TemplateMap->load($map_id)
-                or next;
-            $map->file_template( $q->param($p) );
-            $map->save;
-        }
-        elsif ( $p =~ /^map_build_type_(\d+)$/ ) {
-            my $map_id     = $1;
-            my $map        = MT::TemplateMap->load($map_id)
-                or next;
-            my $build_type = $q->param($p);
-            require MT::PublishOption;
-            $map->build_type($build_type);
-            if ( $build_type == MT::PublishOption::SCHEDULED() ) {
-                my $period   = $q->param( 'map_schedule_period_' . $map_id );
-                my $interval = $q->param( 'map_schedule_interval_' . $map_id );
-                my $sec      = _get_interval( $period, $interval );
-                $map->build_interval($sec);
+    my $type = $q->param('type');
+    # FIXME: enumeration of types
+    if ( $type eq 'custom'
+      || $type eq 'index'
+      || $type eq 'widget'
+      || $type eq 'widgetset' )
+    {
+        $dynamic = $obj->build_dynamic;
+    }
+    else
+    {
+        # archive template specific post_save tasks
+        require MT::TemplateMap;
+        my @p = $q->param;
+        for my $p (@p) {
+            my $map;
+            if ( $p =~ /^archive_tmpl_preferred_(\w+)_(\d+)$/ ) {
+                my $at     = $1;
+                my $map_id = $2;
+                $map    = MT::TemplateMap->load($map_id)
+                    or next;
+                $map->prefer( $q->param($p) );    # prefer method saves in itself
             }
-            $map->save;
+            elsif ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
+                my $map_id = $1;
+                $map    = MT::TemplateMap->load($map_id)
+                    or next;
+                $map->file_template( $q->param($p) );
+                $map->save;
+            }
+            elsif ( $p =~ /^map_build_type_(\d+)$/ ) {
+                my $map_id     = $1;
+                $map        = MT::TemplateMap->load($map_id)
+                    or next;
+                my $build_type = $q->param($p);
+                require MT::PublishOption;
+                $map->build_type($build_type);
+                if ( $build_type == MT::PublishOption::SCHEDULED() ) {
+                    my $period   = $q->param( 'map_schedule_period_' . $map_id );
+                    my $interval = $q->param( 'map_schedule_interval_' . $map_id );
+                    my $sec      = _get_interval( $period, $interval );
+                    $map->build_interval($sec);
+                }
+                $map->save;
+            }
+            if ( !$dynamic
+              && $map && $map->build_type == MT::PublishOption::DYNAMIC() )
+            {
+                $dynamic = 1;
+            }
         }
     }
 
@@ -1334,7 +1354,7 @@ sub post_save {
         );
     }
 
-    if ( $obj->build_dynamic ) {
+    if ( $dynamic ) {
         if ( $obj->type eq 'index' ) {
             $app->rebuild_indexes(
                 BlogID   => $obj->blog_id,
@@ -1342,12 +1362,32 @@ sub post_save {
                 NoStatic => 1,
             ) or return $app->publish_error();    # XXXX
         }
-        else {
-            $app->rebuild(
-                BlogID     => $obj->blog_id,
-                TemplateID => $obj->id,
-                NoStatic   => 1,
-            ) or return $app->publish_error();
+        if ( my $blog = $app->blog ) {
+            require MT::CMS::Blog;
+            my ( $path, $url );
+            if ( $obj->type eq 'index' ) {
+                $path = $blog->site_path;
+                $url = $blog->site_url;
+            }
+            else {
+                # must be archive since other types can't be dynamic
+                if ( $path = $blog->archive_path ) {
+                    $url = $blog->archive_url;
+                }
+                else {
+                    $path = $blog->site_path;
+                    $url = $blog->site_url;
+                }
+            }
+            # specific arguments so not to overwrite mtview and htaccess
+            MT::CMS::Blog::prepare_dynamic_publishing(
+                $eh, 
+                $blog,
+                undef,
+                undef,
+                $path,
+                $url
+            );
         }
     }
     1;

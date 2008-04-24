@@ -1008,7 +1008,10 @@ sub rebuild_file {
     # If you rebuild when you've just switched to dynamic pages,
     # we move the file that might be there so that the custom
     # 404 will be triggered.
-    if ( $tmpl->build_dynamic ) {
+    require MT::PublishOption;
+    if ( $tmpl->build_dynamic
+      || ( $map->build_type == MT::PublishOption::DYNAMIC() ) )
+    {
         rename(
             $finfo->file_path,    # is this just $file ?
             $finfo->file_path . '.static'
@@ -1021,7 +1024,8 @@ sub rebuild_file {
         }
     }
 
-    return 1 if ( $tmpl->build_dynamic );
+    return 1 if ( $tmpl->build_dynamic )
+        || ( $map->build_type == MT::PublishOption::DYNAMIC() );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
     return 1 unless ( $tmpl->build_type );
 

@@ -496,11 +496,9 @@ sub count_static_templates {
     my @maps = MT::TemplateMap->load({blog_id => $blog->id,
                                       archive_type => $archive_type});
     return 0 unless @maps;
-    require MT::Template;
+    require MT::PublishOption;
     foreach my $map (@maps) {  
-        my $tmpl = MT::Template->load($map->template_id)
-            or return 0;
-        $result++ if !$tmpl->build_dynamic;
+        $result++ if $map->build_type != MT::PublishOption::DYNAMIC();
     }
     #$result ||= 1 if ($blog->custom_dynamic_templates || '') ne 'custom';
     return $result;

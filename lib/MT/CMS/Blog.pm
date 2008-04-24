@@ -2167,9 +2167,6 @@ sub prepare_dynamic_publishing {
       && ( 'MT::Callback' eq ref($cb) )
       && ( -f $htaccess_path )
       && ( -f $mtview_path );
-    return 1 
-        if 'all' ne $blog->custom_dynamic_templates
-        && 'archives' ne $blog->custom_dynamic_templates;
 
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
