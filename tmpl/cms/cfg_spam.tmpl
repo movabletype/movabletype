@@ -88,7 +88,7 @@ function scoreNudge(amount) {
         content_class="field-content-text"
         help_page="blog_settings_feedback"
         help_section="autodelete_junk">
-        <input id="auto_delete_junk" name="auto_delete_junk" type="checkbox" value="1"<mt:if name="auto_delete_junk"> checked="checked"</mt:if> onclick="toggleSubPrefs(this)" class="cb" /> <span class="hint"><__trans phrase="If enabled, feedback reported as spam will be automatically erased after a number of days."></span></li>
+        <input id="auto_delete_junk" name="auto_delete_junk" type="checkbox" value="1"<mt:if name="auto_delete_junk"> checked="checked"</mt:if> onclick="toggleSubPrefs(this)" class="cb" /> <span class="hint"><label for="auto_delete_junk"><__trans phrase="If enabled, feedback reported as spam will be automatically erased after a number of days."></label></span></li>
     </mtapp:setting>
 
 <div id="auto_delete_junk_prefs" <mt:unless name="auto_delete_junk">style="display: none"</mt:unless>>
