@@ -28,7 +28,8 @@ __PACKAGE__->install_properties({
         'text_format' => 'string(30)',
         'status' => 'integer',
         'external_id' => 'string(255)',
-#        'last_login' => 'datetime',
+        #'last_login' => 'datetime',
+
         # deprecated; permissions are in MT::Permission only now
         'can_create_blog' => 'boolean',
         'is_superuser' => 'boolean',
@@ -52,9 +53,10 @@ __PACKAGE__->install_properties({
         type => 1,
         status => 1,
         external_id => 1,
-        auth_type => 1,
+        auth_type_name => {
+            columns => ['auth_type', 'name', 'type'],
+        },
         basename => 1,
-        # is_superuser => 1,
     },
     meta => 1,
     child_classes => ['MT::Permission', 'MT::Association'],
@@ -701,6 +703,13 @@ sub userpic_url {
         $author->userpic_thumbnail_options(),
         %param,
     );
+    if ($info[0] !~ m!^https?://!) {
+        my $static_host = MT->instance->static_path;
+        if ($static_host =~ m!^https?://!) {
+            $static_host =~ s!^(https?://[^/]+?)!$1!;
+            $info[0] = $static_host . $info[0];
+        }
+    }
     return wantarray ? @info : $info[0];
 }
 
