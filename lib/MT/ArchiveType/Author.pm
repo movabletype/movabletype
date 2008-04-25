@@ -45,7 +45,7 @@ sub template_params {
     };
 }
 
-sub author_archive_title {
+sub archive_title {
     my $obj = shift;
     my ($ctx) = @_;
     my $a = $ctx->stash('author');
