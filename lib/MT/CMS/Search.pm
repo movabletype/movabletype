@@ -293,6 +293,10 @@ sub do_search_replace {
       = map scalar $q->param($_),
       qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch );
 
+    # trim 'search' parameter
+    $search =~ s/(^\s+|\s+$)//g;
+    $app->param('search', $search);
+
     if ( !$type || ( 'category' eq $type ) || ( 'folder' eq $type ) ) {
         $type = 'entry';
     }
