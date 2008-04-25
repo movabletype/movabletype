@@ -34,7 +34,7 @@ __PACKAGE__->install_properties({
         'can_create_blog' => 'boolean',
         'is_superuser' => 'boolean',
         'can_view_log' => 'boolean',
-        'auth_type' => 'string(255)',
+        'auth_type' => 'string(50)',
         'userpic_asset_id' => 'integer',
         'basename' => 'string(255)',
 
