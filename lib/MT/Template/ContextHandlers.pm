@@ -5523,16 +5523,18 @@ sub _hdlr_comment_author_identity {
             return q();
         }
     }
-    return q() unless $cmntr->url;
     my $link = $cmntr->url;
     my $static_path = _hdlr_static_path($ctx);
     my $logo = $cmntr->auth_icon_url;
     unless ($logo) {
         my $root_url = $static_path . "images";
-        $root_url =~ s|/$||;
         $logo = "$root_url/nav-commenters.gif";
     }
-    qq{<a class="commenter-profile" href=\"$link\"><img alt=\"Author Profile Page\" src=\"$logo\" width=\"16\" height=\"16\" /></a>};
+    my $result = qq{<img alt=\"Author Profile Page\" src=\"$logo\" width=\"16\" height=\"16\" />};
+    if ($link) {
+        $result = qq{<a class="commenter-profile" href=\"$link\">$result</a>};
+    }
+    return $result;
 }
 
 sub _hdlr_comment_link {
