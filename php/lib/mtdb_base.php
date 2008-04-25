@@ -153,6 +153,42 @@ class MTDatabaseBase extends ezsql {
         return $result;
     }
 
+    function fetch_template_meta($type, $name, $blog_id, $global) {
+        if ($type === 'identifier') {
+            $col = 'template_identifier';
+            $type_filter = "";
+        } else {
+            $col = 'template_name';
+            $type_filter = "and template_type='$type'";
+        }
+        if (!isset($global)) {
+            $blog_filter = "and template_blog_id in (".$this->escape($blog_id).",0)";
+        } elseif ($global) {
+            $blog_filter = "and template_blog_id=0";
+        } else {
+            $blog_filter = "and template_blog_id=".$this->escape($blog_id);
+        }
+
+        $tmpl_name = $this->escape($name);
+
+        $sql = "
+            select
+                template_id, template_name, template_modified_on
+            from
+                mt_template
+            where
+                $col = '$tmpl_name'
+                $blog_filter
+                $type_filter
+            order by
+                template_blog_id desc";
+        $row = $this->get_row($sql, ARRAY_A);
+        if (!$row) return '';
+
+        $data = $this->get_meta('template', $row['template_id']);
+        return array_merge($row, $data);
+    }
+
     function load_index_template(&$ctx, $tmpl, $blog_id = null) {
         return $this->load_special_template($ctx, $tmpl, 'index');
     }
@@ -3096,4 +3132,61 @@ class MTDatabaseBase extends ezsql {
             where session_kind = 'CO'";
         $this->query($sql);
     }
+
+    function get_latest_touch($blog_id, $types) {
+        $type_user = false;
+        if (is_array($types)) {
+            $array = preg_grep('/author/', $types);
+            if (!empty($array)) $type_user = true;
+        } else {
+            $type_user = $types == 'author';
+        }
+
+        $blog_filter = '';
+        if (!empty($blog_id)) {
+            if ($type_user)
+                $blog_filter = 'and touch_blog_id = 0';
+            else
+                $blog_filter = 'and touch_blog_id = ' . $blog_id;
+        }
+
+        $type_filter = '';
+        if (!empty($types)) {
+            if ($type_user) {
+                $type_filter = 'and touch_object_type ="author"';
+            } else {
+                if (is_array($types)) {
+                    foreach ($types as $type) {
+                        if ($type_filter != '') $type_filter .= ',';
+                        $type_filter .= "'$type'";
+                    }
+                    $type_filter = 'and touch_object_type in (' . $type_filter . ')';
+                } else {
+                    $type_filter = 'and touch_object_type ="' . $type_filter . '"';
+                }
+            }
+        }
+
+        $sql = "
+            select
+                touch_modified_on
+            from
+                mt_touch
+            where
+                1 = 1
+                $blog_filter
+                $type_filter
+            order by
+                touch_modified_on desc
+            <LIMIT>";
+
+        $sql = $this->apply_limit_sql($sql, 1);
+        $result = $this->get_row($sql, ARRAY_N);
+
+        if (!empty($result))
+            return $result[0];
+
+        return false;
+    }
+
 }
