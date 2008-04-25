@@ -2,7 +2,7 @@ package MT::CMS::Log;
 
 use strict;
 
-use MT::Util qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url );
+use MT::Util qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
 use MT::I18N qw( const break_up_text encode_text );
 
 sub view {
