@@ -2376,10 +2376,14 @@ sub core_commenter_authenticators {
 <input name="openid_url" style="background: #fff url('<mt:var name="static_uri">images/comment/openid_logo.png') no-repeat left; padding-left: 18px; padding-bottom: 1px; border: 1px solid #5694b6; width: 304px; font-size: 110%;" />
     <p class="hint"><__trans phrase="OpenID is an open and decentralized single sign-on identity system."></p>
 </mtapp:setting>
-
-<div class="pkg">
-<div class="left"><input type="submit" name="submit" value="<__trans phrase="Sign In">" /></div>
-<div class="right"><img src="<mt:var name="static_uri">images/comment/openid_enabled.png" /></div>
+<img src="<mt:var name="static_uri">images/comment/openid_enabled.png" class="right" />
+<div class="actions-bar actions-bar-login">
+    <div class="actions-bar-inner pkg actions">
+        <button
+            type="submit"
+            class="primary-button"
+            ><__trans phrase="Sign in"></button>
+    </div>
 </div>
 <p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="http://www.openid.net/"><__trans phrase="Learn more about OpenID."></a></p>
 </fieldset>
