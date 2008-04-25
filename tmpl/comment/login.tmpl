@@ -3,9 +3,9 @@
     <script type="text/javascript">
     /* <![CDATA[ */
     function signinToggle(choice) {
-        var auths = new Array(<mt:if name="enabled_MovableType">'mt',</mt:if><mt:loop name="auth_loop">'<mt:var name="name">'<mt:unless name="__last__">,</mt:unless></mt:loop>);
+        var auths = new Array(<mt:if name="enabled_MovableType">'mt',</mt:if><mt:loop name="auth_loop">'<mt:var name="name">',</mt:loop>'');
 
-        for (var i = 0; i < auths.length; i++) {
+        for (var i = 0; i < auths.length - 1; i++) {
             var signinObject = getByID('signin_with_' + auths[i]);
             var optionsObject = getByID('signin_option_' + auths[i]);
 
