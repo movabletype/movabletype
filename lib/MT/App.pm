@@ -2173,6 +2173,7 @@ sub run {
 
             if (my $new_mode = $app->{forward}) {
                 $mode = $new_mode;
+                $app->mode($mode);
                 goto REQUEST;
             }
 
