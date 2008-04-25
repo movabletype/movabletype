@@ -1142,6 +1142,10 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
 }
 
 # sorts by length of tag name, from longest to shortest
+function tagarray_name_sort($a, $b) {
+    return strcmp($a['tag_name'], $b['tag_name']);
+}
+
 function tagarray_length_sort($a, $b) {
 	$al = strlen($a['tag_name']);
 	$bl = strlen($b['tag_name']);
