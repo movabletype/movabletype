@@ -440,83 +440,84 @@ sub do_search_replace {
                     $class->load($id);
                 }
             };
-        }
-        if ( $blog_id || ($type eq 'blog') ) {
-            $iter = $class->load_iter( \%terms, \%args ) or die $class->errstr;
-        }
-        else {
-
-            my @streams;
-            if ( $author->is_superuser ) {
-                @streams = ( { iter => $class->load_iter( \%terms, \%args ) } );
-            } 
+        } else {
+            if ( $blog_id || ($type eq 'blog') ) {
+                $iter = $class->load_iter( \%terms, \%args ) or die $class->errstr;
+            }
             else {
-                # Get an iter for each accessible blog
-                my @perms = $app->model('permission')->load(
-                    { blog_id => '0', author_id => $author->id },
-                    { not => { blog_id => 1 } },
-                );
-                if (@perms) {
-                    @streams = map {
-                        {
-                            iter => $class->load_iter(
-                                {
-                                    blog_id => $_->blog_id,
-                                    %terms
-                                },
-                                \%args
-                            )
-                        }
-                    } @perms;
+
+                my @streams;
+                if ( $author->is_superuser ) {
+                    @streams = ( { iter => $class->load_iter( \%terms, \%args ) } );
+                } 
+                else {
+                    # Get an iter for each accessible blog
+                    my @perms = $app->model('permission')->load(
+                        { blog_id => '0', author_id => $author->id },
+                        { not => { blog_id => 1 } },
+                    );
+                    if (@perms) {
+                        @streams = map {
+                            {
+                                iter => $class->load_iter(
+                                    {
+                                        blog_id => $_->blog_id,
+                                        %terms
+                                    },
+                                    \%args
+                                )
+                            }
+                        } @perms;
+                    }
                 }
-            }
 
-            # Pull out the head of each iterator
-            # Next: effectively mergesort the various iterators
-            # To call the iterator n times takes time in O(bn)
-            #   with 'b' the number of blogs
-            # we expect to hit the iterator l/p times where 'p' is the
-            #   prob. of the search term appearing and 'l' is $limit
-            $_->{head} = $_->{iter}->() foreach @streams;
-            if ( $type ne 'template' ) {
-                $iter = sub {
+                # Pull out the head of each iterator
+                # Next: effectively mergesort the various iterators
+                # To call the iterator n times takes time in O(bn)
+                #   with 'b' the number of blogs
+                # we expect to hit the iterator l/p times where 'p' is the
+                #   prob. of the search term appearing and 'l' is $limit
+                $_->{head} = $_->{iter}->() foreach @streams;
+                if ( $type ne 'template' ) {
+                    $iter = sub {
 
-                    # find the head with greatest created_on
-                    my $which = \$streams[0];
-                    foreach my $iter (@streams) {
-                        next
-                          if !exists $iter->{head}
-                          || !$which
-                          || !${$which}->{head}
-                          || !defined( $iter->{head} );
-                        if ( $iter->{head}->created_on >
-                            ${$which}->{head}->created_on )
-                        {
-                            $which = \$iter;
+                        # find the head with greatest created_on
+                        my $which = \$streams[0];
+                        foreach my $iter (@streams) {
+                            next
+                              if !exists $iter->{head}
+                              || !$which
+                              || !${$which}->{head}
+                              || !defined( $iter->{head} );
+                            if ( $iter->{head}->created_on >
+                                ${$which}->{head}->created_on )
+                            {
+                                $which = \$iter;
+                            }
                         }
-                    }
 
-                    # Advance the chosen one
-                    my $result = ${$which}->{head};
-                    ${$which}->{head} = ${$which}->{iter}->() if $result;
-                    $result;
-                };
-            }
-            else {
-                $iter = sub {
-                    return undef unless @streams;
+                        # Advance the chosen one
+                        my $result = ${$which}->{head};
+                        ${$which}->{head} = ${$which}->{iter}->() if $result;
+                        $result;
+                    };
+                }
+                else {
+                    $iter = sub {
+                        return undef unless @streams;
 
-                    # find the head with greatest created_on
-                    my $which = \$streams[0];
-                    while ( @streams && ( !defined ${$which}->{head} ) ) {
-                        shift @streams;
-                        last unless @streams;
-                        $which = \$streams[0];
-                    }
-                    my $result = ${$which}->{head};
-                    ${$which}->{head} = ${$which}->{iter}->() if $result;
-                    $result;
-                };
+                        # find the head with greatest created_on
+                        my $which = \$streams[0];
+                        while ( @streams && ( !defined ${$which}->{head} ) ) {
+                            shift @streams;
+                            last unless @streams;
+                            $which = \$streams[0];
+                        }
+                        my $result = ${$which}->{head};
+                        ${$which}->{head} = ${$which}->{iter}->() if $result;
+                        $result;
+                    };
+                }
             }
         }
         my $i = 1;
