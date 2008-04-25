@@ -1,7 +1,7 @@
 package MT::CMS::AddressBook;
 
 use strict;
-use MT::Util qw( is_valid_email );
+use MT::Util qw( is_valid_email dirify );
 use MT::I18N qw( wrap_text );
 
 sub entry_notify {
