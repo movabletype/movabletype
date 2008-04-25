@@ -330,19 +330,11 @@ iframe {
     padding: .25em 10px;
 }
 
-#selector-nav a {
-    color: #606900;
-    font-size: 12px;
-}
-
+#selector-nav a,
 #selector-nav a:hover {
     color: #606900;
 }
 
-#selector-nav li.show-nav a {
-/*    background-color: #000;*/
-/*    color: #000;*/
-}
 #selector-nav li.show-nav ul {
     background: #fff;
     border: 1px solid #000;
@@ -365,7 +357,7 @@ iframe {
     font-size: 14px;
     padding: 6px 10px 5px 10px;
     background: #fff url('../images/blog-selector-control.gif') repeat-x left bottom;
-    border-left: 1px solid #000;
+    margin-left: 1px;
 }
 #blog-selector-control.show-nav #current-blog-title {
     background-image: none;
@@ -448,7 +440,8 @@ iframe {
     border-right: 1px solid #424242;
     border-bottom: 1px solid #424242;
 }
-#blog-nav-list li.show-nav ul { 
+#blog-nav-list li.show-nav ul, /* hack: IE */
+#blog-nav-list li:hover ul { 
     left: auto;
 }
 
@@ -516,19 +509,23 @@ li#config-menu {
     color: #ebf2f5;
 }
 
-#blog-nav li.show-nav a { 
+#blog-nav li.show-nav a, /* hack: IE */
+#blog-nav li:hover a { 
     background-color: #575757;
     color: #ebf2f5;
 }
-#blog-nav li.show-nav li a { 
+#blog-nav li.show-nav li a, /* hack: IE */
+#blog-nav li:hover li a { 
     color: #c2e3f3;
     border-top: 1px solid #424242;
 }
-#blog-nav li.show-nav li a:hover { 
+#blog-nav li.show-nav li a:hover, /* hack: IE */
+#blog-nav li:hover li a:hover { 
     background-color: #474747;
 }
 
-#blog-nav li.show-nav li span {
+#blog-nav li.show-nav li span, /* hack: IE */
+#blog-nav li:hover li span {
     color: #777;
     background-color: #575757;
     border-top: 1px solid #424242;
@@ -541,7 +538,8 @@ li#config-menu {
 .system #blog-nav a:hover {
     color: #f1f4e9;
 }
-.system #blog-nav li.show-nav li a { 
+.system #blog-nav li.show-nav li a, /* hack: IE */
+.system #blog-nav li:hover li a { 
     color: #e8f3c2;
 }
 
@@ -570,12 +568,21 @@ li#config-menu {
     background-position: center -20px;
 }
 
+#blog-nav li#blog-dashboard.show-nav a, /* hack: IE */
+#blog-nav li#blog-dashboard:hover a,
+#blog-nav li#rebuild-site.show-nav a, /* hack: IE */
+#blog-nav li#rebuild-site:hover a {
+    background-position: center -20px;
+    background-color: transparent;
+}
 #view-site a {
     padding-left: 7px;
     background: url('../images/nav-icon-view.gif') no-repeat 5px 11px;
 }
-#view-site a:hover {
+#blog-nav li#view-site.show-nav a, /* hack: IE */
+#blog-nav li#view-site a:hover {
     background-position: 5px -20px;
+    background-color: transparent;
 }
 
 #blog-dashboard a span,
