@@ -10,25 +10,22 @@ use lib 'extlib';
 use MT;
 use MT::Util;
 
-my @tests;
-BEGIN {
-    @tests = (
-        {
-            text => 'Siegfried & Roy',
-            iso  => 'siegfried_roy',
-            utf8 => 'siegfried_roy',
-        },
-        {
-            text => 'Cauchy-Schwartz Inequality',
-            iso  => 'cauchy-schwartz_inequality',
-            utf8 => 'cauchy-schwartz_inequality',
-        },
-        {
-            text => "M\303\272m",
-            utf8 => 'mum',
-        },
-    );
-}
+my @tests = (
+    {
+        text => 'Siegfried & Roy',
+        iso  => 'siegfried_roy',
+        utf8 => 'siegfried_roy',
+    },
+    {
+        text => 'Cauchy-Schwartz Inequality',
+        iso  => 'cauchy-schwartz_inequality',
+        utf8 => 'cauchy-schwartz_inequality',
+    },
+    {
+        text => "M\303\272m",
+        utf8 => 'mum',
+    },
+);
 
 use Test::More tests => 5;
 
