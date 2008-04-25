@@ -40,6 +40,8 @@
     display: none;
 }
 
+#system-allow-pings a.close-me,
+#system-allow-comments a.close-me,
 .msg-error a.close-me,
 .rebuilding-screen .msg a.close-me,
 .restore-publishing-config .msg a.close-me,
