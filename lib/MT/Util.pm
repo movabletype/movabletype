@@ -652,7 +652,7 @@ sub iso_dirify {
     $s = lc $s;                   ## lower-case.
     $s = remove_html($s);         ## remove HTML tags.
     $s =~ s!&[^;\s]+;!!gs;        ## remove HTML entities.
-    $s =~ s![^\w\s]!!gs;          ## remove non-word/space chars.
+    $s =~ s![^\w\s-]!!gs;          ## remove non-word/space chars.
     $s =~ s!\s+!$sep!gs;          ## change space chars to underscores.
     $s;    
 }
@@ -669,7 +669,7 @@ sub utf8_dirify {
     $s = lc $s;                   ## lower-case.
     $s = remove_html($s);         ## remove HTML tags.
     $s =~ s!&[^;\s]+;!!gs;        ## remove HTML entities.
-    $s =~ s![^\w\s]!!gs;          ## remove non-word/space chars.
+    $s =~ s![^\w\s-]!!gs;          ## remove non-word/space chars.
     $s =~ s!\s+!$sep!gs;          ## change space chars to underscores.
     $s;    
 }
