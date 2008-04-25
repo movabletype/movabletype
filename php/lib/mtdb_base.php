@@ -359,7 +359,7 @@ class MTDatabaseBase extends ezsql {
 
     function get_template_text($ctx, $module, $blog_id = null, $type = 'custom', $global = null) {
         $blog_id or $blog_id = $ctx->stash('blog_id');
-        if (($type === 'custom' || $type === 'widget')) {
+        if ($type === 'custom' || $type === 'widget'|| $type === 'widgetset') {
             $col = 'template_name';
             $type_filter = "and template_type='$type'";
         } else {
