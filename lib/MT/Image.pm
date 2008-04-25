@@ -246,8 +246,11 @@ sub init {
     } elsif (my $blob = $param{Data}) {
         $image->{data} = $blob;
     }
-    my %Types = (jpg => 'jpeg', gif => 'gif', 'png' => 'png');
+    my %Types = (jpg => 'jpeg', jpeg => 'jpeg', gif => 'gif', 'png' => 'png');
     my $type = $image->{type} = $Types{ lc $param{Type} };
+    if (!$type) {
+        return $image->error(MT->translate("Unsupported image file type: [_1]", $type));
+    }
     my($out, $err);
     my $pbm = $image->_find_pbm or return;
     my @in = ("$pbm${type}topnm", ($image->{file} ? $image->{file} : ()));
