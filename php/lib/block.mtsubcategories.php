@@ -21,7 +21,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         #   sort_method ::= method name (e.g. package::method)
         #
         # sort_method takes precedence
-        $sort_order = $args['sort_order'] or 'ascend';
+        $sort_order = isset($args['sort_order']) ? $args['sort_order'] : 'ascend';
         $sort_method = $args['sort_method'];
 
         # Store the tokens for recursion
@@ -33,6 +33,8 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
             if ($args['category']) {
                 require_once("MTUtil.php");
                 $current_cat = cat_path_to_category($args['category'], $blog_id);
+                if ( is_array( $current_cat ) )
+                    $current_cat = $current_cat[0];
             }
             if ($current_cat == NULL) {
                 $current_cat = $ctx->stash('category') or $ctx->stash('archive_category');
