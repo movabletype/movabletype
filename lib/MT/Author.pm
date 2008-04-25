@@ -362,16 +362,35 @@ sub permissions {
                 @perm = reverse @perm;
             }
             ($perm, my $sys_perm) = @perm;
-            $perm->add_permission($sys_perm);
+            $perm->add_permissions($sys_perm);
         } elsif (@perm == 1) {
             $perm = $perm[0];
             if (!$perm->blog_id) {
                 $perm->blog_id($obj->id);
-                delete $perm->{column_values}->{id};
-                delete $perm->{changed_cols}->{id};
+                delete $perm->{column_values}{blog_id};
+                delete $perm->{changed_cols}{blog_id};
             }
-        } elsif (@perm) {
-            die "invalid permissions for author " . $author->id;
+        } elsif (@perm > 2) {
+            # Condition sometimes caused by saving preferences. BugId:79501
+            # Handle by merging permissions and removing all but one
+            # Not ideal, but better than dying...
+            my ($sys_perm) = grep { ! $_->blog_id } @perm;
+            my @blog_perms = grep { $_->blog_id } sort { $b->modified_on cmp $a->modified_on } @perm;
+
+            my $new_perm = shift @blog_perms; # take last one saved
+            if (@blog_perms) {
+                foreach my $more_perms (@blog_perms) {
+                    $new_perm->add_permissions($more_perms);
+                    $new_perm->add_restrictions($more_perms);
+                    $more_perms->remove;
+                }
+                # save merged permission record
+                $new_perm->save;
+            }
+            $new_perm->add_permissions($sys_perm);
+            $new_perm->add_restrictions($sys_perm);
+            $perm = $new_perm;
+            @perm = ($perm);
         }
     } else {
         $perm = $perm[0] if @perm;

@@ -137,6 +137,27 @@ sub blog {
         }
     }
 
+    sub add_restrictions {
+        my $perms = shift;
+        my ($more_perm) = @_;
+        if ( my $more = $more_perm->restrictions ) {
+            if ( $more =~ /'administer_blog'/ ) {
+                $more = _all_perms('blog');
+            }
+            my $cur_perm = $perms->restrictions;
+            my @newperms;
+            for my $p ( split ',', $more ) {
+                $p =~ s/'(.+)'/$1/;
+                next if $perms->has($p);
+                push @newperms, $p;
+            }
+            return unless @newperms;
+            my $newperm = "'" . join( "','", @newperms ) . "'";
+            $newperm = "$cur_perm,$newperm" if $cur_perm;
+            $perms->restrictions($newperm);
+        }
+    }
+
     # Sets permissions of those in a particular set
     sub set_full_permissions {
         my $perms = shift;
