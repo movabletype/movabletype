@@ -1112,6 +1112,8 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
     global $mt;
     if (!$blogs)
         $blogs = array('include_blogs' => $mt->blog_id);
+    if (!is_array($blogs))
+        $blogs = array($blogs);
     $mtdb =& $mt->db;
     if (preg_match_all('/(\[[^]]+?\]|[^]\/]+)/', $path, $matches)) {
         # split on slashes, fields quoted by []
