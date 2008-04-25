@@ -14,6 +14,16 @@ sub edit {
 
     my $q = $app->param;
     my $blog_id = $q->param('blog_id');
+
+    # FIXME: enumeration of types
+    unless ( $blog_id ) {
+        my $type = $q->param('type');
+        return $app->return_to_dashboard( redirect => 1 )
+            unless $type eq 'module'
+                || $type eq 'widget'
+                || $type eq 'widgetset';
+    }
+
     my $type = $q->param('_type');
     my $blog = $app->blog;
     my $cfg = $app->config;
