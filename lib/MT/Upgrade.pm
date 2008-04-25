@@ -1031,6 +1031,11 @@ sub core_upgrade_meta_for_table {
     # we are processing
     my $meta_col = $dbd->db_column_name($class->datasource,
         $param{meta_column} || 'meta');
+
+    my $ddl = $driver->dbd->ddl_class;
+    my $db_defs = $ddl->column_defs($class);
+    return 0 unless $db_defs && exists($db_defs->{$meta_col});
+
     my $id_col = $dbd->db_column_name($class->datasource, 'id');
     $stmt->add_where( $meta_col => { not_null => 1 } );
     $stmt->limit( 101 );
