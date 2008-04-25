@@ -2210,7 +2210,8 @@ Options -Indexes +SymLinksIfOwnerMatch
   # (allows the actual file to be served)
   RewriteCond %{REQUEST_FILENAME} !-f
   # anything else is handed to mtview.php for resolution
-  RewriteRule ^(.*)\$ $mtview_server_url [L,QSA]
+  # passthrough query parameters
+  RewriteRule ^(.*)(\\?.*)\?\$ $mtview_server_url\$2 [L,QSA]
 </IfModule>
 
 <IfModule !mod_rewrite.c>

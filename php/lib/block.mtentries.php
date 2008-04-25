@@ -38,6 +38,28 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $args['class'] = 'entry';
     }
 
+    if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
+        $l = 0;
+        if ( $args['limit'] ) {
+            if ( $args['limit'] == 'auto' ) {
+                if ( $_REQUEST['limit'] )
+                    $l = $_REQUEST['limit'];
+                else {
+                    $blog_id = intval($ctx->stash('blog_id'));
+                    $blog = $ctx->mt->db->fetch_blog($blog_id);
+                    $l = $blog['blog_entries_on_index'];
+                }
+            }
+            else
+                $l = $args['limit'];
+        }
+        if ( !$l )
+            $l = 20;
+        $ctx->stash('__pager_limit', $l);
+        if ( $_REQUEST['offset'] )
+            $ctx->stash('__pager_offset', $_REQUEST['offset']);
+    }
+
     $entries = $ctx->stash('entries');
     if (!isset($entries)) {
         global $_archivers;
@@ -76,7 +98,11 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         if ($tag = $ctx->stash('Tag')) {
             $args['tag'] or $args['tags'] or $args['tags'] = is_array($tag) ? $tag['tag_name'] : $tag;
         }
-        $entries =& $ctx->mt->db->fetch_entries($args);
+        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+            $total_count = 0;
+        $entries =& $ctx->mt->db->fetch_entries($args, $total_count);
+        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+            $ctx->stash('__pager_total_count', $total_count);
         $ctx->stash('entries', $entries);
     }
 

@@ -560,10 +560,11 @@ sub core_tags {
             CurrentPage => sub {
                 my $limit = $_[0]->stash('limit');
                 my $offset = $_[0]->stash('offset');
-                $limit ? $offset / $limit + 1 : 1
+                $limit ? $offset / $limit + 1 : 1;
             },
             TotalPages => sub {
                 my $limit = $_[0]->stash('limit');
+                return 1 unless $limit;
                 my $count = $_[0]->stash('count');
                 require POSIX;
                 POSIX::ceil( $count / $limit );

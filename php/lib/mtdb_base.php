@@ -412,7 +412,7 @@ class MTDatabaseBase extends ezsql {
         return $this->fetch_entries($args);
     }
 
-    function &fetch_entries($args) {
+    function &fetch_entries($args, &$total_count = NULL) {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
@@ -421,8 +421,10 @@ class MTDatabaseBase extends ezsql {
             $blog = $this->fetch_blog($blog_id);
         }
 
+        $pagination = 0;
         # automatically include offset if in request
         if ($args['offset'] == 'auto') {
+            $pagination = 1;
             $args['offset'] = 0;
             if ($args['limit'] || $args['lastn']) {
                 if ($_REQUEST['offset'] > 0) {
@@ -800,6 +802,9 @@ class MTDatabaseBase extends ezsql {
             $args['sort_order'] or $args['sort_order'] = 'descend';
             $post_select_limit = $rco;
             $no_resort = 1;
+        } elseif ( !is_null($total_count) ) {
+            $orig_limit = $limit;
+            $orig_offset = $offset;
         } else {
             $sql = $this->apply_limit_sql($sql . " <LIMIT>", $limit, $offset);
         }
@@ -809,9 +814,10 @@ class MTDatabaseBase extends ezsql {
 
         $entries = array();
         $j = 0;
-        $offset = $post_select_offset ? $post_select_offset : 0;
+        $offset = $post_select_offset ? $post_select_offset : $orig_offset;
         $limit = $post_select_limit ? $post_select_limit : 0;
         $id_list = array();
+        $_total_count = 0;
         while (true) {
             $e = $this->query_fetch(ARRAY_A);
             if (!isset($e)) break;
@@ -825,6 +831,14 @@ class MTDatabaseBase extends ezsql {
                     $this->result = $old_result;
                 }
             }
+            $_total_count++;
+            if ( !is_null($total_count) ) {
+                if ( ($orig_limit > 0)
+                  && ( ($_total_count-$offset) > $orig_limit) ) {
+                    // collected all the entries; only count numbers;
+                    continue;
+                }
+            }
             if ($offset && ($j++ < $offset)) continue;
             $e['entry_authored_on'] = $this->db2ts($e['entry_authored_on']);
             $e['entry_modified_on'] = $this->db2ts($e['entry_modified_on']);
@@ -832,7 +846,13 @@ class MTDatabaseBase extends ezsql {
             $entries[] = $e;
             $this->_comment_count_cache[$e['entry_id']] = $e['entry_comment_count'];
             $this->_ping_count_cache[$e['entry_id']] = $e['entry_ping_count'];
-            if (($limit > 0) && (count($entries) >= $limit)) break;
+            if ( is_null($total_count) ) {
+                // the request does not want total count; break early
+                if (($limit > 0) && (count($entries) >= $limit)) break;
+            }
+        }
+        if ( !is_null($total_count) ) {
+            $total_count = $_total_count;
         }
 
         if (!$no_resort) {
