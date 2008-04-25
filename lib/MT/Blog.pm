@@ -89,7 +89,7 @@ __PACKAGE__->install_properties({
         'require_typekey_emails' => 'integer meta',
         'nofollow_urls' => 'integer meta',
         'follow_auth_links' => 'integer meta',
-        'update_pings' => 'integer meta',
+        'update_pings' => 'string meta',
         'captcha_provider' => 'string meta',
         'publish_queue' => 'integer meta',
         'nwc_smart_replace' => 'integer meta',
