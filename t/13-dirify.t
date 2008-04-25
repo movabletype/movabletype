@@ -7,30 +7,38 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 7;
-
 use MT;
 use MT::Util;
 
+my @tests;
+BEGIN {
+    @tests = (
+        {
+            text => 'Siegfried & Roy',
+            iso  => 'siegfried_roy',
+            utf8 => 'siegfried_roy',
+        },
+        {
+            text => 'Cauchy-Schwartz Inequality',
+            iso  => 'cauchy-schwartz_inequality',
+            utf8 => 'cauchy-schwartz_inequality',
+        },
+        {
+            text => "M\303\272m",
+            utf8 => 'mum',
+        },
+    );
+}
+
+use Test::More tests => 5;
+
 MT->set_language('en_US');
 
-is(MT::Util::iso_dirify('Siegfried & Roy'),
-                        'siegfried_roy',
-                        'siegfried_roy');
-is(MT::Util::iso_dirify('Cauchy-Schwartz Inequality'),
-                        'cauchyschwartz_inequality',
-                        'cauchyschwartz_inequality');
-is(MT::Util::utf8_dirify('Siegfried & Roy'),
-                         'siegfried_roy',
-                         'siegfried_roy');
-is(MT::Util::utf8_dirify('Cauchy-Schwartz Inequality'),
-                         'cauchyschwartz_inequality',
-                         'cauchyschwartz_inequality');
-is( MT::Util::iso_dirify('Some & Something'), 
-   MT::Util::utf8_dirify('Some & Something'),
-                         'Some & Something');
-is( MT::Util::iso_dirify('Cauchy-Schwartz Inequality'),
-   MT::Util::utf8_dirify('Cauchy-Schwartz Inequality'),
-                         'Cauchy-Schwartz Inequality');
-is(MT::Util::utf8_dirify("M\303\272m"), 'mum', 'mum');
+for my $test (@tests) {
+    my ($text, $iso, $utf8) = @{ $test }{qw( text iso utf8 )};
+    is(MT::Util::iso_dirify($text), $iso, "String '$text' iso_dirifies correctly")
+        if $iso;
+    is(MT::Util::utf8_dirify($text), $utf8, "String '$text' utf8_dirifies correctly")
+        if $utf8;
+}
 
