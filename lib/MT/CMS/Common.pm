@@ -369,6 +369,10 @@ sub save {
         );
     }
     elsif ( $type eq 'template' && $q->param('rebuild') ) {
+        if ( !$id ) {
+            # add return argument for newly created templates
+            $app->add_return_arg( id => $obj->id );
+        }
         $q->param( 'type',            'index-' . $obj->id );
         $q->param( 'tmpl_id',         $obj->id );
         $q->param( 'single_template', 1 );
