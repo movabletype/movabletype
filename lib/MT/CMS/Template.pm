@@ -268,7 +268,7 @@ sub edit {
             if (@$maps) {
                 $param->{object_loop} = $param->{template_map_loop} = $maps
                   if @$maps;
-                my %archive_types = map { $_->{archive_label} => () } @$maps;
+                my %archive_types = map { $_->{archive_label} => 1 } @$maps;
                 $param->{enabled_archive_types} = join(", ", sort keys %archive_types);
             }
         }
@@ -518,7 +518,7 @@ sub edit {
         if $app->param('dirty');
 
     $param->{can_preview} = 1
-        if (!$param->{is_special}) && (!$obj || ($obj && $obj->outfile !~ m/\.(css|xml|rss|js)$/));
+        if (!$param->{is_special}) && (!$obj || ($obj && ($obj->outfile || '') !~ m/\.(css|xml|rss|js)$/));
 
     1;
 }
@@ -780,42 +780,8 @@ sub preview {
     } elsif (($type eq 'individual') || ($type eq 'page')) {
         my $ctx = $preview_tmpl->context;
         my $entry_type = $type eq 'individual' ? 'entry' : 'page';
-        my $entry_class = $app->model($entry_type);
-        my $obj = $entry_class->load({
-            blog_id => $blog_id,
-            status => MT::Entry::RELEASE()
-        }, {
-            limit => 1,
-            direction => 'descend',
-            'sort' => 'authored_on'
-        });
-        unless ( $obj ) {
-            # create a dummy object
-            $obj = $entry_class->new;
-            $obj->blog_id($blog_id);
-            $obj->id(-1);
-            $obj->author_id( $app->user->id );
-            $obj->authored_on( $blog->current_timestamp );
-            $obj->status( MT::Entry::RELEASE() );
-            $obj->basename( $preview_basename );
-            $obj->title($app->translate("Lorem ipsum"));
-            my $preview_text = $app->translate('LOREM_IPSUM_TEXT');
-            if ($preview_text eq 'LOREM_IPSUM_TEXT') {
-                $preview_text = q{Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut diam quam, accumsan eu, aliquam vel, ultrices a, augue. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce hendrerit, lacus eget bibendum sollicitudin, mi tellus interdum neque, sit amet pretium tortor tellus id erat. Duis placerat justo ac erat. Duis posuere, risus eu elementum viverra, nisl lacus sagittis lorem, ac fermentum neque pede vitae arcu. Phasellus arcu elit, placerat eu, luctus posuere, tristique non, augue. In hac habitasse platea dictumst. Nunc non dolor et ipsum mattis malesuada. Praesent porta orci eu ligula. Ut dui augue, dapibus vitae, sodales in, lobortis non, felis. Aliquam feugiat mollis ipsum.};
-            }
-            my $preview_more = $app->translate('LORE_IPSUM_TEXT_MORE');
-            if ($preview_text eq 'LOREM_IPSUM_TEXT_MORE') {
-                $preview_more = q{Integer nunc nulla, vulputate sit amet, varius ac, faucibus ac, lectus. Nulla semper bibendum justo. In hac habitasse platea dictumst. Aliquam auctor pretium ante. Etiam porta consectetuer erat. Phasellus consequat, nisi eu suscipit elementum, metus leo malesuada pede, vel scelerisque lorem ligula in augue. Sed aliquet. Donec malesuada metus sit amet sapien. Integer non libero. Morbi egestas, mauris posuere consequat sodales, augue lectus suscipit velit, eu commodo lacus dolor congue justo. Suspendisse justo. Curabitur sagittis, lorem tincidunt elementum rhoncus, odio dolor mattis odio, quis ultrices ligula ipsum ac lacus. Nam et sapien ac lacus ultrices sollicitudin. Vestibulum ut dolor nec dui malesuada imperdiet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
-
-                Quisque pharetra libero quis nibh. Cras lacus orci, commodo et, fringilla non, lobortis non, mauris. Curabitur dui sapien, tristique imperdiet, ultrices vitae, gravida varius, ante. Maecenas ac arcu nec nibh euismod feugiat. Pellentesque sed orci eget enim egestas faucibus. Aenean laoreet leo ornare velit. Nunc fermentum dolor eget massa. Fusce fringilla, tellus in pellentesque sodales, urna mi hendrerit leo, vel adipiscing ligula odio sit amet risus. Cras rhoncus, mi et posuere gravida, purus sem porttitor nisl, auctor laoreet nisl turpis quis ligula. Aliquam in nisi tristique augue egestas lacinia. Aenean ante magna, facilisis a, faucibus at, aliquam laoreet, dui. Ut tellus leo, tristique a, pellentesque ac, bibendum non, ipsum. Curabitur eu neque pretium arcu accumsan tincidunt. Ut ipsum. Quisque congue accumsan elit. Nulla ligula felis, aliquam ultricies, vestibulum vestibulum, semper vel, sapien. Aenean sodales ligula venenatis tellus. Vestibulum leo. Morbi viverra convallis eros.
-
-                Phasellus rhoncus pulvinar enim. Ut gravida ante nec lectus. Nam luctus gravida odio. Morbi vitae lorem vitae justo fermentum porttitor. Suspendisse vestibulum magna at purus. Cras nec sem. Duis id felis. Mauris hendrerit dapibus est. Donec semper. Praesent vehicula interdum velit. Ut sed tellus et diam venenatis pulvinar.};
-            }
-            $obj->text($preview_text);
-            $obj->text_more($preview_more);
-            $obj->keywords(MT->translate("sample, entry, preview"));
-            $obj->tags(qw( lorem ipsum sample preview ));
-        }
+        my ($obj) = create_preview_content($app, $blog, $entry_type, 1);
+        $obj->basename( $preview_basename );
         $ctx->stash('entry', $obj);
         $ctx->{current_archive_type} = $type eq 'individual' ? 'Individual' : 'Page';
         if (($type eq 'individual') && $blog->archive_path) {
@@ -826,6 +792,35 @@ sub preview {
         $archive_url = $obj->archive_url;
     } elsif ($type eq 'archive') {
         # some variety of archive template
+        my $ctx = $preview_tmpl->context;
+        require MT::TemplateMap;
+        my $map = MT::TemplateMap->load( { template_id => $id, is_preferred => 1 });
+        if (! $map) {
+            return $app->error("Cannot preview without a template map!");
+        }
+        $ctx->{current_archive_type} = $map->archive_type;
+        my $archiver = MT->publisher->archiver( $map->archive_type );
+        my @entries = create_preview_content($app, $blog, $archiver->entry_class, 10);
+        if ($archiver->date_based) {
+            $ctx->{current_timestamp} = $entries[0]->authored_on;
+            $ctx->{current_timestamp_end} = $entries[$#entries]->authored_on;
+        }
+        if ($archiver->author_based) {
+            $ctx->stash('author', $app->user);
+        }
+        my $cat;
+        if ($archiver->category_based) {
+            $cat = new MT::Category;
+            $cat->label($app->translate("Preview"));
+            $cat->basename("preview");
+            $cat->parent(0);
+            $ctx->stash('archive_category', $cat);
+        }
+        $ctx->stash('entries', \@entries);
+
+        my $file = MT->publisher->archive_file_for( $entries[0], $blog, $map->archive_type, $cat, $map, $ctx->{current_timestamp}, $app->user);
+        $archive_file = File::Spec->catfile( $blog_path, $file );
+        $archive_url = MT::Util::caturl( $blog_url, $file );
     } elsif ($type eq 'index') {
     } else {
         # for now, only index templates can be previewed
@@ -945,6 +940,49 @@ sub preview {
     $param{template_loop} = \@data;
     $param{object_type}  = $type;
     return $app->load_tmpl( 'preview_template_strip.tmpl', \%param );
+}
+
+sub create_preview_content {
+    my ($app, $blog, $type, $number) = @_;
+
+    my $blog_id = $blog->id;
+    my $entry_class = $app->model($type);
+    my @obj = $entry_class->load({
+        blog_id => $blog_id,
+        status => MT::Entry::RELEASE()
+    }, {
+        limit => $number || 1,
+        direction => 'descend',
+        'sort' => 'authored_on'
+    });
+    unless ( @obj ) {
+        # create a dummy object
+        my $obj = $entry_class->new;
+        $obj->blog_id($blog_id);
+        $obj->id(-1);
+        $obj->author_id( $app->user->id );
+        $obj->authored_on( $blog->current_timestamp );
+        $obj->status( MT::Entry::RELEASE() );
+        $obj->title($app->translate("Lorem ipsum"));
+        my $preview_text = $app->translate('LOREM_IPSUM_TEXT');
+        if ($preview_text eq 'LOREM_IPSUM_TEXT') {
+            $preview_text = q{Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut diam quam, accumsan eu, aliquam vel, ultrices a, augue. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce hendrerit, lacus eget bibendum sollicitudin, mi tellus interdum neque, sit amet pretium tortor tellus id erat. Duis placerat justo ac erat. Duis posuere, risus eu elementum viverra, nisl lacus sagittis lorem, ac fermentum neque pede vitae arcu. Phasellus arcu elit, placerat eu, luctus posuere, tristique non, augue. In hac habitasse platea dictumst. Nunc non dolor et ipsum mattis malesuada. Praesent porta orci eu ligula. Ut dui augue, dapibus vitae, sodales in, lobortis non, felis. Aliquam feugiat mollis ipsum.};
+        }
+        my $preview_more = $app->translate('LORE_IPSUM_TEXT_MORE');
+        if ($preview_text eq 'LOREM_IPSUM_TEXT_MORE') {
+            $preview_more = q{Integer nunc nulla, vulputate sit amet, varius ac, faucibus ac, lectus. Nulla semper bibendum justo. In hac habitasse platea dictumst. Aliquam auctor pretium ante. Etiam porta consectetuer erat. Phasellus consequat, nisi eu suscipit elementum, metus leo malesuada pede, vel scelerisque lorem ligula in augue. Sed aliquet. Donec malesuada metus sit amet sapien. Integer non libero. Morbi egestas, mauris posuere consequat sodales, augue lectus suscipit velit, eu commodo lacus dolor congue justo. Suspendisse justo. Curabitur sagittis, lorem tincidunt elementum rhoncus, odio dolor mattis odio, quis ultrices ligula ipsum ac lacus. Nam et sapien ac lacus ultrices sollicitudin. Vestibulum ut dolor nec dui malesuada imperdiet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
+
+            Quisque pharetra libero quis nibh. Cras lacus orci, commodo et, fringilla non, lobortis non, mauris. Curabitur dui sapien, tristique imperdiet, ultrices vitae, gravida varius, ante. Maecenas ac arcu nec nibh euismod feugiat. Pellentesque sed orci eget enim egestas faucibus. Aenean laoreet leo ornare velit. Nunc fermentum dolor eget massa. Fusce fringilla, tellus in pellentesque sodales, urna mi hendrerit leo, vel adipiscing ligula odio sit amet risus. Cras rhoncus, mi et posuere gravida, purus sem porttitor nisl, auctor laoreet nisl turpis quis ligula. Aliquam in nisi tristique augue egestas lacinia. Aenean ante magna, facilisis a, faucibus at, aliquam laoreet, dui. Ut tellus leo, tristique a, pellentesque ac, bibendum non, ipsum. Curabitur eu neque pretium arcu accumsan tincidunt. Ut ipsum. Quisque congue accumsan elit. Nulla ligula felis, aliquam ultricies, vestibulum vestibulum, semper vel, sapien. Aenean sodales ligula venenatis tellus. Vestibulum leo. Morbi viverra convallis eros.
+
+            Phasellus rhoncus pulvinar enim. Ut gravida ante nec lectus. Nam luctus gravida odio. Morbi vitae lorem vitae justo fermentum porttitor. Suspendisse vestibulum magna at purus. Cras nec sem. Duis id felis. Mauris hendrerit dapibus est. Donec semper. Praesent vehicula interdum velit. Ut sed tellus et diam venenatis pulvinar.};
+        }
+        $obj->text($preview_text);
+        $obj->text_more($preview_more);
+        $obj->keywords(MT->translate("sample, entry, preview"));
+        $obj->tags(qw( lorem ipsum sample preview ));
+        @obj = ($obj);
+    }
+    return @obj;
 }
 
 sub reset_blog_templates {
