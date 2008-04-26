@@ -1008,7 +1008,7 @@ sub set_by_key {
         $obj->set_values($key);
     }
     $obj->set_values($value) if $value;
-    $obj->save or return;
+    $obj->save or return $class->error($obj->errstr);
     return $obj;
 }
 
