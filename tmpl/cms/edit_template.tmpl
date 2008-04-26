@@ -291,12 +291,9 @@ function tagDocURL(name) {
     var re = new RegExp('(?:^|,)' + name + '\\??(?:,|$)', 'i');
     for ( var u in tag_docs ) {
         if ( !tag_docs.hasOwnProperty(u) ) continue;
-
-        var tags = tag_docs[u];
         var m;
-        if (m = tags.match(re)) {
+        if (m = tag_docs[u].match(re))
             return u.replace(/\%t/, name);
-        }
     }
     return;
 }
