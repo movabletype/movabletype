@@ -110,6 +110,7 @@ sub ts2iso {
 
 sub ts2epoch {
     my ($blog, $ts) = @_;
+    return unless $ts;
     my ($yr, $mo, $dy, $hr, $mn, $sc) = unpack('A4A2A2A2A2A2', $ts);
     my $epoch = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
     return unless $epoch;
