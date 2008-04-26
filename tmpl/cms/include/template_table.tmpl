@@ -96,7 +96,7 @@
     </mt:unless>
     <mt:if name="template_type" eq="index">
                 <td class="publishing-method">
-                    <mt:if name="build_type" eq="0"><__trans phrase="Manual">
+                    <mt:if name="build_type" eq="0"><__trans phrase="Disabled">
                     <mt:elseif name="build_type" eq="2"><__trans phrase="Manual">
                     <mt:elseif name="build_type" eq="3"><__trans phrase="Dynamic">
                     <mt:elseif name="build_type" eq="4"><__trans phrase="Background">
@@ -110,7 +110,7 @@
                 <mt:loop name="archive_tmpl_loop">
                     <mt:if name="selected">
                         <li>
-                    <mt:if name="map_build_type" eq="0"><__trans phrase="Manual">
+                    <mt:if name="map_build_type" eq="0"><__trans phrase="Disabled">
                     <mt:elseif name="map_build_type" eq="2"><__trans phrase="Manual">
                     <mt:elseif name="map_build_type" eq="3"><__trans phrase="Dynamic">
                     <mt:elseif name="map_build_type" eq="4"><__trans phrase="Background">
