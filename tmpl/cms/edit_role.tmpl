@@ -118,21 +118,22 @@ function doSubmitFormConfirm( f, mode, message ) {
             f.elements["__mode"].value = mode;
         f.submit();
     }
+    return false;
 }
 
 function checkChanged() {
-
-var orig_roleName = "<mt:var name="name" escape="html">";
-var roleName = getByID('name').value;
-if(permsChanged == "yes") {
-    if(roleName == orig_roleName) {
-        doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
+    var orig_roleName = "<mt:var name="name" escape="html">";
+    var roleName = getByID('name').value;
+    if(permsChanged == "yes") {
+        if(roleName == orig_roleName) {
+            return doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
+        } else {
+            doSubmitForm(document.role, 'save_role');
+        }
     } else {
         doSubmitForm(document.role, 'save_role');
     }
-} else {
-    doSubmitForm(document.role, 'save_role');
-}
+    return false;
 }
 
 function allPerms(name, check) {
@@ -352,7 +353,7 @@ TC.attachLoadEvent( rectifyAll );
 <mt:setvarblock name="action_buttons">
     <button
     <mt:if name="id">
-        onclick="checkChanged();"
+        onclick="return checkChanged();"
     </mt:if>
         type="submit"
         accesskey="s"
