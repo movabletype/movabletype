@@ -421,7 +421,7 @@ sub listing {
             offset        => $offset,
             limit         => $limit,
             rows          => scalar @data,
-            listTotal     => $class->count( $terms, $args ),
+            listTotal     => $class->count( $terms, $args ) || 0,
             chronological => $param->{list_noncron} ? 0 : 1,
             return_args   => $app->make_return_args,
             method        => $app->request_method,
