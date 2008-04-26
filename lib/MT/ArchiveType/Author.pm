@@ -175,6 +175,10 @@ sub display_name {
     return $author;
 }
 
+sub author_based {
+    return 1;
+}
+
 sub group_based {
     return 1;
 }
