@@ -153,17 +153,18 @@
         name="preview_template"
         type="submit"
         accesskey="v"
+        tabindex="13"
         title="Preview"
         onclick="return validate(this.form);"
         ><__trans phrase="Preview"></button>
     </mt:if>
     <mt:unless name="build_dynamic">
         <mt:if name="can_rebuild">
-            <mt:if name="type_index">
+            <mt:if name="template_group" like="/^(archive|index)$/">
     <button
         type="submit"
         accesskey="r"
-        tabindex="13"
+        tabindex="14"
         title="<__trans phrase="Save and Publish this template (r)">"
         onclick="return validate(this.form, 1);"
         ><__trans phrase="Save &amp; Publish"></button>
@@ -563,7 +564,7 @@ TC.attachLoadEvent( init );
         help_page="templates"
         help_section="output_file">
         <div class="textarea-wrapper">
-            <input name="outfile" id="outfile" tabindex="5" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
+            <input name="outfile" id="outfile" tabindex="4" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
         </div>
     </mtapp:setting>
 </mt:if>
@@ -574,7 +575,7 @@ TC.attachLoadEvent( init );
         id="identifier"
         help_page="templates"
         help_section="template_type">
-        <select name="identifier" id="identifier" tabindex="4" class="full-width">
+        <select name="identifier" id="identifier" tabindex="5" class="full-width">
             <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
             <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>

@@ -587,6 +587,7 @@ sub rebuild_pages {
     my $with_indexes = $q->param('with_indexes');
     my $no_static = $q->param('no_static');
     my $template_id = $q->param('template_id');
+    my $map_id = $q->param('templatemap_id');
 
     my ($tmpl_saved);
 
@@ -708,7 +709,8 @@ sub rebuild_pages {
                     Limit          => $app->config->EntriesPerRebuild,
                     FilterCallback => $cb,
                     $no_static ? ( NoStatic   => 1 )            : (),
-                    $template_id ? ( TemplateID => $template_id ) : (),
+                    $template_id ? ( TemplateID => $template_id, Force => 1 ) : (),
+                    $map_id ? ( TemplateMap => $template_id, Force => 1 ) : (),
                 ) or return $app->publish_error();
                 $offset += $count;
             }
@@ -905,7 +907,7 @@ sub start_rebuild_pages {
         $start_time = time;
     }
 
-    my $type          = $q->param('type');
+    my $type          = $q->param('type') || '';
     my $next          = $q->param('next') || 0;
     my @order         = split /,/, $type;
     my $total         = $q->param('total') || 0;

@@ -373,11 +373,16 @@ sub save {
             # add return argument for newly created templates
             $app->add_return_arg( id => $obj->id );
         }
-        $q->param( 'type',            'index-' . $obj->id );
-        $q->param( 'tmpl_id',         $obj->id );
-        $q->param( 'single_template', 1 );
-        require MT::CMS::Blog;
-        return MT::CMS::Blog::start_rebuild_pages($app);
+        if ( $obj->type eq 'index' ) {
+            $q->param( 'type',            'index-' . $obj->id );
+            $q->param( 'tmpl_id',         $obj->id );
+            $q->param( 'single_template', 1 );
+            return $app->forward( 'start_rebuild' );
+        } else {
+            # archive rebuild support
+            $q->param( 'id', $obj->id );
+            return $app->forward( 'publish_archive_templates' );
+        }
     }
     elsif ( $type eq 'template' ) {
         if (   $obj->type eq 'archive'

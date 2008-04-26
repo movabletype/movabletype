@@ -1979,28 +1979,61 @@ sub publish_archive_templates {
       || $perms->can_administer_blog
       || $perms->can_rebuild;
 
-    my $blog = $app->blog;
-    my $templates =
-      MT->model('template')->lookup_multi( [ $app->param('id') ] );
+    my @ids = $app->param('id');
+    if (scalar @ids == 1) {
+        # we also support a list of comma-delimited ids like this
+        @ids = split /,/, $ids[0];
+    }
+    return $app->error($app->translate("Invalid request."))
+        unless @ids;
+
+    my $tmpl_id;
+    my %ats;
     require MT::TemplateMap;
-    # FIXME: Need multi-request support!
-    TEMPLATE: for my $tmpl (@$templates) {
-        next TEMPLATE if !defined $tmpl;
-        next TEMPLATE if $tmpl->blog_id != $blog->id;
-        my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl->id } );
+    while (!$tmpl_id && @ids) {
+        $tmpl_id = shift @ids;
+        my @tmpl_maps = MT::TemplateMap->load( { template_id => $tmpl_id } );
         foreach my $map (@tmpl_maps) {
             next unless $map->build_type;
-            $app->rebuild(
-                Blog        => $blog,
-                ArchiveType => $map->archive_type,
-                TemplateMap => $map,
-                NoIndexes   => 1,
-                Force       => 1,
-            );
+            $ats{ $map->archive_type } = 1;
         }
+        undef $tmpl_id unless keys %ats;
     }
 
-    $app->call_return( published => 1 );
+    # we have a template and archive types to publish!
+
+    require MT::CMS::Blog;
+    my $return_args;
+    if (@ids) {
+        # we have more to do after this, so save the list
+        # of remaining archive templates...
+        $return_args = $app->uri_params(
+            mode => 'publish_archive_templates',
+            args => {
+                magic_token => $app->current_magic,
+                blog_id => scalar $app->param('blog_id'),
+                id => join(",", @ids),
+            }
+        );
+    } else {
+        # nothing left after this publish operation; just return
+        # to the listing screen.
+        $return_args = $app->uri_params(
+            mode => 'list',
+            args => {
+                _type => 'template',
+                blog_id => scalar $app->param('blog_id'),
+                published => 1
+            }
+        );
+    }
+    $return_args =~ s/^\?//;
+
+    $app->return_args( $return_args );
+    $app->param( 'template_id', $tmpl_id );
+    $app->param( 'single_template', 1 ); # forces fullscreen mode
+    $app->param( 'type', join(",", keys %ats) );
+    return MT::CMS::Blog::start_rebuild_pages($app);
 }
 
 sub save_widget {
