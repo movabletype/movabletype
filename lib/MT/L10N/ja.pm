@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -2465,6 +2465,8 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Profile' => '公開プロファイル',
 	'Choose the profile that best matches the requirements for this blog.' => 'ブログの要件に最も近いプロファイルを選択してください。',
 	'Static Publishing' => 'スタティックパブリッシング',
+	'Asynchronous Publishing' => '非同期スタティックパブリッシング',
+	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
 	'Publish all files statically.' => 'すべてのファイルをスタティックに公開(再構築)します。',
 	'Publish all files via the asynchronous job queue.' => 'すべてのファイルの公開作業をキューにためてバックグランドで公開(再構築)します。',
 	'Publish main index template and all entry/page archives statically. Publish all other files in the background.' => 'メインページとブログ記事/ウェブページのアーカイブをスタティックに公開(再構築)します。その他のファイルはキューにためてバックグランドで公開します。',
