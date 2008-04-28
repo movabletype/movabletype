@@ -448,7 +448,7 @@ class MTDatabaseBase extends ezsql {
         return $this->fetch_entries($args);
     }
 
-    function &fetch_entries($args, &$total_count = NULL) {
+    function &fetch_entries($args, $total_count = NULL) {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
