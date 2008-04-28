@@ -642,37 +642,39 @@ sub core_list_actions {
                 permission => 'edit_templates',
                 order => 100,
             },
-            publish_index_templates => {
-                label => "Publish Template(s)",
-                code => "${pkg}Template::publish_index_templates",
-                permission => 'rebuild',
-                condition => sub {
-                    my $app = MT->app;
-                    my $tmpl_type = $app->param('filter_key');
-                    return $app->mode eq 'itemset_action'  ? 1
-                         : !$app->blog                     ? 0
-                         : !$tmpl_type                     ? 0
-                         : $tmpl_type eq 'index_templates' ? 1
-                         :                                   0
-                         ;
-                },
-                order => 200,
-            },
-            publish_archive_templates => {
-                label      => "Publish Template(s)",
-                code       => "${pkg}Template::publish_archive_templates",
-                permission => 'rebuild',
-                condition  => sub {
-                    my $app       = MT->app;
-                    my $tmpl_type = $app->param('filter_key');
-                    return $app->mode eq 'itemset_action' ? 1
-                      : !$app->blog ? 0
-                      : !$tmpl_type ? 0
-                      : $tmpl_type eq 'archive_templates' ? 1
-                      :                                     0;
-                },
-                order => 300,
-            },
+            # Now a button!
+            # publish_index_templates => {
+            #     label => "Publish Template(s)",
+            #     code => "${pkg}Template::publish_index_templates",
+            #     permission => 'rebuild',
+            #     condition => sub {
+            #         my $app = MT->app;
+            #         my $tmpl_type = $app->param('filter_key');
+            #         return $app->mode eq 'itemset_action'  ? 1
+            #              : !$app->blog                     ? 0
+            #              : !$tmpl_type                     ? 0
+            #              : $tmpl_type eq 'index_templates' ? 1
+            #              :                                   0
+            #              ;
+            #     },
+            #     order => 200,
+            # },
+            # Now a button!
+            # publish_archive_templates => {
+            #     label      => "Publish Template(s)",
+            #     code       => "${pkg}Template::publish_archive_templates",
+            #     permission => 'rebuild',
+            #     condition  => sub {
+            #         my $app       = MT->app;
+            #         my $tmpl_type = $app->param('filter_key');
+            #         return $app->mode eq 'itemset_action' ? 1
+            #           : !$app->blog ? 0
+            #           : !$tmpl_type ? 0
+            #           : $tmpl_type eq 'archive_templates' ? 1
+            #           :                                     0;
+            #     },
+            #     order => 300,
+            # },
             copy_templates => {
                 label => "Clone Template(s)",
                 code => "${pkg}Template::clone_templates",
