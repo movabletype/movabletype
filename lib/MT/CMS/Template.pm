@@ -1295,14 +1295,14 @@ sub pre_save {
     my $period   = $app->param('cache_expire_period');
     my $interval = $app->param('cache_expire_interval');
     my $sec      = _get_interval( $period, $interval );
-    $obj->cache_expire_interval($sec);
+    $obj->cache_expire_interval($sec) if defined $sec;
     my $q = $app->param;
     my @events;
 
     foreach my $name ( $q->param('cache_expire_event') ) {
         push @events, $name;
     }
-    $obj->cache_expire_event( join ',', @events );
+    $obj->cache_expire_event( join ',', @events ) if $#events >= 0;
     if ( $cache_expire_type == 1 ) {
         return $eh->error(
             $app->translate("You should not be able to enter 0 as the time.") )
