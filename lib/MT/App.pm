@@ -3942,15 +3942,15 @@ an end user such as mt-comments.cgi).
 
 Sample usage:
 
-    <TMPL_VAR NAME=STATIC_URI>images/logo.gif
+    <TMPL_VAR NAME=STATIC_URI>images/image-name.gif
 
 With a StaticWebPath of '/mt/', this produces:
 
-    /mt/mt-static/images/logo.gif
+    /mt/mt-static/images/image-name.gif
 
 or, if StaticWebPath is 'http://example.com/mt-static/':
 
-    http://example.com/mt-static/images/logo.gif
+    http://example.com/mt-static/images/image-name.gif
 
 =item * SCRIPT_URL
 
