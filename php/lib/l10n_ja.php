@@ -11,39 +11,27 @@ $Lexicon_ja = array(
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
-## php/lib/block.mtif.php
+## php/lib/function.mtwidgetmanager.php
+	'Error: widgetset [_1] is empty.' => 'ウィジェットセット[_1]に中身がありません。',
+	'Error compiling widgetset [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
+
+## php/lib/function.mtsetvar.php
 	'You used a [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
-	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
-
-## php/lib/block.mtauthorhaspage.php
-	'No author available' => 'ユーザーがありません。',
-
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
-
-## php/lib/function.mtentryclasslabel.php
-	'page' => 'ウェブページ',
-	'entry' => 'ブログ記事',
-	'Page' => 'ウェブページ',
-	'Entry' => 'ブログ記事',
-
-## php/lib/block.mtsetvarblock.php
 	'\'[_1]\' is not a hash.' => '[_1]はハッシュではありません。',
-	'Invalid index.' => 'インデックスが不正です。',
+	'Invalid index.' => '不正なインデックスです。',
 	'\'[_1]\' is not an array.' => '[_1]は配列ではありません。',
+	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
 	'\'[_1]\' is not a valid function.' => '[_1]という関数はサポートされていません。',
 
-## php/lib/function.mtvar.php
-	'\'[_1]\' is not a valid function for a hash.' => '[_1]はハッシュで利用できる関数ではありません。',
-	'\'[_1]\' is not a valid function for an array.' => '[_1]は配列で利用できる関数ではありません。',
-
-## php/lib/block.mtsethashvar.php
+## php/lib/block.mtentries.php
+	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
 
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters you see in the picture above.' => '画像の中に見える文字を入力してください。',
 
 ## php/lib/archive_lib.php
+	'Page' => 'ウェブページ',
 	'Individual' => 'ブログ記事',
 	'Yearly' => '年別',
 	'Monthly' => '月別',
@@ -60,25 +48,53 @@ $Lexicon_ja = array(
 	'Category Daily' => 'カテゴリ 日別',
 	'Category Weekly' => 'カテゴリ 週別',
 
-## php/lib/block.mtauthorhasentry.php
-
-## php/lib/function.mtremotesigninlink.php
-	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証が有効になっていないので、MTRemoteSignInLinkは利用できません。',
-
 ## php/lib/function.mtauthordisplayname.php
 
+## php/lib/function.mtvar.php
+	'\'[_1]\' is not a valid function for a hash.' => '[_1]はハッシュで利用できる関数ではありません。',
+	'\'[_1]\' is not a valid function for an array.' => '[_1]は配列で利用できる関数ではありません。',
+
+## php/lib/block.mtsetvarblock.php
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
+
+## php/lib/function.mtcommentreplylink.php
+	'Reply' => '返信',
+
+## php/lib/block.mtauthorhasentry.php
+	'No author available' => 'ユーザーが見つかりません。',
+
+## php/lib/function.mtremotesigninlink.php
+	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
+
+## php/lib/function.mtentryclasslabel.php
+	'page' => 'ウェブページ',
+	'entry' => 'ブログ記事',
+	'Entry' => 'ブログ記事',
+
 ## php/lib/block.mtassets.php
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
 
-## php/lib/function.mtsetvar.php
+## php/lib/block.mtsethashvar.php
 
-## php/lib/block.mtentries.php
+## php/lib/block.mtauthorhaspage.php
+
+## php/lib/block.mtif.php
 
 ## php/lib/function.mtassettype.php
-    'image' => '画像',
-    'file' => 'ファイル',
-    'Image' => '画像',
-    'File' => 'ファイル'
+	'image' => '画像',
+	'Image' => '画像',
+	'file' => 'ファイル',
+	'File' => 'ファイル',
+	'audio' => 'オーディオ',
+	'Audio' => 'オーディオ',
+	'video' => 'ビデオ',
+	'Video' => 'ビデオ',
+
+## php/mt.php
+	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
+
+## php/mt.php.pre
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;

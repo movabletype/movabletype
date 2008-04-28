@@ -23,7 +23,7 @@ our $VERSION = '1.1';
 my $plugin = MT::Plugin::WidgetManager->new({
     id             => 'WidgetManager',
     name           => 'Widget Manager Upgrade Assistant',
-    description    => q(<MT_TRANS phrase="Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.\">),
+    description    => q(<MT_TRANS phrase="Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.">),
     version        => $VERSION,
     schema_version => $VERSION,
     author_name    => 'Six Apart, Ltd.',
