@@ -19,10 +19,11 @@ sub edit {
     unless ( $blog_id ) {
         my $type = $q->param('type') || ( $obj ? $obj->type : undef );
         return $app->return_to_dashboard( redirect => 1 )
-            unless $type eq 'module'
-                || $type eq 'custom'
-                || $type eq 'widget'
-                || $type eq 'widgetset';
+            if $type eq 'archive'
+            || $type eq 'individual'
+            || $type eq 'category'
+            || $type eq 'page'
+            || $type eq 'index';
     }
 
     my $type = $q->param('_type');
