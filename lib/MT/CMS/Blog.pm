@@ -238,6 +238,7 @@ sub edit {
                     { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) )
             {
                 $param->{dynamic_enabled} = 1;
+                $param->{warning_include} = 1 unless $blog->include_system eq 'php';
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {

@@ -88,6 +88,14 @@
         </mtapp:statusmsg>
     </mt:if>
     </mt:if>
+
+    <mt:if name="warning_include"> 
+        <mtapp:statusmsg
+            id="warning_include"
+            class="alert">
+            <__trans phrase="Non-PHP based dynamic templates are unable to utilize server side includes.">
+        </mtapp:statusmsg>
+   </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="content_nav">
     <mt:include name="include/cfg_content_nav.tmpl">
