@@ -79,7 +79,8 @@ sub edit {
         }
 
         if ( $obj->junk_log ) {
-            build_junk_table( $app, param => $param, object => $obj );
+            require MT::CMS::Comment;
+            MT::CMS::Comment::build_junk_table( $app, param => $param, object => $obj );
         }
 
         $param->{created_on_time_formatted} =
