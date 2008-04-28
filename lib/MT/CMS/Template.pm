@@ -2189,7 +2189,8 @@ sub edit_widget {
     my %all_widgets;
     while (my $m = $iter->()) {
         next unless $m;
-        $all_widgets{ $m->id } = $m->name;
+        $all_widgets{ $m->id }{name} = $m->name;
+        $all_widgets{ $m->id }{blog_id} = $m->blog_id;
     }
 
     my @inst_modules;
@@ -2221,14 +2222,19 @@ sub edit_widget {
         if ( $modulesets ) {
             my @modules = split ',', $modulesets;
             foreach my $mid ( @modules ) {
-                push @inst_modules, { id => $mid, name => $all_widgets{$mid} };
+                push @inst_modules, {
+                    id => $mid,
+                    name => $all_widgets{$mid}{name},
+                    blog_id => $all_widgets{$mid}{blog_id},
+                };
                 delete $all_widgets{$mid};
             }
         }
     }
     $param->{installed} = \@inst_modules if @inst_modules;
-    my @avail_modules = map { { id => $_, name => $all_widgets{$_} } }
-        keys %all_widgets;
+    my @avail_modules = map { {
+        id => $_, name => $all_widgets{$_}{name}, blog_id => $all_widgets{$_}{blog_id}
+    } } keys %all_widgets;
     $param->{available} = \@avail_modules;
 
     my $res = $app->run_callbacks('cms_edit.widgetset', $app, $id, $wtmpl, $param);
@@ -2258,22 +2264,9 @@ sub list_widget {
             { sort => 'name', direction => 'ascend' }
         ],
     );
-    
-    my $param = {
-        widget_table   => $widget_loop,
-        object_type    => "widgetset",
-        search_type    => "template",
-        search_label   => MT::Template->class_label_plural,
-        listing_screen => 1,
-        screen_id      => "list-widget-set",
-        $blog_id ? ( blog_view => 1, blog_id => $blog_id ) : (),
-        exists($opt{rebuild}) ? ( rebuild => $opt{rebuild} ) : (),
-        exists($opt{error}) ? ( error => $opt{error} ) : (),
-        exists($opt{deleted}) ? ( saved => $opt{deleted} ) : ()
-    };
 
     my $iter = $app->model('template')->load_iter(
-        { type => 'widgetset', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
+        { type => 'widgetset', blog_id => $blog_id ? $blog_id : 0 },
         { sort => 'name', direction => 'ascend' }
     );
     my @widgetmanagers;
@@ -2294,7 +2287,29 @@ sub list_widget {
         }
         push @widgetmanagers, $ws;
     }
-    $param->{object_loop} = \@widgetmanagers if @widgetmanagers;
+
+    my @widget_loop;
+    if ( $blog_id ) {
+        # Remove system level widgets from the listing
+        @widget_loop = grep { $_->{blog_id} == $blog_id } @$widget_loop;
+    }
+    else {
+        @widget_loop = @$widget_loop;
+    }
+
+    my $param = {
+        @widgetmanagers ? ( object_loop  => \@widgetmanagers ) : (),
+        @widget_loop    ? ( widget_table => \@widget_loop ) : (),
+        object_type    => "widgetset",
+        search_type    => "template",
+        search_label   => MT::Template->class_label_plural,
+        listing_screen => 1,
+        screen_id      => "list-widget-set",
+        $blog_id ? ( blog_view => 1, blog_id => $blog_id ) : (),
+        exists($opt{rebuild}) ? ( rebuild => $opt{rebuild} ) : (),
+        exists($opt{error}) ? ( error => $opt{error} ) : (),
+        exists($opt{deleted}) ? ( saved => $opt{deleted} ) : ()
+    };
 
     $app->load_tmpl('list_widget.tmpl', $param);
 }
