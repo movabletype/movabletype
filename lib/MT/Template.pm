@@ -292,7 +292,7 @@ sub widgets_to_modulesets {
 
     my @wtmpls = $pkg->load(
         { name => \@widgets, blog_id => $blog_id ? [ $blog_id, 0 ] : 0, type => 'widget' }
-    );
+    ) if @widgets;
     my @wids;
     foreach my $name ( @widgets ) {
         my ( $widget ) = grep { $_->name eq $name } @wtmpls;
@@ -325,7 +325,7 @@ sub save_widgetset {
         { id => \@inst, type => 'widget',
           blog_id => $obj->blog_id ? [ 0, $obj->blog_id ] : '0' },
         { fetchonly => [ 'id', 'name' ] }
-    );
+    ) if @inst;
 
     my $string_tmpl = '<mt:include widget="%s">';
     my $text = q();
