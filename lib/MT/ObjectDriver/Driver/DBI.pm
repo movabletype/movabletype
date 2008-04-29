@@ -126,7 +126,7 @@ sub _do_group_by {
         delete $args->{no_class};
     }
     else {
-        $class->pre_search_scope_terms_to_class( $terms, $args );
+        $class->_pre_search_scope_terms_to_class( $terms, $args );
     }
     my $order = delete $args->{sort};
     my $direction = delete $args->{direction};
