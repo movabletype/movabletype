@@ -1658,7 +1658,7 @@ sub type_diff {
             } else {
                 if (($col_def->{type} eq 'string')
                  && ($db_def->{type} eq 'string')
-                 && ($col_def->{size} <= $db_def->{size})) {
+                 && ($col_def->{size} != $db_def->{size})) {
                     if (($col_def->{not_null} || 0) != ($db_def->{not_null} || 0)) {
                         push @cols_to_alter, $col;
                     }
