@@ -4851,7 +4851,7 @@ sub _hdlr_sign_in_link {
     my $path = _hdlr_cgi_path($ctx);
     $path .= '/' unless $path =~ m!/$!;
     my $comment_script = $cfg->CommentScript;
-    my $static_arg = $args->{static} ? "&static=" . $args->{static} : "&static=0";
+    my $static_arg = $args->{static} ? "&static=" . $args->{static} : '';
     my $e = $ctx->stash('entry');
     return "$path$comment_script?__mode=login$static_arg" .
         ($blog ? '&blog_id=' . $blog->id : '') .

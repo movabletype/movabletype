@@ -67,6 +67,7 @@
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
     <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+    <input type="hidden" name="return_url" value="<mt:var name="return_url" escape="html">" />
     <mt:unless name="auth_mode_mt"><input type="hidden" name="external_auth" value="1" /></mt:unless>
     <mtapp:setting
         id="username"
@@ -94,7 +95,7 @@
         </div>
     </div>
     <mt:if name="registration_allowed">
-    <div class="right"><__trans phrase="Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id">&amp;static=<mt:var name="static" escape="url">"></div>
+    <div class="right"><__trans phrase="Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id"><mt:if name="static">&amp;static=<mt:var name="static" escape="url"></mt:if><mt:if name="return_url">&amp;return_url=<mt:var name="return_url" escape="url"></mt:if>"></div>
     </mt:if>
 </form>
 

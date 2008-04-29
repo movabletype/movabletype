@@ -384,8 +384,11 @@ function mtEntryOnLoad() {
 function mtSignIn(entry_id) {
     var doc_url = document.URL;
     doc_url = doc_url.replace(/#.+/, '');
-    var url = '<$MTSignInLink$>&entry_id=' + entry_id +
-        '&return_to=' + encodeURIComponent(doc_url);
+    var url = '<$MTSignInLink$>';
+    if (entry_id)
+        url += '&entry_id=' + entry_id;
+    else
+        url += '&return_url=' + encodeURIComponent(doc_url);
     mtClearUser();
     location.href = url;
 }
@@ -449,7 +452,7 @@ function mtShowGreeting() {
         }
     } else {
         if (reg_reqd) {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="mtSignIn()">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="mtSignIn(' + entry_id + ')">%%</a>">';
         } else {
             phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or [_3]comment anonymously[_2]." params="<a href="javascript:void(0)" onclick="mtSignIn(' + entry_id + ')">%%</a>%%<a href="javascript:void(0);" onclick="mtShowAnonymousForm();">">';
         }

@@ -332,7 +332,7 @@ sub signup {
     my $app   = shift;
     my %opt   = @_;
     my $param = {};
-    $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static username);
+    $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static username return_url );
     my $blog = $app->model('blog')->load( $param->{blog_id} )
         or return $app->error($app->translate('Can\'t load blog #[_1].', $param->{blog_id}));
     my $cfg  = $app->config;
@@ -357,7 +357,7 @@ sub do_signup {
     my $param = {};
     $param->{$_} = $q->param($_)
       foreach
-      qw(blog_id entry_id static email url username nickname email hint);
+      qw(blog_id entry_id static email url username nickname email hint return_url );
 
     my $user = $app->create_user_pending($param);
     unless ($user) {
@@ -386,7 +386,7 @@ sub do_signup {
     }
     else {
         $app->build_page( 'signup_thanks.tmpl',
-            { email => $user->email, return_url => is_valid_url( $param->{static} ) }
+            { email => $user->email, return_url => is_valid_url( $param->{return_url} || $param->{static} ) }
         );
     }
 }
