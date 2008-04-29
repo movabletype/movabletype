@@ -571,6 +571,7 @@ sub core_tags {
             },
         },
         modifier => {
+            'mteval' => \&_fltr_mteval,
             'filters' => \&_fltr_filters,
             'trim_to' => \&_fltr_trim_to,
             'trim' => \&_fltr_trim,
@@ -615,17 +616,47 @@ sub core_tags {
     };
 }
 
+sub _fltr_mteval {
+    my ($str, $arg, $ctx) = @_;
+    my $builder = $ctx->stash('builder');
+    my $tokens = $builder->compile($ctx, $str);
+    return $ctx->error($builder->errstr) unless defined $tokens;
+    my $out = $builder->build($ctx, $tokens);
+    return $ctx->error($builder->errstr) unless defined $out;
+    return $out;
+}
+
+=head2 encode_sha1
+
+Outputs a SHA1-hex digest of the content from the tag it is applied to.
+
+=cut
+
 sub _fltr_sha1 {
     my ($str) = @_;
     require MT::Util;
     return MT::Util::perl_sha1_digest_hex($str);
 }
 
+=head2 setvar
+
+Takes the content from the tag it is applied to and assigns it
+to the given variable name.
+
+=cut
+
 sub _fltr_setvar {
     my ($str, $arg, $ctx) = @_;
     $ctx->var($arg, $str);
     return '';
 }
+
+=head2 nofollowfy
+
+Processes the 'a' tags from the tag it is applied to and adds a 'rel'
+attribute of 'nofollow' to it (or appends to an existing rel attribute).
+
+=cut
 
 sub _fltr_nofollowfy {
     my ($str, $arg, $ctx) = @_;
@@ -647,48 +678,123 @@ sub _fltr_nofollowfy {
     $str;
 }
 
+=head2 filters
+
+Applies one or more text format filters. Example:
+
+    <MTEntryBody convert_breaks="0" filters="filter1, filter2, filter3">
+
+=cut
+
 sub _fltr_filters {
     my ($str, $val, $ctx) = @_;
     MT->apply_text_filters($str, [ split /\s*,\s*/, $val ], $ctx);
 }
+
+=head2 trim_to
+
+Trims the input content to the requested length. Example:
+
+    <MTEntryTitle trim_to="4">
+
+=cut
+
 sub _fltr_trim_to {
     my ($str, $val, $ctx) = @_;
     return '' if $val <= 0;
     $str = substr_text($str, 0, $val) if $val < length_text($str);
     $str;
 }
+
+=head2 trim
+
+Trims all leading and trailing whitespace from the input. Example:
+
+    <MTEntryTitle trim="1">
+
+=cut
+
 sub _fltr_trim {
     my ($str, $val, $ctx) = @_;
     $str =~ s/^\s+|\s+$//gs;
     $str;
 }
+
+=head2 ltrim
+
+Trims all leading whitespace from the input. Example:
+
+    <MTEntryTitle ltrim="1">
+
+=cut
+
 sub _fltr_ltrim {
     my ($str, $val, $ctx) = @_;
     $str =~ s/^\s+//s;
     $str;
 }
+
+=head2 rtrim
+
+Trims all trailing (right-side) whitespace from the input. Example:
+
+    <MTEntryTitle rtrim="1">
+
+=cut
+
 sub _fltr_rtrim {
     my ($str, $val, $ctx) = @_;
     $str =~ s/\s+$//s;
     $str;
 }
+
+=head2 decode_html
+
+Decodes any HTML entities from the input.
+
+=cut
+
 sub _fltr_decode_html {
     my ($str, $val, $ctx) = @_;
     MT::Util::decode_html($str);
 }
+
+=head2 decode_xml
+
+Removes XML encoding from the input. Strips a 'CDATA' wrapper as well.
+
+=cut
+
 sub _fltr_decode_xml {
     my ($str, $val, $ctx) = @_;
     decode_xml($str);
 }
+
+=head2 remove_html
+
+Removes any HTML markup from the input.
+
+=cut
+
 sub _fltr_remove_html {
     my ($str, $val, $ctx) = @_;
     MT::Util::remove_html($str);
 }
+
+=head2 dirify
+
+=cut
+
 sub _fltr_dirify {
     my ($str, $val, $ctx) = @_;
     return $str if (defined $val) && ($val eq '0');
     MT::Util::dirify($str, $val);
 }
+
+=head2 sanitize
+
+=cut
+
 sub _fltr_sanitize {
     my ($str, $val, $ctx) = @_;
     my $blog = $ctx->stash('blog');
@@ -699,51 +805,110 @@ sub _fltr_sanitize {
     }
     MT::Sanitize->sanitize($str, $val);
 }
+
+=head2 encode_html
+
+=cut
+
 sub _fltr_encode_html {
     my ($str, $val, $ctx) = @_;
     MT::Util::encode_html($str, 1);
 }
+
+=head2 encode_xml
+
+=cut
+
 sub _fltr_encode_xml {
     my ($str, $val, $ctx) = @_;
     MT::Util::encode_xml($str);
 }
+
+=head2 encode_js
+
+=cut
+
 sub _fltr_encode_js {
     my ($str, $val, $ctx) = @_;
     MT::Util::encode_js($str);
 }
+
+=head2 encode_php
+
+=cut
+
 sub _fltr_encode_php {
     my ($str, $val, $ctx) = @_;
     MT::Util::encode_php($str, $val);
 }
+
+=head2 encode_url
+
+=cut
+
 sub _fltr_encode_url {
     my ($str, $val, $ctx) = @_;
     MT::Util::encode_url($str);
 }
+
+=head2 upper_case
+
+=cut
+
 sub _fltr_upper_case {
     my ($str, $val, $ctx) = @_;
     return uppercase($str);
 }
+
+=head2 lower_case
+
+=cut
+
 sub _fltr_lower_case {
     my ($str, $val, $ctx) = @_;
     return lowercase($str);
 }
+
+=head2 strip_linefeeds
+
+=cut
+
 sub _fltr_strip_linefeeds {
     my ($str, $val, $ctx) = @_;
     $str =~ tr(\r\n)()d;
     $str;
 }
+
+=head2 space_pad
+
+=cut
+
 sub _fltr_space_pad {
     my ($str, $val, $ctx) = @_;
     sprintf "%${val}s", $str;
 }
+
+=head2 zero_pad
+
+=cut
+
 sub _fltr_zero_pad {
     my ($str, $val, $ctx) = @_;
     sprintf "%0${val}s", $str;
 }
+
+=head2 sprintf
+
+=cut
+
 sub _fltr_sprintf {
     my ($str, $val, $ctx) = @_;
     sprintf $val, $str;
 }
+
+=head2 regex_replace
+
+=cut
 
 sub _fltr_regex_replace {
     my ($str, $val, $ctx) = @_;
@@ -776,27 +941,47 @@ sub _fltr_regex_replace {
     return $str;
 }
 
+=head2 capitalize
+
+=cut
+
 sub _fltr_capitalize {
     my ($str, $val, $ctx) = @_;
     $str =~ s/\b(\w+)\b/\u\L$1/g;
     return $str;
 }
 
+=head2 count_characters
+
+=cut
+
 sub _fltr_count_characters {
     my ($str, $val, $ctx) = @_;
     return length_text($str);
 }
+
+=head2 cat
+
+=cut
 
 sub _fltr_cat {
     my ($str, $val, $ctx) = @_;
     return $str . $val;
 }
 
+=head2 count_paragraphs
+
+=cut
+
 sub _fltr_count_paragraphs {
     my ($str, $val, $ctx) = @_;
     my @paras = split /[\r\n]+/, $str;
     return scalar @paras;
 }
+
+=head2 count_words
+
+=cut
 
 sub _fltr_count_words {
     my ($str, $val, $ctx) = @_;
@@ -809,6 +994,24 @@ sub _fltr_count_words {
 #     my ($str, $val, $ctx) = @_;
 #     
 # }
+
+=head2 escape
+
+=over 4
+
+=item html
+
+=item url
+
+=item javascript
+
+=item js
+
+=item mail
+
+=back
+
+=cut
 
 sub _fltr_escape {
     my ($str, $val, $ctx) = @_;
@@ -842,6 +1045,10 @@ sub _fltr_escape {
     return $str;
 }
 
+=head2 indent
+
+=cut
+
 sub _fltr_indent {
     my ($str, $val, $ctx) = @_;
     if ((my $len = int($val)) > 0) {
@@ -850,6 +1057,10 @@ sub _fltr_indent {
     }
     return $str;
 }
+
+=head2 nl2br
+
+=cut
 
 sub _fltr_nl2br {
     my ($str, $val, $ctx) = @_;
@@ -861,6 +1072,10 @@ sub _fltr_nl2br {
     return $str;
 }
 
+=head2 replace
+
+=cut
+
 sub _fltr_replace {
     my ($str, $val, $ctx) = @_;
     # This one requires an array
@@ -871,11 +1086,19 @@ sub _fltr_replace {
     return $str;
 }
 
+=head2 spacify
+
+=cut
+
 sub _fltr_spacify {
     my ($str, $val, $ctx) = @_;
     my @c = split //, $str;
     return join $val, @c;
 }
+
+=head2 strip
+
+=cut
 
 sub _fltr_strip {
     my ($str, $val, $ctx) = @_;
@@ -884,10 +1107,18 @@ sub _fltr_strip {
     return $str;
 }
 
+=head2 strip_tags
+
+=cut
+
 sub _fltr_strip_tags {
     my ($str, $val, $ctx) = @_;
     return MT::Util::remove_html($str);
 }
+
+=head2 _default
+
+=cut
 
 sub _fltr_default {
     my ($str, $val, $ctx) = @_;
@@ -903,6 +1134,10 @@ sub _fltr_default {
 #     my ($str, $val, $ctx) = @_;
 # }
 
+=head2 wrap_text
+
+=cut
+
 sub _fltr_wrap_text {
     my ($str, $val, $ctx) = @_;
     my $ret = wrap_text($str, $val);
@@ -911,11 +1146,137 @@ sub _fltr_wrap_text {
 
 ##  Core template tags
 
+=head2 App:Listing
+
+This application tag is used in MT application templates to produce
+a table listing. It expects an C<object_loop> variable to be available,
+or you can use the C<loop> attribute to have it use a different source.
+
+It will output it's contents once for each row of the input array. It
+produces markup that is compatible with the MT application templates
+and CSS structure, so it is not meant for general blog publishing use.
+
+The C<return_args> variable is recognized and will populate a hidden
+field in the produced C<form> tag if available.
+
+The C<blog_id> variable is recognized and will populate a hidden
+field in the produced C<form> tag if available.
+
+The C<screen_class> variable is recognized and will force the
+C<hide_pager> attribute to 1 if it is set to 'search-replace'.
+
+The C<magic_token> variable is recognized and will populate a hidden
+field in the produced C<form> tag if available (or will retrieve
+a token from the current application if unset).
+
+The C<view_expanded> variable is recognized and will affect the
+class name applied to the table. If assigned, the table tag will
+receive a 'expanded' class; otherwise, it is given a 'compact'
+class.
+
+The C<listing_header> variable is recognized and will be output
+in a C<div> tag (classed with 'listing-header') that appears
+at the top of the listing. This is only output when 'actions'
+are shown (see 'show_actions' attribute).
+
+The structure of the output from a typical use like this:
+
+    <MTApp:Listing type="entry">
+        (contents of one row for table)
+    </MTApp:Listing>
+
+produces something like this:
+
+    <div id="entry-listing" class="listing">
+        <div class="listing-header">
+        </div>
+        <form id="entry-listing-form" class="listing-form"
+            action="..../mt.cgi" method="post"
+            onsubmit="return this['__mode'] ? true : false">
+            <input type="hidden" name="__mode" value="" />
+            <input type="hidden" name="_type" value="entry" />
+            <input type="hidden" name="action_name" value="" />
+            <input type="hidden" name="itemset_action_input" value="" />
+            <input type="hidden" name="return_args" value="..." />
+            <input type="hidden" name="blog_id" value="1" />
+            <input type="hidden" name="magic_token" value="abcd" />
+            <$MTApp:ActionBar bar_position="top"
+                form_id="entry-listing-form"$>
+            <table id="entry-listing-table"
+                class="entry-listing-table compact" cellspacing="0">
+
+                (contents of tag are placed here)
+
+            </table>
+            <$MTApp:ActionBar bar_position="bottom"
+                form_id="entry-listing-form"$>
+        </form>
+    </div>
+
+
+=over 4
+
+=item type (optional; default 'object_type' variable)
+
+The C<MT::Object> object type the listing is processing. If unset,
+will use the contents of the C<object_type> variable. If no type
+can be determined, the tag will return an error.
+
+=item loop (optional; default 'object_loop' variable)
+
+The source of data to process. This is an array of hashes, similar
+to the kind used with the L<Loop> tag. If unset, the C<object_loop>
+variable is used instead.
+
+=item empty_message (optional)
+
+Used when there are no rows to output for the listing. If not set,
+it will process any 'else' block that is available instead, or, failing
+that, will output an L<App:StatusMsg> tag saying that no data could be
+found.
+
+=item id (optional; default "type-listing")
+
+Used to construct the DOM id for the listing. The outer C<div> tag
+will use this value. If unset, it will be assigned C<type-listing> (where
+'type' is the object type determined for the listing; see 'type'
+attribute).
+
+=item listing_class (optional)
+
+Provides a custom class name that can be applied to the main
+C<div> tag produced (this is in addition to the 'listing' class
+that is always applied).
+
+=item action (optional; default 'script_url' variable)
+
+Supplies the 'action' attribute of the C<form> tag produced.
+
+=item hide_pager (optional; default '0')
+
+Controls whether the pagination controls are shown or not.
+If unspecified, pagination is shown.
+
+=item show_actions (optional; default '1')
+
+Controls whether the actions associated with the object type
+processed are shown or not. If unspecified, actions are shown.
+
+=back
+
+=cut
+
 sub _hdlr_app_listing {
     my ($ctx, $args, $cond) = @_;
 
     my $type = $args->{type} || $ctx->var('object_type');
+    return $ctx->error("The 'type' attribute is required.")
+        unless $type;
+
     my $class = MT->model($type);
+    return $ctx->error("No MT object class for type '$type'.")
+        unless $class;
+
     my $loop = $args->{loop} || 'object_loop';
     my $loop_obj = $ctx->var($loop);
 
@@ -999,10 +1360,50 @@ EOT
     }
 }
 
+=head2 App:Link
+
+Produces a application link to the current script with the mode and
+attributes specified.
+
+Example:
+
+    <$MTApp:Link mode="foo" type="entry" bar="1"$>
+
+produces:
+
+    /cgi-bin/mt/mt.cgi?__mode=foo&_type=entry&bar=1
+
+This tag produces unescaped '&' characters. If you use this tag
+in an HTML tag attribute, be sure to add a C<escape="html"> attribute
+which will encode these to HTML entities.
+
+=over 4
+
+=item mode
+
+Maps to a '__mode' argument.
+
+=item type
+
+Maps to a '_type' argument.
+
+=back
+
+=cut
+
 sub _hdlr_app_link {
     my ($ctx, $arg, $cond) = @_;
     my $app = MT->instance;
+
     my %args = %$arg;
+
+    # eliminate special '@' argument (and anything other refs that may exist)
+    ref($args{$_}) && delete $args{$_} for keys %args;
+
+    # strip off any arguments that are actually global filters
+    my $filters = MT->registry('tags', 'modifier');
+    exists($filters->{$_}) && delete $args{$_} for keys %args;
+
     # remap 'type' attribute since we always express this as
     # a '_type' query parameter.
     my $mode = delete $args{mode} or return $ctx->error("mode attribute is required");
@@ -1016,6 +1417,32 @@ sub _hdlr_app_link {
     }
     return $app->uri(mode => $mode, args => \%args);
 }
+
+=head2 App:ActionBar
+
+Produces markup for application templates for the strip of actions
+for a application listing or edit screen.
+
+=over 4
+
+=item bar_position (optional; default "top")
+
+Assigns a CSS class name indicating whether the control is above or
+below the listing or edit form it is associated with.
+
+=item hide_pager
+
+Assign either 1 or 0 to control whether the pagination controls are
+displayed or not.
+
+=item form_id
+
+Associates the pagition controls and item action widget with the
+given form element.
+
+=back
+
+=cut
 
 sub _hdlr_app_action_bar {
     my ($ctx, $args, $cond) = @_;
@@ -1116,6 +1543,26 @@ $insides
 EOT
 }
 
+=head2 App:StatusMsg
+
+An application template tag that outputs a MT status message.
+
+=over 4
+
+=item id (optional)
+
+=item class (optional; default "info")
+
+=item rebuild (optional)
+
+Accepted values: "all", "index".
+
+=item can_close (optional; default "1")
+
+=back
+
+=cut
+
 sub _hdlr_app_statusmsg {
     my ($ctx, $args, $cond) = @_;
     my $id = $args->{id};
@@ -1141,6 +1588,18 @@ sub _hdlr_app_statusmsg {
 EOT
 }
 
+=head2 App:ListFilters
+
+An application template tag used to produce an unordered list of quickfilters
+for a given listing screen. The filters are drawn from a C<list_filters>
+template variable which is an array of hashes.
+
+Example:
+
+    <$MTApp:ListFilters$>
+
+=cut
+
 sub _hdlr_app_list_filters {
     my ($ctx, $args, $cond) = @_;
     my $app = MT->app;
@@ -1162,6 +1621,18 @@ sub _hdlr_app_list_filters {
     </mt:loop>
 EOT
 }
+
+=head2 App:PageActions
+
+An application template tag used to produce an unordered list of actions
+for a given listing screen. The actions are drawn from a C<page_actions>
+template variable which is an array of hashes.
+
+Example:
+
+    <$MTApp:PageActions$>
+
+=cut
 
 sub _hdlr_app_page_actions {
     my ($ctx, $args, $cond) = @_;
@@ -1188,6 +1659,75 @@ sub _hdlr_app_page_actions {
     </mtapp:widget>
 EOT
 }
+
+=head2 App:Form
+
+Used for application templates that need to express a standard MT
+application form. This produces certain hidden fields that are typically
+required by MT application forms.
+
+Example:
+
+    <MTApp:Form id="update" mode="update_blog_name">
+        Blog Name: <input type="text" name="blog_name" />
+        <input type="submit" />
+    </MTApp:Form>
+
+Producing:
+
+    <form id="update" name="update" action="/cgi-bin/mt.cgi" method="POST">
+    <input type="hidden" name="__mode" value="update_blog_name" />
+        Blog Name: <input type="text" name="blog_name" />
+        <input type="submit" />
+    </form>
+
+=over 4
+
+=item action (optional)
+
+Identifies the URL to submit the form to. If not given, will use
+the current application URI.
+
+=item method (optional; default "POST")
+
+Supplies the C<form> method. "GET" or "POST" are the typical values
+for this, but will accept any HTTP-compatible method (ie: "PUT", "DELETE").
+
+=item object_id (optional)
+
+Populates a hidden 'id' field in the form. If not given, will also use any
+'id' template variable defined.
+
+=item blog_id (optional)
+
+Populates a hidden 'blog_id' field in the form. If not given, will also use
+any 'blog_id' template variable defined.
+
+=item object_type (optional)
+
+Populates a hidden '_type' field in the form. If not given, will also use
+any 'type' template variable defined.
+
+=item id (optional)
+
+Used to form the 'id' element of the HTML C<form> tag. If not specified,
+the C<form> tag 'id' element will be assigned TYPE-form, where TYPE is the
+determined object_type.
+
+=item name (optional)
+
+Supplies the C<form> name attribute. If unspecified, will use the C<id>
+attribute, if available.
+
+=item enctype (optional)
+
+If assigned, sets an 'enctype' attribute on the C<form> tag using the value
+supplied. This is typically used to create a form that is capable of
+uploading files.
+
+=back
+
+=cut
 
 sub _hdlr_app_form {
     my ($ctx, $args, $cond) = @_;
@@ -1228,6 +1768,37 @@ $fields
 EOT
 }
 
+=head2 App:SettingGroup
+
+An application template tag used to wrap a number of L<App:Setting> tags.
+
+Example:
+
+    <MTApp:SettingGroup id="foo">
+        <MTApp:Setting ...>
+        <MTApp:Setting ...>
+        <MTApp:Setting ...>
+    </MTApp:SettingGroup>
+
+=over 4
+
+=item id (required)
+
+A unique identifier for this group of settings.
+
+=item class (optional)
+
+If specified, applies this CSS class to the C<fieldset> tag produced.
+
+=item shown (optional; default "1")
+
+Controls whether the C<fieldset> is initially shown or not. If hidden,
+a CSS "hidden" class is applied to the C<fieldset> tag.
+
+=back
+
+=cut
+
 sub _hdlr_app_setting_group {
     my ($ctx, $args, $cond) = @_;
     my $id = $args->{id};
@@ -1245,6 +1816,99 @@ sub _hdlr_app_setting_group {
 </fieldset>
 EOT
 }
+
+=head2 App:Setting
+
+An application template tag used to display an application form field.
+
+Example:
+
+    <mtapp:Setting
+        id="name"
+        required="1"
+        label="Username"
+        hint="The username used to login">
+            <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+
+The basic structural output of a setting tag looks like this:
+
+    <div id="ID-field" class="field pkg">
+        <div class="field-inner">
+            <div class="field-header">
+                <label id="ID-label" for="ID">LABEL</label>
+            </div>
+            <div class="field-content">
+                (content of App:Setting tag)
+            </div>
+        </div>
+    </div>
+
+=over 4
+
+=item id (required)
+
+Each application setting tag requires a unique 'id' attribute. This id
+should not be re-used within the template.
+
+=item required (optional; default "0")
+
+Controls whether the field is displayed with visual cues that the
+field is a required field or not.
+
+=item label
+
+Supplies the label phrase for the setting.
+
+=item show_label (optional; default "1")
+
+Controls whether the label portion of the setting is shown or not.
+
+=item shown (optional; default "1")
+
+Controls whether the setting is visible or not. If specified, adds
+a "hidden" class to the outermost C<div> tag produced for the
+setting.
+
+=item label_class (optional)
+
+Allows an additional CSS class to be applied to the label of the
+setting.
+
+=item content_class (optional)
+
+Allows an addtional CSS class to be applied to the contents of the
+setting.
+
+=item hint (optional)
+
+Supplies a "hint" phrase that provides inline instruction to the user.
+By default, this hint is hidden, unless the 'show_hint' attribute
+forces it to display.
+
+=item show_hint (optional; default "0")
+
+Controls whether the inline help 'hint' label is shown or not.
+
+=item warning
+
+Supplies a warning message to the user regarding the use of this setting.
+
+=item show_warning
+
+Controls whether the warning message is shown or not.
+
+=item help_page
+
+Identifies a specific page of the MT help documentation for this setting.
+
+=item help_section
+
+Identifies a section name of the MT help documentation for this setting.
+
+=back
+
+=cut
 
 sub _hdlr_app_setting {
     my ($ctx, $args, $cond) = @_;
@@ -2968,6 +3632,22 @@ sub _hdlr_cgi_path {
     return $path;
 }
 
+=head2 AdminCGIPath
+
+Returns the value of the AdminCGIPath configuration directive if set. Otherwise, the value of the CGIPath directive is returned.
+
+In the event that the configured path has no domain (ie, "/cgi-bin/"), the active blog's domain will be used.
+
+The path produced by this tag will always have an ending '/', even if one does not exist as configured.
+
+Example:
+
+    <$mt:AdminCGIPath$>
+
+=for tags path, system
+
+=cut
+
 sub _hdlr_admin_cgi_path {
     my ($ctx) = @_;
     my $cfg = $ctx->{config};
@@ -3035,6 +3715,12 @@ sub _hdlr_static_path {
     $path .= '/' unless $path =~ m!/$!;
     return $path;
 }
+
+=head2 AdminScript
+
+Returns the value of the C<AdminScript> configuration directive.
+
+=cut
 
 sub _hdlr_admin_script {
     my ($ctx) = @_;
@@ -3714,6 +4400,197 @@ sub _hdlr_blog_template_set_id {
     return $set;
 }
 
+=head2 Entries
+
+The Entries tag is a workhorse of MT publishing. It is used for
+publishing a selection of entries in a variety of situations. Typically,
+the basic use (specified without any attributes) outputs the selection
+of entries that are appropriate for the page being published. But you
+can use this tag for publishing custom modules, index templates and
+widgets to select content in many different ways.
+
+=over 4
+
+=item lastn (optional)
+
+Allows you to limit the number of entries output. This attribute
+always implies selection of entries based on their 'authored' date, in
+reverse chronological order.
+
+    <MTEntries lastn="5" sort_by="title" sort_order="ascend">
+
+This would publish the 5 most recent entries, ordered by their titles.
+
+=item limit (optional)
+
+Similar to the C<lastn> attribute, but limits output based on whichever
+sort order is in use.
+
+=item sort_by (optional; default "authored_on")
+
+Accepted values are 'authored_on', 'title', 'ping_count', 'comment_count',
+'rate', 'score' (both 'rate' and 'score' require a 'namespace' attribute to
+be present).
+
+If you have the Professional Pack installed, with custom fields, you
+may specify a custom field basename to sort the listing, by giving
+a sort_by value of 'field.basename' (where 'basename' is the custom
+field basename you wish to sort on).
+
+=item sort_order (optional)
+
+Accepted values are 'ascend' and 'descend'. The default is the order
+specified for publishing entries, set on the blog entry preferences
+screen.
+
+=item namespace (optional)
+
+The namespace attribute is used to specify which scoring namespace
+to use when applying the "sort_by='score'" attribute, or filtering
+based on scoring (any of the min_*, max_* attributes require this).
+
+The MT Community Pack provides a 'community_pack_recommend' namespace,
+for instance, which can be used to select entries, sorting by number
+of recommend/favorite votes that have been made.
+
+=item class_type (optional; default 'entry')
+
+Accepted values are 'entry' and 'page'.
+
+=item offset (optional)
+
+Accepted values are any non-zero positive integers, or the keyword
+"auto" which is used under dynamic publishing to automatically
+determine the offset based on the C<offset> query parameter for
+the request.
+
+
+=item category (optional)
+
+=item categories (optional)
+
+This attribute allows you to filter the entries based on category
+assignment. The simple case is to filter for a single category,
+where the full category name is specified:
+
+    <MTEntries category="Featured">
+
+If you have multiple categories with the same name, you can give
+their parent category names to be more explicit:
+
+    <MTEntries category="News/Featured">
+
+or
+
+    <MTEntries category="Projects/Featured">
+
+You can also use 'AND', 'OR' and 'NOT' operators to include or
+exclude categories:
+
+    <MTEntries categories="(Family OR Pets) AND Featured">
+
+or
+
+    <MTEntries categories="NOT Family">
+
+=item include_subcategories (optional)
+
+If this attribute is specified in conjunction with the category (or
+categories) attribute, it will cause any entries assigned to subcategories
+of the identified category/categories to be included as well.
+
+=item tag (optional)
+=item tags (optional)
+
+This attribute functions similarly to the C<category> attribute, but
+filters based on tag assignments. It also supports the logical operators
+described for category selection.
+
+=item author (optional)
+
+Accepts an author's username to filter entry selection. Example:
+
+    <MTEntries author="Melody">
+
+
+=item min_score (optional)
+
+=item max_score (optional)
+
+=item min_rate (optional)
+
+=item max_rate (optional)
+
+=item min_count (optional)
+
+=item max_count (optional)
+
+Allows filtering of entries based on score, rating or count. Each of
+the attributes require the C<namespace> attribute.
+
+=item scored_by (optional)
+
+Allows filtering of entries that were scored by a particular user,
+specified by username. Requires the C<namespace> attribute.
+
+=item days (optional)
+
+Limits the selection of entries to a specified number of days,
+based on the current date. For instance, if you specify:
+
+    <MTEntries days="10">
+
+only entries that were authored within the last 10 days will be
+published.
+
+=item recently_commented_on (optional)
+
+Selects the list of entries that have received published comments
+recently. The value of this attribute is the number of days to use
+to limit the selection. For instance:
+
+    <MTEntries recently_commented_on="10">
+
+will select entries that received published comments within the last
+10 days. The order of the entries is the date of the most recently
+received comment.
+
+=item unique
+
+If specified, this flag will cause MT to keep track of which entries
+are being published for a given page. It will also prevent the publishing
+of entries already published.
+
+For example, if you wish to publish the last 3 entries that are
+tagged "@featured", but wish to exclude these entries from the set
+of entries that follow, you can do this:
+
+
+    <MTEntries tag="@featured" lastn="3">
+        ...
+    </MTEntries>
+
+    <MTEntries lastn="7" unique="1">
+        ...
+    </MTEntries>
+
+The second Entries tag will exclude any entries that were output
+from the first Entries tag.
+
+=item glue (optional)
+
+Specifies a string that is output inbetween published entries. Example:
+
+    <MTEntries glue=","><MTEntryID></MTEntries>
+
+outputs something like this:
+
+    10,9,8,7,6,5,4,3,2,1
+
+=back
+
+=cut
+
 sub _hdlr_entries {
     my($ctx, $args, $cond) = @_;
     return $ctx->error(MT->translate('sort_by="score" must be used in combination with namespace.'))
@@ -3743,6 +4620,13 @@ sub _hdlr_entries {
     my $cat_class = MT->model(
         $class_type eq 'entry' ? 'category' : 'folder');
 
+    my %fields;
+    foreach my $arg ( keys %$args ) {
+        if ($arg =~ m/^field:(.+)$/) {
+            $fields{$1} = $args->{$arg};
+        }
+    }
+
     if ($entries && @$entries) {
         my $entry = @$entries[0];
         $entries = undef if $entry->class ne $class_type;
@@ -3752,6 +4636,9 @@ sub _hdlr_entries {
                 $entries = undef;
                 last;
             }
+        }
+        if ( $entries && %fields ) {
+            $entries = undef;
         }
     }
     local $ctx->{__stash}{entries};
@@ -4045,8 +4932,11 @@ sub _hdlr_entries {
 
         $args{'sort'} = 'authored_on';
         if ($args->{sort_by}) {
+            $args->{sort_by} =~ s/:/./; # for meta:name => meta.name
             $args->{sort_by} = 'ping_count' if $args->{sort_by} eq 'trackback_count';
-            if ($class->has_column($args->{sort_by})) {
+            if ($class->is_meta_column($args->{sort_by})) {
+                $no_resort = 0;
+            } elsif ($class->has_column($args->{sort_by})) {
                 $args{sort} = $args->{sort_by};
                 $no_resort = 1;
             } elsif ($args->{limit} && ('score' eq $args->{sort_by} || 'rate' eq $args->{sort_by})) {
@@ -4056,9 +4946,18 @@ sub _hdlr_entries {
                     delete $args->{lastn};
                 }
                 $no_resort = 0;
-            } elsif ($class->is_meta_column($args->{sort_by})) {
-                $no_resort = 0;
             }
+        }
+
+        if ( %fields ) {
+            # specifies we need a join with entry_meta;
+            # for now, we support one join
+            my ( $col, $val ) = %fields;
+            my $type = MT::Meta->metadata_by_name($class, 'field.' . $col);
+            $args{join} = [ $class->meta_pkg, undef,
+                { type => 'field.' . $col,
+                  $type->{type} => $val,
+                  'entry_id' => \'= entry_id' } ];
         }
 
         if (!@filters) {
@@ -4379,6 +5278,27 @@ sub _no_entry_error {
         $tag));
 }
 
+=head2 EntryBody
+
+Outputs the "main" text of the current entry in context.
+
+=over 4
+
+=item convert_breaks
+
+Accepted values are '0' and '1'. Typically, this attribute is
+used to disable (with a value of '0') the processing of the entry
+text based on the text formatting option for the entry.
+
+=item words
+
+Accepts any positive integer to limit the number of words
+that are output.
+
+=back
+
+=cut
+
 sub _hdlr_entry_body {
     my $arg = $_[1];
     my $e = $_[0]->stash('entry')
@@ -4405,6 +5325,13 @@ sub _hdlr_entry_body {
 
     return $text;
 }
+
+=head2 EntryBody
+
+Outputs the "extended" text of the current entry in context. Refer to the
+L<EntryBody> tag for supported attributes.
+
+=cut
 
 sub _hdlr_entry_more {
     my $arg = $_[1];
@@ -4433,6 +5360,19 @@ sub _hdlr_entry_more {
     return $text;
 }
 
+=head2 EntryTitle
+
+Outputs the title of the current entry in context.
+
+=over 4
+
+=item generate (optional)
+
+If specified, will draw content from the "main" text field of
+the entry if the title is empty.
+
+=cut
+
 sub _hdlr_entry_title {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
@@ -4442,11 +5382,26 @@ sub _hdlr_entry_title {
     $title;
 }
 
+=head2 EntryStatus
+
+Intended for application template use only. Displays the status of the
+entry in context. This will output one of "Draft", "Publish", "Review"
+or "Future".
+
+=cut
+
 sub _hdlr_entry_status {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     MT::Entry::status_text($e->status);
 }
+
+=head2 EntryDate
+
+Outputs the 'authored' date of the current entry in context.
+See the L<Date> tag for supported attributes.
+
+=cut
 
 sub _hdlr_entry_date {
     my $e = $_[0]->stash('entry')
@@ -4456,6 +5411,13 @@ sub _hdlr_entry_date {
     _hdlr_date($_[0], $args);
 }
 
+=head2 EntryCreatedDate
+
+Outputs the creation date of the current entry in context.
+See the L<Date> tag for supported attributes.
+
+=cut
+
 sub _hdlr_entry_create_date {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
@@ -4464,6 +5426,13 @@ sub _hdlr_entry_create_date {
     _hdlr_date($_[0], $args);
 }
 
+=head2 EntryModifiedDate
+
+Outputs the modification date of the current entry in context.
+See the L<Date> tag for supported attributes.
+
+=cut
+
 sub _hdlr_entry_mod_date {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
@@ -4471,6 +5440,21 @@ sub _hdlr_entry_mod_date {
     $args->{ts} = $e->modified_on || $e->created_on;
     _hdlr_date($_[0], $args);
 }
+
+=head2 EntryFlag
+
+Used to output any of the status fields for the current entry in
+context.
+
+=over 4
+
+=item flag (required)
+
+Accepts one of: 'allow_pings', 'allow_comments'.
+
+=back
+
+=cut
 
 sub _hdlr_entry_flag {
     my $e = $_[0]->stash('entry')
@@ -4493,6 +5477,31 @@ sub _hdlr_entry_flag {
     }
 }
 
+=head2 EntryExcerpt
+
+Ouputs the value of the excerpt field of the current entry in context.
+If the excerpt field is empty, it will draw from the main text of the
+entry to generate an excerpt.
+
+=over 4
+
+=item no_generate (optional)
+
+If the excerpt field is empty, this flag will prevent the generation
+of an excerpt using the main text of the entry.
+
+=item words (optional; default "40")
+
+Controls the length of the auto-generated entry excerpt. Does B<not>
+limit the content when the excerpt field contains content.
+
+=item convert_breaks (optional; default "0")
+
+When set to '1', applies the text formatting filters on the excerpt
+content.
+
+=cut
+
 sub _hdlr_entry_excerpt {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
@@ -4512,11 +5521,26 @@ sub _hdlr_entry_excerpt {
     $excerpt . '...';
 }
 
+=head2 EntryKeywords
+
+Outputs the value of the keywords field for the current entry in context.
+
+=cut
+
 sub _hdlr_entry_keywords {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     defined $e->keywords ? $e->keywords : '';
 }
+
+=head2 EntryAuthor
+
+Outputs the username of the author for the current entry in context.
+B<This tag is considered deprecated in favor of
+L<EntryAuthorDisplayName>. It is not recommended to publish MT
+usernames.>
+
+=cut
 
 # FIXME: This should be a container tag providing an author
 # context for the entry in context.
@@ -4527,12 +5551,27 @@ sub _hdlr_entry_author {
     $a ? $a->name || '' : '';
 }
 
+=head2 EntryAuthorDisplayName
+
+Outputs the display name of the author for the current entry in context.
+If the author has not provided a display name for publishing, this tag
+will output an empty string.
+
+=cut
+
 sub _hdlr_entry_author_display_name {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $a = $e->author;
     $a ? $a->nickname || '' : '';
 }
+
+=head2 EntryAuthorNickname
+
+An alias of L<EntryAuthorDisplayName>. B<This tag is deprecated in
+favor of L<EntryAuthorDisplayName>.>
+
+=cut
 
 sub _hdlr_entry_author_nick {
     my $e = $_[0]->stash('entry')
@@ -4541,12 +5580,36 @@ sub _hdlr_entry_author_nick {
     $a ? $a->nickname || '' : '';
 }
 
+=head2 EntryAuthorUsername
+
+Outputs the username of the author for the entry currently in context.
+B<NOTE: it is not recommended to publish MT usernames.>
+
+=cut
+
 sub _hdlr_entry_author_username {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $a = $e->author;
     $a ? $a->name || '' : '';
 }
+
+=head2 EntryAuthorEmail
+
+Outputs the email address of the author for the current entry in context.
+B<NOTE: it is not recommended to publish e-mail addresses for MT users.>
+
+=over 4
+
+=item spam_protect (optional; default "0")
+
+If specified, this will apply a light obfuscation of the email address,
+by encoding any characters that will identify it as an email address
+(C<:>, C<@>, and C<.>) into HTML entities.
+
+=back
+
+=cut
 
 sub _hdlr_entry_author_email {
     my $e = $_[0]->stash('entry')
@@ -4556,6 +5619,13 @@ sub _hdlr_entry_author_email {
     $_[1] && $_[1]->{'spam_protect'} ? spam_protect($a->email) : $a->email;
 }
 
+=head2 EntryAuthorURL
+
+Outputs the Website URL field from the author's profile for the
+current entry in context.
+
+=cut
+
 sub _hdlr_entry_author_url {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
@@ -4563,6 +5633,43 @@ sub _hdlr_entry_author_url {
     my $a = $e->author;
     $a ? $a->url || "" : "";
 }
+
+=head2 EntryAuthorLink
+
+Outputs a linked author name suitable for publishing in the 'byline'
+of an entry.
+
+=over 4
+
+=item new_window
+
+If specified, the published link is given a C<target> attribute of '_blank'.
+
+=item show_email (optional; default "0")
+
+If set, will allow publishing of an email address if the URL field
+for the author is empty.
+
+=item spam_protect (optional)
+
+If specified, this will apply a light obfuscation of any email address
+published, by encoding any characters that will identify it as an email
+address (C<:>, C<@>, and C<.>) into HTML entities.
+
+=item type (optional)
+
+Accepted values: C<url>, C<email>, C<archive>. Note: an 'archive' type
+requires publishing of "Author" archives.
+
+=item show_hcard (optional; default "0")
+
+If present, adds additional CSS class names to the link tag published,
+identifying the link as a url or email address depending on the type of
+link published.
+
+=back
+
+=cut
 
 sub _hdlr_entry_author_link {
     my($ctx, $args, $cond) = @_;
@@ -4611,12 +5718,25 @@ sub _hdlr_entry_author_link {
     return $displayname;
 }
 
+=head2 EntryAuthorID
+
+Outputs the numeric ID of the author for the current entry in context.
+
+=cut
+
 sub _hdlr_entry_author_id {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $a = $e->author;
     $a ? $a->id || '' : '';
 }
+
+=head2 EntryAuthorUserpic
+
+Outputs the HTML for the userpic of the author for the current entry
+in context.
+
+=cut
 
 sub _hdlr_entry_author_userpic {
     my $e = $_[0]->stash('entry')
@@ -4625,12 +5745,27 @@ sub _hdlr_entry_author_userpic {
     $a->userpic_html() || '';
 }
 
+=head2 EntryAuthorUserpicURL
+
+Outputs the URL for the userpic image of the author for the current entry
+in context.
+
+=cut
+
 sub _hdlr_entry_author_userpic_url {
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     my $a = $e->author or return '';
     $a->userpic_url() || '';
 }
+
+=head2 EntryAuthorUserpicAsset
+
+A block tag providing an asset context for the userpic of the
+author for the current entry in context. See the L<Assets> tag
+for more information about publishing assets.
+
+=cut
 
 sub _hdlr_entry_author_userpic_asset {
     my ($ctx, $args, $cond) = @_;
@@ -4648,12 +5783,26 @@ sub _hdlr_entry_author_userpic_asset {
     $builder->build($ctx, $tok, { %$cond });
 }
 
+=head2 EntryID
+
+Ouptuts the numeric ID for the current entry in context.
+
+=cut
+
 sub _hdlr_entry_id {
     my $args = $_[1];
     my $e = $_[0]->stash('entry')
         or return $_[0]->_no_entry_error($_[0]->stash('tag'));
     $args && $args->{pad} ? (sprintf "%06d", $e->id) : $e->id;
 }
+
+=head2 EntryTrackbackLink
+
+Outputs the TrackBack endpoint for the current entry in context.
+If TrackBack is not enabled for the entry, this will output
+an empty string.
+
+=cut
 
 sub _hdlr_entry_tb_link {
     my ($ctx, $args, $cond) = @_;
@@ -4665,6 +5814,30 @@ sub _hdlr_entry_tb_link {
     my $path = _hdlr_cgi_path($ctx);
     $path . $cfg->TrackbackScript . '/' . $tb->id;
 }
+
+=head2 EntryTrackbackLink
+
+Outputs the TrackBack RDF block that allows for TrackBack
+autodiscovery to take place. If TrackBack is not enabled
+for the entry, this will output an empty string.
+
+=over 4
+
+=item comment_wrap (optional; default "1")
+
+If enabled, will enclose the RDF markup inside an HTML
+comment tag.
+
+=item with_index (optional; default "0")
+
+If specified, will leave any "index.html" (or appropriate index
+page filename) in the permalink of the entry in context. By default
+this portion of the permalink is removed, since it is usually
+unnecessary.
+
+=back
+
+=cut
 
 sub _hdlr_entry_tb_data {
     my($ctx, $args) = @_;
@@ -4718,6 +5891,13 @@ RDF
     $rdf;
 }
 
+=head2 EntryTrackbackID
+
+Outputs the numeric ID of the TrackBack for the current entry in context.
+If not TrackBack is not enabled for the entry, this outputs an empty string.
+
+=cut
+
 sub _hdlr_entry_tb_id {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
@@ -4726,6 +5906,31 @@ sub _hdlr_entry_tb_id {
         or return '';
     $tb->id;
 }
+
+=head2 EntryLink
+
+Outputs the URL for the current entry in context.
+
+=over 4
+
+=item type (optional)
+
+=item archive_type (optional)
+
+Identifies the archive type to use when creating the link. For instance,
+to link to the appropriate Monthly archive for the current entry (assuming
+Monthly archives are published), you can use this:
+
+    <$MTEntryLink type="Monthly"$>
+
+or to link to other entries by the current author (assuming Author
+archives are published):
+
+    <$MTEntryLink type="Author"$>
+
+=back
+
+=cut
 
 sub _hdlr_entry_link {
     my ($ctx, $args) = @_;
@@ -4751,6 +5956,21 @@ sub _hdlr_entry_link {
     } else { return "" }
 }
 
+=head2 EntryBasename
+
+Outputs the basename field for the current entry in context.
+
+=over 4
+
+=item separator (optional)
+
+Accepts either "-" or "_". If unspecified, the raw basename value is
+returned.
+
+=back
+
+=cut
+
 sub _hdlr_entry_basename {
     my $args = $_[1];
     my $e = $_[0]->stash('entry')
@@ -4766,12 +5986,24 @@ sub _hdlr_entry_basename {
     $basename;
 }
 
+=head2 EntryAtomID
+
+Outputs the unique Atom ID for the current entry in context.
+
+=cut
+
 sub _hdlr_entry_atom_id {
     my ($ctx, $args, $cond) = @_;
     my $e = $_[0]->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
     return $e->atom_id() || $e->make_atom_id() || $ctx->error(MT->translate("Could not create atom id for entry [_1]", $e->id));
 }
+
+=head2 EntryPermalink
+
+
+
+=cut
 
 sub _hdlr_entry_permalink {
     my ($ctx, $args) = @_;
@@ -4790,6 +6022,10 @@ sub _hdlr_entry_permalink {
     $link;
 }
 
+=head2 EntryClass
+
+=cut
+
 sub _hdlr_entry_class {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
@@ -4797,12 +6033,20 @@ sub _hdlr_entry_class {
     $e->class;
 }
 
+=head2 EntryClassLabel
+
+=cut
+
 sub _hdlr_entry_class_label {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error($ctx->stash('tag'));
     $e->class_label;
 }
+
+=head2 EntryCategory
+
+=cut
 
 sub _hdlr_entry_category {
     my($ctx, $args, $cond) = @_;
@@ -4813,6 +6057,10 @@ sub _hdlr_entry_category {
     local $ctx->{__stash}{category} = $e->category;
     &_hdlr_category_label;
 }
+
+=head2 EntryCategories
+
+=cut
 
 sub _hdlr_entry_categories {
     my($ctx, $args, $cond) = @_;
@@ -4834,6 +6082,14 @@ sub _hdlr_entry_categories {
     $res;
 }
 
+=head2 TypeKeyToken
+
+Outputs the configured TypeKey token for the current blog in context.
+If the blog has not been configured to use TypeKey, this will output
+an empty string.
+
+=cut
+
 sub _hdlr_typekey_token {
     my ($ctx, $args, $cond) = @_;
 
@@ -4843,6 +6099,13 @@ sub _hdlr_typekey_token {
     my $tp_token = $blog->effective_remote_auth_token();
     return $tp_token;
 }
+
+=head2 SignInLink
+
+Outputs a link to the MT Comment script to allow a user to sign in
+to comment on the blog.
+
+=cut
 
 sub _hdlr_sign_in_link {
     my ($ctx, $args) = @_;    
@@ -4857,6 +6120,13 @@ sub _hdlr_sign_in_link {
         ($blog ? '&blog_id=' . $blog->id : '') .
         ($e ? '&entry_id=' . $e->id : '');
 }
+
+=head2 SignOutLink
+
+Outputs a link to the MT Comment script to allow a signed-in user to
+sign out from the blog.
+
+=cut
 
 sub _hdlr_sign_out_link {
     my ($ctx, $args) = @_;
@@ -4881,6 +6151,13 @@ sub _hdlr_sign_out_link {
     return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1" .
         ($e ? "&amp;entry_id=" . $e->id : '');
 }
+
+=head2 RemoteSignInLink
+
+Outputs a link to the MT Comment script to allow signing in to a TypeKey
+configured blog. B<NOTE: This is deprecated in favor of L<SignInLink>.>
+
+=cut
 
 sub _hdlr_remote_sign_in_link {
     my ($ctx, $args) = @_;
@@ -4907,6 +6184,13 @@ sub _hdlr_remote_sign_in_link {
     return "$signon_url$needs_email$language&amp;t=$rem_auth_token$tk_version&amp;_return=$path$comment_script%3f__mode=handle_sign_in%26key=TypeKey%26$static_arg" .
         ($e ? "%26entry_id=" . $e->id : '');
 }
+
+=head2 RemoteSignOutLink
+
+Outputs a link to the MT Comment script to allow a user to sign out from
+a blog. B<NOTE: This tag is deprecated in favor of L<SignOutLink>.>
+
+=cut
 
 sub _hdlr_remote_sign_out_link {
     my ($ctx, $args) = @_;
@@ -4936,6 +6220,12 @@ sub _hdlr_comment_fields {
     return $ctx->error(MT->translate("The MTCommentFields tag is no longer available; please include the [_1] template module instead.", MT->translate("Comment Form")));
 }
 
+=head2 EntryCommentCount
+
+Outputs the number of published comments for the current entry in context.
+
+=cut
+
 sub _hdlr_entry_comments {
     my ($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
@@ -4943,6 +6233,13 @@ sub _hdlr_entry_comments {
     my $count = $e->comment_count;
     return _count_format($count, $args);
 }
+
+=head2 EntryTrackbackCount
+
+Outputs the number of published TrackBack pings for the current entry in
+context.
+
+=cut
 
 sub _hdlr_entry_ping_count {
     my ($ctx, $args, $cond) = @_;
@@ -4952,9 +6249,23 @@ sub _hdlr_entry_ping_count {
     return _count_format($count, $args);
 }
 
+=head2 EntryPrevious
+
+A block tag providing a context for the entry immediately preceding the
+current entry in context (in terms of authored date).
+
+=cut
+
 sub _hdlr_entry_previous {
     _hdlr_entry_nextprev('previous', @_);
 }
+
+=head2 EntryNext
+
+A block tag providing a context for the entry immediately following the
+current entry in context (in terms of authored date).
+
+=cut
 
 sub _hdlr_entry_next {
     _hdlr_entry_nextprev('next', @_);
@@ -4995,6 +6306,182 @@ sub _hdlr_pass_tokens_else {
         or return $ctx->error($b->errstr);
     return $out;
 }
+
+=head2 ArchiveDate
+
+The starting date of the archive in context. For use with the Monthly, Weekly,
+and Daily archive types only. Date format tags may be applied with the format
+attribute along with the language attribute. See L<Date> for attributes
+that are supported.
+
+=for tags date, archive
+
+=cut
+
+=head2 Date
+
+Outputs the current date.
+
+=over 4
+
+=item ts (optional)
+
+If specified, will use the given date as the date to publish. Must be
+in the format of "YYYYMMDDhhmmss".
+
+=item relative (optional)
+
+If specified, will publish the date using a phrase, if the date is
+less than a week from the current date. Accepted values are "1", "2", "3"
+and "js". The options for "1", "2" and "3" affect the style of the phrase.
+
+=over 4
+
+=item relative="1"
+
+Supports display of one duration: moments ago; N minutes ago; N hours ago; N days ago. For older dates in the same year, the date is shown as the abbreviated month and day of the month ("Jan 3"). For older dates, the year is added to that ("Jan 3 2005").
+
+=item relative="2"
+
+Supports display of two durations: less than 1 minute ago; N seconds, N minutes ago; N minutes ago; N hours, N minutes ago; N hours ago; N days, N hours ago; N days ago.
+
+=item relative="3"
+
+Supports display of two durations: N seconds ago; N seconds, N minutes ago;
+N minutes ago; N hours, N minutes ago; N hours ago; N days, N hours ago; N days ago.
+
+=item relative="js"
+
+When specified, publishes the date using JavaScript, which relies on a
+MT JavaScript function 'mtRelativeDate' to format the date.
+
+=back
+
+=item format (optional)
+
+A string that provides the format in which to publish the date. If
+unspecified, the default that is appropriate for the language of the blog
+is used (for English, this is "%B %e, %Y %l:%M %p"). The format specifiers
+supported are:
+
+=over 4
+
+=item %Y
+
+The 4-digit year. Example: "1999".
+
+=item %m
+
+The 2-digit month (zero-padded). Example: for a date in September, this would output "09".
+
+=item %d
+
+The 2-digit day of the month (zero-padded). Example: "05".
+
+=item %H
+
+The 2-digit hour of the day (24-hour clock, zero-padded). Example: "18".
+
+=item %M
+
+The 2-digit minute of the hour (zero-padded). Example: "09".
+
+=item %S
+
+The 2-digit second of the minute (zero-padded). Example: "04".
+
+=item %w
+
+The numeric day of the week, in the range C<0>-C<6>, where C<0> is
+C<Sunday>. Example: "3".
+
+=item %j
+
+The numeric day of the year, in the range C<0>-C<365>. Zero-padded to
+three digits. Example: "040".
+
+=item %y
+
+The two-digit year, zero-padded. Example: %y for a date in 2008 would
+output "08".
+
+=item %b
+
+The abbreviated month name. Example: %b for a date in January would
+output "Jan".
+
+=item %B
+
+The full month name. Example: "January".
+
+=item %a
+
+The abbreviated day of the week. Example: %a for a date on a Monday would
+output "Mon".
+
+=item %A
+
+The full day of the week. Example: "Friday".
+
+=item %e
+
+The numeric day of the month (space-padded). Example: "08".
+
+=item %I
+
+The two-digit hour on a 12-hour clock padded with a zero if applicable.
+Example: "04".
+
+=item %k
+
+The two-digit military time hour padded with a space if applicable.
+Example: " 9".
+
+=item %l
+
+The hour on a 12-hour clock padded with a space if applicable.
+Example: " 4".
+
+=back
+
+=item format_name (optional)
+
+Supports date formatting for particular standards.
+
+=over 4
+
+=item rfc822
+
+Outputs the date in the format: "%a, %d %b %Y %H:%M:%S Z".
+
+=item iso8601
+
+Outputs the date in the format: "%Y-%m-%dT%H:%M:%SZ".
+
+=back
+
+=item utc (optional)
+
+Converts the date into UTC time.
+
+=item offset_blog_id (optional)
+
+Identifies the ID of the blog to use for adjusting the time to
+blog time. Will default to the current blog in context if unset.
+
+=item language (optional)
+
+Used to force localization of the date to a specific language.
+Accepted values: "cz" (Czechoslovakian), "dk" (Scandinavian),
+"nl" (Dutch), "en" (English), "fr" (French), "de" (German),
+"is" (Icelandic), "ja" (Japanese), "it" (Italian), "no" (Norwegian),
+"pl" (Polish), "pt" (Portuguese), "si" (Slovenian), "es" (Spanish),
+"fi" (Finnish), "se" (Swedish). Will use the blog's date language
+setting as a default.
+
+=back
+
+=cut
 
 sub _hdlr_sys_date {
     my $args = $_[1];
@@ -5127,6 +6614,43 @@ sub _no_comment_error {
         "perhaps you mistakenly placed it outside of an 'MTComments' " .
         "container?", $_[1] ));
 }
+
+=head2 Comments
+
+A container that that publishes a list of comments.
+
+=over 4
+
+=item lastn
+
+=item limit
+
+=item offset
+
+=item sort_by
+
+=item sort_order
+
+=item namespace
+
+=item min_score
+
+=item max_score
+
+=item min_rate
+
+=item max_rate
+
+=item min_count
+
+=item max_count
+
+=item scored_by
+
+=back
+
+=cut
+
 sub _hdlr_comments {
     my($ctx, $args, $cond) = @_;
 
@@ -5400,6 +6924,14 @@ sub _hdlr_comments {
     }
     $html;
 }
+
+=head2 CommentDate
+
+Outputs the creation date for the current comment in context. See
+the L<Date> tag for support attributes.
+
+=cut
+
 sub _hdlr_comment_date {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MTCommentDate');
@@ -5407,6 +6939,13 @@ sub _hdlr_comment_date {
     $args->{ts} = $c->created_on;
     _hdlr_date($_[0], $args);
 }
+
+=head2 CommentID
+
+Outputs the numeric ID for the current comment in context.
+
+=cut
+
 sub _hdlr_comment_id {
     my $args = $_[1];
     my $c = $_[0]->stash('comment')
@@ -5414,17 +6953,42 @@ sub _hdlr_comment_id {
     my $id = $c->id || 0;
     $args && $args->{pad} ? (sprintf "%06d", $id) : $id;
 }
+
+=head2 CommentEntryID
+
+Outputs the numeric ID for the parent entry (or page) of
+the current comment in context.
+
+=cut
+
 sub _hdlr_comment_entry_id {
     my $args = $_[1];
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MTCommentEntryID');
     $args && $args->{pad} ? (sprintf "%06d", $c->entry_id) : $c->entry_id;
 }
+
+=head2 CommentBlogID
+
+Outputs the numeric ID of the blog for the current comment
+in context.
+
+=cut
+
 sub _hdlr_comment_blog_id {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MTCommentBlogID');
     return $c->blog_id;
 }
+
+=head2 CommentIfModerated
+
+Conditional tag for testing whether the current comment in context is
+moderated or not (used for application, email and comment response
+templates where the comment may not actually be published).
+
+=cut
+
 sub _hdlr_comment_if_moderated {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MTCommentIfModerated');
@@ -5434,6 +6998,14 @@ sub _hdlr_comment_if_moderated {
         return 0;
     }
 }
+
+=head2 CommentAuthor
+
+Outputs the name field of the current comment in context (for
+comments left by authenticated users, this will return their
+display name).
+
+=cut
 
 # FIXME: This should be a container tag providing an author
 # context for the comment.
@@ -5450,11 +7022,24 @@ sub _hdlr_comment_author {
     $a ||= $_[1]{default} || '';
     remove_html($a);    
 }
+
+=head2 CommentIP
+
+Outputs the IP address where the current comment in context was
+posted from.
+
+=cut
+
 sub _hdlr_comment_ip {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MT' . $_[0]->stash('tag'));
     defined $c->ip ? $c->ip : '';
 }
+
+=head2 CommentAuthorLink
+
+=cut
+
 sub _hdlr_comment_author_link {
     #sanitize_on($_[1]);
     my($ctx, $args) = @_;
@@ -5501,6 +7086,11 @@ sub _hdlr_comment_author_link {
         return $name;
     }
 }
+
+=head2 CommentEmail
+
+=cut
+
 sub _hdlr_comment_email {
     sanitize_on($_[1]);
     my $c = $_[0]->stash('comment')
@@ -5510,6 +7100,11 @@ sub _hdlr_comment_email {
     my $email = remove_html($c->email);
     $_[1] && $_[1]->{'spam_protect'} ? spam_protect($email) : $email;
 }
+
+=head2 CommentAuthorIdentity
+
+=cut
+
 sub _hdlr_comment_author_identity {
     my ($ctx, $args) = @_;
     my $cmt = $ctx->stash('comment')
@@ -5537,6 +7132,10 @@ sub _hdlr_comment_author_identity {
     return $result;
 }
 
+=head2 CommentLink
+
+=cut
+
 sub _hdlr_comment_link {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error('MT' . $_[0]->stash('tag'));
@@ -5545,6 +7144,10 @@ sub _hdlr_comment_link {
     return $entry->archive_url . '#comment-' . $c->id;
 }
 
+=head2 CommentURL
+
+=cut
+
 sub _hdlr_comment_url {
     sanitize_on($_[1]);
     my $c = $_[0]->stash('comment')
@@ -5552,6 +7155,21 @@ sub _hdlr_comment_url {
     my $url = defined $c->url ? $c->url : '';
     remove_html($url);
 }
+
+=head2 CommentBody
+
+=over 4
+
+=item autolink
+
+=item convert_breaks
+
+=item words
+
+=back
+
+=cut
+
 sub _hdlr_comment_body {
     my($ctx, $arg) = @_;
     sanitize_on($arg);
@@ -5578,12 +7196,32 @@ sub _hdlr_comment_body {
     }
     $t;
 }
+
+=head2 CommentOrderNumber
+
+=cut
+
 sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
+
+=head2 CommentPreviewState
+
+=cut
+
 sub _hdlr_comment_prev_state { $_[0]->stash('comment_state') }
+
+=head2 CommentPreviewIsStatic
+
+=cut
+
 sub _hdlr_comment_prev_static {
     my $s = encode_html($_[0]->stash('comment_is_static')) || '';
     defined $s ? $s : ''
 }
+
+=head2 CommentEntry
+
+=cut
+
 sub _hdlr_comment_entry {
     my($ctx, $args, $cond) = @_;
     my $c = $ctx->stash('comment')
@@ -5595,6 +7233,10 @@ sub _hdlr_comment_entry {
     $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
 }
 
+=head2 CommentParent
+
+=cut
+
 sub _hdlr_comment_parent {
     my($ctx, $args, $cond) = @_;
 
@@ -5605,6 +7247,10 @@ sub _hdlr_comment_parent {
     local $ctx->{__stash}{comment} = $parent;
     $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
 }
+
+=head2 CommentReplyLink
+
+=cut
 
 sub _hdlr_comment_reply_link {
     my($ctx, $args) = @_;
@@ -5619,12 +7265,20 @@ sub _hdlr_comment_reply_link {
                    $label, $comment->id, $comment_author, $label);
 }
 
+=head2 CommentParentID
+
+=cut
+
 sub _hdlr_comment_parent_id {
     my $args = $_[1];
     my $c = $_[0]->stash('comment') or return '';
     my $id = $c->parent_id || 0;
     $args && $args->{pad} ? (sprintf "%06d", $id) : ($id ? $id : '');
 }
+
+=head2 CommentReplies
+
+=cut
 
 sub _hdlr_comment_replies {
     my($ctx, $args, $cond) = @_;
@@ -5695,6 +7349,10 @@ sub _hdlr_comment_replies {
     $html;
 }
 
+=head2 CommentRepliesRecurse
+
+=cut
+
 sub _hdlr_comment_replies_recurse {
     my($ctx, $args, $cond) = @_;
 
@@ -5762,6 +7420,10 @@ sub _hdlr_comment_replies_recurse {
     $html;
 }
 
+=head2 IfCommentParent
+
+=cut
+
 sub _hdlr_if_comment_parent {
     my($ctx, $args, $cond) = @_;
 
@@ -5777,6 +7439,10 @@ sub _hdlr_if_comment_parent {
     return $parent->visible ? 1 : 0;
 }
 
+=head2 IfCommentReplies
+
+=cut
+
 sub _hdlr_if_comment_replies {
     my($ctx, $args, $cond) = @_;
 
@@ -5785,6 +7451,10 @@ sub _hdlr_if_comment_replies {
     my @children = MT::Comment->load({parent_id => $c->id});
     return $#children >= 0;
 }
+
+=head2 CommenterNameThunk
+
+=cut
 
 sub _hdlr_commenter_name_thunk {
     my $ctx = shift;
@@ -5802,29 +7472,59 @@ sub _hdlr_commenter_name_thunk {
         return "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>";
     }
 }
+
+=head2 CommenterUsername
+
+=cut
+
 sub _hdlr_commenter_username {
     my $a = $_[0]->stash('commenter');
     $a ? $a->name : '';
 }
+
+=head2 CommenterName
+
+=cut
+
 sub _hdlr_commenter_name {
     my $a = $_[0]->stash('commenter');
     $a ? $a->nickname || '' : '';
 }
+
+=head2 CommenterEmail
+
+=cut
+
 sub _hdlr_commenter_email {
     my $a = $_[0]->stash('commenter');
     return '' if $a && $a->email !~ m/@/;
     $a ? $a->email || '' : '';
 }
+
+=head2 CommenterAuthType
+
+=cut
+
 sub _hdlr_commenter_auth_type {
     my $a = $_[0]->stash('commenter');
     $a ? $a->auth_type || '' : '';
 }
+
+=head2 CommenterAuthIconURL
+
+=cut
+
 sub _hdlr_commenter_auth_icon_url {
     my $a = $_[0]->stash('commenter');
     return q() unless $a;
     my $size = $_[1]->{size} || 'logo_small';
     return $a->auth_icon_url($size);
 }
+
+=head2 IfCommenterTrusted
+
+=cut
+
 sub _hdlr_commenter_trusted {
     my ($ctx, $args, $cond) = @_;
     my $a = $ctx->stash('commenter');
@@ -5835,6 +7535,20 @@ sub _hdlr_commenter_trusted {
         return 0;
     }
 }
+
+=head2 IfCommenterIsAuthor
+
+Conditional tag that is true when the current comment was left
+by a user who is also a native MT user.
+
+=cut
+
+=head2 IfCommenterIsEntryAuthor
+
+Conditional tag that is true when the current comment was left
+by the author of the current entry in context.
+
+=cut
 
 sub _hdlr_commenter_isauthor {
     my ($ctx, $args, $cond) = @_;
@@ -5857,12 +7571,24 @@ sub _hdlr_commenter_isauthor {
     return 0;
 }
 
+=head2 CommenterID
+
+Outputs the numeric ID of the current commenter in context.
+
+=cut
+
 sub _hdlr_commenter_id {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error($_[0]->stash('tag'));
     my $cmntr = $_[0]->stash('commenter') or return '';
     return $cmntr->id;
 }
+
+=head2 CommenterURL
+
+Outputs the URL from the profile of the current commenter in context.
+
+=cut
 
 sub _hdlr_commenter_url {
     my $c = $_[0]->stash('comment')
@@ -5871,6 +7597,10 @@ sub _hdlr_commenter_url {
     return $cmntr->url;
 }
 
+=head2 CommenterUserpic
+
+=cut
+
 sub _hdlr_commenter_userpic {
     my $c = $_[0]->stash('comment')
         or return $_[0]->_no_comment_error($_[0]->stash('tag'));
@@ -5878,10 +7608,18 @@ sub _hdlr_commenter_userpic {
     $cmntr->userpic_html() || '';
 }
 
+=head2 CommenterUserpicURL
+
+=cut
+
 sub _hdlr_commenter_userpic_url {
     my $cmntr = $_[0]->stash('commenter') or return '';
     $cmntr->userpic_url() || '';
 }
+
+=head2 CommenterUserpicAsset
+
+=cut
 
 sub _hdlr_commenter_userpic_asset {
     my ($ctx, $args, $cond) = @_;
@@ -5900,6 +7638,14 @@ sub _hdlr_commenter_userpic_asset {
     local $ctx->{__stash}{asset} = $asset;
     $builder->build($ctx, $tok, { %$cond });
 }
+
+=head2 FeedbackScore
+
+Outputs the numeric junk score calculated for the current comment or
+TrackBack ping in context. Outputs '0' if no score is present.
+A negative number indicates spam.
+
+=cut
 
 sub _hdlr_feedback_score {
     my $fb = $_[0]->stash('comment') || $_[0]->stash('ping');
@@ -5983,6 +7729,13 @@ sub _hdlr_archive_prev_next {
     $res;
 }
 
+=head2 IndexList
+
+A block tag that builds a list of all available index templates, sorting
+them by name.
+
+=cut
+
 sub _hdlr_index_list {
     my ($ctx, $args, $cond) = @_;
     my $tokens = $ctx->stash('tokens');
@@ -6000,6 +7753,22 @@ sub _hdlr_index_list {
     $res;
 }
 
+=head2 IndexLink
+
+Outputs the URL for the current index template in context. Used in
+an L<IndexList> tag.
+
+=over 4
+
+=item with_index (optional; default "0")
+
+If enabled, will retain the "index.html" (or similar index filename)
+in the link.
+
+=back
+
+=cut
+
 sub _hdlr_index_link {
     my ($ctx, $args, $cond) = @_;
     my $idx = $ctx->stash('index');
@@ -6011,12 +7780,35 @@ sub _hdlr_index_link {
     $path = MT::Util::strip_index($path, $blog) unless $args->{with_index};
     $path;
 }
+
+=head2 IndexName
+
+Outputs the name for the current index template in context. Used in
+an L<IndexList> tag.
+
+=cut
+
 sub _hdlr_index_name {
     my ($ctx, $args, $cond) = @_;
     my $idx = $ctx->stash('index');
     return '' unless $idx;
     $idx->name || '';
 }
+
+=head2 IndexBasename
+
+Outputs the C<IndexBasename> MT configuration setting.
+
+=over 4
+
+=item extension (optional; default "0")
+
+If specified, will append the blog's configured file extension.
+
+=back
+
+=cut
+
 sub _hdlr_index_basename {
     my ($ctx, $args, $cond) = @_;
     my $name = $ctx->{config}->IndexBasename;
@@ -6028,6 +7820,10 @@ sub _hdlr_index_basename {
     $ext = '.' . $ext if $ext;
     $name . $ext;
 }
+
+=head2 ArchiveSet
+
+=cut
 
 sub _hdlr_archive_set {
     my($ctx, $args, $cond) = @_;
@@ -6145,6 +7941,10 @@ sub _hdlr_archives {
     $res;
 }
 
+=head2 ArchiveTitle
+
+=cut
+
 sub _hdlr_archive_title {
     my($ctx, $args) = @_;
 
@@ -6192,6 +7992,15 @@ sub _hdlr_archive_title {
     defined $title ? $title : '';
 }
 
+=head2 ArchiveDateEnd
+
+The ending date of the archive in context. For use with the Monthly, Weekly,
+and Daily archive types only. Date format tags may be applied with the format
+attribute along with the language attribute. See L<Date> tag for supported
+attributes.
+
+=cut
+
 sub _hdlr_archive_date_end {
     my($ctx) = @_;
     my $end = $ctx->{current_timestamp_end}
@@ -6202,6 +8011,10 @@ sub _hdlr_archive_date_end {
     _hdlr_date(@_);
 }
 
+=head2 ArchiveType
+
+=cut
+
 sub _hdlr_archive_type {
     my ($ctx, $args, $cond) = @_;
 
@@ -6209,6 +8022,30 @@ sub _hdlr_archive_type {
     $at = 'Category' if $ctx->{inside_mt_categories};
     defined $at ? $at : '';
 }
+
+=head2 ArchiveLabel
+
+A descriptive label of the current archive type.
+
+The value returned from this tag will vary based on the archive type:
+
+Daily, Weekly, Monthly, Yearly, Author, Author Daily, Author Weekly,
+Author Monthly, Author Yearly, Category, Category Daily, Category Weekly,
+Category Monthly, Category Yearly
+
+Example:
+
+    <$mt:ArchiveLabel$>
+
+Related Tags: L<ArchiveType>
+
+Notes:
+
+May be deprecated in exchange for the more specific tag: L<ArchiveTypeLabel>
+
+=for tags archive
+
+=cut
 
 sub _hdlr_archive_label {
     my ($ctx, $args, $cond) = @_;
@@ -6223,6 +8060,34 @@ sub _hdlr_archive_label {
     }
     $al;
 }
+
+=head2 ArchiveFile
+
+The archive filename including file extension for the archive in context. This
+can be controlled through the archive mapping section of the blog's Publishing
+settings screen.
+
+B<Example:> For the URL http://www.example.com/categories/politics.html, the
+L<ArchiveFile> tag would output "politics.html".
+
+Example:
+
+    <$mt:ArchiveFile$>
+
+=over 4
+
+=item extension
+
+set to '0' to exclude the file extension (ie, produce "politics" instead of
+"politics.html")
+
+=item separator
+
+set to '-' to force any underscore characters in the filename to dashes
+
+=back
+
+=cut
 
 sub _hdlr_archive_file {
     my ($ctx, $args, $cond) = @_;
@@ -6252,6 +8117,10 @@ sub _hdlr_archive_file {
     }
     $f;
 }
+
+=head2 ArchiveLink
+
+=cut
 
 sub _hdlr_archive_link {
     my($ctx, $args) = @_;
@@ -6295,6 +8164,27 @@ sub _hdlr_archive_link {
     return $arch;
 }
 
+=head2 ArchiveCount
+
+This tag will potentially return two different values depending upon the
+context in which it is invoked.
+
+If invoked within L<Categories> this tag will behave as if it was an alias
+to L<CategoryCount>.
+
+Otherwise it will return the number corresponding to the number of entries
+currently in context. For example within any L<Entries> context, this tag
+will return the number of entries that that L<Entries> tag corresponds to.
+
+Example:
+
+    <mt:Categories>
+        There are <$mt:ArchiveCount$> entries in the <$mt:CategoryLabel$>
+        category.
+    </mt:Categories>
+
+=cut
+
 sub _hdlr_archive_count {
     my ($ctx, $args, $cond) = @_;
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
@@ -6311,13 +8201,53 @@ sub _hdlr_archive_count {
     return _count_format($count, $args);
 }
 
+=head2 ArchiveCategory
+
+This tag has been deprecated in favor of L<CategoryLabel>.
+Returns the label of the current category.
+
+Example:
+
+    <$mt:ArchiveCategory$>
+
+=for tags deprecated, category, archive
+
+=cut
+
 sub _hdlr_archive_category {
     &_hdlr_category_label;
 }
 
+=head2 ImageURL
+
+Outputs the uploaded image URL (used only for the system
+template for uploaded images).
+
+=cut
+
 sub _hdlr_image_url { $_[0]->stash('image_url') }
+
+=head2 ImageWidth
+
+Outputs the uploaded image width in pixels (used only for the system
+template for uploaded images).
+
+=cut
+
 sub _hdlr_image_width { $_[0]->stash('image_width') }
+
+=head2 ImageHeight
+
+Outputs the uploaded image height in pixels (used only for the system
+template for uploaded images).
+
+=cut
+
 sub _hdlr_image_height { $_[0]->stash('image_height') }
+
+=head2 Calendar
+
+=cut
 
 sub _hdlr_calendar {
     my($ctx, $args, $cond) = @_;
@@ -6516,6 +8446,10 @@ sub _hdlr_categories {
     $res;
 }
 
+=head2 CategoryID
+
+=cut
+
 sub _hdlr_category_id {
     my $cat = ($_[0]->stash('category') || $_[0]->stash('archive_category'))
         or return $_[0]->error(MT->translate(
@@ -6523,6 +8457,10 @@ sub _hdlr_category_id {
             '<$MT'.$_[0]->stash('tag').'$>'));
     $cat->id;
 }
+
+=head2 CategoryLabel
+
+=cut
 
 sub _hdlr_category_label {
     my ($ctx, $args, $cond) = @_;
@@ -6538,6 +8476,10 @@ sub _hdlr_category_label {
     $label = '' unless defined $label;
     $label;
 }
+
+=head2 CategoryBasename
+
+=cut
 
 sub _hdlr_category_basename {
     my ($ctx, $args, $cond) = @_;
@@ -6560,6 +8502,10 @@ sub _hdlr_category_basename {
     $basename;
 }
 
+=head2 CategoryDescription
+
+=cut
+
 sub _hdlr_category_desc {
     my $cat = ($_[0]->stash('category') || $_[0]->stash('archive_category'))
         or return $_[0]->error(MT->translate(
@@ -6567,6 +8513,10 @@ sub _hdlr_category_desc {
             '<$MT'.$_[0]->stash('tag').'$>'));
     defined $cat->description ? $cat->description : '';
 }
+
+=head2 CategoryCount
+
+=cut
 
 sub _hdlr_category_count {
     my ($ctx, $args, $cond) = @_;
@@ -6588,6 +8538,10 @@ sub _hdlr_category_count {
     return _count_format($count, $args);
 }
 
+=head2 CategoryCommentCount
+
+=cut
+
 sub _hdlr_category_comment_count {
     my ($ctx, $args, $cond) = @_;
     my $cat = ($ctx->stash('category') || $_[0]->stash('archive_category'))
@@ -6608,6 +8562,10 @@ sub _hdlr_category_comment_count {
     $count = scalar MT::Comment->count(@args);
     return _count_format($count, $args);
 }
+
+=head2 CategoryArchiveLink
+
+=cut
 
 sub _hdlr_category_archive {
     my $cat = ($_[0]->stash('category') || $_[0]->stash('archive_category'))
@@ -6641,6 +8599,10 @@ sub _hdlr_category_archive {
     $arch;
 }
 
+=head2 CategoryTrackBackLink
+
+=cut
+
 sub _hdlr_category_tb_link {
     my($ctx, $args) = @_;
     my $cat = $_[0]->stash('category') || $_[0]->stash('archive_category');
@@ -6659,6 +8621,10 @@ sub _hdlr_category_tb_link {
     $path . $cfg->TrackbackScript . '/' . $tb->id;
 }
 
+=head2 CategoryIfAllowPings
+
+=cut
+
 sub _hdlr_category_allow_pings {
     my $cat = $_[0]->stash('category') || $_[0]->stash('archive_category');
     if ($cat->allow_pings) {
@@ -6667,6 +8633,10 @@ sub _hdlr_category_allow_pings {
         return 0;
     }
 }
+
+=head2 CategoryTrackBackCount
+
+=cut
 
 sub _hdlr_category_tb_count {
     my($ctx, $args) = @_;
@@ -6750,6 +8720,14 @@ sub _hdlr_category_prevnext {
     return '';
 }
 
+=head2 IfCategory
+
+=cut
+
+=head2 EntryIfCategory
+
+=cut
+
 sub _hdlr_if_category {
     my ($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry');
@@ -6782,6 +8760,10 @@ sub _hdlr_if_category {
     0;
 }
 
+=head2 EntryAdditionalCategories
+
+=cut
+
 sub _hdlr_entry_additional_categories {
     my($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
@@ -6802,6 +8784,10 @@ sub _hdlr_entry_additional_categories {
     }
     $res;
 }
+
+=head2 Pings
+
+=cut
 
 sub _hdlr_pings {
     my($ctx, $args, $cond) = @_;
@@ -6860,6 +8846,11 @@ sub _hdlr_pings {
     }
     $res;
 }
+
+=head2 PingsSent
+
+=cut
+
 sub _hdlr_pings_sent {
     my($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
@@ -6876,12 +8867,22 @@ sub _hdlr_pings_sent {
     }
     $res;
 }
+
+=head2 PingsSentURL
+
+=cut
+
 sub _hdlr_pings_sent_url { $_[0]->stash('ping_sent_url') }
 sub _no_ping_error {
     return $_[0]->error(MT->translate("You used an '[_1]' tag outside of the context of " .
                         "a ping; perhaps you mistakenly placed it outside " .
                         "of an 'MTPings' container?", $_[1]));
 }
+
+=head2 PingDate
+
+=cut
+
 sub _hdlr_ping_date {
     my $p = $_[0]->stash('ping')
         or return $_[0]->_no_ping_error('MTPingDate');
@@ -6889,40 +8890,75 @@ sub _hdlr_ping_date {
     $args->{ts} = $p->created_on;
     _hdlr_date($_[0], $args);
 }
+
+=head2 PingID
+
+=cut
+
 sub _hdlr_ping_id {
     my $ping = $_[0]->stash('ping')
         or return $_[0]->_no_ping_error('MTPingID');
     $ping->id;
 }
+
+=head2 PingTitle
+
+=cut
+
 sub _hdlr_ping_title {
     sanitize_on($_[1]);
     my $ping = $_[0]->stash('ping')
         or return $_[0]->_no_ping_error('MTPingTitle');
     defined $ping->title ? $ping->title : '';
 }
+
+=head2 PingURL
+
+=cut
+
 sub _hdlr_ping_url {
     sanitize_on($_[1]);
     my $ping = $_[0]->stash('ping')
         or return $_[0]->_no_ping_error('MTPingURL');
     defined $ping->source_url ? $ping->source_url : '';
 }
+
+=head2 PingExcerpt
+
+=cut
+
 sub _hdlr_ping_excerpt {
     sanitize_on($_[1]);
     my $ping = $_[0]->stash('ping')
         or return $_[0]->_no_ping_error('MTPingExcerpt');
     defined $ping->excerpt ? $ping->excerpt : '';
 }
+
+=head2 PingIP
+
+=cut
+
 sub _hdlr_ping_ip {
     my $ping = $_[0]->stash('ping')
         or return $_[0]->_no_ping_error('MTPingIP');
     defined $ping->ip ? $ping->ip : '';
 }
+
+=head2 PingBlogName
+
+=cut
+
 sub _hdlr_ping_blog_name {
     sanitize_on($_[1]);
     my $ping = $_[0]->stash('ping')
         or return $_[0]->_no_ping_error('MTPingBlogName');
     defined $ping->blog_name ? $ping->blog_name : '';
 }
+
+=head2 PingEntry
+
+=cut
+
 sub _hdlr_ping_entry {
     my ($ctx, $args, $cond) = @_;
     my $ping = $ctx->stash('ping')
@@ -6937,6 +8973,11 @@ sub _hdlr_ping_entry {
     local $ctx->{current_timestamp} = $entry->authored_on;
     $ctx->stash('builder')->build($ctx, $ctx->stash('tokens'), $cond);
 }
+
+=head2 IfAllowCommentHTML
+
+=cut
+
 sub _hdlr_if_allow_comment_html {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
@@ -6947,6 +8988,10 @@ sub _hdlr_if_allow_comment_html {
         return 0;
     }
 }
+
+=head2 IfCommentsAllowed
+
+=cut
 
 sub _hdlr_if_comments_allowed {
     my ($ctx, $args, $cond) = @_;
@@ -6961,6 +9006,10 @@ sub _hdlr_if_comments_allowed {
         return 0;
     }
 }
+
+=head2 IfCommentsActive
+
+=cut
 
 # comments exist in stash OR entry context allows comments
 sub _hdlr_if_comments_active {
@@ -6982,6 +9031,10 @@ sub _hdlr_if_comments_active {
     }
 }
 
+=head2 IfCommentsAccepted
+
+=cut
+
 sub _hdlr_if_comments_accepted {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
@@ -6996,6 +9049,10 @@ sub _hdlr_if_comments_accepted {
         return 0;
     }
 }
+
+=head2 IfPingsActive
+
+=cut
 
 sub _hdlr_if_pings_active {
     my ($ctx, $args, $cond) = @_;
@@ -7013,6 +9070,13 @@ sub _hdlr_if_pings_active {
     }
 }
 
+=head2 IfPingsModerated
+
+Conditional tag that is positive when the blog has a policy to moderate
+all incoming pings by default.
+
+=cut
+
 sub _hdlr_if_pings_moderated {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
@@ -7022,6 +9086,13 @@ sub _hdlr_if_pings_moderated {
         return 0;
     }
 }
+
+=head2 IfPingsAccepted
+
+Conditional tag that is positive when pings are allowed for the blog
+and the entry (if one is in context) and the MT installation.
+
+=cut
 
 sub _hdlr_if_pings_accepted {
     my ($ctx, $args, $cond) = @_;
@@ -7038,6 +9109,13 @@ sub _hdlr_if_pings_accepted {
     }
 }
 
+=head2 IfPingsAllowed
+
+Conditional tag that is positive when pings are allowed by the blog
+and the MT installation (does not test for an entry context).
+
+=cut
+
 sub _hdlr_if_pings_allowed {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
@@ -7049,6 +9127,20 @@ sub _hdlr_if_pings_allowed {
     }
 }
 
+=head2 IfNeedEmail
+
+Conditional tag that is positive when the blog is configured to
+require an e-mail address for anonymous comments.
+
+=cut
+
+=head2 IfRequireCommentEmails
+
+Conditional tag that is positive when the blog is configured to
+require an e-mail address for anonymous comments.
+
+=cut
+
 sub _hdlr_if_need_email {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
@@ -7059,6 +9151,14 @@ sub _hdlr_if_need_email {
         return 0;
     }
 }
+
+=head2 EntryIfAllowComments
+
+Conditional tag that is positive when the entry in context is
+configured to allow commenting and the blog and MT installation
+also permits comments.
+
+=cut
 
 sub _hdlr_entry_if_allow_comments {
     my ($ctx, $args, $cond) = @_;
@@ -7072,6 +9172,12 @@ sub _hdlr_entry_if_allow_comments {
         return 0;
     }
 }
+
+=head2 EntryIfCommentsOpen
+
+Conditional tag
+
+=cut
 
 sub _hdlr_entry_if_comments_open {
     my ($ctx, $args, $cond) = @_;
@@ -7098,6 +9204,13 @@ sub _hdlr_entry_if_allow_pings {
         return 0;
     }
 }
+
+=head2 EntryIfExtended
+
+Conditional tag that is positive when content is in the extended text
+field of the current entry in context.
+
+=cut
 
 sub _hdlr_entry_if_extended {
     my ($ctx, $args, $cond) = @_;
@@ -7703,7 +9816,10 @@ sub _hdlr_http_content_type {
     return qq{};
 }
 
-### for Asset
+=head2 Assets
+
+=cut
+
 sub _hdlr_assets {
     my($ctx, $args, $cond) = @_;
     return $ctx->error(MT->translate('sort_by="score" must be used in combination with namespace.'))

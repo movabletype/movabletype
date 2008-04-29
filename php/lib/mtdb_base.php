@@ -27,22 +27,22 @@ class MTDatabaseBase extends ezsql {
     ## temporary until we class our objects properly
     var $object_meta = array(
         'blog' => array(
-            'commenter_authenticators',
-            'nofollow_urls',
-            'follow_auth_links',
-            'captcha_provider',
-            'template_set',
-            'page_layout',
-            'include_system',
-            'include_cache'),
+            'commenter_authenticators:vchar',
+            'nofollow_urls:vinteger',
+            'follow_auth_links:vinteger',
+            'captcha_provider:vchar',
+            'template_set:vchar',
+            'page_layout:vchar',
+            'include_system:vinteger',
+            'include_cache:vinteger'),
         'template' => array(
-            'page_layout',
-            'include_with_ssi',
-            'cache_expire_type',
-            'cache_expire_interval',
-            'cache_expire_event'),
-        'asset' => array('image_width',
-            'image_height')
+            'page_layout:vchar',
+            'include_with_ssi:vinteger',
+            'cache_expire_type:vinteger',
+            'cache_expire_interval:vinteger',
+            'cache_expire_event:vchar'),
+        'asset' => array('image_width:vinteger',
+            'image_height:vinteger')
     );
     var $_meta_cache = array();
 
@@ -457,6 +457,12 @@ class MTDatabaseBase extends ezsql {
             $blog = $this->fetch_blog($blog_id);
         }
 
+        // determine any custom fields that we should filter on
+        $fields = array();
+        foreach ($args as $name => $v)
+            if (preg_match('/^field___(\w+)$/', $name, $m))
+                $fields[$m[1]] = $v;
+
         $pagination = 0;
         # automatically include offset if in request
         if ($args['offset'] == 'auto') {
@@ -522,12 +528,11 @@ class MTDatabaseBase extends ezsql {
 
         # Adds a category filter to the filters list.
         $cat_class = 'category';
-        if (!isset($args['class'])) {
+        if (!isset($args['class']))
             $args['class'] = 'entry';
-        }
-        if ($args['class'] == 'page') {
+        if ($args['class'] == 'page')
             $cat_class = 'folder';
-        }
+
         if (isset($args['category']) or isset($args['categories'])) {
             $category_arg = isset($args['category']) ? $args['category'] : $args['categories'];
             require_once("MTUtil.php");
@@ -780,6 +785,8 @@ class MTDatabaseBase extends ezsql {
                     $limit = 0; $offset = 0;
                 } elseif ($args['sort_by'] == 'trackback_count') {
                     $sort_field = 'entry_ping_count';  
+                } elseif (preg_match('/field[:\.]/', $args['sort_by'])) {
+                    $no_resort = 0;
                 } else {  
                     $sort_field = 'entry_' . $args['sort_by'];  
                 }  
@@ -808,14 +815,35 @@ class MTDatabaseBase extends ezsql {
             $limit = 0; $offset = 0;
         }
 
+        if (count($fields)) {
+            $meta_join_num = 1;
+            $meta_join = "";
+            $entry_meta = array();
+            foreach ($this->object_meta['entry'] as $meta) {
+                list($meta_key, $meta_type) = preg_split('/:/', $meta);
+                $entry_meta[$meta_key] = $meta_type;
+            }
+            foreach ($fields as $name => $value) {
+                $meta_col = $entry_meta['field.' . $name];
+                if (!$meta_col) return null; # invalid column; can't select
+
+                $value = $this->escape($value);
+                $meta_join .= " join mt_entry_meta entry_meta$meta_join_num on (entry_meta$meta_join_num.entry_meta_entry_id = entry_id
+                and entry_meta$meta_join_num.entry_meta_type = 'field.$name'
+                and entry_meta$meta_join_num.entry_meta_$meta_col='$value')\n";
+                $meta_join_num++;
+            }
+        }
+
         $sql = "
             select$distinct mt_entry.*, mt_placement.*, mt_author.*,
                    mt_trackback.*
               from mt_entry
               left outer join mt_trackback on trackback_entry_id = entry_id
-              left outer join mt_placement on placement_entry_id = entry_id
+              $meta_join
               $join_score
-                   and placement_is_primary = 1,
+              left outer join mt_placement on (placement_entry_id = entry_id
+                and placement_is_primary = 1),
                    mt_author
              where entry_status = 2
                and entry_author_id = author_id
@@ -826,6 +854,7 @@ class MTDatabaseBase extends ezsql {
                    $day_filter
                    $class_filter
         ";
+
         if ($sort_field) {
             $sql .= "
                 order by $sort_field $base_order";
@@ -878,6 +907,7 @@ class MTDatabaseBase extends ezsql {
             if ($offset && ($j++ < $offset)) continue;
             $e['entry_authored_on'] = $this->db2ts($e['entry_authored_on']);
             $e['entry_modified_on'] = $this->db2ts($e['entry_modified_on']);
+            $e = $this->expand_meta($e);
             $id_list[] = $e['entry_id'];
             $entries[] = $e;
             $this->_comment_count_cache[$e['entry_id']] = $e['entry_comment_count'];
@@ -887,9 +917,8 @@ class MTDatabaseBase extends ezsql {
                 if (($limit > 0) && (count($entries) >= $limit)) break;
             }
         }
-        if ( !is_null($total_count) ) {
+        if ( !is_null($total_count) )
             $total_count = $_total_count;
-        }
 
         if (!$no_resort) {
             $sort_field = '';
@@ -914,6 +943,8 @@ class MTDatabaseBase extends ezsql {
                     $sort_field = $args['sort_by'];
                 } elseif ($args['sort_by'] == 'trackback_count') {
                     $sort_field = 'entry_ping_count';  
+                } elseif (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
+                    $sort_field = 'entry_field.' . $match[1];
                 } else {
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
@@ -2928,6 +2959,7 @@ class MTDatabaseBase extends ezsql {
                         if (isset($data)) {
                             $cols = $this->object_meta[$type];
                             foreach ($cols as $col) {
+                                $col = preg_replace('/:.+$/', '', $col); # strip type
                                 $expanded[$type . '_' . $col] = $data[$col];
                             }
                         }

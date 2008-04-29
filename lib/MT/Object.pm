@@ -116,8 +116,8 @@ sub install_properties {
             $props->{indexes}{$col} = 1;
         }
         if (!$super_props || !$super_props->{class_column}) {
-            $class->add_trigger( pre_search => \&pre_search_scope_terms_to_class );
-            $class->add_trigger( post_load => \&post_load_rebless_object );
+            $class->add_trigger( pre_search => \&_pre_search_scope_terms_to_class );
+            $class->add_trigger( post_load => \&_post_load_rebless_object );
         }
         if (my $type = $props->{class_type}) {
             $props->{defaults}{$col} = $type;
@@ -216,12 +216,12 @@ sub install_properties {
     # install legacy date translation
     if (0 < scalar @{ $class->columns_of_type('datetime', 'timestamp') }) {
         if ($props->{audit}) {
-            $class->add_trigger( pre_save  => \&assign_audited_fields);
-            $class->add_trigger( post_save => \&translate_audited_fields );
+            $class->add_trigger( pre_save  => \&_assign_audited_fields);
+            $class->add_trigger( post_save => \&_translate_audited_fields );
         }
 
-        $class->add_trigger( pre_save  => get_date_translator(\&ts2db, 1) );
-        $class->add_trigger( post_load => get_date_translator(\&db2ts, 0) );
+        $class->add_trigger( pre_save  => _get_date_translator(\&_ts2db, 1) );
+        $class->add_trigger( post_load => _get_date_translator(\&_db2ts, 0) );
     }
 
     if ( exists($props->{cacheable}) && !$props->{cacheable} ) {
@@ -240,7 +240,7 @@ sub install_properties {
 }
 
 # A post-load trigger for classed objects
-sub post_load_rebless_object {
+sub _post_load_rebless_object {
     my $obj = shift;
     my $props = $obj->properties;
     if (my $col = $props->{class_column}) {
@@ -263,7 +263,7 @@ sub post_load_rebless_object {
 }
 
 # A pre-search trigger for classed objects
-sub pre_search_scope_terms_to_class {
+sub _pre_search_scope_terms_to_class {
     my ($class, $terms, $args) = @_;
     # scope search terms to class
 
@@ -407,8 +407,8 @@ sub install_meta {
     require MT::Meta;
     my $pkg = ref $class || $class;
     if (!$pkg->SUPER::properties->{meta_installed}) {
-        $pkg->add_trigger( post_save => \&post_save_save_metadata );
-        $pkg->add_trigger( post_load => \&post_load_initialize_metadata );
+        $pkg->add_trigger( post_save => \&_post_save_save_metadata );
+        $pkg->add_trigger( post_load => \&_post_load_initialize_metadata );
     }
 
     my $props = $class->properties;
@@ -511,7 +511,7 @@ sub has_meta {
     return $obj->properties->{meta_installed} ? 1 : 0;
 }
 
-sub post_load_initialize_metadata {
+sub _post_load_initialize_metadata {
     my $obj = shift;
     if (defined $obj && $obj->properties->{meta_installed}) {
         $obj->init_meta();
@@ -551,7 +551,7 @@ sub has_column {
     return;
 }
 
-sub post_save_save_metadata {
+sub _post_save_save_metadata {
     my $obj = shift;
     if (defined $obj && exists $obj->{__meta}) {
         $obj->{__meta}->set_primary_keys($obj);
@@ -594,7 +594,7 @@ sub column_func {
     };
 }
 
-sub ts2db {  
+sub _ts2db {  
     return unless $_[0];  
     if($_[0] =~ m{ \A \d{4} - }xms) {  
         return $_[0];  
@@ -603,14 +603,14 @@ sub ts2db {
     return $ret;  
 }
   
-sub db2ts {  
-    my $ts = $_[0];  
-    $ts =~ s/(?:\+|-)\d{2}$//;  
-    $ts =~ tr/\- ://d;  
-    return $ts;  
-}  
+sub _db2ts {  
+    my $ts = $_[0];
+    $ts =~ s/(?:\+|-)\d{2}$//;
+    $ts =~ tr/\- ://d;
+    return $ts;
+}
 
-sub get_date_translator {
+sub _get_date_translator {
     my $translator = shift;
     my $change = shift;
     return sub {
@@ -627,13 +627,13 @@ sub get_date_translator {
     };
 }
 
-sub translate_audited_fields {
+sub _translate_audited_fields {
     my ($obj, $orig_obj) = @_;
     my $dbd = $obj->driver->dbd;
     FIELD: for my $field (qw( created_on modified_on )) {
         my $value = $orig_obj->column($field);
         next FIELD if !defined $value;
-        my $new_val = db2ts($value); 
+        my $new_val = _db2ts($value); 
         if((defined $new_val) && ($new_val ne $value)) {
             $orig_obj->column($field, $new_val);
         }
@@ -771,7 +771,7 @@ sub load_iter   {
 
 ## Callbacks
 
-sub assign_audited_fields {
+sub _assign_audited_fields {
     my ($obj, $orig_obj) = @_;
     if ($obj->properties->{audit}) {
         my $blog_id;
@@ -1274,19 +1274,17 @@ Using an I<MT::Object> subclass:
 =head1 DESCRIPTION
 
 I<MT::Object> is the base class for all Movable Type objects that will be
-serialized/stored to some location for later retrieval; this location could
-be a DBM file, a relational database, etc.
+serialized/stored to some location for later retrieval.
 
 Movable Type objects know nothing about how they are stored--they know only
 of what types of data they consist, the names of those types of data (their
-columns), etc. The actual storage mechanism is in the I<MT::ObjectDriver::Driver::DBI>
+columns), etc. The actual storage mechanism is in the L<Data::ObjectDriver>
 class and its driver subclasses; I<MT::Object> subclasses, on the other hand,
 are essentially just standard in-memory Perl objects, but with a little extra
 self-knowledge.
 
 This distinction between storage and in-memory representation allows objects
-to be serialized to disk in many different ways--for example, an object could
-be stored in a MySQL database, in a DBM file, etc. Adding a new storage method
+to be serialized to disk in many different ways. Adding a new storage method
 is as simple as writing an object driver--a non-trivial task, to be sure, but
 one that will not require touching any other Movable Type code.
 
@@ -1387,9 +1385,7 @@ For storing floating point values.
 =back
 
 Note: The physical data storage capacity of these types will vary depending on
-the driver's implementation. Please refer to the documentation of the
-MT::ObjectDriver you're using to determine the actual capacity for these
-types.
+the driver's implementation.
 
 The '(size)' element of the declaration is only valid for the 'string' type.
 
@@ -1410,21 +1406,47 @@ Specify for integer columns (typically the primary key) to automatically assign 
 
 Specify for identifying the column as the primary key (only valid for a single column).
 
+=item * indexed
+
+Identifies that this column should also be individually indexed.
+
+=item * meta
+
+Declares the column as a meta column, which means it is stored in a separate
+table that is used for storing metadata. See L<Metadata> for more information.
+
 =back
 
 =item * indexes
 
-Specifies the column indexes on your objects; this only has consequence for
-some object drivers (DBM, for example), where indexes are not automatically
-maintained by the datastore (as they are in a relational database).
+Specifies the column indexes on your objects.
 
 The value for the I<indexes> key should be a reference to a hash containing
 column names as keys, and the value C<1> for each key--each key represents
-a column that should be indexed.
+a column that should be indexed:
 
-B<NOTE:> with the DBM driver, if you do not set up an index on a column you
-will not be able to select objects with values matching that column using the
-I<load> and I<load_iter> interfaces (see below).
+    indexes => {
+        'column_1' => 1,
+        'column_2' => 1,
+    },
+
+For multi-column indexes, you must declare the individual columns as the
+value for the index key:
+
+    indexes => {
+        'column_catkey' => {
+            columns => [ 'column_1', 'column_2' ],
+        },
+    },
+
+For declaring a unique constraint, add a 'unique' element to this hash:
+
+    indexes => {
+        'column_catkey' => {
+            columns => [ 'column_1', 'column_2' ],
+            unique => 1,
+        },
+    },
 
 =item * audit
 
@@ -1444,18 +1466,15 @@ The name of the datasource for your class. The datasource is a name uniquely
 identifying your class--it is used by the object drivers to construct table
 names, file names, etc. So it should not be specific to any one driver.
 
+Please note: the length of the datasource name should be conservative; some
+drivers place limits on the length of table and column names.
+
 =item * meta
 
-Specify this property if you wish to add an additional 'meta' column to
-the object properties. This is a special type of column that is used to
-store complex data structures for the object. The data is serialized into
-a blob for storage using the L<MT::Serialize> package.
-
-=item * meta_column
-
-If you wish to specify the name of the column to be used for storing
-the object metadata, you may declare this property to name the column.
-The default column name is 'meta'.
+Specify this property if you wish to support the storage of additional
+metadata for this class. By doing so, a second table will be declared to
+MT's registry, one that is designed to hold any metadata associated
+with your class.
 
 =item * class_type
 
@@ -1571,11 +1590,17 @@ an iterator to step through the objects (I<load_iter>).
 
 I<load> has the following general form:
 
+    my $object = MT::Foo->load( $id );
+
     my @objects = MT::Foo->load(\%terms, \%arguments);
+
+    my @objects = MT::Foo->load(\@terms, \%arguments);
 
 I<load_iter> has the following general form:
 
     my $iter = MT::Foo->load_iter(\%terms, \%arguments);
+
+    my $iter = MT::Foo->load_iter(\@terms, \%arguments);
 
 Both methods share the same parameters; the only difference is the manner in
 which they return the matching objects.
@@ -1607,7 +1632,36 @@ this to perform range searches. If the value is a reference, the first element
 in the array specifies the low end of the range, and the second element the
 high end.
 
+=item * A reference to an array.
+
+In this form, the arrayref contains a list of selection terms for more
+complex selections.
+
+    my @foo = MT::Foo->load( [ { foo => 'bar' }
+        => -or => { foo => 'baz' } ] );
+
+The separating operator keywords inbetween terms can be any of C<-or>,
+C<-and>, C<-or_not>, C<-and_not> (the leading '-' is not required, and the
+operator itself is case-insensitive).
+
 =back
+
+Values assigned to terms for selecting data can be either simple or complex
+in nature. Simple scalar values require an exact match. For instance:
+
+    my @foo = MT::Foo->load( { foo => 'bar' });
+
+This selects all I<MT::Foo> objects where foo == 'bar'. But you can provide
+a hashref value to provide more options:
+
+    my @foo = MT::Foo->load( { foo => { like => 'bar%' } });
+
+This selects all I<MT::Foo> objects where foo starts with 'bar'. Other
+possibilities include 'not_like', 'not_null', 'not', 'between', '>',
+'>=', '<', '<=', '!='. Note that 'not' and 'between' both accept an
+arrayref for their value; 'between' expects a two element array, and
+'not' will accept an array of 1 or more values which translates to
+a 'NOT IN (...)' SQL clause.
 
 I<\%arguments> should be a reference to a hash containing parameters for the
 search. The following parameters are allowed:
@@ -1619,10 +1673,18 @@ search. The following parameters are allowed:
 Sort the resulting objects by the column C<column>; C<column> must be an
 indexed column (see L</"indexes">, above).
 
+Sort may also be specified as an arrayref of multiple columns to sort on.
+For example:
+
+    sort => [
+        { column => "column_1", desc => "descend" },
+        { column => "column_2", }   # default direction is 'ascend'
+    ]
+
 =item * direction => "ascend|descend"
 
-To be used together with I<sort>; specifies the sort order (ascending or
-descending). The default is C<ascend>.
+To be used together with a scalar I<sort> value; specifies the sort
+order (ascending or descending). The default is C<ascend>.
 
 =item * limit => "N"
 
@@ -1795,22 +1857,41 @@ use the I<count> method:
 
     my $count = MT::Foo->count({ foo => 'bar' });
 
-I<count> takes the same arguments (I<\%terms> and I<\%arguments>) as I<load>
-and I<load_iter>, above.
+I<count> takes the same arguments as I<load> and I<load_iter>.
 
 =head2 Determining if an object exists in the datastore
 
 To check an object for existence in the datastore, use the I<exists> method:
 
+=over 4
+
+=item * $obj->exists()
+
+=back
+
     if ($foo->exists) {
         print "Foo $foo already exists!";
     }
+
+To test for the existence of an unloaded object, use the 'exist' method:
+
+=over 4
+
+=item * Class->exist( \%terms )
+
+=back
+
+    if (MT::Foo->exist( { foo => 'bar' })) {
+        print "Already exists!";
+    }
+
+This is typically faster than issuing a L<count> call.
 
 =head2 Counting groups of objects
 
 =over 4
 
-=item * $obj->count_group_by()
+=item * Class->count_group_by()
 
 =back
 
@@ -1855,6 +1936,34 @@ values.
         print "There are $count Pips with " .
             "category $cat and invoice $inv\n";
     }
+
+=head2 Averaging by Group
+
+=over 4
+
+=item * Class->avg_group_by()
+
+=back
+
+Like the count_group_by method, you can select groups of averages from
+a MT::Object store.
+
+    my $iter = MT::Foo->avg_group_by($terms, {%args, group => $group_exprs,
+        avg => 'property_to_average' })
+
+=head2 Sum by Group
+
+=over 4
+
+=item * Class->sum_group_by()
+
+=back
+
+Like the count_group_by method, you can select groups of sums from
+a MT::Object store.
+
+    my $iter = MT::Foo->sum_group_by($terms, {%args, group => $group_exprs,
+        avg => 'property_to_sum' })
 
 =head2 Inspecting and Manipulating Object State
 
@@ -1902,6 +2011,11 @@ clone the elements of the blog except the name attribute.
 
    $blog->clone({ except => { name => 1 } });
 
+=item * $obj->clone_all()
+
+Similar to the C<clone> method, but also makes a clones the metadata
+information.
+
 =item * $obj->column_names()
 
 Returns a list of the names of columns in C<$obj>; includes all those
@@ -1909,20 +2023,28 @@ specified to the install_properties method as well as the audit
 properties (C<created_on>, C<modified_on>, C<created_by>,
 C<modified_by>), if those were enabled in install_properties.
 
-=item * $obj->set_driver()
-
-This method sets the object driver to use to link with a database.
-
 =item * MT::Foo->driver()
 
 =item * $obj->driver()
 
 Returns the ObjectDriver object that links this object with a database.
+This is a subclass of L<Data::ObjectDriver>.
+
+=item * $obj->dbi_driver()
+
+This method is similar to the 'driver' method, but will always return
+a DBI driver (a subclass of the L<Data::ObjectDriver::Driver::DBI>
+class) and not a caching driver.
 
 =item * $obj->created_on_obj()
 
-Returns an MT::DateTime object representing the moment when the
+Returns a MT::DateTime object representing the moment when the
 object was first saved to the database.
+
+=item * $obj->column_as_datetime( $column )
+
+Returns a MT::DateTime object for the specified datetime/timestamp
+column specified.
 
 =item * MT::Foo->set_by_key($key_terms, $value_terms)
 
@@ -1988,6 +2110,11 @@ Caches the provided key (e.g. entry, trackback) with the return value
 of the given code reference (which is often an object load call) so
 that the value does not have to be recomputed each time.
 
+=item * $obj->clear_cache()
+
+Clears any object-level cache data (from the C<cache_property> method)
+that may existing.
+
 =item * $obj->column_def($name)
 
 This method returns the value of the given I<$name> C<column_defs>
@@ -1998,22 +2125,33 @@ propery.
 This method returns all the C<column_defs> of the property of the
 object.
 
+=item Class->index_defs()
+
+This method returns all the index definitions assigned to this class.
+This is the 'indexes' member of the properties installed for the class.
+
 =item * $obj->to_hash()
 
-TODO - So far I have not divined what this method actually does. Hints?
+Returns a hashref containing column and metadata key/value pairs for
+the object. If the object has a blog relationship, it also populates
+data from that blog. For example:
 
-=item * Class->join_on()
+    my $entry_hash = $entry->to_hash();
+    # returns: { entry.title => "Title", entry.blog.name => "Foo", ... }
 
-This method returns the list of used by the join arguments parameter
-used by the L<MT::App::CMS/listing> method.
+=item * Class->join_on( $join_column, \%join_terms, \%join_args )
+
+A simple helper method that returns an arrayref of join terms suitable
+for the C<load> and C<load_iter> methods.
 
 =item * $obj->properties()
 
-TODO - Return the return properties of the object.
+Returns a hashref of the object properties that were declared with the
+I<install_properties> method.
 
 =item * $obj->to_xml()
 
-TODO - Returns the XML representation of the object.
+Returns an XML representation of the object.
 This method is defined in MT/BackupRestore.pm - you must first 
 use MT::BackupRestore to use this method.
 
@@ -2033,6 +2171,109 @@ whose keys are xml element names of the object's parent objects
 and values are class names of them.
 This method is defined in MT/BackupRestore.pm - you must first 
 use MT::BackupRestore to use this method.
+
+=item * Class->class_handler($type)
+
+Returns the appropriate Perl package name for the given type identifier.
+For example,
+
+    # Yields MT::Asset::Image
+    MT::Asset->class_handler('asset.image');
+
+=item * Class->class_label
+
+Provides a descriptive name for the requested class package.
+This is a localized name, using the currently assigned language.
+
+=item * Class->class_label_plural
+
+Returns a descriptive pluralized name for the requested class package.
+This is a localized name, using the currently assigned language.
+
+=item * Class->class_labels
+
+Returns a hashref of type identifiers to class labels for all subclasses
+associated with a multiclassed object type. For instance:
+
+    # returns { 'asset' => 'Asset', 'asset.video' => 'Video', ... }
+    my $labels = MT::Asset->class_labels;
+
+=item * Class->columns_of_type(@types)
+
+Returns an arrayref of column names that are of the requested type.
+
+    my @dates = MT::Foo->columns_of_type('datetime', 'timestamp')
+
+=item * Class->has_column( $name )
+
+Returns a boolean as to whether the column C<$name> is defined for
+this class.
+
+=item * Class->table_name()
+
+Returns the database table name (including any prefix) for the class.
+
+=item * $obj->column_func( $column )
+
+Creates an accessor/mutator method for column C<$column>, returning it as a
+coderef. This method overrides the one in L<Data::ObjectDriver::BaseObject>,
+by supporting metadata column as well.
+
+=item * $obj->call_trigger( 'trigger_name', @params )
+
+Issues a call to any Class::Trigger triggers installed for the given object.
+Also invokes any MT callbacks that are registered using MT's callback
+system. "pre" callbacks are invoked prior to triggers; "post" callbacks
+are invoked after triggers are called.
+
+=item * $obj->deflate
+
+Returns a minimal representation of the object, including any metadata.
+See also L<Data::ObjectDriver::BaseObject>.
+
+=item * Class->inflate( $deflated )
+
+Inflates the deflated representation of the object I<$deflated> into a proper
+object in the class I<Class>. That is, undoes the operation C<$deflated =
+$obj-E<gt>deflate()> by returning a new object equivalent to C<$obj>.
+
+=item * Class->install_pre_init_properties
+
+This static method is used to install any class properties that were
+registered prior to the bootstrapping of MT plugins.
+
+=item * $obj->modified_by
+
+A modified getter/setter accessor method for audited classes with a
+'modified_by', 'modified_on' columns. In the event this method is called
+to assign a 'modified_by' value, it automatically updates the 'modified_on'
+column as well.
+
+=item * $obj->nextprev( %params )
+
+Method to determine adjancent objects, based on a date column and/or id.
+The C<%params> hash provides the following elements:
+
+=over 4
+
+=item * direction
+
+Either "next" or "previous".
+
+=item * terms
+
+Any additional terms to supply to the C<load> method.
+
+=item * args
+
+Any additional arguments to supply to the C<load> method (such as a join).
+
+=item * by
+
+The column to use to determine the next/previous object. By default for
+audited classes, this is 'created_on'.
+
+=back
 
 =back
 
@@ -2081,6 +2322,97 @@ object where I<foo> equals C<bar>, because it saves memory--only the
 I<MT::Foo> objects that you will be deleting are kept in memory at the same
 time.
 
+=head1 SUBCLASSING
+
+It is possible to declare a subclass of an existing MT::Object class,
+one that shares the same table storage as the parent class. Examples of
+this include L<MT::Log>, L<MT::Entry>, L<MT::Category>. In these cases,
+the subclass identifies a 'class_type' property. The parent class must also
+have a column where this identifier is stored. Upon loading records from the
+table, the object is reblessed into the appropriate package.
+
+=over 4
+
+=item Class->add_class( $type_id, $class )
+
+This method can be called directly to register a new subclass type
+and package for the base class.
+
+    MT::Foo->add_class( 'foochild' => 'MT::Foo::Subclass' );
+
+=back
+
+=head1 METADATA
+
+The following methods facilitate the storage and management of metadata;
+available when the 'meta' key is included in the installed properties for
+the class.
+
+=over 4
+
+=item * $obj->init_meta()
+
+For object classes that have metadata storage, this method will initialize
+the metadata member.
+
+=item * Class->install_meta( \%meta_properties )
+
+Called to register metadata properties on a particular class. The
+C<%meta_properties> may contain an arrayref of 'columns', or a hashref
+of 'column_defs' (similar to the C<install_properties> method):
+
+    MT::Foo->install_meta( { column_defs => {
+        'metadata1' => 'integer indexed',
+        'metadata2' => 'string indexed',
+    } });
+
+In this form, the storage type is explicitly declared, so the metadata
+is stored into the appropriate column (vinteger_indexed and vchar_indexed
+respectively).
+
+    MT::Foo->install_meta( { columns => [ 'metadata1', 'metadata2' ] } )
+
+In this form, the metadata properties store their data into a 'blob'
+column in the meta table. This type of metadata cannot be used to sort
+or filter on. This form is supported for backward compatibility and is
+considered deprecated.
+
+=item * $obj->remove_meta()
+
+Deletes all related metadata for the given object.
+
+=item * Class->search_by_meta( $key, $value, [ \%terms [, \%args ] ] )
+
+Returns objects that have a C<$key> metadata value of C<$value>. Further
+restrictions on the class may be applied through the optional C<%terms>
+and C<%args> parameters.
+
+=item * $obj->meta_obj()
+
+Returns the L<MT::Object> class
+
+=item * Class->meta_pkg()
+
+Returns the Perl package name for storing it's metadata objects.
+
+=item * Class->meta_args
+
+Returns the source of a Perl package declaration that is loaded to
+declare and process metadata objects for the C<Class>.
+
+=item * Class->has_meta( [ $name ] )
+
+Returns a boolean as to whether the class has metadata when called
+without a parameter, or whether there exists a metadata column
+of the given C<$name>.
+
+=item * Class->is_meta_column( $name )
+
+Returns a boolean as to whether the class has a meta column named
+C<$name>.
+
+=back
+
 =head1 CALLBACKS
 
 =over 4
@@ -2106,6 +2438,8 @@ operations:
 
     load
     save
+    update (issued for save on existing objects)
+    insert (issued for save on new objects)
     remove
     remove_all
     (load_iter operations will call the load callbacks)
@@ -2172,16 +2506,6 @@ then it will be called whenever post_save callbacks are called.
 "Any-class" callbacks are called I<after> all class-specific
 callbacks. Note that C<add_callback> must be called on the C<MT> class,
 not on a subclass of C<MT::Object>.
-
-=over 4
-
-=item * $obj->set_callback_routine()
-
-This method just calls the set_callback_routine as defined by the
-MT::ObjectDriver set with the I<set_driver> method.
-
-
-=back
 
 =head2 Caveat
 
