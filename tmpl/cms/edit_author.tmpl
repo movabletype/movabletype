@@ -181,7 +181,9 @@ TC.attachLoadEvent(init);
     required="1"
     label="<__trans phrase="Username">"
     hint="<__trans phrase="The username used to login.">">
-        <input name="name" id="name" class="half-width" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
+    <div class="textarea-wrapper">
+        <input name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
+    </div>
 </mtapp:setting>
 
 <mt:if name="external_id"><mt:if name="show_external_id">
@@ -200,7 +202,9 @@ TC.attachLoadEvent(init);
         required="1"
         label="<__trans phrase="Display Name">"
         hint="<__trans phrase="The name used when published.">">
-        <input name="nickname" id="nickname" class="half-width" value="<mt:var name="nickname" escape="html">" />
+        <div class="textarea-wrapper">
+            <input name="nickname" id="nickname" class="full-width" value="<mt:var name="nickname" escape="html">" />
+        </div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -208,14 +212,18 @@ TC.attachLoadEvent(init);
         required="$auth_mode_mt"
         label="<__trans phrase="Email Address">"
         hint="<__trans phrase="The email address associated with this user.">">
-        <input name="email" id="email" class="half-width" value="<mt:var name="email" escape="html">" />
+        <div class="textarea-wrapper">
+            <input name="email" id="email" class="full-width" value="<mt:var name="email" escape="html">" />
+        </div>
     </mtapp:setting>
 
     <mtapp:setting
         id="url"
         label="<__trans phrase="Website URL">"
         hint="<__trans phrase="The URL of the site associated with this user. eg. http://www.movabletype.com/">">
-        <input name="url" id="url" class="half-width" value="<mt:var name="url" escape="html">" />
+        <div class="textarea-wrapper">
+            <input name="url" id="url" class="full-width" value="<mt:var name="url" escape="html">" />
+        </div>
     </mtapp:setting>
 
 <mt:if name="id">
@@ -254,7 +262,9 @@ TC.attachLoadEvent(init);
                 id="old_pass"
                 label="<__trans phrase="Current Password">"
                 hint="<__trans phrase="Existing password required to create a new password.">">
-                <input type="password" name="old_pass" value="" id="old_pass" class="half-width" />
+                <div class="textarea-wrapper">
+                    <input type="password" name="old_pass" value="" id="old_pass" class="full-width" />
+                </div>
             </mtapp:setting>
         </mt:unless>
 
@@ -272,21 +282,27 @@ TC.attachLoadEvent(init);
             label="$password_prompt"
             required="$password_required"
             hint="$password_hint">
-            <input type="password" name="pass" id="pass" class="half-width" value="" />
+            <div class="textarea-wrapper">
+                <input type="password" name="pass" id="pass" class="full-width" value="" />
+            </div>
         </mtapp:setting>
         <mtapp:setting
             id="pass_verify"
             label="<__trans phrase="Confirm Password">"
             required="$password_required"
             hint="<__trans phrase="Repeat the password for confirmation.">">
-            <input type="password" name="pass_verify" id="pass_verify" class="half-width" value="" />
+            <div class="textarea-wrapper">
+                <input type="password" name="pass_verify" id="pass_verify" class="full-width" value="" />
+            </div>
         </mtapp:setting>
         <mtapp:setting
             id="hint"
             required="1"
             label="<__trans phrase="Password recovery word/phrase">"
             hint="<__trans phrase="This word or phrase will be required to recover a forgotten password.">">
-            <input name="hint" id="hint" class="half-width" value="<mt:var name="hint" escape="html">" />
+            <div class="textarea-wrapper">
+                <input name="hint" id="hint" class="full-width" value="<mt:var name="hint" escape="html">" />
+            </div>
         </mtapp:setting>
         </div>
     </mt:if>
@@ -299,7 +315,7 @@ TC.attachLoadEvent(init);
         id="preferred_language"
         label="<__trans phrase="Language">"
         hint="<__trans phrase="Preferred language of this user.">">
-        <select name="preferred_language" id="preferred_language" class="half-width"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="se"><mt:loop name="languages">
             <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
     </mtapp:setting>
@@ -308,7 +324,7 @@ TC.attachLoadEvent(init);
         id="text_format"
         label="<__trans phrase="Text Format">"
         hint="<__trans phrase="Preferred text format option.">">
-        <select name="text_format" id="text_format" class="half-width">
+        <select name="text_format" id="text_format" class="se">
         <mt:loop name="text_filters">
             <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Blog Default)"><mt:else><mt:var name="label"></mt:if></option>
         </mt:loop>
@@ -319,7 +335,7 @@ TC.attachLoadEvent(init);
         id="tag_delim"
         label="<__trans phrase="Tag Delimiter">"
         hint="<__trans phrase="Preferred method of separating tags.">">
-        <select name="tag_delim" id="tag_delim" class="half-width">
+        <select name="tag_delim" id="tag_delim" class="se">
             <option value="comma"<mt:if name="auth_pref_tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
             <option value="space"<mt:if name="auth_pref_tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
         </select>
@@ -331,7 +347,9 @@ TC.attachLoadEvent(init);
         id="api_password"
         label="<__trans phrase="Web Services Password">"
         hint="<__trans phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients.">">
-        <input type="password" name="api_password" id="api_password" class="half-width" value="<mt:var name="api_password" escape="html">" />
+        <div class="textarea-wrapper half-width">
+            <input type="password" name="api_password" id="api_password" class="full-width" value="<mt:var name="api_password" escape="html">" />
+        </div>
         <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
     </mtapp:setting>
 </mt:if>

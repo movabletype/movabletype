@@ -4484,6 +4484,11 @@ body.dialog {
     white-space: nowrap;
 }
 
+#api_password-field .textarea-wrapper {
+    float: left;
+    margin-right: 5px;
+}
+
 
 /* Contextual Help ---------------------------------------------------------------------------------- */
 
@@ -4756,4 +4761,3 @@ body.dialog {
 .mt-beta .system #msg-beta-inner {
     background-image: url(../images/beta_icons/beta_icon_system.png);
 }
-
