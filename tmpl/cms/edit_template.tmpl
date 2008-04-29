@@ -541,7 +541,15 @@ TC.attachLoadEvent( init );
     </div>
 </mtapp:setting>
 
-<div id="template-options"<mt:unless name="id"> class="active"</mt:unless>>
+<mt:if name="error">
+    <$mt:setvar name="template_options_active" value="1"$>
+<mt:else name="id">
+    <$mt:setvar name="template_options_active" value="0"$>
+<mt:else>
+    <$mt:setvar name="template_options_active" value="1"$>
+</mt:if>
+
+<div id="template-options"<mt:if name="template_options_active"> class="active"</mt:if>>
     <div id="template-options-header" class="pkg">
         <h3><a href="javascript:void(0);" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
         <div class="template-options-summary">
