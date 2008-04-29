@@ -78,7 +78,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             $mttag = preg_replace('/:/', '', strtolower($mttag));
             $attrs = array();
 
-            if (preg_match_all('!(?:(\w+)\s*=\s*(["\'])((?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)*?)?\2((?:[,:](["\'])((?:<[^>]*?>|.)*?)?\5)*)?|(\w+))!s', $args,
+            if (preg_match_all('!(?:((?:\w|:)+)\s*=\s*(["\'])((?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)*?)?\2((?:[,:](["\'])((?:<[^>]*?>|.)*?)?\5)*)?|(\w+))!s', $args,
                                $arglist, PREG_SET_ORDER)) {
                 for ($a = 0; $a < count($arglist); $a++) {
                     if (isset($arglist[$a][7])) {
@@ -87,6 +87,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $quote = '"';
                     } else {
                         $attr = $arglist[$a][1];
+                        $attr = preg_replace('/:/', '___', $attr);
                         $attrs[$attr] = $arglist[$a][3];
                         $quote = $arglist[$a][2];
                     }
@@ -275,6 +276,10 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             } elseif ($close == '/') {
                 $smart_source .= $ldelim.'/'.$mttag.$rdelim;
             }
+
+            // extra newline is eaten by PHP but will cause any actual
+            // newline from user to be preserved:
+            $smart_source .= "\n";
         }
     } else {
         $smart_source = $tpl_source;
