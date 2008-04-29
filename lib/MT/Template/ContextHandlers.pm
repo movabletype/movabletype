@@ -1963,8 +1963,8 @@ sub _hdlr_app_setting {
     my $req_class = $args->{required} ? " required" : "";
 
     my $insides = $ctx->slurp($args, $cond);
-    $insides =~ s/(<textarea)\b/<div class="textarea-wrapper">$1/g;
-    $insides =~ s/(<\/textarea>)/$1<\/div>/g;
+    $insides =~ s/^\s*(<textarea)\b/<div class="textarea-wrapper">$1/g;
+    $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
 
     my $class = $args->{class} || "";
     $class = ($class eq '') ? 'hidden' : $class . ' hidden' unless $shown;
