@@ -330,7 +330,7 @@ sub search_terms {
     my $q = $app->param;
 
     my $search_string = $q->param('searchTerms') || $q->param('search')
-        or return ( undef, undef );
+        or return $app->errtrans('No search term was specified.');
     $app->{search_string} = $search_string;
     my $offset = $q->param('startIndex') || $q->param('offset') || 0;
     return $app->errtrans('Invalid value: [_1]', encode_html($offset))
