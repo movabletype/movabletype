@@ -271,6 +271,7 @@ sub save {
                 return $app->$meth;
             }
         }
+        $param->{return_args} = $app->param('return_args');
         return edit( $app,
             {
                 %$param,
