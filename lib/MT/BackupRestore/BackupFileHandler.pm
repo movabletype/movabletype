@@ -91,7 +91,7 @@ sub start_element {
                 if ( 'author' eq $name ) {
                     $obj = $class->load({ name => $column_data{name} });
                     if ($obj) {
-                        if ( UNIVERSAL::isa('MT::App', MT->instance)
+                        if ( UNIVERSAL::isa( MT->instance, 'MT::App' )
                           && ( $obj->id == MT->instance->user->id ) ) {
                             MT->log({ message => MT->translate(
                                 "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.", $obj->name),
