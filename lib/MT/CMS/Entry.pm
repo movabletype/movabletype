@@ -562,7 +562,7 @@ sub list {
         $arg{offset} = $offset = $total - $limit;
     }
     elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
-        $arg{offset} = $offset = $total - $offset;
+        $arg{offset} = $offset = 0;
     }
     else {
         $arg{offset} = $offset if $offset;
