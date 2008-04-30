@@ -1875,9 +1875,7 @@ sub cfg_archives_save {
     $blog->archive_type_preferred($at);
     $blog->include_cache( $app->param('include_cache') ? 1 : 0 );
     require MT::PublishOption;
-    if ( ( $blog->custom_dynamic_templates eq 'all'
-        || $blog->custom_dynamic_templates eq 'archives' )
-      && ( $app->model('template')->exist(
+    if ( ( $app->model('template')->exist(
             { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
         || $app->model('templatemap')->exist(
             { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) ) )
