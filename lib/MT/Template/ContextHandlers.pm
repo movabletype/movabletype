@@ -10626,7 +10626,8 @@ sub _hdlr_archives {
     my $blog = $ctx->stash('blog');
     my $at = $blog->archive_type;
     return '' if !$at || $at eq 'None';
-    if (my $arg_at = $args->{type} || $args->{archive_type}) {
+    my $arg_at;
+    if ($arg_at = $args->{type} || $args->{archive_type}) {
         $at = $arg_at;
     } elsif ($blog->archive_type_preferred) {
         $at = $blog->archive_type_preferred;
@@ -10636,6 +10637,12 @@ sub _hdlr_archives {
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
+
+    my $save_stamps;
+
+    if ($ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
+        $save_stamps = 1;
+    }
 
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
@@ -10655,16 +10662,21 @@ sub _hdlr_archives {
     my $save_ts;
     my $save_tse;
     my $tmpl = $ctx->stash('template');
+
     if ( ($tmpl && $tmpl->type eq 'archive')
          && $archiver->date_based)
     {
         my $uncompiled = $ctx->stash('uncompiled') || '';
         if ($uncompiled =~ /<mt:?archivelist>?/i) {
-            $save_ts = $ctx->{current_timestamp};
-            $save_tse = $ctx->{current_timestamp_end};
-            $ctx->{current_timestamp} = undef;
-            $ctx->{current_timestamp_end} = undef;
+            $save_stamps = 1;
         }
+    }
+
+    if ($save_stamps) {
+        $save_ts = $ctx->{current_timestamp};
+        $save_tse = $ctx->{current_timestamp_end};
+        $ctx->{current_timestamp} = undef;
+        $ctx->{current_timestamp_end} = undef;
     }
 
     my $order = $sort_order eq 'ascend' ? 'asc' : 'desc';
