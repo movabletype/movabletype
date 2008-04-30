@@ -1659,17 +1659,9 @@ sub type_diff {
                 if (($col_def->{type} eq 'string')
                  && ($db_def->{type} eq 'string')
                  && ($col_def->{size} != $db_def->{size})) {
-                    if (($col_def->{not_null} || 0) != ($db_def->{not_null} || 0)) {
-                        push @cols_to_alter, $col;
-                    }
+                    push @cols_to_alter, $col;
                 } elsif ($ddl->type2db($col_def)
                       ne $ddl->type2db($db_def)) {
-                    # types are different
-                    # don't bother if the database has sufficient
-                    # capacity for this field
-                    next if ($db_def->{type} eq 'integer')
-                         && ($col_def->{type} eq 'smallint'
-                          || $col_def->{type} eq 'boolean');
                     push @cols_to_alter, $col;
                 } elsif (($col_def->{not_null} || 0) != ($db_def->{not_null} || 0)) {
                     push @cols_to_alter, $col;
