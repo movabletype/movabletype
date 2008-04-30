@@ -39,6 +39,11 @@ function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
         $ctx->stash('__out', false);
         
         $counter = 0;
+        if (!count($tags)) {
+            $ctx->restore($localvars);
+            $repeat = false;
+            return;
+        }
     } else {
         $tags = $ctx->stash('_tags');
         $counter = $ctx->stash('_tags_counter');
@@ -63,4 +68,3 @@ function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

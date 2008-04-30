@@ -393,19 +393,22 @@ EOT;
                     $hdlr = $fntag;
             }
             if ($hdlr) {
-                $hdlr($args, NULL, $this, $repeat = true);
+                $this->_tag_stack[] = array("mt$tag", $args);
+                $repeat = true;
+                $hdlr($args, NULL, $this, $repeat);
                 if ($repeat) {
                     $content = 'true';
-                    $this->_tag_stack[] = array("mt$tag", $args);
                     $content = $hdlr($args, $content, $this, $repeat = false);
-                    array_pop($this->_tag_stack);
-                    return isset($content) && ($content === 'true');
+                    $result = isset($content) && ($content === 'true');
                 } else {
-                    return false;
+                    $result = false;
                 }
+                array_pop($this->_tag_stack);
+                return $result;
             }
         } else {
-            list($hdlr) = $this->handler_for("mt" . $tag);
+            list($hdlr, $type) = $this->handler_for("mt" . $tag);
+            if ($hdlr) $block_tag = $type == 'block';
             if (!$hdlr) {
                 $fntag = 'smarty_function_mt'.$tag;
                 if (!function_exists($fntag))
@@ -413,7 +416,30 @@ EOT;
                 if (function_exists($fntag))
                     $hdlr = $fntag;
             }
+            if (!$hdlr) { // try block tags
+                $fntag = 'smarty_block_mt'.$tag;
+                if (!function_exists($fntag))
+                    @include_once("block.mt$tag.php");
+                if (function_exists($fntag)) {
+                    $hdlr = $fntag;
+                    $block_tag = true;
+                }
+            }
             if ($hdlr) {
+                if ($block_tag) {
+                    $this->_tag_stack[] = array("mt$tag", $args);
+                    $repeat = true;
+                    $hdlr($args, NULL, $this, $repeat);
+                    if ($repeat) {
+                        $content = 'true';
+                        $content = $hdlr($args, $content, $this, $repeat = false);
+                        $result = isset($content) && ($content === 'true');
+                    } else {
+                        $result = false;
+                    }
+                    array_pop($this->_tag_stack);
+                    return $result;
+                }
                 $this->_tag_stack[] = array("mt$tag", $args);
                 $content = $hdlr($args, $this);
                 foreach ($args as $k => $v) {
