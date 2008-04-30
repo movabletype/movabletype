@@ -1846,7 +1846,7 @@ sub create_default_roles {
         { name => 'Editor',
           description => 'Can upload files, edit all entries/categories/tags on a blog and publish the blog.',
           perms => ['comment', 'create_post', 'publish_post', 'edit_all_posts', 'edit_categories', 'edit_tags', 'manage_pages',
-                    'rebuild', 'upload', 'send_notifications', 'manage_feedback'], },
+                    'rebuild', 'upload', 'send_notifications', 'manage_feedback', 'edit_assets'], },
         { name => 'Author',
           description => 'Can create entries, edit their own, upload files and publish.',
           perms => ['comment', 'create_post', 'publish_post', 'upload', 'send_notifications'], },
