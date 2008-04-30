@@ -7932,6 +7932,7 @@ sub _hdlr_archives {
             ArchiveListHeader => $i == 1, ArchiveListFooter => $last }))
             or return $ctx->error( $builder->errstr );
         $res .= $out;
+        last if $last;
         ($cnt, %curr) = ($next_cnt, %next);
     }
 
