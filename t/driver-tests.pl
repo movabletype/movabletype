@@ -17,18 +17,21 @@ $OUTPUT_AUTOFLUSH = 1;
 # ln -s driver-tests.pl 99-driver.t
 
 BEGIN {
-    my $driver = __FILE__;      #   /path/to/99-driver.t  =>  driver
-    $driver =~ s!.+[\\/]!!;
-    $driver =~ s/^\d+-//;
-    $driver =~ s/\.t$//;
-    $ENV{MT_CONFIG} = "$driver-test.cfg";
+    # Set config to driver-test.cfg when run as /path/to/99-driver.t
+    $ENV{MT_CONFIG} = "$1-test.cfg"
+        if __FILE__ =~ m{ [\\/] \d+- ([^\\/]+) \.t \z }xms;
 }
-
-use constant TESTS => 187;
 
 use Test::More;
 use lib 't/lib';
 use MT::Test qw(:testdb :time);
+
+BEGIN {
+    plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
+        if !-r $ENV{MT_CONFIG};
+}
+
+plan tests => 187;
 
 package Zot;
 use base 'MT::Object';
@@ -42,14 +45,6 @@ __PACKAGE__->install_properties({
 });
 
 package main;
-
-if (-r $ENV{MT_CONFIG}) {
-    plan tests => TESTS();
-}
-else {
-    print "Please configure for this test by creating $ENV{MT_CONFIG} with your database, username, and password\n";
-    plan skip_all => "$ENV{MT_CONFIG} configuration not found";
-}
 
 my(@foo, @bar);
 my($tmp, @tmp);
