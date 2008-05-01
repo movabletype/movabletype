@@ -409,6 +409,8 @@ sub db2type {
         return 'blob';
     } elsif ($type == SQL_BOOLEAN) {
         return 'boolean';
+    } elsif ($type == SQL_FLOAT) {
+        return 'float';
     }
     warn "unresolved type: $type\n";
     undef;
