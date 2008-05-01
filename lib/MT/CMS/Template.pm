@@ -2300,7 +2300,7 @@ sub list_widget {
     my $param = {
         @widgetmanagers ? ( object_loop  => \@widgetmanagers ) : (),
         @widget_loop    ? ( widget_table => \@widget_loop ) : (),
-        object_type    => "widgetset",
+        object_type    => "template",
         search_type    => "template",
         search_label   => MT::Template->class_label_plural,
         listing_screen => 1,

@@ -10,7 +10,7 @@ var widgetSetTableSelect;
 var widgetTableSelect;
 function init() {
     // setup
-    widgetSetTableSelect = new TC.TableSelect( "widgetset-listing-table" );
+    widgetSetTableSelect = new TC.TableSelect( "template-listing-table" );
     widgetSetTableSelect.rowSelect = true;
     widgetTableSelect = new TC.TableSelect( "widget-listing-table" );
     widgetTableSelect.rowSelect = true;
@@ -22,7 +22,7 @@ TC.attachLoadEvent( init );
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <a href="javascript:void(0)"
-        onclick="doRemoveItems(getByID('widgetset-listing-form'), '<__trans phrase="Widget Set" escape="js">', '<__trans phrase="Widget Sets" escape="js">', '', '', 'delete_widget'); return false;"
+        onclick="doRemoveItems(getByID('template-listing-form'), '<__trans phrase="Widget Set" escape="js">', '<__trans phrase="Widget Sets" escape="js">', '', '', 'delete_widget'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected Widget Sets (x)">"
         ><__trans phrase="Delete"></a>
