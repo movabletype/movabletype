@@ -58,7 +58,7 @@
                                 <h2 class="comments-open-header"><__trans phrase="Leave a comment"></h2>
                                 <div class="comments-open-content">
                                     <div id="comment-greeting"></div>
-                                    <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="mtCommentOnSubmit(this)">
+                                    <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
                                         <input type="hidden" name="static" value="1" />
                                         <input type="hidden" name="armor" value="1" />
                                         <input type="hidden" name="preview" value="" />
