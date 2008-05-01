@@ -429,6 +429,7 @@ sub get_weblogs {
         ? MT::Blog->load_iter()
         : MT::Permission->load_iter({ author_id => $user->id });
     my $base = $app->base . $app->uri;
+    my $enc = $app->config->PublishCharset;
 
     # TODO: libxml support? XPath should always be available...
     require XML::XPath;
@@ -457,7 +458,8 @@ sub get_weblogs {
         $doc->appendChild($workspace);
 
         my $title = XML::XPath::Node::Element->new('atom:title', 'atom');
-        $title->appendChild(XML::XPath::Node::Text->new($blog->name));
+        my $blogname = encode_text($blog->name, $enc, 'utf-8');
+        $title->appendChild(XML::XPath::Node::Text->new($blogname));
         $workspace->appendChild($title);
 
         my $entries = XML::XPath::Node::Element->new('collection');
@@ -465,7 +467,8 @@ sub get_weblogs {
         $workspace->appendChild($entries);
 
         my $e_title = XML::XPath::Node::Element->new('atom:title', 'atom');
-        $e_title->appendChild(XML::XPath::Node::Text->new(MT->translate('[_1]: Entries', $blog->name)));
+        my $feed_title = encode_text(MT->translate('[_1]: Entries', $blog->name), $enc, 'utf-8');
+        $e_title->appendChild(XML::XPath::Node::Text->new($feed_title));
         $entries->appendChild($e_title);
 
         my $cats = XML::XPath::Node::Element->new('categories');
