@@ -4,17 +4,17 @@ use Carp ();
 ############################################################################
 package Net::OpenID::VerifiedIdentity;
 use fields (
-            'identity',  # the verified identity URL
-            'id_uri',  # the verified identity's URI object
+    'identity',  # the verified identity URL
+    'id_uri',  # the verified identity's URI object
 
-            'foaf',      # discovered foaf URL
-            'foafmaker', # discovered foaf maker
-            'rss',       # discovered rss feed
-            'atom',      # discovered atom feed
+    'claimed_identity', # The ClaimedIdentity object that we've verified
+    'semantic_info',    # The "semantic info" (RSS URLs, etc) at the verified identity URL
 
-            'consumer',  # The Net::OpenID::Consumer module which created us
+    'consumer',  # The Net::OpenID::Consumer module which created us
 
-            );
+    'signed_fields' ,  # hashref of key->value of things that were signed.  without "openid." prefix
+    'signed_message',  # the signed fields as an IndirectMessage object. Created when needed.
+);
 use URI;
 
 sub new {
@@ -24,13 +24,14 @@ sub new {
 
     $self->{'consumer'} = delete $opts{'consumer'};
 
-    if ($self->{'identity'} = delete $opts{'identity'}) {
+    if ($self->{'claimed_identity'} = delete $opts{'claimed_identity'}) {
+        $self->{identity} = $self->{claimed_identity}->claimed_url;
         unless ($self->{'id_uri'} = URI->new($self->{identity})) {
             return $self->{'consumer'}->_fail("invalid_uri");
         }
     }
 
-    for my $par (qw(foaf foafmaker rss atom)) {
+    for my $par (qw(signed_fields)) {
         $self->$par(delete $opts{$par});
     }
 
@@ -48,15 +49,84 @@ sub display {
     return DisplayOfURL($self->{'identity'});
 }
 
-sub foafmaker { &_getset;        }
+sub _semantic_info_hash {
+    my ($self) = @_;
+    return $self->{semantic_info} if $self->{semantic_info};
+    my $sem_info = $self->{claimed_identity}->semantic_info;
+    $self->{semantic_info} = {
+        'foaf' => $self->_identity_relative_uri($sem_info->{"foaf"}),
+        'foafmaker' => $sem_info->{"foaf.maker"},
+        'rss' => $self->_identity_relative_uri($sem_info->{"rss"}),
+        'atom' => $self->_identity_relative_uri($sem_info->{"atom"}),
+    };
+    return $self->{semantic_info};
+}
+
+sub _identity_relative_uri {
+    my $self = shift;
+    my $url = shift;
+
+    return $url if ref $url;
+    return undef unless $url;
+    return URI->new_abs($url, $self->{'id_uri'});
+}
+
+sub signed_fields { &_getset;        }
 
 sub foaf      { &_getset_semurl; }
 sub rss       { &_getset_semurl; }
 sub atom      { &_getset_semurl; }
+sub foafmaker     { &_getset_sem; }
 
 sub declared_foaf   { &_dec_semurl; }
 sub declared_rss    { &_dec_semurl; }
 sub declared_atom   { &_dec_semurl; }
+
+sub extension_fields {
+    my ($self, $ns_uri) = @_;
+    return $self->_extension_fields($ns_uri, $self->{consumer}->message);
+}
+
+sub signed_extension_fields {
+    my ($self, $ns_uri) = @_;
+
+    return $self->_extension_fields($ns_uri, $self->signed_message);
+}
+
+sub _extension_fields {
+    my ($self, $ns_uri, $args) = @_;
+
+    return $args->get_ext($ns_uri);
+}
+
+sub signed_message {
+    my ($self) = @_;
+
+    return $self->{signed_message} if $self->{signed_message};
+
+    # This is maybe a bit hacky.
+    # We need to synthesize an IndirectMessage object
+    # representing the signed fields, which means
+    # that we need to fake up the mandatory message
+    # arguments that probably weren't signed.
+
+    my %args = map { 'openid.'.$_ => $self->{signed_fields}{$_} } keys %{$self->{signed_fields}};
+
+    my $real_message = $self->{consumer}->message;
+    if ($real_message->protocol_version == 1) {
+        # OpenID 1.1 just needs a mode.
+        $args{'openid.mode'} = 'id_res';
+    }
+    else {
+        # OpenID 2.2 needs the namespace URI as well
+        $args{'openid.ns'} = 'http://specs.openid.net/auth/2.0';
+        $args{'openid.mode'} = 'id_res';
+    }
+
+    my $message = Net::OpenID::IndirectMessage->new(\%args);
+
+    return $self->{signed_message} = $message;
+}
 
 sub _getset {
     my $self = shift;
@@ -71,20 +141,36 @@ sub _getset {
     return $self->{$param};
 }
 
+sub _getset_sem {
+    my $self = shift;
+    my $param = (caller(1))[3];
+    $param =~ s/.+:://;
+
+    my $info = $self->_semantic_info_hash;
+
+    if (my $value = shift) {
+        Carp::croak("Too many parameters") if @_;
+        $info->{$param} = $value;
+    }
+    return $info->{$param};
+}
+
 sub _getset_semurl {
     my $self = shift;
     my $param = (caller(1))[3];
     $param =~ s/.+:://;
+
+    my $info = $self->_semantic_info_hash;
 
     if (my $surl = shift) {
         Carp::croak("Too many parameters") if @_;
 
         # TODO: make absolute URL from possibly relative one
         my $abs = URI->new_abs($surl, $self->{'id_uri'});
-        $self->{$param} = $abs;
+        $info->{$param} = $abs;
     }
 
-    my $uri = $self->{$param};
+    my $uri = $info->{$param};
     return $uri && _url_is_under($self->{'id_uri'}, $uri) ? $uri->as_string : undef;
 }
 
@@ -93,7 +179,9 @@ sub _dec_semurl {
     my $param = (caller(1))[3];
     $param =~ s/.+::declared_//;
 
-    my $uri = $self->{$param};
+    my $info = $self->_semantic_info_hash;
+
+    my $uri = $info->{$param};
     return $uri ? $uri->as_string : undef;
 }
 
@@ -221,7 +309,38 @@ the tilde form, or "/users/USERNAME" or "/members/USERNAME".  If the
 path component is empty or just "/", then the display form is just the
 hostname, so "http://myblog.com/" is just "myblog.com".
 
-Suggestions for improving this function are welcome!
+Suggestions for improving this function are welcome, but you'll probably
+get more satisfying results if you make use of the data returned by
+the Simple Registration (SREG) extension, which allows the user to
+choose a preferred nickname to use on your site.
+
+=item $vident->B<extension_fields>($ns_uri)
+
+Return the fields from the given extension namespace, if any, that
+were included in the assertion request. The fields are returned in
+a hashref.
+
+In most cases you'll probably want to use B<signed_extension_fields> instead,
+to avoid attacks where a man-in-the-middle alters the extension fields in transit.
+
+Note that for OpenID 1.1 transactions only Simple Registration (SREG) 1.1
+is supported.
+
+=item $vident->B<signed_extension_fields>($ns_uri)
+
+The same as B<extension_fields> except that only fields that were signed
+as part of the assertion are included in the returned hashref. For example,
+if you included a Simple Registration request in your initial message,
+you might fetch the results (if any) like this:
+
+    $sreg = $vident->signed_extension_fields(
+        'http://openid.net/extensions/sreg/1.1',
+    );
+
+An important gotcha to bear in mind is that for OpenID 2.0 responses
+no extension fields can be considered signed unless the corresponding
+extension namespace declaration is also signed. If that is not the case,
+this method will behave as if no extension fields for that URI were signed.
 
 =item $vident->B<rss>
 

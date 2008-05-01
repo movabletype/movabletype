@@ -4,22 +4,32 @@ use Carp ();
 ############################################################################
 package Net::OpenID::ClaimedIdentity;
 use fields (
-            'identity',  # the canonical URL that was found, following redirects
-            'server',    # author-identity identity server endpoint
-            'consumer',  # ref up to the Net::OpenID::Consumer which generated us
-            'delegate',  # the delegated URL actually asserted by the server
-            );
+    'identity',         # the canonical URL that was found, following redirects
+    'server',           # author-identity identity server endpoint
+    'consumer',         # ref up to the Net::OpenID::Consumer which generated us
+    'delegate',         # the delegated URL actually asserted by the server
+    'protocol_version', # The version of the OpenID Authentication Protocol that is used
+    'semantic_info',    # Stuff that we've discovered in the identifier page's metadata
+    'extension_args',   # Extension arguments that the caller wants to add to the request
+);
 
 sub new {
     my Net::OpenID::ClaimedIdentity $self = shift;
     $self = fields::new( $self ) unless ref $self;
     my %opts = @_;
-    for my $f (qw( identity server consumer delegate )) {
+    for my $f (qw( identity server consumer delegate protocol_version semantic_info )) {
         $self->{$f} = delete $opts{$f};
+    }
+
+    $self->{protocol_version} ||= 1;
+    unless ($self->{protocol_version} == 1 || $self->{protocol_version} == 2) {
+        Carp::croak("Unsupported protocol version");
     }
 
     # lowercase the scheme and hostname
     $self->{'identity'} =~ s!^(https?://.+?)(/(?:.*))?$!lc($1) . $2!ie;
+
+    $self->{extension_args} = {};
 
     Carp::croak("unknown options: " . join(", ", keys %opts)) if %opts;
     return $self;
@@ -31,10 +41,44 @@ sub claimed_url {
     return $self->{'identity'};
 }
 
+sub delegated_url {
+    my Net::OpenID::ClaimedIdentity $self = shift;
+    Carp::croak("Too many parameters") if @_;
+    return $self->{'delegate'};
+}
+
 sub identity_server {
     my Net::OpenID::ClaimedIdentity $self = shift;
     Carp::croak("Too many parameters") if @_;
     return $self->{server};
+}
+
+sub protocol_version {
+    my Net::OpenID::ClaimedIdentity $self = shift;
+    Carp::croak("Too many parameters") if @_;
+    return $self->{protocol_version};
+}
+
+sub semantic_info {
+    my Net::OpenID::ClaimedIdentity $self = shift;
+    Carp::croak("Too many parameters") if @_;
+    return $self->{semantic_info} if $self->{semantic_info};
+    my $final_url = '';
+    my $info = $self->{consumer}->_find_semantic_info($self->claimed_url, \$final_url);
+    # Don't return anything if the URL has changed. Something bad may be happening.
+    $info = {} if $final_url ne $self->claimed_url;
+    return $self->{semantic_info} = $info;
+}
+
+sub set_extension_args {
+    my Net::OpenID::ClaimedIdentity $self = shift;
+    my $ext_uri = shift;
+    my $args = shift;
+    Carp::croak("Too many parameters") if @_;
+    Carp::croak("No extension URI given") unless $ext_uri;
+    Carp::croak("Expecting hashref of args") if defined($args) && ref $args ne 'HASH';
+
+    $self->{extension_args}{$ext_uri} = $args;
 }
 
 sub check_url {
@@ -44,6 +88,9 @@ sub check_url {
     my $return_to   = delete $opts{'return_to'};
     my $trust_root  = delete $opts{'trust_root'};
     my $delayed_ret = delete $opts{'delayed_return'};
+    my $force_reassociate = delete $opts{'force_reassociate'};
+    my $use_assoc_handle = delete $opts{'use_assoc_handle'};
+    my $actually_return_association = delete $opts{'actually_return_association'};
 
     Carp::croak("Unknown options: " . join(", ", keys %opts)) if %opts;
     Carp::croak("Invalid/missing return_to") unless $return_to =~ m!^https?://!;
@@ -54,12 +101,25 @@ sub check_url {
         Carp::croak("No identity server");
 
     # get an assoc (or undef for dumb mode)
-    my $assoc = Net::OpenID::Association::server_assoc($csr, $ident_server);
+    my $assoc;
+    if ($use_assoc_handle) {
+        $assoc = Net::OpenID::Association::handle_assoc($csr, $ident_server, $use_assoc_handle);
+    } else {
+        $assoc = Net::OpenID::Association::server_assoc($csr, $ident_server, $force_reassociate, (
+            protocol_version => $self->protocol_version,
+        ));
+    }
+
+    # for the openid-test project: (doing interop testing)
+    if ($actually_return_association) {
+        return $assoc;
+    }
 
     my $identity_arg = $self->{'delegate'} || $self->{'identity'};
 
     # make a note back to ourselves that we're using a delegate
-    if ($self->{'delegate'}) {
+    # but only in the 1.1 case because 2.0 has a core field for this
+    if ($self->{'delegate'} && $self->protocol_version == 1) {
         OpenID::util::push_url_arg(\$return_to,
                                    "oic.identity",  $self->{identity});
     }
@@ -72,17 +132,63 @@ sub check_url {
                                "oic.time", "${sig_time}-$sig");
 
     my $curl = $ident_server;
-    OpenID::util::push_url_arg(\$curl,
-                               "openid.mode",           ($delayed_ret ? "checkid_setup" : "checkid_immediate"),
-                               "openid.identity",       $identity_arg,
-                               "openid.return_to",      $return_to,
+    if ($self->protocol_version == 1) {
+        OpenID::util::push_url_arg(\$curl,
+            "openid.mode"              => ($delayed_ret ? "checkid_setup" : "checkid_immediate"),
+            "openid.identity"          => $identity_arg,
+            "openid.return_to"         => $return_to,
 
-                               ($trust_root ?
-                                ("openid.trust_root",   $trust_root) : ()),
+            ($trust_root ? (
+                "openid.trust_root"    => $trust_root
+            ) : ()),
 
-                               ($assoc ?
-                                ("openid.assoc_handle", $assoc->handle) : ()),
-                               );
+            ($assoc ? (
+                "openid.assoc_handle"  => $assoc->handle
+            ) : ()),
+        );
+    }
+    elsif ($self->protocol_version == 2) {
+        # NOTE: OpenID Auth 2.0 uses different terminology for a bunch
+        # of things than 1.1 did. This library still uses the 1.1 terminology
+        # in its API.
+        OpenID::util::push_openid2_url_arg(\$curl,
+            "mode"                     => ($delayed_ret ? "checkid_setup" : "checkid_immediate"),
+            "claimed_id"               => $self->claimed_url,
+            "identity"                 => $identity_arg,
+            "return_to"                => $return_to,
+
+            ($trust_root ? (
+                "realm"                => $trust_root
+            ) : ()),
+
+            ($assoc ? (
+                "assoc_handle"         => $assoc->handle
+            ) : ()),
+        );
+    }
+
+    # Finally we add in the extension arguments, if any
+    my %ext_url_args = ();
+    my $ext_idx = 1;
+    foreach my $ext_uri (keys %{$self->{extension_args}}) {
+        my $ext_alias;
+
+        if ($self->protocol_version >= 2) {
+            $ext_alias = 'e'.($ext_idx++);
+            $ext_url_args{'openid.ns.'.$ext_alias} = $ext_uri;
+        }
+        else {
+            # For OpenID 1.1 only the "SREG" extension is allowed,
+            # and it must use the "openid.sreg." prefix.
+            next unless $ext_uri eq "http://openid.net/extensions/sreg/1.1";
+            $ext_alias = "sreg";
+        }
+
+        foreach my $k (keys %{$self->{extension_args}{$ext_uri}}) {
+            $ext_url_args{'openid.'.$ext_alias.'.'.$k} = $self->{extension_args}{$ext_uri}{$k};
+        }
+    }
+    OpenID::util::push_url_arg(\$curl, %ext_url_args) if %ext_url_args;
 
     $self->{consumer}->_debug("check_url for (del=$self->{delegate}, id=$self->{identity}) = $curl");
     return $curl;
@@ -142,6 +248,38 @@ check_url, though.
 
 Returns the identity server that will assert whether or not this
 claimed identity is valid, and sign a message saying so.
+
+=item $url = $cident->B<delegated_url>
+
+If the claimed URL is using delegation, this returns the delegated identity that will
+actually be sent to the identity server.
+
+=item $version = $cident->B<protocol_version>
+
+Determines whether this identifier is to be verified by OpenID 1.1
+or by OpenID 2.0. Returns C<1> or C<2> respectively. This will
+affect the way the C<check_url> is constructed.
+
+=item $cident->B<set_extension_args>($ns_uri, $args)
+
+If called before you access C<check_url>, the arguments given in the hashref
+$args will be added to the request in the given extension namespace.
+For example, to use the Simple Registration (SREG) extension:
+
+    $cident->set_extension_args(
+        'http://openid.net/extensions/sreg/1.1',
+        {
+            required => 'email',
+            optional => 'fullname,nickname',
+            policy_url => 'http://example.com/privacypolicy.html',
+        },
+    );
+
+Note that when making an OpenID 1.1 request, only the Simple Registration
+extension is supported. There was no general extension mechanism defined
+in OpenID 1.1, so SREG (with the namespace URI as in the example above)
+is supported as a special case. All other extension namespaces will
+be silently ignored when making a 1.1 request.
 
 =item $url = $cident->B<check_url>( %opts )
 
@@ -203,5 +341,5 @@ L<Net::OpenID::VerifiedIdentity>
 
 L<Net::OpenID::Server>
 
-Website:  L<http://www.danga.com/openid/>
+Website:  L<http://www.openid.net/>
 

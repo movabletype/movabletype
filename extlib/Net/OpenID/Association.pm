@@ -37,6 +37,12 @@ sub secret {
     $self->{'secret'};
 }
 
+sub type {
+    my $self = shift;
+    die if @_;
+    $self->{'type'};
+}
+
 sub server {
     my Net::OpenID::Association $self = shift;
     Carp::croak("Too many parameters") if @_;
@@ -63,7 +69,10 @@ sub usable {
 # goes into dumb consumer mode.  will do a POST and allocate
 # a new assoc_handle if none is found, or has expired
 sub server_assoc {
-    my ($csr, $server) = @_;
+    my ($csr, $server, $force_reassociate, %opts) = @_;
+
+    my $protocol_version = delete $opts{protocol_version} || 1;
+    Carp::croak("unknown options: " . join(", ", keys %opts)) if %opts;
 
     # closure to return undef (dumb consumer mode) and log why
     my $dumb = sub {
@@ -74,13 +83,15 @@ sub server_assoc {
     my $cache = $csr->cache;
     return $dumb->("no_cache") unless $cache;
 
-    # try first from cached association handle
-    if (my $handle = $cache->get("shandle:$server")) {
-        my $assoc = handle_assoc($csr, $server, $handle);
+    unless ($force_reassociate) {
+        # try first from cached association handle
+        if (my $handle = $cache->get("shandle:$server")) {
+            my $assoc = handle_assoc($csr, $server, $handle);
 
-        if ($assoc && $assoc->usable) {
-            $csr->_debug("Found association from cache (handle=$handle)");
-            return $assoc;
+            if ($assoc && $assoc->usable) {
+                $csr->_debug("Found association from cache (handle=$handle)");
+                return $assoc;
+            }
         }
     }
 
@@ -93,6 +104,10 @@ sub server_assoc {
                 "openid.session_type" => "DH-SHA1",
                 "openid.dh_consumer_public" => OpenID::util::bi2arg($dh->pub_key),
                 );
+
+    if ($protocol_version == 2) {
+        $post{"openid.ns"} = OpenID::util::version_2_namespace();
+    }
 
     my $req = HTTP::Request->new(POST => $server);
     $req->header("Content-Type" => "application/x-www-form-urlencoded");
@@ -158,6 +173,12 @@ sub server_assoc {
 
     $cache->set("hassoc:$server:$ahandle", Storable::freeze(\%assoc));
     $cache->set("shandle:$server", $ahandle);
+
+    # now we test that the cache object given to us actually works.  if it
+    # doesn't, it'll also fail later, making the verify fail, so let's
+    # go into stateless (dumb mode) earlier if we can detect this.
+    $cache->get("shandle:$server")
+        or return $dumb->("cache_broken");
 
     return $assoc;
 }
