@@ -21,6 +21,7 @@ __PACKAGE__->install_properties({
     audit => 1,
     datasource => 'bar',
     primary_key => 'id',
+    cacheable => 0,
 });
 
 1;
