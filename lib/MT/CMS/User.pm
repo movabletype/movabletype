@@ -605,12 +605,14 @@ sub list_association {
                 role_view     => $role_id   ? 1 : 0,
                 $role_id
                 ? (
+                    return_args => '__mode=list_association&role_id=' . $role_id,
                     role_id   => $role_id,
                     role_name => $role->name,
                   )
                 : (),
                 $author_id
                 ? (
+                    return_args => '__mode=list_association&author_id=' . $author_id,
                     edit_author_id   => $author_id,
                     edit_name => $user
                     ? ( $user->nickname ? $user->nickname : $user->name )
