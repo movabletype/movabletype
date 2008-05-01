@@ -24,6 +24,10 @@ sub work {
     # Build this
     my $mt = MT->instance;
 
+    # reset publish timer; don't republish a file if it has
+    # this or a later timestamp.
+    $mt->publisher->start_time( time );
+
     # We got triggered to build; lets find coalescing jobs
     # and process them in one pass.
 

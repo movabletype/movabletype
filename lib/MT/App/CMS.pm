@@ -2849,6 +2849,9 @@ sub rebuild_these {
 
     # if there's nothing to rebuild, just return
     if ( !keys %$rebuild_set ) {
+        if (my $start_time = $app->param('start_time')) {
+            $app->publisher->start_time($start_time);
+        }
 
         # now, rebuild indexes for affected blogs
         my @blogs = $app->param('blog_ids');
@@ -2888,6 +2891,7 @@ sub rebuild_these {
     else {
         my @blogs = $app->param('blog_ids');
         my $start_time = $app->param('start_time');
+        $app->publisher->start_time( $start_time );
         my %blogs = map { $_ => () } @blogs;
         my @set   = keys %$rebuild_set;
         my @rest;

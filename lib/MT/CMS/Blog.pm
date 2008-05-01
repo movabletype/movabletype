@@ -573,7 +573,8 @@ sub rebuild_pages {
     my $type          = $order[$next];
 
     my $pub           = $app->publisher;
-    $pub->start_time( $start_time );  # force start time to parameter start_time
+    $pub->start_time( $start_time )
+        if $start_time;  # force start time to parameter start_time
 
     my $archiver      = $pub->archiver($type);
     my $archive_label = $archiver ? $archiver->archive_label : '';
