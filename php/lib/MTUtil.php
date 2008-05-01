@@ -1585,4 +1585,17 @@ function _math_operation($op, $lvalue, $rvalue) {
     return;
 }
 
+function apply_text_filter ($ctx, $text, $filter) {
+  if ($text == '' || $filter == '') return $text;
+
+    if ($filter == 'convert_breaks') {
+        $text = html_text_transform($text);
+    } elseif ($ctx->load_modifier($filter)) {
+        $mod = 'smarty_modifier_'.$filter;
+        $text = $mod($text);
+    }
+
+    return $text;
+}
+
 ?>

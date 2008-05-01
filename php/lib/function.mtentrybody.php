@@ -22,13 +22,8 @@ function smarty_function_mtentrybody($args, &$ctx) {
             # we're doing convert breaks
             $cb = 'convert_breaks';
         }
-        if ($cb) {
-            # invoke modifier to format
-            if ($ctx->load_modifier($cb)) {
-                $mod = 'smarty_modifier_'.$cb;
-                $text = $mod($text);
-            }
-        }
+        require_once 'MTUtil.php';
+        $text = apply_text_filter($ctx, $text, $cb);
     }
     if (isset($args['words'])) {
         require_once("MTUtil.php");

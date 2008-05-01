@@ -15,10 +15,8 @@ function smarty_modifier_filters($text,$filters) {
             if ($filter == '__default__') {
                 $filter = 'convert_breaks';
             }
-            if ($ctx->load_modifier($filter)) {
-                $mod = 'smarty_modifier_'.$filter;
-                $text = $mod($text);
-            }
+            require_once 'MTUtil.php';
+            $text = apply_text_filter($text, $filter);
         }
     }
     return $text;

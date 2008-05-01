@@ -17,12 +17,8 @@ function smarty_function_mtcommentbody($args, &$ctx) {
     if ($cb == '1' || $cb == '__default__') {
         $cb = 'convert_breaks';
     }
-    if ($cb) {
-        if ($ctx->load_modifier($cb)) {
-            $mod = 'smarty_modifier_'.$cb;
-            $text = $mod($text);
-        }
-    }
+    require_once 'MTUtil.php';
+    $text = apply_text_filter($ctx, $text, $cb);
     if (isset($args['words'])) {
         require_once("MTUtil.php");
         return first_n_text($text, $args['words']);
