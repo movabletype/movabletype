@@ -2282,7 +2282,7 @@ B<Example:>
         required="1"
         label="Username"
         hint="The username used to login">
-            <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" />
+            <input type="text" name="name" id="name" value="<$mt:Var name="name" escape="html"$>" />
     </mtapp:setting>
 
 The basic structural output of a setting tag looks like this:
@@ -2452,7 +2452,7 @@ Tracks the number of times the loop has run (starts at 1).
 
 B<Example:>
 
-    <mt:For from="2" to="10" step="2" glue=","><mt:var name="__index__"></mt:For>
+    <mt:For from="2" to="10" step="2" glue=","><$mt:Var name="__index__"$></mt:For>
 
 Produces:
 
@@ -2719,56 +2719,56 @@ or "nelson" then do something:
 
 If the <$mt:CommenterEmail$> matches foo@domain.com or bar@domain.com:
 
-    <mt:if tag="CommenterEmail" like="(foo@domain.com|bar@domain.com)">
+    <mt:If tag="CommenterEmail" like="(foo@domain.com|bar@domain.com)">
         <!-- do something -->
-    </mt:if>
+    </mt:If>
 
 If the <$mt:CommenterUsername$> matches the username of someone on the
 Movable Type team:
 
-    <mt:if tag="CommenterUsername" like="(beau|byrne|brad|jim|mark|fumiaki|yuji|djchall)">
+    <mt:If tag="CommenterUsername" like="(beau|byrne|brad|jim|mark|fumiaki|yuji|djchall)">
         <!-- do something -->
-    </mt:if>
+    </mt:If>
 
 If <$mt:EntryCategory$> is "Comic" then use the Comic template module
 otherwise use the default:
 
-    <mt:if tag="EntryCategory" eq="Comic">
-        <$mt:include module="Comic Entry Detail"$>
-    <mt:else>
-        <$mt:include module="Entry Detail"$>
-    </mt:if>
+    <mt:If tag="EntryCategory" eq="Comic">
+        <$mt:Include module="Comic Entry Detail"$>
+    <mt:Else>
+        <$mt:Include module="Entry Detail"$>
+    </mt:If>
 
 If <$mt:EntryCategory$> is "Comic", "Sports", or "News" then link to the
 category archive:
 
-    <mt:if tag="EntryCategory" like="(Comic|Sports|News)">
+    <mt:If tag="EntryCategory" like="(Comic|Sports|News)">
         <a href="<$mt:CategoryArchiveLink$>"><$mt:CategoryLabel$></a>
-    <mt:else>
+    <mt:Else>
         <$mt:CategoryLabel$>
-    </mt:if>
+    </mt:If>
 
 List all categories and link to categories it the category has one or more
 entries:
 
-    <MTCategories show_empty="1">
-        <mt:if name="__first__">
+    <mt:Categories show_empty="1">
+        <mt:If name="__first__">
     <ul>
-        </mt:if>
-        <mt:if tag="CategoryCount" gte="1">
+        </mt:If>
+        <mt:If tag="CategoryCount" gte="1">
         <li><a href="<$MTCategoryArchiveLink$>"><$MTCategoryLabel$></a></li>
-        <mt:else>
+        <mt:Else>
         <li><$MTCategoryLabel$></li>
-        </mt:if>
-        <mt:if name="__last__">
+        </mt:If>
+        <mt:If name="__last__">
     </ul>
-        </mt:if>
-    </MTCategories>
+        </mt:If>
+    </mt:Categories>
 
 Test a variable using Perl:
 
     <mt:If test="length($some_variable) > 10">
-        '<mt:var name="some_variable">' is 11 characters or longer
+        '<$mt:Var name="some_variable"$>' is 11 characters or longer
     </mt:If>
 
 =cut
@@ -4206,7 +4206,7 @@ archives and the normal feed for all other templates:
         <link rel="alternate" type="application/atom+xml"
             title="Comments Feed"
             href="<$MTFileTemplate format="%y/%m/%-F.xml"$>" />
-    <mt:else>
+    <mt:Else>
         <link rel="alternate" type="application/atom+xml"
             title="Recent Entries"
             href="<$MTLink template="feed_recent"$>" />
@@ -4246,7 +4246,7 @@ B<Example:>
 
     <mt:IfArchiveTypeEnabled type="Category-Monthly">
         <!-- do something -->
-    <mt:else>
+    <mt:Else>
         <!-- do something else -->
     </mt:IfArchiveTypeEnabled>
 
@@ -4434,7 +4434,7 @@ B<Example:> Passing Parameters to a Template Module
 
 (from the "Section Header" template module)
 
-    <h2><$mt:var name="title"$></h2>
+    <h2><$mt:Var name="title"$></h2>
 
 =cut
 
@@ -5268,7 +5268,7 @@ Then later:
 
     <h1><$mt:Var name="title"$></h1>
 
-    <ul><li><$mt:var name="color"$></li></ul>
+    <ul><li><$mt:Var name="color"$></li></ul>
 
 =cut
 
@@ -7053,7 +7053,7 @@ Allows you to limit the number of entries output. This attribute
 always implies selection of entries based on their 'authored' date, in
 reverse chronological order.
 
-    <MTEntries lastn="5" sort_by="title" sort_order="ascend">
+    <mt:Entries lastn="5" sort_by="title" sort_order="ascend">
 
 This would publish the 5 most recent entries, ordered by their titles.
 
@@ -7064,13 +7064,13 @@ sort order is in use.
 
 =item sort_by (optional; default "authored_on")
 
-Accepted values are 'authored_on', 'title', 'ping_count', 'comment_count',
-'rate', 'score' (both 'rate' and 'score' require a 'namespace' attribute to
-be present).
+Accepted values are: C<authored_on>, C<title>, C<ping_count>,
+C<comment_count>, C<author_id>, C<excerpt>, C<status>, C<created_on>,
+C<modified_on>, C<rate>, C<score> (both C<rate> and C<score> require a C<namespace> attribute to be present).
 
 If you have the Professional Pack installed, with custom fields, you
 may specify a custom field basename to sort the listing, by giving
-a sort_by value of 'field.basename' (where 'basename' is the custom
+a C<sort_by> value of C<field:I<basename>> (where 'basename' is the custom
 field basename you wish to sort on).
 
 =item sort_order (optional)
@@ -7079,11 +7079,24 @@ Accepted values are 'ascend' and 'descend'. The default is the order
 specified for publishing entries, set on the blog entry preferences
 screen.
 
+=item field:I<basename>
+
+Permits filtering entries based on a custom field defined (available
+when the Commercial Pack is installed).
+
+B<Example:>
+
+    <mt:Entries field:special="1" sort_by="authored_on"
+        sort_order="descend" limit="5">
+
+This selects the last 5 entries that have a "special" custom field
+(checkbox field) checked.
+
 =item namespace (optional)
 
 The namespace attribute is used to specify which scoring namespace
-to use when applying the "sort_by='score'" attribute, or filtering
-based on scoring (any of the min_*, max_* attributes require this).
+to use when applying the C<sort_by="score"> attribute, or filtering
+based on scoring (any of the C<min_*>, C<max_*> attributes require this).
 
 The MT Community Pack provides a 'community_pack_recommend' namespace,
 for instance, which can be used to select entries, sorting by number
@@ -7100,34 +7113,31 @@ Accepted values are any non-zero positive integers, or the keyword
 determine the offset based on the C<offset> query parameter for
 the request.
 
-
-=item category (optional)
-
-=item categories (optional)
+=item category or categories (optional)
 
 This attribute allows you to filter the entries based on category
 assignment. The simple case is to filter for a single category,
 where the full category name is specified:
 
-    <MTEntries category="Featured">
+    <mt:Entries category="Featured">
 
 If you have multiple categories with the same name, you can give
 their parent category names to be more explicit:
 
-    <MTEntries category="News/Featured">
+    <mt:Entries category="News/Featured">
 
 or
 
-    <MTEntries category="Projects/Featured">
+    <mt:Entries category="Projects/Featured">
 
 You can also use 'AND', 'OR' and 'NOT' operators to include or
 exclude categories:
 
-    <MTEntries categories="(Family OR Pets) AND Featured">
+    <mt:Entries categories="(Family OR Pets) AND Featured">
 
 or
 
-    <MTEntries categories="NOT Family">
+    <mt:Entries categories="NOT Family">
 
 =item include_subcategories (optional)
 
@@ -7135,8 +7145,7 @@ If this attribute is specified in conjunction with the category (or
 categories) attribute, it will cause any entries assigned to subcategories
 of the identified category/categories to be included as well.
 
-=item tag (optional)
-=item tags (optional)
+=item tag or tags (optional)
 
 This attribute functions similarly to the C<category> attribute, but
 filters based on tag assignments. It also supports the logical operators
@@ -7148,8 +7157,7 @@ Accepts an author's username to filter entry selection.
 
 B<Example:>
 
-    <MTEntries author="Melody">
-
+    <mt:Entries author="Melody">
 
 =item min_score (optional)
 
@@ -7176,7 +7184,7 @@ specified by username. Requires the C<namespace> attribute.
 Limits the selection of entries to a specified number of days,
 based on the current date. For instance, if you specify:
 
-    <MTEntries days="10">
+    <mt:Entries days="10">
 
 only entries that were authored within the last 10 days will be
 published.
@@ -7187,7 +7195,7 @@ Selects the list of entries that have received published comments
 recently. The value of this attribute is the number of days to use
 to limit the selection. For instance:
 
-    <MTEntries recently_commented_on="10">
+    <mt:Entries recently_commented_on="10">
 
 will select entries that received published comments within the last
 10 days. The order of the entries is the date of the most recently
@@ -7204,13 +7212,13 @@ tagged "@featured", but wish to exclude these entries from the set
 of entries that follow, you can do this:
 
 
-    <MTEntries tag="@featured" lastn="3">
+    <mt:Entries tag="@featured" lastn="3">
         ...
-    </MTEntries>
-
-    <MTEntries lastn="7" unique="1">
+    </mt:Entries>
+    
+    <mt:Entries lastn="7" unique="1">
         ...
-    </MTEntries>
+    </mt:Entries>
 
 The second Entries tag will exclude any entries that were output
 from the first Entries tag.
@@ -7221,7 +7229,7 @@ Specifies a string that is output inbetween published entries.
 
 B<Example:>
 
-    <MTEntries glue=","><MTEntryID></MTEntries>
+    <mt:Entries glue=","><$mt:EntryID$></mt:Entries>
 
 outputs something like this:
 
@@ -8800,7 +8808,7 @@ sub _hdlr_entry_permalink {
 =head2 EntryClass
 
 Pages and entries are technically very similar to one another. In fact
-most, if not all, of the <mt:entry*> tags will work for publishing pages
+most, if not all, of the C<<mt:Entry*>> tags will work for publishing pages
 and vice versa. Therefore, to more clearly differentiate within
 templates between pages and entries the <mt:EntryClass> tag returns one of
 two values: "page" or "entry" depending upon the current context you are
