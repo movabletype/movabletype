@@ -463,10 +463,8 @@ class MTDatabaseBase extends ezsql {
             if (preg_match('/^field___(\w+)$/', $name, $m))
                 $fields[$m[1]] = $v;
 
-        $pagination = 0;
         # automatically include offset if in request
         if ($args['offset'] == 'auto') {
-            $pagination = 1;
             $args['offset'] = 0;
             if ($args['limit'] || $args['lastn']) {
                 if ($_REQUEST['offset'] > 0) {
