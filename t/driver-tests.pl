@@ -24,16 +24,11 @@ BEGIN {
     $ENV{MT_CONFIG} = "$driver-test.cfg";
 }
 
-BEGIN {
-    *CORE::GLOBAL::time  = sub { CORE::time };
-    *CORE::GLOBAL::sleep = sub { CORE::sleep };
-}
-
 use constant TESTS => 187;
 
 use Test::More;
 use lib 't/lib';
-use MT::Test qw(:testdb);
+use MT::Test qw(:testdb :time);
 
 package Zot;
 use base 'MT::Object';
@@ -47,13 +42,6 @@ __PACKAGE__->install_properties({
 });
 
 package main;
-
-my $core_time = time;
-{
-    no warnings 'redefine';
-    *CORE::GLOBAL::time  = sub { $core_time };
-    *CORE::GLOBAL::sleep = sub { $core_time += shift };
-}
 
 if (-r $ENV{MT_CONFIG}) {
     plan tests => TESTS();

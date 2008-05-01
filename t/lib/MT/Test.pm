@@ -32,24 +32,33 @@ BEGIN {
     }
 }
 
+# Override time and sleep so we can simulate time passing without making
+# test scripts wait for real wall seconds to pass.
+our $CORE_TIME;
+BEGIN {
+    *CORE::GLOBAL::time  = sub { CORE::time };
+    *CORE::GLOBAL::sleep = sub { CORE::sleep };
+}
+
 sub import {
     my $pkg = shift;
     foreach my $opt (@_) {
-        if ($opt eq ':db') {
-            diag "Initializing database";
-            $pkg->init_db();
-        }
-        elsif ($opt eq ':testdb') {
-            $pkg->init_test_db();
-        }
-        elsif ($opt eq ':data') {
-            diag "Initializing sample data";
-            $pkg->sample_data();
+        if ($opt =~ m{ \A : (.+) \z }xms) {
+            my $command = "init_$1";
+            $pkg->$command() if $pkg->can($command);
         }
     }
 }
 
-sub init_test_db {
+sub init_time {
+    $CORE_TIME = time;
+    
+    no warnings 'redefine';
+    *CORE::GLOBAL::time  = sub { $CORE_TIME };
+    *CORE::GLOBAL::sleep = sub { $CORE_TIME += shift };
+}
+
+sub init_testdb {
     my $pkg = shift;
     # This is a bit of MT::Upgrade magic to prevent the full
     # instantiation of the MT schema. We force the classes list
@@ -78,6 +87,7 @@ sub init_test_db {
 sub init_db {
     my $pkg = shift;
     my ($cfg) = @_;
+    diag "Initializing database";
 
     my $mt = MT->instance($cfg ? (Config => $cfg) : ())
         or die "No MT object " . MT->errstr;
@@ -135,8 +145,10 @@ sub error {
     print "ERROR: $msg\n";
 }
 
-sub sample_data {
+sub init_data {
     my $pkg = shift;
+    diag "Initializing sample data";
+
     my $blog = MT::Blog->new();
     $blog->set_values({
         name => 'none',
