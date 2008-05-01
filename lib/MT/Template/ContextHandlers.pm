@@ -640,6 +640,14 @@ sub _fltr_mteval {
 
 Outputs a SHA1-hex digest of the content from the tag it is applied to.
 
+B<Example:>
+
+    <$mt:EntryTitle encode_sha1="1"$>
+
+outputs:
+
+    0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33
+
 =cut
 
 sub _fltr_sha1 {
@@ -662,6 +670,10 @@ Example, assigning a HTML link of the last published entry with a
         <a href="<$mt:EntryPermalink$>"><$mt:EntryTitle$></a>
     </mt:Entries>
 
+The output from the L<Entries> tag is suppressed, and placed into
+the template variable 'featured_entry_link' instead. To retrieve it,
+just use the L<Var> tag.
+
 =cut
 
 sub _fltr_setvar {
@@ -676,6 +688,10 @@ sub _fltr_setvar {
 
 Processes the 'a' tags from the tag it is applied to and adds a 'rel'
 attribute of 'nofollow' to it (or appends to an existing rel attribute).
+
+B<Example:>
+
+    <$mt:CommentBody nofollowfy="1"$>
 
 =cut
 
@@ -703,7 +719,9 @@ sub _fltr_nofollowfy {
 
 =head2 filters
 
-Applies one or more text format filters. Example:
+Applies one or more text format filters.
+
+B<Example:>
 
     <$mt:EntryBody convert_breaks="0" filters="filter1, filter2, filter3"$>
 
@@ -718,7 +736,9 @@ sub _fltr_filters {
 
 =head2 trim_to
 
-Trims the input content to the requested length. Example:
+Trims the input content to the requested length.
+
+B<Example:>
 
     <$mt:EntryTitle trim_to="4"$>
 
@@ -735,7 +755,9 @@ sub _fltr_trim_to {
 
 =head2 trim
 
-Trims all leading and trailing whitespace from the input. Example:
+Trims all leading and trailing whitespace from the input.
+
+B<Example:>
 
     <$mt:EntryTitle trim="1"$>
 
@@ -751,7 +773,9 @@ sub _fltr_trim {
 
 =head2 ltrim
 
-Trims all leading whitespace from the input. Example:
+Trims all leading whitespace from the input.
+
+B<Example:>
 
     <$mt:EntryTitle ltrim="1"$>
 
@@ -767,7 +791,9 @@ sub _fltr_ltrim {
 
 =head2 rtrim
 
-Trims all trailing (right-side) whitespace from the input. Example:
+Trims all trailing (right-side) whitespace from the input.
+
+B<Example:>
 
     <$mt:EntryTitle rtrim="1"$>
 
@@ -827,11 +853,13 @@ from accented characters and changes spaces into underscores (or
 dashes, depending on parameter).
 
 The dirify parameter can be either "1", "-" or "_". "1" is equivalent
-to "_". Example:
+to "_".
+
+B<Example:>
 
     <$mt:EntryTitle dirify="-"$>
 
-which would translate an entry titled "Mercí, madame" into "merci-madame".
+which would translate an entry titled "Café" into "cafe".
 
 =cut
 
@@ -900,7 +928,9 @@ sub _fltr_encode_xml {
 =head2 encode_js
 
 Encodes any special characters so that the string can be used safely as
-the value in Javascript. Example:
+the value in Javascript.
+
+B<Example:>
 
     <script type="text/javascript">
     <!-- /* <![CDATA[ */
@@ -925,7 +955,7 @@ The value of the attribute can be either C<qq> (double-quote interpolation),
 C<here> (heredoc interpolation), or C<q> (single-quote interpolation). C<q>
 is the default.
 
-Example:
+B<Example:>
 
     <?php
     $the_title = '<$MTEntryTitle encode_php="q"$>';
@@ -999,6 +1029,14 @@ sub _fltr_strip_linefeeds {
 
 =head2 space_pad
 
+Adds whitespace to the left of the input to the length specified.
+
+B<Example:>
+
+    <$mt:EntryBasename space_pad="10">
+
+For a basename of "example", this would output: "   example".
+
 =cut
 
 sub _fltr_space_pad {
@@ -1010,6 +1048,14 @@ sub _fltr_space_pad {
 
 =head2 zero_pad
 
+Adds '0' to the left of the input to the length specified.
+
+B<Example:>
+
+    <$mt:EntryID zero_pad="10"$>
+
+For an entry id of 1023, this would output: "0000001023".
+
 =cut
 
 sub _fltr_zero_pad {
@@ -1020,6 +1066,19 @@ sub _fltr_zero_pad {
 ###########################################################################
 
 =head2 sprintf
+
+Formats the input text using the Perl 'sprintf' function. The value of
+the 'sprintf' attribute is used as the sprintf pattern.
+
+B<Example:>
+
+    <$mt:EntryCommentCount sprintf="<%.6d>"$>
+
+Outputs (for an entry with 1 comment):
+
+    <000001>
+
+Refer to Perl's documentation for sprintf for more examples.
 
 =cut
 
@@ -1034,6 +1093,13 @@ sub _fltr_sprintf {
 
 Applies a regular expression operation on the input. This filter accepts
 B<two> input values: one is the pattern, the second is the replacement.
+
+B<Example:>
+
+    <$mt:EntryTitle regex_replace="/\s*\[.+?\]\s*$/",""$>
+
+This would strip any bracketed phrase from the end of the entry
+title field.
 
 =cut
 
@@ -1072,6 +1138,8 @@ sub _fltr_regex_replace {
 
 =head2 capitalize
 
+Uppercases the first letter of each word in the input.
+
 =cut
 
 sub _fltr_capitalize {
@@ -1084,6 +1152,8 @@ sub _fltr_capitalize {
 
 =head2 count_characters
 
+Outputs the number of characters found in the input.
+
 =cut
 
 sub _fltr_count_characters {
@@ -1094,6 +1164,12 @@ sub _fltr_count_characters {
 ###########################################################################
 
 =head2 cat
+
+Append the input value with the value of the 'cat' attribute.
+
+B<Example:>
+
+    <$mt:EntryTitle cat="!!!1!"$>
 
 =cut
 
@@ -1106,6 +1182,8 @@ sub _fltr_cat {
 
 =head2 count_paragraphs
 
+Outputs the number of paragraphs found in the input.
+
 =cut
 
 sub _fltr_count_paragraphs {
@@ -1117,6 +1195,8 @@ sub _fltr_count_paragraphs {
 ###########################################################################
 
 =head2 count_words
+
+Outputs the number of words found in the input.
 
 =cut
 
@@ -1136,17 +1216,31 @@ sub _fltr_count_words {
 
 =head2 escape
 
+Similar to the 'encode_*' modifiers. The input is reformatted so that
+certain special characters are translated depending on the value of
+the 'escape' attribute. The following modes are recognized:
+
 =over 4
 
 =item html
 
+Similar to the 'encode_html' modifier. Escapes special characters as
+HTML entities.
+
 =item url
 
-=item javascript
+Similar to the 'encode_url' modifier. Escapes special characters using
+a URL-encoded format (ie, " " becomes "%20").
 
-=item js
+=item javascript or js
+
+Similar to the 'encode_js' modifier. Escapes special characters such
+as quotes, newline characters, etc., so that the input can be placed
+in a JavaScript string.
 
 =item mail
+
+A very simple email obfuscation technique.
 
 =back
 
@@ -1188,6 +1282,16 @@ sub _fltr_escape {
 
 =head2 indent
 
+Adds the specified amount of whitespace to the left of each line of
+the input.
+
+B<Example:>
+
+    <$mt:EntryBody indent="4"$>
+
+This adds 4 spaces to the left of each line of the L<EntryBody>
+value.
+
 =cut
 
 sub _fltr_indent {
@@ -1202,6 +1306,10 @@ sub _fltr_indent {
 ###########################################################################
 
 =head2 nl2br
+
+Converts any newline characters into HTML C<br> tags. If the value of
+the 'nl2br' attribute is "xhtml", it will use the "C<<br />>" form
+of the C<br> tag.
 
 =cut
 
@@ -1219,6 +1327,13 @@ sub _fltr_nl2br {
 
 =head2 replace
 
+Issues a simple text search/replace on the input. This modifier requires
+B<two> parameters.
+
+B<Example:>
+
+    <$mt:EntryBody replace="teh","the"$>
+
 =cut
 
 sub _fltr_replace {
@@ -1235,6 +1350,15 @@ sub _fltr_replace {
 
 =head2 spacify
 
+Interleaves the value of the C<spacify> attribute between each character
+of the input.
+
+B<Example:>
+
+    <$mt:EntryTitle spacify=" "$>
+
+Changing an entry title of "Hi there!" to "H i   t h e r e !".
+
 =cut
 
 sub _fltr_spacify {
@@ -1246,6 +1370,12 @@ sub _fltr_spacify {
 ###########################################################################
 
 =head2 strip
+
+Replaces all whitespace with the value of the C<strip> attribute.
+
+B<Example:>
+
+    <$mt:EntryTitle strip="&nbsp;"$>
 
 =cut
 
@@ -1260,6 +1390,8 @@ sub _fltr_strip {
 
 =head2 strip_tags
 
+An alias for L<remove_html>. Removes all HTML markup from the input.
+
 =cut
 
 sub _fltr_strip_tags {
@@ -1270,6 +1402,13 @@ sub _fltr_strip_tags {
 ###########################################################################
 
 =head2 _default
+
+Outputs the value of the C<_default> attribute if the input string
+is empty.
+
+B<Example:>
+
+    <$mt:BlogDescription _default="Not 'just another' Movable Type blog."$>
 
 =cut
 
@@ -1290,6 +1429,13 @@ sub _fltr_default {
 ###########################################################################
 
 =head2 wrap_text
+
+Reformats the input, adding newline characters so the text "wraps"
+at the length specified as the value for the C<wrap_text> attribute.
+Example (this would format the entry text so it is suitable for
+a text e-mail message):
+
+    <$mt:EntryBody remove_html="1" wrap_text="72"$>
 
 =cut
 
@@ -1370,10 +1516,11 @@ produces something like this:
         </form>
     </div>
 
+B<Attributes:>
 
 =over 4
 
-=item type (optional; default 'object_type' variable)
+=item type (optional; defaults to use 'object_type' variable)
 
 The C<MT::Object> object type the listing is processing. If unset,
 will use the contents of the C<object_type> variable. If no type
@@ -1524,17 +1671,7 @@ EOT
 Produces a application link to the current script with the mode and
 attributes specified.
 
-Example:
-
-    <$MTApp:Link mode="foo" type="entry" bar="1"$>
-
-produces:
-
-    /cgi-bin/mt/mt.cgi?__mode=foo&_type=entry&bar=1
-
-This tag produces unescaped '&' characters. If you use this tag
-in an HTML tag attribute, be sure to add a C<escape="html"> attribute
-which will encode these to HTML entities.
+B<Attributes:>
 
 =over 4
 
@@ -1548,13 +1685,25 @@ Maps to a '_type' argument.
 
 =back
 
+B<Example:>
+
+    <$MTApp:Link mode="foo" type="entry" bar="1"$>
+
+produces:
+
+    /cgi-bin/mt/mt.cgi?__mode=foo&_type=entry&bar=1
+
+This tag produces unescaped '&' characters. If you use this tag
+in an HTML tag attribute, be sure to add a C<escape="html"> attribute
+which will encode these to HTML entities.
+
 =cut
 
 sub _hdlr_app_link {
-    my ($ctx, $arg, $cond) = @_;
+    my ($ctx, $args, $cond) = @_;
     my $app = MT->instance;
 
-    my %args = %$arg;
+    my %args = %$args;
 
     # eliminate special '@' argument (and anything other refs that may exist)
     ref($args{$_}) && delete $args{$_} for keys %args;
@@ -1583,6 +1732,8 @@ sub _hdlr_app_link {
 
 Produces markup for application templates for the strip of actions
 for a application listing or edit screen.
+
+B<Attributes:>
 
 =over 4
 
@@ -1632,12 +1783,7 @@ An application template tag that produces HTML for displaying a MT CMS
 dashboard widget. Custom widget templates should utilize this tag to wrap
 their widget content.
 
-Example:
-
-    <mtapp:Widget class="widget my-widget"
-        label="<__trans phrase="All About Me">" can_close="1">
-        (contents of widget go here)
-    </mtapp:Widget>
+B<Attributes:>
 
 =over 4
 
@@ -1675,6 +1821,15 @@ Identifies whether widget may be closed or not.
 
 If specified, the widget will be assigned an attribute that gives it
 a tabbed interface.
+
+=back
+
+B<Example:>
+
+    <mtapp:Widget class="widget my-widget"
+        label="<__trans phrase="All About Me">" can_close="1">
+        (contents of widget go here)
+    </mtapp:Widget>
 
 =cut
 
@@ -1764,6 +1919,8 @@ EOT
 
 An application template tag that outputs a MT status message.
 
+B<Attributes:>
+
 =over 4
 
 =item id (optional)
@@ -1813,7 +1970,7 @@ An application template tag used to produce an unordered list of quickfilters
 for a given listing screen. The filters are drawn from a C<list_filters>
 template variable which is an array of hashes.
 
-Example:
+B<Example:>
 
     <$mtapp:ListFilters$>
 
@@ -1849,7 +2006,7 @@ An application template tag used to produce an unordered list of actions
 for a given listing screen. The actions are drawn from a C<page_actions>
 template variable which is an array of hashes.
 
-Example:
+B<Example:>
 
     <$mtapp:PageActions$>
 
@@ -1889,20 +2046,7 @@ Used for application templates that need to express a standard MT
 application form. This produces certain hidden fields that are typically
 required by MT application forms.
 
-Example:
-
-    <mtapp:Form id="update" mode="update_blog_name">
-        Blog Name: <input type="text" name="blog_name" />
-        <input type="submit" />
-    </mtapp:Form>
-
-Producing:
-
-    <form id="update" name="update" action="/cgi-bin/mt.cgi" method="POST">
-    <input type="hidden" name="__mode" value="update_blog_name" />
-        Blog Name: <input type="text" name="blog_name" />
-        <input type="submit" />
-    </form>
+B<Attributes:>
 
 =over 4
 
@@ -1949,6 +2093,21 @@ supplied. This is typically used to create a form that is capable of
 uploading files.
 
 =back
+
+B<Example:>
+
+    <mtapp:Form id="update" mode="update_blog_name">
+        Blog Name: <input type="text" name="blog_name" />
+        <input type="submit" />
+    </mtapp:Form>
+
+Producing:
+
+    <form id="update" name="update" action="/cgi-bin/mt.cgi" method="POST">
+    <input type="hidden" name="__mode" value="update_blog_name" />
+        Blog Name: <input type="text" name="blog_name" />
+        <input type="submit" />
+    </form>
 
 =cut
 
@@ -1997,13 +2156,7 @@ EOT
 
 An application template tag used to wrap a number of L<App:Setting> tags.
 
-Example:
-
-    <MTApp:SettingGroup id="foo">
-        <MTApp:Setting ...>
-        <MTApp:Setting ...>
-        <MTApp:Setting ...>
-    </MTApp:SettingGroup>
+B<Attributes:>
 
 =over 4
 
@@ -2021,6 +2174,14 @@ Controls whether the C<fieldset> is initially shown or not. If hidden,
 a CSS "hidden" class is applied to the C<fieldset> tag.
 
 =back
+
+B<Example:>
+
+    <MTApp:SettingGroup id="foo">
+        <MTApp:Setting ...>
+        <MTApp:Setting ...>
+        <MTApp:Setting ...>
+    </MTApp:SettingGroup>
 
 =cut
 
@@ -2048,28 +2209,7 @@ EOT
 
 An application template tag used to display an application form field.
 
-Example:
-
-    <mtapp:Setting
-        id="name"
-        required="1"
-        label="Username"
-        hint="The username used to login">
-            <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" />
-    </mtapp:setting>
-
-The basic structural output of a setting tag looks like this:
-
-    <div id="ID-field" class="field pkg">
-        <div class="field-inner">
-            <div class="field-header">
-                <label id="ID-label" for="ID">LABEL</label>
-            </div>
-            <div class="field-content">
-                (content of App:Setting tag)
-            </div>
-        </div>
-    </div>
+B<Attributes:>
 
 =over 4
 
@@ -2134,6 +2274,29 @@ Identifies a specific page of the MT help documentation for this setting.
 Identifies a section name of the MT help documentation for this setting.
 
 =back
+
+B<Example:>
+
+    <mtapp:Setting
+        id="name"
+        required="1"
+        label="Username"
+        hint="The username used to login">
+            <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+
+The basic structural output of a setting tag looks like this:
+
+    <div id="ID-field" class="field pkg">
+        <div class="field-inner">
+            <div class="field-header">
+                <label id="ID-label" for="ID">LABEL</label>
+            </div>
+            <div class="field-content">
+                (content of App:Setting tag)
+            </div>
+        </div>
+    </div>
 
 =cut
 
@@ -2222,13 +2385,7 @@ Technically a for loop advances through a sequence (e.g. all odd numbers, all
 even numbers, every nth number, etc), giving the programmer greater control
 over the seed value (or "index") of each iteration through the loop.
 
-Example:
-
-    <mt:For from="2" to="10" step="2" glue=","><mt:var name="__index__"></mt:For>
-
-Produces:
-
-    2,4,6,8,10
+B<Attributes:>
 
 =over 4
 
@@ -2293,6 +2450,16 @@ Tracks the number of times the loop has run (starts at 1).
 
 =back
 
+B<Example:>
+
+    <mt:For from="2" to="10" step="2" glue=","><mt:var name="__index__"></mt:For>
+
+Produces:
+
+    2,4,6,8,10
+
+=for tags loop
+
 =cut
 
 sub _hdlr_for {
@@ -2341,7 +2508,7 @@ This tag supports all of the attributes and logical operators available in
 the L<If> tag and can be used multiple times to test for different
 scenarios.
 
-Example:
+B<Example:>
 
     <mt:If name="some_variable">
         'some_variable' is assigned
@@ -2403,7 +2570,107 @@ A conditional block that is evaluated if the attributes/modifiers evaluate
 true. This tag can be used in combination with the L<ElseIf> and L<Else>
 tags to test for a variety of cases.
 
-Examples:
+B<Attributes:>
+
+=over 4
+
+=item name
+
+=item var
+
+Declares a variable to test. When none of the comparison attributes are
+present ("eq", "ne", "lt", etc.) the If tag tests if the variable has
+a "true" value, meaning if it is assigned a non-empty, non-zero value.
+
+=item tag
+
+Declares a MT tag to execute; the value of which is used for testing.
+When none of the comparison attributes are present ("eq", "ne", "lt", etc.)
+the If tag tests if the specified tag produces a "true" value, meaning if
+it produces a non-empty, non-zero value. For MT conditional tags, the
+If tag passes through the logical result of that conditional tag.
+
+=item op
+
+If specified, applies the specified mathematical operator to the value
+being tested. 'op' may be one of the following (those that require a
+second value use the 'value' attribute):
+
+=over 4
+
+=item + or add
+
+Addition.
+
+=item - or sub
+
+Subtraction.
+
+=item ++ or inc
+
+Adds 1 to the given value.
+
+=item -- or dec
+
+Subtracts 1 from the given value.
+
+=item * or mul
+
+Multiplication.
+
+=item / or div
+
+Division.
+
+=item % or mod
+
+Issues a modulus operator.
+
+=back
+
+=item value
+
+Used in conjunction with the 'op' attribute.
+
+=item eq
+
+Tests whether the given value is equal to the value of the 'eq' attribute.
+
+=item ne
+
+Tests whether the given value is not equal to the value of the 'ne' attribute.
+
+=item gt
+
+Tests whether the given value is greater than the value of the 'gt' attribute.
+
+=item lt
+
+Tests whether the given value is less than the value of the 'lt' attribute.
+
+=item ge
+
+Tests whether the given value is greater than or equal to the value of the
+'ge' attribute.
+
+=item le
+
+Tests whether the given value is less than or equal to the value of the
+'le' attribute.
+
+=item like
+
+Tests whether the given value matches the regex pattern in the 'like'
+attribute.
+
+=item test
+
+Uses a Perl (or PHP under Dynamic Publishing) expression. For Perl, this
+requires the "Safe" Perl module to be installed.
+
+=back
+
+B<Examples:>
 
 If variable "foo" has a non-zero value:
 
@@ -2503,104 +2770,6 @@ Test a variable using Perl:
     <mt:If test="length($some_variable) > 10">
         '<mt:var name="some_variable">' is 11 characters or longer
     </mt:If>
-
-=over 4
-
-=item name
-
-=item var
-
-Declares a variable to test. When none of the comparison attributes are
-present ("eq", "ne", "lt", etc.) the If tag tests if the variable has
-a "true" value, meaning if it is assigned a non-empty, non-zero value.
-
-=item tag
-
-Declares a MT tag to execute; the value of which is used for testing.
-When none of the comparison attributes are present ("eq", "ne", "lt", etc.)
-the If tag tests if the specified tag produces a "true" value, meaning if
-it produces a non-empty, non-zero value. For MT conditional tags, the
-If tag passes through the logical result of that conditional tag.
-
-=item op
-
-If specified, applies the specified mathematical operator to the value
-being tested. 'op' may be one of the following (those that require a
-second value use the 'value' attribute):
-
-=over 4
-
-=item + or add
-
-Addition.
-
-=item - or sub
-
-Subtraction.
-
-=item ++ or inc
-
-Adds 1 to the given value.
-
-=item -- or dec
-
-Subtracts 1 from the given value.
-
-=item * or mul
-
-Multiplication.
-
-=item / or div
-
-Division.
-
-=item % or mod
-
-Issues a modulus operator.
-
-=back
-
-=item value
-
-Used in conjunction with the 'op' attribute.
-
-=item eq
-
-Tests whether the given value is equal to the value of the 'eq' attribute.
-
-=item ne
-
-Tests whether the given value is not equal to the value of the 'ne' attribute.
-
-=item gt
-
-Tests whether the given value is greater than the value of the 'gt' attribute.
-
-=item lt
-
-Tests whether the given value is less than the value of the 'lt' attribute.
-
-=item ge
-
-Tests whether the given value is greater than or equal to the value of the
-'ge' attribute.
-
-=item le
-
-Tests whether the given value is less than or equal to the value of the
-'le' attribute.
-
-=item like
-
-Tests whether the given value matches the regex pattern in the 'like'
-attribute.
-
-=item test
-
-Uses a Perl (or PHP under Dynamic Publishing) expression. For Perl, this
-requires the "Safe" Perl module to be installed.
-
-=back
 
 =cut
 
@@ -2783,6 +2952,8 @@ CPAN HTML::Template module and it's C<TMPL_LOOP> tag and offers similar
 capabilities. This tag can also handle a hashref variable, which
 causes it to loop over all keys in the hash.
 
+B<Attributes:>
+
 =over 4
 
 =item name
@@ -2800,7 +2971,9 @@ and may additionally include the keywords "numeric" (to imply
 a numeric sort instead of the default alphabetic sort) and/or
 "reverse" to force the sort to be done in reverse order.
 
-Example: sort_by="key reverse"; sort_by="value numeric"
+B<Example:>
+
+    sort_by="key reverse"; sort_by="value numeric"
 
 =item glue (optional)
 
@@ -2841,6 +3014,8 @@ This variable holds the value of the array or hashref element
 currently in context.
 
 =back
+
+=for tags loop
 
 =cut
 
@@ -2946,11 +3121,11 @@ An alias for the 'Var' tag, and considered deprecated in favor of 'Var'.
 
 Retrieves a template variable and outputs it's value.
 
+B<Attributes:>
+
 =over 4
 
-=item name
-
-=item var
+=item var or name
 
 Identifies the template variable. The 'name' attribute supports a variety
 of expressions. The typical case is a simple variable name:
@@ -3231,11 +3406,11 @@ sub _hdlr_build_template_id {
 Conditional tag used to test whether the current entry in context has
 been assigned tags, or if it is assigned a specific tag.
 
+B<Attributes:>
+
 =over 4
 
-=item tag
-
-=item name
+=item tag or name
 
 If either 'name' or 'tag' are specified, tests the entry in context
 for whether it has a tag association by that name.
@@ -3345,6 +3520,8 @@ sub _tag_sort {
 A container tags used for listing all previously assigned entry tags for
 the blog in context.
 
+B<Attributes:>
+
 =over 4
 
 =item glue
@@ -3417,7 +3594,7 @@ can make this simple code into a powerful looking and useful "tag cloud".
         </mt:Tags>
     </ul>
 
-=for tags multiblog
+=for tags multiblog, loop
 
 =cut
 
@@ -3607,6 +3784,8 @@ The tag context is created by either an L<EntryTags> or an L<Tags> block.
 This is suitable for creating "tag clouds" in which L<TagRank> can
 determine what level of header (h1 - h6) to apply to the tag.
 
+B<Attributes:>
+
 =over 4
 
 =item max (optional; default "6")
@@ -3719,16 +3898,7 @@ can use the EntryIfTagged conditional block to first test for entry tags
 on the entry. You can also use the EntryIfTagged conditional block with
 the tag attribute to test for the assignment of a particular entry tag.
 
-Example:
-
-The following code can be used anywhere MTEntries can be used. It prints
-a list of all of the tags assigned to each entry returned by L<Entries>
-glued together by a comma and a space.
-
-    <mt:If tag="EntryTags">
-        The entry "<$mt:EntryTitle$>" is tagged:
-        <mt:EntryTags glue=", "><$mt:TagName$></mt:EntryTags>
-    </mt:If>
+B<Attributes:>
 
 =over 4
 
@@ -3741,6 +3911,17 @@ A text string that is used to join each of the items together. For example:
 would print out each tag name separated by a comma and a space.
 
 =back
+
+B<Example:>
+
+The following code can be used anywhere MTEntries can be used. It prints
+a list of all of the tags assigned to each entry returned by L<Entries>
+glued together by a comma and a space.
+
+    <mt:If tag="EntryTags">
+        The entry "<$mt:EntryTitle$>" is tagged:
+        <mt:EntryTags glue=", "><$mt:TagName$></mt:EntryTags>
+    </mt:If>
 
 =cut
 
@@ -3777,6 +3958,8 @@ sub _hdlr_entry_tags {
 =head2 TagName
 
 Outputs the name of the current tag in context.
+
+B<Attributes:>
 
 =over 4
 
@@ -4001,6 +4184,8 @@ This tag allows you to conditionalize a section of template code based on
 whether the primary template being published is a specific type of archive
 template.
 
+B<Attributes:>
+
 =over 4
 
 =item type
@@ -4044,6 +4229,8 @@ sub _hdlr_if_archive_type {
 A conditional tag used to test whether a specific archive type is
 published or not.
 
+B<Attributes:>
+
 =over 4
 
 =item type or archive_type
@@ -4055,7 +4242,7 @@ tag.
 
 =back
 
-Example:
+B<Example:>
 
     <mt:IfArchiveTypeEnabled type="Category-Monthly">
         <!-- do something -->
@@ -4115,6 +4302,8 @@ tag used to include this "Some Module" template module, like so:
     <$mt:Var name="contents"$>
     (footer stuff)
 
+B<Attributes:>
+
 =over 4
 
 =item var (optional)
@@ -4139,7 +4328,12 @@ sub _hdlr_include_block {
 
 =head2 Include
 
-Includes a template module or external file at this point. One and only one of the following attributes must be specified:
+Includes a template module or external file and outputs the result.
+
+B<NOTE:> One and only one of the 'module', 'widget', 'file' and
+'identifier' attributes can be specified.
+
+B<Attributes:>
 
 =over 4
 
@@ -4166,12 +4360,6 @@ For selecting Index templates by their unique identifier.
 
 For application template use: identifies an application template by
 filename to load.
-
-=back
-
-Optional attributes:
-
-=over 4
 
 =item blog_id (optional)
 
@@ -4228,19 +4416,19 @@ variables when invoking the include template.
 The contents of the file or module are further evaluated for more Movable
 Type template tags.
 
-Example: Including a Widget
+B<Example:> Including a Widget
 
     <$mt:Include widget="Search Box"$>
 
-Example: Including a File
+B<Example:> Including a File
 
     <$mt:Include file="/var/www/html/some-fragment.html"$>
 
-Example: Including a Template Module
+B<Example:> Including a Template Module
 
     <$mt:Include module="Sidebar - Left Column"$>
 
-Example: Passing Parameters to a Template Module
+B<Example:> Passing Parameters to a Template Module
 
     <$mt:Include module="Section Header" title="Elsewhere"$>
 
@@ -4547,6 +4735,8 @@ sub _include_name {
 
 Produces a file name and path using the archive file naming specifiers.
 
+B<Attributes:>
+
 =over 4
 
 =item format
@@ -4677,7 +4867,7 @@ been specified a blank string is returned. Example: .html
 
 =back
 
-Example:
+B<Example:>
 
     <$mt:FileTemplate format="%y/%m/%f"$>
 
@@ -4754,7 +4944,8 @@ sub _hdlr_file_template {
 =head2 TemplateCreatedOn
 
 Returns the creation date for the template publishing the current file.
-Example:
+
+B<Example:>
 
     <$mt:TemplateCreatedOn$>
 
@@ -4776,9 +4967,10 @@ sub _hdlr_template_created_on {
 
 Generates the absolute URL to an index template or specific entry in the system.
 
-Required Attributes
+B<NOTE:> Only one of the 'template', 'identifier' and 'entry_id'
+attributes can be specified at a time.
 
-One of the following attributes is required:
+B<Attributes:>
 
 =item template
 
@@ -4792,12 +4984,6 @@ A template identifier.
 
 The numeric system ID of the entry.
 
-=back
-
-Optional attributes:
-
-=over 4
-
 =item with_index (optional; default "0")
 
 If not set to 1, remove index filenames (by default, index.html)
@@ -4805,7 +4991,7 @@ from resulting links.
 
 =back
 
-Examples:
+B<Examples:>
 
     <a href="<mt:Link template="About Page">">My About Page</a>
 
@@ -4851,7 +5037,8 @@ sub _hdlr_link {
 =head2 Version
 
 The version number of the Movable Type system.
-Example:
+
+B<Example:>
 
     <mt:Version />
 
@@ -4866,13 +5053,9 @@ sub _hdlr_mt_version {
 
 =head2 ProductName
 
-The Movable Type edition in use. For example:
+The Movable Type edition in use.
 
-    <$mt:ProductName$>
-
-for the MTOS edition, this would output:
-
-    Movable Type Open Source
+B<Attributes:>
 
 =over 4
 
@@ -4881,6 +5064,14 @@ for the MTOS edition, this would output:
 If specified, also outputs the version (same as L<Version>).
 
 =back
+
+B<Example:>
+
+    <$mt:ProductName$>
+
+for the MTOS edition, this would output:
+
+    Movable Type Open Source
 
 =cut
 
@@ -4900,7 +5091,8 @@ sub _hdlr_product_name {
 =head2 PublishCharset
 
 The value of the C<PublishCharset> directive in the system configuration.
-Example:
+
+B<Example:>
 
     <$mt:PublishCharset$>
 
@@ -4916,7 +5108,8 @@ sub _hdlr_publish_charset {
 =head2 DefaultLanguage
 
 The value of the C<DefaultLanguage> configuration setting.
-Example:
+
+B<Example:>
 
     <$mt:DefaultLanguage$>
 
@@ -4949,6 +5142,8 @@ sub _hdlr_signon_url {
 
 A conditional tag used to test whether a template variable or tag are
 non-empty. This tag is considered deprecated, in favor of the L<If> tag.
+
+B<Attributes:>
 
 =over 4
 
@@ -4997,6 +5192,8 @@ sub _hdlr_if_nonempty {
 
 A conditional tag used to test whether a template variable or tag are
 non-zero. This tag is considered deprecated, in favor of the L<If> tag.
+
+B<Attributes:>
 
 =over 4
 
@@ -5058,7 +5255,9 @@ sub _hdlr_error_message {
 =head2 SetVars
 
 A block tag that is useful for assigning multiple template variables at
-once. Example:
+once.
+
+B<Example:>
 
     <mt:SetVars>
     title=My Favorite Color
@@ -5099,7 +5298,7 @@ A block tag that is used for creating a hash template variable. A hash
 is a variable that stores many values. You can even nest L<SetHashVar>
 tags so you can store hashes inside hashes for more complex structures.
 
-Example:
+B<Example:>
 
     <mt:SetHashVar name="my_hash">
         <$mt:Var name="foo" value="bar"$>
@@ -5148,6 +5347,8 @@ A function tag used to set the value of a template variable. This tag
 is considered deprecated in favor of L<Var>, which can be used to both
 retrieve and assign template variables.
 
+B<Attributes:>
+
 =over 4
 
 =item var or name
@@ -5185,6 +5386,8 @@ A block tag used to set the value of a template variable. Note that
 you can also use the global 'setvar' modifier to achieve the same result
 as it can be applied to any MT tag.
 
+B<Attributes:>
+
 =over 4
 
 =item var or name (required)
@@ -5219,15 +5422,7 @@ of the tag, but saves it for later evaluation, when the variable is
 requested. This allows you to create inline template modules that you
 can use over and over again.
 
-Example:
-
-    <mt:SetVarTemplate name="entry_title">
-        <h1><$MTEntryTitle$></h1>
-    </mt:SetVarTemplate>
-    
-    <mt:Entries>
-        <$mt:Var name="entry_title"$>
-    </mt:Entries>
+B<Attributes:>
 
 =over 4
 
@@ -5237,6 +5432,16 @@ Identifies the name of the template variable. See L<Var> for more
 information on the format of this attribute.
 
 =back
+
+B<Example:>
+
+    <mt:SetVarTemplate name="entry_title">
+        <h1><$MTEntryTitle$></h1>
+    </mt:SetVarTemplate>
+    
+    <mt:Entries>
+        <$mt:Var name="entry_title"$>
+    </mt:Entries>
 
 =cut
 
@@ -5405,7 +5610,7 @@ In the event that the configured path has no domain (ie, "/cgi-bin/"), the activ
 
 The path produced by this tag will always have an ending '/', even if one does not exist as configured.
 
-Example:
+B<Example:>
 
     <$mt:AdminCGIPath$>
 
@@ -5507,7 +5712,7 @@ The value of the C<StaticWebPath> configuration setting. If this setting
 has no domain, the blog domain is added to it. This value is
 guaranteed to end with a "/" character.
 
-Example:
+B<Example:>
 
     <img src="<$mt:StaticWebPath$>images/powered.gif"
         alt="Powered by MT" />
@@ -5715,7 +5920,7 @@ sub _hdlr_author_has_page {
 A container tag which iterates over a list of authors. Default listing
 includes Authors who have at least one published entry.
 
-Attributes
+B<Attributes:>
 
 =over 4
 
@@ -6136,12 +6341,7 @@ be a small spanner logo of Movable Type. If user is a commenter, icon image
 is provided by each of authentication provider. Movable Type provides
 images for Vox, LiveJournal and OpenID out of the box.
 
-Example:
-
-    <mt:Authors>
-        <img src="<$mt:AuthorAuthIconURL$>" height="16" width="16" />
-        <$mt:AuthorDisplayName$>
-    </mt:Authors>
+B<Attributes:>
 
 =over 4
 
@@ -6152,6 +6352,13 @@ not a dimension in pixels. And, currently, "logo_small" is the only
 supported identifier.
 
 =back
+
+B<Example:>
+
+    <mt:Authors>
+        <img src="<$mt:AuthorAuthIconURL$>" height="16" width="16" />
+        <$mt:AuthorDisplayName$>
+    </mt:Authors>
 
 =cut
 
@@ -6254,6 +6461,8 @@ sub _hdlr_author_basename {
 A container tag which iterates over a list of all of the blogs in the
 system. You can use any of the blog tags (L<BlogName>, L<BlogURL>, etc -
 anything starting with MTBlog) inside of this tag set.
+
+B<Attributes:>
 
 =over 4
 
@@ -6471,6 +6680,8 @@ sub _hdlr_blog_timezone {
 The blog's specified language for date display. This setting can be changed
 on the blog's Entry settings screen.
 
+B<Attributes:>
+
 =over 4
 
 =item locale (optional; default "0")
@@ -6507,7 +6718,7 @@ sub _hdlr_blog_language {
 
 The host name part of the absolute URL of your blog.
 
-Attributes:
+B<Attributes:>
 
 =over 4
 
@@ -6553,6 +6764,8 @@ sub _hdlr_blog_host {
 Returns the domain host from the configuration directive CGIPath. If CGIPath
 is defined as a relative path, then the domain is derived from the Site URL
 in the blog's "Publishing Settings".
+
+B<Attributes:>
 
 =over 4
 
@@ -6684,7 +6897,7 @@ Publishes the URL of the Creative Commons logo appropriate to the
 license assigned to the blog in context. If the blog doesn't have
 a Creative Commons license, this tag returns an empty string.
 
-Example:
+B<Example:>
 
     <MTIf tag="BlogCCLicenseImage">
     <img src="<$MTBlogCCLicenseImage$>" alt="Creative Commons" />
@@ -6708,6 +6921,8 @@ sub _hdlr_blog_cc_license_image {
 
 Returns the RDF markup for a Creative Commons License. If the blog
 has not been assigned a license, this returns an empty string.
+
+B<Attributes:>
 
 =over 4
 
@@ -6828,6 +7043,8 @@ of entries that are appropriate for the page being published. But you
 can use this tag for publishing custom modules, index templates and
 widgets to select content in many different ways.
 
+B<Attributes:>
+
 =over 4
 
 =item lastn (optional)
@@ -6927,7 +7144,9 @@ described for category selection.
 
 =item author (optional)
 
-Accepts an author's username to filter entry selection. Example:
+Accepts an author's username to filter entry selection.
+
+B<Example:>
 
     <MTEntries author="Melody">
 
@@ -6998,7 +7217,9 @@ from the first Entries tag.
 
 =item glue (optional)
 
-Specifies a string that is output inbetween published entries. Example:
+Specifies a string that is output inbetween published entries.
+
+B<Example:>
 
     <MTEntries glue=","><MTEntryID></MTEntries>
 
@@ -7719,6 +7940,8 @@ sub _no_entry_error {
 
 Outputs the "main" text of the current entry in context.
 
+B<Attributes:>
+
 =over 4
 
 =item convert_breaks (optional; default "1")
@@ -7804,6 +8027,8 @@ sub _hdlr_entry_more {
 =head2 EntryTitle
 
 Outputs the title of the current entry in context.
+
+B<Attributes:>
 
 =over 4
 
@@ -7905,6 +8130,8 @@ sub _hdlr_entry_mod_date {
 Used to output any of the status fields for the current entry in
 context.
 
+B<Attributes:>
+
 =over 4
 
 =item flag (required)
@@ -7943,6 +8170,8 @@ sub _hdlr_entry_flag {
 Ouputs the value of the excerpt field of the current entry in context.
 If the excerpt field is empty, it will draw from the main text of the
 entry to generate an excerpt.
+
+B<Attributes:>
 
 =over 4
 
@@ -8074,6 +8303,8 @@ sub _hdlr_entry_author_username {
 Outputs the email address of the author for the current entry in context.
 B<NOTE: it is not recommended to publish e-mail addresses for MT users.>
 
+B<Attributes:>
+
 =over 4
 
 =item spam_protect (optional; default "0")
@@ -8117,6 +8348,8 @@ sub _hdlr_entry_author_url {
 
 Outputs a linked author name suitable for publishing in the 'byline'
 of an entry.
+
+B<Attributes:>
 
 =over 4
 
@@ -8314,6 +8547,8 @@ Outputs the TrackBack RDF block that allows for TrackBack
 autodiscovery to take place. If TrackBack is not enabled
 for the entry, this will output an empty string.
 
+B<Attributes:>
+
 =over 4
 
 =item comment_wrap (optional; default "1")
@@ -8408,6 +8643,8 @@ sub _hdlr_entry_tb_id {
 
 Outputs the URL for the current entry in context.
 
+B<Attributes:>
+
 =over 4
 
 =item type (optional)
@@ -8458,6 +8695,8 @@ sub _hdlr_entry_link {
 =head2 EntryBasename
 
 Outputs the basename field for the current entry in context.
+
+B<Attributes:>
 
 =over 4
 
@@ -8513,6 +8752,8 @@ any L<Entries> loop, you can make a link to an entry like this:
 
     <a href="<$mt:EntryPermalink$>"><$mt:EntryTitle$></a>
 
+B<Attributes:>
+
 =over 4
 
 =item type or archive_type (optional)
@@ -8565,7 +8806,7 @@ templates between pages and entries the <mt:EntryClass> tag returns one of
 two values: "page" or "entry" depending upon the current context you are
 in.
 
-Example:
+B<Example:>
 
     <mt:If tag="EntryClass" eq="page">
         (we're publishing a page)
@@ -8589,7 +8830,7 @@ sub _hdlr_entry_class {
 Returns the localized name of the type of entry being published.
 For English blogs, this is the word "Page" or "Entry".
 
-Example:
+B<Example:>
 
     <$mt:EntryClassLabel$>
 
@@ -8630,6 +8871,8 @@ sub _hdlr_entry_category {
 A container tag that lists all of the categories (primary and secondary)
 to which the entry is assigned. This tagset creates a category context
 within which any category or subcategory tags may be used.
+
+B<Attributes:>
 
 =over 4
 
@@ -8922,6 +9165,8 @@ that are supported.
 =head2 Date
 
 Outputs the current date.
+
+B<Attributes:>
 
 =over 4
 
@@ -9225,6 +9470,8 @@ blog. By default, all comments in context (e.g on an entry or in a blog) are
 returned. When used in a blog context, only comments on published entries are
 returned.
 
+B<Attributes:>
+
 =over 4
 
 =item lastn
@@ -9261,7 +9508,7 @@ values are "ascend" and "descend."
 
 =back
 
-=for tags multiblog, loop, scoring
+=for tags multiblog, comments, loop, scoring
 
 =cut
 
@@ -9668,6 +9915,8 @@ sub _hdlr_comment_author {
 Outputs the IP address where the current comment in context was
 posted from.
 
+=for tags comments
+
 =cut
 
 sub _hdlr_comment_ip {
@@ -9683,6 +9932,8 @@ sub _hdlr_comment_ip {
 A linked version of the comment author name, using the comment author's URL
 if provided in the comment posting form. Otherwise, the comment author
 name is unlinked. This behavior can be altered with optional attributes.
+
+B<Attributes:>
 
 =over 4
 
@@ -9714,6 +9965,8 @@ link.
 If assigned, applies a C<rel="nofollow"> link relation to the link.
 
 =back
+
+=for tags comments
 
 =cut
 
@@ -9772,11 +10025,15 @@ Publishes the commenter's e-mail address.
 
 B<NOTE:> It is not recommended to publish any email addresses.
 
+B<Attributes:>
+
 =over 4
 
 =item spam_protect (optional; default "0")
 
 =back
+
+=for tags comments
 
 =cut
 
@@ -9793,6 +10050,13 @@ sub _hdlr_comment_email {
 ###########################################################################
 
 =head2 CommentAuthorIdentity
+
+Returns a profile icon link for the current commenter in context. The icon
+is for the authentication service used (ie, TypeKey, OpenID, Vox
+LiveJournal, etc.). If the commenter has a URL in their profile the icon
+is linked to that URL.
+
+=for tags comments
 
 =cut
 
@@ -9827,6 +10091,12 @@ sub _hdlr_comment_author_identity {
 
 =head2 CommentLink
 
+Outputs the permalink for the comment currently in context. This is
+the permalink for the parent entry, plus an anchor for the comment
+itself (in the format '#comment-ID').
+
+=for tags comments
+
 =cut
 
 sub _hdlr_comment_link {
@@ -9840,6 +10110,12 @@ sub _hdlr_comment_link {
 ###########################################################################
 
 =head2 CommentURL
+
+Outputs the URL of the current comment in context. The URL is the link
+provided in the comment from an anonymous comment, or for authenticated
+comments, is the URL from the commenter's profile.
+
+=for tags comments
 
 =cut
 
@@ -9855,22 +10131,40 @@ sub _hdlr_comment_url {
 
 =head2 CommentBody
 
+B<Attributes:>
+
 =over 4
 
-=item autolink
+=item autolink (optional)
 
-=item convert_breaks
+If unspecified, any plaintext links in the comment body will be
+automatically linked if the blog is configured to do that on the
+comment preferences screen. If this attribute is specified, it will
+override the blog preference.
 
-=item words
+=item convert_breaks (optional)
+
+By default, the comment text is formatted according to the comment text
+formatting choice in the blog preferences. If convert_breaks is disabled,
+the raw content of the comment body is output without any re-formatting
+applied.
+
+=item words (optional)
+
+Limits the length of the comment body to the specified number of words.
+This is useful for producing a list of recent comments with an excerpt
+of each.
 
 =back
+
+=for tags comments
 
 =cut
 
 sub _hdlr_comment_body {
-    my($ctx, $arg) = @_;
-    sanitize_on($arg);
-    _comment_follow($ctx, $arg);
+    my($ctx, $args) = @_;
+    sanitize_on($args);
+    _comment_follow($ctx, $args);
 
     my $blog = $ctx->stash('blog');
     return q() unless $blog;
@@ -9880,14 +10174,14 @@ sub _hdlr_comment_body {
     unless ($blog->allow_comment_html) {
         $t = remove_html($t);
     }
-    my $convert_breaks = exists $arg->{convert_breaks} ?
-        $arg->{convert_breaks} :
+    my $convert_breaks = exists $args->{convert_breaks} ?
+        $args->{convert_breaks} :
         $blog->convert_paras_comments;
     $t = $convert_breaks ?
         MT->apply_text_filters($t, $blog->comment_text_filters, $ctx) :
         $t;
-    return first_n_text($t, $arg->{words}) if exists $arg->{words};
-    if (!(exists $arg->{autolink} && !$arg->{autolink}) &&
+    return first_n_text($t, $args->{words}) if exists $args->{words};
+    if (!(exists $args->{autolink} && !$args->{autolink}) &&
         $blog->autolink_urls) {
         $t =~ s!(^|\s|>)(https?://[^\s<]+)!$1<a href="$2">$2</a>!gs;
     }
@@ -9898,6 +10192,11 @@ sub _hdlr_comment_body {
 
 =head2 CommentOrderNumber
 
+Outputs a number relating to the position of the comment in the list
+of all comments published using the C<Comments> tag, starting with "1".
+
+=for tags comments
+
 =cut
 
 sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
@@ -9906,6 +10205,10 @@ sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
 
 =head2 CommentPreviewState
 
+For the comment preview template only.
+
+=for tags comments
+
 =cut
 
 sub _hdlr_comment_prev_state { $_[0]->stash('comment_state') }
@@ -9913,6 +10216,10 @@ sub _hdlr_comment_prev_state { $_[0]->stash('comment_state') }
 ###########################################################################
 
 =head2 CommentPreviewIsStatic
+
+For the comment preview template only.
+
+=for tags comments
 
 =cut
 
@@ -9924,6 +10231,18 @@ sub _hdlr_comment_prev_static {
 ###########################################################################
 
 =head2 CommentEntry
+
+A block tag that can be used to set the parent entry of the comment
+in context.
+
+B<Example:>
+
+    <mt:Comments lastn="4">
+        <$mt:CommentAuthor$> left a comment on
+        <mt:CommentEntry><$mt:EntryTitle$></mt:CommentEntry>.
+    </mt:Comments>
+
+=for tags comments
 
 =cut
 
@@ -9942,6 +10261,18 @@ sub _hdlr_comment_entry {
 
 =head2 CommentParent
 
+A block tag that can be used to set the parent comment of the current
+comment in context. If the current comment has no parent, it produces
+nothing.
+
+B<Example:>
+
+    <mt:CommentParent>
+        (a reply to <$mt:CommentAuthor$>'s comment)
+    </mt:CommentParent>
+
+=for tags comments
+
 =cut
 
 sub _hdlr_comment_parent {
@@ -9959,6 +10290,28 @@ sub _hdlr_comment_parent {
 
 =head2 CommentReplyLink
 
+Produces the "Reply" link for the current comment in context.
+By default, this relies on using the MT "Javascript" default template,
+which supplies the C<mtReplyCommentOnClick> function.
+
+B<Attributes:>
+
+=over 4
+
+=item label or text (optional)
+
+A custom phrase for the link (default is "Reply").
+
+=item onclick (optional)
+
+Custom JavaScript code for the onclick attribute. By default, this
+value is "mtReplyCommentOnClick(%d, '%s')" (note that %d is replaced
+with the comment ID; %s is replaced with the name of the commenter).
+
+=back
+
+=for tags comments
+
 =cut
 
 sub _hdlr_comment_reply_link {
@@ -9968,15 +10321,30 @@ sub _hdlr_comment_reply_link {
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
     my $comment_author = MT::Util::encode_js($comment->author);
-    my $onclick = $args->{onclick} || 'mtReplyCommentOnClick';
+    my $onclick = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')", $comment->id, $comment_author);
 
-    return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="$onclick(%d, '%s')">%s</a>),
-                   $label, $comment->id, $comment_author, $label);
+    return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="$onclick">%s</a>),
+                   $label, $label);
 }
 
 ###########################################################################
 
 =head2 CommentParentID
+
+Outputs the ID of the parent comment for the comment currently in context.
+If there is no parent comment, outputs '0'.
+
+B<Attributes:>
+
+=over 4
+
+=item pad
+
+If specified, zero-pads the ID to 6 digits. Example: 001234.
+
+=back
+
+=for tags comments
 
 =cut
 
@@ -9990,6 +10358,8 @@ sub _hdlr_comment_parent_id {
 ###########################################################################
 
 =head2 CommentReplies
+
+=for tags comments, loop
 
 =cut
 
@@ -10066,6 +10436,8 @@ sub _hdlr_comment_replies {
 
 =head2 CommentRepliesRecurse
 
+=for tags comments
+
 =cut
 
 sub _hdlr_comment_replies_recurse {
@@ -10139,6 +10511,17 @@ sub _hdlr_comment_replies_recurse {
 
 =head2 IfCommentParent
 
+A conditional tag that is true when the comment currently in context
+is a reply to another comment.
+
+B<Example:>
+
+    <mt:IfCommentParent>
+        (a reply)
+    </mt:IfCommentParent>
+
+=for tags comments
+
 =cut
 
 sub _hdlr_if_comment_parent {
@@ -10160,20 +10543,25 @@ sub _hdlr_if_comment_parent {
 
 =head2 IfCommentReplies
 
+A conditional tag that is true when the comment currently in context
+has replies.
+
+=for tags comments
+
 =cut
 
 sub _hdlr_if_comment_replies {
     my($ctx, $args, $cond) = @_;
-
     my $c = $ctx->stash('comment');
     return 0 if !$c;
-    my @children = MT::Comment->load({parent_id => $c->id});
-    return $#children >= 0;
+    MT::Comment->exist( { parent_id => $c->id, visible => 1 } );
 }
 
 ###########################################################################
 
 =head2 CommenterNameThunk
+
+=for tags comments
 
 =cut
 
@@ -10198,6 +10586,8 @@ sub _hdlr_commenter_name_thunk {
 
 =head2 CommenterUsername
 
+=for tags comments
+
 =cut
 
 sub _hdlr_commenter_username {
@@ -10209,6 +10599,8 @@ sub _hdlr_commenter_username {
 
 =head2 CommenterName
 
+=for tags comments
+
 =cut
 
 sub _hdlr_commenter_name {
@@ -10219,6 +10611,8 @@ sub _hdlr_commenter_name {
 ###########################################################################
 
 =head2 CommenterEmail
+
+=for tags comments
 
 =cut
 
@@ -10232,6 +10626,8 @@ sub _hdlr_commenter_email {
 
 =head2 CommenterAuthType
 
+=for tags comments
+
 =cut
 
 sub _hdlr_commenter_auth_type {
@@ -10242,6 +10638,8 @@ sub _hdlr_commenter_auth_type {
 ###########################################################################
 
 =head2 CommenterAuthIconURL
+
+=for tags comments
 
 =cut
 
@@ -10255,6 +10653,8 @@ sub _hdlr_commenter_auth_icon_url {
 ###########################################################################
 
 =head2 IfCommenterTrusted
+
+=for tags comments
 
 =cut
 
@@ -10285,6 +10685,8 @@ by a user who is also a native MT user.
 Conditional tag that is true when the current comment was left
 by the author of the current entry in context.
 
+=for tags comments
+
 =cut
 
 sub _hdlr_commenter_isauthor {
@@ -10314,6 +10716,8 @@ sub _hdlr_commenter_isauthor {
 
 Outputs the numeric ID of the current commenter in context.
 
+=for tags comments
+
 =cut
 
 sub _hdlr_commenter_id {
@@ -10329,6 +10733,8 @@ sub _hdlr_commenter_id {
 
 Outputs the URL from the profile of the current commenter in context.
 
+=for tags comments
+
 =cut
 
 sub _hdlr_commenter_url {
@@ -10341,6 +10747,8 @@ sub _hdlr_commenter_url {
 ###########################################################################
 
 =head2 CommenterUserpic
+
+=for tags comments
 
 =cut
 
@@ -10355,6 +10763,8 @@ sub _hdlr_commenter_userpic {
 
 =head2 CommenterUserpicURL
 
+=for tags comments
+
 =cut
 
 sub _hdlr_commenter_userpic_url {
@@ -10365,6 +10775,8 @@ sub _hdlr_commenter_userpic_url {
 ###########################################################################
 
 =head2 CommenterUserpicAsset
+
+=for tags comments
 
 =cut
 
@@ -10521,6 +10933,8 @@ sub _hdlr_index_list {
 Outputs the URL for the current index template in context. Used in
 an L<IndexList> tag.
 
+B<Attributes:>
+
 =over 4
 
 =item with_index (optional; default "0")
@@ -10565,6 +10979,8 @@ sub _hdlr_index_name {
 =head2 IndexBasename
 
 Outputs the C<IndexBasename> MT configuration setting.
+
+B<Attributes:>
 
 =over 4
 
@@ -10835,7 +11251,7 @@ Daily, Weekly, Monthly, Yearly, Author, Author Daily, Author Weekly,
 Author Monthly, Author Yearly, Category, Category Daily, Category Weekly,
 Category Monthly, Category Yearly
 
-Example:
+B<Example:>
 
     <$mt:ArchiveLabel$>
 
@@ -10874,9 +11290,7 @@ settings screen.
 B<Example:> For the URL http://www.example.com/categories/politics.html, the
 L<ArchiveFile> tag would output "politics.html".
 
-Example:
-
-    <$mt:ArchiveFile$>
+B<Attributes:>
 
 =over 4
 
@@ -10890,6 +11304,10 @@ set to '0' to exclude the file extension (ie, produce "politics" instead of
 set to '-' to force any underscore characters in the filename to dashes
 
 =back
+
+B<Example:>
+
+    <$mt:ArchiveFile$>
 
 =cut
 
@@ -10930,13 +11348,7 @@ Publishes a link to the archive template for the current archive context.
 You may specify an alternate archive type with the "type" attribute to
 publish a different archive link.
 
-Example-- when publishing an entry archive template, you can use the
-following tag to get a link to the appropriate Monthly archive template
-relevant to that entry (in other words, if the entry was published in March
-2008, the archive link tag would output a permalink for the March 2008
-archives).
-
-    <$MTArchiveLink type="Monthly"$>
+B<Attributes:>
 
 =over 4
 
@@ -10954,6 +11366,16 @@ If specified, forces any index filename to be included in the link to
 the archive page.
 
 =back
+
+B<Example:>
+
+When publishing an entry archive template, you can use the
+following tag to get a link to the appropriate Monthly archive template
+relevant to that entry (in other words, if the entry was published in March
+2008, the archive link tag would output a permalink for the March 2008
+archives).
+
+    <$MTArchiveLink type="Monthly"$>
 
 =cut
 
@@ -11013,7 +11435,7 @@ Otherwise it will return the number corresponding to the number of entries
 currently in context. For example within any L<Entries> context, this tag
 will return the number of entries that that L<Entries> tag corresponds to.
 
-Example:
+B<Example:>
 
     <mt:Categories>
         There are <$mt:ArchiveCount$> entries in the <$mt:CategoryLabel$>
@@ -11047,7 +11469,7 @@ sub _hdlr_archive_count {
 This tag has been deprecated in favor of L<CategoryLabel>.
 Returns the label of the current category.
 
-Example:
+B<Example:>
 
     <$mt:ArchiveCategory$>
 
@@ -14289,6 +14711,8 @@ sub _object_score_for {
 
 =head2 EntryScore
 
+=for tags entry, scoring
+
 =cut
 
 sub _hdlr_entry_score {
@@ -14298,6 +14722,8 @@ sub _hdlr_entry_score {
 ###########################################################################
 
 =head2 CommentScore
+
+=for tags comments, scoring
 
 =cut
 
@@ -14309,6 +14735,8 @@ sub _hdlr_comment_score {
 
 =head2 PingScore
 
+=for tags pings, scoring
+
 =cut
 
 sub _hdlr_ping_score {
@@ -14319,6 +14747,8 @@ sub _hdlr_ping_score {
 
 =head2 AssetScore
 
+=for tags assets, scoring
+
 =cut
 
 sub _hdlr_asset_score {
@@ -14328,6 +14758,8 @@ sub _hdlr_asset_score {
 ###########################################################################
 
 =head2 AuthorScore
+
+=for tags authors, scoring
 
 =cut
 
@@ -14348,6 +14780,8 @@ sub _object_score_high {
 
 =head2 EntryScoreHigh
 
+=for tags entries, scoring
+
 =cut
 
 sub _hdlr_entry_score_high {
@@ -14357,6 +14791,8 @@ sub _hdlr_entry_score_high {
 ###########################################################################
 
 =head2 CommentScoreHigh
+
+=for tags comments, scoring
 
 =cut
 
@@ -14368,6 +14804,8 @@ sub _hdlr_comment_score_high {
 
 =head2 PingScoreHigh
 
+=for tags pings, scoring
+
 =cut
 
 sub _hdlr_ping_score_high {
@@ -14378,6 +14816,8 @@ sub _hdlr_ping_score_high {
 
 =head2 AssetScoreHigh
 
+=for tags assets, scoring
+
 =cut
 
 sub _hdlr_asset_score_high {
@@ -14387,6 +14827,8 @@ sub _hdlr_asset_score_high {
 ###########################################################################
 
 =head2 AuthorScoreHigh
+
+=for tags authors, scoring
 
 =cut
 
@@ -14407,6 +14849,8 @@ sub _object_score_low {
 
 =head2 EntryScoreLow
 
+=for tags entries, scoring
+
 =cut
 
 sub _hdlr_entry_score_low {
@@ -14416,6 +14860,8 @@ sub _hdlr_entry_score_low {
 ###########################################################################
 
 =head2 CommentScoreLow
+
+=for tags comments, scoring
 
 =cut
 
@@ -14427,6 +14873,8 @@ sub _hdlr_comment_score_low {
 
 =head2 PingScoreLow
 
+=for tags pings, scoring
+
 =cut
 
 sub _hdlr_ping_score_low {
@@ -14437,6 +14885,8 @@ sub _hdlr_ping_score_low {
 
 =head2 AssetScoreLow
 
+=for tags assets, scoring
+
 =cut
 
 sub _hdlr_asset_score_low {
@@ -14446,6 +14896,8 @@ sub _hdlr_asset_score_low {
 ###########################################################################
 
 =head2 AuthorScoreLow
+
+=for tags authors, scoring
 
 =cut
 
@@ -14466,6 +14918,8 @@ sub _object_score_avg {
 
 =head2 EntryScoreAvg
 
+=for tags entries, scoring
+
 =cut
 
 sub _hdlr_entry_score_avg {
@@ -14475,6 +14929,8 @@ sub _hdlr_entry_score_avg {
 ###########################################################################
 
 =head2 CommentScoreAvg
+
+=for tags comments, scoring
 
 =cut
 
@@ -14486,6 +14942,8 @@ sub _hdlr_comment_score_avg {
 
 =head2 PingScoreAvg
 
+=for tags pings, scoring
+
 =cut
 
 sub _hdlr_ping_score_avg {
@@ -14496,6 +14954,8 @@ sub _hdlr_ping_score_avg {
 
 =head2 AssetScoreAvg
 
+=for tags assets, scoring
+
 =cut
 
 sub _hdlr_asset_score_avg {
@@ -14505,6 +14965,8 @@ sub _hdlr_asset_score_avg {
 ###########################################################################
 
 =head2 AuthorScoreAvg
+
+=for tags authors, scoring
 
 =cut
 
@@ -14527,6 +14989,8 @@ sub _object_score_count {
 
 =head2 EntryScoreCount
 
+=for tags entry, scoring
+
 =cut
 
 sub _hdlr_entry_score_count {
@@ -14536,6 +15000,8 @@ sub _hdlr_entry_score_count {
 ###########################################################################
 
 =head2 CommentScoreCount
+
+=for tags comments, scoring
 
 =cut
 
@@ -14547,6 +15013,8 @@ sub _hdlr_comment_score_count {
 
 =head2 PingScoreCount
 
+=for tags pings, scoring
+
 =cut
 
 sub _hdlr_ping_score_count {
@@ -14557,6 +15025,8 @@ sub _hdlr_ping_score_count {
 
 =head2 AssetScoreCount
 
+pings assets, scoring
+
 =cut
 
 sub _hdlr_asset_score_count {
@@ -14566,6 +15036,8 @@ sub _hdlr_asset_score_count {
 ###########################################################################
 
 =head2 AuthorScoreCount
+
+=for tags authors, scoring
 
 =cut
 
@@ -14585,6 +15057,8 @@ sub _object_rank {
 ###########################################################################
 
 =head2 EntryRank
+
+=for tags entries, scoring
 
 =cut
 
@@ -14608,6 +15082,8 @@ sub _hdlr_entry_rank {
 
 =head2 CommentRank
 
+=for tags comments, scoring
+
 =cut
 
 sub _hdlr_comment_rank {
@@ -14625,6 +15101,8 @@ sub _hdlr_comment_rank {
 ###########################################################################
 
 =head2 PingRank
+
+=for tags pings, scoring
 
 =cut
 
@@ -14644,6 +15122,8 @@ sub _hdlr_ping_rank {
 
 =head2 AssetRank
 
+=for tags assets, scoring
+
 =cut
 
 sub _hdlr_asset_rank {
@@ -14653,6 +15133,8 @@ sub _hdlr_asset_rank {
 ###########################################################################
 
 =head2 AuthorRank
+
+=for tags authors, scoring
 
 =cut
 
@@ -14664,11 +15146,15 @@ sub _hdlr_author_rank {
 
 =head2 AuthorNext
 
+=for tags authors
+
 =cut
 
 ###########################################################################
 
 =head2 AuthorPrevious
+
+=for tags authors
 
 =cut
 
@@ -14717,6 +15203,8 @@ sub _get_author {
 ###########################################################################
 
 =head2 Section
+
+=for tags utility
 
 =cut
 
@@ -14958,6 +15446,8 @@ sub _hdlr_next_link {
 ###########################################################################
 
 =head2 WidgetSet
+
+=for tags widgets
 
 =cut
 

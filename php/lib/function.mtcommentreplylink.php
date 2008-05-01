@@ -15,13 +15,13 @@ function smarty_function_mtcommentreplylink($args, &$ctx) {
     $label or $label = $mt->translate("Reply");
 
     $onclick = $args['onclick'];
-    $onclick or $onclick = 'mtCommentReplyOnClick';
+    $onclick or $onclick = "mtCommentReplyOnClick(%d, '%s')";
 
     $comment_author = $comment['comment_author'];
     require_once("MTUtil.php");
     $comment_author = encode_js($comment_author);
 
-    return sprintf("<a title\"%s\" href=\"javascript:void(0);\" onclick=\"$onclick(%d, '%s')\">%s</a>",
-        $label, $comment['comment_id'], $comment_author, $label);
+    $onclick = sprintf($onclick, $comment['comment_id'], $comment_author);
+    return sprintf("<a title=\"%s\" href=\"javascript:void(0);\" onclick=\"$onclick\">%s</a>",
+        $label, $label);
 }
-?>
