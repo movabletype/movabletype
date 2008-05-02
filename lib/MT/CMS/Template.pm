@@ -206,12 +206,22 @@ sub edit {
                 next unless $name;
                 next if $seen{$name};
                 $seen{$name} = 1;
+                my $wset = MT::Template->load(
+                    {
+                        blog_id => [ $obj->blog_id, 0 ],
+                        name    => $name,
+                        type    => 'widgetset',
+                    }, {
+                        sort      => 'blog_id',
+                        direction => 'descend',
+                    }
+                );
                 push @widget_sets, {
                     include_link => $app->mt_uri(
                         mode => 'edit_widget',
                         args => {
-                            blog_id => $obj->blog_id,
-                            widgetmanager => $name,
+                            blog_id => $wset->blog_id,
+                            id => $wset->id,
                         },
                     ),
                     include_module => $name,
