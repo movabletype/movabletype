@@ -364,6 +364,10 @@ class MT {
             $cfg['timeoffset'] = '__DEFAULT_TIMEZONE__';
         isset($cfg['includesdir']) or
             $cfg['includesdir'] = 'includes_c';
+        isset($cfg['searchmaxresults']) or
+            $cfg['searchmaxresults'] = '20';
+        isset($cfg['maxresults']) or
+            $cfg['maxresults'] = $cfg['searchmaxresults'];
     }
 
     function configure_paths($blog_site_path) {
