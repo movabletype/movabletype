@@ -53,7 +53,11 @@ __PACKAGE__->install_properties({
 });
 
 sub class_label {
-    return MT->translate('System');
+    return MT->translate('Log message');
+}
+
+sub class_label_plural {
+    return MT->translate('Log messages');
 }
 
 sub init {
