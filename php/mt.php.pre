@@ -773,6 +773,8 @@ class MT {
     }
 
     function translate($str, $params = null) {
+        if ( ( $params !== null ) && ( !is_array($params) ) )
+            $params = array( $params );
         return translate_phrase($str, $params);
     }
 
