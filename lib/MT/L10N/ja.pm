@@ -377,7 +377,7 @@ use vars qw( @ISA %Lexicon );
 	'Your comment has been received and held for approval by the blog owner.' => 'コメントは現在承認されるまで公開を保留されています。',
 	'Comment Submission Error' => 'コメント投稿エラー',
 	'Your comment submission failed for the following reasons: [_1]' => 'コメントを投稿できませんでした。エラー: [_1]',
-	'Return to the <a href="[_1]">original entry</a>.' => '<a href="[_1]">元のブログ記事</a>に戻る',
+	'Return to the <a href="[_1]">original entry</a>.' => '<a href="[_1]">元の記事</a>に戻る',
 
 ## default_templates/archive_widgets_group.mtml
 	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'アーカイブの種類に応じて異なる内容を表示するように設定されたウィジェットです。詳細: [_1]',
