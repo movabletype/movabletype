@@ -121,13 +121,7 @@ sub _do_group_by {
     my $driver = shift;
     my ($agg_func, $class, $terms, $args) = @_;
     my $props = $class->properties;
-    if ($args->{no_class}) {
-        delete $terms->{$props->{class_column}};
-        delete $args->{no_class};
-    }
-    else {
-        $class->_pre_search_scope_terms_to_class( $terms, $args );
-    }
+    $class->call_trigger('pre_search', $terms, $args);
     my $order = delete $args->{sort};
     my $direction = delete $args->{direction};
     my $limit = exists $args->{limit} ? delete $args->{limit} : undef;

@@ -274,8 +274,13 @@ sub _pre_search_scope_terms_to_class {
     my $col = $props->{class_column}
         or return;
     if (ref $terms eq 'HASH') {
+        my $no_class = 0;
+        if ($args->{no_class}) {
+            delete $args->{no_class};
+            $no_class = 1;
+        }
         if (exists $terms->{$col}) {
-            if ($terms->{$col} eq '*') {
+            if ( ( $terms->{$col} eq '*' ) || $no_class ) {
                 # class term is '*', which signifies filtering for all classes.
                 # simply delete the term in this case.
                 delete $terms->{$col} ;
@@ -288,7 +293,8 @@ sub _pre_search_scope_terms_to_class {
             # no further changes.
             return;
         }
-        $terms->{$col} = $props->{class_type};
+        $terms->{$col} = $props->{class_type}
+            unless $no_class;
     }
     elsif (ref $terms eq 'ARRAY') {
         if (my @class_terms = grep { ref $_ eq 'HASH' && 1 == scalar keys %$_ && $_->{$col} } @$terms) {
