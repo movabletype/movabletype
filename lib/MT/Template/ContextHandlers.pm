@@ -15584,6 +15584,14 @@ sub _hdlr_pager_block {
     $output;
 }
 
+###########################################################################
+
+=head2 IfCurrentPage
+
+=for tags pagination
+
+=cut
+
 # overridden in other contexts
 sub context_script { '' }
 
