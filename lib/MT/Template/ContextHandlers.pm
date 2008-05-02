@@ -7273,8 +7273,8 @@ sub _hdlr_entries {
 
     my $class_type = $args->{class_type} || 'entry';
     my $class = MT->model($class_type);
-    my $cat_class = MT->model(
-        $class_type eq 'entry' ? 'category' : 'folder');
+    my $cat_class_type = $class_type eq 'entry' ? 'category' : 'folder';
+    my $cat_class = MT->model($cat_class_type);
 
     my %fields;
     foreach my $arg ( keys %$args ) {
@@ -7334,10 +7334,11 @@ sub _hdlr_entries {
 
     $terms{status} = MT::Entry::RELEASE();
 
-    if (!$entries && ($class_type eq 'entry' || $class_type eq 'page')) {
+    if (!$entries) {
         if ($ctx->{inside_mt_categories}) {
             if (my $cat = $ctx->stash('category')) {
-                $args->{category} ||= [ 'OR', [ $cat ] ];
+                $args->{category} ||= [ 'OR', [ $cat ] ]
+                    if $cat->class eq $cat_class_type;
             }
         } elsif (my $cat = $ctx->stash('archive_category')) {
             $args->{category} ||= [ 'OR', [ $cat ] ];
