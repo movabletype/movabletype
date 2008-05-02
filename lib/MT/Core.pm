@@ -101,6 +101,7 @@ BEGIN {
             'ts_exitstatus' => 'MT::TheSchwartz::ExitStatus',
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
         },
+        backup_instructions => \&load_backup_instructions,
         permissions => {
             'system.administer' => {
                 label => trans("System Administrator"),
@@ -815,6 +816,11 @@ sub load_core_tags {
 sub load_upgrade_fns {
     require MT::Upgrade;
     return MT::Upgrade->core_upgrade_functions;
+}
+
+sub load_backup_instructions {
+    require MT::BackupRestore;
+    return MT::BackupRestore::core_backup_instructions();
 }
 
 sub l10n_class { 'MT::L10N' }

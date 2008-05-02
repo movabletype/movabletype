@@ -101,6 +101,7 @@ sub start_element {
                                 category => 'restore',
                             });
                             $objects->{"$class#" . $column_data{id}} = $obj;
+                            $self->{current} = $obj;
                             $self->{skip} += 1;
                         }
                         else {
@@ -122,7 +123,10 @@ sub start_element {
                             }
                             my $success = $obj->restore_parent_ids(\%column_data, $objects);
                             if ($success) {
-                                $obj->set_values(\%column_data);
+                                my %realcolumns = map { $_ => delete($column_data{$_}) }
+                                    @{ $obj->column_names };
+                                $obj->set_values(\%realcolumns);
+                                $obj->$_($column_data{$_}) foreach keys( %column_data );
                                 $self->{current} = $obj;
                             } else {
                                 $deferred->{$class . '#' . $column_data{id}} = 1;
@@ -139,7 +143,10 @@ sub start_element {
                             my $old_id = delete $column_data{id};
                             $objects->{"$class#$old_id"} = $obj;
                             if ($self->{overwrite_template}) {
-                                $obj->set_values(\%column_data);
+                                my %realcolumns = map { $_ => delete($column_data{$_}) }
+                                    @{ $obj->column_names };
+                                $obj->set_values(\%realcolumns);
+                                $obj->$_($column_data{$_}) foreach keys( %column_data );
                                 $self->{current} = $obj;
                                 $self->{loaded} = 1;
                             } else {
@@ -205,7 +212,8 @@ sub end_element {
         return;
     }
 
-    my $name = $data->{LocalName};
+    my $name  = $data->{LocalName};
+    my $ns    = $data->{NamespaceURI};
     my $class = MT->model($name);
 
     if (my $obj = $self->{current}) {
@@ -226,10 +234,9 @@ sub end_element {
             elsif ( my $metacolumns = $self->{metacolumns}{ref($obj)} ) {
                 if ( my $type = $metacolumns->{$column_name} ) {
                     if ( 'vblob' eq $type ) {
-                        $self->{callback}->($text);
                         $text = MIME::Base64::decode_base64($text);
-                        $self->{callback}->($text);
-                        $obj->$column_name( $text );
+                        $text = MT::Serialize->unserialize( $text );
+                        $obj->$column_name( $$text );
                     }
                     else {
                         $text = MT::I18N::encode_text($text, 'utf-8');
@@ -315,6 +322,10 @@ sub end_element {
                     $self->{callback}->($self->{state} . " " . MT->translate("[_1] records restored...", $records), $data->{LocalName})
                         if $records && ($records % 10 == 0);
                     $self->{records} = $records + 1;
+                    my $cb = "restored.$name";
+                    $cb .= ":$ns" if MT::BackupRestore::NS_MOVABLETYPE() ne $ns;
+                    MT->run_callbacks( $cb, $obj, $self->{callback} );
+                    $obj->call_trigger('post_save', $obj);
                 } else {
                     push @{$self->{errors}}, $obj->errstr;
                     $self->{callback}->($obj->errstr);
