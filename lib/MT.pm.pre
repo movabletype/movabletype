@@ -914,23 +914,12 @@ sub log_times {
         return;
     }
 
-    my $log_file;
-
-    # Log filename calcluation; changes daily, so we don't cache this
     require File::Spec;
-    my $dir = File::Spec->catdir( MT->instance->static_file_path,
-        'support', 'logs');
-    if (! -d $dir) {
-        require File::Path;
-        eval { File::Path::mkpath([$dir], 0, 0777) };
-        if ($@) {
-            $log_file = 0;
-            return;
-        }
-    }
+    my $dir = MT->config('PerformanceLoggingPath') or return;
+
     my @time = localtime(time);
     my $file = sprintf("pl-%04d%02d%02d.log", $time[5] + 1900, $time[4]+1, $time[3]);
-    $log_file = File::Spec->catfile( $dir, $file );
+    my $log_file = File::Spec->catfile( $dir, $file );
 
     my $first_write = ! -f $log_file;
 

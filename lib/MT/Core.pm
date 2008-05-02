@@ -514,6 +514,7 @@ BEGIN {
             # Basename settings
             'AuthorBasenameLimit' => { default => 30 },
             'PerformanceLogging' => { default => 0 },
+            'PerformanceLoggingPath' =>  { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
             'EnableAddressBook' => { default => 0 },
@@ -836,6 +837,65 @@ sub init_registry {
 sub load_archive_types {
     require MT::WeblogPublisher;
     return MT::WeblogPublisher->core_archive_types;
+}
+
+sub PerformanceLoggingPath {
+    my $cfg = shift;
+    my ($path, $default);
+    return $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
+
+    unless ($path = $cfg->get_internal('PerformanceLoggingPath')) {
+        $path = $default = File::Spec->catdir(
+            MT->instance->static_file_path, 'support', 'logs');
+    }
+
+    # If the $path is not a writeable directory, we need to
+    # do some work to see if we can create it
+    if (! (-d $path and -w $path)) {
+        # Determine where MT should put its logging data.  It will be
+        # the first existing and writeable directory found or created
+        # between PerformanceLoggingPath configuration directive value
+        # and the default fallback of MT_DIR/support/logs.  If neither
+        # can be used, we return an undefined value and simply don't
+        # log the performance stats.
+        #
+        # However, we do log any such errors in the activity log to
+        # notify the user that there is a problem.
+
+        my @dirs = ( $path, ( $default && $path ne $default ? ( $default ) : () ) );
+        require File::Spec;    
+        foreach my $dir (@dirs) {
+            my $msg = '';
+            if (-d $dir and -w $dir) {
+                $path = $dir;
+            }
+            elsif (! -e $dir) {
+                require File::Path;
+                eval { File::Path::mkpath([$dir], 0, 0777); $path = $dir; };
+                if ($@) {
+                    $msg = MT->translate('Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]', $dir, $@);
+                }
+            }
+            elsif (-e $dir and ! -d $dir) {
+                $msg = MT->translate('Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]', $dir);
+            }
+            elsif (-e $dir and ! -w $dir) {
+                    $msg = MT->translate('Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]', $dir);                  
+            }
+
+            if ($msg) {
+                # Issue MT log within an eval block in the
+                # event that the plugin error is happening before
+                # the database has been initialized...
+                require MT::Log;
+                MT->log({  message => $msg, 
+                            class => 'system',
+                            level => MT::Log::ERROR() });
+            }
+            last if $path;
+        }
+    }
+    return $path;
 }
 
 sub ProcessMemoryCommand {

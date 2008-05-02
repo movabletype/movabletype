@@ -162,6 +162,7 @@ sub set_internal {
     } else {
         $mgr->{$set}{$var} = $val;
     }
+    return $val;
 }
 
 sub set {
