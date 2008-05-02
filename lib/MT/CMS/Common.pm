@@ -915,7 +915,8 @@ sub delete {
     for my $id ( $q->param('id') ) {
         next unless $id;    # avoid 'empty' ids
         if ( ( $type eq 'association' ) && ( $id =~ /PSEUDO-/ ) ) {
-            $app->_delete_pseudo_association($id);
+            require MT::CMS::User;
+            MT::CMS::User::_delete_pseudo_association($app, $id);
             next;
         }
 

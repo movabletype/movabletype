@@ -1690,7 +1690,8 @@ sub post_delete {
             category => 'delete'
         }
     );
-    $app->_delete_pseudo_association(undef, $obj->id);
+    require MT::CMS::User;
+    MT::CMS::User::_delete_pseudo_association($app, undef, $obj->id);
 }
 
 sub make_blog_list {
