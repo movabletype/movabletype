@@ -69,7 +69,7 @@ sub compile {
     # Other namespaces (like 'Foo') would require the colon.
     # Tag and attributes are case-insensitive. So you can write:
     #   <mtfoo>...</MTFOO>
-    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"[^"]*?"|'[^']*?'|.)+?)[\$/]?>)!gis) {
+    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)[\$/]?>)!gis) {
         my($whole_tag, $prefix, $tag) = ($1, $2, $3);
         ($tag, my($args)) = split /\s+/, $tag, 2;
         my $sec_start = pos $text;
