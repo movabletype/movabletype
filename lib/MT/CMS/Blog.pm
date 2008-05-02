@@ -1464,7 +1464,12 @@ sub _update_finfos {
         $stmt->add_complex_where([ $new_where ]);
     }
     my $virtual_col = $dbd->db_column_name($finfo_class->datasource, 'virtual');
-    $stmt->add_complex_where([ { $virtual_col => { op => '!=', value => $new_virtual } } ]);
+    $stmt->add_complex_where([ {
+        $virtual_col => [
+            { op => '!=', value => $new_virtual },
+            \"is null",
+        ]
+    } ]);
 
     my $sql = join q{ }, 'UPDATE', $driver->table_for($finfo_class), 'SET',
         $virtual_col, '= ?', $stmt->as_sql_where();
