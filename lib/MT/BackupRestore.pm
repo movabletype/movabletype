@@ -510,26 +510,30 @@ sub restore_asset {
 sub _sync_asset_id {
     my ($text, $related) = @_;
 
-    $text =~ s!<form([^>]*?\s)mt:asset-id=(["'])(\d+)(["'])([^>]*?)>(.+?)</form>!
+    my $new_text = $text;
+
+    $new_text =~ s!<form([^>]*?\s)mt:asset-id=(["'])(\d+)(["'])([^>]*?)>(.+?)</form>!
         my $old_id = $3;
-        my $asset = $related->{$old_id};
-        my $result = '<form' . $1 . 'mt:asset-id=' . $2 . $asset->id . $4 . $5 . '>';
-        my $html = $6;
-        my $filename = quotemeta(encode_url($asset->file_name));
-        my $url = $asset->url;
-        my @children = MT->model('asset')->load(
-            { parent => $asset->id, blog_id => $asset->blog_id, class => '*' }
-        );
-        my %children = map {
-            $_->id => {
-                'filename' => quotemeta(encode_url($_->file_name)),
-                'url' => $_->url
-            }
-        } @children;
-        $result .= $html . '</form>';
+        my $result = '';
+        if ( my $asset = $related->{$old_id} ) {
+            $result = '<form' . $1 . 'mt:asset-id=' . $2 . $asset->id . $4 . $5 . '>';
+            my $html = $6;
+            my $filename = quotemeta(encode_url($asset->file_name));
+            my $url = $asset->url;
+            my @children = MT->model('asset')->load(
+                { parent => $asset->id, blog_id => $asset->blog_id, class => '*' }
+            );
+            my %children = map {
+                $_->id => {
+                    'filename' => quotemeta(encode_url($_->file_name)),
+                    'url' => $_->url
+                }
+            } @children;
+            $result .= $html . '</form>';
+        }
         $result;
     !igem;
-    $text;
+    return $new_text ? $new_text : $text;
 }
 
 sub cb_restore_objects {
@@ -562,9 +566,10 @@ sub cb_restore_objects {
             if ( my $favorites = $new_author->favorite_blogs ) {
                 my @new_favs;
                 if ( @$favorites ) {
-                    my @new_favs = map {
-                        $all_objects->{'MT::Blog#' . $_}->id
-                    } @$favorites;
+                    foreach my $old_id ( @$favorites ) {
+                        my $blog = $all_objects->{'MT::Blog#' . $old_id};
+                        push @new_favs, $blog->id if $blog;
+                    }
                 }
                 $new_author->favorite_blogs(\@new_favs) if @new_favs;
             }
@@ -769,10 +774,12 @@ sub to_xml {
     my $xml;
 
     my $elem = $obj->datasource;
-    if ( $obj->properties
-      && ( my $ccol = $obj->properties->{class_column} ) ) {
-        my $class = $obj->$ccol;
-        $elem = $class if $class;
+    unless ( UNIVERSAL::isa( $obj, 'MT::Log' ) ) {
+        if ( $obj->properties
+          && ( my $ccol = $obj->properties->{class_column} ) ) {
+            my $class = $obj->$ccol;
+            $elem = $class if $class;
+        }
     }
 
     $xml = '<' . $elem;

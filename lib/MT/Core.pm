@@ -72,6 +72,7 @@ BEGIN {
             'notification'    => 'MT::Notification',
             'templatemap'     => 'MT::TemplateMap',
             'banlist'         => 'MT::IPBanList',
+            'ipbanlist'       => 'MT::IPBanList',
             'tbping'          => 'MT::TBPing',
             'ping'            => 'MT::TBPing',
             'ping_cat'        => 'MT::TBPing',
