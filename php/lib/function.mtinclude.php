@@ -152,6 +152,14 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     }
 
+    if ($ssi_enable && !$cache_enable) {
+        if (file_exists($include_file) && is_readable($include_file)) {
+            $content = file_get_contents($include_file);
+            if ($content)
+                return $content;
+        }
+    }
+
     # Compile template
     static $_include_cache = array();
     $_var_compiled = '';
