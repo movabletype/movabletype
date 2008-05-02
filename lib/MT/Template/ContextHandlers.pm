@@ -7159,6 +7159,12 @@ B<Example:>
 
     <mt:Entries author="Melody">
 
+=item id (optional)
+
+If specified, selects a single entry matching the given entry ID.
+
+    <mt:Entries id="10">
+
 =item min_score (optional)
 
 =item max_score (optional)
