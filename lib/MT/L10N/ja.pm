@@ -1,7 +1,7 @@
 # Copyright 2003-2008 Six Apart. This code cannot be redistributed without
 # permission from www.sixapart.com.
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::ja;
 use strict;
@@ -164,6 +164,8 @@ use vars qw( @ISA %Lexicon );
 	'Required' => '必須',
 	'Optional' => 'オプション',
 
+## default_templates/creative_commons.mtml
+	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'このブログは<a href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
 
 ## default_templates/category_archive_list.mtml
 	'Categories' => 'カテゴリ',
@@ -306,7 +308,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/trackbacks.mtml
 	'No TrackBacks' => 'トラックバック(0)',
-	'Entry TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'トラックバックURL: <span id="trackbacks-link">[_1]</span>',
+	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'トラックバックURL: <span id="trackbacks-link">[_1]</span>',
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
 
@@ -338,7 +340,6 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/banner_footer.mtml
 	'_POWERED_BY' => 'Powered by <a href="http://www.sixapart.jp/movabletype/"><$MTProductName$></a>',
-	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'このブログは<a href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
 
 ## default_templates/monthly_archive_dropdown.mtml
 	'Select a Month...' => '月を選択...',
@@ -609,6 +610,9 @@ use vars qw( @ISA %Lexicon );
 	'Manage Assets' => 'アイテムの管理',
 	'Post Comments' => 'コメントの送信',
 	'Manage Feedback' => 'コメント/トラックバックの管理',
+	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'パフォーマンスログを出力するディレクトリ「[_1]」を作成できませんでした。ディレクトリを書き込み可能に設定するか、または書き込みできる場所をPerformanceLoggingPathディレクティブで指定してください。: [_2]',
+	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
+	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
 	'MySQL Database' => 'MySQLデータベース',
 	'PostgreSQL Database' => 'PostgreSQLデータベース',
 	'SQLite Database' => 'SQLiteデータベース',
@@ -1426,8 +1430,15 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Context.pm
 	'The attribute exclude_blogs cannot take \'all\' for a value.' => 'exclude_blogs属性にはallを設定できません。',
+	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?',
+	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTEntriesコンテナタグの外部で使っていませんか?',
+	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => '[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?',
+	'You used an \'[_1]\' tag outside of the context of a ping; perhaps you mistakenly placed it outside of an \'MTPings\' container?' => '[_1]タグをトラックバックのコンテキスト外で利用しようとしました。MTPingsコンテナの外部に配置していませんか?',
+	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => '[_1]をAssetのコンテキスト外で利用しようとしました。MTAssetsコンテナの外部に配置していませんか?',
+	'You used an \'[_1]\' tag outside of the context of an page; perhaps you mistakenly placed it outside of an \'MTPages\' container?' => '[_1]をコンテキスト外で利用しようとしました。MTPagesコンテナの外部に配置していませんか?',
 
 ## lib/MT/Template/ContextHandlers.pm
+	'All About Me' => 'All About Me',
 	'Remove this widget' => 'このウィジェットを削除',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '設定を有効にするために[_1]再構築[_2]してください。',
 	'Actions' => 'アクション',
@@ -1448,11 +1459,9 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => '\'[_1]\'というテンプレートが見つかりませんでした。',
 	'Can\'t find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
-	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?',
 	'You have an error in your \'[_2]\' attribute: [_1]' => '[_2]属性でエラーがありました: [_1]',
 	'You have an error in your \'tag\' attribute: [_1]' => 'tag属性でエラーがありました: [_1]',
 	'No such user \'[_1]\'' => 'ユーザー([_1])が見つかりません。',
-	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTEntriesコンテナタグの外部で使っていませんか?',
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => '[_2]アーカイブにリンクするために[_1]タグを使っていますが、アーカイブを出力していません。',
 	'Could not create atom id for entry [_1]' => 'ブログ記事のAtom IDを作成できませんでした。',
@@ -1460,7 +1469,6 @@ use vars qw( @ISA %Lexicon );
 	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'MTCommentFieldsタグは利用できません。代わりにテンプレートモジュール「[_1]」をインクルードしてください。',
 	'Comment Form' => 'コメント入力フォーム',
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
-	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => '[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?',
 	'Anonymous' => '匿名',
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1]は日別、週別、月別の各アーカイブでのみ利用できます。',
 	'Group iterator failed.' => 'アーカイブのロードでエラーが発生しました。',
@@ -1471,20 +1479,17 @@ use vars qw( @ISA %Lexicon );
 	'[_1] cannot be used without publishing Category archive.' => 'カテゴリアーカイブを公開していないので[_1]は使えません。',
 	'<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the \'category\' attribute to the tag.' => '<\$MTCategoryTrackbackLink\$>はカテゴリのコンテキストかまたはcategory属性とともに利用してください。',
 	'You failed to specify the label attribute for the [_1] tag.' => '[_1]タグにlabel属性が設定されていません。',
-	'You used an \'[_1]\' tag outside of the context of a ping; perhaps you mistakenly placed it outside of an \'MTPings\' container?' => '[_1]タグをトラックバックのコンテキスト外で利用しようとしました。MTPingsコンテナの外部に配置していませんか?',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
 	'MT[_1] must be used in a [_2] context' => 'MT[_1]は[_2]のコンテキスト外部では利用できません。',
 	'Cannot find package [_1]: [_2]' => '[_1]というパッケージが見つかりませんでした: [_2]',
 	'Error sorting [_2]: [_1]' => '[_2]の並べ替えでエラーが発生しました: [_1]',
 	'Edit' => '編集',
-	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => '[_1]をAssetのコンテキスト外で利用しようとしました。MTAssetsコンテナの外部に配置していませんか?',
-	'You used an \'[_1]\' tag outside of the context of an page; perhaps you mistakenly placed it outside of an \'MTPages\' container?' => '[_1]をコンテキスト外で利用しようとしました。MTPagesコンテナの外部に配置していませんか?',
 	'You used an [_1] without a author context set up.' => '[_1]をユーザーのコンテキスト外部で利用しようとしました。',
 	'Can\'t load user.' => 'ユーザーをロードできませんでした。',
 	'Division by zero.' => 'ゼロ除算エラー',
 	'name is required.' => 'nameを指定してください。',
 	'Specified WidgetSet not found.' => '指定されたウィジェットセットは存在しません。',
-    'Can\'t find included template widget \'[_1]\'' => 'ウィジェット「[_1]」が見つかりません。',
+	'Can\'t find included template widget \'[_1]\'' => 'ウィジェット「[_1]」が見つかりません。',
 
 ## lib/MT/App/ActivityFeeds.pm
 	'Error loading [_1]: [_2]' => '[_1]をロードできませんでした: [_2]',
@@ -1617,7 +1622,6 @@ use vars qw( @ISA %Lexicon );
 	'Remove Tags...' => 'タグの削除',
 	'Tags to remove from selected entries' => '削除するタグを入力',
 	'Batch Edit Entries' => 'ブログ記事の一括編集',
-	'Publish Pages' => 'ウェブページの公開',
 	'Unpublish Pages' => 'ウェブページの公開を取り消し',
 	'Tags to add to selected pages' => '追加するタグを入力',
 	'Tags to remove from selected pages' => '削除するタグを入力',
@@ -1678,6 +1682,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid format: [_1]' => '不正なformatです: [_1]',
 	'Unsupported type: [_1]' => '[_1]はサポートされていません。',
 	'Invalid query: [_1]' => '不正なクエリーです: [_1]',
+	'No search term was specified.' => '検索ワードを指定してください。',
 	'Invalid value: [_1]' => '不正な値です: [_1]',
 	'No column was specified to search for [_1].' => '[_1]で検索するカラムが指定されていません。',
 	'Throttled' => 'Throttled',
@@ -1824,7 +1829,8 @@ use vars qw( @ISA %Lexicon );
 	'Tag Placements' => 'タグの関連付け',
 
 ## lib/MT/Log.pm
-	'System' => 'システム',
+	'Log message' => 'ログ',
+	'Log messages' => 'ログ',
 	'Page # [_1] not found.' => 'ID:[_1]のウェブページが見つかりませんでした。',
 	'Entry # [_1] not found.' => 'ID:[_1]のブログ記事が見つかりませんでした。',
 	'Comment # [_1] not found.' => 'ID:[_1]のコメントが見つかりませんでした。',
@@ -2465,10 +2471,10 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Profile' => '公開プロファイル',
 	'Choose the profile that best matches the requirements for this blog.' => 'ブログの要件に最も近いプロファイルを選択してください。',
 	'Static Publishing' => 'スタティックパブリッシング',
-	'Asynchronous Publishing' => '非同期スタティックパブリッシング',
-	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
 	'Publish all files statically.' => 'すべてのファイルをスタティックに公開(再構築)します。',
+	'Asynchronous Publishing' => '非同期スタティックパブリッシング',
 	'Publish all files via the asynchronous job queue.' => 'すべてのファイルの公開作業をキューにためてバックグランドで公開(再構築)します。',
+	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
 	'Publish main index template and all entry/page archives statically. Publish all other files in the background.' => 'メインページとブログ記事/ウェブページのアーカイブをスタティックに公開(再構築)します。その他のファイルはキューにためてバックグランドで公開します。',
 	'Dynamic Publishing' => 'ダイナミックパブリッシング',
 	'Publish all files dynamically.' => 'すべてのファイルをダイナミックに公開します。',
@@ -2795,6 +2801,7 @@ use vars qw( @ISA %Lexicon );
 	'Created By' => '作成者',
 	'Role Is Active' => 'アクティブ',
 	'Role Not Being Used' => '使用されていないロール',
+	'System' => 'システム',
 
 ## tmpl/cms/import_others.tmpl
 	'Start title HTML (optional)' => 'タイトルとなるHTMLの開始地点(任意)',
@@ -3442,6 +3449,7 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully added a new archive-template association.' => '新しいアーカイブテンプレートが有効になりました。',
 	'You may need to update your \'Master Archive Index\' template to account for your new archive configuration.' => 'アーカイブの設定を反映するためにアーカイブインデックステンプレートを更新する必要があるかもしれません。',
 	'The selected archive-template associations have been deleted.' => 'アーカイブとテンプレートの関連付けを削除しました。',
+	'Warning: one or more of your templates is set to publish dynamically using PHP, however your server side include method may not be compatible with dynamic publishing.' => '警告: ダイナミックパブリッシングで出力されるテンプレートがありますが、現在のSSIの設定はダイナミックパブリッシングと互換性がありません。',
 	'You must set your Local Site Path.' => 'サイトパスを指定する必要があります。',
 	'You must set a valid Site URL.' => '有効なサイトURLを指定してください。',
 	'You must set a valid Local Site Path.' => '有効なサイトパスを指定してください。',
