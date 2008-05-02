@@ -1189,9 +1189,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     }
 
     # Populate array (passed in by reference) of used tags
-    # but only if expression is positive (i.e. not NOT)
-	if (!preg_match('/!/', $expr))
-	    $tags = array_values($tags_used);
+    $tags = array_values($tags_used);
 
     # Replace '#TagID' with a hash lookup function.
     # Function confirms/denies use of tag on entry (by IDs)

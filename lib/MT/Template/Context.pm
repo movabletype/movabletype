@@ -442,8 +442,7 @@ sub compile_tag_filter {
         }
     }
     # Populate array ref (passed in by reference) of used tags
-    # but only if expression is positive (i.e. not NOT)
-    @$tags = values %tags_used if $tag_expr !~ m/\bNOT\b/i;
+    @$tags = values %tags_used;
 
     # Replace logical constructs with their perl equivalents
     $tag_expr =~ s/\bAND\b/&&/gi;
@@ -478,12 +477,12 @@ sub compile_tag_filter {
     # Replace '#TagID' with a hash lookup function.
     # Function confirms/denies use of tag on entry (by IDs)
     # Translation: exists( PlacementHashRef->{EntryID}{TagID} )
-    $tag_expr =~ s/#(\d+)/(exists \$p->{\$e}{$1})/g;
+    $tag_expr =~ s/#(\d+)/(exists \$p->{$1})/g;
 
     # Create an anonymous subroutine of that lookup function
     # and return it if all is well.  This code ref will be used
     # later to test for existence of specified tags in entries.
-    my $expr = 'sub{my($e,$p)=@_;'.$tag_expr.';}';
+    my $expr = 'sub{my($p)=@_;' . $tag_expr . '}';
     my $cexpr = eval $expr;
     $@ ? undef : $cexpr;
 }
@@ -534,6 +533,70 @@ sub compile_status_filter {
     my $expr = 'sub{'.$status_expr.';}';
     my $cexpr = eval $expr;
     $@ ? undef : $cexpr;
+}
+
+sub _no_author_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    return $ctx->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of a author; " .
+        "perhaps you mistakenly placed it outside of an 'MTAuthors' " .
+        "container?", $tag_name
+    ));
+}
+
+sub _no_entry_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of an entry; " .
+        "perhaps you mistakenly placed it outside of an 'MTEntries' container?", $tag_name
+    ));
+}
+
+sub _no_comment_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $ctx->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of a comment; " .
+        "perhaps you mistakenly placed it outside of an 'MTComments' " .
+        "container?", $tag_name
+    ));
+}
+
+sub _no_ping_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $ctx->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of " .
+        "a ping; perhaps you mistakenly placed it outside " .
+        "of an 'MTPings' container?", $tag_name
+    ));
+}
+
+sub _no_asset_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $ctx->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of an asset; " .
+        "perhaps you mistakenly placed it outside of an 'MTAssets' container?", $tag_name
+    ));
+
+}
+
+sub _no_page_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $ctx->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of an page; " .
+        "perhaps you mistakenly placed it outside of an 'MTPages' container?",
+        $tag_name
+    ));
 }
 
 1;

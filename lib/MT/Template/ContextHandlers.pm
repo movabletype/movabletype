@@ -226,13 +226,8 @@ sub core_tags {
             TopLevelFolder => \&_hdlr_top_level_folder,
 
             # Pager handlers
-            'IfMoreResults?' => sub {
-                my $limit = $_[0]->stash('limit');
-                my $offset = $_[0]->stash('offset');
-                my $count = $_[0]->stash('count');
-                return $limit + $offset >= $count ? 0 : 1;
-            },
-            'IfPreviousResults?' => sub { $_[0]->stash('offset') ? 1 : 0 },
+            'IfMoreResults?' => \&_hdlr_if_more_results,
+            'IfPreviousResults?' => \&_hdlr_if_previous_results,
             PagerBlock => \&_hdlr_pager_block,
             IfCurrentPage => \&_hdlr_pass_tokens,
 
@@ -508,7 +503,7 @@ sub core_tags {
             SearchString => sub { '' },
             SearchResultCount => sub { 0 }, 
             MaxResults => sub { '' },
-            SearchMaxResults => sub { $_[0]->{config}->MaxResults },
+            SearchMaxResults => \&_hdlr_search_max_results,
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
 
@@ -557,18 +552,8 @@ sub core_tags {
             PagerLink => \&_hdlr_pager_link,
             NextLink => \&_hdlr_next_link,
             PreviousLink => \&_hdlr_previous_link,
-            CurrentPage => sub {
-                my $limit = $_[0]->stash('limit');
-                my $offset = $_[0]->stash('offset');
-                $limit ? $offset / $limit + 1 : 1;
-            },
-            TotalPages => sub {
-                my $limit = $_[0]->stash('limit');
-                return 1 unless $limit;
-                my $count = $_[0]->stash('count');
-                require POSIX;
-                POSIX::ceil( $count / $limit );
-            },
+            CurrentPage => \&_hdlr_current_page,
+            TotalPages => \&_hdlr_total_pages,
         },
         modifier => {
             'mteval' => \&_fltr_mteval,
@@ -4067,12 +4052,9 @@ configured with a TypeKey token.
 =cut
 
 sub _hdlr_if_typekey_token {
-    my $blog = $_[0]->stash('blog');
-    if ($blog->remote_auth_token) {
-        return 1;
-    } else {
-        return 0;
-    }
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
+    return $blog->remote_auth_token ? 1 : 0;
 }
 
 ###########################################################################
@@ -4085,7 +4067,8 @@ incoming comments from anonymous commenters.
 =cut
 
 sub _hdlr_comments_moderated {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
     if ($blog->moderate_unreg_comments || $blog->manual_approve_commenters) {
         return 1;
     } else {
@@ -4103,7 +4086,8 @@ permit user registration.
 =cut
 
 sub _hdlr_reg_allowed {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
     if ($blog->allow_reg_comments && $blog->commenter_authenticators) {
         return 1;
     } else {
@@ -4121,7 +4105,8 @@ require user registration.
 =cut
 
 sub _hdlr_reg_required {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
     if ( $blog->allow_reg_comments && $blog->commenter_authenticators
         && ! $blog->allow_unreg_comments ) {
         return 1;
@@ -4140,7 +4125,8 @@ permit anonymous comments.
 =cut
 
 sub _hdlr_reg_not_required {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
     if ($blog->allow_reg_comments && $blog->commenter_authenticators
         && $blog->allow_unreg_comments) {
         return 1;
@@ -4253,23 +4239,26 @@ B<Example:>
 =cut
 
 sub _hdlr_archive_type_enabled {
-    my $blog = $_[0]->stash('blog');
-    my $at = lc ($_[1]->{type} || $_[1]->{archive_type});
+    my ($ctx, $args) = @_;
+    my $blog = $ctx->stash('blog');
+    my $at = lc ($args->{type} || $args->{archive_type});
     return $blog->has_archive_type($at);
 }
 
 sub sanitize_on {
-    unless ( exists $_[0]->{'sanitize'} ) {
+    my ($ctx) = @_;
+    unless ( exists $ctx->{'sanitize'} ) {
         # Important to come before other manipulation attributes
         # like encode_xml
-        unshift @{$_[0]->{'@'} ||= []}, ['sanitize' => 1];
-        $_[0]->{'sanitize'} = 1;
+        unshift @{$ctx->{'@'} ||= []}, ['sanitize' => 1];
+        $ctx->{'sanitize'} = 1;
     }
 }
 
 sub nofollowfy_on {
-    unless ( exists $_[0]->{'nofollowfy'} ) {
-        $_[0]->{'nofollowfy'} = 1;
+    my ($ctx) = @_;
+    unless ( exists $ctx->{'nofollowfy'} ) {
+        $ctx->{'nofollowfy'} = 1;
     }
 }
 
@@ -4958,7 +4947,7 @@ sub _hdlr_template_created_on {
     my $template = $ctx->stash('template')
         or return $ctx->error(MT->translate("Can't load template"));
     $args->{ts} = $template->created_on;
-    _hdlr_date($_[0], $args);
+    _hdlr_date($ctx, $args);
 }
 
 ###########################################################################
@@ -5246,7 +5235,8 @@ message. Used in system templates, such as the 'Comment Response' template.
 =cut
 
 sub _hdlr_error_message {
-    my $err = $_[0]->stash('error_message');
+    my ($ctx) = @_;
+    my $err = $ctx->stash('error_message');
     defined $err ? $err : '';
 }
 
@@ -5796,6 +5786,23 @@ sub _hdlr_search_script {
     return $ctx->{config}->SearchScript;
 }
 
+=for tags search
+
+###########################################################################
+
+=head2 SearchScript
+
+Returns the value of the C<MaxResults> configuration setting.
+
+=for tags search
+
+=cut
+
+sub _hdlr_search_max_results {
+    my ($ctx) = @_;
+    return $ctx->{config}->MaxResults;
+}
+
 ###########################################################################
 
 =head2 XMLRPCScript
@@ -5838,13 +5845,6 @@ sub _hdlr_notify_script {
     return $ctx->{config}->NotifyScript;
 }
 
-sub _no_author_error {
-    return $_[0]->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of a author; " .
-        "perhaps you mistakenly placed it outside of an 'MTAuthors' " .
-        "container?", $_[1] ));
-}
-
 ###########################################################################
 
 =head2 IfAuthor
@@ -5858,7 +5858,8 @@ A conditional tag that is true when an author object is in context.
 =cut
 
 sub _hdlr_if_author {
-    return $_[0]->stash('author') ? 1 : 0;
+    my ($ctx) = @_;
+    return $ctx->stash('author') ? 1 : 0;
 }
 
 ###########################################################################
@@ -5877,7 +5878,7 @@ has written one or more entries that have been published.
 sub _hdlr_author_has_entry {
     my ($ctx)   = @_;
     my $author  = $ctx->stash('author')
-      or return $ctx->_no_author_error( $ctx->stash('tag') );
+      or return $ctx->_no_author_error();
 
     my %terms;
     $terms{blog_id}   = $ctx->stash('blog_id');
@@ -5901,7 +5902,7 @@ has written one or more pages that have been published.
 sub _hdlr_author_has_page {
     my ($ctx)   = @_;
     my $author  = $ctx->stash('author')
-      or return $ctx->_no_author_error( $ctx->stash('tag') );
+      or return $ctx->_no_author_error();
 
     my %terms;
     $terms{blog_id}   = $ctx->stash('blog_id');
@@ -6243,9 +6244,10 @@ Outputs the numeric ID of the author currently in context.
 =cut
 
 sub _hdlr_author_id {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorID');
-    $author->id;
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
+    return $author->id;
 }
 
 ###########################################################################
@@ -6259,9 +6261,10 @@ B<NOTE:> it is not recommended to publish the author's username.
 =cut
 
 sub _hdlr_author_name {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorName');
-    $author->name;
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
+    return $author->name;
 }
 
 ###########################################################################
@@ -6273,13 +6276,14 @@ Outputs the display name of the author currently in context.
 =cut
 
 sub _hdlr_author_display_name { 
-    my $a = $_[0]->stash('author'); 
+    my ($ctx) = @_;
+    my $a = $ctx->stash('author'); 
     unless ($a) { 
-        my $e = $_[0]->stash('entry'); 
+        my $e = $ctx->stash('entry'); 
         $a = $e->author if $e; 
     } 
-    return $_[0]->_no_author_error('MTAuthorDisplayName') unless $a;
-    $a->nickname || MT->translate('(Display Name not set)', $a->id);
+    return $ctx->_no_author_error() unless $a;
+    return $a->nickname || MT->translate('(Display Name not set)', $a->id);
 } 
 
 ###########################################################################
@@ -6293,11 +6297,12 @@ B<NOTE:> it is not recommended to publish the author's email address.
 =cut
 
 sub _hdlr_author_email {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorEmail');
+    my ($ctx, $args) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
     my $email = $author->email;
     return '' unless defined $email;
-    $_[1] && $_[1]->{'spam_protect'} ? spam_protect($email) : $email;
+    return $args && $args->{'spam_protect'} ? spam_protect($email) : $email;
 }
 
 ###########################################################################
@@ -6309,10 +6314,11 @@ Outputs the URL field of the author currently in context.
 =cut
 
 sub _hdlr_author_url {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorURL');
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
     my $url = $author->url;
-    defined $url ? $url : '';
+    return defined $url ? $url : '';
 }
 
 ###########################################################################
@@ -6325,10 +6331,11 @@ in context. For Movable Type registered users, this is "MT".
 =cut
 
 sub _hdlr_author_auth_type {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorAuthType');
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
     my $auth_type = $author->auth_type;
-    defined $auth_type ? $auth_type : '';
+    return defined $auth_type ? $auth_type : '';
 }
 
 ###########################################################################
@@ -6363,9 +6370,10 @@ B<Example:>
 =cut
 
 sub _hdlr_author_auth_icon_url {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorAuthType');
-    my $size = $_[1]->{size} || 'logo_small';
+    my ($ctx, $args) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
+    my $size = $args->{size} || 'logo_small';
     return $author->auth_icon_url($size);
 }
 
@@ -6382,9 +6390,10 @@ current author's userpic. For example:
 =cut
 
 sub _hdlr_author_userpic {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorUserpic');
-    $author->userpic_html() || '';
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
+    return $author->userpic_html() || '';
 }
 
 ###########################################################################
@@ -6399,9 +6408,10 @@ If the author has no userpic, this will output an empty string.
 =cut
 
 sub _hdlr_author_userpic_url {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorUserpicURL');
-    $author->userpic_url() || '';
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
+    return $author->userpic_url() || '';
 }
 
 ###########################################################################
@@ -6428,7 +6438,7 @@ sub _hdlr_author_userpic_asset {
     my ($ctx, $args, $cond) = @_;
 
     my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error('MTAuthorUserpicAsset');
+        or return $ctx->_no_author_error();
     my $asset = $author->userpic or return '';
 
     my $tok = $ctx->stash('tokens');
@@ -6447,8 +6457,9 @@ Outputs the 'Basename' field of the author currently in context.
 =cut
 
 sub _hdlr_author_basename {
-    my $author = $_[0]->stash('author')
-        or return $_[0]->_no_author_error('MTAuthorBasename');
+    my ($ctx) = @_;
+    my $author = $ctx->stash('author')
+        or return $ctx->_no_author_error();
     my $name = $author->basename;
     $name = MT::Util::make_unique_author_basename($author) if !$name;
     return $name;
@@ -6661,10 +6672,11 @@ General settings screen.
 =cut
 
 sub _hdlr_blog_timezone {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx, $args) = @_;
+    my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $so = $blog->server_offset;
-    my $no_colon = $_[1]->{no_colon};
+    my $no_colon = $args->{no_colon};
     my $partial_hour_offset = 60 * abs($so - int($so));
     sprintf("%s%02d%s%02d", $so < 0 ? '-' : '+',
             abs($so), $no_colon ? '' : ':',
@@ -6884,7 +6896,8 @@ have a Creative Commons license, this tag returns an empty string.
 =cut
 
 sub _hdlr_blog_cc_license_url {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
     return '' unless $blog;
     return $blog->cc_license_url;
 }
@@ -6906,7 +6919,8 @@ B<Example:>
 =cut
 
 sub _hdlr_blog_cc_license_image {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $cc = $blog->cc_license or return '';
     my ($code, $license, $image_url) = $cc =~ /(\S+) (\S+) (\S+)/;
@@ -6934,7 +6948,7 @@ entry permalink published in the RDF block.
 =cut
 
 sub _hdlr_cc_license_rdf {
-    my($ctx, $arg) = @_;
+    my ($ctx, $arg) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $cc = $blog->cc_license or return '';
@@ -6960,8 +6974,8 @@ RDF
 <dc:title>@{[ encode_xml($strip_hyphen->($entry->title)) ]}</dc:title>
 <dc:description>@{[ encode_xml($strip_hyphen->(_hdlr_entry_excerpt(@_))) ]}</dc:description>
 <dc:creator>@{[ encode_xml($strip_hyphen->($author_name)) ]}</dc:creator>
-<dc:date>@{[ _hdlr_entry_date($_[0], { 'format' => "%Y-%m-%dT%H:%M:%S" }) .
-             _hdlr_blog_timezone($_[0]) ]}</dc:date>
+<dc:date>@{[ _hdlr_entry_date($ctx, { 'format' => "%Y-%m-%dT%H:%M:%S" }) .
+             _hdlr_blog_timezone($ctx) ]}</dc:date>
 <license rdf:resource="$cc_url" />
 </Work>
 RDF
@@ -6988,9 +7002,10 @@ been assigned a Creative Commons License.
 =cut
 
 sub _hdlr_blog_if_cc_license {
-    my $blog = $_[0]->stash('blog');
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
     return 0 unless $blog;
-    $blog->cc_license ? 1 : 0;
+    return $blog->cc_license ? 1 : 0;
 }
 
 ###########################################################################
@@ -7418,7 +7433,6 @@ sub _hdlr_entries {
             $tag_arg = join " or ", @tags;
         }
         my $tags = [ MT::Tag->load($terms, {
-            %args,
             binary => { name => 1 },
             join => MT::ObjectTag->join_on('tag_id', {
                 object_datasource => $class->datasource,
@@ -7427,20 +7441,25 @@ sub _hdlr_entries {
         }) ];
         my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
         if ($cexpr) {
-            my %map;
-            for my $tag (@$tags) {
-                my $iter = MT::ObjectTag->load_iter({ 
-                    tag_id => $tag->id,
+            my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
+            my $preloader = sub {
+                my ($entry_id) = @_;
+                my $terms = { 
+                    tag_id => \@tag_ids,
+                    object_id => $entry_id,
                     object_datasource => $class->datasource,
                     %blog_terms,
-                }, { %args, %blog_args });
-                while (my $et = $iter->()) {
-                    $map{$et->object_id}{$tag->id}++;
-                }
-            }
-            push @filters, sub { $cexpr->($_[0]->id, \%map) };
+                };
+                my $args = { %blog_args,
+                    fetchonly => ['tag_id'] };
+                my @ot_ids = MT::ObjectTag->load($terms, $args);
+                my %map;
+                $map{$_->tag_id} = 1 for @ot_ids;
+                \%map;
+            };
+            push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tags} || $args->{tag}));
+            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $tag_arg));
         }
     }
 
@@ -7940,15 +7959,6 @@ sub _hdlr_entries_count {
     return _count_format($count, $args);
 }  
 
-sub _no_entry_error {
-    my $tag = $_[1];
-    $tag = 'MT' . $tag unless $tag =~ m/^MT/i;
-    return $_[0]->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of an entry; " .
-        "perhaps you mistakenly placed it outside of an 'MTEntries' container?",
-        $tag));
-}
-
 ###########################################################################
 
 =head2 EntryBody
@@ -7975,9 +7985,9 @@ that are output.
 =cut
 
 sub _hdlr_entry_body {
-    my $arg = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $text = $e->text;
     $text = '' unless defined $text;
 
@@ -7986,17 +7996,17 @@ sub _hdlr_entry_body {
         $text = asset_cleanup($text);
     }
 
-    my $blog = $_[0]->stash('blog');
-    my $convert_breaks = exists $arg->{convert_breaks} ?
-        $arg->{convert_breaks} :
+    my $blog = $ctx->stash('blog');
+    my $convert_breaks = exists $args->{convert_breaks} ?
+        $args->{convert_breaks} :
             defined $e->convert_breaks ? $e->convert_breaks :
                 ( $blog ? $blog->convert_paras : '__default__' );
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
-        $text = MT->apply_text_filters($text, $filters, $_[0]);
+        $text = MT->apply_text_filters($text, $filters, $ctx);
     }
-    return first_n_text($text, $arg->{words}) if exists $arg->{words};
+    return first_n_text($text, $args->{words}) if exists $args->{words};
 
     return $text;
 }
@@ -8011,9 +8021,9 @@ L<EntryBody> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_more {
-    my $arg = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $text = $e->text_more;
     $text = '' unless defined $text;
 
@@ -8022,17 +8032,17 @@ sub _hdlr_entry_more {
         $text = asset_cleanup($text);
     }
 
-    my $blog = $_[0]->stash('blog');
-    my $convert_breaks = exists $arg->{convert_breaks} ?
-        $arg->{convert_breaks} :
+    my $blog = $ctx->stash('blog');
+    my $convert_breaks = exists $args->{convert_breaks} ?
+        $args->{convert_breaks} :
             defined $e->convert_breaks ? $e->convert_breaks :
                 ($blog ? $blog->convert_paras : '__default__');
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
-        $text = MT->apply_text_filters($text, $filters, $_[0]);
+        $text = MT->apply_text_filters($text, $filters, $ctx);
     }
-    return first_n_text($text, $arg->{words}) if exists $arg->{words};
+    return first_n_text($text, $args->{words}) if exists $args->{words};
 
     return $text;
 }
@@ -8057,12 +8067,13 @@ the entry if the title is empty.
 =cut
 
 sub _hdlr_entry_title {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $title = defined $e->title ? $e->title : '';
     $title = first_n_text($e->text, const('LENGTH_ENTRY_TITLE_FROM_TEXT'))
-        if !$title && $_[1]->{generate};
-    $title;
+        if !$title && $args->{generate};
+    return $title;
 }
 
 ###########################################################################
@@ -8076,9 +8087,10 @@ or "Future".
 =cut
 
 sub _hdlr_entry_status {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    MT::Entry::status_text($e->status);
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    return MT::Entry::status_text($e->status);
 }
 
 ###########################################################################
@@ -8093,11 +8105,11 @@ See the L<Date> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_date {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    my $args = $_[1];
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     $args->{ts} = $e->authored_on;
-    _hdlr_date($_[0], $args);
+    return _hdlr_date($ctx, $args);
 }
 
 ###########################################################################
@@ -8112,11 +8124,11 @@ See the L<Date> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_create_date {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    my $args = $_[1];
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     $args->{ts} = $e->created_on;
-    _hdlr_date($_[0], $args);
+    return _hdlr_date($ctx, $args);
 }
 
 ###########################################################################
@@ -8131,11 +8143,11 @@ See the L<Date> tag for supported attributes.
 =cut
 
 sub _hdlr_entry_mod_date {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    my $args = $_[1];
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     $args->{ts} = $e->modified_on || $e->created_on;
-    _hdlr_date($_[0], $args);
+    return _hdlr_date($ctx, $args);
 }
 
 ###########################################################################
@@ -8158,10 +8170,11 @@ Accepts one of: 'allow_pings', 'allow_comments'.
 =cut
 
 sub _hdlr_entry_flag {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    my $flag = lc $_[1]->{flag}
-        or return $_[0]->error(MT->translate(
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $flag = lc $args->{flag}
+        or return $ctx->error(MT->translate(
             'You used <$MTEntryFlag$> without a flag.' ));
     my $v = $e->$flag();
     ## The logic here: when we added the convert_breaks flag, we wanted it
@@ -8212,7 +8225,7 @@ content.
 sub _hdlr_entry_excerpt {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     if (my $excerpt = $e->excerpt) {
         return $excerpt unless $args->{convert_breaks};
         my $filters = $e->text_filters;
@@ -8225,7 +8238,7 @@ sub _hdlr_entry_excerpt {
     my $words = $args->{words} || $blog ? $blog->words_in_excerpt : 40;
     my $excerpt = _hdlr_entry_body($ctx, { words => $words, %$args });
     return '' unless $excerpt;
-    $excerpt . '...';
+    return $excerpt . '...';
 }
 
 ###########################################################################
@@ -8237,9 +8250,10 @@ Outputs the value of the keywords field for the current entry in context.
 =cut
 
 sub _hdlr_entry_keywords {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    defined $e->keywords ? $e->keywords : '';
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    return defined $e->keywords ? $e->keywords : '';
 }
 
 ###########################################################################
@@ -8256,10 +8270,11 @@ usernames.>
 # FIXME: This should be a container tag providing an author
 # context for the entry in context.
 sub _hdlr_entry_author {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
-    $a ? $a->name || '' : '';
+    return $a ? $a->name || '' : '';
 }
 
 ###########################################################################
@@ -8273,10 +8288,11 @@ will output an empty string.
 =cut
 
 sub _hdlr_entry_author_display_name {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
-    $a ? $a->nickname || '' : '';
+    return $a ? $a->nickname || '' : '';
 }
 
 ###########################################################################
@@ -8289,10 +8305,11 @@ favor of L<EntryAuthorDisplayName>.>
 =cut
 
 sub _hdlr_entry_author_nick {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
-    $a ? $a->nickname || '' : '';
+    return $a ? $a->nickname || '' : '';
 }
 
 ###########################################################################
@@ -8305,10 +8322,11 @@ B<NOTE: it is not recommended to publish MT usernames.>
 =cut
 
 sub _hdlr_entry_author_username {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
-    $a ? $a->name || '' : '';
+    return $a ? $a->name || '' : '';
 }
 
 ###########################################################################
@@ -8333,11 +8351,12 @@ by encoding any characters that will identify it as an email address
 =cut
 
 sub _hdlr_entry_author_email {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
     return '' unless $a && defined $a->email;
-    $_[1] && $_[1]->{'spam_protect'} ? spam_protect($a->email) : $a->email;
+    return $args && $args->{'spam_protect'} ? spam_protect($a->email) : $a->email;
 }
 
 ###########################################################################
@@ -8352,9 +8371,9 @@ current entry in context.
 sub _hdlr_entry_author_url {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
-    $a ? $a->url || "" : "";
+    return $a ? $a->url || "" : "";
 }
 
 ###########################################################################
@@ -8399,9 +8418,9 @@ link published.
 =cut
 
 sub _hdlr_entry_author_link {
-    my($ctx, $args, $cond) = @_;
+    my ($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
     return '' unless $a;
 
@@ -8454,10 +8473,11 @@ Outputs the numeric ID of the author for the current entry in context.
 =cut
 
 sub _hdlr_entry_author_id {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author;
-    $a ? $a->id || '' : '';
+    return $a ? $a->id || '' : '';
 }
 
 ###########################################################################
@@ -8470,10 +8490,11 @@ in context.
 =cut
 
 sub _hdlr_entry_author_userpic {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author or return '';
-    $a->userpic_html() || '';
+    return $a->userpic_html() || '';
 }
 
 ###########################################################################
@@ -8486,10 +8507,11 @@ in context.
 =cut
 
 sub _hdlr_entry_author_userpic_url {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $a = $e->author or return '';
-    $a->userpic_url() || '';
+    return $a->userpic_url() || '';
 }
 
 ###########################################################################
@@ -8505,7 +8527,7 @@ for more information about publishing assets.
 sub _hdlr_entry_author_userpic_asset {
     my ($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $author = $e->author;
     return '' unless $author;
 
@@ -8515,7 +8537,7 @@ sub _hdlr_entry_author_userpic_asset {
     my $builder = $ctx->stash('builder');
 
     local $ctx->{__stash}{asset} = $asset;
-    $builder->build($ctx, $tok, { %$cond });
+    return $builder->build($ctx, $tok, { %$cond });
 }
 
 ###########################################################################
@@ -8527,10 +8549,10 @@ Ouptuts the numeric ID for the current entry in context.
 =cut
 
 sub _hdlr_entry_id {
-    my $args = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    $args && $args->{pad} ? (sprintf "%06d", $e->id) : $e->id;
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    return $args && $args->{pad} ? (sprintf "%06d", $e->id) : $e->id;
 }
 
 ###########################################################################
@@ -8546,7 +8568,7 @@ an empty string.
 sub _hdlr_entry_tb_link {
     my ($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $tb = $e->trackback
         or return '';
     my $cfg = $ctx->{config};
@@ -8585,7 +8607,7 @@ unnecessary.
 sub _hdlr_entry_tb_data {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     return '' unless $e->allow_pings;
     my $blog = $ctx->stash('blog');
     my $cfg = $ctx->{config};
@@ -8595,7 +8617,7 @@ sub _hdlr_entry_tb_data {
     my $path = _hdlr_cgi_path($ctx);
     $path .= $cfg->TrackbackScript . '/' . $tb->id;
     my $url;
-    if (my $at = $_[0]->{current_archive_type} || $_[0]->{archive_type}) {
+    if (my $at = $ctx->{current_archive_type} || $ctx->{archive_type}) {
         $url = $e->archive_url($at);
         $url .= '#entry-' . sprintf("%06d", $e->id)
             unless $at eq 'Individual';
@@ -8626,8 +8648,8 @@ sub _hdlr_entry_tb_data {
     dc:subject="@{[ encode_xml($e->category ? $e->category->label : '', 1) ]}"
     dc:description="@{[ encode_xml($strip_hyphen->(_hdlr_entry_excerpt(@_)), 1) ]}"
     dc:creator="@{[ encode_xml(_hdlr_entry_author_display_name(@_), 1) ]}"
-    dc:date="@{[ _hdlr_date($_[0], { 'ts' => $e->authored_on, 'format' => "%Y-%m-%dT%H:%M:%S" }) .
-                 _hdlr_blog_timezone($_[0]) ]}" />
+    dc:date="@{[ _hdlr_date($ctx, { 'ts' => $e->authored_on, 'format' => "%Y-%m-%dT%H:%M:%S" }) .
+                 _hdlr_blog_timezone($ctx) ]}" />
 </rdf:RDF>
 RDF
     $rdf .= "-->\n" if $comment_wrap;
@@ -8646,7 +8668,7 @@ If not TrackBack is not enabled for the entry, this outputs an empty string.
 sub _hdlr_entry_tb_id {
     my($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $tb = $e->trackback
         or return '';
     $tb->id;
@@ -8684,7 +8706,7 @@ archives are published):
 sub _hdlr_entry_link {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $blog = $ctx->stash('blog');
     my $arch = $blog->archive_url || '';
     $arch = $blog->site_url if $e->class eq 'page';
@@ -8725,9 +8747,9 @@ returned.
 =cut
 
 sub _hdlr_entry_basename {
-    my $args = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $basename = $e->basename() || '';
     if (my $sep = $args->{separator}) {
         if ($sep eq '-') {
@@ -8736,7 +8758,7 @@ sub _hdlr_entry_basename {
             $basename =~ s/-/_/g;
         }
     }
-    $basename;
+    return $basename;
 }
 
 ###########################################################################
@@ -8749,8 +8771,8 @@ Outputs the unique Atom ID for the current entry in context.
 
 sub _hdlr_entry_atom_id {
     my ($ctx, $args, $cond) = @_;
-    my $e = $_[0]->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     return $e->atom_id() || $e->make_atom_id() || $ctx->error(MT->translate("Could not create atom id for entry [_1]", $e->id));
 }
 
@@ -8796,7 +8818,7 @@ If assigned, will retain any index filename at the end of the permalink.
 sub _hdlr_entry_permalink {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $blog = $ctx->stash('blog');
     my $at = $args->{type} || $args->{archive_type};
     if ($at) {
@@ -8834,7 +8856,7 @@ B<Example:>
 sub _hdlr_entry_class {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     $e->class;
 }
 
@@ -8854,7 +8876,7 @@ B<Example:>
 sub _hdlr_entry_class_label {
     my ($ctx, $args) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     $e->class_label;
 }
 
@@ -8872,7 +8894,7 @@ All categories can be listed using L<EntryCategories> loop tag.
 sub _hdlr_entry_category {
     my($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $cat = $e->category;
     return '' unless $cat;
     local $ctx->{__stash}{category} = $e->category;
@@ -8902,7 +8924,7 @@ If specified, this string is placed in between each result from the loop.
 sub _hdlr_entry_categories {
     my($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $cats = $e->categories;
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
@@ -8990,7 +9012,7 @@ sub _hdlr_sign_out_link {
             $static_arg = "&static=0";
         }
     }
-    my $e = $_[0]->stash('entry');
+    my $e = $ctx->stash('entry');
     return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1" .
         ($e ? "&amp;entry_id=" . $e->id : '');
 }
@@ -9057,7 +9079,7 @@ sub _hdlr_remote_sign_out_link {
             $static_arg = "&amp;static=0";
         }
     }
-    my $e = $_[0]->stash('entry');
+    my $e = $ctx->stash('entry');
     "$path$comment_script?__mode=handle_sign_in$static_arg&amp;logout=1" .
         ($e ? "&amp;entry_id=" . $e->id : '');
 }
@@ -9078,7 +9100,7 @@ Outputs the number of published comments for the current entry in context.
 sub _hdlr_entry_comments {
     my ($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $count = $e->comment_count;
     return _count_format($count, $args);
 }
@@ -9095,7 +9117,7 @@ context.
 sub _hdlr_entry_ping_count {
     my ($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $count = $e->ping_count;
     return _count_format($count, $args);
 }
@@ -9129,7 +9151,7 @@ sub _hdlr_entry_next {
 sub _hdlr_entry_nextprev {
     my($meth, $ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $terms = { status => MT::Entry::RELEASE() };
     $terms->{by_author} = 1 if $args->{by_author};
     $terms->{by_category} = 1 if $args->{by_category};
@@ -9345,33 +9367,33 @@ setting as a default.
 =cut
 
 sub _hdlr_sys_date {
-    my $args = $_[1];
+    my ($ctx, $args) = @_;
     unless ($args->{ts}) {
         my $t = time;
-        my @ts = offset_time_list($t, $_[0]->stash('blog_id'));
+        my @ts = offset_time_list($t, $ctx->stash('blog_id'));
         $args->{ts} = sprintf "%04d%02d%02d%02d%02d%02d",
             $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
     }
-    _hdlr_date($_[0], $args);
+    return _hdlr_date($ctx, $args);
 }
 
 sub _hdlr_date {
-    my $args = $_[1];
-    my $ts = $args->{ts} || $_[0]->{current_timestamp};
-    my $tag = $_[0]->stash('tag');
-    return $_[0]->error(MT->translate(
+    my ($ctx, $args) = @_;
+    my $ts = $args->{ts} || $ctx->{current_timestamp};
+    my $tag = $ctx->stash('tag');
+    return $ctx->error(MT->translate(
         "You used an [_1] tag without a date context set up.", "MT$tag" ))
         unless defined $ts;
-    my $blog = $_[0]->stash('blog');
+    my $blog = $ctx->stash('blog');
     unless (ref $blog) {
         my $blog_id = $blog || $args->{offset_blog_id};
         if ($blog) {
             $blog = MT->model('blog')->load($blog_id);
-            return $_[0]->error( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
+            return $ctx->error( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
               unless $blog;
         }
     }
-    my $lang = $args->{language} || $_[0]->var('local_lang_id')
+    my $lang = $args->{language} || $ctx->var('local_lang_id')
         || ($blog && $blog->language);
     if ($args->{utc}) {
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
@@ -9467,13 +9489,6 @@ sub _comment_follow {
             nofollowfy_on($arg);
         }
     }
-}
-
-sub _no_comment_error {
-    return $_[0]->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of a comment; " .
-        "perhaps you mistakenly placed it outside of an 'MTComments' " .
-        "container?", $_[1] ));
 }
 
 ###########################################################################
@@ -9798,7 +9813,7 @@ sub _hdlr_comments {
     if (!@comments) {
         return _hdlr_pass_tokens_else(@_);
     }
-    $html;
+    return $html;
 }
 
 ###########################################################################
@@ -9813,11 +9828,11 @@ the L<Date> tag for support attributes.
 =cut
 
 sub _hdlr_comment_date {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MTCommentDate');
-    my $args = $_[1];
+    my ($ctx, $args) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
     $args->{ts} = $c->created_on;
-    _hdlr_date($_[0], $args);
+    return _hdlr_date($ctx, $args);
 }
 
 ###########################################################################
@@ -9831,11 +9846,11 @@ Outputs the numeric ID for the current comment in context.
 =cut
 
 sub _hdlr_comment_id {
-    my $args = $_[1];
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MTCommentID');
+    my ($ctx, $args) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
     my $id = $c->id || 0;
-    $args && $args->{pad} ? (sprintf "%06d", $id) : $id;
+    return $args && $args->{pad} ? (sprintf "%06d", $id) : $id;
 }
 
 ###########################################################################
@@ -9850,10 +9865,10 @@ the current comment in context.
 =cut
 
 sub _hdlr_comment_entry_id {
-    my $args = $_[1];
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MTCommentEntryID');
-    $args && $args->{pad} ? (sprintf "%06d", $c->entry_id) : $c->entry_id;
+    my ($ctx, $args) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
+    return $args && $args->{pad} ? (sprintf "%06d", $c->entry_id) : $c->entry_id;
 }
 
 ###########################################################################
@@ -9868,8 +9883,9 @@ in context.
 =cut
 
 sub _hdlr_comment_blog_id {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MTCommentBlogID');
+    my ($ctx) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
     return $c->blog_id;
 }
 
@@ -9886,13 +9902,10 @@ templates where the comment may not actually be published).
 =cut
 
 sub _hdlr_comment_if_moderated {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MTCommentIfModerated');
-    if ($c->visible) {
-        return 1;
-    } else {
-        return 0;
-    }
+    my ($ctx) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
+    return $c->visible ? 1 : 0;
 }
 
 ###########################################################################
@@ -9910,17 +9923,13 @@ display name).
 # FIXME: This should be a container tag providing an author
 # context for the comment.
 sub _hdlr_comment_author {
-    sanitize_on($_[1]);
-    my $tag = $_[0]->stash('tag');
-    my $c;
-    my $a;
-    if (!$c) {
-        $c = $_[0]->stash('comment')
-            or return $_[0]->_no_comment_error('MT' . $tag);
-        $a = defined $c->author ? $c->author : '';
-    }
-    $a ||= $_[1]{default} || '';
-    remove_html($a);    
+    my ($ctx, $args) = @_;
+    sanitize_on($args);
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
+    my $a = defined $c->author ? $c->author : '';
+    $a ||= $args->{default} || '';
+    return remove_html($a);    
 }
 
 ###########################################################################
@@ -9935,9 +9944,10 @@ posted from.
 =cut
 
 sub _hdlr_comment_ip {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MT' . $_[0]->stash('tag'));
-    defined $c->ip ? $c->ip : '';
+    my ($ctx) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
+    return defined $c->ip ? $c->ip : '';
 }
 
 ###########################################################################
@@ -9991,10 +10001,10 @@ sub _hdlr_comment_author_link {
     _comment_follow($ctx, $args);
 
     my $c = $ctx->stash('comment')
-        or return $ctx->_no_comment_error('MT' . $ctx->stash('tag'));
+        or return $ctx->_no_comment_error();
     my $name = $c->author;
     $name = '' unless defined $name;
-    $name ||= $_[1]{default_name};
+    $name ||= $args->{default_name};
     $name ||= MT->translate("Anonymous");
     my $show_email = $args->{show_email} ? 1 : 0;
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
@@ -10053,13 +10063,14 @@ B<Attributes:>
 =cut
 
 sub _hdlr_comment_email {
-    sanitize_on($_[1]);
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MT' . $_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    sanitize_on($args);
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
     return '' unless defined $c->email;
     return '' unless $c->email =~ m/@/;
     my $email = remove_html($c->email);
-    $_[1] && $_[1]->{'spam_protect'} ? spam_protect($email) : $email;
+    return $args && $args->{'spam_protect'} ? spam_protect($email) : $email;
 }
 
 ###########################################################################
@@ -10078,7 +10089,7 @@ is linked to that URL.
 sub _hdlr_comment_author_identity {
     my ($ctx, $args) = @_;
     my $cmt = $ctx->stash('comment')
-         or return $ctx->_no_comment_error('MT' . $ctx->stash('tag'));
+         or return $ctx->_no_comment_error();
     my $cmntr = $ctx->stash('commenter');
     unless ($cmntr) {
         if ($cmt->commenter_id) {
@@ -10115,10 +10126,11 @@ itself (in the format '#comment-ID').
 =cut
 
 sub _hdlr_comment_link {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MT' . $_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
     my $entry = $c->entry
-        or return $_[0]->error("No entry exists for comment #" . $c->id);
+        or return $ctx->error("No entry exists for comment #" . $c->id);
     return $entry->archive_url . '#comment-' . $c->id;
 }
 
@@ -10135,11 +10147,12 @@ comments, is the URL from the commenter's profile.
 =cut
 
 sub _hdlr_comment_url {
-    sanitize_on($_[1]);
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error('MT' . $_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    sanitize_on($args);
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
     my $url = defined $c->url ? $c->url : '';
-    remove_html($url);
+    return remove_html($url);
 }
 
 ###########################################################################
@@ -10184,7 +10197,7 @@ sub _hdlr_comment_body {
     my $blog = $ctx->stash('blog');
     return q() unless $blog;
     my $c = $ctx->stash('comment')
-        or return $ctx->_no_comment_error('MT' . $ctx->stash('tag'));
+        or return $ctx->_no_comment_error();
     my $t = defined $c->text ? $c->text : '';
     unless ($blog->allow_comment_html) {
         $t = remove_html($t);
@@ -10214,7 +10227,10 @@ of all comments published using the C<Comments> tag, starting with "1".
 
 =cut
 
-sub _hdlr_comment_order_num { $_[0]->stash('comment_order_num') }
+sub _hdlr_comment_order_num {
+    my ($ctx) = @_;
+    return $ctx->stash('comment_order_num');
+}
 
 ###########################################################################
 
@@ -10226,7 +10242,10 @@ For the comment preview template only.
 
 =cut
 
-sub _hdlr_comment_prev_state { $_[0]->stash('comment_state') }
+sub _hdlr_comment_prev_state {
+    my ($ctx) = @_;
+    return $ctx->stash('comment_state');
+}
 
 ###########################################################################
 
@@ -10239,8 +10258,9 @@ For the comment preview template only.
 =cut
 
 sub _hdlr_comment_prev_static {
-    my $s = encode_html($_[0]->stash('comment_is_static')) || '';
-    defined $s ? $s : ''
+    my ($ctx) = @_;
+    my $s = encode_html($ctx->stash('comment_is_static')) || '';
+    return defined $s ? $s : ''
 }
 
 ###########################################################################
@@ -10264,7 +10284,7 @@ B<Example:>
 sub _hdlr_comment_entry {
     my($ctx, $args, $cond) = @_;
     my $c = $ctx->stash('comment')
-        or return $ctx->_no_comment_error('MTCommentEntry');
+        or return $ctx->_no_comment_error();
     my $entry = MT::Entry->load($c->entry_id)
         or return '';
     local $ctx->{__stash}{entry} = $entry;
@@ -10294,7 +10314,7 @@ sub _hdlr_comment_parent {
     my($ctx, $args, $cond) = @_;
 
     my $c = $ctx->stash('comment')
-        or return $ctx->_no_comment_error('MTCommentParent');
+        or return $ctx->_no_comment_error();
     $c->parent_id && (my $parent = MT::Comment->load($c->parent_id))
         or return '';
     local $ctx->{__stash}{comment} = $parent;
@@ -10332,7 +10352,7 @@ with the comment ID; %s is replaced with the name of the commenter).
 sub _hdlr_comment_reply_link {
     my($ctx, $args) = @_;
     my $comment = $ctx->stash('comment') or
-        return  $ctx->_no_comment_error('MTCommentReplyLink');
+        return  $ctx->_no_comment_error();
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
     my $comment_author = MT::Util::encode_js($comment->author);
@@ -10364,8 +10384,8 @@ If specified, zero-pads the ID to 6 digits. Example: 001234.
 =cut
 
 sub _hdlr_comment_parent_id {
-    my $args = $_[1];
-    my $c = $_[0]->stash('comment') or return '';
+    my ($ctx, $args) = @_;
+    my $c = $ctx->stash('comment') or return '';
     my $id = $c->parent_id || 0;
     $args && $args->{pad} ? (sprintf "%06d", $id) : ($id ? $id : '');
 }
@@ -10382,7 +10402,7 @@ sub _hdlr_comment_replies {
     my($ctx, $args, $cond) = @_;
 
     my $comment = $ctx->stash('comment')
-        or return $ctx->_no_comment_error('MTCommentReplies');
+        or return $ctx->_no_comment_error();
     my $tokens = $ctx->stash('tokens');
 
     $ctx->stash('_comment_replies_tokens', $tokens);
@@ -10459,7 +10479,7 @@ sub _hdlr_comment_replies_recurse {
     my($ctx, $args, $cond) = @_;
 
     my $comment = $ctx->stash('comment')
-        or return $ctx->_no_comment_error('MTCommentRepliesRecurse');
+        or return $ctx->_no_comment_error();
     my $tokens = $ctx->stash('_comment_replies_tokens');
 
     my (%terms, %args);
@@ -10606,8 +10626,9 @@ sub _hdlr_commenter_name_thunk {
 =cut
 
 sub _hdlr_commenter_username {
-    my $a = $_[0]->stash('commenter');
-    $a ? $a->name : '';
+    my ($ctx) = @_;
+    my $a = $ctx->stash('commenter');
+    return $a ? $a->name : '';
 }
 
 ###########################################################################
@@ -10619,8 +10640,9 @@ sub _hdlr_commenter_username {
 =cut
 
 sub _hdlr_commenter_name {
-    my $a = $_[0]->stash('commenter');
-    $a ? $a->nickname || '' : '';
+    my ($ctx) = @_;
+    my $a = $ctx->stash('commenter');
+    return $a ? $a->nickname || '' : '';
 }
 
 ###########################################################################
@@ -10632,9 +10654,10 @@ sub _hdlr_commenter_name {
 =cut
 
 sub _hdlr_commenter_email {
-    my $a = $_[0]->stash('commenter');
+    my ($ctx) = @_;
+    my $a = $ctx->stash('commenter');
     return '' if $a && $a->email !~ m/@/;
-    $a ? $a->email || '' : '';
+    return $a ? $a->email || '' : '';
 }
 
 ###########################################################################
@@ -10646,8 +10669,9 @@ sub _hdlr_commenter_email {
 =cut
 
 sub _hdlr_commenter_auth_type {
-    my $a = $_[0]->stash('commenter');
-    $a ? $a->auth_type || '' : '';
+    my ($ctx) = @_;
+    my $a = $ctx->stash('commenter');
+    return $a ? $a->auth_type || '' : '';
 }
 
 ###########################################################################
@@ -10659,9 +10683,10 @@ sub _hdlr_commenter_auth_type {
 =cut
 
 sub _hdlr_commenter_auth_icon_url {
-    my $a = $_[0]->stash('commenter');
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('commenter');
     return q() unless $a;
-    my $size = $_[1]->{size} || 'logo_small';
+    my $size = $args->{size} || 'logo_small';
     return $a->auth_icon_url($size);
 }
 
@@ -10736,9 +10761,10 @@ Outputs the numeric ID of the current commenter in context.
 =cut
 
 sub _hdlr_commenter_id {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
-    my $cmntr = $_[0]->stash('commenter') or return '';
+    my ($ctx) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
+    my $cmntr = $ctx->stash('commenter') or return '';
     return $cmntr->id;
 }
 
@@ -10753,8 +10779,9 @@ Outputs the URL from the profile of the current commenter in context.
 =cut
 
 sub _hdlr_commenter_url {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
+    my ($ctx) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
     my $cmntr = $_[0]->stash('commenter') or return '';
     return $cmntr->url;
 }
@@ -10768,10 +10795,11 @@ sub _hdlr_commenter_url {
 =cut
 
 sub _hdlr_commenter_userpic {
-    my $c = $_[0]->stash('comment')
-        or return $_[0]->_no_comment_error($_[0]->stash('tag'));
-    my $cmntr = $_[0]->stash('commenter') or return '';
-    $cmntr->userpic_html() || '';
+    my ($ctx) = @_;
+    my $c = $ctx->stash('comment')
+        or return $ctx->_no_comment_error();
+    my $cmntr = $ctx->stash('commenter') or return '';
+    return $cmntr->userpic_html() || '';
 }
 
 ###########################################################################
@@ -10783,8 +10811,9 @@ sub _hdlr_commenter_userpic {
 =cut
 
 sub _hdlr_commenter_userpic_url {
-    my $cmntr = $_[0]->stash('commenter') or return '';
-    $cmntr->userpic_url() || '';
+    my ($ctx) = @_;
+    my $cmntr = $ctx->stash('commenter') or return '';
+    return $cmntr->userpic_url() || '';
 }
 
 ###########################################################################
@@ -10798,7 +10827,7 @@ sub _hdlr_commenter_userpic_url {
 sub _hdlr_commenter_userpic_asset {
     my ($ctx, $args, $cond) = @_;
     my $c = $ctx->stash('comment')
-        or return $ctx->_no_comment_error($ctx->stash('tag'));
+        or return $ctx->_no_comment_error();
     my $cmntr = $ctx->stash('commenter');
     # undef means commenter has no commenter_id
     # need default userpic asset? do nothing now.
@@ -10824,7 +10853,8 @@ A negative number indicates spam.
 =cut
 
 sub _hdlr_feedback_score {
-    my $fb = $_[0]->stash('comment') || $_[0]->stash('ping');
+    my ($ctx) = @_;
+    my $fb = $ctx->stash('comment') || $ctx->stash('ping');
     $fb ? $fb->junk_score || 0 : '';
 }
 
@@ -10832,9 +10862,36 @@ sub _hdlr_feedback_score {
 
 =head2 ArchivePrevious
 
+
 =cut
 
 =head2 ArchiveNext
+
+A container tag that creates a context to the "next" archive relative to
+the current archive context.
+
+This tag also works with the else tag to produce content if there is no
+"previous" archive.
+
+B<Attributes:>
+
+=over 4
+
+=item type or archive_type (optional)
+
+Specifies the "next" archive type the context is for. See the L<ArchiveList>
+tag for supported values for this attribute.
+
+=back
+
+B<Example:>
+
+    <mt:ArchiveNext>
+      <a href="<$mt:ArchiveLink$>"
+        title="<$mt:ArchiveTitle escape="html"$>">Next</a>
+    <mt:else>
+       <!-- output when no previous archive is available -->
+    </mt:ArchiveNext>
 
 =cut
 
@@ -10844,7 +10901,7 @@ sub _hdlr_archive_prev_next {
     my $tag = lc $ctx->stash('tag');
     my $is_prev = $tag eq 'archiveprevious';
     my $res = '';
-    my $at = ($_[1]->{type} || $_[1]->{archive_type}) || $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $at = ($args->{type} || $args->{archive_type}) || $ctx->{current_archive_type} || $ctx->{archive_type};
     my $arctype = MT->publisher->archiver($at);
     return '' unless $arctype;
 
@@ -11021,7 +11078,35 @@ sub _hdlr_index_basename {
 
 ###########################################################################
 
-=head2 ArchiveSet
+=head2 Archives
+
+A container tag representing a list of all the enabled archive types in
+a blog. This tag exists to facilitate the publication of a Google sitemap
+or something of a similar nature.
+
+B<Attributes:>
+
+=over 4
+
+=item type or archive_type (optional)
+
+Specify a comma-delimited list of archive types to loop over. If you
+only wish to publish a list of Individual and Category archives, you
+can specify:
+
+    <mt:ArchiveList type="Individual,Category">
+
+=back
+
+B<Example:>
+
+    <mt:Archives>
+        <mt:ArchiveList><mt:ArchiveLink>
+        </mt:ArchiveList>
+    </mt:Archives>
+
+This will publish a link for each archive type you publish (the primary
+archive links, at least).
 
 =cut
 
@@ -11049,6 +11134,91 @@ sub _hdlr_archive_set {
 ###########################################################################
 
 =head2 ArchiveList
+
+A container tag representing a list of all the archive pages of a
+certain type.
+
+B<Attributes:>
+
+=over 4
+
+=item type or archive_type
+
+An optional attribute that specifies the type of archives to list.
+Recognized values are "Yearly", "Monthly", "Weekly", "Daily",
+"Individual", "Author", "Author-Yearly", "Author-Monthly",
+"Author-Weekly", "Author-Daily", "Category", "Category-Yearly",
+"Category-Monthly", "Category-Weekly" and "Category-Daily" (and perhaps
+others, if custom archive types are provided through third-party
+plugins). The default is to list the Preferred Archive Type specified
+in the blog settings.
+
+=item lastn (optional)
+
+An optional attribute that can be used to limit the number of archives
+in the list.
+
+=item sort_order (optional; default "descend")
+
+An optional attribute that specifies the sort order of the archives
+in the list. It is effective within any of the date-based and
+"Individual" archive types. Recognized values are "ascend" and
+"descend".
+
+=back
+
+B<NOTE:> You may produce an archive list of any supported archive type
+even if you are not publishing that archive type. However, the
+L<ArchiveLink> tag will only work for archive types you are
+publishing.
+
+B<Example:>
+
+    <mt:ArchiveList archive_type="Monthly">
+        <a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a>
+    </mt:ArchiveList>
+
+Here, we're combining two L<ArchiveList> tags (the inner L<ArchiveList>
+tag is bound to the date range of the year in context):
+
+    <mt:ArchiveList type="Yearly" sort_order="ascend">
+        <mt:ArchiveListHeader>
+        <ul>
+        </mt:ArchiveListHeader>
+            <li><$mt:ArchiveDate format="%Y"$>
+        <mt:ArchiveList type="Monthly" sort_order="ascend">
+            <mt:ArchiveListHeader>
+                <ul>
+            </mt:ArchiveListHeader>
+                    <li><$mt:ArchiveDate format="%b"$></li>
+            <mt:ArchiveListFooter>
+                </ul>
+            </mt:ArchiveListFooter>
+            </li>
+        </mt:ArchiveList>
+        <mt:ArchiveListFooter>
+        </ul>
+        </mt:ArchiveListFooter>
+    </mt:ArchiveList>
+
+to publish something like this:
+
+    <ul>
+        <li>2006
+            <ul>
+                <li>Mar</li>
+                <li>Apr</li>
+                <li>May</li>
+            </ul>
+        </li>
+        <li>2007
+            <ul>
+                <li>Apr</li>
+                <li>Jun</li>
+                <li>Dec</li>
+            </ul>
+        </li>
+    </ul>
 
 =cut
 
@@ -11227,13 +11397,13 @@ attributes.
 =cut
 
 sub _hdlr_archive_date_end {
-    my($ctx) = @_;
+    my ($ctx, $args) = @_;
     my $end = $ctx->{current_timestamp_end}
-        or return $_[0]->error(MT->translate(
+        or return $ctx->error(MT->translate(
             "[_1] can be used only with Daily, Weekly, or Monthly archives.",
             '<$MTArchiveDateEnd$>' ));
-    $_[1]{ts} = $end;
-    _hdlr_date(@_);
+    $args->{ts} = $end;
+    return _hdlr_date(@_);
 }
 
 ###########################################################################
@@ -11471,7 +11641,7 @@ sub _hdlr_archive_count {
         return _count_format($count, $args);
     }
 
-    my $e = $_[0]->stash('entries');
+    my $e = $ctx->stash('entries');
     my @entries = @$e if ref($e) eq 'ARRAY';
     my $count = scalar @entries;
     return _count_format($count, $args);
@@ -11493,7 +11663,7 @@ B<Example:>
 =cut
 
 sub _hdlr_archive_category {
-    &_hdlr_category_label;
+    return &_hdlr_category_label;
 }
 
 ###########################################################################
@@ -11505,7 +11675,10 @@ template for uploaded images).
 
 =cut
 
-sub _hdlr_image_url { $_[0]->stash('image_url') }
+sub _hdlr_image_url {
+    my ($ctx) = @_;
+    return $ctx->stash('image_url');
+}
 
 ###########################################################################
 
@@ -11516,7 +11689,10 @@ template for uploaded images).
 
 =cut
 
-sub _hdlr_image_width { $_[0]->stash('image_width') }
+sub _hdlr_image_width {
+    my ($ctx) = @_;
+    return $ctx->stash('image_width');
+}
 
 ###########################################################################
 
@@ -11527,7 +11703,10 @@ template for uploaded images).
 
 =cut
 
-sub _hdlr_image_height { $_[0]->stash('image_height') }
+sub _hdlr_image_height {
+    my ($ctx) = @_;
+    return $ctx->stash('image_height');
+}
 
 ###########################################################################
 
@@ -11648,7 +11827,7 @@ sub _hdlr_calendar {
     }
     $calendar_cache->{$prefix . $cat_name} =
         { output => $res, 'uc' => $uncompiled };
-    $res;
+    return $res;
 }
 
 ###########################################################################
@@ -11660,11 +11839,12 @@ sub _hdlr_calendar {
 =cut
 
 sub _hdlr_calendar_day {
-    my $day = $_[0]->stash('calendar_day')
-        or return $_[0]->error(MT->translate(
+    my ($ctx) = @_;
+    my $day = $ctx->stash('calendar_day')
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
             '<$MTCalendarDay$>' ));
-    $day;
+    return $day;
 }
 
 ###########################################################################
@@ -11676,11 +11856,12 @@ sub _hdlr_calendar_day {
 =cut
 
 sub _hdlr_calendar_cell_num {
-    my $num = $_[0]->stash('calendar_cell')
-        or return $_[0]->error(MT->translate(
+    my ($ctx) = @_;
+    my $num = $ctx->stash('calendar_cell')
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
             '<$MTCalendarCellNumber$>' ));
-    $num;
+    return $num;
 }
 
 ###########################################################################
@@ -11767,11 +11948,12 @@ sub _hdlr_categories {
 =cut
 
 sub _hdlr_category_id {
-    my $cat = ($_[0]->stash('category') || $_[0]->stash('archive_category'))
-        or return $_[0]->error(MT->translate(
+    my ($ctx) = @_;
+    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT'.$_[0]->stash('tag').'$>'));
-    $cat->id;
+            '<$MT'.$ctx->stash('tag').'$>'));
+    return $cat->id;
 }
 
 ###########################################################################
@@ -11792,7 +11974,7 @@ sub _hdlr_category_label {
                            '<$MT'.$ctx->stash('tag').'$>')));
     my $label = $cat->label;
     $label = '' unless defined $label;
-    $label;
+    return $label;
 }
 
 ###########################################################################
@@ -11819,7 +12001,7 @@ sub _hdlr_category_basename {
             $basename =~ s/-/_/g;
         }
     }
-    $basename;
+    return $basename;
 }
 
 ###########################################################################
@@ -11829,11 +12011,12 @@ sub _hdlr_category_basename {
 =cut
 
 sub _hdlr_category_desc {
-    my $cat = ($_[0]->stash('category') || $_[0]->stash('archive_category'))
-        or return $_[0]->error(MT->translate(
+    my ($ctx) = @_;
+    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT'.$_[0]->stash('tag').'$>'));
-    defined $cat->description ? $cat->description : '';
+            '<$MT'.$ctx->stash('tag').'$>'));
+    return defined $cat->description ? $cat->description : '';
 }
 
 ###########################################################################
@@ -11844,10 +12027,10 @@ sub _hdlr_category_desc {
 
 sub _hdlr_category_count {
     my ($ctx, $args, $cond) = @_;
-    my $cat = ($ctx->stash('category') || $_[0]->stash('archive_category'))
-        or return $_[0]->error(MT->translate(
+    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT'.$_[0]->stash('tag').'$>'));
+            '<$MT' . $ctx->stash('tag') . '$>'));
     my($count);
     unless ($count = $ctx->stash('category_count')) {
         my $class = MT->model(
@@ -11870,10 +12053,10 @@ sub _hdlr_category_count {
 
 sub _hdlr_category_comment_count {
     my ($ctx, $args, $cond) = @_;
-    my $cat = ($ctx->stash('category') || $_[0]->stash('archive_category'))
-        or return $_[0]->error(MT->translate(
+    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            '<$MT'.$_[0]->stash('tag').'$>'));
+            '<$MT' . $ctx->stash('tag') . '$>'));
     my($count);
     my $blog_id = $ctx->stash ('blog_id');
     my $class = MT->model(
@@ -11896,13 +12079,14 @@ sub _hdlr_category_comment_count {
 =cut
 
 sub _hdlr_category_archive {
-    my $cat = ($_[0]->stash('category') || $_[0]->stash('archive_category'))
-        or return $_[0]->error(MT->translate(
+    my ($ctx, $args) = @_;
+    my $cat = ($ctx->stash('category') || $ctx->stash('archive_category'))
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
             '<$MTCategoryArchiveLink$>' ));
-    my $curr_at = $_[0]->{current_archive_type} || $_[0]->{archive_type} || 'Category';
+    my $curr_at = $ctx->{current_archive_type} || $ctx->{archive_type} || 'Category';
 
-    my $blog = $_[0]->stash('blog');
+    my $blog = $ctx->stash('blog');
     return '' unless $blog || $curr_at eq 'Category';
     if ( $curr_at ne 'Category' ) {
         # Check if "Category" archive is published
@@ -11915,7 +12099,7 @@ sub _hdlr_category_archive {
                 last;
             }
         }
-        return $_[0]->error(MT->translate(
+        return $ctx->error(MT->translate(
             "[_1] cannot be used without publishing Category archive.",
             '<$MTCategoryArchiveLink$>' )) unless $cat_arc;
     }
@@ -11923,7 +12107,7 @@ sub _hdlr_category_archive {
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
     $arch = $arch . archive_file_for(undef, $blog, 'Category', $cat);
-    $arch = MT::Util::strip_index($arch, $blog) unless $_[1]->{with_index};
+    $arch = MT::Util::strip_index($arch, $blog) unless $args->{with_index};
     $arch;
 }
 
@@ -11935,7 +12119,7 @@ sub _hdlr_category_archive {
 
 sub _hdlr_category_tb_link {
     my($ctx, $args) = @_;
-    my $cat = $_[0]->stash('category') || $_[0]->stash('archive_category');
+    my $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     if (!$cat) {
         my $cat_name = $args->{category}
             or return $ctx->error(MT->translate("<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the 'category' attribute to the tag."));
@@ -11948,7 +12132,7 @@ sub _hdlr_category_tb_link {
         or return '';
     my $cfg = $ctx->{config};
     my $path = _hdlr_cgi_path($ctx);
-    $path . $cfg->TrackbackScript . '/' . $tb->id;
+    return $path . $cfg->TrackbackScript . '/' . $tb->id;
 }
 
 ###########################################################################
@@ -11958,12 +12142,9 @@ sub _hdlr_category_tb_link {
 =cut
 
 sub _hdlr_category_allow_pings {
-    my $cat = $_[0]->stash('category') || $_[0]->stash('archive_category');
-    if ($cat->allow_pings) {
-        return 1;
-    } else {
-        return 0;
-    }
+    my ($ctx) = @_;
+    my $cat = $ctx->stash('category') || $ctx->stash('archive_category');
+    return $cat->allow_pings ? 1 : 0;
 }
 
 ###########################################################################
@@ -11974,7 +12155,7 @@ sub _hdlr_category_allow_pings {
 
 sub _hdlr_category_tb_count {
     my($ctx, $args) = @_;
-    my $cat = $_[0]->stash('category') || $_[0]->stash('archive_category');
+    my $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     return 0 unless $cat;
     require MT::Trackback;
     my $tb = MT::Trackback->load( { category_id => $cat->id } );
@@ -12083,7 +12264,7 @@ sub _hdlr_if_category {
     my $e = $ctx->stash('entry');
     my $tag = lc $ctx->stash('tag');
     my $entry_context = $tag =~ m/(entry|page)if(category|folder)/;
-    return $ctx->_no_entry_error($tag) if $entry_context && !$e;
+    return $ctx->_no_entry_error() if $entry_context && !$e;
     my $name = $args->{name} || $args->{label};
     if (!defined $name) {
         return $ctx->error(MT->translate("You failed to specify the label attribute for the [_1] tag.", $tag));
@@ -12119,7 +12300,7 @@ sub _hdlr_if_category {
 sub _hdlr_entry_additional_categories {
     my($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error($ctx->stash('tag'));
+        or return $ctx->_no_entry_error();
     my $cats = $e->categories;
     return '' unless $cats && @$cats;
     my $builder = $ctx->stash('builder');
@@ -12212,7 +12393,7 @@ sub _hdlr_pings {
 sub _hdlr_pings_sent {
     my($ctx, $args, $cond) = @_;
     my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error('MTPingsSent');
+        or return $ctx->_no_entry_error();
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
     my $res = '';
@@ -12232,11 +12413,9 @@ sub _hdlr_pings_sent {
 
 =cut
 
-sub _hdlr_pings_sent_url { $_[0]->stash('ping_sent_url') }
-sub _no_ping_error {
-    return $_[0]->error(MT->translate("You used an '[_1]' tag outside of the context of " .
-                        "a ping; perhaps you mistakenly placed it outside " .
-                        "of an 'MTPings' container?", $_[1]));
+sub _hdlr_pings_sent_url {
+    my ($ctx) = @_;
+    return $ctx->stash('ping_sent_url');
 }
 
 ###########################################################################
@@ -12248,11 +12427,11 @@ sub _no_ping_error {
 =cut
 
 sub _hdlr_ping_date {
-    my $p = $_[0]->stash('ping')
-        or return $_[0]->_no_ping_error('MTPingDate');
-    my $args = $_[1];
+    my ($ctx, $args) = @_;
+    my $p = $ctx->stash('ping')
+        or return $ctx->_no_ping_error();
     $args->{ts} = $p->created_on;
-    _hdlr_date($_[0], $args);
+    return _hdlr_date($ctx, $args);
 }
 
 ###########################################################################
@@ -12262,9 +12441,10 @@ sub _hdlr_ping_date {
 =cut
 
 sub _hdlr_ping_id {
-    my $ping = $_[0]->stash('ping')
-        or return $_[0]->_no_ping_error('MTPingID');
-    $ping->id;
+    my ($ctx) = @_;
+    my $ping = $ctx->stash('ping')
+        or return $ctx->_no_ping_error();
+    return $ping->id;
 }
 
 ###########################################################################
@@ -12274,10 +12454,11 @@ sub _hdlr_ping_id {
 =cut
 
 sub _hdlr_ping_title {
-    sanitize_on($_[1]);
-    my $ping = $_[0]->stash('ping')
-        or return $_[0]->_no_ping_error('MTPingTitle');
-    defined $ping->title ? $ping->title : '';
+    my ($ctx, $args) = @_;
+    sanitize_on($args);
+    my $ping = $ctx->stash('ping')
+        or return $ctx->_no_ping_error();
+    return defined $ping->title ? $ping->title : '';
 }
 
 ###########################################################################
@@ -12287,10 +12468,11 @@ sub _hdlr_ping_title {
 =cut
 
 sub _hdlr_ping_url {
-    sanitize_on($_[1]);
-    my $ping = $_[0]->stash('ping')
-        or return $_[0]->_no_ping_error('MTPingURL');
-    defined $ping->source_url ? $ping->source_url : '';
+    my ($ctx, $args) = @_;
+    sanitize_on($args);
+    my $ping = $ctx->stash('ping')
+        or return $ctx->_no_ping_error();
+    return defined $ping->source_url ? $ping->source_url : '';
 }
 
 ###########################################################################
@@ -12300,10 +12482,11 @@ sub _hdlr_ping_url {
 =cut
 
 sub _hdlr_ping_excerpt {
-    sanitize_on($_[1]);
-    my $ping = $_[0]->stash('ping')
-        or return $_[0]->_no_ping_error('MTPingExcerpt');
-    defined $ping->excerpt ? $ping->excerpt : '';
+    my ($ctx, $args) = @_;
+    sanitize_on($args);
+    my $ping = $ctx->stash('ping')
+        or return $ctx->_no_ping_error();
+    return defined $ping->excerpt ? $ping->excerpt : '';
 }
 
 ###########################################################################
@@ -12313,9 +12496,10 @@ sub _hdlr_ping_excerpt {
 =cut
 
 sub _hdlr_ping_ip {
-    my $ping = $_[0]->stash('ping')
-        or return $_[0]->_no_ping_error('MTPingIP');
-    defined $ping->ip ? $ping->ip : '';
+    my ($ctx) = @_;
+    my $ping = $ctx->stash('ping')
+        or return $ctx->_no_ping_error();
+    return defined $ping->ip ? $ping->ip : '';
 }
 
 ###########################################################################
@@ -12325,10 +12509,11 @@ sub _hdlr_ping_ip {
 =cut
 
 sub _hdlr_ping_blog_name {
-    sanitize_on($_[1]);
-    my $ping = $_[0]->stash('ping')
-        or return $_[0]->_no_ping_error('MTPingBlogName');
-    defined $ping->blog_name ? $ping->blog_name : '';
+    my ($ctx, $args) = @_;
+    sanitize_on($args);
+    my $ping = $ctx->stash('ping')
+        or return $ctx->_no_ping_error();
+    return defined $ping->blog_name ? $ping->blog_name : '';
 }
 
 ###########################################################################
@@ -12340,7 +12525,7 @@ sub _hdlr_ping_blog_name {
 sub _hdlr_ping_entry {
     my ($ctx, $args, $cond) = @_;
     my $ping = $ctx->stash('ping')
-        or return $ctx->_no_ping_error('MTPingEntry');
+        or return $ctx->_no_ping_error();
     require MT::Trackback;
     my $tb = MT::Trackback->load($ping->tb_id);
     return '' unless $tb;
@@ -12657,7 +12842,8 @@ sub _hdlr_if_commenter_pending {
 =cut
 
 sub _hdlr_sub_cat_is_first {
-    $_[0]->stash('subCatIsFirst');
+    my ($ctx) = @_;
+    return $ctx->stash('subCatIsFirst');
 }
 
 ###########################################################################
@@ -12667,7 +12853,8 @@ sub _hdlr_sub_cat_is_first {
 =cut
 
 sub _hdlr_sub_cat_is_last {
-    $_[0]->stash('subCatIsLast');
+    my ($ctx) = @_;
+    return $ctx->stash('subCatIsLast');
 }
 
 ###########################################################################
@@ -13261,10 +13448,10 @@ sub _sort_cats {
 =cut
 
 sub _hdlr_entry_blog_id {
-    my $args = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
-    $args && $args->{pad} ? (sprintf "%06d", $e->blog_id) : $e->blog_id;
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    return $args && $args->{pad} ? (sprintf "%06d", $e->blog_id) : $e->blog_id;
 }
 
 ###########################################################################
@@ -13274,12 +13461,12 @@ sub _hdlr_entry_blog_id {
 =cut
 
 sub _hdlr_entry_blog_name {
-    my $args = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $b = MT::Blog->load($e->blog_id)
-        or return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
-    $b->name;
+        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
+    return $b->name;
 }
 
 ###########################################################################
@@ -13289,13 +13476,13 @@ sub _hdlr_entry_blog_name {
 =cut
 
 sub _hdlr_entry_blog_description {
-    my $args = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $b = MT::Blog->load($e->blog_id)
-        or return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
+        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
     my $d = $b->description;
-    defined $d ? $d : '';
+    return defined $d ? $d : '';
 }
 
 ###########################################################################
@@ -13305,12 +13492,12 @@ sub _hdlr_entry_blog_description {
 =cut
 
 sub _hdlr_entry_blog_url {
-    my $args = $_[1];
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_entry_error($_[0]->stash('tag'));
+    my ($ctx, $args) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
     my $b = MT::Blog->load($e->blog_id)
-        or return $_[0]->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
-    $b->site_url;
+        or return $ctx->error(MT->translate('Can\'t load blog #[_1].', $e->blog_id));
+    return $b->site_url;
 }
 
 ###########################################################################
@@ -13375,7 +13562,7 @@ sub _hdlr_assets {
     my $tag = lc $ctx->stash('tag');
     if ($tag eq 'entryassets' || $tag eq 'pageassets') {
         my $e = $ctx->stash('entry')
-            or return $ctx->_no_entry_error($tag);
+            or return $ctx->_no_entry_error();
 
         require MT::ObjectAsset;
         my @assets = MT::Asset->load(undef, { join => MT::ObjectAsset->join_on(undef, {
@@ -13416,7 +13603,7 @@ sub _hdlr_assets {
     if (my $type = $args->{type}) {
         my @types = split(',', $args->{type});
         if ($assets) {
-            push @filters, sub { my $a =$_[0]->class; grep(m/$a/, @types) };
+            push @filters, sub { my $a = $_[0]->class; grep(m/$a/, @types) };
         } else {
             $terms{class} = \@types;
         }
@@ -13428,7 +13615,7 @@ sub _hdlr_assets {
     if (my $ext = $args->{file_ext}) {
         my @exts = split(',', $args->{file_ext});
         if (!$assets) {
-            push @filters, sub { my $a =$_[0]->file_ext; grep(m/$a/, @exts) };
+            push @filters, sub { my $a = $_[0]->file_ext; grep(m/$a/, @exts) };
         } else {
             $terms{file_ext} = \@exts;
         }
@@ -13786,7 +13973,7 @@ sub _hdlr_asset_tags {
         $res .= $out;
     }
 
-    $res;
+    return $res;
 }
 
 ###########################################################################
@@ -13798,10 +13985,10 @@ sub _hdlr_asset_tags {
 =cut
 
 sub _hdlr_asset_id {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetID');
-    $args && $args->{pad} ? (sprintf "%06d", $a->id) : $a->id;
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return $args && $args->{pad} ? (sprintf "%06d", $a->id) : $a->id;
 }
 
 ###########################################################################
@@ -13813,10 +14000,10 @@ sub _hdlr_asset_id {
 =cut
 
 sub _hdlr_asset_file_name {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetFileName');
-    $a->file_name;
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return $a->file_name;
 }
 
 ###########################################################################
@@ -13828,10 +14015,10 @@ sub _hdlr_asset_file_name {
 =cut
 
 sub _hdlr_asset_label {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetLabel');
-    defined $a->label ? $a->label : '';
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return defined $a->label ? $a->label : '';
 }
 
 ###########################################################################
@@ -13843,10 +14030,10 @@ sub _hdlr_asset_label {
 =cut
 
 sub _hdlr_asset_description {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetDescription');
-    defined $a->description ? $a->description : '';
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return defined $a->description ? $a->description : '';
 }
 
 ###########################################################################
@@ -13858,10 +14045,10 @@ sub _hdlr_asset_description {
 =cut
 
 sub _hdlr_asset_url {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetURL');
-    $a->url;
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return $a->url;
 }
 
 ###########################################################################
@@ -13873,10 +14060,10 @@ sub _hdlr_asset_url {
 =cut
 
 sub _hdlr_asset_type {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetType');
-    lc $a->class_label;
+    my ($ctx) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return lc $a->class_label;
 }
 
 ###########################################################################
@@ -13888,10 +14075,10 @@ sub _hdlr_asset_type {
 =cut
 
 sub _hdlr_asset_mime_type {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetMimeType');
-    $a->mime_type || '';
+    my ($ctx) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return $a->mime_type || '';
 }
 
 ###########################################################################
@@ -13903,10 +14090,10 @@ sub _hdlr_asset_mime_type {
 =cut
 
 sub _hdlr_asset_file_path {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetFilePath');
-    $a->file_path;
+    my ($ctx) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return $a->file_path || '';
 }
 
 ###########################################################################
@@ -13918,11 +14105,11 @@ sub _hdlr_asset_file_path {
 =cut
 
 sub _hdlr_asset_date_added {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetDateAdded');
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
     $args->{ts} = $a->created_on;
-    _hdlr_date($_[0], $args);
+    return _hdlr_date($ctx, $args);
 }
 
 ###########################################################################
@@ -13934,14 +14121,14 @@ sub _hdlr_asset_date_added {
 =cut
 
 sub _hdlr_asset_added_by {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetAddedBy');
-    
+    my ($ctx) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+
     require MT::Author;
     my $author = MT::Author->load($a->created_by);
     return '' unless $author;
-    $author->nickname || $author->name;
+    return $author->nickname || $author->name;
 }
 
 ###########################################################################
@@ -13953,9 +14140,9 @@ sub _hdlr_asset_added_by {
 =cut
 
 sub _hdlr_asset_property {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetProperty');
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
     my $prop = $args->{property};
     return '' unless $prop;
 
@@ -14003,10 +14190,10 @@ sub _hdlr_asset_property {
 =cut
 
 sub _hdlr_asset_file_ext {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetFileExt');
-    $a->file_ext || '';
+    my ($ctx) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
+    return $a->file_ext || '';
 }
 
 ###########################################################################
@@ -14018,9 +14205,9 @@ sub _hdlr_asset_file_ext {
 =cut
 
 sub _hdlr_asset_thumbnail_url {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetThumbnailURL');
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
     return '' unless $a->has_thumbnail;
 
     my %arg;
@@ -14044,9 +14231,9 @@ sub _hdlr_asset_thumbnail_url {
 =cut
 
 sub _hdlr_asset_link {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetLink');
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
 
     my $ret = sprintf qq(<a href="%s"), $a->url;
     if ($args->{new_window}) {
@@ -14065,16 +14252,16 @@ sub _hdlr_asset_link {
 =cut
 
 sub _hdlr_asset_thumbnail_link {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetThumbnailLink');
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
     my $class = ref($a);
     return '' unless UNIVERSAL::isa($a, 'MT::Asset::Image');
 
     # # Load MT::Image
     # require MT::Image;
     # my $img = new MT::Image(Filename => $a->file_path)
-    #     or return $_[0]->error(MT->translate(MT::Image->errstr));
+    #     or return $ctx->error(MT->translate(MT::Image->errstr));
 
     # Get dimensions
     my %arg;
@@ -14116,9 +14303,9 @@ sub _hdlr_asset_count {
 =cut
  
 sub _hdlr_asset_if_tagged {
-    my $args = $_[1];
-    my $a = $_[0]->stash('asset')
-        or return $_[0]->_no_asset_error('MTAssetIfTagged');
+    my ($ctx, $args) = @_;
+    my $a = $ctx->stash('asset')
+        or return $ctx->_no_asset_error();
 
     my $tag = defined $args->{name} ? $args->{name} : ( defined $args->{tag} ? $args->{tag} : '' );
     if ($tag ne '') {
@@ -14128,14 +14315,6 @@ sub _hdlr_asset_if_tagged {
         @tags = grep /^[^@]/, @tags;
         return @tags ? 1 : 0;
     }
-}
-
-sub _no_asset_error {
-    return $_[0]->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of an asset; " .
-        "perhaps you mistakenly placed it outside of an 'MTAssets' container?",
-        $_[1]));
-
 }
 
 ###########################################################################
@@ -14156,13 +14335,6 @@ sub _hdlr_captcha_fields {
         return $fields;
     }
     return q();
-}
-
-sub _no_page_error {
-    return $_[0]->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of an page; " .
-        "perhaps you mistakenly placed it outside of an 'MTPages' container?",
-        $_[1]));
 }
 
 ###########################################################################
@@ -14654,7 +14826,8 @@ sub _hdlr_if_folder {
 
 sub _hdlr_folder_header {
     return $_ unless &_check_folder(@_);
-    $_[0]->stash('folder_header');
+    my ($ctx) = @_;
+    $ctx->stash('folder_header');
 }
 
 ###########################################################################
@@ -14665,7 +14838,8 @@ sub _hdlr_folder_header {
 
 sub _hdlr_folder_footer {
     return $_ unless &_check_folder(@_);
-    $_[0]->stash('folder_footer');
+    my ($ctx) = @_;
+    $ctx->stash('folder_footer');
 }
 
 ###########################################################################
@@ -14691,19 +14865,21 @@ sub _hdlr_has_parent_folder {
 }
 
 sub _check_folder {
-    my $e = $_[0]->stash('entry');
-    my $cat = ($_[0]->stash('category'))
-        || (($e = $_[0]->stash('entry')) && $e->category)
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry');
+    my $cat = ($ctx->stash('category'))
+        || (($e = $ctx->stash('entry')) && $e->category)
         or return MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            'MT'.$_[0]->stash('tag') );
+            'MT' . $ctx->stash('tag') );
     1;
 }
 
 sub _check_page {
-    my $e = $_[0]->stash('entry')
-        or return $_[0]->_no_page_error('MT'.$_[0]->stash('tag'));
-    return $_[0]->_no_page_error('MT'.$_[0]->stash('tag'))
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_page_error();
+    return $ctx->_no_page_error('MT'.$ctx->stash('tag'))
         if ref $e ne 'MT::Page';
     1;
 }
@@ -15339,6 +15515,35 @@ sub _math_operation {
 
 ###########################################################################
 
+=head2 IfMoreResults
+
+=for tags pagination
+
+=cut
+
+sub _hdlr_if_more_results {
+    my ($ctx) = @_;
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    my $count = $ctx->stash('count');
+    return $limit + $offset >= $count ? 0 : 1;
+}
+
+###########################################################################
+
+=head2 IfPreviousResults
+
+=for tags pagination
+
+=cut
+
+sub _hdlr_if_previous_results {
+    my ($ctx) = @_;
+    return $ctx->stash('offset') ? 1 : 0;
+}
+
+###########################################################################
+
 =head2 PagerBlock
 
 =for tags pagination
@@ -15412,7 +15617,39 @@ sub _hdlr_pager_link {
     }
     $link .= "limit=$limit";
     $link .= "&offset=$offset" if $offset;
-    $link;
+    return $link;
+}
+
+###########################################################################
+
+=head2 CurrentPage
+
+=for tags pagination
+
+=cut
+
+sub _hdlr_current_page {
+    my ($ctx) = @_;
+    my $limit = $ctx->stash('limit');
+    my $offset = $ctx->stash('offset');
+    return $limit ? $offset / $limit + 1 : 1;
+}
+
+###########################################################################
+
+=head2 TotalPages
+
+=for tags pagination
+
+=cut
+
+sub _hdlr_total_pages {
+    my ($ctx) = @_;
+    my $limit = $ctx->stash('limit');
+    return 1 unless $limit;
+    my $count = $ctx->stash('count');
+    require POSIX;
+    return POSIX::ceil( $count / $limit );
 }
 
 ###########################################################################
@@ -15435,8 +15672,16 @@ sub _hdlr_previous_link {
     return q() unless $current_page > 1;
 
     local $ctx->{__stash}{vars}{__value__} = $current_page - 1;
-    _hdlr_pager_link(@_);
+    return _hdlr_pager_link(@_);
 }
+
+###########################################################################
+
+=head2 NextLink
+
+=for tags pagination
+
+=cut
 
 sub _hdlr_next_link {
     my ($ctx, $args) = @_;
@@ -15449,7 +15694,7 @@ sub _hdlr_next_link {
     my $current_page = $limit ? $offset / $limit + 1 : 1;
 
     local $ctx->{__stash}{vars}{__value__} = $current_page + 1;
-    _hdlr_pager_link(@_);
+    return _hdlr_pager_link(@_);
 }
 
 ###########################################################################
