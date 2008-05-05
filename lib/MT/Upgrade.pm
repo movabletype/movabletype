@@ -676,6 +676,7 @@ sub core_upgrade_functions {
                 condition => sub {
                     my $blog = shift;
                     my @blog_at = map { "'$_'" } split ',', $blog->archive_type;
+                    require MT::TemplateMap;
                     MT::TemplateMap->remove(
                       { blog_id => $blog->id, archive_type => \@blog_at },
                       { not => { archive_type => 1 } }
@@ -704,7 +705,10 @@ sub core_upgrade_functions {
                 label => 'Adding new feature widget to dashboard...',
                 condition => sub {
                     my ($user) = @_;
-                    $user->type == MT::Author::AUTHOR(); # AUTHOR records only
+                    if ( $user->type ==MT::Author::AUTHOR() ) {
+                        return 1 if $App && ( $user->id == $App->user->id );
+                    }
+                    return 0;
                 },
                 code => sub {
                     my ($user) = @_;
@@ -1014,14 +1018,6 @@ sub core_upgrade_meta_for_table {
 
     my $msg = MT->translate("Upgrading metadata storage for [_1]", $class->class_label_plural);
 
-    if (!$offset) {
-        $self->progress($msg, $pid);
-    } else {
-        my $count = $class->count();
-        return 0 unless $count;
-        $self->progress(sprintf($msg . " (%d%%)", ($offset/$count*100)), $pid);
-    }
-
     my $driver = $class->dbi_driver;
     my $dbh = $driver->rw_handle;
     my $dbd = $driver->dbd;
@@ -1029,14 +1025,14 @@ sub core_upgrade_meta_for_table {
 
     # assumes 'meta' is the meta column name; should be for all core types
     # we are processing
-    my $meta_col = $dbd->db_column_name($class->datasource,
-        $param{meta_column} || 'meta');
+    my $meta_col = $param{meta_column} || 'meta';
 
     my $ddl = $driver->dbd->ddl_class;
     my $db_defs = $ddl->column_defs($class);
     return 0 unless $db_defs && exists($db_defs->{$meta_col});
 
     my $id_col = $dbd->db_column_name($class->datasource, 'id');
+    $meta_col = $dbd->db_column_name($class->datasource, $meta_col);
     $stmt->add_where( $meta_col => { not_null => 1 } );
     $stmt->limit( 101 );
 
@@ -1049,6 +1045,14 @@ sub core_upgrade_meta_for_table {
     return 0 if !$sth; # ignore this operation if _meta column doesn't exist
     $sth->execute
         or return $self->error($dbh->errstr || $DBI::errstr);
+
+    if (!$offset) {
+        $self->progress($msg, $pid);
+    } else {
+        my $count = $class->count();
+        return 0 unless $count;
+        $self->progress(sprintf($msg . " (%d%%)", ($offset/$count*100)), $pid);
+    }
 
     my $rows = 0;
 
