@@ -1450,7 +1450,9 @@ function asset_cleanup_cb($matches) {
 function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $roles_used = array();
     $orig_expr = $expr;
-    
+
+    $expr = preg_replace('/,/i', ' OR ', $expr);
+
     foreach ($roles as $role) {
         $rolen = $role['role_name'];
         $roleid = $role['role_id'];
@@ -1461,6 +1463,8 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     }
 
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
+    $expr = preg_replace('/\bAND\b/i', '&&', $expr);
+    $expr = preg_replace('/\bNOT\b/i', '!', $expr);
     $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
 
     $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);

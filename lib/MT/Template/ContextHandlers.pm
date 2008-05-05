@@ -6076,13 +6076,15 @@ sub _hdlr_authors {
             \%blog_terms, \%blog_args);
     } else {
         $blog_args{'unique'} = 1;
-        require MT::Permission;
-        $args{'join'} =
-          MT::Permission->join_on( 'author_id', undef, \%blog_args );
-        push @filters, sub {
-            $_[0]->permissions($blog_id)->can_administer_blog
-              || $_[0]->permissions($blog_id)->can_post;
-        };
+        if (!$args->{role}) {
+            require MT::Permission;
+            $args{'join'} =
+                MT::Permission->join_on( 'author_id', undef, \%blog_args );
+            push @filters, sub {
+                $_[0]->permissions($blog_id)->can_administer_blog
+                    || $_[0]->permissions($blog_id)->can_post;
+            };
+        }
     }
 
     if ($args->{namespace}) {
