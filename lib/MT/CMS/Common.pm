@@ -84,41 +84,6 @@ sub save {
         'The Template Name and Output File fields are required.')
       if $type eq 'template' && !$q->param('name') && !$q->param('outfile');
 
-    if ( $type eq 'author' ) {
-        ## If we are saving a user profile, we need to do some
-        ## password maintenance. First make sure that the two
-        ## passwords match...
-        my $editing_other_profile;
-        if ( $id && ( $author->id != $id ) && ( $author->is_superuser ) ) {
-            $editing_other_profile = 1;
-        }
-        my %param = (%$param);
-        unless ($editing_other_profile) {
-            require MT::Auth;
-            my $error = MT::Auth->sanity_check($app);
-            if ($error) {
-                $param{error} = $error;
-                require MT::Log;
-                $app->log(
-                    {
-                        message  => $error,
-                        level    => MT::Log::ERROR(),
-                        class    => 'system',
-                        category => 'save_author_profile'
-                    }
-                );
-            }
-            if ( $param{error} ) {
-                $param{return_args} = $app->param('return_args');
-                my $qual = $id ? '' : 'author_state_';
-                for my $f (qw( name nickname email url state )) {
-                    $param{ $qual . $f } = $q->param($f);
-                }
-                return edit( $app, \%param );
-            }
-        }
-    }
-
     if ( $type eq 'template' ) {
 
         # check for autosave

@@ -1601,6 +1601,20 @@ sub save_filter {
         return $eh->error( MT->translate("Website URL is imperfect") )
           unless is_url($url);
     }
+    require MT::Auth;
+    my $error = MT::Auth->sanity_check($app);
+    if ($error) {
+        require MT::Log;
+        $app->log(
+            {
+                message  => $error,
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'save_author_profile'
+            }
+        );
+        return $eh->error($error);
+    }
     1;
 }
 

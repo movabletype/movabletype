@@ -18,13 +18,12 @@ sub sanity_check {
 
     if ($q->param('pass') ne $q->param('pass_verify')) {
         return $app->translate('Passwords do not match.');
-    } else {
-        if ($q->param('pass') && $id) {
-            my $author = MT::Author->load($id)
-                or return $app->translate('Failed to verify current password.');
-            if (!$auth->is_valid_password($author, $q->param('old_pass'))) {
-                return $app->translate('Failed to verify current password.');
-            }
+    }
+    if ( $q->param('pass') && ( $id && $app->user->id == $id ) ) {
+        my $author = MT::Author->load($id)
+          or return $app->translate('Failed to verify current password.');
+        if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
+            return $app->translate('Failed to verify current password.');
         }
     }
     my $hint = $q->param('hint') || '';
@@ -39,7 +38,7 @@ sub is_valid_password {
     my $auth = shift;
     my($author, $pass, $crypted, $error_ref) = @_;
     $pass ||= '';
-    
+
     my $real_pass = $author->column('password');
     if ((!$real_pass) || ($real_pass eq '(none)')) {
         return 0;
