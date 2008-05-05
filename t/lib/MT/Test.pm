@@ -84,7 +84,7 @@ sub init_testdb {
     $pkg->init_db();
 }
 
-sub init_db {
+sub init_newdb {
     my $pkg = shift;
     my ($cfg) = @_;
     diag "Initializing database";
@@ -124,6 +124,12 @@ sub init_db {
         }
     }
 
+    1;
+}
+
+sub init_upgrade {
+    my $pkg = shift;
+
     require MT::Upgrade;
     # Initialize the MT database
     MT::Upgrade->do_upgrade(
@@ -137,6 +143,13 @@ sub init_db {
         MT::Entry->remove;
         MT::Comment->remove;
     };
+
+    1;
+}
+
+sub init_db {
+    my $pkg = shift;
+    $pkg->init_newdb(@_) && $pkg->init_upgrade(@_);
 }
 
 sub progress {}
