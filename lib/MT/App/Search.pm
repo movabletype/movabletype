@@ -32,8 +32,8 @@ sub init {
     #    }
     #}
     $app->_register_core_callbacks({
-        'MT::App::Search::search_post_execute' => \&log_search,
-        'MT::App::Search::search_post_render'  => \&cache_out,
+        'MT::App::Search::search_post_execute' => \&_log_search,
+        'MT::App::Search::search_post_render'  => \&_cache_out,
         'MT::App::Search::prepare_throttle'    => \&_default_throttle,
         'MT::App::Search::take_down'           => \&_default_takedown,
     });
@@ -409,7 +409,7 @@ sub search_terms {
     ( \@terms, \%args );
 }
 
-sub cache_out {
+sub _cache_out {
     my ( $cb, $app, $count, $out ) = @_;
 
     my $result;
@@ -425,7 +425,7 @@ sub cache_out {
     $cache_driver->set( $app->{cache_keys}{result}, $out, $app->config->SearchCacheTTL );
 }
 
-sub log_search {
+sub _log_search {
     my ( $cb, $app, $count_ref, $iter_ref ) = @_;
 
     #FIXME: template name may not be 'feed' for search feed
@@ -659,11 +659,17 @@ sub _query_parse_core {
     };
 
     my ( @structure, @joins );
-    for my $term ( @$lucene_struct ) {
+    while ( my $term = shift @$lucene_struct ) {
         if ( exists $term->{field} ) {
             unless ( exists $columns->{ $term->{field} } ) {
-                next if $filter_types && %$filter_types
-                    && !exists( $filter_types->{ $term->{field} } );
+                if ( $filter_types && %$filter_types
+                  && !exists( $filter_types->{ $term->{field} } ) ) {
+                    # Colon in query but was not to specify a field.
+                    # Treat it as a phrase including the colon.
+                    my $field = delete $term->{field};
+                    $term->{term} = $field . ':' . $term->{term};
+                    unshift @$lucene_struct, $term;
+                }
             }
         }
 
