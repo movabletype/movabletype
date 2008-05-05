@@ -1016,8 +1016,6 @@ sub core_upgrade_meta_for_table {
 
     my $pid = join q{:}, $param{step} . "_type", $class;
 
-    my $msg = MT->translate("Upgrading metadata storage for [_1]", $class->class_label_plural);
-
     my $driver = $class->dbi_driver;
     my $dbh = $driver->rw_handle;
     my $dbd = $driver->dbd;
@@ -1045,6 +1043,8 @@ sub core_upgrade_meta_for_table {
     return 0 if !$sth; # ignore this operation if _meta column doesn't exist
     $sth->execute
         or return $self->error($dbh->errstr || $DBI::errstr);
+
+    my $msg = $self->translate_escape("Upgrading metadata storage for [_1]", $class->class_label_plural);
 
     if (!$offset) {
         $self->progress($msg, $pid);
