@@ -1174,7 +1174,7 @@ sub _get_options_html {
             $key,
             $app->param('blog_id'),
             $app->param('entry_id') || undef,
-            $app->param('static') || encode_url($app->param('return_to'))
+            $app->param('static') || encode_url($app->param('return_to') || $app->param('return_url'))
         );
         $tmpl->param($params) if $params;
     }
@@ -1545,9 +1545,9 @@ sub logout {
     $app->load_tmpl('login.tmpl', {
         logged_out => 1, 
         no_breadcrumbs => 1,
-        login_fields => MT::Auth->login_form($app),
+        login_fields => MT::Auth->login_form($app) || '',
         can_recover_password => MT::Auth->can_recover_password,
-        delegate_auth => $delegate,
+        delegate_auth => $delegate || 0,
     });
 }
 

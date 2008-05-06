@@ -1300,7 +1300,7 @@ sub pre_save {
     # module caching
     $obj->include_with_ssi( $app->param('include_with_ssi') ? 1 : 0 );
     $obj->cache_path( $app->param('cache_path'));
-    my $cache_expire_type = $app->param('cache_expire_type');
+    my $cache_expire_type = $app->param('cache_expire_type') || '';
     $obj->cache_expire_type($cache_expire_type);
     my $period   = $app->param('cache_expire_period');
     my $interval = $app->param('cache_expire_interval');

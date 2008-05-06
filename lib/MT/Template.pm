@@ -264,7 +264,7 @@ sub build {
     my $res = $build->build($ctx, $tokens, $cond);
 
     if ($timer) {
-        $timer->mark("MT::Template::build[" . ($tmpl->name || $tmpl->{__file}).']');
+        $timer->mark("MT::Template::build[" . ($tmpl->name || $tmpl->{__file} || "?").']');
     }
 
     unless (defined($res)) {

@@ -417,6 +417,8 @@ sub mt_blog_stats_tag_cloud_tab {
         push @tag_loop, { name => $tag->name, count => $count };
     }
 
+    $min ||= 0;
+    $max ||= 0;
     my $factor;
     if ($max - $min == 0) {
         $min -= 6;
