@@ -824,6 +824,8 @@ sub rebuild_file {
     my $archiver = $mt->archiver($at);
     my ( $entry, $start, $end, $category, $author );
 
+    local $ctx->{__stash}{vars} = ();
+
     if ( $finfo = $args{FileInfo} ) {
         $args{Author}   = $finfo->author_id   if $finfo->author_id;
         $args{Category} = $finfo->category_id if $finfo->category_id;
