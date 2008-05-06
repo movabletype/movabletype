@@ -52,6 +52,13 @@ sub dashboard {
             $param->{has_uploads_path} = 1;
         }
     }
+    unless ( exists $param->{has_uploads_path} ) {
+        unless ( $fmgr->exists( $param->{support_path} ) ) {
+            # the path didn't exist - change the warning a little
+            $param->{support_path} =
+                File::Spec->catdir( $app->static_file_path, 'support' );
+        }
+    }
 
     # We require that the determination of the 'single blog mode'
     # state be done PRIOR to the generation of the widgets
@@ -262,6 +269,9 @@ sub generate_dashboard_stats {
     unless ( $fmgr->exists( $param->{support_path} ) ) {
         $fmgr->mkpath( $param->{support_path} );
         unless ( $fmgr->exists( $param->{support_path} ) ) {
+            # the path didn't exist - change the warning a little
+            $param->{support_path} =
+                File::Spec->catdir( $app->static_file_path, 'support' );
             return;
         }
     }
