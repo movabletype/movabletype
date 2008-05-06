@@ -50,6 +50,14 @@ sub import {
     }
 }
 
+sub init_cms {
+    my $pkg = shift;
+    my ($cfg) = @_;
+
+    require MT::App::CMS;
+    MT::App::CMS->instance($cfg ? (Config => $cfg) : ());
+}
+
 sub init_time {
     $CORE_TIME = time;
     
@@ -282,6 +290,7 @@ sub init_data {
     $johnd->approve(1);
 
     my $entry = MT::Entry->load(1);
+    # TODO: this test entry is never created; upgrading already adds entry #1.
     if (!$entry) {
         $entry = MT::Entry->new();
         $entry->set_values({

@@ -39,6 +39,7 @@ Database $DB_DIR/mt.db
 ObjectDriver DBI::sqlite
 PluginPath ../plugins
 PluginPath plugins
+TemplatePath ../tmpl
 CFG
     close $fh;
     $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
