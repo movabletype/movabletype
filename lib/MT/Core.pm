@@ -424,7 +424,10 @@ BEGIN {
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },
             'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
-            'UserSessionTimeout'    => { default => 60 * 60 * 4, },
+            'UserSessionCookieName' => { handler => \&UserSessionCookieName },
+            'UserSessionCookieDomain' => { default => '<$MTBlogDomain exclude_port="1"$>' },
+            'UserSessionCookiePath' => { handler => \&UserSessionCookiePath },
+            'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks' => { default => 0 },
             'TypeKeyVersion'        => { default => '1.1' },
             'TransparentProxyIPs'   => { default => 0, },
@@ -518,6 +521,7 @@ BEGIN {
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
             'EnableAddressBook' => { default => 0 },
+            'SingleCommunity' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -951,6 +955,30 @@ sub NewUserAutoProvisioning {
     return $mgr->set_internal( 'NewUserAutoProvisioning', @_ ) if @_;
     return 0 unless $mgr->DefaultSiteRoot && $mgr->DefaultSiteURL;
     $mgr->get_internal('NewUserAutoProvisioning');
+}
+
+sub UserSessionCookieName {
+    my $mgr = shift;
+    return $mgr->set_internal( 'UserSessionCookieName', @_ ) if @_;
+    my $name = $mgr->get_internal('UserSessionCookieName');
+    return $name if defined $name;
+    if ($mgr->get_internal('SingleCommunity')) {
+        return 'mt_blog_user';
+    } else {
+        return 'mt_blog%b_user';
+    }
+}
+
+sub UserSessionCookiePath {
+    my $mgr = shift;
+    return $mgr->set_internal( 'UserSessionCookiePath', @_ ) if @_;
+    my $path = $mgr->get_internal('UserSessionCookiePath');
+    return $path if defined $path;
+    if ($mgr->get_internal('SingleCommunity')) {
+        return '/';
+    } else {
+        return '<$MTBlogRelativeURL$>';
+    }
 }
 
 1;

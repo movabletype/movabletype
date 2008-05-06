@@ -6,11 +6,13 @@
 # $Id$
 
 function smarty_function_mtcommentauthorlink($args, &$ctx) {
+    global $mt;
     $comment = $ctx->stash('comment');
     $name = $comment['comment_author'];
     if (!$name && isset($args['default_name'])) {
         $name = $args['default_name'];
     }
+    $name or $name = $mt->translate("Anonymous");
     $email = $comment['comment_email'];
     $url = $comment['comment_url'];
     if (isset($args['show_email']))
@@ -21,7 +23,20 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
         $show_url = $args['show_url'];
     else
         $show_url = 1;
-    if ($show_url && $url) {
+
+    $cmntr = $ctx->stash('commenter');
+    if (!isset($cmntr)) {
+        if (isset($comment['comment_commenter_id'])) {
+            $cmntr = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+        }
+    }
+
+    if ( $cmntr ) {
+        if ($cmntr['author_url']) {
+            return sprintf('<a title="%s" href="%s">%s</a>', $cmntr['author_url'], $cmntr['author_url'], $name);
+        }
+        return $name;
+    } elseif ($show_url && $url) {
         require_once "function.mtcgipath.php";
         $cgi_path = smarty_function_mtcgipath($args, $ctx);
         $comment_script = $ctx->mt->config('CommentScript');
@@ -40,18 +55,5 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
             $str = spam_protect($str);
         }
         return sprintf('<a href="%s">%s</a>', $str, $name);
-    } else {
-        $cmntr = $ctx->stash('commenter');
-        if (isset($cmntr)) {
-            if (isset($comment['comment_commenter_id'])) {
-                $cmntr = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
-            }
-            if ($cmntr && $cmntr['author_url']) {
-                return sprintf('<a title="%s" href="%s">%s</a>', $cmntr['author_url'], $cmntr['author_url'], $name);
-            }
-        }
-        
-        return $name;
     }
 }
-?>

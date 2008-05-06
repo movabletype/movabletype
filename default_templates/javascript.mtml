@@ -1,62 +1,52 @@
-<mt:ignore>
+<mt:Ignore>
 /* The following functions are here to support legacy MT templates.
    If you have refreshed your JavaScript template but still use older
    MT comment templates, you may need to uncomment this block in order
    for those templates to work properly. Simply remove the wrapping
-   'mt:ignore' tag to do so. */
+   'mt:Ignore' tag to do so. */
 function hideDocumentElement(id) { return mtHide(id) }
 function showDocumentElement(id) { return mtShow(id) }
 function individualArchivesOnLoad() { return mtEntryOnLoad() }
 function writeCommenterGreeting() { return mtShowGreeting() }
 function rememberMe(f) { return mtRememberMe(f) }
 function forgetMe(f) { return mtForgetMe(f) }
-</mt:ignore>
+</mt:Ignore>
 
 // The cookie name to use for storing the blog-side comment session cookie.
-var cookie_name = "mt_blog<$MTBlogID$>_user";
-// The cookie path to use for storing the blog-side comment session cookie.
-var blog_path = "<$MTBlogURL$>".replace(/^.*?\/\/[^\/]+?\//, '/');
+var mtCookieName = "<$mt:UserSessionCookieName$>";
+var mtCookieDomain = "<$mt:UserSessionCookieDomain$>";
+var mtCookiePath = "<$mt:UserSessionCookiePath$>";
+var mtCookieTimeout = <$mt:UserSessionCookieTimeout$>;
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Simple routine for showing a DOM element (applying a CSS display
  * attribute of 'none').
  */
-</mt:ignore>
+</mt:Ignore>
 function mtHide(id) {
     var el = (typeof id == "string") ? document.getElementById(id) : id;
     if (el) el.style.display = 'none';
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Simple routine for showing a DOM element (applying a CSS display
  * attribute of 'block').
  */
-</mt:ignore>
+</mt:Ignore>
 function mtShow(id) {
     var el = (typeof id == "string") ? document.getElementById(id) : id;
     if (el) el.style.display = 'block';
 }
 
-var captcha_timer;
-<mt:ignore>
-/***
- * Used to display the comment form and captcha field.
- */
-</mt:ignore>
-function mtShowAnonymousForm() {
-    mtShow('comments-form');
-    captcha_timer = setInterval('mtShowCaptcha()', 1000);
-}
-
-<mt:ignore>
+<mt:Ignore>
 /***
  * Displays a relative date.
  * 'ts' is a Date object, 'fds' is a string of the date which
  * will be displayed if the given date is older than 1 week.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtRelativeDate(ts, fds) {
     var now = new Date();
     var ref = ts;
@@ -93,34 +83,39 @@ function mtRelativeDate(ts, fds) {
     return str ? str : fds;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Used to display an edit link for the given entry.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtEditLink(entry_id, author_id) {
     var u = mtGetUser();
     if (! u) return;
     if (! entry_id) return;
     if (! author_id) return;
     if (u.id != author_id) return;
-    var link = '<__trans phrase='<a href="[_1]">Edit</a>' params="<$MTAdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '">';
+    var link = '<__trans phrase='<a href="[_1]">Edit</a>' params="<$mt:AdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '">';
     document.write(link);
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Displays a captcha field for anonymous commenters.
  */
-</mt:ignore>
+</mt:Ignore>
+var mtCaptchaVisible = false;
 function mtShowCaptcha() {
-    if (captcha_timer) clearInterval(captcha_timer);
+    var u = mtGetUser();
+    if ( u && u.is_authenticated ) return;
+    if (mtCaptchaVisible) return;
     var div = document.getElementById('comments-open-captcha');
-    if (div)
-        div.innerHTML = '<$MTCaptchaFields$>';
+    if (div) {
+        div.innerHTML = '<$mt:CaptchaFields$>';
+        mtCaptchaVisible = true;
+    }
 }
 
-<mt:ignore>
+<mt:Ignore>
 /* user object
     -- saved in user cookie --
     u.name (display name)
@@ -138,51 +133,53 @@ function mtShowCaptcha() {
     u.is_authenticated (boolean)
     u.is_anonymous (user is anonymous)
 */
-</mt:ignore>
+</mt:Ignore>
 
 var is_preview;
 var user;
-<mt:ignore>
+<mt:Ignore>
 /***
  * Assigns a user object as the actively logged in user; also saves the
  * user information in a browser cookie.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtSetUser(u) {
     if (u) {
         // persist this
         user = u;
         mtSaveUser();
+        // sync up user greeting
+        mtUserOnLoad();
     }
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Simple function that escapes single quote characters for storing
  * in a cookie.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtEscapeJS(s) {
     s = s.replace(/'/g, "&apos;");
     return s;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Simple function that unescapes single quote characters that were
  * stored in a cookie.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtUnescapeJS(s) {
     s = s.replace(/&apos;/g, "'");
     return s;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Serializes a user object into a string, suitable for storing as a cookie.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtBakeUserCookie(u) {
     var str = "";
     if (u.name) str += "name:'" + mtEscapeJS(u.name) + "';";
@@ -200,12 +197,12 @@ function mtBakeUserCookie(u) {
     return str;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Unserializes a user cookie and returns a user object with the restored
  * state.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtUnbakeUserCookie(s) {
     if (!s) return;
 
@@ -230,15 +227,15 @@ function mtUnbakeUserCookie(s) {
     return u;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Retrieves an object of the currently logged in user's state.
  * If no user is logged in or cookied, this will return null.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtGetUser() {
     if (!user) {
-        var cookie = mtGetCookie(cookie_name);
+        var cookie = mtGetCookie(mtCookieName);
         if (!cookie) return;
         user = mtUnbakeUserCookie(cookie);
         if (! user) {
@@ -253,29 +250,41 @@ function mtGetUser() {
     return user;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Issues a request to the MT comment script to retrieve the currently
  * logged-in user (if any).
  */
-</mt:ignore>
-function mtFetchUser() {
-    document.write('<scr' + 'ipt src="<$MTCGIPath$><$MTCommentScript$>?__mode=session_js&blog_id=<$MTBlogID$>&jsonp=mtSetUser"></scr' + 'ipt>');
+</mt:Ignore>
+function mtFetchUser(cb) {
+    if (!cb) cb = 'mtSetUser';
+    if ( ( cb == 'mtSetUser' ) && mtGetUser() ) {
+        var url = document.URL;
+        url = url.replace(/#.+$/, '');
+        url += '#comments-open';
+        location.href = url;
+    } else {
+        // we aren't using AJAX for this, since we may have to request
+        // from a different domain. JSONP to the rescue.
+        var script = document.createElement('script');
+        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=session_js&blog_id=<$mt:BlogID$>&jsonp=' + cb;
+        (document.getElementsByTagName('head'))[0].appendChild(script);
+    }
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Called when the 'Remember me' checkbox is changed. If the checkbox
  * is cleared, the cached user cookie is immediately cleared.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtRememberMeOnClick(b) {
     if (!b.checked)
         mtClearUser(b.form);
     return true;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Called when comment form is sent.
  * Required parameter: Form DOM object of comment form.
@@ -284,78 +293,55 @@ function mtRememberMeOnClick(b) {
  * If form has a 'armor' member, it will be used to store
  * a token that is checked by the comment script.
  */
-</mt:ignore>
+</mt:Ignore>
 var mtRequestSubmitted = false;
 function mtCommentOnSubmit(f) {
     if (!mtRequestSubmitted) {
         mtRequestSubmitted = true;
 
         if (f.armor)
-            f.armor.value = '<$MTBlogSitePath encode_sha1="1"$>';
+            f.armor.value = '<$mt:BlogSitePath encode_sha1="1"$>';
         if (f.bakecookie && f.bakecookie.checked)
             mtSaveUser(f);
 
         // disable submit buttons
         if (f.preview_button) f.preview_button.disabled = true;
         if (f.post) f.post.disabled = true;
-        if (f.preview.value == '1')
-            f.preview_button.value = '<__trans phrase="Posting...">';
-        else
-            f.post.value = '<__trans phrase="Posting...">';
-
         return true;
     }
     return false;
 }
 
-<mt:ignore>
-/***
- * Called when an entry archive page is loaded.
- * This routine controls which elements of the comment form are shown
- * or hidden, depending on commenter type and blog configuration.
- */
-</mt:ignore>
-function mtEntryOnLoad() {
+function mtUserOnLoad() {
     var u = mtGetUser();
 
-<mt:unless tag="IfCommentsAccepted">
-    mtHide('comments-open');
-</mt:unless>
-<mt:unless tag="IfPingsAccepted">
-    mtHide('trackbacks-info');
-</mt:unless>
-
+    // if the user is authenticated, hide the 'anonymous' fields
+    // and any captcha input if already shown
+    if ( u && u.is_authenticated ) {
+        mtShow('comments-form');
+        mtHide('comments-open-data');
+        if (mtCaptchaVisible)
+            mtHide('comments-open-captcha');
+    } else {
 <mt:IfRegistrationRequired>
-    if ( !u || u.is_anonymous ) {
-        mtHide('comments-open-data');
-        mtHide('comments-open-text');
-        mtHide('comments-open-footer');
-    } else {
-        mtHide('comments-open-data');
-        mtShow('comments-open-text');
-        mtShow('comments-open-footer');
-    }
-<mt:else>
-<mt:IfRegistrationAllowed>
-    if (is_preview && u && u.is_anonymous) {
-        mtShowAnonymousForm();
-    } else {
-        // comments are allowed but registration not required
-        if ( !u || u.is_anonymous )
-            mtHide('comments-form');
-        else
-            mtHide('comments-open-data');
-    }
-<mt:else>
-    mtShowAnonymousForm();
-</mt:IfRegistrationAllowed>
+        mtHide('comments-form');
 </mt:IfRegistrationRequired>
+    }
+    if ( u && u.is_banned ) {
+        mtHide('comments-form');
+    }
 
-    mtShowGreeting();
+    // if we're previewing a comment, make sure the captcha
+    // field is visible
+    if (is_preview) {
+        mtShowCaptcha();
+    } else {
+        // display greeting appropriate to the current user
+        mtShowGreeting();
+    }
 
-    // populate anonymous comment fields if
-    // user is cookied as anonymous
-    var cf = document.comments_form;
+    // populate anonymous comment fields if user is cookied as anonymous
+    var cf = document['comments_form'];
     if (cf) {
         if (u && u.is_anonymous) {
             if (u.email) cf.email.value = u.email;
@@ -375,45 +361,82 @@ function mtEntryOnLoad() {
     }
 }
 
-<mt:ignore>
+<mt:Ignore>
+/***
+ * Called when an entry archive page is loaded.
+ * This routine controls which elements of the comment form are shown
+ * or hidden, depending on commenter type and blog configuration.
+ */
+</mt:Ignore>
+function mtEntryOnLoad() {
+<mt:Unless tag="IfPingsAccepted">
+    mtHide('trackbacks-info');
+</mt:Unless>
+
+<mt:Unless tag="IfCommentsAccepted">
+    mtHide('comments-open');
+</mt:Unless>
+
+    mtUserOnLoad();
+}
+
+<mt:Ignore>
 /***
  * Handles the action of the "Sign in" link. First clears any existing
  * user cookie, then directs to the MT comment script to sign the user in.
  */
-</mt:ignore>
-function mtSignIn(entry_id) {
+</mt:Ignore>
+function mtSignIn() {
     var doc_url = document.URL;
     doc_url = doc_url.replace(/#.+/, '');
-    var url = '<$MTSignInLink$>';
-    if (entry_id)
-        url += '&entry_id=' + entry_id;
-    else
-        url += '&return_url=' + encodeURIComponent(doc_url);
+    var url = '<$mt:SignInLink$>';
+    url += '&return_url=' + encodeURIComponent(doc_url);
     mtClearUser();
     location.href = url;
 }
 
-<mt:ignore>
+function mtSignInOnClick() {
+    // display throbber
+    var el = document.getElementById('comment-greeting');
+    if (!el)  // legacy MT 4.x element id
+        el = document.getElementById('comment-form-external-auth');
+    if (el)
+        el.innerHTML = 'Signing in... <img src="<$mt:StaticWebPath$>images/indicator.white.gif" height="16" width="16" alt="" />';
+
+    mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
+    mtFetchUser('mtSetUserOrLogin');
+}
+
+function mtSetUserOrLogin(u) {
+    if (u && u.is_authenticated) {
+        mtSetUser(u);
+    } else {
+        // user really isn't logged in; so let's do this!
+        mtSignIn();
+    }
+}
+
+<mt:Ignore>
 /***
  * Handles the action of the "Sign out" link. First clears any existing
  * user cookie, then direts to the MT comment script to sign the user out.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtSignOut(entry_id) {
-    var url = '<$MTSignOutLink$>&entry_id=' + entry_id;
+    var url = '<$mt:SignOutLink$>&entry_id=' + entry_id;
     mtClearUser();
     location.href = url;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Handles the display of the greeting message, depending on what kind of
  * user is logged in and blog comment policy.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtShowGreeting() {
 <mt:IfRegistrationAllowed>
-    var reg_reqd = <mt:IfRegistrationRequired>true<mt:else>false</mt:IfRegistrationRequired>;
+    var reg_reqd = <mt:IfRegistrationRequired>true<mt:Else>false</mt:IfRegistrationRequired>;
 
     var cf = document.comments_form;
     if (!cf) return;
@@ -436,7 +459,7 @@ function mtShowGreeting() {
         } else {
             var user_link;
             if ( u.is_author ) {
-                user_link = '<a href="<$MTCGIPath$><$MTCommentScript$>?__mode=edit_profile&blog_id=<$MTBlogID$>';
+                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<$mt:BlogID$>';
                 if (entry_id)
                     user_link += '&entry_id=' + entry_id;
                 user_link += '">' + u.name + '</a>';
@@ -452,22 +475,22 @@ function mtShowGreeting() {
         }
     } else {
         if (reg_reqd) {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="mtSignIn(' + entry_id + ')">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="mtSignInOnClick()">%%</a>">';
         } else {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or [_3]comment anonymously[_2]." params="<a href="javascript:void(0)" onclick="mtSignIn(' + entry_id + ')">%%</a>%%<a href="javascript:void(0);" onclick="mtShowAnonymousForm();">">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="mtSignInOnClick()">%%</a>">';
         }
     }
     el.innerHTML = phrase;
-<mt:else>
+<mt:Else>
     mtShowCaptcha();
 </mt:IfRegistrationAllowed>
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Handles the action of the 'Reply' links.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtReplyCommentOnClick(parent_id, author) {
     mtShow('comment-form-reply');
 
@@ -486,11 +509,11 @@ function mtReplyCommentOnClick(parent_id, author) {
     mtSetCommentParentID();
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Sets the parent comment ID when replying to a comment.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtSetCommentParentID() {
     var checkbox = document.getElementById('comment-reply');
     var parent_id_field = document.getElementById('comment-parent-id');
@@ -502,11 +525,11 @@ function mtSetCommentParentID() {
     parent_id_field.value = pid;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Persists a copy of the current user cookie into the browser cookie stash.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtSaveUser(f) {
     // We can't reliably store the user cookie during a preview.
     if (is_preview) return;
@@ -530,7 +553,7 @@ function mtSaveUser(f) {
 
     if (!u) return;
 
-    var cache_period = 60 * 60 * 1000; // 1 hour
+    var cache_period = mtCookieTimeout * 1000;
 
     // cache anonymous user info for a long period if the
     // user has requested to be remembered
@@ -542,24 +565,25 @@ function mtSaveUser(f) {
     now.setTime(now.getTime() + cache_period);
 
     var cmtcookie = mtBakeUserCookie(u);
-    mtSetCookie(cookie_name, cmtcookie, now, blog_path, null,
+    mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
         location.protocol == 'https:');
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Clears the blog-side user cookie.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtClearUser() {
-    mtDeleteCookie(cookie_name, blog_path);
+    mtDeleteCookie(mtCookieName, mtCookiePath, mtCookieDomain,
+        location.protocol == 'https:');
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Sets a browser cookie.
  */
-</mt:ignore>
+</mt:Ignore>
 function mtSetCookie(name, value, expires, path, domain, secure) {
     var curCookie = name + "=" + escape(value) +
         (expires ? "; expires=" + expires.toGMTString() : "") +
@@ -569,12 +593,12 @@ function mtSetCookie(name, value, expires, path, domain, secure) {
     document.cookie = curCookie;
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Retrieves a browser cookie.
  */
-</mt:ignore>
-function mtGetCookie (name) {
+</mt:Ignore>
+function mtGetCookie(name) {
     var prefix = name + '=';
     var c = document.cookie;
     var cookieStartIndex = c.indexOf(prefix);
@@ -586,12 +610,12 @@ function mtGetCookie (name) {
     return unescape(c.substring(cookieStartIndex + prefix.length, cookieEndIndex));
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Deletes a browser cookie.
  */
-</mt:ignore>
-function mtDeleteCookie (name, path, domain, secure) {
+</mt:Ignore>
+function mtDeleteCookie(name, path, domain, secure) {
     if (mtGetCookie(name))
         document.cookie = name + "=" +
             (path ? "; path=" + path : "") +
@@ -606,11 +630,11 @@ function mtFixDate(date) {
         date.setTime(date.getTime() - skew);
 }
 
-<mt:ignore>
+<mt:Ignore>
 /***
  * Returns a XMLHttpRequest object (for Ajax operations).
  */
-</mt:ignore>
+</mt:Ignore>
 function mtGetXmlHttp() {
     if ( !window.XMLHttpRequest ) {
         window.XMLHttpRequest = function() {
@@ -701,8 +725,15 @@ if (clearCookie) {
     mtClearUser();
     if (RegExp.$1 == 'in')
         mtFetchUser();
-} else if (! mtGetUser()) {
-    // gather user info
-    mtFetchUser();
+} else {
+    <mt:Ignore>
+    /***
+     * Uncomment this call to fetch the current user state (if available)
+     * from MT upon page load if no user cookie is already present.
+     * This is okay if you have a private install, such as an Intranet;
+     * not recommended for public web sites!
+     */
+    // mtFetchUser();
+    </mt:Ignore>
 }
 </mt:IfRegistrationAllowed>

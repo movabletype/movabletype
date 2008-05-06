@@ -63,15 +63,15 @@
                 <div id="comments-open-data">
                     <div id="comment-form-name">
                         <label for="comment-author"><__trans phrase="Name"></label>
-                        <input id="comment-author" name="author" size="30" value="" />
+                        <input id="comment-author" name="author" size="30" value="" onfocus="mtShowCaptcha()" />
                     </div>
                     <div id="comment-form-email">
                         <label for="comment-email"><__trans phrase="Email Address"></label>
-                        <input id="comment-email" name="email" size="30" value="" />
+                        <input id="comment-email" name="email" size="30" value="" onfocus="mtShowCaptcha()" />
                     </div>
                     <div id="comment-form-url">
                         <label for="comment-url"><__trans phrase="URL"></label>
-                        <input id="comment-url" name="url" size="30" value="" />
+                        <input id="comment-url" name="url" size="30" value="" onfocus="mtShowCaptcha()" />
                     </div>
                     <div id="comment-form-remember-me">
                         <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
@@ -85,7 +85,7 @@
                 <div id="comments-open-text">
                     <label for="comment-text"><__trans phrase="Comments">
                     <MTIfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
-                    <textarea id="comment-text" name="text" rows="15" cols="50"></textarea>
+                    <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtShowCaptcha()"></textarea>
                 </div>
                 <div id="comments-open-captcha"></div>
                 <div id="comments-open-footer">

@@ -368,6 +368,16 @@ class MT {
             $cfg['searchmaxresults'] = '20';
         isset($cfg['maxresults']) or
             $cfg['maxresults'] = $cfg['searchmaxresults'];
+        isset($cfg['singlecommunity']) or
+            $cfg['singlecommunity'] = '0';
+        isset($cfg['usersessioncookiename']) or
+            $cfg['usersessioncookiename'] = 'DEFAULT';
+        isset($cfg['usersessioncookiedomain']) or
+            $cfg['usersessioncookiedomain'] = '<$MTBlogHost exclude_port="1"$>';
+        isset($cfg['usersessioncookiepath']) or
+            $cfg['usersessioncookiepath'] = 'DEFAULT';
+        isset($cfg['usersessioncookietimeout']) or
+            $cfg['usersessioncookietimeout'] = 60*60*4;
     }
 
     function configure_paths($blog_site_path) {

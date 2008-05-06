@@ -808,7 +808,7 @@ sub post {
         $path .= '/' unless $path =~ m!/$!;
         my $site_path_sha1 = MT::Util::perl_sha1_digest_hex($path);
         if ($armor ne $site_path_sha1) {
-            return $app->handle_error($app->translate("Invalid request; $armor != $site_path_sha1"));
+            return $app->handle_error($app->translate("Invalid request"));
         }
     }
 
@@ -1095,7 +1095,7 @@ sub _extend_commenter_session {
     my $app         = shift;
     my %param       = @_;
     my %cookies     = $app->cookies();
-    my $cookie_name = $app->commenter_cookie_name;
+    my $cookie_name = $app->commenter_cookie;
     my $session_key = $cookies{$cookie_name}->value() || "";
     $session_key =~ y/+/ /;
     my $sessobj = MT::Session->load($session_key);
@@ -1391,7 +1391,7 @@ sub redirect_to_target {
     my $cfg = $app->config;
     my $target;
     require MT::Util;
-    my $static = $q->param('static') || '';
+    my $static = $q->param('static') || $q->param('return_url') || '';
 
     if ( ($static eq '') || ($static eq 1) ) {
         require MT::Entry;
@@ -1413,10 +1413,79 @@ sub redirect_to_target {
                 UseMeta => 1 );
         }
     }
+    $target =~ s!#.*$!!; # strip off any existing anchor
     return $app->redirect( $target . '#_' .
         ($q->param('logout') ? 'logout' :  'login'), UseMeta => 1 );
 }
 
+sub session_js {
+    my $app = shift;
+    my $blog_id = int($app->param('blog_id'));
+    my $blog = MT::Blog->load( $blog_id ) if $blog_id;
+    my $jsonp = $app->param('jsonp');
+    $jsonp = undef if $jsonp !~ m/^\w+$/;
+    return $app->error("Invalid request.") unless $jsonp;
+
+    my $c;
+    if ( $blog_id && $blog ) {
+        my ( $session, $commenter ) = $app->_get_commenter_session();
+        if ( $session && $commenter ) {
+            my $blog_perms = $commenter->blog_perm($blog_id);
+            my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
+            $banned = 0 if $blog_perms && $blog_perms->can_administer;
+            $banned ||= 1 if $commenter->status == MT::Author::BANNED();
+
+            my $sessobj = MT::Session->load($session);
+            if ($banned) {
+                $sessobj->remove;
+            } else {
+                $sessobj->start( time +
+                    $app->config->CommentSessionTimeout); # extend by timeou
+                $sessobj->save();
+            }
+
+            # FIXME: These may not be accurate in 'SingleCommunity' mode...
+            my $can_comment = $banned ? 0 : 1;
+            $can_comment = 0 unless $blog->allow_unreg_comments || $blog->allow_reg_comments;
+            my $can_post = ($blog_perms && $blog_perms->can_create_post) ? "1" : "0";
+            $c = {
+                name => $commenter->nickname,
+                url => $commenter->url,
+                email => $commenter->email,
+                userpic => scalar $commenter->userpic_url,
+                profile => "", # profile link url
+                is_authenticated => "1",
+                is_trusted => ($commenter->is_trusted($blog_id) ? "1" : "0"),
+                is_author => ($commenter->type == MT::Author::AUTHOR() ? "1" : "0"),
+                is_anonymous => "0",
+                is_banned => $banned,
+                can_comment => $can_comment,
+                can_post => $can_post,
+            };
+        }
+    }
+
+    unless ($c) {
+        my $can_comment = $blog->allow_anon_comments ? "1" : "0";
+        $c = {
+            is_authenticated => "0",
+            is_trusted => "0",
+            is_anonymous => "1",
+            can_post => "0", # no anonymous posts
+            can_comment => $can_comment,
+            is_banned => "0",
+        };
+    }
+
+    require JSON;
+    $app->{no_print_body} = 1;
+    $app->send_http_header("text/javascript");
+    my $json = JSON::objToJson($c);
+    $app->print("$jsonp(" . $json . ");\n");
+    return undef;
+}
+
+# deprecated
 sub _commenter_status {
     my $app = shift;
     my ( $commenter_id ) = @_;
@@ -1454,71 +1523,6 @@ sub _commenter_status {
         }
     }
     $commenter_status;
-}
-
-sub session_js {
-    my $app = shift;
-    my $blog_id = int($app->param('blog_id'));
-    my $blog = MT::Blog->load( $blog_id ) if $blog_id;
-    my $jsonp = $app->param('jsonp');
-    $jsonp = undef if $jsonp !~ m/^\w+$/;
-
-    my $c;
-    if ( $jsonp && $blog_id && $blog ) {
-        my ( $session, $commenter ) = $app->_get_commenter_session();
-        if ( $session && $commenter ) {
-            my $blog_perms = $commenter->blog_perm($blog_id);
-            my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
-            $banned = 0 if $blog_perms && $blog_perms->can_administer;
-            $banned ||= 1 if $commenter->status == MT::Author::BANNED();
-
-            my $sessobj = MT::Session->load($session);
-            if ($banned) {
-                $sessobj->remove;
-            } else {
-                $sessobj->start( time +
-                    $app->config->CommentSessionTimeout); # extend by timeou
-                $sessobj->save();
-            }
-
-            my $can_comment = $banned ? 0 : 1;
-            $can_comment = 0 unless $blog->allow_unreg_comments || $blog->allow_reg_comments;
-            my $can_post = ($blog_perms && $blog_perms->can_create_post) ? "1" : "0";
-            $c = {
-                name => $commenter->nickname,
-                url => $commenter->url,
-                email => $commenter->email,
-                userpic => scalar $commenter->userpic_url,
-                profile => "", # profile link url
-                is_authenticated => "1",
-                is_trusted => ($commenter->is_trusted() ? "1" : "0"),
-                is_author => ($commenter->type == MT::Author::AUTHOR() ? "1" : "0"),
-                is_anonymous => "0",
-                is_banned => $banned,
-                can_comment => $can_comment,
-                can_post => $can_post,
-            };
-        }
-    }
-
-    unless ($c) {
-        my $can_comment = $blog->allow_anon_comments ? "1" : "0";
-        $c = {
-            is_authenticated => "0",
-            is_trusted => "0",
-            is_anonymous => "1",
-            can_post => "0", # no anonymous posts
-            can_comment => $can_comment,
-            is_banned => "0",
-        };
-    }
-
-    require JSON;
-    $app->{no_print_body} = 1;
-    $app->send_http_header("text/javascript");
-    my $json = JSON::objToJson($c);
-    $app->print("$jsonp(" . $json . ");\n");
-    return undef;
 }
 
 # deprecated
@@ -1683,7 +1687,7 @@ sub do_preview {
         }
         $tmpl->context($ctx);
         $tmpl->param(
-            { 'body_class' => 'mt-comment-preview', 'comment_preview_template' => 1, 'system_template' => 1 } );
+            { 'body_class' => 'mt-comment-preview', 'comment_preview' => 1, 'comment_preview_template' => 1, 'system_template' => 1 } );
     }
     my %cond;
     my $html = $tmpl->build( $ctx, \%cond );

@@ -144,6 +144,10 @@ sub set_commenter_perm {
     my $this = shift;
     my ($blog_id, $action) = @_;
 
+    if ( MT->config->SingleCommunity ) {
+        $blog_id = 0;
+    }
+
     require MT::Permission;
     my %perm_spec = (
         author_id => $this->id(),
@@ -174,9 +178,14 @@ sub commenter_status {
     my $this = shift;
     return APPROVED if $this->is_superuser;
     my ($blog_id) = @_;
+
+    if ( MT->config->SingleCommunity ) {
+        $blog_id = 0;
+    }
+
     require MT::Permission;
     my $perm = MT::Permission->load(
-        { author_id=>$this->id, blog_id => $blog_id } );
+        { author_id => $this->id, blog_id => $blog_id } );
     return PENDING if !$perm;
     return BANNED if $perm->is_restricted('comment');
     return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();

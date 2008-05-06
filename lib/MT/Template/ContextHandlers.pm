@@ -271,6 +271,10 @@ sub core_tags {
             CGIServerPath => \&_hdlr_cgi_server_path,
             ConfigFile => \&_hdlr_config_file,
 
+            UserSessionCookieTimeout => \&_hdlr_user_session_cookie_timeout,
+            UserSessionCookieName => \&_hdlr_user_session_cookie_name,
+            UserSessionCookiePath => \&_hdlr_user_session_cookie_path,
+            UserSessionCookieDomain => \&_hdlr_user_session_cookie_domain,
             CommenterNameThunk => \&_hdlr_commenter_name_thunk,
             CommenterUsername => \&_hdlr_commenter_username, 
             CommenterName => \&_hdlr_commenter_name,
@@ -10012,7 +10016,18 @@ sub _hdlr_comment_author_link {
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
     # Open the link in a new window if requested (with new_window="1").
     my $target = $args->{new_window} ? ' target="_blank"' : '';
-    if ($show_url && $c->url) {
+    my $cmntr = $ctx->stash('commenter');
+    if ( !$cmntr ) {
+        $cmntr = MT::Author->load( $c->commenter_id ) if $c->commenter_id;
+    }
+
+    if ( $cmntr ) {
+        if ($cmntr->url) {
+            return sprintf(qq(<a title="%s" href="%s"%s>%s</a>),
+                           $cmntr->url, $cmntr->url, $target, $name); 
+        }
+        return $name;
+    } elsif ($show_url && $c->url) {
         my $cfg = $ctx->{config};
         my $cgi_path = _hdlr_cgi_path($ctx);
         my $comment_script = $cfg->CommentScript;
@@ -10032,15 +10047,6 @@ sub _hdlr_comment_author_link {
         my $str = "mailto:" . $email;
         $str = spam_protect($str) if $args->{'spam_protect'};
         return sprintf qq(<a href="%s">%s</a>), $str, $name;
-    } else {
-        my $cmntr = $ctx->stash('commenter');
-        if ( !$cmntr ) {
-            $cmntr = MT::Author->load( $c->commenter_id ) if $c->commenter_id;
-        }
-        if ($cmntr && $cmntr->url) {
-            return sprintf(qq(<a title="%s" href="%s">%s</a>), $cmntr->url, $cmntr->url, $name );
-        }
-        return $name;
     }
 }
 
@@ -10631,6 +10637,97 @@ sub _hdlr_commenter_username {
     my ($ctx) = @_;
     my $a = $ctx->stash('commenter');
     return $a ? $a->name : '';
+}
+
+###########################################################################
+
+=head2 UserSessionCookieTimeout
+
+=for tags comments
+
+=cut
+
+sub _hdlr_user_session_cookie_timeout {
+    my ($ctx) = @_;
+    return $ctx->{config}->UserSessionCookieTimeout;
+}
+
+###########################################################################
+
+=head2 UserSessionCookiePath
+
+=for tags comments
+
+=cut
+
+sub _hdlr_user_session_cookie_path {
+    my ($ctx, $args, $cond) = @_;
+    my $blog = $ctx->stash('blog');
+    my $blog_id = $blog ? $blog->id : '0';
+    my $blog_path = $ctx->stash('blog_cookie_path_' . $blog_id);
+    if (!defined $blog_path) {
+        $blog_path = $ctx->{config}->UserSessionCookiePath;
+        if ($blog_path =~ m/<\$?mt/i) { # hey, a MT tag! lets evaluate
+            my $builder = $ctx->stash('builder');
+            my $tokens = $builder->compile($ctx, $blog_path);
+            return $ctx->error($builder->errstr) unless defined $tokens;
+            $blog_path = $builder->build($ctx, $tokens, $cond);
+            return $ctx->error($builder->errstr) unless defined $blog_path;
+        }
+        $ctx->stash('blog_cookie_path_' . $blog_id, $blog_path);
+    }
+    return $blog_path;
+}
+
+###########################################################################
+
+=head2 UserSessionCookieDomain
+
+=for tags comments
+
+=cut
+
+sub _hdlr_user_session_cookie_domain {
+    my ($ctx, $args, $cond) = @_;
+    my $blog = $ctx->stash('blog');
+    my $blog_id = $blog ? $blog->id : '0';
+    my $blog_domain = $ctx->stash('blog_cookie_domain_' . $blog_id);
+    if (!defined $blog_domain) {
+        $blog_domain = $ctx->{config}->UserSessionCookieDomain;
+        if ($blog_domain =~ m/<\$?mt/i) { # hey, a MT tag! lets evaluate
+            my $builder = $ctx->stash('builder');
+            my $tokens = $builder->compile($ctx, $blog_domain);
+            return $ctx->error($builder->errstr) unless defined $tokens;
+            $blog_domain = $builder->build($ctx, $tokens, $cond);
+            return $ctx->error($builder->errstr) unless defined $blog_domain;
+        }
+        # strip off common 'www' subdomain
+        $blog_domain =~ s/^www\.//;
+        $blog_domain = '.' . $blog_domain unless $blog_domain =~ m/^\./;
+        $ctx->stash('blog_cookie_domain_' . $blog_id, $blog_domain);
+    }
+    return $blog_domain;
+}
+
+###########################################################################
+
+=head2 UserSessionCookie
+
+=for tags comments
+
+=cut
+
+sub _hdlr_user_session_cookie_name {
+    my ($ctx) = @_;
+    my $name = $ctx->{config}->UserSessionCookieName;
+    if ($name =~ m/%b/) {
+        my $blog_id = '0';
+        if (my $blog = $ctx->stash('blog')) {
+            $blog_id = $blog->id;
+        }
+        $name =~ s/%b/$blog_id/g;
+    }
+    return $name;
 }
 
 ###########################################################################

@@ -3,11 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
 <head>
     <$mt:include module="<__trans phrase="HTML Head">"$>
-    <title><$MTPageTitle encode_html="1"$> - <$MTBlogName encode_html="1"$></title>
-    <$MTEntryTrackbackData$>
-    <script type="text/javascript" src="<$MTLink template="javascript"$>"></script>
+    <title><$mt:PageTitle encode_html="1"$> - <$mt:BlogName encode_html="1"$></title>
+    <$mt:EntryTrackbackData$>
 </head>
-<body id="<$mt:BlogTemplateSetID$>" class="mt-page-archive <$MTVar name="page_layout"$>" onload="mtEntryOnLoad()">
+<body id="<$mt:BlogTemplateSetID$>" class="mt-page-archive <$mt:Var name="page_layout"$>" onload="mtEntryOnLoad()">
     <div id="container">
         <div id="container-inner">
 
@@ -23,35 +22,35 @@
                         <div id="alpha-inner">
 
 
-                            <div id="page-<$MTPageID$>" class="page-asset asset">
+                            <div id="page-<$mt:PageID$>" class="page-asset asset">
                                 <div class="asset-header">
-                                    <h1 id="page-title" class="asset-name"><$MTPageTitle$></h1>
+                                    <h1 id="page-title" class="asset-name"><$mt:PageTitle$></h1>
                                 </div>
                                 <div class="asset-content">
-<MTIfNonEmpty tag="PageBody">
+<mt:If tag="PageBody">
                                     <div class="asset-body">
-                                        <$MTPageBody$>
+                                        <$mt:PageBody$>
                                     </div>
-</MTIfNonEmpty>
-<MTIfNonEmpty tag="PageMore">
+</mt:If>
+<mt:If tag="PageMore">
                                     <div id="more" class="asset-more">
-                                        <$MTPageMore$>
+                                        <$mt:PageMore$>
                                     </div>
-</MTIfNonEmpty>
+</mt:If>
                                 </div>
                                 <div class="asset-footer"></div>
                             </div>
 
 
-                    <$MTInclude module="<__trans phrase="Trackbacks">"$>
-                    <$MTInclude module="<__trans phrase="Comments">"$>
+                    <$mt:Include module="<__trans phrase="Trackbacks">"$>
+                    <$mt:Include module="<__trans phrase="Comments">"$>
 
 
                         </div>
                     </div>
 
 
-                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+                    <$mt:Include module="<__trans phrase="Sidebar">"$>
 
 
                 </div>
