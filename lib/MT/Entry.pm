@@ -374,13 +374,15 @@ MT::Comment->add_trigger(
 sub pings {
     my $entry = shift;
     my ($terms, $args) = @_;
+    my $tb = $entry->trackback;
+    return undef unless $tb;
     if ($terms || $args) {
         $terms ||= {};
-        $terms->{entry_id} = $entry->id;
+        $terms->{tb_id} = $tb->id;
         return [ MT::TBPing->load( $terms, $args ) ];
     } else {
         $entry->cache_property('pings', sub {
-            [ MT::TBPing->load({ entry_id => $entry->id }) ];
+            [ MT::TBPing->load({ tb_id => $tb->id }) ];
         });
     }
 }
