@@ -49,7 +49,7 @@ sub archive_title {
     my $obj = shift;
     my ($ctx) = @_;
     my $a = $ctx->stash('author');
-    $a ? $a->nickname || MT->translate( 'Author (#[_1])', $a->id ) : '';
+    $a ? $a->nickname || MT->translate( '(Display Name not set)' ) : '';
 }
 
 sub archive_file {
@@ -169,7 +169,7 @@ sub display_name {
             $author
           ? $author->nickname
           ? $author->nickname . ": "
-          : MT->translate( 'Author (#[_1])', $author->id )
+          : MT->translate( '(Display Name not set)' )
           : '';
     }
     return $author;
