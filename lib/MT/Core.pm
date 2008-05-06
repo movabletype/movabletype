@@ -424,6 +424,7 @@ BEGIN {
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },
             'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
+            'UserSessionTimeout'    => { default => 60 * 60 * 4, },
             'UserSessionCookieName' => { handler => \&UserSessionCookieName },
             'UserSessionCookieDomain' => { default => '<$MTBlogHost exclude_port="1"$>' },
             'UserSessionCookiePath' => { handler => \&UserSessionCookiePath },
