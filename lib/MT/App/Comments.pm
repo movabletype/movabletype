@@ -1004,7 +1004,7 @@ sub post {
         }
         my $ctx = $tmpl->context;
         $tmpl->param(
-            { 'body_class' => 'mt-comment-confirmation', 'comment_link' => $comment_link, 'comment_response_template' => 1, 'system_template' => 1 } );
+            { 'body_class' => 'mt-comment-confirmation', 'comment_link' => $comment_link, 'comment_response_template' => 1,'comment_confirmation' => 1,  'system_template' => 1 } );
         $ctx->stash('entry', $entry);
         $ctx->stash('comment', $comment);
         $ctx->stash('commenter', $commenter) if $commenter;
@@ -1659,13 +1659,13 @@ sub do_preview {
         if ( $err eq 'pending' ) {
             $tmpl->context($ctx);
             $tmpl->param(
-                { 'body_class' => 'mt-comment-pending', 'comment_response_template' => 1, 'system_template' => 1 } );
+                { 'body_class' => 'mt-comment-pending', 'comment_response_template' => 1, 'comment_pending' => 1, 'system_template' => 1 } );
         }
         else {
             $ctx->stash( 'error_message', $err );
             $tmpl->context($ctx);
             $tmpl->param(
-                { 'body_class' => 'mt-comment-error', 'comment_response_template' => 1, 'system_template' => 1 } );
+                { 'body_class' => 'mt-comment-error', 'comment_response_template' => 1, 'comment_error' => 1, 'system_template' => 1 } );
         }
     }
     else {
