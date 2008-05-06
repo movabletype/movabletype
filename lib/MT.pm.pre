@@ -1140,6 +1140,7 @@ sub init {
     # Load MT::Log so constants are available
     require MT::Log;
 
+    $mt->run_callbacks('post_init', $mt, \%param);
     return $mt;
 }
 
@@ -3321,6 +3322,13 @@ This callback is invoked when a user is being added to Movable Type.
 Movable Type itself registers for this callback (with a priority of 5)
 to provision the user with a new weblog if the system has been configured
 to do so.
+
+=head2 post_init($cb, \%param)
+
+This callback is invoked when MT is initialized and ready to run.
+This callback is invoked after MT initialized addons, plugins, schema
+and permissions.  The arguments passed to initialize MT is passed
+through to the callback.
 
 =head1 LICENSE
 
