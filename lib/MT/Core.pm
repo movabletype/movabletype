@@ -425,7 +425,7 @@ BEGIN {
             'EmailNotificationBcc'  => { default => 1, },
             'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
             'UserSessionCookieName' => { handler => \&UserSessionCookieName },
-            'UserSessionCookieDomain' => { default => '<$MTBlogDomain exclude_port="1"$>' },
+            'UserSessionCookieDomain' => { default => '<$MTBlogHost exclude_port="1"$>' },
             'UserSessionCookiePath' => { handler => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks' => { default => 0 },
