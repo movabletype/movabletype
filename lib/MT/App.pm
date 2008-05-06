@@ -2390,7 +2390,8 @@ sub load_widgets {
                 } else {
                     $widgets->{new_user} = { order => -2, set => 'main' };
                 }
-                $widgets->{new_version} = { order => -1, set => 'main' };
+                $widgets->{new_version} = { order => -1, set => 'main' }
+                    unless $app->param('installed');
             }
         }
     }

@@ -197,6 +197,9 @@
 </div>
 
 <form method="post" action="<mt:var name="mt_url">" id="completed-action" style="display: none">
+<mt:if name="installing">
+<input type="hidden" name="installed" value="1">
+</mtif>
     <div class="actions-bar">
         <div class="actions-bar-inner pkg actions right">
             <button
