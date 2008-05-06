@@ -1,4 +1,4 @@
-#!/opt/local/bin/perl -w
+#!/usr/bin/perl -w
   
 # Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
 # This program is distributed under the terms of the
