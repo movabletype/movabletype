@@ -728,12 +728,13 @@ if (clearCookie) {
 } else {
     <mt:Ignore>
     /***
-     * Uncomment this call to fetch the current user state (if available)
+     * Uncondition this call to fetch the current user state (if available)
      * from MT upon page load if no user cookie is already present.
      * This is okay if you have a private install, such as an Intranet;
      * not recommended for public web sites!
      */
-    // mtFetchUser();
     </mt:Ignore>
+    if ( is_preview )
+        mtFetchUser();
 }
 </mt:IfRegistrationAllowed>
