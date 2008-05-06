@@ -56,4 +56,5 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
         }
         return sprintf('<a href="%s">%s</a>', $str, $name);
     }
+    return $name;
 }
