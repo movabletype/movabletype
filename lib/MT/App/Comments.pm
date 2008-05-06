@@ -1631,6 +1631,7 @@ sub do_preview {
       @ts[ 3, 2, 1, 0 ];
     $comment->created_on($ts);
     $comment->commenter_id( $commenter->id ) if $commenter;
+
     $ctx->stash( 'comment', $comment );
 
     unless ($err) {

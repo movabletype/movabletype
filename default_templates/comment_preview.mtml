@@ -37,7 +37,7 @@
                                         <div class="asset-meta">
                                             <span class="byline">
                                                 <mt:IfCommentParent>
-                                                    <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
+                                                    <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent><mt:CommentEntry><mt:entrypermalink></mt:CommentEntry>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
                                                 <mt:else>
                                                     <$MTCommentAuthorIdentity$>
                                                     <span class="vcard author"><$MTCommentAuthorLink$></span>
@@ -64,6 +64,9 @@
                                         <input type="hidden" name="preview" value="" />
                                         <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
                                         <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
+                                        <mt:IfCommentParent>
+                                            <input type="hidden" name="parent_id" value="<mt:CommentParent><$MTCommentID$></mt:CommentParent>">
+                                        </mt:IfCommentParent>
                                         <div id="comments-open-data">
                                             <div id="comment-form-name">
                                                 <label for="comment-author"><__trans phrase="Name"></label>
