@@ -1866,7 +1866,7 @@ sub queue_build_file_filter {
     }
 
     $job->priority( $priority );
-    $job->coalesce( ( $fi->blog_id || 0 ) . ':' . $$ . ':' . ( time - ( time % 10 ) ) );
+    $job->coalesce( ( $fi->blog_id || 0 ) . ':' . $$ . ':' . $priority . ':' . ( time - ( time % 10 ) ) );
 
     MT::TheSchwartz->insert($job);
 
