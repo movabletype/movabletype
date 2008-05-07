@@ -105,12 +105,19 @@ sub _get_commenter_session {
 
     my $session_key;
 
-    # First, check for a real MT user login. If one exists,
-    # return that as the commenter identity
-    my ($user, $first_time) = $app->SUPER::login();
-    if ( $user ) {
-        my $sess = $app->session;
-        return ( $sess->id, $user );
+    if (my $blog_id = $q->param('blog_id')) {
+        if (my $blog = MT::Blog->load($blog_id)) {
+            my $auths = $blog->commenter_authenticators || '';
+            if ( $auths =~ /MovableType/ ) {
+                # First, check for a real MT user login. If one exists,
+                # return that as the commenter identity
+                my ($user, $first_time) = $app->SUPER::login();
+                if ( $user ) {
+                    my $sess = $app->session;
+                    return ( $sess->id, $user );
+                }
+            }
+        }
     }
 
     my %cookies = $app->cookies();
