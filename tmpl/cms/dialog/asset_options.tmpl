@@ -38,7 +38,7 @@
 
     var tagPos = 0;
     function initTags() {
-        if (!tagLast || tagList.length == 0) return;
+        if (!tagList || tagList.length == 0) return;
         autoTag = new TC.TagComplete("tags", tagList);
         autoTag.delimiter = tag_delim;
     }
