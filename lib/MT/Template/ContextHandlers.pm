@@ -7424,7 +7424,9 @@ sub _hdlr_entries {
             }
             push @filters, sub { $cexpr->($_[0]->id, \%map) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $args->{category} || $args->{categories}, $class_type eq 'entry' ? 'category' : 'folder'));
+            if (! $category_arg ) {
+                return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $category_arg, $class_type eq 'entry' ? 'category' : 'folder'));
+            }
         }
     }
     # Adds a tag filter to the filters list.
