@@ -817,14 +817,13 @@ sub _rebuild_entry_archive_type {
 
 sub rebuild_file {
     my $mt = shift;
-    my ( $blog, $root_path, $map, $at, $ctx, $cond, $build_static, %args )
+    my ( $blog, $root_path, $map, $at, $ctx_, $cond, $build_static, %args )
       = @_;
+    my $ctx = bless { %$ctx_ }, ref $ctx_;
 
     my $finfo;
     my $archiver = $mt->archiver($at);
     my ( $entry, $start, $end, $category, $author );
-
-    local $ctx->{__stash}{vars} = ();
 
     if ( $finfo = $args{FileInfo} ) {
         $args{Author}   = $finfo->author_id   if $finfo->author_id;
