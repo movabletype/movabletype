@@ -55,7 +55,7 @@ function setExtraPath(sel) {
         label="<__trans phrase="Select File to Upload">"
         hint=""
         show_hint="0">
-        <input type="file" name="file" />
+        <input type="file" name="file" id="file" />
     </mtapp:setting>
 
     <mt:if name="enable_destination">
@@ -63,7 +63,7 @@ function setExtraPath(sel) {
             <__trans phrase="_USAGE_UPLOAD" params="<$mt:var name="blog_name" escape="html"$>">
         </mt:setvarblock>
         <mtapp:setting
-            id="folder"
+            id="site_path"
             label_class="top-label"
             label="<__trans phrase="Upload Destination">"
             hint="<$mt:var name="upload_hint"$>"
@@ -131,7 +131,7 @@ function setExtraPath(sel) {
                 
             <!-- <$mt:var name="blog_url" escape="html"$> -->
             
-            <select name="site_path" onchange="setExtraPath(this)">
+            <select name="site_path" id="site_path" onchange="setExtraPath(this)">
                 <option value="1">&#60;<__trans phrase="Site Root">&#62;</option>
             <mt:if name="enable_archive_paths">
                 <option value="0"<mt:if name="archive_path"> selected="selected"</mt:if>>&#60;<__trans phrase="Archive Root">&#62;</option>

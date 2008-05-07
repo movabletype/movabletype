@@ -97,21 +97,21 @@
         label_class="top-label"
         label="<__trans phrase="Name">">
             <div class="textarea-wrapper">
-                <input type="text" name="label" value="<mt:var name="fname" escape="html">" class="full-width">
+                <input type="text" name="label" id="file_name" value="<mt:var name="fname" escape="html">" class="full-width">
             </div>
     </mtapp:setting>
     <mtapp:setting
         id="file_desc"
         label_class="top-label"
         label="<__trans phrase="Description">">
-            <textarea name="description" cols="" rows="" class="full-width short"></textarea>
+            <textarea name="description" id="file_desc" cols="" rows="" class="full-width short"></textarea>
     </mtapp:setting>
     <mtapp:setting
         id="file_tags"
         label_class="top-label"
         label="<__trans phrase="Tags">">
             <div class="textarea-wrapper">
-                <input type="text" name="tags" id="tags" class="full-width" value="" mt:watch-change="1" autocomplete="0" />
+                <input type="text" name="tags" id="file_tags" class="full-width" value="" mt:watch-change="1" autocomplete="0" />
             </div>
     </mtapp:setting>
         </div>

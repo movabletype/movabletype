@@ -92,17 +92,17 @@
     label_class="top-header"
     hint=""
     show_hint="0">
-    <input type="radio" name="align" id="align-left" class="rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
-    <label class="icon-left icon-left-xwide icon-align icon-align-none"><__trans phrase="None"></label>
+    <input type="radio" name="align" id="align-none" class="rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
+    <label for="align-none" class="icon-left icon-left-xwide icon-align icon-align-none"><__trans phrase="None"></label>
 
     <input type="radio" name="align" id="align-left" class="rb" value="left" <mt:if name="align_left">checked="checked" </mt:if>/>
-    <label class="icon-left-xwide icon-align icon-align-left"><__trans phrase="Left"></label>
+    <label for="align-left" class="icon-left-xwide icon-align icon-align-left"><__trans phrase="Left"></label>
 
     <input type="radio" name="align" id="align-center" class="rb" value="center" <mt:if name="align_center">checked="checked" </mt:if>/>
-    <label class="icon-left-xwide icon-align icon-align-center"><__trans phrase="Center"></label>
+    <label for="align-center" class="icon-left-xwide icon-align icon-align-center"><__trans phrase="Center"></label>
 
     <input type="radio" name="align" id="align-right" class="rb" value="right" <mt:if name="align_right">checked="checked" </mt:if>/>
-    <label class="icon-left-xwide icon-align icon-align-right"><__trans phrase="Right"></label>
+    <label for="align-right" class="icon-left-xwide icon-align icon-align-right"><__trans phrase="Right"></label>
 </mtapp:setting>
 <mt:if name="do_thumb">
     <mtapp:setting
@@ -113,7 +113,7 @@
         show_hint="0"
         help_page="file_upload"
         help_section="creating_thumbnails">
-        <input type="checkbox" name="thumb" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
+        <input type="checkbox" name="thumb" id="create_thumbnail" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
         <label for="create_thumbnail"><__trans phrase="Use thumbnail"></label>
         (<label for="thumb_width"><__trans phrase="width:"></label>
         <input name="thumb_width" id="thumb_width" value="<mt:var name="thumb_width">" onkeypress="widthKeyPress(event)" onchange="adjustWidthHeight(this.form, 1)" size="4" /> <__trans phrase="pixels">)
@@ -137,8 +137,8 @@
         label_class="no-header"
         hint=""
         show_hint="0">
-        <input type="checkbox" name="image_defaults" value="1" />
-        <label for="save_settings"><__trans phrase="Remember these settings"></label>
+        <input type="checkbox" name="image_defaults" id="image_defaults" value="1" />
+        <label for="image_defaults"><__trans phrase="Remember these settings"></label>
     </mtapp:setting>
 </mt:if>
     </div>
