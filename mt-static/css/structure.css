@@ -1666,10 +1666,10 @@ fieldset h3 {
     margin-right: 10px;
     text-align: right;
 }
-.edit-author .field .field-content,
-.edit-folder .field .field-content,
-.edit-category .field .field-content,
-.field-left-label .field-content {
+.edit-author #main-content .field .field-content,
+.edit-folder #main-content .field .field-content,
+.edit-category #main-content .field .field-content,
+ #main-content .field-left-label .field-content {
     margin-left: 130px;
 }
 

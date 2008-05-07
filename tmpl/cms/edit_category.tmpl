@@ -17,6 +17,16 @@
         </mtapp:statusmsg>
     </mt:if>
 </MTSetVarBlock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=list_cat&amp;_type=category&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Categories"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id"$>"><__trans phrase="Manage entries in this category"></a></li>
+        </ul>
+    </mtapp:widget>
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
