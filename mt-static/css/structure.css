@@ -3037,6 +3037,7 @@ body.preview-screen {
     background: #E7F0F6;
     padding: 0 10px;
     margin-bottom: 10px;
+    border-bottom: 1px solid #fff; /* HACK - IE & Safari packaging */
 }
 
 #template-options-header {
