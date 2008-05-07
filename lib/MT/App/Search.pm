@@ -31,11 +31,12 @@ sub init {
     #        $app->param($k, $v);
     #    }
     #}
+    my $pkg = ref($app);
     $app->_register_core_callbacks({
-        'MT::App::Search::search_post_execute' => \&_log_search,
-        'MT::App::Search::search_post_render'  => \&_cache_out,
-        'MT::App::Search::prepare_throttle'    => \&_default_throttle,
-        'MT::App::Search::take_down'           => \&_default_takedown,
+        "${pkg}::search_post_execute" => \&_log_search,
+        "${pkg}::search_post_render"  => \&_cache_out,
+        "${pkg}::prepare_throttle"    => \&_default_throttle,
+        "${pkg}::take_down"           => \&_default_takedown,
     });
     $app;
 }
