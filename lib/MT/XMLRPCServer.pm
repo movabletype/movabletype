@@ -362,10 +362,11 @@ sub _new_entry {
             || die MT::XMLRPCServer::_fault(MT->translate("Invalid timestamp format"));
         require MT::DateTime;
         $entry->status(MT::Entry::FUTURE())
-            if MT::DateTime->compare(
-                blog => $blog,
-                a => $entry->authored_on,
-                b => { value => time(), type => 'epoch' } ) > 0;
+            if ($entry->status == MT::Entry::RELEASE()) &&
+                (MT::DateTime->compare(
+                    blog => $blog,
+                    a => $entry->authored_on,
+                    b => { value => time(), type => 'epoch' } ) > 0);
     }
     $entry->discover_tb_from_entry();
 
@@ -454,7 +455,7 @@ sub _edit_entry {
     die _fault(MT->translate("Not privileged to edit entry"))
         unless $perms && $perms->can_edit_entry($entry, $author);
     my $orig_entry = $entry->clone;
-    $entry->status(MT::Entry::RELEASE()) if $publish;
+    $entry->status(MT::Entry::RELEASE()) if $publish && $perms->can_publish_post;
     $entry->title($item->{title}) if $item->{title};
 
     $class->_apply_basename($entry, $item, \%param);
