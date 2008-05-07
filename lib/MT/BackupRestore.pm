@@ -1123,6 +1123,20 @@ sub parents {
     };
 }
 
+package MT::FileInfo;
+
+sub parents {
+    my $obj = shift;
+    {
+        entry_id => { class => [ MT->model('entry'), MT->model('page') ], optional => 1 },
+        blog_id => { class => MT->model('blog'), optional => 1 },
+        templatemap_id => { class => MT->model('templatemap'), optional => 1 },
+        template_id => { class => MT->model('template'), optional => 1 },
+        category_id => { class => [ MT->model('category'), MT->model('folder') ], optional => 1 },
+        author_id => { class => MT->model('author'), optional => 1 },
+    };
+}
+
 package MT::Notification;
 
 sub parents {

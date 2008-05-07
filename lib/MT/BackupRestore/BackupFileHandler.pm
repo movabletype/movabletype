@@ -305,6 +305,16 @@ sub end_element {
                 });
                 $exists = 1 if $score;
             }
+            elsif ('field' eq $name) {
+                # Available in propack only
+                if ( $obj->blog_id == 0 ) {
+                    my $field = $class->exist( {
+                        blog_id => 0,
+                        basename => $obj->basename,
+                    } );
+                    $exists = 1 if $field;
+                }
+            }
             unless ($exists) {
                 my $result;
                 if ( $obj->id ) {

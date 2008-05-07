@@ -48,25 +48,23 @@ my %oldies;
 my $types = MT->registry('object_types');
 foreach my $key (keys %$types) {
     next if exists $skip{$key};
+    next if $key =~ /\w+\.\w+/; # skip subclasses
     my $iter = MT->model($key)->load_iter;
     my @data;
     while ( my $obj = $iter->() ) {
-        push @data, $obj;
+        push @data, $obj unless $obj->can('class') && ($obj->class ne $key);
     }
     $oldies{$key} = \@data;
 }
 
 MT::BackupRestore->backup(undef, $printer, sub {}, sub {}, sub { print $_[0], "\n"; }, 0, 'UTF-8');
-open my $fh, '>', 'c:\\temp\\hoge.txt';
-print $fh $backup_data;
-close $fh;
 
 use IO::String;
 my $h = IO::String->new(\$backup_data);
 my (%objects, %deferred, @errors);
 MT::BackupRestore->restore_process_single_file($h, \%objects, \%deferred, \@errors, "4.0", 0, sub { print $_[0], "\n"; });
 
-is(scalar(keys %deferred), 0);
+is(scalar(keys %deferred), 0, 'no deferred objects remain');
 warn join "\n", @errors if @errors;
 is(scalar(@errors), 0, 'no error during backup');
 &checkthemout(\%oldies, \%objects);
@@ -82,10 +80,10 @@ sub checkthemout {
         for my $old (@$old_objects) {
             my $class = MT->model($name);
             isnt($class, undef, "$name must be valid");
-            my $ds = $class->datasource;
-            my $root_class = MT->model($ds);
-            isnt($root_class, undef, "$ds must be valid");
-            my $key = "$root_class#" . $old->id;
+            if ($class =~ /MT::Asset(::.+)*/) {
+                $class = 'MT::Asset';
+            }
+            my $key = "$class#" . $old->id;
             my $tmp_obj = $objects->{$key};
             isnt(undef, $tmp_obj, "$key must not hold undef");
             my $obj = $class->load($tmp_obj->id, {cached_ok=>0});
@@ -110,14 +108,35 @@ sub checkthemout {
                         $parent = $_->load($new_parent->id);
                         last if $parent;
                     }
-                    isnt(undef, $parent);
+                    unless ($parent) {
+                        # try the other way to find package name for the parents
+                        my $parents_hash = $class->parents;
+                        $parent_class = $parents_hash->{$col} if $parents_hash;
+                        if ( ref($parent_class) eq 'HASH' ) {
+                            $parent_class = $parent_class->{class};
+                        }
+                        if ( !$parent_class && ($col eq 'entry_id') && ('MT::Trackback' eq $class) ) {
+                            $parent_class = [ MT->model('entry'), MT->model('page') ];
+                        }
+                        if ( $parent_class && ( 'ARRAY' eq ref($parent_class) ) ) {
+                            foreach (@$parent_class) {
+                                my $parent_key = $_ . '#' . $old_parent_id;
+                                my $new_parent = $objects->{$parent_key};
+                                next unless $new_parent;
+                                $parent = $_->load($new_parent->id);
+                                last if $parent;
+                            }
+                        }
+                    }
+                    isnt(undef, $parent, "parent object(" . $old->id . ") of $class pointed to by $col should not be undef");
                 } else {
                     next if $col eq 'modified_on';
                     next if (
                         (defined($old->column($col)) && ($old->column($col) eq '')) &&
                         (!defined($obj->column($col)))
                     );
-                    next if ($ds eq 'category' && ($col eq 'parent'));
+                    next if ($name eq 'category' && ($col eq 'parent'));
+                    next if ($name eq 'folder' && ($col eq 'parent'));
                     if ( ($name eq 'trackback') && ($col eq 'is_disabled') ) {
                         if ( defined($obj->is_disabled) && $obj->is_disabled
                           && (!defined($obj->entry->allow_pings) || ($obj->entry->allow_pings == 0)) )
