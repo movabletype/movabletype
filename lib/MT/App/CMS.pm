@@ -1380,7 +1380,7 @@ sub core_menus {
             mode          => 'list_widget',
             order         => 200,
             permission    => 'edit_templates',
-            view          => "blog",
+            system_permission => "edit_templates",
         },
 
         'prefs:general' => {
