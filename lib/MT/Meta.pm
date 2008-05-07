@@ -212,6 +212,7 @@ sub _build_subclass {
     my $subclass = $pkg->meta_pkg;
     return unless $subclass;
 
+    no strict 'refs'; ## no critic
     return if defined ${"${subclass}::VERSION"};
 
     ## Try to use this subclass first to see if it exists
@@ -223,7 +224,7 @@ sub _build_subclass {
     };
     if ($@) {
         ## Die if we get an unexpected error
-        die $@ unless $@ =~ /^Can't locate /;
+        die $@ unless $@ =~ /Can't locate /;
     } else {
         ## This class exists.  We don't need to do anything.
         return 1;
