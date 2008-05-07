@@ -600,7 +600,21 @@ sub core_upgrade_functions {
         'core_update_widget_template' => {
             version_limit => 4.0022,
             priority => 3.1,
-            code => \&update_widget_templates,
+            updater => {
+                type => 'template',
+                label => 'Updating widget template records...',
+                condition => sub {
+                    return 0 unless 'custom' eq $_[0]->type;
+                    my $name = $_[0]->name;
+                    if ($name =~ s/^(?:Widget|Sidebar): ?//) {
+                        $_[0]->name($name);
+                        $_[0]->type('widget');
+                        $_[0]->save;
+                    }
+                    0;
+                },
+                code => sub { 1; },
+            },
         },
         # This upgrade step is currently necessary for PostgreSQL
         # which doesn't support adding a column, populating the existing
@@ -706,7 +720,9 @@ sub core_upgrade_functions {
                 condition => sub {
                     my ($user) = @_;
                     if ( $user->type ==MT::Author::AUTHOR() ) {
-                        return 1 if $App && ( $user->id == $App->user->id );
+                        return 1
+                            if $App && UNIVERSAL::isa( $App, 'MT::App' )
+                            && ( $user->id == $App->user->id );
                     }
                     return 0;
                 },
@@ -2044,28 +2060,6 @@ sub rename_php_plugin_filenames {
                 category => 'upgrade',
             }
         );
-    }
-    1;
-}
-
-sub update_widget_templates {
-    my $self = shift;
-
-    $self->progress($self->translate_escape('Updating widget template records...'));
-    require MT::Template;
-    my $iter = MT::Template->load_iter(
-        { type => 'custom' },
-        { 'sort' => 'name',
-          'direction' => 'ascend' }
-    );
-
-    while (my $tmpl = $iter->()) {
-        my $name = $tmpl->name();
-        if ($name =~ s/^(?:Widget|Sidebar): ?//) {
-            $tmpl->name($name);
-            $tmpl->type('widget');
-            $tmpl->save;
-        }
     }
     1;
 }
