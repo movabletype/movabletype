@@ -917,7 +917,10 @@ sub core_upgrade_functions {
             priority => 3.2,
             updater => {
                 type => 'templatemap',
-                label => 'Replacing %C format to MTCategoryLabel...',
+                label => 'Replacing %C format to use CategoryLabel tag...',
+                condition => sub {
+                    ( $_[0]->file_template || '' ) =~ m/%-?C/;
+                },
                 code => sub {
                     my ($map) = shift;
                     my $file_template = $map->file_template();
