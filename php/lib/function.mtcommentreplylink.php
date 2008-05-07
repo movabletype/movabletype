@@ -15,7 +15,7 @@ function smarty_function_mtcommentreplylink($args, &$ctx) {
     $label or $label = $mt->translate("Reply");
 
     $onclick = $args['onclick'];
-    $onclick or $onclick = "mtCommentReplyOnClick(%d, '%s')";
+    $onclick or $onclick = "mtReplyCommentOnClick(%d, '%s')";
 
     $comment_author = $comment['comment_author'];
     require_once("MTUtil.php");
