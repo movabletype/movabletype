@@ -27,11 +27,16 @@ sub new {
     }
 }
 
+{
+my $Is_Available;
 sub is_available {
+    return $Is_Available if defined $Is_Available;
     my $class = shift;
     my @servers = MT->config->MemcachedServers;
     my $driver_class = MT->config->MemcachedDriver;
-    return @servers > 0 && eval "require $driver_class;" ? 1 : 0;
+    $Is_Available = @servers > 0 && eval "require $driver_class;" ? 1 : 0;
+    return $Is_Available;
+}
 }
 
 our $Instance;
