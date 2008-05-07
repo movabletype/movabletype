@@ -1835,11 +1835,11 @@ sub queue_build_file_filter {
 
     my $at = $fi->archive_type || '';
     # Default priority assignment....
-    if ($at eq 'Individual') {
+    if (($at eq 'Individual') || ($at eq 'Page')) {
         require MT::TemplateMap;
         my $map = MT::TemplateMap->load($fi->templatemap_id);
-        # Individual archive pages that are the 'permalink' pages should
-        # have highest build priority.
+        # Individual/Page archive pages that are the 'permalink' pages
+        # should have highest build priority.
         if ($map && $map->is_preferred) {
             $priority = 10;
         } else {
@@ -1851,12 +1851,18 @@ sub queue_build_file_filter {
         if ($fi->file_path =~ m!/(index|default|atom|feed)!i) {
             $priority = 9;
         } else {
-            $priority = 3;
+            $priority = 8;
         }
-    } elsif ($at =~ m/Category/) {
+    } elsif ($at =~ m/Category|Author/) {
         $priority = 1;
-    } elsif ($at =~ m/Monthly|Weekly|Daily/) {
+    } elsif ($at =~ m/Yearly/) {
+        $priority = 1;
+    } elsif ($at =~ m/Monthly/) {
         $priority = 2;
+    } elsif ($at =~ m/Weekly/) {
+        $priority = 3;
+    } elsif ($at =~ m/Daily/) {
+        $priority = 4;
     }
 
     $job->priority( $priority );
