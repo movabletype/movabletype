@@ -23,6 +23,7 @@ BEGIN {
 }
 
 use Test::More;
+use Test::Deep;
 use lib 't/lib';
 use MT::Test qw(:testdb :time);
 
@@ -31,7 +32,7 @@ BEGIN {
         if !-r $ENV{MT_CONFIG};
 }
 
-plan tests => 187;
+plan tests => 184;
 
 package Zot;
 use base 'MT::Object';
@@ -70,7 +71,7 @@ ok($foo[0]->save, 'A Foo could be saved');
 is($foo[0]->id, 1, 'First Foo was given an id of 1, says accessor method');
 is($foo[0]->column('id'), $foo[0]->id, 'First Foo was given an id of 1, says column()');
 
-sub is_object {
+sub _is_object {
     my ($got, $expected, $name) = @_;
 
     if (!defined $got) {
@@ -100,7 +101,34 @@ sub is_object {
         $expected_values{$field} = $value if defined $value;
     }
 
-    is_deeply(\%got_values, \%expected_values, $name);
+    if (!eq_deeply(\%got_values, \%expected_values)) {
+        # 'Test' again so the helpful failure diagnostics are output.
+        is_deeply(\%got_values, \%expected_values, $name);
+        return;
+    }
+
+    return 1;
+}
+
+sub is_object {
+    my ($got, $expected, $name) = @_;
+    pass($name) if _is_object(@_);
+}
+
+sub are_objects {
+    my ($got, $expected, $name) = @_;
+
+    my $count = scalar @$expected;
+    if ($count != scalar @$got) {
+        fail($name);
+        diag('    got ', scalar(@$got), ' objects but expected ', $count);
+        return;
+    }
+
+    for my $i (0..$count-1) {
+        return if !_is_object($$got[$i], $$expected[$i], "$name (#$i)");
+    }
+    pass($name);
 }
 
 is_object(scalar Foo->load(1), $foo[0], 'Foo #1 by id is Foo #1');
@@ -165,19 +193,6 @@ $tmp = Foo->load(undef, {
     direction => 'ascend',
     limit => 1 });
 is_object($tmp, $foo[0], 'Oldest Foo is Foo #1');
-
-sub are_objects {
-    my ($got, $expected, $name) = @_;
-
-    my $count = scalar @$expected;
-    if ($count != scalar @$got) {
-        fail($name);
-        diag('    got ', scalar(@$got), ' objects but expected ', $count);
-        return;
-    }
-
-    is_object($$got[$_], $$expected[$_], "$name (#$_)") for (0..$count-1);
-}
 
 ## Load using descending sort with limit = 2
 @tmp = Foo->load(undef, {
@@ -492,6 +507,17 @@ is($tmp[1]->id, $foo[1]->id, 'id');
       join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
 is(@tmp, 1, 'array length 1');
 is($tmp[0]->id, $foo[0]->id, 'id');
+
+# Join across a column.
+@tmp = Foo->load({},
+    { sort => 'created_on', direction => 'descend',
+      join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 0 }, { unique => 1 } ] });
+are_objects(\@tmp, \@foo, 'Foos loaded by explicit join across columns');
+
+@tmp = Foo->load({ status => 2 },
+    { sort => 'created_on', direction => 'descend',
+      join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 0 }, { unique => 1 } ] });
+are_objects(\@tmp, [ $foo[0] ], 'Foos of status=2 loaded by explicit join across columns');
 
 ## TEST EXISTS METHOD
 ok($foo[0]->exists, 'exists');
