@@ -800,8 +800,9 @@ sub _rebuild_entry_archive_type {
     for my $map (@map) {
         next unless $map->build_type; # ignore disabled template maps
 
+	my $ctx_clone = $ctx->clone();
         $mt->rebuild_file(
-            $blog, $arch_root, $map, $at, $ctx, \%cond,
+            $blog, $arch_root, $map, $at, $ctx_clone, \%cond,
             !$param{NoStatic},
             Category  => $param{Category},
             Entry     => $entry,
@@ -817,10 +818,8 @@ sub _rebuild_entry_archive_type {
 
 sub rebuild_file {
     my $mt = shift;
-    my ( $blog, $root_path, $map, $at, $ctx_, $cond, $build_static, %args )
+    my ( $blog, $root_path, $map, $at, $ctx, $cond, $build_static, %args )
       = @_;
-    my $ctx = bless { %$ctx_ }, ref $ctx_;
-
     my $finfo;
     my $archiver = $mt->archiver($at);
     my ( $entry, $start, $end, $category, $author );

@@ -33,6 +33,15 @@ sub init {
     $ctx;
 }
 
+sub clone {
+    my $ctx = shift;
+    my $clone = ref($ctx)->new;
+    for my $key (keys %{$ctx}) {
+	$clone->{$key} = $ctx->{$key}
+    }
+    return $clone;
+}
+
 sub init_handlers {
     my $ctx = shift;
     my $mt = MT->instance;
