@@ -55,23 +55,23 @@ TC.attachLoadEvent(init);
             <ul>
                 <li>
                     <input type="radio" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
-                    <label for="dynamicity-sync"><__trans phrase="Static Publishing"> <span class="hint"><__trans phrase="Publish all files statically."></span></label>
+                    <label for="dynamicity-sync"><__trans phrase="Static Publishing"> <span class="hint"><__trans phrase="Immediately publish all templates statically."></span></label>
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
-                    <label for="dynamicity-async"><__trans phrase="Asynchronous Publishing"> <span class="hint"><__trans phrase="Publish all files via the asynchronous job queue."></span></label>
+                    <label for="dynamicity-async"><__trans phrase="Background Publishing"> <span class="hint"><__trans phrase="All templates published statically via Publish Que."></span></label>
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
-                    <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"> <span class="hint"><__trans phrase="Publish main index template and all entry/page archives statically. Publish all other files in the background."></span></label>
+                    <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"> <span class="hint"><__trans phrase="Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically."></span></label>
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
-                    <label for="dynamicity-dynamic"><__trans phrase="Dynamic Publishing"> <span class="hint"><__trans phrase="Publish all files dynamically."></span></label>
+                    <label for="dynamicity-dynamic"><__trans phrase="Dynamic Publishing"> <span class="hint"><__trans phrase="Publish all templates dynamically."></span></label>
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
-                    <label for="dynamicity-archives"><__trans phrase="Dynamic Archives Only"> <span class="hint"><__trans phrase="Publish all archives dynamically. Publish all other files statically."></span></label>
+                    <label for="dynamicity-archives"><__trans phrase="Dynamic Archives Only"> <span class="hint"><__trans phrase="Publish all Archive templates dynamically. Immediately publish all other templates statically."></span></label>
                 </li>
             </ul>
         </mtapp:setting>

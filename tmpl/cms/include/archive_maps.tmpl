@@ -6,7 +6,7 @@
         <tr>
             <th class="archive-type"><__trans phrase="Type"></th>
             <th class="archive-path"><__trans phrase="Path"></th>
-            <th class="publish-options"><__trans phrase="Publish Options"></th>
+            <th class="publish-options"><__trans phrase="Publishing"></th>
             <th class="archive-delete si"><div><span><__trans phrase="Delete"></span></div></th>
         </tr>
     </thead>
@@ -28,10 +28,9 @@
             </td>
             <td class="publish-options">
                 <select name="map_build_type_<mt:var name="map_id">" id="build-type" class="half-width">
-                    <option value="1"<mt:if name="map_build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically"></option>
-                    <option value="3"<mt:if name="map_build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
+                    <option value="1"<mt:if name="map_build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
     <mt:if name="publish_queue_available">
-                    <option value="4"<mt:if name="map_build_type_4"> selected="selected"</mt:if>><__trans phrase="Background"></option>
+                    <option value="4"<mt:if name="map_build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>
         <mt:ignore>
             <!-- untested features -->
                     <option value="5"<mt:if name="map_build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
@@ -44,8 +43,9 @@
                     </select>
         </mt:ignore>
     </mt:if>
+                    <option value="3"<mt:if name="map_build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
                     <option value="2"<mt:if name="map_build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
-                    <option value="0"<mt:if name="map_build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
+                    <option value="0"<mt:if name="map_build_type_0"> selected="selected"</mt:if>><__trans phrase="Do Not Publish"></option>
                 </select>
             </td>
             <td class="archive-delete si"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')" class="delete-archive-link"><span><__trans phrase="Delete"></span></a></td>

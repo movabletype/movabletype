@@ -59,7 +59,7 @@
                 <th class="blog"><__trans phrase="Blog"></th>
         </mt:unless>
         <mt:if name="template_type" like="/(index|archive)/">
-                <th class="publishing-method"><__trans phrase="Publishing"></th>
+                <th class="publishing-method"><__trans phrase="Publish"></th>
         </mt:if>
         <mt:if name="template_type" like="(module|widget)">
                 <th class="cache-method"><__trans phrase="Cached"></th>
@@ -99,7 +99,7 @@
                     <mt:if name="build_type" eq="0"><__trans phrase="Disabled">
                     <mt:elseif name="build_type" eq="2"><__trans phrase="Manual">
                     <mt:elseif name="build_type" eq="3"><__trans phrase="Dynamic">
-                    <mt:elseif name="build_type" eq="4"><__trans phrase="Background">
+                    <mt:elseif name="build_type" eq="4"><__trans phrase="Publish Queue">
                     <mt:elseif name="build_type" eq="5"><__trans phrase="Scheduled">
                     <mt:else><__trans phrase="Static"></mt:if>
                 </td>
@@ -110,11 +110,11 @@
                 <mt:loop name="archive_tmpl_loop">
                     <mt:if name="selected">
                         <li>
-                    <mt:if name="map_build_type" eq="0"><__trans phrase="Disabled">
-                    <mt:elseif name="map_build_type" eq="2"><__trans phrase="Manual">
-                    <mt:elseif name="map_build_type" eq="3"><__trans phrase="Dynamic">
-                    <mt:elseif name="map_build_type" eq="4"><__trans phrase="Background">
-                    <mt:elseif name="map_build_type" eq="5"><__trans phrase="Scheduled">
+                    <mt:if name="build_type" eq="0"><__trans phrase="Disabled">
+                    <mt:elseif name="build_type" eq="2"><__trans phrase="Manual">
+                    <mt:elseif name="build_type" eq="3"><__trans phrase="Dynamic">
+                    <mt:elseif name="build_type" eq="4"><__trans phrase="Publish Queue">
+                    <mt:elseif name="build_type" eq="5"><__trans phrase="Scheduled">
                     <mt:else><__trans phrase="Static"></mt:if>
                         </li>
                     </mt:if>

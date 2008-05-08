@@ -580,7 +580,7 @@ TC.attachLoadEvent( init );
         id="identifier"
         help_page="templates"
         help_section="template_type">
-        <select name="identifier" id="identifier" tabindex="5" class="full-width">
+        <select name="identifier" id="identifier" tabindex="5" class="half-width">
             <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
             <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
@@ -599,6 +599,9 @@ TC.attachLoadEvent( init );
         </div>
 </mtapp:setting>
 
+<mt:setvarblock name="publishing_hint">
+    <__trans phrase="Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>">
+</mt:setvarblock>
 <mt:if name="archive_types">
     <mtapp:setting
         id="archive_mapping"
@@ -627,25 +630,22 @@ TC.attachLoadEvent( init );
         </div>
         <div id="template-maps">
             <mt:include name="include/archive_maps.tmpl">
+            <div class="hint"><$mt:var name="publishing_hint"$></div>
         </div>
     </mtapp:setting>
 <mt:else>
     <mt:if name="template_group" eq="index">
-        <mt:setvarblock name="build_dynamic_hint">
-            <__trans phrase="Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/publishing-profiles-and-strategies.html">publishing profiles</a>">
-        </mt:setvarblock>
         <mtapp:setting
             id="build_dynamic"
-            label="<__trans phrase="Publish Options">"
-            hint="$build_dynamic_hint"
+            label="<__trans phrase="Publishing">"
+            hint="$publishing_hint"
             show_hint="1"
             help_page="templates"
             help_section="enable_dynamic_publishing">
-            <select name="build_type" id="build-type" class="full-width">
-                <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically"></option>
-                <option value="3"<mt:if name="build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
+            <select name="build_type" id="build-type" class="half-width">
+                <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
                 <mt:if name="publish_queue_available">
-                <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Background"></option>
+                <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>
         <mt:ignore>
             <!-- untested features -->
                     <option value="5"<mt:if name="build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
@@ -658,8 +658,9 @@ TC.attachLoadEvent( init );
                     </select>
         </mt:ignore>
                 </mt:if>
+                <option value="3"<mt:if name="build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
                 <option value="2"<mt:if name="build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
-                <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Disabled"></option>
+                <option value="0"<mt:if name="build_type_0"> selected="selected"</mt:if>><__trans phrase="Do Not Publish"></option>
             </select>
         </mtapp:setting>
     </mt:if>
