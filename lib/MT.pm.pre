@@ -1314,8 +1314,8 @@ sub _init_plugins_core {
                       File::Spec->catdir( $plugin_full_path, 'config.yaml' );
 
                     foreach my $lib (qw(lib extlib)) {
-                        $lib = File::Spec->catdir( $plugin_full_path, $lib );
-                        unshift @INC, $lib if -d $lib;
+                        my $plib = File::Spec->catdir( $plugin_full_path, $lib );
+                        unshift @INC, $plib if -d $plib;
                     }
 
                     if ( -f $yaml ) {
