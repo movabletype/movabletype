@@ -27,7 +27,9 @@ __PACKAGE__->install_properties({
         blog_id => 1,
         label => 1,
         parent => 1,
-        basename => 1,
+        blog_basename => {
+            columns => [ 'blog_id', 'basename' ],
+        },
         blog_class => {
             columns => [ 'blog_id', 'class' ],
         },

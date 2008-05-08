@@ -57,7 +57,9 @@ __PACKAGE__->install_properties({
         modified_on => 1,
         authored_on => 1,
         # For lookups 
-        basename => 1,
+        blog_basename => {
+            columns => [ 'blog_id', 'basename' ],
+        },
         # Page listings are published in order by title
         title => 1,
         blog_author => {
