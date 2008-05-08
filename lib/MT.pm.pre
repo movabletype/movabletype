@@ -1312,10 +1312,12 @@ sub _init_plugins_core {
                     # handle config.yaml
                     my $yaml =
                       File::Spec->catdir( $plugin_full_path, 'config.yaml' );
-                    my $libdir;
-                    ( unshift @INC, $libdir )
-                      if -d ( $libdir =
-                          File::Spec->catdir( $plugin_full_path, 'lib' ) );
+
+                    foreach my $lib (qw(lib extlib)) {
+                        $lib = File::Spec->catdir( $plugin_full_path, $lib );
+                        unshift @INC, $lib if -d $lib;
+                    }
+
                     if ( -f $yaml ) {
                         my $pclass =
                           $plugin_dir =~ m/\.pack$/
