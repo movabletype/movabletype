@@ -34,7 +34,7 @@ sub class_label {
 
 sub remove {
     my $pd = shift;
-    $pd->SUPER::remove(@_) if ref($pd);
+    return $pd->SUPER::remove(@_) if ref($pd);
 
     # class method call - might have blog_id parameter
     my ($terms, $args) = @_;
