@@ -28,19 +28,22 @@ my $help      = 0;
 my $load      = 10;
 my $verbose   = 0;
 my $scoreboard;
+my $randomize_jobs = 0;
 
 Getopt::Long::GetOptions(
-    "daemon"      => \$daemonize,
-    "sleep=i"     => \$sleep,
-    "load=i"      => \$load,
-    "scoreboard=s"=> \$scoreboard,
-    "verbose"     => \$verbose,
+    "daemon"       => \$daemonize,
+    "sleep=i"      => \$sleep,
+    "load=i"       => \$load,
+    "scoreboard=s" => \$scoreboard,
+    "randomly"     => \$randomize_jobs,
+    "verbose"      => \$verbose,
 );
 
 my %cfg;
 $cfg{verbose} = $verbose;
 $cfg{scoreboard} = $scoreboard;
 $cfg{prioritize} = 1;
+$cfg{randomize} = $randomize_jobs;
 
 my $client = eval {
     require MT::TheSchwartz;
