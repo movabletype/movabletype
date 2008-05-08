@@ -148,7 +148,7 @@ sub install_properties {
         my @classes = grep { !ref($_) } @$more_props;
         foreach my $isa_class (@classes) {
             next if UNIVERSAL::isa($class, $isa_class);
-            eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $isa_class;" or die;
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $isa_class;" or die;
             no strict 'refs'; ## no critic
             push @{$class . '::ISA'}, $isa_class;
         }
@@ -361,9 +361,9 @@ sub class_handler {
         if (defined *{$package.'::new'}) {
             return $package;
         } else {
-            eval "# line " . __LINE__ . " " . __FILE__ . "\nuse $package;";
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';use $package;";
             return $package unless $@;
-            eval "# line " . __LINE__ . " " . __FILE__ . "\nuse $pkg; $package->new;";
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';use $pkg; $package->new;";
             return $package unless $@;
         }
     }
@@ -990,7 +990,7 @@ sub remove_children {
     my $key = $param->{key} || $obj->datasource . '_id';
     my $obj_id = $obj->id;
     for my $class (@classes) {
-        eval "# line " . __LINE__ . " " . __FILE__ . "\nuse $class;";
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';use $class;";
         $class->remove({ $key => $obj_id });
     }
     1;

@@ -218,10 +218,7 @@ sub _build_subclass {
     ## Try to use this subclass first to see if it exists
     my $subclass_file = $subclass . '.pm';
     $subclass_file =~ s{::}{/}g;
-    eval {
-        require $subclass_file;
-        $subclass->import();
-    };
+    eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require '$subclass_file';$subclass->import();";
     if ($@) {
         ## Die if we get an unexpected error
         die $@ unless $@ =~ /Can't locate /;
