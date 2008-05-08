@@ -848,7 +848,7 @@ B<Example:>
 
     <$mt:EntryTitle dirify="-"$>
 
-which would translate an entry titled "Café" into "cafe".
+which would translate an entry titled "Cafe" into "cafe".
 
 =cut
 
@@ -3809,15 +3809,22 @@ sub _hdlr_tag_rank {
     my $tag = $ctx->stash('Tag');
     return '' unless $tag;
 
+    my $class_type = $ctx->stash('class_type') || 'entry';  # FIXME: defaults to?
+    my $class = MT->model($class_type);
+    my $ds    = $class->datasource;
+    my %term = $class_type eq 'entry' || $class_type eq 'page'
+        ? ( status => MT::Entry::RELEASE() )
+        : ();
+
     my $ntags = $ctx->stash('all_tag_count');
     unless ($ntags) {
         require MT::ObjectTag;
-        $ntags = MT::Entry->count({
-            status => MT::Entry::RELEASE(),
+        $ntags = $class->count({
+            %term,
             %blog_terms,
         }, {
             'join' => MT::ObjectTag->join_on('object_id',
-                { object_datasource => MT::Entry->datasource, %blog_terms },
+                { object_datasource => $ds, %blog_terms },
                 \%blog_args ),
             %blog_args,
         });
@@ -3828,7 +3835,7 @@ sub _hdlr_tag_rank {
     my $min = $ctx->stash('tag_min_count');
     my $max = $ctx->stash('tag_max_count');
     unless (defined $min && defined $max) {
-        (my $tags, $min, $max, my $all_count) = _tags_for_blog($ctx, \%blog_terms, \%blog_args, MT::Entry->datasource);
+        (my $tags, $min, $max, my $all_count) = _tags_for_blog($ctx, \%blog_terms, \%blog_args, $class_type);
         $ctx->stash('tag_max_count', $max);
         $ctx->stash('tag_min_count', $min);
     }
@@ -3847,13 +3854,12 @@ sub _hdlr_tag_rank {
 
     my $count = $ctx->stash('tag_entry_count');
     unless (defined $count) {
-        require MT::Entry;
-        $count = MT::Entry->count({
-            status => MT::Entry::RELEASE(),
+        $count = $class->count({
+            %term,
             %blog_terms,
         }, {
             'join' => MT::ObjectTag->join_on('object_id',
-                { tag_id => $tag->id, object_datasource => MT::Entry->datasource, %blog_terms },
+                { tag_id => $tag->id, object_datasource => $ds, %blog_terms },
                 \%blog_args
             ),
             %blog_args,
@@ -3918,6 +3924,7 @@ sub _hdlr_entry_tags {
 
     local $ctx->{__stash}{tag_max_count} = undef;
     local $ctx->{__stash}{tag_min_count} = undef;
+    local $ctx->{__stash}{all_tag_count} = undef;
 
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
@@ -4028,10 +4035,15 @@ sub _hdlr_tag_count {
     my $count = $ctx->stash('tag_entry_count');
     my $tag = $ctx->stash('Tag');
     my $blog_id = $ctx->stash('blog_id');
-    if ($tag) {
+    my $class_type = $ctx->stash('class_type') || 'entry';  # FIXME: defaults to?
+    my $class = MT->model($class_type);
+    my %term = $class_type eq 'entry' || $class_type eq 'page'
+        ? ( status => MT::Entry::RELEASE() )
+        : ();
+    if ($tag && $class) {
         unless (defined $count) {
-            $count = MT::Entry->tagged_count($tag->id, {
-                status => MT::Entry::RELEASE(),
+            $count = $class->tagged_count($tag->id, {
+                %term,
                 blog_id => $blog_id
             });
         }
@@ -14048,6 +14060,8 @@ sub _hdlr_asset_tags {
 
     local $ctx->{__stash}{tag_max_count} = undef;
     local $ctx->{__stash}{tag_min_count} = undef;
+    local $ctx->{__stash}{all_tag_count} = undef;
+    local $ctx->{__stash}{class_type} = 'asset';
 
     my $iter = MT::Tag->load_iter(undef, { 'sort' => 'name',
             'join' => MT::ObjectTag->join_on('tag_id',
@@ -14513,6 +14527,7 @@ sub _hdlr_page_tags {
     return $_ unless &_check_page(@_);
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
+    local $ctx->{__stash}{class_type} = $args->{class_type};
     &_hdlr_entry_tags(@_); 
 }
 

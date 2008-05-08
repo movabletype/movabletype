@@ -228,8 +228,8 @@ class MTDatabase_mysql extends MTDatabaseBase {
                 , A.objecttag_blog_id
             from
                 mt_objecttag A
-                left join mt_objecttag B on A.objecttag_tag_id = B.objecttag_tag_id $entry_filter $blog_filter
-                left join mt_entry D on B.objecttag_object_id = D.entry_id
+                left join mt_objecttag B on A.objecttag_tag_id = B.objecttag_tag_id
+                left join mt_entry D on A.objecttag_object_id = D.entry_id $entry_filter $blog_filter
                 ,mt_tag C
             where
                 D.entry_class='$class'

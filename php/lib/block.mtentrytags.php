@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
-    $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out');
+    $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out', 'class_type');
     if (!isset($content)) {
         $class = 'entry';
         if (isset($args['class'])) {
@@ -37,7 +37,8 @@ function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
         if (!is_array($tags)) $tags = array();
         $ctx->stash('_tags', $tags);
         $ctx->stash('__out', false);
-        
+        $ctx->stash('class_type', $class);
+
         $counter = 0;
         if (!count($tags)) {
             $ctx->restore($localvars);

@@ -1963,13 +1963,14 @@ class MTDatabaseBase extends ezsql {
         return $count;
     }
 
-    function tags_entry_count($tag_id) {
+    function tags_entry_count($tag_id, $class = 'entry') {
         $count = $this->get_var("
           select count(*)
             from mt_objecttag, mt_entry
            where objecttag_tag_id = " . intval($tag_id) . "
              and entry_id = objecttag_object_id and objecttag_object_datasource='entry'
              and entry_status = 2
+             and entry_class = '$class'
         ");
         return $count;
     }

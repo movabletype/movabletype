@@ -33,7 +33,7 @@ function smarty_function_mttagrank($args, &$ctx) {
 
     $count = $tag['tag_count'];
     if($count == ''){
-        $count = $ctx->mt->db->tags_entry_count($tag['tag_id']);
+        $count = $ctx->mt->db->tags_entry_count($tag['tag_id'], $ctx->stash('class_type'));
     }
 
     $level = intval(log($count - $min + 1) * $factor);
