@@ -32,15 +32,6 @@
   margin-bottom: 0;
 }
 
-.main-screen .field-left-label .field-header {
-  width: 145px;
-}
-
-.main-screen .field-left-label .field-content, 
-.main-screen .settings-actions-bar .actions-bar-inner {
-  margin-left: 155px;
-}
-
 .edit-entry .field-left-label .field-header {
   width: 85px;
 }
