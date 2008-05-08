@@ -1509,13 +1509,12 @@ B<Attributes:>
 
 =over 4
 
-=item type (optional; defaults to use 'object_type' variable)
+=item type (optional)
 
 The C<MT::Object> object type the listing is processing. If unset,
-will use the contents of the C<object_type> variable. If no type
-can be determined, the tag will return an error.
+will use the contents of the C<object_type> variable.
 
-=item loop (optional; default 'object_loop' variable)
+=item loop (optional)
 
 The source of data to process. This is an array of hashes, similar
 to the kind used with the L<Loop> tag. If unset, the C<object_loop>
@@ -1528,7 +1527,7 @@ it will process any 'else' block that is available instead, or, failing
 that, will output an L<App:StatusMsg> tag saying that no data could be
 found.
 
-=item id (optional; default "type-listing")
+=item id (optional)
 
 Used to construct the DOM id for the listing. The outer C<div> tag
 will use this value. If unset, it will be assigned C<type-listing> (where
@@ -1563,20 +1562,14 @@ sub _hdlr_app_listing {
     my ($ctx, $args, $cond) = @_;
 
     my $type = $args->{type} || $ctx->var('object_type');
-    return $ctx->error("The 'type' attribute is required.")
-        unless $type;
-
-    my $class = MT->model($type);
-    return $ctx->error("No MT object class for type '$type'.")
-        unless $class;
-
+    my $class = MT->model($type) if $type;
     my $loop = $args->{loop} || 'object_loop';
     my $loop_obj = $ctx->var($loop);
 
     unless ((ref($loop_obj) eq 'ARRAY') && (@$loop_obj)) {
         my @else = @{ $ctx->stash('tokens_else') || [] };
         return &_hdlr_pass_tokens_else if @else;
-        my $msg = $args->{empty_message} || MT->translate("No [_1] could be found.", lowercase($class->class_label_plural));
+        my $msg = $args->{empty_message} || MT->translate("No [_1] could be found.", $class ? lowercase($class->class_label_plural) : ($type ? $type : MT->translate("records")));
         return $ctx->build(qq{<mtapp:statusmsg
             id="zero-state"
             class="info zero-state">
@@ -1584,7 +1577,7 @@ sub _hdlr_app_listing {
             </mtapp:statusmsg>});
     }
 
-    my $id = $args->{id} || $type . '-listing';
+    my $id = $args->{id} || ($type ? $type . '-listing' : 'listing');
     my $listing_class = $args->{listing_class} || "";
     my $hide_pager = $args->{hide_pager} || 0;
     $hide_pager = 1 if ($ctx->var('screen_class') || '') eq 'search-replace';
@@ -1622,6 +1615,7 @@ $insides
 TABLE
 
     if ($show_actions) {
+        local $ctx->{__stash}{vars}{__contents__} = $table;
         return $ctx->build(<<EOT);
 <div id="$id" class="listing $listing_class">
     <div class="listing-header">
@@ -1638,14 +1632,14 @@ $return_args
 $blog_id
         <input type="hidden" name="magic_token" value="$token" />
         $actions_top
-        $table
+        <mt:var name="__contents__">
         $actions_bottom
     </form>
 </div>
 EOT
     }
     else {
-        return $ctx->build(<<EOT);
+        return <<EOT;
 <div id="$id" class="listing $listing_class">
         $table
 </div>
