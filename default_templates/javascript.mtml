@@ -405,6 +405,7 @@ function mtSignInOnClick() {
 
     mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
     mtFetchUser('mtSetUserOrLogin');
+    return false;
 }
 
 function mtSetUserOrLogin(u) {
@@ -475,9 +476,9 @@ function mtShowGreeting() {
         }
     } else {
         if (reg_reqd) {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="mtSignInOnClick()">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick()">%%</a>">';
         } else {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="mtSignInOnClick()">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick()">%%</a>">';
         }
     }
     el.innerHTML = phrase;
