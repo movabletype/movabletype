@@ -686,7 +686,7 @@ function setCustomFields() {
         var hide = true;
         var field_object = TC.elementOrId("custom-prefs-"+customizable_fields[i]);
 
-        if (field_object && field_object.checked && !field_object.disabled) {
+        if (field_object && field_object.checked) {
             custom_fields.push(customizable_fields[i]);
             hide = false;
         }
