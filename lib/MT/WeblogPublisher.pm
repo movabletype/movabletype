@@ -832,7 +832,7 @@ sub rebuild_file {
         $map ||= MT::TemplateMap->load( $finfo->templatemap_id );
         $at  ||= $finfo->archive_type;
         if ( $finfo->startdate ) {
-            if ( my ( $start, $end ) = $archiver->date_range($finfo->startdate) ) {
+            if ( ( $start, $end ) = $archiver->date_range($finfo->startdate) ) {
                 $args{StartDate} = $start;
                 $args{EndDate}   = $end;
             }
