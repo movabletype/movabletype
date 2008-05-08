@@ -410,6 +410,9 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
 
         // #3 - close singlet tags for img, br, input, param, hr
         html = html.replace(/<(br|img|input|param)([^>]+)?([^\/])?>/g, "<$1$2$3 />");
+
+        // #4 - delete converted URL for IE
+        html = html.replace(/http.*\/mt-static\/html\//g, "");
         return html;
     }
 } );
