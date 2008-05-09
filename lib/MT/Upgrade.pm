@@ -903,14 +903,18 @@ sub core_upgrade_functions {
             code => \&core_upgrade_meta,
         },
 
-        # Helper upgrade routine for core_upgrade_meta
+        # Helper upgrade routines for core_upgrade_meta
         # and possibly other object types that require
         # this migration; version_limit is unspecified, so
-        # this can only be invoked if another upgrade
-        # operation utilizes it.
+        # these can only be invoked if another upgrade
+        # operation utilizes them.
         'core_upgrade_meta_for_table' => {
             priority => 3.3,
             code => \&core_upgrade_meta_for_table,
+        },
+        'core_drop_meta_for_table' => {
+            priority => 3.4,
+            code => \&core_drop_meta_for_table,
         },
         'core_replace_file_template_format' => {
             version_limit => 4.0058,
@@ -943,24 +947,29 @@ sub core_upgrade_meta {
         my $class = MT->model($type);
         next TYPE if !$class->has_meta();  # nothing to upgrade
 
-        next TYPE if $added_step{$class->datasource};  # already got that one
-
+        my $t = $type;
         my $class_type = $class->properties->{class_type};
         if ($class_type && $class_type ne $class->datasource) {
+            $t = $class_type;
             if (my $super_class = MT->model($class->datasource)) {
                 $class = $super_class
                     if $super_class->datasource eq $class->datasource;
             }
             # If there's no appropriate superclass, go to update with the class
             # we have, not the class we want.
+            next TYPE if $added_step{$type};  # already got that one
+        }
+        else {
+            next TYPE if $added_step{$class->datasource};  # already got that one
         }
 
-        my %step_param = ( type => $type );
-        $step_param{plugindata} = 1 if $type eq 'category';
+        my %step_param = ( type => $t );
+        $step_param{plugindata} = 1
+            if ( $class eq 'MT::Category' ) || ( $class eq 'MT::Folder' );
         $step_param{meta_column} = $class->properties->{meta_column}
             if $class->properties->{meta_column};
         $self->add_step('core_upgrade_meta_for_table', %step_param);
-        $added_step{$class->datasource} = 1;
+        $added_step{$class} = 1;
     }
     return 0;
 }
@@ -1035,7 +1044,18 @@ sub core_upgrade_meta_for_table {
 
     my $pid = join q{:}, $param{step} . "_type", $class;
 
-    my $driver = $class->dbi_driver;
+    my $db_class = $class;
+    my $class_type = $class->properties->{class_type};
+    if ($class_type && $class_type ne $class->datasource) {
+        if (my $super_class = MT->model($class->datasource)) {
+            $db_class = $super_class
+                if $super_class->datasource eq $class->datasource;
+        }
+        # If there's no appropriate superclass, go to update with the class
+        # we have, not the class we want.
+    }
+
+    my $driver = $db_class->dbi_driver;
     my $dbh = $driver->rw_handle;
     my $dbd = $driver->dbd;
     my $stmt = $dbd->sql_class->new;
@@ -1045,7 +1065,7 @@ sub core_upgrade_meta_for_table {
     my $meta_col = $param{meta_column} || 'meta';
 
     my $ddl = $driver->dbd->ddl_class;
-    my $db_defs = $ddl->column_defs($class);
+    my $db_defs = $ddl->column_defs($db_class);
     return 0 unless $db_defs && exists($db_defs->{$meta_col});
 
     my $id_col = $dbd->db_column_name($class->datasource, 'id');
@@ -1140,11 +1160,25 @@ sub core_upgrade_meta_for_table {
     } else {
         # done, so lets drop that meta column, what say you?
         $sql = $dbd->ddl_class->drop_column_sql($class, $param{meta_column} || 'meta');
-        $dbh->do($sql);
+        $self->add_step('core_drop_meta_for_table', class => $db_class, sql => $sql);
         $self->progress($msg . ' (100%)', $pid);
         $offset = 0;  # done!
     }
     return $offset;
+}
+
+sub core_drop_meta_for_table {
+    my $self = shift;
+    my (%param) = @_;
+    my $class = $param{class};
+    my $sql = $param{sql};
+
+    eval "require $class;";
+    my $driver = $class->dbi_driver;
+    my $dbh = $driver->rw_handle;
+    $dbh->do($sql);
+
+    return 0;
 }
 
 sub core_populate_author_auth_type {
