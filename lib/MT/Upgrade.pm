@@ -713,13 +713,13 @@ sub core_upgrade_functions {
         },
         'core_add_newfeature_widget' => {
             version_limit => 4.0027,
-            priority => 3.2,
+            priority => 3.4,
             updater => {
                 type => 'author',
                 label => 'Adding new feature widget to dashboard...',
                 condition => sub {
                     my ($user) = @_;
-                    if ( $user->type ==MT::Author::AUTHOR() ) {
+                    if ( $user->type == MT::Author::AUTHOR() ) {
                         return 1
                             if $App && UNIVERSAL::isa( $App, 'MT::App' )
                             && ( $user->id == $App->user->id );

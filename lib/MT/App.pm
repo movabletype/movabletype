@@ -2390,8 +2390,9 @@ sub load_widgets {
                 } else {
                     $widgets->{new_user} = { order => -2, set => 'main' };
                 }
-                $widgets->{new_version} = { order => -1, set => 'main' }
-                    unless $app->param('installed');
+                # Do not show new_version widget for users without specific widgets
+                #$widgets->{new_version} = { order => -1, set => 'main' }
+                #    unless $app->param('installed');
             }
         }
     }
