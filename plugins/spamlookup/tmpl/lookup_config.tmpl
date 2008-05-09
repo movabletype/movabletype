@@ -90,8 +90,7 @@
 <mtapp:setting
     id="lookup_whitelist"
     label="<__trans phrase="Lookup Whitelist">"
-    hint=""
-    show_hint="0">
-    <p><MT_TRANS phrase="To prevent lookups for some IP addresses or domains, list them below. Place each entry on a line by itself."></p>
+    hint="<MT_TRANS phrase="To prevent lookups for specific IP addresses or domains, list each on a line by itself.">"
+    show_hint="1">
     <textarea name="whitelist" id="sll_whitelist" cols="60" rows="8"><TMPL_VAR NAME=WHITELIST ESCAPE=HTML></textarea>
 </mtapp:setting>
