@@ -653,7 +653,7 @@ sub rebuild_pages {
         ) or return $app->publish_error();
         $order = "entry '" . $entry->title . "'";
     }
-    elsif ( $archiver->category_based ) {
+    elsif ( $archiver && $archiver->category_based ) {
         return $app->error( $app->translate("Permission denied.") )
           unless $perms->can_rebuild;
         $offset = $q->param('offset') || 0;
