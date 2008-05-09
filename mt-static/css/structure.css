@@ -2913,8 +2913,11 @@ td.output-file ul li {
 
 #quickpost {
     clear: both;
+    margin-top: 50px;
+    border-top: 1px solid #E7EFF3;
+    padding-top: 5px;
+    font-size: 11px;
 }
-
 .file-extension {
     line-height: 2;
 }
