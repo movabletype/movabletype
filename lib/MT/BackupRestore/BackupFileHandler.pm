@@ -102,6 +102,7 @@ sub start_element {
                             });
                             $objects->{"$class#" . $column_data{id}} = $obj;
                             $self->{current} = $obj;
+                            $self->{loaded} = 1;
                             $self->{skip} += 1;
                         }
                         else {
