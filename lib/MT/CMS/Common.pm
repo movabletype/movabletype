@@ -76,6 +76,12 @@ sub save {
             return edit( $app, \%param );
         }
         else {
+            if ($type) {
+                my $mode = 'view_' . $type;
+                if ( $app->handlers_for_mode($mode) ) {
+                    return $app->forward( $mode, \%param );
+                }
+            }
             return $app->forward( 'view', \%param );
         }
     }
