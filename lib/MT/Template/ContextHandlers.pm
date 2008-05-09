@@ -6236,7 +6236,7 @@ sub _hdlr_authors {
         local $ctx->{__stash}{author} = $author;
         local $ctx->{__stash}{author_id} = $author->id;
         local $vars->{__first__} = $count == 1;
-        local $vars->{__last__} = !$next || ($n && ($count == $n));
+        local $vars->{__last__} = !defined $authors[$count] || ($n && ($count == $n));
         local $vars->{__odd__} = ($count % 2) == 1;
         local $vars->{__even__} = ($count % 2) == 0;
         local $vars->{__counter__} = $count;

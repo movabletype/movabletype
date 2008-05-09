@@ -152,6 +152,12 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
             else
                 $ctx->stash('__out', true);
         }
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = ($count == count($entries));
         $repeat = true;
     } else {
         $glue = $ctx->stash('_entries_glue');

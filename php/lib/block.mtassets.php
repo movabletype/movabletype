@@ -44,6 +44,12 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
             $ctx->stash('asset_last_in_row', true);
 
         $repeat = true;
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = ($count == count($assets));
     } else {
         $ctx->restore($localvars);
         $repeat = false;

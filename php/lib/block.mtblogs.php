@@ -20,6 +20,12 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
         $ctx->stash('blog', $blog);
         $ctx->stash('blog_id', $blog['blog_id']);
         $ctx->stash('_blogs_counter', $counter + 1);
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = ($count == count($blogs));
         $repeat = true;
     } else {
         $ctx->restore(array('_blogs', '_blogs_counter', 'blog', 'blog_id'));

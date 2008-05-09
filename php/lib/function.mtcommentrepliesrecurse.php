@@ -36,6 +36,12 @@ function smarty_function_mtcommentrepliesrecurse($args, &$ctx) {
         $ctx->stash('comment', $comment);
         $ctx->stash('current_timestamp', $comment['comment_created_on']);
         $ctx->stash('comment_order_num', $counter + 1);
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = ($count == count($comments));
         ob_start();
         $token_fn($ctx, array());
         $content .= ob_get_contents();

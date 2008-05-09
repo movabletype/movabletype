@@ -40,6 +40,12 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
         $author = $authors[$counter];
         $ctx->stash('author', $author);
         $ctx->stash('authors_counter', $counter + 1);
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = ($count == count($authors));
         $repeat = true;
     } else {
         $ctx->restore($localvars);

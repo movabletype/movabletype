@@ -42,6 +42,12 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
             else
                 $ctx->stash('__out', true);
         }
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = ($count == count($categories));
         $repeat = true;
     } else {
         if (!empty($glue) && $out && !empty($content))

@@ -80,6 +80,12 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         $ctx->stash('ArchiveListHeader', $i == 0);
         $ctx->stash('ArchiveListFooter', $i+1 == count($archive_list_results));
         $repeat = true;
+        $count = $i + 1;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = ($count == count($archive_list_results));
     } else {
         $ctx->restore($localvars);
         $repeat = false;
