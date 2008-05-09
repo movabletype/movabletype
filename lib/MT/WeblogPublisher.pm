@@ -765,11 +765,6 @@ sub _rebuild_entry_archive_type {
     return 1 unless @map_build;
     @map = @map_build;
 
-    my (%cond);
-    require MT::Template::Context;
-    my $ctx = MT::Template::Context->new;
-    $ctx->{current_archive_type} = $at;
-    $ctx->{archive_type}         = $at;
     $at ||= "";
 
     my $archiver = $mt->archiver($at);
@@ -797,12 +792,15 @@ sub _rebuild_entry_archive_type {
     ## the particular template map, and write it to the specified archive
     ## file template.
     require MT::Template;
+    require MT::Template::Context;
     for my $map (@map) {
         next unless $map->build_type; # ignore disabled template maps
 
-	my $ctx_clone = $ctx->clone();
+	my $ctx = MT::Template::Context->new;
+	$ctx->{current_archive_type} = $at;
+	$ctx->{archive_type}         = $at;
         $mt->rebuild_file(
-            $blog, $arch_root, $map, $at, $ctx_clone, \%cond,
+            $blog, $arch_root, $map, $at, $ctx, \my %cond,
             !$param{NoStatic},
             Category  => $param{Category},
             Entry     => $entry,
