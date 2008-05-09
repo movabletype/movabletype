@@ -141,7 +141,7 @@ window.onload = function() {
 </mt:if>
 
 <mt:if name="success">
-    <p id="show_settings"><a href="javascript:void(0)" onclick="show('db_settings'); hide('show_settings'); return false;"><__trans phrase="Show Current Settings"></a></p>
+    <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); return false;"><__trans phrase="Show Current Settings"></a></p>
 </mt:if>
 
 <fieldset id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
