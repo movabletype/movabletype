@@ -403,9 +403,8 @@ class MT {
      * Mainline handler function.
      */
     function view($blog_id = null) {
-        if ($this->debugging) {
-            require_once("MTUtil.php");
-        }
+        require_once("MTUtil.php");
+
         $blog_id or $blog_id = $this->blog_id;
 
         $ctx =& $this->context();
@@ -492,17 +491,8 @@ class MT {
         $ctx->stash('template_timestamp', $tts);
         $ctx->stash('template_created_on', $data['template']['template_created_on']);
 
-        $columns_map = array(
-            'layout-wt'  => 2,
-            'layout-tw'  => 2,
-            'layout-wm'  => 2,
-            'layout-mw'  => 2,
-            'layout-wtt' => 3,
-            'layout-twt' => 3);
         $page_layout = $data['blog']['blog_page_layout'];
-        $columns = 0;
-        if(array_key_exists($page_layout, $columns_map))
-             $columns = $columns_map[$page_layout];
+        $columns = get_page_column($page_layout);
         $vars =& $ctx->__stash['vars'];
         $vars['page_columns'] = $columns;
         $vars['page_layout'] = $page_layout;
@@ -574,9 +564,10 @@ class MT {
 
             if ($at == 'Category') {
                 $vars =& $ctx->__stash['vars'];
-                $vars['archive_class'] = "category-archive";
-                $vars['category_archive'] = 1;
-                $vars['archive_template'] = 1;
+                $vars['archive_class']                    = "category-archive";
+                $vars['category_archive']                 = 1;
+                $vars['archive_template']                 = 1;
+                $vars['archive_listing']                  = 1;
                 $vars['module_category-monthly_archives'] = 1;
             }
         }

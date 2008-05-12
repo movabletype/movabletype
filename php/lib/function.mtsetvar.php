@@ -12,7 +12,17 @@ function smarty_function_mtsetvar($args, &$ctx) {
     $name or $name = $args['var'];
     if (!$name) return '';
 
+    $value = $args['value'];
+
     $vars =& $ctx->__stash['vars'];
+
+    if (strtolower($name) == 'page_layout') {
+        # replaces page layout for current page
+        require_once("MTUtil.php");
+        $columns = get_page_column($value);
+        $vars['page_columns'] = $columns;
+        $vars['page_layout'] = $value;
+    }
 
     if (preg_match('/^(\w+)\((.+)\)$/', $name, $matches)) {
         $func = $matches[1];
@@ -47,7 +57,6 @@ function smarty_function_mtsetvar($args, &$ctx) {
                 "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ));
     }
 
-    $value = $args['value'];
     $existing = $vars[$name];
 
     require_once("MTUtil.php");

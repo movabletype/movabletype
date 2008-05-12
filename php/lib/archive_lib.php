@@ -81,11 +81,11 @@ class PageArchiver extends BaseArchiver {
 
     function template_params(&$ctx) {
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['page_template'] = 1;
+        $vars['archive_template']  = 1;
+        $vars['page_template']     = 1;
         $vars['feedback_template'] = 1;
-        $vars['page_archive'] = 1;
-        $vars['archive_class'] = 'page-archive';
+        $vars['page_archive']      = 1;
+        $vars['archive_class']     = 'page-archive';
     }
 }
 
@@ -131,10 +131,11 @@ class IndividualArchiver extends BaseArchiver {
 
     function template_params(&$ctx) {
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['entry_template'] = 1;
+        $vars['entry_archive']     = 1;
+        $vars['archive_template']  = 1;
+        $vars['entry_template']    = 1;
         $vars['feedback_template'] = 1;
-        $vars['archive_class'] = 'entry-archive';
+        $vars['archive_class']     = 'entry-archive';
     }
 }
 
@@ -257,8 +258,10 @@ class DateBasedArchiver extends BaseArchiver {
     }
 
     function template_params(&$ctx) {
+        parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
-        $vars['datebased_archive'] = 1;
+        $vars['archive_listing']  = 1;
+        $vars['archive_template'] = 1;
     }
 }
 
@@ -307,11 +310,10 @@ class YearlyArchiver extends DateBasedArchiver {
     function template_params(&$ctx) {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_only_archive']   = 1;
         $vars['datebased_yearly_archive'] = 1;
-        $vars['archive_class'] = 'datebased-yearly-archive';
-        $vars['module_yearly_archives'] = 1;
+        $vars['archive_class']            = 'datebased-yearly-archive';
+        $vars['module_yearly_archives']   = 1;
     }
 }
 
@@ -358,10 +360,9 @@ class MonthlyArchiver extends DateBasedArchiver {
     function template_params(&$ctx) {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_only_archive']    = 1;
         $vars['datebased_monthly_archive'] = 1;
-        $vars['archive_class'] = 'datebased-monthly-archive';
+        $vars['archive_class']             = 'datebased-monthly-archive';
     }
 }
 
@@ -408,10 +409,9 @@ class DailyArchiver extends DateBasedArchiver {
     function template_params(&$ctx) {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_only_archive']  = 1;
         $vars['datebased_daily_archive'] = 1;
-        $vars['archive_class'] = 'datebased-daily-archive';
+        $vars['archive_class']           = 'datebased-daily-archive';
     }
 }
 
@@ -463,10 +463,9 @@ class WeeklyArchiver extends DateBasedArchiver {
     function template_params(&$ctx) {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['datebased_only_archive'] = 1;
+        $vars['datebased_only_archive']   = 1;
         $vars['datebased_weekly_archive'] = 1;
-        $vars['archive_class'] = 'datebased-weekly-archive';
+        $vars['archive_class']            = 'datebased-weekly-archive';
     }
 }
 
@@ -604,10 +603,11 @@ class AuthorBasedArchiver extends BaseArchiver {
 
     function template_params(&$ctx) {
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['author_archive'] = 1;
-        $vars['archive_class'] = 'author-archive';
+        $vars['archive_template']               = 1;
+        $vars['author_archive']                 = 1;
+        $vars['archive_class']                  = 'author-archive';
         $vars['module_author-monthly_archives'] = 1;
+	$vars['archive_listing']                = 1;
     }
 }
 
@@ -744,9 +744,6 @@ class DateBasedAuthorArchiver extends DateBasedArchiver {
 
     function template_params(&$ctx) {
         parent::template_params($ctx);
-        $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['author_archive'] = 1;
     }
 
     function get_author_name ($ctx) {
@@ -863,7 +860,7 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['author_yearly_archive'] = 1;
-        $vars['archive_class'] = 'author-yearly-archive';
+        $vars['archive_class']         = 'author-yearly-archive';
     }
 }
 
@@ -965,8 +962,8 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     function template_params(&$ctx) {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
-        $vars['author_monthly_archive'] = 1;
-        $vars['archive_class'] = 'author-monthly-archive';
+        $vars['archive_class']                  = 'author-monthly-archive';
+	$vars['author_monthly_archive']         = 1;
         $vars['module_author-monthly_archives'] = 1;
     }
 }
@@ -1074,7 +1071,7 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['author_daily_archive'] = 1;
-        $vars['archive_class'] = 'author-daily-archive';
+        $vars['archive_class']        = 'author-daily-archive';
     }
 }
 
@@ -1185,7 +1182,7 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['author_weekly_archive'] = 1;
-        $vars['archive_class'] = 'author-weekly-archive';
+        $vars['archive_class']         = 'author-weekly-archive';
     }
 }
 
@@ -1326,9 +1323,6 @@ class DateBasedCategoryArchiver extends DateBasedArchiver {
 
     function template_params(&$ctx) {
         parent::template_params($ctx);
-        $vars =& $ctx->__stash['vars'];
-        $vars['archive_template'] = 1;
-        $vars['category_archive'] = 1;
     }
 
     function get_category_name ($ctx) {
@@ -1454,7 +1448,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['category_yearly_archive'] = 1;
-        $vars['archive_class'] = 'category-yearly-archive';
+        $vars['archive_class']           = 'category-yearly-archive';
     }
 }
 
@@ -1554,8 +1548,8 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
     function template_params(&$ctx) {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
-        $vars['archive_class'] = 'category-monthlyl-archive';
-        $vars['category-monthly_archive'] = 1;
+        $vars['archive_class']                    = 'category-monthlyl-archive';
+        $vars['category_monthly_archive']         = 1;
         $vars['module_category-monthly_archives'] = 1;
     }
 }
@@ -1661,7 +1655,7 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['category_daily_archive'] = 1;
-        $vars['archive_class'] = 'category-daily-archive';
+        $vars['archive_class']          = 'category-daily-archive';
     }
 }
 
@@ -1769,6 +1763,6 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         parent::template_params($ctx);
         $vars =& $ctx->__stash['vars'];
         $vars['category_weekly_archive'] = 1;
-        $vars['archive_class'] = 'category-weekly-archive';
+        $vars['archive_class']           = 'category-weekly-archive';
     }
 }

@@ -1600,4 +1600,22 @@ function apply_text_filter ($ctx, $text, $filter) {
     return $text;
 }
 
+function get_page_column ($layout) {
+    $columns = 0;
+    if (empty($layout)) return $columns;
+
+    $columns_map = array(
+        'layout-wt'  => 2,
+        'layout-tw'  => 2,
+        'layout-wm'  => 2,
+        'layout-mw'  => 2,
+        'layout-wtt' => 3,
+        'layout-twt' => 3);
+
+    if(array_key_exists($layout, $columns_map))
+         $columns = $columns_map[$layout];
+
+    return $columns;
+}
+
 ?>
