@@ -909,7 +909,7 @@ sub core_upgrade_functions {
         # these can only be invoked if another upgrade
         # operation utilizes them.
         'core_upgrade_meta_for_table' => {
-            priority => 3.3,
+            priority => 1.5,
             code => \&core_upgrade_meta_for_table,
         },
         'core_drop_meta_for_table' => {
@@ -1108,7 +1108,7 @@ sub core_upgrade_meta_for_table {
             my $metadataref = $ser->unserialize($rawmeta);
             if ($metadataref) {
                 my $metadata = $$metadataref;
-                my $obj = $class->load($id);
+                my $obj = $class->load( { id => $id }, { no_class => 1, fetchonly => [ 'id', ( $class_type ? ( $class->properties->{class_column} ) : () ) ] });
                 if ($obj) {
                     my $changed = 0;
                     foreach my $metaname (keys %$metadata) {
@@ -1122,8 +1122,13 @@ sub core_upgrade_meta_for_table {
 
                             foreach my $cfname (keys %$cfdata) {
                                 my $cfvalue = $cfdata->{$cfname};
+                                my $cftype = $type;
+                                if ($class_type) {
+                                    $cftype = $obj->class_type;
+                                }
+
                                 # make sure CustomFields::Field exists
-                                my $fld = $fields{$cfname} ||= $cfclass->load({ basename => $cfname, obj_type => $type });
+                                my $fld = $fields{$cfname}{$cftype} ||= $cfclass->load({ basename => $cfname, obj_type => $cftype });
                                 next unless $fld;
 
                                 $changed++;
@@ -1159,8 +1164,14 @@ sub core_upgrade_meta_for_table {
         $offset += 100;
     } else {
         # done, so lets drop that meta column, what say you?
-        $sql = $dbd->ddl_class->drop_column_sql($class, $param{meta_column} || 'meta');
-        $self->add_step('core_drop_meta_for_table', class => $db_class, sql => $sql);
+        if ($dbd->ddl_class->can_drop_column) {
+            # if the driver cannot drop a column, it is likely
+            # to get dropped as the table is updated for other
+            # new columns anyway.
+            $sql = $dbd->ddl_class->drop_column_sql($class,
+                $param{meta_column} || 'meta');
+            $self->add_step('core_drop_meta_for_table', class => $db_class, sql => $sql);
+        }
         $self->progress($msg . ' (100%)', $pid);
         $offset = 0;  # done!
     }
@@ -1638,6 +1649,12 @@ sub check_type {
     my ($type) = @_;
 
     my $class = MT->model($type);
+
+    # handle schema updates for meta table
+    if ($class->meta_pkg) {
+        $self->check_type($type . ':meta');
+    }
+
     if (my $result = $self->type_diff($type)) {
         if ($result->{fix}) {
             $self->add_step('core_fix_type', type => $type);
@@ -1651,11 +1668,6 @@ sub check_type {
             $self->add_step('core_index_column', type => $type)
                 if $result->{index};
         }
-    }
-
-    # handle schema updates for meta table
-    if ($class->meta_pkg) {
-        $self->check_type($type . ':meta');
     }
 
     1;
@@ -2143,8 +2155,66 @@ sub remove_indexes {
 # 'pre' triggers should execute quickly. 'post' triggers can add steps
 # if they require processing that will take time to complete.
 
-sub pre_upgrade_class { 1 }
-sub post_upgrade_class { 1 }
+sub pre_upgrade_class {
+#     my $self = shift;
+#     my ($class) = @_;
+# 
+#     # Special case for handling upgrade process for old "meta" column
+#     # storage to new narrow tables; some database drivers cannot
+#     # add new columns without recreating the table, so it's necessary
+#     # to add a fake 'meta' column to classes that declare meta support
+#     # so they upgrade properly.
+#     if (MT->config->SchemaVersion < 4.0057) {
+#         # The mt_category table did not have a 'meta' column and is
+#         # upgraded in a different way, so do not include it in this
+#         # case.
+#         if (($class ne 'MT::Category') && ($class ne 'MT::Folder')) {
+#             unless ($class->driver->dbd->ddl_class->can_add_column) {
+#                 if ($class->can('has_meta') && $class->has_meta) {
+# $self->progress("Triggering special handling for class $class");
+#                     my $props = $class->properties;
+#                     my $defs = $class->column_defs;
+#                     my $col = $props->{meta_column} ||= 'meta';
+#                     $defs->{$col} = { type => 'blob' };
+#                     push @{$props->{columns}}, $col;
+#                 }
+#             }
+#         }
+#     }
+
+    return 1;
+}
+
+sub post_upgrade_class {
+    my $self = shift;
+    my ($class) = @_;
+
+    # Special case for handling upgrade process for old "meta" column
+    # storage to new narrow tables; some database drivers cannot
+    # add new columns without recreating the table, so it's necessary
+    # to prioritize migration of meta column data before the schema
+    # for that class is updated and the meta column winds up getting
+    # dropped as a result.
+    if (MT->config->SchemaVersion < 4.0057) {
+        return 1 unless $class =~ m/::Meta$/;
+
+        my $pc = $class;
+        $pc =~ s/::Meta$//;
+
+        my $type = $pc->datasource;
+        # 'page' instead of 'entry', for instance
+        $type = $pc->class_type || $type if $pc->can('class_type');
+
+        my %step_param = ( type => $type );
+        $step_param{plugindata} = 1 if $type eq 'category';
+        $step_param{meta_column} = $pc->properties->{meta_column}
+            if $pc->properties->{meta_column};
+        $self->add_step('core_upgrade_meta_for_table', %step_param);
+    }
+
+    return 1;
+}
+
 sub pre_alter_column { 1 }
 sub post_alter_column { 1 }
 sub pre_drop_column { 1 }
