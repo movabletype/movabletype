@@ -868,6 +868,7 @@ sub preview {
     my $start_time = $has_hires ? Time::HiRes::time() : time;
 
     my $ctx = $preview_tmpl->context;
+    $preview_tmpl->var('preview_template', 1);
     my $html = $preview_tmpl->output;
 
     $param{build_time} = $has_hires ? sprintf("%.3f", Time::HiRes::time() - $start_time ) : "~" . ( time - $start_time );
