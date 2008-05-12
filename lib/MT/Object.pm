@@ -567,13 +567,14 @@ sub _post_save_save_metadata {
 
 sub meta {
     my $obj = shift;
-    my ($name, $value) = @_;
+    my ( $name, $value ) = @_;
 
     return !$obj->{__meta} ? undef
-         : 2 == scalar @_  ? $obj->{__meta}->set($name, $value)
-         : 1 == scalar @_  ? $obj->{__meta}->get($name)
-         :                   $obj->{__meta}->get_hash
-         ;
+         : 2 == scalar @_  ? $obj->{__meta}->set( $name, $value )
+         : 1 == scalar @_  ? (
+           ref($name) eq 'HASH' ? $obj->{__meta}->set_hash(@_)
+             :                    $obj->{__meta}->get($name) )
+         :                   $obj->{__meta}->get_hash;
 }
 
 sub meta_obj {
@@ -898,7 +899,10 @@ sub table_name {
 sub clone_all {
     my $obj = shift;
     my $clone = $obj->SUPER::clone_all();
-    $clone->{__meta} = $obj->{__meta};  # TODO: clone this too
+    if ($clone->properties->{meta_installed}) {
+        $clone->init_meta();
+        $clone->meta( $obj->meta );
+    }
     return $clone;
 }
 

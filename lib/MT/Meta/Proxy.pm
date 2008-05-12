@@ -93,6 +93,15 @@ sub get_hash {
     return $collection;
 }
 
+sub set_hash {
+    my $proxy = shift;
+    my ($collection) = @_;
+
+    foreach my $name (keys %{ $collection }) {
+        $proxy->set($name, $collection->{$name});
+    }
+}
+
 sub get_collection {
     my $proxy = shift;
     my ($col) = @_;
