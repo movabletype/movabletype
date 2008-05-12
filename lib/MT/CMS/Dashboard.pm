@@ -40,16 +40,19 @@ sub dashboard {
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
-    $param->{support_path} =
-        File::Spec->catdir( $app->static_file_path, 'support', 'uploads' );
-    if ( $fmgr->exists( $param->{support_path} ) ) {
-        $param->{has_uploads_path} = 1;
-    } else {
-        $fmgr->mkpath( $param->{support_path} );
+    foreach my $subdir (qw( uploads userpics )) {
+        $param->{support_path} =
+            File::Spec->catdir( $app->static_file_path, 'support', $subdir );
+        if ( !$fmgr->exists( $param->{support_path} ) ) {
+            $fmgr->mkpath( $param->{support_path} );
+        }
         if ( $fmgr->exists( $param->{support_path} )
              && $fmgr->can_write( $param->{support_path} ) )
         {
             $param->{has_uploads_path} = 1;
+        } else {
+            $param->{has_uploads_path} = 0;
+            last;
         }
     }
     unless ( exists $param->{has_uploads_path} ) {
