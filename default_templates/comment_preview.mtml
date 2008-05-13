@@ -36,12 +36,12 @@
                                         <div class="asset-meta">
                                             <span class="byline">
                                                 <mt:IfCommentParent>
-                                                    <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent><mt:CommentEntry><mt:entrypermalink></mt:CommentEntry>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
+                                                    <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
                                                 <mt:else>
                                                     <$MTCommentAuthorIdentity$>
                                                     <span class="vcard author"><$MTCommentAuthorLink$></span>
                                                 </mt:IfCommentParent>
-                                                | <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
+                                                | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
                                             </span>
                                         </div>
                                     </div>
@@ -63,9 +63,9 @@
                                         <input type="hidden" name="preview" value="" />
                                         <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
                                         <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
-                                        <mt:IfCommentParent>
-                                            <input type="hidden" name="parent_id" value="<mt:CommentParent><$MTCommentID$></mt:CommentParent>">
-                                        </mt:IfCommentParent>
+<mt:IfCommentParent>
+                                            <input type="hidden" name="parent_id" value="<$mt:CommentParentId$>" id="comment-parent-id">
+</mt:IfCommentParent>
                                         <div id="comments-open-data">
                                             <div id="comment-form-name">
                                                 <label for="comment-author"><__trans phrase="Name"></label>
@@ -80,6 +80,12 @@
                                                 <input id="comment-url" name="url" size="30" value="<$MTCommentURL encode_html="1"$>" onfocus="mtShowCaptcha()" />
                                             </div>
                                         </div>
+<mt:IfCommentParent>
+                                        <div id="comment-form-reply">
+                                            <input type="checkbox" id="comment-reply" name="comment_reply" value="<$mt:CommentParentId$>" checked="checked" onclick="mtSetCommentParentID()" />
+                                            <label for="comment-reply" id="comment-reply-label"><__trans phrase="Replying to comment from [_1]" params="<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>"></label>
+                                        </div>
+</mt:IfCommentParent>
                                         <div id="comments-open-text">
                                             <label for="comment-text"><__trans phrase="Comments"> <MTIfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
                                             <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtShowCaptcha()"><$MTCommentBody autolink="0" sanitize="0" convert_breaks="0" encode_html="1"$></textarea>

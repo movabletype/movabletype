@@ -19,12 +19,12 @@
                     <div class="asset-meta">
                         <span class="byline">
                             <mt:IfCommentParent>
-                                <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent>#comment-<$MTCommentID$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
+                                <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
                             <mt:else>
                                 <$MTCommentAuthorIdentity$>
                                 <span class="vcard author"><$MTCommentAuthorLink$></span>
                             </mt:IfCommentParent>
-                            | <a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate relative="js"$></abbr></a>
+                            | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate relative="js"$></abbr></a>
                             <MTIfCommentsAccepted> | <$MTCommentReplyLink$></MTIfCommentsAccepted>
                         </span>
                     </div>

@@ -500,7 +500,7 @@ function mtReplyCommentOnClick(parent_id, author) {
     var text = document.getElementById('comment-text');
 
     // Populate label with new values
-    var reply_text = '<__trans phrase="Replying to <a href="#comment-[_1]">comment from [_2]</a>" params="'+ parent_id +'%%'+ author +'">';
+    var reply_text = '<__trans phrase="Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>" params="#comment-'+ parent_id +'%%location.href=this.href; return false%%'+ author +'">';
     label.innerHTML = reply_text;
 
     checkbox.value = parent_id; 
