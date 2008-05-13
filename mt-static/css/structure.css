@@ -1600,6 +1600,10 @@ li#config-menu {
     width: 90%;
 }
 
+.width75 {
+    width: 75%;
+}
+
 .half-width {
     width: 50%;
 }
@@ -4490,7 +4494,15 @@ body.dialog {
 
 #api_password-field .textarea-wrapper {
     float: left;
+    width: 50%;
     margin-right: 5px;
+}
+
+#edit-author #name-field .textarea-wrapper,
+#edit-author #nickname-field .textarea-wrapper,
+#edit-author #email-field .textarea-wrapper,
+#edit-author #url-field .textarea-wrapper {
+    width: 50%;
 }
 
 
