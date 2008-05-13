@@ -85,31 +85,12 @@ sub mt_schwartz_init {
     TheSchwartz::Job->properties->{datasource}        = 'ts_job';
     TheSchwartz::Error->properties->{datasource}      = 'ts_error';
     TheSchwartz::ExitStatus->properties->{datasource} = 'ts_exitstatus';
-
-    my $job_set_exit_status = \&TheSchwartz::Job::set_exit_status;
-    my $job_add_failure = \&TheSchwartz::Job::add_failure;
-
-    my $driver = MT::Object->driver;
-    no warnings 'redefine';
-    *TheSchwartz::Job::set_exit_status = sub {
-        $driver->Disabled(1);
-        my $res = $job_set_exit_status->(@_);
-        $driver->Disabled(0);
-        return $res;
-    };
-    *TheSchwartz::Job::add_failure = sub {
-        $driver->Disabled(1);
-        my $res = $job_add_failure->(@_);
-        $driver->Disabled(0);
-        return $res;
-    };
-
     return $initialized = 1;
 }
 
 sub driver_for {
     my MT::TheSchwartz $client = shift;
-    return MT::Object->driver;
+    return MT::Object->dbi_driver;
 }
 
 sub shuffled_databases {
@@ -146,19 +127,25 @@ sub work_periodically {
     my ($delay) = @_;
     $delay ||= 5;
     my $last_task_run = 0;
+    my $did_work = 0;
     while (1) {
-        unless ($client->work_once) {
-            my $driver = $client->driver_for();
-            $driver->clear_cache
-                if $driver->can('clear_cache');
-            MT->request->reset();
-            sleep $delay;
+        if ($client->work_once) {
+            $did_work = 1;
+        } else {
+            if ($did_work) {
+                my $driver = MT::Object->driver;
+                $driver->clear_cache
+                    if $driver->can('clear_cache');
+                MT->request->reset();
+                $did_work = 0;
+            }
 
             if ($last_task_run + 60 * 5 < time) {
                 MT->run_tasks();
                 $last_task_run = time;
             }
         }
+        sleep $delay;
     }
 }
 
