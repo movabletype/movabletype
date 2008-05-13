@@ -8,6 +8,7 @@ package MT::Category;
 
 use strict;
 use base qw( MT::Object );
+use MT::Util qw( weaken );
 
 use MT::Blog;
 
@@ -75,15 +76,14 @@ sub publish_path {
     my $cat = shift;
     return $cat->{__path} if exists $cat->{__path};
     my $result = $cat->basename;
+    my $orig = $cat;
     do {
-        # TODO: uh, does this not mean we cache the resulting path on the
-        # root category object instead?
         $cat = $cat->parent ? __PACKAGE__->load($cat->parent) : undef;
         $result = join "/", $cat->basename, $result if $cat;
     } while ($cat);
     # caching this information may be problematic IF
     # parent category basenames are changed.
-    $cat->{__path} = $result;
+    $orig->{__path} = $result;
 }
 *category_path = \&publish_path;
 
@@ -91,6 +91,7 @@ sub category_label_path {
     my $cat = shift;
     return $cat->{__label_path} if exists $cat->{__label_path};
     my $result = $cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label;
+    my $orig = $cat;
     do {
         $cat = $cat->parent ? __PACKAGE__->load($cat->parent) : undef;
         $result = join "/", ($cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label),
@@ -98,7 +99,7 @@ sub category_label_path {
     } while ($cat);
     # caching this information may be problematic IF
     # parent category labels are changed.
-    $cat->{__label_path} = $result;
+    $orig->{__label_path} = $result;
 }
 
 sub cache_obj {
@@ -388,6 +389,7 @@ sub parent_category {
     my $class = ref($cat);
     unless ($cat->{__parent_category}) {
         $cat->{__parent_category} = ($cat->parent) ? $class->load($cat->parent) : undef;
+        weaken( $cat->{__parent_category} );
     }
     $cat->{__parent_category};
 }
@@ -399,6 +401,7 @@ sub children_categories {
         @{$cat->{__children}} = sort { $a->label cmp $b->label }
         $class->load({ blog_id => $cat->blog_id,
             parent => $cat->id });
+        weaken( $_ ) foreach @{ $cat->{__children} };
     }
     @{$cat->{__children}};
 }
