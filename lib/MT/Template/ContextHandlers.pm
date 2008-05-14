@@ -560,6 +560,7 @@ sub core_tags {
             TotalPages => \&_hdlr_total_pages,
         },
         modifier => {
+            'numify' => \&_fltr_numify,
             'mteval' => \&_fltr_mteval,
             'filters' => \&_fltr_filters,
             'trim_to' => \&_fltr_trim_to,
@@ -603,6 +604,23 @@ sub core_tags {
             'setvar' => \&_fltr_setvar,
         },
     };
+}
+
+###########################################################################
+
+=head2 numify
+
+Adds commas to a number. Converting "12345" into "12,345" for instance.
+The argument for the numify attribute is the separator character to use
+(ie, "," or "."); "," is the default.
+
+=cut
+
+sub _fltr_numify {
+    my ($str, $arg, $ctx) = @_;
+    $arg = ',' if (!defined $arg) || ($arg eq '1');
+    $str =~ s/(^[−+]?\d+?(?=(?>(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/$1$arg/g;
+    return $str;
 }
 
 ###########################################################################
@@ -1108,15 +1126,11 @@ sub _fltr_regex_replace {
         }
         my $re = eval { qr/$patt/ };
         if (defined $re) {
-            $replace =~ s!\\\\(\d+)!\$$1!g; # for php, \\1 is how you write $1
-            if ($global) {
-                $str =~ s/$re/$replace/g;
-                my @matches = ($&, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20);
-                $str =~ s/\$(\d+)/$matches[$1]/g;
-            } else {
-                $str =~ s/$re/$replace/;
-                my @matches = ($&, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20);
-                $str =~ s/\$(\d+)/$matches[$1]/g;
+            $replace =~ s!\\\\(\d+)!\$1!g; # for php, \\1 is how you write $1
+            $replace =~ s!/!\\/!g;
+            eval '$str =~ s/$re/' . $replace . '/' . ($global ? 'g' : '');
+            if ($@) {
+                return $ctx->error("Invalid regular expression: $@");
             }
         }
     }
@@ -11997,6 +12011,17 @@ sub _hdlr_categories {
     my $entry_class = MT->model(
         $class_type eq 'category' ? 'entry' : 'page');
 
+    # issue a single count_group_by for all categories
+    my $cnt_iter = MT::Placement->count_group_by({
+        %terms
+    }, { group => [ 'category_id' ],
+        join => $entry_class->join_on('id', { status => MT::Entry::RELEASE() }),
+    });
+    my %counts;
+    while (my ($count, $cat_id) = $cnt_iter->()) {
+        $counts{$cat_id} = $count;
+    }
+
     my $iter = $class->load_iter(\%terms, \%args);
     my $res = '';
     my $builder = $ctx->stash('builder');
@@ -12029,14 +12054,7 @@ sub _hdlr_categories {
         local $vars->{__odd__} = ($i % 2) == 1;
         local $vars->{__even__} = ($i % 2) == 0;
         local $vars->{__counter__} = $i;
-        my @args = (
-            { blog_id => $cat->blog_id,
-              status => MT::Entry::RELEASE() },
-            { 'join' => [ 'MT::Placement', 'entry_id',
-                          { category_id => $cat->id } ],
-              'sort' => 'authored_on',
-              direction => 'descend', });
-        $ctx->{__stash}{category_count} = $entry_class->count(@args);
+        $ctx->{__stash}{category_count} = $counts{$cat->id};
         $cat = $next_cat,next unless $ctx->{__stash}{category_count} || $args->{show_empty};
         defined(my $out = $builder->build($ctx, $tokens,
             { %$cond,

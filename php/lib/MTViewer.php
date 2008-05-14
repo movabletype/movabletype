@@ -69,6 +69,7 @@ class MTViewer extends Smarty {
         'sprintf' => 1,
         'wrap_text' => 1,
         'setvar' => 1,
+        'numify' => 1,
          # native smarty modifiers
         'regex_replace' => 1,
         'capitalize' => 1,
