@@ -1427,11 +1427,10 @@ class MTDatabaseBase extends ezsql {
         $extend_column = '';
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_join = 'join mt_permission on permission_author_id = author_id and permission_blog_id ' . $sql;
-            $extend_column = ', mt_permission.*';
+            $unique_filter = 'distinct';
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_join = "join mt_permission on permission_author_id = author_id and permission_blog_id = $blog_id";
-            $extend_column = ', mt_permission.*';
         }
 
         # Adds author filter
@@ -1665,6 +1664,30 @@ class MTDatabaseBase extends ezsql {
         }
 
         return $authors;
+    }
+
+    function &fetch_permission($args) {
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'permission_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = "and permission_blog_id = $blog_id";
+        }
+        if (isset($args['id'])) {
+          $id_filter = 'and permission_author_id in ('.$args['id'].')';
+        }
+
+        $sql = "select
+                    *
+                from
+                    mt_permission
+                where
+                    1 = 1
+                    $blog_filter
+                    $id_filter";
+
+        $result = $this->get_results($sql, ARRAY_A);
+        return $result;
     }
 
     function &fetch_all_roles() {
