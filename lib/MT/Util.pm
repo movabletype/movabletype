@@ -327,6 +327,11 @@ sub format_ts {
         $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
         $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
     }
+    elsif ($lang eq 'it') {
+        ## Hack for the Italian dates
+        ## In Italian, the date always come before the month.
+        $format =~ s!%b %e!%e %b!g;
+    }
     $format =~ s!%(\w)!$f{$1}!g if defined $format;
 
     if ($is_mail) {

@@ -247,6 +247,11 @@ function format_ts($format, $ts, $blog, $lang = null) {
             $format = preg_replace('!%B %E!', $Languages[$lang][7], $format);
         }
     }
+    elseif ( $lang == 'it' ) {
+        ## Hack for the Italian dates
+        ## In Italian, the date always come before the month.
+        $format = preg_replace('!%b %e!', '%e %b', $format);
+    }
     if (isset($format)) {
         $format = preg_replace('!%(\w)!e', '\$f[\'\1\']', $format);
     }
