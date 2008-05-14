@@ -31,6 +31,15 @@ sub insert {
     $class->instance->SUPER::insert(@_);
 }
 
+sub default_logger {
+    my ($msg, $job) = @_;
+    # suppress TheSchwartz::Job's 'job completed'
+    return if $msg eq 'job completed';
+
+    $msg =~ s/\s+$//;
+    print STDERR "$msg\n";
+}
+
 sub new {
     my $class = shift;
     $class->mt_schwartz_init();
@@ -40,6 +49,9 @@ sub new {
 
     # Reports object usage inbetween jobs if Devel::Leak::Object is loaded
     $OBJECT_REPORT = 1 if $Devel::Leak::Object::VERSION;
+
+    $param{verbose} = \&default_logger
+        if $param{verbose} && (ref $param{verbose} ne 'CODE');
 
     my $client = $class->SUPER::new(%param);
 
@@ -133,12 +145,18 @@ sub work_periodically {
     my $last_task_run = 0;
     my $did_work = 0;
 
+    # holds state of objects at start
+    my %obj_start;
     if ($OBJECT_REPORT) {
-        Devel::Leak::Object::status();
-        print "\n\n";
+        %obj_start = %Devel::Leak::Object::OBJECT_COUNT;
     }
 
     while (1) {
+        my %obj_pre;
+        if ($OBJECT_REPORT) {
+            %obj_pre = %Devel::Leak::Object::OBJECT_COUNT;
+        }
+
         if ($client->work_once) {
             $did_work = 1;
         }
@@ -156,12 +174,35 @@ sub work_periodically {
             MT->request->reset();
             $did_work = 0;
             if ($OBJECT_REPORT) {
-                Devel::Leak::Object::status();
-                print "\n\n";
+                leak_report(\%obj_start, \%obj_pre, \%Devel::Leak::Object::OBJECT_COUNT);
             }
         }
 
         sleep $delay;
+    }
+}
+
+our %persistent;
+BEGIN {
+    %persistent = map { $_ => 1 } qw( MT::Task MT::Plugin MT::Component MT::ArchiveType MT::TaskMgr MT::WeblogPublisher MT::Serializer TheSchwartz::Job TheSchwartz::JobHandle );
+}
+sub leak_report {
+    my ($start, $pre, $post) = @_;
+    my $reported;
+    foreach my $class (sort keys %$post) {
+        # skip reporting classes that are persistent in nature
+        next if exists $persistent{$class};
+
+        my $post_count = $post->{$class};
+        next if ! $post_count;
+        my $pre_count = $pre->{$class} || 0;
+        my $start_count = $start->{$class} || 0;
+        next if $post_count == 1;  # ignores most singletons
+        if (($pre_count != $post_count) || ($post_count != $start_count)) {
+            print "Leak report (class, total, delta from last job(s), delta since process start):\n" unless $reported;
+            printf "%-40s %-10d %-10d %-10d\n", $class, $post_count, $post_count - $pre_count, $post_count - $start_count;
+            $reported = 1;
+        }
     }
 }
 

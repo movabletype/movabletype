@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/opt/local/bin/perl -w
 
 # Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
 # This program is distributed under the terms of the
@@ -9,8 +9,40 @@
 use strict;
 
 use lib 'lib', '../lib';
-use MT::Bootstrap;
-use MT;
+
+my $daemonize = 0;
+my $sleep     = 5;
+my $help      = 0;
+my $load      = 10;
+my $verbose   = 0;
+my $scoreboard;
+my $randomize_jobs = 0;
+my $trace_objects = 0;
+
+require Getopt::Long;
+Getopt::Long::GetOptions(
+    "daemon"       => \$daemonize,
+    "sleep=i"      => \$sleep,
+    "load=i"       => \$load,
+    "scoreboard=s" => \$scoreboard,
+    "randomly"     => \$randomize_jobs,
+    "verbose"      => \$verbose,
+    "leak"         => \$trace_objects,
+);
+
+if ( $trace_objects ) {
+    require Devel::Leak::Object;
+    Devel::Leak::Object->import( qw{ GLOBAL_bless } );
+}
+
+my %cfg;
+$cfg{verbose} = $verbose;
+$cfg{scoreboard} = $scoreboard;
+$cfg{prioritize} = 1;
+$cfg{randomize} = $randomize_jobs;
+
+require MT::Bootstrap;
+require MT;
 
 my $mt = MT->new() or die MT->errstr;
 
@@ -20,30 +52,6 @@ $mt->{template_dir} = 'cms';
 $mt->{user_class} = 'MT::Author';
 $mt->{plugin_template_path} = 'tmpl';
 $mt->run_callbacks('init_app', $mt);
-
-require Getopt::Long;
-my $daemonize = 0;
-my $sleep     = 5;
-my $help      = 0;
-my $load      = 10;
-my $verbose   = 0;
-my $scoreboard;
-my $randomize_jobs = 0;
-
-Getopt::Long::GetOptions(
-    "daemon"       => \$daemonize,
-    "sleep=i"      => \$sleep,
-    "load=i"       => \$load,
-    "scoreboard=s" => \$scoreboard,
-    "randomly"     => \$randomize_jobs,
-    "verbose"      => \$verbose,
-);
-
-my %cfg;
-$cfg{verbose} = $verbose;
-$cfg{scoreboard} = $scoreboard;
-$cfg{prioritize} = 1;
-$cfg{randomize} = $randomize_jobs;
 
 my $client = eval {
     require MT::TheSchwartz;

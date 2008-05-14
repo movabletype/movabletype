@@ -58,7 +58,6 @@ sub work {
         }
 
         my $priority = $job->priority ? ", priority " . $job->priority : "";
-        $job->debug("MT::Worker::Publish publishing " . $fi->file_path . "$priority");
 
         # Important: prevents requeuing!
         $fi->{from_queue} = 1;
@@ -81,8 +80,8 @@ sub work {
             }
         }
 
-        ## MT::TheSchwartz->debug("Publishing: " . RebuildQueue::Daemon::_summary($fi));
-        MT::TheSchwartz->debug("Publishing file " . $fi->file_path . "...");
+        $job->debug("Publishing " . $fi->file_path . $priority);
+
         my $res = $mt->publisher->rebuild_from_fileinfo($fi);
         if (defined $res) {
             if ( $sync ) {
@@ -95,16 +94,6 @@ sub work {
             } else {
                 $job->completed();
             }
-            # This is way too noisy and clutters the activity log
-            # for active sites.
-            # $mt->log({
-            #     ($fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
-            #     message => $mt->translate('Background Publishing Done'),
-            #     metadata => log_time() . ' '
-            #         . $mt->translate('Published: [_1]', $fi->file_path),
-            #     category => "publish",
-            #     level => MT::Log::INFO(),
-            # });
             $rebuilt++;
         } else {
             my $error = $mt->publisher->errstr;
