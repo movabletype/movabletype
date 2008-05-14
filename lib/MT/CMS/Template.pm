@@ -2067,13 +2067,15 @@ sub publish_archive_templates {
         );
     } else {
         # nothing left after this publish operation; just return
-        # to the listing screen.
+        # to the edit screen.
         $return_args = $app->uri_params(
-            mode => 'list',
+            mode => 'view',
             args => {
-                _type => 'template',
-                blog_id => scalar $app->param('blog_id'),
-                published => 1
+                _type     => 'template',
+                blog_id   => scalar $app->param('blog_id'),
+                published => 1,
+                id        => $tmpl_id,
+                saved     => 1,
             }
         );
     }
