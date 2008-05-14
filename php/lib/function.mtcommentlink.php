@@ -8,7 +8,7 @@
 function smarty_function_mtcommentlink($args, &$ctx) {
     $args['no_anchor'] = 1;
     $entry_link = $ctx->tag('EntryPermalink', $args);
-    $entry_link .= '#comment-' . $ctx['comment_id'];
+    $entry_link .= '#comment-' . $args['comment_id'];
     return $link;
 }
 ?>
