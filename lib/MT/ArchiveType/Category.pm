@@ -41,7 +41,7 @@ sub template_params {
         category_archive                   => 1,
         archive_template                   => 1,
         archive_listing                    => 1,
-        'module_category-monthly_archives' => 1,
+        'module_category_archives' => 1,
     };
 }
 
@@ -93,25 +93,26 @@ sub archive_group_iter {
     require MT::Placement;
     require MT::Entry;
 
+    # issue a single count_group_by for all categories
+    my $cnt_iter = MT::Placement->count_group_by({
+        blog_id => $blog_id,
+    }, {
+        group => [ 'category_id' ],
+        join => MT::Entry->join_on('id', { status => MT::Entry::RELEASE() }),
+    });
+    my %counts;
+    while (my ($count, $cat_id) = $cnt_iter->()) {
+        $counts{$cat_id} = $count;
+    }
+
     return sub {
         while ( my $c = $iter->() ) {
-            my @arguments = (
-                {
-                    blog_id => $blog_id,
-                    status  => MT::Entry::RELEASE()
-                },
-                {
-                    'join' => [
-                        'MT::Placement', 'entry_id', { category_id => $c->id }
-                    ]
-                }
-            );
-            my $count = MT::Entry->count( @arguments );
+            my $count = $counts{$c->id};
             next unless $count || $args->{show_empty};
             return ( $count, category => $c );
         }
-        undef;
-      }
+        return ();
+    };
 }
 
 sub archive_group_entries {
