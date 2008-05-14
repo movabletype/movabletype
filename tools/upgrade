@@ -74,6 +74,9 @@ sub main {
         $author_id = $a->id;
     }
 
+    if ( $install ) {
+        $MT::Upgrade::Installing = 1;
+    }
     my $updated = MT::Upgrade->do_upgrade(
         App       => __PACKAGE__, 
         DryRun    => $dryrun,
