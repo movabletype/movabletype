@@ -14,6 +14,7 @@ use List::Util qw( shuffle );
 my $instance;
 
 our $RANDOMIZE_JOBS = 0;
+our $OBJECT_REPORT = 0;
 
 sub instance {
     $instance ||= MT::TheSchwartz->new();
@@ -36,6 +37,9 @@ sub new {
     my (%param) = @_;
     my $workers = delete $param{workers} if exists $param{workers};
     $RANDOMIZE_JOBS = delete $param{randomize} if exists $param{randomize};
+
+    # Reports object usage inbetween jobs if Devel::Leak::Object is loaded
+    $OBJECT_REPORT = 1 if $Devel::Leak::Object::VERSION;
 
     my $client = $class->SUPER::new(%param);
 
@@ -128,23 +132,35 @@ sub work_periodically {
     $delay ||= 5;
     my $last_task_run = 0;
     my $did_work = 0;
+
+    if ($OBJECT_REPORT) {
+        Devel::Leak::Object::status();
+        print "\n\n";
+    }
+
     while (1) {
         if ($client->work_once) {
             $did_work = 1;
-        } else {
-            if ($did_work) {
-                my $driver = MT::Object->driver;
-                $driver->clear_cache
-                    if $driver->can('clear_cache');
-                MT->request->reset();
-                $did_work = 0;
-            }
+        }
 
-            if ($last_task_run + 60 * 5 < time) {
-                MT->run_tasks();
-                $last_task_run = time;
+        if ($last_task_run + 60 * 5 < time) {
+            MT->run_tasks();
+            $did_work = 1;
+            $last_task_run = time;
+        }
+
+        if ($did_work) {
+            my $driver = MT::Object->driver;
+            $driver->clear_cache
+                if $driver->can('clear_cache');
+            MT->request->reset();
+            $did_work = 0;
+            if ($OBJECT_REPORT) {
+                Devel::Leak::Object::status();
+                print "\n\n";
             }
         }
+
         sleep $delay;
     }
 }
