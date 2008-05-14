@@ -801,6 +801,12 @@ sub preview {
         }
         $archive_file = File::Spec->catfile( $blog_path, $obj->archive_file );
         $archive_url = $obj->archive_url;
+
+        my $archiver = MT->publisher->archiver( $ctx->{current_archive_type} );
+        my $tparams = $archiver->template_params;
+        if ($tparams) {
+            $ctx->var( $_, $tparams->{$_} ) for keys %$tparams;
+        }
     } elsif ($type eq 'archive') {
         # some variety of archive template
         my $ctx = $preview_tmpl->context;
@@ -811,6 +817,10 @@ sub preview {
         }
         $ctx->{current_archive_type} = $map->archive_type;
         my $archiver = MT->publisher->archiver( $map->archive_type );
+        my $tparams = $archiver->template_params;
+        if ($tparams) {
+            $ctx->var( $_, $tparams->{$_} ) for keys %$tparams;
+        }
         my @entries = create_preview_content($app, $blog, $archiver->entry_class, 10);
         if ($archiver->date_based) {
             $ctx->{current_timestamp} = $entries[0]->authored_on;
