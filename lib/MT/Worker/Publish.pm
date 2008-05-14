@@ -95,14 +95,16 @@ sub work {
             } else {
                 $job->completed();
             }
-            $mt->log({
-                ($fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
-                message => $mt->translate('Background Publishing Done'),
-                metadata => log_time() . ' '
-                    . $mt->translate('Published: [_1]', $fi->file_path),
-                category => "publish",
-                level => MT::Log::INFO(),
-            });
+            # This is way too noisy and clutters the activity log
+            # for active sites.
+            # $mt->log({
+            #     ($fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
+            #     message => $mt->translate('Background Publishing Done'),
+            #     metadata => log_time() . ' '
+            #         . $mt->translate('Published: [_1]', $fi->file_path),
+            #     category => "publish",
+            #     level => MT::Log::INFO(),
+            # });
             $rebuilt++;
         } else {
             my $error = $mt->publisher->errstr;
