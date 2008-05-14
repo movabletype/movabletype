@@ -1,5 +1,7 @@
-# Copyright 2003-2008 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2005-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 #
 # $Id:$
 
@@ -35,6 +37,9 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters you see in the picture above.' => '画像の中に見える文字を入力してください。',
+
+## php/lib/function.mtcommentauthorlink.php
+	'Anonymous' => '匿名',
 
 ## php/lib/archive_lib.php
 	'Page' => 'ウェブページ',
@@ -262,12 +267,11 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,minute,minutes] ago' => '[quant,_1,分,分]前',
 	'[quant,_1,day,days] ago' => '[quant,_1,日,日]前',
 	'<a href="[_1]">Edit</a>' => '<a href="[_1]">編集</a>',
-	'Posting...' => '投稿中...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'このブログにコメントする権限を持っていません。([_2]サインアウトする[_3])',
 	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => '[_1]としてサインインしています。([_2]サインアウト[_3])',
 	'[_1]Sign in[_2] to comment.' => 'コメントするにはまず[_1]サインイン[_2]してください。',
-	'[_1]Sign in[_2] to comment, or [_3]comment anonymously[_2].' => '[_1]サインイン[_2]してからコメントすることもできます。([_3]すぐにコメントする[_2])',
-	'Replying to <a href="#comment-[_1]">comment from [_2]</a>' => '<a href="#comment-[_1]">[_2]からのコメント</a>に返信',
+	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'コメントする前に[_1]サインイン[_2]することもできます。',
+	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => '年別ユーザーアーカイブ',
@@ -349,6 +353,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_preview.mtml
 	'Previewing your Comment' => 'コメントの確認',
+	'Replying to comment from [_1]' => '[_1]からのコメントに返信',
 	'Cancel' => 'キャンセル',
 
 ## default_templates/pages_list.mtml
@@ -519,7 +524,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'ユーザー別',
-	'Author (#[_1])' => 'ユーザー (#[_1])',
 	'author/author-display-name/index.html' => 'author/author-display-name/index.html',
 	'author/author_display_name/index.html' => 'author/author_display_name/index.html',
 
@@ -1342,7 +1346,6 @@ use vars qw( @ISA %Lexicon );
 	'Renaming PHP plugin file names...' => 'phpプラグインのファイル名を変更しています...',
 	'Error renaming PHP files. Please check the Activity Log.' => 'PHPファイルの名前を変更できませんでした。ログを確認してください。',
 	'Cannot rename in [_1]: [_2].' => '[_1]の名前を変更できません: [_2]',
-	'Updating widget template records...' => 'ウィジェットテンプレートを更新しています...',
 	'Removing unnecessary indexes...' => '不要なインデックスを削除しています...',
 	'Upgrading table for [_1] records...' => '[_1]のテーブルを更新しています...',
 	'Upgrading database from version [_1].' => 'データベースをバージョン [_1]から更新しています...',
@@ -1389,6 +1392,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning user status...' => 'ユーザーの状態を設定しています...',
 	'Migrating permissions to roles...' => '権限をロールに移行しています...',
 	'Populating authored and published dates for entries...' => 'ブログ記事の作成日と公開日を設定しています...',
+	'Updating widget template records...' => 'ウィジェットテンプレートを更新しています...',
 	'Classifying category records...' => 'カテゴリのデータにクラスを設定しています...',
 	'Classifying entry records...' => 'ブログ記事のデータにクラスを設定しています...',
 	'Merging comment system templates...' => 'コメント関連のシステムテンプレートをマージしています...',
@@ -1402,7 +1406,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'ユーザーにベースネームを設定しています...',
 	'Assigning entry comment and TrackBack counts...' => 'コメントとトラックバックの件数を設定しています....',
 	'Assigning embedded flag to asset placements...' => 'アイテムの関連付けの有無を設定しています...',
-	'Replacing %C format to MTCategoryLabel...' => 'ファイルフォーマット(%C)をMTCategoryLabelに変換しています...',
+	'Replacing file formats to use CategoryLabel tag...' => 'ファイルフォーマットをMTCategoryLabelに変換しています...',
 
 ## lib/MT/ImportExport.pm
 	'No Blog' => 'ブログがありません。',
@@ -1445,6 +1449,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning' => '警告',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.jp/documentation/appendices/tags/%t.html',
 	'No [_1] could be found.' => '[_1]が見つかりません。',
+	'records' => 'オブジェクト',
 	'Invalid tag [_1] specified.' => 'タグ[_1]は不正です。',
 	'No template to include specified' => 'インクルードするテンプレートが見つかりませんでした。',
 	'Recursion attempt on [_1]: [_2]' => '[_1]でお互いがお互いを参照している状態になっています: [_2]',
@@ -1469,7 +1474,6 @@ use vars qw( @ISA %Lexicon );
 	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'MTCommentFieldsタグは利用できません。代わりにテンプレートモジュール「[_1]」をインクルードしてください。',
 	'Comment Form' => 'コメント入力フォーム',
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
-	'Anonymous' => '匿名',
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1]は日別、週別、月別の各アーカイブでのみ利用できます。',
 	'Group iterator failed.' => 'アーカイブのロードでエラーが発生しました。',
 	'You used an [_1] tag outside of the proper context.' => '[_1]タグを不正なコンテキストで利用しようとしました。',
@@ -1622,6 +1626,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove Tags...' => 'タグの削除',
 	'Tags to remove from selected entries' => '削除するタグを入力',
 	'Batch Edit Entries' => 'ブログ記事の一括編集',
+	'Publish Pages' => 'ウェブページを公開',
 	'Unpublish Pages' => 'ウェブページの公開を取り消し',
 	'Tags to add to selected pages' => '追加するタグを入力',
 	'Tags to remove from selected pages' => '削除するタグを入力',
@@ -1685,7 +1690,7 @@ use vars qw( @ISA %Lexicon );
 	'No search term was specified.' => '検索ワードを指定してください。',
 	'Invalid value: [_1]' => '不正な値です: [_1]',
 	'No column was specified to search for [_1].' => '[_1]で検索するカラムが指定されていません。',
-	'Throttled' => 'Throttled',
+	'The search you conducted has timed out.  Please simplify your query and try again.' => 'タイムアウトしました。お手数ですが検索をやり直してください。',
 
 ## lib/MT/App/NotifyList.pm
 	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
@@ -1714,7 +1719,6 @@ use vars qw( @ISA %Lexicon );
 	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => '[_1]からのコメントが[_2]秒間に8個続いたため、このIPアドレスを禁止リストに登録しました。',
 	'IP Banned Due to Excessive Comments' => '大量コメントによるIP禁止',
 	'No such entry \'[_1]\'.' => 'ブログ記事\'[_1]\'がありません。',
-	'Invalid request; $armor != $site_path_sha1' => '不正な要求です。 $armor != $site_path_sha1',
 	'_THROTTLED_COMMENT' => '短い期間にコメントを大量に送りすぎです。しばらくたってからやり直してください。',
 	'Comments are not allowed on this entry.' => 'このブログ記事にはコメントできません。',
 	'Comment text is required.' => 'コメントを入力していません。',
@@ -2317,6 +2321,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_category.tmpl
 	'Edit Category' => 'カテゴリの編集',
 	'Your category changes have been made.' => 'カテゴリを変更しました。',
+	'Useful links' => 'ショートカット',
+	'Manage entries in this category' => 'このカテゴリに属するブログ記事の一覧',
 	'You must specify a label for the category.' => 'カテゴリ名を設定してください。',
 	'_CATEGORY_BASENAME' => '出力ファイル/フォルダ名',
 	'This is the basename assigned to your category.' => 'カテゴリの出力ファイル/フォルダ名です。',
@@ -2402,7 +2408,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenter Details' => 'コメント投稿者の詳細',
 	'The commenter has been trusted.' => 'コメント投稿者を承認しました。',
 	'The commenter has been banned.' => 'コメント投稿者を禁止しました。',
-	'Useful links' => 'ショートカット',
 	'Comments from [_1]' => '[_1]からのコメント',
 	'commenter' => 'コメント投稿者',
 	'commenters' => 'コメント投稿者',
@@ -2471,15 +2476,15 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Profile' => '公開プロファイル',
 	'Choose the profile that best matches the requirements for this blog.' => 'ブログの要件に最も近いプロファイルを選択してください。',
 	'Static Publishing' => 'スタティックパブリッシング',
-	'Publish all files statically.' => 'すべてのファイルをスタティックに公開(再構築)します。',
-	'Asynchronous Publishing' => '非同期スタティックパブリッシング',
-	'Publish all files via the asynchronous job queue.' => 'すべてのファイルの公開作業をキューにためてバックグランドで公開(再構築)します。',
+	'Immediately publish all templates statically.' => 'すべてのテンプレートをスタティックパブリッシングします。',
+	'Background Publishing' => 'バックグラウンドパブリッシング',
+	'All templates published statically via Publish Que.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
 	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
-	'Publish main index template and all entry/page archives statically. Publish all other files in the background.' => 'メインページとブログ記事/ウェブページのアーカイブをスタティックに公開(再構築)します。その他のファイルはキューにためてバックグランドで公開します。',
+	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、ブログ記事アーカイブ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
 	'Dynamic Publishing' => 'ダイナミックパブリッシング',
-	'Publish all files dynamically.' => 'すべてのファイルをダイナミックに公開します。',
+	'Publish all templates dynamically.' => 'すべてのテンプレートをダイナミックパブリッシングします。',
 	'Dynamic Archives Only' => 'アーカイブのみダイナミックパブリッシング',
-	'Publish all archives dynamically. Publish all other files statically.' => 'すべてのアーカイブをダイナミックで公開し、その他のファイルはスタティックに公開(再構築)します。',
+	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'アーカイブテンプレートをすべてダイナミックパブリッシングします。他のテンプレートはスタティックパブリッシングします。',
 	'This new publishing profile will update all of your templates.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
 
 ## tmpl/cms/dialog/entry_notify.tmpl
@@ -2593,6 +2598,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_folder.tmpl
 	'Edit Folder' => 'フォルダを編集',
 	'Your folder changes have been made.' => 'フォルダを編集しました。',
+	'Manage pages in this folder' => 'このフォルダに属するウェブページ一覧',
 	'You must specify a label for the folder.' => 'このフォルダの名前を設定してください。',
 	'Save changes to this folder (s)' => 'フォルダへの変更を保存 (s)',
 
@@ -3287,6 +3293,7 @@ use vars qw( @ISA %Lexicon );
 	'-' => '-',
 	'Manual' => '手動',
 	'Dynamic' => 'ダイナミック',
+	'Publish Queue' => '公開キュー',
 	'Static' => 'スタティック',
 
 ## tmpl/cms/include/overview-left-nav.tmpl
@@ -3353,15 +3360,16 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Type' => '種類',
-	'Publish Options' => '再構築オプション',
 	'Custom...' => 'カスタム...',
-	'Statically' => 'スタティック',
-	'Dynamically' => 'ダイナミック',
+	'Statically (default)' => 'スタティック(既定)',
+	'Via Publish Queue' => '公開キュー経由',
 	'On a schedule' => 'スケジュール',
 	': every ' => '毎',
 	'minutes' => '分',
 	'hours' => '時',
+	'Dynamically' => 'ダイナミック',
 	'Manually' => '手動',
+	'Do Not Publish' => '公開しない',
 
 ## tmpl/cms/include/cfg_content_nav.tmpl
 
@@ -3530,8 +3538,8 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'テンプレートの種類',
 	'Custom Index Template' => 'カスタムインデックステンプレート',
 	'Link to File' => 'ファイルへのリンク',
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => '<a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">公開プロファイルについて</a>',
 	'Create Archive Mapping' => '新しいアーカイブマッピングを作成',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/publishing-profiles-and-strategies.html">publishing profiles</a>' => '<a href="http://www.movabletype.jp/documentation/administrator/publishing/publishing-profiles-and-strategies.html">公開プロファイルについて</a>',
 	'Server Side Include' => 'サーバーサイドインクルード',
 	'Process as <strong>[_1]</strong> include' => '<strong>[_1]</strong>のインクルードとして処理する',
 	'Include cache path' => 'キャッシュのパス',
@@ -4045,6 +4053,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '（カンマ区切りリスト）',
 	'(space-delimited list)' => '（スペース区切りリスト）',
 	'(delimited by \'[_1]\')' => '（[_1]で区切る）',
+	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => '', # Blog It is not encouraged in Japanese version
 	'None selected' => '選択されていません',
 
 ## plugins/Textile/textile2.pl
@@ -4111,7 +4120,7 @@ use vars qw( @ISA %Lexicon );
 	'Moderate TrackBacks from suspicious sources' => '疑わしい送信元からのトラックバックの公開を保留する',
 	'Junk TrackBacks from suspicious sources' => '疑わしい送信元からのトラックバックをスパムとして報告する',
 	'Lookup Whitelist' => 'ホワイトリスト',
-	'To prevent lookups for some IP addresses or domains, list them below. Place each entry on a line by itself.' => '一部のIPアドレスやドメイン名について問い合わせを行わない場合、下の一覧に追加してください。一行に一つずつ指定します。',
+	'To prevent lookups for specific IP addresses or domains, list each on a line by itself.' => '特定のIPアドレスやドメイン名について問い合わせを行わない場合、下の一覧に追加してください。一行に一つずつ指定します。',
 
 ## plugins/spamlookup/tmpl/word_config.tmpl
 	'Incomming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => '受信したコメントトラックバックについて、特定のキーワードやドメイン名、パターンを監視します。一致したものについて、公開の保留または、スパム指定を行います。個々のパターンについて、評価値の調整も可能です。',
@@ -4143,7 +4152,6 @@ use vars qw( @ISA %Lexicon );
 	'SpamLookup Link Filter' => 'SpamLookup リンクフィルタ',
 	'SpamLookup Link Memory' => 'SpamLookup リンクメモリ',
 	'SpamLookup Email Memory' => 'SpamLookup メールメモリ',
-
 );
 
 1;

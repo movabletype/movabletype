@@ -30,6 +30,9 @@ $Lexicon_ja = array(
 	'Captcha' => 'Captcha',
 	'Type the characters you see in the picture above.' => '画像の中に見える文字を入力してください。',
 
+## php/lib/function.mtcommentauthorlink.php
+	'Anonymous' => '匿名',
+
 ## php/lib/archive_lib.php
 	'Page' => 'ウェブページ',
 	'Individual' => 'ブログ記事',

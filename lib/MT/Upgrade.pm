@@ -921,7 +921,7 @@ sub core_upgrade_functions {
             priority => 3.2,
             updater => {
                 type => 'templatemap',
-                label => 'Replacing %C format to use CategoryLabel tag...',
+                label => 'Replacing file formats to use CategoryLabel tag...',
                 condition => sub {
                     ( $_[0]->file_template || '' ) =~ m/%-?C/;
                 },
