@@ -1857,6 +1857,7 @@ sub _hdlr_app_widget {
     } else {
         $widget_header .= $var_header;
     }
+    my $corners = $args->{corners} ? '<div class="corners"><b></b><u></u><s></s><i></i></div>' : "";
     my $tabbed = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
     my $header_class = $tabbed ? 'widget-header-tabs' : '';
     my $return_args = $app->make_return_args;
@@ -1890,7 +1891,7 @@ EOT
 $insides
             </div>
         </div>
-        <div class="widget-footer">$widget_footer</div>
+        <div class="widget-footer">$widget_footer</div>$corners
     </div>
 </div>
 EOT

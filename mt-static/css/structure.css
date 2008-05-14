@@ -1481,6 +1481,24 @@ li#config-menu {
     margin-bottom: .5em;
 }
 
+/* General Widget */
+
+.dashboard .widget-inner {
+    position: relative;
+}
+
+.corners b, .corners u, .corners s, .corners i {
+    position: absolute;
+    background: transparent url(../images/widget/corners.gif) no-repeat;
+    width: 3px;
+    height: 3px;
+}
+.corners b { top: 0; left: 0; }
+.corners u { top: 0; right: 0; background-position: -3px 0; }
+.corners s { bottom: 0; right: 0; background-position: -3px -3px; }
+.corners i { bottom: 0; left: 0; background-position: 0 -3px; }
+
+
 /* Shortcuts Widget */
 
 .dashboard .shortcuts-widget ul {
@@ -4357,8 +4375,12 @@ body.dialog {
 
 /* Plugin Settings ---------------------------------------------------------------------------------- */
 
-#list-plugins .plugin-group a:link,
-#list-plugins .plugin-group a:visited {
+#list-plugins .plugin-group .plugin-status a:link,
+#list-plugins .plugin-group .plugin-name a:link,
+#list-plugins .plugin-group .plugin-tabs a:link,
+#list-plugins .plugin-group .plugin-status a:visited,
+#list-plugins .plugin-group .plugin-name a:visited,
+#list-plugins .plugin-group .plugin-tabs a:visited {
     color: #000;
 }
 
