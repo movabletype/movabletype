@@ -456,7 +456,7 @@ function mtShowGreeting() {
 
     if ( u && u.is_authenticated ) {
         if ( u.is_banned ) {
-            phrase = '<__trans phrase="You do not have permission to comment on this blog. ([_1]sign out[_2])" params="<a href="javascript:void(0);" onclick="mtSignOut(' + entry_id + ')">%%</a>">';
+            phrase = '<__trans phrase="You do not have permission to comment on this blog. ([_1]sign out[_2])" params="<a href="javascript:void(0);" onclick="mtSignOut(' + entry_id + ');return false;">%%</a>">';
         } else {
             var user_link;
             if ( u.is_author ) {
@@ -472,7 +472,7 @@ function mtShowGreeting() {
                     user_link = u.name;
             }
             // TBD: supplement phrase with userpic if one is available.
-            phrase = '<__trans phrase="Thanks for signing in, [_1]. ([_2]sign out[_3])" params="' + user_link + '%%<a href="javascript:void(0)" onclick="mtSignOut(' + entry_id + ')">%%</a>">';
+            phrase = '<__trans phrase="Thanks for signing in, [_1]. ([_2]sign out[_3])" params="' + user_link + '%%<a href="javascript:void(0)" onclick="mtSignOut(' + entry_id + ');return false;">%%</a>">';
         }
     } else {
         if (reg_reqd) {
