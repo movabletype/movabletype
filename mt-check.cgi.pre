@@ -65,7 +65,13 @@ eval {
     $cfg->PublishCharset('utf-8');
     $cfg->DefaultLanguage($lang);
     require MT::L10N;
-    $LH = $mt ? $mt->language_handle : MT::L10N->get_handle($lang);
+    if ( $mt ) {
+        $LH = $mt->language_handle;
+        $mt->set_language($lang);
+    }
+    else {
+        MT::L10N->get_handle($lang);
+    }
 };
 
 sub trans_templ {
