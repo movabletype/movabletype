@@ -939,6 +939,7 @@ sub core_upgrade_functions {
 
 sub core_upgrade_meta {
     my $self = shift;
+
     my $types = MT->registry('object_types');
     my %added_step;
     TYPE: while (my ($type, $reg_class) = each %$types) {
@@ -1011,6 +1012,7 @@ sub _save_meta {
 
 sub core_upgrade_meta_for_table {
     my $self = shift;
+    return 0 if $Installing;
     my (%param) = @_;
     my $type = $param{type};
     return 0 unless $type;
