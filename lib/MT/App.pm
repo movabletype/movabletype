@@ -1082,7 +1082,14 @@ sub _invalidate_commenter_session {
 
     $app->logout();
 
-    # my $timeout = $app->config->CommentSessionTimeout;
+    # need to clear commenter_name for writeCommenterGreeting
+    my $timeout = $app->config->CommentSessionTimeout;
+    my %name_kookee = (-name => 'commenter_name',
+                       -value => '',
+                       -path => '/',
+                       -expires => "+${timeout}s");
+    $app->bake_cookie(%name_kookee);
+
     # my %kookee = (-name => COMMENTER_COOKIE_NAME(),
     #               -value => '',
     #               -path => '/',
@@ -1093,11 +1100,6 @@ sub _invalidate_commenter_session {
     #                    -path => '/',
     #                    -expires => "+${timeout}s");
     # $app->bake_cookie(%url_kookee);
-    # my %name_kookee = (-name => 'commenter_name',
-    #                    -value => '',
-    #                    -path => '/',
-    #                    -expires => "+${timeout}s");
-    # $app->bake_cookie(%name_kookee);
     # my %id_kookee = (-name => 'commenter_id',
     #                    -value => '',
     #                    -path => '/',
