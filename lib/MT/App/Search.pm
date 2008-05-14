@@ -827,7 +827,7 @@ sub throttle_response {
     }
     my $msg = $messages && @$messages
       ? join '; ', @$messages
-      : $app->translate('Throttled');
+      : $app->translate('The search you conducted has timed out.  Please simplify your query and try again.');
     return $app->error($msg);
 }
 
@@ -864,7 +864,11 @@ sub _default_throttle {
 
     unless ( $^O eq 'Win32' ) {
         # Use SIGALRM to stop processing in 5 seconds for each request
-        $SIG{ALRM} = sub { $app->errtrans('Throttled'); die; };
+        $SIG{ALRM} = sub {
+            my $msg = $app->translate('The search you conducted has timed out.  Please simplify your query and try again.');
+            $app->error($msg);
+            die $msg;
+        };
         $app->{__have_throttle} = 1;
         alarm($app->config->SearchThrottleSeconds);
         $$result = 1;
