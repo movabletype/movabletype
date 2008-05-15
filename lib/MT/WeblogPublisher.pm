@@ -47,17 +47,6 @@ sub init_archive_types {
     my $mt = MT->instance;
     while (my ($type, $typedata) = each %$types) {
         if ('HASH' eq ref $typedata) {
-            # $typedata = { %$typedata };  # don't edit registry
-            # $typedata->{$_} = $mt->handler_to_coderef($typedata->{$_})
-            #     for qw( archive_label archive_file archive_title date_range
-            #             archive_group_iter archive_group_entries
-            #             archive_entries_count );
-            # $typedata->{default_archive_templates} = [
-            #     map { { %$_ } }
-            #         @{ $typedata->{default_archive_templates} || [] }
-            # ];
-            # All of the above is useless, since we're replacing $typedate
-            # by this object.
             $typedata = MT::ArchiveType->new( %$typedata );
         }
         $ArchiveTypes{$type} = $typedata;
@@ -913,8 +902,6 @@ sub rebuild_file {
     $url .= '/' unless $url =~ m|/$|;
     $url .= $map->{__saved_output_file};
 
-    my $cached_tmpl = MT->instance->request('__cached_templates')
-      || MT->instance->request( '__cached_templates', {} );
     my $tmpl_id = $map->template_id;
 
     # template specific for this entry (or page, as the case may be)
@@ -929,14 +916,7 @@ sub rebuild_file {
         }
     }
 
-    my $tmpl = $cached_tmpl->{$tmpl_id};
-    unless ($tmpl) {
-        $tmpl = MT::Template->load($tmpl_id);
-        if ($cached_tmpl) {
-            $cached_tmpl->{$tmpl_id} = $tmpl;
-        }
-    }
-
+    my $tmpl = MT::Template->load($tmpl_id);
     $tmpl->context($ctx);
 
     # From Here
