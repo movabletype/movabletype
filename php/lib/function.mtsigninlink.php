@@ -15,8 +15,8 @@ function smarty_function_mtsigninlink($args, &$ctx) {
     $return = $path . $ctx->mt->config('CommentScript') .
         '?__mode=login' . $static_arg;
     if ($blog)
-        $return .= '&blog_id' . $blog['blog_id'];
+        $return .= '&blog_id=' . $blog['blog_id'];
     if ($entry)
-        $return .= '&entry_id' . $entry['entry_id'];
+        $return .= '&entry_id=' . $entry['entry_id'];
     return $return;
 }
