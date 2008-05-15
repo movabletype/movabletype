@@ -401,7 +401,7 @@ function mtSignInOnClick() {
     if (!el)  // legacy MT 4.x element id
         el = document.getElementById('comment-form-external-auth');
     if (el)
-        el.innerHTML = 'Signing in... <img src="<$mt:StaticWebPath$>images/indicator.white.gif" height="16" width="16" alt="" />';
+        el.innerHTML = '<__trans phrase="Signing in..."> <img src="<$mt:StaticWebPath$>images/indicator.white.gif" height="16" width="16" alt="" />';
 
     mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
     mtFetchUser('mtSetUserOrLogin');
