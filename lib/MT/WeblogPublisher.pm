@@ -413,7 +413,7 @@ sub rebuild_entry {
                     ? ( TemplateMap => $param{TemplateMap} )
                     : (),
                     NoStatic => $param{NoStatic},
-                    # Force    => ($param{Force} ? 1 : 0),
+                    Force    => ($param{Force} ? 1 : 0),
                     Author   => $entry->author,
                 ) or return;
             }
@@ -1801,6 +1801,8 @@ sub queue_build_file_filter {
 
     # From here on, we're committed to publishing this file via TheSchwartz
     return 1 if $throttle->{type} != MT::PublishOption::ASYNC();
+
+    return 1 if $args{force}; # if async, but force is used, publish
 
     require MT::TheSchwartz;
     require TheSchwartz::Job;

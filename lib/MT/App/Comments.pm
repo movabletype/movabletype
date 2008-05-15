@@ -969,10 +969,10 @@ sub post {
     }
 
     if ( $comment->visible ) {
-
+        $app->publisher->start_time(time);
         # Rebuild the entry synchronously so that if the user gets
         # redirected to the indiv. page it will be up-to-date.
-        $app->rebuild_entry( Entry => $entry->id )
+        $app->rebuild_entry( Entry => $entry->id, Force => 1, PreferredArchiveOnly => 1 )
           or return $app->handle_error(
             $app->translate( "Publish failed: [_1]", $app->errstr ) );
     }
@@ -990,8 +990,10 @@ sub post {
     # Index rebuilds and notifications are done in the background.
     MT::Util::start_background_task(
         sub {
-            $app->rebuild_indexes( Blog => $blog )
-              or return $app->errtrans( "Publish failed: [_1]", $app->errstr );
+            $app->rebuild_entry( Entry => $entry->id, BuildDependencies => 1 )
+              or return $app->handle_error(
+                $app->translate( "Publish failed: [_1]", $app->errstr ) );
+
             $app->_send_comment_notification( $comment, $comment_link, $entry,
                 $blog, $commenter );
             _expire_sessions( $cfg->CommentSessionTimeout )
