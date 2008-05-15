@@ -1,18 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
 <head>
-   <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
-   <meta name="generator" content="<$MTProductName version="1"$>" />
-   
-   <link rel="stylesheet" href="<$MTBlogURL$>styles.css" type="text/css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+    <meta name="generator" content="<$MTProductName version="1"$>" />
+<mt:IfBlog>
+    <link rel="stylesheet" href="<$MTLink template="styles"$>" type="text/css" />
+<mt:else>
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
+</mt:IfBlog>
 <MTIgnore>
  ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
 </MTIgnore>
 <MTNoSearch><MTElse>
-   <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
 </MTElse></MTNoSearch>      
-   <title><MT_TRANS phrase="Search Results"></title>
+    <title><MT_TRANS phrase="Search Results"></title>
 </head>
 <body class="<MTNoSearch>layout-one-column<MTElse>layout-two-column-right</MTElse></MTNoSearch> mt-search-results">
    <div id="container">
