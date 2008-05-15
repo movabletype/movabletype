@@ -401,7 +401,6 @@ sub children_categories {
         @{$cat->{__children}} = sort { $a->label cmp $b->label }
         $class->load({ blog_id => $cat->blog_id,
             parent => $cat->id });
-        weaken( $_ ) foreach @{ $cat->{__children} };
     }
     @{$cat->{__children}};
 }
