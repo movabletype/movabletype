@@ -394,6 +394,7 @@ sub build_dynamic {
 
 sub blog {
     my $this = shift;
+    return undef unless $this->blog_id;
     return $this->{__blog} if $this->{__blog};
     return $this->{__blog} = MT::Blog->load($this->blog_id);
 }
