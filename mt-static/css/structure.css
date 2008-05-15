@@ -1489,7 +1489,7 @@ li#config-menu {
 
 .corners b, .corners u, .corners s, .corners i {
     position: absolute;
-    background: transparent url(../images/widget/corners.gif) no-repeat;
+    background: transparent url(../images/widget/corners.png) no-repeat;
     width: 3px;
     height: 3px;
 }
