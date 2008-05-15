@@ -79,7 +79,10 @@ sub textile_2 {
             $ctx->stash('TextileOptions', undef);
         }
 
-        $textile->filter_param($ctx);
+        # reduces circular references
+        # $textile->filter_param($ctx);
+        require MT::Util;
+        MT::Util::weaken( $textile->{filter_param} = $ctx );
     } else {
         # no Context object...
         $textile = _new_textile();
