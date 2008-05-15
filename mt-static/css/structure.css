@@ -1760,6 +1760,13 @@ fieldset h3 {
     margin-left: 1.5em;
 }
 
+.web-services-settings #remote_auth_token {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 2px 4px;
+    width: 200px;
+}
+
 /* Action Bars ---------------------------------------------------------------------------------- */
 
 .actions-bar { 
