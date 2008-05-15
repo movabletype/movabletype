@@ -174,7 +174,8 @@ sub work_periodically {
             MT->request->reset();
             $did_work = 0;
             if ($OBJECT_REPORT) {
-                leak_report(\%obj_start, \%obj_pre, \%Devel::Leak::Object::OBJECT_COUNT);
+                my $report = leak_report(\%obj_start, \%obj_pre, \%Devel::Leak::Object::OBJECT_COUNT);
+                $client->debug($report) if $report ne '';
             }
         }
 
@@ -184,11 +185,12 @@ sub work_periodically {
 
 our %persistent;
 BEGIN {
-    %persistent = map { $_ => 1 } qw( MT::Task MT::Plugin MT::Component MT::ArchiveType MT::TaskMgr MT::WeblogPublisher MT::Serializer TheSchwartz::Job TheSchwartz::JobHandle );
+    %persistent = map { $_ => 1 } qw( MT::Callback MT::Task MT::Plugin MT::Component MT::ArchiveType MT::TaskMgr MT::WeblogPublisher MT::Serializer TheSchwartz::Job TheSchwartz::JobHandle );
 }
 sub leak_report {
     my ($start, $pre, $post) = @_;
     my $reported;
+    my $report = '';
     foreach my $class (sort keys %$post) {
         # skip reporting classes that are persistent in nature
         next if exists $persistent{$class};
@@ -199,11 +201,12 @@ sub leak_report {
         my $start_count = $start->{$class} || 0;
         next if $post_count == 1;  # ignores most singletons
         if (($pre_count != $post_count) || ($post_count != $start_count)) {
-            print "Leak report (class, total, delta from last job(s), delta since process start):\n" unless $reported;
-            printf "%-40s %-10d %-10d %-10d\n", $class, $post_count, $post_count - $pre_count, $post_count - $start_count;
+            $report .= "Leak report (class, total, delta from last job(s), delta since process start):\n" unless $reported;
+            $report .= sprintf("%-40s %-10d %-10d %-10d\n", $class, $post_count, $post_count - $pre_count, $post_count - $start_count);
             $reported = 1;
         }
     }
+    return $report;
 }
 
 sub _grab_a_job {
