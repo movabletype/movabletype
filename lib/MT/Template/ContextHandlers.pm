@@ -15684,7 +15684,8 @@ sub _math_operation {
 
 =head2 IfMoreResults
 
-=for tags pagination
+A conditional tag used to test whether the requested content has more
+to show than currently appearing in the page.
 
 =cut
 
@@ -15700,7 +15701,8 @@ sub _hdlr_if_more_results {
 
 =head2 IfPreviousResults
 
-=for tags pagination
+A conditional tag used to test whether the requested content has previous
+page.
 
 =cut
 
@@ -15713,7 +15715,28 @@ sub _hdlr_if_previous_results {
 
 =head2 PagerBlock
 
-=for tags pagination
+A block tag iterates from 1 to the number of the last page in the search
+result. For example, if the limit was 10 and the number of results is 75,
+the tag loops from 1 through 8. 
+
+The page number is set to __value__ standard variable in each iteration. 
+
+The tag also sets __odd__, __even__, __first__, __last__ and __counter__
+standard variables. 
+
+=back
+
+B<Example:>
+
+    M
+    <MTPagerBlock>
+      <MTIfCurrentPage>o<MTElse><a href="<MTPagerLink>">o</a></MTIfCurrentPage>
+    </MTPagerBlock>
+    vable Type
+
+produces:
+
+    "Mooooooooovable Type" where each "o" is a link to the page.
 
 =cut
 
@@ -15755,7 +15778,9 @@ sub _hdlr_pager_block {
 
 =head2 IfCurrentPage
 
-=for tags pagination
+A conditional tag returns true if the current page in the context of
+PagerBlock is the current page that is being rendered. 
+The tag must be used in the context of PagerBlock.
 
 =cut
 
@@ -15766,7 +15791,8 @@ sub context_script { '' }
 
 =head2 PagerLink
 
-=for tags pagination
+A function tag returns the URL points to the page in the context of
+PagerBlock. The tag can only be used in the context of PagerBlock. 
 
 =cut
 
@@ -15799,7 +15825,8 @@ sub _hdlr_pager_link {
 
 =head2 CurrentPage
 
-=for tags pagination
+A function tag returns a number represents the number of current page.
+The number starts from 1.
 
 =cut
 
@@ -15814,7 +15841,8 @@ sub _hdlr_current_page {
 
 =head2 TotalPages
 
-=for tags pagination
+A function tag returns a number represents the total number of pages
+in the current search context. The number starts from 1. 
 
 =cut
 
@@ -15831,7 +15859,8 @@ sub _hdlr_total_pages {
 
 =head2 PreviousLink
 
-=for tags pagination
+A function tag returns the URL points to the previous page of 
+the current page that is being rendered.
 
 =cut
 
@@ -15854,7 +15883,8 @@ sub _hdlr_previous_link {
 
 =head2 NextLink
 
-=for tags pagination
+A function tag returns the URL points to the next page of the current page
+that is being rendered. 
 
 =cut
 
