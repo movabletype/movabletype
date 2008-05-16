@@ -288,13 +288,11 @@ sub widgets_to_modulesets {
     my ( $widgets, $blog_id ) = @_;
     return unless $widgets && @$widgets;
 
-    my @widgets = map { MT->translate( $_ ) } @$widgets;
-
     my @wtmpls = $pkg->load(
-        { name => \@widgets, blog_id => $blog_id ? [ $blog_id, 0 ] : 0, type => 'widget' }
-    ) if @widgets;
+        { name => $widgets, blog_id => $blog_id ? [ $blog_id, 0 ] : 0, type => 'widget' }
+    ) if $widgets && @$widgets;
     my @wids;
-    foreach my $name ( @widgets ) {
+    foreach my $name ( @$widgets ) {
         my ( $widget ) = grep { $_->name eq $name } @wtmpls;
         next unless $widget;
         push @wids, $widget->id;

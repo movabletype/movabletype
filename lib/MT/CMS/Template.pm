@@ -1028,7 +1028,6 @@ sub reset_blog_templates {
     my $tmpl_list = MT::DefaultTemplates->templates($set) || [];
     my @arch_tmpl;
     for my $val (@$tmpl_list) {
-        $val->{name} = $app->translate( $val->{name} );
         $val->{text} = $app->translate_templatized( $val->{text} );
         my $tmpl = MT::Template->new;
         if ( ( 'widgetset' eq $val->{type} )
@@ -1735,7 +1734,6 @@ sub refresh_all_templates {
 
             if ( !$val->{orig_name} ) {
                 $val->{orig_name} = $val->{name};
-                $val->{name}      = $app->translate( $val->{name} );
                 $val->{text}      = $app->translate_templatized( $val->{text} );
             }
 
