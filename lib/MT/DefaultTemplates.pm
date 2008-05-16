@@ -320,6 +320,7 @@ sub templates {
         else {
             $tmpl_hash = $set ? $def_tmpl->{templates} : $def_tmpl;
         }
+        my $plugin = $tmpl_hash->{plugin};
 
         foreach my $tmpl_set (keys %$tmpl_hash) {
             next unless ref($tmpl_hash->{$tmpl_set}) eq 'HASH';
@@ -364,6 +365,20 @@ sub templates {
                     } else {
                         $tmpl->{text} = '';
                     }
+                }
+
+                if ( exists $tmpl->{widgets} ) {
+                    my $widgets = $tmpl->{widgets};
+                    my @widgets;
+                    foreach my $widget ( @$widgets ) {
+                        if ( $plugin ) {
+                            push @widgets, $plugin->translate( $widget );
+                        }
+                        else {
+                            push @widgets, MT->translate( $widget );
+                        }
+                    }
+                    $tmpl->{widgets} = \@widgets if @widgets;
                 }
 
                 my $local_global_tmpls = $tmpl->{global} ? \%global_tmpls : \%tmpls;
