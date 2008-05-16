@@ -772,7 +772,7 @@ sub _rebuild_entry_archive_type {
         $start = $param{Start};
         $end   = $param{End};
     } else {
-        if ($archiver->can('date_range')) {
+        if ($archiver->date_based() && $archiver->can('date_range')) {
             ( $start, $end ) = $archiver->date_range( $entry->authored_on );
         }
     }

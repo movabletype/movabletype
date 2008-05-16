@@ -59,9 +59,6 @@ sub archive_title {
 sub archive_label {
     shift->_getset_coderef( 'archive_label', @_ );
 }
-# sub date_range {
-#     shift->_getset_coderef( 'date_range', @_ );
-# }
 
 sub group_based {
     my $obj = shift;
@@ -159,6 +156,17 @@ sub archive_entries_count {
         }
     );
     return $count;
+}
+
+# For user-defined date-based archive types
+sub date_range {
+    shift->_getset_coderef( 'date_range', @_ );
+}
+sub next_archive_entry {
+    shift->_getset_coderef( 'next_archive_entry', @_ );
+}
+sub previous_archive_entry {
+    shift->_getset_coderef( 'previous_archive_entry', @_ );
 }
 
 1;
