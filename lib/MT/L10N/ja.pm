@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -272,6 +272,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment.' => 'コメントするにはまず[_1]サインイン[_2]してください。',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'コメントする前に[_1]サインイン[_2]することもできます。',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
+    'Signing in...' => 'サインインします...',
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => '年別ユーザーアーカイブ',
@@ -3538,7 +3539,7 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'テンプレートの種類',
 	'Custom Index Template' => 'カスタムインデックステンプレート',
 	'Link to File' => 'ファイルへのリンク',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => '<a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">公開プロファイルについて</a>',
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => '<a href="http://www.movabletype.jp/documentation/administrator/publishing/settings.html">公開プロファイルについて</a>',
 	'Create Archive Mapping' => '新しいアーカイブマッピングを作成',
 	'Server Side Include' => 'サーバーサイドインクルード',
 	'Process as <strong>[_1]</strong> include' => '<strong>[_1]</strong>のインクルードとして処理する',
