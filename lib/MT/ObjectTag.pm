@@ -28,7 +28,7 @@ __PACKAGE__->install_properties({
             columns => ['blog_id', 'object_datasource', 'tag_id'],
         },
         # For tag count
-        blog_ds_object_tag => {
+        blog_ds_obj_tag => {
             columns => ['blog_id', 'object_datasource', 'object_id', 'tag_id'],
         },
     },

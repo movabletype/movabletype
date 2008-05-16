@@ -35,13 +35,13 @@ our (%Types, %TypesByName);
 BEGIN {
     %Types = (
         TYPE_VCHAR()             => "vchar",
-        TYPE_VCHAR_INDEXED()     => "vchar_indexed",
+        TYPE_VCHAR_INDEXED()     => "vchar_idx",
         TYPE_VINTEGER()          => "vinteger",
-        TYPE_VINTEGER_INDEXED()  => "vinteger_indexed",
+        TYPE_VINTEGER_INDEXED()  => "vinteger_idx",
         TYPE_VDATETIME()         => "vdatetime",
-        TYPE_VDATETIME_INDEXED() => "vdatetime_indexed",
+        TYPE_VDATETIME_INDEXED() => "vdatetime_idx",
         TYPE_VFLOAT()            => "vfloat",
-        TYPE_VFLOAT_INDEXED()    => "vfloat_indexed",
+        TYPE_VFLOAT_INDEXED()    => "vfloat_idx",
         TYPE_VBLOB()             => "vblob",
         TYPE_VCLOB()             => "vclob",
     );
@@ -69,7 +69,7 @@ BEGIN {
 ##         name    => 'column',
 ##         id      => 123,
 ##         type_id => 1,
-##         type    => 'vchar_indexed',
+##         type    => 'vchar_idx',
 ##         pkg     => 'MT::Foo',
 ##         zip     => $cfg,   ## optional
 ##       },
@@ -317,7 +317,7 @@ field in the database.
 
 =item * type
 
-The data type of the metadata field. One of: C<vchar>, C<vchar_indexed>, or
+The data type of the metadata field. One of: C<vchar>, C<vchar_idx>, or
 C<vblob>.
 
 =back
@@ -385,7 +385,7 @@ field in the database.
 
 =item * type
 
-The data type of the metadata field. One of: C<vchar>, C<vchar_indexed>, or
+The data type of the metadata field. One of: C<vchar>, C<vchar_idx>, or
 C<vblob>.
 
 =item * type_id

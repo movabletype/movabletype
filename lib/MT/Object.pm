@@ -473,39 +473,39 @@ sub meta_args {
             $id_field         => 'integer not null',
             type              => 'string(75) not null',
             vchar             => 'string(255)',
-            vchar_indexed     => 'string(255)',
+            vchar_idx         => 'string(255)',
             vdatetime         => 'datetime',
-            vdatetime_indexed => 'datetime',
+            vdatetime_idx     => 'datetime',
             vinteger          => 'integer',
-            vinteger_indexed  => 'integer',
+            vinteger_idx      => 'integer',
             vfloat            => 'float',
-            vfloat_indexed    => 'float',
+            vfloat_idx        => 'float',
             vblob             => 'blob',
             vclob             => 'text',
         },
         columns => [ $id_field, qw(
             type
             vchar
-            vchar_indexed
+            vchar_idx
             vdatetime
-            vdatetime_indexed
+            vdatetime_idx
             vinteger
-            vinteger_indexed
+            vinteger_idx
             vfloat
-            vfloat_indexed
+            vfloat_idx
             vblob
             vclob
         ) ],
         indexes => {
             $id_field => 1,
             id_type   => { columns => [ $id_field, 'type' ] },
-            id_type_vchar => { columns => [ $id_field, 'type', 'vchar_indexed' ] },
-            id_type_vdatetime => { columns => [ $id_field, 'type',
-                'vdatetime_indexed' ] },
-            id_type_vinteger => { columns => [ $id_field, 'type',
-                'vinteger_indexed' ] },
-            id_type_vfloat => { columns => [ $id_field, 'type',
-                'vfloat_indexed' ] },
+            id_type_vchar => { columns => [ $id_field, 'type', 'vchar_idx' ] },
+            id_type_vdt => { columns => [ $id_field, 'type',
+                'vdatetime_idx' ] },
+            id_type_vint => { columns => [ $id_field, 'type',
+                'vinteger_idx' ] },
+            id_type_vflt => { columns => [ $id_field, 'type',
+                'vfloat_idx' ] },
         },
         primary_key => [ $id_field, 'type' ],
     };
@@ -2377,7 +2377,7 @@ of 'column_defs' (similar to the C<install_properties> method):
     } });
 
 In this form, the storage type is explicitly declared, so the metadata
-is stored into the appropriate column (vinteger_indexed and vchar_indexed
+is stored into the appropriate column (vinteger_idx and vchar_idx
 respectively).
 
     MT::Foo->install_meta( { columns => [ 'metadata1', 'metadata2' ] } )
