@@ -832,13 +832,15 @@ sub clone_with_children {
         my $state = MT->translate("Cloning templates for blog...");
         $callback->($state, "tmpls");
         require MT::Template;
-        $iter = MT::Template->load_iter({ blog_id => $old_blog_id });
-        $counter = 0;
-        while (my $tmpl = $iter->()) {
-            $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'tmpls')
-                if $counter && ($counter % 100 == 0);
+        $iter = MT::Template->load_iter(
+            { blog_id => $old_blog_id, type => { not => 'widgetset' } }
+        );
+        my $tmpl_processor = sub {
+            my ( $new_blog_id, $counter, $tmpl, $tmpl_map ) = @_;
+            $callback->($state . " " . MT->translate("[_1] records processed...", $$counter), 'tmpls')
+                if $counter && ($$counter % 100 == 0);
             my $tmpl_id = $tmpl->id;
-            $counter++;
+            $$counter++;
             delete $tmpl->{column_values}->{id};
             delete $tmpl->{changed_cols}->{id};
             # linked_file won't be cloned for now because
@@ -848,7 +850,23 @@ sub clone_with_children {
             delete $tmpl->{column_values}->{linked_file_size};
             $tmpl->blog_id($new_blog_id);
             $tmpl->save or die $tmpl->errstr;
-            $tmpl_map{$tmpl_id} = $tmpl->id;
+            $tmpl_map->{$tmpl_id} = $tmpl->id;
+        };
+        $counter = 0;
+        while (my $tmpl = $iter->()) {
+            $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
+        }
+        $iter = MT::Template->load_iter(
+            { blog_id => $old_blog_id, type => 'widgetset' }
+        );
+        while (my $tmpl = $iter->()) {
+            $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
+            my @old_widgets = split /,/, $tmpl->modulesets;
+            my @new_widgets;
+            push @new_widgets, $tmpl_map{$_}
+                foreach @old_widgets;
+            $tmpl->modulesets( join(',', @new_widgets) );
+            $tmpl->save;
         }
         $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'tmpls');
 
