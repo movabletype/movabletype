@@ -6,9 +6,20 @@
 # $Id$
 
 function smarty_function_mtcommentlink($args, &$ctx) {
-    $c = $ctx->stash('comment');
     $args['no_anchor'] = 1;
+    $c = $ctx->stash('comment');
+    $e = $ctx->stash('entry');
+    $need_clear = false;
+    if (empty($e)) {
+        $e = $ctx->mt->db->fetch_entry($c['comment_entry_id']);
+        $ctx->stash('entry', $e);
+        $need_clear = true;
+    }
     $entry_link = $ctx->tag('EntryPermalink', $args);
     $entry_link .= '#comment-' . $c['comment_id'];
+
+    if ($need_clear)
+        $ctx->stash('entry', null);
+
     return $entry_link;
 }
