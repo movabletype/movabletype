@@ -113,11 +113,7 @@ sub handle_sign_in {
         $nick = $name unless $nick;
 
         # Signature was valid, so create a session, etc.
-        my $enc = $app->{cfg}->PublishCharset || '';
-        my $nick_escaped = escape_unicode($nick);
-        $nick = encode_text($nick, 'utf-8', undef);
-        $session = $app->make_commenter_session($app->make_magic_token, q(),
-                                                 $name, $nick_escaped, undef, $name);
+        $session = $app->make_commenter_session($cmntr);
         unless ($session) {
             $app->error($app->errstr() || $app->translate("Couldn't save the session"));
             return 0;

@@ -13,7 +13,7 @@ use MT::I18N qw( encode_text );
 sub handle_sign_in {
     my $class = shift;
     my ($app, $auth_type) = @_;
-    my $q = $app->{query};
+    my $q = $app->param;
 
     my $sig_str = $q->param('sig');
     unless ($sig_str) {
@@ -33,69 +33,42 @@ sub handle_sign_in {
     my $nick = $q->param('nick') || "";
     my $cmntr;
     my $session;
-    if ($sig_str) {
-        if (!$class->_validate_signature($app, $sig_str, 
-                                       token => $blog->effective_remote_auth_token,
-                                       email => decode_url($email),
-                                       name => decode_url($name),
-                                       nick => decode_url($nick),
-                                       ts => $ts))
-        {
-            # Signature didn't match, or timestamp was out of date.
-            # This implies tampering, not a user mistake.
-            $app->error($app->translate("The sign-in validation failed."));
-            return 0;
-        }
 
-        if ($blog->require_typekey_emails && !is_valid_email($email)) {
-            $q->param('email', '');  # blank out email address since it's invalid
-            $app->error($app->translate("This weblog requires commenters to pass an email address. If you'd like to do so you may log in again, and give the authentication service permission to pass your email address."));
-            return 0;
-        }
+    if (!$class->_validate_signature($app, $sig_str, 
+                                   token => $blog->effective_remote_auth_token,
+                                   email => decode_url($email),
+                                   name => decode_url($name),
+                                   nick => decode_url($nick),
+                                   ts => $ts))
+    {
+        # Signature didn't match, or timestamp was out of date.
+        # This implies tampering, not a user mistake.
+        $app->error($app->translate("The sign-in validation failed."));
+        return 0;
+    }
 
-        my $url = $app->{cfg}->IdentityURL;
-        $url .= "/" unless $url =~ m|/$|;
-        $url .= $name;
+    if ($blog->require_typekey_emails && !is_valid_email($email)) {
+        $q->param('email', '');  # blank out email address since it's invalid
+        $app->error($app->translate("This weblog requires commenters to pass an email address. If you'd like to do so you may log in again, and give the authentication service permission to pass your email address."));
+        return 0;
+    }
 
-        # Signature was valid, so create a session, etc.
-        my $enc = $app->{cfg}->PublishCharset || '';
-        my $nick_escaped = escape_unicode($nick);
-        $nick = encode_text($nick, 'utf-8', undef);
-        $session = $app->make_commenter_session($sig_str, $email,
-                                                 $name, $nick_escaped, undef, $url);
-        unless ($session) {
-            $app->error($app->errstr() || $app->translate("Couldn't save the session"));
-            return 0;
-        }
-        $cmntr = $app->_make_commenter(
-            email => $email,
-            nickname => $nick,
-            name => $name,
-            url => $url,
-            auth_type => $auth_type,
-        );
-    } else {
-        # If there's no signature, then we trust the cookie.
-        my %cookies = $app->cookies();
-        my $cookie_name = MT::App::COMMENTER_COOKIE_NAME();
-        if ($cookies{$cookie_name}
-            && ($session = $cookies{$cookie_name}->value())) 
-        {
-            require MT::Session;
-            require MT::Author;
-            my $sess = MT::Session->load({id => $session})
-                or return 0;
-            $cmntr = MT::Author->load({name => $sess->name,
-                                       type => MT::Author::COMMENTER(),
-                                       auth_type => $auth_type})
-                or return 0;
-            if ($blog->require_typekey_emails
-                && !is_valid_email($cmntr->email))
-            {
-                $app->error($app->translate("This blog requires commenters to provide an email address"));
-                return 0;
-            }
-        }
+    my $url = $app->config('IdentityURL');
+    $url .= "/" unless $url =~ m|/$|;
+    $url .= $name;
+
+    # Signature was valid, so create a session, etc.
+    $cmntr = $app->_make_commenter(
+        email => $email,
+        nickname => $nick,
+        name => $name,
+        url => $url,
+        auth_type => $auth_type,
+    );
+    $session = $app->make_commenter_session($cmntr);
+    unless ($session) {
+        $app->error($app->errstr() || $app->translate("Couldn't save the session"));
+        return 0;
     }
     if ($q->param('sig') && !$cmntr) {
         return 0;
@@ -111,8 +84,6 @@ sub _validate_signature {
 
     # the DSA sig parameter is composed of the two pieces of the
     # real DSA sig, packed in Base64, separated by a colon.
-
-#    my ($r, $s) = split /:/, decode_url($sig_str);
     my ($r, $s) = split /:/, $sig_str;
     $r =~ s/ /+/g;
     $s =~ s/ /+/g;
@@ -129,7 +100,7 @@ sub _validate_signature {
     my $timer = time;
     require MT::Util; import MT::Util ('dsa_verify');
     my $msg;
-    if ($app->{cfg}->TypeKeyVersion eq '1.1') {
+    if ($app->config('TypeKeyVersion') eq '1.1') {
         $msg = ($params{email} . "::" . $params{name} . "::" .
                 $params{nick} . "::" . $params{ts} . "::" . $params{token});
     } else {
@@ -149,10 +120,10 @@ sub _validate_signature {
     }
     if ( ! $dsa_key ) {
         # Load the override key
-        $dsa_key = $app->{cfg}->get('SignOnPublicKey');
+        $dsa_key = $app->config->get('SignOnPublicKey');
     }
     # Load the DSA key from the RegKeyURL
-    my $key_location = $app->{cfg}->RegKeyURL;
+    my $key_location = $app->config('RegKeyURL');
     if (!$dsa_key && $key_location) {
         my $ua = $app->new_ua;
         unless ($ua) {

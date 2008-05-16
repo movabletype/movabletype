@@ -32,7 +32,6 @@ __PACKAGE__->install_properties({
         'parent_id' => 'integer',
     },
     indexes => {
-        ip => 1,
         created_on => 1,
         entry_visible => {
             columns => [ 'entry_id', 'visible' ],
@@ -41,6 +40,10 @@ __PACKAGE__->install_properties({
         commenter_id => 1,
         parent_id => 1,
         last_moved_on => 1, # used for junk expiration
+        # For comment throttle check
+        blog_ip_date => {
+            columns => [ 'blog_id', 'ip', 'created_on' ],
+        },
         # For URL lookups to aid spam filtering
         blog_url => {
             columns => [ 'blog_id', 'visible', 'url' ],

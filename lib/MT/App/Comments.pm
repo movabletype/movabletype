@@ -129,26 +129,24 @@ sub _get_commenter_session {
     $session_key =~ y/+/ /;
     my $cfg = $app->config;
     require MT::Session;
-    my $sess_obj = MT::Session->load( { id => $session_key } );
+    my $sess_obj = MT::Session->load( { id => $session_key, kind => 'SI' } );
     my $timeout = $cfg->CommentSessionTimeout;
-    my $user;
-    
-    if ( $sess_obj
-        && ( $user = MT::Author->load( { name => $sess_obj->name } ) ) )
-    {
-        return ( $session_key, $user ) if $user->type eq MT::Author::AUTHOR();
-    }
+    my $user_id = $sess_obj->get('author_id') if $sess_obj;
+    my $user = MT::Author->load( $user_id ) if $user_id;
+
     if (   !$sess_obj
         || ( $sess_obj->start() + $timeout < time )
+        || ( !$user_id )
+        || ( !$user )
       )
     {
+        $app->log("session is invalid; sess_obj = $sess_obj; key = $session_key; user_id = $user_id; user = $user");
         $app->_invalidate_commenter_session( \%cookies );
         return ( undef, undef );
     }
-    else {
-        # session is valid!
-        return ( $session_key, $user );
-    }
+
+    # session is valid!
+    return ( $session_key, $user );
 }
 
 sub login {
@@ -297,10 +295,7 @@ sub do_login {
         }
         MT::Auth->new_login( $app, $commenter );
         if ( $app->_check_commenter_author( $commenter, $blog_id ) ) {
-            $app->make_commenter_session( $app->make_magic_token,
-                $commenter->email, $commenter->name,
-                ($commenter->nickname || $app->translate('(Display Name not set)')),
-                $commenter->id, undef, $ctx->{permanent} ? '+10y' : 0, $blog_id );
+            $app->make_commenter_session( $commenter );
             return $app->redirect_to_target;
         }
         $error = $app->translate("Permission denied.");
@@ -705,6 +700,13 @@ sub _builtin_throttle {
     {
         return 0;    # Put a collar on that puppy.
     }
+
+    return 1 unless $cfg->ShowIPInformation;
+
+    # If IP banning is enabled, check for lots of comments from
+    # the user's IP within the throttle period * 10; if they
+    # exceed 8 comments within that period, ban the IP.
+
     @ts = MT::Util::offset_time_list( time - $throttle_period * 10 - 1,
         $entry->blog_id );
     $from = sprintf(
@@ -1107,7 +1109,7 @@ sub _extend_commenter_session {
     my $cookie_name = $app->commenter_cookie;
     my $session_key = $cookies{$cookie_name}->value() || "";
     $session_key =~ y/+/ /;
-    my $sessobj = MT::Session->load($session_key);
+    my $sessobj = MT::Session->load({ id => $session_key, kind => 'SI' });
     return
       if
       !$sessobj;   # no point changing the cookie if the session's already lost.
@@ -1343,7 +1345,7 @@ sub _expire_sessions {
         { range => { start => 1 } }
     );
     foreach (@old_sessions) {
-        $_->remove() || die "couldn't remove sessions because " . $_->errstr();
+        $_->remove();
     }
 }
 
@@ -1438,18 +1440,19 @@ sub session_js {
     my $c;
     if ( $blog_id && $blog ) {
         my ( $session, $commenter ) = $app->_get_commenter_session();
+use Data::Dumper;
         if ( $session && $commenter ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
             my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
             $banned = 0 if $blog_perms && $blog_perms->can_administer;
             $banned ||= 1 if $commenter->status == MT::Author::BANNED();
 
-            my $sessobj = MT::Session->load($session);
+            my $sessobj = MT::Session->load({ id => $session, kind => 'SI' });
             if ($banned) {
                 $sessobj->remove;
             } else {
                 $sessobj->start( time +
-                    $app->config->CommentSessionTimeout); # extend by timeou
+                    $app->config->CommentSessionTimeout); # extend by timeout
                 $sessobj->save();
             }
 
@@ -1820,10 +1823,7 @@ sub save_commenter_profile {
             $cmntr->errstr );
     }
     if ($renew_session) {
-        $app->make_commenter_session( $app->make_magic_token, $cmntr->email,
-            $cmntr->name,
-            ($cmntr->nickname || $app->translate('(Display Name not set)')),
-            $cmntr->id );
+        $app->make_commenter_session( $cmntr );
     }
 
     return $app->build_page( 'profile.tmpl', \%param );

@@ -11,7 +11,8 @@ use base qw( MT );
 
 use File::Spec;
 use MT::Request;
-use MT::Util qw( encode_html offset_time_list decode_html encode_url is_valid_email is_url );
+use MT::Util qw( encode_html offset_time_list decode_html encode_url
+    is_valid_email is_url escape_unicode );
 use MT::I18N qw( encode_text wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
@@ -1016,13 +1017,44 @@ sub session_user {
 
 sub make_commenter_session {
     my $app = shift;
-    my ($session_key, $email, $name, $nick, $id, $url, $timeout, $blog_id) = @_;
+    my ($session_key, $email, $name, $nick, $id, $url) = @_;
+    my $user;
+
+    # support for old signature; new signature is $session_key, $user_obj
+    if ( ref($session_key) && $session_key->isa('MT::Author') ) {
+        $user = $session_key;
+        $session_key = $app->make_magic_token;
+        $email = $user->email;
+        $name = $user->name;
+        $nick = $user->nickname || $app->translate('(Display Name not set)');
+        $id = $user->id;
+        $url = $user->url;
+    }
+    # test
+    $session_key = $app->param('sig') if $user->auth_type eq 'TypeKey';
+
+    require MT::Session;
+    my $sess_obj = MT::Session->new();
+    $sess_obj->id($session_key);
+    $sess_obj->email($email);
+    $sess_obj->name($name);
+    $sess_obj->start(time);
+    $sess_obj->kind("SI");
+    $sess_obj->set('author_id', $user->id) if $user;
+    $sess_obj->save()
+        or return $app->error($app->translate("The login could not be confirmed because of a database error ([_1])", $sess_obj->errstr));
 
     my $enc = $app->charset;
     $nick = encode_text($nick, $enc, 'utf-8');
     my $nick_escaped = MT::Util::escape_unicode( $nick );
 
-    $timeout = '+' . $app->config->CommentSessionTimeout . 's' unless defined $timeout;
+    my $timeout;
+    if ( $user->auth_type eq 'MT' ) {
+        $timeout = '+' . $app->config->UserSessionTimeout . 's';
+    } else {
+        $timeout = '+' . $app->config->CommentSessionTimeout . 's';
+    }
+
     my %kookee = (-name => COMMENTER_COOKIE_NAME(),
                   -value => $session_key,
                   -path => '/',
@@ -1033,38 +1065,7 @@ sub make_commenter_session {
                        -path => '/',
                        ($timeout ? (-expires => $timeout) : ()));
     $app->bake_cookie(%name_kookee);
-    if (defined $id) {
-        my $banned = 0;
-        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
-        if ($perm) {
-            if (!$perm->can_administer_blog && $perm->is_restricted('comment')) {
-                $banned = 1;
-            }
-        }
 
-        # my %id_kookee = (-name => "commenter_id",
-        #                    -value => $id . ':' . $blog_ids,
-        #                    -path => '/',
-        #                    ($timeout ? (-expires => $timeout) : ()));
-        # $app->bake_cookie(%id_kookee);
-    }
-    # if (defined($url) && $url) {
-    #     my %id_kookee = (-name => "commenter_url",
-    #                        -value => $url,
-    #                        -path => '/',
-    #                        ($timeout ? (-expires => $timeout) : ()));
-    #     $app->bake_cookie(%id_kookee);
-    # }
-
-    require MT::Session;
-    my $sess_obj = MT::Session->new();
-    $sess_obj->id($session_key);
-    $sess_obj->email($email);
-    $sess_obj->name($name);
-    $sess_obj->start(time);
-    $sess_obj->kind("SI");
-    $sess_obj->save()
-        or return $app->error($app->translate("The login could not be confirmed because of a database error ([_1])", $sess_obj->errstr));
     return $session_key;
 }
 
@@ -1083,28 +1084,16 @@ sub _invalidate_commenter_session {
     $app->logout();
 
     # need to clear commenter_name for writeCommenterGreeting
-    my $timeout = $app->config->CommentSessionTimeout;
     my %name_kookee = (-name => 'commenter_name',
                        -value => '',
                        -path => '/',
-                       -expires => "+${timeout}s");
+                       -expires => "Thu, 01-Jan-70 00:00:01 GMT");
     $app->bake_cookie(%name_kookee);
-
-    # my %kookee = (-name => COMMENTER_COOKIE_NAME(),
-    #               -value => '',
-    #               -path => '/',
-    #               -expires => "+${timeout}s");
-    # $app->bake_cookie(%kookee);
-    # my %url_kookee = (-name => 'commenter_url',
-    #                    -value => '',
-    #                    -path => '/',
-    #                    -expires => "+${timeout}s");
-    # $app->bake_cookie(%url_kookee);
-    # my %id_kookee = (-name => 'commenter_id',
-    #                    -value => '',
-    #                    -path => '/',
-    #                    -expires => "+${timeout}s");
-    # $app->bake_cookie(%id_kookee);
+    my %kookee = (-name => COMMENTER_COOKIE_NAME(),
+                  -value => '',
+                  -path => '/',
+                  -expires => "Thu, 01-Jan-70 00:00:01 GMT");
+    $app->bake_cookie(%kookee);
 }
 
 sub start_session {
@@ -1448,15 +1437,7 @@ sub login {
             if ( $commenter_blog_id >= 0 ) {
                 # Presence of 'password' indicates this is a login request;
                 # do session/cookie management.
-                $app->make_commenter_session(
-                    $app->make_magic_token, 
-                    $author->email, 
-                    $author->name, 
-                    ($author->nickname || $app->translate('(Display Name not set)')), 
-                    $author->id, 
-                    undef, 
-                    $ctx->{permanent} ? '+10y' : 0
-                );
+                $app->make_commenter_session($author);
 
                 if ($commenter_blog_id) {
                     my $url = $app->commenter_loggedin($author, $commenter_blog_id);

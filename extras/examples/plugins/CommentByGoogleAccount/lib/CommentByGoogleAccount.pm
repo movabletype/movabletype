@@ -38,12 +38,6 @@ sub handle_sign_in {
         my $enc = $app->{cfg}->PublishCharset || '';
         my $nick_escaped = escape_unicode($nick);
         $nick = encode_text($nick, 'utf-8', undef);
-        $session = $app->make_commenter_session($app->make_magic_token, $email,
-                                                 $name, $nick_escaped);
-        unless ($session) {
-            $app->error($app->errstr() || $app->translate("Couldn't save the session"));
-            return 0;
-        }
         $cmntr = $app->_make_commenter(
             email => $email,
             nickname => $nick,
@@ -51,6 +45,12 @@ sub handle_sign_in {
             url => $url,
             auth_type => $auth_type,
         );
+
+        $session = $app->make_commenter_session($cmntr);
+        unless ($session) {
+            $app->error($app->errstr() || $app->translate("Couldn't save the session"));
+            return 0;
+        }
     } else {
         # If there's no signature, then we trust the cookie.
         my %cookies = $app->cookies();
