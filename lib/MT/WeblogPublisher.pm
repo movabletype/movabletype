@@ -785,9 +785,9 @@ sub _rebuild_entry_archive_type {
     for my $map (@map) {
         next unless $map->build_type; # ignore disabled template maps
 
-	my $ctx = MT::Template::Context->new;
-	$ctx->{current_archive_type} = $at;
-	$ctx->{archive_type}         = $at;
+        my $ctx = MT::Template::Context->new;
+        $ctx->{current_archive_type} = $at;
+        $ctx->{archive_type}         = $at;
         $mt->rebuild_file(
             $blog, $arch_root, $map, $at, $ctx, \my %cond,
             !$param{NoStatic},
