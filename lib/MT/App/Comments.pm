@@ -1447,7 +1447,7 @@ use Data::Dumper;
             $banned = 0 if $blog_perms && $blog_perms->can_administer;
             $banned ||= 1 if $commenter->status == MT::Author::BANNED();
 
-            my $sessobj = MT::Session->load({ id => $session, kind => 'SI' });
+            my $sessobj = MT::Session->load( $session );
             if ($banned) {
                 $sessobj->remove;
             } else {
