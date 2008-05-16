@@ -659,6 +659,7 @@ sub do_search_replace {
         replace_count  => $replace_count,
         "search_$type" => 1,
         search_label   => $class->class_label_plural,
+        object_label => $class->class_label,
         object_label_plural => $class->class_label_plural,
         object_type    => $type,
         search         => ($do_replace ? $q->param('orig_search')
