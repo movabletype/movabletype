@@ -10198,6 +10198,7 @@ sub _hdlr_comment_link {
     my ($ctx) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
+    return '#' unless $c->id;
     my $entry = $c->entry
         or return $ctx->error("No entry exists for comment #" . $c->id);
     return $entry->archive_url . '#comment-' . $c->id;
