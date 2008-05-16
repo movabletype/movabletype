@@ -7,7 +7,16 @@
 
 function smarty_function_mtauthoruserpicurl($args, &$ctx) {
     $author = $ctx->stash('author');
-    if (!$author) return '';
+    if (empty($author)) {
+        $entry = $ctx->stash('entry');
+        if (!empty($entry)) {
+            $author = $ctx->mt->db->fetch_author($entry['entry_author_id']);
+        }
+    }
+
+    if (empty($author)) {
+        return $ctx->error("No author available");
+    }
 
     $asset_id = isset($author['author_userpic_asset_id']) ? $author['author_userpic_asset_id'] : 0;
     $asset = $ctx->mt->db->fetch_assets(array('id' => $asset_id));

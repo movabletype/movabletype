@@ -7,9 +7,16 @@
 
 function smarty_function_mtauthoremail($args, &$ctx) {
     $author = $ctx->stash('author');
-    if (!$author) {
+    if (empty($author)) {
+        $entry = $ctx->stash('entry');
+        if (!empty($entry)) {
+            $author = $ctx->mt->db->fetch_author($entry['entry_author_id']);
+        }
+    }
+
+    if (empty($author)) {
         return $ctx->error("No author available");
     }
-     return isset($author['author_email']) ? $author['author_email'] : '';
+    return isset($author['author_email']) ? $author['author_email'] : '';
 }
 ?>

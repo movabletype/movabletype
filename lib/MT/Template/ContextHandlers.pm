@@ -6272,8 +6272,12 @@ Outputs the numeric ID of the author currently in context.
 
 sub _hdlr_author_id {
     my ($ctx) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     return $author->id;
 }
 
@@ -6289,8 +6293,12 @@ B<NOTE:> it is not recommended to publish the author's username.
 
 sub _hdlr_author_name {
     my ($ctx) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     return $author->name;
 }
 
@@ -6308,10 +6316,10 @@ sub _hdlr_author_display_name {
     unless ($a) { 
         my $e = $ctx->stash('entry'); 
         $a = $e->author if $e; 
-    } 
+    }
     return $ctx->_no_author_error() unless $a;
     return $a->nickname || MT->translate('(Display Name not set)', $a->id);
-} 
+}
 
 ###########################################################################
 
@@ -6325,8 +6333,12 @@ B<NOTE:> it is not recommended to publish the author's email address.
 
 sub _hdlr_author_email {
     my ($ctx, $args) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     my $email = $author->email;
     return '' unless defined $email;
     return $args && $args->{'spam_protect'} ? spam_protect($email) : $email;
@@ -6342,8 +6354,12 @@ Outputs the URL field of the author currently in context.
 
 sub _hdlr_author_url {
     my ($ctx) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     my $url = $author->url;
     return defined $url ? $url : '';
 }
@@ -6359,8 +6375,12 @@ in context. For Movable Type registered users, this is "MT".
 
 sub _hdlr_author_auth_type {
     my ($ctx) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     my $auth_type = $author->auth_type;
     return defined $auth_type ? $auth_type : '';
 }
@@ -6398,8 +6418,12 @@ B<Example:>
 
 sub _hdlr_author_auth_icon_url {
     my ($ctx, $args) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) { 
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     my $size = $args->{size} || 'logo_small';
     return $author->auth_icon_url($size);
 }
@@ -6418,8 +6442,12 @@ current author's userpic. For example:
 
 sub _hdlr_author_userpic {
     my ($ctx) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     return $author->userpic_html() || '';
 }
 
@@ -6436,8 +6464,12 @@ If the author has no userpic, this will output an empty string.
 
 sub _hdlr_author_userpic_url {
     my ($ctx) = @_;
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     return $author->userpic_url() || '';
 }
 
@@ -6464,8 +6496,12 @@ asset template tags to display the userpic's properties.
 sub _hdlr_author_userpic_asset {
     my ($ctx, $args, $cond) = @_;
 
-    my $author = $ctx->stash('author')
-        or return $ctx->_no_author_error();
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry'); 
+        $author = $e->author if $e; 
+    }
+    return $ctx->_no_author_error() unless $author;
     my $asset = $author->userpic or return '';
 
     my $tok = $ctx->stash('tokens');
