@@ -216,4 +216,8 @@ sub archive_entries_count {
     );
 }
 
+sub date_range {
+    MT::ArchiveType::Yearly::date_range(@_);
+}
+
 1;

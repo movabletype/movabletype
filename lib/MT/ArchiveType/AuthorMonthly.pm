@@ -230,4 +230,8 @@ sub archive_entries_count {
     );
 }
 
+sub date_range {
+    MT::ArchiveType::Monthly::date_range(@_);
+}
+
 1;

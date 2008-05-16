@@ -226,4 +226,8 @@ sub archive_entries_count {
     );
 }
 
+sub date_range {
+    MT::ArchiveType::Weekly::date_range(@_);
+}
+
 1;
