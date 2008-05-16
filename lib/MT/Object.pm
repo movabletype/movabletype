@@ -734,7 +734,7 @@ sub load_iter   {
         $dbi_driver = $dbi_driver->fallback;
     }
 
-    if ($dbi_driver->dbd eq 'MT::ObjectDriver::Driver::SQLite') {
+    if ($dbi_driver->dbd eq 'MT::ObjectDriver::Driver::DBD::SQLite') {
         # for SQLite, use search method, since this technique
         # will cause it to lock the table
         return scalar $class->search(@_);
