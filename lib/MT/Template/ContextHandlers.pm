@@ -7419,7 +7419,8 @@ sub _hdlr_entries {
                     if $cat->class eq $cat_class_type;
             }
         } elsif (my $cat = $ctx->stash('archive_category')) {
-            $args->{category} ||= [ 'OR', [ $cat ] ];
+            $args->{category} ||= [ 'OR', [ $cat ] ]
+                if $cat->class eq $cat_class_type;
         }
     }
 
