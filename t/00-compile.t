@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use lib 'lib', 'extlib';
-use Test::More tests => 134;
+use Test::More tests => 181;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -13,6 +13,11 @@ use_ok('MT');
 
 # Base App class
 use_ok('MT::App');
+use_ok('MT::Tool');
+
+# Core module
+use_ok('MT::Core');
+use_ok('MT::Component');
 
 # All CMS modules
 use_ok('MT::App::CMS');
@@ -42,15 +47,25 @@ use_ok('MT::CMS::User');
 use_ok('MT::App::ActivityFeeds');
 use_ok('MT::App::Comments');
 use_ok('MT::App::NotifyList');
-use_ok('MT::App::Search');
 use_ok('MT::App::Trackback');
 use_ok('MT::App::Upgrader');
 use_ok('MT::App::Viewer');
 use_ok('MT::App::Wizard');
 
+# Search apps
+use_ok('MT::App::Search');
+use_ok('MT::App::Search::FreeText');
+use_ok('MT::App::Search::Legacy');
+use_ok('MT::App::Search::TagSearch');
+
 # Auth framework
 use_ok('MT::Auth');
 use_ok('MT::Auth::MT');
+use_ok('MT::Auth::BasicAuth');
+use_ok('MT::Auth::LiveJournal');
+use_ok('MT::Auth::OpenID');
+use_ok('MT::Auth::TypeKey');
+use_ok('MT::Auth::Vox');
 
 # MT::Objects
 use_ok('MT::Object');
@@ -84,6 +99,9 @@ use_ok('MT::Template');
 use_ok('MT::TemplateMap');
 use_ok('MT::Trackback');
 use_ok('MT::TBPing');
+use_ok('MT::BlockList');
+use_ok('MT::Object::BaseCache');
+use_ok('MT::Touch');
 
 # Utility modules
 use_ok('MT::Builder');
@@ -95,12 +113,32 @@ use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::Image');
 use_ok('MT::ImportExport');
+use_ok('MT::Import');
 use_ok('MT::JunkFilter');
 use_ok('MT::Mail');
 use_ok('MT::Promise');
 use_ok('MT::Request');
 use_ok('MT::Sanitize');
 use_ok('MT::Serialize');
+use_ok('MT::Memcached');
+use_ok('MT::PublishOption');
+use_ok('MT::Scorable');
+
+use_ok('MT::Util');
+use_ok('MT::Util::Archive');
+use_ok('MT::Util::Archive::Tgz');
+use_ok('MT::Util::Archive::Zip');
+use_ok('MT::Util::Captcha');
+use_ok('MT::Util::LogProcessor');
+use_ok('MT::Util::PerformanceData');
+use_ok('MT::Util::ReqTimer');
+
+# TheSchwartz support
+use_ok('MT::TheSchwartz');
+use_ok('MT::TheSchwartz::Error');
+use_ok('MT::TheSchwartz::ExitStatus');
+use_ok('MT::TheSchwartz::FuncMap');
+use_ok('MT::TheSchwartz::Job');
 
 # L10N modules
 use_ok('MT::L10N');
@@ -119,11 +157,20 @@ use_ok('MT::I18N::ja');
 
 # Data::ObjectDriver classes
 use_ok('MT::ObjectDriverFactory');
+use_ok('MT::ObjectDriver::DDL');
+use_ok('MT::ObjectDriver::DDL::Pg');
+use_ok('MT::ObjectDriver::DDL::SQLite');
+use_ok('MT::ObjectDriver::DDL::mysql');
 use_ok('MT::ObjectDriver::Driver::DBI');
+use_ok('MT::ObjectDriver::Driver::Cache::RAM');
 use_ok('MT::ObjectDriver::Driver::DBD::Legacy');
 use_ok('MT::ObjectDriver::Driver::DBD::mysql');
 use_ok('MT::ObjectDriver::Driver::DBD::Pg');
 use_ok('MT::ObjectDriver::Driver::DBD::SQLite');
+use_ok('MT::ObjectDriver::SQL');
+use_ok('MT::ObjectDriver::SQL::Pg');
+use_ok('MT::ObjectDriver::SQL::SQLite');
+use_ok('MT::ObjectDriver::SQL::mysql');
 
 # Plugin API
 use_ok('MT::Plugin');
@@ -134,7 +181,6 @@ use_ok('MT::TaskMgr');
 use_ok('MT::Template::Context');
 use_ok('MT::Template::ContextHandlers');
 use_ok('MT::Upgrade');
-use_ok('MT::Util');
 use_ok('MT::WeblogPublisher');
 
 # Archive code
@@ -169,3 +215,19 @@ use_ok('MT::AtomServer');
 use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');
 use_ok('MT::BackupRestore::ManifestFileHandler');
+
+# Cache support
+use_ok('MT::Cache::Negotiate');
+use_ok('MT::Cache::Null');
+use_ok('MT::Cache::Session');
+
+# Compatible Support
+use_ok('MT::Compat::v3');
+
+# Meta support
+use_ok('MT::Meta');
+use_ok('MT::Meta::Proxy');
+
+# Job worker
+use_ok('MT::Worker::Publish');
+use_ok('MT::Worker::Sync');
