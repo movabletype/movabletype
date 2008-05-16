@@ -1,65 +1,49 @@
-<script type="text/javascript" src="<$mt:Link template="<__trans phrase="JavaScript">"$>"></script>
+<mt:IfRegistrationAllowed>
 <div class="widget-sign-in widget">
     <h3 class="widget-header"><__trans phrase="Sign In"></h3>
-    <div class="widget-content">
+    <div class="widget-content" id="signin-widget-content"></div>
+</div>
 <script type="text/javascript">
 /* <![CDATA[ */
-var name, id, url, blog_ids;
-if (typeof(commenter_name) != 'undefined')
-    name = commenter_name
-if (typeof(commenter_id) != 'undefined')
-    id = commenter_id;
-if (typeof(commenter_url) != 'undefined')
-    url = commenter_url;
-if (typeof(commenter_blog_ids) != 'undefined')
-    blog_ids = commenter_blog_ids;
-
-if (!name && !id) {
-    if ('<$mt:CGIHost exclude_port="1"$>' != '<$mt:BlogHost exclude_port="1"$>') {
-        document.write('<scr' + 'ipt src="<$mt:CGIPath$><$mt:CommentScript$>?__mode=cmtr_name_js">');
-        document.write("</scr" + "ipt>");
+function mtUpdateSignInWidget(u) {
+    var el = document.getElementById('signin-widget-content');
+    if (!el) return;
+    if (u) {
+        if (u && u.is_authenticated) {
+            user = u;
+            mtSaveUser();
+        } else {
+            // user really isn't logged in; so let's do this!
+            return mtSignIn();
+        }
     } else {
-        name = getCookie('commenter_name');
-        ids = getCookie('commenter_id').split(':');
-        id = ids[0];
-        blog_ids = ids[1];
-        url = getCookie('commenter_url');
+        u = mtGetUser();
     }
-}
-showMessage(name, id, url);
-
-function showMessage(commenter_name, commenter_id, commenter_url) {
-    static = location.href;
-    if ( commenter_name &&
-         ( !commenter_id 
-        || commenter_blog_ids.indexOf("'<$mt:BlogID$>'") > -1))
-    {
+    if (u) {
         var url;
-        if (commenter_id) {
-            url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&commenter=' + commenter_id + '&blog_id=<$mt:BlogID$>';
-            url += '&static=' + static;
-        } else if (commenter_url) {
-            url = commenter_url;
+        if (u.is_authenticated) {
+            url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<$mt:BlogID$>';
+            url += '&static=' + escape( location.href );
+        } else if (u.url) {
+            url = u.url;
         } else {
             url = null;
         }
         var content = '<__trans phrase="You are signed in as " escape="js">';
-        if (url) {
-            content += '<a href="' + url + '">' + commenter_name + '</a>';
-        } else {
-            content += commenter_name;
-        }
-        content += '.  (<a href="<$mt:RemoteSignOutLink no_static="1"$>&static=' + static + '"><__trans phrase="sign out" escape="js"></a>)';
-        document.write(content);
-    } else if (commenter_name) {
-        document.write('<__trans phrase="You do not have permission to sign in to this blog." escape="js"> (<a href="<$mt:RemoteSignOutLink no_static="1"$>&static=' + static + '"><__trans phrase="sign out" escape="js"></a>)');
+        if (url)
+            content += '<a href="' + url + '">' + u.name + '</a>';
+        else
+            content += u.name;
+        content += '.  (<a href="javascript:void(0)" onclick="return mtSignOutOnClick()"><__trans phrase="sign out" escape="js"></a>)';
+    } else if (u && u.is_banned) {
+        content = '<__trans phrase="You do not have permission to sign in to this blog." escape="js">';
     } else {
-    <mt:IfRegistrationAllowed>
-        document.write('<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=login&blog_id=<$mt:BlogID$>&static=' + static + '"><__trans phrase="Sign In" escape="js"></a>');
-    </mt:IfRegistrationAllowed>
+        content = '<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'signin-widget-content\')"><__trans phrase="Sign In" escape="js"></a>';
     }
+    el.innerHTML = content;
 }
+mtAttachEvent('usersignin', mtUpdateSignInWidget);
+mtUpdateSignInWidget();
 /* ]]> */
 </script>
-    </div>
-</div>
+</mt:IfRegistrationAllowed>

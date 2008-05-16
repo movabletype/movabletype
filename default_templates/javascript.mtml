@@ -42,6 +42,35 @@ function mtShow(id) {
 
 <mt:Ignore>
 /***
+ * A utility function for assigning/adding handlers to window events.
+ */
+</mt:Ignore>
+function mtAttachEvent(eventName,func) {
+    var onEventName = 'on' + eventName;
+    var old = window[onEventName];
+    if( typeof old != 'function' )
+        window[onEventName] = func;
+    else {
+        window[onEventName] = function( evt ) {
+            old( evt );
+            return func( evt );
+        };
+    }
+}
+
+<mt:Ignore>
+/***
+ * Calls the event named, if there are handlers for it.
+ */
+</mt:Ignore>
+function mtFireEvent(eventName,param) {
+    var fn = window['on' + eventName];
+    if (typeof fn == 'function') return fn(param);
+    return;
+}
+
+<mt:Ignore>
+/***
  * Displays a relative date.
  * 'ts' is a Date object, 'fds' is a string of the date which
  * will be displayed if the given date is older than 1 week.
@@ -149,7 +178,7 @@ function mtSetUser(u) {
         user = u;
         mtSaveUser();
         // sync up user greeting
-        mtUserOnLoad();
+        mtFireEvent('usersignin');
     }
 }
 
@@ -317,46 +346,45 @@ function mtUserOnLoad() {
 
     // if the user is authenticated, hide the 'anonymous' fields
     // and any captcha input if already shown
-    if ( u && u.is_authenticated ) {
-        mtShow('comments-form');
-        mtHide('comments-open-data');
-        if (mtCaptchaVisible)
-            mtHide('comments-open-captcha');
-    } else {
+    if ( document.getElementById('comments-form')) {
+        if ( u && u.is_authenticated ) {
+            mtShow('comments-form');
+            mtHide('comments-open-data');
+            if (mtCaptchaVisible)
+                mtHide('comments-open-captcha');
+        } else {
 <mt:IfRegistrationRequired>
-        mtHide('comments-form');
+            mtHide('comments-form');
 </mt:IfRegistrationRequired>
-    }
-    if ( u && u.is_banned ) {
-        mtHide('comments-form');
-    }
-
-    // if we're previewing a comment, make sure the captcha
-    // field is visible
-    if (is_preview) {
-        mtShowCaptcha();
-    } else {
-        // display greeting appropriate to the current user
-        mtShowGreeting();
-    }
-
-    // populate anonymous comment fields if user is cookied as anonymous
-    var cf = document['comments_form'];
-    if (cf) {
-        if (u && u.is_anonymous) {
-            if (u.email) cf.email.value = u.email;
-            if (u.name) cf.author.value = u.name;
-            if (u.url) cf.url.value = u.url;
-            if (cf.bakecookie)
-                cf.bakecookie.checked = u.name || u.email;
         }
-        if (cf.post.disabled) {
-            cf.post.disabled = false;
-            cf.post.value = '<__trans phrase="Submit">';
-        }
-        if (cf.preview_button.disabled) {
-            cf.preview_button.disabled = false;
-            cf.preview_button.value = '<__trans phrase="Preview">';
+        if ( u && u.is_banned )
+            mtHide('comments-form');
+
+        // if we're previewing a comment, make sure the captcha
+        // field is visible
+        if (is_preview)
+            mtShowCaptcha();
+        else
+            mtShowGreeting();
+
+        // populate anonymous comment fields if user is cookied as anonymous
+        var cf = document['comments_form'];
+        if (cf) {
+            if (u && u.is_anonymous) {
+                if (u.email) cf.email.value = u.email;
+                if (u.name) cf.author.value = u.name;
+                if (u.url) cf.url.value = u.url;
+                if (cf.bakecookie)
+                    cf.bakecookie.checked = u.name || u.email;
+            }
+            if (cf.post.disabled) {
+                cf.post.disabled = false;
+                cf.post.value = '<__trans phrase="Submit">';
+            }
+            if (cf.preview_button.disabled) {
+                cf.preview_button.disabled = false;
+                cf.preview_button.value = '<__trans phrase="Preview">';
+            }
         }
     }
 }
@@ -369,16 +397,12 @@ function mtUserOnLoad() {
  */
 </mt:Ignore>
 function mtEntryOnLoad() {
-<mt:Unless tag="IfPingsAccepted">
-    mtHide('trackbacks-info');
-</mt:Unless>
-
-<mt:Unless tag="IfCommentsAccepted">
-    mtHide('comments-open');
-</mt:Unless>
-
-    mtUserOnLoad();
+    <mt:Unless tag="IfPingsAccepted">mtHide('trackbacks-info');</mt:Unless>
+    <mt:Unless tag="IfCommentsAccepted">mtHide('comments-open');</mt:Unless>
+    mtFireEvent('usersignin');
 }
+
+mtAttachEvent('usersignin', mtUserOnLoad);
 
 <mt:Ignore>
 /***
@@ -395,11 +419,14 @@ function mtSignIn() {
     location.href = url;
 }
 
-function mtSignInOnClick() {
-    // display throbber
-    var el = document.getElementById('comment-greeting');
-    if (!el)  // legacy MT 4.x element id
-        el = document.getElementById('comment-form-external-auth');
+function mtSignInOnClick(sign_in_element) {
+    var el;
+    if (sign_in_element) {
+        // display throbber
+        el = document.getElementById(sign_in_element);
+        if (!el)  // legacy MT 4.x element id
+            el = document.getElementById('comment-form-external-auth');
+    }
     if (el)
         el.innerHTML = '<__trans phrase="Signing in..."> <img src="<$mt:StaticWebPath$>images/indicator.white.gif" height="16" width="16" alt="" />';
 
@@ -419,14 +446,25 @@ function mtSetUserOrLogin(u) {
 
 <mt:Ignore>
 /***
- * Handles the action of the "Sign out" link. First clears any existing
- * user cookie, then direts to the MT comment script to sign the user out.
+ * Handles sign out from the web site.
+ * First clears any existing user cookie, then direts to the MT comment
+ * script to sign the user out.
  */
 </mt:Ignore>
 function mtSignOut(entry_id) {
-    var url = '<$mt:SignOutLink$>&entry_id=' + entry_id;
     mtClearUser();
+    var url = '<$mt:SignOutLink$>&return_to=' + encodeURIComponent(location.href);
     location.href = url;
+}
+
+<mt:Ignore>
+/***
+ * Handles the action of the "Sign out" link.
+ */
+</mt:Ignore>
+function mtSignOutOnClick() {
+    mtSignOut();
+    return false;
 }
 
 <mt:Ignore>
@@ -456,7 +494,7 @@ function mtShowGreeting() {
 
     if ( u && u.is_authenticated ) {
         if ( u.is_banned ) {
-            phrase = '<__trans phrase="You do not have permission to comment on this blog. ([_1]sign out[_2])" params="<a href="javascript:void(0);" onclick="mtSignOut(' + entry_id + ');return false;">%%</a>">';
+            phrase = '<__trans phrase="You do not have permission to comment on this blog. ([_1]sign out[_2])" params="<a href="javascript:void(0);" onclick="return mtSignOutOnClick();">%%</a>">';
         } else {
             var user_link;
             if ( u.is_author ) {
@@ -472,13 +510,13 @@ function mtShowGreeting() {
                     user_link = u.name;
             }
             // TBD: supplement phrase with userpic if one is available.
-            phrase = '<__trans phrase="Thanks for signing in, [_1]. ([_2]sign out[_3])" params="' + user_link + '%%<a href="javascript:void(0)" onclick="mtSignOut(' + entry_id + ');return false;">%%</a>">';
+            phrase = '<__trans phrase="Thanks for signing in, [_1]. ([_2]sign out[_3])" params="' + user_link + '%%<a href="javascript:void(0)" onclick="return mtSignOutOnClick();">%%</a>">';
         }
     } else {
         if (reg_reqd) {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick()">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>">';
         } else {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick()">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>">';
         }
     }
     el.innerHTML = phrase;
@@ -586,6 +624,8 @@ function mtClearUser() {
  */
 </mt:Ignore>
 function mtSetCookie(name, value, expires, path, domain, secure) {
+    if (domain && domain.match(/^\.?localhost$/))
+        domain = null;
     var curCookie = name + "=" + escape(value) +
         (expires ? "; expires=" + expires.toGMTString() : "") +
         (path ? "; path=" + path : "") +
@@ -617,12 +657,15 @@ function mtGetCookie(name) {
  */
 </mt:Ignore>
 function mtDeleteCookie(name, path, domain, secure) {
-    if (mtGetCookie(name))
+    if (mtGetCookie(name)) {
+        if (domain && domain.match(/^\.?localhost$/))
+            domain = null;
         document.cookie = name + "=" +
             (path ? "; path=" + path : "") +
             (domain ? "; domain=" + domain : "") +
             (secure ? "; secure" : "") +
             "; expires=Thu, 01-Jan-70 00:00:01 GMT";
+    }
 }
 
 function mtFixDate(date) {
