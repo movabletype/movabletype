@@ -51,9 +51,7 @@ sub db2ts {
 sub configure {
     my $dbd = shift;
     my ($driver) = @_;
-    $dbd->_set_names($driver);
     $driver->pk_generator(\&pk_generator); 
-
     return $dbd;
 }
 
@@ -85,15 +83,21 @@ sub pk_generator {
     return $id;
 }
 
+sub init_dbh {
+    my $dbd = shift;
+    my ($dbh) = @_;
+    $dbd->SUPER::init_dbh(@_);
+    $dbd->_set_names($dbh);
+}
+
 sub _set_names {
     my $dbd = shift;
-    my ($driver) = @_;
-    my $dbh = $driver->r_handle;
-    return 1 if exists $driver->{set_names};
+    my ($dbh) = @_;
+    return 1 if exists $dbh->{private_set_names};
 
     my $cfg = MT->config;
     my $set_names = $cfg->SQLSetNames;
-    $driver->{set_names} = 1;
+    $dbh->{private_set_names} = 1;
     return 1 if (defined $set_names) && !$set_names;
 
     my $c = lc $cfg->PublishCharset;

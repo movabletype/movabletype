@@ -36,27 +36,29 @@ sub ddl_class {
     return 'MT::ObjectDriver::DDL::mysql';
 }
 
-sub configure {
+sub init_dbh {
     my $dbd = shift;
-    my ($driver) = @_;
-    $dbd->_set_names($driver);
-    $dbd;
+    my ($dbh) = @_;
+    $dbd->SUPER::init_dbh(@_);
+    $dbd->_set_names($dbh);
 }
 
 sub _set_names {
     my $dbd = shift;
-    my ($driver) = @_;
-    my $dbh = $driver->rw_handle;
+    my ($dbh) = @_;
+    return 1 if exists $dbh->{private_set_names};
 
+warn "got here";
     my $cfg = MT->config;
     my $set_names = $cfg->SQLSetNames;
+    $dbh->{private_set_names} = 1;
     return 1 if (defined $set_names) && !$set_names;
 
     eval {
         local $@;
         my $sth = $dbh->prepare('show variables like "character_set_database"')
-            or return $driver->error($dbh->errstr);
-        $sth->execute or return $driver->error($sth->errstr);
+            or die "error collecting variables from mysql: " . $dbh->errstr;
+        $sth->execute or die "error collecting variables from mysql: " . $sth->errstr;
         my $result = $sth->fetchall_hashref('Variable_name');
         my $charset_db = $result->{character_set_database}{Value};
         if (defined($charset_db) && ($charset_db ne 'latin1')) {
