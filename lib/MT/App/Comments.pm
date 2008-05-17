@@ -89,6 +89,14 @@ sub init_request {
     }
 }
 
+sub load_core_tags {
+    return {
+        function => {
+            UserSessionState => \&_hdlr_user_session_state,
+        },
+    };
+}
+
 #
 # $app->_get_commenter_session()
 # Creates a commenter record based on the cookies in the $app, if
@@ -1429,13 +1437,10 @@ sub redirect_to_target {
         ($q->param('logout') ? 'logout' :  'login'), UseMeta => 1 );
 }
 
-sub session_js {
+sub session_state {
     my $app = shift;
-    my $blog_id = int($app->param('blog_id'));
-    my $blog = MT::Blog->load( $blog_id ) if $blog_id;
-    my $jsonp = $app->param('jsonp');
-    $jsonp = undef if $jsonp !~ m/^\w+$/;
-    return $app->error("Invalid request.") unless $jsonp;
+    my $blog = $app->blog;
+    my $blog_id = $blog->id if $blog;
 
     my $c;
     if ( $blog_id && $blog ) {
@@ -1478,7 +1483,7 @@ use Data::Dumper;
     }
 
     unless ($c) {
-        my $can_comment = $blog->allow_anon_comments ? "1" : "0";
+        my $can_comment = $blog && $blog->allow_anon_comments ? "1" : "0";
         $c = {
             is_authenticated => "0",
             is_trusted => "0",
@@ -1489,12 +1494,31 @@ use Data::Dumper;
         };
     }
 
+    return $c;
+}
+
+sub session_js {
+    my $app = shift;
+    my $jsonp = $app->param('jsonp');
+    $jsonp = undef if $jsonp !~ m/^\w+$/;
+    return $app->error("Invalid request.") unless $jsonp;
+
+    my $state = $app->session_state;
+
     require JSON;
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
-    my $json = JSON::objToJson($c);
+    my $json = JSON::objToJson($state);
     $app->print("$jsonp(" . $json . ");\n");
     return undef;
+}
+
+sub _hdlr_user_session_state {
+    my ($ctx, $args, $cond) = @_;
+    my $state = MT->app->session_state();
+    require JSON;
+    my $json = JSON::objToJson($state);
+    return $json;
 }
 
 # deprecated
@@ -1838,6 +1862,8 @@ sub blog {
         my $entry = MT::Entry->load($entry_id);
         return undef unless $entry;
         $app->{_blog} = $entry->blog if $entry;
+    } elsif ( my $blog_id = $app->param('blog_id') ) {
+        $app->{_blog} = MT::Blog->load( int($blog_id) );
     }
     return $app->{_blog};
 }

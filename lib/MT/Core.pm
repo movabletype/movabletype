@@ -534,7 +534,10 @@ BEGIN {
             'tb'       => { handler => 'MT::App::Trackback', },
             'upgrade'  => { handler => 'MT::App::Upgrade', },
             'wizard'   => { handler => 'MT::App::Wizard', },
-            'comments' => { handler => 'MT::App::Comments', },
+            'comments' => {
+                handler => 'MT::App::Comments',
+                tags => sub { MT->app->load_core_tags },
+            },
             'search'   => {
                 handler => 'MT::App::Search::Legacy', 
                 tags => sub { MT->app->load_core_tags },

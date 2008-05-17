@@ -511,6 +511,8 @@ sub core_tags {
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
 
+            UserSessionState => sub { 'null' },
+
             BuildTemplateID => \&_hdlr_build_template_id,
 
             CaptchaFields => \&_hdlr_captcha_fields,

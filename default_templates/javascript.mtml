@@ -778,7 +778,7 @@ if (clearCookie) {
      * not recommended for public web sites!
      */
     </mt:Ignore>
-    if ( is_preview )
+    if ( is_preview && !user )
         mtFetchUser();
 }
 </mt:IfRegistrationAllowed>
