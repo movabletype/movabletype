@@ -453,7 +453,7 @@ function mtSetUserOrLogin(u) {
 </mt:Ignore>
 function mtSignOut(entry_id) {
     mtClearUser();
-    var url = '<$mt:SignOutLink$>&return_to=' + encodeURIComponent(location.href);
+    var url = '<$mt:SignOutLink$>&return_url=' + encodeURIComponent(location.href);
     location.href = url;
 }
 
