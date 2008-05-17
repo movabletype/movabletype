@@ -48,7 +48,6 @@ sub _set_names {
     my ($dbh) = @_;
     return 1 if exists $dbh->{private_set_names};
 
-warn "got here";
     my $cfg = MT->config;
     my $set_names = $cfg->SQLSetNames;
     $dbh->{private_set_names} = 1;
