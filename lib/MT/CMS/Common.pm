@@ -354,6 +354,7 @@ sub save {
             } else {
                 # archive rebuild support
                 $q->param( 'id', $obj->id );
+                $q->param( 'reedit', $obj->id );
                 return $app->forward( 'publish_archive_templates' );
             }
         }

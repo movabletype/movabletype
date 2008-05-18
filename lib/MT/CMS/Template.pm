@@ -2062,6 +2062,7 @@ sub publish_archive_templates {
 
     require MT::CMS::Blog;
     my $return_args;
+    my $reedit = $app->param('reedit');
     if (@ids) {
         # we have more to do after this, so save the list
         # of remaining archive templates...
@@ -2071,19 +2072,19 @@ sub publish_archive_templates {
                 magic_token => $app->current_magic,
                 blog_id => scalar $app->param('blog_id'),
                 id => join(",", @ids),
+                reedit => $reedit,
             }
         );
     } else {
-        # nothing left after this publish operation; just return
-        # to the edit screen.
+        my $mode = $reedit ? 'view' : 'list';
         $return_args = $app->uri_params(
-            mode => 'view',
+            mode => $mode,
             args => {
                 _type     => 'template',
                 blog_id   => scalar $app->param('blog_id'),
                 published => 1,
-                id        => $tmpl_id,
                 saved     => 1,
+                ( $reedit ? ( id => $reedit ) : () ),
             }
         );
     }
