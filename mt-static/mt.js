@@ -2782,6 +2782,7 @@ MT.App.CategorySelector = new Class( Component, {
             var parentItem = this.list.getItem( parent.id );
             /* move it after the parent */
             this.list.content.insertBefore( div, parentItem.nextSibling );
+            this.list.toggleCheckbox( div, true ); // added checked attribute again for IE
             DOM.removeClassName( div, "hidden" );
         } else {
             catlist.push( cat );
