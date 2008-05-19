@@ -272,7 +272,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment.' => 'コメントするにはまず[_1]サインイン[_2]してください。',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'コメントする前に[_1]サインイン[_2]することもできます。',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
-    'Signing in...' => 'サインインします...',
+	'Signing in...' => 'サインインします...',
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => '年別ユーザーアーカイブ',
@@ -4054,7 +4054,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '（カンマ区切りリスト）',
 	'(space-delimited list)' => '（スペース区切りリスト）',
 	'(delimited by \'[_1]\')' => '（[_1]で区切る）',
-	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => '', # Blog It is not encouraged in Japanese version
+	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => '<a href="http://blogit.typepad.com/">Blog It</a>を使えば、FacebookなどのソーシャルネットワーキングサイトからMovable Typeに投稿できます。',
 	'None selected' => '選択されていません',
 
 ## plugins/Textile/textile2.pl
