@@ -22,8 +22,12 @@ function mtUpdateSignInWidget(u) {
     if (u) {
         var url;
         if (u.is_authenticated) {
-            url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<$mt:BlogID$>';
-            url += '&static=' + escape( location.href );
+            if (u.is_author) {
+                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<$mt:BlogID$>';
+                url += '&static=' + escape( location.href );
+            } else {
+                url = u.url;
+            }
         } else if (u.url) {
             url = u.url;
         } else {
