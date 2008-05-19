@@ -2060,6 +2060,9 @@ sub run {
 
         REQUEST:
         {
+            # for Perl 5.6.x BugId:79755
+            $mode = $app->{forward} unless $mode;
+
             my $requires_login = $app->{requires_login};
 
             my $code = $app->handlers_for_mode($mode);
