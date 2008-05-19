@@ -129,6 +129,17 @@ function mtEditLink(entry_id, author_id) {
 
 <mt:Ignore>
 /***
+ * Called when an input field on the comment form receives focus.
+ */
+</mt:Ignore>
+function mtCommentFormOnFocus() {
+    // if CAPTCHA is enabled, this causes the captcha image to be
+    // displayed if it hasn't been already.
+    mtShowCaptcha();
+}
+
+<mt:Ignore>
+/***
  * Displays a captcha field for anonymous commenters.
  */
 </mt:Ignore>
@@ -217,6 +228,7 @@ function mtBakeUserCookie(u) {
     if (u.is_authenticated) str += "is_authenticated:'1';";
     if (u.profile) str += "profile:'" + mtEscapeJS(u.profile) + "';";
     if (u.userpic) str += "userpic:'" + mtEscapeJS(u.userpic) + "';";
+    if (u.sid) str += "sid:'" + mtEscapeJS(u.sid) + "';";
     str += "is_trusted:'" + (u.is_trusted ? "1" : "0") + "';";
     str += "is_author:'" + (u.is_author ? "1" : "0") + "';";
     str += "is_banned:'" + (u.is_banned ? "1" : "0") + "';";
@@ -237,7 +249,7 @@ function mtUnbakeUserCookie(s) {
 
     var u = {};
     var m;
-    while (m = s.match(/^((name|url|email|is_authenticated|profile|userpic|is_trusted|is_author|is_banned|can_post|can_comment):'([^']+?)';?)/)) {
+    while (m = s.match(/^((name|url|email|is_authenticated|profile|userpic|sid|is_trusted|is_author|is_banned|can_post|can_comment):'([^']+?)';?)/)) {
         s = s.substring(m[1].length);
         if (m[2].match(/^(is|can)_/)) // boolean fields
             u[m[2]] = m[3] == '1' ? true : false;
@@ -285,6 +297,7 @@ function mtGetUser() {
  * logged-in user (if any).
  */
 </mt:Ignore>
+var mtFetchedUser = false;
 function mtFetchUser(cb) {
     if (!cb) cb = 'mtSetUser';
     if ( ( cb == 'mtSetUser' ) && mtGetUser() ) {
@@ -295,6 +308,7 @@ function mtFetchUser(cb) {
     } else {
         // we aren't using AJAX for this, since we may have to request
         // from a different domain. JSONP to the rescue.
+        mtFetchedUser = true;
         var script = document.createElement('script');
         script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=session_js&blog_id=<$mt:BlogID$>&jsonp=' + cb;
         (document.getElementsByTagName('head'))[0].appendChild(script);
@@ -336,9 +350,34 @@ function mtCommentOnSubmit(f) {
         // disable submit buttons
         if (f.preview_button) f.preview_button.disabled = true;
         if (f.post) f.post.disabled = true;
+
+        var u = mtGetUser();
+        if ( !is_preview && ( u && u.is_authenticated ) ) {
+            // validate session; then submit
+            mtFetchedUser = false;
+            mtFetchUser('mtCommentSessionVerify');
+            return false;
+        }
+
         return true;
     }
     return false;
+}
+
+function mtCommentSessionVerify(app_user) {
+    var u = mtGetUser();
+    var f = document['comments_form'];
+    if ( u && app_user && app_user.sid && ( u.sid == app_user.sid ) ) {
+        f.submit();
+    } else {
+        alert('<__trans phrase="Your session has expired. Please sign in again to comment." escape="js">');
+        mtClearUser();
+        mtFireEvent('usersignin');
+<mt:IfRegistrationRequired>
+        mtShow('comments-form');
+        mtHide('comments-open-footer');
+</mt:IfRegistrationRequired>
+    }
 }
 
 function mtUserOnLoad() {
@@ -376,15 +415,15 @@ function mtUserOnLoad() {
                 if (u.url) cf.url.value = u.url;
                 if (cf.bakecookie)
                     cf.bakecookie.checked = u.name || u.email;
+            } else {
+                if (u && u.sid && cf.sid)
+                    cf.sid.value = u.sid;
             }
-            if (cf.post.disabled) {
+            if (cf.post.disabled)
                 cf.post.disabled = false;
-                cf.post.value = '<__trans phrase="Submit">';
-            }
-            if (cf.preview_button.disabled) {
+            if (cf.preview_button.disabled)
                 cf.preview_button.disabled = false;
-                cf.preview_button.value = '<__trans phrase="Preview">';
-            }
+            mtRequestSubmitted = false;
         }
     }
 }
@@ -477,7 +516,7 @@ function mtShowGreeting() {
 <mt:IfRegistrationAllowed>
     var reg_reqd = <mt:IfRegistrationRequired>true<mt:Else>false</mt:IfRegistrationRequired>;
 
-    var cf = document.comments_form;
+    var cf = document['comments_form'];
     if (!cf) return;
 
     var el = document.getElementById('comment-greeting');
@@ -614,6 +653,7 @@ function mtSaveUser(f) {
  */
 </mt:Ignore>
 function mtClearUser() {
+    user = null;
     mtDeleteCookie(mtCookieName, mtCookiePath, mtCookieDomain,
         location.protocol == 'https:');
 }

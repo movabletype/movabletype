@@ -15,7 +15,7 @@
 <MTElse name="comment_error">
     <mt:ignore><!-- Error message when comment submission fails --></mt:ignore>
     <MTSetVar name="page_title" value="<__trans phrase="Comment Submission Error">">
-    <MTSetVarBlock name="message"><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$MTErrorMessage$>"></MTSetVarBlock>
+    <MTSetVarBlock name="message"><p><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$MTErrorMessage$>"></p></MTSetVarBlock>
 </MTIf>
 
 

@@ -113,17 +113,16 @@ sub _get_commenter_session {
 
     my $session_key;
 
-    if (my $blog_id = $q->param('blog_id')) {
-        if (my $blog = MT::Blog->load($blog_id)) {
-            my $auths = $blog->commenter_authenticators || '';
-            if ( $auths =~ /MovableType/ ) {
-                # First, check for a real MT user login. If one exists,
-                # return that as the commenter identity
-                my ($user, $first_time) = $app->SUPER::login();
-                if ( $user ) {
-                    my $sess = $app->session;
-                    return ( $sess->id, $user );
-                }
+    my $blog = $app->blog;
+    if ($blog) {
+        my $auths = $blog->commenter_authenticators || '';
+        if ( $auths =~ /MovableType/ ) {
+            # First, check for a real MT user login. If one exists,
+            # return that as the commenter identity
+            my ($user, $first_time) = $app->SUPER::login();
+            if ( $user ) {
+                my $sess = $app->session;
+                return ( $sess->id, $user );
             }
         }
     }
@@ -148,7 +147,6 @@ sub _get_commenter_session {
         || ( !$user )
       )
     {
-        $app->log("session is invalid; sess_obj = $sess_obj; key = $session_key; user_id = $user_id; user = $user");
         $app->_invalidate_commenter_session( \%cookies );
         return ( undef, undef );
     }
@@ -859,6 +857,18 @@ sub post {
             $app->translate("Comment text is required.") );
     }
 
+    # validate session parameter
+    if ( my $sid = $q->param('sid') ) {
+        my ( $session, $commenter ) = $app->_get_commenter_session();
+        if ( $session && $commenter && ( $session eq $sid ) ) {
+            # well, everything is okay
+        } else {
+            return $app->handle_error(
+                $app->translate("Your session has expired. Please sign in again to comment.")
+            );
+        }
+    }
+
     my ( $comment, $commenter ) = _make_comment( $app, $entry, $blog );
     return $app->handle_error(
         $app->translate( "An error occurred: [_1]", $app->errstr() ) )
@@ -1445,7 +1455,6 @@ sub session_state {
     my $c;
     if ( $blog_id && $blog ) {
         my ( $session, $commenter ) = $app->_get_commenter_session();
-use Data::Dumper;
         if ( $session && $commenter ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
             my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
@@ -1466,6 +1475,7 @@ use Data::Dumper;
             $can_comment = 0 unless $blog->allow_unreg_comments || $blog->allow_reg_comments;
             my $can_post = ($blog_perms && $blog_perms->can_create_post) ? "1" : "0";
             $c = {
+                sid => $sessobj->id,
                 name => $commenter->nickname,
                 url => $commenter->url,
                 email => $commenter->email,
