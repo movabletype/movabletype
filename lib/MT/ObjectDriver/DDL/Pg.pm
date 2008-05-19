@@ -285,4 +285,23 @@ sub cast_column_sql {
     }
 }
 
+sub drop_index_sql {
+    my $ddl = shift;
+    my ($class, $key) = @_;
+    my $table_name = $class->table_name;
+
+    my $props = $class->properties;
+    my $indexes = $props->{indexes};
+    return q() unless exists($indexes->{$key});
+
+    if (ref $indexes->{$key} eq 'HASH') {
+        my $idx_info = $indexes->{$key};
+        if ($idx_info->{unique} && $ddl->can_add_constraint) {
+            return "ALTER TABLE $table_name DROP CONSTRAINT ${table_name}_$key";
+        }
+    }
+
+    return "DROP INDEX ${table_name}_$key";
+}
+
 1;
