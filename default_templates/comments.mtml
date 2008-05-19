@@ -18,14 +18,16 @@
                 <div class="comment-header">
                     <div class="asset-meta">
                         <span class="byline">
-                            <mt:IfCommentParent>
-                                <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<$MTCommentAuthorIdentity$> <span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
-                            <mt:else>
-                                <$MTCommentAuthorIdentity$>
-                                <span class="vcard author"><$MTCommentAuthorLink$></span>
-                            </mt:IfCommentParent>
+                            <$MTCommentAuthorIdentity$>
+        <mt:IfCommentParent>
+                            <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
+        <mt:else>
+                            <span class="vcard author"><$MTCommentAuthorLink$></span>
+        </mt:IfCommentParent>
                             | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
-                            <MTIfCommentsAccepted> | <$MTCommentReplyLink$></MTIfCommentsAccepted>
+        <MTIfCommentsAccepted>
+                            | <$MTCommentReplyLink$>
+        </MTIfCommentsAccepted>
                         </span>
                     </div>
                 </div>
