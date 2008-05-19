@@ -1747,7 +1747,7 @@ sub refresh_all_templates {
             $terms->{blog_id} = $blog_id;
             $terms->{type} = $val->{type};
             if ( $val->{type} =~
-                m/^(archive|individual|page|category|index|custom|widget)$/ )
+                m/^(archive|individual|page|category|index|custom|widget|widgetset)$/ )
             {
                 $terms->{name} = $val->{name};
             }
