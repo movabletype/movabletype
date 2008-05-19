@@ -5,7 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
     <meta name="generator" content="<$MTProductName version="1"$>" />
 <mt:IfBlog>
+    <mt:IfNonEmpty tag="Link" template="styles">
     <link rel="stylesheet" href="<$MTLink template="styles"$>" type="text/css" />
+    <mt:else>
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    </mt:IfNonEmpty>
 <mt:else>
     <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css" type="text/css" />
     <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
