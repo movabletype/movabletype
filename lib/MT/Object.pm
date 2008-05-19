@@ -697,6 +697,7 @@ sub remove {
     my(@args) = @_;
     if (!ref $obj) {
         $obj->remove_meta( @args ) if $obj->has_meta;
+        $obj->remove_scores( @args ) if $obj->isa('MT::Scorable');
         return $obj->driver->direct_remove($obj, @args);
     } else {
         return $obj->driver->remove($obj, @args);
@@ -986,6 +987,7 @@ sub remove_meta {
         $args = { %$args } if $args; # copy so we can alter
         my $meta_id = $obj->datasource . '_id';
         my $offset = 0;
+        $args ||= {};
         $args->{fetchonly} = [ 'id' ];
         $args->{join} = [ $mpkg, $meta_id ];
         $args->{no_triggers} = 1;
@@ -1004,7 +1006,38 @@ sub remove_meta {
                 $offset = -1;
             }
         }
+        return 1;
     }
+}
+
+sub remove_scores {
+    my $class = shift;
+    require MT::ObjectScore;
+    my ($terms, $args) = @_;
+    $args = { %$args } if $args; # copy so we can alter
+    my $offset = 0;
+    $args ||= {};
+    $args->{fetchonly} = [ 'id' ];
+    $args->{join} = [ 'MT::ObjectScore', 'object_id', {
+        object_ds => $class->datasource } ];
+    $args->{no_triggers} = 1;
+    $args->{limit} = 50;
+    while ( $offset >= 0 ) {
+        $args->{offset} = $offset;
+        if (my @list = $class->load( $terms, $args )) {
+            my @ids = map { $_->id } @list;
+            MT::ObjectScore->driver->direct_remove( 'MT::ObjectScore', {
+                object_ds => $class->datasource, 'object_id' => \@ids });
+            if ( scalar @list == 50 ) {
+                $offset += 50;
+            } else {
+                $offset = -1; # break loop
+            }
+        } else {
+            $offset = -1;
+        }
+    }
+    return 1;
 }
 
 sub remove_children {
