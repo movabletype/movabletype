@@ -16,11 +16,10 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
         }
     }
     if (!$cmntr) return "";
-    if (isset($cmntr['author_url'])) {
+    if (is_array($cmntr))
+        $cmntr = $cmntr[0];
+    if (isset($cmntr['author_url']))
         $link = $cmntr['author_url'];
-    } else {
-        return "";
-    }
     require_once "function.mtstaticwebpath.php";
     $static_path = smarty_function_mtstaticwebpath($args, $ctx);
     require_once "commenter_auth_lib.php";
@@ -38,4 +37,3 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
     }
     return $result;
 }
-?>

@@ -12,6 +12,8 @@ function smarty_function_mtcommentauthor($args, &$ctx) {
     $a = isset($c['comment_author']) ? $c['comment_author'] : '';
     if ($c['comment_commenter_id']) {
         $commenter = $ctx->stash('commenter');
+        if (is_array($commenter))
+            $commenter = $commenter[0];
         if ($commenter)
             $a = $commenter['author_nickname'];
     }
