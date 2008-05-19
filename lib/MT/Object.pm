@@ -696,6 +696,7 @@ sub remove {
     my $obj = shift;
     my(@args) = @_;
     if (!ref $obj) {
+        $obj->remove_meta( @args ) if $obj->has_meta;
         return $obj->driver->direct_remove($obj, @args);
     } else {
         return $obj->driver->remove($obj, @args);
@@ -975,10 +976,35 @@ sub join_on {
 
 sub remove_meta {
     my $obj = shift;
-    return 1 unless ref $obj;
     my $mpkg = $obj->meta_pkg or return;
-    my $id_field = $obj->datasource . '_id';
-    return $mpkg->remove({ $id_field => $obj->id });
+    if ( ref $obj ) {
+        my $id_field = $obj->datasource . '_id';
+        return $mpkg->remove({ $id_field => $obj->id });
+    } else {
+        # static invocation
+        my ($terms, $args) = @_;
+        $args = { %$args } if $args; # copy so we can alter
+        my $meta_id = $obj->datasource . '_id';
+        my $offset = 0;
+        $args->{fetchonly} = [ 'id' ];
+        $args->{join} = [ $mpkg, $meta_id ];
+        $args->{no_triggers} = 1;
+        $args->{limit} = 50;
+        while ( $offset >= 0 ) {
+            $args->{offset} = $offset;
+            if (my @list = $obj->load( $terms, $args )) {
+                my @ids = map { $_->id } @list;
+                $mpkg->driver->direct_remove( $mpkg, { $meta_id => \@ids });
+                if ( scalar @list == 50 ) {
+                    $offset += 50;
+                } else {
+                    $offset = -1; # break loop
+                }
+            } else {
+                $offset = -1;
+            }
+        }
+    }
 }
 
 sub remove_children {
