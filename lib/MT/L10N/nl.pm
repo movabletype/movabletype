@@ -1,5 +1,7 @@
-# Copyright 2003-2008 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2005-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 #
 # $Id:$
 
@@ -15,10 +17,10 @@ use vars qw( @ISA %Lexicon );
 %Lexicon = (
 
 ## php/lib/function.mtassettype.php
-	'image' => 'afbeelding', # Translate - Case
+	'image' => 'afbeelding',
 	'Image' => 'Afbeelding',
-	'file' => 'bestand', # Translate - New
-	'File' => 'Bestand', # Translate - New
+	'file' => 'bestand',
+	'File' => 'Bestand',
 	'audio' => 'audio',
 	'Audio' => 'Audio',
 	'video' => 'video',
@@ -31,8 +33,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] is illegaal.',
 
 ## php/lib/function.mtwidgetmanager.php
-	'Error: widgetset [_1] is empty.' => 'Fout: widgetset [_1] is leeg', # Translate - New
-	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]', # Translate - New
+	'Error: widgetset [_1] is empty.' => 'Fout: widgetset [_1] is leeg',
+	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]',
 
 ## php/lib/archive_lib.php
 	'Page' => 'Pagina',
@@ -101,7 +103,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry' => 'Bericht',
 
 ## php/mt.php.pre
-	'Page not found - [_1]' => 'Pagina niet gevonden - [_1]', # Translate - New
+	'Page not found - [_1]' => 'Pagina niet gevonden - [_1]',
 
 ## default_templates/comment_response.mtml
 	'Confirmation...' => 'Bevestiging...',
@@ -109,12 +111,12 @@ use vars qw( @ISA %Lexicon );
 	'Thank you for commenting.' => 'Bedankt voor uw reactie.',
 	'Your comment has been received and held for approval by the blog owner.' => 'Uw reactie is ontvangen en zal worden opgeslagen tot de eigenaar van deze weblog goedkeuring geeft voor publicatie.',
 	'Comment Submission Error' => 'Fout bij indienen reactie',
-	'Your comment submission failed for the following reasons: [_1]' => 'Het indienen van uw reactie mislukte wegens deze redenen: [_1]', # Translate - New
-	'HTML Head' => 'HTML Head', # Translate - New
-	'Banner Header' => 'Banner hoofding', # Translate - New
+	'Your comment submission failed for the following reasons: [_1]' => 'Het indienen van uw reactie mislukte wegens deze redenen: [_1]',
+	'HTML Head' => 'HTML Head',
+	'Banner Header' => 'Banner hoofding',
 	'Return to the <a href="[_1]">original entry</a>.' => 'Ga terug naar het <a href="[_1]">oorspronkelijke bericht</a>.',
 	'Sidebar' => 'Zijkolom',
-	'Banner Footer' => 'Banner voettekst', # Translate - New
+	'Banner Footer' => 'Banner voettekst',
 
 ## default_templates/notify-entry.mtml
 	'A new [lc,_3] entitled \'[_1]\' has been published to [_2].' => 'Een [lc,_3] getiteld \'[_1]\' is gepubliceerd op [_2].',
@@ -138,12 +140,12 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/entry_summary.mtml
 	'By [_1] on [_2]' => 'Door [_1] op [_2]',
-	'1 Comment' => '1 reactie', # Translate - New
-	'# Comments' => '# reacties', # Translate - New
-	'1 TrackBack' => '1 Trackback', # Translate - New
-	'# TrackBacks' => '# TrackBacks', # Translate - New
+	'1 Comment' => '1 reactie',
+	'# Comments' => '# reacties',
+	'1 TrackBack' => '1 Trackback',
+	'# TrackBacks' => '# TrackBacks',
 	'Tags' => 'Tags',
-	'Continue reading <a href="[_1]" rel="bookmark">[_2]</a>.' => '<a href="[_1]" rel="bookmark">[_2]</a> verder lezen.', # Translate - New
+	'Continue reading <a href="[_1]" rel="bookmark">[_2]</a>.' => '<a href="[_1]" rel="bookmark">[_2]</a> verder lezen.',
 
 ## default_templates/category_archive_list.mtml
 	'Categories' => 'Categorieën',
@@ -283,8 +285,8 @@ use vars qw( @ISA %Lexicon );
 	'Mail Footer' => 'Footer voor e-mail',
 
 ## default_templates/trackbacks.mtml
-	'No TrackBacks' => 'Geen TrackBacks', # Translate - New
-	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'TrackBack URL: <span id="trackbacks-link">[_1]</span>', # Translate - New
+	'No TrackBacks' => 'Geen TrackBacks',
+	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'TrackBack URL: <span id="trackbacks-link">[_1]</span>',
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> van [_3] op <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Meer lezen</a>',
 
@@ -293,14 +295,15 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,hour,hours] ago' => '[quant,_1,uur,uur] geleden',
 	'[quant,_1,minute,minutes] ago' => '[quant,_1,minuut,minuten] geleden',
 	'[quant,_1,day,days] ago' => '[quant,_1,dag,dagen] geleden',
-	'<a href="[_1]">Edit</a>' => '<a href="[_1]">Bewerken</a>', # Translate - New
+	'<a href="[_1]">Edit</a>' => '<a href="[_1]">Bewerken</a>',
 	'Submit' => 'Invoeren',
 	'Preview' => 'Voorbeeld',
-	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'U heeft geen permissie om te reageren op deze weblog. ([_1]afmelden[_2])', # Translate - New
-	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => 'Bedankt om u aan te melden, [_1]. ([_2]afmelden[_3])', # Translate - New
-	'[_1]Sign in[_2] to comment.' => '[_1]Meld u aan[_2] om te reageren.', # Translate - New
-	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Meld u aan[_2] om te reageren, of reageer anoniem.', # Translate - New
-	'Replying to <a href="#comment-[_1]">comment from [_2]</a>' => 'Antwoord op <a href="#comment-[_1]">reactie van [_2]</a>', # Translate - New
+	'Signing in...' => 'Aanmelden...', # Translate - New
+	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'U heeft geen permissie om te reageren op deze weblog. ([_1]afmelden[_2])',
+	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => 'Bedankt om u aan te melden, [_1]. ([_2]afmelden[_3])',
+	'[_1]Sign in[_2] to comment.' => '[_1]Meld u aan[_2] om te reageren.',
+	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Meld u aan[_2] om te reageren, of reageer anoniem.',
+	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Als antwoord op <a href="[_1]" onclick="[_2]">reactie van [_3]</a>', # Translate - New
 
 ## default_templates/archive_index.mtml
 	'Author Archives' => 'Archief per auteur',
@@ -337,8 +340,8 @@ use vars qw( @ISA %Lexicon );
 	'_POWERED_BY' => 'Aangedreven  door<br /><a href=\"http://www.sixapart.com/movabletype/\"><$MTProductName$></a>',
 
 ## default_templates/comments.mtml
-	'No Comments' => 'Geen reacties', # Translate - New
-	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] reageerde op <a href="[_2]">reactie van [_3]</a>', # Translate - New
+	'No Comments' => 'Geen reacties',
+	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] reageerde op <a href="[_2]">reactie van [_3]</a>',
 	'Leave a comment' => 'Laat een reactie achter',
 	'Name' => 'Naam',
 	'Email Address' => 'E-mailadres',
@@ -366,6 +369,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_preview.mtml
 	'Previewing your Comment' => 'U ziet een voorbeeld van uw reactie',
+	'Replying to comment from [_1]' => 'Antwoord op reactie van [_1]', # Translate - New
 	'Cancel' => 'Annuleren',
 
 ## default_templates/powered_by.mtml
@@ -464,7 +468,7 @@ use vars qw( @ISA %Lexicon );
 	'Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]' => 'Bijsnijden van een vierkant van [_1]x[_1] op [_2],[_3] mislukt: [_4]',
 	'Converting image to [_1] failed: [_2]' => 'Converteren van afbeelding naar [_1] mislukt: [_2]',
 	'Can\'t load IPC::Run: [_1]' => 'Kan IPC::Run niet laden: [_1]',
-	'Unsupported image file type: [_1]' => 'Niet ondersteund afbeeldingsformaat: [_1]', # Translate - New
+	'Unsupported image file type: [_1]' => 'Niet ondersteund afbeeldingsformaat: [_1]',
 	'Cropping to [_1]x[_1] failed: [_2]' => 'Bijsnijden naar [_1]x[_1] mislukt: [_2]',
 	'Converting to [_1] failed: [_2]' => 'Converteren naar [_1] mislukt: [_2]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'U hebt geen geldig pad naar de NetPBM tools op uw machine.',
@@ -502,8 +506,8 @@ use vars qw( @ISA %Lexicon );
 	'Comment Pending' => 'Reactie wordt behandeld',
 	'Your comment submission failed for the following reasons:' => 'Het indienen van uw reactie mislukte omwille van volgende redenen:',
 	'[_1]: [_2]' => '[_1]: [_2]',
-	'Moving metadata storage for categories...' => 'Metadata opslag voor categoriën wordt verplaatst...', # Translate - New
-	'Upgrading metadata storage for [_1]' => 'Metadata opslag voor [_1] wordt bijgewerkt', # Translate - New
+	'Moving metadata storage for categories...' => 'Metadata opslag voor categoriën wordt verplaatst...',
+	'Upgrading metadata storage for [_1]' => 'Metadata opslag voor [_1] wordt bijgewerkt',
 	'Migrating Nofollow plugin settings...' => 'Nofollow plugin instellingen worden gemigreerd',
 	'Updating system search template records...' => 'Systeemzoeksjablonen worden bijgewerkt...',
 	'Custom ([_1])' => 'Gepersonaliseerd ([_1])',
@@ -540,8 +544,7 @@ use vars qw( @ISA %Lexicon );
 	'Renaming PHP plugin file names...' => 'PHP plugin bestandsnamen aan het aanpassen...',
 	'Error renaming PHP files. Please check the Activity Log.' => 'Fout bij het aanpassen van de bestandsnamen van PHP bestanden.  Kijk in het activiteitenlog voor details.',
 	'Cannot rename in [_1]: [_2].' => 'Kan naam niet aanpassen in [_1]: [_2]',
-	'Updating widget template records...' => 'Bezig widgetsjablooninformatie bij te werken...',
-	'Removing unnecessary indexes...' => 'Onnodige indexen worden verwijderd...', # Translate - New
+	'Removing unnecessary indexes...' => 'Onnodige indexen worden verwijderd...',
 	'Upgrading table for [_1] records...' => 'Tabel aan het upgraden voor [_1] records...',
 	'Upgrading database from version [_1].' => 'Database wordt bijgewerkt van versie [_1].',
 	'Database has been upgraded to version [_1].' => 'Database is bijgewerkt naar versie [_1].',
@@ -587,6 +590,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning user status...' => 'Gebruikersstatus wordt toegekend...',
 	'Migrating permissions to roles...' => 'Permissies aan het migreren naar rollen...',
 	'Populating authored and published dates for entries...' => 'Bezig creatie- en publicatiedatums voor berichten in te stellen...',
+	'Updating widget template records...' => 'Bezig widgetsjablooninformatie bij te werken...',
 	'Classifying category records...' => 'Categorieën aan het klasseren...',
 	'Classifying entry records...' => 'Berichten aan het klasseren...',
 	'Merging comment system templates...' => 'Bezig reactiesysteemsjabonen samen te voegen...',
@@ -597,10 +601,10 @@ use vars qw( @ISA %Lexicon );
 	'Moving OpenID usernames to external_id fields...' => 'OpenID gebruikersnamen aan het verplaatsen naar external_id velden...',
 	'Assigning blog template set...' => 'Blog sjabloonset aan het toekennen...',
 	'Assigning blog page layout...' => 'Blog pagina layout aan het toekennen...',
-	'Assigning author basename...' => 'Basisnaam auteur aan het toekennen...', # Translate - New
-	'Assigning entry comment and TrackBack counts...' => 'Tellingen aantal reacties en TrackBacks bericht aan het toekennen...', # Translate - New
-	'Assigning embedded flag to asset placements...' => 'Markering voor inbedding van mediabestanden aan het toekennen...', # Translate - New
-	'Replacing %C format to MTCategoryLabel...' => 'Formaat %C aan het vervangen door MTCategoryLabel...', # Translate - New
+	'Assigning author basename...' => 'Basisnaam auteur aan het toekennen...',
+	'Assigning entry comment and TrackBack counts...' => 'Tellingen aantal reacties en TrackBacks bericht aan het toekennen...',
+	'Assigning embedded flag to asset placements...' => 'Markering voor inbedding van mediabestanden aan het toekennen...',
+	'Replacing file formats to use CategoryLabel tag...' => 'Bestandsformaten aan het vervangen om CategoryLabel tag te gebruiken...', # Translate - New
 
 ## lib/MT/Core.pm
 	'System Administrator' => 'Systeembeheerder',
@@ -625,9 +629,9 @@ use vars qw( @ISA %Lexicon );
 	'Manage Assets' => 'Mediabestanden beheren',
 	'Post Comments' => 'Reacties publiceren',
 	'Manage Feedback' => 'Feedback beheren',
-	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'Fout bij het aanmaken van de map voor de performantielogbestanden, [_1].  Gelieve de permissies aan te passen zodat deze map beschrijfbaar is of geef een alternatief pad op via de PerformanceLoggingPath configuratiedirectief: [_2]', # Translate - New
-	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'Fout bij het aanmaken van performantielogs: PerformanceLogginPath instelling moet een pad naar een map zijn, geen bestand: [_1]', # Translate - New
-	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'Fout bij het aanmaken van performantielogs: PerformanceLoggingPath map bestaat maar is niet beschrijfbaar: [_1]', # Translate - New
+	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'Fout bij het aanmaken van de map voor de performantielogbestanden, [_1].  Gelieve de permissies aan te passen zodat deze map beschrijfbaar is of geef een alternatief pad op via de PerformanceLoggingPath configuratiedirectief: [_2]',
+	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'Fout bij het aanmaken van performantielogs: PerformanceLogginPath instelling moet een pad naar een map zijn, geen bestand: [_1]',
+	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'Fout bij het aanmaken van performantielogs: PerformanceLoggingPath map bestaat maar is niet beschrijfbaar: [_1]',
 	'MySQL Database' => 'MySQL databank',
 	'PostgreSQL Database' => 'PostgreSQL databank',
 	'SQLite Database' => 'SQLite databank',
@@ -667,8 +671,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
 	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
-	'author/author-display-name/yyyy/mm/index.html' => 'auteur/getoonde-naam-auteur/jjjj/mm/index.html', # Translate - New
-	'author/author_display_name/yyyy/mm/index.html' => 'auteur/getoonde_naam_auteur/jjjj/mm/index.html', # Translate - New
+	'author/author-display-name/yyyy/mm/index.html' => 'auteur/getoonde-naam-auteur/jjjj/mm/index.html',
+	'author/author_display_name/yyyy/mm/index.html' => 'auteur/getoonde_naam_auteur/jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/Yearly.pm
 	'YEARLY_ADV' => 'per jaar',
@@ -693,8 +697,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
 	'AUTHOR-WEEKLY_ADV' => 'per auteur per week',
-	'author/author-display-name/yyyy/mm/day-week/index.html' => 'auteur/auteur-getoonde-naam/jjjj/mm/dag-week/index.html', # Translate - New
-	'author/author_display_name/yyyy/mm/day-week/index.html' => 'auteur/auteur_getoonde_naam/jjjj/mm/dag-week/index.html', # Translate - New
+	'author/author-display-name/yyyy/mm/day-week/index.html' => 'auteur/auteur-getoonde-naam/jjjj/mm/dag-week/index.html',
+	'author/author_display_name/yyyy/mm/day-week/index.html' => 'auteur/auteur_getoonde_naam/jjjj/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
@@ -723,8 +727,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
 	'AUTHOR-YEARLY_ADV' => 'per auteur per jaar',
-	'author/author-display-name/yyyy/index.html' => 'auteur/auteur-getoonde-naam/jjjj/index.html', # Translate - New
-	'author/author_display_name/yyyy/index.html' => 'auteur/auteur_getoonde_naam/jjjj/index.html', # Translate - New
+	'author/author-display-name/yyyy/index.html' => 'auteur/auteur-getoonde-naam/jjjj/index.html',
+	'author/author_display_name/yyyy/index.html' => 'auteur/auteur_getoonde_naam/jjjj/index.html',
 
 ## lib/MT/ArchiveType/Monthly.pm
 	'MONTHLY_ADV' => 'per maand',
@@ -741,9 +745,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'per auteur',
-	'Author (#[_1])' => 'Auteur (#[_1])',
-	'author/author-display-name/index.html' => 'auteur/auteur-getoonde-naam/index.html', # Translate - New
-	'author/author_display_name/index.html' => 'auteur/auteur_getoonde_naam/index.html', # Translate - New
+	'author/author-display-name/index.html' => 'auteur/auteur-getoonde-naam/index.html',
+	'author/author_display_name/index.html' => 'auteur/auteur_getoonde_naam/index.html',
 
 ## lib/MT/ArchiveType/Daily.pm
 	'DAILY_ADV' => 'per dag',
@@ -852,7 +855,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records processed...' => '[_1] items verwerkt...',
 	'[_1] records processed.' => '[_1] items verwerkt.',
 	'Cloning associations for blog:' => 'Associaties worden gekloond voor blog:',
-	'Cloning entries and pages for blog...' => 'Berichten en pagina\'s worden gekloond voor blog...', # Translate - New
+	'Cloning entries and pages for blog...' => 'Berichten en pagina\'s worden gekloond voor blog...',
 	'Cloning categories for blog...' => 'Categorieën worden gekloond voor blog...',
 	'Cloning entry placements for blog...' => 'Berichtcategorieën wordt gekloond voor blog...',
 	'Cloning comments for blog...' => 'Reacties worden gekloond voor blog...',
@@ -884,7 +887,7 @@ use vars qw( @ISA %Lexicon );
 	'<[_1]> with no </[_1]> on line #' => '<[_1]> zonder </[_1]> op regel #',
 	'<[_1]> with no </[_1]> on line [_2].' => '<[_1]> zonder </[_1]> op regel [_2].',
 	'<[_1]> with no </[_1]> on line [_2]' => '<[_1]> zonder </[_1]> op regel [_2]',
-	'Error in <mt[_1]> tag: [_2]' => 'Fout in <mt[_1]> tag: _2]', # Translate - New
+	'Error in <mt[_1]> tag: [_2]' => 'Fout in <mt[_1]> tag: _2]',
 	'Unknown tag found: [_1]' => 'Onbekende tag gevonden: [_1]',
 
 ## lib/MT/ObjectDriver/Driver/DBD/SQLite.pm
@@ -921,21 +924,21 @@ use vars qw( @ISA %Lexicon );
 	'Archive Templates' => 'Archiefsjablonen',
 	'Template Modules' => 'Sjabloonmodules',
 	'System Templates' => 'Systeemsjablonen',
-	'Email Templates' => 'E-mail sjablonen', # Translate - New
-	'Template Backups' => 'Sjabloonbackups', # Translate - New
-	'Can\'t locate host template to preview module/widget.' => 'Kan geen gastsjabloon vinden om voorbeeld van module/widget in te bekijken.', # Translate - New
+	'Email Templates' => 'E-mail sjablonen',
+	'Template Backups' => 'Sjabloonbackups',
+	'Can\'t locate host template to preview module/widget.' => 'Kan geen gastsjabloon vinden om voorbeeld van module/widget in te bekijken.',
 	'Publish error: [_1]' => 'Publicatiefout: [_1]',
 	'Unable to create preview file in this location: [_1]' => 'Kon geen voorbeeldbestand maken op deze locatie: [_1]',
-	'Lorem ipsum' => 'Lorem ipsum', # Translate - New
+	'Lorem ipsum' => 'Lorem ipsum',
 	'LOREM_IPSUM_TEXT' => '', # Translate - New
 	'LORE_IPSUM_TEXT_MORE' => '', # Translate - New
-	'sample, entry, preview' => 'staaltje, bericht, voorbeeld', # Translate - New
+	'sample, entry, preview' => 'staaltje, bericht, voorbeeld',
 	'No permissions' => 'Geen permissies',
 	'Populating blog with default templates failed: [_1]' => 'Inrichten van blog met standaard sjablonen mislukt: [_1]',
 	'Setting up mappings failed: [_1]' => 'Doorverwijzingen opzetten mislukt: [_1]',
 	'Saving map failed: [_1]' => 'Map opslaan mislukt: [_1]',
-	'You should not be able to enter 0 as the time.' => 'Het ingeven van 0 als tijdstip zou noet mogelijk moeten zijn.', # Translate - New
-	'You must select at least one event checkbox.' => 'U moet minstens één gebeurtenis-vakje aankruisen.', # Translate - New
+	'You should not be able to enter 0 as the time.' => 'Het ingeven van 0 als tijdstip zou noet mogelijk moeten zijn.',
+	'You must select at least one event checkbox.' => 'U moet minstens één gebeurtenis-vakje aankruisen.',
 	'Template \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Sjabloon \'[_1]\' (ID:[_2]) aangemaakt door \'[_3]\'',
 	'Template \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Sjabloon \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'No Name' => 'Geen naam',
@@ -946,17 +949,17 @@ use vars qw( @ISA %Lexicon );
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Sjabloon \'[_1]\' wordt overgeslagen, omdat het blijkbaar een gepersonaliseerd sjabloon is.',
 	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => 'Bezig sjabloon <strong>[_3]</strong> te verversen met <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
 	'Skipping template \'[_1]\' since it has not been changed.' => 'Sjabloon \'[_1]\' wordt overgeslagen omdat het niet is veranderd.',
-	'Copy of [_1]' => 'Kopie van [_1]', # Translate - New
+	'Copy of [_1]' => 'Kopie van [_1]',
 	'Permission denied: [_1]' => 'Toestemming geweigerd: [_1]',
 	'Save failed: [_1]' => 'Opslaan mislukt: [_1]',
-	'Invalid ID [_1]' => 'Ongeldig ID [_1]', # Translate - New
+	'Invalid ID [_1]' => 'Ongeldig ID [_1]',
 	'Saving object failed: [_1]' => 'Object opslaan mislukt: [_1]',
 	'Load failed: [_1]' => 'Laden mislukt: [_1]',
 	'(no reason given)' => '(geen reden vermeld)',
 	'Removing [_1] failed: [_2]' => 'Verwijderen van [_1] mislukt: [_2]',
 	'template' => 'sjabloon',
-	'Restoring widget set [_1]... ' => 'Widgetset [_1] aan het terugzetten...', # Translate - New
-	'Failed.' => 'Mislukt.', # Translate - New
+	'Restoring widget set [_1]... ' => 'Widgetset [_1] aan het terugzetten...',
+	'Failed.' => 'Mislukt.',
 
 ## lib/MT/CMS/Search.pm
 	'No [_1] were found that match the given criteria.' => 'Er werden geen [_1] gevonden die overeenkomen met de opgegeven criteria.',
@@ -1035,7 +1038,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Gebruiker aanmaken',
-	'Can\'t load role #[_1].' => 'Kan rol #[_1] niet laden.', # Translate - New
+	'Can\'t load role #[_1].' => 'Kan rol #[_1] niet laden.',
 	'Roles' => 'Rollen',
 	'Create Role' => 'Rol aanmaken',
 	'(user deleted)' => '(gebruiker verwijderd)',
@@ -1051,10 +1054,10 @@ use vars qw( @ISA %Lexicon );
 	'General Settings' => 'Algemene instellingen',
 	'Invalid ID given for personal blog clone source ID.' => 'Ongeldig ID opgegeven als kloonbron voor een persoonlijke weblog.',
 	'If personal blog is set, the default site URL and root are required.' => 'Als persoonlijke weblog is ingesteld, dan zijn de standaard URL en hoofdmap van de site vereist.',
-	'Select a entry author' => 'Selecteer een berichtauteur', # Translate - New
-	'Selected author' => 'Selecteer auteur', # Translate - New
+	'Select a entry author' => 'Selecteer een berichtauteur',
+	'Selected author' => 'Selecteer auteur',
 	'Type a username to filter the choices below.' => 'Tik een gebruikersnaam in om de keuzes hieronder te filteren.',
-	'Entry author' => 'Berichtauteur', # Translate - New
+	'Entry author' => 'Berichtauteur',
 	'Select a System Administrator' => 'Selecteer een systeembeheerder',
 	'Selected System Administrator' => 'Geselecteerde systeembeheerder',
 	'represents a user who will be created afterwards' => 'stelt een gebruiker voor die later zal worden aangemaakt',
@@ -1073,7 +1076,7 @@ use vars qw( @ISA %Lexicon );
 	'You cannot delete your own user record.' => 'U kunt uw eigen gebruikersgegevens niet verwijderen.',
 	'You have no permission to delete the user [_1].' => 'U heeft geen rechten om gebruiker [_1] te verwijderen.',
 	'User requires username' => 'Gebruiker vereist gebruikersnaam',
-	'User requires display name' => 'Gebruiker heeft een getoonde naam nodig', # Translate - New
+	'User requires display name' => 'Gebruiker heeft een getoonde naam nodig',
 	'A user with the same name already exists.' => 'Er bestaat al een gebruiker met die naam.',
 	'User requires password' => 'Gebruiker vereist wachtwoord',
 	'User requires password recovery word/phrase' => 'Gebruiker heeft een woord/uitdrukking nodig om het wachtwoord te kunnen terugvinden',
@@ -1128,8 +1131,8 @@ use vars qw( @ISA %Lexicon );
 	'New Blog' => 'Nieuwe blog',
 	'Blog Activity Feed' => 'Blogactiviteitsfeed',
 	'Go Back' => 'Ga terug',
-	'Can\'t load entry #[_1].' => 'Kan bericht #[_1] niet laden.', # Translate - New
-	'Can\'t load template #[_1].' => 'Kan sjabloon #[_1] niet laden.', # Translate - New
+	'Can\'t load entry #[_1].' => 'Kan bericht #[_1] niet laden.',
+	'Can\'t load template #[_1].' => 'Kan sjabloon #[_1] niet laden.',
 	'index template \'[_1]\'' => 'indexsjabloon \'[_1]\'',
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'Publish Site' => 'Site publiceren',
@@ -1149,12 +1152,12 @@ use vars qw( @ISA %Lexicon );
 	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.' => 'Fout: Movable Type kon geen map maken om uw dynamische sjablonen in te cachen. U moet een map aanmaken met de naam <code>[_1]</code> onder de map van uw weblog.',
 
 ## lib/MT/CMS/Dashboard.pm
-	'Better, Stronger, Faster' => 'Beter, sterker, sneller', # Translate - New
-	'A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching.' => 'Er is een stevige inspanning geleverd om de performantie en betrouwbaarheid vna Movable Type nog verder te verbeteren, met nieuwe opties zoals Server Side Includes en Sjabloonmodulecaching.', # Translate - New
-	'Improved Template Management' => 'Verbeterd sjabloonbeheer', # Translate - New
-	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.' => 'De sjabloonbewerkinterface is aangepast om ontwerpers efficiënter het design van hun site te laten aanpassen.', # Translate - New
-	'Threaded Comments' => 'Reacties: raak de draad niet kwijt!', # Translate - New
-	'Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.' => 'Geef reageerders op uw blog de optie om op elkaar te antwoorden, wat voor meer engagement en meer dynamische conversaties zorgt.', # Translate - New
+	'Better, Stronger, Faster' => 'Beter, sterker, sneller',
+	'A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching.' => 'Er is een stevige inspanning geleverd om de performantie en betrouwbaarheid vna Movable Type nog verder te verbeteren, met nieuwe opties zoals Server Side Includes en Sjabloonmodulecaching.',
+	'Improved Template Management' => 'Verbeterd sjabloonbeheer',
+	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.' => 'De sjabloonbewerkinterface is aangepast om ontwerpers efficiënter het design van hun site te laten aanpassen.',
+	'Threaded Comments' => 'Reacties: raak de draad niet kwijt!',
+	'Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.' => 'Geef reageerders op uw blog de optie om op elkaar te antwoorden, wat voor meer engagement en meer dynamische conversaties zorgt.',
 
 ## lib/MT/CMS/Common.pm
 	'Permisison denied.' => 'Toestemming geweigerd.',
@@ -1233,7 +1236,7 @@ use vars qw( @ISA %Lexicon );
 	'Tag' => 'Tag',
 	'Entry Status' => 'Status bericht',
 	'[_1] Feed' => '[_1] Feed',
-	'Can\'t load template.' => 'Kan sjabloon niet laden.', # Translate - New
+	'Can\'t load template.' => 'Kan sjabloon niet laden.',
 	'New [_1]' => 'Nieuwe [_1]',
 	'No such [_1].' => 'Geen [_1].',
 	'Same Basename has already been used. You should use an unique basename.' => 'Dezelfde basisnaam is al in gebruik.  U gebruikt best een unieke basisnaam.',
@@ -1376,8 +1379,8 @@ use vars qw( @ISA %Lexicon );
 	'Removed [_1].' => '[_1] verwijderd.',
 
 ## lib/MT/Log.pm
-	'Log message' => 'Logbericht', # Translate - Case
-	'Log messages' => 'Logberichten', # Translate - New
+	'Log message' => 'Logbericht',
+	'Log messages' => 'Logberichten',
 	'Page # [_1] not found.' => 'Pagina # [_1] niet gevonden.',
 	'Entry # [_1] not found.' => 'Bericht # [_1] niet gevonden.',
 	'Comment # [_1] not found.' => 'Reactie # [_1] niet gevonden.',
@@ -1393,15 +1396,16 @@ use vars qw( @ISA %Lexicon );
 	'You used an \'[_1]\' tag outside of the context of an page; perhaps you mistakenly placed it outside of an \'MTPages\' container?' => 'U gebruikte een \'[_1]\' tag buiten de context van een pagina; misschien plaatste u dit per ongeluk buiten een \'MTPages\' container?',
 
 ## lib/MT/Template/ContextHandlers.pm
-	'All About Me' => 'Alles over mij', # Translate - New
+	'All About Me' => 'Alles over mij',
 	'Remove this widget' => 'Verwijder dit widget',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publiceer[_2] uw site om deze wijzigingen zichtbaar te maken.',
 	'Actions' => 'Acties',
 	'Warning' => 'Waarschuwing',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
 	'No [_1] could be found.' => '[_1] werden niet gevonden',
+	'records' => 'records', # Translate - New
 	'Invalid tag [_1] specified.' => 'Ongeldige tag [_1] opgegeven.',
-	'No template to include specified' => 'Geen sjabloon opgegeven om te includeren', # Translate - New
+	'No template to include specified' => 'Geen sjabloon opgegeven om te includeren',
 	'Recursion attempt on [_1]: [_2]' => 'Recursiepoging op [_1]: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => 'Kan geincludeerd sjabloon niet vinden: [_1] \'[_2]\'',
 	'Writing to \'[_1]\' failed: [_2]' => 'Schrijven naar \'[_1]\' mislukt: [_2]',
@@ -1442,8 +1446,8 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] without a author context set up.' => 'U gebruikte een [_1] zonder een auteurscontext op te zetten.',
 	'Can\'t load user.' => 'Kan gebruiker niet laden.',
 	'Division by zero.' => 'Deling door nul.',
-	'name is required.' => 'naam is verplicht.', # Translate - New
-	'Specified WidgetSet not found.' => 'Opgegeven widgetset niet gevonden.', # Translate - New
+	'name is required.' => 'naam is verplicht.',
+	'Specified WidgetSet not found.' => 'Opgegeven widgetset niet gevonden.',
 	'Can\'t find included template widget \'[_1]\'' => 'Kan geïncludeerd sjabloonwidget \'[_1]\' niet vinden',
 
 ## lib/MT/App/Search/Legacy.pm
@@ -1456,7 +1460,7 @@ use vars qw( @ISA %Lexicon );
 	'Search: new comment search' => 'Zoeken: opnieuw zoeken in de reacties',
 
 ## lib/MT/App/Search/TagSearch.pm
-	'TagSearch works with MT::App::Search.' => 'TagSearch werkt met MT::App::Search.', # Translate - New
+	'TagSearch works with MT::App::Search.' => 'TagSearch werkt met MT::App::Search.',
 
 ## lib/MT/App/NotifyList.pm
 	'Please enter a valid email address.' => 'Gelieve een geldig e-mail adres op te geven.',
@@ -1502,22 +1506,22 @@ use vars qw( @ISA %Lexicon );
 	'The sign-in attempt was not successful; please try again.' => 'Aanmeldingspoging mislukt; gelieve opnieuw te proberen.',
 	'No entry was specified; perhaps there is a template problem?' => 'Geen bericht opgegeven; misschien is er een sjabloonprobleem?',
 	'Somehow, the entry you tried to comment on does not exist' => 'Het bericht waar u een reactie op probeerde achter te laten, bestaat niet',
-	'Invalid entry ID provided' => 'Ongeldig berichtID opgegeven', # Translate - New
+	'Invalid entry ID provided' => 'Ongeldig berichtID opgegeven',
 	'Invalid commenter ID' => 'Ongeldig reageerder-ID',
 	'All required fields must have valid values.' => 'Alle vereiste velden moeten geldige waarden bevatten.',
 	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
 
 ## lib/MT/App/Search.pm
-	'Invalid type: [_1]' => 'Ongeldig type: [_1]', # Translate - New
-	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Zoeken: opslaan resultaten in cache mislukt.  [_1] is niet beschikbar [_2]', # Translate - New
-	'Invalid format: [_1]' => 'Ongeldig formaat: [_1]', # Translate - New
-	'Unsupported type: [_1]' => 'Niet ondersteund type: [_1]', # Translate - New
-	'Invalid query: [_1]' => 'Ongeldige zoekopdracht: [_1]', # Translate - New
-	'No search term was specified.' => 'Er werd geen zoekterm opgegeven', # Translate - New
-	'Invalid value: [_1]' => 'Ongeldige waarde: [_1]', # Translate - New
-	'No column was specified to search for [_1].' => 'Geen kolom opgegeven om op te zoeken [_1].', # Translate - New
-	'Throttled' => 'Gelimiteerd', # Translate - New
+	'Invalid type: [_1]' => 'Ongeldig type: [_1]',
+	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Zoeken: opslaan resultaten in cache mislukt.  [_1] is niet beschikbar [_2]',
+	'Invalid format: [_1]' => 'Ongeldig formaat: [_1]',
+	'Unsupported type: [_1]' => 'Niet ondersteund type: [_1]',
+	'Invalid query: [_1]' => 'Ongeldige zoekopdracht: [_1]',
+	'No search term was specified.' => 'Er werd geen zoekterm opgegeven',
+	'Invalid value: [_1]' => 'Ongeldige waarde: [_1]',
+	'No column was specified to search for [_1].' => 'Geen kolom opgegeven om op te zoeken [_1].',
+	'The search you conducted has timed out.  Please simplify your query and try again.' => 'De zoekopdracht die u uitvoerde is over de tijdslimiet gegaan.  Gelieve uw zoekopdracht te vereenvoudigen en opnieuw te proberen.', # Translate - New
 
 ## lib/MT/App/Trackback.pm
 	'Invalid entry ID \'[_1]\'' => 'Ongeldig bericht-ID \'[_1]\'',
@@ -1559,7 +1563,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is needed if you wish to use the MT XML-RPC server implementation.' => 'Deze module is vereist als u de MT XML-RPC serverimplementatie wenst te gebruiken.',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'Deze module is vereist als u bestaande bestanden wenst te kunnen overschrijven bij het opladen.',
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
-	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.', # Translate - New
+	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
 	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Deze module is vereist als u graag thumbnailveries van opgeladen bestanden wenst te kunnen aanmaken.',
 	'This module is required by certain MT plugins available from third parties.' => 'Deze module is vereist door bepaalde MT plugins beschikbaar bij derden.',
 	'This module accelerates comment registration sign-ins.' => 'Deze module versnelt aanmeldingen om te kunnen reageren.',
@@ -1607,13 +1611,14 @@ use vars qw( @ISA %Lexicon );
 	'Blog Stats' => 'Blogstatistieken',
 	'Refresh Blog Templates' => 'Blogsjablonen verversen',
 	'Refresh Global Templates' => 'Globale sjablonen verversen',
-	'Use Publishing Profile' => 'Publicatieprofiel gebruiken', # Translate - New
+	'Use Publishing Profile' => 'Publicatieprofiel gebruiken',
 	'Unpublish Entries' => 'Publicatie ongedaan maken',
 	'Add Tags...' => 'Tags toevoegen',
 	'Tags to add to selected entries' => 'Tags toe te voegen aan geselecteerde berichten',
 	'Remove Tags...' => 'Tags verwijderen',
 	'Tags to remove from selected entries' => 'Tags te verwijderen van geselecteerde berichten',
 	'Batch Edit Entries' => 'Berichten bewerken in bulk',
+	'Publish Pages' => 'Pagina\'s publiceren', # Translate - New
 	'Unpublish Pages' => 'Pagina\'s off-line halen',
 	'Tags to add to selected pages' => 'Tags om toe te voegen aan geselecteerde pagina\'s',
 	'Tags to remove from selected pages' => 'Tags om te verwijderen van geselecteerde pagina\'s',
@@ -1630,7 +1635,7 @@ use vars qw( @ISA %Lexicon );
 	'Delete' => 'Verwijderen',
 	'Refresh Template(s)' => 'Sjablo(o)n(en) verversen',
 	'Publish Template(s)' => 'Sjablo(o)n(en) publiceren',
-	'Clone Template(s)' => 'Sjablo(o)n(en) klonen', # Translate - New
+	'Clone Template(s)' => 'Sjablo(o)n(en) klonen',
 	'Non-spam TrackBacks' => 'Non-spam TrackBacks',
 	'TrackBacks on my entries' => 'TrackBacks op mijn berichten',
 	'Published TrackBacks' => 'Gepubliceerde TrackBacks',
@@ -1673,7 +1678,7 @@ use vars qw( @ISA %Lexicon );
 	'Loading blog with ID [_1] failed' => 'Laden van blog met ID [_1] mislukt',
 	'Template publishing failed: [_1]' => 'Publicatie van sjabloon mislukt: [_1]',
 	'Invalid date spec' => 'Ongeldige date spec',
-	'Can\'t load templatemap' => 'Kan sjabloonmap niet laden', # Translate - New
+	'Can\'t load templatemap' => 'Kan sjabloonmap niet laden',
 	'Can\'t load template [_1]' => 'Kan sjabloon [_1] niet laden',
 	'Archive publishing failed: [_1]' => 'Publicatie van archief mislukt: [_1]',
 	'Invalid entry ID [_1]' => 'Ongeldige entry ID [_1]',
@@ -1697,7 +1702,7 @@ use vars qw( @ISA %Lexicon );
 	'All Weblog Pages' => 'Alle weblogpagina\'s',
 
 ## lib/MT/AtomServer.pm
-	'[_1]: Entries' => '[_1]: Berichten', # Translate - New
+	'[_1]: Entries' => '[_1]: Berichten',
 	'PreSave failed [_1]' => 'PreSave mislukt [_1]',
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => 'Gebruiker \'[_1]\' (gebruiker #[_2]) voegde [lc,_4] #[_3] toe',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => 'Gebruiker \'[_1]\' (gebruiker #[_2]) bewerkte [lc,_4] #[_3]',
@@ -1745,7 +1750,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template.pm
 	'Template' => 'Sjabloon',
-	'File not found: [_1]' => 'Bestand niet gevonden: [_1]', # Translate - New
+	'File not found: [_1]' => 'Bestand niet gevonden: [_1]',
 	'Error reading file \'[_1]\': [_2]' => 'Fout bij het lezen van bestand \'[_1]\': [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'Publicatiefout in sjabloon \'[_1]\': [_2]',
 	'Template with the same name already exists in this blog.' => 'Er bestaat al een sjabloon met dezelfde naam in deze weblog.',
@@ -1780,15 +1785,15 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => '[quant,_1,uur,uur], [quant,_2,minuut,minuten] geleden',
 	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'over [quant,_1,dag,dagen] en [quant,_2,uur,uur]',
 	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => '[quant,_1,dag,dagen] en [quant,_2,uur,uur] geleden',
-	'[quant,_1,second,seconds] from now' => 'over [quant,_1,seconde,seconden]', # Translate - New
-	'[quant,_1,second,seconds]' => '[quant,_1,seconde,seconden]', # Translate - New
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'over [quant,_1,minuut,minuten], [quant,_2,seconde,seconden]', # Translate - New
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuut,minuten], [quant,_2,seconde,seconden]', # Translate - New
-	'[quant,_1,minute,minutes]' => '[quant,_1,minuut,minuten]', # Translate - New
-	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,uur,uren], [quant,_2,minuut,minuten]', # Translate - New
-	'[quant,_1,hour,hours]' => '[quant,_1,uur,uren]', # Translate - New
-	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,dag,dagen], [quant,_2,uur,uren]', # Translate - New
-	'[quant,_1,day,days]' => '[quant,_1,dag,dagen]', # Translate - New
+	'[quant,_1,second,seconds] from now' => 'over [quant,_1,seconde,seconden]',
+	'[quant,_1,second,seconds]' => '[quant,_1,seconde,seconden]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'over [quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minuut,minuten], [quant,_2,seconde,seconden]',
+	'[quant,_1,minute,minutes]' => '[quant,_1,minuut,minuten]',
+	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,uur,uren], [quant,_2,minuut,minuten]',
+	'[quant,_1,hour,hours]' => '[quant,_1,uur,uren]',
+	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,dag,dagen], [quant,_2,uur,uren]',
+	'[quant,_1,day,days]' => '[quant,_1,dag,dagen]',
 
 ## lib/MT/Mail.pm
 	'Unknown MailTransfer method \'[_1]\'' => 'Onbekende MailTransfer methode \'[_1]\'',
@@ -1798,13 +1803,11 @@ use vars qw( @ISA %Lexicon );
 	'Exec of sendmail failed: [_1]' => 'Exec van sendmail mislukt: [_1]',
 
 ## lib/MT/Worker/Publish.pm
-	'Background Publishing Done' => 'Publicatie in de achtergrond voltooid', # Translate - New
-	'Published: [_1]' => 'Gepubliceerd: [_1]', # Translate - New
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- set afgerond ([quant,_1,bestand,bestanden] in [_2] seconden)',
 
 ## lib/MT/Worker/Sync.pm
-	'Synchrnizing Files Done' => 'Bestanden synchroniseren afgelopen', # Translate - New
-	'Done syncing files to [_1] ([_2])' => 'Klaar met synchroniseren van bestanden naar [_1] ([_2])', # Translate - New
+	'Synchrnizing Files Done' => 'Bestanden synchroniseren afgelopen',
+	'Done syncing files to [_1] ([_2])' => 'Klaar met synchroniseren van bestanden naar [_1] ([_2])',
 
 ## lib/MT/Auth.pm
 	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'Foute AuthenticationModule configuratie \'[_1]\': [_2]',
@@ -1856,10 +1859,10 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'Archiefindex',
 	'Stylesheet' => 'Stylesheet',
-	'Feed - Recent Entries' => 'Feed - Recente berichten', # Translate - New
+	'Feed - Recent Entries' => 'Feed - Recente berichten',
 	'RSD' => 'RSD',
-	'Monthly Entry Listing' => 'Maandoverzicht berichten', # Translate - New
-	'Category Entry Listing' => 'Categorie-overzicht berichten', # Translate - New
+	'Monthly Entry Listing' => 'Maandoverzicht berichten',
+	'Category Entry Listing' => 'Categorie-overzicht berichten',
 	'Displays error, pending or confirmation message for comments.' => 'Toont foutboodschappen, bevestigingen en \'even geduld\' berichten voor reacties.',
 	'Displays preview of comment.' => 'Toont voorbeeld van reactie.',
 	'Displays errors for dynamically published templates.' => 'Toont fouten bij dynamisch gepubliceerde sjablonen.',
@@ -1867,11 +1870,11 @@ use vars qw( @ISA %Lexicon );
 	'Displays image when user clicks a popup-linked image.' => 'Toont afbeelding wanneer de gebruiker op een afbeelding klikt die in een popup verschijnt.',
 	'Displays results of a search.' => 'Toont zoekresultaten',
 	'About This Page' => 'Over deze pagina',
-	'Archive Widgets Group' => 'Archiefwidgetsgroep', # Translate - New
+	'Archive Widgets Group' => 'Archiefwidgetsgroep',
 	'Current Author Monthly Archives' => 'Archieven per maand van de huidige auteur',
 	'Calendar' => 'Kalender',
 	'Creative Commons' => 'Creative Commons',
-	'Home Page Widgets Group' => 'Hoofdpaginawidgetsgroep', # Translate - New
+	'Home Page Widgets Group' => 'Hoofdpaginawidgetsgroep',
 	'Monthly Archives Dropdown' => 'Uitklapmenu archieven per maand',
 	'Page Listing' => 'Overzicht pagina\'s',
 	'Powered By' => 'Aangedreven door',
@@ -2125,8 +2128,8 @@ use vars qw( @ISA %Lexicon );
 	'Your \'Publishing Path\' is the path on your web server\'s file system where Movable Type will publish all the files for your blog. Your web server must have write access to this directory.' => 'Uw \'publicatiepad\' is het pad op het bestandsysteem van uw webserver waar Movable Type alle bestanden zal publiceren van uw weblog.  Uw webserver moet schrijfrechten hebben op deze map. ',
 
 ## tmpl/cms/edit_template.tmpl
-	'Edit Widget' => 'Widget bewerken', # Translate - New
-	'Create Widget' => 'Widget aanmaken', # Translate - New
+	'Edit Widget' => 'Widget bewerken',
+	'Create Widget' => 'Widget aanmaken',
 	'Create Template' => 'Sjabloon aanmaken',
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>' => '[_1] werd automatisch opgeslagen [_3]. <a href="[_2]">Automatisch opgeslagen versie terughalen</a>',
 	'You have successfully recovered your saved [_1].' => '[_1] met succes teruggehaald.',
@@ -2136,12 +2139,12 @@ use vars qw( @ISA %Lexicon );
 	'Your [_1] has been published.' => 'Uw [_1] is opnieuw gepubliceerd.',
 	'Useful Links' => 'Nuttige links',
 	'List [_1] templates' => 'Toon [_1] sjablonen',
-	'List all templates' => 'Alle sjablonen tonen', # Translate - New
+	'List all templates' => 'Alle sjablonen tonen',
 	'_external_link_target' => '_new',
 	'View Published Template' => 'Gepubliceerd sjabloon bekijken',
-	'Included Templates' => 'Geïncludeerde sjablonen', # Translate - New
+	'Included Templates' => 'Geïncludeerde sjablonen',
 	'create' => 'aanmaken',
-	'Template Tag Docs' => 'Sjabloontagdocumentatie', # Translate - New
+	'Template Tag Docs' => 'Sjabloontagdocumentatie',
 	'Unrecognized Tags' => 'Niet herkende tags',
 	'Save (s)' => 'Opslaan (s)',
 	'Save' => 'Opslaan',
@@ -2150,7 +2153,7 @@ use vars qw( @ISA %Lexicon );
 	'You have unsaved changes to this template that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan dit sjabloon die verloren zullen gaan.',
 	'You must set the Template Name.' => 'U moet de naam van het sjabloon instellen',
 	'You must set the template Output File.' => 'U moet het uitvoerbestand van het sjabloon instellen.',
-	'Processing request...' => 'Verzoek verwerken...', # Translate - New
+	'Processing request...' => 'Verzoek verwerken...',
 	'Error occurred while updating archive maps.' => 'Er deed zich teen fout voor bij het bijwerken van de archiefkoppelingen.',
 	'Archive map has been successfully updated.' => 'Archiefkoppelingen zijn met succes bijgewerkt.',
 	'Are you sure you want to remove this template map?' => 'Bent u zeker dat u deze sjabloonmapping wenst te verwijderen?',
@@ -2159,36 +2162,35 @@ use vars qw( @ISA %Lexicon );
 	'Syntax Highlight On' => 'Syntax highlighting aan',
 	'Syntax Highlight Off' => 'Syntax highlighting uit',
 	'Insert...' => 'Invoegen...',
-	'Template Options' => 'Sjabloonopties', # Translate - New
-	'Output file: <strong>[_1]</strong>' => 'Uitvoerbestand: <strong>[_1]</strong>', # Translate - New
-	'Enabled Mappings: [_1]' => 'Ingeschakelde mappings: [_1]', # Translate - New
+	'Template Options' => 'Sjabloonopties',
+	'Output file: <strong>[_1]</strong>' => 'Uitvoerbestand: <strong>[_1]</strong>',
+	'Enabled Mappings: [_1]' => 'Ingeschakelde mappings: [_1]',
 	'Output File' => 'Uitvoerbestand',
 	'Template Type' => 'Sjabloontype',
 	'Custom Index Template' => 'Gepersonaliseerd indexsjabloon',
 	'Link to File' => 'Koppelen aan bestand',
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => 'Meer leren over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publicatie-instellingen</a>', # Translate - New
 	'Create Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
 	'Type' => 'Type',
 	'Add' => 'Toevoegen',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/publishing-profiles-and-strategies.html">publishing profiles</a>' => 'Meer leren over <a href="http://www.movabletype.org/documentation/administrator/publishing/publishing-profiles-and-strategies.html">publicatieprofielen</a>', # Translate - New
-	'Publish Options' => 'Publicatieopties',
-	'Statically' => 'Statisch', # Translate - New
-	'Dynamically' => 'Dynamisch', # Translate - New
-	'Background' => 'Achtergrond', # Translate - New
-	'On a schedule' => 'Gepland', # Translate - New
-	': every ' => ': elke ', # Translate - New
-	'minutes' => 'minuten', # Translate - New
-	'hours' => 'uren', # Translate - New
+	'Statically (default)' => 'Statisch (standaard)', # Translate - New
+	'Via Publish Queue' => 'Via publicatiewachtrij', # Translate - New
+	'On a schedule' => 'Gepland',
+	': every ' => ': elke ',
+	'minutes' => 'minuten',
+	'hours' => 'uren',
 	'days' => 'dagen',
-	'Manually' => 'Handmatig', # Translate - New
-	'Disabled' => 'Uitgeschakeld',
-	'Server Side Include' => 'Server Side Include', # Translate - New
-	'Process as <strong>[_1]</strong> include' => 'Behandel als <strong>[_1]</strong> include', # Translate - New
-	'Include cache path' => 'Cachepad voor includes', # Translate - New
-	'Module Caching' => 'Modulecaching', # Translate - New
-	'Disabled (<a href="[_1]">change publishing settings</a>)' => 'Uitgeschakeld (<a href="[_1]">publicatie-instellingen aanpassen</a>)', # Translate - New
-	'No caching' => 'Geen caching', # Translate - New
-	'Expire after' => 'Verloopt na', # Translate - New
-	'Expire upon creation or modification of:' => 'Verloop bij het aanmaken of aanpassen van:', # Translate - New
+	'Dynamically' => 'Dynamisch',
+	'Manually' => 'Handmatig',
+	'Do Not Publish' => 'Niet publiceren', # Translate - New
+	'Server Side Include' => 'Server Side Include',
+	'Process as <strong>[_1]</strong> include' => 'Behandel als <strong>[_1]</strong> include',
+	'Include cache path' => 'Cachepad voor includes',
+	'Module Caching' => 'Modulecaching',
+	'Disabled (<a href="[_1]">change publishing settings</a>)' => 'Uitgeschakeld (<a href="[_1]">publicatie-instellingen aanpassen</a>)',
+	'No caching' => 'Geen caching',
+	'Expire after' => 'Verloopt na',
+	'Expire upon creation or modification of:' => 'Verloop bij het aanmaken of aanpassen van:',
 	'Auto-saving...' => 'Auto-opslaan...',
 	'Last auto-save at [_1]:[_2]:[_3]' => 'Laatste auto-opslag om [_1]:[_2]:[_3]',
 
@@ -2243,6 +2245,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to Load' => 'Laden mislukt',
 	'(Disable)' => '(Desactiveren)',
 	'Enabled' => 'Ingeschakeld',
+	'Disabled' => 'Uitgeschakeld',
 	'(Enable)' => '(Activeren)',
 	'Settings for [_1]' => 'Instellingen voor [_1]',
 	'This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be 100% functional. Furthermore, it will require an upgrade once you have upgraded to the next Movable Type major release (when available).' => 'Deze plugin is niet bijgewerkt om Movable Type [_1] te ondersteunen.  Om die reden kan het zijn dat hij niet voor 100% werkt.  Bovendien zal er een upgrade nodig zijn wanneer u een upgrade uitvoert naar de volgende major versie van Movable Type (wanneer die beschikbaar komt).',
@@ -2300,7 +2303,7 @@ use vars qw( @ISA %Lexicon );
 	'Select a Widget...' => 'Selecteer een widget...',
 	'Your Dashboard has been updated.' => 'Uw dashboard is bijgewerkt.',
 	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'U heeft geprobeerd een optie te gebruiken waar u niet voldoende rechten voor heeft.  Als u gelooft dat u deze boodschap onterecht te zien krijgt, contacteer dan uw systeembeheerder.',
-	'The directory you have configured for uploading userpics is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]' => 'De map die u heeft ingesteld om avatars in te uploaden is niet beschrijfbaar.  Om gebruikers de optie te geven een avatar te uploaden, gelieve deze directory schrijfbaar te maken voor uw webserver: [_1]', # Translate - New
+	'The directory you have configured for uploading userpics is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]' => 'De map die u heeft ingesteld om avatars in te uploaden is niet beschrijfbaar.  Om gebruikers de optie te geven een avatar te uploaden, gelieve deze directory schrijfbaar te maken voor uw webserver: [_1]',
 	'Your dashboard is empty!' => 'Uw dashboard is leeg!',
 
 ## tmpl/cms/edit_commenter.tmpl
@@ -2461,9 +2464,9 @@ use vars qw( @ISA %Lexicon );
 	'Show Activity Log' => 'Activiteitenlog bekijken',
 
 ## tmpl/cms/include/comment_detail.tmpl
-	'By [_1]' => 'Door [_1]', # Translate - New
-	'replied to [_1]' => 'Reageerde op [_1]', # Translate - New
-	'on [_1]' => 'op [_1]', # Translate - New
+	'By [_1]' => 'Door [_1]',
+	'replied to [_1]' => 'Reageerde op [_1]',
+	'on [_1]' => 'op [_1]',
 
 ## tmpl/cms/include/cfg_content_nav.tmpl
 
@@ -2500,15 +2503,15 @@ use vars qw( @ISA %Lexicon );
 	'View the [_1] for this TrackBack' => 'De [_1] bekijken voor deze TrackBack',
 
 ## tmpl/cms/include/footer.tmpl
-	'This is a beta version of Movable Type and is not recommended for production use.' => 'Dit is een betaversie van Movable Type, niet aangeraden voor productiegebruik.', # Translate - New
-	'http://www.movabletype.org' => 'http://www.movabletype.org', # Translate - New
-	'MovableType.org' => 'MovableType.org', # Translate - New
-	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/', # Translate - New
-	'Wiki' => 'Wiki', # Translate - New
-	'http://www.movabletype.com/support/' => 'http://www.movabletype.com/support/', # Translate - New
-	'Support' => 'Ondersteuning', # Translate - New
-	'http://www.movabletype.org/feedback.html' => 'http://www.movabletype.org/feedback.html', # Translate - New
-	'Send us Feedback' => 'Stuur ons feedback', # Translate - New
+	'This is a beta version of Movable Type and is not recommended for production use.' => 'Dit is een betaversie van Movable Type, niet aangeraden voor productiegebruik.',
+	'http://www.movabletype.org' => 'http://www.movabletype.org',
+	'MovableType.org' => 'MovableType.org',
+	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
+	'Wiki' => 'Wiki',
+	'http://www.movabletype.com/support/' => 'http://www.movabletype.com/support/',
+	'Support' => 'Ondersteuning',
+	'http://www.movabletype.org/feedback.html' => 'http://www.movabletype.org/feedback.html',
+	'Send us Feedback' => 'Stuur ons feedback',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> versie [_2]',
 	'with' => 'met',
 
@@ -2634,17 +2637,18 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/template_table.tmpl
 	'Create Archive Template:' => 'Archiefsjabloon aanmaken:',
 	'Entry Listing' => 'Overzicht berichten',
-	'Create template module' => 'Sjabloonmodule aanmaken', # Translate - New
-	'Create index template' => 'Indexsjabloon aanmaken', # Translate - New
+	'Create template module' => 'Sjabloonmodule aanmaken',
+	'Create index template' => 'Indexsjabloon aanmaken',
 	'templates' => 'sjablonen',
-	'Publish selected templates (a)' => 'Geselecteerde sjablonen publiceren (a)', # Translate - New
-	'Archive Path' => 'Archiefpad', # Translate - New
-	'Cached' => 'Gecached', # Translate - New
+	'Publish selected templates (a)' => 'Geselecteerde sjablonen publiceren (a)',
+	'Archive Path' => 'Archiefpad',
+	'Cached' => 'Gecached',
 	'Linked Template' => 'Gelinkt sjabloon',
 	'-' => '-',
-	'Manual' => 'Handmatig', # Translate - New
+	'Manual' => 'Handmatig',
 	'Dynamic' => 'Dynamisch',
-	'Static' => 'Statisch', # Translate - New
+	'Publish Queue' => 'Publicatiewachtrij', # Translate - New
+	'Static' => 'Statisch',
 	'Yes' => 'Ja',
 	'No' => 'Nee',
 
@@ -2799,19 +2803,19 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you wish to continue?' => 'Bent u zeker dat verder u wenst te gaan?',
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
-	'Publishing Profile' => 'Publicatieprofiel', # Translate - New
-	'Choose the profile that best matches the requirements for this blog.' => 'Kies het publicatieprofiel dat het beste overeenkomt met de noden van deze blog.', # Translate - New
-	'Static Publishing' => 'Statisch publiceren', # Translate - New
-	'Publish all files statically.' => 'Alle bestanden statisch publiceren.', # Translate - New
-	'Asynchronous Publishing' => 'Asynchroon publiceren', # Translate - New
-	'Publish all files via the asynchronous job queue.' => 'Alle bestanden via de asynchrone jobwachtrij publiceren.', # Translate - New
-	'High Priority Static Publishing' => 'Statisch publiceren met hoge prioriteit', # Translate - New
-	'Publish main index template and all entry/page archives statically. Publish all other files in the background.' => 'Publiceer hoofdindexsjabloon en alle berichten/pagina\'s statisch.  Publiceer alle andere bestanden in de achtergrond.', # Translate - New
-	'Dynamic Publishing' => 'Dynamisch publiceren', # Translate - New
-	'Publish all files dynamically.' => 'Alle bestanden dynamisch publiceren.', # Translate - New
-	'Dynamic Archives Only' => 'Enkel archieven dynamisch', # Translate - New
-	'Publish all archives dynamically. Publish all other files statically.' => 'Publiceer alle archieven dynamisch.  Publiceer alle andere bestanden statisch.', # Translate - New
-	'This new publishing profile will update all of your templates.' => 'Dit nieuwe publicatieprofiel zal de instellingen van al uw sjablonen aanpassen.', # Translate - New
+	'Publishing Profile' => 'Publicatieprofiel',
+	'Choose the profile that best matches the requirements for this blog.' => 'Kies het publicatieprofiel dat het beste overeenkomt met de noden van deze blog.',
+	'Static Publishing' => 'Statisch publiceren',
+	'Immediately publish all templates statically.' => 'Alle sjablonen onmiddellijk statisch publiceren', # Translate - New
+	'Background Publishing' => 'Pubiceren in de achtergrond', # Translate - New
+	'All templates published statically via Publish Que.' => 'Alle sjablonen statisch publiceren via de publicatiewachtrij', # Translate - New
+	'High Priority Static Publishing' => 'Statisch publiceren met hoge prioriteit',
+	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'Onmiddellijk hoofdindesjabloon, berichtarchieven en pagina-archieven statisch publiceren.  Gebruik de publicatiewachtrij om alle andere sjablonen statisch te publiceren.', # Translate - New
+	'Dynamic Publishing' => 'Dynamisch publiceren',
+	'Publish all templates dynamically.' => 'Alle sjablonen dynamisch publiceren.', # Translate - New
+	'Dynamic Archives Only' => 'Enkel archieven dynamisch',
+	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'Alle archiefsjablonen dynamisch publiceren.  Alle andere sjablonen statisch publiceren.', # Translate - New
+	'This new publishing profile will update all of your templates.' => 'Dit nieuwe publicatieprofiel zal de instellingen van al uw sjablonen aanpassen.',
 
 ## tmpl/cms/dialog/asset_upload.tmpl
 	'You need to configure your blog.' => 'U moet uw weblog configureren.',
@@ -3051,6 +3055,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(lijst gescheiden met komma\'s)',
 	'(space-delimited list)' => '(lijst gescheiden met spaties)',
 	'(delimited by \'[_1]\')' => '(gescheiden door \'[_1]\')',
+	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => 'Gebruik <a href="http://blogit.typepad.com/">Blog It</a> om op Movable Type te publiceren vanop sociale netwerken zoals Facebook.', # Translate - New
 	'None selected' => 'Geen geselecteerd',
 
 ## tmpl/cms/refresh_results.tmpl
@@ -3087,6 +3092,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_category.tmpl
 	'Edit Category' => 'Categorie bewerken',
 	'Your category changes have been made.' => 'Uw categoriewijzigingen zijn gemaakt.',
+	'Manage entries in this category' => 'Berichten beheren in deze categorie', # Translate - New
 	'You must specify a label for the category.' => 'U moet een label opgeven voor de categorie.',
 	'_CATEGORY_BASENAME' => 'Basename',
 	'This is the basename assigned to your category.' => 'Dit is de basisnaam toegekend aan uw categorie',
@@ -3132,6 +3138,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_folder.tmpl
 	'Edit Folder' => 'Map bewerken',
 	'Your folder changes have been made.' => 'De wijzigingen aan de map zijn uitgevoerd.',
+	'Manage Folders' => 'Mappen beheren',
+	'Manage pages in this folder' => 'Pagina\'s in deze map beheren', # Translate - New
 	'You must specify a label for the folder.' => 'U moet een naam opgeven voor de map',
 	'Save changes to this folder (s)' => 'Wijzigingen aan deze map opslaan (s)',
 
@@ -3358,12 +3366,12 @@ use vars qw( @ISA %Lexicon );
 	'No comments available.' => 'Geen reacties beschikbaar',
 
 ## tmpl/cms/preview_template_strip.tmpl
-	'You are previewing the template named &ldquo;[_1]&rdquo;' => 'U bekijkt een voorbeeld van het sjabloon met de naam &ldquo;[_1]&rdquo;', # Translate - New
-	'(Publish time: [_1] seconds)' => '(Publicatietijd: [_1] seconden)', # Translate - New
-	'Save this template (s)' => 'Sjabloon opslaan (s)', # Translate - New
-	'Save this template' => 'Sjabloon opslaan', # Translate - New
-	'Re-Edit this template (e)' => 'Sjabloon opnieuw bewerken (e)', # Translate - New
-	'Re-Edit this template' => 'Sjabloon opnieuw bewerken', # Translate - New
+	'You are previewing the template named &ldquo;[_1]&rdquo;' => 'U bekijkt een voorbeeld van het sjabloon met de naam &ldquo;[_1]&rdquo;',
+	'(Publish time: [_1] seconds)' => '(Publicatietijd: [_1] seconden)',
+	'Save this template (s)' => 'Sjabloon opslaan (s)',
+	'Save this template' => 'Sjabloon opslaan',
+	'Re-Edit this template (e)' => 'Sjabloon opnieuw bewerken (e)',
+	'Re-Edit this template' => 'Sjabloon opnieuw bewerken',
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Instellingen webservices',
@@ -3398,7 +3406,7 @@ use vars qw( @ISA %Lexicon );
 	'No comments appeared to be spam.' => 'Er lijken geen berichten als spam gemarkeerd te zijn',
 	'[_1] on entries created within the last [_2] days' => '[_1] op berichten aangemaakt in de laatste [_2] dagen',
 	'[_1] on entries created more than [_2] days ago' => '[_1] op berichten aangemaakt langer dan [_2] dagen geleden',
-	'spam' => 'spam', # Translate - Case
+	'spam' => 'spam',
 
 ## tmpl/cms/list_tag.tmpl
 	'Your tag changes and additions have been made.' => 'Uw tag-wijzigingen en toevoegingen zijn uitgevoerd.',
@@ -3418,16 +3426,16 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Blogsjablonen',
-	'Show All' => 'Alles tonen', # Translate - New
+	'Show All' => 'Alles tonen',
 	'Blog Publishing Settings' => 'Blogpublicatie-instellingen',
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
 	'Your templates have been published.' => 'Uw sjablonen werden gepubliceerd.',
-	'Selected template(s) has been copied.' => 'Geselecteerde sjablo(o)n(en) gekopiëerd.', # Translate - New
+	'Selected template(s) has been copied.' => 'Geselecteerde sjablo(o)n(en) gekopiëerd.',
 
 ## tmpl/cms/install.tmpl
 	'Create Your Account' => 'Maak uw account aan',
 	'The initial account name is required.' => 'De oorspronkelijke accountnaam is vereist.',
-	'The display name is required.' => 'Getoonde naam is vereist.', # Translate - New
+	'The display name is required.' => 'Getoonde naam is vereist.',
 	'Password recovery word/phrase is required.' => 'Woord/uitdrukking om uw wachtwoord terug te vinden is vereist.',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]).' => 'De versie van Perl die op uw server is geïnstalleerd ([_1]) is lager dan de ondersteunde minimale versie ([_2]).',
 	'While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1].' => 'Hoewel Movable Type er misschien op draait, is het een <strong>ongetesten en niet ondersteunde omgeving</strong>.  We raden ten zeerste aan om minstens te upgraden tot Perl [_1].',
@@ -3464,7 +3472,7 @@ use vars qw( @ISA %Lexicon );
 	'All of your files have been published.' => 'Al uw bestanden zijn gepubliceerd.',
 	'Your [_1] archives have been published.' => 'Uw [_1] archieven zijn gepubliceerd.',
 	'Your [_1] templates have been published.' => 'Uw [_1] sjablonen zijn gepubliceerd.',
-	'Publish time: [_1].' => 'Publicatietijd: [_1].', # Translate - New
+	'Publish time: [_1].' => 'Publicatietijd: [_1].',
 	'View your site.' => 'Uw site bekijken.',
 	'View this page.' => 'Deze pagina bekijken.',
 	'Publish Again (s)' => 'Opnieuw pubiceren (s)',
@@ -3558,9 +3566,9 @@ use vars qw( @ISA %Lexicon );
 	'Your changes to the widget set have been saved.' => 'Uw wijzigingen aan de widgetset werden opgeslagen.',
 	'You have successfully deleted the selected widget set(s) from your blog.' => 'U heeft met succes de geselecteerde widgetset(s) van uw weblog verwijderd.',
 	'No Widget Sets could be found.' => 'Er werden geen widgetsets gevonden.',
-	'Create widget template' => 'Widgetsjabloon aanmaken', # Translate - New
-	'Widget Template' => 'Widgetsjabloon', # Translate - New
-	'Widget Templates' => 'Widgetsjablonen', # Translate - New
+	'Create widget template' => 'Widgetsjabloon aanmaken',
+	'Widget Template' => 'Widgetsjabloon',
+	'Widget Templates' => 'Widgetsjablonen',
 
 ## tmpl/cms/restore.tmpl
 	'Restore from a Backup' => 'Terugzetten uit een backup',
@@ -3590,7 +3598,7 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully added a new archive-template association.' => 'U hebt een nieuwe koppeling tussen een archief en een sjabloon toegevoegd.',
 	'You may need to update your \'Master Archive Index\' template to account for your new archive configuration.' => 'Het kan zijn dat u uw \'Hoofdarchiefindex\' sjabloon moet bijwerken om rekening te houden met uw nieuwe archiefconfiguratie.',
 	'The selected archive-template associations have been deleted.' => 'De geselecteerde koppelingen tussen een archief en een sjabloon zijn verwijderd.',
-	'Warning: one or more of your templates is set to publish dynamically using PHP, however your server side include method may not be compatible with dynamic publishing.' => 'Waarschuwing: één of meer van uw sjablonen staan ingesteld om dynamisch gepubliceerd te worden met PHP, terwijl uw server side include methode mogelijk niet compatibel is met dynamisch publiceren.', # Translate - New
+	'Warning: one or more of your templates is set to publish dynamically using PHP, however your server side include method may not be compatible with dynamic publishing.' => 'Waarschuwing: één of meer van uw sjablonen staan ingesteld om dynamisch gepubliceerd te worden met PHP, terwijl uw server side include methode mogelijk niet compatibel is met dynamisch publiceren.',
 	'You must set your Local Site Path.' => 'U dient het lokale pad van uw site in te stellen.',
 	'You must set a valid Site URL.' => 'U moet een geldige URL instellen voor uw site.',
 	'You must set a valid Local Site Path.' => 'U moet een geldig lokaal site-pad instellen.',
@@ -3609,27 +3617,27 @@ use vars qw( @ISA %Lexicon );
 	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => 'Waarschuwing: het aanpassen van de archief-URL kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
 	'Enter the path where your archive files will be published. Example: /home/melody/public_html/archives' => 'Vul het pad in waar uw archiefbestanden gepubliceerd moeten worden.  Voorbeeld: /home/melody/public_html/archieven',
 	'Warning: Changing the archive path can result in breaking all the links in your blog.' => 'Waarschuwing: het aanpassen van het archiefpad kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
-	'Asynchronous Job Queue' => 'Asynchrone jobwachtrij', # Translate - New
+	'Asynchronous Job Queue' => 'Asynchrone jobwachtrij',
 	'Use Publishing Queue' => 'Publicatiewachtrij gebruiken',
 	'Requires the use of a cron job to publish pages in the background.' => 'Hiervoor is een cron job vereist die pagina\'s kan publiceren in de achtergrond.',
 	'Use background publishing queue for publishing static pages for this blog' => 'Publicatiewachtrij in de achtergrond gebruiken om statische pagina\'s te publiceren op deze weblog.',
-	'Dynamic Publishing Options' => 'Opties dynamische publicatie', # Translate - New
-	'Enable dynamic cache' => 'Dynamische cache inschakelen', # Translate - Case
+	'Dynamic Publishing Options' => 'Opties dynamische publicatie',
+	'Enable dynamic cache' => 'Dynamische cache inschakelen',
 	'Enable conditional retrieval' => 'Conditioneel ophalen mogelijk maken',
-	'Archive Options' => 'Archiefopties', # Translate - New
-	'File Extension' => 'Bestandsextensie', # Translate - New
+	'Archive Options' => 'Archiefopties',
+	'File Extension' => 'Bestandsextensie',
 	'Enter the archive file extension. This can take the form of \'html\', \'shtml\', \'php\', etc. Note: Do not enter the leading period (\'.\').' => 'Voer de bestandsextensie voor het archief in. Dit kan zijn in de vorm van \'html\', \'shtml\', \'php\', enz. Opmerking: voer het eerste punt niet in (\'.\').',
-	'Preferred Archive' => 'Voorkeursarchief', # Translate - New
+	'Preferred Archive' => 'Voorkeursarchief',
 	'Used for creating links to an archived entry (permalink). Select from the archive types used in this blogs archive templates.' => 'Gebruikt om links te leggen naar een gearchiveerd bericht (permalink).  Selecteer uit de archieftypes gebruikt in de archiefsjablonen van deze weblog.',
 	'No archives are active' => 'Geen archieven actief',
-	'Module Options' => 'Moduleopties', # Translate - New
-	'Enable template module caching' => 'Caching modulesjablonen toestaan', # Translate - New
-	'Server Side Includes' => 'Server Side Includes', # Translate - New
-	'None (disabled)' => 'Geen (uitgeschakeld)', # Translate - New
-	'PHP Includes' => 'PHP Includes', # Translate - New
-	'Apache Server-Side Includes' => 'Apache Server-Side Includes', # Translate - New
-	'Active Server Page Includes' => 'Active Server Page Includes', # Translate - New
-	'Java Server Page Includes' => 'Java Server Page Includes', # Translate - New
+	'Module Options' => 'Moduleopties',
+	'Enable template module caching' => 'Caching modulesjablonen toestaan',
+	'Server Side Includes' => 'Server Side Includes',
+	'None (disabled)' => 'Geen (uitgeschakeld)',
+	'PHP Includes' => 'PHP Includes',
+	'Apache Server-Side Includes' => 'Apache Server-Side Includes',
+	'Active Server Page Includes' => 'Active Server Page Includes',
+	'Java Server Page Includes' => 'Java Server Page Includes',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => 'Publiceren...',
@@ -3717,7 +3725,6 @@ use vars qw( @ISA %Lexicon );
 	'Cancel (c)' => 'Annuleer (c)',
 
 ## tmpl/cms/list_folder.tmpl
-	'Manage Folders' => 'Mappen beheren',
 	'Your folder changes and additions have been made.' => 'De wijzigingen en toevoegingen aan uw mappen zijn aangebracht.',
 	'You have successfully deleted the selected folder.' => 'De geselecteerde map werden met succes verwijderd.',
 	'Delete selected folders (x)' => 'Geselecteerde mappen verwijderen (x)',
@@ -4407,9 +4414,9 @@ use vars qw( @ISA %Lexicon );
 	'The basename \'[_1]\' is already in use.' => 'De basisnaam \'[_1]\' is al in gebruik',
 	'Default value must be valid URL.' => 'Standaardwaarde moet een geldige URL zijn.',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Pas de formulieren en velden aan voor berichten, pagina\'s, mappen, categoriën en gebruikers aan en sla exact die informatie op die u nodig heeft.',
-	' ' => '', # Translate - New
+	' ' => ' ', # Translate - New
 	'Single-Line Text' => 'Een regel tekst',
-	'Multi-Line Text' => 'Meerdere regels tekst', # Translate - New
+	'Multi-Line Text' => 'Meerdere regels tekst',
 	'Checkbox' => 'Checkbox',
 	'Date and Time' => 'Datum en tijd',
 	'Drop Down Menu' => 'Uitklapmenu',
@@ -4450,9 +4457,9 @@ use vars qw( @ISA %Lexicon );
 	'Search (In Navigation)' => 'Zoeken (in navigatie)',
 	'Recent Entries Expanded' => 'Recent aangepaste berichten',
 	'Footer Links' => 'Links in voettekst',
-	'Blog Activity' => 'Blogactiviteit', # Translate - New
-	'Blog Archives' => 'Blogarchieven', # Translate - New
-	'Main Sidebar' => 'Primaire zijkolom', # Translate - New
+	'Blog Activity' => 'Blogactiviteit',
+	'Blog Archives' => 'Blogarchieven',
+	'Main Sidebar' => 'Primaire zijkolom',
 
 ## addons/Commercial.pack/tmpl/reorder_fields.tmpl
 	'Your field order has been saved. Please refresh this page to see the new order.' => 'De volgorde van uw velden is opgeslagen.  Vernieuw deze pagina om de nieuwe volgorde te zien.',
@@ -4482,7 +4489,7 @@ use vars qw( @ISA %Lexicon );
 	'_CF_BASENAME' => 'Basename',
 	'The basename is used for entering custom field data through a 3rd party client. It must be unique.' => 'De basisnaam wordt gebruikt om gepersonaliseerde veld informatie in te voeren via een cliënt van derden.  Hij moet uniek zijn.',
 	'Unlock this for editing' => 'Maak dit aanpasbaar',
-	'Warning: Changing this field\'s basename may require changes to existing templates.' => 'Waarschuwing: het aanpassen van de basisnaam van deze tag vereist mogelijk aanpassingen aan bestaande sjablonen.', # Translate - New
+	'Warning: Changing this field\'s basename may require changes to existing templates.' => 'Waarschuwing: het aanpassen van de basisnaam van deze tag vereist mogelijk aanpassingen aan bestaande sjablonen.',
 	'Template Tag' => 'Sjabloontag',
 	'Create a custom template tag for this field.' => 'Maak een gepersonaliseerde sjabloontag aan voor dit veld',
 	'Example Template Code' => 'Voorbeeldsjablooncode',
@@ -4557,8 +4564,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/recover-password.mtml
 
 ## addons/Commercial.pack/templates/javascript.mtml
-	'Posting...' => 'Publiceren...', # Translate - New
-	'[_1]Sign in[_2] to comment, or [_3]comment anonymously[_2].' => '[_1]Aanmelden[_2] om te reageren of [_3]reageer anoniem[_4]', # Translate - New
 
 ## addons/Commercial.pack/templates/archive_index.mtml
 
@@ -4568,7 +4573,7 @@ use vars qw( @ISA %Lexicon );
 	'Sign Out' => 'Afmelden',
 
 ## addons/Commercial.pack/templates/trackbacks.mtml
-	'TrackBack URL: <a href="[_1]" id="trackbacks-link">[_1]</a>' => 'TrackBack URL: <a href="[_1]" id="trackbacks-link">[_1]</a>', # Translate - New
+	'TrackBack URL: <a href="[_1]" id="trackbacks-link">[_1]</a>' => 'TrackBack URL: <a href="[_1]" id="trackbacks-link">[_1]</a>',
 
 ## addons/Commercial.pack/templates/sidebar.mtml
 
@@ -4945,7 +4950,7 @@ use vars qw( @ISA %Lexicon );
 	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed',
 	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal',
 	'2-Columns, Wide, Medium' => '2-kolommen, breed, medium',
-	'2-Columns, Medium, Wide' => '2-kolommen, medium, breed', # Translate - New
+	'2-Columns, Medium, Wide' => '2-kolommen, medium, breed',
 	'None available' => 'Geen beschikbaar',
 	'Applying...' => 'Wordt toegepast...',
 	'Apply Design' => 'Design toepassen',
@@ -5008,7 +5013,7 @@ use vars qw( @ISA %Lexicon );
 	'Moderate TrackBacks from suspicious sources' => 'Modereer TrackBacks uit verdachte bronnen',
 	'Junk TrackBacks from suspicious sources' => 'Ken een spamscore toe aan TrackBacks uit verdachte bronnen',
 	'Lookup Whitelist' => 'Witte lijst voor opzoekingen',
-	'To prevent lookups for some IP addresses or domains, list them below. Place each entry on a line by itself.' => 'Om te voorkomen dat bepaalde IP adressen of domeinen opgezocht worden, kunt u ze hieronder opsommen.  Gelieve elk gegeven op een aparte regel te plaatsen.',
+	'To prevent lookups for specific IP addresses or domains, list each on a line by itself.' => 'Om te voorkomen dat bepaalde IP adressen of domeinen opgezocht worden, gelieve ze hier op te sommen, één per lijn.', # Translate - New
 
 ## plugins/spamlookup/tmpl/url_config.tmpl
 	'Link filters monitor the number of hyperlinks in incoming feedback. Feedback with many links can be held for moderation or scored as junk. Conversely, feedback that does not contain links or only refers to previously published URLs can be positively rated. (Only enable this option if you are sure your site is already spam-free.)' => 'Linkfilters houden het aantal hyperlinks in binnenkomende feedback in de gaten.  Feedback met veel links in kan tegengehouden worden voor moderatie of kan een spamscore krijgen.  Langs de andere kant kan feedback die geen links bevat of enkel verwijst naar eerder gepubliceerde URL\'s een positieve score krijgen. (Deze optie enkel inschakelen indien uw site reeds spam-vrij is).',
@@ -5108,8 +5113,8 @@ use vars qw( @ISA %Lexicon );
 	'Textile 2' => 'Textile 2',
 
 ## plugins/WidgetManager/WidgetManager.pl
-	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.', # Translate - New
-	'Moving storage of Widget Manager [_1]...' => 'Opslagruimte van Widget Manager aan het overzetten [_1]...', # Translate - New
+	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.',
+	'Moving storage of Widget Manager [_1]...' => 'Opslagruimte van Widget Manager aan het overzetten [_1]...',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
@@ -5156,6 +5161,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 1111
+## New words: 182
 
 1;

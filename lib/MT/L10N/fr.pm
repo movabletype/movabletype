@@ -1,5 +1,7 @@
-# Copyright 2003-2008 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.
+# Movable Type (r) Open Source (C) 2005-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 #
 # $Id:$
 
@@ -15,10 +17,10 @@ use vars qw( @ISA %Lexicon );
 %Lexicon = (
 
 ## php/lib/function.mtassettype.php
-	'image' => 'image', # Translate - Case
+	'image' => 'image',
 	'Image' => 'Image',
-	'file' => 'fichier', 
-	'File' => 'Fichier', 
+	'file' => 'fichier',
+	'File' => 'Fichier',
 	'audio' => 'Audio',
 	'Audio' => 'Audio',
 	'video' => 'Vidéo',
@@ -110,11 +112,11 @@ use vars qw( @ISA %Lexicon );
 	'Your comment has been received and held for approval by the blog owner.' => 'Votre commentaire a été reçu et est en attente de validation par le propriétaire de ce blog.',
 	'Comment Submission Error' => 'Erreur d\'envoi du commentaire',
 	'Your comment submission failed for the following reasons: [_1]' => 'La soumission de votre commentaire a échoué pour la raison suivante : [_1]',
-	'HTML Head' => '', # Translate - New
-	'Banner Header' => '', # Translate - New
+	'HTML Head' => 'En-tête HTML', # Translate - New
+	'Banner Header' => 'Bloc de l\'En-tête', # Translate - New
 	'Return to the <a href="[_1]">original entry</a>.' => 'Retourner à la <a href="[_1]">note originale</a>.',
 	'Sidebar' => 'Colonne latérale',
-	'Banner Footer' => '', # Translate - New
+	'Banner Footer' => 'Bloc du Pied de page', # Translate - New
 
 ## default_templates/notify-entry.mtml
 	'A new [lc,_3] entitled \'[_1]\' has been published to [_2].' => 'Une nouvelle [lc,_3] intitulée \'[_1]\' a été publiée sur [_2].',
@@ -140,18 +142,18 @@ use vars qw( @ISA %Lexicon );
 	'By [_1] on [_2]' => 'Par [_1] le [_2]',
 	'1 Comment' => '1 Commentaire',
 	'# Comments' => '# Commentaires',
-	'1 TrackBack' => '1 TrackBack',
-	'# TrackBacks' => '# TrackBacks',
+	'1 TrackBack' => '1 Trackback',
+	'# TrackBacks' => '# Trackbacks',
 	'Tags' => 'Tags',
 	'Continue reading <a href="[_1]" rel="bookmark">[_2]</a>.' => 'Lire la suite de <a href="[_1]" rel="bookmark">[_2]</a>.',
-	
+
 ## default_templates/category_archive_list.mtml
 	'Categories' => 'Catégories',
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/recent_comments.mtml
 	'Recent Comments' => 'Commentaires récents',
-	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] a commenté sur [_3]</a>: [_4]',
+	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] a commenté sur [_3]</a> : [_4]',
 
 ## default_templates/new-ping.mtml
 	'An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Un TrackBack non-approuvé a été déposé sur votre blog [_1], pour la note #[_2] ([_3]). Vous devez approuver ce TrackBack pour qu\'il apparaisse sur votre site.',
@@ -163,10 +165,10 @@ use vars qw( @ISA %Lexicon );
 	'Title' => 'Titre',
 	'Blog' => 'Blog',
 	'IP address' => 'Adresse IP',
-	'Approve TrackBack' => 'Approuver le TrackBack',
-	'View TrackBack' => 'Voir le TrackBack',
-	'Report TrackBack as spam' => 'Notifier le TrackBack comme spam',
-	'Edit TrackBack' => 'Éditer les  trackbacks',
+	'Approve TrackBack' => 'Approuver le Trackback',
+	'View TrackBack' => 'Voir le Trackback',
+	'Report TrackBack as spam' => 'Notifier le Trackback comme spam',
+	'Edit TrackBack' => 'Éditer les Trackbacks',
 
 ## default_templates/current_author_monthly_archive_list.mtml
 	'[_1]: Monthly Archives' => '[_1]: Archives Mensuelles',
@@ -283,8 +285,8 @@ use vars qw( @ISA %Lexicon );
 	'Mail Footer' => 'Pied des mails',
 
 ## default_templates/trackbacks.mtml
-	'No TrackBacks' => 'Aucun TrackBack',
-	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'URL de TrackBack : <span id="trackbacks-link">[_1]</span>',
+	'No TrackBacks' => 'Aucun Trackback',
+	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'URL de Trackback : <span id="trackbacks-link">[_1]</span>',
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> depuis [_3] sur <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Lire la suite</a>',
 
@@ -296,12 +298,13 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">Edit</a>' => '<a href="[_1]">Editer</a>',
 	'Submit' => 'Envoyer',
 	'Preview' => 'Aperçu',
+	'Signing in...' => 'Identification ...', # Translate - New
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'Vous n\'avez pas la permission de commenter sur ce blog. ([_1]déconnexion[_2])',
-	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => 'Merci de vous être identifié, [_1]. ([_2]déconnexion[_3])', 
+	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => 'Merci de vous être identifié, [_1]. ([_2]déconnexion[_3])',
 	'[_1]Sign in[_2] to comment.' => '[_1]Identifiez-vous[_2] pour commenter.',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Identifiez-vous[_2] pour commenter, ou laissez un commentaire anonyme.',
-	'Replying to <a href="#comment-[_1]">comment from [_2]</a>' => 'Réponse au <a href="#comment-[_1]">commentaire de [_2]</a>', 
-	
+	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'En réponse au <a href="[_1]" onclick="[_2]">commentaire de [_3]</a>', # Translate - New
+
 ## default_templates/archive_index.mtml
 	'Author Archives' => 'Archives par auteurs',
 	'Category Monthly Archives' => 'Archives par catégories et mois',
@@ -334,15 +337,15 @@ use vars qw( @ISA %Lexicon );
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Ce blog possède une licence <a href="[_1]">Creative Commons</a>.',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Powered by <a href="http://www.movabletype.org/"><$MTProductName$></a>',
 
 ## default_templates/comments.mtml
-	'No Comments' => '', # Translate - New
-	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] à répondu au <a href="[_2]">commentaire de [_3]</a>', 
+	'No Comments' => 'Aucun Commentaire', # Translate - New
+	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] en réponse au <a href="[_2]">commentaire de [_3]</a>',
 	'Leave a comment' => 'Laisser un commentaire',
 	'Name' => 'Nom',
 	'Email Address' => 'Adresse e-mail',
-	'Remember personal info?' => 'Mémoriser mes infos personnelles?',
+	'Remember personal info?' => 'Mémoriser mes infos personnelles ?',
 	'(You may use HTML tags for style)' => '(Vous pouvez utiliser des balises HTML pour le style)',
 
 ## default_templates/monthly_entry_listing.mtml
@@ -366,6 +369,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_preview.mtml
 	'Previewing your Comment' => 'Aperçu de votre commentaire',
+	'Replying to comment from [_1]' => 'En réponse au commentaire de [_1]', # Translate - New
 	'Cancel' => 'Annuler',
 
 ## default_templates/powered_by.mtml
@@ -385,7 +389,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/search.mtml
 	'Case sensitive' => 'Sensible à la casse',
-	'Regex search' => 'Expression générique',
+	'Regex search' => 'Expression rationnelle',
 
 ## default_templates/commenter_confirm.mtml
 	'Thank you registering for an account to comment on [_1].' => 'Merci de vous être enregistré pour commenter sur [_1].',
@@ -540,7 +544,6 @@ use vars qw( @ISA %Lexicon );
 	'Renaming PHP plugin file names...' => 'Renommage des noms de fichier des plugins php...',
 	'Error renaming PHP files. Please check the Activity Log.' => 'Erreur pendant le renommage des fichiers PHP. Merci de vérifier le journal (logs).',
 	'Cannot rename in [_1]: [_2].' => 'Impossible de renommer dans [_1]: [_2].',
-	'Updating widget template records...' => 'Mise à jour des données du gabarit de widget...',
 	'Removing unnecessary indexes...' => 'Suppression des index non nécessaires...',
 	'Upgrading table for [_1] records...' => 'Mise à jour des tables pour [_1] les enregistrements...',
 	'Upgrading database from version [_1].' => 'Mise à jour de la Base de données de la version [_1].',
@@ -587,6 +590,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning user status...' => 'Attribution du statut utilisateur...',
 	'Migrating permissions to roles...' => 'Migration des autorisations vers les rôles...',
 	'Populating authored and published dates for entries...' => 'Mise en place des dates de création et de publication des notes...',
+	'Updating widget template records...' => 'Mise à jour des données du gabarit de widget...',
 	'Classifying category records...' => 'Classement des données des catégories...',
 	'Classifying entry records...' => 'Classement des données des notes...',
 	'Merging comment system templates...' => 'Assemblage des gabarits du système de commentaire...',
@@ -595,12 +599,12 @@ use vars qw( @ISA %Lexicon );
 	'Assigning user authentication type...' => 'Attribution du type d\'authentification utilisateur...',
 	'Adding new feature widget to dashboard...' => 'Ajout du nouveau widget au tableau de bord...',
 	'Moving OpenID usernames to external_id fields...' => 'Déplacement des identifiants OpenID vers les champs external_id...',
-	'Assigning blog template set...' => 'Attribution du groupe de gabarits de blogs',
-	'Assigning blog page layout...' => 'Attribution de la mise en page du blog',
-	'Assigning author basename...' => '', # Translate - New
-	'Assigning entry comment and TrackBack counts...' => '', # Translate - New
-	'Assigning embedded flag to asset placements...' => '', # Translate - New
-	'Replacing %C format to MTCategoryLabel...' => '', # Translate - New
+	'Assigning blog template set...' => 'Attribution du groupe de gabarits de blogs...',
+	'Assigning blog page layout...' => 'Attribution de la mise en page du blog...',
+	'Assigning author basename...' => 'Attribution du nom de base de l\'auteur...', # Translate - New
+	'Assigning entry comment and TrackBack counts...' => 'Attribution des nombres de commentaires et trackbacks...', # Translate - New
+	'Assigning embedded flag to asset placements...' => 'Attribution des drapeaux embarqués vers la gestion d\'éléments...', # Translate - New
+	'Replacing file formats to use CategoryLabel tag...' => 'Remplacement des formats de fichiers pour utiliser le tag CategoryLabel...', # Translate - New
 
 ## lib/MT/Core.pm
 	'System Administrator' => 'Administrateur Système',
@@ -695,7 +699,7 @@ use vars qw( @ISA %Lexicon );
 	'AUTHOR-WEEKLY_ADV' => 'par auteurs et années',
 	'author/author-display-name/yyyy/mm/day-week/index.html' => 'auteur/auteur-nom-affichage/aaaa/mm/jour-semaine/index.html',
 	'author/author_display_name/yyyy/mm/day-week/index.html' => 'auteur/auteur_nom_affichage/aaaa/mm/jour-semaine/index.html',
-	
+
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'par auteurs et jours',
 	'author-display-name/yyyy/mm/dd/index.html' => 'auteur-nom-affichage/aaaa/mm/jj/index.html',
@@ -741,7 +745,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'par auteurs',
-	'Author (#[_1])' => 'Auteur (#[_1])',
 	'author/author-display-name/index.html' => 'auteur/auteur-nom-affichage/index.html',
 	'author/author_display_name/index.html' => 'auteur/auteur_nom_affichage/index.html',
 
@@ -1067,7 +1070,7 @@ use vars qw( @ISA %Lexicon );
 	'Select Roles' => 'Sélectionnez des rôles',
 	'Role Name' => 'Nom du rôle',
 	'Roles Selected' => 'Rôles sélectionnés',
-	'' => '',
+	'' => '', # Translate - New
 	'Grant Permissions' => 'Ajouter des autorisations',
 	'You cannot delete your own association.' => 'Vous ne pouvez pas supprimer votre propre association.',
 	'You cannot delete your own user record.' => 'Vous ne pouvez pas effacer vos propres données Utilisateur.',
@@ -1376,7 +1379,7 @@ use vars qw( @ISA %Lexicon );
 	'Removed [_1].' => '[_1] supprimés.',
 
 ## lib/MT/Log.pm
-	'Log message' => 'Message du journal', # Translate - Case
+	'Log message' => 'Message du journal',
 	'Log messages' => 'Messages du journal',
 	'Page # [_1] not found.' => 'Page # [_1] non trouvée.',
 	'Entry # [_1] not found.' => 'Note # [_1] non trouvée.',
@@ -1400,6 +1403,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning' => 'Attention',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
 	'No [_1] could be found.' => 'Il n\'y a pas de [_1] trouvés.',
+	'records' => 'enregistrements', # Translate - New
 	'Invalid tag [_1] specified.' => 'Tag invalide [_1] spécifié.',
 	'No template to include specified' => 'Aucun gabarit spécifié pour inclusion',
 	'Recursion attempt on [_1]: [_2]' => 'Tentative de récursion sur [_1]: [_2]',
@@ -1511,20 +1515,20 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => 'Type invalide : [_1]',
 	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Recherche : échec sur stockage des résultats en cache. [_1] n\'est pas disponible : [_2]',
-	'Invalid format: [_1]' => 'Format invalide : [_1]', 
-	'Unsupported type: [_1]' => 'Type non supporté : [_1]', 
-	'Invalid query: [_1]' => 'Requête non valide : [_1]', 
-	'No search term was specified.' => 'Aucune entrée de recherche spécifiée.', 
+	'Invalid format: [_1]' => 'Format invalide : [_1]',
+	'Unsupported type: [_1]' => 'Type non supporté : [_1]',
+	'Invalid query: [_1]' => 'Requête non valide : [_1]',
+	'No search term was specified.' => 'Aucune entrée de recherche spécifiée.',
 	'Invalid value: [_1]' => 'Valeur invalide : [_1]',
 	'No column was specified to search for [_1].' => 'Aucune colonne spécifiée à la recherche de [_1].',
-	'Throttled' => '', # Translate - New
+	'The search you conducted has timed out.  Please simplify your query and try again.' => 'La recherche que vous avez effectué a expiré. Merci de simplifier votre requête et réessayer.', # Translate - New
 
 ## lib/MT/App/Trackback.pm
 	'Invalid entry ID \'[_1]\'' => 'ID de Note invalide \'[_1]\'',
 	'You must define a Ping template in order to display pings.' => 'Vous devez définir un gabarit d\'affichage Ping pour les afficher.',
 	'Trackback pings must use HTTP POST' => 'Les Pings trackback doivent utiliser HTTP POST',
-	'Need a TrackBack ID (tb_id).' => 'Un trackback ID est requis (tb_id).',
-	'Invalid TrackBack ID \'[_1]\'' => 'Trackback ID invalide \'[_1]\'',
+	'Need a TrackBack ID (tb_id).' => 'Un ID de Trackback est requis (tb_id).',
+	'Invalid TrackBack ID \'[_1]\'' => 'L\'ID de Trackback \'[_1]\' est invalide',
 	'You are not allowed to send TrackBack pings.' => 'You n\'êtes pas autorisé à envoyer des pings trackback.',
 	'You are pinging trackbacks too quickly. Please try again later.' => 'Vous pinguez les trackbacks trop rapidement. Merci d\'essayer plus tard.',
 	'Need a Source URL (url).' => 'Une URL source est requise (url).',
@@ -1614,6 +1618,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove Tags...' => 'Enlever les tags...',
 	'Tags to remove from selected entries' => 'Tags à enlever des notes sélectionnées',
 	'Batch Edit Entries' => 'Modifier des notes par lot',
+	'Publish Pages' => 'Publier les pages', # Translate - New
 	'Unpublish Pages' => 'Dépublier les pages',
 	'Tags to add to selected pages' => 'Tags à ajouter aux pages sélectionnées',
 	'Tags to remove from selected pages' => 'Tags à supprimer des pages sélectionnées',
@@ -1673,7 +1678,7 @@ use vars qw( @ISA %Lexicon );
 	'Loading blog with ID [_1] failed' => 'Échec lors du chargement du blog ayant pour ID [_1] ',
 	'Template publishing failed: [_1]' => 'Échec lors de la publication du gabarit : [_1]',
 	'Invalid date spec' => 'Spécifications de dates invalides',
-	'Can\'t load templatemap' => '', # Translate - New
+	'Can\'t load templatemap' => 'Impossible de charger la table de correspondance des gabarits', # Translate - New
 	'Can\'t load template [_1]' => 'Impossible de charger le gabarit [_1]',
 	'Archive publishing failed: [_1]' => 'Échec lors de la publication de l\'archive : [_1]',
 	'Invalid entry ID [_1]' => ' ID de la note invalide : [_1]',
@@ -1780,10 +1785,11 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,hour,hours], [quant,_2,minute,minutes] ago' => 'il y a [quant,_1,heure,heures], [quant,_2,minute,minutes]',
 	'[quant,_1,day,days], [quant,_2,hour,hours] from now' => 'dans [quant,_1,jour,jours], [quant,_2,heure,heures]',
 	'[quant,_1,day,days], [quant,_2,hour,hours] ago' => 'il y a [quant,_1,jour,jours], [quant,_2,heure,heures]',
-	'[quant,_1,second,seconds] from now' => 'dans [quant,_1,seconde,secondes]', 
-	'[quant,_1,second,seconds]' => '[quant,_1,seconde,secondes]', 
+	'[quant,_1,second,seconds] from now' => 'dans [quant,_1,seconde,secondes]',
+	'[quant,_1,second,seconds]' => '[quant,_1,seconde,secondes]',
 	'[quant,_1,minute,minutes], [quant,_2,second,seconds] from now' => 'dans [quant,_1,minute,minutes], [quant,_2,seconde,secondes]',
-	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minute,minutes], [quant,_2,seconde,secondes]', 	'[quant,_1,minute,minutes]' => '[quant,_1,minute,minutes]',
+	'[quant,_1,minute,minutes], [quant,_2,second,seconds]' => '[quant,_1,minute,minutes], [quant,_2,seconde,secondes]',
+	'[quant,_1,minute,minutes]' => '[quant,_1,minute,minutes]',
 	'[quant,_1,hour,hours], [quant,_2,minute,minutes]' => '[quant,_1,heure,heures], [quant,_2,minute,minutes]',
 	'[quant,_1,hour,hours]' => '[quant,_1,heure,heures]',
 	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,jour,jours], [quant,_2,heure,heures]',
@@ -1797,8 +1803,6 @@ use vars qw( @ISA %Lexicon );
 	'Exec of sendmail failed: [_1]' => 'Échec lors de l\'exécution de sendmail : [_1]',
 
 ## lib/MT/Worker/Publish.pm
-	'Background Publishing Done' => 'Publication en arrière plan terminée',
-	'Published: [_1]' => 'Publié: [_1]',
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- configuration terminée ([quant,_1,fichier,fichiers] dans [_2] secondes)',
 
 ## lib/MT/Worker/Sync.pm
@@ -2140,7 +2144,7 @@ use vars qw( @ISA %Lexicon );
 	'View Published Template' => 'Voir le gabarit publié',
 	'Included Templates' => 'Gabarits inclus',
 	'create' => 'créer',
-	'Template Tag Docs' => '', # Translate - New
+	'Template Tag Docs' => 'Docs des tags de gabarits', # Translate - New
 	'Unrecognized Tags' => 'Tags non reconnus',
 	'Save (s)' => 'Enregistrer (s)',
 	'Save' => 'Enregistrer',
@@ -2165,22 +2169,21 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'Type de gabarit',
 	'Custom Index Template' => 'Gabarit d\'index personnalisé',
 	'Link to File' => 'Lien vers le fichier',
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => 'En savoir plus sur <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">les paramètres de publication</a>', # Translate - New
 	'Create Archive Mapping' => 'Créer une nouvelle table de correspondance des archives',
 	'Type' => 'Type',
 	'Add' => 'Ajouter',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/publishing-profiles-and-strategies.html">publishing profiles</a>' => 'En apprendre plus sur <a href="http://www.movabletype.org/documentation/administrator/publishing/publishing-profiles-and-strategies.html">les profils de publication</a>',
-	'Publish Options' => 'Options de publication',
-	'Statically' => 'Statique',
-	'Dynamically' => 'Dynamique',
-	'Background' => 'Arrière Plan',
+	'Statically (default)' => 'Statique (défaut)', # Translate - New
+	'Via Publish Queue' => 'Via une Publication en Mode File d\'Attente', # Translate - New
 	'On a schedule' => 'Planifié',
-	': every ' => ': chaque ', 
+	': every ' => ': chaque ',
 	'minutes' => 'minutes',
 	'hours' => 'heures',
 	'days' => 'jours',
+	'Dynamically' => 'Dynamique',
 	'Manually' => 'Manuellement',
-	'Disabled' => 'Désactivé',
-	'Server Side Include' => '', # Translate - New
+	'Do Not Publish' => 'Ne Pas Publier', # Translate - New
+	'Server Side Include' => 'Server Side Include', # Translate - New
 	'Process as <strong>[_1]</strong> include' => 'Traiter comme inclusion de <strong>[_1]</strong>',
 	'Include cache path' => 'Inclure le chemin du cache',
 	'Module Caching' => 'Cache des modules',
@@ -2242,6 +2245,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to Load' => 'Erreur de chargement',
 	'(Disable)' => '(Désactiver)',
 	'Enabled' => 'Activé',
+	'Disabled' => 'Désactivé',
 	'(Enable)' => '(Activer)',
 	'Settings for [_1]' => 'Paramètres pour [_1]',
 	'This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be 100% functional. Furthermore, it will require an upgrade once you have upgraded to the next Movable Type major release (when available).' => 'Ce plugin n\'a pas été mis à jour pour supporter Movable Type [_1]. Ainsi, il n\'est peut-être pas fonctionnel à 100%. De plus, il nécessitera une mise à jour dès que vous aurez mis à jour Movable Type à la prochaine version majeure (quand elle sera disponible).',
@@ -2462,7 +2466,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/comment_detail.tmpl
 	'By [_1]' => 'Par [_1]',
 	'replied to [_1]' => 'a répondu à [_1]',
-	'on [_1]' => 'sur [_1]',
+	'on [_1]' => 'le [_1]',
 
 ## tmpl/cms/include/cfg_content_nav.tmpl
 
@@ -2643,6 +2647,7 @@ use vars qw( @ISA %Lexicon );
 	'-' => '-',
 	'Manual' => 'Manuellement',
 	'Dynamic' => 'Dynamique',
+	'Publish Queue' => 'Publication en mode File d\'Attente', # Translate - New
 	'Static' => 'Statique',
 	'Yes' => 'Oui',
 	'No' => 'Non',
@@ -2780,13 +2785,13 @@ use vars qw( @ISA %Lexicon );
 	'No assets could be found.' => 'Aucun élément n\'a été trouvé.',
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
-	'Refresh Template Set' => 'Réactualiser le Groupe de Gabartis',
+	'Refresh Template Set' => 'Réactualiser le Groupe de Gabarits',
 	'Refresh [_1] template set' => 'Réactualiser le groupe de gabarits [_1]',
 	'Updates current templates while retaining any user-created or user-modified templates.' => 'Met à jour les gabarits actuels en conservant les gabarits créés ou modifiés par n\'importe quel utilisateur.',
 	'Apply a new template set' => 'Appliquer un nouveau groupe de gabarits',
 	'Deletes all existing templates and install the selected template set.' => 'Supprime tout les gabarits existants et installe le groupe de gabarits sélectionné.',
 	'Reset to factory defaults' => 'Remettre à zéro les modifications',
-	'Deletes all existing templates and installs factory default template set.' => 'Supprime tous les gabartis existants et installe les groupes de gabarits par défaut ',
+	'Deletes all existing templates and installs factory default template set.' => 'Supprime tous les gabarits existants et installe les groupes de gabarits par défaut ',
 	'Make backups of existing templates first' => 'Faire d\'abord des sauvegardes des gabarits existants',
 	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Vous avez demandé de <strong>réactualiser le groupe de gabarit actuel</strong>. Cette action va :',
 	'potentially install new templates' => 'peut-être installer de nouveaux gabarits',
@@ -2799,17 +2804,17 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Publishing Profile' => 'Profil de publication',
-	'Choose the profile that best matches the requirements for this blog.' => 'Choisir le profil qui correspond le mieux aux besoins de ce blog', 
+	'Choose the profile that best matches the requirements for this blog.' => 'Choisir le profil qui correspond le mieux aux besoins de ce blog',
 	'Static Publishing' => 'Publication statique',
-	'Publish all files statically.' => 'Publication statique de tous les fichiers',
-	'Asynchronous Publishing' => 'Publication asynchrone',
-	'Publish all files via the asynchronous job queue.' => 'Publier tous les fichiers via la file d\'attente asynchrone', 
-	'High Priority Static Publishing' => 'Publication statique prioritaire', 
-	'Publish main index template and all entry/page archives statically. Publish all other files in the background.' => 'Publication statique du gabarit d\'index principal et de toutes les archives de notes/pages. Publication des autres fichiers en arrière-plan.', 
+	'Immediately publish all templates Statically.' => 'Publier immédiatement tous les gabarits statiques', # Translate - New
+	'Background Publishing' => 'Publication en arrière-plan', # Translate - New
+	'All templates published statically via Publish Que.' => 'Tous les gabarits sont publiés en statique via une publication en mode file d\'attente', # Translate - New
+	'High Priority Static Publishing' => 'Publication statique prioritaire',
+	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'Publier immédiatement les gabarits d\'index et d\'achives individuelles de notes et pages en statique. Utiliser une publication en mode file d\'attente pour tout le reste', # Translate - New
 	'Dynamic Publishing' => 'Publication dynamique',
-	'Publish all files dynamically.' => 'Publication dynamique de tous les fichiers', 
+	'Publish all templates dynamically.' => 'Publier tous les gabarits en dynamique', # Translate - New
 	'Dynamic Archives Only' => 'Archives dynamiques uniquement',
-	'Publish all archives dynamically. Publish all other files statically.' => 'Publier toutes les archives dynamiquement. Publication statique des autres fichiers.',
+	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'Publier tous les gabarits d\'archives individuelles en dynamique. Publier immédiatement tout les autres gabarits en statique.', # Translate - New
 	'This new publishing profile will update all of your templates.' => 'Ce nouveau profil de publication mettra à jour tous vos gabarits.',
 
 ## tmpl/cms/dialog/asset_upload.tmpl
@@ -3050,6 +3055,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(liste délimitée par virgule)',
 	'(space-delimited list)' => '(liste délimitée par espace)',
 	'(delimited by \'[_1]\')' => '(délimitée par \'[_1]\')',
+	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => 'Utiliser <a href="http://blogit.typepad.com/">Blog It</a> pour publier sur Movable Type depuis des réseaux sociaux comme Facebook.', # Translate - New
 	'None selected' => 'Aucune sélectionnée',
 
 ## tmpl/cms/refresh_results.tmpl
@@ -3086,6 +3092,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_category.tmpl
 	'Edit Category' => 'Editer les catégories',
 	'Your category changes have been made.' => 'Les modifications apportées ont été enregistrées.',
+	'Manage entries in this category' => 'Gérer les notes dans cette catégorie', # Translate - New
 	'You must specify a label for the category.' => 'Vous devez spécifier un titre pour cette catégorie.',
 	'_CATEGORY_BASENAME' => 'Nom de base',
 	'This is the basename assigned to your category.' => 'Ceci est le nom de base assigné à votre catégorie.',
@@ -3131,6 +3138,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_folder.tmpl
 	'Edit Folder' => 'Modifier le répertoire',
 	'Your folder changes have been made.' => 'Vos modifications du répertoire ont été faites.',
+	'Manage Folders' => 'Gérer les Répertoires',
+	'Manage pages in this folder' => 'Gérer les pages de ce dossier', # Translate - New
 	'You must specify a label for the folder.' => 'Vous devez spécifier un nom pour le répertoire.',
 	'Save changes to this folder (s)' => 'Enregistrer les modifications de ce répertoire (s)',
 
@@ -3359,10 +3368,10 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/preview_template_strip.tmpl
 	'You are previewing the template named &ldquo;[_1]&rdquo;' => 'Vous prévisualisez le module nommé &ldquo;[_1]&rdquo;',
 	'(Publish time: [_1] seconds)' => 'Temps de publication : [_1] secondes',
-	'Save this template (s)' => 'Sauvegarder ce gabarit (s)', 
-	'Save this template' => 'Sauvegarder ce gabarit', 
-	'Re-Edit this template (e)' => 'Ré-éditer ce gabarit (e)', 
-	'Re-Edit this template' => 'Ré-éditer ce gabarit', 
+	'Save this template (s)' => 'Sauvegarder ce gabarit (s)',
+	'Save this template' => 'Sauvegarder ce gabarit',
+	'Re-Edit this template (e)' => 'Ré-éditer ce gabarit (e)',
+	'Re-Edit this template' => 'Ré-éditer ce gabarit',
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Paramètres des services Web',
@@ -3397,7 +3406,7 @@ use vars qw( @ISA %Lexicon );
 	'No comments appeared to be spam.' => 'Aucun commentaire ne semble être du spam.',
 	'[_1] on entries created within the last [_2] days' => '[_1] sur les notes créées dans les [_2] derniers jours',
 	'[_1] on entries created more than [_2] days ago' => '[_1] sur les notes créées il y a plus de [_2] jours',
-	'spam' => 'Spam', # Translate - Case
+	'spam' => 'Spam',
 
 ## tmpl/cms/list_tag.tmpl
 	'Your tag changes and additions have been made.' => 'Votre changement de tag et les compléments ont été faits.',
@@ -3558,8 +3567,8 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected widget set(s) from your blog.' => 'Vous avez supprimé de votre blog les groupes de widgets sélectionnés.',
 	'No Widget Sets could be found.' => 'Aucun groupe de widgets n\'a été trouvé',
 	'Create widget template' => 'Créer un gabarit de widget',
-	'Widget Template' => 'Gabarit de Widget', 
-	'Widget Templates' => 'Gabarits de Widget', 
+	'Widget Template' => 'Gabarit de Widget',
+	'Widget Templates' => 'Gabarits de Widget',
 
 ## tmpl/cms/restore.tmpl
 	'Restore from a Backup' => 'Restaurer à partir d\'une sauvegarde',
@@ -3612,8 +3621,8 @@ use vars qw( @ISA %Lexicon );
 	'Use Publishing Queue' => 'Utiliser la publication en mode File d\'attente',
 	'Requires the use of a cron job to publish pages in the background.' => 'Requiert l\'utilisation d\'un cron job pour publier en tâche de fond.',
 	'Use background publishing queue for publishing static pages for this blog' => 'Utiliser la publication en mode File d\'attente pour publier les pages statiques de ce blog',
-	'Dynamic Publishing Options' => 'Options de publication dynamique', 
-	'Enable dynamic cache' => 'Activer le cache dynamique', # Translate - Case
+	'Dynamic Publishing Options' => 'Options de publication dynamique',
+	'Enable dynamic cache' => 'Activer le cache dynamique',
 	'Enable conditional retrieval' => 'Activer la récupération conditionnelle',
 	'Archive Options' => 'Options d\'archive',
 	'File Extension' => 'Extension de fichier',
@@ -3623,10 +3632,10 @@ use vars qw( @ISA %Lexicon );
 	'No archives are active' => 'Aucune archive n\'est active',
 	'Module Options' => 'Options de module',
 	'Enable template module caching' => 'Activer le cache des modules de gabarit',
-	'Server Side Includes' => '', # Translate - New
+	'Server Side Includes' => 'Service Side Includes', # Translate - New
 	'None (disabled)' => 'Aucun (désactivé)',
 	'PHP Includes' => 'Inclusions PHP',
-	'Apache Server-Side Includes' => 'Inclusions Apache côté serveur',
+	'Apache Server-Side Includes' => 'Inclusions Apache Server-Side',
 	'Active Server Page Includes' => 'Inclusions Active Server Page',
 	'Java Server Page Includes' => 'Inclusions Java Server Page',
 
@@ -3716,7 +3725,6 @@ use vars qw( @ISA %Lexicon );
 	'Cancel (c)' => 'Annuler (c)',
 
 ## tmpl/cms/list_folder.tmpl
-	'Manage Folders' => 'Gérer les Répertoires',
 	'Your folder changes and additions have been made.' => 'Vos modifications du répertoire ont bien été apportées.',
 	'You have successfully deleted the selected folder.' => 'Vous avez supprimé avec succès le répertoire sélectionné',
 	'Delete selected folders (x)' => 'Supprimer les répertoires sélectionnés (x)',
@@ -3868,7 +3876,7 @@ use vars qw( @ISA %Lexicon );
 	'Replace' => 'Remplacer',
 	'Replace Checked' => 'Remplacer les objets sélectionnés',
 	'Case Sensitive' => 'Sensible à la casse',
-	'Regex Match' => 'Expression Régulière',
+	'Regex Match' => 'Expression Rationnelle',
 	'Limited Fields' => 'Champs limités',
 	'Date Range' => 'Période (date)',
 	'Reported as Spam?' => 'Notifié comme spam ?',
@@ -4556,8 +4564,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/recover-password.mtml
 
 ## addons/Commercial.pack/templates/javascript.mtml
-	'Posting...' => 'Publication...',
-	'[_1]Sign in[_2] to comment, or [_3]comment anonymously[_2].' => '[_1]Identifiez-vous[_2] pour commenter, ou [_3]commentez anonymement[_2].', 
 
 ## addons/Commercial.pack/templates/archive_index.mtml
 
@@ -4681,7 +4687,8 @@ use vars qw( @ISA %Lexicon );
 	'User [_1] cannot be updated.' => 'Utilisateur [_1] ne peut être mis à jour.',
 	'Failed login attempt by user \'[_1]\' deleted from LDAP.' => 'Tentative de login échouée par utilisateur \'[_1]\' supprimé de LDAP.',
 	'User \'[_1]\' updated with LDAP login name \'[_2]\'.' => 'Utilisateur \'[_1]\' mis à jour avec l\'identifiant LDAP \'[_2]\'.',
-	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => "Echec de la connexion pour l\'utilisateur\'[_1]\'. Un utilisateur avec cet\nidentifiant existe mais avec un UUID différent.", 
+	"Failed login attempt by user \'[_1]\'. A user with that\nusername already exists in the system with a different UUID." => "Echec de la connexion pour l\'utilisateur\'[_1]\'. Un utilisateur avec cet
+identifiant existe mais avec un UUID différent.",
 	'User \'[_1]\' account is disabled.' => 'Le compte de l\'utilisateur \'[_1]\' est désactivé.',
 	'LDAP users synchronization interrupted.' => 'Synchronisation des utilisateurs LDAP interrompue.',
 	'Loading MT::LDAP failed: [_1]' => 'Chargement de MT::LDAP échoué: [_1]',
@@ -4694,7 +4701,8 @@ use vars qw( @ISA %Lexicon );
 	'LDAP groups synchronized with existing groups.' => 'Groupes LDAP synchronisés avec les groupes existants.',
 	'The following groups\' information were modified:' => 'Les informations suivantes des groupes ont été modifiées:',
 	'No LDAP group was found using given filter.' => 'Aucun groupe LDAP n\'a été trouvé avec le filtre fourni.',
-	"Filter used to search for groups: [_1]\nSearch base: [_2]" => "Filtre utilisé pour la recherche dans les groupes : [_1]\nBase de recherche : [_2]",
+	"Filter used to search for groups: [_1]\nSearch base: [_2]" => "Filtre utilisé pour la recherche dans les groupes : [_1]
+Base de recherche : [_2]",
 	'(none)' => '(Aucun)',
 	'The following groups were deleted:' => 'Les groupes suivants ont été effacés:',
 	'Failed to create a new group: [_1]' => 'Impossible de créer un nouveau groupe: [_1]',
@@ -5007,7 +5015,7 @@ use vars qw( @ISA %Lexicon );
 	'Moderate TrackBacks from suspicious sources' => 'Modérer les trackbacks des sources suspectes',
 	'Junk TrackBacks from suspicious sources' => 'Marquer comme spam les trackbacks des sources suspectes',
 	'Lookup Whitelist' => 'Vérifier la liste blanche',
-	'To prevent lookups for some IP addresses or domains, list them below. Place each entry on a line by itself.' => 'Pour éviter les vérifications pour certaines adresses IP ou certains domaines, listez-les ci-dessous. Placez chaque entrée sur une seule ligne.',
+	'To prevent lookups for specific IP addresses or domains, list each on a line by itself.' => 'Pour ne pas effectuer de vérifications pour des noms de domaines ou addresses IP spécifiques, listez-les ligne par ligne.', # Translate - New
 
 ## plugins/spamlookup/tmpl/url_config.tmpl
 	'Link filters monitor the number of hyperlinks in incoming feedback. Feedback with many links can be held for moderation or scored as junk. Conversely, feedback that does not contain links or only refers to previously published URLs can be positively rated. (Only enable this option if you are sure your site is already spam-free.)' => 'Les filtres de liens surveillent le nombre de liens hypertextes dans les messages entrants. Les messages avec beaucoup de liens peuvent être retenus pour modération ou marqués comme spam. Inversement, les messages qui ne contiennent pas de liens ou lient seulement vers des URLs publiées précédemment peuvent être notés positivement. (Activez cette option si vous êtes sûr que votre site est déjà dépourvu de spam.)',
@@ -5155,6 +5163,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 1111
+## New words: 200
 
 1;
