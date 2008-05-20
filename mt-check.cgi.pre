@@ -342,6 +342,8 @@ my @CORE_OPT = (
 
     [ 'Digest::SHA1', 0, 0, translate('Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.')],
     [ 'Mail::Sendmail', 0, 0, translate('Mail::Sendmail is required for sending mail via SMTP Server.')],
+    [ 'Safe', 0, 0, translate('This module is used in test attribute of MTIf conditional tag.')],
+    [ 'Digest::MD5', 0, 0, translate('This module is used by the Markdown text filter.')],
 );
 
 use Cwd;

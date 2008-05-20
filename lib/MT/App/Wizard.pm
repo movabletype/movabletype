@@ -191,6 +191,10 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Safe',
                 label => 'This module is used in test attribute of MTIf conditional tag.',
             },
+            'Digest::MD5' => {
+                link => 'http://search.cpan.org/dist/Digest-MD5',
+                label => 'This module is used by the Markdown text filter.',
+            },
         },
         required_packages => {
             'Image::Size' => {
