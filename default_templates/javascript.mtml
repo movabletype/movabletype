@@ -453,7 +453,16 @@ function mtSignIn() {
     var doc_url = document.URL;
     doc_url = doc_url.replace(/#.+/, '');
     var url = '<$mt:SignInLink$>';
-    url += '&return_url=' + encodeURIComponent(doc_url);
+    if (is_preview) {
+        if ( document['comments_form'] ) {
+            var entry_id = document['comments_form'].entry_id.value;
+            url += '&entry_id=' + entry_id;
+        } else {
+            url += '&return_url=<$MTBlogURL encode_url="1"$>';
+        }
+    } else {
+        url += '&return_url=' + encodeURIComponent(doc_url);
+    }
     mtClearUser();
     location.href = url;
 }
@@ -492,7 +501,19 @@ function mtSetUserOrLogin(u) {
 </mt:Ignore>
 function mtSignOut(entry_id) {
     mtClearUser();
-    var url = '<$mt:SignOutLink$>&return_url=' + encodeURIComponent(location.href);
+    var doc_url = document.URL;
+    doc_url = doc_url.replace(/#.+/, '');
+    var url = '<$mt:SignOutLink$>';
+    if (is_preview) {
+        if ( document['comments_form'] ) {
+            var entry_id = document['comments_form'].entry_id.value;
+            url += '&entry_id=' + entry_id;
+        } else {
+            url += '&return_url=<$MTBlogURL encode_url="1"$>';
+        }
+    } else {
+        url += '&return_url=' + encodeURIComponent(doc_url);
+    }
     location.href = url;
 }
 
