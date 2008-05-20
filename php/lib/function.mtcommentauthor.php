@@ -19,6 +19,10 @@ function smarty_function_mtcommentauthor($args, &$ctx) {
     }
     if (isset($args['default']))
         $a or $a = $args['default'];
+    else {
+        global $mt;
+        $a or $a = $mt->translate("Anonymous");
+    }
     $a or $a = '';
     return strip_tags($a);
 }

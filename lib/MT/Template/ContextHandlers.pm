@@ -9988,15 +9988,15 @@ display name).
 
 =cut
 
-# FIXME: This should be a container tag providing an author
-# context for the comment.
 sub _hdlr_comment_author {
     my ($ctx, $args) = @_;
     sanitize_on($args);
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $a = defined $c->author ? $c->author : '';
-    $a ||= $args->{default} || '';
+    $args->{default} = MT->translate("Anonymous")
+        unless exists $args->{default};
+    $a ||= $args->{default};
     return remove_html($a);    
 }
 
