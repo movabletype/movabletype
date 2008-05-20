@@ -121,7 +121,7 @@ sub _get_commenter_session {
             my ($user, $first_time) = $app->SUPER::login();
             if ( $user ) {
                 my $sess = $app->session;
-                return ( $sess->id, $user );
+                return ( $sess, $user );
             }
         }
     }
