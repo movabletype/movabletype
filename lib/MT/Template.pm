@@ -354,8 +354,10 @@ sub save {
         require MT::PublishOption;
         my @maps = MT::TemplateMap->load({ template_id => $tmpl->id });
         foreach my $map (@maps) {
-            $map->build_type($tmpl->build_type);
-            $map->save or die $map->errstr;
+            if ( ($map->build_type || 0) != ($tmpl->build_type || 0) ) {
+                $map->build_type($tmpl->build_type);
+                $map->save or die $map->errstr;
+            }
         }
     }
 
@@ -363,22 +365,6 @@ sub save {
         $tmpl->_sync_to_disk($tmpl->SUPER::text) or return;
     }
     $tmpl->{needs_db_sync} = 0;
-
-    # if ((!$tmpl->id) && (my $blog = $tmpl->blog)) {
-    #     my $dcty = $blog->custom_dynamic_templates;
-    #     if ($dcty eq 'all') {
-    #         if (('index' eq $tmpl->type) || ('archive' eq $tmpl->type) ||
-    #             ('individual' eq $tmpl->type) || ('page' eq $tmpl->type) ||
-    #                 ('category' eq $tmpl->type)) {
-    #             $tmpl->build_dynamic(1);
-    #         }
-    #     } elsif ($dcty eq 'archives') {
-    #         if (('archive' eq $tmpl->type) || ('page' eq $tmpl->type) ||
-    #             ('individual' eq $tmpl->type) || ('category' eq $tmpl->type)) {
-    #             $tmpl->build_dynamic(1);
-    #         }
-    #     }
-    # }
 
     $tmpl->SUPER::save;
 }

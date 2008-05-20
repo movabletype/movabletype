@@ -69,7 +69,7 @@ sub remove {
     my $map = shift;
     $map->remove_children({ key => 'templatemap_id' });
     my $result = $map->SUPER::remove(@_);
-    
+
     if (ref $map) {
         my $remaining = MT::TemplateMap->load(
           {
@@ -98,8 +98,14 @@ sub remove {
         }
     }
     else {
+        my $blog_id;
+        if ( $_[0] && $_[0]->{template_id} ) {
+            my $tmpl = MT::Template->load( $_[0]->{template_id} );
+            $blog_id = $tmpl->blog_id if $tmpl;
+        }
+
         my $maps_iter = MT::TemplateMap->count_group_by(
-            undef,
+            { ( defined $blog_id ? ( blog_id => $blog_id ) : () ) },
             { group => [ 'blog_id', 'archive_type' ] }
         );
         my %ats;
@@ -108,7 +114,13 @@ sub remove {
             push @$ats, $at if $count > 0;
             $ats{$blog_id} = $ats;
         }
-        my $iter = MT::Blog->load_iter();
+        my $iter;
+        if ( $blog_id ) {
+            my $blog = MT::Blog->load( $blog_id );
+            $iter = sub { my $ret = $blog; $blog = undef; $ret; }
+        } else {
+            $iter = MT::Blog->load_iter();
+        }
         while ( my $blog = $iter->() ) {
             $blog->archive_type( $ats{ $blog->id } ? join ',', @{ $ats{ $blog->id } } : '' );
             $blog->save;
