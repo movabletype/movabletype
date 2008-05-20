@@ -22,12 +22,12 @@ sub default_archive_templates {
     return [
         {
             label    => 'author/author-display-name/yyyy/index.html',
-            template => '%-a/%y/%f',
+            template => 'author/%-a/%y/%f',
             default  => 1
         },
         {
             label    => 'author/author_display_name/yyyy/index.html',
-            template => '%a/%y/%f'
+            template => 'author/%a/%y/%f'
         },
     ];
 }
