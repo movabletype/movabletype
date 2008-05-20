@@ -210,4 +210,8 @@ sub archive_entries_count {
     );
 }
 
+*date_range             = \&MT::ArchiveType::Weekly::date_range;
+*next_archive_entry     = \&MT::ArchiveType::Date::next_archive_entry;
+*previous_archive_entry = \&MT::ArchiveType::Date::previous_archive_entry;
+
 1;
