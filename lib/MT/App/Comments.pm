@@ -102,10 +102,9 @@ sub load_core_tags {
 # Creates a commenter record based on the cookies in the $app, if
 # one already exists corresponding to the browser's session.
 #
-# Returns a pair ($session_key, $commenter) where $session_key is the
-# key to the MT::Session object (as well as the cookie value) and
-# $commenter is an MT::Author record. Both values are undef when no
-# session is active.
+# Returns a pair ($session_obj, $commenter) where $session_obj is
+# a MT::Session object and $commenter is an MT::Author record. Both
+# values are undef when no session is active.
 #
 sub _get_commenter_session {
     my $app = shift;
@@ -152,7 +151,7 @@ sub _get_commenter_session {
     }
 
     # session is valid!
-    return ( $session_key, $user );
+    return ( $sess_obj, $user );
 }
 
 sub login {
@@ -859,8 +858,8 @@ sub post {
 
     # validate session parameter
     if ( my $sid = $q->param('sid') ) {
-        my ( $session, $commenter ) = $app->_get_commenter_session();
-        if ( $session && $commenter && ( $session eq $sid ) ) {
+        my ( $sess_obj, $commenter ) = $app->_get_commenter_session();
+        if ( $sess_obj && $commenter && ( $sess_obj->id eq $sid ) ) {
             # well, everything is okay
         } else {
             return $app->handle_error(
@@ -1232,9 +1231,9 @@ sub _make_comment {
 
     my $nick  = $q->param('author');
     my $email = $q->param('email');
-    my ( $session, $commenter );
+    my ( $sess_obj, $commenter );
     if ( $blog->accepts_registered_comments ) {
-        ( $session, $commenter ) = $app->_get_commenter_session();
+        ( $sess_obj, $commenter ) = $app->_get_commenter_session();
     }
     if ( $commenter && ( 'do_reply' ne $app->mode ) ) {
         if ( MT::Author::AUTHOR() == $commenter->type ) {
@@ -1454,14 +1453,13 @@ sub session_state {
 
     my $c;
     if ( $blog_id && $blog ) {
-        my ( $session, $commenter ) = $app->_get_commenter_session();
-        if ( $session && $commenter ) {
+        my ( $sessobj, $commenter ) = $app->_get_commenter_session();
+        if ( $sessobj && $commenter ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
             my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
             $banned = 0 if $blog_perms && $blog_perms->can_administer;
             $banned ||= 1 if $commenter->status == MT::Author::BANNED();
 
-            my $sessobj = MT::Session->load( $session );
             if ($banned) {
                 $sessobj->remove;
             } else {
@@ -1745,7 +1743,7 @@ sub do_preview {
 sub edit_commenter_profile {
     my $app = shift;
 
-    my ( $session, $commenter ) = $app->_get_commenter_session();
+    my ( $sess_obj, $commenter ) = $app->_get_commenter_session();
     if ($commenter) {
         my $url;
         my $entry_id = $app->param('entry_id');
@@ -1759,15 +1757,8 @@ sub edit_commenter_profile {
             $url = is_valid_url( $app->param('static') );
         }
 
-        #require MT::Auth;
-        #my $ctx = MT::Auth->fetch_credentials( { app => $app } );
-        #my $cmntr_sess =
-        #  $app->session_user( $commenter, $ctx->{session_id},
-        #    permanent => $ctx->{permanent} );
-        #return $app->handle_error( $app->translate('Invalid login') )
-        #  unless $cmntr_sess;
-
         my $blog_id = $app->param('blog_id');
+        $app->{session} = $sess_obj;
         $app->user($commenter);
         my $param = {
             id       => $commenter->id,
@@ -1790,32 +1781,19 @@ sub save_commenter_profile {
     my $app = shift;
     my $q   = $app->param;
 
+    my ( $sess_obj, $cmntr ) = $app->_get_commenter_session();
+    return $app->handle_error( $app->translate('Invalid login') )
+        unless $cmntr;
+
     my %param =
       map { $_ => scalar( $q->param($_) ) }
-      qw( id name nickname email password pass_verify hint url entry_url return_url external_auth);
-
-    unless ( $param{id} =~ /\d+/ ) {
-        $param{error} = $app->translate('Invalid commenter ID');
-        return $app->build_page( 'profile.tmpl', \%param );
-    }
-
-    my $cmntr = MT::Author->load( $param{id} );
-    unless ($cmntr) {
-        $param{error} = $app->translate('Invalid commenter ID');
-        return $app->build_page( 'profile.tmpl', \%param );
-    }
+      qw( name nickname email password pass_verify hint url entry_url return_url external_auth);
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
 
-    # require MT::Auth;
-    # my $ctx = MT::Auth->fetch_credentials( { app => $app } );
-    # my $cmntr_sess =
-    #  $app->session_user( $cmntr, $ctx->{session_id},
-    #    permanent => $ctx->{permanent} );
-    # return $app->handle_error( $app->translate('Invalid login') )
-    #  unless $cmntr_sess;
-
     $app->user($cmntr);
+    $app->{session} = $sess_obj;
+
     $app->validate_magic
       or return $app->handle_error( $app->translate('Invalid request') );
 
@@ -1859,6 +1837,7 @@ sub save_commenter_profile {
     if ($renew_session) {
         $app->make_commenter_session( $cmntr );
     }
+    $param{magic_token} = $app->current_magic;
 
     return $app->build_page( 'profile.tmpl', \%param );
 }
