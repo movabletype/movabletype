@@ -16,7 +16,7 @@ function smarty_modifier_filters($text,$filters) {
                 $filter = 'convert_breaks';
             }
             require_once 'MTUtil.php';
-            $text = apply_text_filter($text, $filter);
+            $text = apply_text_filter($ctx, $text, $filter);
         }
     }
     return $text;
