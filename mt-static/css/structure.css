@@ -849,6 +849,7 @@ li#config-menu {
 #list-role #main-content,
 #list-category #main-content,
 #list-folder #main-content,
+#list-notification #main-content,
 .batch-edit #main-content {
     padding-top: 5px;
 }

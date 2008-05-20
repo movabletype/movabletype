@@ -848,9 +848,9 @@ sub list {
     $param{saved}         = $q->param('saved');
     $param{saved_deleted} = $q->param('saved_deleted');
     $param{page_actions}  = $app->page_actions( 'list_' . $type );
-    unless ( $param{screen_class} ) {
-        $param{screen_class} = "list-$type";
-    }
+    $param{screen_class} ||= "list-$type";
+    $param{screen_id} ||= "list-$type";
+    $param{listing_screen} = 1;
     $app->load_tmpl( "list_${type}.tmpl", \%param );
 }
 

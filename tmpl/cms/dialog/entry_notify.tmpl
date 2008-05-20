@@ -32,7 +32,9 @@ function doValidateNotifyRecips(f) {
         show_hint="1"
         hint="<__trans phrase="Enter email addresses on separate lines, or comma separated.">">
         <ul>
+<mt:if name="config.enableaddressbook">
             <li><input type="checkbox" name="send_notify_list" id="send_notify_list" value="1" class="cb" checked="checked" /> <label for="send_notify_list"><__trans phrase="All addresses from Address Book"></label></li>
+</mt:if>
             <li><textarea name="send_notify_emails" class="full-width lines-4" id="send_notify_emails" cols="" rows="3"></textarea></li>
         </ul>
     </mtapp:setting>

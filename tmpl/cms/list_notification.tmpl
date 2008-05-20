@@ -1,4 +1,4 @@
-<mt:setvar name="page_title" value="<__trans phrase="Address Book">">
+<mt:setvar name="page_title" value="<__trans phrase="Manage Address Book">">
 <mt:setvarblock name="system_msg">
     <mt:if name="error">
         <mtapp:statusmsg
@@ -172,10 +172,12 @@
     title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
     ><__trans phrase="Delete"></a>
 </mt:setvarblock>
-
+<mt:setvarblock name="content_header">
+    <ul class="action-link-list">
+        <li id="create-contact"><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Contact"></a></li>
+    </ul>
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
-
-<p id="create-contact"><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Contact"></a></p>
 
 <div class="create-inline" id="create-inline-notification">
 <form method="post" action="<mt:var name="script_url">" id="create-inline-notification-form">

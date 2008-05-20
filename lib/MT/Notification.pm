@@ -26,6 +26,7 @@ __PACKAGE__->install_properties({
     datasource => 'notification',
     audit => 1,
     primary_key => 'id',
+    listing_screen => 1,
 });
 
 sub class_label {
