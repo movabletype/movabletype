@@ -67,7 +67,7 @@ This tag is only recognized in SearchResults block.
 
 ###########################################################################
 
-=head2 BlogResultsHeader
+=head2 BlogResultHeader
 
 The contents of this container tag will be displayed when the blog id of
 the entry in context from search results differs from the previous entry's
@@ -81,7 +81,7 @@ This tag is only recognized in search templates.
 
 ###########################################################################
 
-=head2 BlogResultsFooter
+=head2 BlogResultFooter
 
 The contents of this container tag will be displayed when the blog id of
 the entry in context from search results differs from the next entry's
