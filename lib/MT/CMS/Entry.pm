@@ -957,7 +957,9 @@ sub preview {
           || $col eq 'tangent_cache'
           || $col eq 'template_id'
           || $col eq 'class'
-          || $col eq 'meta';
+          || $col eq 'meta'
+          || $col eq 'comment_count'
+          || $col eq 'ping_count';
         if ( $col eq 'basename' ) {
             if (   ( !defined $q->param('basename') )
                 || ( $q->param('basename') eq '' ) )
