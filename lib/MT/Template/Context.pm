@@ -546,6 +546,28 @@ sub compile_status_filter {
     $@ ? undef : $cexpr;
 }
 
+sub count_format {
+    my $ctx = shift;
+    my ($count, $args) = @_;
+    my $phrase;
+    $count ||= 0;
+    if ($count == 0) {
+        $phrase = exists $args->{none}
+            ? $args->{none}   : (exists $args->{plural}
+            ? $args->{plural} : '');
+    } elsif ($count == 1) {
+        $phrase = exists $args->{singular} ? $args->{singular} : '';
+    } elsif ($count > 1) {
+        $phrase = exists $args->{plural} ? $args->{plural} : '';
+    }
+    return $count if $phrase eq '';
+    return $phrase unless $phrase =~ m/#/;
+
+    $phrase =~ s/(?<!\\)#/$count/g;
+    $phrase =~ s/\\#/#/g;
+    return $phrase;
+}
+
 sub _no_author_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');

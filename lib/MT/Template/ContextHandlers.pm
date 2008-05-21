@@ -4015,27 +4015,6 @@ sub _hdlr_tag_id {
     $tag->id;
 }
 
-sub _count_format {
-    my ($count, $args) = @_;
-    my $phrase;
-    $count ||= 0;
-    if ($count == 0) {
-        $phrase = exists $args->{none}
-            ? $args->{none}   : (exists $args->{plural}
-            ? $args->{plural} : '');
-    } elsif ($count == 1) {
-        $phrase = exists $args->{singular} ? $args->{singular} : '';
-    } elsif ($count > 1) {
-        $phrase = exists $args->{plural} ? $args->{plural} : '';
-    }
-    return $count if $phrase eq '';
-    return $phrase unless $phrase =~ m/#/;
-
-    $phrase =~ s/(?<!\\)#/$count/g;
-    $phrase =~ s/\\#/#/g;
-    return $phrase;
-}
-
 ###########################################################################
 
 =head2 TagCount
@@ -4066,7 +4045,7 @@ sub _hdlr_tag_count {
         }
     }
     $count ||= 0;
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -6878,7 +6857,7 @@ sub _hdlr_blog_category_count {
     $ctx->set_blog_load_context($args, \%terms, \%args)
         or return $ctx->error($ctx->errstr);
     my $count = MT::Category->count(\%terms, \%args);
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -6901,7 +6880,7 @@ sub _hdlr_blog_entry_count {
         or return $ctx->error($ctx->errstr);
     $terms{status} = MT::Entry::RELEASE();
     my $count = $class->count(\%terms, \%args);
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -6923,7 +6902,7 @@ sub _hdlr_blog_comment_count {
     $terms{visible} = 1;
     require MT::Comment;
     my $count = MT::Comment->count(\%terms, \%args);
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -6947,7 +6926,7 @@ sub _hdlr_blog_ping_count {
     require MT::TBPing;
     my $count = MT::Trackback->count(undef,
         { 'join' => MT::TBPing->join_on('tb_id', \%terms, \%args) });
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -8024,7 +8003,7 @@ sub _hdlr_entries_count {
         }
         $count = $i;
     }
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }  
 
 ###########################################################################
@@ -9170,7 +9149,7 @@ sub _hdlr_entry_comments {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $count = $e->comment_count;
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -9187,7 +9166,7 @@ sub _hdlr_entry_ping_count {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $count = $e->ping_count;
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -11801,13 +11780,13 @@ sub _hdlr_archive_count {
     if ($ctx->{inside_mt_categories} && !$archiver->date_based) {
         return _hdlr_category_count($ctx);
     } elsif (my $count = $ctx->stash('archive_count')) {
-        return _count_format($count, $args);
+        return $ctx->count_format($count, $args);
     }
 
     my $e = $ctx->stash('entries');
     my @entries = @$e if ref($e) eq 'ARRAY';
     my $count = scalar @entries;
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -12209,7 +12188,7 @@ sub _hdlr_category_count {
         require MT::Placement;
         $count = scalar $class->count(@args);
     }
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -12236,7 +12215,7 @@ sub _hdlr_category_comment_count {
                               { 'join' => MT::Placement->join_on('entry_id', { category_id => $cat->id, blog_id => $blog_id } ) } ) } );
     require MT::Comment;
     $count = scalar MT::Comment->count(@args);
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -12329,7 +12308,7 @@ sub _hdlr_category_tb_count {
     return 0 unless $tb;
     require MT::TBPing;
     my $count = MT::TBPing->count( { tb_id => $tb->id, visible => 1 } );
-    return _count_format($count || 0, $args);
+    return $ctx->count_format($count || 0, $args);
 }
 
 sub _load_sibling_categories {
@@ -14460,7 +14439,7 @@ sub _hdlr_asset_count {
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
     $terms{class} = $args->{type} || '*';
     my $count = MT::Asset->count(\%terms, \%args);
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
@@ -15343,7 +15322,7 @@ sub _object_score_count {
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
     my $count = $object->vote_for($key);
-    return _count_format($count, $args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
