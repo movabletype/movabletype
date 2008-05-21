@@ -631,6 +631,22 @@ sub _get_date_translator {
                 $obj->column($field, $new_val, { no_changed_flag => !$change });
             }
         }
+        if ( $obj->has_meta ) {
+            my @meta_columns = MT::Meta->metadata_by_class( ref $obj );
+            my @date_meta = grep {
+                   $_->{type} eq 'vdatetime'
+                || $_->{type} eq 'vdatetime_idx'
+            } @meta_columns;
+            META_FIELD: for my $f (@date_meta) {
+                my $field = $f->{name};
+                my $value = $obj->$field;
+                next META_FIELD if !defined $value;
+                my $new_val = $translator->($value); 
+                if((defined $new_val) && ($new_val ne $value)) {
+                    $obj->$field( $new_val );
+                }
+            }
+        }
     };
 }
 
