@@ -5796,9 +5796,10 @@ sub _hdlr_search_script {
 
 ###########################################################################
 
-=head2 SearchScript
+=head2 SearchMaxResults
 
-Returns the value of the C<MaxResults> configuration setting.
+Returns the value of the C<SearchMaxResults> or C<MaxResults> configuration
+setting.  Use C<SearchMaxResults> because MaxResults is considered deprecated.
 
 =for tags search
 

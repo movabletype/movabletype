@@ -36,6 +36,93 @@ sub load_core_tags {
     };
 }
 
+###########################################################################
+
+=head2 SearchResultsHeader
+
+The content of this block tag is rendered when the item in context
+from search results are the first item of the result set.  You can
+use the block to render headings and titles of the result table,
+for example.
+
+This tag is only recognized in SearchResults block.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
+=head2 SearchResultsFooter
+
+The content of this block tag is rendered when the item in context
+from search results are the last item of the result set.  You can
+use the block to render closeing tags of a HTML element, for example.
+
+This tag is only recognized in SearchResults block.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
+=head2 BlogResultsHeader
+
+The contents of this container tag will be displayed when the blog id of
+the entry in context from search results differs from the previous entry's
+blog id.
+
+This tag is only recognized in search templates.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
+=head2 BlogResultsFooter
+
+The contents of this container tag will be displayed when the blog id of
+the entry in context from search results differs from the next entry's
+blog id.
+
+This tag is only recognized in search templates.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
+=head2 IfMaxResultsCutOff
+
+NOTE: this tag only applies if you are using older Movable Type than
+version 4.15, or you set up your search script so it instantiates
+MT::App::Search::Legacy, the older search script.  Under the default
+search script in Movable Type, this tag will never be evaluated as true and
+therefore the contents will never be rendered.
+
+A conditional tag that returns true when the number of search results
+per blog exceeds the maximium limit specified in MaxResults configuration
+directive.
+
+This tag is only recognized in search templates.
+
+=cut
+
+###########################################################################
+
+=head2 MaxResults
+
+Returns the value of SearchMaxResults, specified either in configuration
+(via C<SearchMaxResults> configuration directive) or in the search query
+parameter in the URL.
+
+This tag is only recognized in search templates.
+
+=cut
+
 sub _hdlr_include_blogs { $_[0]->stash('include_blogs') || '' }
 sub _hdlr_search_string { $_[0]->stash('search_string') || '' }
 sub _hdlr_template_id { $_[0]->stash('template_id') || '' }
