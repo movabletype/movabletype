@@ -35,9 +35,11 @@ sub get_throttle {
 }
 
 sub archive_build_type {
-    my $at = shift;
+    my ( $blog_id, $at ) = @_;
     require MT::TemplateMap;
-    my $map = MT::TemplateMap->load( { archive_type => $at } );
+    my $map = MT::TemplateMap->load(
+        { blog_id => $blog_id, archive_type => $at }
+    );
     $map && $map->build_type;
 }
 

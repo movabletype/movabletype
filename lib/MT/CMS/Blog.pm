@@ -1019,7 +1019,7 @@ sub _create_build_order {
         foreach my $t (@blog_at) {
             $archiver = $app->publisher->archiver($t);
             next unless $archiver;    # ignore unknown archive types
-            next if MT::PublishOption::archive_build_type($t) == MT::PublishOption::DISABLED();
+            next if MT::PublishOption::archive_build_type($blog->id, $t) == MT::PublishOption::DISABLED();
             push @at, $t;
             $archive_label = $archiver->archive_label;
             $archive_label = $at unless $archive_label;
