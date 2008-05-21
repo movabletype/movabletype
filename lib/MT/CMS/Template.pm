@@ -2083,8 +2083,8 @@ sub publish_archive_templates {
                 _type     => 'template',
                 blog_id   => scalar $app->param('blog_id'),
                 published => 1,
-                saved     => 1,
-                ( $reedit ? ( id => $reedit ) : () ),
+                ( $reedit ? ( saved => 1 )       : () ),
+                ( $reedit ? ( id    => $reedit ) : () ),
             }
         );
     }
