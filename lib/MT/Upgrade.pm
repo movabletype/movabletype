@@ -934,6 +934,62 @@ sub core_upgrade_functions {
                 },
             },
         },
+        # These three upgrade steps are currently necessary for PostgreSQL
+        # which doesn't support adding a column, populating the existing
+        # records with a value.
+        'core_set_count_defaults' => {
+            version_limit => 4.0062,
+            priority => 3.3,
+            updater => {
+                type => 'entry',
+                label => 'Updating default comment TrackBack counts...',
+                condition => sub {
+                       !$_[0]->column('comment_count')
+                    && !$_[0]->column('ping_count')
+                },
+                code => sub {
+                    $_[0]->comment_count(0);
+                    $_[0]->ping_count(0);
+                },
+                sql =>
+                    "update mt_entry set comment_count = 0, ping_count = 0
+                        where comment_count is null and ping_count is null",
+            },
+        },
+        'core_set_template_build_type' => {
+            version_limit => 4.0062,
+            priority => 3.3,
+            updater => {
+                type => 'template',
+                label => 'Updating default build type of templates...',
+                condition => sub {
+                    !$_[0]->column('build_type')
+                },
+                code => sub {
+                    $_[0]->build_type(1);
+                },
+                sql =>
+                    "update mt_template set build_type = 1
+                        where build_type is null",
+            },
+        },
+        'core_set_templatemap_build_type' => {
+            version_limit => 4.0062,
+            priority => 3.3,
+            updater => {
+                type => 'templatemap',
+                label => 'Updating default build type of templatemaps...',
+                condition => sub {
+                    !$_[0]->column('build_type')
+                },
+                code => sub {
+                    $_[0]->build_type(1);
+                },
+                sql =>
+                    "update mt_templatemap set build_type = 1
+                        where build_type is null",
+            },
+        },
     };
 }
 
