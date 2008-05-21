@@ -15669,6 +15669,8 @@ sub _math_operation {
 A conditional tag used to test whether the requested content has more
 to show than currently appearing in the page.
 
+=for tags pagination
+
 =cut
 
 sub _hdlr_if_more_results {
@@ -15685,6 +15687,8 @@ sub _hdlr_if_more_results {
 
 A conditional tag used to test whether the requested content has previous
 page.
+
+=for tags pagination
 
 =cut
 
@@ -15705,6 +15709,8 @@ The page number is set to __value__ standard variable in each iteration.
 
 The tag also sets __odd__, __even__, __first__, __last__ and __counter__
 standard variables. 
+
+=for tags pagination
 
 =back
 
@@ -15764,6 +15770,8 @@ A conditional tag returns true if the current page in the context of
 PagerBlock is the current page that is being rendered. 
 The tag must be used in the context of PagerBlock.
 
+=for tags pagination
+
 =cut
 
 # overridden in other contexts
@@ -15775,6 +15783,8 @@ sub context_script { '' }
 
 A function tag returns the URL points to the page in the context of
 PagerBlock. The tag can only be used in the context of PagerBlock. 
+
+=for tags pagination
 
 =cut
 
@@ -15810,6 +15820,8 @@ sub _hdlr_pager_link {
 A function tag returns a number represents the number of current page.
 The number starts from 1.
 
+=for tags pagination
+
 =cut
 
 sub _hdlr_current_page {
@@ -15825,6 +15837,8 @@ sub _hdlr_current_page {
 
 A function tag returns a number represents the total number of pages
 in the current search context. The number starts from 1. 
+
+=for tags pagination
 
 =cut
 
@@ -15843,6 +15857,8 @@ sub _hdlr_total_pages {
 
 A function tag returns the URL points to the previous page of 
 the current page that is being rendered.
+
+=for tags pagination
 
 =cut
 
@@ -15867,6 +15883,8 @@ sub _hdlr_previous_link {
 
 A function tag returns the URL points to the next page of the current page
 that is being rendered. 
+
+=for tags pagination
 
 =cut
 
