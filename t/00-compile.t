@@ -99,7 +99,7 @@ use_ok('MT::Template');
 use_ok('MT::TemplateMap');
 use_ok('MT::Trackback');
 use_ok('MT::TBPing');
-use_ok('MT::BlockList');
+use_ok('MT::Blocklist');
 use_ok('MT::Object::BaseCache');
 use_ok('MT::Touch');
 
