@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::ja;
 use strict;
@@ -69,6 +69,8 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
+
+## php/lib/function.mtcommentauthor.php
 
 ## php/lib/function.mtcommentreplylink.php
 	'Reply' => '返信',
@@ -267,12 +269,13 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,minute,minutes] ago' => '[quant,_1,分,分]前',
 	'[quant,_1,day,days] ago' => '[quant,_1,日,日]前',
 	'<a href="[_1]">Edit</a>' => '<a href="[_1]">編集</a>',
+	'Your session has expired. Please sign in again to comment.' => 'セッションの有効期限が切れています。再度サインインしてください。',
+	'Signing in...' => 'サインインします...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'このブログにコメントする権限を持っていません。([_2]サインアウトする[_3])',
 	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => '[_1]としてサインインしています。([_2]サインアウト[_3])',
 	'[_1]Sign in[_2] to comment.' => 'コメントするにはまず[_1]サインイン[_2]してください。',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'コメントする前に[_1]サインイン[_2]することもできます。',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
-	'Signing in...' => 'サインインします...',
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => '年別ユーザーアーカイブ',
@@ -313,7 +316,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/trackbacks.mtml
 	'No TrackBacks' => 'トラックバック(0)',
-	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'トラックバックURL: <span id="trackbacks-link">[_1]</span>',
+	'TrackBack URL: [_1]' => 'トラックバックURL: [_1]',
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
 
@@ -329,7 +332,6 @@ use vars qw( @ISA %Lexicon );
 	'Blogs that link here' => 'リンクしているブログ',
 
 ## default_templates/signin.mtml
-	'JavaScript' => 'JavaScript',
 	'Sign In' => 'サインイン',
 	'You are signed in as ' => 'ユーザー名:',
 	'sign out' => 'サインアウト',
@@ -550,8 +552,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'ユーザー-日別',
-	'author-display-name/yyyy/mm/dd/index.html' => 'author-display-name/yyyy/mm/dd/index.html',
-	'author_display_name/yyyy/mm/dd/index.html' => 'author_display_name/yyyy/mm/dd/index.html',
+	'author/author-display-name/yyyy/mm/dd/index.html' => 'author/author-display-name/yyyy/mm/dd/index.html',
+	'author/author_display_name/yyyy/mm/dd/index.html' => 'author/author_display_name/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
 	'AUTHOR-YEARLY_ADV' => 'ユーザー-年別',
@@ -1293,8 +1295,6 @@ use vars qw( @ISA %Lexicon );
 	'Done syncing files to [_1] ([_2])' => '[_1]へファイルを同期しました。([_2])',
 
 ## lib/MT/Worker/Publish.pm
-	'Background Publishing Done' => '公開作業を完了しました。',
-	'Published: [_1]' => '[_1]を公開しました。',
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
 
 ## lib/MT/ObjectAsset.pm
@@ -1546,6 +1546,7 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'VoxとLiveJournal、あるいはOpenIDでコメント投稿者を認証するために必要になります。',
 	'This module is required for sending mail via SMTP Server.' => 'SMTPサーバーを経由してメールを送信する場合に必要になります。',
 	'This module is used in test attribute of MTIf conditional tag.' => 'MTIfタグの機能で使われます。',
+	'This module is used by the Markdown text filter.' => 'Markdown形式を利用するために必要です。',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'ファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
 	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
 
@@ -1733,7 +1734,6 @@ use vars qw( @ISA %Lexicon );
 	'No entry was specified; perhaps there is a template problem?' => 'ブログ記事が指定されていません。テンプレートに問題があるかもしれません。',
 	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとしたブログ記事がありません。',
 	'Invalid entry ID provided' => 'ブログ記事のIDが不正です。',
-	'Invalid commenter ID' => 'コメント投稿者のIDが不正です。',
 	'All required fields must have valid values.' => '必須フィールドのすべてに正しい値を設定してください。',
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
@@ -1761,7 +1761,6 @@ use vars qw( @ISA %Lexicon );
 	'Sign in requires a secure signature.' => 'サインインにはセキュリティトークンが必要です。',
 	'The sign-in validation failed.' => 'サインインの検証に失敗しました。',
 	'This weblog requires commenters to pass an email address. If you\'d like to do so you may log in again, and give the authentication service permission to pass your email address.' => 'このブログは、コメントの際にメールアドレスを必ず通知するように要求しています。メールアドレスを通知しない限り、コメントを投稿できません。',
-	'This blog requires commenters to provide an email address' => 'メールアドレスを記入しないとコメントは投稿できません。',
 	'Couldn\'t get public key from url provided' => '指定されたURLから公開キーを取得できませんでした。',
 	'No public key could be found to validate registration.' => '登録状況を検査するための公開キーが見つかりませんでした。',
 	'TypeKey signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypeKey signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]',
@@ -1780,6 +1779,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'アーカイブインデックス',
 	'Stylesheet' => 'スタイルシート',
+	'JavaScript' => 'JavaScript',
 	'Feed - Recent Entries' => '最新記事のフィード',
 	'RSD' => 'RSD',
 	'Monthly Entry Listing' => '月別ブログ記事リスト',

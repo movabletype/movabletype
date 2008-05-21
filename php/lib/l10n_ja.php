@@ -62,6 +62,8 @@ $Lexicon_ja = array(
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
+## php/lib/function.mtcommentauthor.php
+
 ## php/lib/function.mtcommentreplylink.php
 	'Reply' => '返信',
 
