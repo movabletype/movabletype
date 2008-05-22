@@ -249,6 +249,7 @@ sub add_column_sql {
             $default_value = $dbh->quote($default_value);
         }
         push @stmt, "ALTER TABLE $table_name ALTER COLUMN ${field_prefix}_${name} SET DEFAULT " . $default_value;
+        push @stmt, "UPDATE $table_name SET ${field_prefix}_${name} = $default_value WHERE ${field_prefix}_${name} IS NULL";
     }
     if ($def->{key}) {
         push @stmt, "ALTER TABLE $table_name ADD PRIMARY KEY (${field_prefix}_${name})";
