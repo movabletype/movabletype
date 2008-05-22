@@ -2394,7 +2394,8 @@ sub load_widgets {
         my $widget_param = $widgets->{$widget_id} ||= {};
         my $order;
         if (!($order = $widget_param->{order})) {
-            $order = ++$order_num;
+            $order = $all_widgets->{$widget_id}{order};
+            $order = ++$order_num unless defined $order;
             $widget_param->{order} = $order_num;
             $resave_widgets = 1;
         }

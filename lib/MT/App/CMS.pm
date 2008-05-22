@@ -814,8 +814,7 @@ sub core_list_filters {
                     $from .= '000000';
                     $to = undef unless $to =~ m/^\d{8}$/;
                     $to .= '235959';
-                    $terms->{authored_on} =
-                      [ MT::Object::ts2db($from), MT::Object::ts2db($to) ];
+                    $terms->{authored_on} = [ $from, $to ];
                     $args->{range_incl}{authored_on} = 1;
                 },
             },

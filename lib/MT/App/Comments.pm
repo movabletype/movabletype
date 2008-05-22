@@ -991,7 +991,7 @@ sub post {
         $app->publisher->start_time(time);
         # Rebuild the entry synchronously so that if the user gets
         # redirected to the indiv. page it will be up-to-date.
-        $app->rebuild_entry( Entry => $entry->id, Force => 1, PreferredArchiveOnly => 1 )
+        $app->rebuild_entry( Entry => $entry->id, PreferredArchiveOnly => 1 )
           or return $app->handle_error(
             $app->translate( "Publish failed: [_1]", $app->errstr ) );
     }
