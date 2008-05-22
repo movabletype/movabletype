@@ -96,13 +96,6 @@
     /* ]]> */
     </script>
 </mt:setvarblock>
-<mt:setvarblock name="object_nav">
-    <ul class="object-nav"> 
-        <li id="previous-link"><mt:if name="previous_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Previous"></a><mt:else><span><__trans phrase="Previous"></span></mt:if></li>
-        <li id="manage-link"><a href="<$mt:var name="script_url"$>?__mode=list_<$mt:var name="object_type" lower_case="1"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Assets"></a></li>
-        <li id="next-link"><mt:if name="next_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"></a><mt:else><span><__trans phrase="Next"></span></mt:if></li> 
-    </ul>
-</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 <div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
     <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
