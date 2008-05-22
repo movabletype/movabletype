@@ -442,17 +442,22 @@
             </ul>
         </mtapp:setting>
 
+        <mt:unless name="new_object">
+            <mt:if name="has_any_pinged_urls">
+                <$mt:setvar name="show_ping_urls_hint" value="1"$>
+                <mt:setvarblock name="ping_urls_hint">
+                <a href="javascript:void(0)" onclick="listPreviousPings(); return false"><__trans phrase="View Previously Sent TrackBacks"></a>
+                </mt:setvarblock>
+            </mt:if>
+        </mt:unless>
         <mtapp:setting
             id="ping_urls"
             label="<__trans phrase="Outbound TrackBack URLs">"
+            hint="$ping_urls_hint"
+            show_hint="$show_ping_urls_hint"
             help_page="entries"
             help_section="urls_to_ping">
                 <textarea name="to_ping_urls" id="to_ping_urls" class="full-width short" tabindex="16" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
-            <mt:unless name="new_object">
-                <mt:if name="has_any_pinged_urls">
-                <div id="sent-tb"><a href="javascript:void(0)" onclick="listPreviousPings(); return false"><__trans phrase="View Previously Sent TrackBacks"></a></div>
-                </mt:if>
-            </mt:unless>
         </mtapp:setting>
 
     </mtapp:widget>
@@ -1039,6 +1044,7 @@ function listPreviousPings () {
         shown="$disp_prefs_show_tags"
         label="<__trans phrase="Tags">"
         label_class="top-label"
+        hint="$tags_hint"
         help_page="entries"
         help_section="entry_tags">
         <div class="textarea-wrapper">
