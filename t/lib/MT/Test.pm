@@ -86,7 +86,6 @@ sub init_testdb {
     MT::Upgrade->register_upgrade_function({
         core_seed_database     => { code => sub { 1 } },
         core_upgrade_templates => { code => sub { 1 } },
-        core_upgrade_templates => { code => sub { 1 } },
         core_finish            => { code => sub { 1 } },
     });
     $pkg->init_db();
@@ -151,6 +150,7 @@ sub init_upgrade {
         MT::Entry->remove;
         MT::Comment->remove;
     };
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     1;
 }
