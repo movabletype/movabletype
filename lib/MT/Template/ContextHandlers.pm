@@ -13705,6 +13705,8 @@ sub _hdlr_assets {
     return $ctx->error(MT->translate('sort_by="score" must be used in combination with namespace.'))
         if ((exists $args->{sort_by}) && ('score' eq $args->{sort_by}) && (!exists $args->{namespace}));
 
+    my $class_type = $args->{class_type} || 'asset';
+    my $class = MT->model($class_type);
     my $assets;
     my $tag = lc $ctx->stash('tag');
     if ($tag eq 'entryassets' || $tag eq 'pageassets') {
@@ -13784,16 +13786,23 @@ sub _hdlr_assets {
                     join => ['MT::ObjectTag', 'tag_id', { blog_id => $blog_id, object_datasource => MT::Asset->datasource }]
         }) ];
         my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
-
         if ($cexpr) {
-            my %map;
-            for my $tag (@$tags) {
-                my $iter = MT::ObjectTag->load_iter({ tag_id => $tag->id, blog_id => $blog_id, object_datasource => MT::Asset->datasource });
-                while (my $et = $iter->()) {
-                    $map{$et->object_id}{$tag->id}++;
-                }
-                                                                                                                                                                                    }
-            push @filters, sub { $cexpr->($_[0]->id, \%map) };
+            my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
+            my $preloader = sub {
+                my ($entry_id) = @_;
+                my $terms = {
+                    tag_id            => \@tag_ids,
+                    object_id         => $entry_id,
+                    object_datasource => $class->datasource,
+                    %blog_terms,
+                };
+                my $args = { %blog_args, fetchonly => ['tag_id'] };
+                my @ot_ids = MT::ObjectTag->load( $terms, $args );
+                my %map;
+                $map{ $_->tag_id } = 1 for @ot_ids;
+                \%map;
+            };
+            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
         } else {
             return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tags} || $args->{tag}));
         }
