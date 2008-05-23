@@ -9,8 +9,9 @@ use XML::XPath;
 use XML::Atom;
 use XML::Atom::Feed;
 use XML::Atom::Entry;
+use POSIX qw( ceil );
 
-use Test::More tests => 97;
+use Test::More qw( no_plan );#tests => 97;
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
@@ -499,6 +500,84 @@ COMMENT:
     else {
         die $resp->content();
     }
+}
+
+sub _test_limit_offset {
+    my ( $uri, $url, $limit, $total, $desc ) = @_;
+    my %items;
+    for ( my $i = 0; $i < ceil($total/$limit); $i++ ) {
+        my $wsse_header = make_wsse($chuck_token);
+        my $req = new HTTP::Request(GET => $uri);
+        $req->header('Authorization' => 'Atom');
+        $req->header('X-WSSE' => $wsse_header);
+
+        my $resp = $ua->request($req);
+        if (ok($resp->is_success)) {
+            my $thr_ns = XML::Atom::Namespace->new(prefix => undef, uri => 'http://purl.org/syndication/thread/1.0');
+            my $items = XML::Atom::Feed->new(\$resp->content());
+            ok ($items, 'items retrieved');
+            if ( $total >= $limit * ($i+1) ) {
+                is( scalar($items->entries), $limit, 'limit applied ' . $desc );
+            }
+            else {
+                ok( scalar($items->entries) < $limit, 'limit applied ' . $desc );
+            }
+            foreach my $c ( $items->entries ) {
+                my $id = $c->id;
+                die unless $id;
+                ok( !exists($items{$id}), 'no dupe items - offset applied ' . $desc );
+                $items{$id} = 1;
+            }
+        }
+        else {
+            die $resp->content();
+        }
+        $uri->path($url . '/offset=' . ($limit*($i+1)));
+    }
+}
+
+#offset and limit
+{
+    my $uri = new URI;
+    my $limit = 3;
+    my $url = "/mt-atom.cgi/1.0/blog_id=1/limit=$limit";
+    $uri->path($url);
+
+    my $count = MT::Entry->count({
+        blog_id => 1
+    });
+
+    &_test_limit_offset( $uri, $url, $limit, $count, 'blog entries');
+
+    $url = "/mt-atom.cgi/comments/blog_id=1/limit=$limit";
+    $uri->path($url);
+
+    my $count = MT::Comment->count({
+        blog_id => 1, visible => 1
+    });
+
+    &_test_limit_offset( $uri, $url, $limit, $count, 'blog comments');
+
+    my $iter = MT::Comment->count_group_by(
+        { blog_id => 1, visible => 1 },
+        { group => ['entry_id'], sort => [ { desc => 'DESC', column => '1' } ]
+        }
+    );
+
+    $limit = 2;
+    my $eid;
+    while ( ( $count, $eid ) = $iter->() ) {
+        if ( $count > 2 ) {
+            $iter->('finish');
+            last;
+        }
+    }
+    die unless $eid;
+
+    $url = "/mt-atom.cgi/comments/blog_id=1/entry_id=$eid/limit=$limit";
+    $uri->path($url);
+
+    &_test_limit_offset($uri, $url, $limit, $count, 'entry comments');
 }
 
 END {

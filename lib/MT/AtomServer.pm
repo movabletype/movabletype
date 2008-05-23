@@ -700,8 +700,7 @@ sub get_posts {
     my $blog = $app->{blog};
     my %terms = (blog_id => $blog->id);
     my %arg = (sort => $app->get_posts_order_field, direction => 'descend');
-    my $Limit = 20;
-    $arg{limit} = $Limit + 1;
+    $arg{limit}  = $app->{param}{limit}  || 21;
     $arg{offset} = $app->{param}{offset} || 0;
     my $iter = MT::Entry->load_iter(\%terms, \%arg);
     my $feed = $app->new_feed();
@@ -1104,8 +1103,7 @@ sub get_blog_comments {
     my $blog = $app->{blog};
     my %terms = (blog_id => $blog->id, visible => 1);
     my %arg = (sort => $app->get_posts_order_field, direction => 'descend');
-    my $Limit = 20;
-    $arg{limit} = $Limit + 1;
+    $arg{limit}  = $app->{param}{limit}  || 21;
     $arg{offset} = $app->{param}{offset} || 0;
 
     my $feed = $app->new_feed();
@@ -1140,8 +1138,7 @@ sub get_comments {
         or return $app->error(400, "Invalid entry_id");
     my %terms = (blog_id => $blog->id, entry_id => $entry->id, visible => 1);
     my %arg = (sort => $app->get_posts_order_field, direction => 'descend');
-    my $Limit = 20;
-    $arg{limit} = $Limit + 1;
+    $arg{limit}  = $app->{param}{limit}  || 21;
     $arg{offset} = $app->{param}{offset} || 0;
 
     my $feed = $app->new_feed();
