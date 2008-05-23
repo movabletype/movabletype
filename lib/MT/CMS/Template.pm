@@ -216,16 +216,30 @@ sub edit {
                         direction => 'descend',
                     }
                 );
-                push @widget_sets, {
-                    include_link => $app->mt_uri(
-                        mode => 'edit_widget',
-                        args => {
-                            blog_id => $wset->blog_id,
-                            id => $wset->id,
-                        },
-                    ),
-                    include_module => $name,
-                };
+                if ( $wset ) {
+                    push @widget_sets, {
+                        include_link => $app->mt_uri(
+                            mode => 'edit_widget',
+                            args => {
+                                blog_id => $wset->blog_id,
+                                id => $wset->id,
+                            },
+                        ),
+                        include_module => $name,
+                    };
+                }
+                else {
+                    push @widget_sets, {
+                        create_link => $app->mt_uri(
+                            mode => 'edit_widget',
+                            args => {
+                                blog_id => $blog_id,
+                                name    => $name
+                            },
+                        ),
+                        include_module => $name,
+                    };
+                }
             }
             $param->{widget_set_loop} = \@widget_sets if @widget_sets;
         }
@@ -2162,6 +2176,7 @@ sub edit_widget {
 
     my $q       = $app->param();
     my $id      = scalar($q->param('id')) || $opt{id};
+    my $name    = scalar($q->param('name'));
     my $blog_id = scalar $q->param('blog_id') || 0;
 
     my $tmpl_class = $app->model('template');
@@ -2183,10 +2198,14 @@ sub edit_widget {
         blog_id      => $blog_id,
         search_type  => "template",
         search_label => MT::Template->class_label_plural,
-        $id ? ( id => $id ) : (), 
         exists($opt{rebuild}) ? ( rebuild => $opt{rebuild} ) : (),
         exists($opt{error}) ? ( error => $opt{error} ) : (),
-        exists($opt{saved}) ? ( saved => $opt{saved} ) : ()
+        exists($opt{saved}) ? ( saved => $opt{saved} ) : (),
+        $id
+          ? ( id => $id )
+          : $name
+            ? ( name => $name )
+            : (),
     };
     if ($blog_id) {
         my $blog = $app->blog;
