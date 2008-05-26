@@ -55,11 +55,6 @@ sub core_parameters {
         params => [ qw( searchTerms search count limit startIndex offset
             category author )],
         types  => {
-            #author => {
-            #    columns => [ qw( name nickname email url ) ],
-            #    'sort' => 'created_on',
-            #    terms   => { status => 1 }, #MT::Author::ACTIVE()
-            #},
             entry => {
                 columns => {
                     title     => 'like',
