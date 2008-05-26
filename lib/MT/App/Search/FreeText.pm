@@ -14,11 +14,13 @@ sub id { 'new_search' }
 
 sub query_parse {
     my $app = shift;
-    my ( $columns ) = @_;
+    my ( %columns ) = @_;
+
+    my @column_names = keys %columns;
 
     my $args = {
       'freetext' => {
-        columns       => $columns,
+        columns       => \@column_names,
         search_string => $app->{search_string}
       }
     };
