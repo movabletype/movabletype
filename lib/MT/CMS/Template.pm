@@ -26,6 +26,9 @@ sub edit {
             || $type eq 'index';
     }
 
+    # to trigger autosave logic in main edit routine
+    $param->{autosave_support} = 1;
+
     my $type = $q->param('_type');
     my $blog = $app->blog;
     my $cfg = $app->config;
