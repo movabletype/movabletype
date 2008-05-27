@@ -414,7 +414,9 @@ COMMENT:
     #$p->reset;
     #print "$_\n" foreach @{$p->query_log};
     my ( $count, $eid ) = $iter->();
-    $iter->('finish');
+    # finish iterator cleanly
+    while ( my @dump = $iter->() ) {}
+
     my $entry = MT::Entry->load($eid);
 
     my $wsse_header = make_wsse($chuck_token);
@@ -568,10 +570,11 @@ sub _test_limit_offset {
     my $eid;
     while ( ( $count, $eid ) = $iter->() ) {
         if ( $count > 2 ) {
-            $iter->('finish');
             last;
         }
     }
+    # finish iterator cleanly
+    while ( my @dump = $iter->() ) {}
     die unless $eid;
 
     $url = "/mt-atom.cgi/comments/blog_id=1/entry_id=$eid/limit=$limit";
