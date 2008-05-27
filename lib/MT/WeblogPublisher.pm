@@ -1734,7 +1734,7 @@ sub archive_file_for {
     $file_tmpl ||= '';
     my ($ctx);
     if ( $file_tmpl =~ m/\%[_-]?[A-Za-z]/ ) {
-        if ( $file_tmpl =~ m/<\$?MT/ ) {
+        if ( $file_tmpl =~ m/<\$?MT/i ) {
             $file_tmpl =~
 s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '">'!gie;
         }
