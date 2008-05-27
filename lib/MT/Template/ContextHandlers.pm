@@ -12032,11 +12032,19 @@ sub _hdlr_categories {
         $class_type eq 'category' ? 'entry' : 'page');
 
     # issue a single count_group_by for all categories
-    my $cnt_iter = MT::Placement->count_group_by({
-        %terms
-    }, { group => [ 'category_id' ],
-        join => $entry_class->join_on('id', { status => MT::Entry::RELEASE() }),
-    });
+    my $cnt_iter = MT::Placement->count_group_by(
+        {%terms},
+        {
+            group => ['category_id'],
+            join  => $entry_class->join_on(
+                undef,
+                {
+                    id     => \'=placement_entry_id',
+                    status => MT::Entry::RELEASE()
+                }
+            ),
+        }
+    ); 
     my %counts;
     while (my ($count, $cat_id) = $cnt_iter->()) {
         $counts{$cat_id} = $count;
