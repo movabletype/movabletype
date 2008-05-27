@@ -57,8 +57,13 @@ sub save_config {
         $param{$_} = $q->param($_);
     }
     if ( $profile && $profile->{object} ) {
+        my $plugin = $profile->{object};
+        $plugin->error(undef);
         $profile->{object}
           ->save_config( \%param, $blog_id ? 'blog:' . $blog_id : 'system' );
+        if ( $plugin->errstr ) {
+            return $app->error("Error saving plugin settings: " . $plugin->errstr);
+        }
     }
 
     $app->add_return_arg( saved => 1 );
