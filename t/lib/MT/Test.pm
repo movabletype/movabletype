@@ -522,7 +522,7 @@ It\'s a hard rain\'s a-gonna fall',
             url => 'http://fatman.com/',
             blog_id => 1,
             ip => '127.0.0.1',
-            created_on => '20040914182800',
+            created_on => '20040714182800',
         });
         $cmt->id(1);
         $cmt->save() or die "Couldn't save comment record 1: ".$cmt->errstr;
@@ -628,7 +628,7 @@ It\'s a hard rain\'s a-gonna fall',
             url => '',
             blog_id => 1,
             ip => '127.0.0.1',
-            created_on => '20040814182800',
+            created_on => '20040614182800',
         });
         $cmt->id(6);
         $cmt->save() or die "Couldn't save comment record 6: ".$cmt->errstr;
