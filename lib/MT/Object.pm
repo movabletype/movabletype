@@ -1205,7 +1205,11 @@ sub cache_property {
         $oc = {};
         $r->cache('object_cache', $oc);
     }
-    $oc = $oc->{"$obj"} ||= {};
+
+    my $pk = $obj->primary_key;
+    $pk = join ":", @$pk if ref $pk;
+    $oc = $oc->{ref($obj). ':' . $pk} ||= {};
+
     if (@_) {
         $oc->{$key} = $_[0];
     } else {
