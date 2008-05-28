@@ -386,7 +386,11 @@ sub list_tag_for {
 
     $arg{'sort'} = 'name';
     $arg{limit} = $limit + 1;
-    if ( $total && $offset > $total - 1 ) {
+    if ( $total <= $limit ) {
+        delete $arg{limit};
+        $offset = 0;
+    }
+    elsif ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
     elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {

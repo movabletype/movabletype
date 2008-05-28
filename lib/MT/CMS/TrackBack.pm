@@ -244,14 +244,18 @@ sub list {
     $arg{'sort'}    = 'created_on';
     $arg{direction} = $sort_direction;
     $arg{limit}     = $limit + 1;
-    if ( $total && $offset > $total - 1 ) {
+    if ( $total <= $limit ) {
+        delete $arg{limit};
+        $offset = 0;
+    }
+    elsif ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
     elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
-        $arg{offset} = $offset = 0;
+        $arg{offset} = $offset = $total - $limit;
     }
-    elsif ($offset) {
-        $arg{offset} = $offset;
+    else {
+        $arg{offset} = $offset if $offset;
     }
 
     my $iter = $class->load_iter( \%terms, \%arg );

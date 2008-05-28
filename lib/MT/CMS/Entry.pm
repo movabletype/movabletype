@@ -558,11 +558,15 @@ sub list {
     $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
     $arg{direction} = 'descend';
     $arg{limit}     = $limit + 1;
-    if ( $total && $offset > $total - 1 ) {
+    if ( $total <= $limit ) {
+        delete $arg{limit};
+        $offset = 0;
+    }
+    elsif ( $total && $offset > $total - 1 ) {
         $arg{offset} = $offset = $total - $limit;
     }
     elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
-        $arg{offset} = $offset = 0;
+        $arg{offset} = $offset = $total - $limit;
     }
     else {
         $arg{offset} = $offset if $offset;
