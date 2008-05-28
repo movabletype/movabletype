@@ -5510,7 +5510,7 @@ sub _hdlr_set_var {
     elsif ($args->{append}) {
         $val = $existing . $val;
     }
-    elsif ( defined($existing) && ( my $op = $args->{op} ) ) {
+    elsif ( $existing ne '' && ( my $op = $args->{op} ) ) {
         $val = _math_operation($ctx, $op, $existing, $val);
     }
 
