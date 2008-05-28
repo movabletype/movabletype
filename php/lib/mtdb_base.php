@@ -748,6 +748,7 @@ class MTDatabaseBase extends ezsql {
             $class = 'entry';
         }
         $class_filter = "and entry_class='$class'";
+        if ($args['class'] == '*') $class_filter = '';
         
         $join_score = "";
         $distinct = "";

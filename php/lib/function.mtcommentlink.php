@@ -11,11 +11,14 @@ function smarty_function_mtcommentlink($args, &$ctx) {
     $e = $ctx->stash('entry');
     $need_clear = false;
     if (empty($e)) {
-        $e = $ctx->mt->db->fetch_entry($c['comment_entry_id']);
+        $entries = $ctx->mt->db->fetch_entries(
+            array('entry_id' => $c['comment_entry_id'], 'class' => '*'));
+        $e = $entries[0];
         $ctx->stash('entry', $e);
         $need_clear = true;
     }
-    $entry_link = $ctx->tag('EntryPermalink', $args);
+    if (empty($e)) return '';
+    $entry_link = $ctx->tag($e['entry_class'].'Permalink', $args);
     $entry_link .= '#comment-' . $c['comment_id'];
 
     if ($need_clear)
