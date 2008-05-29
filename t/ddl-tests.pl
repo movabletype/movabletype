@@ -31,7 +31,7 @@ BEGIN {
         if !-r $ENV{MT_CONFIG};
 }
 
-plan tests => 30;
+plan tests => 41;
 
 
 package Ddltest;
@@ -63,9 +63,11 @@ __PACKAGE__->install_properties({
         datetime_nn  => 'datetime not null',
     },
     indexes => {
-        name       => 1,
-        status     => 1,
-        created_on => 1,
+        string_25_nn => 1,
+        int_small_nn => 1,
+        string_dt  => {
+            columns => [ qw( string_25 datetime_nn ) ],
+        },
     },
     audit       => 1,
     datasource  => 'ddltest',
@@ -162,11 +164,34 @@ is_def($defs->{blob_nn},      _def(0, 1, 'blob'),         'Ddltest blob_nn colum
 is_def($defs->{datetime},     _def(0, 0, 'datetime'),     'Ddltest datetime column def is correct');
 is_def($defs->{datetime_nn},  _def(0, 1, 'datetime'),     'Ddltest datetime_nn column def is correct');
 
-    # audit fields
+# audit fields
 is_def($defs->{created_on},  _def(0, 0, 'datetime'), 'Ddltest created_on column def is correct');
 is_def($defs->{created_by},  _def(0, 0, 'integer'),  'Ddltest created_by column def is correct');
 is_def($defs->{modified_on}, _def(0, 0, 'datetime'), 'Ddltest modified_on column def is correct');
 is_def($defs->{modified_by}, _def(0, 0, 'integer'),  'Ddltest modified_by column def is correct');
+
+
+ok(!defined MT::Object->driver->dbd->ddl_class->index_defs('Ddltest'), q{Ddltest table's indexes are not yet created});
+
+my @index_sql = $ddl_class->index_table_sql('Ddltest');
+ok(@index_sql, 'Index Table SQL for Ddltest is available');
+is(scalar @index_sql, 3, 'Index Table SQL has 4 statements');
+for my $index_sql (@index_sql) {
+    $res = $dbh->do($index_sql);
+    ok($res, 'Driver could perform Index Table SQL for Ddltest');
+    if (!$res) {
+        diag($dbh->errstr || $DBI::errstr);
+        diag('SQL: ' . $index_sql);
+    }
+}
+
+my $index_defs = MT::Object->driver->dbd->ddl_class->index_defs('Ddltest');
+ok($index_defs, 'Ddltest table has index defs');
+
+is(keys %$index_defs, 3, 'Ddltest table has three indexes');
+is($index_defs->{string_25_nn}, 1, 'Ddltest table has name index');
+is($index_defs->{int_small_nn}, 1, 'Ddltest table has status index');
+is_deeply($index_defs->{string_dt}, { columns => [ qw( string_25 datetime_nn ) ] }, 'Ddltest table has multi-column string_dt index');
 
 1;
 
