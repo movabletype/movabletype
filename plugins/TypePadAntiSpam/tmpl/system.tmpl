@@ -1,0 +1,24 @@
+<div class="field field-left-label pkg">
+    <div class="field-inner">
+        <div class="field-header">
+            <label for="tpas_api_key"><MT_TRANS phrase="API Key"></label>
+        </div>
+        <div class="field-content">
+            <div class="textarea-wrapper"><input type="text" size="15" id="tpas_api_key" name="api_key" value="<TMPL_VAR NAME=API_KEY ESCAPE=HTML>" /></div>
+            <TMPL_UNLESS NAME=API_KEY>
+            <p class="hint"><MT_TRANS phrase="To enable this plugin, you'll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below." params='<a href="http://antispam.typepad.com/" target="_blank">%%</a>'></p>
+            </TMPL_UNLESS>
+        </div>
+    </div>
+</div>
+<div class="field field-left-label pkg">
+    <div class="field-inner">
+        <div class="field-header">
+            <label for="tpas_service_host"><MT_TRANS phrase="Service Host"></label>
+        </div>
+        <div class="field-content">
+            <div class="textarea-wrapper"><input type="text" size="40" name="service_host" id="tpas_service_host" value="<TMPL_VAR NAME=SERVICE_HOST ESCAPE=HTML>" /></div>
+            <p class="hint"><MT_TRANS phrase="The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API."></p>
+        </div>
+    </div>
+</div>
