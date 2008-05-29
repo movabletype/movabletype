@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::es;
 use strict;
@@ -35,6 +35,9 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtwidgetmanager.php
 	'Error: widgetset [_1] is empty.' => 'Error: el conjunto de widgets [_1] está vacío',
 	'Error compiling widgetset [_1]' => 'Error compilando el conjunto de widgets [_1]',
+
+## php/lib/function.mtcommentauthor.php
+	'Anonymous' => 'Anónimo',
 
 ## php/lib/archive_lib.php
 	'Page' => 'Página',
@@ -77,7 +80,6 @@ use vars qw( @ISA %Lexicon );
 	'Type the characters you see in the picture above.' => 'Introduzca los caracteres que ve en la imagen de arriba.',
 
 ## php/lib/function.mtcommentauthorlink.php
-	'Anonymous' => 'Anónimo',
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
@@ -248,7 +250,6 @@ use vars qw( @ISA %Lexicon );
 	'Report comment as spam:' => 'Reportar el comentario como spam:',
 
 ## default_templates/signin.mtml
-	'JavaScript' => 'JavaScript',
 	'Sign In' => 'Registrarse',
 	'You are signed in as ' => 'Se identificó como ',
 	'sign out' => 'salir',
@@ -286,7 +287,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/trackbacks.mtml
 	'No TrackBacks' => 'Sin trackbacks',
-	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'URL de TrackBack: <span id="trackbacks-link">[_1]</span>',
+	'TrackBack URL: [_1]' => 'URL de TrackBack: [_1]', # Translate - New
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> desde [_3] en <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Leer más</a>',
 
@@ -296,14 +297,13 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,minute,minutes] ago' => 'hace [quant,_1,minute,minutes]',
 	'[quant,_1,day,days] ago' => 'hace [quant,_1,día,días]',
 	'<a href="[_1]">Edit</a>' => '<a href="[_1]">Editar</a>',
-	'Submit' => 'Enviar',
-	'Preview' => 'Vista previa',
-	'Signing in...' => 'Iniciando sesión...', # Translate - New
+	'Your session has expired. Please sign in again to comment.' => 'La sesión ha caducado. Por favor, identifíquese de nuevo para comentar.', # Translate - New
+	'Signing in...' => 'Iniciando sesión...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'No tiene permisos para comentar en este blog ([_1]cerrar sesión[_2])',
 	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => 'Gracias por registrarse, [_1]. ([_2]cerrar sesión[_3])',
 	'[_1]Sign in[_2] to comment.' => '[_1]Iniciar una sesión[_2].',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'Para comentar [_1]inicie una sesión[_2] o hágalo de forma anónima.',
-	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Respondiendo al <a href="[_1]" onclick="[_2]">comentario de [_3]</a>', # Translate - New
+	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Respondiendo al <a href="[_1]" onclick="[_2]">comentario de [_3]</a>',
 
 ## default_templates/archive_index.mtml
 	'Author Archives' => 'Archivos por autor',
@@ -347,6 +347,8 @@ use vars qw( @ISA %Lexicon );
 	'Email Address' => 'Dirección de correo electrónico',
 	'Remember personal info?' => '¿Recordar datos personales?',
 	'(You may use HTML tags for style)' => '(Puede usar etiquetas HTML para el estilo)',
+	'Preview' => 'Vista previa',
+	'Submit' => 'Enviar',
 
 ## default_templates/monthly_entry_listing.mtml
 
@@ -369,7 +371,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_preview.mtml
 	'Previewing your Comment' => 'Vista previa del comentario',
-	'Replying to comment from [_1]' => 'Respondiendo al comentario de [_1]', # Translate - New
+	'Replying to comment from [_1]' => 'Respondiendo al comentario de [_1]',
 	'Cancel' => 'Cancelar',
 
 ## default_templates/powered_by.mtml
@@ -604,7 +606,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'Asignando nombre base a los autores...',
 	'Assigning entry comment and TrackBack counts...' => 'Asignando totales de comentarios y trackbacks de las entradas...',
 	'Assigning embedded flag to asset placements...' => 'Asignando marca a los elementos empotrados...',
-	'Replacing file formats to use CategoryLabel tag...' => 'Reemplazando los formatos de fichero para usar la etiqueta CategoryLabel...', # Translate - New
+	'Replacing file formats to use CategoryLabel tag...' => 'Reemplazando los formatos de fichero para usar la etiqueta CategoryLabel...',
 
 ## lib/MT/Core.pm
 	'System Administrator' => 'Administrador del sistema',
@@ -702,8 +704,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'por día y autor',
-	'author-display-name/yyyy/mm/dd/index.html' => 'pseudónimo-autor/aaaa/mm/dd/index.html',
-	'author_display_name/yyyy/mm/dd/index.html' => 'pseudónimo_autor/aaaa/mm/dd/index.html',
+	'author/author-display-name/yyyy/mm/dd/index.html' => 'autor/nombre-público-autor/aaaa/mm/dd/index.html', # Translate - New
+	'author/author_display_name/yyyy/mm/dd/index.html' => 'autor/nombre-público-autor/aaaa/mm/dd/index.html', # Translate - New
 
 ## lib/MT/ArchiveType/Individual.pm
 	'INDIVIDUAL_ADV' => 'por entrada',
@@ -829,7 +831,6 @@ use vars qw( @ISA %Lexicon );
 	'The sign-in validation failed.' => 'Falló el registro de validación.',
 	'This weblog requires commenters to pass an email address. If you\'d like to do so you may log in again, and give the authentication service permission to pass your email address.' => 'Este weblog obliga a que los comentaristas den su dirección de correo electrónico. Si lo desea puede iniciar una sesión de nuevo, y dar al servicio de autentificación permisos para pasar la dirección de correo electrónico.',
 	'Couldn\'t save the session' => 'No se pudo guardar la sesión',
-	'This blog requires commenters to provide an email address' => 'Para hacer comentarios en este blog debe tener una dirección de correo electrónico',
 	'Couldn\'t get public key from url provided' => 'No se pudo obtener la clave pública desde la URL indicada',
 	'No public key could be found to validate registration.' => 'No se encontró la clave pública para validar el registro.',
 	'TypeKey signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'La firma TypeKey signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]',
@@ -1403,7 +1404,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning' => 'Alerta',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
 	'No [_1] could be found.' => 'No se encontraron [_1].',
-	'records' => 'registros', # Translate - New
+	'records' => 'registros',
 	'Invalid tag [_1] specified.' => 'Especificada etiqueta no válida [_1].',
 	'No template to include specified' => 'No se especificó plantilla a incluir',
 	'Recursion attempt on [_1]: [_2]' => 'Intento de recursión en [_1]: [_2]',
@@ -1509,7 +1510,6 @@ que la dirección provista es correcta y le pertenece.',
 	'No entry was specified; perhaps there is a template problem?' => 'No se especificó ninguna entrada; ¿quizás hay un problema con la plantilla?',
 	'Somehow, the entry you tried to comment on does not exist' => 'De alguna manera, la entrada en la que intentó comentar no existe',
 	'Invalid entry ID provided' => 'ID de entrada provisto no válido',
-	'Invalid commenter ID' => 'ID de comentarista no válido',
 	'All required fields must have valid values.' => 'Todos los campos obligatorios deben tener valores válidos.',
 	'Commenter profile has successfully been updated.' => 'Se actualizó con éxito el perfil del comentarista.',
 	'Commenter profile could not be updated: [_1]' => 'No se pudo actualizar el perfil del comentarista: [_1]',
@@ -1523,7 +1523,7 @@ que la dirección provista es correcta y le pertenece.',
 	'No search term was specified.' => 'No se especificó ningún término para la búsqueda.',
 	'Invalid value: [_1]' => 'Valor no válido: [_1]',
 	'No column was specified to search for [_1].' => 'No se especificó ninguna columna para la búsqueda de [_1].',
-	'The search you conducted has timed out.  Please simplify your query and try again.' => 'La búsqueda que realizaba sobrepasó el tiempo. Por favor, simplifique la consulta e inténtelo de nuevo.', # Translate - New
+	'The search you conducted has timed out.  Please simplify your query and try again.' => 'La búsqueda que realizaba sobrepasó el tiempo. Por favor, simplifique la consulta e inténtelo de nuevo.',
 
 ## lib/MT/App/Trackback.pm
 	'Invalid entry ID \'[_1]\'' => 'ID de entrada no válido \'[_1]\'',
@@ -1578,6 +1578,7 @@ que la dirección provista es correcta y le pertenece.',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Este módulo y sus dependencias son necesarios para permitir que los comentaristas se autentifiquen a través de proveedores de OpenID, incluyendo Vox y LiveJournal.',
 	'This module is required for sending mail via SMTP Server.' => 'Este módulo es necesario para el envío de correo a través de servidores SMTP.',
 	'This module is used in test attribute of MTIf conditional tag.' => 'Este módulo se utiliza en el atributo test de la etiqueta MTIf.',
+	'This module is used by the Markdown text filter.' => 'El filtro de textos Markdown utiliza este módulo.', # Translate - New
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Este módulo es necesario para subir archivos (para determinar el tamaño de las imágenes en diferentes formatos).',
 	'This module is required for cookie authentication.' => 'Este módulo es necsario para la autentificación con cookies.',
 	'DBI is required to store data in database.' => 'DBI es necesario para guardar información en bases de datos.',
@@ -1620,7 +1621,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Remove Tags...' => 'Borrar entradas...',
 	'Tags to remove from selected entries' => 'Etiquetas a borrar de las entradas seleccionadas',
 	'Batch Edit Entries' => 'Editar entradas en lote',
-	'Publish Pages' => 'Publicar páginas', # Translate - New
+	'Publish Pages' => 'Publicar páginas',
 	'Unpublish Pages' => 'Despublicar páginas',
 	'Tags to add to selected pages' => 'Etiquetas a añadir a las páginas seleccionadas',
 	'Tags to remove from selected pages' => 'Etiquetas a eliminar de las páginas seleccionadas',
@@ -1861,6 +1862,7 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'Índice de archivos',
 	'Stylesheet' => 'Hoja de estilo',
+	'JavaScript' => 'JavaScript',
 	'Feed - Recent Entries' => 'Sindicación - Entradas recientes',
 	'RSD' => 'RSD',
 	'Monthly Entry Listing' => 'Lista mensual de entradas',
@@ -2171,12 +2173,12 @@ que la dirección provista es correcta y le pertenece.',
 	'Template Type' => 'Tipo de plantilla',
 	'Custom Index Template' => 'Plantilla índice personalizada',
 	'Link to File' => 'Enlazar a archivo',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => 'Consulte más información sobre las <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">opciones de publicación</a>', # Translate - New
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => 'Consulte más información sobre las <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">opciones de publicación</a>',
 	'Create Archive Mapping' => 'Crear mapeado de archivos',
 	'Type' => 'Tipo',
 	'Add' => 'Crear',
-	'Statically (default)' => 'Estáticamente (por defecto)', # Translate - New
-	'Via Publish Queue' => 'Vía cola de publicación', # Translate - New
+	'Statically (default)' => 'Estáticamente (por defecto)',
+	'Via Publish Queue' => 'Vía cola de publicación',
 	'On a schedule' => 'Programado',
 	': every ' => ': cada ',
 	'minutes' => 'minutos',
@@ -2184,7 +2186,7 @@ que la dirección provista es correcta y le pertenece.',
 	'days' => 'días',
 	'Dynamically' => 'Dinámicamente',
 	'Manually' => 'Manualmente',
-	'Do Not Publish' => 'No publicar', # Translate - New
+	'Do Not Publish' => 'No publicar',
 	'Server Side Include' => 'Server Side Include',
 	'Process as <strong>[_1]</strong> include' => 'Procesar como inserción <strong>[_1]</strong>',
 	'Include cache path' => 'Ruta de caché de inserciones',
@@ -2649,7 +2651,7 @@ que la dirección provista es correcta y le pertenece.',
 	'-' => '-',
 	'Manual' => 'Manual',
 	'Dynamic' => 'Dinámico',
-	'Publish Queue' => 'Cola de publicación', # Translate - New
+	'Publish Queue' => 'Cola de publicación',
 	'Static' => 'Estático',
 	'Yes' => 'Sí',
 	'No' => 'No',
@@ -2808,15 +2810,15 @@ que la dirección provista es correcta y le pertenece.',
 	'Publishing Profile' => 'Perfil de publicación',
 	'Choose the profile that best matches the requirements for this blog.' => 'Seleccione el perfil que mejor se adapte a las necesidades de este blog.',
 	'Static Publishing' => 'Publicación estática',
-	'Immediately publish all templates statically.' => 'Publicar inmediatamente todas las plantillas de forma estática.', # Translate - New
-	'Background Publishing' => 'Publicación en segundo plano', # Translate - New
-	'All templates published statically via Publish Que.' => 'Todas las plantillas publicadas con la cola de publicación.', # Translate - New
+	'Immediately publish all templates statically.' => 'Publicar inmediatamente todas las plantillas de forma estática.',
+	'Background Publishing' => 'Publicación en segundo plano',
+	'All templates published statically via Publish Que.' => 'Todas las plantillas publicadas con la cola de publicación.',
 	'High Priority Static Publishing' => 'Publicación estática de alta prioridad',
-	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'Publicar inmediata y estáticamente la plantilla índice principal y los archivos de entradas y páginas. Utilizar la cola de publicación para publicar el resto de plantillas estáticamente.', # Translate - New
+	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'Publicar inmediata y estáticamente la plantilla índice principal y los archivos de entradas y páginas. Utilizar la cola de publicación para publicar el resto de plantillas estáticamente.',
 	'Dynamic Publishing' => 'Publicación dinámica',
-	'Publish all templates dynamically.' => 'Publicar todas las plantillas dinámicamente.', # Translate - New
+	'Publish all templates dynamically.' => 'Publicar todas las plantillas dinámicamente.',
 	'Dynamic Archives Only' => 'Solo archivos dinámicos',
-	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'Publicar todos las plantillas de archivos dinámicamente. Publicar de forma inmediata el resto de plantillas estáticamente.', # Translate - New
+	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'Publicar todos las plantillas de archivos dinámicamente. Publicar de forma inmediata el resto de plantillas estáticamente.',
 	'This new publishing profile will update all of your templates.' => 'Este nuevo perfil de publicación actualizará todas las plantillas.',
 
 ## tmpl/cms/dialog/asset_upload.tmpl
@@ -3057,7 +3059,7 @@ que la dirección provista es correcta y le pertenece.',
 	'(comma-delimited list)' => '(lista separada por comas)',
 	'(space-delimited list)' => '(lista separada por espacios)',
 	'(delimited by \'[_1]\')' => '(separado por \'[_1]\')',
-	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => 'Utilice <a href="http://blogit.typepad.com/">Blog It</a> para publicar en Movable Type desde redes sociales como Facebook.', # Translate - New
+	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => 'Utilice <a href="http://blogit.typepad.com/">Blog It</a> para publicar en Movable Type desde redes sociales como Facebook.',
 	'None selected' => 'Ninguna seleccionada',
 
 ## tmpl/cms/refresh_results.tmpl
@@ -3094,7 +3096,7 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/edit_category.tmpl
 	'Edit Category' => 'Editar categoría',
 	'Your category changes have been made.' => 'Los cambios en la categoría se han guardado.',
-	'Manage entries in this category' => 'Administrar las entradas de esta categorías', # Translate - New
+	'Manage entries in this category' => 'Administrar las entradas de esta categorías',
 	'You must specify a label for the category.' => 'Debe especificar un título para la categoría.',
 	'_CATEGORY_BASENAME' => 'Nombre base',
 	'This is the basename assigned to your category.' => 'El nombre base asignado a la categoría.',
@@ -3141,7 +3143,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Edit Folder' => 'Editar carpeta',
 	'Your folder changes have been made.' => 'Se han realizado los cambios en la carpeta.',
 	'Manage Folders' => 'Administrar carpetas',
-	'Manage pages in this folder' => 'Administrar las páginas de esta carpeta', # Translate - New
+	'Manage pages in this folder' => 'Administrar las páginas de esta carpeta',
 	'You must specify a label for the folder.' => 'Debe especificar una etiqueta para la carpeta.',
 	'Save changes to this folder (s)' => 'Guardar cambios de esta carpeta (s)',
 
@@ -4452,8 +4454,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Entry Metadata' => 'Entrada de los Metadatos',
 	'Page Detail' => 'Detalle de la página',
 	'Powered By (Footer)' => 'Powered By (Pie)',
-	'Sign In (In Header)' => 'Identificación (en la cabecera)',
-	'Search (In Navigation)' => 'Buscar (en la navegación)',
 	'Recent Entries Expanded' => 'Entradas recientes expandidas',
 	'Footer Links' => 'Enlaces del pie',
 	'Blog Activity' => 'Actividad del blog',
@@ -4507,99 +4507,95 @@ que la dirección provista es correcta y le pertenece.',
 	'No fields could be found.' => 'No se encontraron campos.',
 	'System-Wide' => 'Todo el sistema',
 
-## addons/Commercial.pack/templates/comment_response.mtml
+## addons/Commercial.pack/templates/universal/comment_response.mtml
 
-## addons/Commercial.pack/templates/notify-entry.mtml
+## addons/Commercial.pack/templates/universal/notify-entry.mtml
 
-## addons/Commercial.pack/templates/blog_index.mtml
+## addons/Commercial.pack/templates/universal/blog_index.mtml
 
-## addons/Commercial.pack/templates/category_archive_list.mtml
+## addons/Commercial.pack/templates/universal/category_archive_list.mtml
 
-## addons/Commercial.pack/templates/main_index.mtml
+## addons/Commercial.pack/templates/universal/main_index.mtml
 
-## addons/Commercial.pack/templates/page.mtml
+## addons/Commercial.pack/templates/universal/page.mtml
 
-## addons/Commercial.pack/templates/entry_summary.mtml
+## addons/Commercial.pack/templates/universal/entry_summary.mtml
 
-## addons/Commercial.pack/templates/recent_entries_expanded.mtml
+## addons/Commercial.pack/templates/universal/recent_entries_expanded.mtml
 	'By [_1] | Comments ([_2])' => 'Por [_1] | Commentarios ([_2]) ',
 
-## addons/Commercial.pack/templates/commenter_notify.mtml
+## addons/Commercial.pack/templates/universal/commenter_notify.mtml
 
-## addons/Commercial.pack/templates/verify-subscribe.mtml
+## addons/Commercial.pack/templates/universal/verify-subscribe.mtml
 
-## addons/Commercial.pack/templates/footer-email.mtml
+## addons/Commercial.pack/templates/universal/footer-email.mtml
 
-## addons/Commercial.pack/templates/entry_detail.mtml
+## addons/Commercial.pack/templates/universal/entry_detail.mtml
 
-## addons/Commercial.pack/templates/comment_detail.mtml
+## addons/Commercial.pack/templates/universal/comment_detail.mtml
 
-## addons/Commercial.pack/templates/new-ping.mtml
+## addons/Commercial.pack/templates/universal/new-ping.mtml
 
-## addons/Commercial.pack/templates/comment_throttle.mtml
+## addons/Commercial.pack/templates/universal/comment_throttle.mtml
 
-## addons/Commercial.pack/templates/comment_form.mtml
+## addons/Commercial.pack/templates/universal/comment_form.mtml
 
-## addons/Commercial.pack/templates/recent_comments.mtml
+## addons/Commercial.pack/templates/universal/recent_comments.mtml
 
-## addons/Commercial.pack/templates/monthly_archive_list.mtml
+## addons/Commercial.pack/templates/universal/monthly_archive_list.mtml
 
-## addons/Commercial.pack/templates/new-comment.mtml
+## addons/Commercial.pack/templates/universal/signin.mtml
 
-## addons/Commercial.pack/templates/entry_listing.mtml
+## addons/Commercial.pack/templates/universal/new-comment.mtml
+
+## addons/Commercial.pack/templates/universal/entry_listing.mtml
 	'Recently by <em>[_1]</em>' => 'Novedades por <em>[_1]</em>',
 
-## addons/Commercial.pack/templates/footer.mtml
+## addons/Commercial.pack/templates/universal/footer.mtml
 
-## addons/Commercial.pack/templates/tags.mtml
+## addons/Commercial.pack/templates/universal/tags.mtml
 
-## addons/Commercial.pack/templates/navigation.mtml
+## addons/Commercial.pack/templates/universal/navigation.mtml
 	'Home' => 'Inicio',
 
-## addons/Commercial.pack/templates/entry_metadata.mtml
+## addons/Commercial.pack/templates/universal/entry_metadata.mtml
 
-## addons/Commercial.pack/templates/entry.mtml
+## addons/Commercial.pack/templates/universal/entry.mtml
 
-## addons/Commercial.pack/templates/recover-password.mtml
+## addons/Commercial.pack/templates/universal/recover-password.mtml
 
-## addons/Commercial.pack/templates/javascript.mtml
+## addons/Commercial.pack/templates/universal/javascript.mtml
 
-## addons/Commercial.pack/templates/archive_index.mtml
+## addons/Commercial.pack/templates/universal/archive_index.mtml
 
-## addons/Commercial.pack/templates/sign_in_top.mtml
-	'You are signed in as' => 'Se ha identificado como',
-	'.  <a href="[_1]">Sign Out</a>' => '.  <a href="[_1]">Salir</a>',
-	'Sign Out' => 'Salir',
+## addons/Commercial.pack/templates/universal/trackbacks.mtml
 
-## addons/Commercial.pack/templates/trackbacks.mtml
-	'TrackBack URL: <a href="[_1]" id="trackbacks-link">[_1]</a>' => 'URL de TrackBack: <a href="[_1]" id="trackbacks-link">[_1]</a>',
+## addons/Commercial.pack/templates/universal/sidebar.mtml
 
-## addons/Commercial.pack/templates/sidebar.mtml
+## addons/Commercial.pack/templates/universal/powered_by_footer.mtml
 
-## addons/Commercial.pack/templates/powered_by_footer.mtml
+## addons/Commercial.pack/templates/universal/categories.mtml
 
-## addons/Commercial.pack/templates/categories.mtml
+## addons/Commercial.pack/templates/universal/comments.mtml
 
-## addons/Commercial.pack/templates/comments.mtml
+## addons/Commercial.pack/templates/universal/search_results.mtml
 
-## addons/Commercial.pack/templates/search_results.mtml
+## addons/Commercial.pack/templates/universal/header.mtml
 
-## addons/Commercial.pack/templates/search_top.mtml
+## addons/Commercial.pack/templates/universal/dynamic_error.mtml
 
-## addons/Commercial.pack/templates/header.mtml
-
-## addons/Commercial.pack/templates/dynamic_error.mtml
-
-## addons/Commercial.pack/templates/footer_links.mtml
+## addons/Commercial.pack/templates/universal/footer_links.mtml
 	'Links' => 'Enlaces',
 
-## addons/Commercial.pack/templates/tag_cloud.mtml
+## addons/Commercial.pack/templates/universal/tag_cloud.mtml
 
-## addons/Commercial.pack/templates/recent_assets.mtml
+## addons/Commercial.pack/templates/universal/recent_assets.mtml
 
-## addons/Commercial.pack/templates/comment_preview.mtml
+## addons/Commercial.pack/templates/universal/comment_preview.mtml
 
-## addons/Commercial.pack/templates/commenter_confirm.mtml
+## addons/Commercial.pack/templates/universal/search.mtml
+
+## addons/Commercial.pack/templates/universal/commenter_confirm.mtml
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
 	'Add [_1] to a blog' => 'Añadir [_1] al blog',
@@ -5014,7 +5010,7 @@ Búsqueda base: [_2]",
 	'Moderate TrackBacks from suspicious sources' => 'Moderar TrackBacks de origen sospechoso',
 	'Junk TrackBacks from suspicious sources' => 'Marcar como basura los TrackBacks de origen sospechoso',
 	'Lookup Whitelist' => 'Verificar la lista blanca',
-	'To prevent lookups for specific IP addresses or domains, list each on a line by itself.' => 'Para prevenir accesos desde IPs y dominios específicos, indíquelos usando una línea para cada uno.', # Translate - New
+	'To prevent lookups for specific IP addresses or domains, list each on a line by itself.' => 'Para prevenir accesos desde IPs y dominios específicos, indíquelos usando una línea para cada uno.',
 
 ## plugins/spamlookup/tmpl/url_config.tmpl
 	'Link filters monitor the number of hyperlinks in incoming feedback. Feedback with many links can be held for moderation or scored as junk. Conversely, feedback that does not contain links or only refers to previously published URLs can be positively rated. (Only enable this option if you are sure your site is already spam-free.)' => 'Los filtros de enlaces comprueban el número de hiperenlaces en las respuestas entrantes. Las respuestas con demasiados enlaces se moderarán o se puntuarán como basura. Las respuestas que no contengan enlaces o que solo se refieran a URLs publicadas anteriormente recibirán puntuación positiva. (Habilite esta opción solo si está seguro de que su sitio está libre de spam).',
@@ -5117,6 +5113,36 @@ Búsqueda base: [_2]",
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Administrador de Widgets versión 1.1; Esta versión de la extensión actualiza los datos de la versiones antiguas del Adminstrador de Widgets que venía con Movable Type al esquema interno de Movable Type. No se han incluído otras características. Puede borrar esta extensión sin problemas después de instalar o actualizar Movable Type.',
 	'Moving storage of Widget Manager [_1]...' => 'Migrando Administrador de Widgets [_1]...',
 
+## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
+	'API key is a required parameter.' => 'La clave del API es un parámetro necesario.', # Translate - New
+
+## plugins/TypePadAntiSpam/tmpl/system.tmpl
+	'API Key' => 'Clave del API', # Translate - New
+	'To enable this plugin, you\'ll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.' => 'Para habilitar esta extensión, necesita una clave gratuita del API de TypePad AntiSpam. Puede <strong>obtener su clave, gratis, en [_1]antispam.typepad.com[_2]</strong>. Tras obtenerla, regrese a esta página para introducir la clave en el campo de abajo.', # Translate - New
+	'Service Host' => 'Servidor', # Translate - New
+	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'El servidor predefinido para TypePad AntiSpam es api.antispam.typepad.com. Modifíquelo solo en el caso de utilizar otro servicio compatible con el API de TypePad AntiSpam.', # Translate - New
+
+## plugins/TypePadAntiSpam/tmpl/config.tmpl
+	'Junk Score Weight' => 'Peso de la puntuación', # Translate - New
+	'Least Weight' => 'Peso mínimo', # Translate - New
+	'Most Weight' => 'Peso máximo', # Translate - New
+	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Los comentarios y los TrackBacks reciben una puntuación de basura entre -10 (realmente spam) y +10 (no es spam). Esta opción le permite controlar el peso de la puntuación de TypePad AntiSpam relativo a otros filtros que pudiera tener instalados para ayudarle a filtrar los comentarios y TrackBacks.', # Translate - New
+
+## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
+	'widget_label_width' => 'widget_label_width', # Translate - New
+	'widget_totals_width' => 'widget_totals_width', # Translate - New
+	'TypePad AntiSpam' => 'TypePad AntiSpam', # Translate - New
+	'Spam Blocked' => 'Spam bloqueado', # Translate - New
+	'on this blog' => 'en este blog', # Translate - New
+	'on this system' => 'en este sistema', # Translate - New
+
+## plugins/TypePadAntiSpam/TypePadAntiSpam.pl
+	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam es un servicio gratuito de Six Apart. Le ayuda a proteger su blog del spam en los comentarios y en el TrackBack. La extensión de TypePad AntiSpam enviará al servicio todos los comentarios y TrackBacks que reciba su blog para analizarlos. Movable Type filtrará los elementos que TypePad AntiSpam identifique como spam. Si descubre que TypePad AntiSpam clasifica incorrectamente algún elemento, solo tiene que modificar la clasificación marcando al elemento como "Spam" o "No es spam" en la pantalla de administración de comentarios. TypePad AntiSpam aprenderá de sus decisiones. El servicio mejorará con el tiempo gracias a los informes remitidos por los usuarios, así que tenga cuidado al marcar lso elementos como "Spam" o como "No es spam".', # Translate - New
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Hasta ahora, TypePad AntiSpam ha bloqueado [quant,_1,mensaje,mensajes] en este blog y [quant,_2,mensaje,mensajes] en todo el sistema.', # Translate - New
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Hasta ahora, TypePad AntiSpam ha bloqueado [quant,_1,mensaje,mensajes] en todo el sistema.', # Translate - New
+	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Fallo al verificar la clave API de TypePad AntiSpam: [_1]', # Translate - New
+	'The TypePad AntiSpam API key provided is invalid.' => 'La clave API de TypePad AntiSpam no es válida.', # Translate - New
+
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. Se utilizó la versión previa de la fuente. Se devolvió el estado HTTP [_2].',
 	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. La versión anterior de la fuente no estaba disponible. Se devolvió el estado HTTP [_2].',
@@ -5162,6 +5188,6 @@ Búsqueda base: [_2]",
 
 );
 
-## New words: 164
+## New words: 347
 
 1;

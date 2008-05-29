@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::nl;
 use strict;
@@ -35,6 +35,9 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtwidgetmanager.php
 	'Error: widgetset [_1] is empty.' => 'Fout: widgetset [_1] is leeg',
 	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]',
+
+## php/lib/function.mtcommentauthor.php
+	'Anonymous' => 'Anonieme',
 
 ## php/lib/archive_lib.php
 	'Page' => 'Pagina',
@@ -77,7 +80,6 @@ use vars qw( @ISA %Lexicon );
 	'Type the characters you see in the picture above.' => 'Tik te tekens in die u ziet in de afbeelding hierboven.',
 
 ## php/lib/function.mtcommentauthorlink.php
-	'Anonymous' => 'Anonieme',
 
 ## php/lib/MTUtil.php
 	'userpic-[_1]-%wx%h%x' => 'gebruikersafbeelding-[_1]-%wx%h%x',
@@ -248,7 +250,6 @@ use vars qw( @ISA %Lexicon );
 	'Report comment as spam:' => 'Reactie als spam rapporteren:',
 
 ## default_templates/signin.mtml
-	'JavaScript' => 'JavaScript',
 	'Sign In' => 'Aanmelden',
 	'You are signed in as ' => 'U bent aangemeld als',
 	'sign out' => 'afmelden',
@@ -286,7 +287,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/trackbacks.mtml
 	'No TrackBacks' => 'Geen TrackBacks',
-	'TrackBack URL: <span id="trackbacks-link">[_1]</span>' => 'TrackBack URL: <span id="trackbacks-link">[_1]</span>',
+	'TrackBack URL: [_1]' => 'TrackBack URL: [_1]', # Translate - New
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> van [_3] op <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Meer lezen</a>',
 
@@ -296,14 +297,13 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,minute,minutes] ago' => '[quant,_1,minuut,minuten] geleden',
 	'[quant,_1,day,days] ago' => '[quant,_1,dag,dagen] geleden',
 	'<a href="[_1]">Edit</a>' => '<a href="[_1]">Bewerken</a>',
-	'Submit' => 'Invoeren',
-	'Preview' => 'Voorbeeld',
-	'Signing in...' => 'Aanmelden...', # Translate - New
+	'Your session has expired. Please sign in again to comment.' => 'Uw sessie is verlopen.  Gelieve opnieuw aan te melden om te kunnen reageren.', # Translate - New
+	'Signing in...' => 'Aanmelden...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'U heeft geen permissie om te reageren op deze weblog. ([_1]afmelden[_2])',
 	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => 'Bedankt om u aan te melden, [_1]. ([_2]afmelden[_3])',
 	'[_1]Sign in[_2] to comment.' => '[_1]Meld u aan[_2] om te reageren.',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Meld u aan[_2] om te reageren, of reageer anoniem.',
-	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Als antwoord op <a href="[_1]" onclick="[_2]">reactie van [_3]</a>', # Translate - New
+	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Als antwoord op <a href="[_1]" onclick="[_2]">reactie van [_3]</a>',
 
 ## default_templates/archive_index.mtml
 	'Author Archives' => 'Archief per auteur',
@@ -347,6 +347,8 @@ use vars qw( @ISA %Lexicon );
 	'Email Address' => 'E-mailadres',
 	'Remember personal info?' => 'Persoonijke gegevens onthouden?',
 	'(You may use HTML tags for style)' => '(u kunt HTML tags gebruiken voor de lay-out)',
+	'Preview' => 'Voorbeeld',
+	'Submit' => 'Invoeren',
 
 ## default_templates/monthly_entry_listing.mtml
 
@@ -369,7 +371,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_preview.mtml
 	'Previewing your Comment' => 'U ziet een voorbeeld van uw reactie',
-	'Replying to comment from [_1]' => 'Antwoord op reactie van [_1]', # Translate - New
+	'Replying to comment from [_1]' => 'Antwoord op reactie van [_1]',
 	'Cancel' => 'Annuleren',
 
 ## default_templates/powered_by.mtml
@@ -604,7 +606,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'Basisnaam auteur aan het toekennen...',
 	'Assigning entry comment and TrackBack counts...' => 'Tellingen aantal reacties en TrackBacks bericht aan het toekennen...',
 	'Assigning embedded flag to asset placements...' => 'Markering voor inbedding van mediabestanden aan het toekennen...',
-	'Replacing file formats to use CategoryLabel tag...' => 'Bestandsformaten aan het vervangen om CategoryLabel tag te gebruiken...', # Translate - New
+	'Replacing file formats to use CategoryLabel tag...' => 'Bestandsformaten aan het vervangen om CategoryLabel tag te gebruiken...',
 
 ## lib/MT/Core.pm
 	'System Administrator' => 'Systeembeheerder',
@@ -702,8 +704,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
-	'author-display-name/yyyy/mm/dd/index.html' => 'naam-auteur/jjjj/mm/dd/index.html',
-	'author_display_name/yyyy/mm/dd/index.html' => 'naam_auteur/jjjj/mm/dd/index.html',
+	'author/author-display-name/yyyy/mm/dd/index.html' => 'auteur/getoonde-auteursnaam/jjjj/mm/dd/index.html', # Translate - New
+	'author/author_display_name/yyyy/mm/dd/index.html' => 'auteur/getoonde_auteursnaam/jjjj/mm/dd/index.html', # Translate - New
 
 ## lib/MT/ArchiveType/Individual.pm
 	'INDIVIDUAL_ADV' => 'per bericht',
@@ -829,7 +831,6 @@ use vars qw( @ISA %Lexicon );
 	'The sign-in validation failed.' => 'Validatie van het aanmelden mislukt.',
 	'This weblog requires commenters to pass an email address. If you\'d like to do so you may log in again, and give the authentication service permission to pass your email address.' => 'Deze weblog vereist dat reageerders een e-mail adres opgeven.  Als u dat wenst kunt u zich opnieuw aanmelden en de authenticatiedienst toestemming verlenen om uw e-mail adres door te geven.',
 	'Couldn\'t save the session' => 'Kon de sessie niet opslaan',
-	'This blog requires commenters to provide an email address' => 'Deze blog vereist een e-mail adres van reageerders',
 	'Couldn\'t get public key from url provided' => 'Kon geen publieke sleutel vinden via de opgegeven url',
 	'No public key could be found to validate registration.' => 'Er kon geen publieke sleutel gevonden worden om de registratie te valideren.',
 	'TypeKey signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypeKey signatuurverificatie gaf [_1] terug in [_2] seconden bij het verifiëren van [_3] met [_4]',
@@ -1403,7 +1404,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning' => 'Waarschuwing',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
 	'No [_1] could be found.' => '[_1] werden niet gevonden',
-	'records' => 'records', # Translate - New
+	'records' => 'records',
 	'Invalid tag [_1] specified.' => 'Ongeldige tag [_1] opgegeven.',
 	'No template to include specified' => 'Geen sjabloon opgegeven om te includeren',
 	'Recursion attempt on [_1]: [_2]' => 'Recursiepoging op [_1]: [_2]',
@@ -1507,7 +1508,6 @@ use vars qw( @ISA %Lexicon );
 	'No entry was specified; perhaps there is a template problem?' => 'Geen bericht opgegeven; misschien is er een sjabloonprobleem?',
 	'Somehow, the entry you tried to comment on does not exist' => 'Het bericht waar u een reactie op probeerde achter te laten, bestaat niet',
 	'Invalid entry ID provided' => 'Ongeldig berichtID opgegeven',
-	'Invalid commenter ID' => 'Ongeldig reageerder-ID',
 	'All required fields must have valid values.' => 'Alle vereiste velden moeten geldige waarden bevatten.',
 	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
@@ -1521,7 +1521,7 @@ use vars qw( @ISA %Lexicon );
 	'No search term was specified.' => 'Er werd geen zoekterm opgegeven',
 	'Invalid value: [_1]' => 'Ongeldige waarde: [_1]',
 	'No column was specified to search for [_1].' => 'Geen kolom opgegeven om op te zoeken [_1].',
-	'The search you conducted has timed out.  Please simplify your query and try again.' => 'De zoekopdracht die u uitvoerde is over de tijdslimiet gegaan.  Gelieve uw zoekopdracht te vereenvoudigen en opnieuw te proberen.', # Translate - New
+	'The search you conducted has timed out.  Please simplify your query and try again.' => 'De zoekopdracht die u uitvoerde is over de tijdslimiet gegaan.  Gelieve uw zoekopdracht te vereenvoudigen en opnieuw te proberen.',
 
 ## lib/MT/App/Trackback.pm
 	'Invalid entry ID \'[_1]\'' => 'Ongeldig bericht-ID \'[_1]\'',
@@ -1576,6 +1576,7 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Deze module en de modules waar ze van afhangt zijn nodig om reageerders zichzelf te laten authenticeren via OpenID providers zoals o.a. Vox en LiveJournal.',
 	'This module is required for sending mail via SMTP Server.' => 'Deze module is vereist om mail te versturen via een SMTP server.',
 	'This module is used in test attribute of MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut van de MTIf conditionele tag.',
+	'This module is used by the Markdown text filter.' => 'Deze module is vereist voor de Markdown tekstfilter.', # Translate - New
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
 	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
@@ -1618,7 +1619,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove Tags...' => 'Tags verwijderen',
 	'Tags to remove from selected entries' => 'Tags te verwijderen van geselecteerde berichten',
 	'Batch Edit Entries' => 'Berichten bewerken in bulk',
-	'Publish Pages' => 'Pagina\'s publiceren', # Translate - New
+	'Publish Pages' => 'Pagina\'s publiceren',
 	'Unpublish Pages' => 'Pagina\'s off-line halen',
 	'Tags to add to selected pages' => 'Tags om toe te voegen aan geselecteerde pagina\'s',
 	'Tags to remove from selected pages' => 'Tags om te verwijderen van geselecteerde pagina\'s',
@@ -1859,6 +1860,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'Archiefindex',
 	'Stylesheet' => 'Stylesheet',
+	'JavaScript' => 'JavaScript',
 	'Feed - Recent Entries' => 'Feed - Recente berichten',
 	'RSD' => 'RSD',
 	'Monthly Entry Listing' => 'Maandoverzicht berichten',
@@ -2169,12 +2171,12 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'Sjabloontype',
 	'Custom Index Template' => 'Gepersonaliseerd indexsjabloon',
 	'Link to File' => 'Koppelen aan bestand',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => 'Meer leren over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publicatie-instellingen</a>', # Translate - New
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => 'Meer leren over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publicatie-instellingen</a>',
 	'Create Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
 	'Type' => 'Type',
 	'Add' => 'Toevoegen',
-	'Statically (default)' => 'Statisch (standaard)', # Translate - New
-	'Via Publish Queue' => 'Via publicatiewachtrij', # Translate - New
+	'Statically (default)' => 'Statisch (standaard)',
+	'Via Publish Queue' => 'Via publicatiewachtrij',
 	'On a schedule' => 'Gepland',
 	': every ' => ': elke ',
 	'minutes' => 'minuten',
@@ -2182,7 +2184,7 @@ use vars qw( @ISA %Lexicon );
 	'days' => 'dagen',
 	'Dynamically' => 'Dynamisch',
 	'Manually' => 'Handmatig',
-	'Do Not Publish' => 'Niet publiceren', # Translate - New
+	'Do Not Publish' => 'Niet publiceren',
 	'Server Side Include' => 'Server Side Include',
 	'Process as <strong>[_1]</strong> include' => 'Behandel als <strong>[_1]</strong> include',
 	'Include cache path' => 'Cachepad voor includes',
@@ -2647,7 +2649,7 @@ use vars qw( @ISA %Lexicon );
 	'-' => '-',
 	'Manual' => 'Handmatig',
 	'Dynamic' => 'Dynamisch',
-	'Publish Queue' => 'Publicatiewachtrij', # Translate - New
+	'Publish Queue' => 'Publicatiewachtrij',
 	'Static' => 'Statisch',
 	'Yes' => 'Ja',
 	'No' => 'Nee',
@@ -2806,15 +2808,15 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Profile' => 'Publicatieprofiel',
 	'Choose the profile that best matches the requirements for this blog.' => 'Kies het publicatieprofiel dat het beste overeenkomt met de noden van deze blog.',
 	'Static Publishing' => 'Statisch publiceren',
-	'Immediately publish all templates statically.' => 'Alle sjablonen onmiddellijk statisch publiceren', # Translate - New
-	'Background Publishing' => 'Pubiceren in de achtergrond', # Translate - New
-	'All templates published statically via Publish Que.' => 'Alle sjablonen statisch publiceren via de publicatiewachtrij', # Translate - New
+	'Immediately publish all templates statically.' => 'Alle sjablonen onmiddellijk statisch publiceren',
+	'Background Publishing' => 'Pubiceren in de achtergrond',
+	'All templates published statically via Publish Que.' => 'Alle sjablonen statisch publiceren via de publicatiewachtrij',
 	'High Priority Static Publishing' => 'Statisch publiceren met hoge prioriteit',
-	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'Onmiddellijk hoofdindesjabloon, berichtarchieven en pagina-archieven statisch publiceren.  Gebruik de publicatiewachtrij om alle andere sjablonen statisch te publiceren.', # Translate - New
+	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'Onmiddellijk hoofdindesjabloon, berichtarchieven en pagina-archieven statisch publiceren.  Gebruik de publicatiewachtrij om alle andere sjablonen statisch te publiceren.',
 	'Dynamic Publishing' => 'Dynamisch publiceren',
-	'Publish all templates dynamically.' => 'Alle sjablonen dynamisch publiceren.', # Translate - New
+	'Publish all templates dynamically.' => 'Alle sjablonen dynamisch publiceren.',
 	'Dynamic Archives Only' => 'Enkel archieven dynamisch',
-	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'Alle archiefsjablonen dynamisch publiceren.  Alle andere sjablonen statisch publiceren.', # Translate - New
+	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'Alle archiefsjablonen dynamisch publiceren.  Alle andere sjablonen statisch publiceren.',
 	'This new publishing profile will update all of your templates.' => 'Dit nieuwe publicatieprofiel zal de instellingen van al uw sjablonen aanpassen.',
 
 ## tmpl/cms/dialog/asset_upload.tmpl
@@ -3055,7 +3057,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(lijst gescheiden met komma\'s)',
 	'(space-delimited list)' => '(lijst gescheiden met spaties)',
 	'(delimited by \'[_1]\')' => '(gescheiden door \'[_1]\')',
-	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => 'Gebruik <a href="http://blogit.typepad.com/">Blog It</a> om op Movable Type te publiceren vanop sociale netwerken zoals Facebook.', # Translate - New
+	'Use <a href="http://blogit.typepad.com/">Blog It</a> to post to Movable Type from social networks like Facebook.' => 'Gebruik <a href="http://blogit.typepad.com/">Blog It</a> om op Movable Type te publiceren vanop sociale netwerken zoals Facebook.',
 	'None selected' => 'Geen geselecteerd',
 
 ## tmpl/cms/refresh_results.tmpl
@@ -3092,7 +3094,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_category.tmpl
 	'Edit Category' => 'Categorie bewerken',
 	'Your category changes have been made.' => 'Uw categoriewijzigingen zijn gemaakt.',
-	'Manage entries in this category' => 'Berichten beheren in deze categorie', # Translate - New
+	'Manage entries in this category' => 'Berichten beheren in deze categorie',
 	'You must specify a label for the category.' => 'U moet een label opgeven voor de categorie.',
 	'_CATEGORY_BASENAME' => 'Basename',
 	'This is the basename assigned to your category.' => 'Dit is de basisnaam toegekend aan uw categorie',
@@ -3139,7 +3141,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit Folder' => 'Map bewerken',
 	'Your folder changes have been made.' => 'De wijzigingen aan de map zijn uitgevoerd.',
 	'Manage Folders' => 'Mappen beheren',
-	'Manage pages in this folder' => 'Pagina\'s in deze map beheren', # Translate - New
+	'Manage pages in this folder' => 'Pagina\'s in deze map beheren',
 	'You must specify a label for the folder.' => 'U moet een naam opgeven voor de map',
 	'Save changes to this folder (s)' => 'Wijzigingen aan deze map opslaan (s)',
 
@@ -4414,7 +4416,7 @@ use vars qw( @ISA %Lexicon );
 	'The basename \'[_1]\' is already in use.' => 'De basisnaam \'[_1]\' is al in gebruik',
 	'Default value must be valid URL.' => 'Standaardwaarde moet een geldige URL zijn.',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Pas de formulieren en velden aan voor berichten, pagina\'s, mappen, categoriën en gebruikers aan en sla exact die informatie op die u nodig heeft.',
-	' ' => ' ', # Translate - New
+	' ' => ' ', # Translate - Case
 	'Single-Line Text' => 'Een regel tekst',
 	'Multi-Line Text' => 'Meerdere regels tekst',
 	'Checkbox' => 'Checkbox',
@@ -4453,8 +4455,6 @@ use vars qw( @ISA %Lexicon );
 	'Entry Metadata' => 'Metadata bericht',
 	'Page Detail' => 'Pagina detail',
 	'Powered By (Footer)' => 'Aangedreven door (voettekst)',
-	'Sign In (In Header)' => 'Registratie (in hoofding)',
-	'Search (In Navigation)' => 'Zoeken (in navigatie)',
 	'Recent Entries Expanded' => 'Recent aangepaste berichten',
 	'Footer Links' => 'Links in voettekst',
 	'Blog Activity' => 'Blogactiviteit',
@@ -4508,99 +4508,95 @@ use vars qw( @ISA %Lexicon );
 	'No fields could be found.' => 'Er werden geen velden gevonden.',
 	'System-Wide' => 'Over heel het systeem',
 
-## addons/Commercial.pack/templates/comment_response.mtml
+## addons/Commercial.pack/templates/universal/comment_response.mtml
 
-## addons/Commercial.pack/templates/notify-entry.mtml
+## addons/Commercial.pack/templates/universal/notify-entry.mtml
 
-## addons/Commercial.pack/templates/blog_index.mtml
+## addons/Commercial.pack/templates/universal/blog_index.mtml
 
-## addons/Commercial.pack/templates/category_archive_list.mtml
+## addons/Commercial.pack/templates/universal/category_archive_list.mtml
 
-## addons/Commercial.pack/templates/main_index.mtml
+## addons/Commercial.pack/templates/universal/main_index.mtml
 
-## addons/Commercial.pack/templates/page.mtml
+## addons/Commercial.pack/templates/universal/page.mtml
 
-## addons/Commercial.pack/templates/entry_summary.mtml
+## addons/Commercial.pack/templates/universal/entry_summary.mtml
 
-## addons/Commercial.pack/templates/recent_entries_expanded.mtml
+## addons/Commercial.pack/templates/universal/recent_entries_expanded.mtml
 	'By [_1] | Comments ([_2])' => 'Door [_1] | Reacties ([_2])',
 
-## addons/Commercial.pack/templates/commenter_notify.mtml
+## addons/Commercial.pack/templates/universal/commenter_notify.mtml
 
-## addons/Commercial.pack/templates/verify-subscribe.mtml
+## addons/Commercial.pack/templates/universal/verify-subscribe.mtml
 
-## addons/Commercial.pack/templates/footer-email.mtml
+## addons/Commercial.pack/templates/universal/footer-email.mtml
 
-## addons/Commercial.pack/templates/entry_detail.mtml
+## addons/Commercial.pack/templates/universal/entry_detail.mtml
 
-## addons/Commercial.pack/templates/comment_detail.mtml
+## addons/Commercial.pack/templates/universal/comment_detail.mtml
 
-## addons/Commercial.pack/templates/new-ping.mtml
+## addons/Commercial.pack/templates/universal/new-ping.mtml
 
-## addons/Commercial.pack/templates/comment_throttle.mtml
+## addons/Commercial.pack/templates/universal/comment_throttle.mtml
 
-## addons/Commercial.pack/templates/comment_form.mtml
+## addons/Commercial.pack/templates/universal/comment_form.mtml
 
-## addons/Commercial.pack/templates/recent_comments.mtml
+## addons/Commercial.pack/templates/universal/recent_comments.mtml
 
-## addons/Commercial.pack/templates/monthly_archive_list.mtml
+## addons/Commercial.pack/templates/universal/monthly_archive_list.mtml
 
-## addons/Commercial.pack/templates/new-comment.mtml
+## addons/Commercial.pack/templates/universal/signin.mtml
 
-## addons/Commercial.pack/templates/entry_listing.mtml
+## addons/Commercial.pack/templates/universal/new-comment.mtml
+
+## addons/Commercial.pack/templates/universal/entry_listing.mtml
 	'Recently by <em>[_1]</em>' => 'Recent door <em>[_1]</em>',
 
-## addons/Commercial.pack/templates/footer.mtml
+## addons/Commercial.pack/templates/universal/footer.mtml
 
-## addons/Commercial.pack/templates/tags.mtml
+## addons/Commercial.pack/templates/universal/tags.mtml
 
-## addons/Commercial.pack/templates/navigation.mtml
+## addons/Commercial.pack/templates/universal/navigation.mtml
 	'Home' => 'Hoofdpagina',
 
-## addons/Commercial.pack/templates/entry_metadata.mtml
+## addons/Commercial.pack/templates/universal/entry_metadata.mtml
 
-## addons/Commercial.pack/templates/entry.mtml
+## addons/Commercial.pack/templates/universal/entry.mtml
 
-## addons/Commercial.pack/templates/recover-password.mtml
+## addons/Commercial.pack/templates/universal/recover-password.mtml
 
-## addons/Commercial.pack/templates/javascript.mtml
+## addons/Commercial.pack/templates/universal/javascript.mtml
 
-## addons/Commercial.pack/templates/archive_index.mtml
+## addons/Commercial.pack/templates/universal/archive_index.mtml
 
-## addons/Commercial.pack/templates/sign_in_top.mtml
-	'You are signed in as' => 'U bent aangemeld als',
-	'.  <a href="[_1]">Sign Out</a>' => '.  <a href="[_1]">Afmelden</a>',
-	'Sign Out' => 'Afmelden',
+## addons/Commercial.pack/templates/universal/trackbacks.mtml
 
-## addons/Commercial.pack/templates/trackbacks.mtml
-	'TrackBack URL: <a href="[_1]" id="trackbacks-link">[_1]</a>' => 'TrackBack URL: <a href="[_1]" id="trackbacks-link">[_1]</a>',
+## addons/Commercial.pack/templates/universal/sidebar.mtml
 
-## addons/Commercial.pack/templates/sidebar.mtml
+## addons/Commercial.pack/templates/universal/powered_by_footer.mtml
 
-## addons/Commercial.pack/templates/powered_by_footer.mtml
+## addons/Commercial.pack/templates/universal/categories.mtml
 
-## addons/Commercial.pack/templates/categories.mtml
+## addons/Commercial.pack/templates/universal/comments.mtml
 
-## addons/Commercial.pack/templates/comments.mtml
+## addons/Commercial.pack/templates/universal/search_results.mtml
 
-## addons/Commercial.pack/templates/search_results.mtml
+## addons/Commercial.pack/templates/universal/header.mtml
 
-## addons/Commercial.pack/templates/search_top.mtml
+## addons/Commercial.pack/templates/universal/dynamic_error.mtml
 
-## addons/Commercial.pack/templates/header.mtml
-
-## addons/Commercial.pack/templates/dynamic_error.mtml
-
-## addons/Commercial.pack/templates/footer_links.mtml
+## addons/Commercial.pack/templates/universal/footer_links.mtml
 	'Links' => 'Links',
 
-## addons/Commercial.pack/templates/tag_cloud.mtml
+## addons/Commercial.pack/templates/universal/tag_cloud.mtml
 
-## addons/Commercial.pack/templates/recent_assets.mtml
+## addons/Commercial.pack/templates/universal/recent_assets.mtml
 
-## addons/Commercial.pack/templates/comment_preview.mtml
+## addons/Commercial.pack/templates/universal/comment_preview.mtml
 
-## addons/Commercial.pack/templates/commenter_confirm.mtml
+## addons/Commercial.pack/templates/universal/search.mtml
+
+## addons/Commercial.pack/templates/universal/commenter_confirm.mtml
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
 	'Add [_1] to a blog' => 'Voeg [_1] toe aan een blog',
@@ -5013,7 +5009,7 @@ use vars qw( @ISA %Lexicon );
 	'Moderate TrackBacks from suspicious sources' => 'Modereer TrackBacks uit verdachte bronnen',
 	'Junk TrackBacks from suspicious sources' => 'Ken een spamscore toe aan TrackBacks uit verdachte bronnen',
 	'Lookup Whitelist' => 'Witte lijst voor opzoekingen',
-	'To prevent lookups for specific IP addresses or domains, list each on a line by itself.' => 'Om te voorkomen dat bepaalde IP adressen of domeinen opgezocht worden, gelieve ze hier op te sommen, één per lijn.', # Translate - New
+	'To prevent lookups for specific IP addresses or domains, list each on a line by itself.' => 'Om te voorkomen dat bepaalde IP adressen of domeinen opgezocht worden, gelieve ze hier op te sommen, één per lijn.',
 
 ## plugins/spamlookup/tmpl/url_config.tmpl
 	'Link filters monitor the number of hyperlinks in incoming feedback. Feedback with many links can be held for moderation or scored as junk. Conversely, feedback that does not contain links or only refers to previously published URLs can be positively rated. (Only enable this option if you are sure your site is already spam-free.)' => 'Linkfilters houden het aantal hyperlinks in binnenkomende feedback in de gaten.  Feedback met veel links in kan tegengehouden worden voor moderatie of kan een spamscore krijgen.  Langs de andere kant kan feedback die geen links bevat of enkel verwijst naar eerder gepubliceerde URL\'s een positieve score krijgen. (Deze optie enkel inschakelen indien uw site reeds spam-vrij is).',
@@ -5116,6 +5112,36 @@ use vars qw( @ISA %Lexicon );
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.',
 	'Moving storage of Widget Manager [_1]...' => 'Opslagruimte van Widget Manager aan het overzetten [_1]...',
 
+## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
+	'API key is a required parameter.' => 'API sleutel is een vereiste parameter', # Translate - New
+
+## plugins/TypePadAntiSpam/tmpl/system.tmpl
+	'API Key' => 'API sleutel', # Translate - New
+	'To enable this plugin, you\'ll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.' => 'Om deze plugin te kunnen inschakelen heeft u een gratis TypePad AntiSpam API sleutel nodig.  U kunt uw <strong>gratis API sleutel afhalen op [_1]antispam.typepad.com[_2]</strong>.  Zodra u uw sleutel heeft, moet u terugkeren naar deze pagina en hem hieronder invullen.', # Translate - New
+	'Service Host' => 'Service host', # Translate - New
+	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'De standaard host voor TypePad AntiSpam is api.antispam.com.  U moet dit alleen veranderen als u een andere service gebruikt die compatibel is met de TypePad AntiSpam API.', # Translate - New
+
+## plugins/TypePadAntiSpam/tmpl/config.tmpl
+	'Junk Score Weight' => 'Spamscoregewicht', # Translate - New
+	'Least Weight' => 'Laagste gewicht', # Translate - New
+	'Most Weight' => 'Hoogste gewicht', # Translate - New
+	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Reacties en TrackBacks krijgen een spamscore tussen -10 (zeker spam) en +10 (zeker geen spam).  Deze instelling geeft u de mogelijkheid het gewicht van het oordeel van TypePad AntiSpam in te stellen relatief tot de andere filters die u misschien geïnstalleerd heeft om reacties en TrackBacks te filteren.', # Translate - New
+
+## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
+	'widget_label_width' => 'widget_label_width', # Translate - New
+	'widget_totals_width' => 'widget_totals_width', # Translate - New
+	'TypePad AntiSpam' => 'TypePad AntiSpam', # Translate - New
+	'Spam Blocked' => 'Spams gestopt', # Translate - New
+	'on this blog' => 'op deze blog', # Translate - New
+	'on this system' => 'op dit systeem', # Translate - New
+
+## plugins/TypePadAntiSpam/TypePadAntiSpam.pl
+	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam is een gratis service van Six Apart die helpt uw blog te beschermen tegen spam in uw reacties en TrackBacks.  De TypePad AntiSpam plugin verstuurt elke reactie of TrackBack die ontvangen wordt op uw blog door naar de service waar ze dan beoordeeld worden.  Movable Type zal items filteren als TypePad AntiSpam bepaalt dat ze spam zijn.  Als u merkt dat TypePad AntiSpam items niet correct classificeert dan kunt u de classificatie eenvoudigweg aanpassen door ze als "Spam" of "Geen Spam" te markeren vanop het scherm voor reactiebeheer.  TypePad AntiSpam zal dan leren uit uw acties.  Na verloop van tijd wordt de service dus altijd maar beter, gebaseerd op rapporten van gebruikers, dus let op voor u iets als "Spam" of "Geen Spam" markeert!', # Translate - New
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Tot nu toe heeft TypePad AntiSpam [quant,_1,bericht,berichten] geblokkeerd voor deze weblog, en [quant,_2,bericht,berichten] over het hele systeem.', # Translate - New
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Tot nu toe heeft TypePad AntiSpam [quant,_1,bericht,berichten] geblokkeerd over het hele systeem.', # Translate - New
+	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Verificatie van uw TypePad AntiSpam API sleutel mislukt:', # Translate - New
+	'The TypePad AntiSpam API key provided is invalid.' => 'De TypePad AntiSpam API sleutel die u opgaf was ongeldig.', # Translate - New
+
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
 	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',
@@ -5161,6 +5187,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 182
+## New words: 365
 
 1;
