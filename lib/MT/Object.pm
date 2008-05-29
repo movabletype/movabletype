@@ -706,6 +706,7 @@ sub exist          { shift->_proxy('exist',          @_) }
 sub count_group_by { shift->_proxy('count_group_by', @_) }
 sub sum_group_by   { shift->_proxy('sum_group_by',   @_) }
 sub avg_group_by   { shift->_proxy('avg_group_by',   @_) }
+sub max_group_by   { shift->_proxy('max_group_by',   @_) }
 sub remove_all     { shift->_proxy('remove_all',     @_) }
 
 sub remove {
@@ -2039,6 +2040,20 @@ a MT::Object store.
 
     my $iter = MT::Foo->avg_group_by($terms, {%args, group => $group_exprs,
         avg => 'property_to_average' })
+
+=head2 Max by Group
+
+=over 4
+
+=item * Class->max_group_by()
+
+=back
+
+Like the count_group_by method, you can select objects from a MT::Object
+store using a SQL 'MAX' operator.
+
+    my $iter = MT::Foo->max_group_by($terms, {%args, group => $group_exprs,
+        max => 'column_name' })
 
 =head2 Sum by Group
 

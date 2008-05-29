@@ -117,6 +117,18 @@ sub avg_group_by {
     $driver->_do_group_by("AVG($avg_column) AS avg_$avg_column", @_);
 }
 
+sub max_group_by {
+    my $driver = shift;
+    my ($class, $terms, $args) = @_;
+
+    my $max_column = delete $args->{max};
+    return unless $max_column;
+    $max_column = $driver->_decorate_column_name($class, $max_column);
+    $args->{sort} = "max_$max_column" unless exists $args->{sort};
+    $args->{direction} = 'descend' unless exists $args->{direction};
+    $driver->_do_group_by("MAX($max_column) AS max_$max_column", @_);
+}
+
 sub _do_group_by {
     my $driver = shift;
     my ($agg_func, $class, $terms, $args) = @_;
