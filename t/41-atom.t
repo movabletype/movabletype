@@ -165,9 +165,10 @@ foreach my $base_uri ( qw{/mt-atom.cgi/weblog /mt-atom.cgi/1.0 } ) {
             my ($replies) = grep {
                 $_->rel eq 'replies'
             } $entry->links;
-            $failed = 1, last unless $replies;
+            $failed = 2, last unless $replies;
             my $replies_uri = new URI($replies->href);
-            $failed = 1, last unless $replies_uri->path eq '/mt-atom.cgi/comments/blog_id=1/entry_id='.$mt_entry->id;
+            my $cmt_url = '/mt-atom.cgi/comments/blog_id=1/entry_id='.$mt_entry->id;
+            $failed = 3, last unless $replies_uri->path =~ m|${cmt_url}$|;
         }
         is($failed, 0, 'all the entries have replies link rel');
     }
