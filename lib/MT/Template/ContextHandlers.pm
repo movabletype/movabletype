@@ -7655,15 +7655,15 @@ sub _hdlr_entries {
                 }
             }
             if ( !$entries ) {
-                $args{join} = MT::Placement->join_on( 'entry_id', {
-                        category_id => \@cat_ids, %blog_terms
-                    }, { %blog_args, unique => 1 } );
+                if ($category_arg !~ m/\bNOT\b/i) {
+                    $args{join} = MT::Placement->join_on( 'entry_id', {
+                            category_id => \@cat_ids, %blog_terms
+                        }, { %blog_args, unique => 1 } );
+                }
             }
             push @filters, sub { $cexpr->($_[0]->id, \%map) };
         } else {
-            if (! $category_arg ) {
-                return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $category_arg, $class_type eq 'entry' ? 'category' : 'folder'));
-            }
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $category_arg, $class_type eq 'entry' ? 'category' : 'folder'));
         }
     }
     # Adds a tag filter to the filters list.
@@ -7703,10 +7703,12 @@ sub _hdlr_entries {
                 \%map;
             };
             if (!$entries) {
-                $args{join} = MT::ObjectTag->join_on( 'object_id', {
-                        tag_id => \@tag_ids, object_datasource => 'entry',
-                        %blog_terms
-                    }, { %blog_args, unique => 1 } );
+                if ($tag_arg !~ m/\bNOT\b/i) {
+                    $args{join} = MT::ObjectTag->join_on( 'object_id', {
+                            tag_id => \@tag_ids, object_datasource => 'entry',
+                            %blog_terms
+                        }, { %blog_args, unique => 1 } );
+                }
             }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
         } else {
@@ -7911,7 +7913,7 @@ sub _hdlr_entries {
                     push @entries, $e;
                     last unless --$limit;
                 }
-                $no_resort = 1 unless $args->{sort_order} || $args->{sort_by};
+                $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
             } else {
                 @entries = $class->load(\%terms, \%args);
             }
@@ -7929,7 +7931,7 @@ sub _hdlr_entries {
                 $args->{lastn} = $args->{recently_commented_on};
                 $iter = _rco_entries_iter(
                     \%terms, \%args, \%blog_terms, \%blog_args);
-                $no_resort = 1 unless $args->{sort_order} || $args->{sort_by};
+                $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
             } else {
                 $iter = $class->load_iter(\%terms, \%args);
             }
