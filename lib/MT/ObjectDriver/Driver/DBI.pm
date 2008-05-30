@@ -163,7 +163,7 @@ sub _do_group_by {
     if ($order) {
         if (! ref($order)) {
             $stmt->order( [ { column => $decorate->($order),
-                desc => $direction eq 'descend' ? 'DESC' : 'ASC'
+                desc => ($direction || '') eq 'descend' ? 'DESC' : 'ASC'
             } ] );
         } else {
             my @order;
