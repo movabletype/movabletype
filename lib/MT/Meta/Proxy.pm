@@ -257,12 +257,9 @@ sub load_objects {
     foreach my $meta_obj (@objs) {
         my $type_id = $meta_obj->type;
 
-        my $field = MT::Meta->metadata_by_id($pkg, $type_id);
-        unless ($field) {
-            MT->log("Metadata ID $type_id on $pkg not found");
-            next;
-        }
-        
+        my $field = MT::Meta->metadata_by_id($pkg, $type_id)
+            or next;
+
         my $name  = $field->{name};
         my $type  = $field->{type};
 
