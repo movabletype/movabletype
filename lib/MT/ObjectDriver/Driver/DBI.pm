@@ -159,16 +159,12 @@ sub _do_group_by {
     }
     $stmt->group([ map { { column => $_ } } @group ]);
 
-    ## Ugly.
-    my $sql = $stmt->as_sql;
-
     ## Set statement's ORDER clause if any.
     if ($order) {
         if (! ref($order)) {
-            $sql .= "\nORDER BY " . $decorate->($order);
-            if ($direction) {
-                $sql .= $direction eq 'descend' ? ' DESC' : ' ASC';
-            }
+            $stmt->order( [ { column => $decorate->($order),
+                desc => $direction eq 'descend' ? 'DESC' : 'ASC'
+            } ] );
         } else {
             my @order;
             foreach my $ord (@$order) {
@@ -178,9 +174,10 @@ sub _do_group_by {
                 };
             }
             $stmt->order(\@order);
-            $sql .= "\n" . $stmt->as_aggregate('order');
         }
     }
+
+    my $sql = $stmt->as_sql;
 
     my $dbh = $driver->r_handle;
     $driver->start_query($sql, $stmt->bind);

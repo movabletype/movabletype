@@ -23,7 +23,7 @@ sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->add_methods(
-        login            => \&login,
+        login            => \&login_form,
         login_external   => \&login_external,
         do_login         => \&do_login,
         signup           => \&signup,
@@ -90,11 +90,7 @@ sub init_request {
 }
 
 sub load_core_tags {
-    return {
-        function => {
-            UserSessionState => \&_hdlr_user_session_state,
-        },
-    };
+    return {};
 }
 
 #
@@ -108,53 +104,10 @@ sub load_core_tags {
 #
 sub _get_commenter_session {
     my $app = shift;
-    my $q   = $app->param;
-
-    my $session_key;
-
-    my $blog = $app->blog;
-    if ($blog) {
-        my $auths = $blog->commenter_authenticators || '';
-        if ( $auths =~ /MovableType/ ) {
-            # First, check for a real MT user login. If one exists,
-            # return that as the commenter identity
-            my ($user, $first_time) = $app->SUPER::login();
-            if ( $user ) {
-                my $sess = $app->session;
-                return ( $sess, $user );
-            }
-        }
-    }
-
-    my %cookies = $app->cookies();
-    my $cookie_name = $app->commenter_cookie;
-    if ( !$cookies{$cookie_name} ) {
-        return ( undef, undef );
-    }
-    $session_key = $cookies{$cookie_name}->value() || "";
-    $session_key =~ y/+/ /;
-    my $cfg = $app->config;
-    require MT::Session;
-    my $sess_obj = MT::Session->load( { id => $session_key, kind => 'SI' } );
-    my $timeout = $cfg->CommentSessionTimeout;
-    my $user_id = $sess_obj->get('author_id') if $sess_obj;
-    my $user = MT::Author->load( $user_id ) if $user_id;
-
-    if (   !$sess_obj
-        || ( $sess_obj->start() + $timeout < time )
-        || ( !$user_id )
-        || ( !$user )
-      )
-    {
-        $app->_invalidate_commenter_session( \%cookies );
-        return ( undef, undef );
-    }
-
-    # session is valid!
-    return ( $sess_obj, $user );
+    return $app->get_commenter_session();
 }
 
-sub login {
+sub login_form {
     my $app   = shift;
     my %param = @_;
 
@@ -1421,13 +1374,11 @@ sub redirect_to_target {
     require MT::Util;
     my $static = $q->param('static') || $q->param('return_url') || '';
 
-    if ( ($static eq '') || ($static eq 1) ) {
+    if ( ($static eq '') || ($static eq '1') ) {
         require MT::Entry;
         my $entry = MT::Entry->load( $q->param('entry_id') || 0 )
             or return $app->error($app->translate('Can\'t load entry #[_1].', $q->param('entry_id')));
         $target = $entry->archive_url;
-        my $blog = MT::Blog->load( $entry->blog_id );
-        $target = MT::Util::strip_index( $target, $blog );
     }
     elsif ($static ne '') {
         $target = $static;
@@ -1446,65 +1397,6 @@ sub redirect_to_target {
         ($q->param('logout') ? 'logout' :  'login'), UseMeta => 1 );
 }
 
-sub session_state {
-    my $app = shift;
-    my $blog = $app->blog;
-    my $blog_id = $blog->id if $blog;
-
-    my $c;
-    if ( $blog_id && $blog ) {
-        my ( $sessobj, $commenter ) = $app->_get_commenter_session();
-        if ( $sessobj && $commenter ) {
-            my $blog_perms = $commenter->blog_perm($blog_id);
-            my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
-            $banned = 0 if $blog_perms && $blog_perms->can_administer;
-            $banned ||= 1 if $commenter->status == MT::Author::BANNED();
-
-            if ($banned) {
-                $sessobj->remove;
-            } else {
-                $sessobj->start( time +
-                    $app->config->CommentSessionTimeout); # extend by timeout
-                $sessobj->save();
-            }
-
-            # FIXME: These may not be accurate in 'SingleCommunity' mode...
-            my $can_comment = $banned ? 0 : 1;
-            $can_comment = 0 unless $blog->allow_unreg_comments || $blog->allow_reg_comments;
-            my $can_post = ($blog_perms && $blog_perms->can_create_post) ? "1" : "0";
-            $c = {
-                sid => $sessobj->id,
-                name => $commenter->nickname,
-                url => $commenter->url,
-                email => $commenter->email,
-                userpic => scalar $commenter->userpic_url,
-                profile => "", # profile link url
-                is_authenticated => "1",
-                is_trusted => ($commenter->is_trusted($blog_id) ? "1" : "0"),
-                is_author => ($commenter->type == MT::Author::AUTHOR() ? "1" : "0"),
-                is_anonymous => "0",
-                is_banned => $banned,
-                can_comment => $can_comment,
-                can_post => $can_post,
-            };
-        }
-    }
-
-    unless ($c) {
-        my $can_comment = $blog && $blog->allow_anon_comments ? "1" : "0";
-        $c = {
-            is_authenticated => "0",
-            is_trusted => "0",
-            is_anonymous => "1",
-            can_post => "0", # no anonymous posts
-            can_comment => $can_comment,
-            is_banned => "0",
-        };
-    }
-
-    return $c;
-}
-
 sub session_js {
     my $app = shift;
     my $jsonp = $app->param('jsonp');
@@ -1519,14 +1411,6 @@ sub session_js {
     my $json = JSON::objToJson($state);
     $app->print("$jsonp(" . $json . ");\n");
     return undef;
-}
-
-sub _hdlr_user_session_state {
-    my ($ctx, $args, $cond) = @_;
-    my $state = MT->app->session_state();
-    require JSON;
-    my $json = JSON::objToJson($state);
-    return $json;
 }
 
 # deprecated

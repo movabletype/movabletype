@@ -511,7 +511,7 @@ sub core_tags {
             SearchIncludeBlogs => sub { '' },
             SearchTemplateID => sub { 0 },
 
-            UserSessionState => sub { 'null' },
+            UserSessionState => \&_hdlr_user_session_state,
 
             BuildTemplateID => \&_hdlr_build_template_id,
 
@@ -1572,6 +1572,8 @@ processed are shown or not. If unspecified, actions are shown.
 
 =back
 
+=for tags application
+
 =cut
 
 sub _hdlr_app_listing {
@@ -1696,6 +1698,8 @@ This tag produces unescaped '&' characters. If you use this tag
 in an HTML tag attribute, be sure to add a C<escape="html"> attribute
 which will encode these to HTML entities.
 
+=for tags application
+
 =cut
 
 sub _hdlr_app_link {
@@ -1752,6 +1756,8 @@ Associates the pagition controls and item action widget with the
 given form element.
 
 =back
+
+=for tags application
 
 =cut
 
@@ -1829,6 +1835,8 @@ B<Example:>
         label="<__trans phrase="All About Me">" can_close="1">
         (contents of widget go here)
     </mtapp:Widget>
+
+=for tags application
 
 =cut
 
@@ -1935,6 +1943,8 @@ Accepted values: "all", "index".
 
 =back
 
+=for tags application
+
 =cut
 
 sub _hdlr_app_statusmsg {
@@ -2009,6 +2019,8 @@ template variable which is an array of hashes.
 B<Example:>
 
     <$mtapp:PageActions$>
+
+=for tags application
 
 =cut
 
@@ -2109,6 +2121,8 @@ Producing:
         <input type="submit" />
     </form>
 
+=for tags application
+
 =cut
 
 sub _hdlr_app_form {
@@ -2182,6 +2196,8 @@ B<Example:>
         <MTApp:Setting ...>
         <MTApp:Setting ...>
     </MTApp:SettingGroup>
+
+=for tags application
 
 =cut
 
@@ -2297,6 +2313,8 @@ The basic structural output of a setting tag looks like this:
             </div>
         </div>
     </div>
+
+=for tags application
 
 =cut
 
@@ -2458,7 +2476,7 @@ Produces:
 
     2,4,6,8,10
 
-=for tags loop
+=for tags loop, templating
 
 =cut
 
@@ -2518,6 +2536,8 @@ B<Example:>
         'some_variable' nor 'some_other_variable' is assigned
     </mt:If>
 
+=for tags templating
+
 =cut
 
 sub _hdlr_else {
@@ -2546,6 +2566,8 @@ sub _hdlr_else {
 =head2 ElseIf
 
 An alias for the 'Else' tag.
+
+=for tags templating
 
 =cut
 
@@ -2770,6 +2792,8 @@ Test a variable using Perl:
     <mt:If test="length($some_variable) > 10">
         '<$mt:Var name="some_variable"$>' is 11 characters or longer
     </mt:If>
+
+=for tags templating
 
 =cut
 
@@ -3015,7 +3039,7 @@ currently in context.
 
 =back
 
-=for tags loop
+=for tags loop, templating
 
 =cut
 
@@ -3119,13 +3143,13 @@ An alias for the 'Var' tag, and considered deprecated in favor of 'Var'.
 
 =head2 Var
 
-Retrieves a template variable and outputs it's value.
+A B<function tag> used to store and later output data in a template.
 
 B<Attributes:>
 
 =over 4
 
-=item var or name
+=item name (or var)
 
 Identifies the template variable. The 'name' attribute supports a variety
 of expressions. The typical case is a simple variable name:
@@ -3222,6 +3246,8 @@ For array template variables, this attribute is used in joining the
 values of the array together.
 
 =back
+
+=for tags templating
 
 =cut
 
@@ -3417,6 +3443,8 @@ for whether it has a tag association by that name.
 
 =back
 
+=for tags tags, entries
+
 =cut
 
 sub _hdlr_entry_if_tagged {
@@ -3594,7 +3622,7 @@ can make this simple code into a powerful looking and useful "tag cloud".
         </mt:Tags>
     </ul>
 
-=for tags multiblog, loop
+=for tags tags, multiblog, loop
 
 =cut
 
@@ -3733,7 +3761,7 @@ A URL like this would have to be built like this:
 And of course, you would have to create the .htaccess rules to translate
 this into a request to mt-search.cgi.
 
-=for tags multiblog
+=for tags tags, multiblog
 
 =cut
 
@@ -3807,6 +3835,8 @@ with some styling, a sidebar of any page.
     </div>
 
 =for tags multiblog
+
+=for tags tags
 
 =cut
 
@@ -3929,6 +3959,8 @@ glued together by a comma and a space.
         <mt:EntryTags glue=", "><$mt:TagName$></mt:EntryTags>
     </mt:If>
 
+=for tags tags, entries
+
 =cut
 
 sub _hdlr_entry_tags {
@@ -3985,6 +4017,8 @@ marks.
 
 =back
 
+=for tags tags
+
 =cut
 
 sub _hdlr_tag_name {
@@ -4006,6 +4040,8 @@ sub _hdlr_tag_name {
 
 Outputs the numeric ID of the tag currently in context.
 
+=for tags tags
+
 =cut
 
 sub _hdlr_tag_id {
@@ -4022,7 +4058,7 @@ sub _hdlr_tag_id {
 Returns the number of entries that have been tagged with the current tag
 in context.
 
-=for tags count
+=for tags tags, count
 
 =cut
 
@@ -4055,6 +4091,8 @@ sub _hdlr_tag_count {
 A conditional tag that is true when the current blog in context has been
 configured with a TypeKey token.
 
+=for tags comments, typekey
+
 =cut
 
 sub _hdlr_if_typekey_token {
@@ -4069,6 +4107,8 @@ sub _hdlr_if_typekey_token {
 
 A conditional tag that is true when the blog is configured to moderate
 incoming comments from anonymous commenters.
+
+=for tags comments
 
 =cut
 
@@ -4089,6 +4129,8 @@ sub _hdlr_comments_moderated {
 A conditional tag that is true when the blog has been configured to
 permit user registration.
 
+=for tags comments
+
 =cut
 
 sub _hdlr_reg_allowed {
@@ -4107,6 +4149,8 @@ sub _hdlr_reg_allowed {
 
 A conditional tag that is true when the blog has been configured to
 require user registration.
+
+=for tags comments
 
 =cut
 
@@ -4127,6 +4171,8 @@ sub _hdlr_reg_required {
 
 A conditional tag that is true when the blog has been configured to
 permit anonymous comments.
+
+=for tags comments
 
 =cut
 
@@ -4153,6 +4199,8 @@ sub _hdlr_reg_not_required {
 A conditional tag that returns true when: the system is configured to
 allow comments and the blog is configured to accept comments in some
 fashion.
+
+=for tags comments
 
 =cut
 
@@ -4204,6 +4252,8 @@ archives and the normal feed for all other templates:
             href="<$MTLink template="feed_recent"$>" />
     </mt:IfArchiveType>
 
+=for tags archives
+
 =cut
 
 sub _hdlr_if_archive_type {
@@ -4241,6 +4291,8 @@ B<Example:>
     <mt:Else>
         <!-- do something else -->
     </mt:IfArchiveTypeEnabled>
+
+=for tags archives
 
 =cut
 
@@ -4307,6 +4359,8 @@ Supplies a variable name to use for assigning the contents of the
 L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
 
 =back
+
+=for tags templating
 
 =cut
 
@@ -4430,6 +4484,8 @@ B<Example:> Passing Parameters to a Template Module
 (from the "Section Header" template module)
 
     <h2><$mt:Var name="title"$></h2>
+
+=for tags templating
 
 =cut
 
@@ -4866,6 +4922,8 @@ B<Example:>
 
     <$mt:FileTemplate format="%y/%m/%f"$>
 
+=for tags archives
+
 =cut
 
 sub _hdlr_file_template {
@@ -4946,6 +5004,8 @@ B<Example:>
 
 =for tags date
 
+=for tags templates
+
 =cut
 
 sub _hdlr_template_created_on {
@@ -4994,6 +5054,7 @@ B<Examples:>
 
     <a href="<mt:Link identifier="main_index">">Home</a>
 
+=for tags archives
 =cut
 
 sub _hdlr_link {
@@ -5037,6 +5098,8 @@ B<Example:>
 
     <mt:Version />
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_mt_version {
@@ -5068,6 +5131,8 @@ for the MTOS edition, this would output:
 
     Movable Type Open Source
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_product_name {
@@ -5091,6 +5156,8 @@ B<Example:>
 
     <$mt:PublishCharset$>
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_publish_charset {
@@ -5111,6 +5178,8 @@ B<Example:>
 This outputs a language code, ie: "en_US", "ja", "de", "es", "fr", "nl" or
 other installed language.
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_default_language {
@@ -5123,6 +5192,8 @@ sub _hdlr_default_language {
 =head2 SignOnURL
 
 The value of the C<SignOnURL> configuration setting.
+
+=for tags comments
 
 =cut
 
@@ -5238,6 +5309,8 @@ sub _hdlr_if_nonzero {
 This tag is used by the system to display the text of any user error
 message. Used in system templates, such as the 'Comment Response' template.
 
+=for tags templating
+
 =cut
 
 sub _hdlr_error_message {
@@ -5265,6 +5338,8 @@ Then later:
     <h1><$mt:Var name="title"$></h1>
 
     <ul><li><$mt:Var name="color"$></li></ul>
+
+=for tags templating
 
 =cut
 
@@ -5304,6 +5379,8 @@ B<Example:>
 Then later:
 
     foo is assigned: <$mt:Var name="my_hash{foo}"$>
+
+=for tags templating
 
 =cut
 
@@ -5372,6 +5449,8 @@ for the template variable.
 
 =back
 
+=for tags templating
+
 =cut
 
 ###########################################################################
@@ -5407,6 +5486,8 @@ for the template variable.
 
 =back
 
+=for tags templating
+
 =cut
 
 ###########################################################################
@@ -5438,6 +5519,8 @@ B<Example:>
     <mt:Entries>
         <$mt:Var name="entry_title"$>
     </mt:Entries>
+
+=for tags templating
 
 =cut
 
@@ -5580,6 +5663,8 @@ name is unnecessary):
 
     <a href="<$mt:CGIPath$>some-cgi-script.cgi">
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_cgi_path {
@@ -5610,7 +5695,7 @@ B<Example:>
 
     <$mt:AdminCGIPath$>
 
-=for tags path, system
+=for tags path, configuration
 
 =cut
 
@@ -5635,6 +5720,8 @@ sub _hdlr_admin_cgi_path {
 Returns the full file path for the Movable Type configuration file
 (mt-config.cgi).
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_config_file {
@@ -5647,6 +5734,8 @@ sub _hdlr_config_file {
 
 Returns the file path to the directory where Movable Type has been
 installed. Any trailing "/" character is removed.
+
+=for tags configuration
 
 =cut
 
@@ -5663,6 +5752,8 @@ sub _hdlr_cgi_server_path {
 The relative URL (path) extracted from the CGIPath setting in
 mt-config.cgi. This is the same as L<CGIPath>, but without any
 domain name. This value is guaranteed to end with a "/" character.
+
+=for tags configuration
 
 =cut
 
@@ -5684,6 +5775,8 @@ The file path to the directory where Movable Type's static files are
 stored (as configured by the C<StaticFilePath> setting, or based on
 the location of the MT application files alone). This value is
 guaranteed to end with a "/" character.
+
+=for tags configuration
 
 =cut
 
@@ -5712,6 +5805,8 @@ B<Example:>
 
     <img src="<$mt:StaticWebPath$>images/powered.gif"
         alt="Powered by MT" />
+
+=for tags configuration
 
 =cut
 
@@ -5743,6 +5838,8 @@ sub _hdlr_static_path {
 Returns the value of the C<AdminScript> configuration setting. The default
 for this setting if unassigned is "mt.cgi".
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_admin_script {
@@ -5756,6 +5853,8 @@ sub _hdlr_admin_script {
 
 Returns the value of the C<CommentScript> configuration setting. The
 default for this setting if unassigned is "mt-comments.cgi".
+
+=for tags configuration
 
 =cut
 
@@ -5771,6 +5870,8 @@ sub _hdlr_comment_script {
 Returns the value of the C<TrackbackScript> configuration setting. The
 default for this setting if unassigned is "mt-tb.cgi".
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_trackback_script {
@@ -5784,6 +5885,8 @@ sub _hdlr_trackback_script {
 
 Returns the value of the C<SearchScript> configuration setting. The
 default for this setting if unassigned is "mt-search.cgi".
+
+=for tags configuration
 
 =cut
 
@@ -5801,7 +5904,7 @@ sub _hdlr_search_script {
 Returns the value of the C<SearchMaxResults> or C<MaxResults> configuration
 setting.  Use C<SearchMaxResults> because MaxResults is considered deprecated.
 
-=for tags search
+=for tags search, configuration
 
 =cut
 
@@ -5817,6 +5920,8 @@ sub _hdlr_search_max_results {
 Returns the value of the C<XMLRPCScript> configuration setting. The
 default for this setting if unassigned is "mt-xmlrpc.cgi".
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_xmlrpc_script {
@@ -5831,6 +5936,8 @@ sub _hdlr_xmlrpc_script {
 Returns the value of the C<AtomScript> configuration setting. The
 default for this setting if unassigned is "mt-atom.cgi".
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_atom_script {
@@ -5844,6 +5951,8 @@ sub _hdlr_atom_script {
 
 Returns the value of the C<NotifyScript> configuration setting. The
 default for this setting if unassigned is "mt-add-notify.cgi".
+
+=for tags configuration
 
 =cut
 
@@ -5862,6 +5971,8 @@ A conditional tag that is true when an author object is in context.
         Author: <$mt:AuthorDisplayName$>
     </mt:IfAuthor>
 
+=for tags authors
+
 =cut
 
 sub _hdlr_if_author {
@@ -5879,6 +5990,8 @@ has written one or more entries that have been published.
     <mt:AuthorHasEntry>
     <a href="<$mt:ArchiveLink type="Author">">Archive for this author</a>
     </mt:AuthorHasEntry>
+
+=for tags authors, entries
 
 =cut
 
@@ -5903,6 +6016,8 @@ sub _hdlr_author_has_entry {
 
 A conditional tag that is true when the author currently in context
 has written one or more pages that have been published.
+
+=for tags authors, pages
 
 =cut
 
@@ -6017,7 +6132,7 @@ List all Authors and Commenters for a blog:
         <a href="<$mt:AuthorURL$>"><mt:AuthorDisplayName$></a>
     </mt:Authors>
 
-=for tags multiblog, loop, scoring
+=for tags multiblog, loop, scoring, authors
 
 =cut
 
@@ -6248,7 +6363,10 @@ sub _hdlr_authors {
 
 =head2 AuthorID
 
-Outputs the numeric ID of the author currently in context.
+Outputs the numeric ID of the author currently in context. If no author
+is in context, it will use the author of the entry or page in context.
+
+=for tags authors
 
 =cut
 
@@ -6267,9 +6385,12 @@ sub _hdlr_author_id {
 
 =head2 AuthorName
 
-Outputs the username of the author currently in context.
+Outputs the username of the author currently in context. If no author
+is in context, it will use the author of the entry or page in context.
 
 B<NOTE:> it is not recommended to publish the author's username.
+
+=for tags authors
 
 =cut
 
@@ -6288,7 +6409,10 @@ sub _hdlr_author_name {
 
 =head2 AuthorDisplayName
 
-Outputs the display name of the author currently in context.
+Outputs the display name of the author currently in context. If no author
+is in context, it will use the author of the entry or page in context.
+
+=for tags authors
 
 =cut
 
@@ -6307,9 +6431,12 @@ sub _hdlr_author_display_name {
 
 =head2 AuthorEmail
 
-Outputs the email address of the author currently in context.
+Outputs the email address of the author currently in context. If no author
+is in context, it will use the author of the entry or page in context.
 
 B<NOTE:> it is not recommended to publish the author's email address.
+
+=for tags authors
 
 =cut
 
@@ -6330,7 +6457,10 @@ sub _hdlr_author_email {
 
 =head2 AuthorURL
 
-Outputs the URL field of the author currently in context.
+Outputs the URL field of the author currently in context. If no author
+is in context, it will use the author of the entry or page in context.
+
+=for tags authors
 
 =cut
 
@@ -6352,6 +6482,8 @@ sub _hdlr_author_url {
 
 Outputs the authentication type identifier for the author currently
 in context. For Movable Type registered users, this is "MT".
+
+=for tags authors
 
 =cut
 
@@ -6396,6 +6528,8 @@ B<Example:>
         <$mt:AuthorDisplayName$>
     </mt:Authors>
 
+=for tags authors
+
 =cut
 
 sub _hdlr_author_auth_icon_url {
@@ -6420,6 +6554,8 @@ current author's userpic. For example:
     <img src="http://www.yourblog.com/path/to/userpic.jpg"
         width="100" height="100" />
 
+=for tags authors, userpics
+
 =cut
 
 sub _hdlr_author_userpic {
@@ -6441,6 +6577,8 @@ This template tag returns the fully qualified URL for the userpic of
 the author currently in context.
 
 If the author has no userpic, this will output an empty string.
+
+=for tags authors, userpics
 
 =cut
 
@@ -6473,6 +6611,8 @@ asset template tags to display the userpic's properties.
          </mt:AuthorUserpicAsset>
     </mt:Authors></ul>
 
+=for tags authors, userpics, assets
+
 =cut
 
 sub _hdlr_author_userpic_asset {
@@ -6498,6 +6638,8 @@ sub _hdlr_author_userpic_asset {
 =head2 AuthorBasename
 
 Outputs the 'Basename' field of the author currently in context.
+
+=for tags authors
 
 =cut
 
@@ -6534,7 +6676,7 @@ would iterate over only the blogs with IDs 1, 12, 19, 37 and 112.
 
 =back
 
-=for tags multiblog, loop
+=for tags multiblog, loop, blogs
 
 =cut
 
@@ -6591,6 +6733,8 @@ sub _hdlr_blogs {
 
 Outputs the numeric ID of the blog currently in context.
 
+=for tags blogs
+
 =cut
 
 sub _hdlr_blog_id {
@@ -6604,6 +6748,8 @@ sub _hdlr_blog_id {
 =head2 BlogName
 
 Outputs the name of the blog currently in context.
+
+=for tags blogs
 
 =cut
 
@@ -6621,6 +6767,8 @@ sub _hdlr_blog_name {
 
 Outputs the description field of the blog currently in context.
 
+=for tags blogs
+
 =cut
 
 sub _hdlr_blog_description {
@@ -6635,7 +6783,10 @@ sub _hdlr_blog_description {
 
 =head2 BlogURL
 
-Outputs the Site URL field of the blog currently in context.
+Outputs the Site URL field of the blog currently in context. An ending
+'/' character is guaranteed.
+
+=for tags blogs
 
 =cut
 
@@ -6653,7 +6804,10 @@ sub _hdlr_blog_url {
 
 =head2 BlogSitePath
 
-Outputs the Site Root field of the blog currently in context.
+Outputs the Site Root field of the blog currently in context. An ending
+'/' character is guaranteed.
+
+=for tags blogs
 
 =cut
 
@@ -6671,7 +6825,10 @@ sub _hdlr_blog_site_path {
 
 =head2 BlogArchiveURL
 
-Outputs the Archive URL of the blog currently in context.
+Outputs the Archive URL of the blog currently in context. An ending
+'/' character is guaranteed.
+
+=for tags blogs
 
 =cut
 
@@ -6690,6 +6847,8 @@ sub _hdlr_blog_archive_url {
 =head2 BlogRelativeURL
 
 Similar to the L<BlogURL> tag, but removes any domain name from the URL.
+
+=for tags blogs
 
 =cut
 
@@ -6713,6 +6872,19 @@ sub _hdlr_blog_relative_url {
 The timezone that has been specified for the blog displayed as an offset
 from UTC in +|-hh:mm format. This setting can be changed on the blog's
 General settings screen.
+
+B<Attributes:>
+
+=over 4
+
+=item no_colon (optional; default "0")
+
+If specified, will produce the timezone without the ":" character
+("+|-hhmm" only).
+
+=back
+
+=for tags blogs
 
 =cut
 
@@ -6751,6 +6923,8 @@ If assigned, will change any '_' in the language code to a '-', conforming
 it to the IETF RFC # 3066.
 
 =back
+
+=for tags blogs
 
 =cut
 
@@ -6793,6 +6967,8 @@ underscores ("_").
 
 =back
 
+=for tags blogs
+
 =cut
 
 sub _hdlr_blog_host {
@@ -6832,6 +7008,8 @@ If set, exclude the port number from the CGIHost.
 
 =back
 
+=for tags configuration
+
 =cut
 
 sub _hdlr_cgi_host {
@@ -6848,7 +7026,7 @@ sub _hdlr_cgi_host {
 
 =head2 BlogCategoryCount
 
-=for tags multiblog, count
+=for tags multiblog, count, blogs
 
 =cut
 
@@ -6868,7 +7046,7 @@ sub _hdlr_blog_category_count {
 Returns the number of published entries associated with the blog
 currently in context.
 
-=for tags multiblog, count
+=for tags multiblog, count, blogs, entries
 
 =cut
 
@@ -6891,7 +7069,7 @@ sub _hdlr_blog_entry_count {
 Returns the number of published comments associated with the blog
 currently in context.
 
-=for tags multiblog, count
+=for tags multiblog, count, blogs, comments
 
 =cut
 
@@ -6913,7 +7091,7 @@ sub _hdlr_blog_comment_count {
 Returns a count of published TrackBack pings associated with the blog
 currently in context.
 
-=for tags multiblog, count
+=for tags multiblog, count, blogs, pings
 
 =cut
 
@@ -6938,6 +7116,8 @@ Publishes the license URL of the Creative Commons logo appropriate
 to the license assigned to the blog inc ontex.t If the blog doesn't
 have a Creative Commons license, this tag returns an empty string.
 
+=for tags blogs, creativecommons
+
 =cut
 
 sub _hdlr_blog_cc_license_url {
@@ -6960,6 +7140,8 @@ B<Example:>
     <MTIf tag="BlogCCLicenseImage">
     <img src="<$MTBlogCCLicenseImage$>" alt="Creative Commons" />
     </MTIf>
+
+=for tags blogs, creativecommons
 
 =cut
 
@@ -6989,6 +7171,8 @@ B<Attributes:>
 
 If specified, forces the trailing "index" filename to be left on any
 entry permalink published in the RDF block.
+
+=for tags blogs, creativecommons
 
 =cut
 
@@ -7044,6 +7228,8 @@ RDF
 A conditional tag that is true when the current blog in context has
 been assigned a Creative Commons License.
 
+=for tags blogs, creativecommons
+
 =cut
 
 sub _hdlr_blog_if_cc_license {
@@ -7060,6 +7246,8 @@ sub _hdlr_blog_if_cc_license {
 Returns the configured blog filename extension, including a leading
 '.' character. If no extension is assigned, this returns an empty
 string.
+
+=for tags blogs
 
 =cut
 
@@ -7080,6 +7268,8 @@ Returns an identifier for the currently assigned template set for the
 blog in context. The identifier is modified such that underscores are
 changed to dashes. In the MT template sets, this identifier is assigned
 to the "id" attribute of the C<body> HTML tag.
+
+=for tags blogs
 
 =cut
 
@@ -7456,11 +7646,18 @@ sub _hdlr_entries {
         if ($cexpr) {
             my %map;
             require MT::Placement;
+            my @cat_ids;
             for my $cat (@$cats) {
+                push @cat_ids, $cat->id;
                 my $iter = MT::Placement->load_iter({ category_id => $cat->id });
                 while (my $p = $iter->()) {
                     $map{$p->entry_id}{$cat->id}++;
                 }
+            }
+            if ( !$entries ) {
+                $args{join} = MT::Placement->join_on( 'entry_id', {
+                        category_id => \@cat_ids, %blog_terms
+                    }, { %blog_args, unique => 1 } );
             }
             push @filters, sub { $cexpr->($_[0]->id, \%map) };
         } else {
@@ -7481,11 +7678,11 @@ sub _hdlr_entries {
             $tag_arg = join " or ", @tags;
         }
         my $tags = [ MT::Tag->load($terms, {
-            binary => { name => 1 },
+            ( $terms ? ( binary => { name => 1 } ) : () ),
             join => MT::ObjectTag->join_on('tag_id', {
                 object_datasource => $class->datasource,
-                %blog_terms
-            }, \%blog_args)
+                %blog_terms,
+            }, { %blog_args, unique => 1 } ),
         }) ];
         my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
         if ($cexpr) {
@@ -7505,6 +7702,12 @@ sub _hdlr_entries {
                 $map{$_->tag_id} = 1 for @ot_ids;
                 \%map;
             };
+            if (!$entries) {
+                $args{join} = MT::ObjectTag->join_on( 'object_id', {
+                        tag_id => \@tag_ids, object_datasource => 'entry',
+                        %blog_terms
+                    }, { %blog_args, unique => 1 } );
+            }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
         } else {
             return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $tag_arg));
@@ -7624,7 +7827,7 @@ sub _hdlr_entries {
                 'lastn',      'category',
                 'categories', 'tag',
                 'tags',       'author',
-                'days',       'recently_commented_on',
+                'days',
                 'min_score',  'max_score',
                 'min_rate',    'max_rate',
                 'min_count',  'max_count'
@@ -7699,7 +7902,19 @@ sub _hdlr_entries {
                 }
             }
             $args{offset} = $args->{offset} if $args->{offset};
-            @entries = $class->load(\%terms, \%args);
+
+            if ($args->{recently_commented_on}) {
+                my $entries_iter = _rco_entries_iter(\%terms, \%args,
+                    \%blog_terms, \%blog_args);
+                my $limit = $args->{recently_commented_on};
+                while (my $e = $entries_iter->()) {
+                    push @entries, $e;
+                    last unless --$limit;
+                }
+                $no_resort = 1 unless $args->{sort_order} || $args->{sort_by};
+            } else {
+                @entries = $class->load(\%terms, \%args);
+            }
         } else {
             if (($args->{lastn}) && (!exists $args->{limit})) {
                 $args{direction} = 'descend';
@@ -7709,7 +7924,15 @@ sub _hdlr_entries {
                 $args{direction} = $args->{sort_order} || 'descend';
                 $no_resort = 1 unless $args->{sort_by};
             }
-            my $iter = $class->load_iter(\%terms, \%args);
+            my $iter;
+            if ($args->{recently_commented_on}) {
+                $args->{lastn} = $args->{recently_commented_on};
+                $iter = _rco_entries_iter(
+                    \%terms, \%args, \%blog_terms, \%blog_args);
+                $no_resort = 1 unless $args->{sort_order} || $args->{sort_by};
+            } else {
+                $iter = $class->load_iter(\%terms, \%args);
+            }
             my $i = 0; my $j = 0;
             my $off = $args->{offset} || 0;
             my $n = $args->{lastn};
@@ -7722,13 +7945,6 @@ sub _hdlr_entries {
                 $i++;
                 $iter->('finish'), last if $n && $i >= $n;
             }
-        }
-        if ($args->{recently_commented_on}) {
-            my @e = sort {$b->comment_latest->created_on <=>
-                          $a->comment_latest->created_on}
-                    grep {$_->comment_latest} @entries;
-            @entries = splice(@e, 0, $args->{recently_commented_on});
-            $no_resort = 1;
         }
     } else {
         # Don't resort a predefined list that's not in a published archive
@@ -7943,6 +8159,62 @@ sub _hdlr_entries {
     }
 
     $res;
+}
+
+# returns an iterator that supplies entries, in the order of last comment
+# date (descending)
+sub _rco_entries_iter {
+    my ($entry_terms, $entry_args, $blog_terms, $blog_args) = @_;
+
+    my $offset = 0;
+    my $limit = $entry_args->{limit} || 20;
+    my @entries;
+    delete $entry_args->{direction}
+        if exists $entry_args->{direction};
+    delete $entry_args->{sort}
+        if exists $entry_args->{sort};
+
+    my $rco_iter = sub {
+        if (@_ && ($_[0] eq 'finish')) {
+            return undef;
+        }
+        if (! @entries) {
+            require MT::Comment;
+            my $iter = MT::Comment->max_group_by({
+                visible => 1,
+                %$blog_terms,
+            }, {
+                join => MT::Entry->join_on(undef,
+                    {
+                        'id' => \'=comment_entry_id',
+                        %$entry_terms,
+                    }, { %$entry_args }),
+                %$blog_args,
+                group => ['entry_id'],
+                max => 'created_on',
+                offset => $offset,
+                limit => $limit,
+            });
+            my @ids;
+            my %order;
+            my $num = 0;
+            while (my ($max, $id) = $iter->()) {
+                push @ids, $id;
+                $order{$id} = $num++;
+            }
+            if ( @ids ) {
+                @entries = MT::Entry->load({ id => \@ids });
+                @entries = sort { $order{$a->id} <=> $order{$b->id} } @entries;
+            }
+        }
+        if ( @entries ) {
+            $offset++;
+            return shift @entries;
+        } else {
+            return undef;
+        }
+    };
+    return $rco_iter;
 }
 
 ###########################################################################
@@ -9447,7 +9719,7 @@ sub _hdlr_date {
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
         my $server_offset = $blog->server_offset;
-        if ((localtime (timelocal ($s, $m, $h, $d, $mo, ($y - 1900 >= 0 ? $y - 1900 : 0 ))))[8]) {
+        if ((localtime (timelocal ($s, $m, $h, $d, $mo, $y )))[8]) {
             $server_offset += 1;
         }
         my $four_digit_offset = sprintf('%.02d%.02d', int($server_offset),
@@ -10681,6 +10953,28 @@ sub _hdlr_commenter_username {
     my ($ctx) = @_;
     my $a = $ctx->stash('commenter');
     return $a ? $a->name : '';
+}
+
+###########################################################################
+
+=head2 UserSessionCookieTimeout
+
+Returns a JSON-formatted data structure that represents the user that is
+currently logged in.
+
+=for tags comments
+
+=cut
+
+sub _hdlr_user_session_state {
+    my ($ctx, $args, $cond) = @_;
+    my $app = MT->app;
+    return 'null' unless $app->can('session_state');
+
+    my $state = $app->session_state();
+    require JSON;
+    my $json = JSON::objToJson($state);
+    return $json;
 }
 
 ###########################################################################
@@ -15964,3 +16258,5 @@ sub _hdlr_widget_manager {
 }
 
 1;
+
+__END__

@@ -495,8 +495,10 @@ sub prepare_context {
 
     my $blog_id = $app->first_blog_id();
     if ( $blog_id ) {
+        my $blog = $app->model('blog')->load($blog_id);
+        $app->blog( $blog );
         $ctx->stash('blog_id', $blog_id);
-        $ctx->stash('blog',    $app->model('blog')->load($blog_id));
+        $ctx->stash('blog',    $blog);
     }
     $ctx;
 }
