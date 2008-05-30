@@ -319,7 +319,7 @@ sub core_upgrade_functions {
                     require MT::TemplateMap;
                     foreach my $map (MT::TemplateMap->load({ blog_id => $blog->id })) {
                         next if $map->file_template;
-            
+
                         my $at = $map->archive_type;
                         if ($at eq 'Individual') {
                             $map->file_template('%e%x');
@@ -1105,44 +1105,48 @@ sub core_upgrade_meta_for_table {
     while (my $row = $sth->fetchrow_arrayref) {
         $rows++;
         my ($rawmeta, $id) = @$row;
-        if ($rawmeta =~ m/^SERG/) {
-            # deserialize
-            my $metadataref = $ser->unserialize($rawmeta);
-            if ($metadataref) {
-                my $metadata = $$metadataref;
-                my $obj = $class->load( { id => $id }, { no_class => 1, fetchonly => [ 'id', ( $class_type ? ( $class->properties->{class_column} ) : () ) ] });
-                if ($obj) {
-                    my $changed = 0;
-                    foreach my $metaname (keys %$metadata) {
-                        my $metavalue = $metadata->{$metaname};
-                        if ($metaname eq 'customfields') {
-                            next unless $cfclass;
+        if (defined $rawmeta) {
+            push @ids, $id;
+            if ($rawmeta =~ m/^SERG/) {
+                # deserialize
+                my $metadataref = $ser->unserialize($rawmeta);
+                if ($metadataref) {
+                    my $metadata = $$metadataref;
+                    my $obj = $class->load( { id => $id }, { no_class => 1,
+                        fetchonly => [ 'id',
+                            ( $class_type ? ( $class->properties->{class_column} ) : () )
+                        ]
+                    });
+                    if ($obj) {
+                        foreach my $metaname (keys %$metadata) {
+                            my $metavalue = $metadata->{$metaname};
+                            if ($metaname eq 'customfields') {
+                                next unless $cfclass;
 
-                            # extra work for custom fields; a hash into itself
-                            my $cfdata = $metavalue;
-                            next unless ref $cfdata eq 'HASH';
+                                # extra work for custom fields;
+                                # a hash into itself
+                                my $cfdata = $metavalue;
+                                next unless ref $cfdata eq 'HASH';
 
-                            foreach my $cfname (keys %$cfdata) {
-                                my $cfvalue = $cfdata->{$cfname};
-                                my $cftype = $type;
-                                if ($class_type) {
-                                    $cftype = $obj->class_type;
+                                foreach my $cfname (keys %$cfdata) {
+                                    my $cfvalue = $cfdata->{$cfname};
+                                    my $cftype = $type;
+                                    if ($class_type) {
+                                        $cftype = $obj->class_type;
+                                    }
+
+                                    # make sure CustomFields::Field exists
+                                    my $fld = $fields{$cfname}{$cftype} ||= $cfclass->load({ basename => $cfname, obj_type => $cftype });
+                                    next unless $fld;
+
+                                    $self->_save_meta($obj,
+                                        'field.' . $cfname, $cfvalue);
                                 }
-
-                                # make sure CustomFields::Field exists
-                                my $fld = $fields{$cfname}{$cftype} ||= $cfclass->load({ basename => $cfname, obj_type => $cftype });
-                                next unless $fld;
-
-                                $changed++;
-                                $self->_save_meta($obj, 'field.' . $cfname, $cfvalue);
+                            } else {
+                                $self->_save_meta($obj, $metaname,
+                                    $metavalue);
                             }
-                        } else {
-                            $changed++;
-                            $self->_save_meta($obj, $metaname, $metavalue);
                         }
-                    }
-                    if ($changed) {
-                        push @ids, $obj->id;
                     }
                 }
             }
