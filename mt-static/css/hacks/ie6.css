@@ -1,3 +1,7 @@
+.dashboard #main-content {
+    margin-left: 5px;
+}
+
 #dialog-container {
     position: absolute;
 }

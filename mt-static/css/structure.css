@@ -895,12 +895,19 @@ li#config-menu {
 }
 
 .dashboard #main-content {
-    margin-top: 8px;
+    margin: 10px 0 0 10px;
     width: 587px;
 }
+.dashboard #main-content-inner {
+    margin: 0;
+}
 .dashboard #related-content {
-    margin-top: 15px;
-    width: 323px;
+    margin-top: 10px;
+    padding-left: 12px;
+    width: 303px;
+}
+.dashboard #related-content-inner {
+    margin-left: 0;
 }
 
 .main-screen #content-header h2 {
