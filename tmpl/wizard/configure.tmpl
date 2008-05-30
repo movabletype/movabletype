@@ -150,7 +150,7 @@ window.onload = function() {
         id="dbtype"
         label="<__trans phrase="Database Type">"
         label_class="top-label">
-<select id="dbtype" name="dbtype" onchange="db_select(this); hide('db_hint');">
+<select id="dbtype" name="dbtype" onchange="db_select(this); hideByID('db_hint');">
 <mt:unless one_db>
 <option value=""><__trans phrase="Select One..."></option>
 </mt:unless>
