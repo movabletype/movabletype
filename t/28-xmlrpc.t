@@ -8,6 +8,7 @@ BEGIN {
 use MT;
 
 use Test::More qw( no_plan );
+use MIME::Base64;
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
@@ -28,6 +29,8 @@ my $deser = XMLRPC::Deserializer->new();
 
 require LWP::UserAgent::Local;
 my $ua = new LWP::UserAgent::Local({ ScriptAlias => '/' });
+
+my $logo = q{R0lGODlhlgAZANUAAP////Ly8uTk5NfX18nJyb29vbu7u62trZ6eno+Pj1iZvVKQsoCAgE6IqHx8fEmAnnFxcUV4lGtra0BwimFhYTtnf1lZWTZfdVBQUDFWaitMXz8/PydDUyA5SC0tLRswPBYlLxkZGQ8bIggPEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAACWABkAAAb/QAjBQCoaMQSC0QiaKJ6LzGhJIhyoVQSWQcBgi8lwIkTdEDZfkjCchHzZbC3JfF0eCOQign3wLOFJRgWDFgUkBRYJAAAUVAaLVBxPk08PU0YHAH5GFABuVAIARF8ABAkIA6VUGABeX4oJsbGuVLKZB7GfJI+NRQwACX8CsQQAAZskpbKxS4YOBRIFDooBSkYeiwBLH08cSxEKD0udwUYGAXlGEACpyEvA5ppLrLS12mlf9FghAQJkHgEGUAlUZF25ZAexGILGUBECeXoAZPoWjgqIbksECLgmEcsAARsAyKECL6I7fa/u4VvV6ss6LcXQ/LFGAtvBkl8WHjqkCFsd/34GFBkZ8eQDlgoKKixR5OqXzCMAGJAYgA6LRAwYElRjWW9pK6xY0+Vr+QaYSCwEPTzSdRXs0zRCH5H5lVUltwlfiEZY4rOIRiznyKzTZSTbogBdUWJRZJhsGsVUAALwh7ZxnSKNVa0UyirYX6FFRChYcGmJpAUD0bGSyrdjkYBWD2ClkKoeZK9gw668veRXr4HDElBwl0y225UkQGvs5AZ0kQUKLlAZAV2BUXWeMoklkWlAmACOMR8MIWpeeK/IueLjXYWm1YTpQa8LUNU5iQxPQCzB/wTvkmquGcHPAMsocpl4AmpWBHvJqZQeCQxCeB4Y7pEEH3Kg8XNWg1Q8EP9OBiDyN4k3mCzS1S+EVQERZsbR5ol5DOSWDlO5vYVFhOwRRIpxYBFnjxEPbWJfERdQYiRGRYS0EShLLmHQO4YFAB8rjdHCmGEVqvfYhO3hkxlOX3hASwhPifmFCBpU0MCRT0ixoI0QwhnnPLl9EUJuuhUhJp5yCojBdkvcCegcfUKIJwY+PqioCBdUR8kCF1yn6KSUVmrppZheKoKHbIajQWmZhirqqKReOgKnnTagX6mstupqqRd1CgWor9Zq661fICVrUrj26qutsU4S6QcfdPAErb8mq6ylaz7RABVFSrrstNQi50RR0y0gbbXcdkuCBk/shQUHInhrLrei8XoZ7rrrFmkdu/B664S48dY7LQcPkGjvvksEAQA7};
 
 my @apis = (
     {
@@ -310,7 +313,114 @@ my @apis = (
             ok(!$entry->category);
         },
     },
-    #TODO Add more XML-RPC API
+    {
+        api    => 'blogger.newPost',
+        params => [ '', 1, $username, $password, 'This is a new post.', 0 ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my $entry = MT::Entry->load($result);
+            ok($entry);
+            is($entry->text, 'This is a new post.');
+            # RELEASE unless NoPublishMeansDraft
+            is($entry->status, MT::Entry::RELEASE());
+        },
+    },
+    {
+        api    => 'metaWeblog.newPost',
+        params => [ 1, $username, $password, {
+            title => 'MetaWeblog Post',
+            description => 'This is a new post via metaWeblog API.'
+        }, 1 ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my $entry = MT::Entry->load($result);
+            ok($entry);
+            is($entry->title, 'MetaWeblog Post');
+            is($entry->text, 'This is a new post via metaWeblog API.');
+            # RELEASE unless NoPublishMeansDraft
+            is($entry->status, MT::Entry::RELEASE());
+        },
+    },
+    {
+        api    => 'blogger.deletePost',
+        params => [ '', 25, $username, $password, 0 ],
+        pre    => sub {
+            my ( $e1 ) = MT::Entry->load(undef,
+                { sort => 'created_on', direction => 'descend', limit => 1 }
+            );
+            is( $e1->id, 25 );
+            return $e1;
+        },
+        result => sub {
+            my ( $som, $data ) = @_;
+            my $result = $som->result;
+            MT::Entry->driver->Disabled(1);
+            my $entry = MT::Entry->load($data->id);
+            is( $entry, undef );
+            MT::Entry->driver->Disabled(0);
+        },
+    },
+    {
+        api    => 'blogger.deletePost',
+        params => [ '', 24, $username, $password, 0 ],
+        pre    => sub {
+            my ( $e2 ) = MT::Entry->load(undef,
+                { sort => 'created_on', direction => 'descend', limit => 1 }
+            );
+            is( $e2->id, 24 );
+            return $e2;
+        },
+        result => sub {
+            my ( $som, $data ) = @_;
+            my $result = $som->result;
+            MT::Entry->driver->Disabled(1);
+            my $entry = MT::Entry->load($data->id);
+            is( $entry, undef );
+            MT::Entry->driver->Disabled(0);
+        },
+    },
+    {
+        api    => 'metaWeblog.newMediaObject',
+        params => [ 1, $username, $password, {
+            name => 'movable-type-logo.gif',
+            type => 'image/gif',
+            bits  => sub {
+                return MIME::Base64::decode_base64($logo);
+            },
+        } ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my $url = $result->{url};
+            is( $url, 'http://narnia.na/nana/movable-type-logo.gif' );
+            my $asset = MT::Asset->load(undef, { sort => 'created_on', direction => 'descend', limit => 1 });
+            ok($asset, 'asset loaded');
+            is( $asset->mime_type, 'image/gif' );
+            is( $asset->file_name, 'movable-type-logo.gif' );
+            local $/;
+            open my $fh, '<', $asset->file_path;
+            my $image = <$fh>;
+            close $fh;
+            require MIME::Base64;
+            is( $logo, MIME::Base64::encode_base64($image, '') );
+        },
+        post   => sub {
+            my $asset = MT::Asset->load(undef, { sort => 'created_on', direction => 'descend', limit => 1 });
+            $asset->remove();
+        }
+    },
+    #TODO Add these tests
+    #'blogger.deletePost',
+    #'metaWeblog.getPost',
+    #'metaWeblog.newPost',
+    #'metaWeblog.getCategories',
+    #'metaWeblog.deletePost',
+    #'metaWeblog.getUsersBlogs',
+    #'wp.newPage', 'wp.getPages', 'wp.getPage', 'wp.editPage', 'wp.deletePage',
+    #'mt.getTrackbackPings', 'mt.supportedTextFilters',
+    #'mt.getRecentPostTitles', 'mt.publishPost', 'mt.getTagList'
 );
 
 my $uri = new URI();
@@ -321,15 +431,35 @@ foreach my $api ( @apis ) {
 
     my $data = {};
     $data = $api->{pre}->() if exists $api->{pre};
-
-    $req->content($ser->method($api->{api}, @{ $api->{params} }));
+    my @params;
+    foreach my $param ( @{ $api->{params} } ) {
+        if ( 'CODE' eq ref($param) ) {
+            push @params, $param->();
+        }
+        elsif ( 'HASH' eq ref($param) ) {
+            my $hash = {};
+            while ( my ( $key, $val ) = each %$param ) {
+                if ( 'CODE' eq ref($val) ) {
+                    $hash->{$key} = $val->();
+                }
+                else {
+                    $hash->{$key} = $val;
+                }
+            }
+            push @params, $hash;
+        }
+        else {
+            push @params, $param;
+        }
+    }
+    $req->content($ser->method($api->{api}, @params));
 
     my $resp = $ua->request($req);
 #    print STDERR $resp->content;
     my $som = $deser->deserialize($resp->content());
     $api->{result}->($som, $data);
+    $api->{post}->() if exists $api->{post};
 }
 
 1;
-
 __END__
