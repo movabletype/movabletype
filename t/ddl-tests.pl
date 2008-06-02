@@ -34,7 +34,6 @@ BEGIN {
 
 
 package Ddltest;
-
 use base qw( MT::Object );
 
 __PACKAGE__->install_properties({
@@ -70,6 +69,20 @@ __PACKAGE__->install_properties({
     },
     audit       => 1,
     datasource  => 'ddltest',
+    primary_key => 'id',
+    cacheable   => 0,
+});
+
+
+package Ddltest::InvalidType;
+use base qw( MT::Object );
+
+__PACKAGE__->install_properties({
+    column_defs => {
+        id => 'integer not null auto_increment',
+        boo => 'asfdasf',
+    },
+    datasource  => 'ddltest_invalidtype',
     primary_key => 'id',
     cacheable   => 0,
 });
@@ -226,6 +239,19 @@ sub index_defs : Tests(5) {
     is_deeply($index_defs->{string_dt}, {
         columns => [ qw( string_25 datetime_nn ) ]
     }, 'Ddltest table has multi-column string_dt index');
+}
+
+sub invalid_type : Tests(3) {
+    my $self = shift;
+
+    my $driver    = MT::Object->dbi_driver;
+    my $dbh       = $driver->rw_handle;
+    my $ddl_class = $driver->dbd->ddl_class;
+
+    ok(!$driver->table_exists('Ddltest::InvalidType'), 'Ddltest::InvalidType table does not yet exist');
+    ok(!defined $ddl_class->column_defs('Ddltest::InvalidType'), 'Ddltest::InvalidType table has no column defs');
+
+    ok(!eval { $ddl_class->create_table_sql('Ddltest::InvalidType') }, 'Ddltest::InvalidType cannot make creation sql');
 }
 
 package main;
