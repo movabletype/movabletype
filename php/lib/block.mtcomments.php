@@ -36,9 +36,11 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
         $comment = $comments[$counter];
         if ($comment['comment_commenter_id']) {
             $commenter = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+            if (empty($commenter)) {
+                $ctx->__stash['commenter'] = null;
+            }
             $permission = $ctx->mt->db->fetch_permission(array('blog_id' => $comment['comment_blog_id'], 'id' => $comment['comment_commenter_id']));
-            if ( isset($permission) && count($permission) > 0 ) {
-                $commenter = array($commenter);
+            if (!empty($permission)) {
                 $commenter = array_merge($commenter, $permission[0]);
             }
             $ctx->stash('commenter', $commenter);
