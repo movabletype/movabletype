@@ -231,7 +231,8 @@ class MTDatabaseBase extends ezsql {
                 return null;
             }
             $blog =& $this->fetch_blog($link['fileinfo_blog_id']);
-            $blog_url = $blog['blog_site_url'];
+            $blog_url = $blog['blog_archive_url'];
+            $blog_url or $blog_url = $blog['blog_site_url'];
             $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
             $url = $blog_url . $link['fileinfo_url'];
             $url = _strip_index($url, $blog);
@@ -261,7 +262,12 @@ class MTDatabaseBase extends ezsql {
                 return null;
             }
             $blog =& $this->fetch_blog($blog_id);
-            $blog_url = $blog['blog_site_url'];
+            if ($at == 'Page') {
+                $blog_url = $blog['blog_site_url'];
+            } else {
+                $blog_url = $blog['blog_archive_url'];
+                $blog_url or $blog_url = $blog['blog_site_url'];
+            }
             $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
             $url = $blog_url . $link['fileinfo_url'];
             $url = _strip_index($url, $blog);
@@ -320,7 +326,12 @@ class MTDatabaseBase extends ezsql {
                 return null;
             }
             $blog =& $this->fetch_blog($link['fileinfo_blog_id']);
-            $blog_url = $blog['blog_site_url'];
+            if ($at == 'Page') {
+                $blog_url = $blog['blog_site_url'];
+            } else {
+                $blog_url = $blog['blog_archive_url'];
+                $blog_url or $blog_url = $blog['blog_site_url'];
+            }
             $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
             $url = $blog_url . $link['fileinfo_url'];
             $url = _strip_index($url, $blog);
@@ -1820,7 +1831,7 @@ class MTDatabaseBase extends ezsql {
             return;
         $id_list = substr($id_list, 1);
         $query = "
-            select fileinfo_entry_id, fileinfo_url, blog_site_url, blog_file_extension
+            select fileinfo_entry_id, fileinfo_url, blog_site_url, blog_file_extension, blog_archive_url
               from mt_fileinfo, mt_templatemap, mt_blog
              where fileinfo_entry_id in ($id_list)
                and fileinfo_archive_type = 'Individual'
@@ -1832,7 +1843,8 @@ class MTDatabaseBase extends ezsql {
         if ($results) {
 
             foreach ($results as $row) {
-                $blog_url = $row[2];
+                $blog_url = $row[4];
+                $blog_url or $blog_url = $row[2];
                 $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
                 $url = $blog_url . $row[1];
                 $url = _strip_index($url, array('blog_file_extension' => $row[3]));
@@ -1853,7 +1865,7 @@ class MTDatabaseBase extends ezsql {
             return;
         $id_list = substr($id_list, 1);
         $query = "
-            select fileinfo_category_id, fileinfo_url, blog_site_url, blog_file_extension
+            select fileinfo_category_id, fileinfo_url, blog_site_url, blog_file_extension, blog_archive_url
               from mt_fileinfo, mt_templatemap, mt_blog
              where fileinfo_category_id in ($id_list)
                and fileinfo_archive_type = 'Category'
@@ -1864,7 +1876,8 @@ class MTDatabaseBase extends ezsql {
         $results = $this->get_results($query, ARRAY_N);
         if ($results) {
             foreach ($results as $row) {
-                $blog_url = $row[2];
+                $blog_url = $row[4];
+                $blog_url or $blog_url = $row[2];
                 $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
                 $url = $blog_url . $row[1];
                 $url = _strip_index($url, array('blog_file_extension' => $row[3]));
@@ -2527,7 +2540,7 @@ class MTDatabaseBase extends ezsql {
             }
             $range = "'$low' and '$hi'";
             $link_cache_sql = "
-                select fileinfo_startdate, fileinfo_url, blog_site_url, blog_file_extension
+                select fileinfo_startdate, fileinfo_url, blog_site_url, blog_file_extension, blog_archive_url
                   from mt_fileinfo, mt_templatemap, mt_blog
                  where fileinfo_startdate between $range
                    and fileinfo_archive_type = '$at'
@@ -2540,7 +2553,12 @@ class MTDatabaseBase extends ezsql {
             if (is_array($cache_results)) {
                 foreach ($cache_results as $row) {
                     $date = $this->db2ts($row[0]);
-                    $blog_url = $row[2];
+                    if ($at == 'Page') {
+                        $blog_url = $row[2];
+                    } else {
+                        $blog_url = $row[4];
+                        $blog_url or $blog_url = $row[2];
+                    }
                     $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
                     $url = $blog_url . $row[1];
                     $url = _strip_index($url, array('blog_file_extension' => $row[3]));
